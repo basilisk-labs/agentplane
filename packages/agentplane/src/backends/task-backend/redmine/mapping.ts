@@ -129,6 +129,9 @@ export function issueToTask(opts: {
     verify: maybeParseJson(verifyVal) as string[],
     commit: maybeParseJson(commitVal) as TaskData["commit"],
     comments: normalizeComments(maybeParseJson(commentsVal)),
+    plan_approval: canonicalState?.plan_approval,
+    verification: canonicalState?.verification,
+    events: canonicalState?.events,
     id_source: "custom",
   };
 

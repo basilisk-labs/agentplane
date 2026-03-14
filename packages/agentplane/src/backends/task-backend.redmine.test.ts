@@ -70,6 +70,27 @@ describe("RedmineBackend (mocked)", () => {
                 Summary: "Canonical summary.",
                 "Verify Steps": "1. Canonical check.",
               },
+              plan_approval: {
+                state: "approved",
+                updated_at: "2026-03-14T00:00:00Z",
+                updated_by: "ORCHESTRATOR",
+                note: "approved",
+              },
+              verification: {
+                state: "ok",
+                updated_at: "2026-03-14T00:05:00Z",
+                updated_by: "CODER",
+                note: "verified",
+              },
+              events: [
+                {
+                  type: "status",
+                  at: "2026-03-14T00:00:00Z",
+                  author: "CODER",
+                  from: "TODO",
+                  to: "DOING",
+                },
+              ],
             }),
           },
           { id: 3, value: "{bad" },
@@ -146,6 +167,27 @@ describe("RedmineBackend (mocked)", () => {
       Summary: "Canonical summary.",
       "Verify Steps": "1. Canonical check.",
     });
+    expect(taskAfterPull?.plan_approval).toEqual({
+      state: "approved",
+      updated_at: "2026-03-14T00:00:00Z",
+      updated_by: "ORCHESTRATOR",
+      note: "approved",
+    });
+    expect(taskAfterPull?.verification).toEqual({
+      state: "ok",
+      updated_at: "2026-03-14T00:05:00Z",
+      updated_by: "CODER",
+      note: "verified",
+    });
+    expect(taskAfterPull?.events).toEqual([
+      {
+        type: "status",
+        at: "2026-03-14T00:00:00Z",
+        author: "CODER",
+        from: "TODO",
+        to: "DOING",
+      },
+    ]);
     expect(taskAfterPull?.doc).toContain("Canonical summary.");
     expect(taskAfterPull?.doc).not.toContain("Stale doc");
 
@@ -1260,6 +1302,27 @@ describe("RedmineBackend (mocked)", () => {
               Summary: "Remote summary.",
               "Verify Steps": "1. Remote check.",
             },
+            plan_approval: {
+              state: "approved",
+              updated_at: "2026-03-14T00:00:00Z",
+              updated_by: "ORCHESTRATOR",
+              note: "approved",
+            },
+            verification: {
+              state: "ok",
+              updated_at: "2026-03-14T00:05:00Z",
+              updated_by: "CODER",
+              note: "verified",
+            },
+            events: [
+              {
+                type: "status",
+                at: "2026-03-14T00:00:00Z",
+                author: "CODER",
+                from: "TODO",
+                to: "DOING",
+              },
+            ],
           }),
         },
         { id: 3, value: "Stale doc" },
@@ -1291,6 +1354,27 @@ describe("RedmineBackend (mocked)", () => {
               Summary: "Updated summary.",
               "Verify Steps": "1. Updated check.",
             },
+            plan_approval: {
+              state: "approved",
+              updated_at: "2026-03-14T00:00:00Z",
+              updated_by: "ORCHESTRATOR",
+              note: "approved",
+            },
+            verification: {
+              state: "ok",
+              updated_at: "2026-03-14T00:05:00Z",
+              updated_by: "CODER",
+              note: "verified",
+            },
+            events: [
+              {
+                type: "status",
+                at: "2026-03-14T00:00:00Z",
+                author: "CODER",
+                from: "TODO",
+                to: "DOING",
+              },
+            ],
           }),
         },
       ]),
@@ -1302,6 +1386,27 @@ describe("RedmineBackend (mocked)", () => {
       Summary: "Updated summary.",
       "Verify Steps": "1. Updated check.",
     });
+    expect(cached?.plan_approval).toEqual({
+      state: "approved",
+      updated_at: "2026-03-14T00:00:00Z",
+      updated_by: "ORCHESTRATOR",
+      note: "approved",
+    });
+    expect(cached?.verification).toEqual({
+      state: "ok",
+      updated_at: "2026-03-14T00:05:00Z",
+      updated_by: "CODER",
+      note: "verified",
+    });
+    expect(cached?.events).toEqual([
+      {
+        type: "status",
+        at: "2026-03-14T00:00:00Z",
+        author: "CODER",
+        from: "TODO",
+        to: "DOING",
+      },
+    ]);
     expect(cached?.doc).toContain("Updated summary.");
   });
 
