@@ -1,10 +1,11 @@
 ---
 id: "202603140600-APGANH"
 title: "Add Redmine canonical-state custom field plumbing"
-status: "DOING"
+result_summary: "Introduced AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE plumbing, added redmine/state.ts helper seams, serialized canonical_state into Redmine payloads, and synced init/docs/tests. Implementation commits: 25692e8ec5b6, 7155158f80f4."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 depends_on: []
 tags:
   - "code"
@@ -35,11 +36,16 @@ verification:
     Result: pass
     Evidence: Prettier matched the MDX doc; git diff --check reported no whitespace issues for .env.example/docs; both package builds exited 0. Note: .env.example required git diff --check because this Prettier build cannot infer a parser for that file.
     Scope: Docs/template formatting sanity and package build integrity for the new Redmine plumbing.
-commit: null
+commit:
+  hash: "7155158f80f42a1f9ebd6dedf35ba0ed116f1dd8"
+  message: "🧪 APGANH task: add Redmine plumbing regressions"
 comments:
   -
     author: "CODER"
     body: "Start: implement Redmine canonical_state plumbing across env parsing, init templates, helper seams, and focused regression coverage."
+  -
+    author: "CODER"
+    body: "Verified: Redmine now exposes a canonical_state custom field seam across env parsing, init templates, payload building, and focused regression coverage without yet switching remote round-trip behavior."
 events:
   -
     type: "status"
@@ -68,8 +74,15 @@ events:
       Result: pass
       Evidence: Prettier matched the MDX doc; git diff --check reported no whitespace issues for .env.example/docs; both package builds exited 0. Note: .env.example required git diff --check because this Prettier build cannot infer a parser for that file.
       Scope: Docs/template formatting sanity and package build integrity for the new Redmine plumbing.
+  -
+    type: "status"
+    at: "2026-03-14T06:15:19.173Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Redmine now exposes a canonical_state custom field seam across env parsing, init templates, payload building, and focused regression coverage without yet switching remote round-trip behavior."
 doc_version: 3
-doc_updated_at: "2026-03-14T06:14:14.037Z"
+doc_updated_at: "2026-03-14T06:15:19.174Z"
 doc_updated_by: "CODER"
 description: "Introduce one structured Redmine custom field for canonical task state and wire env/config parsing around it without yet claiming full remote parity."
 sections:
