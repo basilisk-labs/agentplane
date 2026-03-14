@@ -727,6 +727,7 @@ describe("RedmineBackend (mocked)", () => {
       "202601300000-ABCD",
     );
     expect(task?.revision).toBe(1);
+    expect(task?.doc_version).toBe(3);
     expect(task?.sections).toMatchObject({
       Summary: "Legacy summary.",
       "Verify Steps": "1. Legacy check.",

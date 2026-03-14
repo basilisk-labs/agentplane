@@ -90,7 +90,7 @@ export function validateTaskDocMetadata(frontmatter: Record<string, unknown>): s
   return errors;
 }
 
-function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 2): 2 | 3 {
+function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 3): 2 | 3 {
   return value === 3 ? 3 : value === 2 ? 2 : fallback;
 }
 

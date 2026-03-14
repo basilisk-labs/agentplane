@@ -156,7 +156,7 @@ function taskReadmePath(ctx: CommandContext, taskId: string): string {
   return path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.workflow_dir, taskId, "README.md");
 }
 
-function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 2): 2 | 3 {
+function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 3): 2 | 3 {
   return value === 3 ? 3 : value === 2 ? 2 : fallback;
 }
 

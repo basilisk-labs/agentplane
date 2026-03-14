@@ -50,7 +50,7 @@ export function isVerifyStepsFilled(sectionText: string | null): boolean {
 
 export function normalizeTaskDocVersion(
   value: unknown,
-  fallback: TaskDocVersion = 2,
+  fallback: TaskDocVersion = 3,
 ): TaskDocVersion {
   return value === 3 ? 3 : value === 2 ? 2 : fallback;
 }

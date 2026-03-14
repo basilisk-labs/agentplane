@@ -167,6 +167,16 @@ describe("runCli", () => {
       ioShow.restore();
     }
 
+    const derivedReadme = await readFile(
+      path.join(root, ".agentplane", "tasks", derivedId, "README.md"),
+      "utf8",
+    );
+    expect(derivedReadme).toContain("doc_version: 3");
+    expect(derivedReadme).toContain("## Verify Steps");
+    expect(derivedReadme).toContain("## Verification");
+    expect(derivedReadme).toContain("## Findings");
+    expect(derivedReadme).toContain(`derived from spike ${spikeId}`);
+
     const ioList = captureStdIO();
     try {
       const code = await runCli(["task", "list", "--root", root]);

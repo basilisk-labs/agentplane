@@ -75,7 +75,7 @@ describe("task shared helpers", () => {
 
   it("normalizes doc versions and resolves observation sections with fallback", () => {
     const doc = ["## Summary", "S", "", "## Findings", "new", "", "## Notes", "old"].join("\n");
-    expect(normalizeTaskDocVersion(null)).toBe(2);
+    expect(normalizeTaskDocVersion(null)).toBe(3);
     expect(normalizeTaskDocVersion(3)).toBe(3);
     expect(taskObservationSectionName(2)).toBe("Notes");
     expect(taskObservationSectionName(3)).toBe("Findings");

@@ -2,6 +2,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { unknownEntityMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { defaultTaskDocV3, TASK_DOC_VERSION_V3 } from "./doc-template.js";
 
 import {
   extractTaskObservationSection,
@@ -67,6 +68,7 @@ export async function cmdTaskDerive(opts: {
     let description = opts.description.trim();
     description = `${description} (derived from spike ${opts.spikeId})`;
     if (excerpt) description = `${description} [spike_notes: ${excerpt}]`;
+    const doc = defaultTaskDocV3({ title: opts.title, description });
 
     const at = nowIso();
     await ctx.taskBackend.writeTask({
@@ -80,7 +82,8 @@ export async function cmdTaskDerive(opts: {
       depends_on: [opts.spikeId],
       verify: [],
       comments: [],
-      doc_version: 2,
+      doc,
+      doc_version: TASK_DOC_VERSION_V3,
       doc_updated_at: at,
       doc_updated_by: opts.owner,
       id_source: "generated",
