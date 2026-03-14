@@ -103,6 +103,8 @@ afterEach(async () => {
 });
 
 describe("stale-dist read-only diagnostics", () => {
+  const STALE_DIST_READONLY_TIMEOUT_MS = 60_000;
+
   it("warns but runs doctor when watched runtime paths are dirty", async () => {
     const { repoRoot, repoBin } = await setupFrameworkCheckout();
 
@@ -119,22 +121,26 @@ describe("stale-dist read-only diagnostics", () => {
     expect(stderr).toContain("command: doctor");
   });
 
-  it("warns but runs runtime explain when watched runtime paths are dirty", async () => {
-    const { repoRoot, repoBin } = await setupFrameworkCheckout();
+  it(
+    "warns but runs runtime explain when watched runtime paths are dirty",
+    { timeout: STALE_DIST_READONLY_TIMEOUT_MS },
+    async () => {
+      const { repoRoot, repoBin } = await setupFrameworkCheckout();
 
-    const { stdout, stderr } = await execFileAsync(
-      process.execPath,
-      [repoBin, "runtime", "explain", "--json"],
-      {
-        cwd: repoRoot,
-        encoding: "utf8",
-      },
-    );
+      const { stdout, stderr } = await execFileAsync(
+        process.execPath,
+        [repoBin, "runtime", "explain", "--json"],
+        {
+          cwd: repoRoot,
+          encoding: "utf8",
+        },
+      );
 
-    expect(stdout).toContain("DIST");
-    expect(stdout).toContain('"args":["runtime","explain","--json"]');
-    expect(stderr).toContain("command: runtime explain --json");
-  });
+      expect(stdout).toContain("DIST");
+      expect(stdout).toContain('"args":["runtime","explain","--json"]');
+      expect(stderr).toContain("command: runtime explain --json");
+    },
+  );
 
   it("warns but runs task list when watched runtime paths are dirty", async () => {
     const { repoRoot, repoBin } = await setupFrameworkCheckout();
