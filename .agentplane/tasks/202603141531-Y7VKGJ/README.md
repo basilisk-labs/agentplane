@@ -1,10 +1,11 @@
 ---
 id: "202603141531-Y7VKGJ"
 title: "Stabilize stale-dist readonly runtime explain timeout case"
-status: "DOING"
+result_summary: "Stale-dist readonly runtime explain coverage now uses an explicit timeout budget and remains behaviorally unchanged."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 depends_on: []
 tags:
   - "release"
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-03-14T15:42:10.614Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/cli/stale-dist-readonly.test.ts; Result: pass; Evidence: 5 tests passed, runtime explain case completed in ~1.8s and suite in 10.14s. Scope: packages/agentplane/src/cli/stale-dist-readonly.test.ts. Command: bun x tsc -b packages/core packages/agentplane; Result: pass; Evidence: TypeScript build completed successfully. Scope: packages/core packages/agentplane. Command: bun run --filter=@agentplaneorg/core build; Result: pass; Evidence: core build exited with code 0. Scope: packages/core. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0. Scope: packages/agentplane. Review: diff limited to a single timeout budget in stale-dist readonly runtime explain coverage; no scope drift."
-commit: null
+commit:
+  hash: "2208d73e154f49e6e1c4e948ebb502d5aa8c11f1"
+  message: "⏱️ Y7VKGJ test: stabilize stale-dist readonly timeout budget"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the stale-dist readonly runtime-explain timeout under isolated and full release-gate load, confirm whether it is budget-only, and patch the smallest coherent fix without weakening readonly diagnostics."
+  -
+    author: "CODER"
+    body: "Verified: stale-dist readonly runtime explain timeout now has an explicit local budget; suite, tsc, and package builds all passed with no scope drift."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/cli/stale-dist-readonly.test.ts; Result: pass; Evidence: 5 tests passed, runtime explain case completed in ~1.8s and suite in 10.14s. Scope: packages/agentplane/src/cli/stale-dist-readonly.test.ts. Command: bun x tsc -b packages/core packages/agentplane; Result: pass; Evidence: TypeScript build completed successfully. Scope: packages/core packages/agentplane. Command: bun run --filter=@agentplaneorg/core build; Result: pass; Evidence: core build exited with code 0. Scope: packages/core. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0. Scope: packages/agentplane. Review: diff limited to a single timeout budget in stale-dist readonly runtime explain coverage; no scope drift."
+  -
+    type: "status"
+    at: "2026-03-14T15:42:48.455Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: stale-dist readonly runtime explain timeout now has an explicit local budget; suite, tsc, and package builds all passed with no scope drift."
 doc_version: 3
-doc_updated_at: "2026-03-14T15:42:10.632Z"
+doc_updated_at: "2026-03-14T15:42:48.458Z"
 doc_updated_by: "CODER"
 description: "Stabilize the stale-dist readonly runtime explain diagnostic coverage under full release load without weakening readonly warning assertions."
 sections:
