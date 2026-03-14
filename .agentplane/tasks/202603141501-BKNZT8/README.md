@@ -1,10 +1,12 @@
 ---
 id: "202603141501-BKNZT8"
 title: "Stabilize doctor historical archive timeout cases"
-status: "DOING"
+result_summary: "Stabilized the historical doctor archive cases under full release load by giving only those three tests an explicit long timeout budget."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on: []
 tags:
   - "release"
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-03-14T15:18:47.255Z"
   updated_by: "CODER"
   note: "The three historical doctor archive failures were not semantic regressions; targeted repro shows those cases take about 1.5s, 1.5s, and 2.6s, but the full doctor.command suite is large enough that they were inheriting the default 30000ms budget under release:ci-base. Adding a dedicated 60s budget only to the three history/archive-heavy cases keeps the archive diagnostics unchanged while leaving the full doctor suite, tsc, and package builds green."
-commit: null
+commit:
+  hash: "e738769a75ee92d494f1f30a3085a83c1a56155b"
+  message: "⏱️ BKNZT8 test: stabilize doctor archive timeout cases"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the three historical doctor archive timeout cases under isolated and full release-gate load, separate expensive git-history fixture setup from actual doctor diagnostics runtime, and patch the smallest coherent fix without weakening historical archive assertions."
+  -
+    author: "CODER"
+    body: "Verified: the three historical doctor archive failures were aggregate-load timeout spills, not diagnostic regressions. Adding a dedicated 60s budget only to those history/archive-heavy cases keeps the assertions intact and leaves the full doctor suite, tsc, and package builds green."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "The three historical doctor archive failures were not semantic regressions; targeted repro shows those cases take about 1.5s, 1.5s, and 2.6s, but the full doctor.command suite is large enough that they were inheriting the default 30000ms budget under release:ci-base. Adding a dedicated 60s budget only to the three history/archive-heavy cases keeps the archive diagnostics unchanged while leaving the full doctor suite, tsc, and package builds green."
+  -
+    type: "status"
+    at: "2026-03-14T15:19:20.545Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the three historical doctor archive failures were aggregate-load timeout spills, not diagnostic regressions. Adding a dedicated 60s budget only to those history/archive-heavy cases keeps the assertions intact and leaves the full doctor suite, tsc, and package builds green."
 doc_version: 3
-doc_updated_at: "2026-03-14T15:18:47.260Z"
+doc_updated_at: "2026-03-14T15:19:20.547Z"
 doc_updated_by: "CODER"
 description: "Stabilize the historical README and archive diagnostic cases in doctor.command.test under full release load without weakening diagnostic assertions."
 sections:
