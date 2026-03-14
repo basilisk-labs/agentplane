@@ -59,6 +59,7 @@ installRunCliIntegrationHarness();
 
 describe("runCli", () => {
   const CLEANUP_MERGED_LIST_TIMEOUT_MS = 120_000;
+  const CLEANUP_MERGED_MUTATION_TIMEOUT_MS = 120_000;
 
   it("cleanup merged requires branch_pr workflow", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -342,153 +343,161 @@ describe("runCli", () => {
     },
   );
 
-  it("cleanup merged deletes branches/worktrees and archives pr artifacts", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    await configureGitUser(root);
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
+  it(
+    "cleanup merged deletes branches/worktrees and archives pr artifacts",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await configureGitUser(root);
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
 
-    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
-    await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
-    await commitAll(root, "chore base");
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+      await commitAll(root, "chore base");
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
-    let taskId = "";
-    const ioTask = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Cleanup delete",
-        "--description",
-        "cleanup candidate",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-    await commitAll(root, `chore ${taskId} scaffold`);
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Cleanup delete",
+          "--description",
+          "cleanup candidate",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await commitAll(root, `chore ${taskId} scaffold`);
 
-    const task = await readTask({ cwd: root, taskId });
-    const readmeText = await readFile(task.readmePath, "utf8");
-    await writeFile(
-      task.readmePath,
-      readmeText.replace('status: "TODO"', 'status: "DONE"'),
-      "utf8",
-    );
-    await commitAll(root, `chore ${taskId} done`);
+      const task = await readTask({ cwd: root, taskId });
+      const readmeText = await readFile(task.readmePath, "utf8");
+      await writeFile(
+        task.readmePath,
+        readmeText.replace('status: "TODO"', 'status: "DONE"'),
+        "utf8",
+      );
+      await commitAll(root, `chore ${taskId} done`);
 
-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
-    await mkdir(prDir, { recursive: true });
-    await writeFile(path.join(prDir, "meta.json"), "{\n}\n", "utf8");
-    await commitAll(root, `chore ${taskId} pr artifacts`);
+      const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+      await mkdir(prDir, { recursive: true });
+      await writeFile(path.join(prDir, "meta.json"), "{\n}\n", "utf8");
+      await commitAll(root, `chore ${taskId} pr artifacts`);
 
-    const branch = `task/${taskId}/cleanup-delete`;
-    const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-cleanup-delete`);
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
+      const branch = `task/${taskId}/cleanup-delete`;
+      const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-cleanup-delete`);
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["cleanup", "merged", "--yes", "--archive", "--root", root]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("✅ cleanup merged");
-    } finally {
-      io.restore();
-    }
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["cleanup", "merged", "--yes", "--archive", "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("✅ cleanup merged");
+      } finally {
+        io.restore();
+      }
 
-    expect(await gitBranchExists(root, branch)).toBe(false);
-    expect(await pathExists(worktreePath)).toBe(false);
+      expect(await gitBranchExists(root, branch)).toBe(false);
+      expect(await pathExists(worktreePath)).toBe(false);
 
-    const archiveRoot = path.join(root, ".agentplane", "tasks", taskId, "pr-archive");
-    const entries = await readdir(archiveRoot);
-    expect(entries.length).toBe(1);
-    expect(await pathExists(path.join(archiveRoot, entries[0]))).toBe(true);
-    expect(await pathExists(prDir)).toBe(false);
-  }, 60_000);
+      const archiveRoot = path.join(root, ".agentplane", "tasks", taskId, "pr-archive");
+      const entries = await readdir(archiveRoot);
+      expect(entries.length).toBe(1);
+      expect(await pathExists(path.join(archiveRoot, entries[0]))).toBe(true);
+      expect(await pathExists(prDir)).toBe(false);
+    },
+    CLEANUP_MERGED_MUTATION_TIMEOUT_MS,
+  );
 
-  it("cleanup merged refuses worktrees outside repo", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    await configureGitUser(root);
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
+  it(
+    "cleanup merged refuses worktrees outside repo",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await configureGitUser(root);
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
 
-    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
-    await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
-    await commitAll(root, "chore base");
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+      await commitAll(root, "chore base");
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
-    let taskId = "";
-    const ioTask = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Cleanup outside worktree",
-        "--description",
-        "cleanup candidate",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-    await commitAll(root, `chore ${taskId} scaffold`);
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Cleanup outside worktree",
+          "--description",
+          "cleanup candidate",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await commitAll(root, `chore ${taskId} scaffold`);
 
-    const task = await readTask({ cwd: root, taskId });
-    const readmeText = await readFile(task.readmePath, "utf8");
-    await writeFile(
-      task.readmePath,
-      readmeText.replace('status: "TODO"', 'status: "DONE"'),
-      "utf8",
-    );
-    await commitAll(root, `chore ${taskId} done`);
+      const task = await readTask({ cwd: root, taskId });
+      const readmeText = await readFile(task.readmePath, "utf8");
+      await writeFile(
+        task.readmePath,
+        readmeText.replace('status: "TODO"', 'status: "DONE"'),
+        "utf8",
+      );
+      await commitAll(root, `chore ${taskId} done`);
 
-    const branch = `task/${taskId}/cleanup-outside`;
-    const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-"));
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
+      const branch = `task/${taskId}/cleanup-outside`;
+      const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-"));
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["cleanup", "merged", "--yes", "--root", root]);
-      expect(code).toBe(5);
-      expect(io.stderr).toContain("Refusing to remove worktree outside repo");
-    } finally {
-      io.restore();
-    }
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["cleanup", "merged", "--yes", "--root", root]);
+        expect(code).toBe(5);
+        expect(io.stderr).toContain("Refusing to remove worktree outside repo");
+      } finally {
+        io.restore();
+      }
 
-    await execFileAsync("git", ["worktree", "remove", "--force", worktreePath], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-    await execFileAsync("git", ["branch", "-D", branch], { cwd: root, env: cleanGitEnv() });
-  }, 60_000);
+      await execFileAsync("git", ["worktree", "remove", "--force", worktreePath], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      await execFileAsync("git", ["branch", "-D", branch], { cwd: root, env: cleanGitEnv() });
+    },
+    CLEANUP_MERGED_MUTATION_TIMEOUT_MS,
+  );
 });
