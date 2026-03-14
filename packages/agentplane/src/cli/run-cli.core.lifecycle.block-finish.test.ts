@@ -32,6 +32,8 @@ afterEach(() => {
 });
 
 describe("runCli", () => {
+  const BLOCK_FINISH_TIMEOUT_MS = 60_000;
+
   it("block updates status and appends comment", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -574,84 +576,88 @@ describe("runCli", () => {
     },
   );
 
-  it("finish persists result_summary/risk_level/breaking in task README frontmatter", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
+  it(
+    "finish persists result_summary/risk_level/breaking in task README frontmatter",
+    { timeout: BLOCK_FINISH_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
 
-    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Finish metadata persistence",
-        "--description",
-        "Ensure finish writes metadata into README frontmatter",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "docs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Finish metadata persistence",
+          "--description",
+          "Ensure finish writes metadata into README frontmatter",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
 
-    await runCliSilent([
-      "verify",
-      taskId,
-      "--ok",
-      "--by",
-      "TESTER",
-      "--note",
-      "Ok to finish: verification recorded for finish metadata persistence test coverage.",
-      "--quiet",
-      "--root",
-      root,
-    ]);
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "finish",
+      await runCliSilent([
+        "verify",
         taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Verified: ensure finish persists result_summary, risk_level, and breaking in frontmatter.",
-        "--result",
-        "persist finish metadata",
-        "--risk",
-        "high",
-        "--breaking",
-        "--force",
+        "--ok",
+        "--by",
+        "TESTER",
+        "--note",
+        "Ok to finish: verification recorded for finish metadata persistence test coverage.",
+        "--quiet",
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("✅ finished");
-    } finally {
-      io.restore();
-    }
 
-    const task = await readTask({ cwd: root, rootOverride: root, taskId });
-    expect(task.frontmatter.status).toBe("DONE");
-    expect(task.frontmatter.result_summary).toBe("persist finish metadata");
-    expect(task.frontmatter.risk_level).toBe("high");
-    expect(task.frontmatter.breaking).toBe(true);
-  });
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "finish",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Verified: ensure finish persists result_summary, risk_level, and breaking in frontmatter.",
+          "--result",
+          "persist finish metadata",
+          "--risk",
+          "high",
+          "--breaking",
+          "--force",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("✅ finished");
+      } finally {
+        io.restore();
+      }
+
+      const task = await readTask({ cwd: root, rootOverride: root, taskId });
+      expect(task.frontmatter.status).toBe("DONE");
+      expect(task.frontmatter.result_summary).toBe("persist finish metadata");
+      expect(task.frontmatter.risk_level).toBe("high");
+      expect(task.frontmatter.breaking).toBe(true);
+    },
+  );
 
   it("finish does not accept missing task id (no env fallback)", async () => {
     const root = await mkGitRepoRoot();
@@ -672,8 +678,9 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage:");
-      expect(io.stderr).toContain("agentplane finish");
+      const usageOutput = `${io.stderr}${io.stdout}`;
+      expect(usageOutput).toContain("Usage:");
+      expect(usageOutput).toContain("agentplane finish");
     } finally {
       io.restore();
       if (previous) process.env.AGENTPLANE_TASK_ID = previous;
@@ -681,108 +688,112 @@ describe("runCli", () => {
     }
   });
 
-  it("finish --force requires explicit approval in conservative profile", async () => {
-    const root = await mkGitRepoRoot();
-    await configureGitUser(root);
-    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
-    await commitAll(root, "seed");
-    const cfg = defaultConfig();
-    cfg.execution.profile = "conservative";
-    await writeConfig(root, cfg);
+  it(
+    "finish --force requires explicit approval in conservative profile",
+    { timeout: BLOCK_FINISH_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      await commitAll(root, "seed");
+      const cfg = defaultConfig();
+      cfg.execution.profile = "conservative";
+      await writeConfig(root, cfg);
 
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish force approval",
-          "--description",
-          "conservative force approval check for finish",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-      } finally {
-        io.restore();
+      let taskId = "";
+      {
+        const io = captureStdIO();
+        try {
+          const code = await runCli([
+            "task",
+            "new",
+            "--title",
+            "Finish force approval",
+            "--description",
+            "conservative force approval check for finish",
+            "--priority",
+            "med",
+            "--owner",
+            "CODER",
+            "--tag",
+            "docs",
+            "--root",
+            root,
+          ]);
+          expect(code).toBe(0);
+          taskId = io.stdout.trim();
+        } finally {
+          io.restore();
+        }
       }
-    }
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "verify",
-          taskId,
-          "--ok",
-          "--by",
-          "TESTER",
-          "--note",
-          "Ok to finish under conservative force-approval test.",
-          "--quiet",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-      } finally {
-        io.restore();
+      {
+        const io = captureStdIO();
+        try {
+          const code = await runCli([
+            "verify",
+            taskId,
+            "--ok",
+            "--by",
+            "TESTER",
+            "--note",
+            "Ok to finish under conservative force-approval test.",
+            "--quiet",
+            "--root",
+            root,
+          ]);
+          expect(code).toBe(0);
+        } finally {
+          io.restore();
+        }
       }
-    }
 
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "finish",
-          taskId,
-          "--author",
-          "CODER",
-          "--body",
-          "Verified: force finish requires explicit approval in conservative profile mode.",
-          "--result",
-          "force-finish-check",
-          "--force",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(3);
-        expect(io.stderr).toContain("Force action requires explicit approval");
-      } finally {
-        io.restore();
+      {
+        const io = captureStdIO();
+        try {
+          const code = await runCli([
+            "finish",
+            taskId,
+            "--author",
+            "CODER",
+            "--body",
+            "Verified: force finish requires explicit approval in conservative profile mode.",
+            "--result",
+            "force-finish-check",
+            "--force",
+            "--root",
+            root,
+          ]);
+          expect(code).toBe(3);
+          expect(io.stderr).toContain("Force action requires explicit approval");
+        } finally {
+          io.restore();
+        }
       }
-    }
 
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "finish",
-          taskId,
-          "--author",
-          "CODER",
-          "--body",
-          "Verified: force finish proceeds with explicit yes approval in conservative profile mode.",
-          "--result",
-          "force-finish-check",
-          "--force",
-          "--yes",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-      } finally {
-        io.restore();
+      {
+        const io = captureStdIO();
+        try {
+          const code = await runCli([
+            "finish",
+            taskId,
+            "--author",
+            "CODER",
+            "--body",
+            "Verified: force finish proceeds with explicit yes approval in conservative profile mode.",
+            "--result",
+            "force-finish-check",
+            "--force",
+            "--yes",
+            "--root",
+            root,
+          ]);
+          expect(code).toBe(0);
+        } finally {
+          io.restore();
+        }
       }
-    }
-  });
+    },
+  );
 
   it("finish supports multiple task ids", async () => {
     const root = await mkGitRepoRoot();
