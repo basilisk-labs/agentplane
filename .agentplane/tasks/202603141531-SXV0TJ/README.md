@@ -1,10 +1,11 @@
 ---
 id: "202603141531-SXV0TJ"
 title: "Stabilize close-message fallback timeout case"
-status: "DOING"
+result_summary: "Close-message result_summary fallback coverage now uses an explicit timeout budget without changing behavior."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 depends_on: []
 tags:
   - "release"
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-03-14T15:46:40.933Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/commands/guard/impl/close-message.test.ts; Result: pass; Evidence: 7 tests passed and the result_summary fallback case completed within the suite budget. Scope: packages/agentplane/src/commands/guard/impl/close-message.test.ts. Command: bun x tsc -b packages/core packages/agentplane; Result: pass; Evidence: TypeScript build completed successfully. Scope: packages/core packages/agentplane. Command: bun run --filter=@agentplaneorg/core build; Result: pass; Evidence: core build exited with code 0. Scope: packages/core. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0. Scope: packages/agentplane. Review: diff is limited to a local timeout constant and the single fallback coverage case in close-message tests; no scope drift."
-commit: null
+commit:
+  hash: "5918df174f1b5814b70e74e1fcb84cc314a65e41"
+  message: "⏱️ SXV0TJ test: stabilize close-message fallback timeout"
 comments:
   -
     author: "CODER"
     body: "Start: inspect the close-message fallback timeout in packages/agentplane/src/commands/guard/impl/close-message.test.ts, confirm whether it is budget-only, and keep the fix inside that file unless evidence shows a semantic regression."
+  -
+    author: "CODER"
+    body: "Verified: close-message fallback coverage now has an explicit local timeout budget; suite, tsc, and package builds all passed with no scope drift."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/commands/guard/impl/close-message.test.ts; Result: pass; Evidence: 7 tests passed and the result_summary fallback case completed within the suite budget. Scope: packages/agentplane/src/commands/guard/impl/close-message.test.ts. Command: bun x tsc -b packages/core packages/agentplane; Result: pass; Evidence: TypeScript build completed successfully. Scope: packages/core packages/agentplane. Command: bun run --filter=@agentplaneorg/core build; Result: pass; Evidence: core build exited with code 0. Scope: packages/core. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0. Scope: packages/agentplane. Review: diff is limited to a local timeout constant and the single fallback coverage case in close-message tests; no scope drift."
+  -
+    type: "status"
+    at: "2026-03-14T15:46:56.318Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: close-message fallback coverage now has an explicit local timeout budget; suite, tsc, and package builds all passed with no scope drift."
 doc_version: 3
-doc_updated_at: "2026-03-14T15:46:40.938Z"
+doc_updated_at: "2026-03-14T15:46:56.320Z"
 doc_updated_by: "CODER"
 description: "Stabilize the close-message fallback-marker coverage under full release load without weakening deterministic close-message behavior."
 sections:
