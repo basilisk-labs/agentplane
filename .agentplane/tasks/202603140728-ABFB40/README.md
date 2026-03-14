@@ -1,10 +1,11 @@
 ---
 id: "202603140728-ABFB40"
 title: "Add Redmine readiness and doctor checks for canonical state"
-status: "DOING"
+result_summary: "Added Redmine-specific doctor readiness diagnostics, temp-workspace regressions for configured and unconfigured canonical_state support, and backlog artifacts for the follow-up migration and live sync tasks."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 depends_on: []
 tags:
   - "code"
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-03-14T07:38:30.228Z"
   updated_by: "CODER"
   note: "Verified Redmine readiness diagnostics with bun x vitest run packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/backends/task-backend.load.test.ts --hookTimeout 60000 --testTimeout 60000, eslint on doctor workspace/tests, prettier on touched doctor/docs files, and both package builds. doctor now warns when Redmine runs without AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE and stays quiet when canonical_state support is configured."
-commit: null
+commit:
+  hash: "557150bd8088f65e03279a3c6c0a1b4f537b2022"
+  message: "🧪 ABFB40 task: cover Redmine readiness regressions"
 comments:
   -
     author: "CODER"
     body: "Start: inspect Redmine backend readiness around canonical_state, surface partial-compatibility doctor findings, and prove the readiness contract in backend and doctor regressions before moving on to migration and live sync work."
+  -
+    author: "CODER"
+    body: "Verified: doctor now surfaces Redmine partial-compatibility mode when canonical_state support is missing, and the readiness warning stays absent when canonical_state is configured."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified Redmine readiness diagnostics with bun x vitest run packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/backends/task-backend.load.test.ts --hookTimeout 60000 --testTimeout 60000, eslint on doctor workspace/tests, prettier on touched doctor/docs files, and both package builds. doctor now warns when Redmine runs without AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE and stays quiet when canonical_state support is configured."
+  -
+    type: "status"
+    at: "2026-03-14T07:39:11.057Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: doctor now surfaces Redmine partial-compatibility mode when canonical_state support is missing, and the readiness warning stays absent when canonical_state is configured."
 doc_version: 3
-doc_updated_at: "2026-03-14T07:38:30.231Z"
+doc_updated_at: "2026-03-14T07:39:11.058Z"
 doc_updated_by: "CODER"
 description: "Expose Redmine backend readiness for canonical_state-based operation, detect partial compatibility in doctor output, and cover the readiness contract in tests."
 sections:
