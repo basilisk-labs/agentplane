@@ -1,10 +1,12 @@
 ---
 id: "202603141501-86KWHQ"
 title: "Stabilize commit wrapper protected auto-stage timeout cases"
-status: "DOING"
+result_summary: "Stabilized the two commit-wrapper auto-stage cases under full release load by giving only those tests an explicit long timeout budget."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on: []
 tags:
   - "release"
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-03-14T15:09:14.112Z"
   updated_by: "CODER"
   note: "The two failing commit-wrapper auto-stage cases were not functionally broken; the file has no explicit timeout on those early tests and the full release gate was letting them inherit the default 30000ms budget. Adding a dedicated 60s budget only to the two aggregate-load-sensitive auto-stage cases keeps the guard assertions unchanged while making the suite stable under release load."
-commit: null
+commit:
+  hash: "d60d68f521e9680db25ba382dba1cdacf9510912"
+  message: "⏱️ 86KWHQ test: stabilize commit-wrapper auto-stage timeouts"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the two commit-wrapper auto-stage timeout cases under isolated and full-gate conditions, confirm whether they are stale timeout bindings or genuine slow guard paths, and land the smallest coherent fix without widening guard semantics."
+  -
+    author: "CODER"
+    body: "Verified: the commit-wrapper auto-stage failures were aggregate-load timeouts, not semantic guard regressions. Adding a dedicated 60s budget only to the two allow-tasks/allow-ci auto-stage cases keeps the assertions intact and leaves the isolated suite, tsc, and package builds green."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "The two failing commit-wrapper auto-stage cases were not functionally broken; the file has no explicit timeout on those early tests and the full release gate was letting them inherit the default 30000ms budget. Adding a dedicated 60s budget only to the two aggregate-load-sensitive auto-stage cases keeps the guard assertions unchanged while making the suite stable under release load."
+  -
+    type: "status"
+    at: "2026-03-14T15:09:32.883Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the commit-wrapper auto-stage failures were aggregate-load timeouts, not semantic guard regressions. Adding a dedicated 60s budget only to the two allow-tasks/allow-ci auto-stage cases keeps the assertions intact and leaves the isolated suite, tsc, and package builds green."
 doc_version: 3
-doc_updated_at: "2026-03-14T15:09:14.116Z"
+doc_updated_at: "2026-03-14T15:09:32.886Z"
 doc_updated_by: "CODER"
 description: "Stabilize the allow-tasks and allow-ci commit-wrapper auto-stage tests under full release load without widening unrelated guard behavior."
 sections:
