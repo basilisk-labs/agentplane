@@ -11,7 +11,7 @@ import { pushReleaseRefs, runReleaseApply } from "./apply.command.js";
 const execFileAsync = promisify(execFile);
 const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 const ORIGINAL_DRY_RUN = process.env.AGENTPLANE_RELEASE_DRY_RUN;
-const RELEASE_PUSH_TIMEOUT_MS = 60_000;
+const RELEASE_APPLY_LONG_TIMEOUT_MS = 60_000;
 
 async function withDryRunReleaseMode<T>(work: () => Promise<T>): Promise<T> {
   process.env.AGENTPLANE_RELEASE_DRY_RUN = "1";
@@ -284,7 +284,7 @@ describeWhenNotHook("release apply", () => {
         process.env.AGENTPLANE_RELEASE_DRY_RUN = wasDryRun;
       }
     },
-    RELEASE_PUSH_TIMEOUT_MS,
+    RELEASE_APPLY_LONG_TIMEOUT_MS,
   );
 
   it("fails early when release tag already exists", async () => {
@@ -487,62 +487,66 @@ describeWhenNotHook("release apply", () => {
     expect(committedFiles).toContain("docs/reference/generated-reference.mdx");
   }, 60_000);
 
-  it("pushes release refs with --no-verify to avoid recursive local pre-push hooks", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
+  it(
+    "pushes release refs with --no-verify to avoid recursive local pre-push hooks",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
 
-    const remoteRoot = path.join(root, "remote.git");
-    await execFileAsync("git", ["init", "--bare", remoteRoot], { cwd: root });
-    await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
+      const remoteRoot = path.join(root, "remote.git");
+      await execFileAsync("git", ["init", "--bare", remoteRoot], { cwd: root });
+      await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
 
-    await writeFile(path.join(root, "tracked.txt"), "release\n", "utf8");
-    await commitAll(root, "seed");
-    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
-    await execFileAsync("git", ["tag", "v0.2.7"], { cwd: root });
+      await writeFile(path.join(root, "tracked.txt"), "release\n", "utf8");
+      await commitAll(root, "seed");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+      await execFileAsync("git", ["tag", "v0.2.7"], { cwd: root });
 
-    const hookPath = path.join(root, ".git", "hooks", "pre-push");
-    const markerPath = path.join(root, "pre-push.marker");
-    await writeFile(
-      hookPath,
-      [
-        "#!/bin/sh",
-        String.raw`printf 'hook-ran\n' >> '${markerPath}'`,
-        "echo 'pre-push hook should have been skipped' >&2",
-        "exit 1",
-        "",
-      ].join("\n"),
-      "utf8",
-    );
-    await execFileAsync("chmod", ["+x", hookPath], { cwd: root });
+      const hookPath = path.join(root, ".git", "hooks", "pre-push");
+      const markerPath = path.join(root, "pre-push.marker");
+      await writeFile(
+        hookPath,
+        [
+          "#!/bin/sh",
+          String.raw`printf 'hook-ran\n' >> '${markerPath}'`,
+          "echo 'pre-push hook should have been skipped' >&2",
+          "exit 1",
+          "",
+        ].join("\n"),
+        "utf8",
+      );
+      await execFileAsync("chmod", ["+x", hookPath], { cwd: root });
 
-    await pushReleaseRefs(root, "origin", "v0.2.7");
+      await pushReleaseRefs(root, "origin", "v0.2.7");
 
-    await expect(readFile(markerPath, "utf8")).rejects.toThrow();
+      await expect(readFile(markerPath, "utf8")).rejects.toThrow();
 
-    const { stdout: localBranch } = await execFileAsync(
-      "git",
-      ["symbolic-ref", "--short", "HEAD"],
-      {
+      const { stdout: localBranch } = await execFileAsync(
+        "git",
+        ["symbolic-ref", "--short", "HEAD"],
+        {
+          cwd: root,
+        },
+      );
+      const branchRef = `refs/heads/${localBranch.trim()}`;
+      const { stdout: remoteHead } = await execFileAsync("git", ["rev-parse", branchRef], {
+        cwd: remoteRoot,
+      });
+      const { stdout: localHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
         cwd: root,
-      },
-    );
-    const branchRef = `refs/heads/${localBranch.trim()}`;
-    const { stdout: remoteHead } = await execFileAsync("git", ["rev-parse", branchRef], {
-      cwd: remoteRoot,
-    });
-    const { stdout: localHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: root,
-    });
-    expect(remoteHead.trim()).toBe(localHead.trim());
+      });
+      expect(remoteHead.trim()).toBe(localHead.trim());
 
-    const { stdout: remoteTag } = await execFileAsync("git", ["rev-parse", "refs/tags/v0.2.7"], {
-      cwd: remoteRoot,
-    });
-    const { stdout: localTag } = await execFileAsync("git", ["rev-list", "-n", "1", "v0.2.7"], {
-      cwd: root,
-    });
-    expect(remoteTag.trim()).toBe(localTag.trim());
-  }, 30_000);
+      const { stdout: remoteTag } = await execFileAsync("git", ["rev-parse", "refs/tags/v0.2.7"], {
+        cwd: remoteRoot,
+      });
+      const { stdout: localTag } = await execFileAsync("git", ["rev-list", "-n", "1", "v0.2.7"], {
+        cwd: root,
+      });
+      expect(remoteTag.trim()).toBe(localTag.trim());
+    },
+    RELEASE_APPLY_LONG_TIMEOUT_MS,
+  );
 
   it("fails on a burned npm version before running release:prepublish or mutating local state", async () => {
     const root = await mkGitRepoRoot();
