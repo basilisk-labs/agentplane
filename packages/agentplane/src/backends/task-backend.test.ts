@@ -196,7 +196,7 @@ describe("task-backend helpers", () => {
     expect(task.tags).toEqual(["ok"]);
     expect(task.verify).toEqual([]);
     expect(task.comments).toEqual([{ author: "a", body: "b" }]);
-    expect(task.doc_version).toBe(2);
+    expect(task.doc_version).toBe(3);
     expect(task.doc_updated_by).toBe("a");
     expect(task.dirty).toBe(false);
     expect(task.id_source).toBe("generated");

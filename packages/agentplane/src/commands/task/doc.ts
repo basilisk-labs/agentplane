@@ -294,7 +294,7 @@ export async function cmdTaskDocShow(opts: {
       const sectionKey = normalizeDocSectionName(opts.section);
       const entry = canonicalSections.get(sectionKey);
       const content = entry?.lines ?? [];
-      if (content.length > 0) {
+      if (content.some((line) => line.trim().length > 0)) {
         process.stdout.write(`${content.join("\n").trimEnd()}\n`);
         return 0;
       }
