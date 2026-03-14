@@ -1358,184 +1358,196 @@ describe("runCli", () => {
     }
   });
 
-  it("start supports status_commit_policy=confirm when acknowledged", async () => {
-    const root = await mkGitRepoRoot();
-    const cfg = defaultConfig();
-    cfg.status_commit_policy = "confirm";
-    await writeConfig(root, cfg);
-    await configureGitUser(root);
-    await commitAll(root, "seed");
+  it(
+    "start supports status_commit_policy=confirm when acknowledged",
+    async () => {
+      const root = await mkGitRepoRoot();
+      const cfg = defaultConfig();
+      cfg.status_commit_policy = "confirm";
+      await writeConfig(root, cfg);
+      await configureGitUser(root);
+      await commitAll(root, "seed");
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "Confirm acknowledged",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-    await approveTaskPlan(root, taskId);
-    await startDirectWork(root, taskId, "CODER");
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Start task",
+          "--description",
+          "Confirm acknowledged",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+      await approveTaskPlan(root, taskId);
+      await startDirectWork(root, taskId, "CODER");
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "start",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: confirm policy acknowledged for status commit workflow and logging",
-        "--commit-from-comment",
-        "--commit-allow",
-        ".agentplane/tasks",
-        "--confirm-status-commit",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
-  });
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: confirm policy acknowledged for status commit workflow and logging",
+          "--commit-from-comment",
+          "--commit-allow",
+          ".agentplane/tasks",
+          "--confirm-status-commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    },
+    START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
+  );
 
-  it("start commit-from-comment formats single-sentence summaries without details", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
-    await commitAll(root, "seed");
+  it(
+    "start commit-from-comment formats single-sentence summaries without details",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
+      await commitAll(root, "seed");
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "Single sentence",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-    await approveTaskPlan(root, taskId);
-    await startDirectWork(root, taskId, "CODER");
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Start task",
+          "--description",
+          "Single sentence",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+      await approveTaskPlan(root, taskId);
+      await startDirectWork(root, taskId, "CODER");
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "start",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: implement summary-only commit message formatting for start actions",
-        "--commit-from-comment",
-        "--commit-allow",
-        ".agentplane/tasks",
-        "--confirm-status-commit",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: implement summary-only commit message formatting for start actions",
+          "--commit-from-comment",
+          "--commit-allow",
+          ".agentplane/tasks",
+          "--confirm-status-commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
 
-    const execFileAsync = promisify(execFile);
-    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
-    const suffix = extractTaskSuffix(taskId);
-    expect(stdout.trim()).toBe(`🚧 ${suffix} meta: doing`);
-  });
+      const execFileAsync = promisify(execFile);
+      const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
+      const suffix = extractTaskSuffix(taskId);
+      expect(stdout.trim()).toBe(`🚧 ${suffix} meta: doing`);
+    },
+    START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
+  );
 
-  it("start commit-from-comment accepts any explicit --commit-emoji provided by the agent", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
-    await commitAll(root, "seed");
+  it(
+    "start commit-from-comment accepts any explicit --commit-emoji provided by the agent",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
+      await commitAll(root, "seed");
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "Custom emoji",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-    await approveTaskPlan(root, taskId);
-    await startDirectWork(root, taskId, "CODER");
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "start",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: custom emoji commit path for start command coverage and validation",
-        "--commit-from-comment",
-        "--commit-emoji",
-        "🦞",
-        "--commit-allow",
-        ".agentplane/tasks",
-        "--commit-allow-tasks",
-        "--confirm-status-commit",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Start task",
+          "--description",
+          "Custom emoji",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+      await approveTaskPlan(root, taskId);
+      await startDirectWork(root, taskId, "CODER");
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: custom emoji commit path for start command coverage and validation",
+          "--commit-from-comment",
+          "--commit-emoji",
+          "🦞",
+          "--commit-allow",
+          ".agentplane/tasks",
+          "--commit-allow-tasks",
+          "--confirm-status-commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
 
-    const execFileAsync = promisify(execFile);
-    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
-    const suffix = extractTaskSuffix(taskId);
-    expect(stdout.trim()).toBe(`🦞 ${suffix} meta: doing`);
-  });
+      const execFileAsync = promisify(execFile);
+      const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
+      const suffix = extractTaskSuffix(taskId);
+      expect(stdout.trim()).toBe(`🦞 ${suffix} meta: doing`);
+    },
+    START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
+  );
 
   it("start commit-from-comment still commits the active task README when allow prefixes do not match non-task changes", async () => {
     const root = await mkGitRepoRoot();
