@@ -1,10 +1,12 @@
 ---
 id: "202603141501-ZCEP32"
 title: "Stabilize finish close-commit deterministic timeout case"
-status: "DOING"
+result_summary: "Stabilized the deterministic finish --close-commit case under full release load by increasing only that test's timeout budget."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on: []
 tags:
   - "release"
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-03-14T15:13:59.173Z"
   updated_by: "CODER"
   note: "The deterministic finish --close-commit case was not semantically regressing; isolated it takes about 3s, but under full release load it exhausted the existing 60s budget. Raising only that test to 120s keeps the close-commit assertions unchanged while leaving the full block-finish suite, tsc, and package builds green."
-commit: null
+commit:
+  hash: "83e1a88b64f7c9b3158a37d1c90d97d94a19b5d8"
+  message: "⏱️ ZCEP32 test: raise finish close-commit timeout budget"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the finish --close-commit deterministic timeout in isolation and under full release-gate load, confirm whether the 60s budget is simply too low, and patch the smallest coherent fix without weakening close-commit assertions."
+  -
+    author: "CODER"
+    body: "Verified: the deterministic finish --close-commit failure was aggregate-load timeout pressure, not a close-commit regression. Raising only that case to 120s keeps the deterministic assertions intact and leaves the isolated block-finish suite, tsc, and package builds green."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "The deterministic finish --close-commit case was not semantically regressing; isolated it takes about 3s, but under full release load it exhausted the existing 60s budget. Raising only that test to 120s keeps the close-commit assertions unchanged while leaving the full block-finish suite, tsc, and package builds green."
+  -
+    type: "status"
+    at: "2026-03-14T15:14:20.680Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the deterministic finish --close-commit failure was aggregate-load timeout pressure, not a close-commit regression. Raising only that case to 120s keeps the deterministic assertions intact and leaves the isolated block-finish suite, tsc, and package builds green."
 doc_version: 3
-doc_updated_at: "2026-03-14T15:13:59.178Z"
+doc_updated_at: "2026-03-14T15:14:20.681Z"
 doc_updated_by: "CODER"
 description: "Stabilize the finish --close-commit deterministic same-command flow under full release load."
 sections:
