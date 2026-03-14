@@ -1,10 +1,11 @@
 ---
 id: "202603141409-19VPQC"
 title: "Publish the v0.3.7 release article"
-status: "DOING"
+result_summary: "Published and verified the v0.3.7 release article for the docs site."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 7
+revision: 8
 depends_on:
   - "202603141409-ZMR686"
 tags:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-03-14T18:10:27.764Z"
   updated_by: "DOCS"
   note: "Verified: bun run --cwd website typecheck; bun run --cwd website build. The article is based only on docs/releases/v0.3.7, GitHub release v0.3.7, successful Docs CI/Pages Deploy, successful Publish to npm, and npm registry versions 0.3.7."
-commit: null
+commit:
+  hash: "2a62237056a5b2ba45bcc1a206184b24b2db123c"
+  message: "📝 19VPQC docs: publish v0.3.7 release article"
 comments:
   -
     author: "DOCS"
     body: "Start: inspect the shipped release notes and recent website/blog release posts, write the v0.3.7 release article with only confirmed publication facts and shipped behavior, run the smallest blog/docs checks, and publish it through the standard docs deploy path."
+  -
+    author: "DOCS"
+    body: "Verified: website typecheck and build passed; the v0.3.7 release article records only shipped facts confirmed by the release notes, GitHub Release, Pages deploy, and npm publication."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: bun run --cwd website typecheck; bun run --cwd website build. The article is based only on docs/releases/v0.3.7, GitHub release v0.3.7, successful Docs CI/Pages Deploy, successful Publish to npm, and npm registry versions 0.3.7."
+  -
+    type: "status"
+    at: "2026-03-14T18:12:51.604Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: website typecheck and build passed; the v0.3.7 release article records only shipped facts confirmed by the release notes, GitHub Release, Pages deploy, and npm publication."
 doc_version: 3
-doc_updated_at: "2026-03-14T18:10:27.771Z"
+doc_updated_at: "2026-03-14T18:12:51.607Z"
 doc_updated_by: "DOCS"
 description: "Write and publish the public blog article for AgentPlane 0.3.7 after the patch release is confirmed on npm, using the final release notes and compatibility conclusions as the source of truth."
 sections:
