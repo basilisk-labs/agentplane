@@ -9,6 +9,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/run-local-release-e2e.mjs");
+const LOCAL_RELEASE_E2E_TIMEOUT_MS = 60_000;
 
 const roots: string[] = [];
 
@@ -198,67 +199,71 @@ afterEach(async () => {
 });
 
 describe("local release E2E script", () => {
-  it("passes for the exact checkout SHA when GitHub release-ready metadata and artifact match", async () => {
-    const { root, sha, binDir } = await initWorkspace();
+  it(
+    "passes for the exact checkout SHA when GitHub release-ready metadata and artifact match",
+    async () => {
+      const { root, sha, binDir } = await initWorkspace();
 
-    await withServer(
-      (pathname, searchParams) => {
-        if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
-          expect(searchParams.get("head_sha")).toBe(sha);
-          return {
-            body: {
-              workflow_runs: [makeRun({ headSha: sha })],
+      await withServer(
+        (pathname, searchParams) => {
+          if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+            expect(searchParams.get("head_sha")).toBe(sha);
+            return {
+              body: {
+                workflow_runs: [makeRun({ headSha: sha })],
+              },
+            };
+          }
+          if (pathname.endsWith("/actions/runs/123/artifacts")) {
+            return {
+              body: {
+                artifacts: [makeArtifact()],
+              },
+            };
+          }
+          return { status: 404, body: { message: "not found" } };
+        },
+        async (baseUrl) => {
+          const result = await runScript(
+            root,
+            ["--skip-prepublish", "--json", "--repo", "basilisk-labs/agentplane"],
+            {
+              PATH: `${binDir}:${process.env.PATH ?? ""}`,
+              GITHUB_TOKEN: "test-token",
+              AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+              AGENTPLANE_TEST_GH_SHA: sha,
             },
+          );
+
+          const payload = JSON.parse(result.stdout) as {
+            ok: boolean;
+            sha: string;
+            runId: number;
+            version: string;
+            tag: string;
+            localManifestPath: string;
+            downloadedManifestPath: string;
           };
-        }
-        if (pathname.endsWith("/actions/runs/123/artifacts")) {
-          return {
-            body: {
-              artifacts: [makeArtifact()],
-            },
-          };
-        }
-        return { status: 404, body: { message: "not found" } };
-      },
-      async (baseUrl) => {
-        const result = await runScript(
-          root,
-          ["--skip-prepublish", "--json", "--repo", "basilisk-labs/agentplane"],
-          {
-            PATH: `${binDir}:${process.env.PATH ?? ""}`,
-            GITHUB_TOKEN: "test-token",
-            AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
-            AGENTPLANE_TEST_GH_SHA: sha,
-          },
-        );
+          expect(payload.ok).toBe(true);
+          expect(payload.sha).toBe(sha);
+          expect(payload.runId).toBe(123);
+          expect(payload.version).toBe("1.2.3");
+          expect(payload.tag).toBe("v1.2.3");
 
-        const payload = JSON.parse(result.stdout) as {
-          ok: boolean;
-          sha: string;
-          runId: number;
-          version: string;
-          tag: string;
-          localManifestPath: string;
-          downloadedManifestPath: string;
-        };
-        expect(payload.ok).toBe(true);
-        expect(payload.sha).toBe(sha);
-        expect(payload.runId).toBe(123);
-        expect(payload.version).toBe("1.2.3");
-        expect(payload.tag).toBe("v1.2.3");
+          const localManifest = JSON.parse(
+            await readFile(path.join(root, payload.localManifestPath), "utf8"),
+          ) as { sha: string };
+          expect(localManifest.sha).toBe(sha);
 
-        const localManifest = JSON.parse(
-          await readFile(path.join(root, payload.localManifestPath), "utf8"),
-        ) as { sha: string };
-        expect(localManifest.sha).toBe(sha);
-
-        const downloadedManifest = JSON.parse(
-          await readFile(path.join(root, payload.downloadedManifestPath), "utf8"),
-        ) as { sha: string };
-        expect(downloadedManifest.sha).toBe(sha);
-      },
-    );
-  });
+          const downloadedManifest = JSON.parse(
+            await readFile(path.join(root, payload.downloadedManifestPath), "utf8"),
+          ) as { sha: string };
+          expect(downloadedManifest.sha).toBe(sha);
+        },
+      );
+    },
+    LOCAL_RELEASE_E2E_TIMEOUT_MS,
+  );
 
   it("fails when the requested sha does not match the current checkout", async () => {
     const { root, binDir } = await initWorkspace();

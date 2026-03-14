@@ -11,6 +11,7 @@ import { pushReleaseRefs, runReleaseApply } from "./apply.command.js";
 const execFileAsync = promisify(execFile);
 const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 const ORIGINAL_DRY_RUN = process.env.AGENTPLANE_RELEASE_DRY_RUN;
+const RELEASE_PUSH_TIMEOUT_MS = 60_000;
 
 async function withDryRunReleaseMode<T>(work: () => Promise<T>): Promise<T> {
   process.env.AGENTPLANE_RELEASE_DRY_RUN = "1";
@@ -226,57 +227,65 @@ describeWhenNotHook("release apply", () => {
     });
   }, 60_000);
 
-  it("requires --push in normal mode for non-dry-run release apply", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
+  it(
+    "requires --push in normal mode for non-dry-run release apply",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
 
-    await mkdir(path.join(root, "packages", "core"), { recursive: true });
-    await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
-    await mkdir(path.join(root, "docs", "releases"), { recursive: true });
+      await mkdir(path.join(root, "packages", "core"), { recursive: true });
+      await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
+      await mkdir(path.join(root, "docs", "releases"), { recursive: true });
 
-    await writeFile(
-      path.join(root, "packages", "core", "package.json"),
-      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify(
-        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
-        null,
-        2,
-      ) + "\n",
-      "utf8",
-    );
-    await commitAll(root, "seed");
-    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+      await writeFile(
+        path.join(root, "packages", "core", "package.json"),
+        JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
+        "utf8",
+      );
+      await writeFile(
+        path.join(root, "packages", "agentplane", "package.json"),
+        JSON.stringify(
+          {
+            name: "agentplane",
+            version: "0.2.6",
+            dependencies: { "@agentplaneorg/core": "0.2.6" },
+          },
+          null,
+          2,
+        ) + "\n",
+        "utf8",
+      );
+      await commitAll(root, "seed");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
-    await writeFile(path.join(root, "file.txt"), "x", "utf8");
-    await commitAll(root, "feat: add file");
+      await writeFile(path.join(root, "file.txt"), "x", "utf8");
+      await commitAll(root, "feat: add file");
 
-    await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
-    await writeFile(
-      path.join(root, "docs", "releases", "v0.2.7.md"),
-      ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
-      "utf8",
-    );
+      await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
+      await writeFile(
+        path.join(root, "docs", "releases", "v0.2.7.md"),
+        ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+        "utf8",
+      );
 
-    const wasDryRun = process.env.AGENTPLANE_RELEASE_DRY_RUN;
-    delete process.env.AGENTPLANE_RELEASE_DRY_RUN;
-
-    await expect(
-      runReleaseApply(
-        { cwd: root, rootOverride: root },
-        { plan: undefined, yes: true, push: false, remote: "origin" },
-      ),
-    ).rejects.toThrow(/Release publish is mandatory/u);
-
-    if (wasDryRun === undefined) {
+      const wasDryRun = process.env.AGENTPLANE_RELEASE_DRY_RUN;
       delete process.env.AGENTPLANE_RELEASE_DRY_RUN;
-    } else {
-      process.env.AGENTPLANE_RELEASE_DRY_RUN = wasDryRun;
-    }
-  }, 30_000);
+
+      await expect(
+        runReleaseApply(
+          { cwd: root, rootOverride: root },
+          { plan: undefined, yes: true, push: false, remote: "origin" },
+        ),
+      ).rejects.toThrow(/Release publish is mandatory/u);
+
+      if (wasDryRun === undefined) {
+        delete process.env.AGENTPLANE_RELEASE_DRY_RUN;
+      } else {
+        process.env.AGENTPLANE_RELEASE_DRY_RUN = wasDryRun;
+      }
+    },
+    RELEASE_PUSH_TIMEOUT_MS,
+  );
 
   it("fails early when release tag already exists", async () => {
     const root = await mkGitRepoRoot();
