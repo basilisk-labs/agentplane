@@ -1846,6 +1846,53 @@ describe("RedmineBackend (mocked)", () => {
     ).rejects.toBeInstanceOf(BackendError);
   });
 
+  it("treats revision-only divergence as a syncPull conflict for dirty local tasks", async () => {
+    const cache = new LocalBackend({ dir: tempDir });
+    await cache.writeTask({
+      id: "202603140730-R37DPX",
+      title: "Same task",
+      description: "Same task",
+      status: "TODO",
+      priority: "med",
+      owner: "REDMINE",
+      revision: 3,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      dirty: true,
+    });
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1, canonical_state: 2 },
+      },
+      { cache },
+    );
+    const helper = backend as unknown as {
+      listTasksRemote: () => Promise<TaskData[]>;
+    };
+    helper.listTasksRemote = vi.fn().mockResolvedValue([
+      {
+        id: "202603140730-R37DPX",
+        title: "Same task",
+        description: "Same task",
+        status: "TODO",
+        priority: "med",
+        owner: "REDMINE",
+        revision: 4,
+        depends_on: [],
+        tags: [],
+        verify: [],
+      },
+    ]);
+
+    await expect(
+      backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: false }),
+    ).rejects.toThrow(/Conflict detected for 202603140730-R37DPX/u);
+  });
+
   it("surfaces task doc errors when issues are missing", async () => {
     const backend = new RedmineBackend(
       {
