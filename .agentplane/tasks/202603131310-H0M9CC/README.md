@@ -1,10 +1,11 @@
 ---
 id: "202603131310-H0M9CC"
 title: "Decide future one-file YAML target"
-status: "DOING"
+result_summary: "The roadmap now has an explicit architectural decision: stay on one-file README.md for the current task model and revisit YAML only when defined migration criteria are met."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
-revision: 5
+revision: 6
 depends_on:
   - "202603131309-JYPPQS"
   - "202603131310-SE12RR"
@@ -37,11 +38,16 @@ verification:
     Result: pass
     Evidence: prerequisite tasks confirm canonical schema v1, generated body, legacy migration, and backend revision groundwork are complete, which matches the documented decision to stay on README.md for now.
     Scope: decision consistency against prerequisite implementation state.
-commit: null
+commit:
+  hash: "c7b2eb4105a197065616bb65dddfed3adf13eb64"
+  message: "🧭 H0M9CC task: record one-file task format decision"
 comments:
   -
     author: "PLANNER"
     body: "Start: record the post-stabilization decision for one-file task format, keep README.md as the current canonical container, and document concrete triggers that would justify a later move to single-file YAML."
+  -
+    author: "PLANNER"
+    body: "Verified: developer docs now explicitly keep README.md as the current one-file task container, describe frontmatter as canonical state with generated body, and list the concrete triggers that would justify revisiting a future task.yaml migration."
 events:
   -
     type: "status"
@@ -70,8 +76,15 @@ events:
       Result: pass
       Evidence: prerequisite tasks confirm canonical schema v1, generated body, legacy migration, and backend revision groundwork are complete, which matches the documented decision to stay on README.md for now.
       Scope: decision consistency against prerequisite implementation state.
+  -
+    type: "status"
+    at: "2026-03-14T04:29:02.946Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: developer docs now explicitly keep README.md as the current one-file task container, describe frontmatter as canonical state with generated body, and list the concrete triggers that would justify revisiting a future task.yaml migration."
 doc_version: 3
-doc_updated_at: "2026-03-14T04:28:45.130Z"
+doc_updated_at: "2026-03-14T04:29:02.947Z"
 doc_updated_by: "PLANNER"
 description: "Evaluate whether the stabilized one-file canonical task format should remain README.md with generated body or later migrate to a single YAML file, with explicit tradeoffs and migration criteria."
 sections:
