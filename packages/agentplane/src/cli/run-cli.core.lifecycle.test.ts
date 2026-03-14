@@ -56,6 +56,8 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
+const START_COMMIT_PATH_HANDLING_TIMEOUT_MS = 60_000;
+
 async function approveTaskPlan(root: string, taskId: string): Promise<void> {
   const codeSet = await runCli([
     "task",
@@ -719,192 +721,204 @@ describe("runCli", () => {
     expect(body).toContain("implement comment-driven commit for start flow");
   }, 90_000);
 
-  it("start --commit-from-comment normalizes ./ prefixes in allowlist", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
-    await commitAll(root, "seed");
+  it(
+    "start --commit-from-comment normalizes ./ prefixes in allowlist",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
+      await commitAll(root, "seed");
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Allow prefix normalize",
-        "--description",
-        "Ensure ./ prefixes are accepted for commit-from-comment allowlist",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-    await approveTaskPlan(root, taskId);
-    await startDirectWork(root, taskId, "CODER");
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Allow prefix normalize",
+          "--description",
+          "Ensure ./ prefixes are accepted for commit-from-comment allowlist",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+      await approveTaskPlan(root, taskId);
+      await startDirectWork(root, taskId, "CODER");
 
-    await mkdir(path.join(root, "tmp"), { recursive: true });
-    await writeFile(path.join(root, "tmp", "a.txt"), "hello\n", "utf8");
+      await mkdir(path.join(root, "tmp"), { recursive: true });
+      await writeFile(path.join(root, "tmp", "a.txt"), "hello\n", "utf8");
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "start",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: allow ./tmp prefix should work for staging + guard validation.",
-        "--commit-from-comment",
-        "--commit-allow",
-        "./tmp",
-        "--confirm-status-commit",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("✅ started");
-    } finally {
-      io.restore();
-    }
-  });
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: allow ./tmp prefix should work for staging + guard validation.",
+          "--commit-from-comment",
+          "--commit-allow",
+          "./tmp",
+          "--confirm-status-commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("✅ started");
+      } finally {
+        io.restore();
+      }
+    },
+    START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
+  );
 
-  it("start --commit-from-comment handles paths with spaces", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
-    await commitAll(root, "seed");
+  it(
+    "start --commit-from-comment handles paths with spaces",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
+      await commitAll(root, "seed");
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Spaced paths",
-        "--description",
-        "Ensure commit-from-comment can stage file paths with spaces",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-    await approveTaskPlan(root, taskId);
-    await startDirectWork(root, taskId, "CODER");
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Spaced paths",
+          "--description",
+          "Ensure commit-from-comment can stage file paths with spaces",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+      await approveTaskPlan(root, taskId);
+      await startDirectWork(root, taskId, "CODER");
 
-    await mkdir(path.join(root, "tmp"), { recursive: true });
-    await writeFile(path.join(root, "tmp", "a b.txt"), "hello\n", "utf8");
+      await mkdir(path.join(root, "tmp"), { recursive: true });
+      await writeFile(path.join(root, "tmp", "a b.txt"), "hello\n", "utf8");
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "start",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: stage path with spaces via -z parsing (tmp/a b.txt).",
-        "--commit-from-comment",
-        "--commit-allow",
-        ".agentplane/tasks",
-        "--commit-allow",
-        "tmp",
-        "--confirm-status-commit",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("✅ started");
-    } finally {
-      io.restore();
-    }
-  });
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: stage path with spaces via -z parsing (tmp/a b.txt).",
+          "--commit-from-comment",
+          "--commit-allow",
+          ".agentplane/tasks",
+          "--commit-allow",
+          "tmp",
+          "--confirm-status-commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("✅ started");
+      } finally {
+        io.restore();
+      }
+    },
+    START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
+  );
 
-  it("start --commit-from-comment stages deletions under allowlist", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
+  it(
+    "start --commit-from-comment stages deletions under allowlist",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
 
-    // Seed a tracked file we will delete (so staging deletes is required).
-    await mkdir(path.join(root, "tmp"), { recursive: true });
-    await writeFile(path.join(root, "tmp", "a.txt"), "hello\n", "utf8");
-    await commitAll(root, "seed");
+      // Seed a tracked file we will delete (so staging deletes is required).
+      await mkdir(path.join(root, "tmp"), { recursive: true });
+      await writeFile(path.join(root, "tmp", "a.txt"), "hello\n", "utf8");
+      await commitAll(root, "seed");
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Delete staging",
-        "--description",
-        "Ensure allowlist staging includes deletions",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-    await approveTaskPlan(root, taskId);
-    await startDirectWork(root, taskId, "CODER");
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Delete staging",
+          "--description",
+          "Ensure allowlist staging includes deletions",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+      await approveTaskPlan(root, taskId);
+      await startDirectWork(root, taskId, "CODER");
 
-    await rm(path.join(root, "tmp", "a.txt"));
+      await rm(path.join(root, "tmp", "a.txt"));
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "start",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: ensure allowlist stages deletions",
-        "--commit-from-comment",
-        "--commit-allow",
-        "tmp",
-        "--confirm-status-commit",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: ensure allowlist stages deletions",
+          "--commit-from-comment",
+          "--commit-allow",
+          "tmp",
+          "--confirm-status-commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
 
-    const execFileAsync = promisify(execFile);
-    const { stdout } = await execFileAsync("git", ["show", "--name-status", "--pretty=%s"], {
-      cwd: root,
-    });
-    expect(stdout).toContain("D\ttmp/a.txt");
-  });
+      const execFileAsync = promisify(execFile);
+      const { stdout } = await execFileAsync("git", ["show", "--name-status", "--pretty=%s"], {
+        cwd: root,
+      });
+      expect(stdout).toContain("D\ttmp/a.txt");
+    },
+    START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
+  );
 
   it("start blocks comment-driven commits when status_commit_policy=confirm", async () => {
     const root = await mkGitRepoRoot();
