@@ -1,10 +1,11 @@
 ---
 id: "202603140730-R37DPX"
 title: "Add Redmine sync conflict and live integration coverage"
-status: "DOING"
+result_summary: "Added Redmine sync conflict coverage for canonical_state revision divergence, extended the live sandbox suite with a readiness-aware smoke path, and documented the resulting live validation contract."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 depends_on: []
 tags:
   - "code"
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-03-14T07:54:07.477Z"
   updated_by: "CODER"
   note: "Verified Redmine sync/live contract with bun x vitest run packages/agentplane/src/backends/task-backend.redmine.test.ts --hookTimeout 60000 --testTimeout 60000, bun run test:backend:redmine-live against the sandbox .env, eslint on redmine test/live files, prettier --check docs/user/backends/redmine.mdx, and both package builds. revision-only dirty/local divergence now has explicit syncPull conflict coverage, and the live suite documents whether the sandbox is canonical_state-ready or still partial-compatibility only."
-commit: null
+commit:
+  hash: "dfa190e52c11ac3085a4721547fd1ab4646ca4b6"
+  message: "🔄 R37DPX task: cover Redmine sync and live contract"
 comments:
   -
     author: "CODER"
     body: "Start: formalize Redmine sync conflict behavior around canonical_state revision divergence and add a safe live smoke path that uses the sandbox .env contract without requiring implicit or unsafe remote writes."
+  -
+    author: "CODER"
+    body: "Verified: revision-only sync divergence now has explicit mocked coverage, and the live Redmine sandbox smoke makes canonical_state readiness visible without requiring implicit remote writes."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified Redmine sync/live contract with bun x vitest run packages/agentplane/src/backends/task-backend.redmine.test.ts --hookTimeout 60000 --testTimeout 60000, bun run test:backend:redmine-live against the sandbox .env, eslint on redmine test/live files, prettier --check docs/user/backends/redmine.mdx, and both package builds. revision-only dirty/local divergence now has explicit syncPull conflict coverage, and the live suite documents whether the sandbox is canonical_state-ready or still partial-compatibility only."
+  -
+    type: "status"
+    at: "2026-03-14T07:54:29.551Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: revision-only sync divergence now has explicit mocked coverage, and the live Redmine sandbox smoke makes canonical_state readiness visible without requiring implicit remote writes."
 doc_version: 3
-doc_updated_at: "2026-03-14T07:54:07.480Z"
+doc_updated_at: "2026-03-14T07:54:29.552Z"
 doc_updated_by: "CODER"
 description: "Cover Redmine sync conflict behavior for canonical_state revisions and add a live integration smoke path against the test Redmine sandbox from .env."
 sections:
