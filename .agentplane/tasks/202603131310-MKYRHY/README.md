@@ -1,10 +1,11 @@
 ---
 id: "202603131310-MKYRHY"
 title: "Prepare backend revision interface groundwork"
-status: "DOING"
+result_summary: "Backend contracts now express revision-aware write groundwork explicitly instead of keeping CAS semantics hidden inside TaskStore-only local paths."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on:
   - "202603131309-YDAC7K"
 tags:
@@ -30,11 +31,16 @@ verification:
     Result: pass
     Evidence: eslint clean; both package builds exited 0.
     Scope: touched backend contract/runtime files and dependent test surfaces.
-commit: null
+commit:
+  hash: "b728e7e2ddf4f47b28800ac0eb99af8421ea4804"
+  message: "🧱 MKYRHY task: expose backend revision write groundwork"
 comments:
   -
     author: "CODER"
     body: "Start: add explicit revision-aware backend groundwork so shared backend types can express compare-and-swap support, local backend can advertise the contract honestly, and remote backends stay clearly marked as future parity work."
+  -
+    author: "CODER"
+    body: "Verified: shared backend types now expose revision-aware write options and explicit capability flags, LocalBackend enforces stale expectedRevision writes for groundwork-level parity, and remote backends remain clearly marked as not yet supporting guarded revision writes."
 events:
   -
     type: "status"
@@ -58,8 +64,15 @@ events:
       Result: pass
       Evidence: eslint clean; both package builds exited 0.
       Scope: touched backend contract/runtime files and dependent test surfaces.
+  -
+    type: "status"
+    at: "2026-03-14T04:26:26.955Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: shared backend types now expose revision-aware write options and explicit capability flags, LocalBackend enforces stale expectedRevision writes for groundwork-level parity, and remote backends remain clearly marked as not yet supporting guarded revision writes."
 doc_version: 3
-doc_updated_at: "2026-03-14T04:26:07.033Z"
+doc_updated_at: "2026-03-14T04:26:26.956Z"
 doc_updated_by: "CODER"
 description: "Extend backend contracts to accommodate revision-aware task reads and writes so non-local backends can later match local canonical-state concurrency semantics."
 sections:
