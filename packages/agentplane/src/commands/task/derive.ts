@@ -1,14 +1,23 @@
+import { setMarkdownSection, taskDocToSectionMap } from "@agentplaneorg/core";
+
 import { mapBackendError } from "../../cli/error-map.js";
-import { unknownEntityMessage } from "../../cli/output.js";
+import { unknownEntityMessage, warnMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { defaultTaskDocV3, TASK_DOC_VERSION_V3 } from "./doc-template.js";
+import {
+  buildDefaultVerifyStepsSection,
+  defaultTaskDocV3,
+  TASK_DOC_VERSION_V3,
+} from "./doc-template.js";
 
 import {
   extractTaskObservationSection,
   normalizeTaskDocVersion,
   nowIso,
+  requiresVerifyStepsByPrimary,
+  resolvePrimaryTag,
   toStringArray,
+  warnIfUnknownOwner,
 } from "./shared.js";
 
 function normalizeOneLine(text: string, maxChars: number): string {
@@ -27,6 +36,7 @@ export async function cmdTaskDerive(opts: {
   owner: string;
   priority: "low" | "normal" | "med" | "high";
   tags: string[];
+  verify: string[];
 }): Promise<number> {
   try {
     const ctx =
@@ -68,7 +78,41 @@ export async function cmdTaskDerive(opts: {
     let description = opts.description.trim();
     description = `${description} (derived from spike ${opts.spikeId})`;
     if (excerpt) description = `${description} [spike_notes: ${excerpt}]`;
-    const doc = defaultTaskDocV3({ title: opts.title, description });
+    let doc = defaultTaskDocV3({ title: opts.title, description });
+    const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
+    const primary = resolvePrimaryTag(opts.tags, ctx);
+    if (primary.usedFallback) {
+      process.stderr.write(
+        `${warnMessage(
+          `primary tag not found in task tags; using fallback primary=${primary.primary}`,
+        )}\n`,
+      );
+    }
+    const requiresVerifySteps = requiresVerifyStepsByPrimary(opts.tags, ctx.config);
+    await warnIfUnknownOwner(ctx, opts.owner);
+    if (requiresVerifySteps) {
+      doc = setMarkdownSection(
+        doc,
+        "Verify Steps",
+        buildDefaultVerifyStepsSection({
+          primary: primary.primary,
+          verifyCommands: opts.verify,
+        }),
+      );
+      process.stderr.write(
+        `${warnMessage(
+          "task requires Verify Steps by primary tag; seeded a default ## Verify Steps section in README (review and refine before approval/start)",
+        )}\n`,
+      );
+    }
+    const hasSpike = opts.tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
+    if (hasSpike && requiresVerifySteps) {
+      process.stderr.write(
+        `${warnMessage(
+          "spike is combined with a primary tag that requires verify steps; consider splitting spike vs implementation tasks",
+        )}\n`,
+      );
+    }
 
     const at = nowIso();
     await ctx.taskBackend.writeTask({
@@ -80,9 +124,10 @@ export async function cmdTaskDerive(opts: {
       owner: opts.owner,
       tags: opts.tags,
       depends_on: [opts.spikeId],
-      verify: [],
+      verify: opts.verify,
       comments: [],
       doc,
+      sections: taskDocToSectionMap(doc),
       doc_version: TASK_DOC_VERSION_V3,
       doc_updated_at: at,
       doc_updated_by: opts.owner,

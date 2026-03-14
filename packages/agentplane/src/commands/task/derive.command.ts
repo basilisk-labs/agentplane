@@ -12,6 +12,7 @@ export type TaskDeriveParsed = {
   owner: string;
   priority: "low" | "normal" | "med" | "high";
   tags: string[];
+  verify: string[];
 };
 
 export const taskDeriveSpec: CommandSpec<TaskDeriveParsed> = {
@@ -58,12 +59,23 @@ export const taskDeriveSpec: CommandSpec<TaskDeriveParsed> = {
       minCount: 1,
       description: "Repeatable. Adds a tag (must provide at least one).",
     },
+    {
+      kind: "string",
+      name: "verify",
+      valueHint: "<command>",
+      repeatable: true,
+      description: "Repeatable. Verification commands/checks to run for this task.",
+    },
   ],
   examples: [
     {
-      cmd: 'agentplane task derive 202602070101-ABCD --title "Implement X" --description "Do the thing" --owner CODER --tag code',
-      why: "Create an implementation task derived from a spike.",
+      cmd: 'agentplane task derive 202602070101-ABCD --title "Implement X" --description "Do the thing" --owner CODER --tag code --verify "bun test"',
+      why: "Create an implementation task derived from a spike with seeded verify steps.",
     },
+  ],
+  notes: [
+    "Derived tasks default to doc_version=3 and seed the README v3 section contract automatically.",
+    "For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.",
   ],
   validateRaw: (raw) => {
     const tags = toStringList(raw.opts.tag);
@@ -82,6 +94,7 @@ export const taskDeriveSpec: CommandSpec<TaskDeriveParsed> = {
     owner: raw.opts.owner as string,
     priority: (raw.opts.priority as TaskDeriveParsed["priority"]) ?? "med",
     tags: toStringList(raw.opts.tag),
+    verify: (raw.opts.verify ?? []) as string[],
   }),
 };
 
@@ -97,6 +110,7 @@ export function makeRunTaskDeriveHandler(getCtx: (cmd: string) => Promise<Comman
       owner: p.owner,
       priority: p.priority,
       tags: p.tags,
+      verify: p.verify,
     });
   };
 }

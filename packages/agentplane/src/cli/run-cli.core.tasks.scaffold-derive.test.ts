@@ -101,7 +101,7 @@ describe("runCli", () => {
     }
   });
 
-  it("task derive sets depends_on and task list shows wait deps until spike is DONE", async () => {
+  it("task derive seeds verify steps for implementation tasks and task list shows wait deps until spike is DONE", async () => {
     const root = await writeAndConfigureRoot();
 
     const ioSpike = captureStdIO();
@@ -147,12 +147,17 @@ describe("runCli", () => {
         "CODER",
         "--tag",
         "code",
+        "--verify",
+        "bun test",
         "--root",
         root,
       ]);
       expect(code).toBe(0);
       derivedId = ioDerive.stdout.trim();
       expect(derivedId).toContain("-");
+      expect(ioDerive.stderr).toContain(
+        "task requires Verify Steps by primary tag; seeded a default ## Verify Steps section in README",
+      );
     } finally {
       ioDerive.restore();
     }
@@ -161,8 +166,9 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "show", derivedId, "--root", root]);
       expect(code).toBe(0);
-      const parsed = JSON.parse(ioShow.stdout) as { depends_on?: string[] };
+      const parsed = JSON.parse(ioShow.stdout) as { depends_on?: string[]; verify?: string[] };
       expect(parsed.depends_on ?? []).toContain(spikeId);
+      expect(parsed.verify ?? []).toEqual(["bun test"]);
     } finally {
       ioShow.restore();
     }
@@ -176,6 +182,12 @@ describe("runCli", () => {
     expect(derivedReadme).toContain("## Verification");
     expect(derivedReadme).toContain("## Findings");
     expect(derivedReadme).toContain(`derived from spike ${spikeId}`);
+    expect(derivedReadme).toContain(
+      "1. Run `bun test`. Expected: it succeeds and confirms the requested outcome for this task.",
+    );
+    expect(derivedReadme).not.toContain(
+      "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
+    );
 
     const ioList = captureStdIO();
     try {
