@@ -1,4 +1,4 @@
-import { canonicalizeJson } from "@agentplaneorg/core";
+import { canonicalizeJson, taskDocToSectionMap } from "@agentplaneorg/core";
 
 import { isRecord } from "../../shared/guards.js";
 
@@ -28,6 +28,10 @@ import {
   findIssueByTaskId as findIssueByTaskIdImpl,
   listTasksRemote as listTasksRemoteImpl,
 } from "./redmine/remote.js";
+import {
+  buildRedmineCanonicalStateWithOptions,
+  parseRedmineCanonicalState,
+} from "./redmine/state.js";
 import { readRedmineEnv } from "./redmine/env.js";
 import {
   BackendError,
@@ -253,13 +257,41 @@ export class RedmineBackend implements TaskBackend {
       const issueIdText = toStringSafe(issue.id);
       if (!issueIdText) throw new Error(redmineIssueIdMissingMessage());
       const cachedTask = this.issueToTask(issue, taskId);
+      const currentState = parseRedmineCanonicalState(
+        this.customFieldValue(issue, this.customFields.canonical_state),
+      );
       const taskDoc: TaskDocMeta = {
         doc: String(doc ?? ""),
         doc_version: cachedTask?.doc_version,
       };
       ensureDocMetadata(taskDoc, updatedBy);
+      const nextSections = taskDocToSectionMap(String(taskDoc.doc ?? ""));
+      const nextRevision = Math.max(cachedTask?.revision ?? 0, currentState?.revision ?? 0, 0) + 1;
       const customFields: Record<string, unknown>[] = [];
       this.appendCustomField(customFields, "doc", taskDoc.doc);
+      const nextCanonicalState = buildRedmineCanonicalStateWithOptions(
+        {
+          id: taskId,
+          title: cachedTask?.title ?? "",
+          description: cachedTask?.description ?? "",
+          status: cachedTask?.status ?? "TODO",
+          priority: cachedTask?.priority ?? "med",
+          owner: cachedTask?.owner ?? this.ownerAgent,
+          depends_on: cachedTask?.depends_on ?? [],
+          tags: cachedTask?.tags ?? [],
+          verify: cachedTask?.verify ?? [],
+          doc: taskDoc.doc,
+          sections: nextSections,
+          revision: nextRevision,
+          plan_approval: cachedTask?.plan_approval,
+          verification: cachedTask?.verification,
+          events: cachedTask?.events,
+        },
+        { base: currentState, revision: nextRevision },
+      );
+      if (nextCanonicalState) {
+        this.appendCustomField(customFields, "canonical_state", nextCanonicalState);
+      }
       this.appendCustomField(customFields, "doc_version", taskDoc.doc_version);
       this.appendCustomField(customFields, "doc_updated_at", taskDoc.doc_updated_at);
       this.appendCustomField(customFields, "doc_updated_by", taskDoc.doc_updated_by);
@@ -268,6 +300,8 @@ export class RedmineBackend implements TaskBackend {
       });
       if (cachedTask) {
         cachedTask.doc = taskDoc.doc;
+        cachedTask.sections = nextSections;
+        cachedTask.revision = nextRevision;
         cachedTask.doc_version = taskDoc.doc_version;
         cachedTask.doc_updated_at = taskDoc.doc_updated_at;
         cachedTask.doc_updated_by = taskDoc.doc_updated_by;
@@ -279,6 +313,8 @@ export class RedmineBackend implements TaskBackend {
         const cached = await this.cache.getTask(taskId);
         if (!cached) throw new Error(unknownTaskIdMessage(taskId));
         cached.doc = String(doc ?? "");
+        cached.sections = taskDocToSectionMap(cached.doc);
+        cached.revision = Math.max(cached.revision ?? 0, 0) + 1 || 1;
         ensureDocMetadata(cached, updatedBy);
         cached.dirty = true;
         await this.cache.writeTask(cached);
@@ -349,9 +385,28 @@ export class RedmineBackend implements TaskBackend {
         const payload = await this.requestJson("GET", `issues/${issueIdText}.json`);
         existingIssue = this.issueFromPayload(payload);
       }
-      const payload = this.taskToIssuePayload(task, existingIssue ?? undefined);
+      const currentState =
+        existingIssue && this.customFields.canonical_state
+          ? parseRedmineCanonicalState(
+              this.customFieldValue(existingIssue, this.customFields.canonical_state),
+            )
+          : null;
+      const nextRevision = issueIdText
+        ? Math.max(task.revision ?? 0, currentState?.revision ?? 0, 0) + 1
+        : Math.max(task.revision ?? 0, currentState?.revision ?? 0, 1);
+      const taskForWrite: TaskData = {
+        ...task,
+        revision: nextRevision,
+        sections:
+          task.sections && Object.keys(task.sections).length > 0
+            ? task.sections
+            : task.doc
+              ? taskDocToSectionMap(task.doc)
+              : undefined,
+      };
+      const payload = this.taskToIssuePayload(taskForWrite, existingIssue ?? undefined);
       if (payload.status_id === undefined) {
-        const inferredStatusId = await this.inferStatusIdForTaskStatus(task.status);
+        const inferredStatusId = await this.inferStatusIdForTaskStatus(taskForWrite.status);
         if (inferredStatusId !== null) payload.status_id = inferredStatusId;
       }
       if (issueIdText) {
@@ -379,17 +434,27 @@ export class RedmineBackend implements TaskBackend {
                 ),
               )
             : [];
-        const desiredComments = this.normalizeComments(task.comments);
+        const desiredComments = this.normalizeComments(taskForWrite.comments);
         await this.appendCommentNotes(issueIdText, existingComments, desiredComments);
       }
-      task.dirty = false;
-      await this.cacheTask(task, false);
+      taskForWrite.dirty = false;
+      await this.cacheTask(taskForWrite, false);
       this.issueCache.clear();
     } catch (err) {
       if (err instanceof RedmineUnavailable) {
         if (!this.cache) throw err;
-        task.dirty = true;
-        await this.cacheTask(task, true);
+        const taskForCache: TaskData = {
+          ...task,
+          revision: Math.max(task.revision ?? 0, 1),
+          sections:
+            task.sections && Object.keys(task.sections).length > 0
+              ? task.sections
+              : task.doc
+                ? taskDocToSectionMap(task.doc)
+                : undefined,
+          dirty: true,
+        };
+        await this.cacheTask(taskForCache, true);
         return;
       }
       throw err;

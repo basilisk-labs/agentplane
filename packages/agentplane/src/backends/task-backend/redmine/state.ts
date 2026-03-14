@@ -1,3 +1,5 @@
+import { taskDocToSectionMap } from "@agentplaneorg/core";
+
 import { isRecord } from "../../../shared/guards.js";
 
 import { normalizeEvents } from "../shared/events.js";
@@ -11,6 +13,11 @@ export type RedmineCanonicalState = {
   plan_approval?: TaskData["plan_approval"];
   verification?: TaskData["verification"];
   events?: TaskData["events"];
+};
+
+type BuildRedmineCanonicalStateOptions = {
+  base?: RedmineCanonicalState | null;
+  revision?: number | null;
 };
 
 function normalizeRevision(value: unknown): number | undefined {
@@ -70,18 +77,41 @@ export function parseRedmineCanonicalState(value: unknown): RedmineCanonicalStat
 }
 
 export function buildRedmineCanonicalState(task: TaskData): RedmineCanonicalState | null {
-  const revision = normalizeRevision(task.revision);
-  const sections = normalizeCanonicalSections(task.sections);
-  const planApproval = normalizePlanApproval(task.plan_approval) ?? undefined;
-  const verification = normalizeVerificationResult(task.verification) ?? undefined;
+  return buildRedmineCanonicalStateWithOptions(task);
+}
+
+export function buildRedmineCanonicalStateWithOptions(
+  task: TaskData,
+  opts?: BuildRedmineCanonicalStateOptions,
+): RedmineCanonicalState | null {
+  const base = opts?.base ?? null;
+  const revision =
+    normalizeRevision(opts?.revision) ??
+    normalizeRevision(task.revision) ??
+    normalizeRevision(base?.revision);
+  const sections =
+    normalizeCanonicalSections(task.sections) ??
+    (typeof task.doc === "string" && task.doc.trim().length > 0
+      ? taskDocToSectionMap(task.doc)
+      : undefined) ??
+    normalizeCanonicalSections(base?.sections);
+  const planApproval =
+    normalizePlanApproval(task.plan_approval) ??
+    normalizePlanApproval(base?.plan_approval) ??
+    undefined;
+  const verification =
+    normalizeVerificationResult(task.verification) ??
+    normalizeVerificationResult(base?.verification) ??
+    undefined;
   const events = normalizeEvents(task.events);
+  const fallbackEvents = events.length > 0 ? events : normalizeEvents(base?.events);
 
   if (
     revision === undefined &&
     sections === undefined &&
     planApproval === undefined &&
     verification === undefined &&
-    events.length === 0
+    fallbackEvents.length === 0
   ) {
     return null;
   }
@@ -91,6 +121,6 @@ export function buildRedmineCanonicalState(task: TaskData): RedmineCanonicalStat
     ...(sections ? { sections } : {}),
     ...(planApproval ? { plan_approval: planApproval } : {}),
     ...(verification ? { verification } : {}),
-    ...(events.length > 0 ? { events } : {}),
+    ...(fallbackEvents.length > 0 ? { events: fallbackEvents } : {}),
   };
 }

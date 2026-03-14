@@ -1,3 +1,5 @@
+import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core";
+
 import { isRecord } from "../../../shared/guards.js";
 
 import {
@@ -11,7 +13,7 @@ import {
 import { customFieldValue } from "./fields.js";
 import { coerceDocVersion, maybeParseJson } from "./parse.js";
 import { normalizeComments } from "./comments.js";
-import { buildRedmineCanonicalState } from "./state.js";
+import { buildRedmineCanonicalState, parseRedmineCanonicalState } from "./state.js";
 
 export function startDateFromTaskId(taskId: string): string | null {
   if (!taskId.includes("-")) return null;
@@ -82,12 +84,14 @@ export function issueToTask(opts: {
   const docVersionVal = customFieldValue(opts.issue, opts.customFields.doc_version);
   const docUpdatedAtVal = customFieldValue(opts.issue, opts.customFields.doc_updated_at);
   const docUpdatedByVal = customFieldValue(opts.issue, opts.customFields.doc_updated_by);
+  const canonicalStateVal = customFieldValue(opts.issue, opts.customFields.canonical_state);
   const updatedOn =
     typeof opts.issue.updated_on === "string"
       ? opts.issue.updated_on
       : typeof opts.issue.created_on === "string"
         ? opts.issue.created_on
         : null;
+  const canonicalState = parseRedmineCanonicalState(canonicalStateVal);
 
   const priorityVal = isRecord(opts.issue.priority) ? opts.issue.priority : null;
   const priorityName = normalizePriority(priorityVal?.name ?? priorityFieldVal);
@@ -119,6 +123,7 @@ export function issueToTask(opts: {
     status: status ?? "TODO",
     priority: priorityName,
     owner: toStringSafe(ownerFieldVal ?? opts.ownerAgent),
+    revision: canonicalState?.revision ?? 1,
     tags: mergedTags,
     depends_on: [],
     verify: maybeParseJson(verifyVal) as string[],
@@ -127,7 +132,14 @@ export function issueToTask(opts: {
     id_source: "custom",
   };
 
-  if (docVal) task.doc = toStringSafe(docVal);
+  const canonicalSections = canonicalState?.sections;
+  const derivedDoc = canonicalSections
+    ? renderTaskDocFromSections(canonicalSections)
+    : docVal
+      ? toStringSafe(docVal)
+      : "";
+  if (derivedDoc) task.doc = derivedDoc;
+  task.sections = canonicalSections ?? (derivedDoc ? taskDocToSectionMap(derivedDoc) : undefined);
   const docVersion = coerceDocVersion(docVersionVal);
   task.doc_version = docVersion ?? opts.defaultDocVersion;
   task.doc_updated_at = docUpdatedAtVal ? toStringSafe(docUpdatedAtVal) : (updatedOn ?? nowIso());
