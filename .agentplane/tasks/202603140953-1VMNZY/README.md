@@ -1,10 +1,11 @@
 ---
 id: "202603140953-1VMNZY"
 title: "Align task derive and doc version defaults with README v3"
-status: "DOING"
+result_summary: "Derived tasks now land on README v3 and missing doc_version falls back to the canonical v3 contract."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on: []
 tags:
   - "code"
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-03-14T10:00:01.960Z"
   updated_by: "CODER"
   note: "Verified README v3 derive/doc_version alignment with vitest, TypeScript, and package builds."
-commit: null
+commit:
+  hash: "f3a1d85839c48d08691dbbcb9401eaf9b8314186"
+  message: "✨ 1VMNZY code: align derive and doc_version defaults with README v3"
 comments:
   -
     author: "CODER"
     body: "Start: align task derive and shared doc-version defaults with README v3, add regression tests, and keep scope to task-contract drift only."
+  -
+    author: "CODER"
+    body: "Verified: aligned task derive with README v3 scaffolding, raised canonical doc_version defaults to v3, and covered derive/local/redmine regressions."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified README v3 derive/doc_version alignment with vitest, TypeScript, and package builds."
+  -
+    type: "status"
+    at: "2026-03-14T10:00:33.835Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: aligned task derive with README v3 scaffolding, raised canonical doc_version defaults to v3, and covered derive/local/redmine regressions."
 doc_version: 3
-doc_updated_at: "2026-03-14T10:00:01.966Z"
+doc_updated_at: "2026-03-14T10:00:33.836Z"
 doc_updated_by: "CODER"
 description: "Fix task derive so derived tasks use README v3 scaffolding, align backend/core doc_version defaults with the canonical v3 contract, and add regression coverage."
 sections:
