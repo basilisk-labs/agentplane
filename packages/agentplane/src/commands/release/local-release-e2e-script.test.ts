@@ -289,7 +289,7 @@ describe("local release E2E script", () => {
     expect(result.stderr).toContain("Exact checkout required");
   });
 
-  it("fails explicitly when GitHub auth is missing", async () => {
+  it("fails explicitly when GitHub auth is missing", LOCAL_RELEASE_E2E_TIMEOUT_MS, async () => {
     const { root, binDir } = await initWorkspace();
 
     const result = await runScript(root, ["--skip-prepublish"], {
@@ -312,55 +312,59 @@ describe("local release E2E script", () => {
     expect(result.stderr).toContain("Missing required GITHUB_TOKEN");
   });
 
-  it("fails when the downloaded artifact manifest does not match the exact release sha", async () => {
-    const { root, sha, binDir } = await initWorkspace();
+  it(
+    "fails when the downloaded artifact manifest does not match the exact release sha",
+    LOCAL_RELEASE_E2E_TIMEOUT_MS,
+    async () => {
+      const { root, sha, binDir } = await initWorkspace();
 
-    await withServer(
-      (pathname) => {
-        if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
-          return {
-            body: {
-              workflow_runs: [makeRun({ headSha: sha })],
+      await withServer(
+        (pathname) => {
+          if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+            return {
+              body: {
+                workflow_runs: [makeRun({ headSha: sha })],
+              },
+            };
+          }
+          if (pathname.endsWith("/actions/runs/123/artifacts")) {
+            return {
+              body: {
+                artifacts: [makeArtifact()],
+              },
+            };
+          }
+          return { status: 404, body: { message: "not found" } };
+        },
+        async (baseUrl) => {
+          const result = await runScript(
+            root,
+            ["--skip-prepublish", "--repo", "basilisk-labs/agentplane"],
+            {
+              PATH: `${binDir}:${process.env.PATH ?? ""}`,
+              GITHUB_TOKEN: "test-token",
+              AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+              AGENTPLANE_TEST_GH_SHA: "different-sha",
             },
-          };
-        }
-        if (pathname.endsWith("/actions/runs/123/artifacts")) {
-          return {
-            body: {
-              artifacts: [makeArtifact()],
+          ).then(
+            () => ({ ok: true as const, stderr: "" }),
+            (error: unknown) => {
+              const stderr =
+                typeof error === "object" &&
+                error !== null &&
+                "stderr" in error &&
+                typeof (error as { stderr?: unknown }).stderr === "string"
+                  ? (error as { stderr: string }).stderr
+                  : "";
+              return { ok: false as const, stderr };
             },
-          };
-        }
-        return { status: 404, body: { message: "not found" } };
-      },
-      async (baseUrl) => {
-        const result = await runScript(
-          root,
-          ["--skip-prepublish", "--repo", "basilisk-labs/agentplane"],
-          {
-            PATH: `${binDir}:${process.env.PATH ?? ""}`,
-            GITHUB_TOKEN: "test-token",
-            AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
-            AGENTPLANE_TEST_GH_SHA: "different-sha",
-          },
-        ).then(
-          () => ({ ok: true as const, stderr: "" }),
-          (error: unknown) => {
-            const stderr =
-              typeof error === "object" &&
-              error !== null &&
-              "stderr" in error &&
-              typeof (error as { stderr?: unknown }).stderr === "string"
-                ? (error as { stderr: string }).stderr
-                : "";
-            return { ok: false as const, stderr };
-          },
-        );
+          );
 
-        expect(result.ok).toBe(false);
-        expect(result.stderr).toContain("Local release E2E validation failed");
-        expect(result.stderr).toContain("downloaded manifest sha mismatch");
-      },
-    );
-  });
+          expect(result.ok).toBe(false);
+          expect(result.stderr).toContain("Local release E2E validation failed");
+          expect(result.stderr).toContain("downloaded manifest sha mismatch");
+        },
+      );
+    },
+  );
 });
