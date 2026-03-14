@@ -62,13 +62,23 @@ describe("RedmineBackend (mocked)", () => {
         tags: [{ name: "tag1" }],
         custom_fields: [
           { id: 1, value: "202601300000-ABCD" },
-          { id: 2, value: "{bad" },
-          { id: 3, value: '{"hash":"h","message":"m"}' },
-          { id: 4, value: "plain note" },
-          { id: 5, value: "Doc" },
-          { id: 6, value: "2" },
-          { id: 7, value: "2026-01-30T00:00:00Z" },
-          { id: 8, value: "tester" },
+          {
+            id: 2,
+            value: JSON.stringify({
+              revision: 2,
+              sections: {
+                Summary: "Canonical summary.",
+                "Verify Steps": "1. Canonical check.",
+              },
+            }),
+          },
+          { id: 3, value: "{bad" },
+          { id: 4, value: '{"hash":"h","message":"m"}' },
+          { id: 5, value: "plain note" },
+          { id: 6, value: "Stale doc" },
+          { id: 7, value: "2" },
+          { id: 8, value: "2026-01-30T00:00:00Z" },
+          { id: 9, value: "tester" },
         ],
         updated_on: "2026-01-30T00:00:00Z",
       },
@@ -98,13 +108,14 @@ describe("RedmineBackend (mocked)", () => {
         status_map: { DONE: 5, TODO: 1 },
         custom_fields: {
           task_id: 1,
-          verify: 2,
-          commit: 3,
-          comments: 4,
-          doc: 5,
-          doc_version: 6,
-          doc_updated_at: 7,
-          doc_updated_by: 8,
+          canonical_state: 2,
+          verify: 3,
+          commit: 4,
+          comments: 5,
+          doc: 6,
+          doc_version: 7,
+          doc_updated_at: 8,
+          doc_updated_by: 9,
         },
       },
       { cache },
@@ -130,9 +141,17 @@ describe("RedmineBackend (mocked)", () => {
 
     const taskAfterPull = await backend.getTask("202601300000-ABCD");
     expect(taskAfterPull?.title).toBe("Issue");
+    expect(taskAfterPull?.revision).toBe(2);
+    expect(taskAfterPull?.sections).toMatchObject({
+      Summary: "Canonical summary.",
+      "Verify Steps": "1. Canonical check.",
+    });
+    expect(taskAfterPull?.doc).toContain("Canonical summary.");
+    expect(taskAfterPull?.doc).not.toContain("Stale doc");
 
     const cached = await cache.listTasks();
     expect(cached).toHaveLength(1);
+    expect(cached[0]?.revision).toBe(2);
   });
 
   it("uses projection-only reads and does not touch network or cache writes for list/get", async () => {
@@ -579,6 +598,44 @@ describe("RedmineBackend (mocked)", () => {
         ],
       }),
     );
+  });
+
+  it("derives canonical sections from legacy doc when structured state is absent", () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        status_map: { TODO: 1 },
+        custom_fields: { task_id: 1, doc: 2 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      issueToTask: (issue: Record<string, unknown>, taskIdOverride?: string) => TaskData | null;
+    };
+    const task = helper.issueToTask(
+      {
+        id: 1,
+        subject: "Issue",
+        description: "Desc",
+        status: { id: 1 },
+        custom_fields: [
+          { id: 1, value: "202601300000-ABCD" },
+          {
+            id: 2,
+            value: "## Summary\n\nLegacy summary.\n\n## Verify Steps\n\n1. Legacy check.\n",
+          },
+        ],
+      },
+      "202601300000-ABCD",
+    );
+    expect(task?.revision).toBe(1);
+    expect(task?.sections).toMatchObject({
+      Summary: "Legacy summary.",
+      "Verify Steps": "1. Legacy check.",
+    });
+    expect(task?.doc).toContain("Legacy summary.");
   });
 
   it("normalizes priority values when mapping issues", () => {
@@ -1164,6 +1221,88 @@ describe("RedmineBackend (mocked)", () => {
     await backend.touchTaskDocMetadata(task.id, "tester");
     const touched = await cache.getTask(task.id);
     expect(touched?.dirty).toBe(true);
+  });
+
+  it("setTaskDoc writes canonical_state revision and sections when configured", async () => {
+    const cache = new LocalBackend({ dir: tempDir });
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: {
+          task_id: 1,
+          canonical_state: 2,
+          doc: 3,
+          doc_version: 4,
+          doc_updated_at: 5,
+          doc_updated_by: 6,
+        },
+      },
+      { cache },
+    );
+    const helper = backend as unknown as {
+      findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
+      requestJson: (...args: unknown[]) => Promise<Record<string, unknown>>;
+    };
+    const issue = {
+      id: 1,
+      subject: "Issue",
+      description: "Desc",
+      status: { id: 1, name: "New" },
+      custom_fields: [
+        { id: 1, value: "202601300000-ABCD" },
+        {
+          id: 2,
+          value: JSON.stringify({
+            revision: 4,
+            sections: {
+              Summary: "Remote summary.",
+              "Verify Steps": "1. Remote check.",
+            },
+          }),
+        },
+        { id: 3, value: "Stale doc" },
+        { id: 4, value: "3" },
+        { id: 5, value: "2026-03-14T00:00:00Z" },
+        { id: 6, value: "REDMINE" },
+      ],
+    };
+    helper.findIssueByTaskId = vi.fn().mockResolvedValue(issue);
+    const requestJson = vi.fn().mockResolvedValue({});
+    helper.requestJson = requestJson;
+
+    const nextDoc = "## Summary\n\nUpdated summary.\n\n## Verify Steps\n\n1. Updated check.\n";
+    await backend.setTaskDoc("202601300000-ABCD", nextDoc, "CODER");
+
+    const firstCall = requestJson.mock.calls[0] as
+      | [string, string, { issue?: { custom_fields?: { id?: number; value?: unknown }[] } }]
+      | undefined;
+    expect(firstCall?.[0]).toBe("PUT");
+    expect(firstCall?.[1]).toBe("issues/1.json");
+    expect(firstCall?.[2].issue?.custom_fields).toEqual(
+      expect.arrayContaining([
+        { id: 3, value: nextDoc },
+        {
+          id: 2,
+          value: JSON.stringify({
+            revision: 5,
+            sections: {
+              Summary: "Updated summary.",
+              "Verify Steps": "1. Updated check.",
+            },
+          }),
+        },
+      ]),
+    );
+
+    const cached = await cache.getTask("202601300000-ABCD");
+    expect(cached?.revision).toBe(5);
+    expect(cached?.sections).toMatchObject({
+      Summary: "Updated summary.",
+      "Verify Steps": "1. Updated check.",
+    });
+    expect(cached?.doc).toContain("Updated summary.");
   });
 
   it("exports a Redmine projection snapshot from cache without touching the remote source", async () => {
