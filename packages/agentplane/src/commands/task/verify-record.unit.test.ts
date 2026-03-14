@@ -384,6 +384,57 @@ describe("task verify record (unit)", () => {
     expect(next?.doc).toContain("#### 2026-02-09T00:00:00.000Z — VERIFY — ok");
   });
 
+  it("cmdTaskVerifyOk decodes escaped newlines in verification details", async () => {
+    const writeTask = vi.fn<(t: TaskData) => Promise<void>>(() => Promise.resolve());
+    const backend: TaskBackend = {
+      id: "mock",
+      listTasks: () => Promise.resolve([]),
+      getTask: () => Promise.resolve(null),
+      writeTask,
+      getTaskDoc: () =>
+        Promise.resolve(
+          [
+            "## Summary",
+            "x",
+            "",
+            "## Verify Steps",
+            "step",
+            "",
+            "## Verification",
+            "<!-- BEGIN VERIFICATION RESULTS -->",
+            "<!-- END VERIFICATION RESULTS -->",
+            "",
+          ].join("\n"),
+        ),
+    };
+    const ctx = mkCtx({ taskBackend: backend, backend });
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        status: "DONE",
+        commit: { hash: "abc", message: "msg" },
+        doc: undefined,
+        doc_version: 3,
+        doc_updated_at: "2026-02-01T00:00:00Z",
+      }),
+    );
+
+    const { cmdTaskVerifyOk } = await import("./verify-record.js");
+    const rc = await cmdTaskVerifyOk({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      by: "TESTER",
+      note: "ok",
+      details: String.raw`line one\nline two`,
+      quiet: true,
+    });
+    expect(rc).toBe(0);
+
+    const next = writeTask.mock.calls[0]?.[0];
+    expect(next?.doc).toContain("Details:\n\nline one\nline two");
+    expect(next?.doc).not.toContain(String.raw`line one\nline two`);
+  });
+
   it("cmdTaskVerifyRework records needs_rework, clears commit, forces status DOING, and does not print when quiet=true", async () => {
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 

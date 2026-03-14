@@ -24,6 +24,7 @@ import {
 
 import {
   appendTaskEvent,
+  decodeEscapedTaskTextNewlines,
   extractDocSection,
   normalizeTaskDocVersion,
   normalizeVerificationSectionLayout,
@@ -272,6 +273,9 @@ async function resolveVerifyRecordInput(opts: {
     } catch (err) {
       throw mapCoreError(err, { command: opts.command, filePath: opts.file });
     }
+  }
+  if (typeof details === "string") {
+    details = decodeEscapedTaskTextNewlines(details);
   }
 
   return { by, note, details };
