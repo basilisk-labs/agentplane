@@ -1,5 +1,9 @@
 import { syncSpec } from "../../../commands/sync.command.js";
-import { backendSpec, backendSyncSpec } from "../../../commands/backend/sync.command.js";
+import {
+  backendMigrateCanonicalStateSpec,
+  backendSpec,
+  backendSyncSpec,
+} from "../../../commands/backend/sync.command.js";
 import {
   branchBaseClearSpec,
   branchBaseExplainSpec,
@@ -139,6 +143,11 @@ export const PROJECT_COMMANDS = [
   entry(backendSyncSpec, (deps) =>
     import("../../../commands/backend/sync.command.js").then((m) =>
       m.makeRunBackendSyncHandler(deps.getCtx),
+    ),
+  ),
+  entry(backendMigrateCanonicalStateSpec, (deps) =>
+    import("../../../commands/backend/sync.command.js").then((m) =>
+      m.makeRunBackendMigrateCanonicalStateHandler(deps.getCtx),
     ),
   ),
   entry(syncSpec, (deps) =>

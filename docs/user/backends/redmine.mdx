@@ -91,6 +91,19 @@ Operational rule:
 - use `push --yes` when you want to send local dirty task state back to Redmine;
 - ordinary task reads do not implicitly refresh from the network.
 
+## Canonical-state migration
+
+To backfill structured `canonical_state` into legacy Redmine issues that still only carry the
+older doc-based projection, run:
+
+```bash
+agentplane backend migrate-canonical-state redmine --yes
+```
+
+The command scans the current Redmine task set, skips issues that already store
+`canonical_state`, skips issues that cannot be reconstructed from legacy doc content, and reports
+any per-task failures explicitly.
+
 ## Validation
 
 To validate the install-first Redmine contract against a real backend without performing remote

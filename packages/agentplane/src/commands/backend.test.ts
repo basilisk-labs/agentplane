@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { parseCommandArgv } from "../cli/spec/parse.js";
-import { backendSyncSpec } from "./backend/sync.command.js";
+import { backendMigrateCanonicalStateSpec, backendSyncSpec } from "./backend/sync.command.js";
 import { syncSpec } from "./sync.command.js";
 
 describe("commands/backend", () => {
@@ -17,6 +17,15 @@ describe("commands/backend", () => {
   it("rejects sync with duplicate backend ids", () => {
     try {
       parseCommandArgv(syncSpec, ["local", "extra"]);
+      throw new Error("expected E_USAGE");
+    } catch (err) {
+      expect(err).toMatchObject({ code: "E_USAGE" });
+    }
+  });
+
+  it("rejects backend migrate-canonical-state with missing args", () => {
+    try {
+      parseCommandArgv(backendMigrateCanonicalStateSpec, []);
       throw new Error("expected E_USAGE");
     } catch (err) {
       expect(err).toMatchObject({ code: "E_USAGE" });

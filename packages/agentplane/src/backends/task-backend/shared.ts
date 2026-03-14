@@ -5,6 +5,7 @@ export type {
   PlanApprovalState,
   TaskBackend,
   TaskBackendCapabilities,
+  TaskCanonicalStateMigrationResult,
   TaskData,
   TaskDocMeta,
   TaskEvent,

@@ -6,6 +6,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 
 - Backend
   - [backend](#backend)
+  - [backend migrate-canonical-state](#backend-migrate-canonical-state)
   - [backend sync](#backend-sync)
   - [sync](#sync)
 - Branch
@@ -135,7 +136,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 
 Backend-related operations.
 
-This is a command group. Use a subcommand such as \`agentplane backend sync ...\`.
+This is a command group. Use a subcommand such as \`agentplane backend sync ...\` or \`agentplane backend migrate-canonical-state ...\`.
 
 Usage:
 
@@ -150,6 +151,29 @@ agentplane backend sync local --direction pull
 ```
 
 - Sync the backend.
+
+### backend migrate-canonical-state
+
+Backfill canonical_state for issues in the configured backend.
+
+Usage:
+
+```text
+agentplane backend migrate-canonical-state <id> [options]
+```
+
+Options:
+
+- `--yes`: Auto-approve network access. (default=false)
+- `--quiet`: Reduce output noise. (default=false)
+
+Examples:
+
+```sh
+agentplane backend migrate-canonical-state redmine --yes
+```
+
+- Backfill structured canonical_state into legacy Redmine issues.
 
 ### backend sync
 

@@ -83,6 +83,14 @@ export type TaskProjectionRefreshOptions = {
   conflict?: "diff" | "prefer-local" | "prefer-remote" | "fail";
 };
 
+export type TaskCanonicalStateMigrationResult = {
+  scanned: number;
+  migrated: string[];
+  skippedStructured: string[];
+  skippedNoDoc: string[];
+  failed: { taskId: string; reason: string }[];
+};
+
 export type TaskBackend = {
   id: string;
   capabilities: TaskBackendCapabilities;
@@ -95,6 +103,7 @@ export type TaskBackend = {
   writeTasks?(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void>;
   normalizeTasks?(): Promise<{ scanned: number; changed: number }>;
   refreshProjection?(opts: TaskProjectionRefreshOptions): Promise<void>;
+  migrateCanonicalState?(): Promise<TaskCanonicalStateMigrationResult>;
   exportProjectionSnapshot?(outputPath: string): Promise<void>;
   exportTasksJson?(outputPath: string): Promise<void>;
   getTaskDoc?(taskId: string): Promise<string>;

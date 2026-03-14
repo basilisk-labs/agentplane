@@ -7,6 +7,7 @@ exports[`runCli help snapshots (cli2) > help (registry) snapshot 1`] = `
 Commands:
   Backend:
     backend  Backend-related operations.
+    backend migrate-canonical-state  Backfill canonical_state for issues in the configured backend.
     backend sync  Sync the configured backend (push or pull).
     sync  Sync the configured backend (alias).
   Branch:

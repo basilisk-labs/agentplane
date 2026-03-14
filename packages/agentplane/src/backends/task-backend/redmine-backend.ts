@@ -52,6 +52,7 @@ import {
   unknownTaskIdMessage,
   validateTaskId,
   writeTasksExportFromTasks,
+  type TaskCanonicalStateMigrationResult,
   type TaskBackend,
   type TaskData,
   type TaskDocMeta,
@@ -223,6 +224,107 @@ export class RedmineBackend implements TaskBackend {
     // Remote backends should avoid expensive downloads; best-effort normalize the local cache if present.
     if (this.cache?.normalizeTasks) return await this.cache.normalizeTasks();
     return { scanned: 0, changed: 0 };
+  }
+
+  async migrateCanonicalState(): Promise<TaskCanonicalStateMigrationResult> {
+    if (!this.customFields.canonical_state) {
+      throw new BackendError(
+        redmineConfigMissingEnvMessage("AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE"),
+        "E_BACKEND",
+      );
+    }
+
+    const tasks = await this.listTasksRemote();
+    const result: TaskCanonicalStateMigrationResult = {
+      scanned: tasks.length,
+      migrated: [],
+      skippedStructured: [],
+      skippedNoDoc: [],
+      failed: [],
+    };
+
+    for (const [index, task] of tasks.entries()) {
+      const taskId = toStringSafe(task.id).trim();
+      if (!taskId) continue;
+      const issue = this.issueCache.get(taskId);
+      if (!issue) {
+        result.failed.push({
+          taskId,
+          reason: "Redmine issue payload was not cached during remote list refresh",
+        });
+        continue;
+      }
+
+      const currentState = parseRedmineCanonicalState(
+        this.customFieldValue(issue, this.customFields.canonical_state),
+      );
+      if (currentState) {
+        result.skippedStructured.push(taskId);
+        continue;
+      }
+
+      const sections =
+        task.sections && Object.keys(task.sections).length > 0
+          ? task.sections
+          : task.doc
+            ? taskDocToSectionMap(task.doc)
+            : undefined;
+      if (!sections || Object.keys(sections).length === 0) {
+        result.skippedNoDoc.push(taskId);
+        continue;
+      }
+
+      const issueIdText = toStringSafe(issue.id);
+      if (!issueIdText) {
+        result.failed.push({ taskId, reason: redmineIssueIdMissingMessage() });
+        continue;
+      }
+
+      const currentRevision = 0;
+      const nextRevision = Math.max(task.revision ?? 0, currentRevision, 1);
+      const nextCanonicalState = buildRedmineCanonicalStateWithOptions(
+        {
+          ...task,
+          sections,
+          revision: nextRevision,
+        },
+        { base: currentState, revision: nextRevision },
+      );
+      if (!nextCanonicalState) {
+        result.skippedNoDoc.push(taskId);
+        continue;
+      }
+
+      const customFields: Record<string, unknown>[] = [];
+      this.appendCustomField(customFields, "canonical_state", nextCanonicalState);
+      try {
+        await this.requestJson("PUT", `issues/${issueIdText}.json`, {
+          issue: { custom_fields: customFields },
+        });
+        this.setIssueCustomFieldValue(issue, this.customFields.canonical_state, nextCanonicalState);
+        this.issueCache.set(taskId, issue);
+        await this.cacheTask(
+          {
+            ...task,
+            sections,
+            revision: nextRevision,
+            dirty: false,
+          },
+          false,
+        );
+        result.migrated.push(taskId);
+      } catch (err) {
+        const reason =
+          err instanceof Error ? err.message : "Unknown Redmine canonical_state migration failure";
+        result.failed.push({ taskId, reason });
+      }
+
+      if (this.batchPauseMs > 0 && this.batchSize > 0 && (index + 1) % this.batchSize === 0) {
+        await sleep(this.batchPauseMs);
+      }
+    }
+
+    return result;
   }
 
   async getTask(taskId: string): Promise<TaskData | null> {

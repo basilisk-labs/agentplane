@@ -124,6 +124,84 @@ describe("runCli", () => {
     }
   });
 
+  it("backend migrate-canonical-state routes to configured backend", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const migrateCanonicalState = vi.fn().mockResolvedValue({
+      scanned: 2,
+      migrated: ["202603140729-W4D9ZT", "202603140730-R37DPX"],
+      skippedStructured: [],
+      skippedNoDoc: [],
+      failed: [],
+    });
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({ id: "redmine", migrateCanonicalState }),
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "backend",
+        "migrate-canonical-state",
+        "redmine",
+        "--yes",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(migrateCanonicalState).toHaveBeenCalledTimes(1);
+      expect(io.stdout).toContain("backend migrate-canonical-state");
+      expect(io.stdout).toContain("migrated=2");
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
+  it("backend migrate-canonical-state requires --yes in non-tty mode when require_network=true and backend is non-local", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const migrateCanonicalState = vi.fn().mockResolvedValue({
+      scanned: 0,
+      migrated: [],
+      skippedStructured: [],
+      skippedNoDoc: [],
+      failed: [],
+    });
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({ id: "redmine", migrateCanonicalState }),
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["backend", "migrate-canonical-state", "redmine", "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("--yes");
+      expect(migrateCanonicalState).not.toHaveBeenCalled();
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
   it("backend sync forwards flags to the backend", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
