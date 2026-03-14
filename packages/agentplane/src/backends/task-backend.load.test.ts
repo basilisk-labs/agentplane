@@ -96,6 +96,37 @@ describe("loadTaskBackend", () => {
     expect(process.env.AGENTPLANE_REDMINE_URL).toBe("https://redmine.env");
   });
 
+  it("reports guarded revision support when canonical_state is configured", async () => {
+    const agentplaneDir = path.join(tempDir, ".agentplane");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.dirname(backendPath), { recursive: true });
+    await writeFile(
+      backendPath,
+      JSON.stringify({
+        id: "redmine",
+        settings: {
+          custom_fields: { task_id: 1, canonical_state: 2 },
+        },
+      }),
+      "utf8",
+    );
+    await writeFile(
+      path.join(tempDir, ".env"),
+      [
+        "AGENTPLANE_REDMINE_URL=https://redmine.env",
+        "AGENTPLANE_REDMINE_API_KEY=env-key",
+        "AGENTPLANE_REDMINE_PROJECT_ID=proj",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const result = await loadTaskBackend({ cwd: tempDir });
+    expect(result.backendId).toBe("redmine");
+    expect(result.backend).toBeInstanceOf(RedmineBackend);
+    expect(result.backend.capabilities.supports_task_revisions).toBe(true);
+    expect(result.backend.capabilities.supports_revision_guarded_writes).toBe(true);
+  });
+
   it("parses quoted .env values and resolves backend directories", async () => {
     const agentplaneDir = path.join(tempDir, ".agentplane");
     const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");

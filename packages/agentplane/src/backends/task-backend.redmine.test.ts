@@ -1226,6 +1226,7 @@ describe("RedmineBackend (mocked)", () => {
       status: "TODO",
       priority: "med",
       owner: "REDMINE",
+      revision: 4,
       depends_on: [],
       tags: [],
       verify: [],
@@ -1237,7 +1238,7 @@ describe("RedmineBackend (mocked)", () => {
         url: "https://redmine.example",
         api_key: "key",
         project_id: "proj",
-        custom_fields: { task_id: 1, doc: 2 },
+        custom_fields: { task_id: 1, canonical_state: 2, doc: 3 },
       },
       { cache },
     );
@@ -1263,6 +1264,10 @@ describe("RedmineBackend (mocked)", () => {
     await backend.touchTaskDocMetadata(task.id, "tester");
     const touched = await cache.getTask(task.id);
     expect(touched?.dirty).toBe(true);
+
+    await expect(
+      backend.setTaskDoc(task.id, "Doc again", "tester", { expectedRevision: 3 }),
+    ).rejects.toThrow(/Task revision changed concurrently/u);
   });
 
   it("setTaskDoc writes canonical_state revision and sections when configured", async () => {
@@ -1408,6 +1413,99 @@ describe("RedmineBackend (mocked)", () => {
       },
     ]);
     expect(cached?.doc).toContain("Updated summary.");
+  });
+
+  it("rejects stale expectedRevision writes when canonical_state guarding is configured", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: {
+          task_id: 1,
+          canonical_state: 2,
+          doc: 3,
+          doc_version: 4,
+          doc_updated_at: 5,
+          doc_updated_by: 6,
+        },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
+      requestJson: (...args: unknown[]) => Promise<Record<string, unknown>>;
+    };
+    helper.findIssueByTaskId = vi.fn().mockResolvedValue({
+      id: 1,
+      subject: "Issue",
+      description: "Desc",
+      status: { id: 1, name: "New" },
+      custom_fields: [
+        { id: 1, value: "202601300000-ABCD" },
+        { id: 2, value: JSON.stringify({ revision: 4, sections: { Summary: "Remote summary." } }) },
+        { id: 3, value: "## Summary\n\nRemote summary.\n" },
+      ],
+    });
+    const requestJson = vi.fn().mockResolvedValue({});
+    helper.requestJson = requestJson;
+
+    await expect(
+      backend.writeTask(
+        {
+          id: "202601300000-ABCD",
+          title: "Issue",
+          description: "Desc",
+          status: "TODO",
+          priority: "med",
+          owner: "REDMINE",
+          revision: 4,
+          depends_on: [],
+          tags: [],
+          verify: [],
+          sections: { Summary: "Updated summary." },
+        },
+        { expectedRevision: 3 },
+      ),
+    ).rejects.toThrow(/Task revision changed concurrently/u);
+    await expect(
+      backend.setTaskDoc("202601300000-ABCD", "## Summary\n\nUpdated summary.\n", "CODER", {
+        expectedRevision: 3,
+      }),
+    ).rejects.toThrow(/Task revision changed concurrently/u);
+    await expect(
+      backend.touchTaskDocMetadata("202601300000-ABCD", "CODER", { expectedRevision: 3 }),
+    ).rejects.toThrow(/Task revision changed concurrently/u);
+    expect(requestJson).not.toHaveBeenCalled();
+  });
+
+  it("rejects guarded writes when canonical_state support is not configured", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1, doc: 2 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
+    };
+    helper.findIssueByTaskId = vi.fn().mockResolvedValue({
+      id: 1,
+      subject: "Issue",
+      description: "Desc",
+      status: { id: 1, name: "New" },
+      custom_fields: [
+        { id: 1, value: "202601300000-ABCD" },
+        { id: 2, value: "Doc" },
+      ],
+    });
+
+    await expect(
+      backend.setTaskDoc("202601300000-ABCD", "Doc", "CODER", { expectedRevision: 1 }),
+    ).rejects.toThrow(/guarding is unavailable/u);
   });
 
   it("exports a Redmine projection snapshot from cache without touching the remote source", async () => {

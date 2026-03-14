@@ -72,7 +72,7 @@ export type RedmineSettings = {
 
 export class RedmineBackend implements TaskBackend {
   id = "redmine";
-  capabilities = {
+  capabilities: TaskBackend["capabilities"] = {
     canonical_source: "remote",
     projection: "cache",
     reads_from_projection_by_default: true,
@@ -139,6 +139,13 @@ export class RedmineBackend implements TaskBackend {
         "E_BACKEND",
       );
     }
+
+    const supportsStructuredRevisions = Boolean(this.customFields?.canonical_state);
+    this.capabilities = {
+      ...this.capabilities,
+      supports_task_revisions: supportsStructuredRevisions,
+      supports_revision_guarded_writes: supportsStructuredRevisions,
+    };
 
     for (const [key, value] of Object.entries(this.statusMap)) {
       if (typeof value === "number") this.reverseStatus.set(value, key);
@@ -243,7 +250,7 @@ export class RedmineBackend implements TaskBackend {
     taskId: string,
     doc: string,
     updatedBy?: string,
-    _opts?: TaskWriteOptions,
+    opts?: TaskWriteOptions,
   ): Promise<void> {
     if (!this.customFields.doc) {
       throw new BackendError(
@@ -260,6 +267,8 @@ export class RedmineBackend implements TaskBackend {
       const currentState = parseRedmineCanonicalState(
         this.customFieldValue(issue, this.customFields.canonical_state),
       );
+      this.assertExpectedRevisionSupported(taskId, opts);
+      this.assertExpectedRevision(taskId, opts?.expectedRevision, currentState?.revision ?? 1);
       const taskDoc: TaskDocMeta = {
         doc: String(doc ?? ""),
         doc_version: cachedTask?.doc_version,
@@ -312,12 +321,14 @@ export class RedmineBackend implements TaskBackend {
         if (!this.cache) throw err;
         const cached = await this.cache.getTask(taskId);
         if (!cached) throw new Error(unknownTaskIdMessage(taskId));
+        this.assertExpectedRevisionSupported(taskId, opts);
+        this.assertExpectedRevision(taskId, opts?.expectedRevision, cached.revision ?? 1);
         cached.doc = String(doc ?? "");
         cached.sections = taskDocToSectionMap(cached.doc);
-        cached.revision = Math.max(cached.revision ?? 0, 0) + 1 || 1;
+        cached.revision = Math.max(cached.revision ?? 0, 0) + 1;
         ensureDocMetadata(cached, updatedBy);
         cached.dirty = true;
-        await this.cache.writeTask(cached);
+        await this.cache.writeTask(cached, opts);
         return;
       }
       throw err;
@@ -327,7 +338,7 @@ export class RedmineBackend implements TaskBackend {
   async touchTaskDocMetadata(
     taskId: string,
     updatedBy?: string,
-    _opts?: TaskWriteOptions,
+    opts?: TaskWriteOptions,
   ): Promise<void> {
     try {
       const issue = await this.findIssueByTaskId(taskId);
@@ -336,6 +347,11 @@ export class RedmineBackend implements TaskBackend {
       if (!issueIdText) throw new Error(redmineIssueIdMissingMessage());
       const docValue = this.customFieldValue(issue, this.customFields.doc);
       const cachedTask = this.issueToTask(issue, taskId);
+      const currentState = parseRedmineCanonicalState(
+        this.customFieldValue(issue, this.customFields.canonical_state),
+      );
+      this.assertExpectedRevisionSupported(taskId, opts);
+      this.assertExpectedRevision(taskId, opts?.expectedRevision, currentState?.revision ?? 1);
       const taskDoc: TaskDocMeta = {
         doc: docValue ?? "",
         doc_version: cachedTask?.doc_version,
@@ -361,16 +377,18 @@ export class RedmineBackend implements TaskBackend {
         if (!this.cache) throw err;
         const cached = await this.cache.getTask(taskId);
         if (!cached) throw new Error(unknownTaskIdMessage(taskId));
+        this.assertExpectedRevisionSupported(taskId, opts);
+        this.assertExpectedRevision(taskId, opts?.expectedRevision, cached.revision ?? 1);
         ensureDocMetadata(cached, updatedBy);
         cached.dirty = true;
-        await this.cache.writeTask(cached);
+        await this.cache.writeTask(cached, opts);
         return;
       }
       throw err;
     }
   }
 
-  async writeTask(task: TaskData, _opts?: TaskWriteOptions): Promise<void> {
+  async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
     const taskId = toStringSafe(task.id).trim();
     if (!taskId) throw new Error(missingTaskIdMessage());
     validateTaskId(taskId);
@@ -391,6 +409,8 @@ export class RedmineBackend implements TaskBackend {
               this.customFieldValue(existingIssue, this.customFields.canonical_state),
             )
           : null;
+      this.assertExpectedRevisionSupported(taskId, opts);
+      this.assertExpectedRevision(taskId, opts?.expectedRevision, currentState?.revision ?? 0);
       const nextRevision = issueIdText
         ? Math.max(task.revision ?? 0, currentState?.revision ?? 0, 0) + 1
         : Math.max(task.revision ?? 0, currentState?.revision ?? 0, 1);
@@ -443,6 +463,7 @@ export class RedmineBackend implements TaskBackend {
     } catch (err) {
       if (err instanceof RedmineUnavailable) {
         if (!this.cache) throw err;
+        this.assertExpectedRevisionSupported(taskId, opts);
         const taskForCache: TaskData = {
           ...task,
           revision: Math.max(task.revision ?? 0, 1),
@@ -454,16 +475,16 @@ export class RedmineBackend implements TaskBackend {
                 : undefined,
           dirty: true,
         };
-        await this.cacheTask(taskForCache, true);
+        await this.cache.writeTask(taskForCache, opts);
         return;
       }
       throw err;
     }
   }
 
-  async writeTasks(tasks: TaskData[], _opts?: TaskWriteOptions): Promise<void> {
+  async writeTasks(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void> {
     for (const [index, task] of tasks.entries()) {
-      await this.writeTask(task);
+      await this.writeTask(task, opts);
       if (this.batchPauseMs > 0 && this.batchSize > 0 && (index + 1) % this.batchSize === 0) {
         await sleep(this.batchPauseMs);
       }
@@ -597,6 +618,30 @@ export class RedmineBackend implements TaskBackend {
     if (!this.cache) return;
     const next = { ...task, dirty };
     await this.cache.writeTask(next);
+  }
+
+  private assertExpectedRevisionSupported(taskId: string, opts?: TaskWriteOptions): void {
+    if (opts?.expectedRevision === undefined) return;
+    if (this.capabilities.supports_revision_guarded_writes) return;
+    throw new BackendError(
+      `Task revision guarding is unavailable for ${taskId} without AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE`,
+      "E_BACKEND",
+    );
+  }
+
+  private assertExpectedRevision(
+    taskId: string,
+    expectedRevision: number | undefined,
+    currentRevision: number,
+  ): void {
+    if (expectedRevision === undefined) return;
+    const expected = Math.trunc(expectedRevision);
+    if (expected <= 0 || expected === currentRevision) return;
+    throw new BackendError(
+      `Task revision changed concurrently: ${taskId} ` +
+        `(expected revision ${expected}, current revision ${currentRevision})`,
+      "E_BACKEND",
+    );
   }
 
   private taskIdFieldId(): unknown {
