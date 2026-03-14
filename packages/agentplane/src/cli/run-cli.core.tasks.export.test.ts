@@ -126,6 +126,8 @@ describe("runCli", () => {
           canonical_source: "remote",
           projection: "cache",
           reads_from_projection_by_default: true,
+          supports_task_revisions: false,
+          supports_revision_guarded_writes: false,
           may_access_network_on_read: false,
           may_access_network_on_write: true,
           supports_projection_refresh: true,

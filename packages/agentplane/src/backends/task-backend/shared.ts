@@ -10,6 +10,7 @@ export type {
   TaskEvent,
   TaskEventType,
   TaskProjectionRefreshOptions,
+  TaskWriteOptions,
   VerificationResult,
   VerificationState,
 } from "./shared/types.js";

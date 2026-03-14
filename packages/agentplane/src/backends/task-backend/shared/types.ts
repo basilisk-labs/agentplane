@@ -59,11 +59,17 @@ export type TaskDocMeta = Pick<
   "doc" | "doc_version" | "doc_updated_at" | "doc_updated_by"
 >;
 
+export type TaskWriteOptions = {
+  expectedRevision?: number;
+};
+
 export type TaskBackendCapabilities = {
   canonical_source: "local" | "remote";
   projection: "canonical" | "cache";
   reads_from_projection_by_default: boolean;
   writes_task_readmes?: boolean;
+  supports_task_revisions: boolean;
+  supports_revision_guarded_writes: boolean;
   may_access_network_on_read: boolean;
   may_access_network_on_write: boolean;
   supports_projection_refresh: boolean;
@@ -85,15 +91,20 @@ export type TaskBackend = {
   getLastListWarnings?(): string[];
   getTask(taskId: string): Promise<TaskData | null>;
   getTasks?(taskIds: string[]): Promise<(TaskData | null)[]>;
-  writeTask(task: TaskData): Promise<void>;
-  writeTasks?(tasks: TaskData[]): Promise<void>;
+  writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void>;
+  writeTasks?(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void>;
   normalizeTasks?(): Promise<{ scanned: number; changed: number }>;
   refreshProjection?(opts: TaskProjectionRefreshOptions): Promise<void>;
   exportProjectionSnapshot?(outputPath: string): Promise<void>;
   exportTasksJson?(outputPath: string): Promise<void>;
   getTaskDoc?(taskId: string): Promise<string>;
-  setTaskDoc?(taskId: string, doc: string, updatedBy?: string): Promise<void>;
-  touchTaskDocMetadata?(taskId: string, updatedBy?: string): Promise<void>;
+  setTaskDoc?(
+    taskId: string,
+    doc: string,
+    updatedBy?: string,
+    opts?: TaskWriteOptions,
+  ): Promise<void>;
+  touchTaskDocMetadata?(taskId: string, updatedBy?: string, opts?: TaskWriteOptions): Promise<void>;
   sync?(opts: {
     direction: "push" | "pull";
     conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";

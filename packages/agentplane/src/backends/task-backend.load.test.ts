@@ -57,6 +57,8 @@ describe("loadTaskBackend", () => {
     const result = await loadTaskBackend({ cwd: tempDir });
     expect(result.backendId).toBe("local");
     expect(result.backend).toBeInstanceOf(LocalBackend);
+    expect(result.backend.capabilities.supports_task_revisions).toBe(true);
+    expect(result.backend.capabilities.supports_revision_guarded_writes).toBe(true);
   });
 
   it("loads redmine backend and reads .env without overriding existing vars", async () => {
@@ -87,6 +89,8 @@ describe("loadTaskBackend", () => {
     const result = await loadTaskBackend({ cwd: tempDir });
     expect(result.backendId).toBe("redmine");
     expect(result.backend).toBeInstanceOf(RedmineBackend);
+    expect(result.backend.capabilities.supports_task_revisions).toBe(false);
+    expect(result.backend.capabilities.supports_revision_guarded_writes).toBe(false);
     expect(process.env.AGENTPLANE_REDMINE_API_KEY).toBe("preserve");
     expect(process.env.AGENTPLANE_REDMINE_URL).toBe("https://redmine.env");
   });

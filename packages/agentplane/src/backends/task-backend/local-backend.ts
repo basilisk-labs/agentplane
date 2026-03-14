@@ -37,9 +37,37 @@ import {
   taskRecordToData,
   validateTaskId,
   writeTasksExportFromTasks,
+  BackendError,
   type TaskBackend,
   type TaskData,
+  type TaskWriteOptions,
 } from "./shared.js";
+
+function storedRevisionFromFrontmatter(
+  frontmatter: Record<string, unknown>,
+  fallback: number,
+): number {
+  return Number.isInteger(frontmatter.revision) &&
+    typeof frontmatter.revision === "number" &&
+    frontmatter.revision > 0
+    ? frontmatter.revision
+    : fallback;
+}
+
+function assertExpectedRevision(opts: {
+  taskId: string;
+  expectedRevision?: number;
+  currentRevision: number;
+}): void {
+  if (opts.expectedRevision === undefined) return;
+  const expected = Math.trunc(opts.expectedRevision);
+  if (expected <= 0 || expected === opts.currentRevision) return;
+  throw new BackendError(
+    `Task revision changed concurrently: ${opts.taskId} ` +
+      `(expected revision ${expected}, current revision ${opts.currentRevision})`,
+    "E_BACKEND",
+  );
+}
 
 export class LocalBackend implements TaskBackend {
   id = "local";
@@ -48,6 +76,8 @@ export class LocalBackend implements TaskBackend {
     projection: "canonical",
     reads_from_projection_by_default: true,
     writes_task_readmes: true,
+    supports_task_revisions: true,
+    supports_revision_guarded_writes: true,
     may_access_network_on_read: false,
     may_access_network_on_write: false,
     supports_projection_refresh: false,
@@ -244,7 +274,7 @@ export class LocalBackend implements TaskBackend {
     return extractTaskDoc(parsed.body);
   }
 
-  async writeTask(task: TaskData): Promise<void> {
+  async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
     const taskId = task.id.trim();
     if (!taskId) throw new Error(missingTaskIdMessage());
     validateTaskId(taskId);
@@ -264,6 +294,15 @@ export class LocalBackend implements TaskBackend {
       const code = (err as { code?: string } | null)?.code;
       if (code !== "ENOENT") throw err;
     }
+
+    assertExpectedRevision({
+      taskId,
+      expectedRevision: opts?.expectedRevision,
+      currentRevision:
+        Object.keys(existingFrontmatter).length > 0
+          ? storedRevisionFromFrontmatter(existingFrontmatter, 1)
+          : 0,
+    });
 
     const payload: Record<string, unknown> = { ...task };
     delete payload.doc;
@@ -341,10 +380,20 @@ export class LocalBackend implements TaskBackend {
     await writeTextIfChanged(readme, text.endsWith("\n") ? text : `${text}\n`);
   }
 
-  async setTaskDoc(taskId: string, doc: string, updatedBy?: string): Promise<void> {
+  async setTaskDoc(
+    taskId: string,
+    doc: string,
+    updatedBy?: string,
+    opts?: TaskWriteOptions,
+  ): Promise<void> {
     const readme = taskReadmePath(this.root, taskId);
     const text = await readFile(readme, "utf8");
     const parsed = parseTaskReadme(text);
+    assertExpectedRevision({
+      taskId,
+      expectedRevision: opts?.expectedRevision,
+      currentRevision: storedRevisionFromFrontmatter(parsed.frontmatter, 1),
+    });
     const docText = String(doc ?? "");
     const body = mergeTaskDoc(parsed.body, docText);
     const frontmatter = { ...parsed.frontmatter } as Record<string, unknown>;
@@ -364,10 +413,19 @@ export class LocalBackend implements TaskBackend {
     await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
   }
 
-  async touchTaskDocMetadata(taskId: string, updatedBy?: string): Promise<void> {
+  async touchTaskDocMetadata(
+    taskId: string,
+    updatedBy?: string,
+    opts?: TaskWriteOptions,
+  ): Promise<void> {
     const readme = taskReadmePath(this.root, taskId);
     const text = await readFile(readme, "utf8");
     const parsed = parseTaskReadme(text);
+    assertExpectedRevision({
+      taskId,
+      expectedRevision: opts?.expectedRevision,
+      currentRevision: storedRevisionFromFrontmatter(parsed.frontmatter, 1),
+    });
     const frontmatter = { ...parsed.frontmatter } as Record<string, unknown>;
     frontmatter.doc_version = normalizeDocVersion(frontmatter.doc_version);
     frontmatter.doc_updated_at = nowIso();
@@ -384,9 +442,9 @@ export class LocalBackend implements TaskBackend {
     await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
   }
 
-  async writeTasks(tasks: TaskData[]): Promise<void> {
+  async writeTasks(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void> {
     await mapLimit(tasks, 4, async (task) => {
-      await this.writeTask(task);
+      await this.writeTask(task, opts);
       return null;
     });
   }

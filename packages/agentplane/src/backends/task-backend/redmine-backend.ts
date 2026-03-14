@@ -51,6 +51,7 @@ import {
   type TaskBackend,
   type TaskData,
   type TaskDocMeta,
+  type TaskWriteOptions,
 } from "./shared.js";
 
 export type RedmineSettings = {
@@ -72,6 +73,8 @@ export class RedmineBackend implements TaskBackend {
     projection: "cache",
     reads_from_projection_by_default: true,
     writes_task_readmes: true,
+    supports_task_revisions: false,
+    supports_revision_guarded_writes: false,
     may_access_network_on_read: false,
     may_access_network_on_write: true,
     supports_projection_refresh: true,
@@ -232,7 +235,12 @@ export class RedmineBackend implements TaskBackend {
     return toStringSafe(task.doc);
   }
 
-  async setTaskDoc(taskId: string, doc: string, updatedBy?: string): Promise<void> {
+  async setTaskDoc(
+    taskId: string,
+    doc: string,
+    updatedBy?: string,
+    _opts?: TaskWriteOptions,
+  ): Promise<void> {
     if (!this.customFields.doc) {
       throw new BackendError(
         redmineConfigMissingEnvMessage("AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC"),
@@ -280,7 +288,11 @@ export class RedmineBackend implements TaskBackend {
     }
   }
 
-  async touchTaskDocMetadata(taskId: string, updatedBy?: string): Promise<void> {
+  async touchTaskDocMetadata(
+    taskId: string,
+    updatedBy?: string,
+    _opts?: TaskWriteOptions,
+  ): Promise<void> {
     try {
       const issue = await this.findIssueByTaskId(taskId);
       if (!issue) throw new Error(unknownTaskIdMessage(taskId));
@@ -322,7 +334,7 @@ export class RedmineBackend implements TaskBackend {
     }
   }
 
-  async writeTask(task: TaskData): Promise<void> {
+  async writeTask(task: TaskData, _opts?: TaskWriteOptions): Promise<void> {
     const taskId = toStringSafe(task.id).trim();
     if (!taskId) throw new Error(missingTaskIdMessage());
     validateTaskId(taskId);
@@ -384,7 +396,7 @@ export class RedmineBackend implements TaskBackend {
     }
   }
 
-  async writeTasks(tasks: TaskData[]): Promise<void> {
+  async writeTasks(tasks: TaskData[], _opts?: TaskWriteOptions): Promise<void> {
     for (const [index, task] of tasks.entries()) {
       await this.writeTask(task);
       if (this.batchPauseMs > 0 && this.batchSize > 0 && (index + 1) % this.batchSize === 0) {

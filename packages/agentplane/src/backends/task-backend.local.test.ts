@@ -363,6 +363,63 @@ describe("LocalBackend", () => {
     ).rejects.toThrow(/Missing task id \(expected non-empty value\)/);
   });
 
+  it("rejects writeTask when expectedRevision does not match the stored revision", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const taskId = "202601300020-ABCD";
+    await backend.writeTask({
+      id: taskId,
+      title: "Task",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      revision: 2,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      doc: "## Summary\n\nDoc",
+    });
+
+    await expect(
+      backend.writeTask(
+        {
+          id: taskId,
+          title: "Task",
+          description: "",
+          status: "DOING",
+          priority: "med",
+          owner: "tester",
+          depends_on: [],
+          tags: [],
+          verify: [],
+        },
+        { expectedRevision: 1 },
+      ),
+    ).rejects.toThrow(/Task revision changed concurrently/u);
+  });
+
+  it("rejects setTaskDoc when expectedRevision does not match the stored revision", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const taskId = "202601300021-ABCD";
+    await backend.writeTask({
+      id: taskId,
+      title: "Task",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      revision: 3,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      doc: "## Summary\n\nDoc",
+    });
+
+    await expect(
+      backend.setTaskDoc(taskId, "## Summary\n\nUpdated", "tester", { expectedRevision: 2 }),
+    ).rejects.toThrow(/Task revision changed concurrently/u);
+  });
+
   it("generates task ids and enforces minimum length", async () => {
     const backend = new LocalBackend({ dir: tempDir });
     await expect(backend.generateTaskId({ length: 3, attempts: 1 })).rejects.toThrow(

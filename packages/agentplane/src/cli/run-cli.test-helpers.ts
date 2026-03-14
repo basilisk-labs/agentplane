@@ -187,6 +187,8 @@ export function stubTaskBackend(overrides: Partial<TaskBackend> = {}): TaskBacke
       projection: "canonical",
       reads_from_projection_by_default: false,
       writes_task_readmes: true,
+      supports_task_revisions: true,
+      supports_revision_guarded_writes: true,
       may_access_network_on_read: false,
       may_access_network_on_write: false,
       supports_projection_refresh: false,

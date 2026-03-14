@@ -14,6 +14,7 @@ export {
   type TaskEvent,
   type TaskEventType,
   type TaskProjectionRefreshOptions,
+  type TaskWriteOptions,
   type VerificationResult,
   type VerificationState,
 } from "./task-backend/shared.js";
