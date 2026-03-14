@@ -15,6 +15,7 @@ export type RedmineEnvConfig = {
 
 type RedmineCustomFieldKey =
   | "task_id"
+  | "canonical_state"
   | "doc"
   | "doc_version"
   | "doc_updated_at"
@@ -55,6 +56,8 @@ export function readRedmineEnv(): RedmineEnvConfig {
 
   const taskId = parsePositiveIntEnv("AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID");
   if (taskId !== undefined) customFields.task_id = taskId;
+  const canonicalState = parsePositiveIntEnv("AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE");
+  if (canonicalState !== undefined) customFields.canonical_state = canonicalState;
   const doc = parsePositiveIntEnv("AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC");
   if (doc !== undefined) customFields.doc = doc;
   const docVersion = parsePositiveIntEnv("AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC_VERSION");

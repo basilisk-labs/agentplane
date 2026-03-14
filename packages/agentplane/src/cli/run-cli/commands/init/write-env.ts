@@ -30,6 +30,12 @@ const REDMINE_ENV_TEMPLATE: EnvTemplateEntry[] = [
     required: true,
   },
   {
+    key: "AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID",
+    value: "1",
+    comment: "Required Redmine custom field ID that stores the agentplane task id.",
+    required: true,
+  },
+  {
     key: "AGENTPLANE_REDMINE_OWNER_AGENT",
     value: "REDMINE",
     comment: "Optional default owner agent.",
@@ -39,6 +45,12 @@ const REDMINE_ENV_TEMPLATE: EnvTemplateEntry[] = [
     key: "AGENTPLANE_REDMINE_ASSIGNEE_ID",
     value: "",
     comment: "Optional assignee numeric ID.",
+    required: false,
+  },
+  {
+    key: "AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE",
+    value: "",
+    comment: "Optional Redmine custom field ID for structured canonical task state JSON.",
     required: false,
   },
 ];

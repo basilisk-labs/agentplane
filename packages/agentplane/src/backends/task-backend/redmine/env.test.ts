@@ -24,13 +24,14 @@ describe("readRedmineEnv", () => {
     process.env.AGENTPLANE_REDMINE_ASSIGNEE_ID = "7";
     process.env.AGENTPLANE_REDMINE_OWNER_AGENT = "CODER";
     process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID = "1";
-    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC = "2";
-    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC_VERSION = "3";
-    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC_UPDATED_AT = "4";
-    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC_UPDATED_BY = "5";
-    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_TAGS = "6";
-    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_PRIORITY = "7";
-    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_OWNER = "8";
+    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE = "2";
+    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC = "3";
+    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC_VERSION = "4";
+    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC_UPDATED_AT = "5";
+    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC_UPDATED_BY = "6";
+    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_TAGS = "7";
+    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_PRIORITY = "8";
+    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_OWNER = "9";
     process.env.AGENTPLANE_REDMINE_BATCH_SIZE = "50";
     process.env.AGENTPLANE_REDMINE_BATCH_PAUSE = "200";
 
@@ -42,13 +43,14 @@ describe("readRedmineEnv", () => {
     expect(parsed.ownerAgent).toBe("CODER");
     expect(parsed.customFields).toEqual({
       task_id: 1,
-      doc: 2,
-      doc_version: 3,
-      doc_updated_at: 4,
-      doc_updated_by: 5,
-      tags: 6,
-      priority: 7,
-      owner: 8,
+      canonical_state: 2,
+      doc: 3,
+      doc_version: 4,
+      doc_updated_at: 5,
+      doc_updated_by: 6,
+      tags: 7,
+      priority: 8,
+      owner: 9,
     });
     expect(parsed.batch).toEqual({ size: 50, pauseMs: 200 });
   });

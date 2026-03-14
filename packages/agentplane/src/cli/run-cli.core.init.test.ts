@@ -429,6 +429,8 @@ describe("runCli", () => {
     expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_URL=https://redmine.example");
     expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_API_KEY=replace-me");
     expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_PROJECT_ID=replace-me");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID=1");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE=");
     expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_OWNER_AGENT=REDMINE");
     const dotEnvPath = path.join(root, ".env");
     const dotEnvText = await readFile(dotEnvPath, "utf8");
@@ -459,6 +461,8 @@ describe("runCli", () => {
     expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_URL=https://redmine.example");
     expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_API_KEY=replace-me");
     expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_PROJECT_ID=replace-me");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID=1");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE=");
   });
 
   it("init bootstraps git repo and commits install when git is missing", async () => {

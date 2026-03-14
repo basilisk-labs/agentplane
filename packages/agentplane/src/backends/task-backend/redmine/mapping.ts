@@ -11,6 +11,7 @@ import {
 import { customFieldValue } from "./fields.js";
 import { coerceDocVersion, maybeParseJson } from "./parse.js";
 import { normalizeComments } from "./comments.js";
+import { buildRedmineCanonicalState } from "./state.js";
 
 export function startDateFromTaskId(taskId: string): string | null {
   if (!taskId.includes("-")) return null;
@@ -170,6 +171,10 @@ export function taskToIssuePayload(opts: {
   const customFields: Record<string, unknown>[] = [];
   ensureDocMetadata(opts.task);
   opts.appendCustomField(customFields, "task_id", opts.task.id);
+  const canonicalState = buildRedmineCanonicalState(opts.task);
+  if (canonicalState) {
+    opts.appendCustomField(customFields, "canonical_state", canonicalState);
+  }
   opts.appendCustomField(customFields, "verify", opts.task.verify);
   opts.appendCustomField(customFields, "commit", opts.task.commit);
   opts.appendCustomField(customFields, "comments", opts.task.comments);
