@@ -44,6 +44,28 @@ The runtime layer owns command behavior. The core layer owns parsing and shared 
 5. Optional exports write `.agentplane/tasks.json`.
 6. Task docs live in `.agentplane/tasks/<task-id>/README.md`.
 
+## Task file decision
+
+Current target:
+
+1. Keep one file per task.
+2. Keep `.agentplane/tasks/<task-id>/README.md` as the canonical container for now.
+3. Treat frontmatter as the canonical task state, including `revision`, `sections`, status, and lifecycle metadata.
+4. Treat the visible markdown body as a generated projection, not as the operational write surface.
+
+Why README stays the target for now:
+
+1. It preserves the current human-first workflow: one readable task file, stable diffs, and no split between structured state and narrative view.
+2. Canonical frontmatter already gives the system the structured write surface it needed for generated body, migration, and revision groundwork.
+3. Moving to single-file YAML now would impose migration and tooling cost without solving a correctness problem that the current README-plus-frontmatter model still has.
+
+Revisit a future `task.yaml` target only if at least one of these becomes true:
+
+1. Frontmatter grows large enough that task files become materially harder to scan than the generated body helps.
+2. Most task mutations become machine-driven and the rendered markdown view stops being the primary human surface.
+3. Non-local backends or external integrations need a stricter structured payload than YAML frontmatter inside README can express cleanly.
+4. Projection repair, normalization, or container-specific drift starts costing more complexity than a format migration would remove.
+
 ## Harness engeneering loop
 
 Agent Plane architecture is designed for an iterative control loop:
