@@ -142,18 +142,22 @@ describe("stale-dist read-only diagnostics", () => {
     },
   );
 
-  it("warns but runs task list when watched runtime paths are dirty", async () => {
-    const { repoRoot, repoBin } = await setupFrameworkCheckout();
+  it(
+    "warns but runs task list when watched runtime paths are dirty",
+    { timeout: STALE_DIST_READONLY_TIMEOUT_MS },
+    async () => {
+      const { repoRoot, repoBin } = await setupFrameworkCheckout();
 
-    const { stdout, stderr } = await execFileAsync(process.execPath, [repoBin, "task", "list"], {
-      cwd: repoRoot,
-      encoding: "utf8",
-    });
+      const { stdout, stderr } = await execFileAsync(process.execPath, [repoBin, "task", "list"], {
+        cwd: repoRoot,
+        encoding: "utf8",
+      });
 
-    expect(stdout).toContain("DIST");
-    expect(stdout).toContain('"args":["task","list"]');
-    expect(stderr).toContain("command: task list");
-  });
+      expect(stdout).toContain("DIST");
+      expect(stdout).toContain('"args":["task","list"]');
+      expect(stderr).toContain("command: task list");
+    },
+  );
 
   it("warns but runs task doc show when watched runtime paths are dirty", async () => {
     const { repoRoot, repoBin } = await setupFrameworkCheckout();
