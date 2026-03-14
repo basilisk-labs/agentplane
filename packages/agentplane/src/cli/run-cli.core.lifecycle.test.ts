@@ -1183,66 +1183,70 @@ describe("runCli", () => {
     }
   });
 
-  it("start commit-from-comment supports status_commit_policy=off with semicolon details", async () => {
-    const root = await mkGitRepoRoot();
-    const cfg = defaultConfig();
-    cfg.status_commit_policy = "off";
-    await writeConfig(root, cfg);
-    await configureGitUser(root);
-    await commitAll(root, "seed");
+  it(
+    "start commit-from-comment supports status_commit_policy=off with semicolon details",
+    START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
+    async () => {
+      const root = await mkGitRepoRoot();
+      const cfg = defaultConfig();
+      cfg.status_commit_policy = "off";
+      await writeConfig(root, cfg);
+      await configureGitUser(root);
+      await commitAll(root, "seed");
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "Off policy",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-    await approveTaskPlan(root, taskId);
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Start task",
+          "--description",
+          "Off policy",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+      await approveTaskPlan(root, taskId);
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "start",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: handle policy off; follow-up; extra details included for coverage",
-        "--commit-from-comment",
-        "--commit-allow",
-        ".agentplane/tasks",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      expect(io.stderr).not.toContain("policy=warn");
-    } finally {
-      io.restore();
-    }
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: handle policy off; follow-up; extra details included for coverage",
+          "--commit-from-comment",
+          "--commit-allow",
+          ".agentplane/tasks",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stderr).not.toContain("policy=warn");
+      } finally {
+        io.restore();
+      }
 
-    const execFileAsync = promisify(execFile);
-    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
-    const suffix = extractTaskSuffix(taskId);
-    expect(stdout.trim()).toBe(`🚧 ${suffix} meta: doing`);
-  });
+      const execFileAsync = promisify(execFile);
+      const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
+      const suffix = extractTaskSuffix(taskId);
+      expect(stdout.trim()).toBe(`🚧 ${suffix} meta: doing`);
+    },
+  );
 
   it("start commit-from-comment formats -- separators and supports --quiet", async () => {
     const root = await mkGitRepoRoot();
