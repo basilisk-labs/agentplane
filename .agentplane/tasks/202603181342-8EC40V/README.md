@@ -1,11 +1,11 @@
 ---
 id: "202603181342-8EC40V"
 title: "Refresh governance docs for current workflow"
-result_summary: "Clarified docs-site ownership and navigation model in docs/README.md without touching other files."
+result_summary: "Aligned contributor-facing governance docs and docs onboarding with the current task workflow and docs-site ownership model."
 status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 21
+revision: 25
 depends_on: []
 tags:
   - "docs"
@@ -17,12 +17,12 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-03-18T13:46:19.455Z"
+  updated_at: "2026-03-18T13:50:29.775Z"
   updated_by: "DOCS"
-  note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK; Scope: docs/README.md. Command: agentplane doctor; Result: pass; Evidence: doctor (OK), findings=0; Scope: docs/README.md."
+  note: "Docs checks passed: routing, doctor, and docs site build succeeded."
 commit:
-  hash: "b2f640c26b33324c8ec4c18716a8a21adb4b4243"
-  message: "📝 docs: clarify docs site layout"
+  hash: "94403413fe528259840616d9e81913fe79bf92cd"
+  message: "📝 8EC40V docs: align docs onboarding sources"
 comments:
   -
     author: "DOCS"
@@ -30,6 +30,9 @@ comments:
   -
     author: "DOCS"
     body: "Verified: docs/README.md now separates canonical docs content, the Docusaurus site shell, and the docs navigation manifest; validation passed with policy routing OK and agentplane doctor OK."
+  -
+    author: "DOCS"
+    body: "Verified: contributor-facing governance docs and docs onboarding now match the current task-driven workflow, agentplane CLI guidance, and Docusaurus-backed site layout; routing, doctor, and docs build checks passed."
 events:
   -
     type: "status"
@@ -69,8 +72,21 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK; Scope: docs/README.md. Command: agentplane doctor; Result: pass; Evidence: doctor (OK), findings=0; Scope: docs/README.md."
+  -
+    type: "verify"
+    at: "2026-03-18T13:50:29.775Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Docs checks passed: routing, doctor, and docs site build succeeded."
+  -
+    type: "status"
+    at: "2026-03-18T13:51:02.840Z"
+    author: "DOCS"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: contributor-facing governance docs and docs onboarding now match the current task-driven workflow, agentplane CLI guidance, and Docusaurus-backed site layout; routing, doctor, and docs build checks passed."
 doc_version: 3
-doc_updated_at: "2026-03-18T13:46:19.458Z"
+doc_updated_at: "2026-03-18T13:51:02.841Z"
 doc_updated_by: "DOCS"
 description: "Audit root governance/community docs against the current AgentPlane repository state and update stale guidance."
 sections:
@@ -106,12 +122,40 @@ sections:
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-18T13:46:19.359Z, excerpt_hash=sha256:56f744206a9fc779fab3934c63538a76c00e4d86f38b4d2a9c965b498ba754e6
     
+    #### 2026-03-18T13:50:29.775Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Docs checks passed: routing, doctor, and docs site build succeeded.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-18T13:50:10.894Z, excerpt_hash=sha256:56f744206a9fc779fab3934c63538a76c00e4d86f38b4d2a9c965b498ba754e6
+    
+    Details:
+    
+    - Command: node .agentplane/policy/check-routing.mjs
+      Result: pass
+      Evidence: policy routing OK
+      Scope: CONTRIBUTING.md, docs/README.md, docs/developer/contributing.mdx, docs/developer/documentation-information-architecture.mdx
+      Links: AGENTS.md, .agentplane/policy/workflow.direct.md, .agentplane/policy/dod.docs.md
+    - Command: agentplane doctor
+      Result: pass
+      Evidence: doctor OK with zero errors and zero warnings
+      Scope: CONTRIBUTING.md, docs/README.md, docs/developer/contributing.mdx, docs/developer/documentation-information-architecture.mdx
+      Links: AGENTS.md
+    - Command: bun run docs:site:build
+      Result: pass
+      Evidence: Docusaurus production build succeeded and generated static files in build/
+      Scope: docs/README.md, docs/developer/contributing.mdx, docs/developer/documentation-information-architecture.mdx
+      Links: website/docusaurus.config.ts
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the docs changes introduced by this task.
     - Re-run node .agentplane/policy/check-routing.mjs and agentplane doctor to confirm the repository returns to the prior docs-policy state.
     - If a reverted file was updated to remove stale commands or paths, re-check README links so contributor guidance does not point at removed content.
-  Findings: "No additional findings."
+  Findings: |-
+    - No separate SUPPORT.md was added in this task. The repository currently publishes a verified private route only for security reports at security@agentplane.dev plus public GitHub issues and PRs; adding a broader support surface without a confirmed maintainer-owned channel would create policy text that the repo cannot yet honor.
+    - docs/docs.json remains in the repository, but the active public docs shell is Docusaurus under website/. This task reduced contributor-facing ambiguity without deleting the legacy metadata artifact.
 id_source: "generated"
 ---
 ## Summary
@@ -156,6 +200,32 @@ Note: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-18T13:46:19.359Z, excerpt_hash=sha256:56f744206a9fc779fab3934c63538a76c00e4d86f38b4d2a9c965b498ba754e6
 
+#### 2026-03-18T13:50:29.775Z — VERIFY — ok
+
+By: DOCS
+
+Note: Docs checks passed: routing, doctor, and docs site build succeeded.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-18T13:50:10.894Z, excerpt_hash=sha256:56f744206a9fc779fab3934c63538a76c00e4d86f38b4d2a9c965b498ba754e6
+
+Details:
+
+- Command: node .agentplane/policy/check-routing.mjs
+  Result: pass
+  Evidence: policy routing OK
+  Scope: CONTRIBUTING.md, docs/README.md, docs/developer/contributing.mdx, docs/developer/documentation-information-architecture.mdx
+  Links: AGENTS.md, .agentplane/policy/workflow.direct.md, .agentplane/policy/dod.docs.md
+- Command: agentplane doctor
+  Result: pass
+  Evidence: doctor OK with zero errors and zero warnings
+  Scope: CONTRIBUTING.md, docs/README.md, docs/developer/contributing.mdx, docs/developer/documentation-information-architecture.mdx
+  Links: AGENTS.md
+- Command: bun run docs:site:build
+  Result: pass
+  Evidence: Docusaurus production build succeeded and generated static files in build/
+  Scope: docs/README.md, docs/developer/contributing.mdx, docs/developer/documentation-information-architecture.mdx
+  Links: website/docusaurus.config.ts
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -166,4 +236,5 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-18T13:46:19.359Z, excerpt_
 
 ## Findings
 
-No additional findings.
+- No separate SUPPORT.md was added in this task. The repository currently publishes a verified private route only for security reports at security@agentplane.dev plus public GitHub issues and PRs; adding a broader support surface without a confirmed maintainer-owned channel would create policy text that the repo cannot yet honor.
+- docs/docs.json remains in the repository, but the active public docs shell is Docusaurus under website/. This task reduced contributor-facing ambiguity without deleting the legacy metadata artifact.
