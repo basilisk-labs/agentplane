@@ -1,8 +1,13 @@
-# Docs (Mintlify)
+# Docs layout
 
-Mintlify entrypoint: `docs/index.mdx`.
+`docs/` is the canonical content source for the public documentation set.
+Page text lives in the Markdown and MDX files under this directory.
 
-If you are reading this in GitHub, open `docs/index.mdx` for the full reading order.
+`docs/index.mdx` is the published reading order for the docs site. If you are reading this in GitHub, start there.
+
+`website/` is the site shell that renders and deploys the public docs. It owns sidebar wiring, routing, layout, and presentation. It does not define canonical page content.
+
+`docs/docs.json` is the docs navigation manifest for the docs tree. Keep it in sync when the docs structure changes so downstream docs tooling and the published navigation model stay aligned.
 
 Docs are organized into an agent-first navigation model on top of `docs/user/`, `docs/developer/`, and `docs/help/`:
 
