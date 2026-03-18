@@ -1,181 +1,114 @@
-# Contributing to Agent Plane
+# Contributing to AgentPlane
 
-Thank you for your interest in contributing to **Agent Plane**.
-This document describes how we work on the project and how to propose changes.
+This document describes how to propose and land changes in the repository.
+The workflow in this project is task-driven and repo-native: use `agentplane`
+from `PATH`, keep work traceable to a task ID, and treat the repository
+workflow as the source of truth.
 
----
+## 1. Start with the right path
 
-## 0. TL;DR
+Use the current repository workflow, not an ad hoc script or a hand-edited
+task file.
 
-- Small fixes (typos, docs, obvious bugs):
-  → open a pull request from a feature branch, reference an issue if there is one.
-
-- Any **global / architectural / behavioral change**:
-  → **must start as an Issue**, be discussed and approved by maintainers,
-  → only then implemented in a pull request.
-
-## 0.1 Code of Conduct
-
-All contributors are expected to follow `CODE_OF_CONDUCT.md`.
-
----
-
-## 1. Governance
-
-- The project is maintained by the **Agent Plane maintainers team**.
-- Maintainers are responsible for:
-  - reviewing and merging pull requests,
-  - curating the roadmap and long-term architecture,
-  - making final decisions in case of disagreement.
-
-We aim for open discussion first, but maintainers have the final say to keep the
-project coherent.
-
----
-
-## 2. What counts as a “global change”
-
-You **must open an Issue first** (design / proposal) for any change that:
-
-- modifies the core agent orchestration or task model,
-- changes public APIs, CLIs or configuration formats,
-- impacts persistence (database schema, storage layout, on-disk formats),
-- changes default behavior that existing users may rely on,
-- introduces or replaces major dependencies or subsystems.
-
-These Issues should:
-
-1. Describe the problem and motivation.
-2. Outline the proposed design (high-level, not full spec).
-3. Discuss alternatives or trade-offs.
-4. Include migration / backwards-compatibility notes if relevant.
-
-Once maintainers agree on the direction, the Issue will be marked as **“approved for implementation”** and you (or someone else) can start a pull request.
-
----
-
-## 3. Development workflow
-
-1. **Fork the repository** (or create a feature branch if you have write access).
-2. **Create a branch** from `main`:
+Typical start sequence:
 
 ```bash
-git checkout -b feature/short-description
+agentplane config show
+agentplane quickstart
+agentplane task list
+agentplane role ORCHESTRATOR
 ```
 
-Implement your change, keeping commits logically separate and with clear
-messages.
-
-Run the tests / linters relevant for your change.
-Check the project README for the current commands; if in doubt, at least run
-whatever is available for local validation.
-
-Update documentation if your change affects behavior, configuration or
-public APIs.
-
-Open a Pull Request:
-
-- target branch: main,
-- link the corresponding Issue (Closes #NNN),
-- briefly describe what changed and why,
-- mention any breaking changes or migration steps.
-
-Address review comments from maintainers. When the PR is approved and CI is
-green, a maintainer will merge it.
-
-Direct commits to main are reserved for maintainers and automated tooling.
-
-## 4. Coding style
-
-Follow the existing style in the files you modify.
-
-Prefer clear, explicit code over clever one-liners.
-
-Keep functions and modules focused; avoid mixing unrelated changes in one PR.
-
-Add or update tests alongside new behavior whenever possible.
-
-If you are unsure about style or structure, ask in the Issue before investing a
-lot of time.
-
-## 5. Documentation contributions
-
-Improving documentation is highly appreciated:
-
-- Fixing typos or unclear wording.
-- Adding examples or usage notes.
-- Clarifying configuration and deployment instructions.
-
-Documentation changes also go through pull requests and should keep the
-structure and tone of existing docs.
-
-### 5.1 Docs runtime and source of truth
-
-- Public docs are built by Docusaurus from repository root `docs/` (canonical source).
-- Marketing and runtime shell live under `website/`.
-- Do not introduce a second docs source directory under `website/`.
-- Generated reference docs are produced by:
+If you are working inside this repository, activate the role that owns the
+next step before owner-scoped execution:
 
 ```bash
-bun run docs:site:generate
+agentplane role DOCS
+agentplane role CODER
+agentplane role REVIEWER
 ```
 
-### 5.2 Split CI contours
+## 2. When to open an issue first
 
-The repository uses split website checks:
+Open an issue before implementation for changes that are architectural,
+behavioral, or broadly visible to users.
 
-- `Core CI`: heavy code/test contour for core repository changes.
-- `Docs CI`: website/docs/design contour for docs and site presentation updates.
+That includes changes that:
 
-Before opening a PR for docs/site work, run:
+- alter task lifecycle behavior or workflow contracts;
+- change the CLI surface, configuration format, or persistence layout;
+- modify default behavior that existing users rely on;
+- introduce major dependencies or subsystems.
+
+Small fixes, typo corrections, and documentation adjustments can move
+directly through the normal task flow when the scope is already clear.
+
+## 3. Work in a task, not in isolation
+
+For repository work, use the task lifecycle instead of editing first and
+describing the change later.
 
 ```bash
-bun run docs:site:check
+agentplane task new --title "..." --description "..." --priority med --owner DOCS --tag docs
+agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR
+agentplane task plan approve <task-id> --by ORCHESTRATOR
+agentplane task start-ready <task-id> --author DOCS --body "Start: ..."
+agentplane task verify-show <task-id>
+agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
+agentplane finish <task-id> --author DOCS --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
 ```
 
-This command runs generation, typecheck, static build, and DESIGN.md compliance checks.
+Notes:
 
-### 5.3 DESIGN.md compliance
+- `agentplane task plan approve` is only needed when the current repository
+  config requires it.
+- `agentplane finish` records the verified closeout and, in `direct` mode,
+  creates the deterministic close commit by default.
+- `agentplane task export` writes an export-only snapshot for integrations;
+  `.agentplane/tasks.json` is not the canonical backlog and must not be edited
+  by hand.
 
-- `DESIGN.md` is a contract, not inspiration.
-- Do not add rounded design motifs, shadows, or visual styles that contradict the constraints.
-- If design rules need to change, update `DESIGN.md` first, then implementation.
+## 4. Keep docs and CLI references current
 
-### 5.4 Blog publishing rules
+When a change affects user-facing behavior, update the matching docs in the
+same task.
 
-- Blog entries live in `website/blog/`.
-- Every post must include frontmatter (`slug`, `title`, `authors`, `tags`) and a truncation marker.
-- Posts should link to canonical docs pages rather than duplicating long technical references.
+- Root policy and contributor guidance live in `AGENTS.md` and this file.
+- Public docs live under `docs/`; the site shell lives under `website/`.
+- Generated command references should be refreshed through the documented
+  generation flow rather than edited manually.
 
-### 5.5 Discovery and indexing artifacts
+If you touch docs/policy-only paths, run the lightweight policy checks before
+closing the task:
 
-Ensure these files stay valid in production output:
+```bash
+node .agentplane/policy/check-routing.mjs
+agentplane doctor
+```
 
-- `website/static/robots.txt`
-- `website/static/llms.txt`
-- `website/static/llms-full.txt`
+## 5. Development expectations
 
-When docs routes change, update discovery files accordingly.
+- Keep changes scoped to one task whenever possible.
+- Use clear commit messages and keep unrelated edits out of the same task.
+- Add or update tests when behavior changes.
+- Follow the style already used in the files you modify.
 
-## 6. License and copyright
+For docs changes, keep the wording aligned with the shipped CLI and the
+current repository workflow. For task tooling changes, prefer the `agentplane`
+CLI from `PATH` over direct `node packages/...` entrypoints.
 
-By contributing to Agent Plane, you agree that:
+## 6. Documentation contributions
 
-- Your contributions are licensed under the same license as the project
-  (currently MIT), and
+Documentation improvements are welcome when they reflect confirmed behavior.
 
-- You have the right to provide the contribution under this license.
+- Fix unclear wording, stale commands, and incorrect paths.
+- Update onboarding docs together when the workflow changes.
+- Keep root docs, `docs/`, and generated surfaces consistent with one another.
 
-The project’s copyright notice must be preserved as described in LICENSE.
-If you add files that originate from third-party sources, clearly mark their
-license and provenance.
+## 7. License and provenance
 
-## 7. Project workflow notes (when applicable)
+By contributing to AgentPlane, you agree that your contributions are licensed
+under the project license and that you have the right to contribute them.
 
-Some changes (especially documentation and workflow automation) are managed inside the repo via the framework itself:
-
-- The task export is the canonical backlog for local tooling and must be updated only via `node packages/agentplane/bin/agentplane.js task export` (manual edits break the checksum).
-- Per-task documentation artifacts live under `.agentplane/tasks/`.
-- When a contribution touches task tooling or task data, maintainers may ask you to:
-  - run `node packages/agentplane/bin/agentplane.js task lint`
-  - keep commits scoped and traceable (task IDs + short messages)
+If you add third-party material, preserve its license and provenance in the
+affected files.
