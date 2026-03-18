@@ -75,14 +75,14 @@ The public docs entrypoints should mirror the same workflow model the CLI and ga
 
 1. Find the owning page by using the mapping table above.
 2. Confirm behavior in code before editing text.
-3. Update navigation if a page is added, renamed, or removed:
+3. Update navigation and site wiring if a page is added, renamed, or removed:
    - `docs/index.mdx`
-   - `docs/docs.json`
    - `docs/README.md`
    - `website/sidebars.ts`
    - `website/docusaurus.config.ts`
-4. If command output changed, regenerate `docs/user/cli-reference.generated.mdx`.
-5. Run the docs task verification checklist before closing the task.
+4. Keep `docs/docs.json` aligned only when you intentionally maintain the legacy metadata snapshot alongside the current docs tree; the active Docusaurus site is configured from `website/`.
+5. If command output changed, regenerate `docs/user/cli-reference.generated.mdx`.
+6. Run the docs task verification checklist before closing the task.
 
 ## Review checklist for this IA
 

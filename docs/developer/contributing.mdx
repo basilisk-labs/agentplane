@@ -12,6 +12,7 @@ bun run test:fast
 
 ## Workflow expectations
 
+- Start from `agentplane quickstart`, then activate the current role with `agentplane role <ROLE>`.
 - Use `agentplane` CLI for task operations (no manual edits to tasks).
 - Keep commits tied to a task ID.
 - Follow the configured workflow mode (`direct` or `branch_pr`).
@@ -64,7 +65,9 @@ bun run test:full
 ## Documentation updates
 
 - Keep docs in English.
-- Update `docs/docs.json` when adding pages.
+- The public docs site is the Docusaurus app under `website/`, which reads content from repository `docs/`.
+- When adding, moving, or renaming pages, update `docs/index.mdx`, `docs/README.md`, `website/sidebars.ts`, and `website/docusaurus.config.ts` together.
+- Do not treat `docs/docs.json` as the active Docusaurus source of truth; keep it aligned only when you intentionally maintain the legacy metadata snapshot.
 - Prefer clear, actionable examples.
 - Keep docs changes in the same task that changes behavior.
 
