@@ -256,6 +256,14 @@ export const finishSpec: CommandSpec<FinishParsed> = {
         message: "--commit-from-comment/--status-commit requires exactly one task id",
       });
     }
+    if (commitFromComment && statusCommit) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message:
+          "--commit-from-comment cannot be combined with --status-commit in finish; use one deterministic commit path.",
+      });
+    }
     if (commitFromComment && commitAllow.length === 0) {
       throw usageError({
         spec: finishSpec,

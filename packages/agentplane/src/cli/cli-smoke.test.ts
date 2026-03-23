@@ -159,6 +159,8 @@ describe("agentplane CLI smoke", () => {
         "Verified: smoke finish comment with enough detail to pass minimum length checks.",
         "--result",
         "smoke: finish task",
+        "--commit",
+        "HEAD",
       ]);
       expect(finish.code).toBe(0);
 

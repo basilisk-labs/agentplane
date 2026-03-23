@@ -36,7 +36,6 @@ import {
   normalizeTaskDocVersion,
   nowIso,
   readCommitInfo,
-  readHeadCommit,
   requireStructuredComment,
   resolvePrimaryTag,
   toStringArray,
@@ -60,6 +59,89 @@ async function clearDirectWorkLockIfMatches(opts: {
 }
 
 type ResolvedCommitInfo = { hash: string; message: string };
+type LoadedFinishTask = {
+  taskId: string;
+  task: TaskData;
+};
+
+function existingCommitInfo(task: TaskData): ResolvedCommitInfo | null {
+  const hash = typeof task.commit?.hash === "string" ? task.commit.hash.trim() : "";
+  if (!hash) return null;
+  const message = typeof task.commit?.message === "string" ? task.commit.message.trim() : "";
+  return { hash, message };
+}
+
+async function loadTaskForFinish(opts: {
+  ctx: CommandContext;
+  store: ReturnType<typeof getTaskStore> | null;
+  useStore: boolean;
+  taskId: string;
+  taskCount: number;
+  metaTaskId: string;
+  resultProvided: boolean;
+  resultSummary: string;
+  force: boolean;
+  capturePrimaryLifecycleMeta: boolean;
+}): Promise<{
+  loaded: LoadedFinishTask;
+  primaryStatusFrom: string | null;
+  primaryTag: string | null;
+}> {
+  let primaryStatusFrom: string | null = null;
+  let primaryTag: string | null = null;
+  if (opts.useStore) {
+    let captured: TaskData | null = null;
+    await mutateTaskStore(opts.store!, opts.taskId, (current) => {
+      assertTaskCanFinish({
+        task: current,
+        config: opts.ctx.config,
+        taskCount: opts.taskCount,
+        isMetaTask: opts.taskId === opts.metaTaskId,
+        resultProvided: opts.resultProvided,
+        resultSummary: opts.resultSummary,
+        force: opts.force,
+      });
+      captured = current;
+      if (opts.capturePrimaryLifecycleMeta) {
+        primaryStatusFrom = String(current.status || "TODO").toUpperCase();
+        primaryTag = resolvePrimaryTag(toStringArray(current.tags), opts.ctx).primary;
+      }
+      return [];
+    });
+    if (!captured) {
+      throw new CliError({
+        exitCode: 4,
+        code: "E_IO",
+        message: `Task not found: ${opts.taskId}`,
+      });
+    }
+    return {
+      loaded: { taskId: opts.taskId, task: captured },
+      primaryStatusFrom,
+      primaryTag,
+    };
+  }
+
+  const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
+  assertTaskCanFinish({
+    task,
+    config: opts.ctx.config,
+    taskCount: opts.taskCount,
+    isMetaTask: opts.taskId === opts.metaTaskId,
+    resultProvided: opts.resultProvided,
+    resultSummary: opts.resultSummary,
+    force: opts.force,
+  });
+  if (opts.capturePrimaryLifecycleMeta) {
+    primaryStatusFrom = String(task.status || "TODO").toUpperCase();
+    primaryTag = resolvePrimaryTag(toStringArray(task.tags), opts.ctx).primary;
+  }
+  return {
+    loaded: { taskId: opts.taskId, task },
+    primaryStatusFrom,
+    primaryTag,
+  };
+}
 
 function assertTaskCanFinish(opts: {
   task: TaskData;
@@ -165,6 +247,14 @@ export async function cmdFinish(opts: {
         message: "--commit-from-comment/--status-commit requires exactly one task id",
       });
     }
+    if (opts.commitFromComment && statusCommitRequested) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          "--commit-from-comment cannot be combined with --status-commit in finish; use one deterministic commit path.",
+      });
+    }
     if ((opts.closeCommit || opts.noCloseCommit) && opts.taskIds.length !== 1) {
       throw new CliError({
         exitCode: 2,
@@ -254,43 +344,37 @@ export async function cmdFinish(opts: {
 
     let primaryStatusFrom: string | null = null;
     let primaryTag: string | null = null;
-    const loadedTasks: { taskId: string; task: TaskData }[] = [];
+    const loadedTasks: LoadedFinishTask[] = [];
     for (const taskId of opts.taskIds) {
-      if (useStore) {
-        await mutateTaskStore(store!, taskId, (current) => {
-          assertTaskCanFinish({
-            task: current,
-            config: ctx.config,
-            taskCount: opts.taskIds.length,
-            isMetaTask: taskId === metaTaskId,
-            resultProvided,
-            resultSummary,
-            force: opts.force,
-          });
-          loadedTasks.push({ taskId, task: current });
-          if (taskId === primaryTaskId && (opts.commitFromComment || statusCommitRequested)) {
-            primaryStatusFrom = String(current.status || "TODO").toUpperCase();
-            primaryTag = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
-          }
-          return [];
-        });
-      } else {
-        const task = await loadTaskFromContext({ ctx, taskId });
-        assertTaskCanFinish({
-          task,
-          config: ctx.config,
-          taskCount: opts.taskIds.length,
-          isMetaTask: taskId === metaTaskId,
-          resultProvided,
-          resultSummary,
-          force: opts.force,
-        });
-        loadedTasks.push({ taskId, task });
-        if (taskId === primaryTaskId && (opts.commitFromComment || statusCommitRequested)) {
-          primaryStatusFrom = String(task.status || "TODO").toUpperCase();
-          primaryTag = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
-        }
+      const loaded = await loadTaskForFinish({
+        ctx,
+        store,
+        useStore,
+        taskId,
+        taskCount: opts.taskIds.length,
+        metaTaskId,
+        resultProvided,
+        resultSummary,
+        force: opts.force,
+        capturePrimaryLifecycleMeta: taskId === primaryTaskId,
+      });
+      loadedTasks.push(loaded.loaded);
+      if (taskId === primaryTaskId) {
+        primaryStatusFrom = loaded.primaryStatusFrom;
+        primaryTag = loaded.primaryTag;
       }
+    }
+
+    const tasksMissingCommit = loadedTasks
+      .filter(({ task }) => !existingCommitInfo(task))
+      .map(({ taskId }) => taskId);
+    if (!opts.commitFromComment && !opts.commit && tasksMissingCommit.length > 0) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          "finish requires --commit <hash> or existing task commit metadata on every task; implicit HEAD fallback was removed.",
+      });
     }
 
     if (opts.commitFromComment || statusCommitRequested) {
@@ -316,14 +400,9 @@ export async function cmdFinish(opts: {
     }
 
     const gitRoot = ctx.resolvedProject.gitRoot;
-    let taskCommitInfo: ResolvedCommitInfo | null = null;
-    if (!opts.commitFromComment) {
-      taskCommitInfo = opts.commit
-        ? await readCommitInfo(gitRoot, opts.commit)
-        : await readHeadCommit(gitRoot);
-    }
-
-    const shouldRunStatusCommitAfterPersist = opts.commitFromComment && statusCommitRequested;
+    let taskCommitInfo: ResolvedCommitInfo | null = opts.commit
+      ? await readCommitInfo(gitRoot, opts.commit)
+      : null;
 
     if (opts.commitFromComment) {
       if (!opts.quiet) {
@@ -362,7 +441,7 @@ export async function cmdFinish(opts: {
       });
     }
 
-    if (statusCommitRequested && !shouldRunStatusCommitAfterPersist) {
+    if (statusCommitRequested) {
       if (!opts.quiet) {
         process.stdout.write(`${infoMessage("creating status commit")}\n`);
       }
@@ -491,43 +570,6 @@ export async function cmdFinish(opts: {
         allowCI: false,
       });
       await ctx.git.commitAmendNoEdit({ env });
-    }
-
-    if (statusCommitRequested && shouldRunStatusCommitAfterPersist) {
-      if (!opts.quiet) {
-        process.stdout.write(`${infoMessage("creating status commit")}\n`);
-      }
-      if (typeof opts.statusCommitEmoji === "string" && opts.statusCommitEmoji.trim() !== "✅") {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: invalidValueMessage(
-            "--status-commit-emoji",
-            opts.statusCommitEmoji,
-            "✅ (finish commits must use a checkmark)",
-          ),
-        });
-      }
-      await commitFromComment({
-        ctx,
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride,
-        taskId: primaryTaskId,
-        primaryTag: primaryTag ?? "meta",
-        executorAgent: executorAgent ?? undefined,
-        author: opts.author,
-        statusFrom: primaryStatusFrom ?? undefined,
-        statusTo: "DONE",
-        commentBody: opts.body,
-        formattedComment: formatCommentBodyForCommit(opts.body, ctx.config),
-        emoji: opts.statusCommitEmoji ?? defaultCommitEmojiForStatus("DONE"),
-        allow: opts.statusCommitAllow,
-        autoAllow: false,
-        allowTasks: true,
-        requireClean: opts.statusCommitRequireClean,
-        quiet: opts.quiet,
-        config: ctx.config,
-      });
     }
 
     // tasks.json is export-only; generated via `agentplane task export`.

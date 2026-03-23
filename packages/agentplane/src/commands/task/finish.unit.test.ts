@@ -338,7 +338,13 @@ describe("task finish (unit)", () => {
 
   it("runs deterministic close commit when --close-commit is enabled", async () => {
     const ctx = mkCtx();
-    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["meta"] }));
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        id: "T-1",
+        tags: ["meta"],
+        commit: { hash: "impl-hash", message: "feat: implement T-1" },
+      }),
+    );
 
     const { cmdFinish } = await import("./finish.js");
     await cmdFinish({
@@ -381,7 +387,11 @@ describe("task finish (unit)", () => {
   it("auto-runs deterministic close commit by default in direct mode with local backend", async () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "direct";
-    const task = mkTask({ id: "T-1", tags: ["meta"] });
+    const task = mkTask({
+      id: "T-1",
+      tags: ["meta"],
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
+    });
     const store = {
       get: vi.fn().mockResolvedValue(task),
       patch: vi
@@ -429,7 +439,11 @@ describe("task finish (unit)", () => {
   });
 
   it("auto-runs deterministic close commit by default in direct mode with a projection-backed backend", async () => {
-    const task = mkTask({ id: "T-1", tags: ["meta"] });
+    const task = mkTask({
+      id: "T-1",
+      tags: ["meta"],
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
+    });
     const ctx = mkCtx({
       taskBackend: {
         id: "redmine",
@@ -489,7 +503,11 @@ describe("task finish (unit)", () => {
   it("does not auto-run close commit outside direct mode", async () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "branch_pr";
-    const task = mkTask({ id: "T-1", tags: ["meta"] });
+    const task = mkTask({
+      id: "T-1",
+      tags: ["meta"],
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
+    });
     const store = {
       get: vi.fn().mockResolvedValue(task),
       patch: vi
@@ -533,7 +551,11 @@ describe("task finish (unit)", () => {
   it("suppresses default direct close commit with --no-close-commit", async () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "direct";
-    const task = mkTask({ id: "T-1", tags: ["meta"] });
+    const task = mkTask({
+      id: "T-1",
+      tags: ["meta"],
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
+    });
     const store = {
       get: vi.fn().mockResolvedValue(task),
       patch: vi
@@ -657,9 +679,16 @@ describe("task finish (unit)", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
-  it("uses readCommitInfo when --commit is provided; otherwise uses readHeadCommit", async () => {
+  it("uses readCommitInfo only when --commit is provided", async () => {
     const ctx = mkCtx();
-    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["code"] }));
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        id: "T-1",
+        status: "DOING",
+        tags: ["code"],
+        commit: { hash: "existing-hash", message: "existing" },
+      }),
+    );
 
     const { cmdFinish } = await import("./finish.js");
     await cmdFinish({
@@ -709,7 +738,38 @@ describe("task finish (unit)", () => {
       confirmStatusCommit: false,
       quiet: true,
     });
-    expect(mocks.readHeadCommit).toHaveBeenCalled();
+    expect(mocks.readCommitInfo).not.toHaveBeenCalled();
+    expect(mocks.readHeadCommit).not.toHaveBeenCalled();
+  });
+
+  it("rejects combining --commit-from-comment with --status-commit", async () => {
+    const ctx = mkCtx();
+    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", status: "DOING" }));
+
+    const { cmdFinish } = await import("./finish.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "ok",
+        breaking: false,
+        force: false,
+        commitFromComment: true,
+        commitAllow: ["packages/agentplane"],
+        commitAutoAllow: false,
+        commitAllowTasks: true,
+        commitRequireClean: false,
+        statusCommit: true,
+        statusCommitAllow: ["packages/agentplane"],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
   it("rejects finishing already DONE when --force is not set", async () => {
@@ -1021,6 +1081,49 @@ describe("task finish (unit)", () => {
     writeSpy.mockRestore();
   });
 
+  it("rejects implicit HEAD fallback when deterministic close commit lacks implementation metadata", async () => {
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "direct";
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue({
+      get: vi.fn(() => mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
+      patch: vi.fn(
+        async (_taskId: string, builder: (task: TaskData) => Promise<TaskStorePatch>) => ({
+          changed: true,
+          task: applyStorePatch(
+            mkTask({ id: "T-1", status: "DOING", tags: ["docs"] }),
+            await builder(mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
+          ),
+        }),
+      ),
+    });
+
+    const { cmdFinish } = await import("./finish.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: close commit path should require deterministic commit provenance.",
+        result: "close-commit-needs-commit",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+  });
+
   it("preserves fresher README content and comments when store update sees newer task data", async () => {
     const staleTask = mkTask({
       id: "T-1",
@@ -1051,6 +1154,7 @@ describe("task finish (unit)", () => {
       id: "T-1",
       status: "DOING",
       tags: ["code"],
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
       comments: [{ author: "CURRENT", body: "fresh comment" }],
       doc: [
         "## Summary",
@@ -1138,6 +1242,7 @@ describe("task finish (unit)", () => {
       id: "T-1",
       status: "DOING",
       tags: ["code"],
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
       verification: {
         state: "ok",
         updated_at: "2026-02-09T00:00:00.000Z",
@@ -1350,7 +1455,7 @@ describe("task finish (unit)", () => {
   it("maps non-CliError failures as E_IO via backend error mapping", async () => {
     const ctx = mkCtx();
     mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["spike"] }));
-    mocks.readHeadCommit.mockRejectedValue(new Error("boom"));
+    mocks.readCommitInfo.mockRejectedValue(new Error("boom"));
 
     const { cmdFinish } = await import("./finish.js");
     await expect(
@@ -1361,6 +1466,7 @@ describe("task finish (unit)", () => {
         author: "A",
         body: "Verified: this is long enough",
         result: "ok",
+        commit: "abc123",
         breaking: false,
         force: false,
         commitFromComment: false,

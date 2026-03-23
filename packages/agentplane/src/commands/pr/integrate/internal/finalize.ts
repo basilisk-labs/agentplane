@@ -104,7 +104,7 @@ export async function finalizeIntegrate(opts: {
     result: `integrate: ${opts.mergeStrategy} ${opts.branch}`,
     risk: undefined,
     breaking: false,
-    commit: undefined,
+    commit: opts.mergeHash,
     force: false,
     commitFromComment: false,
     commitEmoji: undefined,

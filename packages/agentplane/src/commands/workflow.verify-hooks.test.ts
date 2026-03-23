@@ -188,7 +188,7 @@ describe("commands/workflow", () => {
         result: "finish: mark task done",
         risk: undefined,
         breaking: false,
-        commit: undefined,
+        commit: "HEAD",
         force: false,
         commitFromComment: false,
         commitAllow: [],

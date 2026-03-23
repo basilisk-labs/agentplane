@@ -128,6 +128,8 @@ describe("runCli", () => {
       "Verified: dependency completed for readiness test; checks done locally; no issues found.",
       "--result",
       "ready: finish dependency",
+      "--commit",
+      "HEAD",
       "--quiet",
       "--root",
       root,
