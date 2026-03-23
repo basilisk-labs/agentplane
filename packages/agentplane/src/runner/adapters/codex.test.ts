@@ -106,6 +106,85 @@ describe("CodexRunnerAdapter", () => {
     expect(invocation.argv.join(" ")).not.toContain("do not inline this policy text into argv");
   });
 
+  it("maps recipe run_profile sandbox into codex argv and exports the remaining fields via env", async () => {
+    const adapter = createRunnerAdapter(defaultConfig());
+    const bundle = makeBundle();
+    bundle.target = {
+      kind: "recipe_scenario",
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      task_id: "202603231410-ABC123",
+    };
+    bundle.recipe = {
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      run_profile: {
+        mode: "analysis",
+        sandbox: "read-only",
+        network: true,
+        requires_human_approval: true,
+        writes_artifacts_to: ["reports", "logs"],
+        expected_exit_contract: "exit_zero",
+      },
+    };
+
+    const invocation = await adapter.prepare(bundle);
+
+    expect(invocation.argv).toEqual([
+      "codex",
+      "exec",
+      "--json",
+      "--output-last-message",
+      "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/codex-last-message.md",
+      "-C",
+      "/repo",
+      "-s",
+      "read-only",
+      "-a",
+      "never",
+      "-",
+    ]);
+    expect(invocation.env).toMatchObject({
+      AGENTPLANE_RECIPE_MODE: "analysis",
+      AGENTPLANE_RECIPE_SANDBOX: "read-only",
+      AGENTPLANE_RECIPE_NETWORK: "true",
+      AGENTPLANE_RECIPE_REQUIRES_HUMAN_APPROVAL: "true",
+      AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT: "exit_zero",
+      AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO: JSON.stringify(["reports", "logs"]),
+    });
+  });
+
+  it("falls back to the default codex sandbox when recipe run_profile sandbox is unsupported", async () => {
+    const adapter = createRunnerAdapter(defaultConfig());
+    const bundle = makeBundle();
+    bundle.recipe = {
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      run_profile: {
+        mode: "analysis",
+        sandbox: "custom-sandbox",
+      },
+    };
+
+    const invocation = await adapter.prepare(bundle);
+
+    expect(invocation.argv).toEqual([
+      "codex",
+      "exec",
+      "--json",
+      "--output-last-message",
+      "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/codex-last-message.md",
+      "-C",
+      "/repo",
+      "-s",
+      "danger-full-access",
+      "-a",
+      "never",
+      "-",
+    ]);
+    expect(invocation.env.AGENTPLANE_RECIPE_SANDBOX).toBe("custom-sandbox");
+  });
+
   it("captures success-path result details and persists run-state updates", async () => {
     const adapter = createRunnerAdapter(defaultConfig());
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-success-"));
