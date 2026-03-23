@@ -32,6 +32,7 @@ import {
   loadAgentsTemplate,
 } from "../agents/agents-template.js";
 import type * as taskBackend from "../backends/task-backend.js";
+import { loadCommandContext } from "../commands/shared/task-backend.js";
 import {
   captureStdIO,
   cleanGitEnv,
@@ -51,6 +52,8 @@ import {
   writeConfig,
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
+import { evolveRunnerRunState, writeRunnerRunState } from "../runner/artifacts.js";
+import { prepareTaskRunnerExecution } from "../runner/usecases/task-run.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 
@@ -373,6 +376,309 @@ describe("runCli", () => {
       expect(state.result?.status).toBe("success");
       expect(state.result?.exit_code).toBe(0);
       expect(state.result?.stdout_summary).toContain("custom runner ok runner-token task");
+    } finally {
+      process.env.PATH = originalPath;
+      io.restore();
+    }
+  });
+
+  it("task run cancel marks an existing prepared execute-mode run as cancelled", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Cancel prepared run task",
+          "--description",
+          "Cancel prepared run task",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before cancelling a prepared execute-mode runner run in the CLI test.",
+      "--root",
+      root,
+    ]);
+    const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const prepared = await prepareTaskRunnerExecution({
+      ctx: commandCtx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "execute",
+      run_id: "run-cancel-cli",
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "run",
+        "cancel",
+        taskId,
+        prepared.invocation.run_id,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`task run cancelled: ${taskId}`);
+      expect(io.stdout).toContain("previous_status: prepared");
+      expect(io.stdout).toContain("status: cancelled");
+
+      const state = JSON.parse(await readFile(prepared.invocation.state_path, "utf8")) as {
+        status: string;
+      };
+      expect(state.status).toBe("cancelled");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task run resume executes an existing prepared run in place", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = { command: ["custom-runner"] };
+    await writeConfig(root, config);
+
+    const fakeBinDir = path.join(root, "bin");
+    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeRunnerPath,
+      [
+        "#!/bin/sh",
+        String.raw`printf "resume cli runner %s\n" "$AGENTPLANE_RUNNER_RUN_DIR"`,
+        "cat >/dev/null",
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeRunnerPath, 0o755);
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Resume prepared run task",
+          "--description",
+          "Resume prepared run task",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before resuming a prepared execute-mode runner run in the CLI test.",
+      "--root",
+      root,
+    ]);
+    const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const prepared = await prepareTaskRunnerExecution({
+      ctx: commandCtx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "execute",
+      run_id: "run-resume-cli",
+    });
+
+    const io = captureStdIO();
+    const originalPath = process.env.PATH;
+    try {
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
+      const code = await runCli([
+        "task",
+        "run",
+        "resume",
+        taskId,
+        prepared.invocation.run_id,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`task run resumed: ${taskId}`);
+      expect(io.stdout).toContain("previous_status: prepared");
+      expect(io.stdout).toContain("status: success");
+      expect(io.stdout).toContain("stdout: resume cli runner");
+
+      const state = JSON.parse(await readFile(prepared.invocation.state_path, "utf8")) as {
+        status: string;
+        result?: { status: string; exit_code: number | null; stdout_summary?: string };
+      };
+      expect(state.status).toBe("success");
+      expect(state.result?.status).toBe("success");
+      expect(state.result?.stdout_summary).toContain("resume cli runner");
+    } finally {
+      process.env.PATH = originalPath;
+      io.restore();
+    }
+  });
+
+  it("task run retry creates a fresh run from a failed run snapshot", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = { command: ["custom-runner"] };
+    await writeConfig(root, config);
+
+    const fakeBinDir = path.join(root, "bin");
+    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeRunnerPath,
+      [
+        "#!/bin/sh",
+        String.raw`printf "retry cli runner %s\n" "$AGENTPLANE_RUNNER_RUN_DIR"`,
+        "cat >/dev/null",
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeRunnerPath, 0o755);
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Retry failed run task",
+          "--description",
+          "Retry failed run task",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before retrying a failed runner run from persisted artifacts in the CLI test.",
+      "--root",
+      root,
+    ]);
+    const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const prepared = await prepareTaskRunnerExecution({
+      ctx: commandCtx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "execute",
+      run_id: "run-retry-source-cli",
+    });
+    const failedAt = new Date().toISOString();
+    await writeRunnerRunState({
+      state_path: prepared.invocation.state_path,
+      state: evolveRunnerRunState({
+        state: prepared.state,
+        status: "failed",
+        updated_at: failedAt,
+        result: {
+          status: "failed",
+          exit_code: 1,
+          started_at: failedAt,
+          ended_at: failedAt,
+          stderr_summary: "synthetic failure",
+        },
+      }),
+    });
+
+    const io = captureStdIO();
+    const originalPath = process.env.PATH;
+    try {
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
+      const code = await runCli([
+        "task",
+        "run",
+        "retry",
+        taskId,
+        prepared.invocation.run_id,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`task run retried: ${taskId}`);
+      expect(io.stdout).toContain("source_run_id: run-retry-source-cli");
+      expect(io.stdout).toContain("previous_status: failed");
+      expect(io.stdout).toContain("status: success");
+      expect(io.stdout).toContain("stdout: retry cli runner");
+
+      const newRunId = /^run_id: (.+)$/m.exec(io.stdout)?.[1] ?? "";
+      expect(newRunId).toBeTruthy();
+      expect(newRunId).not.toBe(prepared.invocation.run_id);
+      const newStatePath = path.join(
+        root,
+        ".agentplane",
+        "tasks",
+        taskId,
+        "runs",
+        newRunId,
+        "run-state.json",
+      );
+      const state = JSON.parse(await readFile(newStatePath, "utf8")) as {
+        status: string;
+        result?: { status: string; stdout_summary?: string };
+      };
+      expect(state.status).toBe("success");
+      expect(state.result?.status).toBe("success");
+      expect(state.result?.stdout_summary).toContain("retry cli runner");
     } finally {
       process.env.PATH = originalPath;
       io.restore();

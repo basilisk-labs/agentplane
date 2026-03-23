@@ -20,6 +20,9 @@ import { taskPlanSetSpec } from "../../../commands/task/plan-set.command.js";
 import { taskPlanSpec } from "../../../commands/task/plan.command.js";
 import { taskRebuildIndexSpec } from "../../../commands/task/rebuild-index.command.js";
 import { taskRunSpec } from "../../../commands/task/run.spec.js";
+import { taskRunCancelSpec } from "../../../commands/task/run-cancel.spec.js";
+import { taskRunResumeSpec } from "../../../commands/task/run-resume.spec.js";
+import { taskRunRetrySpec } from "../../../commands/task/run-retry.spec.js";
 import { taskScaffoldSpec } from "../../../commands/task/scaffold.command.js";
 import { taskScrubSpec } from "../../../commands/task/scrub.command.js";
 import { taskSearchSpec } from "../../../commands/task/search.spec.js";
@@ -57,6 +60,15 @@ export const TASK_COMMANDS = [
   ),
   entry(taskRunSpec, () =>
     import("../../../commands/task/run.command.js").then((m) => m.runTaskRun),
+  ),
+  entry(taskRunCancelSpec, () =>
+    import("../../../commands/task/run-cancel.command.js").then((m) => m.runTaskRunCancel),
+  ),
+  entry(taskRunResumeSpec, () =>
+    import("../../../commands/task/run-resume.command.js").then((m) => m.runTaskRunResume),
+  ),
+  entry(taskRunRetrySpec, () =>
+    import("../../../commands/task/run-retry.command.js").then((m) => m.runTaskRunRetry),
   ),
   entry(taskNewSpec, (deps) =>
     import("../../../commands/task/new.command.js").then((m) =>

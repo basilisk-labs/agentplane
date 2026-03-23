@@ -30,7 +30,7 @@ export type ExecutedTaskRunnerExecution = PreparedTaskRunnerExecution & {
   result: RunnerResult;
 };
 
-function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
+export function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
   const task = bundle.task;
   if (!task) return;
   const status = String(task.data.status || "TODO")
@@ -46,7 +46,7 @@ function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
   });
 }
 
-function renderTaskRunnerBootstrap(
+export function renderTaskRunnerBootstrap(
   bundle: RunnerContextBundle,
   invocation: RunnerInvocation,
 ): string {
