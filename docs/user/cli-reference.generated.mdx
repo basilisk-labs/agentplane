@@ -112,6 +112,9 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task plan set](#task-plan-set)
   - [task rebuild-index](#task-rebuild-index)
   - [task run](#task-run)
+  - [task run cancel](#task-run-cancel)
+  - [task run resume](#task-run-resume)
+  - [task run retry](#task-run-retry)
   - [task scaffold](#task-scaffold)
   - [task scrub](#task-scrub)
   - [task search](#task-search)
@@ -1798,7 +1801,7 @@ agentplane scenario list
 
 ### scenario run
 
-Validate a scenario and print a prepared run plan (no execution).
+Preview a validated scenario plan without creating a task or running a runner.
 
 Usage:
 
@@ -1812,7 +1815,7 @@ Examples:
 agentplane scenario run viewer:demo
 ```
 
-- Validate a scenario and inspect the prepared run plan.
+- Validate a scenario and inspect the preview plan before \`scenario execute\`.
 
 ## Setup
 
@@ -2623,6 +2626,66 @@ agentplane task run 202602030608-F1Q8AB
 ```
 
 - Prepare bundle artifacts and execute the configured runner adapter for the task.
+
+### task run cancel
+
+Mark an existing runner run as cancelled in persisted runner state.
+
+Loads an existing runner run from its artifacts, marks the run as cancelled in run-state/events, and leaves the task available for later resume or retry decisions.
+
+Usage:
+
+```text
+agentplane task run cancel <task-id> <run-id>
+```
+
+Examples:
+
+```sh
+agentplane task run cancel 202602030608-F1Q8AB run_20260323_abc123
+```
+
+- Persist a cancelled state for an existing runner run.
+
+### task run resume
+
+Resume an existing execute-mode runner run in place.
+
+Loads an existing execute-mode runner run from its artifacts and re-executes the configured adapter against the same bundle and run directory.
+
+Usage:
+
+```text
+agentplane task run resume <task-id> <run-id>
+```
+
+Examples:
+
+```sh
+agentplane task run resume 202602030608-F1Q8AB run_20260323_abc123
+```
+
+- Resume or re-execute a prepared/failed/cancelled run in place.
+
+### task run retry
+
+Retry an existing execute-mode runner run into a new run id.
+
+Loads an existing runner run, snapshots its bundle into a new run id, and executes the configured adapter against the new run directory while retaining the source run for traceability.
+
+Usage:
+
+```text
+agentplane task run retry <task-id> <run-id>
+```
+
+Examples:
+
+```sh
+agentplane task run retry 202602030608-F1Q8AB run_20260323_abc123
+```
+
+- Create a new run from a failed/cancelled run snapshot and execute it.
 
 ### task scaffold
 

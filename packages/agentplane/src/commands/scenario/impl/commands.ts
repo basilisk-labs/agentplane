@@ -389,7 +389,11 @@ export async function cmdScenarioRunParsed(opts: {
       `scenario definition ok: ${path.relative(project.gitRoot, selection.scenario_file)}`,
       ...validationChecks,
     ]);
-    process.stdout.write("Status: scenario orchestration runtime is not implemented yet.\n");
+    process.stdout.write("Status: preview only; no task created and no runner executed.\n");
+    process.stdout.write(
+      `Next: use \`agentplane scenario execute ${selection.recipe_id}:${selection.scenario_id}\` ` +
+        "to materialize and run this scenario.\n",
+    );
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

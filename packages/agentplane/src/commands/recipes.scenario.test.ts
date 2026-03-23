@@ -325,7 +325,10 @@ describe("commands/recipes scenario", () => {
       expect(code).toBe(0);
       expect(io.stdout).toContain("Prepared run plan: viewer:RECIPE_SCENARIO");
       expect(io.stdout).toContain("Selection reasons:");
-      expect(io.stdout).toContain("Status: scenario orchestration runtime is not implemented yet.");
+      expect(io.stdout).toContain("Status: preview only; no task created and no runner executed.");
+      expect(io.stdout).toContain(
+        "Next: use `agentplane scenario execute viewer:RECIPE_SCENARIO` to materialize and run this scenario.",
+      );
     } finally {
       io.restore();
     }

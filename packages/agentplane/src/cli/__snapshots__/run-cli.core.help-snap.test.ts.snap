@@ -84,7 +84,7 @@ Commands:
     scenario execute  Materialize a recipe-backed task and execute it through the shared runner flow.
     scenario info  Show manifest-backed scenario details and normalized run profile.
     scenario list  List resolver-backed scenario descriptors from installed recipes.
-    scenario run  Validate a scenario and print a prepared run plan (no execution).
+    scenario run  Preview a validated scenario plan without creating a task or running a runner.
   Setup:
     init  Initialize agentplane project files under .agentplane/.
     upgrade  Upgrade the local agentplane framework bundle in the repo.
@@ -113,6 +113,9 @@ Commands:
     task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
     task rebuild-index  Rebuild the task index cache for the configured backend (best-effort).
     task run  Prepare or run a task through the shared runner contract.
+    task run cancel  Mark an existing runner run as cancelled in persisted runner state.
+    task run resume  Resume an existing execute-mode runner run in place.
+    task run retry  Retry an existing execute-mode runner run into a new run id.
     task scaffold  Write a task README file scaffold (for the current doc template).
     task scrub  Replace a string across all tasks (frontmatter + docs).
     task search  Search tasks by text or regex with optional filters.
@@ -161,6 +164,14 @@ exports[`runCli help snapshots (cli2) > help scenario execute --compact snapshot
 
 Usage:
   agentplane scenario execute <recipe:scenario>
+"
+`;
+
+exports[`runCli help snapshots (cli2) > help scenario run --compact snapshot 1`] = `
+"scenario run - Preview a validated scenario plan without creating a task or running a runner.
+
+Usage:
+  agentplane scenario run <recipe:scenario>
 "
 `;
 
