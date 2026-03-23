@@ -59,6 +59,8 @@ async function clearDirectWorkLockIfMatches(opts: {
   }
 }
 
+type ResolvedCommitInfo = { hash: string; message: string };
+
 function assertTaskCanFinish(opts: {
   task: TaskData;
   config: CommandContext["config"];
@@ -223,11 +225,6 @@ export async function cmdFinish(opts: {
       });
     }
 
-    const gitRoot = ctx.resolvedProject.gitRoot;
-    const commitInfo = opts.commit
-      ? await readCommitInfo(gitRoot, opts.commit)
-      : await readHeadCommit(gitRoot);
-
     const useStore = backendIsLocalFileBackend(ctx);
     const store = useStore ? getTaskStore(ctx) : null;
     const backendWritesTaskReadmes = ctx.taskBackend.capabilities.writes_task_readmes === true;
@@ -257,26 +254,8 @@ export async function cmdFinish(opts: {
 
     let primaryStatusFrom: string | null = null;
     let primaryTag: string | null = null;
+    const loadedTasks: { taskId: string; task: TaskData }[] = [];
     for (const taskId of opts.taskIds) {
-      const task = useStore ? await store!.get(taskId) : await loadTaskFromContext({ ctx, taskId });
-      if (!useStore) {
-        assertTaskCanFinish({
-          task,
-          config: ctx.config,
-          taskCount: opts.taskIds.length,
-          isMetaTask: taskId === metaTaskId,
-          resultProvided,
-          resultSummary,
-          force: opts.force,
-        });
-
-        if (taskId === primaryTaskId && (opts.commitFromComment || statusCommitRequested)) {
-          primaryStatusFrom = String(task.status || "TODO").toUpperCase();
-          primaryTag = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
-        }
-      }
-
-      const at = nowIso();
       if (useStore) {
         await mutateTaskStore(store!, taskId, (current) => {
           assertTaskCanFinish({
@@ -288,63 +267,29 @@ export async function cmdFinish(opts: {
             resultSummary,
             force: opts.force,
           });
-          const currentStatus = String(current.status || "TODO").toUpperCase();
+          loadedTasks.push({ taskId, task: current });
           if (taskId === primaryTaskId && (opts.commitFromComment || statusCommitRequested)) {
-            primaryStatusFrom = currentStatus;
+            primaryStatusFrom = String(current.status || "TODO").toUpperCase();
             primaryTag = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
           }
-          return [
-            setTaskFieldsIntent({
-              status: "DONE",
-              commit: { hash: commitInfo.hash, message: commitInfo.message },
-              ...(taskId === metaTaskId && resultSummary ? { result_summary: resultSummary } : {}),
-              ...(taskId === metaTaskId && riskLevel ? { risk_level: riskLevel } : {}),
-              ...(taskId === metaTaskId && breaking ? { breaking: true } : {}),
-            }),
-            appendTaskCommentIntent({ author: opts.author, body: opts.body }),
-            appendTaskEventIntent({
-              type: "status",
-              at,
-              author: opts.author,
-              from: currentStatus,
-              to: "DONE",
-              note: opts.body,
-            }),
-            touchTaskDocMetaIntent({
-              updatedBy: opts.author,
-              version: normalizeTaskDocVersion(current.doc_version),
-            }),
-          ];
+          return [];
         });
       } else {
-        const existingComments = Array.isArray(task.comments)
-          ? task.comments.filter(
-              (item): item is { author: string; body: string } =>
-                !!item && typeof item.author === "string" && typeof item.body === "string",
-            )
-          : [];
-        const nextTask: TaskData = {
-          ...task,
-          status: "DONE",
-          commit: { hash: commitInfo.hash, message: commitInfo.message },
-          comments: [...existingComments, { author: opts.author, body: opts.body }],
-          events: appendTaskEvent(task, {
-            type: "status",
-            at,
-            author: opts.author,
-            from: String(task.status || "TODO").toUpperCase(),
-            to: "DONE",
-            note: opts.body,
-          }),
-          result_summary:
-            taskId === metaTaskId && resultSummary ? resultSummary : task.result_summary,
-          risk_level: taskId === metaTaskId && riskLevel ? riskLevel : task.risk_level,
-          breaking: taskId === metaTaskId && breaking ? true : task.breaking,
-          doc_version: normalizeTaskDocVersion(task.doc_version),
-          doc_updated_at: at,
-          doc_updated_by: opts.author,
-        };
-        await ctx.taskBackend.writeTask(nextTask);
+        const task = await loadTaskFromContext({ ctx, taskId });
+        assertTaskCanFinish({
+          task,
+          config: ctx.config,
+          taskCount: opts.taskIds.length,
+          isMetaTask: taskId === metaTaskId,
+          resultProvided,
+          resultSummary,
+          force: opts.force,
+        });
+        loadedTasks.push({ taskId, task });
+        if (taskId === primaryTaskId && (opts.commitFromComment || statusCommitRequested)) {
+          primaryStatusFrom = String(task.status || "TODO").toUpperCase();
+          primaryTag = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
+        }
       }
     }
 
@@ -359,8 +304,6 @@ export async function cmdFinish(opts: {
       });
     }
 
-    // tasks.json is export-only; generated via `agentplane task export`.
-
     let executorAgent: string | null = null;
     if (opts.commitFromComment || statusCommitRequested) {
       const mode = ctx.config.workflow_mode;
@@ -372,11 +315,19 @@ export async function cmdFinish(opts: {
       }
     }
 
+    const gitRoot = ctx.resolvedProject.gitRoot;
+    let taskCommitInfo: ResolvedCommitInfo | null = null;
+    if (!opts.commitFromComment) {
+      taskCommitInfo = opts.commit
+        ? await readCommitInfo(gitRoot, opts.commit)
+        : await readHeadCommit(gitRoot);
+    }
+
+    const shouldRunStatusCommitAfterPersist = opts.commitFromComment && statusCommitRequested;
+
     if (opts.commitFromComment) {
       if (!opts.quiet) {
-        process.stdout.write(
-          `${infoMessage("task marked DONE; creating commit from verification comment")}\n`,
-        );
+        process.stdout.write(`${infoMessage("creating commit from verification comment")}\n`);
       }
       if (typeof opts.commitEmoji === "string" && opts.commitEmoji.trim() !== "✅") {
         throw new CliError({
@@ -389,7 +340,7 @@ export async function cmdFinish(opts: {
           ),
         });
       }
-      const committed = await commitFromComment({
+      taskCommitInfo = await commitFromComment({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
@@ -409,57 +360,11 @@ export async function cmdFinish(opts: {
         quiet: opts.quiet,
         config: ctx.config,
       });
-
-      // commitFromComment creates the git commit and returns the actual head hash/subject.
-      // Refresh task commit metadata to this hash and amend the same commit in local mode so
-      // "task done" metadata does not require a manual follow-up close commit.
-      await (useStore
-        ? mutateTaskStore(store!, primaryTaskId, (current) => [
-            setTaskFieldsIntent({
-              commit: { hash: committed.hash, message: committed.message },
-            }),
-            touchTaskDocMetaIntent({
-              updatedBy: opts.author,
-              version: normalizeTaskDocVersion(current.doc_version),
-            }),
-          ])
-        : (async () => {
-            const taskAfterCommit = await loadTaskFromContext({ ctx, taskId: primaryTaskId });
-            const updatedAfterCommit: TaskData = {
-              ...taskAfterCommit,
-              commit: { hash: committed.hash, message: committed.message },
-              doc_version: normalizeTaskDocVersion(taskAfterCommit.doc_version),
-              doc_updated_at: nowIso(),
-              doc_updated_by: opts.author,
-            };
-            await ctx.taskBackend.writeTask(updatedAfterCommit);
-          })());
-
-      if (backendWritesTaskReadmes) {
-        const workflowReadmeRelPath = path.join(
-          ctx.config.paths.workflow_dir,
-          primaryTaskId,
-          "README.md",
-        );
-        await ctx.git.stage([workflowReadmeRelPath]);
-        const env = buildGitCommitEnv({
-          taskId: primaryTaskId,
-          agentId: executorAgent ?? undefined,
-          statusTo: "DONE",
-          allowTasks: true,
-          allowBase: false,
-          allowPolicy: false,
-          allowConfig: false,
-          allowHooks: false,
-          allowCI: false,
-        });
-        await ctx.git.commitAmendNoEdit({ env });
-      }
     }
 
-    if (statusCommitRequested) {
+    if (statusCommitRequested && !shouldRunStatusCommitAfterPersist) {
       if (!opts.quiet) {
-        process.stdout.write(`${infoMessage("task marked DONE; creating status commit")}\n`);
+        process.stdout.write(`${infoMessage("creating status commit")}\n`);
       }
       if (typeof opts.statusCommitEmoji === "string" && opts.statusCommitEmoji.trim() !== "✅") {
         throw new CliError({
@@ -493,6 +398,139 @@ export async function cmdFinish(opts: {
         config: ctx.config,
       });
     }
+
+    for (const { taskId, task } of loadedTasks) {
+      const at = nowIso();
+      if (useStore) {
+        await mutateTaskStore(store!, taskId, (current) => {
+          assertTaskCanFinish({
+            task: current,
+            config: ctx.config,
+            taskCount: opts.taskIds.length,
+            isMetaTask: taskId === metaTaskId,
+            resultProvided,
+            resultSummary,
+            force: opts.force,
+          });
+          const currentStatus = String(current.status || "TODO").toUpperCase();
+          return [
+            setTaskFieldsIntent({
+              status: "DONE",
+              ...(taskCommitInfo
+                ? { commit: { hash: taskCommitInfo.hash, message: taskCommitInfo.message } }
+                : {}),
+              ...(taskId === metaTaskId && resultSummary ? { result_summary: resultSummary } : {}),
+              ...(taskId === metaTaskId && riskLevel ? { risk_level: riskLevel } : {}),
+              ...(taskId === metaTaskId && breaking ? { breaking: true } : {}),
+            }),
+            appendTaskCommentIntent({ author: opts.author, body: opts.body }),
+            appendTaskEventIntent({
+              type: "status",
+              at,
+              author: opts.author,
+              from: currentStatus,
+              to: "DONE",
+              note: opts.body,
+            }),
+            touchTaskDocMetaIntent({
+              updatedBy: opts.author,
+              version: normalizeTaskDocVersion(current.doc_version),
+            }),
+          ];
+        });
+      } else {
+        const existingComments = Array.isArray(task.comments)
+          ? task.comments.filter(
+              (item): item is { author: string; body: string } =>
+                !!item && typeof item.author === "string" && typeof item.body === "string",
+            )
+          : [];
+        const nextTask: TaskData = {
+          ...task,
+          status: "DONE",
+          ...(taskCommitInfo
+            ? { commit: { hash: taskCommitInfo.hash, message: taskCommitInfo.message } }
+            : {}),
+          comments: [...existingComments, { author: opts.author, body: opts.body }],
+          events: appendTaskEvent(task, {
+            type: "status",
+            at,
+            author: opts.author,
+            from: String(task.status || "TODO").toUpperCase(),
+            to: "DONE",
+            note: opts.body,
+          }),
+          result_summary:
+            taskId === metaTaskId && resultSummary ? resultSummary : task.result_summary,
+          risk_level: taskId === metaTaskId && riskLevel ? riskLevel : task.risk_level,
+          breaking: taskId === metaTaskId && breaking ? true : task.breaking,
+          doc_version: normalizeTaskDocVersion(task.doc_version),
+          doc_updated_at: at,
+          doc_updated_by: opts.author,
+        };
+        await ctx.taskBackend.writeTask(nextTask);
+      }
+    }
+
+    if (opts.commitFromComment && backendWritesTaskReadmes && primaryTaskId) {
+      const workflowReadmeRelPath = path.join(
+        ctx.config.paths.workflow_dir,
+        primaryTaskId,
+        "README.md",
+      );
+      await ctx.git.stage([workflowReadmeRelPath]);
+      const env = buildGitCommitEnv({
+        taskId: primaryTaskId,
+        agentId: executorAgent ?? undefined,
+        statusTo: "DONE",
+        allowTasks: true,
+        allowBase: false,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+      });
+      await ctx.git.commitAmendNoEdit({ env });
+    }
+
+    if (statusCommitRequested && shouldRunStatusCommitAfterPersist) {
+      if (!opts.quiet) {
+        process.stdout.write(`${infoMessage("creating status commit")}\n`);
+      }
+      if (typeof opts.statusCommitEmoji === "string" && opts.statusCommitEmoji.trim() !== "✅") {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: invalidValueMessage(
+            "--status-commit-emoji",
+            opts.statusCommitEmoji,
+            "✅ (finish commits must use a checkmark)",
+          ),
+        });
+      }
+      await commitFromComment({
+        ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId: primaryTaskId,
+        primaryTag: primaryTag ?? "meta",
+        executorAgent: executorAgent ?? undefined,
+        author: opts.author,
+        statusFrom: primaryStatusFrom ?? undefined,
+        statusTo: "DONE",
+        commentBody: opts.body,
+        formattedComment: formatCommentBodyForCommit(opts.body, ctx.config),
+        emoji: opts.statusCommitEmoji ?? defaultCommitEmojiForStatus("DONE"),
+        allow: opts.statusCommitAllow,
+        autoAllow: false,
+        allowTasks: true,
+        requireClean: opts.statusCommitRequireClean,
+        quiet: opts.quiet,
+        config: ctx.config,
+      });
+    }
+
+    // tasks.json is export-only; generated via `agentplane task export`.
 
     if (shouldCloseCommit && primaryTaskId) {
       if (!opts.quiet) {

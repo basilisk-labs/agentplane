@@ -283,6 +283,59 @@ describe("task finish (unit)", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
+  it("rejects confirm-gated comment-driven finish before mutating task state", async () => {
+    let currentTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["spike"],
+    });
+    const storePatch = vi.fn(
+      async (_taskId: string, builder: (task: TaskData) => Promise<TaskStorePatch>) => {
+        currentTask = applyStorePatch(currentTask, await builder(currentTask));
+        return { changed: true, task: currentTask };
+      },
+    );
+    const ctx = mkCtx();
+    ctx.config.status_commit_policy = "confirm";
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue({
+      get: vi.fn(() => currentTask),
+      patch: storePatch,
+    });
+
+    const { cmdFinish } = await import("./finish.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "done",
+        breaking: false,
+        force: false,
+        commitFromComment: true,
+        commitEmoji: "✅",
+        commitAllow: ["packages/agentplane"],
+        commitAutoAllow: false,
+        commitAllowTasks: true,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+
+    expect(currentTask.status).toBe("DOING");
+    expect(currentTask.commit ?? null).toBeNull();
+    expect(storePatch).toHaveBeenCalledTimes(1);
+    expect(mocks.commitFromComment).not.toHaveBeenCalled();
+    expect(mocks.readHeadCommit).not.toHaveBeenCalled();
+  });
+
   it("runs deterministic close commit when --close-commit is enabled", async () => {
     const ctx = mkCtx();
     mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["meta"] }));
@@ -691,7 +744,7 @@ describe("task finish (unit)", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
-  it("writes DONE status, then refreshes commit metadata from commitFromComment and amends in local mode", async () => {
+  it("creates the verification commit before writing DONE metadata and amends the README in local mode", async () => {
     const writes: string[] = [];
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
       writes.push(String(chunk));
@@ -771,6 +824,7 @@ describe("task finish (unit)", () => {
       quiet: false,
     });
     expect(rc).toBe(0);
+    expect(storeGet).not.toHaveBeenCalled();
     expect(storePatch).toHaveBeenCalledTimes(2);
     expect(currentTask.status).toBe("DONE");
     expect(currentTask.commit).toEqual({ hash: "new-hash", message: "✅ T-1 task: verified" });
@@ -904,7 +958,7 @@ describe("task finish (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(writeTask).toHaveBeenCalledTimes(2);
+    expect(writeTask).toHaveBeenCalledTimes(1);
     expect(stageSpy).toHaveBeenCalledWith([".agentplane/tasks/T-1/README.md"]);
     expect(amendSpy).toHaveBeenCalledTimes(1);
 
@@ -1060,8 +1114,8 @@ describe("task finish (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(store.get).toHaveBeenCalledTimes(1);
-    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(store.get).not.toHaveBeenCalled();
+    expect(store.patch).toHaveBeenCalledTimes(2);
     expect(currentTask.status).toBe("DONE");
     expect(currentTask.doc).toContain("## Summary\nConcurrent summary");
     expect(currentTask.comments).toEqual([
@@ -1133,8 +1187,8 @@ describe("task finish (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(store.get).toHaveBeenCalledTimes(1);
-    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(store.get).not.toHaveBeenCalled();
+    expect(store.patch).toHaveBeenCalledTimes(2);
     expect(currentTask.status).toBe("DONE");
   });
 
