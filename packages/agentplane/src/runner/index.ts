@@ -45,3 +45,7 @@ export {
   runnerAdapterSuccessResult,
   type RunnerAdapter,
 } from "./adapters/index.js";
+export {
+  prepareTaskRunnerExecution,
+  type PreparedTaskRunnerExecution,
+} from "./usecases/task-run.js";

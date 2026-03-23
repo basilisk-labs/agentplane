@@ -112,7 +112,7 @@ Commands:
     task plan reject  Reject the current task plan (requires a note).
     task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
     task rebuild-index  Rebuild the task index cache for the configured backend (best-effort).
-    task run  Run a task through the future runner contract (runtime not implemented yet).
+    task run  Prepare or run a task through the shared runner contract.
     task scaffold  Write a task README file scaffold (for the current doc template).
     task scrub  Replace a string across all tasks (frontmatter + docs).
     task search  Search tasks by text or regex with optional filters.
@@ -214,10 +214,13 @@ Usage:
 `;
 
 exports[`runCli help snapshots (cli2) > help task run --compact snapshot 1`] = `
-"task run - Run a task through the future runner contract (runtime not implemented yet).
+"task run - Prepare or run a task through the shared runner contract.
 
 Usage:
-  agentplane task run <task-id>
+  agentplane task run <task-id> [options]
+
+Options:
+  --dry-run  Prepare runner artifacts and print invocation metadata without executing a runner. (default=false)
 "
 `;
 

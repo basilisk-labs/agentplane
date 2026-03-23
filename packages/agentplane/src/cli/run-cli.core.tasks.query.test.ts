@@ -57,7 +57,7 @@ import * as prompts from "./prompts.js";
 installRunCliIntegrationHarness();
 
 describe("runCli", () => {
-  it("task run reserves the command contract until runtime lands", async () => {
+  it("task run --dry-run materializes runner artifacts without executing a real runner", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     let taskId = "";
@@ -87,9 +87,69 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
+      const code = await runCli(["task", "run", taskId, "--dry-run", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`task run dry-run prepared: ${taskId}`);
+      expect(io.stdout).toContain("adapter: codex");
+      expect(io.stdout).toContain("bundle:");
+      expect(io.stdout).toContain("argv: codex runner --bundle");
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      expect(await pathExists(runsRoot)).toBe(true);
+      const runEntries = await readdir(runsRoot);
+      const entries = runEntries.toSorted();
+      expect(entries).toHaveLength(1);
+      const runDir = path.join(runsRoot, entries[0] ?? "");
+      const bundlePath = path.join(runDir, "bundle.json");
+      const statePath = path.join(runDir, "run-state.json");
+      expect(await pathExists(bundlePath)).toBe(true);
+      expect(await pathExists(statePath)).toBe(true);
+
+      const bundle = JSON.parse(await readFile(bundlePath, "utf8")) as {
+        execution: { mode: string; adapter_id: string };
+        task: { task_id: string };
+      };
+      expect(bundle.execution.mode).toBe("dry_run");
+      expect(bundle.execution.adapter_id).toBe("codex");
+      expect(bundle.task.task_id).toBe(taskId);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task run without --dry-run stays on the explicit not-implemented path", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Runner execute placeholder task",
+          "--description",
+          "Execution path lands in the next task",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
       const code = await runCli(["task", "run", taskId, "--root", root]);
       expect(code).toBe(3);
-      expect(io.stderr).toContain("Task runner runtime is not implemented yet.");
+      expect(io.stderr).toContain("Task runner execution is not implemented yet.");
     } finally {
       io.restore();
     }

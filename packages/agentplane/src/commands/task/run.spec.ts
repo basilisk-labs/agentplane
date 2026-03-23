@@ -1,22 +1,29 @@
 import type { CommandSpec } from "../../cli/spec/spec.js";
 
-export type TaskRunParsed = { taskId: string };
+export type TaskRunParsed = { taskId: string; dryRun: boolean };
 
 export const taskRunSpec: CommandSpec<TaskRunParsed> = {
   id: ["task", "run"],
   group: "Task",
-  summary: "Run a task through the future runner contract (runtime not implemented yet).",
+  summary: "Prepare or run a task through the shared runner contract.",
   description:
-    "Reserves the task-runner command surface. The execution runtime lands in later tasks; this command currently exists to freeze help, parsing, and routing contracts.",
+    "Materializes runner bundle artifacts for a task. In the current milestone only --dry-run is implemented; real runner execution lands in the next task.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
-  examples: [
+  options: [
     {
-      cmd: "agentplane task run 202602030608-F1Q8AB",
-      why: "Inspect the future task-runner command contract.",
+      kind: "boolean",
+      name: "dry-run",
+      default: false,
+      description:
+        "Prepare runner artifacts and print invocation metadata without executing a runner.",
     },
   ],
-  notes: [
-    "This command is a contract placeholder in the current milestone; runner execution is added later.",
+  examples: [
+    {
+      cmd: "agentplane task run 202602030608-F1Q8AB --dry-run",
+      why: "Materialize bundle/run artifacts and inspect the prepared runner invocation.",
+    },
   ],
-  parse: (raw) => ({ taskId: String(raw.args["task-id"]) }),
+  notes: ["Runner execution without --dry-run is added in the next task."],
+  parse: (raw) => ({ taskId: String(raw.args["task-id"]), dryRun: raw.opts["dry-run"] === true }),
 };
