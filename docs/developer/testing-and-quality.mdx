@@ -228,7 +228,7 @@ By default, hooks run:
   - Status/comment-driven task commits derive `<emoji>` from the executor agent id and enforce it via `AGENTPLANE_AGENT_ID`
   - Finish commits must use `✅` (enforced via `AGENTPLANE_STATUS_TO=DONE`)
 - `pre-commit`: staged-only format/lint checks + `test:precommit`
-- `pre-push`: runs `bun run ci:local` by default. This fast local gate always covers format, schemas, agent templates, policy routing, release parity, build, onboarding, lint, fast tests, and critical CLI checks, but it now chooses a narrower contour when the changed-file scope is isolated:
+- `pre-push`: runs `bun run ci:local` by default. This fast local gate is intentionally read-only: it uses `format:check`, fails with an explicit remediation command instead of rewriting files, and blocks if any hook step mutates tracked content. It always covers format, schemas, agent templates, policy routing, release parity, build, onboarding, lint, fast tests, and critical CLI checks, but it now chooses a narrower contour when the changed-file scope is isolated:
   - `docs-only`: docs, website, policy, and task-doc changes skip code-heavy checks
   - `targeted(task)`: task command paths run the task-focused fast suite
   - `targeted(doctor)`: doctor command paths run the doctor-focused fast suite

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { execFile } from "node:child_process";
+import { execFile, execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import {
   chmod,
@@ -13,6 +13,7 @@ import {
 } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 
@@ -55,6 +56,11 @@ import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
+
+const PRE_PUSH_HOOK_SCRIPT = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../../../scripts/run-pre-push-hook.mjs",
+);
 
 describe("runCli", () => {
   it("hooks install writes managed hooks and shim", async () => {
@@ -412,6 +418,118 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("pre-push hook blocks formatting drift without mutating tracked files", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "hook-test",
+          private: true,
+          scripts: {
+            "format:check": "node scripts/format-check.mjs",
+            "ci:local:fast": "node scripts/ci-fast.mjs",
+            "ci:local:full": "node scripts/ci-fast.mjs",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "scripts", "format-check.mjs"), "process.exit(1);\n", "utf8");
+    await writeFile(path.join(root, "scripts", "ci-fast.mjs"), "process.exit(0);\n", "utf8");
+    const trackedFile = path.join(root, "src", "example.ts");
+    const original = "export const example={value:1}\n";
+    await writeFile(trackedFile, original, "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "package.json", "scripts", "src/example.ts"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test fixture"], { cwd: root });
+
+    let failure: (Error & { stderr?: string | Buffer; stdout?: string | Buffer }) | null = null;
+    try {
+      execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
+        cwd: root,
+        stdio: "pipe",
+        input: "",
+      });
+    } catch (error) {
+      failure = error as Error & { stderr?: string | Buffer; stdout?: string | Buffer };
+    }
+
+    expect(failure).not.toBeNull();
+    expect(String(failure?.stderr ?? "")).toContain(
+      "pre-push blocked: formatting check failed. Run `bun run format`, review the diff, commit it, and push again.",
+    );
+    expect(String(failure?.stderr ?? "")).not.toContain(
+      "format:check changed tracked files unexpectedly",
+    );
+    expect(await readFile(trackedFile, "utf8")).toBe(original);
+    const status = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
+      cwd: root,
+    });
+    expect(status.stdout.trim()).toBe("");
+  });
+
+  it("pre-push hook reports tracked-file mutations even when local ci fails", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "hook-test",
+          private: true,
+          scripts: {
+            "format:check": "node scripts/format-check.mjs",
+            "ci:local:fast": "node scripts/ci-fast.mjs",
+            "ci:local:full": "node scripts/ci-fast.mjs",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "scripts", "format-check.mjs"), "process.exit(0);\n", "utf8");
+    await writeFile(
+      path.join(root, "scripts", "ci-fast.mjs"),
+      [
+        'import { writeFileSync } from "node:fs";',
+        String.raw`writeFileSync("src/example.ts", "export const example = 2;\n", "utf8");`,
+        "process.exit(1);",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    const trackedFile = path.join(root, "src", "example.ts");
+    await writeFile(trackedFile, "export const example = 1;\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "package.json", "scripts", "src/example.ts"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test fixture"], { cwd: root });
+
+    let failure: (Error & { stderr?: string | Buffer; stdout?: string | Buffer }) | null = null;
+    try {
+      execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
+        cwd: root,
+        stdio: "pipe",
+        input: "",
+      });
+    } catch (error) {
+      failure = error as Error & { stderr?: string | Buffer; stdout?: string | Buffer };
+    }
+
+    expect(failure).not.toBeNull();
+    expect(String(failure?.stderr ?? "")).toContain(
+      "pre-push blocked: ci:local:fast changed tracked files. Commit or revert those changes and push again.",
+    );
+    expect(String(failure?.stderr ?? "")).not.toContain("pre-push blocked: ci:local:fast failed.");
+    expect(await readFile(trackedFile, "utf8")).toBe("export const example = 2;\n");
   });
 
   it("hooks run pre-commit allows tasks.json with env override", async () => {

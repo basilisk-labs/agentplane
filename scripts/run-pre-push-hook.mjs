@@ -24,49 +24,91 @@ function trackedChangesShort() {
   return String(read("git", ["status", "--short", "--untracked-files=no"])).trim();
 }
 
-const stdin = readFileSync(0, "utf8");
-const updates = parsePrePushStdin(stdin);
-
-const envRelease =
-  String(process.env.AGENTPLANE_HOOKS_RELEASE ?? "")
-    .trim()
-    .toLowerCase() === "1";
-const envFull =
-  String(process.env.AGENTPLANE_HOOKS_FULL ?? "")
-    .trim()
-    .toLowerCase() === "1";
-const isReleasePush = envRelease || envFull || hasReleaseTagPush(updates);
-const mode = isReleasePush ? "release" : "standard";
-process.stdout.write(`Running pre-push checks in ${mode} mode.\n`);
-const ciScript = envFull ? "ci:local:full" : "ci:local:fast";
-const changedFiles = readChangedFilesForRange(selectBranchDiffRange(updates));
-const ciEnv =
-  changedFiles.length > 0
-    ? { ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") }
-    : process.env;
-
-process.stdout.write("\n== Format (write) ==\n");
-run("bun", ["run", "format"]);
-const afterFormat = trackedChangesShort();
-if (afterFormat) {
-  process.stderr.write(
-    "\npre-push blocked: formatter changed tracked files. Commit these changes and push again.\n",
-  );
-  process.stderr.write(`${afterFormat}\n`);
-  throw new Error("pre-push blocked due to uncommitted formatter edits");
+class HookFailure extends Error {
+  constructor(message, details = []) {
+    super(message);
+    this.name = "HookFailure";
+    this.details = details;
+  }
 }
 
-runWithEnv("bun", ["run", ciScript], ciEnv);
-const afterCi = trackedChangesShort();
-if (afterCi) {
-  process.stderr.write(
-    `\npre-push blocked: ${ciScript} changed tracked files. Commit or revert those changes and push again.\n`,
-  );
-  process.stderr.write(`${afterCi}\n`);
-  throw new Error("pre-push blocked due to post-ci tracked file mutations");
+function fail(message, details = []) {
+  throw new HookFailure(message, details);
 }
 
-if (isReleasePush) {
-  run("node", ["scripts/check-release-notes.mjs"]);
-  run("bun", ["run", "release:prepublish"]);
+function failIfTrackedChanges(message) {
+  const changes = trackedChangesShort();
+  if (!changes) return;
+  fail(message, [changes]);
+}
+
+function main() {
+  const stdin = readFileSync(0, "utf8");
+  const updates = parsePrePushStdin(stdin);
+
+  const envRelease =
+    String(process.env.AGENTPLANE_HOOKS_RELEASE ?? "")
+      .trim()
+      .toLowerCase() === "1";
+  const envFull =
+    String(process.env.AGENTPLANE_HOOKS_FULL ?? "")
+      .trim()
+      .toLowerCase() === "1";
+  const isReleasePush = envRelease || envFull || hasReleaseTagPush(updates);
+  const mode = isReleasePush ? "release" : "standard";
+  process.stdout.write(`Running pre-push checks in ${mode} mode.\n`);
+  const ciScript = envFull ? "ci:local:full" : "ci:local:fast";
+  const changedFiles = readChangedFilesForRange(selectBranchDiffRange(updates));
+  const ciEnv =
+    changedFiles.length > 0
+      ? { ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") }
+      : process.env;
+
+  process.stdout.write("\n== Format (check) ==\n");
+  try {
+    run("bun", ["run", "format:check"]);
+  } catch {
+    failIfTrackedChanges(
+      "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
+    );
+    fail(
+      "pre-push blocked: formatting check failed. Run `bun run format`, review the diff, commit it, and push again.",
+    );
+  }
+  failIfTrackedChanges(
+    "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
+  );
+
+  let ciFailed = false;
+  try {
+    runWithEnv("bun", ["run", ciScript], ciEnv);
+  } catch {
+    ciFailed = true;
+  }
+  failIfTrackedChanges(
+    `pre-push blocked: ${ciScript} changed tracked files. Commit or revert those changes and push again.`,
+  );
+  if (ciFailed) {
+    fail(`pre-push blocked: ${ciScript} failed. Fix the reported checks and push again.`);
+  }
+
+  if (isReleasePush) {
+    run("node", ["scripts/check-release-notes.mjs"]);
+    run("bun", ["run", "release:prepublish"]);
+  }
+}
+
+try {
+  main();
+} catch (error) {
+  if (error instanceof HookFailure) {
+    process.stderr.write(`\n${error.message}\n`);
+    for (const detail of error.details) {
+      if (!detail) continue;
+      process.stderr.write(`${detail}\n`);
+    }
+    process.exitCode = 1;
+  } else {
+    throw error;
+  }
 }
