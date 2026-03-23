@@ -35,7 +35,8 @@ project runtime.
 
 Before running a scenario:
 
-1. Check manifest-level scenario descriptor, permissions, and `run_profile`.
+1. Check manifest-level scenario descriptor, permissions, and `run_profile`. Treat network approval as
+   part of the global `require_network` gate rather than a recipe-local `run_profile` field.
 2. Confirm recipe-local file references exist and look intentional.
 3. Confirm required inputs are present before approving future execution.
 

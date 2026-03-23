@@ -49,6 +49,8 @@ This page describes runtime behavior behind `recipes` and `scenario` commands.
 
 Install and validation flows inherit the current process environment.
 Execution flows are delegated to the configured runner adapter. The CLI passes recipe and task context through the runner bundle and does not interpret recipe `steps` as a direct execution DSL.
+Recipe `run_profile` no longer declares a separate network policy. Real network approval outside the
+runner bundle continues to flow through the global `require_network` gate.
 
 ## Caching behavior
 

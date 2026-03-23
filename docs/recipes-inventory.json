@@ -37,7 +37,6 @@
           "run_profile": {
             "mode": "analysis",
             "sandbox": "workspace-write",
-            "network": true,
             "expected_exit_contract": "viewer_url"
           }
         }
@@ -66,7 +65,6 @@
           "run_profile": {
             "mode": "analysis",
             "sandbox": "workspace-write",
-            "network": true,
             "expected_exit_contract": "projects"
           }
         },
@@ -85,7 +83,6 @@
           "run_profile": {
             "mode": "apply",
             "sandbox": "workspace-write",
-            "network": true,
             "requires_human_approval": true,
             "expected_exit_contract": "deployment_status"
           }

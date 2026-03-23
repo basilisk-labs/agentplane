@@ -117,6 +117,9 @@ Resolver output includes:
 - normalized `run_profile`
 - explicit selection reasons
 
+`run_profile` now covers runner-local execution hints only. Global network approval remains governed by
+`agents.approvals.require_network`, not by a recipe-scoped `run_profile.network` field.
+
 ## Scenario preview and execution contract
 
 `scenario run` resolves a scenario definition, validates recipe-local file references, and prints a
