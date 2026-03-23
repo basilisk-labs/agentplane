@@ -2629,9 +2629,9 @@ agentplane task run 202602030608-F1Q8AB
 
 ### task run cancel
 
-Mark an existing runner run as cancelled in persisted runner state.
+Cancel an existing runner run and stop the supervised process when present.
 
-Loads an existing runner run from its artifacts, marks the run as cancelled in run-state/events, and leaves the task available for later resume or retry decisions.
+Loads an existing runner run from its artifacts, sends a termination signal to a live supervised process when one is recorded, and persists the resulting cancelled state for later resume or retry decisions.
 
 Usage:
 
@@ -2645,7 +2645,7 @@ Examples:
 agentplane task run cancel 202602030608-F1Q8AB run_20260323_abc123
 ```
 
-- Persist a cancelled state for an existing runner run.
+- Cancel a prepared run or send a termination signal to a live supervised run.
 
 ### task run resume
 
