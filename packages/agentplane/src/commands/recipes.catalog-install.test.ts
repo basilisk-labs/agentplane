@@ -163,7 +163,13 @@ describe("commands/recipes catalog/install", () => {
         {
           schema_version: "1",
           id: "fixture",
+          summary: "Fixture goal",
           goal: "Fixture goal",
+          task_template: {
+            title: "Fixture scenario task",
+            description: "Fixture goal",
+            owner: "CODER",
+          },
           inputs: [],
           outputs: [],
           steps: [{ tool: "noop" }],

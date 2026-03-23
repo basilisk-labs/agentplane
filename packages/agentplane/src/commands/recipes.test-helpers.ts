@@ -156,6 +156,50 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
       ),
       "utf8",
     );
+
+    const scenarios = Array.isArray(manifest.scenarios)
+      ? manifest.scenarios.filter(
+          (scenario): scenario is Record<string, unknown> =>
+            !!scenario && typeof scenario === "object",
+        )
+      : [];
+    for (const scenario of scenarios) {
+      const scenarioFile = readStringFixtureValue(scenario, "file", "").trim();
+      if (!scenarioFile) continue;
+      const scenarioId = readStringFixtureValue(scenario, "id", "SCENARIO");
+      const scenarioName = readStringFixtureValue(scenario, "name", scenarioId);
+      const scenarioSummary = readStringFixtureValue(scenario, "summary", scenarioName);
+      const scenarioOutputs = Array.isArray(scenario.outputs)
+        ? scenario.outputs.filter((entry): entry is string => typeof entry === "string")
+        : [];
+      const scenarioInputs = Array.isArray(scenario.required_inputs)
+        ? scenario.required_inputs.filter((entry): entry is string => typeof entry === "string")
+        : [];
+      const scenarioPath = path.join(recipeDir, scenarioFile);
+      await mkdir(path.dirname(scenarioPath), { recursive: true });
+      await writeFile(
+        scenarioPath,
+        JSON.stringify(
+          {
+            schema_version: "1",
+            id: scenarioId,
+            summary: scenarioSummary,
+            goal: scenarioSummary,
+            task_template: {
+              title: `${scenarioName} task`,
+              description: scenarioSummary,
+              owner: "CODER",
+            },
+            inputs: scenarioInputs.map((name) => ({ name, type: "string" })),
+            outputs: scenarioOutputs.map((name) => ({ name, type: "string" })),
+            steps: [],
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+    }
   }
 }
 
