@@ -57,6 +57,44 @@ import * as prompts from "./prompts.js";
 installRunCliIntegrationHarness();
 
 describe("runCli", () => {
+  it("task run reserves the command contract until runtime lands", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Runner placeholder task",
+          "--description",
+          "Placeholder task run contract",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "run", taskId, "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Task runner runtime is not implemented yet.");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("task next shows ready tasks only", async () => {
     const root = await mkGitRepoRoot();
     let taskA = "";

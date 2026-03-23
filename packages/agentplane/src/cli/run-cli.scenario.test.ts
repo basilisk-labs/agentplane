@@ -133,6 +133,20 @@ describe("runCli scenario", () => {
     ).toBe(false);
   });
 
+  it("scenario execute reserves the command contract until runtime lands", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["scenario", "execute", "viewer:RECIPE_SCENARIO", "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Scenario execution runtime is not implemented yet.");
+      expect(io.stderr).toContain("agentplane scenario run <recipe:scenario>");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("scenario run rejects missing scenario definition files", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

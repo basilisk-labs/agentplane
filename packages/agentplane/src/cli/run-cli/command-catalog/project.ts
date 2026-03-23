@@ -32,6 +32,7 @@ import { recipesListRemoteSpec } from "../../../commands/recipes/list-remote.com
 import { recipesListSpec } from "../../../commands/recipes/list.command.js";
 import { recipesRemoveSpec } from "../../../commands/recipes/remove.command.js";
 import { recipesSpec } from "../../../commands/recipes/recipes.command.js";
+import { scenarioExecuteSpec } from "../../../commands/scenario/execute.command.js";
 import { scenarioInfoSpec } from "../../../commands/scenario/info.command.js";
 import { scenarioListSpec } from "../../../commands/scenario/list.command.js";
 import { scenarioRunSpec } from "../../../commands/scenario/run.command.js";
@@ -98,6 +99,9 @@ export const PROJECT_COMMANDS = [
   ),
   entry(scenarioInfoSpec, () =>
     import("../../../commands/scenario/info.command.js").then((m) => m.runScenarioInfo),
+  ),
+  entry(scenarioExecuteSpec, () =>
+    import("../../../commands/scenario/execute.command.js").then((m) => m.runScenarioExecute),
   ),
   entry(scenarioRunSpec, () =>
     import("../../../commands/scenario/run.command.js").then((m) => m.runScenarioRun),

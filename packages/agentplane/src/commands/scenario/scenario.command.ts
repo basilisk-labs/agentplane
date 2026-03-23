@@ -4,7 +4,7 @@ import { suggestOne } from "../../cli/spec/suggest.js";
 
 type ScenarioParsed = Record<string, never>;
 
-const SCENARIO_SUBCOMMANDS = ["list", "info", "run"] as const;
+const SCENARIO_SUBCOMMANDS = ["list", "info", "run", "execute"] as const;
 
 export const scenarioSpec: CommandSpec<ScenarioParsed> = {
   id: ["scenario"],

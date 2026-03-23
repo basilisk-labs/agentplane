@@ -21,6 +21,7 @@ const TASK_SUBCOMMANDS = [
   "normalize",
   "plan",
   "rebuild-index",
+  "run",
   "scrub",
   "search",
   "set-status",
@@ -58,6 +59,10 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
     {
       cmd: "agentplane task verify-show <task-id>",
       why: "Show Verify Steps before running checks.",
+    },
+    {
+      cmd: "agentplane task run <task-id>",
+      why: "Inspect the future task-runner contract.",
     },
   ],
   parse: (raw) => ({ cmd: (raw.args.cmd ?? []) as string[] }),

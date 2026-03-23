@@ -19,6 +19,7 @@ import { taskPlanRejectSpec } from "../../../commands/task/plan-reject.command.j
 import { taskPlanSetSpec } from "../../../commands/task/plan-set.command.js";
 import { taskPlanSpec } from "../../../commands/task/plan.command.js";
 import { taskRebuildIndexSpec } from "../../../commands/task/rebuild-index.command.js";
+import { taskRunSpec } from "../../../commands/task/run.spec.js";
 import { taskScaffoldSpec } from "../../../commands/task/scaffold.command.js";
 import { taskScrubSpec } from "../../../commands/task/scrub.command.js";
 import { taskSearchSpec } from "../../../commands/task/search.spec.js";
@@ -53,6 +54,9 @@ export const TASK_COMMANDS = [
   ),
   entry(taskShowSpec, (deps) =>
     import("../../../commands/task/show.run.js").then((m) => m.makeRunTaskShowHandler(deps.getCtx)),
+  ),
+  entry(taskRunSpec, () =>
+    import("../../../commands/task/run.command.js").then((m) => m.runTaskRun),
   ),
   entry(taskNewSpec, (deps) =>
     import("../../../commands/task/new.command.js").then((m) =>

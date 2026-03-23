@@ -81,6 +81,7 @@ Commands:
     release plan  Generate an agent-assisted release plan (changes list + next patch version).
   Scenario:
     scenario  Recipe scenario commands.
+    scenario execute  Execute a scenario through the future shared runner flow (runtime not implemented yet).
     scenario info  Show manifest-backed scenario details and normalized run profile.
     scenario list  List resolver-backed scenario descriptors from installed recipes.
     scenario run  Validate a scenario and print a prepared run plan (no execution).
@@ -111,6 +112,7 @@ Commands:
     task plan reject  Reject the current task plan (requires a note).
     task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
     task rebuild-index  Rebuild the task index cache for the configured backend (best-effort).
+    task run  Run a task through the future runner contract (runtime not implemented yet).
     task scaffold  Write a task README file scaffold (for the current doc template).
     task scrub  Replace a string across all tasks (frontmatter + docs).
     task search  Search tasks by text or regex with optional filters.
@@ -151,6 +153,14 @@ Options:
   --refresh  Refresh remote index cache before installing. (default=false)
   --yes  Auto-approve network prompts when allowed by config. (default=false)
   --on-conflict <fail|rename|overwrite>  Deprecated compatibility no-op; recipe installs stay self-contained. (choices=fail|rename|overwrite, default=fail)
+"
+`;
+
+exports[`runCli help snapshots (cli2) > help scenario execute --compact snapshot 1`] = `
+"scenario execute - Execute a scenario through the future shared runner flow (runtime not implemented yet).
+
+Usage:
+  agentplane scenario execute <recipe:scenario>
 "
 `;
 
@@ -200,6 +210,14 @@ exports[`runCli help snapshots (cli2) > help task plan --compact snapshot 1`] = 
 
 Usage:
   agentplane task plan <set|approve|reject> [args] [options]
+"
+`;
+
+exports[`runCli help snapshots (cli2) > help task run --compact snapshot 1`] = `
+"task run - Run a task through the future runner contract (runtime not implemented yet).
+
+Usage:
+  agentplane task run <task-id>
 "
 `;
 
