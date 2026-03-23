@@ -143,6 +143,8 @@ export class CodexRunnerAdapter implements RunnerAdapter {
       ),
       argv: [
         "codex",
+        "-a",
+        "never",
         "exec",
         "--json",
         "--output-last-message",
@@ -151,8 +153,6 @@ export class CodexRunnerAdapter implements RunnerAdapter {
         bundle.repository.git_root,
         "-s",
         sandbox,
-        "-a",
-        "never",
         "-",
       ],
       env: {

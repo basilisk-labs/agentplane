@@ -93,6 +93,8 @@ describe("CodexRunnerAdapter", () => {
     });
     expect(invocation.argv).toEqual([
       "codex",
+      "-a",
+      "never",
       "exec",
       "--json",
       "--output-last-message",
@@ -101,8 +103,6 @@ describe("CodexRunnerAdapter", () => {
       "/repo",
       "-s",
       "danger-full-access",
-      "-a",
-      "never",
       "-",
     ]);
     expect(invocation.argv.join(" ")).not.toContain("do not inline this policy text into argv");
@@ -134,6 +134,8 @@ describe("CodexRunnerAdapter", () => {
 
     expect(invocation.argv).toEqual([
       "codex",
+      "-a",
+      "never",
       "exec",
       "--json",
       "--output-last-message",
@@ -142,8 +144,6 @@ describe("CodexRunnerAdapter", () => {
       "/repo",
       "-s",
       "read-only",
-      "-a",
-      "never",
       "-",
     ]);
     expect(invocation.env).toMatchObject({
@@ -172,6 +172,8 @@ describe("CodexRunnerAdapter", () => {
 
     expect(invocation.argv).toEqual([
       "codex",
+      "-a",
+      "never",
       "exec",
       "--json",
       "--output-last-message",
@@ -180,8 +182,6 @@ describe("CodexRunnerAdapter", () => {
       "/repo",
       "-s",
       "danger-full-access",
-      "-a",
-      "never",
       "-",
     ]);
     expect(invocation.env.AGENTPLANE_RECIPE_SANDBOX).toBe("custom-sandbox");
