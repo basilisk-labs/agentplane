@@ -57,7 +57,7 @@ import * as prompts from "./prompts.js";
 installRunCliIntegrationHarness();
 
 describe("runCli", () => {
-  it("task run --dry-run materializes runner artifacts without executing a real runner", async () => {
+  it("task run rejects tasks that have not entered DOING yet", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     let taskId = "";
@@ -84,6 +84,60 @@ describe("runCli", () => {
         io.restore();
       }
     }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "run", taskId, "--dry-run", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain(`runner execution requires task status DOING`);
+      expect(io.stderr).toContain(`agentplane task start-ready ${taskId}`);
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      expect(await pathExists(runsRoot)).toBe(false);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task run --dry-run materializes runner artifacts for a DOING task without executing a real runner", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Runner placeholder task",
+          "--description",
+          "Placeholder task run contract",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before preparing runner artifacts for the dry-run contract.",
+      "--root",
+      root,
+    ]);
 
     const io = captureStdIO();
     try {
@@ -176,6 +230,18 @@ describe("runCli", () => {
       "utf8",
     );
     await chmod(fakeCodexPath, 0o755);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before executing the prepared runner adapter in the CLI test.",
+      "--root",
+      root,
+    ]);
 
     const io = captureStdIO();
     const originalPath = process.env.PATH;

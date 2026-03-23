@@ -8,6 +8,7 @@ import {
   executeTaskRunnerExecution,
   prepareTaskRunnerExecution,
 } from "../../runner/usecases/task-run.js";
+import { CliError } from "../../shared/errors.js";
 
 import type { TaskRunParsed } from "./run.spec.js";
 
@@ -65,6 +66,7 @@ export const runTaskRun: CommandHandler<TaskRunParsed> = async (
     process.stdout.write(`argv: ${prepared.invocation.argv.join(" ")}\n`);
     return 0;
   } catch (err) {
+    if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "task run", task_id: parsed.taskId });
   }
 };

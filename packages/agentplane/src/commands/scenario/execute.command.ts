@@ -6,6 +6,8 @@ import { infoMessage } from "../../cli/output.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { executeTaskRunnerExecution } from "../../runner/usecases/task-run.js";
 import { materializeRecipeScenarioTask } from "../../runner/usecases/scenario-materialize-task.js";
+import { cmdTaskPlanApprove } from "../task/plan.js";
+import { cmdTaskStartReady } from "../task/start-ready.js";
 
 import { CliError } from "../../shared/errors.js";
 
@@ -38,6 +40,20 @@ export const scenarioExecuteSpec: CommandSpec<ScenarioExecuteParsed> = {
   },
 };
 
+function renderScenarioExecuteStartBody(parsed: ScenarioExecuteParsed, taskId: string): string {
+  return (
+    `Start: execute recipe scenario ${parsed.recipeId}:${parsed.scenarioId} through the shared runner ` +
+    `using materialized task ${taskId} and its explicit task_template.`
+  );
+}
+
+function renderScenarioExecutePlanApprovalNote(parsed: ScenarioExecuteParsed): string {
+  return (
+    `Materialized from recipe scenario ${parsed.recipeId}:${parsed.scenarioId} ` +
+    "for immediate shared-runner execution."
+  );
+}
+
 export const runScenarioExecute: CommandHandler<ScenarioExecuteParsed> = async (ctx, parsed) => {
   try {
     const commandCtx = await loadCommandContext({
@@ -50,6 +66,25 @@ export const runScenarioExecute: CommandHandler<ScenarioExecuteParsed> = async (
       rootOverride: ctx.rootOverride ?? null,
       recipe_id: parsed.recipeId,
       scenario_id: parsed.scenarioId,
+    });
+    await cmdTaskPlanApprove({
+      ctx: commandCtx,
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride ?? undefined,
+      taskId: materialized.task_id,
+      by: "ORCHESTRATOR",
+      note: renderScenarioExecutePlanApprovalNote(parsed),
+    });
+    await cmdTaskStartReady({
+      ctx: commandCtx,
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride ?? undefined,
+      taskId: materialized.task_id,
+      author: materialized.task.owner,
+      body: renderScenarioExecuteStartBody(parsed, materialized.task_id),
+      force: false,
+      yes: false,
+      quiet: true,
     });
     const executed = await executeTaskRunnerExecution({
       ctx: commandCtx,

@@ -234,8 +234,12 @@ describe("runCli scenario", () => {
       const taskId = taskIdMatch?.[1] ?? "";
       const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
       const readme = await readFile(readmePath, "utf8");
+      expect(readme).toContain('status: "DOING"');
       expect(readme).toContain(`recipe_id: "${manifestId}"`);
       expect(readme).toContain('scenario_id: "RECIPE_SCENARIO"');
+      expect(readme).toContain(
+        `Start: execute recipe scenario ${manifestId}:RECIPE_SCENARIO through the shared runner`,
+      );
 
       const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
       const runEntries = await readdir(runsRoot);

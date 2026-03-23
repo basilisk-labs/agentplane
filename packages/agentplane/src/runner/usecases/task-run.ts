@@ -1,4 +1,5 @@
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
+import { CliError } from "../../shared/errors.js";
 
 import type { RunnerAdapter } from "../adapters/shared.js";
 import { writePreparedRunnerArtifacts } from "../artifacts.js";
@@ -28,6 +29,22 @@ export type PreparedTaskRunnerExecution = {
 export type ExecutedTaskRunnerExecution = PreparedTaskRunnerExecution & {
   result: RunnerResult;
 };
+
+function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
+  const task = bundle.task;
+  if (!task) return;
+  const status = String(task.data.status || "TODO")
+    .trim()
+    .toUpperCase();
+  if (status === "DOING") return;
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message:
+      `${task.task_id}: runner execution requires task status DOING ` +
+      `(current=${JSON.stringify(status)}; use \`agentplane task start-ready ${task.task_id} --author <ROLE> --body "Start: ..."\` first).`,
+  });
+}
 
 function renderTaskRunnerBootstrap(
   bundle: RunnerContextBundle,
@@ -111,6 +128,7 @@ export async function prepareTaskRunnerExecution(opts: {
     },
   };
   const invocation = await adapter.prepare(bundle);
+  assertRunnerTaskExecutable(bundle);
   const state = await writePreparedRunnerArtifacts({
     bundle,
     bootstrap_markdown: renderTaskRunnerBootstrap(bundle, invocation),
