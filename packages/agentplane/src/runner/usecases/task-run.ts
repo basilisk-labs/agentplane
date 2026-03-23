@@ -13,8 +13,10 @@ import {
   type RunnerContextBundle,
   type RunnerExecutionContract,
   type RunnerInvocation,
+  type RunnerRecipeContext,
   type RunnerResult,
   type RunnerRunState,
+  type RunnerTarget,
 } from "../types.js";
 
 export type PreparedTaskRunnerExecution = {
@@ -31,10 +33,14 @@ function renderTaskRunnerBootstrap(
   bundle: RunnerContextBundle,
   invocation: RunnerInvocation,
 ): string {
+  const targetLabel =
+    bundle.target.kind === "task"
+      ? `task ${bundle.target.task_id}`
+      : `recipe scenario ${bundle.target.recipe_id}:${bundle.target.scenario_id}`;
   return [
-    "# agentplane task runner bootstrap",
+    "# agentplane runner bootstrap",
     "",
-    `- target: task ${bundle.target.kind === "task" ? bundle.target.task_id : bundle.target.scenario_id}`,
+    `- target: ${targetLabel}`,
     `- adapter: ${bundle.execution.adapter_id}`,
     `- mode: ${bundle.execution.mode}`,
     `- run_id: ${bundle.execution.run_id}`,
@@ -55,6 +61,9 @@ export async function prepareTaskRunnerExecution(opts: {
   rootOverride?: string | null;
   task_id: string;
   mode: RunnerExecutionContract["mode"];
+  run_id?: string;
+  recipe?: RunnerRecipeContext;
+  target?: RunnerTarget;
 }): Promise<PreparedTaskRunnerExecution> {
   const ctx =
     opts.ctx ??
@@ -74,7 +83,7 @@ export async function prepareTaskRunnerExecution(opts: {
   const adapter: RunnerAdapter = createRunnerAdapter(ctx.config);
   const configured_adapter_id: RunnerExecutionContract["adapter_id"] =
     adapter.id === "custom" ? "custom" : "codex";
-  const run_id = createRunnerRunId();
+  const run_id = opts.run_id ?? createRunnerRunId();
   const artifact_paths = resolveTaskRunnerPaths({
     git_root: taskEnvelope.repository.git_root,
     workflow_dir: taskEnvelope.repository.workflow_dir,
@@ -84,10 +93,11 @@ export async function prepareTaskRunnerExecution(opts: {
   const bundle: RunnerContextBundle = {
     schema_version: RUNNER_BUNDLE_SCHEMA_VERSION,
     runner_api_version: RUNNER_API_VERSION,
-    target: { kind: "task", task_id: opts.task_id },
+    target: opts.target ?? { kind: "task", task_id: opts.task_id },
     base_prompts,
     repository: taskEnvelope.repository,
     task: taskEnvelope.task,
+    recipe: opts.recipe,
     execution: {
       adapter_id: configured_adapter_id,
       mode: opts.mode,
@@ -113,6 +123,9 @@ export async function executeTaskRunnerExecution(opts: {
   cwd: string;
   rootOverride?: string | null;
   task_id: string;
+  run_id?: string;
+  recipe?: RunnerRecipeContext;
+  target?: RunnerTarget;
 }): Promise<ExecutedTaskRunnerExecution> {
   const ctx =
     opts.ctx ??
@@ -123,6 +136,9 @@ export async function executeTaskRunnerExecution(opts: {
     rootOverride: opts.rootOverride ?? null,
     task_id: opts.task_id,
     mode: "execute",
+    run_id: opts.run_id,
+    recipe: opts.recipe,
+    target: opts.target,
   });
   const adapter = createRunnerAdapter(ctx.config);
   const result = await adapter.execute(prepared.invocation);

@@ -1,4 +1,4 @@
-import { readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
@@ -174,16 +174,90 @@ describe("runCli scenario", () => {
     ).toBe(false);
   });
 
-  it("scenario execute reserves the command contract until runtime lands", async () => {
+  it("scenario execute materializes a task and runs the shared runner with recipe context", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive();
+    const manifestId = String(manifest.id);
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+
+    const fakeBinDir = path.join(root, "bin");
+    const fakeCodexPath = path.join(fakeBinDir, "codex");
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeCodexPath,
+      [
+        "#!/bin/sh",
+        'out=""',
+        'while [ "$#" -gt 0 ]; do',
+        '  case "$1" in',
+        "    exec|--json|-|danger-full-access|never)",
+        "      shift",
+        "      ;;",
+        "    --output-last-message|-C|-s|-a)",
+        '      if [ "$1" = "--output-last-message" ]; then out="$2"; fi',
+        "      shift 2",
+        "      ;;",
+        "    *)",
+        "      shift",
+        "      ;;",
+        "  esac",
+        "done",
+        "cat >/dev/null",
+        String.raw`printf '{"type":"session.started"}\n'`,
+        String.raw`printf 'scenario execute final message\n' > "$out"`,
+        String.raw`printf 'scenario execute stdout\n'`,
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeCodexPath, 0o755);
+
     const io = captureStdIO();
+    const originalPath = process.env.PATH;
     try {
-      const code = await runCli(["scenario", "execute", "viewer:RECIPE_SCENARIO", "--root", root]);
-      expect(code).toBe(3);
-      expect(io.stderr).toContain("Scenario execution runtime is not implemented yet.");
-      expect(io.stderr).toContain("agentplane scenario run <recipe:scenario>");
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
+      const code = await runCli([
+        "scenario",
+        "execute",
+        `${manifestId}:RECIPE_SCENARIO`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`scenario executed: ${manifestId}:RECIPE_SCENARIO`);
+      expect(io.stdout).toContain("status: success");
+      expect(io.stdout).toContain("runner_exit_code: 0");
+
+      const taskIdMatch = /^task_id: (.+)$/m.exec(io.stdout);
+      expect(taskIdMatch?.[1]).toBeTruthy();
+      const taskId = taskIdMatch?.[1] ?? "";
+      const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+      const readme = await readFile(readmePath, "utf8");
+      expect(readme).toContain(`recipe_id: "${manifestId}"`);
+      expect(readme).toContain('scenario_id: "RECIPE_SCENARIO"');
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      const runEntries = await readdir(runsRoot);
+      const sortedRunEntries = runEntries.toSorted();
+      expect(sortedRunEntries).toHaveLength(1);
+      const runDir = path.join(runsRoot, sortedRunEntries[0] ?? "");
+      const bundle = JSON.parse(await readFile(path.join(runDir, "bundle.json"), "utf8")) as {
+        target: { kind: string; recipe_id?: string; scenario_id?: string; task_id?: string };
+        recipe?: { recipe_id?: string; scenario_id?: string };
+      };
+      expect(bundle.target).toEqual({
+        kind: "recipe_scenario",
+        recipe_id: manifestId,
+        scenario_id: "RECIPE_SCENARIO",
+        task_id: taskId,
+      });
+      expect(bundle.recipe).toMatchObject({
+        recipe_id: manifestId,
+        scenario_id: "RECIPE_SCENARIO",
+      });
     } finally {
+      process.env.PATH = originalPath;
       io.restore();
     }
   });
