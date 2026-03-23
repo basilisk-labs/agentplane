@@ -59,6 +59,19 @@ describe("config", () => {
     }
   });
 
+  it("loadConfig fills the default runner adapter when config.json omits runner", async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), "agentplane-config-runner-default-"));
+    const agentplaneDir = path.join(tmp, ".agentplane");
+    await mkdir(agentplaneDir, { recursive: true });
+
+    const raw = defaultConfig() as unknown as Record<string, unknown>;
+    delete raw.runner;
+    await writeFile(path.join(agentplaneDir, "config.json"), JSON.stringify(raw, null, 2), "utf8");
+
+    const loaded = await loadConfig(agentplaneDir);
+    expect(loaded.config.runner.default_adapter).toBe("codex");
+  });
+
   it("setByDottedKey sets nested fields and preserves object shape", () => {
     const cfg = defaultConfig() as unknown as Record<string, unknown>;
     setByDottedKey(cfg, "workflow_mode", "branch_pr");
@@ -93,6 +106,7 @@ describe("config", () => {
     expect(cfg.execution.handoff_conditions.length).toBeGreaterThan(0);
     expect(cfg.execution.unsafe_actions_requiring_explicit_user_ok.length).toBeGreaterThan(0);
     expect(cfg.framework.cli.expected_version).toBeNull();
+    expect(cfg.runner.default_adapter).toBe("codex");
   });
 
   it("default task README contract uses the active v3 sections", () => {
@@ -233,6 +247,12 @@ describe("config", () => {
         "recipes.storage_default",
         (raw) => ((raw.recipes as Record<string, unknown>).storage_default = "bad"),
         schemaPath("recipes.storage_default"),
+      ],
+      ["runner", (raw) => (raw.runner = "nope"), /runner must be object/],
+      [
+        "runner.default_adapter",
+        (raw) => ((raw.runner as Record<string, unknown>).default_adapter = "unknown"),
+        schemaPath("runner.default_adapter"),
       ],
       ["execution", (raw) => (raw.execution = "nope"), /execution must be object/],
       [

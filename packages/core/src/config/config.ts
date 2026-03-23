@@ -14,6 +14,7 @@ export type StatusCommitPolicy = "off" | "warn" | "confirm";
 export type CommitAutomation = "manual" | "finish_only";
 export type ExecutionProfile = "conservative" | "balanced" | "aggressive";
 export type ReasoningEffort = "low" | "medium" | "high";
+export type RunnerAdapterId = "codex" | "custom";
 
 export type AgentplaneConfig = {
   schema_version: 1;
@@ -43,6 +44,9 @@ export type AgentplaneConfig = {
     stop_conditions: string[];
     handoff_conditions: string[];
     unsafe_actions_requiring_explicit_user_ok: string[];
+  };
+  runner: {
+    default_adapter: RunnerAdapterId;
   };
   paths: {
     agents_dir: string;

@@ -37,3 +37,4 @@ export {
   assembleRunnerTaskContext,
   type RunnerTaskContextEnvelope,
 } from "./context/task-context.js";
+export { KNOWN_RUNNER_ADAPTER_IDS, resolveRunnerAdapterId } from "./config.js";

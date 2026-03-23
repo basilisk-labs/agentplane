@@ -13,6 +13,9 @@
   "recipes": {
     "storage_default": "link"
   },
+  "runner": {
+    "default_adapter": "codex"
+  },
   "paths": {
     "agents_dir": ".agentplane/agents",
     "tasks_path": ".agentplane/tasks.json",

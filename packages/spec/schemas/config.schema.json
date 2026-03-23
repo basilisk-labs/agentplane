@@ -4,7 +4,15 @@
   "title": "agentplane config.json (v1)",
   "type": "object",
   "additionalProperties": true,
-  "required": ["schema_version", "workflow_mode", "paths", "tasks", "commit", "tasks_backend"],
+  "required": [
+    "schema_version",
+    "workflow_mode",
+    "runner",
+    "paths",
+    "tasks",
+    "commit",
+    "tasks_backend"
+  ],
   "properties": {
     "schema_version": { "type": "integer", "const": 1, "default": 1 },
     "workflow_mode": {
@@ -150,6 +158,21 @@
             "Outside-repo read/write.",
             "Credential, keychain, or SSH material changes."
           ]
+        }
+      }
+    },
+    "runner": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["default_adapter"],
+      "default": {
+        "default_adapter": "codex"
+      },
+      "properties": {
+        "default_adapter": {
+          "type": "string",
+          "enum": ["codex", "custom"],
+          "default": "codex"
         }
       }
     },
