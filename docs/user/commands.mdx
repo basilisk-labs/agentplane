@@ -107,6 +107,8 @@ agentplane help task
 agentplane help task plan
 agentplane task show <task-id>
 agentplane task new --title "..." --description "..." --priority med --owner CODER --tag nodejs
+agentplane task run <task-id> --dry-run
+agentplane task run <task-id>
 agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
@@ -211,10 +213,15 @@ agentplane branch base explain
 
 ```bash
 agentplane recipes list
+agentplane recipes info <id>
 agentplane recipes explain <id>
+agentplane scenario info <recipe:scenario>
 agentplane scenario list
 agentplane scenario run <recipe:scenario>
+agentplane scenario execute <recipe:scenario>
 ```
+
+`scenario run` is preview-only. `scenario execute` materializes a recipe-backed task and runs it through the shared runner flow.
 
 ## CLI reference (generated)
 

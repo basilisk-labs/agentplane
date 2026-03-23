@@ -80,6 +80,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [release plan](#release-plan)
 - Scenario
   - [scenario](#scenario)
+  - [scenario execute](#scenario-execute)
   - [scenario info](#scenario-info)
   - [scenario list](#scenario-list)
   - [scenario run](#scenario-run)
@@ -110,6 +111,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task plan reject](#task-plan-reject)
   - [task plan set](#task-plan-set)
   - [task rebuild-index](#task-rebuild-index)
+  - [task run](#task-run)
   - [task scaffold](#task-scaffold)
   - [task scrub](#task-scrub)
   - [task search](#task-search)
@@ -1738,6 +1740,26 @@ Usage:
 agentplane scenario <subcommand> [options]
 ```
 
+### scenario execute
+
+Materialize a recipe-backed task and execute it through the shared runner flow.
+
+Resolves a recipe scenario, materializes a task from its explicit task_template, and executes the shared runner with recipe context bundled alongside the created task.
+
+Usage:
+
+```text
+agentplane scenario execute <recipe:scenario>
+```
+
+Examples:
+
+```sh
+agentplane scenario execute viewer:demo
+```
+
+- Create a task from the scenario template and execute it through the configured runner.
+
 ### scenario info
 
 Show manifest-backed scenario details and normalized run profile.
@@ -1985,6 +2007,12 @@ agentplane task verify-show <task-id>
 ```
 
 - Show Verify Steps before running checks.
+
+```sh
+agentplane task run <task-id>
+```
+
+- Run an existing task through the shared runner flow.
 
 ### task add
 
@@ -2565,6 +2593,36 @@ agentplane task rebuild-index
 ```
 
 - Rebuild tasks index cache.
+
+### task run
+
+Prepare or run a task through the shared runner contract.
+
+Materializes runner bundle artifacts for a task and can execute the configured runner adapter against that prepared bundle.
+
+Usage:
+
+```text
+agentplane task run <task-id> [options]
+```
+
+Options:
+
+- `--dry-run`: Prepare runner artifacts and print invocation metadata without executing a runner. (default=false)
+
+Examples:
+
+```sh
+agentplane task run 202602030608-F1Q8AB --dry-run
+```
+
+- Materialize bundle/run artifacts and inspect the prepared runner invocation.
+
+```sh
+agentplane task run 202602030608-F1Q8AB
+```
+
+- Prepare bundle artifacts and execute the configured runner adapter for the task.
 
 ### task scaffold
 

@@ -55,6 +55,11 @@ Scenario commands:
 - `agentplane scenario list`
 - `agentplane scenario info <recipe:scenario>`
 - `agentplane scenario run <recipe:scenario>`
+- `agentplane scenario execute <recipe:scenario>`
+
+Shared runner entrypoint:
+
+- `agentplane task run <task-id> [--dry-run]`
 
 ## Install sources
 
@@ -89,6 +94,10 @@ Project-local install/runtime state:
 - `.agentplane/recipes/<id>/tools/...`
 - `.agentplane/recipes/<id>/scenarios/...`
 - `.agentplane/recipes-cache/`
+- `.agentplane/tasks/<task-id>/runs/<run-id>/bundle.json`
+- `.agentplane/tasks/<task-id>/runs/<run-id>/bootstrap.md`
+- `.agentplane/tasks/<task-id>/runs/<run-id>/run-state.json`
+- `.agentplane/tasks/<task-id>/runs/<run-id>/events.jsonl`
 
 `AGENTPLANE_HOME` can override the global storage root.
 
@@ -108,25 +117,45 @@ Resolver output includes:
 - normalized `run_profile`
 - explicit selection reasons
 
-## Scenario placeholder contract
+## Scenario preview and execution contract
 
-`scenario run` currently resolves a scenario definition, validates recipe-local file references, and prints
-a prepared run plan. It does not execute orchestration steps yet.
+`scenario run` resolves a scenario definition, validates recipe-local file references, and prints a
+prepared run plan. It is preview-only: no task is created and no runner artifacts are written.
 
-Current placeholder support:
+`scenario execute` uses the same resolver and validation path, then:
+
+1. materializes a normal task from the scenario's explicit `task_template`;
+2. records recipe provenance on that task (`recipe_id`, `scenario_id`, `recipe_version`, `run_id`);
+3. assembles a shared runner bundle with base prompts, task context, and recipe context;
+4. invokes the configured runner adapter through the same contract used by `task run`.
+
+Required scenario definition support:
 
 - manifest-level scenario selection
 - recipe-local file validation (`agents`, `skills`, `tools`, `scenarios`)
-- internal scenario definition validation (`goal`, `inputs`, `outputs`, `steps`)
-- compatibility failure reporting before execution
+- internal scenario definition validation (`goal`, `inputs`, `outputs`, `steps`, `task_template`)
+- compatibility failure reporting before preview or execution
+
+`task_template` is required in every executable scenario definition. It must provide:
+
+- `title`
+- `description`
+- `owner`
+- optional `priority`
+- optional `tags`
+- optional `verify`
+- optional `doc` seeds for task README sections
+
+`task run` is the runner-neutral task entrypoint. It materializes bundle artifacts for an existing task and
+either prints invocation metadata (`--dry-run`) or executes the configured runner adapter.
 
 Scenario definitions can declare evidence requirements:
 
 - `evidence.required` (boolean)
 - `evidence.files` (string array, defaults to `["evidence.json"]` when required)
 
-Evidence declarations are part of the future orchestration contract and are not executed in the current
-placeholder runtime.
+Evidence declarations are bundled into recipe context for the runner and can seed verification expectations,
+but they are not a separate CLI orchestration DSL.
 
 ## Security model
 

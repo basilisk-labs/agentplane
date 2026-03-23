@@ -1,6 +1,6 @@
 ---
 title: "How recipes work"
-description: "Install, inspect, and validate self-contained recipes in the current CLI runtime."
+description: "Install, inspect, preview, and execute self-contained recipes in the current CLI runtime."
 ---
 
 This page describes runtime behavior behind `recipes` and `scenario` commands.
@@ -20,22 +20,35 @@ This page describes runtime behavior behind `recipes` and `scenario` commands.
 - `recipes list` scans project-local installed recipes and prints short entries.
 - `recipes info` and `recipes explain` read manifest-backed details.
 - `scenario list` enumerates resolver-backed scenario descriptors from installed recipes.
-- `scenario info` prints manifest-backed scenario details and normalized `run_profile` data for one `<recipe:scenario>`.
+- `scenario info` prints manifest-backed scenario details, normalized `run_profile`, and the explicit `task_template` for one `<recipe:scenario>`.
 
-## Scenario run flow
+## Scenario preview flow
 
 `scenario run`:
 
 1. Parses `<recipe:scenario>` id.
 2. Resolves the scenario through the deterministic recipe resolver.
-3. Validates compatibility, recipe-local files, and the internal `scenario.json` contract.
-4. Prints a prepared run plan with selection reasons and normalized `run_profile`.
+3. Validates compatibility, recipe-local files, and the internal `scenario.json` contract, including `task_template`.
+4. Prints a prepared run plan with selection reasons, normalized `run_profile`, and task-template data.
 5. Stops without executing tools or creating `runs/` artifacts.
+
+## Scenario execution flow
+
+`scenario execute`:
+
+1. Parses `<recipe:scenario>` id.
+2. Resolves and validates the scenario through the same deterministic resolver used by `scenario run`.
+3. Materializes a task from the scenario's explicit `task_template` and records recipe provenance on that task.
+4. Assembles the shared runner bundle from base prompts, repository context, task context, and recipe context.
+5. Creates task-local run artifacts under `.agentplane/tasks/<task-id>/runs/<run-id>/`.
+6. Invokes the configured runner adapter and reports task id, run id, artifact paths, and runner status.
+
+`task run` uses the same shared runner contract for ordinary tasks that were not created from recipes.
 
 ## Environment behavior
 
 Install and validation flows inherit the current process environment.
-Recipe-local tool execution env is intentionally out of scope until a real orchestration runner lands.
+Execution flows are delegated to the configured runner adapter. The CLI passes recipe and task context through the runner bundle and does not interpret recipe `steps` as a direct execution DSL.
 
 ## Caching behavior
 

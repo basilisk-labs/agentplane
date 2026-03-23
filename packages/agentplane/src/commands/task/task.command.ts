@@ -62,7 +62,7 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
     },
     {
       cmd: "agentplane task run <task-id>",
-      why: "Inspect the future task-runner contract.",
+      why: "Run an existing task through the shared runner flow.",
     },
   ],
   parse: (raw) => ({ cmd: (raw.args.cmd ?? []) as string[] }),

@@ -21,17 +21,23 @@ description: "Practical workflow for authoring and validating recipes."
    - `agentplane scenario list`
 4. Inspect target scenario:
    - `agentplane scenario info <recipe:scenario>`
-5. Validate prepared run plan:
+5. Validate the preview contract:
    - `agentplane scenario run <recipe:scenario>`
-6. Confirm no additional execution/runtime assumptions leaked into docs or tests.
+6. Validate the execution contract:
+   - `agentplane scenario execute <recipe:scenario>`
+7. If the created task must be debugged independently, inspect the shared runner contract:
+   - `agentplane task run <task-id> --dry-run`
+8. Confirm no additional runtime assumptions leaked into docs or tests.
 
 ## Designing scenarios
 
 - Keep the manifest-level descriptor self-sufficient for selection.
-- Keep internal orchestration files forward-compatible with future execution.
+- Keep internal scenario files explicit and forward-compatible with shared-runner execution.
 - Explicitly define expected outputs, required inputs, and failure messages.
 - Do not hide required inputs behind implicit defaults.
 - Keep `use_when` descriptive, but rely on structured fields for deterministic selection.
+- Every executable scenario must define `task_template`; do not synthesize task title, owner, or verification steps implicitly.
+- Use `task_template.doc.*` only for task seeding. Do not treat it as a second execution language.
 
 ## Designing tools
 
@@ -39,7 +45,8 @@ description: "Practical workflow for authoring and validating recipes."
 - Keep tool side effects inside project-local directories when possible.
 - Prefer stable stdout/stderr output formats for downstream automation.
 - Exit non-zero on failures and include actionable error text.
-- Do not assume tools will be invoked directly by `scenario run` until the orchestration runner exists.
+- Assume live execution happens only through `scenario execute` and the shared runner contract.
+- Do not rely on CLI-side interpretation of recipe `steps`; the runner receives them as context, not as an imperative DSL.
 
 ## Distribution and upgrades
 
@@ -51,5 +58,6 @@ description: "Practical workflow for authoring and validating recipes."
 
 - Recipe-local agents stay inside `.agentplane/recipes/<id>/agents/`; they are not installed into `.agentplane/agents`.
 - Treat `scenario` as the only public recipe capability surface.
+- `scenario execute` creates a normal task with recipe provenance and then reuses the same runner path as `task run`.
 - Validate both local archive installs and remote index installs before release.
 - Use extension recipes for non-core integrations (for example Dokploy or custom external APIs).

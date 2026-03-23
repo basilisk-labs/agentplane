@@ -4,10 +4,13 @@
   "runtime_contract": {
     "install_root": ".agentplane/recipes/<recipe-id>/",
     "public_entrypoint": "scenario",
-    "scenario_run": "prepared-plan-placeholder",
+    "scenario_run": "preview-only",
+    "scenario_execute": "materialize-task-and-runner-execution",
+    "task_run": "shared-runner-task-entrypoint",
     "notes": [
       "Recipe-local agents, skills, tools, and scenarios stay inside the recipe bundle.",
-      "scenario run validates compatibility and file references but does not execute orchestration steps in v1."
+      "scenario run validates compatibility and file references and prints a prepared plan without creating run artifacts.",
+      "scenario execute materializes a task from the scenario task_template and runs it through the shared runner contract."
     ]
   },
   "recipes": [
@@ -21,7 +24,7 @@
       "scenarios": [
         {
           "id": "viewer",
-          "summary": "Prepare the local task viewer run plan.",
+          "summary": "Open the local task viewer through the shared runner.",
           "use_when": [
             "Need to inspect task artifacts in a browser.",
             "Need a local preview before changing task data."
@@ -50,7 +53,7 @@
       "scenarios": [
         {
           "id": "list-projects",
-          "summary": "Prepare a run plan for listing Dokploy projects.",
+          "summary": "List Dokploy projects through the shared runner.",
           "use_when": [
             "Need to validate Dokploy connectivity.",
             "Need to inspect available projects before deployment."
@@ -69,7 +72,7 @@
         },
         {
           "id": "deploy-application",
-          "summary": "Prepare a run plan for deploying an application through Dokploy.",
+          "summary": "Deploy an application through Dokploy via the shared runner.",
           "use_when": [
             "Need to deploy an application through Dokploy.",
             "Need to review deployment permissions before execution."

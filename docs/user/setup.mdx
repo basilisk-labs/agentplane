@@ -284,4 +284,7 @@ Each command writes evidence to `.agentplane/workflows/evidence/`.
 agentplane recipes install --name viewer
 agentplane scenario list
 agentplane scenario run viewer:viewer
+agentplane scenario execute viewer:viewer
 ```
+
+Use `scenario run` when you only need validation and the prepared run plan. Use `scenario execute` when the recipe should create a task from its template and run through the shared runner.
