@@ -247,6 +247,7 @@ describe("runCli scenario", () => {
       expect(sortedRunEntries).toHaveLength(1);
       const runDir = path.join(runsRoot, sortedRunEntries[0] ?? "");
       const bundle = JSON.parse(await readFile(path.join(runDir, "bundle.json"), "utf8")) as {
+        base_prompts?: { id?: string; source?: string }[];
         target: { kind: string; recipe_id?: string; scenario_id?: string; task_id?: string };
         recipe?: { recipe_id?: string; scenario_id?: string };
       };
@@ -260,6 +261,20 @@ describe("runCli scenario", () => {
         recipe_id: manifestId,
         scenario_id: "RECIPE_SCENARIO",
       });
+      expect(bundle.base_prompts?.map((prompt) => prompt.id)).toEqual(
+        expect.arrayContaining([
+          "base.framework_runner",
+          "base.policy_gateway",
+          "base.owner_profile",
+          "recipe.execution_context",
+          "recipe.agent.RECIPE_AGENT",
+          "recipe.skill.RECIPE_SKILL",
+          "recipe.tools_summary",
+        ]),
+      );
+      expect(
+        bundle.base_prompts?.find((prompt) => prompt.id === "recipe.agent.RECIPE_AGENT")?.source,
+      ).toBe(`.agentplane/recipes/${manifestId}/agents/recipe.json`);
     } finally {
       process.env.PATH = originalPath;
       io.restore();

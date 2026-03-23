@@ -96,6 +96,7 @@ export async function prepareTaskRunnerExecution(opts: {
     git_root: taskEnvelope.repository.git_root,
     owner_id: taskEnvelope.task.data.owner,
     agents_dir: ctx.config.paths.agents_dir,
+    recipe: opts.recipe,
   });
   const adapter: RunnerAdapter = createRunnerAdapter(ctx.config);
   const configured_adapter_id: RunnerExecutionContract["adapter_id"] =

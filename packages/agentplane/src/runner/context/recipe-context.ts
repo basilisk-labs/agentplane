@@ -41,6 +41,7 @@ function toRecipeContext(opts: {
     scenario_id: opts.selection.scenario_id,
     recipe_name: opts.entry.manifest.name,
     recipe_version: opts.entry.version,
+    recipe_dir: opts.selection.recipe_dir,
     scenario_file: opts.selection.scenario_file,
     run_profile: opts.selection.run_profile as Record<string, unknown>,
     selection_reasons: [...opts.selection.selection_reasons],

@@ -59,6 +59,7 @@ export type RunnerRecipeContext = {
   scenario_id: string;
   recipe_name?: string;
   recipe_version?: string;
+  recipe_dir?: string;
   scenario_file?: string;
   run_profile?: Record<string, unknown>;
   selection_reasons?: string[];
