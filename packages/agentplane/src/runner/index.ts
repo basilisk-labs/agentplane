@@ -1,6 +1,9 @@
 export {
   appendRunnerEvent,
   createRunnerRunState,
+  evolveRunnerRunState,
+  readRunnerRunState,
+  writeRunnerRunState,
   writePreparedRunnerArtifacts,
 } from "./artifacts.js";
 export { createRunnerRunId } from "./run-id.js";
@@ -46,6 +49,8 @@ export {
   type RunnerAdapter,
 } from "./adapters/index.js";
 export {
+  executeTaskRunnerExecution,
   prepareTaskRunnerExecution,
+  type ExecutedTaskRunnerExecution,
   type PreparedTaskRunnerExecution,
 } from "./usecases/task-run.js";

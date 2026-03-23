@@ -13,6 +13,7 @@ import {
   type RunnerContextBundle,
   type RunnerExecutionContract,
   type RunnerInvocation,
+  type RunnerResult,
   type RunnerRunState,
 } from "../types.js";
 
@@ -20,6 +21,10 @@ export type PreparedTaskRunnerExecution = {
   bundle: RunnerContextBundle;
   invocation: RunnerInvocation;
   state: RunnerRunState;
+};
+
+export type ExecutedTaskRunnerExecution = PreparedTaskRunnerExecution & {
+  result: RunnerResult;
 };
 
 function renderTaskRunnerBootstrap(
@@ -67,6 +72,8 @@ export async function prepareTaskRunnerExecution(opts: {
     agents_dir: ctx.config.paths.agents_dir,
   });
   const adapter: RunnerAdapter = createRunnerAdapter(ctx.config);
+  const configured_adapter_id: RunnerExecutionContract["adapter_id"] =
+    adapter.id === "custom" ? "custom" : "codex";
   const run_id = createRunnerRunId();
   const artifact_paths = resolveTaskRunnerPaths({
     git_root: taskEnvelope.repository.git_root,
@@ -82,7 +89,7 @@ export async function prepareTaskRunnerExecution(opts: {
     repository: taskEnvelope.repository,
     task: taskEnvelope.task,
     execution: {
-      adapter_id: "codex",
+      adapter_id: configured_adapter_id,
       mode: opts.mode,
       run_id,
       artifact_paths,
@@ -99,4 +106,28 @@ export async function prepareTaskRunnerExecution(opts: {
     bootstrap: renderTaskRunnerBootstrap(bundle, invocation),
   });
   return { bundle, invocation, state };
+}
+
+export async function executeTaskRunnerExecution(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string | null;
+  task_id: string;
+}): Promise<ExecutedTaskRunnerExecution> {
+  const ctx =
+    opts.ctx ??
+    (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  const prepared = await prepareTaskRunnerExecution({
+    ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+    task_id: opts.task_id,
+    mode: "execute",
+  });
+  const adapter = createRunnerAdapter(ctx.config);
+  const result = await adapter.execute(prepared.invocation);
+  return {
+    ...prepared,
+    result,
+  };
 }

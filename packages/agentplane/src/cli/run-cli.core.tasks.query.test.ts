@@ -92,7 +92,7 @@ describe("runCli", () => {
       expect(io.stdout).toContain(`task run dry-run prepared: ${taskId}`);
       expect(io.stdout).toContain("adapter: codex");
       expect(io.stdout).toContain("bundle:");
-      expect(io.stdout).toContain("argv: codex runner --bundle");
+      expect(io.stdout).toContain("argv: codex exec --json --output-last-message");
 
       const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
       expect(await pathExists(runsRoot)).toBe(true);
@@ -117,9 +117,11 @@ describe("runCli", () => {
     }
   });
 
-  it("task run without --dry-run stays on the explicit not-implemented path", async () => {
+  it("task run without --dry-run executes the prepared runner adapter and persists run-state", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
+    const fakeBinDir = path.join(root, "bin");
+    const fakeCodexPath = path.join(fakeBinDir, "codex");
     let taskId = "";
     {
       const io = captureStdIO();
@@ -145,12 +147,63 @@ describe("runCli", () => {
       }
     }
 
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeCodexPath,
+      [
+        "#!/bin/sh",
+        'out=""',
+        'while [ "$#" -gt 0 ]; do',
+        '  case "$1" in',
+        "    exec|--json|-|danger-full-access|never)",
+        "      shift",
+        "      ;;",
+        "    --output-last-message|-C|-s|-a)",
+        '      if [ "$1" = "--output-last-message" ]; then out="$2"; fi',
+        "      shift 2",
+        "      ;;",
+        "    *)",
+        "      shift",
+        "      ;;",
+        "  esac",
+        "done",
+        "cat >/dev/null",
+        String.raw`printf '{"type":"session.started"}\n'`,
+        String.raw`printf 'CLI fake Codex message\n' > "$out"`,
+        String.raw`printf 'cli fake stdout\n'`,
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeCodexPath, 0o755);
+
     const io = captureStdIO();
+    const originalPath = process.env.PATH;
     try {
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
       const code = await runCli(["task", "run", taskId, "--root", root]);
-      expect(code).toBe(3);
-      expect(io.stderr).toContain("Task runner execution is not implemented yet.");
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`task run executed: ${taskId}`);
+      expect(io.stdout).toContain("status: success");
+      expect(io.stdout).toContain("runner_exit_code: 0");
+      expect(io.stdout).toContain("stdout: CLI fake Codex message");
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      const runEntries = await readdir(runsRoot);
+      const sortedRunEntries = runEntries.toSorted();
+      expect(sortedRunEntries).toHaveLength(1);
+      const runDir = path.join(runsRoot, sortedRunEntries[0] ?? "");
+      const statePath = path.join(runDir, "run-state.json");
+      const state = JSON.parse(await readFile(statePath, "utf8")) as {
+        status: string;
+        result?: { status: string; exit_code: number | null; stdout_summary?: string };
+      };
+      expect(state.status).toBe("success");
+      expect(state.result?.status).toBe("success");
+      expect(state.result?.exit_code).toBe(0);
+      expect(state.result?.stdout_summary).toContain("CLI fake Codex message");
     } finally {
+      process.env.PATH = originalPath;
       io.restore();
     }
   });

@@ -105,7 +105,10 @@ export type RunnerInvocation = {
   run_id: string;
   run_dir: string;
   bundle_path: string;
+  state_path: string;
+  events_path: string;
   bootstrap_path?: string | null;
+  output_last_message_path?: string | null;
   argv: string[];
   env: Record<string, string>;
   dry_run: boolean;

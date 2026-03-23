@@ -1,4 +1,4 @@
-import { appendFile, mkdir } from "node:fs/promises";
+import { appendFile, mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { atomicWriteFile } from "@agentplaneorg/core";
@@ -7,6 +7,7 @@ import type {
   RunnerContextBundle,
   RunnerEvent,
   RunnerLifecycleStatus,
+  RunnerResult,
   RunnerRunState,
 } from "./types.js";
 
@@ -63,6 +64,40 @@ export async function appendRunnerEvent(opts: {
 }): Promise<void> {
   await mkdir(path.dirname(opts.events_path), { recursive: true });
   await appendFile(opts.events_path, `${JSON.stringify(opts.event)}\n`, "utf8");
+}
+
+export async function readRunnerRunState(state_path: string): Promise<RunnerRunState | null> {
+  try {
+    const raw = await readFile(state_path, "utf8");
+    return JSON.parse(raw) as RunnerRunState;
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code === "ENOENT") return null;
+    throw err;
+  }
+}
+
+export function evolveRunnerRunState(opts: {
+  state: RunnerRunState;
+  status: RunnerLifecycleStatus;
+  result?: RunnerResult;
+  updated_at?: string;
+}): RunnerRunState {
+  const updated_at = opts.updated_at ?? new Date().toISOString();
+  return {
+    ...opts.state,
+    status: opts.status,
+    updated_at,
+    result: opts.result,
+  };
+}
+
+export async function writeRunnerRunState(opts: {
+  state_path: string;
+  state: RunnerRunState;
+}): Promise<void> {
+  await mkdir(path.dirname(opts.state_path), { recursive: true });
+  await atomicWriteFile(opts.state_path, `${JSON.stringify(opts.state, null, 2)}\n`, "utf8");
 }
 
 function ensureTrailingNewline(text: string): string {
