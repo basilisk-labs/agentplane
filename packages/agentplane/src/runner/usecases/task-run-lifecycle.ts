@@ -12,6 +12,7 @@ import {
   writeRunnerRunState,
 } from "../artifacts.js";
 import { createRunnerRunId } from "../run-id.js";
+import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { resolveTaskRunnerPaths } from "../task-run-paths.js";
 import type {
   RunnerContextBundle,
@@ -205,6 +206,12 @@ export async function cancelTaskRunnerExecution(opts: {
       },
     },
   });
+  await persistRunnerOutcomeToTask({
+    ctx: loaded.ctx,
+    task_id: opts.task_id,
+    bundle: loaded.bundle,
+    state: nextState,
+  });
   return { ...loaded, state: nextState, previous_status: loaded.state.status, changed: true };
 }
 
@@ -257,6 +264,12 @@ export async function resumeTaskRunnerExecution(opts: {
 
   const result = await createRunnerAdapter(loaded.ctx.config).execute(loaded.invocation);
   const nextState = (await readRunnerRunState(loaded.invocation.state_path)) ?? resetState;
+  await persistRunnerOutcomeToTask({
+    ctx: loaded.ctx,
+    task_id: opts.task_id,
+    bundle: loaded.bundle,
+    state: nextState,
+  });
   return { ...loaded, state: nextState, previous_status: loaded.state.status, result };
 }
 
@@ -335,6 +348,12 @@ export async function retryTaskRunnerExecution(opts: {
   });
   const result = await adapter.execute(invocation);
   const nextState = (await readRunnerRunState(invocation.state_path)) ?? state;
+  await persistRunnerOutcomeToTask({
+    ctx: source.ctx,
+    task_id: opts.task_id,
+    bundle: retriedBundle,
+    state: nextState,
+  });
   return {
     ctx: source.ctx,
     bundle: retriedBundle,

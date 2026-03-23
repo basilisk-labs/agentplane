@@ -120,6 +120,17 @@ describe("task-run lifecycle usecases", () => {
     const events = await readFile(cancelled.invocation.events_path, "utf8");
     expect(events).toContain("runner_prepared");
     expect(events).toContain("runner_cancelled");
+    const task = await ctx.taskBackend.getTask(taskId);
+    expect(task?.runner).toMatchObject({
+      run_id: "run-cancel",
+      status: "cancelled",
+      adapter_id: "custom",
+      mode: "execute",
+      target: { kind: "task", task_id: taskId },
+    });
+    expect(task?.verification?.state).toBe("pending");
+    expect(task?.doc).toContain("RUNNER — cancelled");
+    expect(task?.doc).toContain("VerificationHint: runner was cancelled");
   });
 
   it("resume re-executes an existing prepared execute-mode run in place", async () => {
@@ -157,6 +168,14 @@ describe("task-run lifecycle usecases", () => {
     const events = await readFile(resumed.invocation.events_path, "utf8");
     expect(events).toContain("runner_resume_requested");
     expect(events).toContain("runner_execute_finish");
+    const task = await ctx.taskBackend.getTask(taskId);
+    expect(task?.runner).toMatchObject({
+      run_id: "run-resume",
+      status: "success",
+      adapter_id: "custom",
+      mode: "execute",
+    });
+    expect(task?.doc).toContain("RUNNER — success");
   });
 
   it("retry creates a new run from a failed execute-mode run snapshot", async () => {
@@ -214,5 +233,13 @@ describe("task-run lifecycle usecases", () => {
     const retryEvents = await readFile(retried.invocation.events_path, "utf8");
     expect(retryEvents).toContain("runner_prepared");
     expect(retryEvents).toContain("runner_retry_created");
+    const task = await ctx.taskBackend.getTask(taskId);
+    expect(task?.runner).toMatchObject({
+      run_id: "run-retry-dest",
+      status: "success",
+      adapter_id: "custom",
+      mode: "execute",
+    });
+    expect(task?.doc).toContain("RunId: run-retry-dest");
   });
 });

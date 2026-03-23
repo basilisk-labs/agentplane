@@ -2,6 +2,8 @@ import { chmod, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import { readTask } from "@agentplaneorg/core";
+
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
@@ -275,6 +277,22 @@ describe("runCli scenario", () => {
       expect(
         bundle.base_prompts?.find((prompt) => prompt.id === "recipe.agent.RECIPE_AGENT")?.source,
       ).toBe(`.agentplane/recipes/${manifestId}/agents/recipe.json`);
+
+      const task = await readTask({ cwd: root, rootOverride: root, taskId });
+      expect(task.frontmatter.verification?.state).toBe("pending");
+      expect(task.frontmatter.runner).toMatchObject({
+        status: "success",
+        adapter_id: "codex",
+        mode: "execute",
+        target: {
+          kind: "recipe_scenario",
+          recipe_id: manifestId,
+          scenario_id: "RECIPE_SCENARIO",
+          task_id: taskId,
+        },
+      });
+      expect(task.body).toContain("RUNNER — success");
+      expect(task.body).toContain(`Target: recipe ${manifestId}:RECIPE_SCENARIO -> task ${taskId}`);
     } finally {
       process.env.PATH = originalPath;
       io.restore();

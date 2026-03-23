@@ -34,6 +34,38 @@ export type TaskOrigin = {
   [key: string]: string | undefined;
 };
 
+export type TaskRunnerOutcomeStatus = "prepared" | "running" | "success" | "failed" | "cancelled";
+
+export type TaskRunnerExecutionMetrics = {
+  duration_ms?: number;
+  stdout_bytes?: number;
+  stderr_bytes?: number;
+  output_last_message_bytes?: number | null;
+};
+
+export type TaskRunnerTarget = {
+  kind: "task" | "recipe_scenario";
+  task_id?: string;
+  recipe_id?: string;
+  scenario_id?: string;
+};
+
+export type TaskRunnerOutcome = {
+  run_id: string;
+  status: TaskRunnerOutcomeStatus;
+  adapter_id: string;
+  mode: "execute" | "dry_run";
+  updated_at: string;
+  started_at?: string;
+  ended_at?: string;
+  exit_code: number | null;
+  target: TaskRunnerTarget;
+  output_paths?: string[];
+  stdout_summary?: string;
+  stderr_summary?: string;
+  metrics?: TaskRunnerExecutionMetrics;
+};
+
 export type TaskFrontmatter = {
   id: string;
   title: string;
@@ -57,6 +89,7 @@ export type TaskFrontmatter = {
     updated_by: string | null;
     note: string | null;
   };
+  runner?: TaskRunnerOutcome;
   comments: { author: string; body: string }[];
   events?: TaskEvent[];
   doc_version: 2 | 3;

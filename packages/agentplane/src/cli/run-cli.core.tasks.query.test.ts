@@ -271,6 +271,105 @@ describe("runCli", () => {
       expect(state.result?.status).toBe("success");
       expect(state.result?.exit_code).toBe(0);
       expect(state.result?.stdout_summary).toContain("CLI fake Codex message");
+
+      const task = await readTask({ cwd: root, rootOverride: root, taskId });
+      expect(task.frontmatter.verification?.state).toBe("pending");
+      expect(task.frontmatter.runner).toMatchObject({
+        run_id: sortedRunEntries[0],
+        status: "success",
+        adapter_id: "codex",
+        mode: "execute",
+        exit_code: 0,
+        target: { kind: "task", task_id: taskId },
+      });
+      expect(task.body).toContain("<!-- BEGIN RUNNER OUTCOME -->");
+      expect(task.body).toContain("RUNNER — success");
+      expect(task.body).toContain("VerificationHint: runner completed successfully");
+    } finally {
+      process.env.PATH = originalPath;
+      io.restore();
+    }
+  });
+
+  it("task run failure writes the failed outcome back into task state and findings", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const fakeBinDir = path.join(root, "bin");
+    const fakeCodexPath = path.join(fakeBinDir, "codex");
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Runner failed task",
+          "--description",
+          "Execution path captures a failed runner outcome",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeCodexPath,
+      [
+        "#!/bin/sh",
+        "cat >/dev/null",
+        String.raw`printf 'runner failed stderr\n' >&2`,
+        "exit 17",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeCodexPath, 0o755);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before exercising the failed task-run outcome path in the CLI test.",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    const originalPath = process.env.PATH;
+    try {
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
+      const code = await runCli(["task", "run", taskId, "--root", root]);
+      expect(code).toBe(17);
+      expect(io.stdout).toContain(`task run executed: ${taskId}`);
+      expect(io.stdout).toContain("status: failed");
+      expect(io.stdout).toContain("runner_exit_code: 17");
+      expect(io.stderr).toContain("stderr: runner failed stderr");
+
+      const task = await readTask({ cwd: root, rootOverride: root, taskId });
+      expect(task.frontmatter.status).toBe("DOING");
+      expect(task.frontmatter.verification?.state).toBe("pending");
+      expect(task.frontmatter.runner).toMatchObject({
+        status: "failed",
+        adapter_id: "codex",
+        mode: "execute",
+        exit_code: 17,
+        target: { kind: "task", task_id: taskId },
+      });
+      expect(task.body).toContain("RUNNER — failed");
+      expect(task.body).toContain("Stderr: runner failed stderr");
+      expect(task.body).toContain("VerificationHint: runner failed");
     } finally {
       process.env.PATH = originalPath;
       io.restore();

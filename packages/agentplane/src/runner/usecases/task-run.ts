@@ -2,11 +2,16 @@ import { loadCommandContext, type CommandContext } from "../../commands/shared/t
 import { CliError } from "../../shared/errors.js";
 
 import type { RunnerAdapter } from "../adapters/shared.js";
-import { writePreparedRunnerArtifacts } from "../artifacts.js";
+import {
+  evolveRunnerRunState,
+  readRunnerRunState,
+  writePreparedRunnerArtifacts,
+} from "../artifacts.js";
 import { createRunnerAdapter } from "../adapters/index.js";
 import { collectRunnerBasePrompts } from "../context/base-prompts.js";
 import { assembleRunnerTaskContext } from "../context/task-context.js";
 import { createRunnerRunId } from "../run-id.js";
+import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { resolveTaskRunnerPaths } from "../task-run-paths.js";
 import {
   RUNNER_API_VERSION,
@@ -162,6 +167,20 @@ export async function executeTaskRunnerExecution(opts: {
   });
   const adapter = createRunnerAdapter(ctx.config);
   const result = await adapter.execute(prepared.invocation);
+  const state =
+    (await readRunnerRunState(prepared.invocation.state_path)) ??
+    evolveRunnerRunState({
+      state: prepared.state,
+      status: result.status,
+      result,
+      updated_at: result.ended_at,
+    });
+  await persistRunnerOutcomeToTask({
+    ctx,
+    task_id: opts.task_id,
+    bundle: prepared.bundle,
+    state,
+  });
   return {
     ...prepared,
     result,

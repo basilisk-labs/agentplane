@@ -135,6 +135,7 @@ export function issueToTask(opts: {
     owner: toStringSafe(ownerFieldVal ?? opts.ownerAgent),
     revision: canonicalState?.revision ?? 1,
     origin,
+    runner: canonicalState?.runner,
     tags: mergedTags,
     depends_on: [],
     verify: maybeParseJson(verifyVal) as string[],

@@ -14,6 +14,10 @@ export type {
   TaskEvent,
   TaskEventType,
   TaskOrigin,
+  TaskRunnerExecutionMetrics,
+  TaskRunnerOutcome,
+  TaskRunnerOutcomeStatus,
+  TaskRunnerTarget,
   TaskProjectionRefreshOptions,
   TaskWriteOptions,
   VerificationResult,
@@ -28,6 +32,7 @@ export * from "./shared/id.js";
 export {
   defaultPlanApproval,
   normalizeTaskOrigin,
+  normalizeTaskRunnerOutcome,
   defaultVerificationResult,
   normalizeDependsOn,
   normalizePriority,
