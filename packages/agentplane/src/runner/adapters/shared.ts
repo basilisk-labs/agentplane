@@ -59,3 +59,24 @@ export function runnerAdapterFailureResult(opts: {
     metrics: opts.metrics,
   };
 }
+
+export function runnerAdapterCancelledResult(opts: {
+  reason: string;
+  started_at?: string;
+  ended_at?: string;
+  exit_code?: number | null;
+  output_paths?: string[];
+  metrics?: RunnerExecutionMetrics;
+}): RunnerResult {
+  const started_at = opts.started_at ?? nowIso();
+  const ended_at = opts.ended_at ?? nowIso();
+  return {
+    status: "cancelled",
+    exit_code: opts.exit_code ?? null,
+    started_at,
+    ended_at,
+    stderr_summary: opts.reason,
+    output_paths: opts.output_paths,
+    metrics: opts.metrics,
+  };
+}

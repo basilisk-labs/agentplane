@@ -122,6 +122,19 @@ export type RunnerExecutionMetrics = {
   output_last_message_bytes?: number | null;
 };
 
+export type RunnerProcessSignal = "SIGHUP" | "SIGINT" | "SIGQUIT" | "SIGTERM" | "SIGKILL";
+
+export type RunnerSupervisionState = {
+  pid?: number | null;
+  command?: string | null;
+  started_at?: string | null;
+  heartbeat_at?: string | null;
+  cancel_requested_at?: string | null;
+  cancel_signal?: RunnerProcessSignal | null;
+  force_killed?: boolean;
+  exit_signal?: RunnerProcessSignal | null;
+};
+
 export type RunnerResultStatus = "success" | "failed" | "cancelled";
 
 export type RunnerResult = {
@@ -168,6 +181,7 @@ export type RunnerRunState = {
   created_at: string;
   updated_at: string;
   prepared_metadata?: RunnerPreparedMetadata;
+  supervision?: RunnerSupervisionState;
   result?: RunnerResult;
 };
 

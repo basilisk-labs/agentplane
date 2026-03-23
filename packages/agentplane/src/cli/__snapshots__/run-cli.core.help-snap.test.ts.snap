@@ -113,7 +113,7 @@ Commands:
     task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
     task rebuild-index  Rebuild the task index cache for the configured backend (best-effort).
     task run  Prepare or run a task through the shared runner contract.
-    task run cancel  Mark an existing runner run as cancelled in persisted runner state.
+    task run cancel  Cancel an existing runner run and stop the supervised process when present.
     task run resume  Resume an existing execute-mode runner run in place.
     task run retry  Retry an existing execute-mode runner run into a new run id.
     task scaffold  Write a task README file scaffold (for the current doc template).

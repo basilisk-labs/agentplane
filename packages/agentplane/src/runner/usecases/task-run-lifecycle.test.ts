@@ -20,7 +20,7 @@ import {
   resumeTaskRunnerExecution,
   retryTaskRunnerExecution,
 } from "./task-run-lifecycle.js";
-import { prepareTaskRunnerExecution } from "./task-run.js";
+import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
 
 installRunCliIntegrationHarness();
 const originalPath = process.env.PATH;
@@ -92,6 +92,20 @@ async function configureCustomRunner(root: string, scriptLines: string[]): Promi
   process.env.PATH = `${fakeBinDir}${path.delimiter}${process.env.PATH ?? ""}`;
 }
 
+async function waitForState(
+  statePath: string,
+  predicate: (state: Awaited<ReturnType<typeof readRunnerRunState>>) => boolean,
+  timeoutMs = 5000,
+): Promise<Awaited<ReturnType<typeof readRunnerRunState>>> {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    const state = await readRunnerRunState(statePath);
+    if (predicate(state)) return state;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  return await readRunnerRunState(statePath);
+}
+
 describe("task-run lifecycle usecases", () => {
   it("cancel marks a prepared execute-mode run as cancelled and appends an event", async () => {
     const root = await makeTaskRoot();
@@ -131,6 +145,61 @@ describe("task-run lifecycle usecases", () => {
     expect(task?.verification?.state).toBe("pending");
     expect(task?.doc).toContain("RUNNER — cancelled");
     expect(task?.doc).toContain("VerificationHint: runner was cancelled");
+  });
+
+  it("cancel terminates a running execute-mode run via persisted supervision metadata", async () => {
+    const root = await makeTaskRoot();
+    await configureCustomRunner(root, [
+      "#!/bin/sh",
+      "trap 'exit 0' TERM",
+      "cat >/dev/null",
+      "while :; do sleep 1; done",
+    ]);
+    const taskId = await createDoingTask(root, "Cancel live run");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const runId = "run-live-cancel";
+    const statePath = path.join(
+      root,
+      ".agentplane",
+      "tasks",
+      taskId,
+      "runs",
+      runId,
+      "run-state.json",
+    );
+    const executionPromise = executeTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      run_id: runId,
+    });
+
+    const runningState = await waitForState(
+      statePath,
+      (state) => state?.status === "running" && typeof state.supervision?.pid === "number",
+    );
+    expect(runningState?.status).toBe("running");
+    expect(runningState?.supervision?.pid).toBeGreaterThan(0);
+
+    const cancelled = await cancelTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      run_id: runId,
+    });
+
+    const executed = await executionPromise;
+    const finalState = await readRunnerRunState(statePath);
+
+    expect(cancelled.changed).toBe(true);
+    expect(cancelled.state.status).toBe("cancelled");
+    expect(cancelled.state.supervision?.cancel_requested_at).toBeTruthy();
+    expect(cancelled.state.supervision?.cancel_signal).toBeTruthy();
+    expect(executed.result.status).toBe("cancelled");
+    expect(finalState?.status).toBe("cancelled");
+    expect(finalState?.supervision?.exit_signal).toBeTruthy();
   });
 
   it("resume re-executes an existing prepared execute-mode run in place", async () => {

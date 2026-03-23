@@ -1,4 +1,3 @@
-import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -10,10 +9,12 @@ import {
   writeRunnerRunState,
 } from "../artifacts.js";
 import {
+  runnerAdapterCancelledResult,
   runnerAdapterFailureResult,
   runnerAdapterSuccessResult,
   type RunnerAdapter,
 } from "./shared.js";
+import { exitCodeForSignal, runSupervisedProcess } from "../process-supervision.js";
 
 const CODEX_LAST_MESSAGE_FILENAME = "codex-last-message.md";
 const CODEX_SANDBOX_VALUES = new Set(["read-only", "workspace-write", "danger-full-access"]);
@@ -66,39 +67,6 @@ async function readOptionalText(filePath?: string | null): Promise<string | null
   } catch {
     return null;
   }
-}
-
-async function runCodexProcess(opts: {
-  invocation: RunnerInvocation;
-  stdin_text: string;
-}): Promise<{ exit_code: number | null; stdout: string; stderr: string }> {
-  return await new Promise((resolve, reject) => {
-    const [command, ...args] = opts.invocation.argv;
-    if (!command) {
-      reject(new Error("Codex adapter invocation is missing the executable command"));
-      return;
-    }
-
-    const child = spawn(command, args, {
-      cwd: opts.invocation.run_dir,
-      env: { ...process.env, ...opts.invocation.env },
-      stdio: ["pipe", "pipe", "pipe"],
-    });
-
-    let stdout = "";
-    let stderr = "";
-    child.stdout.on("data", (chunk: Buffer | string) => {
-      stdout += chunk.toString();
-    });
-    child.stderr.on("data", (chunk: Buffer | string) => {
-      stderr += chunk.toString();
-    });
-    child.on("error", reject);
-    child.on("close", (code) => {
-      resolve({ exit_code: code, stdout, stderr });
-    });
-    child.stdin.end(opts.stdin_text);
-  });
 }
 
 function assertCodexBundle(bundle: RunnerContextBundle): void {
@@ -241,30 +209,11 @@ export class CodexRunnerAdapter implements RunnerAdapter {
     return (async () => {
       try {
         assertCodexInvocation(invocation);
-        const initialState = await readRunnerRunState(invocation.state_path);
-        if (initialState) {
-          await writeRunnerRunState({
-            state_path: invocation.state_path,
-            state: evolveRunnerRunState({
-              state: initialState,
-              status: "running",
-              updated_at: started_at,
-            }),
-          });
-        }
-        await appendRunnerEvent({
-          events_path: invocation.events_path,
-          event: {
-            at: started_at,
-            type: "runner_execute_start",
-            message: "codex exec started",
-            data: buildInvocationEventData(invocation),
-          },
-        });
         const bootstrapText = await readFile(invocation.bootstrap_path!, "utf8");
-        const processResult = await runCodexProcess({
+        const processResult = await runSupervisedProcess({
           invocation,
           stdin_text: bootstrapText,
+          start_message: "codex exec started",
         });
         const lastMessage = await readOptionalText(invocation.output_last_message_path);
         const output_paths = [
@@ -273,35 +222,48 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           invocation.output_last_message_path,
         ].filter((value): value is string => typeof value === "string" && value.trim().length > 0);
         const success = processResult.exit_code === 0;
-        const ended_at = new Date().toISOString();
+        const ended_at = processResult.ended_at;
         const metrics = {
-          duration_ms: durationMs(started_at, ended_at),
+          duration_ms: durationMs(processResult.started_at, ended_at),
           stdout_bytes: byteLength(processResult.stdout),
           stderr_bytes: byteLength(processResult.stderr),
           output_last_message_bytes: lastMessage === null ? null : byteLength(lastMessage),
         };
-        const result = success
-          ? runnerAdapterSuccessResult({
-              started_at,
+        const result = processResult.cancel_requested_at
+          ? runnerAdapterCancelledResult({
+              reason: processResult.cancel_signal
+                ? `Codex runner cancelled via ${processResult.cancel_signal}.`
+                : "Codex runner cancelled.",
+              started_at: processResult.started_at,
               ended_at,
-              exit_code: processResult.exit_code ?? 0,
-              stdout_summary:
-                summarizeOutput(lastMessage ?? processResult.stdout) ??
-                "Codex execution finished without output.",
+              exit_code:
+                processResult.exit_code ?? exitCodeForSignal(processResult.exit_signal) ?? null,
               output_paths,
               metrics,
             })
-          : runnerAdapterFailureResult({
-              err:
-                summarizeOutput(processResult.stderr) ??
-                summarizeOutput(processResult.stdout) ??
-                `Codex exited with code ${processResult.exit_code ?? "unknown"}`,
-              started_at,
-              ended_at,
-              exit_code: processResult.exit_code ?? 1,
-              output_paths,
-              metrics,
-            });
+          : success
+            ? runnerAdapterSuccessResult({
+                started_at: processResult.started_at,
+                ended_at,
+                exit_code: processResult.exit_code ?? 0,
+                stdout_summary:
+                  summarizeOutput(lastMessage ?? processResult.stdout) ??
+                  "Codex execution finished without output.",
+                output_paths,
+                metrics,
+              })
+            : runnerAdapterFailureResult({
+                err:
+                  summarizeOutput(processResult.stderr) ??
+                  summarizeOutput(processResult.stdout) ??
+                  `Codex exited with code ${processResult.exit_code ?? "unknown"}`,
+                started_at: processResult.started_at,
+                ended_at,
+                exit_code:
+                  processResult.exit_code ?? exitCodeForSignal(processResult.exit_signal) ?? 1,
+                output_paths,
+                metrics,
+              });
         const stateAfter = await readRunnerRunState(invocation.state_path);
         if (stateAfter) {
           await writeRunnerRunState({
@@ -310,6 +272,14 @@ export class CodexRunnerAdapter implements RunnerAdapter {
               state: stateAfter,
               status: result.status,
               result,
+              supervision: {
+                ...stateAfter.supervision,
+                pid: processResult.pid,
+                command: invocation.argv[0] ?? null,
+                started_at: processResult.started_at,
+                heartbeat_at: processResult.heartbeat_at,
+                exit_signal: processResult.exit_signal,
+              },
             }),
           });
         }
@@ -321,6 +291,11 @@ export class CodexRunnerAdapter implements RunnerAdapter {
             message: `codex exec finished with status=${result.status}`,
             data: {
               ...buildInvocationEventData(invocation),
+              pid: processResult.pid,
+              exit_signal: processResult.exit_signal,
+              cancel_requested_at: processResult.cancel_requested_at,
+              cancel_signal: processResult.cancel_signal,
+              force_killed: processResult.force_killed,
               exit_code: result.exit_code,
               output_paths,
               metrics: result.metrics,

@@ -59,6 +59,31 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
+async function waitForRunnerState(opts: {
+  root: string;
+  taskId: string;
+  predicate: (state: Record<string, unknown>) => boolean;
+  timeoutMs?: number;
+}): Promise<{ runId: string; statePath: string; state: Record<string, unknown> }> {
+  const timeoutMs = opts.timeoutMs ?? 5000;
+  const started = Date.now();
+  const runsRoot = path.join(opts.root, ".agentplane", "tasks", opts.taskId, "runs");
+  while (Date.now() - started < timeoutMs) {
+    if (await pathExists(runsRoot)) {
+      const runEntries = await readdir(runsRoot);
+      const sortedRunEntries = runEntries.toSorted();
+      for (const runId of sortedRunEntries) {
+        const statePath = path.join(runsRoot, runId, "run-state.json");
+        if (!(await pathExists(statePath))) continue;
+        const state = JSON.parse(await readFile(statePath, "utf8")) as Record<string, unknown>;
+        if (opts.predicate(state)) return { runId, statePath, state };
+      }
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error(`Timed out waiting for runner state in ${runsRoot}`);
+}
+
 describe("runCli", () => {
   it("task run rejects tasks that have not entered DOING yet", async () => {
     const root = await mkGitRepoRoot();
@@ -551,6 +576,110 @@ describe("runCli", () => {
       };
       expect(state.status).toBe("cancelled");
     } finally {
+      io.restore();
+    }
+  });
+
+  it("task run cancel sends a real termination signal to a running supervised run", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = { command: ["custom-runner"] };
+    await writeConfig(root, config);
+
+    const fakeBinDir = path.join(root, "bin");
+    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeRunnerPath,
+      ["#!/bin/sh", "trap 'exit 0' TERM", "cat >/dev/null", "while :; do sleep 1; done"].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeRunnerPath, 0o755);
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Cancel live supervised run task",
+          "--description",
+          "Cancel live supervised run task",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before cancelling a live supervised runner run in the CLI test.",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    const originalPath = process.env.PATH;
+    try {
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
+      const runPromise = runCli(["task", "run", taskId, "--root", root]);
+      const liveRun = await waitForRunnerState({
+        root,
+        taskId,
+        predicate: (state) => {
+          const status = state.status;
+          const supervision =
+            state.supervision && typeof state.supervision === "object"
+              ? (state.supervision as Record<string, unknown>)
+              : null;
+          return status === "running" && typeof supervision?.pid === "number";
+        },
+      });
+      const cancelCode = await runCli([
+        "task",
+        "run",
+        "cancel",
+        taskId,
+        liveRun.runId,
+        "--root",
+        root,
+      ]);
+      const runCode = await runPromise;
+
+      expect(cancelCode).toBe(0);
+      expect(runCode).toBeGreaterThan(0);
+      expect(io.stdout).toContain(`task run cancelled: ${taskId}`);
+      expect(io.stdout).toContain("status: cancelled");
+      expect(io.stdout).toContain(`task run executed: ${taskId}`);
+      expect(io.stdout).toContain("runner_exit_code:");
+
+      const finalState = JSON.parse(await readFile(liveRun.statePath, "utf8")) as {
+        status: string;
+        supervision?: { cancel_requested_at?: string | null; exit_signal?: string | null };
+        result?: { status?: string };
+      };
+      expect(finalState.status).toBe("cancelled");
+      expect(finalState.result?.status).toBe("cancelled");
+      expect(finalState.supervision?.cancel_requested_at).toBeTruthy();
+      expect(finalState.supervision?.exit_signal).toBeTruthy();
+    } finally {
+      process.env.PATH = originalPath;
       io.restore();
     }
   });

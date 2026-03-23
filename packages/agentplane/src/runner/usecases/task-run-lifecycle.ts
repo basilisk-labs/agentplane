@@ -4,6 +4,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { createRunnerAdapter } from "../adapters/index.js";
+import { runnerAdapterCancelledResult } from "../adapters/shared.js";
 import {
   appendRunnerEvent,
   evolveRunnerRunState,
@@ -17,9 +18,16 @@ import { resolveTaskRunnerPaths } from "../task-run-paths.js";
 import type {
   RunnerContextBundle,
   RunnerLifecycleStatus,
+  RunnerProcessSignal,
   RunnerResult,
   RunnerRunState,
 } from "../types.js";
+import {
+  exitCodeForSignal,
+  isProcessAlive,
+  waitForProcessExit,
+  waitForRunnerStateStop,
+} from "../process-supervision.js";
 
 import {
   assertRunnerTaskExecutable,
@@ -115,6 +123,53 @@ function assertExecuteMode(bundle: RunnerContextBundle, action: "resume" | "retr
   });
 }
 
+function readRunningPid(state: RunnerRunState): number | null {
+  return typeof state.supervision?.pid === "number" ? state.supervision.pid : null;
+}
+
+function signalProcess(pid: number, signal: RunnerProcessSignal): boolean {
+  try {
+    process.kill(pid, signal);
+    return true;
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException | null)?.code;
+    if (code === "ESRCH") return false;
+    throw err;
+  }
+}
+
+function buildSyntheticCancelledState(opts: {
+  state: RunnerRunState;
+  signal: RunnerProcessSignal;
+  updated_at: string;
+}): RunnerRunState {
+  const started_at =
+    opts.state.result?.started_at ??
+    opts.state.supervision?.started_at ??
+    opts.state.updated_at ??
+    opts.updated_at;
+  const result = runnerAdapterCancelledResult({
+    reason: `Runner cancelled via ${opts.signal}.`,
+    started_at,
+    ended_at: opts.updated_at,
+    exit_code: exitCodeForSignal(opts.signal),
+    output_paths: [opts.state.bundle_path, opts.state.bootstrap_path].filter(
+      (value): value is string => typeof value === "string" && value.trim().length > 0,
+    ),
+  });
+  return evolveRunnerRunState({
+    state: opts.state,
+    status: "cancelled",
+    result,
+    updated_at: opts.updated_at,
+    supervision: {
+      ...opts.state.supervision,
+      heartbeat_at: opts.updated_at,
+      exit_signal: opts.signal,
+    },
+  });
+}
+
 async function loadExistingRunnerExecution(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -184,6 +239,126 @@ export async function cancelTaskRunnerExecution(opts: {
   }
   if (loaded.state.status === "cancelled") {
     return { ...loaded, previous_status: loaded.state.status, changed: false };
+  }
+  if (loaded.state.status === "running") {
+    const pid = readRunningPid(loaded.state);
+    if (!pid) {
+      throw new CliError({
+        exitCode: 4,
+        code: "E_IO",
+        message: `runner cancel requires supervision metadata for running run ${opts.task_id}:${opts.run_id}`,
+      });
+    }
+    const requested_at = new Date().toISOString();
+    const requestedState = evolveRunnerRunState({
+      state: loaded.state,
+      status: "running",
+      updated_at: requested_at,
+      supervision: {
+        ...loaded.state.supervision,
+        cancel_requested_at: requested_at,
+        cancel_signal: "SIGTERM",
+        heartbeat_at: requested_at,
+      },
+    });
+    await writeRunnerRunState({
+      state_path: loaded.invocation.state_path,
+      state: requestedState,
+    });
+    await appendRunnerEvent({
+      events_path: loaded.invocation.events_path,
+      event: {
+        at: requested_at,
+        type: "runner_cancel_requested",
+        message: `runner cancel requested via SIGTERM for pid=${pid}`,
+        data: {
+          previous_status: loaded.state.status,
+          pid,
+          signal: "SIGTERM",
+        },
+      },
+    });
+    const exitedAfterTerm = signalProcess(pid, "SIGTERM")
+      ? await waitForProcessExit({ pid, timeout_ms: 1500 })
+      : true;
+    let finalSignal: RunnerProcessSignal = "SIGTERM";
+    if (!exitedAfterTerm && isProcessAlive(pid)) {
+      const killRequestedAt = new Date().toISOString();
+      const killRequestedState = evolveRunnerRunState({
+        state: requestedState,
+        status: "running",
+        updated_at: killRequestedAt,
+        supervision: {
+          ...requestedState.supervision,
+          cancel_requested_at: requested_at,
+          cancel_signal: "SIGKILL",
+          force_killed: true,
+          heartbeat_at: killRequestedAt,
+        },
+      });
+      await writeRunnerRunState({
+        state_path: loaded.invocation.state_path,
+        state: killRequestedState,
+      });
+      await appendRunnerEvent({
+        events_path: loaded.invocation.events_path,
+        event: {
+          at: killRequestedAt,
+          type: "runner_force_kill_requested",
+          message: `runner cancel escalated to SIGKILL for pid=${pid}`,
+          data: {
+            previous_status: loaded.state.status,
+            pid,
+            signal: "SIGKILL",
+          },
+        },
+      });
+      signalProcess(pid, "SIGKILL");
+      await waitForProcessExit({ pid, timeout_ms: 1500 });
+      finalSignal = "SIGKILL";
+    }
+    const settledState = await waitForRunnerStateStop({
+      state_path: loaded.invocation.state_path,
+      timeout_ms: 3000,
+    });
+    const nextState =
+      settledState ??
+      buildSyntheticCancelledState({
+        state: (await readRunnerRunState(loaded.invocation.state_path)) ?? requestedState,
+        signal: finalSignal,
+        updated_at: new Date().toISOString(),
+      });
+    if (!settledState) {
+      await writeRunnerRunState({
+        state_path: loaded.invocation.state_path,
+        state: nextState,
+      });
+      await appendRunnerEvent({
+        events_path: loaded.invocation.events_path,
+        event: {
+          at: nextState.updated_at,
+          type: "runner_cancelled",
+          message: `runner process exited after ${finalSignal}; state synthesized as cancelled`,
+          data: {
+            previous_status: loaded.state.status,
+            pid,
+            signal: finalSignal,
+          },
+        },
+      });
+    }
+    await persistRunnerOutcomeToTask({
+      ctx: loaded.ctx,
+      task_id: opts.task_id,
+      bundle: loaded.bundle,
+      state: nextState,
+    });
+    return {
+      ...loaded,
+      state: nextState,
+      previous_status: loaded.state.status,
+      changed: nextState.status === "cancelled",
+    };
   }
   const updated_at = new Date().toISOString();
   const nextState = evolveRunnerRunState({

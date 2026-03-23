@@ -1,4 +1,3 @@
-import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 
 import type { RunnerCustomConfig } from "@agentplaneorg/core";
@@ -11,10 +10,12 @@ import {
   writeRunnerRunState,
 } from "../artifacts.js";
 import {
+  runnerAdapterCancelledResult,
   runnerAdapterFailureResult,
   runnerAdapterSuccessResult,
   type RunnerAdapter,
 } from "./shared.js";
+import { exitCodeForSignal, runSupervisedProcess } from "../process-supervision.js";
 
 function summarizeOutput(text: string, limit = 4000): string | undefined {
   const normalized = text.replaceAll("\r\n", "\n").trim();
@@ -43,39 +44,6 @@ function buildInvocationEventData(invocation: RunnerInvocation): Record<string, 
     has_bootstrap_path:
       typeof invocation.bootstrap_path === "string" && invocation.bootstrap_path.trim().length > 0,
   };
-}
-
-async function runCustomProcess(opts: {
-  invocation: RunnerInvocation;
-  stdin_text: string;
-}): Promise<{ exit_code: number | null; stdout: string; stderr: string }> {
-  return await new Promise((resolve, reject) => {
-    const [command, ...args] = opts.invocation.argv;
-    if (!command) {
-      reject(new Error("Custom runner adapter invocation is missing the executable command"));
-      return;
-    }
-
-    const child = spawn(command, args, {
-      cwd: opts.invocation.run_dir,
-      env: { ...process.env, ...opts.invocation.env },
-      stdio: ["pipe", "pipe", "pipe"],
-    });
-
-    let stdout = "";
-    let stderr = "";
-    child.stdout.on("data", (chunk: Buffer | string) => {
-      stdout += chunk.toString();
-    });
-    child.stderr.on("data", (chunk: Buffer | string) => {
-      stderr += chunk.toString();
-    });
-    child.on("error", reject);
-    child.on("close", (code) => {
-      resolve({ exit_code: code, stdout, stderr });
-    });
-    child.stdin.end(opts.stdin_text);
-  });
 }
 
 function normalizeCustomCommand(value: RunnerCustomConfig["command"] | undefined): string[] {
@@ -163,65 +131,59 @@ export class CustomRunnerAdapter implements RunnerAdapter {
     return (async () => {
       try {
         assertCustomInvocation(invocation);
-        const initialState = await readRunnerRunState(invocation.state_path);
-        if (initialState) {
-          await writeRunnerRunState({
-            state_path: invocation.state_path,
-            state: evolveRunnerRunState({
-              state: initialState,
-              status: "running",
-              updated_at: started_at,
-            }),
-          });
-        }
-        await appendRunnerEvent({
-          events_path: invocation.events_path,
-          event: {
-            at: started_at,
-            type: "runner_execute_start",
-            message: "custom runner started",
-            data: buildInvocationEventData(invocation),
-          },
-        });
         const bootstrapText = invocation.bootstrap_path
           ? await readFile(invocation.bootstrap_path, "utf8")
           : "";
-        const processResult = await runCustomProcess({
+        const processResult = await runSupervisedProcess({
           invocation,
           stdin_text: bootstrapText,
+          start_message: "custom runner started",
         });
         const output_paths = [invocation.bundle_path, invocation.bootstrap_path].filter(
           (value): value is string => typeof value === "string" && value.trim().length > 0,
         );
         const success = processResult.exit_code === 0;
-        const ended_at = new Date().toISOString();
-        const metrics = {
-          duration_ms: durationMs(started_at, ended_at),
+        const ended_at = processResult.ended_at;
+        const resultMetrics = {
+          duration_ms: durationMs(processResult.started_at, ended_at),
           stdout_bytes: byteLength(processResult.stdout),
           stderr_bytes: byteLength(processResult.stderr),
         };
-        const result = success
-          ? runnerAdapterSuccessResult({
-              started_at,
+        const result = processResult.cancel_requested_at
+          ? runnerAdapterCancelledResult({
+              reason: processResult.cancel_signal
+                ? `Custom runner cancelled via ${processResult.cancel_signal}.`
+                : "Custom runner cancelled.",
+              started_at: processResult.started_at,
               ended_at,
-              exit_code: processResult.exit_code ?? 0,
-              stdout_summary:
-                summarizeOutput(processResult.stdout) ??
-                "Custom runner execution finished without output.",
+              exit_code:
+                processResult.exit_code ?? exitCodeForSignal(processResult.exit_signal) ?? null,
               output_paths,
-              metrics,
+              metrics: resultMetrics,
             })
-          : runnerAdapterFailureResult({
-              err:
-                summarizeOutput(processResult.stderr) ??
-                summarizeOutput(processResult.stdout) ??
-                `Custom runner exited with code ${processResult.exit_code ?? "unknown"}`,
-              started_at,
-              ended_at,
-              exit_code: processResult.exit_code ?? 1,
-              output_paths,
-              metrics,
-            });
+          : success
+            ? runnerAdapterSuccessResult({
+                started_at: processResult.started_at,
+                ended_at,
+                exit_code: processResult.exit_code ?? 0,
+                stdout_summary:
+                  summarizeOutput(processResult.stdout) ??
+                  "Custom runner execution finished without output.",
+                output_paths,
+                metrics: resultMetrics,
+              })
+            : runnerAdapterFailureResult({
+                err:
+                  summarizeOutput(processResult.stderr) ??
+                  summarizeOutput(processResult.stdout) ??
+                  `Custom runner exited with code ${processResult.exit_code ?? "unknown"}`,
+                started_at: processResult.started_at,
+                ended_at,
+                exit_code:
+                  processResult.exit_code ?? exitCodeForSignal(processResult.exit_signal) ?? 1,
+                output_paths,
+                metrics: resultMetrics,
+              });
         const stateAfter = await readRunnerRunState(invocation.state_path);
         if (stateAfter) {
           await writeRunnerRunState({
@@ -230,6 +192,14 @@ export class CustomRunnerAdapter implements RunnerAdapter {
               state: stateAfter,
               status: result.status,
               result,
+              supervision: {
+                ...stateAfter.supervision,
+                pid: processResult.pid,
+                command: invocation.argv[0] ?? null,
+                started_at: processResult.started_at,
+                heartbeat_at: processResult.heartbeat_at,
+                exit_signal: processResult.exit_signal,
+              },
             }),
           });
         }
@@ -241,6 +211,11 @@ export class CustomRunnerAdapter implements RunnerAdapter {
             message: `custom runner finished with status=${result.status}`,
             data: {
               ...buildInvocationEventData(invocation),
+              pid: processResult.pid,
+              exit_signal: processResult.exit_signal,
+              cancel_requested_at: processResult.cancel_requested_at,
+              cancel_signal: processResult.cancel_signal,
+              force_killed: processResult.force_killed,
               exit_code: result.exit_code,
               output_paths,
               metrics: result.metrics,

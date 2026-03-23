@@ -12,6 +12,7 @@ import type {
   RunnerPreparedMetadata,
   RunnerResult,
   RunnerRunState,
+  RunnerSupervisionState,
 } from "./types.js";
 
 function sha256(text: string): string {
@@ -147,12 +148,14 @@ export function evolveRunnerRunState(opts: {
   status: RunnerLifecycleStatus;
   result?: RunnerResult;
   updated_at?: string;
+  supervision?: RunnerSupervisionState;
 }): RunnerRunState {
   const updated_at = opts.updated_at ?? new Date().toISOString();
   return {
     ...opts.state,
     status: opts.status,
     updated_at,
+    supervision: opts.supervision ?? opts.state.supervision,
     result: opts.result,
   };
 }
