@@ -15,4 +15,27 @@ describe("runner config", () => {
     const config = validateConfig(raw);
     expect(resolveRunnerAdapterId(config)).toBe("custom");
   });
+
+  it("validates custom runner command and env settings", () => {
+    const raw = defaultConfig() as unknown as Record<string, unknown>;
+    raw.runner = {
+      default_adapter: "custom",
+      custom: {
+        command: ["custom-runner", "--flag"],
+        env: {
+          CUSTOM_TOKEN: "token",
+        },
+      },
+    };
+
+    const config = validateConfig(raw);
+
+    expect(resolveRunnerAdapterId(config)).toBe("custom");
+    expect(config.runner.custom).toEqual({
+      command: ["custom-runner", "--flag"],
+      env: {
+        CUSTOM_TOKEN: "token",
+      },
+    });
+  });
 });

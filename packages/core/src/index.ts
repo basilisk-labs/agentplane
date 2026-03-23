@@ -18,6 +18,7 @@ export {
   type LoadedConfig,
   type ReasoningEffort,
   type RunnerAdapterId,
+  type RunnerCustomConfig,
   type StatusCommitPolicy,
   type WorkflowMode,
 } from "./config/config.js";

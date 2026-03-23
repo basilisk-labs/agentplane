@@ -15,6 +15,10 @@ export type CommitAutomation = "manual" | "finish_only";
 export type ExecutionProfile = "conservative" | "balanced" | "aggressive";
 export type ReasoningEffort = "low" | "medium" | "high";
 export type RunnerAdapterId = "codex" | "custom";
+export type RunnerCustomConfig = {
+  command: string[];
+  env?: Record<string, string>;
+};
 
 export type AgentplaneConfig = {
   schema_version: 1;
@@ -47,6 +51,7 @@ export type AgentplaneConfig = {
   };
   runner: {
     default_adapter: RunnerAdapterId;
+    custom?: RunnerCustomConfig;
   };
   paths: {
     agents_dir: string;

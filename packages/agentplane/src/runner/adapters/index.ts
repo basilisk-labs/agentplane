@@ -1,6 +1,7 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core";
 
 import { CodexRunnerAdapter } from "./codex.js";
+import { CustomRunnerAdapter } from "./custom.js";
 import type { RunnerAdapter } from "./shared.js";
 
 export function createRunnerAdapter(config: Pick<AgentplaneConfig, "runner">): RunnerAdapter {
@@ -9,11 +10,12 @@ export function createRunnerAdapter(config: Pick<AgentplaneConfig, "runner">): R
       return new CodexRunnerAdapter();
     }
     case "custom": {
-      throw new Error("Runner adapter is not implemented yet: custom");
+      return new CustomRunnerAdapter(config.runner.custom);
     }
   }
 }
 
 export { CodexRunnerAdapter } from "./codex.js";
+export { CustomRunnerAdapter } from "./custom.js";
 export type { RunnerAdapter } from "./shared.js";
 export { runnerAdapterFailureResult, runnerAdapterSuccessResult } from "./shared.js";

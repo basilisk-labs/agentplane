@@ -1,0 +1,249 @@
+import { spawn } from "node:child_process";
+import { readFile } from "node:fs/promises";
+
+import type { RunnerCustomConfig } from "@agentplaneorg/core";
+
+import type { RunnerContextBundle, RunnerInvocation, RunnerResult } from "../types.js";
+import {
+  appendRunnerEvent,
+  evolveRunnerRunState,
+  readRunnerRunState,
+  writeRunnerRunState,
+} from "../artifacts.js";
+import {
+  runnerAdapterFailureResult,
+  runnerAdapterSuccessResult,
+  type RunnerAdapter,
+} from "./shared.js";
+
+function summarizeOutput(text: string, limit = 4000): string | undefined {
+  const normalized = text.replaceAll("\r\n", "\n").trim();
+  if (!normalized) return undefined;
+  if (normalized.length <= limit) return normalized;
+  return `${normalized.slice(0, limit - 15)}\n...[truncated]`;
+}
+
+async function runCustomProcess(opts: {
+  invocation: RunnerInvocation;
+  stdin_text: string;
+}): Promise<{ exit_code: number | null; stdout: string; stderr: string }> {
+  return await new Promise((resolve, reject) => {
+    const [command, ...args] = opts.invocation.argv;
+    if (!command) {
+      reject(new Error("Custom runner adapter invocation is missing the executable command"));
+      return;
+    }
+
+    const child = spawn(command, args, {
+      cwd: opts.invocation.run_dir,
+      env: { ...process.env, ...opts.invocation.env },
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk: Buffer | string) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on("data", (chunk: Buffer | string) => {
+      stderr += chunk.toString();
+    });
+    child.on("error", reject);
+    child.on("close", (code) => {
+      resolve({ exit_code: code, stdout, stderr });
+    });
+    child.stdin.end(opts.stdin_text);
+  });
+}
+
+function normalizeCustomCommand(value: RunnerCustomConfig["command"] | undefined): string[] {
+  return Array.isArray(value)
+    ? value.map((entry) => entry.trim()).filter((entry) => entry.length > 0)
+    : [];
+}
+
+function assertCustomBundle(bundle: RunnerContextBundle): void {
+  if (bundle.execution.adapter_id !== "custom") {
+    throw new Error(
+      `Custom adapter cannot prepare bundle for adapter_id=${JSON.stringify(bundle.execution.adapter_id)}`,
+    );
+  }
+  if (!bundle.execution.artifact_paths.bundle_path.trim()) {
+    throw new Error("Custom adapter requires a non-empty bundle path");
+  }
+  if (!bundle.execution.artifact_paths.run_dir.trim()) {
+    throw new Error("Custom adapter requires a non-empty run dir");
+  }
+}
+
+function assertCustomInvocation(invocation: RunnerInvocation): void {
+  if (invocation.adapter_id !== "custom") {
+    throw new Error(
+      `Custom adapter cannot execute invocation for adapter_id=${JSON.stringify(invocation.adapter_id)}`,
+    );
+  }
+  if (!invocation.bundle_path.trim()) {
+    throw new Error("Custom adapter invocation is missing bundle_path");
+  }
+  if (!invocation.run_dir.trim()) {
+    throw new Error("Custom adapter invocation is missing run_dir");
+  }
+  if (!invocation.state_path.trim()) {
+    throw new Error("Custom adapter invocation is missing state_path");
+  }
+  if (!invocation.events_path.trim()) {
+    throw new Error("Custom adapter invocation is missing events_path");
+  }
+}
+
+export class CustomRunnerAdapter implements RunnerAdapter {
+  readonly id = "custom" as const;
+
+  constructor(private readonly config: RunnerCustomConfig | undefined) {}
+
+  prepare(bundle: RunnerContextBundle): Promise<RunnerInvocation> {
+    assertCustomBundle(bundle);
+    const command = normalizeCustomCommand(this.config?.command);
+    if (command.length === 0) {
+      throw new Error(
+        "Custom runner adapter requires config.runner.custom.command to contain at least one argv element",
+      );
+    }
+    const { execution } = bundle;
+    return Promise.resolve({
+      adapter_id: this.id,
+      run_id: execution.run_id,
+      run_dir: execution.artifact_paths.run_dir,
+      bundle_path: execution.artifact_paths.bundle_path,
+      state_path: execution.artifact_paths.state_path,
+      events_path: execution.artifact_paths.events_path,
+      bootstrap_path: execution.artifact_paths.bootstrap_path,
+      output_last_message_path: null,
+      argv: command,
+      env: {
+        ...this.config?.env,
+        AGENTPLANE_RUNNER_ADAPTER: this.id,
+        AGENTPLANE_RUNNER_MODE: execution.mode,
+        AGENTPLANE_RUNNER_API_VERSION: bundle.runner_api_version,
+        AGENTPLANE_RUNNER_TARGET: bundle.target.kind,
+        AGENTPLANE_RUNNER_BUNDLE_PATH: execution.artifact_paths.bundle_path,
+        AGENTPLANE_RUNNER_RUN_DIR: execution.artifact_paths.run_dir,
+        AGENTPLANE_RUNNER_BOOTSTRAP_PATH: execution.artifact_paths.bootstrap_path,
+        AGENTPLANE_RUNNER_STATE_PATH: execution.artifact_paths.state_path,
+        AGENTPLANE_RUNNER_EVENTS_PATH: execution.artifact_paths.events_path,
+      },
+      dry_run: execution.mode === "dry_run",
+    });
+  }
+
+  execute(invocation: RunnerInvocation): Promise<RunnerResult> {
+    const started_at = new Date().toISOString();
+    return (async () => {
+      try {
+        assertCustomInvocation(invocation);
+        const initialState = await readRunnerRunState(invocation.state_path);
+        if (initialState) {
+          await writeRunnerRunState({
+            state_path: invocation.state_path,
+            state: evolveRunnerRunState({
+              state: initialState,
+              status: "running",
+              updated_at: started_at,
+            }),
+          });
+        }
+        await appendRunnerEvent({
+          events_path: invocation.events_path,
+          event: {
+            at: started_at,
+            type: "runner_execute_start",
+            message: "custom runner started",
+          },
+        });
+        const bootstrapText = invocation.bootstrap_path
+          ? await readFile(invocation.bootstrap_path, "utf8")
+          : "";
+        const processResult = await runCustomProcess({
+          invocation,
+          stdin_text: bootstrapText,
+        });
+        const output_paths = [invocation.bundle_path, invocation.bootstrap_path].filter(
+          (value): value is string => typeof value === "string" && value.trim().length > 0,
+        );
+        const success = processResult.exit_code === 0;
+        const result = success
+          ? runnerAdapterSuccessResult({
+              started_at,
+              exit_code: processResult.exit_code ?? 0,
+              stdout_summary:
+                summarizeOutput(processResult.stdout) ??
+                "Custom runner execution finished without output.",
+              output_paths,
+            })
+          : runnerAdapterFailureResult({
+              err:
+                summarizeOutput(processResult.stderr) ??
+                summarizeOutput(processResult.stdout) ??
+                `Custom runner exited with code ${processResult.exit_code ?? "unknown"}`,
+              started_at,
+              exit_code: processResult.exit_code ?? 1,
+              output_paths,
+            });
+        const stateAfter = await readRunnerRunState(invocation.state_path);
+        if (stateAfter) {
+          await writeRunnerRunState({
+            state_path: invocation.state_path,
+            state: evolveRunnerRunState({
+              state: stateAfter,
+              status: result.status,
+              result,
+            }),
+          });
+        }
+        await appendRunnerEvent({
+          events_path: invocation.events_path,
+          event: {
+            at: result.ended_at,
+            type: "runner_execute_finish",
+            message: `custom runner finished with status=${result.status}`,
+            data: {
+              exit_code: result.exit_code,
+            },
+          },
+        });
+        return result;
+      } catch (err) {
+        const result = runnerAdapterFailureResult({
+          err,
+          started_at,
+          output_paths: [invocation.bundle_path, invocation.bootstrap_path].filter(
+            (value): value is string => typeof value === "string" && value.trim().length > 0,
+          ),
+        });
+        const stateAfter = await readRunnerRunState(invocation.state_path);
+        if (stateAfter) {
+          await writeRunnerRunState({
+            state_path: invocation.state_path,
+            state: evolveRunnerRunState({
+              state: stateAfter,
+              status: result.status,
+              result,
+            }),
+          });
+        }
+        await appendRunnerEvent({
+          events_path: invocation.events_path,
+          event: {
+            at: result.ended_at,
+            type: "runner_execute_finish",
+            message: `custom runner failed with status=${result.status}`,
+            data: {
+              exit_code: result.exit_code,
+            },
+          },
+        });
+        return result;
+      }
+    })();
+  }
+}

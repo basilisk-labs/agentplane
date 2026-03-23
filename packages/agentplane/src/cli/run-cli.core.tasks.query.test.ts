@@ -274,6 +274,111 @@ describe("runCli", () => {
     }
   });
 
+  it("task run executes the configured custom runner adapter", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = {
+      command: ["custom-runner", "--bundle-from-env"],
+      env: {
+        CUSTOM_TOKEN: "runner-token",
+      },
+    };
+    await writeConfig(root, config);
+
+    const fakeBinDir = path.join(root, "bin");
+    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Custom runner execute task",
+          "--description",
+          "Execution path uses the custom adapter",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeRunnerPath,
+      [
+        "#!/bin/sh",
+        String.raw`bootstrap_line="$(sed -n '1p' "$AGENTPLANE_RUNNER_BOOTSTRAP_PATH")"`,
+        String.raw`printf "custom runner ok %s %s %s\n" "$CUSTOM_TOKEN" "$AGENTPLANE_RUNNER_TARGET" "$bootstrap_line"`,
+        "cat >/dev/null",
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeRunnerPath, 0o755);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before executing the custom runner adapter in the CLI test.",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    const originalPath = process.env.PATH;
+    try {
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
+      const code = await runCli(["task", "run", taskId, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`task run executed: ${taskId}`);
+      expect(io.stdout).toContain("adapter: custom");
+      expect(io.stdout).toContain("status: success");
+      expect(io.stdout).toContain("runner_exit_code: 0");
+      expect(io.stdout).toContain("stdout: custom runner ok runner-token task");
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      const runEntries = await readdir(runsRoot);
+      const sortedRunEntries = runEntries.toSorted();
+      expect(sortedRunEntries).toHaveLength(1);
+      const runDir = path.join(runsRoot, sortedRunEntries[0] ?? "");
+      const statePath = path.join(runDir, "run-state.json");
+      const bundlePath = path.join(runDir, "bundle.json");
+      const state = JSON.parse(await readFile(statePath, "utf8")) as {
+        adapter_id: string;
+        status: string;
+        result?: { status: string; exit_code: number | null; stdout_summary?: string };
+      };
+      const bundle = JSON.parse(await readFile(bundlePath, "utf8")) as {
+        execution: { adapter_id: string; mode: string };
+      };
+      expect(bundle.execution.adapter_id).toBe("custom");
+      expect(bundle.execution.mode).toBe("execute");
+      expect(state.adapter_id).toBe("custom");
+      expect(state.status).toBe("success");
+      expect(state.result?.status).toBe("success");
+      expect(state.result?.exit_code).toBe(0);
+      expect(state.result?.stdout_summary).toContain("custom runner ok runner-token task");
+    } finally {
+      process.env.PATH = originalPath;
+      io.restore();
+    }
+  });
+
   it("task next shows ready tasks only", async () => {
     const root = await mkGitRepoRoot();
     let taskA = "";
