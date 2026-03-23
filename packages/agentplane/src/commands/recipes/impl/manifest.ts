@@ -101,7 +101,6 @@ function normalizeRunProfile(raw: unknown, field: string): RecipeRunProfile {
   return {
     mode: normalizeRequiredString(raw.mode, `${field}.mode`),
     sandbox: normalizeOptionalString(raw.sandbox, `${field}.sandbox`),
-    network: normalizeBoolean(raw.network, `${field}.network`),
     requires_human_approval: normalizeBoolean(
       raw.requires_human_approval,
       `${field}.requires_human_approval`,

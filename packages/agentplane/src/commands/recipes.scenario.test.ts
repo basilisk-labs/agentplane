@@ -88,7 +88,6 @@ describe("commands/recipes scenario", () => {
       compatibility: { ok: true },
       run_profile: {
         mode: "analysis",
-        network: false,
         requires_human_approval: false,
         permissions: [],
         agents_involved: ["RECIPE_AGENT"],
@@ -145,7 +144,6 @@ describe("commands/recipes scenario", () => {
     expect(selection.run_profile).toMatchObject({
       mode: "analysis",
       sandbox: "read-only",
-      network: true,
       required_inputs: ["task_id"],
       permissions: ["network"],
     });

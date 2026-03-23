@@ -176,11 +176,9 @@ export function normalizeResolvedRecipeRunProfile(
 ): ResolvedRecipeRunProfile {
   const declaredProfile: RecipeRunProfile = scenario.run_profile;
   const permissions = dedupeStrings([...scenario.permissions]).toSorted();
-  const network = declaredProfile.network ?? permissions.includes("network");
   return {
     mode: declaredProfile.mode,
     sandbox: declaredProfile.sandbox,
-    network,
     requires_human_approval: declaredProfile.requires_human_approval ?? false,
     writes_artifacts_to: dedupeStrings(declaredProfile.writes_artifacts_to ?? []).toSorted(),
     expected_exit_contract: declaredProfile.expected_exit_contract,

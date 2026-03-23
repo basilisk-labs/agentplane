@@ -138,7 +138,7 @@ describe("collectRunnerBasePrompts", () => {
         recipe_dir: recipeDir,
         scenario_file: path.join(recipeDir, "scenarios", "recipe-scenario.json"),
         selection_reasons: ["recipe compatibility satisfied"],
-        run_profile: { mode: "analysis", network: false },
+        run_profile: { mode: "analysis" },
         scenario: {
           goal: "Preview installed tasks.",
           summary: "Recipe scenario",

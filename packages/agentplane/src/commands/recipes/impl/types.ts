@@ -10,7 +10,6 @@ export type RecipeCompatibility = {
 export type RecipeRunProfile = {
   mode: string;
   sandbox?: string;
-  network?: boolean;
   requires_human_approval?: boolean;
   writes_artifacts_to?: string[];
   expected_exit_contract?: string;
@@ -111,7 +110,6 @@ export type RecipeResolverCompatibility = {
 export type ResolvedRecipeRunProfile = {
   mode: string;
   sandbox?: string;
-  network: boolean;
   requires_human_approval: boolean;
   writes_artifacts_to: string[];
   expected_exit_contract?: string;

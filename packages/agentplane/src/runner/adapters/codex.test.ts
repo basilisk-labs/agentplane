@@ -123,7 +123,6 @@ describe("CodexRunnerAdapter", () => {
       run_profile: {
         mode: "analysis",
         sandbox: "read-only",
-        network: true,
         requires_human_approval: true,
         writes_artifacts_to: ["reports", "logs"],
         expected_exit_contract: "exit_zero",
