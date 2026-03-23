@@ -33,3 +33,7 @@ export {
   type RunnerTaskContext,
 } from "./types.js";
 export { collectRunnerBasePrompts } from "./context/base-prompts.js";
+export {
+  assembleRunnerTaskContext,
+  type RunnerTaskContextEnvelope,
+} from "./context/task-context.js";
