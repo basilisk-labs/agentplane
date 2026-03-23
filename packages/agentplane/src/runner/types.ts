@@ -1,0 +1,149 @@
+import type { TaskData, TaskEvent } from "../backends/task-backend.js";
+
+export const RUNNER_BUNDLE_SCHEMA_VERSION = 1 as const;
+export const RUNNER_API_VERSION = "1" as const;
+
+export type RunnerTarget =
+  | {
+      kind: "task";
+      task_id: string;
+    }
+  | {
+      kind: "recipe_scenario";
+      recipe_id: string;
+      scenario_id: string;
+      task_id?: string;
+    };
+
+export type RunnerPromptRole = "system" | "policy" | "profile" | "task" | "context";
+
+export type RunnerPromptBlock = {
+  id: string;
+  role: RunnerPromptRole;
+  content: string;
+  title?: string;
+  source?: string;
+  priority: number;
+};
+
+export type RunnerRepositoryContext = {
+  git_root: string;
+  workflow_dir: string;
+  backend_id: string;
+  backend_config_path: string;
+  branch?: string | null;
+  head_commit?: string | null;
+};
+
+export type RunnerDependencyState = {
+  ready: boolean;
+  missing: string[];
+  incomplete: string[];
+  completed: string[];
+};
+
+export type RunnerTaskContext = {
+  task_id: string;
+  data: TaskData;
+  frontmatter: Record<string, unknown>;
+  doc: string;
+  sections: Record<string, string>;
+  comments: { author: string; body: string }[];
+  events: TaskEvent[];
+  readme_path?: string;
+  dependency_state?: RunnerDependencyState;
+};
+
+export type RunnerRecipeContext = {
+  recipe_id: string;
+  scenario_id: string;
+  recipe_name?: string;
+  recipe_version?: string;
+  scenario_file?: string;
+  run_profile?: Record<string, unknown>;
+  selection_reasons?: string[];
+  manifest?: Record<string, unknown>;
+  scenario?: Record<string, unknown>;
+  agents?: Record<string, unknown>[];
+  skills?: Record<string, unknown>[];
+  tools?: Record<string, unknown>[];
+};
+
+export type RunnerArtifactPaths = {
+  run_dir: string;
+  bundle_path: string;
+  bootstrap_path: string;
+  state_path: string;
+  events_path: string;
+};
+
+export type RunnerExecutionContract = {
+  adapter_id: string;
+  mode: "execute" | "dry_run";
+  run_id: string;
+  artifact_paths: RunnerArtifactPaths;
+  approvals?: {
+    require_plan?: boolean;
+    require_verify?: boolean;
+    require_network?: boolean;
+  };
+};
+
+export type RunnerContextBundle = {
+  schema_version: typeof RUNNER_BUNDLE_SCHEMA_VERSION;
+  runner_api_version: typeof RUNNER_API_VERSION;
+  target: RunnerTarget;
+  base_prompts: RunnerPromptBlock[];
+  repository: RunnerRepositoryContext;
+  task?: RunnerTaskContext;
+  recipe?: RunnerRecipeContext;
+  execution: RunnerExecutionContract;
+};
+
+export type RunnerInvocation = {
+  adapter_id: string;
+  run_id: string;
+  run_dir: string;
+  bundle_path: string;
+  bootstrap_path?: string | null;
+  argv: string[];
+  env: Record<string, string>;
+  dry_run: boolean;
+};
+
+export type RunnerResultStatus = "success" | "failed" | "cancelled";
+
+export type RunnerResult = {
+  status: RunnerResultStatus;
+  exit_code: number | null;
+  started_at: string;
+  ended_at: string;
+  stdout_summary?: string;
+  stderr_summary?: string;
+  output_paths?: string[];
+};
+
+export type RunnerLifecycleStatus = "prepared" | "running" | RunnerResultStatus;
+
+export type RunnerRunState = {
+  schema_version: typeof RUNNER_BUNDLE_SCHEMA_VERSION;
+  runner_api_version: typeof RUNNER_API_VERSION;
+  run_id: string;
+  adapter_id: string;
+  target: RunnerTarget;
+  status: RunnerLifecycleStatus;
+  mode: RunnerExecutionContract["mode"];
+  bundle_path: string;
+  bootstrap_path?: string | null;
+  events_path: string;
+  created_at: string;
+  updated_at: string;
+  result?: RunnerResult;
+};
+
+export type RunnerEvent = {
+  at: string;
+  type: string;
+  message: string;
+  data?: Record<string, unknown>;
+};
