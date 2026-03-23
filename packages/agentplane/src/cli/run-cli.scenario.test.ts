@@ -2,7 +2,7 @@ import { chmod, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { readTask } from "@agentplaneorg/core";
+import { defaultConfig, readTask } from "@agentplaneorg/core";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -13,6 +13,7 @@ import {
   registerAgentplaneHome,
   runCliSilent,
   silenceStdIO,
+  writeConfig,
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
 
@@ -296,6 +297,140 @@ describe("runCli scenario", () => {
       });
       expect(task.body).toContain("RUNNER — success");
       expect(task.body).toContain(`Target: recipe ${manifestId}:RECIPE_SCENARIO -> task ${taskId}`);
+    } finally {
+      process.env.PATH = originalPath;
+      io.restore();
+    }
+  });
+
+  it("scenario execute exports resolved recipe run_profile policy to the custom runner", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = {
+      command: ["custom-runner"],
+    };
+    await writeConfig(root, config);
+    const { archivePath, manifest } = await createRecipeArchive();
+    const manifestId = String(manifest.id);
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+
+    const fakeBinDir = path.join(root, "bin");
+    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeRunnerPath,
+      [
+        "#!/bin/sh",
+        "node <<'NODE'",
+        'const fs = require("node:fs");',
+        "const out = {",
+        "  recipe_id: process.env.AGENTPLANE_RECIPE_ID ?? null,",
+        "  scenario_id: process.env.AGENTPLANE_SCENARIO_ID ?? null,",
+        "  mode: process.env.AGENTPLANE_RECIPE_MODE ?? null,",
+        "  sandbox: process.env.AGENTPLANE_RECIPE_SANDBOX ?? null,",
+        "  network: process.env.AGENTPLANE_RECIPE_NETWORK ?? null,",
+        "  requires_human_approval: process.env.AGENTPLANE_RECIPE_REQUIRES_HUMAN_APPROVAL ?? null,",
+        "  expected_exit_contract: process.env.AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT ?? null,",
+        '  writes_artifacts_to: JSON.parse(process.env.AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO ?? "[]"),',
+        '  permissions: JSON.parse(process.env.AGENTPLANE_RECIPE_PERMISSIONS ?? "[]"),',
+        '  agents_involved: JSON.parse(process.env.AGENTPLANE_RECIPE_AGENTS_INVOLVED ?? "[]"),',
+        '  skills_used: JSON.parse(process.env.AGENTPLANE_RECIPE_SKILLS_USED ?? "[]"),',
+        '  tools_used: JSON.parse(process.env.AGENTPLANE_RECIPE_TOOLS_USED ?? "[]"),',
+        '  required_inputs: JSON.parse(process.env.AGENTPLANE_RECIPE_REQUIRED_INPUTS ?? "[]"),',
+        '  outputs: JSON.parse(process.env.AGENTPLANE_RECIPE_OUTPUTS ?? "[]"),',
+        '  artifacts: JSON.parse(process.env.AGENTPLANE_RECIPE_ARTIFACTS ?? "[]"),',
+        '  run_profile: JSON.parse(process.env.AGENTPLANE_RECIPE_RUN_PROFILE ?? "{}"),',
+        "};",
+        "fs.writeFileSync(",
+        '  process.env.AGENTPLANE_RUNNER_RUN_DIR + "/recipe-env.json",',
+        "  JSON.stringify(out, null, 2),",
+        ");",
+        "NODE",
+        String.raw`printf '{"schema_version":1,"summary":"custom scenario ok","capabilities_used":["custom.recipe"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        "cat >/dev/null",
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeRunnerPath, 0o755);
+
+    const io = captureStdIO();
+    const originalPath = process.env.PATH;
+    try {
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
+      const code = await runCli([
+        "scenario",
+        "execute",
+        `${manifestId}:RECIPE_SCENARIO`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`scenario executed: ${manifestId}:RECIPE_SCENARIO`);
+      expect(io.stdout).toContain("status: success");
+
+      const taskIdMatch = /^task_id: (.+)$/m.exec(io.stdout);
+      expect(taskIdMatch?.[1]).toBeTruthy();
+      const taskId = taskIdMatch?.[1] ?? "";
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      const runEntries = await readdir(runsRoot);
+      const sortedRunEntries = runEntries.toSorted();
+      expect(sortedRunEntries).toHaveLength(1);
+      const runDir = path.join(runsRoot, sortedRunEntries[0] ?? "");
+      const recipeEnv = JSON.parse(
+        await readFile(path.join(runDir, "recipe-env.json"), "utf8"),
+      ) as {
+        recipe_id?: string;
+        scenario_id?: string;
+        mode?: string;
+        sandbox?: string;
+        network?: string;
+        requires_human_approval?: string;
+        expected_exit_contract?: string;
+        writes_artifacts_to?: string[];
+        permissions?: string[];
+        agents_involved?: string[];
+        skills_used?: string[];
+        tools_used?: string[];
+        required_inputs?: string[];
+        outputs?: string[];
+        artifacts?: string[];
+        run_profile?: Record<string, unknown>;
+      };
+      expect(recipeEnv).toMatchObject({
+        recipe_id: manifestId,
+        scenario_id: "RECIPE_SCENARIO",
+        mode: "analysis",
+        sandbox: "workspace-write",
+        network: "false",
+        requires_human_approval: "false",
+        expected_exit_contract: "report",
+        writes_artifacts_to: ["logs/", "reports/"],
+        permissions: ["filesystem-write"],
+        agents_involved: ["RECIPE_AGENT"],
+        skills_used: ["RECIPE_SKILL"],
+        tools_used: ["RECIPE_TOOL"],
+        required_inputs: ["task_id"],
+        outputs: ["report"],
+        artifacts: ["artifact.txt"],
+      });
+      expect(recipeEnv.run_profile).toMatchObject({
+        mode: "analysis",
+        sandbox: "workspace-write",
+        network: false,
+        requires_human_approval: false,
+        writes_artifacts_to: ["logs/", "reports/"],
+        expected_exit_contract: "report",
+        permissions: ["filesystem-write"],
+        agents_involved: ["RECIPE_AGENT"],
+        skills_used: ["RECIPE_SKILL"],
+        tools_used: ["RECIPE_TOOL"],
+        required_inputs: ["task_id"],
+        outputs: ["report"],
+        artifacts: ["artifact.txt"],
+      });
     } finally {
       process.env.PATH = originalPath;
       io.restore();

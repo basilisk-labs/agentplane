@@ -24,18 +24,10 @@ import {
   readRunnerResultManifest,
   writeRunnerResultManifest,
 } from "../result-manifest.js";
+import { buildRecipeRunnerEnv, readRecipeRunProfile } from "./recipe-run-profile.js";
 
 const CODEX_LAST_MESSAGE_FILENAME = "codex-last-message.md";
 const CODEX_SANDBOX_VALUES = new Set(["read-only", "workspace-write", "danger-full-access"]);
-
-type RecipeRunProfileMetadata = {
-  mode?: string;
-  sandbox?: string;
-  network?: boolean;
-  requires_human_approval?: boolean;
-  writes_artifacts_to?: string[];
-  expected_exit_contract?: string;
-};
 
 function summarizeOutput(text: string, limit = 4000): string | undefined {
   const normalized = text.replaceAll("\r\n", "\n").trim();
@@ -127,58 +119,15 @@ function normalizeCodexSandbox(value: unknown): string | null {
   return CODEX_SANDBOX_VALUES.has(normalized) ? normalized : null;
 }
 
-function readRecipeRunProfile(bundle: RunnerContextBundle): RecipeRunProfileMetadata | null {
-  const profile = bundle.recipe?.run_profile;
-  if (!profile || typeof profile !== "object") return null;
-  const candidate = profile;
-  return {
-    mode: typeof candidate.mode === "string" ? candidate.mode.trim() : undefined,
-    sandbox: typeof candidate.sandbox === "string" ? candidate.sandbox.trim() : undefined,
-    network: typeof candidate.network === "boolean" ? candidate.network : undefined,
-    requires_human_approval:
-      typeof candidate.requires_human_approval === "boolean"
-        ? candidate.requires_human_approval
-        : undefined,
-    writes_artifacts_to: Array.isArray(candidate.writes_artifacts_to)
-      ? candidate.writes_artifacts_to
-          .filter((entry): entry is string => typeof entry === "string")
-          .map((entry) => entry.trim())
-          .filter((entry) => entry.length > 0)
-      : undefined,
-    expected_exit_contract:
-      typeof candidate.expected_exit_contract === "string"
-        ? candidate.expected_exit_contract.trim()
-        : undefined,
-  };
-}
-
 export class CodexRunnerAdapter implements RunnerAdapter {
   readonly id = "codex" as const;
 
   prepare(bundle: RunnerContextBundle): Promise<RunnerInvocation> {
     assertCodexBundle(bundle);
     const { execution } = bundle;
-    const runProfile = readRecipeRunProfile(bundle);
+    const runProfile = readRecipeRunProfile(bundle.recipe);
     const sandbox = normalizeCodexSandbox(runProfile?.sandbox) ?? "danger-full-access";
-    const recipeEnv: Record<string, string> = {};
-    if (runProfile?.mode) recipeEnv.AGENTPLANE_RECIPE_MODE = runProfile.mode;
-    if (runProfile?.sandbox) recipeEnv.AGENTPLANE_RECIPE_SANDBOX = runProfile.sandbox;
-    if (typeof runProfile?.network === "boolean") {
-      recipeEnv.AGENTPLANE_RECIPE_NETWORK = String(runProfile.network);
-    }
-    if (typeof runProfile?.requires_human_approval === "boolean") {
-      recipeEnv.AGENTPLANE_RECIPE_REQUIRES_HUMAN_APPROVAL = String(
-        runProfile.requires_human_approval,
-      );
-    }
-    if (runProfile?.expected_exit_contract) {
-      recipeEnv.AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT = runProfile.expected_exit_contract;
-    }
-    if (runProfile?.writes_artifacts_to && runProfile.writes_artifacts_to.length > 0) {
-      recipeEnv.AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO = JSON.stringify(
-        runProfile.writes_artifacts_to,
-      );
-    }
+    const recipeEnv = buildRecipeRunnerEnv(bundle.recipe);
     return Promise.resolve({
       adapter_id: this.id,
       run_id: execution.run_id,

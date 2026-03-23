@@ -92,6 +92,81 @@ describe("CustomRunnerAdapter", () => {
     });
   });
 
+  it("exports resolved recipe run_profile policy for recipe-scenario bundles", async () => {
+    const raw = defaultConfig();
+    raw.runner.default_adapter = "custom";
+    raw.runner.custom = {
+      command: ["custom-runner", "--bundle-from-env"],
+      env: {
+        CUSTOM_TOKEN: "token",
+        AGENTPLANE_RECIPE_NETWORK: "false",
+      },
+    };
+    const adapter = createRunnerAdapter(raw);
+    const bundle = makeBundle();
+    bundle.target = {
+      kind: "recipe_scenario",
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      task_id: "202603231410-XYZ789",
+    };
+    bundle.recipe = {
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      run_profile: {
+        mode: "analysis",
+        sandbox: "workspace-write",
+        network: true,
+        requires_human_approval: false,
+        writes_artifacts_to: ["logs/", "reports/"],
+        expected_exit_contract: "report",
+        permissions: ["filesystem-write"],
+        agents_involved: ["RECIPE_AGENT"],
+        skills_used: ["RECIPE_SKILL"],
+        tools_used: ["RECIPE_TOOL"],
+        required_inputs: ["task_id"],
+        outputs: ["report"],
+        artifacts: ["artifact.txt"],
+      },
+    };
+
+    const invocation = await adapter.prepare(bundle);
+
+    expect(invocation.env).toMatchObject({
+      CUSTOM_TOKEN: "token",
+      AGENTPLANE_RECIPE_ID: "viewer",
+      AGENTPLANE_SCENARIO_ID: "RECIPE_SCENARIO",
+      AGENTPLANE_RECIPE_MODE: "analysis",
+      AGENTPLANE_RECIPE_SANDBOX: "workspace-write",
+      AGENTPLANE_RECIPE_NETWORK: "true",
+      AGENTPLANE_RECIPE_REQUIRES_HUMAN_APPROVAL: "false",
+      AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT: "report",
+      AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO: JSON.stringify(["logs/", "reports/"]),
+      AGENTPLANE_RECIPE_PERMISSIONS: JSON.stringify(["filesystem-write"]),
+      AGENTPLANE_RECIPE_AGENTS_INVOLVED: JSON.stringify(["RECIPE_AGENT"]),
+      AGENTPLANE_RECIPE_SKILLS_USED: JSON.stringify(["RECIPE_SKILL"]),
+      AGENTPLANE_RECIPE_TOOLS_USED: JSON.stringify(["RECIPE_TOOL"]),
+      AGENTPLANE_RECIPE_REQUIRED_INPUTS: JSON.stringify(["task_id"]),
+      AGENTPLANE_RECIPE_OUTPUTS: JSON.stringify(["report"]),
+      AGENTPLANE_RECIPE_ARTIFACTS: JSON.stringify(["artifact.txt"]),
+    });
+    expect(JSON.parse(invocation.env.AGENTPLANE_RECIPE_RUN_PROFILE ?? "{}")).toMatchObject({
+      mode: "analysis",
+      sandbox: "workspace-write",
+      network: true,
+      requires_human_approval: false,
+      writes_artifacts_to: ["logs/", "reports/"],
+      expected_exit_contract: "report",
+      permissions: ["filesystem-write"],
+      agents_involved: ["RECIPE_AGENT"],
+      skills_used: ["RECIPE_SKILL"],
+      tools_used: ["RECIPE_TOOL"],
+      required_inputs: ["task_id"],
+      outputs: ["report"],
+      artifacts: ["artifact.txt"],
+    });
+  });
+
   it("rejects custom adapter selection when no external command is configured", () => {
     const raw = defaultConfig();
     raw.runner.default_adapter = "custom";

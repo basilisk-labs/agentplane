@@ -25,6 +25,7 @@ import {
   readRunnerResultManifest,
   writeRunnerResultManifest,
 } from "../result-manifest.js";
+import { buildRecipeRunnerEnv } from "./recipe-run-profile.js";
 
 function summarizeOutput(text: string, limit = 4000): string | undefined {
   const normalized = text.replaceAll("\r\n", "\n").trim();
@@ -112,6 +113,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
       );
     }
     const { execution } = bundle;
+    const recipeEnv = buildRecipeRunnerEnv(bundle.recipe);
     return Promise.resolve({
       adapter_id: this.id,
       run_id: execution.run_id,
@@ -135,6 +137,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
         AGENTPLANE_RUNNER_STATE_PATH: execution.artifact_paths.state_path,
         AGENTPLANE_RUNNER_EVENTS_PATH: execution.artifact_paths.events_path,
         AGENTPLANE_RUNNER_RESULT_PATH: execution.artifact_paths.result_path,
+        ...recipeEnv,
       },
       dry_run: execution.mode === "dry_run",
     });
