@@ -534,6 +534,100 @@ describe("runCli", () => {
     }
   });
 
+  it("task run surfaces malformed runner manifests as deterministic failures", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = {
+      command: ["custom-runner"],
+    };
+    await writeConfig(root, config);
+
+    const fakeBinDir = path.join(root, "bin");
+    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Custom runner invalid manifest task",
+          "--description",
+          "Execution path writes an invalid result manifest",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeRunnerPath,
+      [
+        "#!/bin/sh",
+        String.raw`printf '{"schema_version":1,"findings":[42]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        "cat >/dev/null",
+        String.raw`printf "custom runner wrote invalid manifest\n"`,
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeRunnerPath, 0o755);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before exercising the invalid runner result manifest path in the CLI test.",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    const originalPath = process.env.PATH;
+    try {
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
+      const code = await runCli(["task", "run", taskId, "--root", root]);
+      expect(code).toBe(1);
+      expect(io.stdout).toContain(`task run executed: ${taskId}`);
+      expect(io.stdout).toContain("status: failed");
+      expect(io.stderr).toContain("Invalid runner result manifest");
+
+      const task = await readTask({ cwd: root, rootOverride: root, taskId });
+      expect(task.frontmatter.runner).toMatchObject({
+        status: "failed",
+        adapter_id: "custom",
+        mode: "execute",
+        target: { kind: "task", task_id: taskId },
+      });
+      expect(task.body).toContain("RUNNER — failed");
+      expect(task.body).toContain("Invalid runner result manifest");
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      const runEntries = await readdir(runsRoot);
+      const runDir = path.join(runsRoot, runEntries.toSorted()[0] ?? "");
+      const preservedManifestPath = path.join(runDir, "result.invalid.json");
+      expect(await pathExists(preservedManifestPath)).toBe(true);
+      expect(await readFile(preservedManifestPath, "utf8")).toContain('"findings":[42]');
+    } finally {
+      process.env.PATH = originalPath;
+      io.restore();
+    }
+  });
+
   it("task run cancel marks an existing prepared execute-mode run as cancelled", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

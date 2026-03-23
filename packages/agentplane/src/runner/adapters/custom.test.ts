@@ -194,4 +194,95 @@ describe("CustomRunnerAdapter", () => {
 
     await rm(tempDir, { recursive: true, force: true });
   });
+
+  it("fails deterministically and preserves malformed custom runner manifests", async () => {
+    const raw = defaultConfig();
+    raw.runner.default_adapter = "custom";
+    raw.runner.custom = {
+      command: ["custom-runner"],
+    };
+    const adapter = createRunnerAdapter(raw);
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-invalid-"));
+    const fakeBinDir = path.join(tempDir, "bin");
+    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
+    const bundle = makeBundle();
+    bundle.repository.git_root = tempDir;
+    bundle.execution.mode = "execute";
+    bundle.execution.artifact_paths.run_dir = path.join(tempDir, "runs", "run-invalid");
+    bundle.execution.artifact_paths.bundle_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "bundle.json",
+    );
+    bundle.execution.artifact_paths.bootstrap_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "bootstrap.md",
+    );
+    bundle.execution.artifact_paths.state_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "run-state.json",
+    );
+    bundle.execution.artifact_paths.events_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "events.jsonl",
+    );
+    bundle.execution.artifact_paths.result_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "result.json",
+    );
+
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeRunnerPath,
+      [
+        "#!/bin/sh",
+        String.raw`printf '{"schema_version":1,"findings":[42]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        "cat >/dev/null",
+        String.raw`printf "custom runner wrote invalid manifest\n"`,
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeRunnerPath, 0o755);
+
+    const invocation = await adapter.prepare(bundle);
+    invocation.env.PATH = `${fakeBinDir}:${process.env.PATH ?? ""}`;
+    await writePreparedRunnerArtifacts({
+      bundle,
+      bootstrap_markdown: "Read the bundle from env.\n",
+      invocation,
+    });
+
+    const result = await adapter.execute(invocation);
+
+    expect(result.status).toBe("failed");
+    expect(result.exit_code).toBe(1);
+    expect(result.stderr_summary).toContain("Invalid runner result manifest");
+    expect(result.output_paths).toContain(invocation.result_path);
+    expect(result.output_paths).toContain(
+      path.join(bundle.execution.artifact_paths.run_dir, "result.invalid.json"),
+    );
+    const preserved = await readFile(
+      path.join(bundle.execution.artifact_paths.run_dir, "result.invalid.json"),
+      "utf8",
+    );
+    expect(preserved).toContain('"findings":[42]');
+    const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
+      status?: string;
+      stderr_summary?: string;
+      artifacts?: { path: string }[];
+    };
+    expect(resultManifest.status).toBe("failed");
+    expect(resultManifest.stderr_summary).toContain("Invalid runner result manifest");
+    expect(resultManifest.artifacts?.map((artifact) => artifact.path)).toContain(
+      path.join(bundle.execution.artifact_paths.run_dir, "result.invalid.json"),
+    );
+    const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
+      status: string;
+      result?: { status?: string; stderr_summary?: string };
+    };
+    expect(state.status).toBe("failed");
+    expect(state.result?.stderr_summary).toContain("Invalid runner result manifest");
+
+    await rm(tempDir, { recursive: true, force: true });
+  });
 });

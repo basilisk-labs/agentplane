@@ -17,8 +17,10 @@ import {
 } from "./shared.js";
 import { exitCodeForSignal, runSupervisedProcess } from "../process-supervision.js";
 import {
+  InvalidRunnerResultManifestError,
   applyRunnerResultManifest,
   manifestFromRunnerResult,
+  preserveInvalidRunnerResultManifest,
   readRunnerResultManifest,
   writeRunnerResultManifest,
 } from "../result-manifest.js";
@@ -331,20 +333,32 @@ export class CodexRunnerAdapter implements RunnerAdapter {
         return result;
       } catch (err) {
         const ended_at = new Date().toISOString();
+        const invalidManifestPath =
+          err instanceof InvalidRunnerResultManifestError
+            ? await preserveInvalidRunnerResultManifest({
+                result_path: invocation.result_path,
+                error: err,
+              })
+            : null;
+        const output_paths = [
+          invocation.bundle_path,
+          invocation.bootstrap_path,
+          invocation.output_last_message_path,
+          invalidManifestPath,
+          invocation.result_path,
+        ].filter((value): value is string => typeof value === "string" && value.trim().length > 0);
         const result = runnerAdapterFailureResult({
           err,
           started_at,
           ended_at,
-          output_paths: [invocation.bundle_path, invocation.bootstrap_path].filter(
-            (value): value is string => typeof value === "string" && value.trim().length > 0,
-          ),
+          output_paths,
         });
         await writeRunnerResultManifest({
           result_path: invocation.result_path,
           manifest: manifestFromRunnerResult({
             ...result,
             summary: result.stderr_summary,
-            artifacts: runnerArtifactsFromPaths(result.output_paths),
+            artifacts: runnerArtifactsFromPaths(output_paths),
             capabilities_used: ["codex.exec"],
           }),
         });
@@ -367,6 +381,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
             message: result.stderr_summary ?? "codex exec failed",
             data: {
               ...buildInvocationEventData(invocation),
+              output_paths,
               metrics: result.metrics,
             },
           },

@@ -12,49 +12,104 @@ import type {
 } from "./types.js";
 
 export const RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 1 as const;
+const INVALID_RESULT_MANIFEST_SUFFIX = ".invalid.json";
+
+export class InvalidRunnerResultManifestError extends Error {
+  readonly result_path: string;
+  readonly reason: string;
+  readonly raw_content: string;
+
+  constructor(opts: { result_path: string; reason: string; raw_content: string }) {
+    super(`Invalid runner result manifest at ${opts.result_path}: ${opts.reason}`);
+    this.name = "InvalidRunnerResultManifestError";
+    this.result_path = opts.result_path;
+    this.reason = opts.reason;
+    this.raw_content = opts.raw_content;
+  }
+}
+
+function invalidManifest(resultPath: string, reason: string, rawContent: string): never {
+  throw new InvalidRunnerResultManifestError({
+    result_path: resultPath,
+    reason,
+    raw_content: rawContent,
+  });
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
 
 function normalizeStringArray(value: unknown): string[] | undefined {
   if (!Array.isArray(value)) return undefined;
-  const entries = value
-    .filter((entry): entry is string => typeof entry === "string")
-    .map((entry) => entry.trim())
-    .filter((entry) => entry.length > 0);
+  const entries = value.map((entry) => {
+    if (typeof entry !== "string") {
+      throw new Error("entries must be strings");
+    }
+    const normalized = entry.trim();
+    if (!normalized) {
+      throw new Error("entries must be non-empty strings");
+    }
+    return normalized;
+  });
   return entries.length > 0 ? entries : undefined;
 }
 
 function normalizeArtifacts(value: unknown): RunnerResultArtifact[] | undefined {
   if (!Array.isArray(value)) return undefined;
-  const artifacts = value
-    .filter((entry): entry is Record<string, unknown> => !!entry && typeof entry === "object")
-    .map((entry) => {
-      const pathValue = typeof entry.path === "string" ? entry.path.trim() : "";
-      const labelValue = typeof entry.label === "string" ? entry.label.trim() : "";
-      if (!pathValue) return null;
-      return labelValue ? { path: pathValue, label: labelValue } : { path: pathValue };
-    })
-    .filter((entry): entry is RunnerResultArtifact => entry !== null);
+  const artifacts = value.map((entry) => {
+    if (!isRecord(entry)) {
+      throw new Error("artifacts entries must be objects");
+    }
+    const pathValue = typeof entry.path === "string" ? entry.path.trim() : "";
+    if (!pathValue) {
+      throw new Error("artifacts[].path must be a non-empty string");
+    }
+    if (entry.label === undefined) return { path: pathValue };
+    if (typeof entry.label !== "string" || !entry.label.trim()) {
+      throw new Error("artifacts[].label must be a non-empty string when present");
+    }
+    return { path: pathValue, label: entry.label.trim() };
+  });
   return artifacts.length > 0 ? artifacts : undefined;
 }
 
 function normalizeMetrics(value: unknown): RunnerExecutionMetrics | undefined {
-  if (!value || typeof value !== "object") return undefined;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
   const candidate = value as Record<string, unknown>;
   const metrics: RunnerExecutionMetrics = {};
-  if (typeof candidate.duration_ms === "number" && Number.isFinite(candidate.duration_ms)) {
-    metrics.duration_ms = candidate.duration_ms;
+  if (candidate.duration_ms !== undefined) {
+    const duration = candidate.duration_ms;
+    if (typeof duration !== "number" || !Number.isInteger(duration) || duration < 0) {
+      throw new Error("metrics.duration_ms must be a non-negative integer");
+    }
+    metrics.duration_ms = duration;
   }
-  if (typeof candidate.stdout_bytes === "number" && Number.isFinite(candidate.stdout_bytes)) {
-    metrics.stdout_bytes = candidate.stdout_bytes;
+  if (candidate.stdout_bytes !== undefined) {
+    const stdoutBytes = candidate.stdout_bytes;
+    if (typeof stdoutBytes !== "number" || !Number.isInteger(stdoutBytes) || stdoutBytes < 0) {
+      throw new Error("metrics.stdout_bytes must be a non-negative integer");
+    }
+    metrics.stdout_bytes = stdoutBytes;
   }
-  if (typeof candidate.stderr_bytes === "number" && Number.isFinite(candidate.stderr_bytes)) {
-    metrics.stderr_bytes = candidate.stderr_bytes;
+  if (candidate.stderr_bytes !== undefined) {
+    const stderrBytes = candidate.stderr_bytes;
+    if (typeof stderrBytes !== "number" || !Number.isInteger(stderrBytes) || stderrBytes < 0) {
+      throw new Error("metrics.stderr_bytes must be a non-negative integer");
+    }
+    metrics.stderr_bytes = stderrBytes;
   }
-  if (
-    candidate.output_last_message_bytes === null ||
-    (typeof candidate.output_last_message_bytes === "number" &&
-      Number.isFinite(candidate.output_last_message_bytes))
-  ) {
-    metrics.output_last_message_bytes = candidate.output_last_message_bytes;
+  if (candidate.output_last_message_bytes !== undefined) {
+    const outputLastMessageBytes = candidate.output_last_message_bytes;
+    if (
+      outputLastMessageBytes !== null &&
+      (typeof outputLastMessageBytes !== "number" ||
+        !Number.isInteger(outputLastMessageBytes) ||
+        outputLastMessageBytes < 0)
+    ) {
+      throw new Error("metrics.output_last_message_bytes must be null or a non-negative integer");
+    }
+    metrics.output_last_message_bytes = outputLastMessageBytes;
   }
   return Object.keys(metrics).length > 0 ? metrics : undefined;
 }
@@ -67,35 +122,103 @@ export async function readRunnerResultManifest(
   resultPath: string,
 ): Promise<RunnerResultManifest | null> {
   try {
-    const raw = JSON.parse(await readFile(resultPath, "utf8")) as Record<string, unknown>;
+    const rawText = await readFile(resultPath, "utf8");
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(rawText);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      invalidManifest(resultPath, `result.json must contain valid JSON (${message})`, rawText);
+    }
+    if (!isRecord(parsed)) {
+      invalidManifest(resultPath, "result.json must contain a JSON object", rawText);
+    }
+    const raw = parsed;
+    if (raw.schema_version !== RUNNER_RESULT_MANIFEST_SCHEMA_VERSION) {
+      invalidManifest(
+        resultPath,
+        `schema_version must be ${RUNNER_RESULT_MANIFEST_SCHEMA_VERSION}`,
+        rawText,
+      );
+    }
     const manifest: RunnerResultManifest = {
       schema_version: RUNNER_RESULT_MANIFEST_SCHEMA_VERSION,
     };
-    const status = normalizeStatus(raw.status);
-    if (status) manifest.status = status;
-    if (raw.exit_code === null || typeof raw.exit_code === "number") {
-      manifest.exit_code = raw.exit_code;
+    if (raw.status !== undefined) {
+      const status = normalizeStatus(raw.status);
+      if (!status) {
+        invalidManifest(resultPath, "status must be success, failed, or cancelled", rawText);
+      }
+      manifest.status = status;
     }
-    if (typeof raw.summary === "string" && raw.summary.trim()) {
+    if (raw.exit_code !== undefined) {
+      const exitCode = raw.exit_code;
+      if (
+        exitCode !== null &&
+        (typeof exitCode !== "number" || !Number.isInteger(exitCode) || exitCode < 0)
+      ) {
+        invalidManifest(resultPath, "exit_code must be null or a non-negative integer", rawText);
+      }
+      manifest.exit_code = exitCode;
+    }
+    if (raw.summary !== undefined) {
+      if (typeof raw.summary !== "string" || !raw.summary.trim()) {
+        invalidManifest(resultPath, "summary must be a non-empty string when present", rawText);
+      }
       manifest.summary = raw.summary.trim();
     }
-    if (typeof raw.stdout_summary === "string" && raw.stdout_summary.trim()) {
+    if (raw.stdout_summary !== undefined) {
+      if (typeof raw.stdout_summary !== "string" || !raw.stdout_summary.trim()) {
+        invalidManifest(
+          resultPath,
+          "stdout_summary must be a non-empty string when present",
+          rawText,
+        );
+      }
       manifest.stdout_summary = raw.stdout_summary.trim();
     }
-    if (typeof raw.stderr_summary === "string" && raw.stderr_summary.trim()) {
+    if (raw.stderr_summary !== undefined) {
+      if (typeof raw.stderr_summary !== "string" || !raw.stderr_summary.trim()) {
+        invalidManifest(
+          resultPath,
+          "stderr_summary must be a non-empty string when present",
+          rawText,
+        );
+      }
       manifest.stderr_summary = raw.stderr_summary.trim();
     }
-    manifest.artifacts = normalizeArtifacts(raw.artifacts);
-    manifest.findings = normalizeStringArray(raw.findings);
-    manifest.verification_hints = normalizeStringArray(raw.verification_hints);
-    manifest.capabilities_used = normalizeStringArray(raw.capabilities_used);
-    manifest.metrics = normalizeMetrics(raw.metrics);
+    try {
+      manifest.artifacts = normalizeArtifacts(raw.artifacts);
+      manifest.findings = normalizeStringArray(raw.findings);
+      manifest.verification_hints = normalizeStringArray(raw.verification_hints);
+      manifest.capabilities_used = normalizeStringArray(raw.capabilities_used);
+      manifest.metrics = normalizeMetrics(raw.metrics);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      invalidManifest(resultPath, message, rawText);
+    }
     return manifest;
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ENOENT") return null;
     throw err;
   }
+}
+
+export function invalidRunnerResultManifestPath(resultPath: string): string {
+  const dir = path.dirname(resultPath);
+  const base = path.basename(resultPath, ".json");
+  return path.join(dir, `${base}${INVALID_RESULT_MANIFEST_SUFFIX}`);
+}
+
+export async function preserveInvalidRunnerResultManifest(opts: {
+  result_path: string;
+  error: InvalidRunnerResultManifestError;
+}): Promise<string> {
+  const invalidPath = invalidRunnerResultManifestPath(opts.result_path);
+  await mkdir(path.dirname(invalidPath), { recursive: true });
+  await atomicWriteFile(invalidPath, opts.error.raw_content, "utf8");
+  return invalidPath;
 }
 
 export async function writeRunnerResultManifest(opts: {
