@@ -93,6 +93,8 @@ describe("runCli", () => {
     expect(readme).toContain("doc_version: 3");
     expect(readme).toContain('status: "TODO"');
     expect(readme).toContain('title: "My task"');
+    expect(readme).toContain("origin:");
+    expect(readme).toContain('system: "manual"');
     expect(readme).toContain("## Summary");
     expect(readme).toContain("## Scope");
     expect(readme).toContain("## Findings");
@@ -168,6 +170,7 @@ describe("runCli", () => {
     }
 
     const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.origin).toEqual({ system: "manual" });
     expect(task.frontmatter.depends_on).toContain("202601010101-ABCDEF");
     expect(task.frontmatter.verify).toContain("bun run ci");
   });

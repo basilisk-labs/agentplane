@@ -16,6 +16,7 @@ export {
   type TaskData,
   type TaskEvent,
   type TaskEventType,
+  type TaskOrigin,
   type TaskProjectionRefreshOptions,
   type TaskWriteOptions,
   type VerificationResult,

@@ -14,6 +14,17 @@ export type VerificationResult = {
   note: string | null;
 };
 
+export type TaskOrigin = {
+  system: string;
+  issue_id?: string;
+  url?: string;
+  recipe_id?: string;
+  scenario_id?: string;
+  recipe_version?: string;
+  run_id?: string;
+  [key: string]: string | undefined;
+};
+
 export type TaskEventType = "status" | "comment" | "verify";
 export type TaskEvent = {
   type: TaskEventType;
@@ -37,6 +48,7 @@ export type TaskData = {
   priority: string | number;
   owner: string;
   revision?: number;
+  origin?: TaskOrigin | null;
   depends_on: string[];
   tags: string[];
   verify: string[];

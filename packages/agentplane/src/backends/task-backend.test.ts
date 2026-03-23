@@ -179,6 +179,7 @@ describe("task-backend helpers", () => {
         status: "TODO",
         priority: 2,
         owner: "CODER",
+        origin: { system: "manual", run_id: "run-123" },
         depends_on: "nope" as unknown as string[],
         tags: ["ok", 1 as unknown as string],
         verify: null as unknown as string[],
@@ -195,6 +196,7 @@ describe("task-backend helpers", () => {
     expect(task.depends_on).toEqual([]);
     expect(task.tags).toEqual(["ok"]);
     expect(task.verify).toEqual([]);
+    expect(task.origin).toEqual({ system: "manual", run_id: "run-123" });
     expect(task.comments).toEqual([{ author: "a", body: "b" }]);
     expect(task.doc_version).toBe(3);
     expect(task.doc_updated_by).toBe("a");
@@ -211,6 +213,7 @@ describe("task-backend helpers", () => {
         status: "TODO",
         priority: "med",
         owner: "tester",
+        origin: { system: "recipe", recipe_id: "viewer", scenario_id: "demo" },
         depends_on: [],
         tags: ["a"],
         verify: ["echo ok"],
@@ -224,6 +227,11 @@ describe("task-backend helpers", () => {
     expect(data.doc).toBe("## Summary\n\nDoc text");
     expect(data.commit).toEqual({ hash: "abc", message: "msg" });
     expect(data.comments).toEqual([{ author: "me", body: "note" }]);
+    expect(data.origin).toEqual({
+      system: "recipe",
+      recipe_id: "viewer",
+      scenario_id: "demo",
+    });
     expect(data.dirty).toBe(true);
   });
 

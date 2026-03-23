@@ -50,6 +50,7 @@ export async function cmdTaskAdd(opts: {
       status,
       priority: opts.priority,
       owner: opts.owner,
+      origin: { system: "manual" },
       tags,
       depends_on: dependsOn,
       verify,

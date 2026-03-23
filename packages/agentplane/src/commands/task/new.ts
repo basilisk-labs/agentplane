@@ -105,6 +105,7 @@ export async function runTaskNewParsed(opts: {
       priority: p.priority,
       owner: p.owner,
       revision: 1,
+      origin: { system: "manual" },
       tags: p.tags,
       depends_on: p.dependsOn,
       verify: p.verify,

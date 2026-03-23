@@ -5,7 +5,7 @@ import path from "node:path";
 import { loadConfig } from "../config/config.js";
 import { atomicWriteFile } from "../fs/atomic-write.js";
 import { resolveProject } from "../project/project-root.js";
-import { listTasks } from "./task-store.js";
+import { listTasks, type TaskOrigin } from "./task-store.js";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
@@ -13,6 +13,22 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 3): 2 | 3 {
   return value === 3 ? 3 : value === 2 ? 2 : fallback;
+}
+
+function normalizeTaskOrigin(value: unknown): TaskOrigin | undefined {
+  if (!isRecord(value)) return undefined;
+  const system = typeof value.system === "string" ? value.system.trim() : "";
+  if (!system) return undefined;
+  const origin: TaskOrigin = { system };
+  for (const [key, raw] of Object.entries(value)) {
+    if (key === "system") continue;
+    if (typeof raw !== "string") continue;
+    const normalizedKey = key.trim();
+    const normalizedValue = raw.trim();
+    if (!normalizedKey || !normalizedValue) continue;
+    origin[normalizedKey] = normalizedValue;
+  }
+  return origin;
 }
 
 export function canonicalizeJson(value: unknown): unknown {
@@ -41,6 +57,7 @@ export type TasksExportTask = {
   status: string;
   priority: string;
   owner: string;
+  origin?: TaskOrigin;
   depends_on: string[];
   tags: string[];
   verify: string[];
@@ -155,6 +172,7 @@ export async function buildTasksExportSnapshot(opts: {
       status: typeof fm.status === "string" ? fm.status : "",
       priority: typeof fm.priority === "string" ? fm.priority : "",
       owner: typeof fm.owner === "string" ? fm.owner : "",
+      origin: normalizeTaskOrigin(fm.origin),
       depends_on: dependsOn,
       tags,
       verify,

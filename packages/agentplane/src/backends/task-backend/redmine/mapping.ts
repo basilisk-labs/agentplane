@@ -4,6 +4,7 @@ import { isRecord } from "../../../shared/guards.js";
 
 import {
   ensureDocMetadata,
+  normalizeTaskOrigin,
   normalizePriority,
   nowIso,
   toStringSafe,
@@ -92,6 +93,15 @@ export function issueToTask(opts: {
         ? opts.issue.created_on
         : null;
   const canonicalState = parseRedmineCanonicalState(canonicalStateVal);
+  const issueId = toStringSafe(opts.issue.id).trim();
+  const issueUrl = toStringSafe(opts.issue.url).trim();
+  const origin =
+    normalizeTaskOrigin(canonicalState?.origin) ??
+    ({
+      system: "redmine",
+      ...(issueId ? { issue_id: issueId } : {}),
+      ...(issueUrl ? { url: issueUrl } : {}),
+    } satisfies NonNullable<TaskData["origin"]>);
 
   const priorityVal = isRecord(opts.issue.priority) ? opts.issue.priority : null;
   const priorityName = normalizePriority(priorityVal?.name ?? priorityFieldVal);
@@ -124,6 +134,7 @@ export function issueToTask(opts: {
     priority: priorityName,
     owner: toStringSafe(ownerFieldVal ?? opts.ownerAgent),
     revision: canonicalState?.revision ?? 1,
+    origin,
     tags: mergedTags,
     depends_on: [],
     verify: maybeParseJson(verifyVal) as string[],

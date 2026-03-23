@@ -55,6 +55,7 @@ describe("task-store", () => {
     const loaded = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
     expect(loaded.frontmatter.title).toBe("My task");
     expect(loaded.frontmatter.owner).toBe("CODER");
+    expect(loaded.frontmatter.origin).toEqual({ system: "manual" });
     expect(loaded.frontmatter.tags).toEqual(["nodejs"]);
   });
 

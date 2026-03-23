@@ -717,6 +717,8 @@ describe("runCli", () => {
       const code2 = await runCli(["task", "show", id, "--root", root]);
       expect(code2).toBe(0);
       expect(io2.stdout).toContain(`"id": "${id}"`);
+      expect(io2.stdout).toContain('"origin"');
+      expect(io2.stdout).toContain('"system": "manual"');
       expect(io2.stdout).toContain('"status": "TODO"');
     } finally {
       io2.restore();

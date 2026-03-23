@@ -93,6 +93,7 @@ describe("tasks-export", () => {
     const loaded = JSON.parse(text) as typeof snapshot;
     expect(loaded.meta.checksum).toBe(snapshot.meta.checksum);
     expect(Array.isArray(loaded.tasks)).toBe(true);
+    expect(snapshot.tasks.find((t) => t.id === created.id)?.origin).toEqual({ system: "manual" });
 
     const malformed = snapshot.tasks.find((t) => t.id === malformedId);
     expect(malformed?.commit).toEqual({ hash: "abc1234", message: "done" });

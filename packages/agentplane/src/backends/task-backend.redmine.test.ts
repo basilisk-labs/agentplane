@@ -163,6 +163,7 @@ describe("RedmineBackend (mocked)", () => {
     const taskAfterPull = await backend.getTask("202601300000-ABCD");
     expect(taskAfterPull?.title).toBe("Issue");
     expect(taskAfterPull?.revision).toBe(2);
+    expect(taskAfterPull?.origin).toEqual({ system: "redmine", issue_id: "101" });
     expect(taskAfterPull?.sections).toMatchObject({
       Summary: "Canonical summary.",
       "Verify Steps": "1. Canonical check.",
@@ -640,6 +641,7 @@ describe("RedmineBackend (mocked)", () => {
       priority: "med",
       owner: "REDMINE",
       revision: 3,
+      origin: { system: "recipe", recipe_id: "viewer", scenario_id: "demo" },
       depends_on: [],
       tags: [],
       verify: [],
@@ -667,6 +669,11 @@ describe("RedmineBackend (mocked)", () => {
     expect(canonicalField?.value).toEqual(
       JSON.stringify({
         revision: 3,
+        origin: {
+          system: "recipe",
+          recipe_id: "viewer",
+          scenario_id: "demo",
+        },
         sections: {
           Summary: "Summary text.",
           "Verify Steps": "1. Run focused tests.",
@@ -694,6 +701,34 @@ describe("RedmineBackend (mocked)", () => {
         ],
       }),
     );
+  });
+
+  it("derives redmine origin metadata when canonical origin is absent", () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        status_map: { TODO: 1 },
+        custom_fields: { task_id: 1 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      issueToTask: (issue: Record<string, unknown>, taskIdOverride?: string) => TaskData | null;
+    };
+    const task = helper.issueToTask(
+      {
+        id: 42,
+        subject: "Issue",
+        description: "Desc",
+        status: { id: 1 },
+        custom_fields: [{ id: 1, value: "202601300000-ABCD" }],
+      },
+      "202601300000-ABCD",
+    );
+
+    expect(task?.origin).toEqual({ system: "redmine", issue_id: "42" });
   });
 
   it("derives canonical sections from legacy doc when structured state is absent", () => {
@@ -732,7 +767,57 @@ describe("RedmineBackend (mocked)", () => {
       Summary: "Legacy summary.",
       "Verify Steps": "1. Legacy check.",
     });
+    expect(task?.origin).toEqual({ system: "redmine", issue_id: "1" });
     expect(task?.doc).toContain("Legacy summary.");
+  });
+
+  it("prefers canonical_state origin over inferred redmine origin", () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        status_map: { TODO: 1 },
+        custom_fields: { task_id: 1, canonical_state: 2 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      issueToTask: (issue: Record<string, unknown>, taskIdOverride?: string) => TaskData | null;
+    };
+
+    const task = helper.issueToTask(
+      {
+        id: 7,
+        subject: "Issue",
+        description: "Desc",
+        status: { id: 1 },
+        url: "https://redmine.example/issues/7",
+        custom_fields: [
+          { id: 1, value: "202601300000-ABCD" },
+          {
+            id: 2,
+            value: JSON.stringify({
+              revision: 3,
+              origin: {
+                system: "recipe",
+                recipe_id: "viewer",
+                scenario_id: "demo",
+                run_id: "run-42",
+              },
+            }),
+          },
+        ],
+      },
+      "202601300000-ABCD",
+    );
+
+    expect(task?.origin).toEqual({
+      system: "recipe",
+      recipe_id: "viewer",
+      scenario_id: "demo",
+      run_id: "run-42",
+    });
   });
 
   it("normalizes priority values when mapping issues", () => {

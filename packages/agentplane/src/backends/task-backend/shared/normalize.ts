@@ -1,6 +1,6 @@
 import { isRecord } from "../../../shared/guards.js";
 
-import type { PlanApproval, VerificationResult } from "./types.js";
+import type { PlanApproval, TaskOrigin, VerificationResult } from "./types.js";
 import { toStringSafe } from "./strings.js";
 
 export function normalizeDependsOn(value: unknown): string[] {
@@ -28,6 +28,22 @@ export function defaultPlanApproval(): PlanApproval {
 
 export function defaultVerificationResult(): VerificationResult {
   return { state: "pending", updated_at: null, updated_by: null, note: null };
+}
+
+export function normalizeTaskOrigin(value: unknown): TaskOrigin | null {
+  if (!isRecord(value)) return null;
+  const system = typeof value.system === "string" ? value.system.trim() : "";
+  if (!system) return null;
+  const origin: TaskOrigin = { system };
+  for (const [key, raw] of Object.entries(value)) {
+    if (key === "system") continue;
+    if (typeof raw !== "string") continue;
+    const normalizedKey = key.trim();
+    const normalizedValue = raw.trim();
+    if (!normalizedKey || !normalizedValue) continue;
+    origin[normalizedKey] = normalizedValue;
+  }
+  return origin;
 }
 
 export function normalizePlanApproval(value: unknown): PlanApproval | null {

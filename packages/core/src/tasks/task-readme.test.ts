@@ -145,6 +145,38 @@ Hello world.
     );
   });
 
+  it("renders origin metadata in deterministic order and roundtrips it", () => {
+    const parsed = parseTaskReadme(sample);
+    const withOrigin = {
+      ...parsed.frontmatter,
+      origin: {
+        system: "recipe",
+        recipe_id: "viewer",
+        scenario_id: "demo",
+        recipe_version: "1.2.3",
+        run_id: "run-123",
+      },
+    };
+
+    const rendered = renderTaskReadme(withOrigin as Record<string, unknown>, parsed.body);
+    expect(rendered).toContain("origin:");
+    expect(rendered.indexOf('system: "recipe"')).toBeLessThan(
+      rendered.indexOf('recipe_id: "viewer"'),
+    );
+    expect(rendered.indexOf('recipe_id: "viewer"')).toBeLessThan(
+      rendered.indexOf('scenario_id: "demo"'),
+    );
+
+    const roundtrip = parseTaskReadme(rendered).frontmatter;
+    expect(roundtrip.origin).toEqual({
+      system: "recipe",
+      recipe_id: "viewer",
+      scenario_id: "demo",
+      recipe_version: "1.2.3",
+      run_id: "run-123",
+    });
+  });
+
   it("renders canonical sections in task-doc order and roundtrips them", () => {
     const parsed = parseTaskReadme(sample);
     const withCanonicalSections = {

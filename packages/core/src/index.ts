@@ -65,6 +65,7 @@ export {
   taskReadmePath,
   validateTaskDocMetadata,
   type TaskFrontmatter,
+  type TaskOrigin,
   type TaskPriority,
   type TaskRecord,
   type TaskStatus,

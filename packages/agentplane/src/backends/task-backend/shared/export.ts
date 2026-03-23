@@ -8,6 +8,7 @@ import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 
 import { DEFAULT_DOC_UPDATED_BY } from "./constants.js";
 import { normalizeDocVersion, resolveDocUpdatedByFromTask } from "./doc.js";
+import { normalizeTaskOrigin } from "./normalize.js";
 import { toStringArray } from "./strings.js";
 import type { TaskData, TaskEvent } from "./types.js";
 
@@ -20,6 +21,7 @@ function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_sourc
     status: task.status ?? "",
     priority: typeof task.priority === "number" ? String(task.priority) : (task.priority ?? ""),
     owner: task.owner ?? "",
+    origin: normalizeTaskOrigin(task.origin) ?? undefined,
     depends_on: toStringArray(task.depends_on),
     tags: toStringArray(task.tags),
     verify: toStringArray(task.verify),

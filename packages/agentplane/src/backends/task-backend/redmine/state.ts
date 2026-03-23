@@ -3,12 +3,17 @@ import { taskDocToSectionMap } from "@agentplaneorg/core";
 import { isRecord } from "../../../shared/guards.js";
 
 import { normalizeEvents } from "../shared/events.js";
-import { normalizePlanApproval, normalizeVerificationResult } from "../shared/normalize.js";
+import {
+  normalizePlanApproval,
+  normalizeTaskOrigin,
+  normalizeVerificationResult,
+} from "../shared/normalize.js";
 import type { TaskData } from "../shared/types.js";
 import { toStringSafe } from "../shared/strings.js";
 
 export type RedmineCanonicalState = {
   revision?: number;
+  origin?: TaskData["origin"];
   sections?: Record<string, string>;
   plan_approval?: TaskData["plan_approval"];
   verification?: TaskData["verification"];
@@ -52,6 +57,7 @@ export function parseRedmineCanonicalState(value: unknown): RedmineCanonicalStat
   if (!isRecord(parsed)) return null;
 
   const revision = normalizeRevision(parsed.revision);
+  const origin = normalizeTaskOrigin(parsed.origin) ?? undefined;
   const sections = normalizeCanonicalSections(parsed.sections);
   const planApproval = normalizePlanApproval(parsed.plan_approval) ?? undefined;
   const verification = normalizeVerificationResult(parsed.verification) ?? undefined;
@@ -59,6 +65,7 @@ export function parseRedmineCanonicalState(value: unknown): RedmineCanonicalStat
 
   if (
     revision === undefined &&
+    origin === undefined &&
     sections === undefined &&
     planApproval === undefined &&
     verification === undefined &&
@@ -69,6 +76,7 @@ export function parseRedmineCanonicalState(value: unknown): RedmineCanonicalStat
 
   return {
     ...(revision === undefined ? {} : { revision }),
+    ...(origin ? { origin } : {}),
     ...(sections ? { sections } : {}),
     ...(planApproval ? { plan_approval: planApproval } : {}),
     ...(verification ? { verification } : {}),
@@ -89,6 +97,7 @@ export function buildRedmineCanonicalStateWithOptions(
     normalizeRevision(opts?.revision) ??
     normalizeRevision(task.revision) ??
     normalizeRevision(base?.revision);
+  const origin = normalizeTaskOrigin(task.origin) ?? normalizeTaskOrigin(base?.origin) ?? undefined;
   const sections =
     normalizeCanonicalSections(task.sections) ??
     (typeof task.doc === "string" && task.doc.trim().length > 0
@@ -108,6 +117,7 @@ export function buildRedmineCanonicalStateWithOptions(
 
   if (
     revision === undefined &&
+    origin === undefined &&
     sections === undefined &&
     planApproval === undefined &&
     verification === undefined &&
@@ -118,6 +128,7 @@ export function buildRedmineCanonicalStateWithOptions(
 
   return {
     ...(revision === undefined ? {} : { revision }),
+    ...(origin ? { origin } : {}),
     ...(sections ? { sections } : {}),
     ...(planApproval ? { plan_approval: planApproval } : {}),
     ...(verification ? { verification } : {}),

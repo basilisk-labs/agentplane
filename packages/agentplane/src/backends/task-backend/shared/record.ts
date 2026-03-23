@@ -7,6 +7,7 @@ import { normalizeEvents } from "./events.js";
 import {
   normalizeDependsOn,
   normalizePlanApproval,
+  normalizeTaskOrigin,
   normalizeVerificationResult,
 } from "./normalize.js";
 import { toStringArray } from "./strings.js";
@@ -50,6 +51,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
   const events = normalizeEvents(fm.events);
   const planApproval = normalizePlanApproval(fm.plan_approval);
   const verification = normalizeVerificationResult(fm.verification);
+  const origin = normalizeTaskOrigin(fm.origin);
   const sections = normalizeCanonicalSections(fm.sections);
   const doc = sections ? renderTaskDocFromSections(sections) : extractTaskDoc(record.body);
 
@@ -68,6 +70,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     priority: typeof fm.priority === "string" || typeof fm.priority === "number" ? fm.priority : "",
     owner: typeof fm.owner === "string" ? fm.owner : "",
     revision: normalizeRevision(fm.revision) ?? 1,
+    origin: origin ?? undefined,
     depends_on: normalizeDependsOn(fm.depends_on),
     tags: toStringArray(fm.tags),
     verify: toStringArray(fm.verify),

@@ -31,6 +31,7 @@ describe("LocalBackend", () => {
       status: "TODO",
       priority: "med",
       owner: "tester",
+      origin: { system: "manual" },
       depends_on: [],
       tags: ["tag"],
       verify: ["echo ok"],
@@ -40,6 +41,7 @@ describe("LocalBackend", () => {
     const loaded = await backend.getTask(task.id);
     expect(loaded?.doc).toContain("## Summary");
     expect(loaded?.doc_updated_by).toBe("tester");
+    expect(loaded?.origin).toEqual({ system: "manual" });
     const doc = await backend.getTaskDoc(task.id);
     expect(doc).toContain("Doc body");
 

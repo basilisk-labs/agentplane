@@ -179,7 +179,15 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
   if (isRecord(value)) {
     const preferred =
       key === "origin"
-        ? (["system", "issue_id", "url"] as const)
+        ? ([
+            "system",
+            "issue_id",
+            "url",
+            "recipe_id",
+            "scenario_id",
+            "recipe_version",
+            "run_id",
+          ] as const)
         : key === "plan_approval"
           ? (["state", "updated_at", "updated_by", "note"] as const)
           : key === "verification"

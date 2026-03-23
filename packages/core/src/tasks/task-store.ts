@@ -23,6 +23,17 @@ export type TaskEvent = {
   body?: string;
 };
 
+export type TaskOrigin = {
+  system: string;
+  issue_id?: string;
+  url?: string;
+  recipe_id?: string;
+  scenario_id?: string;
+  recipe_version?: string;
+  run_id?: string;
+  [key: string]: string | undefined;
+};
+
 export type TaskFrontmatter = {
   id: string;
   title: string;
@@ -30,6 +41,7 @@ export type TaskFrontmatter = {
   priority: TaskPriority;
   owner: string;
   revision?: number;
+  origin?: TaskOrigin;
   depends_on: string[];
   tags: string[];
   verify: string[];
@@ -229,6 +241,7 @@ export async function createTask(opts: {
     priority: opts.priority,
     owner: opts.owner,
     revision: 1,
+    origin: { system: "manual" },
     depends_on: opts.dependsOn,
     tags: opts.tags,
     verify: opts.verify,

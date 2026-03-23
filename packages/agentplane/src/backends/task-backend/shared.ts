@@ -13,6 +13,7 @@ export type {
   TaskDocMeta,
   TaskEvent,
   TaskEventType,
+  TaskOrigin,
   TaskProjectionRefreshOptions,
   TaskWriteOptions,
   VerificationResult,
@@ -26,6 +27,7 @@ export * from "./shared/export.js";
 export * from "./shared/id.js";
 export {
   defaultPlanApproval,
+  normalizeTaskOrigin,
   defaultVerificationResult,
   normalizeDependsOn,
   normalizePriority,

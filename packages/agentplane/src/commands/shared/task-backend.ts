@@ -73,6 +73,7 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
     priority: task.priority,
     owner: task.owner,
     revision,
+    origin: task.origin ?? undefined,
     depends_on: task.depends_on ?? [],
     tags: task.tags ?? [],
     verify: task.verify ?? [],
