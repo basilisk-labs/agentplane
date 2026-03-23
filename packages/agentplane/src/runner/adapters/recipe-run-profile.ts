@@ -3,7 +3,6 @@ import type { RunnerRecipeContext } from "../types.js";
 export type RecipeRunProfileMetadata = {
   mode?: string;
   sandbox?: string;
-  network?: boolean;
   requires_human_approval?: boolean;
   writes_artifacts_to?: string[];
   expected_exit_contract?: string;
@@ -55,7 +54,6 @@ export function readRecipeRunProfile(
   return {
     mode: normalizeOptionalString(candidate.mode),
     sandbox: normalizeOptionalString(candidate.sandbox),
-    network: typeof candidate.network === "boolean" ? candidate.network : undefined,
     requires_human_approval:
       typeof candidate.requires_human_approval === "boolean"
         ? candidate.requires_human_approval
@@ -86,7 +84,6 @@ export function buildRecipeRunnerEnv(
 
   setStringEnv(env, "AGENTPLANE_RECIPE_MODE", profile.mode);
   setStringEnv(env, "AGENTPLANE_RECIPE_SANDBOX", profile.sandbox);
-  setBooleanEnv(env, "AGENTPLANE_RECIPE_NETWORK", profile.network);
   setBooleanEnv(env, "AGENTPLANE_RECIPE_REQUIRES_HUMAN_APPROVAL", profile.requires_human_approval);
   setStringEnv(env, "AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT", profile.expected_exit_contract);
   setJsonEnv(env, "AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO", profile.writes_artifacts_to);

@@ -99,7 +99,6 @@ describe("CustomRunnerAdapter", () => {
       command: ["custom-runner", "--bundle-from-env"],
       env: {
         CUSTOM_TOKEN: "token",
-        AGENTPLANE_RECIPE_NETWORK: "false",
       },
     };
     const adapter = createRunnerAdapter(raw);
@@ -138,7 +137,6 @@ describe("CustomRunnerAdapter", () => {
       AGENTPLANE_SCENARIO_ID: "RECIPE_SCENARIO",
       AGENTPLANE_RECIPE_MODE: "analysis",
       AGENTPLANE_RECIPE_SANDBOX: "workspace-write",
-      AGENTPLANE_RECIPE_NETWORK: "true",
       AGENTPLANE_RECIPE_REQUIRES_HUMAN_APPROVAL: "false",
       AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT: "report",
       AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO: JSON.stringify(["logs/", "reports/"]),
@@ -153,7 +151,6 @@ describe("CustomRunnerAdapter", () => {
     expect(JSON.parse(invocation.env.AGENTPLANE_RECIPE_RUN_PROFILE ?? "{}")).toMatchObject({
       mode: "analysis",
       sandbox: "workspace-write",
-      network: true,
       requires_human_approval: false,
       writes_artifacts_to: ["logs/", "reports/"],
       expected_exit_contract: "report",

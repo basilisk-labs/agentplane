@@ -329,7 +329,6 @@ describe("runCli scenario", () => {
         "  scenario_id: process.env.AGENTPLANE_SCENARIO_ID ?? null,",
         "  mode: process.env.AGENTPLANE_RECIPE_MODE ?? null,",
         "  sandbox: process.env.AGENTPLANE_RECIPE_SANDBOX ?? null,",
-        "  network: process.env.AGENTPLANE_RECIPE_NETWORK ?? null,",
         "  requires_human_approval: process.env.AGENTPLANE_RECIPE_REQUIRES_HUMAN_APPROVAL ?? null,",
         "  expected_exit_contract: process.env.AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT ?? null,",
         '  writes_artifacts_to: JSON.parse(process.env.AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO ?? "[]"),',
@@ -386,7 +385,6 @@ describe("runCli scenario", () => {
         scenario_id?: string;
         mode?: string;
         sandbox?: string;
-        network?: string;
         requires_human_approval?: string;
         expected_exit_contract?: string;
         writes_artifacts_to?: string[];
@@ -404,7 +402,6 @@ describe("runCli scenario", () => {
         scenario_id: "RECIPE_SCENARIO",
         mode: "analysis",
         sandbox: "workspace-write",
-        network: "false",
         requires_human_approval: "false",
         expected_exit_contract: "report",
         writes_artifacts_to: ["logs/", "reports/"],
@@ -419,7 +416,6 @@ describe("runCli scenario", () => {
       expect(recipeEnv.run_profile).toMatchObject({
         mode: "analysis",
         sandbox: "workspace-write",
-        network: false,
         requires_human_approval: false,
         writes_artifacts_to: ["logs/", "reports/"],
         expected_exit_contract: "report",
