@@ -1,0 +1,483 @@
+const AGENTPLANE_CONFIG_SCHEMA_JSON = String.raw`{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentplane.dev/schemas/config.schema.json",
+  "title": "agentplane config.json (v1)",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "workflow_mode",
+    "runner",
+    "paths",
+    "tasks",
+    "commit",
+    "tasks_backend"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1, "default": 1 },
+    "workflow_mode": {
+      "type": "string",
+      "enum": ["direct", "branch_pr"],
+      "default": "direct"
+    },
+    "status_commit_policy": {
+      "type": "string",
+      "enum": ["off", "warn", "confirm"],
+      "default": "warn"
+    },
+    "commit_automation": {
+      "type": "string",
+      "enum": ["manual", "finish_only"],
+      "default": "manual"
+    },
+    "finish_auto_status_commit": { "type": "boolean", "default": false },
+    "agents": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["approvals"],
+      "default": {
+        "approvals": { "require_plan": true, "require_network": true, "require_verify": true }
+      },
+      "properties": {
+        "approvals": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["require_plan", "require_network", "require_verify"],
+          "default": {
+            "require_plan": true,
+            "require_network": true,
+            "require_verify": true,
+            "require_force": false
+          },
+          "properties": {
+            "require_plan": { "type": "boolean", "default": true },
+            "require_network": { "type": "boolean", "default": true },
+            "require_verify": { "type": "boolean", "default": true },
+            "require_force": { "type": "boolean", "default": false }
+          }
+        }
+      }
+    },
+    "recipes": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["storage_default"],
+      "default": { "storage_default": "link" },
+      "properties": {
+        "storage_default": {
+          "type": "string",
+          "enum": ["link", "copy", "global"],
+          "default": "link"
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "profile",
+        "reasoning_effort",
+        "tool_budget",
+        "stop_conditions",
+        "handoff_conditions",
+        "unsafe_actions_requiring_explicit_user_ok"
+      ],
+      "default": {
+        "profile": "balanced",
+        "reasoning_effort": "medium",
+        "tool_budget": {
+          "discovery": 6,
+          "implementation": 10,
+          "verification": 6
+        },
+        "stop_conditions": [
+          "Missing required input blocks correctness.",
+          "Requested action expands scope or risk beyond approved plan.",
+          "Verification fails and remediation changes scope."
+        ],
+        "handoff_conditions": [
+          "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
+          "Task depends_on prerequisites are incomplete.",
+          "Specialized agent is required."
+        ],
+        "unsafe_actions_requiring_explicit_user_ok": [
+          "Destructive git history operations.",
+          "Outside-repo read/write.",
+          "Credential, keychain, or SSH material changes."
+        ]
+      },
+      "properties": {
+        "profile": {
+          "type": "string",
+          "enum": ["conservative", "balanced", "aggressive"],
+          "default": "balanced"
+        },
+        "reasoning_effort": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "default": "medium"
+        },
+        "tool_budget": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["discovery", "implementation", "verification"],
+          "default": {
+            "discovery": 6,
+            "implementation": 10,
+            "verification": 6
+          },
+          "properties": {
+            "discovery": { "type": "integer", "minimum": 1, "default": 6 },
+            "implementation": { "type": "integer", "minimum": 1, "default": 10 },
+            "verification": { "type": "integer", "minimum": 1, "default": 6 }
+          }
+        },
+        "stop_conditions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "default": [
+            "Missing required input blocks correctness.",
+            "Requested action expands scope or risk beyond approved plan.",
+            "Verification fails and remediation changes scope."
+          ]
+        },
+        "handoff_conditions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "default": [
+            "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
+            "Task depends_on prerequisites are incomplete.",
+            "Specialized agent is required."
+          ]
+        },
+        "unsafe_actions_requiring_explicit_user_ok": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "default": [
+            "Destructive git history operations.",
+            "Outside-repo read/write.",
+            "Credential, keychain, or SSH material changes."
+          ]
+        }
+      }
+    },
+    "runner": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["default_adapter"],
+      "default": {
+        "default_adapter": "codex"
+      },
+      "properties": {
+        "default_adapter": {
+          "type": "string",
+          "enum": ["codex", "custom"],
+          "default": "codex"
+        },
+        "custom": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["command"],
+          "properties": {
+            "command": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "env": {
+              "type": "object",
+              "default": {},
+              "additionalProperties": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["agents_dir", "tasks_path", "workflow_dir", "worktrees_dir"],
+      "default": {
+        "agents_dir": ".agentplane/agents",
+        "tasks_path": ".agentplane/tasks.json",
+        "workflow_dir": ".agentplane/tasks",
+        "worktrees_dir": ".agentplane/worktrees"
+      },
+      "properties": {
+        "agents_dir": { "type": "string", "minLength": 1, "default": ".agentplane/agents" },
+        "tasks_path": { "type": "string", "minLength": 1, "default": ".agentplane/tasks.json" },
+        "workflow_dir": { "type": "string", "minLength": 1, "default": ".agentplane/tasks" },
+        "worktrees_dir": { "type": "string", "minLength": 1, "default": ".agentplane/worktrees" }
+      }
+    },
+    "branch": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["task_prefix"],
+      "default": { "task_prefix": "task" },
+      "properties": {
+        "task_prefix": { "type": "string", "minLength": 1, "default": "task" }
+      }
+    },
+    "framework": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["source", "last_update", "cli"],
+      "default": {
+        "source": "https://github.com/basilisk-labs/agentplane",
+        "last_update": null,
+        "cli": {
+          "expected_version": null
+        }
+      },
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "default": "https://github.com/basilisk-labs/agentplane"
+        },
+        "last_update": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "default": null
+        },
+        "cli": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["expected_version"],
+          "default": {
+            "expected_version": null
+          },
+          "properties": {
+            "expected_version": {
+              "type": ["string", "null"],
+              "default": null
+            }
+          }
+        }
+      }
+    },
+    "tasks": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id_suffix_length_default", "verify", "doc", "comments", "tags"],
+      "default": {
+        "id_suffix_length_default": 6,
+        "verify": {
+          "required_tags": ["code", "backend", "frontend"],
+          "require_steps_for_primary": ["code", "data", "ops"],
+          "require_verification_for_primary": ["code", "data", "ops"]
+        },
+        "tags": {
+          "primary_allowlist": ["code", "data", "research", "docs", "ops", "product", "meta"],
+          "strict_primary": false,
+          "fallback_primary": "meta",
+          "lock_primary_on_update": true
+        },
+        "doc": {
+          "sections": [
+            "Summary",
+            "Scope",
+            "Plan",
+            "Verify Steps",
+            "Verification",
+            "Rollback Plan",
+            "Findings"
+          ],
+          "required_sections": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
+        },
+        "comments": {
+          "start": { "prefix": "Start:", "min_chars": 40 },
+          "blocked": { "prefix": "Blocked:", "min_chars": 40 },
+          "verified": { "prefix": "Verified:", "min_chars": 60 }
+        }
+      },
+      "properties": {
+        "id_suffix_length_default": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 16,
+          "default": 6
+        },
+        "verify": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["required_tags"],
+          "default": {
+            "required_tags": ["code", "backend", "frontend"],
+            "spike_tag": "spike",
+            "enforce_on_plan_approve": true,
+            "enforce_on_start_when_no_plan": true
+          },
+          "properties": {
+            "required_tags": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true,
+              "default": ["code", "backend", "frontend"]
+            },
+            "require_steps_for_tags": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            },
+            "require_steps_for_primary": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true,
+              "default": ["code", "data", "ops"]
+            },
+            "require_verification_for_primary": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true,
+              "default": ["code", "data", "ops"]
+            },
+            "spike_tag": { "type": "string", "minLength": 1, "default": "spike" },
+            "enforce_on_plan_approve": { "type": "boolean", "default": true },
+            "enforce_on_start_when_no_plan": { "type": "boolean", "default": true }
+          }
+        },
+        "tags": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "primary_allowlist",
+            "strict_primary",
+            "fallback_primary",
+            "lock_primary_on_update"
+          ],
+          "default": {
+            "primary_allowlist": ["code", "data", "research", "docs", "ops", "product", "meta"],
+            "strict_primary": false,
+            "fallback_primary": "meta",
+            "lock_primary_on_update": true
+          },
+          "properties": {
+            "primary_allowlist": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true,
+              "minItems": 1,
+              "default": ["code", "data", "research", "docs", "ops", "product", "meta"]
+            },
+            "strict_primary": { "type": "boolean", "default": false },
+            "fallback_primary": { "type": "string", "minLength": 1, "default": "meta" },
+            "lock_primary_on_update": { "type": "boolean", "default": true }
+          }
+        },
+        "doc": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["sections", "required_sections"],
+          "default": {
+            "sections": [
+              "Summary",
+              "Scope",
+              "Plan",
+              "Verify Steps",
+              "Verification",
+              "Rollback Plan",
+              "Findings"
+            ],
+            "required_sections": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
+          },
+          "properties": {
+            "sections": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "default": [
+                "Summary",
+                "Scope",
+                "Plan",
+                "Verify Steps",
+                "Verification",
+                "Rollback Plan",
+                "Findings"
+              ]
+            },
+            "required_sections": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "default": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
+            }
+          }
+        },
+        "comments": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["start", "blocked", "verified"],
+          "default": {
+            "start": { "prefix": "Start:", "min_chars": 40 },
+            "blocked": { "prefix": "Blocked:", "min_chars": 40 },
+            "verified": { "prefix": "Verified:", "min_chars": 60 }
+          },
+          "properties": {
+            "start": {
+              "$ref": "#/$defs/comment_policy",
+              "default": { "prefix": "Start:", "min_chars": 40 }
+            },
+            "blocked": {
+              "$ref": "#/$defs/comment_policy",
+              "default": { "prefix": "Blocked:", "min_chars": 40 }
+            },
+            "verified": {
+              "$ref": "#/$defs/comment_policy",
+              "default": { "prefix": "Verified:", "min_chars": 60 }
+            }
+          }
+        }
+      }
+    },
+    "commit": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["generic_tokens"],
+      "default": {
+        "generic_tokens": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"]
+      },
+      "properties": {
+        "generic_tokens": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "default": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"]
+        }
+      }
+    },
+    "tasks_backend": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["config_path"],
+      "default": { "config_path": ".agentplane/backends/local/backend.json" },
+      "properties": {
+        "config_path": {
+          "type": "string",
+          "minLength": 1,
+          "default": ".agentplane/backends/local/backend.json"
+        }
+      }
+    },
+    "closure_commit_requires_approval": { "type": "boolean", "default": false }
+  },
+  "$defs": {
+    "comment_policy": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["prefix", "min_chars"],
+      "properties": {
+        "prefix": { "type": "string", "minLength": 1 },
+        "min_chars": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}`;
+
+export const AGENTPLANE_CONFIG_SCHEMA = JSON.parse(AGENTPLANE_CONFIG_SCHEMA_JSON) as Record<
+  string,
+  unknown
+>;
+
+export function renderAgentplaneConfigSchemaJson(): string {
+  return `${AGENTPLANE_CONFIG_SCHEMA_JSON}\n`;
+}

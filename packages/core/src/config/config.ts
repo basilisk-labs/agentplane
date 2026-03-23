@@ -1,13 +1,12 @@
-import { readFileSync } from "node:fs";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 import type { ErrorObject, Options, ValidateFunction } from "ajv";
 import AjvModule from "ajv";
 import AjvFormatsModule from "ajv-formats";
 
 import { atomicWriteFile } from "../fs/atomic-write.js";
+import { AGENTPLANE_CONFIG_SCHEMA } from "./config-schema.js";
 
 export type WorkflowMode = "direct" | "branch_pr";
 export type StatusCommitPolicy = "off" | "warn" | "confirm";
@@ -104,12 +103,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
-const CONFIG_SCHEMA_URL = new URL("../../schemas/config.schema.json", import.meta.url);
-const CONFIG_SCHEMA = JSON.parse(readFileSync(fileURLToPath(CONFIG_SCHEMA_URL), "utf8")) as Record<
-  string,
-  unknown
->;
-
 type AjvInstance = {
   compile: <T>(schema: unknown) => ValidateFunction<T>;
   errorsText: (errors?: ErrorObject[] | null, opts?: { dataVar?: string }) => string;
@@ -134,7 +127,7 @@ const AJV = new Ajv({
 });
 addFormats(AJV);
 
-const validateSchema = AJV.compile<AgentplaneConfig>(CONFIG_SCHEMA);
+const validateSchema = AJV.compile<AgentplaneConfig>(AGENTPLANE_CONFIG_SCHEMA);
 
 function formatSchemaErrors(errors: ErrorObject[] | null | undefined): string {
   if (!errors || errors.length === 0) return "config schema validation failed";

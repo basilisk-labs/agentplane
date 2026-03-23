@@ -1,8 +1,10 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+import { renderAgentplaneConfigSchemaJson } from "../packages/core/src/config/config-schema.ts";
+
 function usage() {
-  console.log("Usage: node scripts/sync-schemas.mjs <check|sync>");
+  console.log("Usage: bun scripts/sync-schemas.mjs <check|sync>");
   throw new Error("Invalid usage");
 }
 
@@ -11,33 +13,35 @@ function main() {
   if (mode !== "check" && mode !== "sync") usage();
 
   const repoRoot = process.cwd();
-  const canonical = path.join(repoRoot, "packages", "spec", "schemas", "config.schema.json");
-  const target = path.join(repoRoot, "packages", "core", "schemas", "config.schema.json");
-
-  const canonicalText = readFileSync(canonical, "utf8");
-  const targetText = readFileSync(target, "utf8");
+  const targets = [
+    path.join(repoRoot, "packages", "spec", "schemas", "config.schema.json"),
+    path.join(repoRoot, "packages", "core", "schemas", "config.schema.json"),
+  ];
+  const rendered = renderAgentplaneConfigSchemaJson();
 
   if (mode === "check") {
-    if (canonicalText !== targetText) {
-      const msg =
-        "config.schema.json is out of sync.\n" +
-        `Canonical: ${path.relative(repoRoot, canonical)}\n` +
-        `Target:    ${path.relative(repoRoot, target)}\n` +
-        "Run: bun run schemas:sync";
-      throw new Error(msg);
+    const drifted = targets.filter((target) => readFileSync(target, "utf8") !== rendered);
+    if (drifted.length > 0) {
+      const lines = drifted
+        .map((target) => `Target: ${path.relative(repoRoot, target)}`)
+        .join("\n");
+      throw new Error(
+        `config schema artifacts are out of sync.\n${lines}\nRun: bun run schemas:sync`,
+      );
     }
     process.stdout.write("schemas OK\n");
     return;
   }
 
-  if (canonicalText === targetText) {
+  const drifted = targets.filter((target) => readFileSync(target, "utf8") !== rendered);
+  if (drifted.length === 0) {
     process.stdout.write("schemas already in sync\n");
     return;
   }
 
-  writeFileSync(target, canonicalText, "utf8");
+  for (const target of drifted) writeFileSync(target, rendered, "utf8");
   process.stdout.write(
-    `synced ${path.relative(repoRoot, canonical)} -> ${path.relative(repoRoot, target)}\n`,
+    `synced runtime config schema -> ${drifted.map((target) => path.relative(repoRoot, target)).join(", ")}\n`,
   );
 }
 

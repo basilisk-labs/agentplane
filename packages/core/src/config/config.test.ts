@@ -5,6 +5,7 @@ import { mkdtemp, readFile, writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 import { defaultConfig, loadConfig, saveConfig, setByDottedKey, validateConfig } from "../index.js";
+import { renderAgentplaneConfigSchemaJson } from "./config-schema.js";
 
 const makeConfigRecord = (): Record<string, unknown> =>
   structuredClone(defaultConfig()) as Record<string, unknown>;
@@ -21,6 +22,15 @@ describe("config", () => {
     const text = await readFile(fileURLToPath(exampleUrl), "utf8");
     const parsed = JSON.parse(text) as unknown;
     expect(() => validateConfig(parsed)).not.toThrow();
+  });
+
+  it("published config schema artifacts match the runtime schema source", async () => {
+    const specSchemaUrl = new URL("../../../spec/schemas/config.schema.json", import.meta.url);
+    const coreSchemaUrl = new URL("../../schemas/config.schema.json", import.meta.url);
+    const rendered = renderAgentplaneConfigSchemaJson();
+
+    await expect(readFile(fileURLToPath(specSchemaUrl), "utf8")).resolves.toBe(rendered);
+    await expect(readFile(fileURLToPath(coreSchemaUrl), "utf8")).resolves.toBe(rendered);
   });
 
   it("validateConfig allows missing agents approvals", () => {
