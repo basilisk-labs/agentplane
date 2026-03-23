@@ -38,3 +38,10 @@ export {
   type RunnerTaskContextEnvelope,
 } from "./context/task-context.js";
 export { KNOWN_RUNNER_ADAPTER_IDS, resolveRunnerAdapterId } from "./config.js";
+export {
+  CodexRunnerAdapter,
+  createRunnerAdapter,
+  runnerAdapterFailureResult,
+  runnerAdapterSuccessResult,
+  type RunnerAdapter,
+} from "./adapters/index.js";
