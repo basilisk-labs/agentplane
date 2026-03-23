@@ -37,6 +37,10 @@ export {
 } from "./types.js";
 export { collectRunnerBasePrompts } from "./context/base-prompts.js";
 export {
+  assembleRunnerRecipeContext,
+  type RunnerRecipeContextEnvelope,
+} from "./context/recipe-context.js";
+export {
   assembleRunnerTaskContext,
   type RunnerTaskContextEnvelope,
 } from "./context/task-context.js";
@@ -54,3 +58,8 @@ export {
   type ExecutedTaskRunnerExecution,
   type PreparedTaskRunnerExecution,
 } from "./usecases/task-run.js";
+export {
+  buildMaterializedRecipeTask,
+  materializeRecipeScenarioTask,
+  type MaterializedRecipeScenarioTask,
+} from "./usecases/scenario-materialize-task.js";
