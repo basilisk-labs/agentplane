@@ -32,3 +32,4 @@ export {
   type RunnerTarget,
   type RunnerTaskContext,
 } from "./types.js";
+export { collectRunnerBasePrompts } from "./context/base-prompts.js";
