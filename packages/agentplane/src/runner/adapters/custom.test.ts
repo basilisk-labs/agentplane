@@ -146,6 +146,7 @@ describe("CustomRunnerAdapter", () => {
     await writePreparedRunnerArtifacts({
       bundle,
       bootstrap_markdown: "Read the bundle from env.\n",
+      invocation,
     });
 
     const result = await adapter.execute(invocation);
@@ -153,14 +154,28 @@ describe("CustomRunnerAdapter", () => {
     expect(result.status).toBe("success");
     expect(result.exit_code).toBe(0);
     expect(result.stdout_summary).toContain("custom runner ok");
+    expect(result.metrics?.stdout_bytes).toBeGreaterThan(0);
     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
       status: string;
-      result?: { status: string; exit_code: number | null; stdout_summary?: string };
+      prepared_metadata?: { bootstrap_sha256: string };
+      result?: {
+        status: string;
+        exit_code: number | null;
+        stdout_summary?: string;
+        metrics?: { stdout_bytes?: number };
+      };
     };
     expect(state.status).toBe("success");
+    expect(state.prepared_metadata?.bootstrap_sha256).toMatch(/^[a-f0-9]{64}$/);
     expect(state.result?.status).toBe("success");
     expect(state.result?.exit_code).toBe(0);
     expect(state.result?.stdout_summary).toContain("custom runner ok");
+    expect(state.result?.metrics?.stdout_bytes).toBeGreaterThan(0);
+    const events = await readFile(invocation.events_path, "utf8");
+    expect(events).toContain('"type":"runner_prepared"');
+    expect(events).toContain('"type":"runner_execute_start"');
+    expect(events).toContain('"type":"runner_execute_finish"');
+    expect(events).toContain('"stdout_bytes"');
 
     await rm(tempDir, { recursive: true, force: true });
   });

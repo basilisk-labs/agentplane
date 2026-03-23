@@ -307,6 +307,7 @@ export async function retryTaskRunnerExecution(opts: {
   const state = await writePreparedRunnerArtifacts({
     bundle: retriedBundle,
     bootstrap_markdown: renderTaskRunnerBootstrap(retriedBundle, invocation),
+    invocation,
   });
   const requested_at = new Date().toISOString();
   await appendRunnerEvent({

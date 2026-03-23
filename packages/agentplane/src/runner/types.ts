@@ -115,6 +115,13 @@ export type RunnerInvocation = {
   dry_run: boolean;
 };
 
+export type RunnerExecutionMetrics = {
+  duration_ms?: number;
+  stdout_bytes?: number;
+  stderr_bytes?: number;
+  output_last_message_bytes?: number | null;
+};
+
 export type RunnerResultStatus = "success" | "failed" | "cancelled";
 
 export type RunnerResult = {
@@ -125,9 +132,27 @@ export type RunnerResult = {
   stdout_summary?: string;
   stderr_summary?: string;
   output_paths?: string[];
+  metrics?: RunnerExecutionMetrics;
 };
 
 export type RunnerLifecycleStatus = "prepared" | "running" | RunnerResultStatus;
+
+export type RunnerPreparedMetadata = {
+  prompt_count: number;
+  bundle_bytes: number;
+  bootstrap_bytes: number;
+  bundle_sha256: string;
+  bootstrap_sha256: string;
+  has_task_context: boolean;
+  has_recipe_context: boolean;
+  invocation: {
+    executable: string | null;
+    argv_count: number;
+    env_keys: string[];
+    cwd: string | null;
+    has_output_last_message_path: boolean;
+  };
+};
 
 export type RunnerRunState = {
   schema_version: typeof RUNNER_BUNDLE_SCHEMA_VERSION;
@@ -142,6 +167,7 @@ export type RunnerRunState = {
   events_path: string;
   created_at: string;
   updated_at: string;
+  prepared_metadata?: RunnerPreparedMetadata;
   result?: RunnerResult;
 };
 

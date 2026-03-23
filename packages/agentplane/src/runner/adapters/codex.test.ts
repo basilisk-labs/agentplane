@@ -246,6 +246,7 @@ describe("CodexRunnerAdapter", () => {
     await writePreparedRunnerArtifacts({
       bundle,
       bootstrap_markdown: "Read the bundle and act on it.\n",
+      invocation,
     });
 
     const result = await adapter.execute(invocation);
@@ -253,13 +254,30 @@ describe("CodexRunnerAdapter", () => {
     expect(result.status).toBe("success");
     expect(result.exit_code).toBe(0);
     expect(result.stdout_summary).toContain("Final fake Codex message");
+    expect(result.metrics?.stdout_bytes).toBeGreaterThan(0);
+    expect(result.metrics?.duration_ms).toBeGreaterThanOrEqual(0);
     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
       status: string;
-      result?: { status: string; exit_code: number | null; stdout_summary?: string };
+      prepared_metadata?: { bundle_bytes: number; bundle_sha256: string };
+      result?: {
+        status: string;
+        exit_code: number | null;
+        stdout_summary?: string;
+        metrics?: { stdout_bytes?: number; output_last_message_bytes?: number | null };
+      };
     };
     expect(state.status).toBe("success");
+    expect(state.prepared_metadata?.bundle_bytes).toBeGreaterThan(0);
+    expect(state.prepared_metadata?.bundle_sha256).toMatch(/^[a-f0-9]{64}$/);
     expect(state.result?.status).toBe("success");
     expect(state.result?.exit_code).toBe(0);
+    expect(state.result?.metrics?.stdout_bytes).toBeGreaterThan(0);
+    expect(state.result?.metrics?.output_last_message_bytes).toBeGreaterThan(0);
+    const events = await readFile(invocation.events_path, "utf8");
+    expect(events).toContain('"type":"runner_prepared"');
+    expect(events).toContain('"type":"runner_execute_start"');
+    expect(events).toContain('"type":"runner_execute_finish"');
+    expect(events).toContain('"stdout_bytes"');
 
     await rm(tempDir, { recursive: true, force: true });
   });
@@ -321,6 +339,7 @@ describe("CodexRunnerAdapter", () => {
     await writePreparedRunnerArtifacts({
       bundle,
       bootstrap_markdown: "Read the bundle and act on it.\n",
+      invocation,
     });
 
     const result = await adapter.execute(invocation);
@@ -330,13 +349,22 @@ describe("CodexRunnerAdapter", () => {
     expect(result.stderr_summary).toContain("fake stderr fail");
     expect(result.started_at).toMatch(/T/);
     expect(result.ended_at).toMatch(/T/);
+    expect(result.metrics?.stderr_bytes).toBeGreaterThan(0);
     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
       status: string;
-      result?: { status: string; stderr_summary?: string };
+      result?: {
+        status: string;
+        stderr_summary?: string;
+        metrics?: { stderr_bytes?: number };
+      };
     };
     expect(state.status).toBe("failed");
     expect(state.result?.status).toBe("failed");
     expect(state.result?.stderr_summary).toContain("fake stderr fail");
+    expect(state.result?.metrics?.stderr_bytes).toBeGreaterThan(0);
+    const events = await readFile(invocation.events_path, "utf8");
+    expect(events).toContain('"type":"runner_execute_finish"');
+    expect(events).toContain('"stderr_bytes"');
 
     await rm(tempDir, { recursive: true, force: true });
   });

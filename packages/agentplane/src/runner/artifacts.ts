@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { appendFile, mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -6,15 +7,52 @@ import { atomicWriteFile } from "@agentplaneorg/core";
 import type {
   RunnerContextBundle,
   RunnerEvent,
+  RunnerInvocation,
   RunnerLifecycleStatus,
+  RunnerPreparedMetadata,
   RunnerResult,
   RunnerRunState,
 } from "./types.js";
+
+function sha256(text: string): string {
+  return createHash("sha256").update(text).digest("hex");
+}
+
+function byteLength(text: string): number {
+  return Buffer.byteLength(text, "utf8");
+}
+
+function buildPreparedMetadata(opts: {
+  bundle: RunnerContextBundle;
+  invocation?: RunnerInvocation;
+  bundle_text: string;
+  bootstrap_text: string;
+}): RunnerPreparedMetadata {
+  return {
+    prompt_count: opts.bundle.base_prompts.length,
+    bundle_bytes: byteLength(opts.bundle_text),
+    bootstrap_bytes: byteLength(opts.bootstrap_text),
+    bundle_sha256: sha256(opts.bundle_text),
+    bootstrap_sha256: sha256(opts.bootstrap_text),
+    has_task_context: !!opts.bundle.task,
+    has_recipe_context: !!opts.bundle.recipe,
+    invocation: {
+      executable: opts.invocation?.argv[0] ?? null,
+      argv_count: opts.invocation?.argv.length ?? 0,
+      env_keys: Object.keys(opts.invocation?.env ?? {}).toSorted(),
+      cwd: opts.invocation?.run_dir ?? null,
+      has_output_last_message_path:
+        typeof opts.invocation?.output_last_message_path === "string" &&
+        opts.invocation.output_last_message_path.trim().length > 0,
+    },
+  };
+}
 
 export function createRunnerRunState(opts: {
   bundle: RunnerContextBundle;
   status?: RunnerLifecycleStatus;
   created_at?: string;
+  prepared_metadata?: RunnerRunState["prepared_metadata"];
 }): RunnerRunState {
   const created_at = opts.created_at ?? new Date().toISOString();
   return {
@@ -30,6 +68,7 @@ export function createRunnerRunState(opts: {
     events_path: opts.bundle.execution.artifact_paths.events_path,
     created_at,
     updated_at: created_at,
+    prepared_metadata: opts.prepared_metadata,
   };
 }
 
@@ -37,23 +76,49 @@ export async function writePreparedRunnerArtifacts(opts: {
   bundle: RunnerContextBundle;
   bootstrap_markdown?: string;
   created_at?: string;
+  invocation?: RunnerInvocation;
 }): Promise<RunnerRunState> {
   const paths = opts.bundle.execution.artifact_paths;
   await mkdir(paths.run_dir, { recursive: true });
+  const bundleText = `${JSON.stringify(opts.bundle, null, 2)}\n`;
+  const bootstrapText = opts.bootstrap_markdown
+    ? ensureTrailingNewline(opts.bootstrap_markdown)
+    : "";
+  const preparedMetadata = buildPreparedMetadata({
+    bundle: opts.bundle,
+    invocation: opts.invocation,
+    bundle_text: bundleText,
+    bootstrap_text: bootstrapText,
+  });
 
   const state = createRunnerRunState({
     bundle: opts.bundle,
     created_at: opts.created_at,
+    prepared_metadata: preparedMetadata,
   });
 
-  await atomicWriteFile(paths.bundle_path, `${JSON.stringify(opts.bundle, null, 2)}\n`, "utf8");
+  await atomicWriteFile(paths.bundle_path, bundleText, "utf8");
   await atomicWriteFile(paths.state_path, `${JSON.stringify(state, null, 2)}\n`, "utf8");
-  await atomicWriteFile(
-    paths.bootstrap_path,
-    opts.bootstrap_markdown ? ensureTrailingNewline(opts.bootstrap_markdown) : "",
-    "utf8",
-  );
+  await atomicWriteFile(paths.bootstrap_path, bootstrapText, "utf8");
   await atomicWriteFile(paths.events_path, "", "utf8");
+  await appendRunnerEvent({
+    events_path: paths.events_path,
+    event: {
+      at: state.created_at,
+      type: "runner_prepared",
+      message: `runner prepared with adapter=${opts.bundle.execution.adapter_id} mode=${opts.bundle.execution.mode}`,
+      data: {
+        prompt_count: preparedMetadata.prompt_count,
+        bundle_bytes: preparedMetadata.bundle_bytes,
+        bootstrap_bytes: preparedMetadata.bootstrap_bytes,
+        bundle_sha256: preparedMetadata.bundle_sha256,
+        bootstrap_sha256: preparedMetadata.bootstrap_sha256,
+        has_task_context: preparedMetadata.has_task_context,
+        has_recipe_context: preparedMetadata.has_recipe_context,
+        invocation: preparedMetadata.invocation,
+      },
+    },
+  });
 
   return state;
 }

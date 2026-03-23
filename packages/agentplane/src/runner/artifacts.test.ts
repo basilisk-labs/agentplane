@@ -66,15 +66,44 @@ describe("runner artifacts", () => {
         artifact_paths: paths,
       },
     };
+    const invocation = {
+      adapter_id: "codex",
+      run_id: "2026-03-23T13-00-00-000Z",
+      run_dir: paths.run_dir,
+      bundle_path: paths.bundle_path,
+      state_path: paths.state_path,
+      events_path: paths.events_path,
+      bootstrap_path: paths.bootstrap_path,
+      output_last_message_path: path.join(paths.run_dir, "codex-last-message.md"),
+      argv: ["codex", "exec", "-"],
+      env: {
+        AGENTPLANE_RUNNER_ADAPTER: "codex",
+        AGENTPLANE_RUNNER_MODE: "dry_run",
+      },
+      dry_run: true,
+    };
 
     const state = await writePreparedRunnerArtifacts({
       bundle,
       bootstrap_markdown: "# bootstrap\n",
       created_at: "2026-03-23T13:00:00.000Z",
+      invocation,
     });
 
     expect(state.status).toBe("prepared");
     expect(state.bundle_path).toBe(paths.bundle_path);
+    expect(state.prepared_metadata).toMatchObject({
+      prompt_count: 0,
+      has_task_context: true,
+      has_recipe_context: false,
+      invocation: {
+        executable: "codex",
+        argv_count: 3,
+        env_keys: ["AGENTPLANE_RUNNER_ADAPTER", "AGENTPLANE_RUNNER_MODE"],
+        cwd: paths.run_dir,
+        has_output_last_message_path: true,
+      },
+    });
 
     const writtenBundle = JSON.parse(
       await readFile(paths.bundle_path, "utf8"),
@@ -93,7 +122,9 @@ describe("runner artifacts", () => {
     });
 
     expect(await readFile(paths.bootstrap_path, "utf8")).toBe("# bootstrap\n");
-    expect(await readFile(paths.events_path, "utf8")).toBe("");
+    const initialEvents = await readFile(paths.events_path, "utf8");
+    expect(initialEvents).toContain('"type":"runner_prepared"');
+    expect(initialEvents).toContain('"bundle_sha256"');
 
     await appendRunnerEvent({
       events_path: paths.events_path,

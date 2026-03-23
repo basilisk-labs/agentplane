@@ -23,6 +23,28 @@ function summarizeOutput(text: string, limit = 4000): string | undefined {
   return `${normalized.slice(0, limit - 15)}\n...[truncated]`;
 }
 
+function byteLength(text: string | null | undefined): number {
+  return Buffer.byteLength(text ?? "", "utf8");
+}
+
+function durationMs(startedAt: string, endedAt: string): number | undefined {
+  const started = Date.parse(startedAt);
+  const ended = Date.parse(endedAt);
+  if (Number.isNaN(started) || Number.isNaN(ended)) return undefined;
+  return Math.max(0, ended - started);
+}
+
+function buildInvocationEventData(invocation: RunnerInvocation): Record<string, unknown> {
+  return {
+    executable: invocation.argv[0] ?? null,
+    argv_count: invocation.argv.length,
+    cwd: invocation.run_dir,
+    env_keys: Object.keys(invocation.env).toSorted(),
+    has_bootstrap_path:
+      typeof invocation.bootstrap_path === "string" && invocation.bootstrap_path.trim().length > 0,
+  };
+}
+
 async function runCustomProcess(opts: {
   invocation: RunnerInvocation;
   stdin_text: string;
@@ -158,6 +180,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
             at: started_at,
             type: "runner_execute_start",
             message: "custom runner started",
+            data: buildInvocationEventData(invocation),
           },
         });
         const bootstrapText = invocation.bootstrap_path
@@ -171,14 +194,22 @@ export class CustomRunnerAdapter implements RunnerAdapter {
           (value): value is string => typeof value === "string" && value.trim().length > 0,
         );
         const success = processResult.exit_code === 0;
+        const ended_at = new Date().toISOString();
+        const metrics = {
+          duration_ms: durationMs(started_at, ended_at),
+          stdout_bytes: byteLength(processResult.stdout),
+          stderr_bytes: byteLength(processResult.stderr),
+        };
         const result = success
           ? runnerAdapterSuccessResult({
               started_at,
+              ended_at,
               exit_code: processResult.exit_code ?? 0,
               stdout_summary:
                 summarizeOutput(processResult.stdout) ??
                 "Custom runner execution finished without output.",
               output_paths,
+              metrics,
             })
           : runnerAdapterFailureResult({
               err:
@@ -186,8 +217,10 @@ export class CustomRunnerAdapter implements RunnerAdapter {
                 summarizeOutput(processResult.stdout) ??
                 `Custom runner exited with code ${processResult.exit_code ?? "unknown"}`,
               started_at,
+              ended_at,
               exit_code: processResult.exit_code ?? 1,
               output_paths,
+              metrics,
             });
         const stateAfter = await readRunnerRunState(invocation.state_path);
         if (stateAfter) {
@@ -207,15 +240,20 @@ export class CustomRunnerAdapter implements RunnerAdapter {
             type: "runner_execute_finish",
             message: `custom runner finished with status=${result.status}`,
             data: {
+              ...buildInvocationEventData(invocation),
               exit_code: result.exit_code,
+              output_paths,
+              metrics: result.metrics,
             },
           },
         });
         return result;
       } catch (err) {
+        const ended_at = new Date().toISOString();
         const result = runnerAdapterFailureResult({
           err,
           started_at,
+          ended_at,
           output_paths: [invocation.bundle_path, invocation.bootstrap_path].filter(
             (value): value is string => typeof value === "string" && value.trim().length > 0,
           ),
@@ -238,7 +276,9 @@ export class CustomRunnerAdapter implements RunnerAdapter {
             type: "runner_execute_finish",
             message: `custom runner failed with status=${result.status}`,
             data: {
+              ...buildInvocationEventData(invocation),
               exit_code: result.exit_code,
+              metrics: result.metrics,
             },
           },
         });

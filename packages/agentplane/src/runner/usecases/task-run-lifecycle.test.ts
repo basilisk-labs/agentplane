@@ -118,6 +118,7 @@ describe("task-run lifecycle usecases", () => {
     expect(cancelled.previous_status).toBe("prepared");
     expect(cancelled.state.status).toBe("cancelled");
     const events = await readFile(cancelled.invocation.events_path, "utf8");
+    expect(events).toContain("runner_prepared");
     expect(events).toContain("runner_cancelled");
   });
 
@@ -153,6 +154,9 @@ describe("task-run lifecycle usecases", () => {
     expect(resumed.result.stdout_summary).toContain("resumed runner");
     const state = await readRunnerRunState(resumed.invocation.state_path);
     expect(state?.status).toBe("success");
+    const events = await readFile(resumed.invocation.events_path, "utf8");
+    expect(events).toContain("runner_resume_requested");
+    expect(events).toContain("runner_execute_finish");
   });
 
   it("retry creates a new run from a failed execute-mode run snapshot", async () => {
@@ -207,5 +211,8 @@ describe("task-run lifecycle usecases", () => {
     expect(newState?.status).toBe("success");
     const sourceEvents = await readFile(prepared.invocation.events_path, "utf8");
     expect(sourceEvents).toContain("runner_retry_requested");
+    const retryEvents = await readFile(retried.invocation.events_path, "utf8");
+    expect(retryEvents).toContain("runner_prepared");
+    expect(retryEvents).toContain("runner_retry_created");
   });
 });

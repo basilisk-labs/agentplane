@@ -34,6 +34,31 @@ function summarizeOutput(text: string, limit = 4000): string | undefined {
   return `${normalized.slice(0, limit - 15)}\n...[truncated]`;
 }
 
+function byteLength(text: string | null | undefined): number {
+  return Buffer.byteLength(text ?? "", "utf8");
+}
+
+function durationMs(startedAt: string, endedAt: string): number | undefined {
+  const started = Date.parse(startedAt);
+  const ended = Date.parse(endedAt);
+  if (Number.isNaN(started) || Number.isNaN(ended)) return undefined;
+  return Math.max(0, ended - started);
+}
+
+function buildInvocationEventData(invocation: RunnerInvocation): Record<string, unknown> {
+  return {
+    executable: invocation.argv[0] ?? null,
+    argv_count: invocation.argv.length,
+    cwd: invocation.run_dir,
+    env_keys: Object.keys(invocation.env).toSorted(),
+    has_bootstrap_path:
+      typeof invocation.bootstrap_path === "string" && invocation.bootstrap_path.trim().length > 0,
+    has_output_last_message_path:
+      typeof invocation.output_last_message_path === "string" &&
+      invocation.output_last_message_path.trim().length > 0,
+  };
+}
+
 async function readOptionalText(filePath?: string | null): Promise<string | null> {
   if (!filePath?.trim()) return null;
   try {
@@ -233,6 +258,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
             at: started_at,
             type: "runner_execute_start",
             message: "codex exec started",
+            data: buildInvocationEventData(invocation),
           },
         });
         const bootstrapText = await readFile(invocation.bootstrap_path!, "utf8");
@@ -247,14 +273,23 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           invocation.output_last_message_path,
         ].filter((value): value is string => typeof value === "string" && value.trim().length > 0);
         const success = processResult.exit_code === 0;
+        const ended_at = new Date().toISOString();
+        const metrics = {
+          duration_ms: durationMs(started_at, ended_at),
+          stdout_bytes: byteLength(processResult.stdout),
+          stderr_bytes: byteLength(processResult.stderr),
+          output_last_message_bytes: lastMessage === null ? null : byteLength(lastMessage),
+        };
         const result = success
           ? runnerAdapterSuccessResult({
               started_at,
+              ended_at,
               exit_code: processResult.exit_code ?? 0,
               stdout_summary:
                 summarizeOutput(lastMessage ?? processResult.stdout) ??
                 "Codex execution finished without output.",
               output_paths,
+              metrics,
             })
           : runnerAdapterFailureResult({
               err:
@@ -262,8 +297,10 @@ export class CodexRunnerAdapter implements RunnerAdapter {
                 summarizeOutput(processResult.stdout) ??
                 `Codex exited with code ${processResult.exit_code ?? "unknown"}`,
               started_at,
+              ended_at,
               exit_code: processResult.exit_code ?? 1,
               output_paths,
+              metrics,
             });
         const stateAfter = await readRunnerRunState(invocation.state_path);
         if (stateAfter) {
@@ -283,15 +320,20 @@ export class CodexRunnerAdapter implements RunnerAdapter {
             type: "runner_execute_finish",
             message: `codex exec finished with status=${result.status}`,
             data: {
+              ...buildInvocationEventData(invocation),
               exit_code: result.exit_code,
+              output_paths,
+              metrics: result.metrics,
             },
           },
         });
         return result;
       } catch (err) {
+        const ended_at = new Date().toISOString();
         const result = runnerAdapterFailureResult({
           err,
           started_at,
+          ended_at,
           output_paths: [invocation.bundle_path, invocation.bootstrap_path].filter(
             (value): value is string => typeof value === "string" && value.trim().length > 0,
           ),
@@ -313,6 +355,10 @@ export class CodexRunnerAdapter implements RunnerAdapter {
             at: result.ended_at,
             type: "runner_execute_error",
             message: result.stderr_summary ?? "codex exec failed",
+            data: {
+              ...buildInvocationEventData(invocation),
+              metrics: result.metrics,
+            },
           },
         });
         return result;
