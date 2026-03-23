@@ -9,12 +9,19 @@ import {
   writeRunnerRunState,
 } from "../artifacts.js";
 import {
+  runnerArtifactsFromPaths,
   runnerAdapterCancelledResult,
   runnerAdapterFailureResult,
   runnerAdapterSuccessResult,
   type RunnerAdapter,
 } from "./shared.js";
 import { exitCodeForSignal, runSupervisedProcess } from "../process-supervision.js";
+import {
+  applyRunnerResultManifest,
+  manifestFromRunnerResult,
+  readRunnerResultManifest,
+  writeRunnerResultManifest,
+} from "../result-manifest.js";
 
 const CODEX_LAST_MESSAGE_FILENAME = "codex-last-message.md";
 const CODEX_SANDBOX_VALUES = new Set(["read-only", "workspace-write", "danger-full-access"]);
@@ -101,6 +108,9 @@ function assertCodexInvocation(invocation: RunnerInvocation): void {
   if (!invocation.events_path.trim()) {
     throw new Error("Codex adapter invocation is missing events_path");
   }
+  if (!invocation.result_path.trim()) {
+    throw new Error("Codex adapter invocation is missing result_path");
+  }
   if (!invocation.bootstrap_path?.trim()) {
     throw new Error("Codex adapter invocation is missing bootstrap_path");
   }
@@ -174,6 +184,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
       bundle_path: execution.artifact_paths.bundle_path,
       state_path: execution.artifact_paths.state_path,
       events_path: execution.artifact_paths.events_path,
+      result_path: execution.artifact_paths.result_path,
       bootstrap_path: execution.artifact_paths.bootstrap_path,
       output_last_message_path: path.join(
         execution.artifact_paths.run_dir,
@@ -198,6 +209,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
         AGENTPLANE_RUNNER_MODE: execution.mode,
         AGENTPLANE_RUNNER_API_VERSION: bundle.runner_api_version,
         AGENTPLANE_RUNNER_TARGET: bundle.target.kind,
+        AGENTPLANE_RUNNER_RESULT_PATH: execution.artifact_paths.result_path,
         ...recipeEnv,
       },
       dry_run: execution.mode === "dry_run",
@@ -229,7 +241,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           stderr_bytes: byteLength(processResult.stderr),
           output_last_message_bytes: lastMessage === null ? null : byteLength(lastMessage),
         };
-        const result = processResult.cancel_requested_at
+        const baseResult = processResult.cancel_requested_at
           ? runnerAdapterCancelledResult({
               reason: processResult.cancel_signal
                 ? `Codex runner cancelled via ${processResult.cancel_signal}.`
@@ -264,6 +276,20 @@ export class CodexRunnerAdapter implements RunnerAdapter {
                 output_paths,
                 metrics,
               });
+        const manifest = await readRunnerResultManifest(invocation.result_path);
+        const result = applyRunnerResultManifest({
+          base: {
+            ...baseResult,
+            summary: baseResult.stdout_summary ?? baseResult.stderr_summary,
+            artifacts: runnerArtifactsFromPaths(output_paths),
+            capabilities_used: ["codex.exec"],
+          },
+          manifest,
+        });
+        await writeRunnerResultManifest({
+          result_path: invocation.result_path,
+          manifest: manifestFromRunnerResult(result),
+        });
         const stateAfter = await readRunnerRunState(invocation.state_path);
         if (stateAfter) {
           await writeRunnerRunState({
@@ -312,6 +338,15 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           output_paths: [invocation.bundle_path, invocation.bootstrap_path].filter(
             (value): value is string => typeof value === "string" && value.trim().length > 0,
           ),
+        });
+        await writeRunnerResultManifest({
+          result_path: invocation.result_path,
+          manifest: manifestFromRunnerResult({
+            ...result,
+            summary: result.stderr_summary,
+            artifacts: runnerArtifactsFromPaths(result.output_paths),
+            capabilities_used: ["codex.exec"],
+          }),
         });
         const stateAfter = await readRunnerRunState(invocation.state_path);
         if (stateAfter) {

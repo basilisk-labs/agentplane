@@ -42,6 +42,8 @@ function buildPreparedMetadata(opts: {
       argv_count: opts.invocation?.argv.length ?? 0,
       env_keys: Object.keys(opts.invocation?.env ?? {}).toSorted(),
       cwd: opts.invocation?.run_dir ?? null,
+      has_result_path:
+        typeof opts.invocation?.result_path === "string" && opts.invocation.result_path.length > 0,
       has_output_last_message_path:
         typeof opts.invocation?.output_last_message_path === "string" &&
         opts.invocation.output_last_message_path.trim().length > 0,
@@ -65,6 +67,7 @@ export function createRunnerRunState(opts: {
     status: opts.status ?? "prepared",
     mode: opts.bundle.execution.mode,
     bundle_path: opts.bundle.execution.artifact_paths.bundle_path,
+    result_path: opts.bundle.execution.artifact_paths.result_path,
     bootstrap_path: opts.bundle.execution.artifact_paths.bootstrap_path,
     events_path: opts.bundle.execution.artifact_paths.events_path,
     created_at,

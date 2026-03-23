@@ -69,6 +69,9 @@ function renderRunnerMetrics(state: RunnerRunState): string | null {
 }
 
 function renderVerificationHint(state: RunnerRunState): string {
+  if (state.result?.verification_hints && state.result.verification_hints.length > 0) {
+    return state.result.verification_hints.join(" | ");
+  }
   if (state.status === "success") {
     return "runner completed successfully; human verification and closure remain explicit lifecycle steps.";
   }
@@ -111,6 +114,23 @@ function renderRunnerOutcomeEntry(state: RunnerRunState): string {
   }
   if (state.result?.stderr_summary) {
     lines.push("", `Stderr: ${state.result.stderr_summary}`);
+  }
+  if (state.result?.summary) {
+    lines.push("", `Summary: ${state.result.summary}`);
+  }
+  if (state.result?.artifacts?.length) {
+    lines.push(
+      "",
+      `Artifacts: ${state.result.artifacts
+        .map((artifact) => (artifact.label ? `${artifact.label}=${artifact.path}` : artifact.path))
+        .join(", ")}`,
+    );
+  }
+  if (state.result?.findings?.length) {
+    lines.push("", `Findings: ${state.result.findings.join(" | ")}`);
+  }
+  if (state.result?.capabilities_used?.length) {
+    lines.push("", `Capabilities: ${state.result.capabilities_used.join(", ")}`);
   }
   if (state.result?.output_paths?.length) {
     lines.push("", `Outputs: ${state.result.output_paths.join(", ")}`);

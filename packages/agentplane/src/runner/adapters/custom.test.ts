@@ -52,6 +52,7 @@ function makeBundle(): RunnerContextBundle {
         bootstrap_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/bootstrap.md",
         state_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/run-state.json",
         events_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/events.jsonl",
+        result_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/result.json",
       },
     },
   };
@@ -86,6 +87,8 @@ describe("CustomRunnerAdapter", () => {
         "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/run-state.json",
       AGENTPLANE_RUNNER_EVENTS_PATH:
         "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/events.jsonl",
+      AGENTPLANE_RUNNER_RESULT_PATH:
+        "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/result.json",
     });
   });
 
@@ -132,6 +135,10 @@ describe("CustomRunnerAdapter", () => {
       bundle.execution.artifact_paths.run_dir,
       "events.jsonl",
     );
+    bundle.execution.artifact_paths.result_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "result.json",
+    );
 
     await mkdir(fakeBinDir, { recursive: true });
     await writeFile(
@@ -171,6 +178,14 @@ describe("CustomRunnerAdapter", () => {
     expect(state.result?.exit_code).toBe(0);
     expect(state.result?.stdout_summary).toContain("custom runner ok");
     expect(state.result?.metrics?.stdout_bytes).toBeGreaterThan(0);
+    const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
+      status?: string;
+      summary?: string;
+      capabilities_used?: string[];
+    };
+    expect(resultManifest.status).toBe("success");
+    expect(resultManifest.summary).toContain("custom runner ok");
+    expect(resultManifest.capabilities_used).toEqual(["custom:custom-runner"]);
     const events = await readFile(invocation.events_path, "utf8");
     expect(events).toContain('"type":"runner_prepared"');
     expect(events).toContain('"type":"runner_execute_start"');

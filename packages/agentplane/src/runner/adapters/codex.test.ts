@@ -59,6 +59,7 @@ function makeBundle(): RunnerContextBundle {
         bootstrap_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/bootstrap.md",
         state_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/run-state.json",
         events_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/events.jsonl",
+        result_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/result.json",
       },
     },
   };
@@ -78,6 +79,7 @@ describe("CodexRunnerAdapter", () => {
       bundle_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/bundle.json",
       state_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/run-state.json",
       events_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/events.jsonl",
+      result_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/result.json",
       bootstrap_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/bootstrap.md",
       output_last_message_path:
         "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/codex-last-message.md",
@@ -210,6 +212,10 @@ describe("CodexRunnerAdapter", () => {
       bundle.execution.artifact_paths.run_dir,
       "events.jsonl",
     );
+    bundle.execution.artifact_paths.result_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "result.json",
+    );
 
     await mkdir(fakeBinDir, { recursive: true });
     await writeFile(
@@ -273,6 +279,14 @@ describe("CodexRunnerAdapter", () => {
     expect(state.result?.exit_code).toBe(0);
     expect(state.result?.metrics?.stdout_bytes).toBeGreaterThan(0);
     expect(state.result?.metrics?.output_last_message_bytes).toBeGreaterThan(0);
+    const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
+      status?: string;
+      summary?: string;
+      capabilities_used?: string[];
+    };
+    expect(resultManifest.status).toBe("success");
+    expect(resultManifest.summary).toContain("Final fake Codex message");
+    expect(resultManifest.capabilities_used).toEqual(["codex.exec"]);
     const events = await readFile(invocation.events_path, "utf8");
     expect(events).toContain('"type":"runner_prepared"');
     expect(events).toContain('"type":"runner_execute_start"');
@@ -306,6 +320,10 @@ describe("CodexRunnerAdapter", () => {
     bundle.execution.artifact_paths.events_path = path.join(
       bundle.execution.artifact_paths.run_dir,
       "events.jsonl",
+    );
+    bundle.execution.artifact_paths.result_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "result.json",
     );
 
     await mkdir(fakeBinDir, { recursive: true });
@@ -362,6 +380,12 @@ describe("CodexRunnerAdapter", () => {
     expect(state.result?.status).toBe("failed");
     expect(state.result?.stderr_summary).toContain("fake stderr fail");
     expect(state.result?.metrics?.stderr_bytes).toBeGreaterThan(0);
+    const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
+      status?: string;
+      stderr_summary?: string;
+    };
+    expect(resultManifest.status).toBe("failed");
+    expect(resultManifest.stderr_summary).toContain("fake stderr fail");
     const events = await readFile(invocation.events_path, "utf8");
     expect(events).toContain('"type":"runner_execute_finish"');
     expect(events).toContain('"stderr_bytes"');

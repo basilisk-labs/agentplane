@@ -67,6 +67,7 @@ export function renderTaskRunnerBootstrap(
     `- mode: ${bundle.execution.mode}`,
     `- run_id: ${bundle.execution.run_id}`,
     `- bundle_path: ${bundle.execution.artifact_paths.bundle_path}`,
+    `- result_path: ${bundle.execution.artifact_paths.result_path}`,
     `- bootstrap_path: ${bundle.execution.artifact_paths.bootstrap_path}`,
     "",
     "Use bundle.json as the complete runner input. Do not reconstruct prompts from CLI argv.",

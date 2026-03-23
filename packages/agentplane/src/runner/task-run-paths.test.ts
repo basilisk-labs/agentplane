@@ -4,6 +4,7 @@ import {
   RUNNER_BOOTSTRAP_FILENAME,
   RUNNER_BUNDLE_FILENAME,
   RUNNER_EVENTS_FILENAME,
+  RUNNER_RESULT_FILENAME,
   RUNNER_STATE_FILENAME,
   resolveTaskRunnerPaths,
 } from "./task-run-paths.js";
@@ -26,5 +27,6 @@ describe("resolveTaskRunnerPaths", () => {
     expect(paths.bootstrap_path).toBe(`${paths.run_dir}/${RUNNER_BOOTSTRAP_FILENAME}`);
     expect(paths.state_path).toBe(`${paths.run_dir}/${RUNNER_STATE_FILENAME}`);
     expect(paths.events_path).toBe(`${paths.run_dir}/${RUNNER_EVENTS_FILENAME}`);
+    expect(paths.result_path).toBe(`${paths.run_dir}/${RUNNER_RESULT_FILENAME}`);
   });
 });

@@ -76,6 +76,7 @@ export type RunnerArtifactPaths = {
   bootstrap_path: string;
   state_path: string;
   events_path: string;
+  result_path: string;
 };
 
 export type RunnerExecutionContract = {
@@ -108,6 +109,7 @@ export type RunnerInvocation = {
   bundle_path: string;
   state_path: string;
   events_path: string;
+  result_path: string;
   bootstrap_path?: string | null;
   output_last_message_path?: string | null;
   argv: string[];
@@ -120,6 +122,11 @@ export type RunnerExecutionMetrics = {
   stdout_bytes?: number;
   stderr_bytes?: number;
   output_last_message_bytes?: number | null;
+};
+
+export type RunnerResultArtifact = {
+  path: string;
+  label?: string;
 };
 
 export type RunnerProcessSignal = "SIGHUP" | "SIGINT" | "SIGQUIT" | "SIGTERM" | "SIGKILL";
@@ -137,14 +144,33 @@ export type RunnerSupervisionState = {
 
 export type RunnerResultStatus = "success" | "failed" | "cancelled";
 
+export type RunnerResultManifest = {
+  schema_version: 1;
+  status?: RunnerResultStatus;
+  exit_code?: number | null;
+  summary?: string;
+  stdout_summary?: string;
+  stderr_summary?: string;
+  artifacts?: RunnerResultArtifact[];
+  findings?: string[];
+  verification_hints?: string[];
+  capabilities_used?: string[];
+  metrics?: RunnerExecutionMetrics;
+};
+
 export type RunnerResult = {
   status: RunnerResultStatus;
   exit_code: number | null;
   started_at: string;
   ended_at: string;
+  summary?: string;
   stdout_summary?: string;
   stderr_summary?: string;
   output_paths?: string[];
+  artifacts?: RunnerResultArtifact[];
+  findings?: string[];
+  verification_hints?: string[];
+  capabilities_used?: string[];
   metrics?: RunnerExecutionMetrics;
 };
 
@@ -163,6 +189,7 @@ export type RunnerPreparedMetadata = {
     argv_count: number;
     env_keys: string[];
     cwd: string | null;
+    has_result_path: boolean;
     has_output_last_message_path: boolean;
   };
 };
@@ -176,6 +203,7 @@ export type RunnerRunState = {
   status: RunnerLifecycleStatus;
   mode: RunnerExecutionContract["mode"];
   bundle_path: string;
+  result_path: string;
   bootstrap_path?: string | null;
   events_path: string;
   created_at: string;

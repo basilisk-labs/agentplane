@@ -34,6 +34,7 @@ export const runTaskRun: CommandHandler<TaskRunParsed> = async (
       process.stdout.write(`${infoMessage(`task run executed: ${parsed.taskId}`)}\n`);
       process.stdout.write(`adapter: ${executed.invocation.adapter_id}\n`);
       process.stdout.write(`run_id: ${executed.invocation.run_id}\n`);
+      process.stdout.write(`result: ${executed.invocation.result_path}\n`);
       process.stdout.write(`state: ${executed.bundle.execution.artifact_paths.state_path}\n`);
       process.stdout.write(`events: ${executed.bundle.execution.artifact_paths.events_path}\n`);
       process.stdout.write(`status: ${executed.result.status}\n`);
@@ -60,6 +61,7 @@ export const runTaskRun: CommandHandler<TaskRunParsed> = async (
     process.stdout.write(`adapter: ${prepared.invocation.adapter_id}\n`);
     process.stdout.write(`run_id: ${prepared.invocation.run_id}\n`);
     process.stdout.write(`bundle: ${prepared.bundle.execution.artifact_paths.bundle_path}\n`);
+    process.stdout.write(`result: ${prepared.bundle.execution.artifact_paths.result_path}\n`);
     process.stdout.write(`bootstrap: ${prepared.bundle.execution.artifact_paths.bootstrap_path}\n`);
     process.stdout.write(`state: ${prepared.bundle.execution.artifact_paths.state_path}\n`);
     process.stdout.write(`events: ${prepared.bundle.execution.artifact_paths.events_path}\n`);

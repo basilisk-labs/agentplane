@@ -10,12 +10,19 @@ import {
   writeRunnerRunState,
 } from "../artifacts.js";
 import {
+  runnerArtifactsFromPaths,
   runnerAdapterCancelledResult,
   runnerAdapterFailureResult,
   runnerAdapterSuccessResult,
   type RunnerAdapter,
 } from "./shared.js";
 import { exitCodeForSignal, runSupervisedProcess } from "../process-supervision.js";
+import {
+  applyRunnerResultManifest,
+  manifestFromRunnerResult,
+  readRunnerResultManifest,
+  writeRunnerResultManifest,
+} from "../result-manifest.js";
 
 function summarizeOutput(text: string, limit = 4000): string | undefined {
   const normalized = text.replaceAll("\r\n", "\n").trim();
@@ -84,6 +91,9 @@ function assertCustomInvocation(invocation: RunnerInvocation): void {
   if (!invocation.events_path.trim()) {
     throw new Error("Custom adapter invocation is missing events_path");
   }
+  if (!invocation.result_path.trim()) {
+    throw new Error("Custom adapter invocation is missing result_path");
+  }
 }
 
 export class CustomRunnerAdapter implements RunnerAdapter {
@@ -107,6 +117,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
       bundle_path: execution.artifact_paths.bundle_path,
       state_path: execution.artifact_paths.state_path,
       events_path: execution.artifact_paths.events_path,
+      result_path: execution.artifact_paths.result_path,
       bootstrap_path: execution.artifact_paths.bootstrap_path,
       output_last_message_path: null,
       argv: command,
@@ -121,6 +132,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
         AGENTPLANE_RUNNER_BOOTSTRAP_PATH: execution.artifact_paths.bootstrap_path,
         AGENTPLANE_RUNNER_STATE_PATH: execution.artifact_paths.state_path,
         AGENTPLANE_RUNNER_EVENTS_PATH: execution.artifact_paths.events_path,
+        AGENTPLANE_RUNNER_RESULT_PATH: execution.artifact_paths.result_path,
       },
       dry_run: execution.mode === "dry_run",
     });
@@ -149,7 +161,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
           stdout_bytes: byteLength(processResult.stdout),
           stderr_bytes: byteLength(processResult.stderr),
         };
-        const result = processResult.cancel_requested_at
+        const baseResult = processResult.cancel_requested_at
           ? runnerAdapterCancelledResult({
               reason: processResult.cancel_signal
                 ? `Custom runner cancelled via ${processResult.cancel_signal}.`
@@ -184,6 +196,20 @@ export class CustomRunnerAdapter implements RunnerAdapter {
                 output_paths,
                 metrics: resultMetrics,
               });
+        const manifest = await readRunnerResultManifest(invocation.result_path);
+        const result = applyRunnerResultManifest({
+          base: {
+            ...baseResult,
+            summary: baseResult.stdout_summary ?? baseResult.stderr_summary,
+            artifacts: runnerArtifactsFromPaths(output_paths),
+            capabilities_used: [`custom:${invocation.argv[0] ?? "runner"}`],
+          },
+          manifest,
+        });
+        await writeRunnerResultManifest({
+          result_path: invocation.result_path,
+          manifest: manifestFromRunnerResult(result),
+        });
         const stateAfter = await readRunnerRunState(invocation.state_path);
         if (stateAfter) {
           await writeRunnerRunState({
@@ -232,6 +258,15 @@ export class CustomRunnerAdapter implements RunnerAdapter {
           output_paths: [invocation.bundle_path, invocation.bootstrap_path].filter(
             (value): value is string => typeof value === "string" && value.trim().length > 0,
           ),
+        });
+        await writeRunnerResultManifest({
+          result_path: invocation.result_path,
+          manifest: manifestFromRunnerResult({
+            ...result,
+            summary: result.stderr_summary,
+            artifacts: runnerArtifactsFromPaths(result.output_paths),
+            capabilities_used: [`custom:${invocation.argv[0] ?? "runner"}`],
+          }),
         });
         const stateAfter = await readRunnerRunState(invocation.state_path);
         if (stateAfter) {

@@ -4,6 +4,7 @@ import type {
   RunnerContextBundle,
   RunnerExecutionMetrics,
   RunnerInvocation,
+  RunnerResultArtifact,
   RunnerResult,
 } from "../types.js";
 
@@ -79,4 +80,11 @@ export function runnerAdapterCancelledResult(opts: {
     output_paths: opts.output_paths,
     metrics: opts.metrics,
   };
+}
+
+export function runnerArtifactsFromPaths(
+  paths: string[] | undefined,
+): RunnerResultArtifact[] | undefined {
+  if (!paths || paths.length === 0) return undefined;
+  return paths.map((pathValue) => ({ path: pathValue }));
 }
