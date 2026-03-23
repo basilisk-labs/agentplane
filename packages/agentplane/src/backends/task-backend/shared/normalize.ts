@@ -4,6 +4,7 @@ import type {
   PlanApproval,
   TaskOrigin,
   TaskRunnerExecutionMetrics,
+  TaskRunnerHistoryEntry,
   TaskRunnerOutcome,
   TaskRunnerTarget,
   VerificationResult,
@@ -116,7 +117,7 @@ function normalizeTaskRunnerMetrics(value: unknown): TaskRunnerExecutionMetrics 
   return Object.keys(metrics).length > 0 ? metrics : null;
 }
 
-export function normalizeTaskRunnerOutcome(value: unknown): TaskRunnerOutcome | null {
+function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry | null {
   if (!isRecord(value)) return null;
   const runId = typeof value.run_id === "string" ? value.run_id.trim() : "";
   const status = typeof value.status === "string" ? value.status.trim() : "";
@@ -135,7 +136,7 @@ export function normalizeTaskRunnerOutcome(value: unknown): TaskRunnerOutcome | 
     return null;
   }
 
-  const outcome: TaskRunnerOutcome = {
+  const outcome: TaskRunnerHistoryEntry = {
     run_id: runId,
     status,
     adapter_id: adapterId,
@@ -166,4 +167,18 @@ export function normalizeTaskRunnerOutcome(value: unknown): TaskRunnerOutcome | 
   const metrics = normalizeTaskRunnerMetrics(value.metrics);
   if (metrics) outcome.metrics = metrics;
   return outcome;
+}
+
+export function normalizeTaskRunnerOutcome(value: unknown): TaskRunnerOutcome | null {
+  const outcome = normalizeTaskRunnerHistoryEntry(value);
+  if (!outcome) return null;
+  const record = value as Record<string, unknown>;
+
+  const history = Array.isArray(record.history)
+    ? record.history
+        .map((entry) => normalizeTaskRunnerHistoryEntry(entry))
+        .filter((entry): entry is TaskRunnerHistoryEntry => !!entry)
+    : [];
+
+  return history.length > 0 ? { ...outcome, history } : outcome;
 }

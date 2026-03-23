@@ -1,6 +1,10 @@
 import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
 
-import type { TaskData } from "../backends/task-backend.js";
+import type {
+  TaskData,
+  TaskRunnerHistoryEntry,
+  TaskRunnerTarget,
+} from "../backends/task-backend.js";
 import { backendNotSupportedMessage } from "../cli/output.js";
 import { loadTaskFromContext, type CommandContext } from "../commands/shared/task-backend.js";
 import {
@@ -21,8 +25,9 @@ import type { RunnerContextBundle, RunnerRunState, RunnerTarget } from "./types.
 
 const RUNNER_OUTCOME_BEGIN = "<!-- BEGIN RUNNER OUTCOME -->";
 const RUNNER_OUTCOME_END = "<!-- END RUNNER OUTCOME -->";
+const MAX_TASK_RUNNER_HISTORY = 5;
 
-function formatRunnerTarget(target: RunnerTarget): string {
+function formatRunnerTarget(target: RunnerTarget | TaskRunnerTarget): string {
   if (target.kind === "task") return `task ${target.task_id}`;
   const base = `recipe ${target.recipe_id}:${target.scenario_id}`;
   return target.task_id ? `${base} -> task ${target.task_id}` : base;
@@ -47,13 +52,60 @@ function replaceRunnerOutcomeSection(sectionText: string | null, entryText: stri
     throw new Error("Runner outcome markers are malformed");
   }
 
-  const beforeEnd = normalized.slice(0, endIdx).trimEnd();
-  const afterEnd = normalized.slice(endIdx).trimStart();
-  return [beforeEnd, "", entryText.trimEnd(), "", afterEnd].join("\n").trimEnd();
+  const beforeBegin = normalized.slice(0, beginIdx).trimEnd();
+  const afterEnd = normalized.slice(endIdx + RUNNER_OUTCOME_END.length).trimStart();
+  const parts: string[] = [];
+  if (beforeBegin) parts.push(beforeBegin, "");
+  parts.push(RUNNER_OUTCOME_BEGIN);
+  if (entryText.trim()) parts.push("", entryText.trimEnd());
+  parts.push("", RUNNER_OUTCOME_END);
+  if (afterEnd) parts.push("", afterEnd);
+  return parts.join("\n").trimEnd();
 }
 
-function renderRunnerMetrics(state: RunnerRunState): string | null {
-  const metrics = state.result?.metrics;
+function runArtifactsDirForTask(taskId: string, runId: string): string {
+  return `.agentplane/tasks/${taskId}/runs/${runId}`;
+}
+
+function stripRunnerHistory(
+  outcome: NonNullable<TaskData["runner"]> | TaskRunnerHistoryEntry,
+): TaskRunnerHistoryEntry {
+  return {
+    run_id: outcome.run_id,
+    status: outcome.status,
+    adapter_id: outcome.adapter_id,
+    mode: outcome.mode,
+    updated_at: outcome.updated_at,
+    ...(outcome.started_at ? { started_at: outcome.started_at } : {}),
+    ...(outcome.ended_at ? { ended_at: outcome.ended_at } : {}),
+    exit_code: outcome.exit_code,
+    target: { ...outcome.target },
+    ...(outcome.output_paths?.length ? { output_paths: [...outcome.output_paths] } : {}),
+    ...(outcome.stdout_summary ? { stdout_summary: outcome.stdout_summary } : {}),
+    ...(outcome.stderr_summary ? { stderr_summary: outcome.stderr_summary } : {}),
+    ...(outcome.metrics ? { metrics: { ...outcome.metrics } } : {}),
+  };
+}
+
+function runnerHistoryFromTask(
+  outcome: NonNullable<TaskData["runner"]> | null | undefined,
+): TaskRunnerHistoryEntry[] {
+  if (!outcome) return [];
+  if (outcome.history?.length) return outcome.history.map((entry) => stripRunnerHistory(entry));
+  return [stripRunnerHistory(outcome)];
+}
+
+function renderRunnerMetrics(
+  metrics:
+    | {
+        duration_ms?: number;
+        stdout_bytes?: number;
+        stderr_bytes?: number;
+        output_last_message_bytes?: number | null;
+      }
+    | null
+    | undefined,
+): string | null {
   if (!metrics) return null;
   const pairs: string[] = [];
   if (typeof metrics.duration_ms === "number") pairs.push(`duration_ms=${metrics.duration_ms}`);
@@ -68,83 +120,105 @@ function renderRunnerMetrics(state: RunnerRunState): string | null {
   return pairs.length > 0 ? pairs.join(", ") : null;
 }
 
-function renderVerificationHint(state: RunnerRunState): string {
-  if (state.result?.verification_hints && state.result.verification_hints.length > 0) {
-    return state.result.verification_hints.join(" | ");
+function renderVerificationHint(opts: {
+  status: RunnerRunState["status"];
+  verification_hints?: string[] | null;
+}): string {
+  if (opts.verification_hints && opts.verification_hints.length > 0) {
+    return opts.verification_hints.join(" | ");
   }
-  if (state.status === "success") {
+  if (opts.status === "success") {
     return "runner completed successfully; human verification and closure remain explicit lifecycle steps.";
   }
-  if (state.status === "failed") {
+  if (opts.status === "failed") {
     return "runner failed; inspect artifacts before retrying or recording verification evidence.";
   }
-  if (state.status === "cancelled") {
+  if (opts.status === "cancelled") {
     return "runner was cancelled; verification evidence is incomplete until a later run succeeds.";
   }
-  if (state.status === "running") {
+  if (opts.status === "running") {
     return "runner is still executing; verification evidence is not complete yet.";
   }
   return "runner is prepared but has not produced verification-relevant output yet.";
 }
 
-function renderRunnerOutcomeEntry(state: RunnerRunState): string {
+function renderRunnerOutcomeEntry(opts: {
+  task_id: string;
+  entry: TaskRunnerHistoryEntry;
+  state?: RunnerRunState;
+}): string {
+  const summary = opts.state?.result?.summary;
+  const findings = opts.state?.result?.findings;
+  const capabilitiesUsed = opts.state?.result?.capabilities_used;
+  const entryStdout = opts.entry.stdout_summary;
+  const entryStderr = opts.entry.stderr_summary;
+  const entryOutputPaths = opts.entry.output_paths;
+  const entryMetrics = opts.entry.metrics;
   const lines = [
-    `#### ${state.updated_at} — RUNNER — ${state.status}`,
+    `#### ${opts.entry.updated_at} — RUNNER — ${opts.entry.status}`,
     "",
-    `RunId: ${state.run_id}`,
+    `RunId: ${opts.entry.run_id}`,
     "",
-    `Adapter: ${state.adapter_id}`,
+    `Adapter: ${opts.entry.adapter_id}`,
     "",
-    `Mode: ${state.mode}`,
+    `Mode: ${opts.entry.mode}`,
     "",
-    `Target: ${formatRunnerTarget(state.target)}`,
+    `Target: ${formatRunnerTarget(opts.entry.target)}`,
     "",
-    `UpdatedAt: ${state.updated_at}`,
+    `UpdatedAt: ${opts.entry.updated_at}`,
     "",
-    `ExitCode: ${state.result?.exit_code ?? "null"}`,
+    `RunArtifacts: ${runArtifactsDirForTask(opts.task_id, opts.entry.run_id)}`,
+    "",
+    `ExitCode: ${opts.entry.exit_code ?? "null"}`,
   ];
-  if (state.result?.started_at) {
-    lines.push("", `StartedAt: ${state.result.started_at}`);
+  if (opts.entry.started_at) {
+    lines.push("", `StartedAt: ${opts.entry.started_at}`);
   }
-  if (state.result?.ended_at) {
-    lines.push("", `EndedAt: ${state.result.ended_at}`);
+  if (opts.entry.ended_at) {
+    lines.push("", `EndedAt: ${opts.entry.ended_at}`);
   }
-  if (state.result?.stdout_summary) {
-    lines.push("", `Stdout: ${state.result.stdout_summary}`);
+  if (entryStdout) {
+    lines.push("", `Stdout: ${entryStdout}`);
   }
-  if (state.result?.stderr_summary) {
-    lines.push("", `Stderr: ${state.result.stderr_summary}`);
+  if (entryStderr) {
+    lines.push("", `Stderr: ${entryStderr}`);
   }
-  if (state.result?.summary) {
-    lines.push("", `Summary: ${state.result.summary}`);
+  if (summary) {
+    lines.push("", `Summary: ${summary}`);
   }
-  if (state.result?.artifacts?.length) {
+  if (opts.state?.result?.artifacts?.length) {
     lines.push(
       "",
-      `Artifacts: ${state.result.artifacts
+      `Artifacts: ${opts.state.result.artifacts
         .map((artifact) => (artifact.label ? `${artifact.label}=${artifact.path}` : artifact.path))
         .join(", ")}`,
     );
   }
-  if (state.result?.findings?.length) {
-    lines.push("", `Findings: ${state.result.findings.join(" | ")}`);
+  if (findings?.length) {
+    lines.push("", `Findings: ${findings.join(" | ")}`);
   }
-  if (state.result?.capabilities_used?.length) {
-    lines.push("", `Capabilities: ${state.result.capabilities_used.join(", ")}`);
+  if (capabilitiesUsed?.length) {
+    lines.push("", `Capabilities: ${capabilitiesUsed.join(", ")}`);
   }
-  if (state.result?.output_paths?.length) {
-    lines.push("", `Outputs: ${state.result.output_paths.join(", ")}`);
+  if (entryOutputPaths?.length) {
+    lines.push("", `Outputs: ${entryOutputPaths.join(", ")}`);
   }
-  const metrics = renderRunnerMetrics(state);
+  const metrics = renderRunnerMetrics(entryMetrics);
   if (metrics) {
     lines.push("", `Metrics: ${metrics}`);
   }
-  lines.push("", `VerificationHint: ${renderVerificationHint(state)}`);
+  lines.push(
+    "",
+    `VerificationHint: ${renderVerificationHint({
+      status: opts.entry.status,
+      verification_hints: opts.state?.result?.verification_hints ?? null,
+    })}`,
+  );
   return `${lines.join("\n").trimEnd()}\n`;
 }
 
-function buildTaskRunnerOutcome(state: RunnerRunState): NonNullable<TaskData["runner"]> {
-  const outcome: NonNullable<TaskData["runner"]> = {
+function buildTaskRunnerHistoryEntry(state: RunnerRunState): TaskRunnerHistoryEntry {
+  const outcome: TaskRunnerHistoryEntry = {
     run_id: state.run_id,
     status: state.status,
     adapter_id: state.adapter_id,
@@ -160,6 +234,47 @@ function buildTaskRunnerOutcome(state: RunnerRunState): NonNullable<TaskData["ru
   if (state.result?.stderr_summary) outcome.stderr_summary = state.result.stderr_summary;
   if (state.result?.metrics) outcome.metrics = { ...state.result.metrics };
   return outcome;
+}
+
+function mergeTaskRunnerHistory(opts: {
+  latest: TaskRunnerHistoryEntry;
+  previous?: NonNullable<TaskData["runner"]> | null;
+}): TaskRunnerHistoryEntry[] {
+  const merged: TaskRunnerHistoryEntry[] = [];
+  const seen = new Set<string>();
+  for (const entry of [opts.latest, ...runnerHistoryFromTask(opts.previous)]) {
+    if (seen.has(entry.run_id)) continue;
+    seen.add(entry.run_id);
+    merged.push(stripRunnerHistory(entry));
+    if (merged.length >= MAX_TASK_RUNNER_HISTORY) break;
+  }
+  return merged;
+}
+
+function buildTaskRunnerOutcome(opts: {
+  state: RunnerRunState;
+  previous?: NonNullable<TaskData["runner"]> | null;
+}): NonNullable<TaskData["runner"]> {
+  const latest = buildTaskRunnerHistoryEntry(opts.state);
+  const history = mergeTaskRunnerHistory({ latest, previous: opts.previous });
+  return history.length > 1 ? { ...latest, history } : latest;
+}
+
+function renderRunnerOutcomeHistory(opts: {
+  task_id: string;
+  outcome: NonNullable<TaskData["runner"]>;
+  state: RunnerRunState;
+}): string {
+  const history = opts.outcome.history?.length
+    ? opts.outcome.history
+    : [stripRunnerHistory(opts.outcome)];
+  const [latest, ...previous] = history;
+  return [
+    renderRunnerOutcomeEntry({ task_id: opts.task_id, entry: latest, state: opts.state }),
+    ...previous.map((entry) => renderRunnerOutcomeEntry({ task_id: opts.task_id, entry })),
+  ]
+    .join("\n")
+    .trimEnd();
 }
 
 function resolveRunnerUpdatedBy(task: Pick<TaskData, "owner" | "doc_updated_by">): string {
@@ -188,10 +303,13 @@ export async function persistRunnerOutcomeToTask(opts: {
   }
 
   const useStore = backendIsLocalFileBackend(opts.ctx);
-  const outcome = buildTaskRunnerOutcome(opts.state);
   if (useStore) {
     const store = getTaskStore(opts.ctx);
     await store.mutate(opts.task_id, (current) => {
+      const outcome = buildTaskRunnerOutcome({
+        state: opts.state,
+        previous: current.runner ?? null,
+      });
       const baseDoc = ensureDocSections(
         String(current.doc ?? ""),
         opts.ctx.config.tasks.doc.required_sections,
@@ -201,7 +319,11 @@ export async function persistRunnerOutcomeToTask(opts: {
       const currentObservation = extractDocSection(baseDoc, observationSection);
       const nextObservation = replaceRunnerOutcomeSection(
         currentObservation,
-        renderRunnerOutcomeEntry(opts.state),
+        renderRunnerOutcomeHistory({
+          task_id: opts.task_id,
+          outcome,
+          state: opts.state,
+        }),
       );
       return [
         setTaskFieldsIntent({ runner: outcome }),
@@ -220,6 +342,10 @@ export async function persistRunnerOutcomeToTask(opts: {
   }
 
   const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.task_id });
+  const outcome = buildTaskRunnerOutcome({
+    state: opts.state,
+    previous: task.runner ?? null,
+  });
   const baseDoc = ensureDocSections(
     String(task.doc ?? ""),
     opts.ctx.config.tasks.doc.required_sections,
@@ -229,7 +355,11 @@ export async function persistRunnerOutcomeToTask(opts: {
   const currentObservation = extractDocSection(baseDoc, observationSection);
   const nextObservation = replaceRunnerOutcomeSection(
     currentObservation,
-    renderRunnerOutcomeEntry(opts.state),
+    renderRunnerOutcomeHistory({
+      task_id: opts.task_id,
+      outcome,
+      state: opts.state,
+    }),
   );
   const nextDoc = ensureDocSections(
     setMarkdownSection(baseDoc, observationSection, nextObservation),

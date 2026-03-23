@@ -70,6 +70,7 @@ export {
   type TaskOrigin,
   type TaskPriority,
   type TaskRecord,
+  type TaskRunnerHistoryEntry,
   type TaskStatus,
 } from "./tasks/task-store.js";
 

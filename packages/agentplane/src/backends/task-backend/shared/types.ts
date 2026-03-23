@@ -30,7 +30,7 @@ export type TaskRunnerTarget = {
   scenario_id?: string;
 };
 
-export type TaskRunnerOutcome = {
+export type TaskRunnerHistoryEntry = {
   run_id: string;
   status: TaskRunnerOutcomeStatus;
   adapter_id: string;
@@ -44,6 +44,10 @@ export type TaskRunnerOutcome = {
   stdout_summary?: string;
   stderr_summary?: string;
   metrics?: TaskRunnerExecutionMetrics;
+};
+
+export type TaskRunnerOutcome = TaskRunnerHistoryEntry & {
+  history?: TaskRunnerHistoryEntry[];
 };
 
 export type TaskOrigin = {

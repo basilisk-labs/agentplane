@@ -9,6 +9,7 @@ import {
   listTasks,
   type TaskOrigin,
   type TaskRunnerExecutionMetrics,
+  type TaskRunnerHistoryEntry,
   type TaskRunnerOutcome,
   type TaskRunnerTarget,
 } from "./task-store.js";
@@ -75,7 +76,7 @@ function normalizeRunnerMetrics(value: unknown): TaskRunnerExecutionMetrics | un
   return Object.keys(metrics).length > 0 ? metrics : undefined;
 }
 
-function normalizeTaskRunnerOutcome(value: unknown): TaskRunnerOutcome | undefined {
+function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry | undefined {
   if (!isRecord(value)) return undefined;
   const runId = typeof value.run_id === "string" ? value.run_id.trim() : "";
   const status = typeof value.status === "string" ? value.status.trim() : "";
@@ -94,7 +95,7 @@ function normalizeTaskRunnerOutcome(value: unknown): TaskRunnerOutcome | undefin
     return undefined;
   }
 
-  const outcome: TaskRunnerOutcome = {
+  const outcome: TaskRunnerHistoryEntry = {
     run_id: runId,
     status,
     adapter_id: adapterId,
@@ -125,6 +126,20 @@ function normalizeTaskRunnerOutcome(value: unknown): TaskRunnerOutcome | undefin
   const metrics = normalizeRunnerMetrics(value.metrics);
   if (metrics) outcome.metrics = metrics;
   return outcome;
+}
+
+function normalizeTaskRunnerOutcome(value: unknown): TaskRunnerOutcome | undefined {
+  const outcome = normalizeTaskRunnerHistoryEntry(value);
+  if (!outcome) return undefined;
+  const record = value as Record<string, unknown>;
+
+  const history = Array.isArray(record.history)
+    ? record.history
+        .map((entry) => normalizeTaskRunnerHistoryEntry(entry))
+        .filter((entry): entry is TaskRunnerHistoryEntry => !!entry)
+    : [];
+
+  return history.length > 0 ? { ...outcome, history } : outcome;
 }
 
 export function canonicalizeJson(value: unknown): unknown {
