@@ -9,6 +9,7 @@ import { compareVersions } from "../../../shared/version-compare.js";
 
 import { resolveProjectInstalledRecipeDir } from "./paths.js";
 import { readProjectInstalledRecipes } from "./project-installed-recipes.js";
+import { readScenarioDefinition } from "./scenario.js";
 import type {
   InstalledRecipeEntry,
   RecipeCompatibility,
@@ -17,6 +18,7 @@ import type {
   RecipeResolverContext,
   RecipeRunProfile,
   RecipeScenarioDescriptor,
+  RecipeTaskTemplate,
   ResolveRecipeScenarioSelectionFlags,
   ResolvedRecipeRunProfile,
   ResolvedRecipeScenario,
@@ -219,6 +221,21 @@ function toResolvedRecipeScenarios(opts: {
     .toSorted((left, right) => left.scenario_id.localeCompare(right.scenario_id));
 }
 
+async function resolveScenarioTaskTemplate(
+  selection: ResolvedRecipeScenarioSelection,
+): Promise<RecipeTaskTemplate> {
+  if (!(await fileExists(selection.scenario_file))) {
+    throw new Error(`Scenario definition not found: ${selection.scenario_file}`);
+  }
+  const scenario = await readScenarioDefinition(selection.scenario_file);
+  if (scenario.id !== selection.scenario_id) {
+    throw new Error(
+      `Scenario definition id mismatch: manifest expects ${selection.scenario_id}, file defines ${scenario.id}`,
+    );
+  }
+  return scenario.task_template;
+}
+
 export async function listResolvedRecipeScenarios(opts: {
   project: ResolvedProject;
   recipeId?: string;
@@ -308,5 +325,9 @@ export async function resolveRecipeScenarioSelection(opts: {
     throw new Error(`Scenario selection is ambiguous: ${labels}`);
   }
 
-  return matches[0];
+  const selected = matches[0];
+  return {
+    ...selected,
+    task_template: await resolveScenarioTaskTemplate(selected),
+  };
 }

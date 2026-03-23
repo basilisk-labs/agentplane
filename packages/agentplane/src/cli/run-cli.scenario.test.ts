@@ -57,6 +57,7 @@ describe("runCli scenario", () => {
       expect(code).toBe(0);
       expect(ioInfo.stdout).toContain("Scenario:");
       expect(ioInfo.stdout).toContain("Run profile:");
+      expect(ioInfo.stdout).toContain("Task template:");
       expect(ioInfo.stdout).toContain("Scenario file:");
       expect(ioInfo.stdout).toContain("Compatibility: satisfied");
       expect(ioInfo.stdout).not.toContain("Steps:");
@@ -96,6 +97,46 @@ describe("runCli scenario", () => {
       ]);
       expect(code).toBe(3);
       expect(io.stderr).toContain("Missing required field: scenario.goal");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("scenario info rejects invalid task_template definitions with a precise error", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive();
+    const manifestId = String(manifest.id);
+
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+
+    const scenarioPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      manifestId,
+      "scenarios",
+      "recipe-scenario.json",
+    );
+    const scenario = JSON.parse(await readFile(scenarioPath, "utf8")) as Record<string, unknown>;
+    scenario.task_template = {
+      title: "Broken template",
+      description: "Broken template",
+      owner: 123,
+    };
+    await writeFile(scenarioPath, JSON.stringify(scenario, null, 2), "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "scenario",
+        "info",
+        `${manifestId}:RECIPE_SCENARIO`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Invalid field scenario.task_template.owner");
     } finally {
       io.restore();
     }

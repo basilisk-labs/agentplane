@@ -218,6 +218,11 @@ describe("runCli recipes", () => {
             schema_version: "1",
             id: "FULL_SCENARIO",
             goal: "Full scenario goal",
+            task_template: {
+              title: "Full scenario task",
+              description: "Materialize the full recipe scenario.",
+              owner: "CODER",
+            },
             inputs: [],
             outputs: [],
             steps: [],
@@ -540,6 +545,11 @@ describe("runCli recipes", () => {
               id: "..",
               summary: "Bad",
               goal: "Goal",
+              task_template: {
+                title: "Bad scenario task",
+                description: "Broken scenario fixture.",
+                owner: "CODER",
+              },
               inputs: [],
               outputs: [],
               steps: [{ tool: "TOOL" }],

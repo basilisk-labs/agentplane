@@ -75,7 +75,25 @@ async function resolveScenarioForCli(opts: {
     if (message.startsWith("No recipe scenario matches")) {
       throw buildScenarioNotFoundError(opts.recipeId, opts.scenarioId);
     }
+    if (message.startsWith("Scenario definition not found")) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_IO"),
+        code: "E_IO",
+        message,
+      });
+    }
     if (message.startsWith("Scenario selection is ambiguous")) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message,
+      });
+    }
+    if (
+      message.startsWith("Missing required field: scenario.") ||
+      message.startsWith("Invalid field scenario.") ||
+      message.startsWith("Scenario definition id mismatch:")
+    ) {
       throw new CliError({
         exitCode: exitCodeForError("E_VALIDATION"),
         code: "E_VALIDATION",
@@ -267,6 +285,7 @@ export async function cmdScenarioInfoParsed(opts: {
       printJsonSection("Avoid when", selection.avoid_when);
     }
     printJsonSection("Run profile", selection.run_profile);
+    printJsonSection("Task template", selection.task_template);
     process.stdout.write(
       `Scenario file: ${path.relative(project.gitRoot, selection.scenario_file)}\n`,
     );

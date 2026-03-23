@@ -4,10 +4,122 @@ import path from "node:path";
 import { fileExists, getPathKind } from "../../../cli/fs-utils.js";
 import { invalidFieldMessage, requiredFieldMessage } from "../../../cli/output.js";
 import { isRecord } from "../../../shared/guards.js";
+import { dedupeStrings } from "../../../shared/strings.js";
 
 import { RECIPES_SCENARIOS_DIR_NAME, RECIPES_SCENARIOS_INDEX_NAME } from "./constants.js";
 import { normalizeScenarioId } from "./normalize.js";
-import type { RecipeManifest, RecipeScenarioDetail, ScenarioDefinition } from "./types.js";
+import type {
+  RecipeManifest,
+  RecipeScenarioDetail,
+  RecipeTaskTemplate,
+  RecipeTaskTemplateDoc,
+  ScenarioDefinition,
+} from "./types.js";
+
+function normalizeRequiredString(raw: unknown, field: string, sourcePath: string): string {
+  if (typeof raw !== "string") throw new Error(invalidFieldMessage(field, "string", sourcePath));
+  const value = raw.trim();
+  if (!value) throw new Error(requiredFieldMessage(field, sourcePath));
+  return value;
+}
+
+function normalizeOptionalString(
+  raw: unknown,
+  field: string,
+  sourcePath: string,
+): string | undefined {
+  if (raw === undefined) return undefined;
+  if (typeof raw !== "string") throw new Error(invalidFieldMessage(field, "string", sourcePath));
+  const value = raw.trim();
+  return value || undefined;
+}
+
+function normalizeOptionalStringList(
+  raw: unknown,
+  field: string,
+  sourcePath: string,
+): string[] | undefined {
+  if (raw === undefined) return undefined;
+  if (!Array.isArray(raw)) throw new Error(invalidFieldMessage(field, "string[]", sourcePath));
+  const values = raw.map((value) => {
+    if (typeof value !== "string")
+      throw new Error(invalidFieldMessage(field, "string[]", sourcePath));
+    const trimmed = value.trim();
+    if (!trimmed) throw new Error(invalidFieldMessage(field, "string[]", sourcePath));
+    return trimmed;
+  });
+  const deduped = dedupeStrings(values).toSorted();
+  return deduped.length > 0 ? deduped : undefined;
+}
+
+function normalizeTaskTemplateDoc(
+  raw: unknown,
+  sourcePath: string,
+): RecipeTaskTemplateDoc | undefined {
+  if (raw === undefined) return undefined;
+  if (!isRecord(raw)) {
+    throw new Error(invalidFieldMessage("scenario.task_template.doc", "object", sourcePath));
+  }
+  const doc: RecipeTaskTemplateDoc = {
+    summary: normalizeOptionalString(raw.summary, "scenario.task_template.doc.summary", sourcePath),
+    scope: normalizeOptionalString(raw.scope, "scenario.task_template.doc.scope", sourcePath),
+    plan: normalizeOptionalString(raw.plan, "scenario.task_template.doc.plan", sourcePath),
+    verify_steps: normalizeOptionalString(
+      raw.verify_steps,
+      "scenario.task_template.doc.verify_steps",
+      sourcePath,
+    ),
+    rollback_plan: normalizeOptionalString(
+      raw.rollback_plan,
+      "scenario.task_template.doc.rollback_plan",
+      sourcePath,
+    ),
+    findings: normalizeOptionalString(
+      raw.findings,
+      "scenario.task_template.doc.findings",
+      sourcePath,
+    ),
+  };
+  return Object.values(doc).some((value) => value !== undefined) ? doc : undefined;
+}
+
+function normalizeTaskTemplate(raw: unknown, sourcePath: string): RecipeTaskTemplate {
+  if (!isRecord(raw)) {
+    throw new Error(invalidFieldMessage("scenario.task_template", "object", sourcePath));
+  }
+  const rawPriority = raw.priority;
+  let priority: RecipeTaskTemplate["priority"];
+  if (rawPriority !== undefined) {
+    if (
+      rawPriority !== "low" &&
+      rawPriority !== "normal" &&
+      rawPriority !== "med" &&
+      rawPriority !== "high"
+    ) {
+      throw new Error(
+        invalidFieldMessage(
+          "scenario.task_template.priority",
+          '"low" | "normal" | "med" | "high"',
+          sourcePath,
+        ),
+      );
+    }
+    priority = rawPriority;
+  }
+  return {
+    title: normalizeRequiredString(raw.title, "scenario.task_template.title", sourcePath),
+    description: normalizeRequiredString(
+      raw.description,
+      "scenario.task_template.description",
+      sourcePath,
+    ),
+    owner: normalizeRequiredString(raw.owner, "scenario.task_template.owner", sourcePath),
+    priority,
+    tags: normalizeOptionalStringList(raw.tags, "scenario.task_template.tags", sourcePath),
+    verify: normalizeOptionalStringList(raw.verify, "scenario.task_template.verify", sourcePath),
+    doc: normalizeTaskTemplateDoc(raw.doc, sourcePath),
+  };
+}
 
 function normalizeScenarioEvidence(
   raw: unknown,
@@ -45,6 +157,9 @@ function validateScenarioDefinition(raw: unknown, sourcePath: string): ScenarioD
   const id = normalizeScenarioId(rawId);
   const goal = typeof raw.goal === "string" ? raw.goal.trim() : "";
   if (!goal) throw new Error(requiredFieldMessage("scenario.goal", sourcePath));
+  if (!("task_template" in raw)) {
+    throw new Error(requiredFieldMessage("scenario.task_template", sourcePath));
+  }
   if (!("inputs" in raw)) throw new Error(requiredFieldMessage("scenario.inputs", sourcePath));
   if (!("outputs" in raw)) throw new Error(requiredFieldMessage("scenario.outputs", sourcePath));
   if (!Array.isArray(raw.steps)) {
@@ -56,6 +171,7 @@ function validateScenarioDefinition(raw: unknown, sourcePath: string): ScenarioD
     summary: typeof raw.summary === "string" ? raw.summary.trim() : undefined,
     description: typeof raw.description === "string" ? raw.description.trim() : undefined,
     goal,
+    task_template: normalizeTaskTemplate(raw.task_template, sourcePath),
     inputs: raw.inputs,
     outputs: raw.outputs,
     evidence: normalizeScenarioEvidence(raw.evidence, sourcePath),
@@ -123,6 +239,7 @@ export async function collectRecipeScenarioDetails(
         if (!detail) continue;
         detail.description ??= scenario.description;
         detail.goal = scenario.goal;
+        detail.task_template = scenario.task_template;
         detail.inputs = scenario.inputs;
         detail.steps = scenario.steps;
         detail.outputs = detail.outputs ?? scenario.outputs;
@@ -145,6 +262,7 @@ export async function collectRecipeScenarioDetails(
         summary: scenario.summary,
         description: scenario.description,
         goal: scenario.goal,
+        task_template: scenario.task_template,
         inputs: scenario.inputs,
         outputs: scenario.outputs,
         evidence: scenario.evidence,

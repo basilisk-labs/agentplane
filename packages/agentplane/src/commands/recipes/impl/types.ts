@@ -16,6 +16,25 @@ export type RecipeRunProfile = {
   expected_exit_contract?: string;
 };
 
+export type RecipeTaskTemplateDoc = {
+  summary?: string;
+  scope?: string;
+  plan?: string;
+  verify_steps?: string;
+  rollback_plan?: string;
+  findings?: string;
+};
+
+export type RecipeTaskTemplate = {
+  title: string;
+  description: string;
+  owner: string;
+  priority?: "low" | "normal" | "med" | "high";
+  tags?: string[];
+  verify?: string[];
+  doc?: RecipeTaskTemplateDoc;
+};
+
 export type RecipeSkillDefinition = {
   id: string;
   summary: string;
@@ -121,6 +140,7 @@ export type ResolvedRecipeScenario = {
   scenario_file: string;
   compatibility: RecipeResolverCompatibility;
   run_profile: ResolvedRecipeRunProfile;
+  task_template?: RecipeTaskTemplate;
 };
 
 export type ResolveRecipeScenarioSelectionFlags = {
@@ -184,6 +204,7 @@ export type ScenarioDefinition = {
   summary?: string;
   description?: string;
   goal: string;
+  task_template: RecipeTaskTemplate;
   inputs: unknown;
   outputs: unknown;
   evidence?: {
@@ -208,6 +229,7 @@ export type RecipeScenarioDetail = {
   tools_used?: string[];
   run_profile?: RecipeRunProfile;
   goal?: string;
+  task_template?: RecipeTaskTemplate;
   inputs?: unknown;
   outputs?: unknown;
   evidence?: ScenarioDefinition["evidence"];
