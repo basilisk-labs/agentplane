@@ -229,7 +229,9 @@ export class CodexRunnerAdapter implements RunnerAdapter {
         const result = runnerAdapterFailureResult({
           err,
           started_at,
-          output_paths: [invocation.bundle_path, invocation.bootstrap_path].filter(Boolean),
+          output_paths: [invocation.bundle_path, invocation.bootstrap_path].filter(
+            (value): value is string => typeof value === "string" && value.trim().length > 0,
+          ),
         });
         const stateAfter = await readRunnerRunState(invocation.state_path);
         if (stateAfter) {

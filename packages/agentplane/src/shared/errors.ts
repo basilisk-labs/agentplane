@@ -5,6 +5,7 @@ export type ErrorCode =
   | "E_GIT"
   | "E_BACKEND"
   | "E_NETWORK"
+  | "E_RUNTIME"
   | "E_INTERNAL";
 
 export class CliError extends Error {

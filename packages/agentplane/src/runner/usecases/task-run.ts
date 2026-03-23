@@ -113,7 +113,7 @@ export async function prepareTaskRunnerExecution(opts: {
   const invocation = await adapter.prepare(bundle);
   const state = await writePreparedRunnerArtifacts({
     bundle,
-    bootstrap: renderTaskRunnerBootstrap(bundle, invocation),
+    bootstrap_markdown: renderTaskRunnerBootstrap(bundle, invocation),
   });
   return { bundle, invocation, state };
 }

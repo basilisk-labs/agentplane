@@ -10,6 +10,7 @@ const EXIT_CODE_BY_ERROR: Record<string, number> = {
   E_GIT: 5,
   E_BACKEND: 6,
   E_NETWORK: 7,
+  E_RUNTIME: 8,
 };
 
 async function listTsFiles(root: string): Promise<string[]> {

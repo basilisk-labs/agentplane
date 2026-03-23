@@ -156,6 +156,16 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
         },
       });
     }
+    case "E_RUNTIME": {
+      return withExplicit({
+        hint: "Inspect runner artifacts and the external runner result before retrying.",
+        nextAction: {
+          command: "agentplane doctor",
+          reason: "confirm runtime wiring and recent runner state before rerunning the command",
+          reasonCode: "runtime_runner_state",
+        },
+      });
+    }
     case "E_BACKEND": {
       if (command?.includes("sync")) {
         return withExplicit({
