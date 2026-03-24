@@ -2,6 +2,7 @@ import type { TaskData, TaskEvent } from "../backends/task-backend.js";
 
 export const RUNNER_BUNDLE_SCHEMA_VERSION = 1 as const;
 export const RUNNER_API_VERSION = "1" as const;
+export const RUNNER_TRACE_SCHEMA_VERSION = 1 as const;
 
 export type RunnerTarget =
   | {
@@ -141,6 +142,21 @@ export type RunnerExecutionMetrics = {
   stdout_bytes?: number;
   stderr_bytes?: number;
   output_last_message_bytes?: number | null;
+};
+
+export type RunnerTraceStream = "stdout" | "stderr" | "system";
+
+export type RunnerTraceKind = "json_event" | "text";
+
+export type RunnerTraceEvent = {
+  schema_version: typeof RUNNER_TRACE_SCHEMA_VERSION;
+  ts: string;
+  seq: number;
+  stream: RunnerTraceStream;
+  adapter_id: string;
+  kind: RunnerTraceKind;
+  raw: string;
+  parsed?: Record<string, unknown>;
 };
 
 export type RunnerResultArtifact = {
