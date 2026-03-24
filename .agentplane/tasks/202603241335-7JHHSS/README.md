@@ -1,10 +1,11 @@
 ---
 id: "202603241335-7JHHSS"
 title: "Persist final finish commit hash after close/amend"
-status: "DOING"
+result_summary: "finish now preserves task.commit as implementation provenance by recording tracked task READMEs in a separate deterministic close commit instead of amending the implementation commit."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-24T13:55:22.876Z"
   updated_by: "CODER"
   note: "ok: unit and CLI lifecycle tests confirm finish now records task README changes in a separate deterministic close commit, preserving task.commit as implementation provenance without the stale self-amend hash."
-commit: null
+commit:
+  hash: "8b5ebed729f6d417a7e9778d9b7f2d551511bc55"
+  message: "✅ 7JHHSS code: done"
 comments:
   -
     author: "CODER"
     body: "Start: trace the finish close path, fix stale task.commit.hash persistence after final close/amend flows, and keep the diff limited to finish metadata plus regression coverage."
+  -
+    author: "CODER"
+    body: "Verified: removed the self-referential finish amend path, added a separate deterministic close commit for tracked task READMEs after comment-driven finish flows, and locked the behavior with unit plus CLI lifecycle regression coverage."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "ok: unit and CLI lifecycle tests confirm finish now records task README changes in a separate deterministic close commit, preserving task.commit as implementation provenance without the stale self-amend hash."
+  -
+    type: "status"
+    at: "2026-03-24T13:56:15.889Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: removed the self-referential finish amend path, added a separate deterministic close commit for tracked task READMEs after comment-driven finish flows, and locked the behavior with unit plus CLI lifecycle regression coverage."
 doc_version: 3
-doc_updated_at: "2026-03-24T13:55:22.885Z"
+doc_updated_at: "2026-03-24T13:56:15.894Z"
 doc_updated_by: "CODER"
 description: "Fix finish so task.commit.hash records the final commit hash that remains on the branch after any close-commit or amend flow, rather than an intermediate pre-amend hash."
 sections:
