@@ -31,10 +31,15 @@ import {
   InvalidRunnerResultManifestError,
   applyRunnerResultManifest,
   manifestFromRunnerResult,
+  preserveRunnerResultManifestSource,
   preserveInvalidRunnerResultManifest,
   readRunnerResultManifest,
   writeRunnerResultManifest,
 } from "../result-manifest.js";
+import {
+  assertRunnerManifestArtifactPolicy,
+  readRecipeArtifactPrefixesFromRunnerEnv,
+} from "../result-manifest-policy.js";
 import { buildRecipeRunnerEnv, readRecipeRunProfile } from "./recipe-run-profile.js";
 
 const CODEX_LAST_MESSAGE_FILENAME = "codex-last-message.md";
@@ -57,6 +62,7 @@ const CODEX_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
     writes_artifacts_to: {
       level: "advisory",
       channel: "env",
+      note: "Recipe artifact prefixes are exported through env and enforced post-run against external manifest artifacts and evidence paths.",
     },
     expected_exit_contract: {
       level: "advisory",
@@ -107,6 +113,7 @@ function buildCodexArtifacts(opts: {
   trace_archive_path?: string | null;
   stderr_artifact_path?: string | null;
   stderr_archive_path?: string | null;
+  source_manifest_path?: string | null;
   invalid_manifest_path?: string | null;
 }): NonNullable<RunnerResult["artifacts"]> {
   return (
@@ -117,6 +124,7 @@ function buildCodexArtifacts(opts: {
       { path: opts.trace_archive_path, label: "raw-trace-gzip" },
       { path: opts.stderr_artifact_path, label: "stderr-log" },
       { path: opts.stderr_archive_path, label: "stderr-log-gzip" },
+      { path: opts.source_manifest_path, label: "source-result-manifest" },
       { path: opts.invocation.output_last_message_path, label: "assistant-last-message" },
       { path: opts.invalid_manifest_path, label: "invalid-result-manifest" },
       { path: opts.invocation.result_path, label: "result-manifest" },
@@ -354,6 +362,11 @@ export class CodexRunnerAdapter implements RunnerAdapter {
                   timeout_reason: processResult.timeout_reason,
                 });
         const manifest = await readRunnerResultManifest(invocation.result_path);
+        assertRunnerManifestArtifactPolicy({
+          adapter_id: invocation.adapter_id,
+          allowed_prefixes: readRecipeArtifactPrefixesFromRunnerEnv(invocation.env),
+          manifest,
+        });
         assertExecuteModeManifest({
           invocation,
           processResult,
@@ -421,6 +434,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
         return result;
       } catch (err) {
         const ended_at = new Date().toISOString();
+        const sourceManifestPath = await preserveRunnerResultManifestSource(invocation.result_path);
         const invalidManifestPath =
           err instanceof InvalidRunnerResultManifestError
             ? await preserveInvalidRunnerResultManifest({
@@ -434,6 +448,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           trace_archive_path: processResult?.trace_archive_path,
           stderr_artifact_path: processResult?.stderr_artifact_path,
           stderr_archive_path: processResult?.stderr_archive_path,
+          source_manifest_path: sourceManifestPath,
           invalid_manifest_path: invalidManifestPath,
         });
         const output_paths = artifacts.map((artifact) => artifact.path);

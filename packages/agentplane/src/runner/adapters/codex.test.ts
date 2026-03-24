@@ -722,4 +722,106 @@ describe("CodexRunnerAdapter", () => {
 
     await rm(tempDir, { recursive: true, force: true });
   });
+
+  it("fails when codex result manifest paths escape declared recipe prefixes", async () => {
+    const adapter = createRunnerAdapter(defaultConfig());
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-scope-"));
+    const fakeBinDir = path.join(tempDir, "bin");
+    const fakeCodexPath = path.join(fakeBinDir, "codex");
+    const bundle = makeBundle();
+    bundle.repository.git_root = tempDir;
+    bundle.execution.mode = "execute";
+    bundle.recipe = {
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      run_profile: {
+        writes_artifacts_to: ["reports/", "logs/"],
+      },
+    };
+    bundle.execution.artifact_paths.run_dir = path.join(tempDir, "runs", "run-scope");
+    bundle.execution.artifact_paths.bundle_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "bundle.json",
+    );
+    bundle.execution.artifact_paths.bootstrap_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "bootstrap.md",
+    );
+    bundle.execution.artifact_paths.state_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "run-state.json",
+    );
+    bundle.execution.artifact_paths.events_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "events.jsonl",
+    );
+    bundle.execution.artifact_paths.result_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "result.json",
+    );
+    bundle.execution.artifact_paths.trace_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "agent-trace.jsonl",
+    );
+    bundle.execution.artifact_paths.stderr_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "stderr.log",
+    );
+
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeCodexPath,
+      [
+        "#!/bin/sh",
+        'out=""',
+        'while [ "$#" -gt 0 ]; do',
+        '  case "$1" in',
+        "    exec|--json|-|danger-full-access|never)",
+        "      shift",
+        "      ;;",
+        "    --output-last-message|-C|-s|-a)",
+        '      if [ "$1" = "--output-last-message" ]; then out="$2"; fi',
+        "      shift 2",
+        "      ;;",
+        "    *)",
+        "      shift",
+        "      ;;",
+        "  esac",
+        "done",
+        String.raw`printf '{"schema_version":1,"artifacts":[{"path":"tmp/out.txt","label":"report"}],"evidence":{"evidence_paths":["outside/out.log"]}}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        "cat >/dev/null",
+        String.raw`printf 'Final fake Codex message\n' > "$out"`,
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeCodexPath, 0o755);
+
+    const invocation = await adapter.prepare(bundle);
+    invocation.env.PATH = `${fakeBinDir}:${process.env.PATH ?? ""}`;
+    await writePreparedRunnerArtifacts({
+      bundle,
+      bootstrap_markdown: "Read the bundle and act on it.\n",
+      invocation,
+    });
+
+    const result = await adapter.execute(invocation);
+
+    expect(result.status).toBe("failed");
+    expect(result.summary).toBe("Codex execution failed before producing a valid result manifest.");
+    expect(result.stderr_summary).toContain("writes_artifacts_to prefixes");
+    expect(result.stderr_summary).toContain("tmp/out.txt");
+    expect(result.stderr_summary).toContain("outside/out.log");
+    expect(result.output_paths).toContain(
+      path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
+    );
+    expect(
+      await readFile(
+        path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
+        "utf8",
+      ),
+    ).toContain('"tmp/out.txt"');
+
+    await rm(tempDir, { recursive: true, force: true });
+  });
 });

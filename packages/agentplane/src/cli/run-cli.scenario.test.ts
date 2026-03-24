@@ -476,6 +476,72 @@ describe("runCli scenario", () => {
     }
   });
 
+  it("scenario execute fails when external runner artifacts escape declared recipe prefixes", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = {
+      command: ["custom-runner"],
+    };
+    await writeConfig(root, config);
+    const { archivePath, manifest } = await createRecipeArchive();
+    const manifestId = String(manifest.id);
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+
+    const fakeBinDir = path.join(root, "bin");
+    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeRunnerPath,
+      [
+        "#!/bin/sh",
+        String.raw`printf '{"schema_version":1,"summary":"bad artifact scope","artifacts":[{"path":"tmp/out.txt","label":"report"}],"evidence":{"evidence_paths":["outside/out.log"]}}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        "cat >/dev/null",
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeRunnerPath, 0o755);
+
+    const io = captureStdIO();
+    const originalPath = process.env.PATH;
+    try {
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
+      const code = await runCli([
+        "scenario",
+        "execute",
+        `${manifestId}:RECIPE_SCENARIO`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(8);
+      expect(io.stderr).toContain("writes_artifacts_to prefixes");
+      expect(io.stderr).toContain("tmp/out.txt");
+      expect(io.stderr).toContain("outside/out.log");
+
+      const taskEntries = await readdir(path.join(root, ".agentplane", "tasks"));
+      const taskIds = taskEntries.filter((entry) => /^\d{12}-[A-Z0-9]{6}$/u.test(entry));
+      expect(taskIds).toHaveLength(1);
+      const taskId = taskIds[0] ?? "";
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      const runEntries = await readdir(runsRoot);
+      const runDir = path.join(runsRoot, runEntries.toSorted()[0] ?? "");
+      expect(await readFile(path.join(runDir, "result.source.json"), "utf8")).toContain(
+        '"tmp/out.txt"',
+      );
+      const state = JSON.parse(await readFile(path.join(runDir, "run-state.json"), "utf8")) as {
+        status: string;
+        result?: { status?: string; stderr_summary?: string };
+      };
+      expect(state.status).toBe("failed");
+      expect(state.result?.status).toBe("failed");
+      expect(state.result?.stderr_summary).toContain("writes_artifacts_to prefixes");
+    } finally {
+      process.env.PATH = originalPath;
+      io.restore();
+    }
+  });
+
   it("scenario run rejects missing scenario definition files", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

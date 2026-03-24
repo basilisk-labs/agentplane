@@ -37,6 +37,10 @@ import {
   readRunnerResultManifest,
   writeRunnerResultManifest,
 } from "../result-manifest.js";
+import {
+  assertRunnerManifestArtifactPolicy,
+  readRecipeArtifactPrefixesFromRunnerEnv,
+} from "../result-manifest-policy.js";
 import { buildRecipeRunnerEnv, readRecipeRunProfile } from "./recipe-run-profile.js";
 
 const CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES = ["workspace-write"];
@@ -86,6 +90,7 @@ function buildCustomCapabilities(
       writes_artifacts_to: {
         level: "advisory",
         channel: "env",
+        note: "Recipe artifact prefixes are exported through env and enforced post-run against external manifest artifacts and evidence paths.",
       },
       expected_exit_contract: {
         level: "advisory",
@@ -422,6 +427,11 @@ export class CustomRunnerAdapter implements RunnerAdapter {
         const sourceManifestPath = manifest
           ? await preserveRunnerResultManifestSource(invocation.result_path)
           : null;
+        assertRunnerManifestArtifactPolicy({
+          adapter_id: invocation.adapter_id,
+          allowed_prefixes: readRecipeArtifactPrefixesFromRunnerEnv(invocation.env),
+          manifest,
+        });
         const artifacts = buildCustomArtifacts({
           invocation,
           trace_artifact_path: processResult?.trace_artifact_path,
@@ -554,10 +564,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
         });
         return result;
       } catch (err) {
-        const sourceManifestPath =
-          err instanceof InvalidRunnerResultManifestError
-            ? await preserveRunnerResultManifestSource(invocation.result_path)
-            : null;
+        const sourceManifestPath = await preserveRunnerResultManifestSource(invocation.result_path);
         const ended_at = new Date().toISOString();
         const invalidManifestPath =
           err instanceof InvalidRunnerResultManifestError
@@ -581,6 +588,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
           summary: "Custom runner execution failed before producing a valid result manifest.",
           started_at,
           ended_at,
+          exit_code: err instanceof CliError ? err.exitCode : undefined,
           output_paths,
         });
         await writeRunnerResultManifest({

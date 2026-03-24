@@ -177,6 +177,12 @@ Codex probe showed that non-interactive approval modes remain permissive, so the
 from runtime execution surfaces instead of being documented as a fake enforcement guarantee. External
 catalog projections may still show the legacy field until the `agentplane-recipes` submodule is
 synced separately.
+`run_profile.writes_artifacts_to` remains advisory at invocation time, but the shared runner now
+enforces it post-run against external `result.json` manifest paths only: `artifacts[].path` and
+`evidence.evidence_paths[]` must stay under the declared prefixes or the run fails deterministically.
+Runner-owned control artifacts such as `bundle.json`, `result.json`, trace files, and preserved
+source manifests are outside that prefix check because they are emitted by the framework itself, not
+by the recipe-controlled runner payload.
 
 ## Scenario preview and execution contract
 
