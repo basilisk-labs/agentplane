@@ -15,7 +15,7 @@ import {
   writeRunnerRunState,
 } from "../artifacts.js";
 import {
-  runnerArtifactsFromPaths,
+  runnerArtifactsFromSpecs,
   runnerAdapterCancelledResult,
   runnerAdapterFailureResult,
   runnerAdapterSuccessResult,
@@ -59,13 +59,6 @@ const CUSTOM_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
   },
 };
 
-function summarizeOutput(text: string, limit = 4000): string | undefined {
-  const normalized = text.replaceAll("\r\n", "\n").trim();
-  if (!normalized) return undefined;
-  if (normalized.length <= limit) return normalized;
-  return `${normalized.slice(0, limit - 15)}\n...[truncated]`;
-}
-
 function durationMs(startedAt: string, endedAt: string): number | undefined {
   const started = Date.parse(startedAt);
   const ended = Date.parse(endedAt);
@@ -102,6 +95,22 @@ function assertCustomBundle(bundle: RunnerContextBundle): void {
   if (!bundle.execution.artifact_paths.run_dir.trim()) {
     throw new Error("Custom adapter requires a non-empty run dir");
   }
+}
+
+function buildCustomArtifacts(opts: {
+  invocation: RunnerInvocation;
+  invalid_manifest_path?: string | null;
+}): NonNullable<RunnerResult["artifacts"]> {
+  return (
+    runnerArtifactsFromSpecs([
+      { path: opts.invocation.bundle_path, label: "bundle" },
+      { path: opts.invocation.bootstrap_path, label: "bootstrap" },
+      { path: opts.invocation.trace_path, label: "raw-trace" },
+      { path: opts.invocation.stderr_path, label: "stderr-log" },
+      { path: opts.invalid_manifest_path, label: "invalid-result-manifest" },
+      { path: opts.invocation.result_path, label: "result-manifest" },
+    ]) ?? []
+  );
 }
 
 function assertCustomInvocation(invocation: RunnerInvocation): void {
@@ -196,9 +205,8 @@ export class CustomRunnerAdapter implements RunnerAdapter {
           stdin_text: bootstrapText,
           start_message: "custom runner started",
         });
-        const output_paths = [invocation.bundle_path, invocation.bootstrap_path].filter(
-          (value): value is string => typeof value === "string" && value.trim().length > 0,
-        );
+        const artifacts = buildCustomArtifacts({ invocation });
+        const output_paths = artifacts.map((artifact) => artifact.path);
         const success = processResult.exit_code === 0;
         const ended_at = processResult.ended_at;
         const resultMetrics = {
@@ -211,6 +219,9 @@ export class CustomRunnerAdapter implements RunnerAdapter {
               reason: processResult.cancel_signal
                 ? `Custom runner cancelled via ${processResult.cancel_signal}.`
                 : "Custom runner cancelled.",
+              summary: "Custom runner execution was cancelled.",
+              stderr_summary:
+                "Cancellation details were recorded in stderr.log and agent-trace.jsonl.",
               started_at: processResult.started_at,
               ended_at,
               exit_code:
@@ -220,20 +231,21 @@ export class CustomRunnerAdapter implements RunnerAdapter {
             })
           : success
             ? runnerAdapterSuccessResult({
+                summary: "Custom runner execution completed successfully.",
                 started_at: processResult.started_at,
                 ended_at,
                 exit_code: processResult.exit_code ?? 0,
-                stdout_summary:
-                  summarizeOutput(processResult.stdout_tail) ??
-                  "Custom runner execution finished without output.",
+                stdout_summary: "Raw execution trace was captured in agent-trace.jsonl.",
                 output_paths,
                 metrics: resultMetrics,
               })
             : runnerAdapterFailureResult({
-                err:
-                  summarizeOutput(processResult.stderr_tail) ??
-                  summarizeOutput(processResult.stdout_tail) ??
+                err: new Error(
                   `Custom runner exited with code ${processResult.exit_code ?? "unknown"}`,
+                ),
+                summary: "Custom runner execution failed.",
+                stderr_summary:
+                  "Failure details were captured in stderr.log and agent-trace.jsonl.",
                 started_at: processResult.started_at,
                 ended_at,
                 exit_code:
@@ -245,8 +257,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
         const result = applyRunnerResultManifest({
           base: {
             ...baseResult,
-            summary: baseResult.stdout_summary ?? baseResult.stderr_summary,
-            artifacts: runnerArtifactsFromPaths(output_paths),
+            artifacts,
             capabilities_used: [`custom:${invocation.argv[0] ?? "runner"}`],
           },
           manifest,
@@ -303,14 +314,14 @@ export class CustomRunnerAdapter implements RunnerAdapter {
                 error: err,
               })
             : null;
-        const output_paths = [
-          invocation.bundle_path,
-          invocation.bootstrap_path,
-          invalidManifestPath,
-          invocation.result_path,
-        ].filter((value): value is string => typeof value === "string" && value.trim().length > 0);
+        const artifacts = buildCustomArtifacts({
+          invocation,
+          invalid_manifest_path: invalidManifestPath,
+        });
+        const output_paths = artifacts.map((artifact) => artifact.path);
         const result = runnerAdapterFailureResult({
           err,
+          summary: "Custom runner execution failed before producing a valid result manifest.",
           started_at,
           ended_at,
           output_paths,
@@ -319,8 +330,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
           result_path: invocation.result_path,
           manifest: manifestFromRunnerResult({
             ...result,
-            summary: result.stderr_summary,
-            artifacts: runnerArtifactsFromPaths(output_paths),
+            artifacts,
             capabilities_used: [`custom:${invocation.argv[0] ?? "runner"}`],
           }),
         });

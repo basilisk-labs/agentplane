@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   InvalidRunnerResultManifestError,
+  manifestFromRunnerResult,
   invalidRunnerResultManifestPath,
   preserveInvalidRunnerResultManifest,
   readRunnerResultManifest,
@@ -78,5 +79,38 @@ describe("runner result manifest", () => {
     });
     expect(invalidPath).toBe(invalidRunnerResultManifestPath(resultPath));
     expect(await readFile(invalidPath, "utf8")).toBe(rawManifest);
+  });
+
+  it("serializes machine summaries and labeled artifacts from runner results", () => {
+    const manifest = manifestFromRunnerResult({
+      status: "success",
+      exit_code: 0,
+      started_at: "2026-03-24T09:00:00.000Z",
+      ended_at: "2026-03-24T09:00:01.000Z",
+      summary: "Codex execution completed successfully.",
+      stdout_summary:
+        "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
+      artifacts: [
+        { path: "runs/run-1/agent-trace.jsonl", label: "raw-trace" },
+        { path: "runs/run-1/codex-last-message.md", label: "assistant-last-message" },
+      ],
+      metrics: { stdout_bytes: 10, stderr_bytes: 0 },
+      capabilities_used: ["codex.exec"],
+    });
+
+    expect(manifest).toEqual({
+      schema_version: 1,
+      status: "success",
+      exit_code: 0,
+      summary: "Codex execution completed successfully.",
+      stdout_summary:
+        "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
+      artifacts: [
+        { path: "runs/run-1/agent-trace.jsonl", label: "raw-trace" },
+        { path: "runs/run-1/codex-last-message.md", label: "assistant-last-message" },
+      ],
+      metrics: { stdout_bytes: 10, stderr_bytes: 0 },
+      capabilities_used: ["codex.exec"],
+    });
   });
 });

@@ -15,7 +15,7 @@ import {
   writeRunnerRunState,
 } from "../artifacts.js";
 import {
-  runnerArtifactsFromPaths,
+  runnerArtifactsFromSpecs,
   runnerAdapterCancelledResult,
   runnerAdapterFailureResult,
   runnerAdapterSuccessResult,
@@ -65,13 +65,6 @@ const CODEX_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
   },
 };
 
-function summarizeOutput(text: string, limit = 4000): string | undefined {
-  const normalized = text.replaceAll("\r\n", "\n").trim();
-  if (!normalized) return undefined;
-  if (normalized.length <= limit) return normalized;
-  return `${normalized.slice(0, limit - 15)}\n...[truncated]`;
-}
-
 function byteLength(text: string | null | undefined): number {
   return Buffer.byteLength(text ?? "", "utf8");
 }
@@ -104,6 +97,23 @@ async function readOptionalText(filePath?: string | null): Promise<string | null
   } catch {
     return null;
   }
+}
+
+function buildCodexArtifacts(opts: {
+  invocation: RunnerInvocation;
+  invalid_manifest_path?: string | null;
+}): NonNullable<RunnerResult["artifacts"]> {
+  return (
+    runnerArtifactsFromSpecs([
+      { path: opts.invocation.bundle_path, label: "bundle" },
+      { path: opts.invocation.bootstrap_path, label: "bootstrap" },
+      { path: opts.invocation.trace_path, label: "raw-trace" },
+      { path: opts.invocation.stderr_path, label: "stderr-log" },
+      { path: opts.invocation.output_last_message_path, label: "assistant-last-message" },
+      { path: opts.invalid_manifest_path, label: "invalid-result-manifest" },
+      { path: opts.invocation.result_path, label: "result-manifest" },
+    ]) ?? []
+  );
 }
 
 function assertCodexBundle(bundle: RunnerContextBundle): void {
@@ -239,11 +249,8 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           start_message: "codex exec started",
         });
         const lastMessage = await readOptionalText(invocation.output_last_message_path);
-        const output_paths = [
-          invocation.bundle_path,
-          invocation.bootstrap_path,
-          invocation.output_last_message_path,
-        ].filter((value): value is string => typeof value === "string" && value.trim().length > 0);
+        const artifacts = buildCodexArtifacts({ invocation });
+        const output_paths = artifacts.map((artifact) => artifact.path);
         const success = processResult.exit_code === 0;
         const ended_at = processResult.ended_at;
         const metrics = {
@@ -257,6 +264,9 @@ export class CodexRunnerAdapter implements RunnerAdapter {
               reason: processResult.cancel_signal
                 ? `Codex runner cancelled via ${processResult.cancel_signal}.`
                 : "Codex runner cancelled.",
+              summary: "Codex execution was cancelled.",
+              stderr_summary:
+                "Cancellation details were recorded in stderr.log and agent-trace.jsonl.",
               started_at: processResult.started_at,
               ended_at,
               exit_code:
@@ -266,20 +276,21 @@ export class CodexRunnerAdapter implements RunnerAdapter {
             })
           : success
             ? runnerAdapterSuccessResult({
+                summary: "Codex execution completed successfully.",
                 started_at: processResult.started_at,
                 ended_at,
                 exit_code: processResult.exit_code ?? 0,
-                stdout_summary:
-                  summarizeOutput(lastMessage ?? processResult.stdout_tail) ??
-                  "Codex execution finished without output.",
+                stdout_summary: lastMessage?.trim()
+                  ? "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl."
+                  : "Raw execution trace was captured in agent-trace.jsonl.",
                 output_paths,
                 metrics,
               })
             : runnerAdapterFailureResult({
-                err:
-                  summarizeOutput(processResult.stderr_tail) ??
-                  summarizeOutput(processResult.stdout_tail) ??
-                  `Codex exited with code ${processResult.exit_code ?? "unknown"}`,
+                err: new Error(`Codex exited with code ${processResult.exit_code ?? "unknown"}`),
+                summary: "Codex execution failed.",
+                stderr_summary:
+                  "Failure details were captured in stderr.log and agent-trace.jsonl.",
                 started_at: processResult.started_at,
                 ended_at,
                 exit_code:
@@ -291,8 +302,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
         const result = applyRunnerResultManifest({
           base: {
             ...baseResult,
-            summary: baseResult.stdout_summary ?? baseResult.stderr_summary,
-            artifacts: runnerArtifactsFromPaths(output_paths),
+            artifacts,
             capabilities_used: ["codex.exec"],
           },
           manifest,
@@ -349,15 +359,14 @@ export class CodexRunnerAdapter implements RunnerAdapter {
                 error: err,
               })
             : null;
-        const output_paths = [
-          invocation.bundle_path,
-          invocation.bootstrap_path,
-          invocation.output_last_message_path,
-          invalidManifestPath,
-          invocation.result_path,
-        ].filter((value): value is string => typeof value === "string" && value.trim().length > 0);
+        const artifacts = buildCodexArtifacts({
+          invocation,
+          invalid_manifest_path: invalidManifestPath,
+        });
+        const output_paths = artifacts.map((artifact) => artifact.path);
         const result = runnerAdapterFailureResult({
           err,
+          summary: "Codex execution failed before producing a valid result manifest.",
           started_at,
           ended_at,
           output_paths,
@@ -366,8 +375,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           result_path: invocation.result_path,
           manifest: manifestFromRunnerResult({
             ...result,
-            summary: result.stderr_summary,
-            artifacts: runnerArtifactsFromPaths(output_paths),
+            artifacts,
             capabilities_used: ["codex.exec"],
           }),
         });

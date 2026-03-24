@@ -250,7 +250,8 @@ describe("CustomRunnerAdapter", () => {
 
     expect(result.status).toBe("success");
     expect(result.exit_code).toBe(0);
-    expect(result.stdout_summary).toContain("custom runner ok");
+    expect(result.summary).toBe("Custom runner execution completed successfully.");
+    expect(result.stdout_summary).toBe("Raw execution trace was captured in agent-trace.jsonl.");
     expect(result.metrics?.stdout_bytes).toBeGreaterThan(0);
     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
       status: string;
@@ -258,6 +259,7 @@ describe("CustomRunnerAdapter", () => {
       result?: {
         status: string;
         exit_code: number | null;
+        summary?: string;
         stdout_summary?: string;
         metrics?: { stdout_bytes?: number };
       };
@@ -266,15 +268,29 @@ describe("CustomRunnerAdapter", () => {
     expect(state.prepared_metadata?.bootstrap_sha256).toMatch(/^[a-f0-9]{64}$/);
     expect(state.result?.status).toBe("success");
     expect(state.result?.exit_code).toBe(0);
-    expect(state.result?.stdout_summary).toContain("custom runner ok");
+    expect(state.result?.summary).toBe("Custom runner execution completed successfully.");
+    expect(state.result?.stdout_summary).toBe(
+      "Raw execution trace was captured in agent-trace.jsonl.",
+    );
     expect(state.result?.metrics?.stdout_bytes).toBeGreaterThan(0);
     const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
       status?: string;
       summary?: string;
+      stdout_summary?: string;
+      artifacts?: { path: string; label?: string }[];
       capabilities_used?: string[];
     };
     expect(resultManifest.status).toBe("success");
-    expect(resultManifest.summary).toContain("custom runner ok");
+    expect(resultManifest.summary).toBe("Custom runner execution completed successfully.");
+    expect(resultManifest.stdout_summary).toBe(
+      "Raw execution trace was captured in agent-trace.jsonl.",
+    );
+    expect(resultManifest.artifacts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: invocation.trace_path, label: "raw-trace" }),
+        expect.objectContaining({ path: invocation.stderr_path, label: "stderr-log" }),
+      ]),
+    );
     expect(resultManifest.capabilities_used).toEqual(["custom:custom-runner"]);
     const events = await readFile(invocation.events_path, "utf8");
     const trace = await readFile(invocation.trace_path, "utf8");
@@ -357,6 +373,9 @@ describe("CustomRunnerAdapter", () => {
 
     expect(result.status).toBe("failed");
     expect(result.exit_code).toBe(1);
+    expect(result.summary).toBe(
+      "Custom runner execution failed before producing a valid result manifest.",
+    );
     expect(result.stderr_summary).toContain("Invalid runner result manifest");
     expect(result.output_paths).toContain(invocation.result_path);
     expect(result.output_paths).toContain(
@@ -369,10 +388,14 @@ describe("CustomRunnerAdapter", () => {
     expect(preserved).toContain('"findings":[42]');
     const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
       status?: string;
+      summary?: string;
       stderr_summary?: string;
       artifacts?: { path: string }[];
     };
     expect(resultManifest.status).toBe("failed");
+    expect(resultManifest.summary).toBe(
+      "Custom runner execution failed before producing a valid result manifest.",
+    );
     expect(resultManifest.stderr_summary).toContain("Invalid runner result manifest");
     expect(resultManifest.artifacts?.map((artifact) => artifact.path)).toContain(
       path.join(bundle.execution.artifact_paths.run_dir, "result.invalid.json"),
@@ -381,9 +404,12 @@ describe("CustomRunnerAdapter", () => {
     expect(trace).toContain("custom runner wrote invalid manifest");
     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
       status: string;
-      result?: { status?: string; stderr_summary?: string };
+      result?: { status?: string; summary?: string; stderr_summary?: string };
     };
     expect(state.status).toBe("failed");
+    expect(state.result?.summary).toBe(
+      "Custom runner execution failed before producing a valid result manifest.",
+    );
     expect(state.result?.stderr_summary).toContain("Invalid runner result manifest");
 
     await rm(tempDir, { recursive: true, force: true });

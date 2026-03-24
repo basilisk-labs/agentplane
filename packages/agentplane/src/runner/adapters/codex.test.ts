@@ -290,7 +290,10 @@ describe("CodexRunnerAdapter", () => {
 
     expect(result.status).toBe("success");
     expect(result.exit_code).toBe(0);
-    expect(result.stdout_summary).toContain("Final fake Codex message");
+    expect(result.summary).toBe("Codex execution completed successfully.");
+    expect(result.stdout_summary).toBe(
+      "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
+    );
     expect(result.metrics?.stdout_bytes).toBeGreaterThan(0);
     expect(result.metrics?.duration_ms).toBeGreaterThanOrEqual(0);
     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
@@ -299,6 +302,7 @@ describe("CodexRunnerAdapter", () => {
       result?: {
         status: string;
         exit_code: number | null;
+        summary?: string;
         stdout_summary?: string;
         metrics?: { stdout_bytes?: number; output_last_message_bytes?: number | null };
       };
@@ -308,15 +312,31 @@ describe("CodexRunnerAdapter", () => {
     expect(state.prepared_metadata?.bundle_sha256).toMatch(/^[a-f0-9]{64}$/);
     expect(state.result?.status).toBe("success");
     expect(state.result?.exit_code).toBe(0);
+    expect(state.result?.summary).toBe("Codex execution completed successfully.");
     expect(state.result?.metrics?.stdout_bytes).toBeGreaterThan(0);
     expect(state.result?.metrics?.output_last_message_bytes).toBeGreaterThan(0);
     const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
       status?: string;
       summary?: string;
+      stdout_summary?: string;
+      artifacts?: { path: string; label?: string }[];
       capabilities_used?: string[];
     };
     expect(resultManifest.status).toBe("success");
-    expect(resultManifest.summary).toContain("Final fake Codex message");
+    expect(resultManifest.summary).toBe("Codex execution completed successfully.");
+    expect(resultManifest.stdout_summary).toBe(
+      "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
+    );
+    expect(resultManifest.artifacts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: invocation.trace_path, label: "raw-trace" }),
+        expect.objectContaining({ path: invocation.stderr_path, label: "stderr-log" }),
+        expect.objectContaining({
+          path: invocation.output_last_message_path,
+          label: "assistant-last-message",
+        }),
+      ]),
+    );
     expect(resultManifest.capabilities_used).toEqual(["codex.exec"]);
     const events = await readFile(invocation.events_path, "utf8");
     const trace = await readFile(invocation.trace_path, "utf8");
@@ -407,7 +427,10 @@ describe("CodexRunnerAdapter", () => {
 
     expect(result.status).toBe("failed");
     expect(result.exit_code).toBe(42);
-    expect(result.stderr_summary).toContain("fake stderr fail");
+    expect(result.summary).toBe("Codex execution failed.");
+    expect(result.stderr_summary).toBe(
+      "Failure details were captured in stderr.log and agent-trace.jsonl.",
+    );
     expect(result.started_at).toMatch(/T/);
     expect(result.ended_at).toMatch(/T/);
     expect(result.metrics?.stderr_bytes).toBeGreaterThan(0);
@@ -415,20 +438,28 @@ describe("CodexRunnerAdapter", () => {
       status: string;
       result?: {
         status: string;
+        summary?: string;
         stderr_summary?: string;
         metrics?: { stderr_bytes?: number };
       };
     };
     expect(state.status).toBe("failed");
     expect(state.result?.status).toBe("failed");
-    expect(state.result?.stderr_summary).toContain("fake stderr fail");
+    expect(state.result?.summary).toBe("Codex execution failed.");
+    expect(state.result?.stderr_summary).toBe(
+      "Failure details were captured in stderr.log and agent-trace.jsonl.",
+    );
     expect(state.result?.metrics?.stderr_bytes).toBeGreaterThan(0);
     const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
       status?: string;
+      summary?: string;
       stderr_summary?: string;
     };
     expect(resultManifest.status).toBe("failed");
-    expect(resultManifest.stderr_summary).toContain("fake stderr fail");
+    expect(resultManifest.summary).toBe("Codex execution failed.");
+    expect(resultManifest.stderr_summary).toBe(
+      "Failure details were captured in stderr.log and agent-trace.jsonl.",
+    );
     const events = await readFile(invocation.events_path, "utf8");
     const trace = await readFile(invocation.trace_path, "utf8");
     expect(events).toContain('"type":"runner_execute_finish"');
@@ -518,6 +549,7 @@ describe("CodexRunnerAdapter", () => {
     const result = await adapter.execute(invocation);
 
     expect(result.status).toBe("failed");
+    expect(result.summary).toBe("Codex execution failed before producing a valid result manifest.");
     expect(result.stderr_summary).toContain("Invalid runner result manifest");
     expect(result.output_paths).toContain(invocation.result_path);
     expect(result.output_paths).toContain(
@@ -530,10 +562,14 @@ describe("CodexRunnerAdapter", () => {
     expect(preserved).toContain('"capabilities_used":["ok",42]');
     const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
       status?: string;
+      summary?: string;
       stderr_summary?: string;
       artifacts?: { path: string }[];
     };
     expect(resultManifest.status).toBe("failed");
+    expect(resultManifest.summary).toBe(
+      "Codex execution failed before producing a valid result manifest.",
+    );
     expect(resultManifest.stderr_summary).toContain("Invalid runner result manifest");
     expect(resultManifest.artifacts?.map((artifact) => artifact.path)).toContain(
       path.join(bundle.execution.artifact_paths.run_dir, "result.invalid.json"),
