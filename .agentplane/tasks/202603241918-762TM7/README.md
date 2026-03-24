@@ -1,10 +1,11 @@
 ---
 id: "202603241918-762TM7"
 title: "Workflow: switch repository default mode from direct to branch_pr"
-status: "DOING"
+result_summary: "Repo-local workflow default is branch_pr and the base branch is pinned to main."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -19,15 +20,23 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-24T19:53:48.280Z"
+  updated_by: "CODER"
+  note: |-
+    Command: agentplane config show; Result: pass; Evidence: workflow_mode resolved to branch_pr in repo-local config. Scope: .agentplane/config.json.
+    Command: agentplane branch base get; Result: pass; Evidence: pinned base branch resolved to main after branch_pr switch. Scope: local repo git config for branch_pr execution.
+    Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK after the workflow-mode switch. Scope: policy gateway integrity.
+commit:
+  hash: "dbef4836d15afcc915c37f27b9e26b6ae9c17780"
+  message: "✨ 762TM7 code: switch repo default workflow to branch_pr"
 comments:
   -
     author: "CODER"
     body: "Start: switch the repository default workflow_mode to branch_pr, then verify the installed CLI and policy routing both see the new mode before moving on to the remaining workflow tasks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: the repository now defaults to branch_pr and has a pinned base branch for deterministic branch_pr command resolution."
 events:
   -
     type: "status"
@@ -36,9 +45,25 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: switch the repository default workflow_mode to branch_pr, then verify the installed CLI and policy routing both see the new mode before moving on to the remaining workflow tasks."
+  -
+    type: "verify"
+    at: "2026-03-24T19:53:48.280Z"
+    author: "CODER"
+    state: "ok"
+    note: |-
+      Command: agentplane config show; Result: pass; Evidence: workflow_mode resolved to branch_pr in repo-local config. Scope: .agentplane/config.json.
+      Command: agentplane branch base get; Result: pass; Evidence: pinned base branch resolved to main after branch_pr switch. Scope: local repo git config for branch_pr execution.
+      Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK after the workflow-mode switch. Scope: policy gateway integrity.
+  -
+    type: "status"
+    at: "2026-03-24T19:53:49.611Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the repository now defaults to branch_pr and has a pinned base branch for deterministic branch_pr command resolution."
 doc_version: 3
-doc_updated_at: "2026-03-24T19:52:48.353Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-03-24T19:53:49.611Z"
+doc_updated_by: "INTEGRATOR"
 description: "Change the repository workflow configuration so normal task execution targets branch_pr instead of direct main pushes, matching the requirement that remote required checks must pass before main is updated."
 sections:
   Summary: |-
@@ -59,6 +84,14 @@ sections:
     4. Review .agentplane/config.json and git config state. Expected: the workflow switch and pinned base branch are the only semantic prerequisites introduced for branch_pr execution.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    #### 2026-03-24T19:53:48.280Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: agentplane config show; Result: pass; Evidence: workflow_mode resolved to branch_pr in repo-local config. Scope: .agentplane/config.json.\nCommand: agentplane branch base get; Result: pass; Evidence: pinned base branch resolved to main after branch_pr switch. Scope: local repo git config for branch_pr execution.\nCommand: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK after the workflow-mode switch. Scope: policy gateway integrity.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-24T19:52:48.353Z, excerpt_hash=sha256:b075a677db5e1361e8059ed13bad1f58e6f0662c0fd1ea0f7553ce4c920fe6e9
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -93,6 +126,14 @@ Change the repository workflow configuration so normal task execution targets br
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-24T19:53:48.280Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: agentplane config show; Result: pass; Evidence: workflow_mode resolved to branch_pr in repo-local config. Scope: .agentplane/config.json.\nCommand: agentplane branch base get; Result: pass; Evidence: pinned base branch resolved to main after branch_pr switch. Scope: local repo git config for branch_pr execution.\nCommand: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK after the workflow-mode switch. Scope: policy gateway integrity.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-24T19:52:48.353Z, excerpt_hash=sha256:b075a677db5e1361e8059ed13bad1f58e6f0662c0fd1ea0f7553ce4c920fe6e9
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
