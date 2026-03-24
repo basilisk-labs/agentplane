@@ -230,6 +230,37 @@ describe("CodexRunnerAdapter", () => {
     expect((error as CliError).message).toContain("does not support recipe sandbox");
   });
 
+  it("fails closed when recipe writes_artifacts_to prefixes are invalid", () => {
+    const adapter = createRunnerAdapter(defaultConfig());
+    const bundle = makeBundle();
+    bundle.recipe = {
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      run_profile: {
+        mode: "analysis",
+        writes_artifacts_to: ["reports/", "../tmp"],
+      },
+    };
+
+    let error: unknown = null;
+    try {
+      adapter.prepare(bundle);
+    } catch (err) {
+      error = err;
+    }
+
+    expect(error).toBeInstanceOf(CliError);
+    expect(error).toMatchObject({
+      code: "E_RUNTIME",
+      exitCode: 8,
+      context: {
+        policy_field: "writes_artifacts_to",
+        invalid_declared_prefixes: ["../tmp"],
+      },
+    });
+    expect((error as CliError).message).toContain("invalid relative prefixes");
+  });
+
   it("captures success-path result details and persists run-state updates", async () => {
     const adapter = createRunnerAdapter(defaultConfig());
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-success-"));

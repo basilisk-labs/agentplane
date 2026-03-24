@@ -226,12 +226,12 @@ describe("CustomRunnerAdapter", () => {
       AGENTPLANE_SCENARIO_ID: "RECIPE_SCENARIO",
       AGENTPLANE_RECIPE_MODE: "analysis",
       AGENTPLANE_RECIPE_SANDBOX: "workspace-write",
-      AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO: JSON.stringify(["logs/", "reports/"]),
+      AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO: JSON.stringify(["logs", "reports"]),
     });
     expect(JSON.parse(invocation.env.AGENTPLANE_RECIPE_RUN_PROFILE ?? "{}")).toMatchObject({
       mode: "analysis",
       sandbox: "workspace-write",
-      writes_artifacts_to: ["logs/", "reports/"],
+      writes_artifacts_to: ["logs", "reports"],
     });
   });
 
@@ -307,6 +307,31 @@ describe("CustomRunnerAdapter", () => {
     expect(() => adapter.prepare(bundle)).toThrow(
       /cannot support recipe sandbox "read-only" because the shared runner contract requires write access to result\.json and trace artifacts inside run_dir/i,
     );
+  });
+
+  it("fails closed when recipe writes_artifacts_to prefixes are invalid", () => {
+    const raw = defaultConfig();
+    raw.runner.default_adapter = "custom";
+    raw.runner.custom = {
+      command: ["custom-runner", "--bundle-from-env"],
+    };
+    const adapter = createRunnerAdapter(raw);
+    const bundle = makeBundle();
+    bundle.target = {
+      kind: "recipe_scenario",
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      task_id: "202603231410-XYZ789",
+    };
+    bundle.recipe = {
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      run_profile: {
+        writes_artifacts_to: ["reports/", "../tmp"],
+      },
+    };
+
+    expect(() => adapter.prepare(bundle)).toThrow(/invalid relative prefixes/);
   });
 
   it("rejects custom adapter selection when no external command is configured", () => {

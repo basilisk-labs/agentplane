@@ -60,11 +60,11 @@ projects it into resolver output or runner env because current values are scenar
 not a deterministic shared contract. Legacy manifest fields may remain in external recipe sources,
 but they are ignored by the active runner surface.
 `run_profile.writes_artifacts_to` is now a partial enforcement contract: the adapter still receives
-the declared prefixes through env, and after execution the shared runner rejects external
-`result.json` manifest paths outside those prefixes after normalized relative-path checks. The check
-only applies to recipe-controlled manifest paths such as `artifacts[].path` and
-`evidence.evidence_paths[]`; traversal forms and absolute paths are rejected, while runner-owned
-control artifacts and preserved source manifests are exempt.
+the declared prefixes through env, invalid prefixes are rejected before spawn, and after execution
+the shared runner rejects external `result.json` manifest paths outside those prefixes after
+normalized relative-path checks. The check only applies to recipe-controlled manifest paths such as
+`artifacts[].path` and `evidence.evidence_paths[]`; traversal forms and absolute paths are rejected,
+while runner-owned control artifacts and preserved source manifests are exempt.
 
 ## Caching behavior
 

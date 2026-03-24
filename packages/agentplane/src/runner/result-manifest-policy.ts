@@ -20,7 +20,7 @@ function normalizeRelativePolicyPath(value: string): string | null {
   return normalized.replace(/\/+$/u, "");
 }
 
-function normalizeAllowedPrefixes(raw: string[] | undefined): string[] {
+export function normalizeRecipeArtifactPrefixes(raw: string[] | undefined): string[] {
   const invalidPrefixes: string[] = [];
   const normalizedPrefixes = (raw ?? [])
     .map((entry) => {
@@ -65,7 +65,7 @@ export function readRecipeArtifactPrefixesFromRunnerEnv(
     return undefined;
   }
   if (!Array.isArray(parsed)) return undefined;
-  return normalizeAllowedPrefixes(
+  return normalizeRecipeArtifactPrefixes(
     parsed.filter((entry): entry is string => typeof entry === "string"),
   );
 }
@@ -76,7 +76,7 @@ export function assertRunnerManifestArtifactPolicy(opts: {
   manifest: RunnerResultManifest | null;
 }): void {
   if (!opts.manifest) return;
-  const allowedPrefixes = normalizeAllowedPrefixes(opts.allowed_prefixes);
+  const allowedPrefixes = normalizeRecipeArtifactPrefixes(opts.allowed_prefixes);
   if (allowedPrefixes.length === 0) return;
 
   const invalidArtifactPaths = (opts.manifest.artifacts ?? [])

@@ -385,12 +385,12 @@ describe("runCli scenario", () => {
         scenario_id: "RECIPE_SCENARIO",
         mode: "analysis",
         sandbox: "workspace-write",
-        writes_artifacts_to: ["logs/", "reports/"],
+        writes_artifacts_to: ["logs", "reports"],
       });
       expect(recipeEnv.run_profile).toMatchObject({
         mode: "analysis",
         sandbox: "workspace-write",
-        writes_artifacts_to: ["logs/", "reports/"],
+        writes_artifacts_to: ["logs", "reports"],
       });
     } finally {
       process.env.PATH = originalPath;
@@ -467,6 +467,64 @@ describe("runCli scenario", () => {
       expect(task.body).toContain(
         "Summary: Codex runner failed; inspect run artifacts for details.",
       );
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("scenario execute fails before spawn when declared artifact prefixes are invalid", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = {
+      command: ["custom-runner"],
+    };
+    await writeConfig(root, config);
+    const { archivePath, manifest } = await createRecipeArchive();
+    const manifestId = String(manifest.id);
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+
+    const manifestPath = path.join(root, ".agentplane", "recipes", manifestId, "manifest.json");
+    const manifestData = JSON.parse(await readFile(manifestPath, "utf8")) as {
+      scenarios?: {
+        id?: string;
+        run_profile?: Record<string, unknown>;
+      }[];
+    };
+    const scenarioDescriptor = manifestData.scenarios?.find(
+      (entry) => entry.id === "RECIPE_SCENARIO",
+    );
+    expect(scenarioDescriptor).toBeTruthy();
+    scenarioDescriptor!.run_profile = {
+      ...scenarioDescriptor!.run_profile,
+      writes_artifacts_to: ["reports/", "../tmp"],
+    };
+    await writeFile(manifestPath, JSON.stringify(manifestData, null, 2), "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "scenario",
+        "execute",
+        `${manifestId}:RECIPE_SCENARIO`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(8);
+      expect(io.stderr).toContain("invalid relative prefixes");
+      expect(io.stderr).toContain("../tmp");
+
+      const taskEntries = await readdir(path.join(root, ".agentplane", "tasks"));
+      const taskIds = taskEntries.filter((entry) => /^\d{12}-[A-Z0-9]{6}$/u.test(entry));
+      expect(taskIds).toHaveLength(1);
+      const taskId = taskIds[0] ?? "";
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      const runEntries = await readdir(runsRoot);
+      const runDir = path.join(runsRoot, runEntries.toSorted()[0] ?? "");
+      const events = await readFile(path.join(runDir, "events.jsonl"), "utf8");
+      expect(events).toContain('"type":"runner_refused"');
+      expect(events).not.toContain('"type":"runner_execute_start"');
     } finally {
       io.restore();
     }

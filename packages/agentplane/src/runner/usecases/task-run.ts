@@ -19,6 +19,7 @@ import { createRunnerRunId } from "../run-id.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { resolveTaskRunnerPaths } from "../task-run-paths.js";
 import { resolveRunnerTimeoutPolicy, resolveRunnerTracePolicy } from "../config.js";
+import { normalizeRecipeArtifactPrefixes } from "../result-manifest-policy.js";
 import {
   RUNNER_API_VERSION,
   RUNNER_BUNDLE_SCHEMA_VERSION,
@@ -88,6 +89,9 @@ function assertRunnerPolicyCompatibility(bundle: RunnerContextBundle): void {
         },
       });
     }
+  }
+  if (profile.writes_artifacts_to && profile.writes_artifacts_to.length > 0) {
+    normalizeRecipeArtifactPrefixes(profile.writes_artifacts_to);
   }
 }
 
