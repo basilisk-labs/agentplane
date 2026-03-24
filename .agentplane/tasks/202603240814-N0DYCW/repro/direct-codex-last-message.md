@@ -1,0 +1,1 @@
+Written [direct-codex-output.md](/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240814-N0DYCW/repro/direct-codex-output.md).

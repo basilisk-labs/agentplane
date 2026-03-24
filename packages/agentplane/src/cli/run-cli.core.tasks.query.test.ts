@@ -184,8 +184,10 @@ describe("runCli", () => {
       expect(entries).toHaveLength(1);
       const runDir = path.join(runsRoot, entries[0] ?? "");
       const bundlePath = path.join(runDir, "bundle.json");
+      const bootstrapPath = path.join(runDir, "bootstrap.md");
       const statePath = path.join(runDir, "run-state.json");
       expect(await pathExists(bundlePath)).toBe(true);
+      expect(await pathExists(bootstrapPath)).toBe(true);
       expect(await pathExists(statePath)).toBe(true);
 
       const bundle = JSON.parse(await readFile(bundlePath, "utf8")) as {
@@ -196,10 +198,16 @@ describe("runCli", () => {
         };
         task: { task_id: string };
       };
+      const bootstrap = await readFile(bootstrapPath, "utf8");
       expect(bundle.execution.mode).toBe("dry_run");
       expect(bundle.execution.adapter_id).toBe("codex");
       expect(bundle.execution.adapter_capabilities?.adapter_id).toBe("codex");
       expect(bundle.task.task_id).toBe(taskId);
+      expect(bootstrap).toContain(
+        "This invocation is already inside an approved runner execution.",
+      );
+      expect(bootstrap).toContain("Do not run repository startup commands");
+      expect(bootstrap).toContain("Open bundle.json immediately");
     } finally {
       io.restore();
     }

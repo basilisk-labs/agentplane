@@ -76,6 +76,7 @@ describe("collectRunnerBasePrompts", () => {
     expect(prompts[0]?.content).toContain(
       "Treat `bundle.json` as the authoritative input contract.",
     );
+    expect(prompts[0]?.content).toContain("Do not run repository startup commands");
     expect(prompts[1]?.content).toBe("# Repo Policy\n\nFollow the workspace contract.\n");
     expect(prompts[2]?.content).toContain('"role": "Repo-local coder profile"');
   });
