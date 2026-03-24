@@ -1,10 +1,11 @@
 ---
 id: "202603241429-Q1P5CJ"
 title: "Stabilize flaky process supervision trace test under fast CI"
-status: "DOING"
+result_summary: "The last pre-push blocker was a CI-only race in process-supervision.test.ts; the test is now deterministic under repeated local runs."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-24T14:32:39.586Z"
   updated_by: "CODER"
   note: "Confirmed the failure was a CI-only race in process-supervision.test.ts. The first trace assertion now has more timing headroom, and the test always awaits the supervised child in a finally block so temp-dir cleanup no longer races pending trace writes."
-commit: null
+commit:
+  hash: "84955a920b071280f09899b26cad128db8bfd644"
+  message: "✅ Q1P5CJ code: done"
 comments:
   -
     author: "CODER"
     body: "Start: stabilize the remaining flaky trace-streaming test and then retry the blocked push."
+  -
+    author: "CODER"
+    body: "Verified: stabilized the remaining flaky trace-streaming test by increasing timing headroom and always awaiting the supervised child before temp-dir cleanup. Re-ran the targeted suite five times plus a fresh build."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Confirmed the failure was a CI-only race in process-supervision.test.ts. The first trace assertion now has more timing headroom, and the test always awaits the supervised child in a finally block so temp-dir cleanup no longer races pending trace writes."
+  -
+    type: "status"
+    at: "2026-03-24T14:35:33.618Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: stabilized the remaining flaky trace-streaming test by increasing timing headroom and always awaiting the supervised child before temp-dir cleanup. Re-ran the targeted suite five times plus a fresh build."
 doc_version: 3
-doc_updated_at: "2026-03-24T14:32:39.598Z"
+doc_updated_at: "2026-03-24T14:35:33.621Z"
 doc_updated_by: "CODER"
 description: "Fix the remaining flaky race in process-supervision.test.ts so the trace-streaming assertion does not intermittently miss early output under fast CI load, and ensure the child process is awaited even when an early assertion fails to avoid temp-dir ENOENT noise."
 sections:
