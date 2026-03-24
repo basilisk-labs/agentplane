@@ -1,10 +1,11 @@
 ---
 id: "202603241826-ZPWNDW"
 title: "Make expected_exit_contract honest in main runner runtime"
-status: "DOING"
+result_summary: "Main-repo runtime no longer projects arbitrary expected_exit_contract strings into resolver output or runner env; legacy manifest fields remain parser-compatible only."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,15 +21,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-24T18:30:29.623Z"
+  updated_by: "CODER"
+  note: "Verified: bunx vitest run packages/agentplane/src/commands/recipes/impl/resolver.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts; bun run --filter=agentplane build; expected_exit_contract is now parser-compatible only and no longer projected into the active runner runtime."
+commit:
+  hash: "754dbc5aaccc8409a938b5b5c3ac6fd716663c07"
+  message: "✅ ZPWNDW code: remove expected_exit_contract from main runner runtime"
 comments:
   -
     author: "CODER"
     body: "Start: remove expected_exit_contract from the main runner execution surface so adapters, resolver outputs, and docs stop presenting arbitrary scenario-specific strings as an enforceable shared runtime contract."
+  -
+    author: "CODER"
+    body: "Verified: resolver, adapter, and scenario integration tests stayed green after removing expected_exit_contract from the active runner surface, and agentplane build remained clean."
 events:
   -
     type: "status"
@@ -37,8 +43,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: remove expected_exit_contract from the main runner execution surface so adapters, resolver outputs, and docs stop presenting arbitrary scenario-specific strings as an enforceable shared runtime contract."
+  -
+    type: "verify"
+    at: "2026-03-24T18:30:29.623Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bunx vitest run packages/agentplane/src/commands/recipes/impl/resolver.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts; bun run --filter=agentplane build; expected_exit_contract is now parser-compatible only and no longer projected into the active runner runtime."
+  -
+    type: "status"
+    at: "2026-03-24T18:30:33.896Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: resolver, adapter, and scenario integration tests stayed green after removing expected_exit_contract from the active runner surface, and agentplane build remained clean."
 doc_version: 3
-doc_updated_at: "2026-03-24T18:30:06.510Z"
+doc_updated_at: "2026-03-24T18:30:33.896Z"
 doc_updated_by: "CODER"
 description: "Remove recipe run_profile.expected_exit_contract from the main-repo runner execution surface because current catalog values are arbitrary scenario-specific strings and cannot be enforced as a deterministic shared runner contract."
 sections:
@@ -59,6 +78,14 @@ sections:
     3. Inspect updated docs and generated surfaces for expected_exit_contract. Expected: main-repo runtime no longer promises it as an execution contract; any remaining catalog references are described as external lag only.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    #### 2026-03-24T18:30:29.623Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: bunx vitest run packages/agentplane/src/commands/recipes/impl/resolver.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts; bun run --filter=agentplane build; expected_exit_contract is now parser-compatible only and no longer projected into the active runner runtime.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-24T18:30:06.510Z, excerpt_hash=sha256:564de8859b9542672446a5c0c3e789bf506a3add496502946a0e2a3ac600fc06
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -95,6 +122,14 @@ Remove recipe run_profile.expected_exit_contract from the main-repo runner execu
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-24T18:30:29.623Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bunx vitest run packages/agentplane/src/commands/recipes/impl/resolver.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts; bun run --filter=agentplane build; expected_exit_contract is now parser-compatible only and no longer projected into the active runner runtime.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-24T18:30:06.510Z, excerpt_hash=sha256:564de8859b9542672446a5c0c3e789bf506a3add496502946a0e2a3ac600fc06
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
