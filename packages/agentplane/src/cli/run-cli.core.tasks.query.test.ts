@@ -589,7 +589,7 @@ describe("runCli", () => {
       [
         "#!/bin/sh",
         String.raw`bootstrap_line="$(sed -n '1p' "$AGENTPLANE_RUNNER_BOOTSTRAP_PATH")"`,
-        String.raw`printf '%s\n' '{"schema_version":1,"summary":"custom manifest summary","artifacts":[{"path":"reports/custom.txt","label":"report"}],"findings":["custom finding"],"verification_hints":["custom verification hint"],"capabilities_used":["custom.report"]}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        String.raw`printf '%s\n' '{"schema_version":1,"summary":"Привет из custom manifest","artifacts":[{"path":"reports/custom.txt","label":"report"}],"findings":["русский finding"],"verification_hints":["русский hint"],"capabilities_used":["custom.report"]}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         String.raw`printf "custom runner ok %s %s %s\n" "$CUSTOM_TOKEN" "$AGENTPLANE_RUNNER_TARGET" "$bootstrap_line"`,
         "cat >/dev/null",
         "exit 0",
@@ -630,6 +630,7 @@ describe("runCli", () => {
       const statePath = path.join(runDir, "run-state.json");
       const bundlePath = path.join(runDir, "bundle.json");
       const resultPath = path.join(runDir, "result.json");
+      const sourceResultPath = path.join(runDir, "result.source.json");
       const state = JSON.parse(await readFile(statePath, "utf8")) as {
         adapter_id: string;
         status: string;
@@ -657,20 +658,26 @@ describe("runCli", () => {
       expect(state.status).toBe("success");
       expect(state.result?.status).toBe("success");
       expect(state.result?.exit_code).toBe(0);
-      expect(state.result?.summary).toBe("custom manifest summary");
+      expect(state.result?.summary).toBe("Custom runner execution completed successfully.");
       expect(state.result?.stdout_summary).toBe(
         "Raw execution trace was captured in agent-trace.jsonl.",
       );
-      expect(state.result?.findings).toEqual(["custom finding"]);
-      expect(state.result?.verification_hints).toEqual(["custom verification hint"]);
-      expect(manifest.summary).toBe("custom manifest summary");
-      expect(manifest.findings).toEqual(["custom finding"]);
-      expect(manifest.verification_hints).toEqual(["custom verification hint"]);
+      expect(state.result?.findings).toBeUndefined();
+      expect(state.result?.verification_hints).toBeUndefined();
+      expect(manifest.summary).toBe("Custom runner execution completed successfully.");
+      expect(manifest.findings).toBeUndefined();
+      expect(manifest.verification_hints).toBeUndefined();
       expect(manifest.capabilities_used).toEqual(["custom.report"]);
+      expect(await pathExists(sourceResultPath)).toBe(true);
+      expect(await readFile(sourceResultPath, "utf8")).toContain("Привет из custom manifest");
+      expect(await readFile(sourceResultPath, "utf8")).toContain("русский finding");
+      expect(await readFile(sourceResultPath, "utf8")).toContain("русский hint");
 
       const task = await readTask({ cwd: root, rootOverride: root, taskId });
       expect(task.body).toContain("Summary: Custom runner completed successfully.");
-      expect(task.body).not.toContain("custom finding");
+      expect(task.body).not.toContain("русский finding");
+      expect(task.body).toContain("source-result-manifest=");
+      expect(task.body).toContain("result.source.json");
       expect(task.body).toContain("VerificationHint: runner completed successfully");
       expect(task.body).toContain("Capabilities: custom.report");
     } finally {

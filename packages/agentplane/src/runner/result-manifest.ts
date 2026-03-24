@@ -13,6 +13,7 @@ import type {
 
 export const RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 1 as const;
 const INVALID_RESULT_MANIFEST_SUFFIX = ".invalid.json";
+const SOURCE_RESULT_MANIFEST_SUFFIX = ".source.json";
 
 export class InvalidRunnerResultManifestError extends Error {
   readonly result_path: string;
@@ -211,6 +212,12 @@ export function invalidRunnerResultManifestPath(resultPath: string): string {
   return path.join(dir, `${base}${INVALID_RESULT_MANIFEST_SUFFIX}`);
 }
 
+export function sourceRunnerResultManifestPath(resultPath: string): string {
+  const dir = path.dirname(resultPath);
+  const base = path.basename(resultPath, ".json");
+  return path.join(dir, `${base}${SOURCE_RESULT_MANIFEST_SUFFIX}`);
+}
+
 export async function preserveInvalidRunnerResultManifest(opts: {
   result_path: string;
   error: InvalidRunnerResultManifestError;
@@ -219,6 +226,22 @@ export async function preserveInvalidRunnerResultManifest(opts: {
   await mkdir(path.dirname(invalidPath), { recursive: true });
   await atomicWriteFile(invalidPath, opts.error.raw_content, "utf8");
   return invalidPath;
+}
+
+export async function preserveRunnerResultManifestSource(
+  resultPath: string,
+): Promise<string | null> {
+  try {
+    const rawContent = await readFile(resultPath, "utf8");
+    const sourcePath = sourceRunnerResultManifestPath(resultPath);
+    await mkdir(path.dirname(sourcePath), { recursive: true });
+    await atomicWriteFile(sourcePath, rawContent, "utf8");
+    return sourcePath;
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException | null)?.code;
+    if (code === "ENOENT") return null;
+    throw err;
+  }
 }
 
 export async function writeRunnerResultManifest(opts: {

@@ -424,4 +424,106 @@ describe("CustomRunnerAdapter", () => {
 
     await rm(tempDir, { recursive: true, force: true });
   });
+
+  it("preserves the original custom manifest as a side artifact while keeping normalized prose machine-English", async () => {
+    const raw = defaultConfig();
+    raw.runner.default_adapter = "custom";
+    raw.runner.custom = {
+      command: ["custom-runner"],
+    };
+    const adapter = createRunnerAdapter(raw);
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-source-"));
+    const fakeBinDir = path.join(tempDir, "bin");
+    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
+    const bundle = makeBundle();
+    bundle.repository.git_root = tempDir;
+    bundle.execution.mode = "execute";
+    bundle.execution.artifact_paths.run_dir = path.join(tempDir, "runs", "run-source");
+    bundle.execution.artifact_paths.bundle_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "bundle.json",
+    );
+    bundle.execution.artifact_paths.bootstrap_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "bootstrap.md",
+    );
+    bundle.execution.artifact_paths.state_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "run-state.json",
+    );
+    bundle.execution.artifact_paths.events_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "events.jsonl",
+    );
+    bundle.execution.artifact_paths.result_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "result.json",
+    );
+    bundle.execution.artifact_paths.trace_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "agent-trace.jsonl",
+    );
+    bundle.execution.artifact_paths.stderr_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "stderr.log",
+    );
+
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeRunnerPath,
+      [
+        "#!/bin/sh",
+        String.raw`printf '{"schema_version":1,"summary":"Привет из custom manifest","findings":["русский finding"],"verification_hints":["русский hint"],"capabilities_used":["custom.report"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        "cat >/dev/null",
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeRunnerPath, 0o755);
+
+    const invocation = await adapter.prepare(bundle);
+    invocation.env.PATH = `${fakeBinDir}:${process.env.PATH ?? ""}`;
+    await writePreparedRunnerArtifacts({
+      bundle,
+      bootstrap_markdown: "Read the bundle from env.\n",
+      invocation,
+    });
+
+    const result = await adapter.execute(invocation);
+
+    expect(result.summary).toBe("Custom runner execution completed successfully.");
+    expect(result.findings).toBeUndefined();
+    expect(result.verification_hints).toBeUndefined();
+    expect(result.capabilities_used).toEqual(["custom.report"]);
+    expect(result.artifacts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: invocation.result_path, label: "result-manifest" }),
+        expect.objectContaining({
+          path: path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
+          label: "source-result-manifest",
+        }),
+      ]),
+    );
+
+    const normalized = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
+      summary?: string;
+      findings?: string[];
+      verification_hints?: string[];
+      capabilities_used?: string[];
+    };
+    expect(normalized.summary).toBe("Custom runner execution completed successfully.");
+    expect(normalized.findings).toBeUndefined();
+    expect(normalized.verification_hints).toBeUndefined();
+    expect(normalized.capabilities_used).toEqual(["custom.report"]);
+
+    const sourceManifest = await readFile(
+      path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
+      "utf8",
+    );
+    expect(sourceManifest).toContain("Привет из custom manifest");
+    expect(sourceManifest).toContain("русский finding");
+    expect(sourceManifest).toContain("русский hint");
+
+    await rm(tempDir, { recursive: true, force: true });
+  });
 });

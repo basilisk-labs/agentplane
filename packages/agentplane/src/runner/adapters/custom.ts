@@ -6,6 +6,7 @@ import type {
   RunnerAdapterCapabilities,
   RunnerContextBundle,
   RunnerInvocation,
+  RunnerResultArtifact,
   RunnerResult,
 } from "../types.js";
 import {
@@ -24,8 +25,8 @@ import {
 import { exitCodeForSignal, runSupervisedProcess } from "../process-supervision.js";
 import {
   InvalidRunnerResultManifestError,
-  applyRunnerResultManifest,
   manifestFromRunnerResult,
+  preserveRunnerResultManifestSource,
   preserveInvalidRunnerResultManifest,
   readRunnerResultManifest,
   writeRunnerResultManifest,
@@ -99,6 +100,7 @@ function assertCustomBundle(bundle: RunnerContextBundle): void {
 
 function buildCustomArtifacts(opts: {
   invocation: RunnerInvocation;
+  source_manifest_path?: string | null;
   invalid_manifest_path?: string | null;
 }): NonNullable<RunnerResult["artifacts"]> {
   return (
@@ -107,10 +109,52 @@ function buildCustomArtifacts(opts: {
       { path: opts.invocation.bootstrap_path, label: "bootstrap" },
       { path: opts.invocation.trace_path, label: "raw-trace" },
       { path: opts.invocation.stderr_path, label: "stderr-log" },
+      { path: opts.source_manifest_path, label: "source-result-manifest" },
       { path: opts.invalid_manifest_path, label: "invalid-result-manifest" },
       { path: opts.invocation.result_path, label: "result-manifest" },
     ]) ?? []
   );
+}
+
+function mergeRunnerArtifacts(
+  base: RunnerResult["artifacts"],
+  extra: RunnerResultArtifact[] | undefined,
+): RunnerResult["artifacts"] {
+  const merged: NonNullable<RunnerResult["artifacts"]> = [];
+  const seen = new Set<string>();
+  for (const artifact of [...(base ?? []), ...(extra ?? [])]) {
+    const key = `${artifact.path}::${artifact.label ?? ""}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(artifact);
+  }
+  return merged.length > 0 ? merged : undefined;
+}
+
+function applyCustomRunnerResultManifest(opts: {
+  base: RunnerResult;
+  manifest: Awaited<ReturnType<typeof readRunnerResultManifest>>;
+}): RunnerResult {
+  if (!opts.manifest) return opts.base;
+  const merged: RunnerResult = {
+    ...opts.base,
+    status:
+      opts.base.status === "cancelled" ? "cancelled" : (opts.manifest.status ?? opts.base.status),
+    exit_code:
+      opts.base.status === "cancelled"
+        ? opts.base.exit_code
+        : (opts.manifest.exit_code ?? opts.base.exit_code),
+    artifacts: mergeRunnerArtifacts(opts.base.artifacts, opts.manifest.artifacts),
+    capabilities_used: opts.manifest.capabilities_used ?? opts.base.capabilities_used,
+    metrics: {
+      ...opts.base.metrics,
+      ...opts.manifest.metrics,
+    },
+  };
+  if (merged.artifacts && merged.artifacts.length > 0) {
+    merged.output_paths = merged.artifacts.map((artifact) => artifact.path);
+  }
+  return merged;
 }
 
 function assertCustomInvocation(invocation: RunnerInvocation): void {
@@ -206,7 +250,14 @@ export class CustomRunnerAdapter implements RunnerAdapter {
           stdin_text: bootstrapText,
           start_message: "custom runner started",
         });
-        const artifacts = buildCustomArtifacts({ invocation });
+        const manifest = await readRunnerResultManifest(invocation.result_path);
+        const sourceManifestPath = manifest
+          ? await preserveRunnerResultManifestSource(invocation.result_path)
+          : null;
+        const artifacts = buildCustomArtifacts({
+          invocation,
+          source_manifest_path: sourceManifestPath,
+        });
         const output_paths = artifacts.map((artifact) => artifact.path);
         const success = processResult.exit_code === 0;
         const ended_at = processResult.ended_at;
@@ -254,8 +305,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
                 output_paths,
                 metrics: resultMetrics,
               });
-        const manifest = await readRunnerResultManifest(invocation.result_path);
-        const result = applyRunnerResultManifest({
+        const result = applyCustomRunnerResultManifest({
           base: {
             ...baseResult,
             artifacts,
