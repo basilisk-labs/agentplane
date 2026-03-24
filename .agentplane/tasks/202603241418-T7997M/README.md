@@ -1,10 +1,11 @@
 ---
 id: "202603241418-T7997M"
 title: "Stabilize process-supervision trace and timeout fast tests"
-status: "DOING"
+result_summary: "packages/agentplane/src/runner/process-supervision.test.ts is now stable under the fast pre-push suite again."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-24T14:21:15.487Z"
   updated_by: "CODER"
   note: "ok: packages/agentplane/src/runner/process-supervision.test.ts passes after stabilizing the trace timing window and the timeout signal expectation."
-commit: null
+commit:
+  hash: "93dcc4b87646d95161b5324b5982d305c63da6be"
+  message: "✅ T7997M code: done"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the process-supervision fast-test failures, stabilize the trace and timeout behavior with the smallest viable fix, and retry the blocked push once the focused suite is green."
+  -
+    author: "CODER"
+    body: "Verified: stabilized the process-supervision fast tests by widening the trace timing window and by making the wall-timeout assertion accept either SIGTERM or SIGKILL once force-kill escalation has been recorded."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "ok: packages/agentplane/src/runner/process-supervision.test.ts passes after stabilizing the trace timing window and the timeout signal expectation."
+  -
+    type: "status"
+    at: "2026-03-24T14:21:45.784Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: stabilized the process-supervision fast tests by widening the trace timing window and by making the wall-timeout assertion accept either SIGTERM or SIGKILL once force-kill escalation has been recorded."
 doc_version: 3
-doc_updated_at: "2026-03-24T14:21:15.505Z"
+doc_updated_at: "2026-03-24T14:21:45.785Z"
 doc_updated_by: "CODER"
 description: "Fix the fast-CI failures in packages/agentplane/src/runner/process-supervision.test.ts so pre-push passes again. Current failures are the raw trace stream not being visible early enough and a wall-timeout expectation assuming SIGKILL when the process can still exit on SIGTERM during escalation."
 sections:
