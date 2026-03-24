@@ -130,6 +130,8 @@ export type RunnerInvocation = {
   state_path: string;
   events_path: string;
   result_path: string;
+  trace_path: string;
+  stderr_path: string;
   bootstrap_path?: string | null;
   output_last_message_path?: string | null;
   argv: string[];

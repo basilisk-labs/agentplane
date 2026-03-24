@@ -141,6 +141,12 @@ function assertCodexInvocation(invocation: RunnerInvocation): void {
   if (!invocation.result_path.trim()) {
     throw new Error("Codex adapter invocation is missing result_path");
   }
+  if (!invocation.trace_path.trim()) {
+    throw new Error("Codex adapter invocation is missing trace_path");
+  }
+  if (!invocation.stderr_path.trim()) {
+    throw new Error("Codex adapter invocation is missing stderr_path");
+  }
   if (!invocation.bootstrap_path?.trim()) {
     throw new Error("Codex adapter invocation is missing bootstrap_path");
   }
@@ -188,6 +194,8 @@ export class CodexRunnerAdapter implements RunnerAdapter {
       state_path: execution.artifact_paths.state_path,
       events_path: execution.artifact_paths.events_path,
       result_path: execution.artifact_paths.result_path,
+      trace_path: execution.artifact_paths.trace_path,
+      stderr_path: execution.artifact_paths.stderr_path,
       bootstrap_path: execution.artifact_paths.bootstrap_path,
       output_last_message_path: path.join(
         execution.artifact_paths.run_dir,
@@ -240,8 +248,8 @@ export class CodexRunnerAdapter implements RunnerAdapter {
         const ended_at = processResult.ended_at;
         const metrics = {
           duration_ms: durationMs(processResult.started_at, ended_at),
-          stdout_bytes: byteLength(processResult.stdout),
-          stderr_bytes: byteLength(processResult.stderr),
+          stdout_bytes: processResult.stdout_bytes,
+          stderr_bytes: processResult.stderr_bytes,
           output_last_message_bytes: lastMessage === null ? null : byteLength(lastMessage),
         };
         const baseResult = processResult.cancel_requested_at
@@ -262,15 +270,15 @@ export class CodexRunnerAdapter implements RunnerAdapter {
                 ended_at,
                 exit_code: processResult.exit_code ?? 0,
                 stdout_summary:
-                  summarizeOutput(lastMessage ?? processResult.stdout) ??
+                  summarizeOutput(lastMessage ?? processResult.stdout_tail) ??
                   "Codex execution finished without output.",
                 output_paths,
                 metrics,
               })
             : runnerAdapterFailureResult({
                 err:
-                  summarizeOutput(processResult.stderr) ??
-                  summarizeOutput(processResult.stdout) ??
+                  summarizeOutput(processResult.stderr_tail) ??
+                  summarizeOutput(processResult.stdout_tail) ??
                   `Codex exited with code ${processResult.exit_code ?? "unknown"}`,
                 started_at: processResult.started_at,
                 ended_at,

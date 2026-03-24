@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { appendFile } from "node:fs/promises";
 
 import {
   appendRunnerEvent,
@@ -12,6 +13,7 @@ import type {
   RunnerRunState,
   RunnerSupervisionState,
 } from "./types.js";
+import { createRunnerTraceEvent, serializeRunnerTraceEvent } from "./trace.js";
 
 const SUPPORTED_SIGNALS = new Set<RunnerProcessSignal>([
   "SIGHUP",
@@ -20,12 +22,15 @@ const SUPPORTED_SIGNALS = new Set<RunnerProcessSignal>([
   "SIGTERM",
   "SIGKILL",
 ]);
+const OUTPUT_TAIL_LIMIT_BYTES = 64 * 1024;
 
 export type SupervisedProcessResult = {
   exit_code: number | null;
   exit_signal: RunnerProcessSignal | null;
-  stdout: string;
-  stderr: string;
+  stdout_tail: string;
+  stderr_tail: string;
+  stdout_bytes: number;
+  stderr_bytes: number;
   pid: number | null;
   started_at: string;
   ended_at: string;
@@ -66,8 +71,36 @@ function buildInvocationEventData(
     has_output_last_message_path:
       typeof invocation.output_last_message_path === "string" &&
       invocation.output_last_message_path.trim().length > 0,
+    has_trace_path:
+      typeof invocation.trace_path === "string" && invocation.trace_path.trim().length > 0,
+    has_stderr_path:
+      typeof invocation.stderr_path === "string" && invocation.stderr_path.trim().length > 0,
     pid,
   };
+}
+
+function appendTail(current: string, incoming: string, maxBytes = OUTPUT_TAIL_LIMIT_BYTES): string {
+  const combined = Buffer.from(`${current}${incoming}`, "utf8");
+  if (combined.length <= maxBytes) return combined.toString("utf8");
+  return combined.subarray(combined.length - maxBytes).toString("utf8");
+}
+
+function splitCompletedLines(buffer: string): { lines: string[]; remainder: string } {
+  const lines: string[] = [];
+  let start = 0;
+  while (start < buffer.length) {
+    const newlineIndex = buffer.indexOf("\n", start);
+    if (newlineIndex === -1) {
+      return { lines, remainder: buffer.slice(start) };
+    }
+    let line = buffer.slice(start, newlineIndex);
+    if (line.endsWith("\r")) {
+      line = line.slice(0, -1);
+    }
+    lines.push(line);
+    start = newlineIndex + 1;
+  }
+  return { lines, remainder: "" };
 }
 
 export function exitCodeForSignal(signal: RunnerProcessSignal | null): number | null {
@@ -126,9 +159,52 @@ export async function runSupervisedProcess(opts: {
     const pid = typeof child.pid === "number" ? child.pid : null;
     const started_at = new Date().toISOString();
     let heartbeat_at = started_at;
-    let stdout = "";
-    let stderr = "";
+    let stdout_tail = "";
+    let stderr_tail = "";
+    let stdout_bytes = 0;
+    let stderr_bytes = 0;
+    let stdout_buffer = "";
+    let stderr_buffer = "";
+    let trace_seq = 0;
     let settled = false;
+    let traceWriteChain = Promise.resolve();
+    let stderrWriteChain = Promise.resolve();
+
+    const queueAppend = (kind: "trace" | "stderr", text: string) => {
+      const chain = kind === "trace" ? traceWriteChain : stderrWriteChain;
+      const path = kind === "trace" ? opts.invocation.trace_path : opts.invocation.stderr_path;
+      const next: Promise<void> = chain.then(() => appendFile(path, text, "utf8"));
+      void next.catch(finishWithError);
+      if (kind === "trace") {
+        traceWriteChain = next;
+      } else {
+        stderrWriteChain = next;
+      }
+    };
+
+    const writeTraceLine = (stream: "stdout" | "stderr", raw: string) => {
+      trace_seq += 1;
+      queueAppend(
+        "trace",
+        serializeRunnerTraceEvent(
+          createRunnerTraceEvent({
+            ts: new Date().toISOString(),
+            seq: trace_seq,
+            stream,
+            adapter_id: opts.invocation.adapter_id,
+            raw,
+          }),
+        ),
+      );
+    };
+
+    const flushTraceBuffer = (buffer: string, stream: "stdout" | "stderr"): string => {
+      const { lines, remainder } = splitCompletedLines(buffer);
+      for (const line of lines) {
+        writeTraceLine(stream, line);
+      }
+      return remainder;
+    };
 
     const updateRunningState = async () => {
       const initialState = await readRunnerRunState(opts.invocation.state_path);
@@ -178,25 +254,42 @@ export async function runSupervisedProcess(opts: {
     });
 
     child.stdout.on("data", (chunk: Buffer | string) => {
+      const text = chunk.toString();
       heartbeat_at = new Date().toISOString();
-      stdout += chunk.toString();
+      stdout_bytes += Buffer.byteLength(text, "utf8");
+      stdout_tail = appendTail(stdout_tail, text);
+      stdout_buffer = flushTraceBuffer(`${stdout_buffer}${text}`, "stdout");
     });
     child.stderr.on("data", (chunk: Buffer | string) => {
+      const text = chunk.toString();
       heartbeat_at = new Date().toISOString();
-      stderr += chunk.toString();
+      stderr_bytes += Buffer.byteLength(text, "utf8");
+      stderr_tail = appendTail(stderr_tail, text);
+      stderr_buffer = flushTraceBuffer(`${stderr_buffer}${text}`, "stderr");
+      queueAppend("stderr", text);
     });
     child.on("error", finishWithError);
     child.on("close", async (code, signal) => {
       if (settled) return;
-      settled = true;
       const ended_at = new Date().toISOString();
+      if (stdout_buffer) {
+        writeTraceLine("stdout", stdout_buffer);
+      }
+      if (stderr_buffer) {
+        writeTraceLine("stderr", stderr_buffer);
+      }
+      await Promise.all([traceWriteChain, stderrWriteChain]);
+      if (settled) return;
+      settled = true;
       const currentState = await readRunnerRunState(opts.invocation.state_path);
       const supervision = currentState?.supervision;
       resolve({
         exit_code: code,
         exit_signal: normalizeSignal(signal),
-        stdout,
-        stderr,
+        stdout_tail,
+        stderr_tail,
+        stdout_bytes,
+        stderr_bytes,
         pid,
         started_at,
         ended_at,

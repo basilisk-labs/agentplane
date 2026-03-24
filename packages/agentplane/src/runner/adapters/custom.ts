@@ -66,10 +66,6 @@ function summarizeOutput(text: string, limit = 4000): string | undefined {
   return `${normalized.slice(0, limit - 15)}\n...[truncated]`;
 }
 
-function byteLength(text: string | null | undefined): number {
-  return Buffer.byteLength(text ?? "", "utf8");
-}
-
 function durationMs(startedAt: string, endedAt: string): number | undefined {
   const started = Date.parse(startedAt);
   const ended = Date.parse(endedAt);
@@ -129,6 +125,12 @@ function assertCustomInvocation(invocation: RunnerInvocation): void {
   if (!invocation.result_path.trim()) {
     throw new Error("Custom adapter invocation is missing result_path");
   }
+  if (!invocation.trace_path.trim()) {
+    throw new Error("Custom adapter invocation is missing trace_path");
+  }
+  if (!invocation.stderr_path.trim()) {
+    throw new Error("Custom adapter invocation is missing stderr_path");
+  }
 }
 
 export class CustomRunnerAdapter implements RunnerAdapter {
@@ -158,6 +160,8 @@ export class CustomRunnerAdapter implements RunnerAdapter {
       state_path: execution.artifact_paths.state_path,
       events_path: execution.artifact_paths.events_path,
       result_path: execution.artifact_paths.result_path,
+      trace_path: execution.artifact_paths.trace_path,
+      stderr_path: execution.artifact_paths.stderr_path,
       bootstrap_path: execution.artifact_paths.bootstrap_path,
       output_last_message_path: null,
       argv: command,
@@ -199,8 +203,8 @@ export class CustomRunnerAdapter implements RunnerAdapter {
         const ended_at = processResult.ended_at;
         const resultMetrics = {
           duration_ms: durationMs(processResult.started_at, ended_at),
-          stdout_bytes: byteLength(processResult.stdout),
-          stderr_bytes: byteLength(processResult.stderr),
+          stdout_bytes: processResult.stdout_bytes,
+          stderr_bytes: processResult.stderr_bytes,
         };
         const baseResult = processResult.cancel_requested_at
           ? runnerAdapterCancelledResult({
@@ -220,15 +224,15 @@ export class CustomRunnerAdapter implements RunnerAdapter {
                 ended_at,
                 exit_code: processResult.exit_code ?? 0,
                 stdout_summary:
-                  summarizeOutput(processResult.stdout) ??
+                  summarizeOutput(processResult.stdout_tail) ??
                   "Custom runner execution finished without output.",
                 output_paths,
                 metrics: resultMetrics,
               })
             : runnerAdapterFailureResult({
                 err:
-                  summarizeOutput(processResult.stderr) ??
-                  summarizeOutput(processResult.stdout) ??
+                  summarizeOutput(processResult.stderr_tail) ??
+                  summarizeOutput(processResult.stdout_tail) ??
                   `Custom runner exited with code ${processResult.exit_code ?? "unknown"}`,
                 started_at: processResult.started_at,
                 ended_at,

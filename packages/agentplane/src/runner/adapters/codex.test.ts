@@ -103,6 +103,8 @@ describe("CodexRunnerAdapter", () => {
       state_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/run-state.json",
       events_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/events.jsonl",
       result_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/result.json",
+      trace_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/agent-trace.jsonl",
+      stderr_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/stderr.log",
       bootstrap_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/bootstrap.md",
       output_last_message_path:
         "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/codex-last-message.md",
@@ -317,10 +319,14 @@ describe("CodexRunnerAdapter", () => {
     expect(resultManifest.summary).toContain("Final fake Codex message");
     expect(resultManifest.capabilities_used).toEqual(["codex.exec"]);
     const events = await readFile(invocation.events_path, "utf8");
+    const trace = await readFile(invocation.trace_path, "utf8");
     expect(events).toContain('"type":"runner_prepared"');
     expect(events).toContain('"type":"runner_execute_start"');
     expect(events).toContain('"type":"runner_execute_finish"');
     expect(events).toContain('"stdout_bytes"');
+    expect(trace).toContain('"stream":"stdout"');
+    expect(trace).toContain('"kind":"json_event"');
+    expect(trace).toContain("fake stdout ok");
 
     await rm(tempDir, { recursive: true, force: true });
   });
@@ -424,8 +430,11 @@ describe("CodexRunnerAdapter", () => {
     expect(resultManifest.status).toBe("failed");
     expect(resultManifest.stderr_summary).toContain("fake stderr fail");
     const events = await readFile(invocation.events_path, "utf8");
+    const trace = await readFile(invocation.trace_path, "utf8");
     expect(events).toContain('"type":"runner_execute_finish"');
     expect(events).toContain('"stderr_bytes"');
+    expect(trace).toContain('"stream":"stderr"');
+    expect(await readFile(invocation.stderr_path, "utf8")).toContain("fake stderr fail");
 
     await rm(tempDir, { recursive: true, force: true });
   });

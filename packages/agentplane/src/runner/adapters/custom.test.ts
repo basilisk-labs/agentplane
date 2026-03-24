@@ -116,6 +116,12 @@ describe("CustomRunnerAdapter", () => {
       AGENTPLANE_RUNNER_RESULT_PATH:
         "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/result.json",
     });
+    expect(invocation.trace_path).toBe(
+      "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/agent-trace.jsonl",
+    );
+    expect(invocation.stderr_path).toBe(
+      "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/stderr.log",
+    );
   });
 
   it("exports resolved recipe run_profile policy for recipe-scenario bundles", async () => {
@@ -271,10 +277,13 @@ describe("CustomRunnerAdapter", () => {
     expect(resultManifest.summary).toContain("custom runner ok");
     expect(resultManifest.capabilities_used).toEqual(["custom:custom-runner"]);
     const events = await readFile(invocation.events_path, "utf8");
+    const trace = await readFile(invocation.trace_path, "utf8");
     expect(events).toContain('"type":"runner_prepared"');
     expect(events).toContain('"type":"runner_execute_start"');
     expect(events).toContain('"type":"runner_execute_finish"');
     expect(events).toContain('"stdout_bytes"');
+    expect(trace).toContain('"stream":"stdout"');
+    expect(trace).toContain("custom runner ok");
 
     await rm(tempDir, { recursive: true, force: true });
   });
@@ -368,6 +377,8 @@ describe("CustomRunnerAdapter", () => {
     expect(resultManifest.artifacts?.map((artifact) => artifact.path)).toContain(
       path.join(bundle.execution.artifact_paths.run_dir, "result.invalid.json"),
     );
+    const trace = await readFile(invocation.trace_path, "utf8");
+    expect(trace).toContain("custom runner wrote invalid manifest");
     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
       status: string;
       result?: { status?: string; stderr_summary?: string };
