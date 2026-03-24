@@ -1,10 +1,11 @@
 ---
 id: "202603241335-VM41TM"
 title: "Remove legacy approval field from agentplane-recipes catalog"
-status: "DOING"
+result_summary: "the main repo now points at agentplane-recipes commit 021c99b, which removes the legacy requires_human_approval field from the catalog sources."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-24T13:59:13.922Z"
   updated_by: "CODER"
   note: "ok: removed the legacy requires_human_approval field from the submodule schema and Dokploy manifest, and confirmed the upstream submodule commit hash is 021c99b with no remaining source-level matches."
-commit: null
+commit:
+  hash: "c7c819dee4fa5891e6ff141708a7866dfbf690a4"
+  message: "✅ VM41TM code: done"
 comments:
   -
     author: "CODER"
     body: "Start: remove the legacy requires_human_approval field from the agentplane-recipes catalog sources, keep the submodule diff minimal, and record the resulting submodule commit hash for the follow-up inventory refresh."
+  -
+    author: "CODER"
+    body: "Verified: removed the legacy requires_human_approval field from the submodule schema and Dokploy manifest, recorded the upstream submodule commit 021c99b, and updated the main-repo pointer as the task-scoped implementation change."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "ok: removed the legacy requires_human_approval field from the submodule schema and Dokploy manifest, and confirmed the upstream submodule commit hash is 021c99b with no remaining source-level matches."
+  -
+    type: "status"
+    at: "2026-03-24T13:59:34.111Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: removed the legacy requires_human_approval field from the submodule schema and Dokploy manifest, recorded the upstream submodule commit 021c99b, and updated the main-repo pointer as the task-scoped implementation change."
 doc_version: 3
-doc_updated_at: "2026-03-24T13:59:13.933Z"
+doc_updated_at: "2026-03-24T13:59:34.115Z"
 doc_updated_by: "CODER"
 description: "Update the agentplane-recipes submodule manifests and schema so the external recipe catalog no longer advertises requires_human_approval as a runner field."
 sections:
