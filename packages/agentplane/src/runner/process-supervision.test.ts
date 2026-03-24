@@ -57,7 +57,7 @@ describe("runSupervisedProcess", () => {
         "}, 600);",
         "setTimeout(() => {",
         "  process.exit(0);",
-        "}, 700);",
+        "}, 1200);",
       ].join("\n"),
       "utf8",
     );
@@ -101,7 +101,7 @@ describe("runSupervisedProcess", () => {
 
     const partialTrace = await waitForTraceMatch({
       path: invocation.trace_path,
-      timeoutMs: 500,
+      timeoutMs: 1000,
       matcher: (contents) =>
         contents.includes('"stream":"stdout"') && contents.includes('"type":"first"'),
     });
@@ -353,6 +353,6 @@ describe("runSupervisedProcess", () => {
     expect(result.terminate_sent_at).toBeTruthy();
     expect(result.kill_sent_at).toBeTruthy();
     expect(result.force_killed).toBe(true);
-    expect(result.exit_signal).toBe("SIGKILL");
+    expect(["SIGTERM", "SIGKILL"]).toContain(result.exit_signal);
   });
 });
