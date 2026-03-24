@@ -1,10 +1,11 @@
 ---
 id: "202603241541-EGMWZ2"
 title: "Add structured evidence fields to task-facing runner outcomes"
-status: "DOING"
+result_summary: "Structured runner evidence fields now persist across result normalization, task state, and README runner history without leaking assistant prose."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -19,15 +20,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-24T16:29:40.581Z"
+  updated_by: "CODER"
+  note: "Checks passed: bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts -t \"task run executes the configured custom runner adapter\"; bun run --filter=agentplane build. Confirmed evidence survives manifest normalization, persists in runner state/frontmatter, and renders as machine-only task-facing lines."
+commit:
+  hash: "56fb85cacdd6d5fe3958137858cd1c9b7d5b728f"
+  message: "✅ EGMWZ2 code: done"
 comments:
   -
     author: "CODER"
     body: "Start: implement structured runner evidence fields, sanitize task-facing rendering, and add regression coverage."
+  -
+    author: "CODER"
+    body: "Verified: structured runner evidence now survives manifest normalization, persists into runner/task history, and renders as machine-only task-facing fields."
 events:
   -
     type: "status"
@@ -36,9 +42,22 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement structured runner evidence fields, sanitize task-facing rendering, and add regression coverage."
+  -
+    type: "verify"
+    at: "2026-03-24T16:29:40.581Z"
+    author: "CODER"
+    state: "ok"
+    note: "Checks passed: bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts -t \"task run executes the configured custom runner adapter\"; bun run --filter=agentplane build. Confirmed evidence survives manifest normalization, persists in runner state/frontmatter, and renders as machine-only task-facing lines."
+  -
+    type: "status"
+    at: "2026-03-24T16:29:58.797Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: structured runner evidence now survives manifest normalization, persists into runner/task history, and renders as machine-only task-facing fields."
 doc_version: 3
-doc_updated_at: "2026-03-24T16:26:58.286Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-03-24T16:29:58.798Z"
+doc_updated_by: "CODER"
 description: "Extend sanitized runner projection and history with machine evidence such as changed paths, files changed count, tests run, and evidence paths without leaking assistant prose back into task docs."
 sections:
   Summary: |-
@@ -58,6 +77,14 @@ sections:
     3. Inspect the updated runner outcome rendering in the task-facing projection. Expected: evidence fields are shown as machine data and no assistant prose is copied into README history.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    #### 2026-03-24T16:29:40.581Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Checks passed: bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts -t "task run executes the configured custom runner adapter"; bun run --filter=agentplane build. Confirmed evidence survives manifest normalization, persists in runner state/frontmatter, and renders as machine-only task-facing lines.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-24T16:26:58.286Z, excerpt_hash=sha256:85a40459250cc2b15a9570e2a01ede2687ca368382a9482d75f0dfa78c2adc71
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -91,6 +118,14 @@ Extend sanitized runner projection and history with machine evidence such as cha
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-24T16:29:40.581Z — VERIFY — ok
+
+By: CODER
+
+Note: Checks passed: bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts -t "task run executes the configured custom runner adapter"; bun run --filter=agentplane build. Confirmed evidence survives manifest normalization, persists in runner state/frontmatter, and renders as machine-only task-facing lines.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-24T16:26:58.286Z, excerpt_hash=sha256:85a40459250cc2b15a9570e2a01ede2687ca368382a9482d75f0dfa78c2adc71
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
