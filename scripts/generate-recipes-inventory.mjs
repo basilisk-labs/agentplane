@@ -1,5 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { spawn } from "node:child_process";
 
 const ROOT = process.cwd();
 const INDEX_PATH = path.join(ROOT, "agentplane-recipes", "index.json");
@@ -42,6 +43,21 @@ function pickRunProfile(value) {
     output[key] = source[key];
   }
   return output;
+}
+
+function runBunx(args) {
+  return new Promise((resolve, reject) => {
+    const child = spawn("bunx", args, {
+      cwd: ROOT,
+      stdio: "inherit",
+      env: process.env,
+    });
+    child.on("error", reject);
+    child.on("exit", (code) => {
+      if (code === 0) return resolve();
+      reject(new Error(`bunx ${args.join(" ")} failed with exit code ${code ?? "unknown"}`));
+    });
+  });
 }
 
 async function readJson(filePath) {
@@ -103,6 +119,7 @@ async function main() {
     : OUTPUT_PATH;
   const payload = await buildInventory();
   await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  await runBunx(["prettier", "--write", outputPath]);
   process.stdout.write(`generated ${path.relative(ROOT, outputPath)}\n`);
 }
 
