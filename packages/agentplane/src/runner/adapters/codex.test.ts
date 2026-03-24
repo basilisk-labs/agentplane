@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 import { writePreparedRunnerArtifacts } from "../artifacts.js";
 import type { RunnerContextBundle } from "../types.js";
 import { createRunnerAdapter } from "./index.js";
+import { CliError } from "../../shared/errors.js";
 
 function makeBundle(): RunnerContextBundle {
   return {
@@ -154,7 +155,7 @@ describe("CodexRunnerAdapter", () => {
     });
   });
 
-  it("falls back to the default codex sandbox when recipe run_profile sandbox is unsupported", async () => {
+  it("fails closed when recipe run_profile sandbox is unsupported", () => {
     const adapter = createRunnerAdapter(defaultConfig());
     const bundle = makeBundle();
     bundle.recipe = {
@@ -166,23 +167,23 @@ describe("CodexRunnerAdapter", () => {
       },
     };
 
-    const invocation = await adapter.prepare(bundle);
+    let error: unknown = null;
+    try {
+      adapter.prepare(bundle);
+    } catch (err) {
+      error = err;
+    }
 
-    expect(invocation.argv).toEqual([
-      "codex",
-      "-a",
-      "never",
-      "exec",
-      "--json",
-      "--output-last-message",
-      "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/codex-last-message.md",
-      "-C",
-      "/repo",
-      "-s",
-      "danger-full-access",
-      "-",
-    ]);
-    expect(invocation.env.AGENTPLANE_RECIPE_SANDBOX).toBe("custom-sandbox");
+    expect(error).toBeInstanceOf(CliError);
+    expect(error).toMatchObject({
+      code: "E_RUNTIME",
+      exitCode: 8,
+      context: {
+        adapter_id: "codex",
+        requested_sandbox: "custom-sandbox",
+      },
+    });
+    expect((error as CliError).message).toContain("does not support recipe sandbox");
   });
 
   it("captures success-path result details and persists run-state updates", async () => {

@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { RunnerContextBundle, RunnerInvocation, RunnerResult } from "../types.js";
+import { CliError } from "../../shared/errors.js";
 import {
   appendRunnerEvent,
   evolveRunnerRunState,
@@ -28,6 +29,7 @@ import { buildRecipeRunnerEnv, readRecipeRunProfile } from "./recipe-run-profile
 
 const CODEX_LAST_MESSAGE_FILENAME = "codex-last-message.md";
 const CODEX_SANDBOX_VALUES = new Set(["read-only", "workspace-write", "danger-full-access"]);
+const SUPPORTED_CODEX_SANDBOXES = [...CODEX_SANDBOX_VALUES];
 
 function summarizeOutput(text: string, limit = 4000): string | undefined {
   const normalized = text.replaceAll("\r\n", "\n").trim();
@@ -113,10 +115,22 @@ function assertCodexInvocation(invocation: RunnerInvocation): void {
   }
 }
 
-function normalizeCodexSandbox(value: unknown): string | null {
+function resolveCodexSandbox(value: unknown): string {
   const normalized = typeof value === "string" ? value.trim() : "";
-  if (!normalized) return null;
-  return CODEX_SANDBOX_VALUES.has(normalized) ? normalized : null;
+  if (!normalized) return "danger-full-access";
+  if (CODEX_SANDBOX_VALUES.has(normalized)) return normalized;
+  throw new CliError({
+    exitCode: 8,
+    code: "E_RUNTIME",
+    message:
+      `Codex runner does not support recipe sandbox ${JSON.stringify(normalized)}; ` +
+      `supported values: ${SUPPORTED_CODEX_SANDBOXES.join(", ")}.`,
+    context: {
+      adapter_id: "codex",
+      requested_sandbox: normalized,
+      supported_sandboxes: SUPPORTED_CODEX_SANDBOXES,
+    },
+  });
 }
 
 export class CodexRunnerAdapter implements RunnerAdapter {
@@ -126,7 +140,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
     assertCodexBundle(bundle);
     const { execution } = bundle;
     const runProfile = readRecipeRunProfile(bundle.recipe);
-    const sandbox = normalizeCodexSandbox(runProfile?.sandbox) ?? "danger-full-access";
+    const sandbox = resolveCodexSandbox(runProfile?.sandbox);
     const recipeEnv = buildRecipeRunnerEnv(bundle.recipe);
     return Promise.resolve({
       adapter_id: this.id,
