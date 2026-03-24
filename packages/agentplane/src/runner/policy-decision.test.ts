@@ -9,10 +9,6 @@ describe("buildRunnerPolicyDecision", () => {
       capabilities: {
         adapter_id: "codex",
         fields: {
-          mode: {
-            level: "advisory",
-            channel: "env",
-          },
           sandbox: {
             level: "native",
             channel: "argv",
@@ -24,7 +20,6 @@ describe("buildRunnerPolicyDecision", () => {
         recipe_id: "viewer",
         scenario_id: "SCENARIO",
         run_profile: {
-          mode: "analysis",
           sandbox: "read-only",
           writes_artifacts_to: ["reports"],
         },
@@ -32,18 +27,11 @@ describe("buildRunnerPolicyDecision", () => {
     });
 
     expect(decision.requested).toEqual({
-      mode: "analysis",
       sandbox: "read-only",
       writes_artifacts_to: ["reports"],
     });
     expect(decision.effective).toEqual({
       sandbox: "read-only",
-    });
-    expect(decision.fields.mode).toMatchObject({
-      requested: "analysis",
-      status: "advisory",
-      capability_level: "advisory",
-      channel: "env",
     });
     expect(decision.fields.sandbox).toMatchObject({
       requested: "read-only",

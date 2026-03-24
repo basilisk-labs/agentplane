@@ -2,7 +2,6 @@ import type { RunnerRecipeContext } from "../types.js";
 import { normalizeRecipeArtifactPrefixes } from "../result-manifest-policy.js";
 
 export type RecipeRunProfileMetadata = {
-  mode?: string;
   sandbox?: string;
   writes_artifacts_to?: string[];
 };
@@ -40,7 +39,6 @@ export function readRecipeRunProfile(
   if (!profile || typeof profile !== "object") return null;
   const candidate = profile;
   return {
-    mode: normalizeOptionalString(candidate.mode),
     sandbox: normalizeOptionalString(candidate.sandbox),
     writes_artifacts_to: normalizeStringList(candidate.writes_artifacts_to),
   };
@@ -58,7 +56,6 @@ export function buildRecipeRunnerEnv(
   const profile = readRecipeRunProfile(recipe);
   if (!profile) return env;
 
-  setStringEnv(env, "AGENTPLANE_RECIPE_MODE", profile.mode);
   setStringEnv(env, "AGENTPLANE_RECIPE_SANDBOX", profile.sandbox);
   const normalizedArtifactPrefixes = normalizeRecipeArtifactPrefixes(profile.writes_artifacts_to);
   const normalizedProfile = {

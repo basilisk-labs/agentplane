@@ -65,10 +65,6 @@ function buildCustomCapabilities(
   return {
     adapter_id: "custom",
     fields: {
-      mode: {
-        level: "advisory",
-        channel: "env",
-      },
       sandbox:
         enforcement.mode === "codex_sandbox_full_auto"
           ? {

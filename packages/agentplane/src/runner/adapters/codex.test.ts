@@ -90,10 +90,6 @@ describe("CodexRunnerAdapter", () => {
     expect(capabilities).toMatchObject({
       adapter_id: "codex",
       fields: {
-        mode: {
-          level: "advisory",
-          channel: "env",
-        },
         sandbox: {
           level: "native",
           channel: "argv",
@@ -193,7 +189,6 @@ describe("CodexRunnerAdapter", () => {
       "-",
     ]);
     expect(invocation.env).toMatchObject({
-      AGENTPLANE_RECIPE_MODE: "analysis",
       AGENTPLANE_RECIPE_SANDBOX: "read-only",
       AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO: JSON.stringify(["reports", "logs"]),
     });

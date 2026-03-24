@@ -172,6 +172,9 @@ Resolver output includes:
 
 `run_profile` now covers runner-local execution hints only. Global network approval remains governed by
 `agents.approvals.require_network`, not by a recipe-scoped `run_profile.network` field.
+`run_profile.mode` remains part of resolver selection and CLI discovery output, but it is no longer
+projected into the active runner env or capability surface because it functions as a recipe
+classification label rather than a shared execution-policy field.
 The main-repo runner contract also no longer accepts `run_profile.requires_human_approval`: the live
 Codex probe showed that non-interactive approval modes remain permissive, so the field was removed
 from runtime execution surfaces instead of being documented as a fake enforcement guarantee. External

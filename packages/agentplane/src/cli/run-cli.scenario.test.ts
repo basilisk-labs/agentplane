@@ -328,7 +328,6 @@ describe("runCli scenario", () => {
         "const out = {",
         "  recipe_id: process.env.AGENTPLANE_RECIPE_ID ?? null,",
         "  scenario_id: process.env.AGENTPLANE_SCENARIO_ID ?? null,",
-        "  mode: process.env.AGENTPLANE_RECIPE_MODE ?? null,",
         "  sandbox: process.env.AGENTPLANE_RECIPE_SANDBOX ?? null,",
         '  writes_artifacts_to: JSON.parse(process.env.AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO ?? "[]"),',
         '  run_profile: JSON.parse(process.env.AGENTPLANE_RECIPE_RUN_PROFILE ?? "{}"),',
@@ -375,7 +374,6 @@ describe("runCli scenario", () => {
       ) as {
         recipe_id?: string;
         scenario_id?: string;
-        mode?: string;
         sandbox?: string;
         writes_artifacts_to?: string[];
         run_profile?: Record<string, unknown>;
@@ -383,12 +381,10 @@ describe("runCli scenario", () => {
       expect(recipeEnv).toMatchObject({
         recipe_id: manifestId,
         scenario_id: "RECIPE_SCENARIO",
-        mode: "analysis",
         sandbox: "workspace-write",
         writes_artifacts_to: ["logs", "reports"],
       });
       expect(recipeEnv.run_profile).toMatchObject({
-        mode: "analysis",
         sandbox: "workspace-write",
         writes_artifacts_to: ["logs", "reports"],
       });

@@ -48,11 +48,6 @@ const SUPPORTED_CODEX_SANDBOXES = [...CODEX_SANDBOX_VALUES];
 const CODEX_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
   adapter_id: "codex",
   fields: {
-    mode: {
-      level: "advisory",
-      channel: "env",
-      note: "Recipe mode is exported for the runner process but does not affect codex argv.",
-    },
     sandbox: {
       level: "native",
       channel: "argv",
