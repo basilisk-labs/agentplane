@@ -14,7 +14,12 @@ export function resolveRunnerAdapterId(config: Pick<AgentplaneConfig, "runner">)
 export function resolveRunnerTracePolicy(
   config: Pick<AgentplaneConfig, "runner">,
 ): RunnerTraceConfig {
-  return config.runner.trace;
+  return {
+    ...config.runner.trace,
+    retention: config.runner.trace.retention ?? "keep",
+    compression: config.runner.trace.compression ?? "none",
+    redact_patterns: config.runner.trace.redact_patterns ?? [],
+  };
 }
 
 export function resolveRunnerTimeoutPolicy(

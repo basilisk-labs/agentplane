@@ -170,7 +170,10 @@
         "trace": {
           "mode": "raw",
           "max_tail_bytes": 65536,
-          "capture_stderr": true
+          "capture_stderr": true,
+          "retention": "keep",
+          "compression": "none",
+          "redact_patterns": []
         },
         "timeouts": {
           "wall_clock_ms": 900000,
@@ -187,11 +190,21 @@
         "trace": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["mode", "max_tail_bytes", "capture_stderr"],
+          "required": [
+            "mode",
+            "max_tail_bytes",
+            "capture_stderr",
+            "retention",
+            "compression",
+            "redact_patterns"
+          ],
           "default": {
             "mode": "raw",
             "max_tail_bytes": 65536,
-            "capture_stderr": true
+            "capture_stderr": true,
+            "retention": "keep",
+            "compression": "none",
+            "redact_patterns": []
           },
           "properties": {
             "mode": {
@@ -207,6 +220,24 @@
             "capture_stderr": {
               "type": "boolean",
               "default": true
+            },
+            "retention": {
+              "type": "string",
+              "enum": ["keep", "remove_on_success", "remove_always"],
+              "default": "keep"
+            },
+            "compression": {
+              "type": "string",
+              "enum": ["none", "gzip"],
+              "default": "none"
+            },
+            "redact_patterns": {
+              "type": "array",
+              "default": [],
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         },

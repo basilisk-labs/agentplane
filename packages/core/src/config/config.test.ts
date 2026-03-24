@@ -27,10 +27,15 @@ describe("config", () => {
   it("published config schema artifacts match the runtime schema source", async () => {
     const specSchemaUrl = new URL("../../../spec/schemas/config.schema.json", import.meta.url);
     const coreSchemaUrl = new URL("../../schemas/config.schema.json", import.meta.url);
-    const rendered = renderAgentplaneConfigSchemaJson();
+    const rendered = JSON.parse(renderAgentplaneConfigSchemaJson()) as unknown;
 
-    await expect(readFile(fileURLToPath(specSchemaUrl), "utf8")).resolves.toBe(rendered);
-    await expect(readFile(fileURLToPath(coreSchemaUrl), "utf8")).resolves.toBe(rendered);
+    const [specText, coreText] = await Promise.all([
+      readFile(fileURLToPath(specSchemaUrl), "utf8"),
+      readFile(fileURLToPath(coreSchemaUrl), "utf8"),
+    ]);
+
+    expect(JSON.parse(specText)).toEqual(rendered);
+    expect(JSON.parse(coreText)).toEqual(rendered);
   });
 
   it("validateConfig allows missing agents approvals", () => {
@@ -121,6 +126,9 @@ describe("config", () => {
       mode: "raw",
       max_tail_bytes: 65_536,
       capture_stderr: true,
+      retention: "keep",
+      compression: "none",
+      redact_patterns: [],
     });
     expect(cfg.runner.timeouts).toEqual({
       wall_clock_ms: 900_000,
@@ -300,6 +308,28 @@ describe("config", () => {
             (raw.runner as Record<string, unknown>).trace as Record<string, unknown>
           ).capture_stderr = "nope"),
         schemaPath("runner.trace.capture_stderr"),
+      ],
+      [
+        "runner.trace.retention",
+        (raw) =>
+          (((raw.runner as Record<string, unknown>).trace as Record<string, unknown>).retention =
+            "bad"),
+        schemaPath("runner.trace.retention"),
+      ],
+      [
+        "runner.trace.compression",
+        (raw) =>
+          (((raw.runner as Record<string, unknown>).trace as Record<string, unknown>).compression =
+            "bad"),
+        schemaPath("runner.trace.compression"),
+      ],
+      [
+        "runner.trace.redact_patterns",
+        (raw) =>
+          ((
+            (raw.runner as Record<string, unknown>).trace as Record<string, unknown>
+          ).redact_patterns = [""]),
+        schemaPath("runner.trace.redact_patterns.0"),
       ],
       [
         "runner.timeouts",

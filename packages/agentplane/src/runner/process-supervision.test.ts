@@ -5,6 +5,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { runSupervisedProcess } from "./process-supervision.js";
+import { compressedTraceArtifactPath, readTraceArtifactText } from "./trace-artifacts.js";
 
 async function waitForTraceMatch(opts: {
   path: string;
@@ -175,6 +176,75 @@ describe("runSupervisedProcess", () => {
     expect(result.stderr_tail).toBe("ine\n");
     expect(await readFile(invocation.trace_path, "utf8").catch(() => "")).toBe("");
     expect(await readFile(invocation.stderr_path, "utf8").catch(() => "")).toBe("");
+  });
+
+  it("applies trace redaction and gzip retention policy after successful runs", async () => {
+    tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-retention-"));
+    const runDir = path.join(tempDir, "run");
+    const scriptPath = path.join(tempDir, "runner.mjs");
+    await mkdir(runDir, { recursive: true });
+    await writeFile(
+      scriptPath,
+      [
+        String.raw`process.stdout.write('token=SECRET_TOKEN\n');`,
+        String.raw`process.stderr.write('stderr SECRET_TOKEN\n');`,
+        "setTimeout(() => process.exit(0), 25);",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const invocation = {
+      adapter_id: "custom",
+      run_id: "run-retention",
+      run_dir: runDir,
+      bundle_path: path.join(runDir, "bundle.json"),
+      state_path: path.join(runDir, "run-state.json"),
+      events_path: path.join(runDir, "events.jsonl"),
+      result_path: path.join(runDir, "result.json"),
+      trace_path: path.join(runDir, "agent-trace.jsonl"),
+      stderr_path: path.join(runDir, "stderr.log"),
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 64 * 1024,
+        capture_stderr: true,
+        retention: "remove_on_success",
+        compression: "gzip",
+        redact_patterns: ["SECRET_TOKEN"],
+      },
+      timeout_policy: {
+        wall_clock_ms: 10_000,
+        idle_ms: 10_000,
+        terminate_grace_ms: 100,
+      },
+      bootstrap_path: null,
+      output_last_message_path: null,
+      argv: [process.execPath, scriptPath],
+      env: {},
+      dry_run: false,
+    } as const;
+
+    const result = await runSupervisedProcess({
+      invocation,
+      stdin_text: "",
+      start_message: "test runner started",
+    });
+
+    expect(result.exit_code).toBe(0);
+    expect(result.stdout_tail).toContain("[REDACTED]");
+    expect(result.stdout_tail).not.toContain("SECRET_TOKEN");
+    expect(result.stderr_tail).toContain("[REDACTED]");
+    expect(result.trace_artifact_path).toBe(compressedTraceArtifactPath(invocation.trace_path));
+    expect(result.trace_archive_path).toBeNull();
+    expect(result.stderr_artifact_path).toBe(compressedTraceArtifactPath(invocation.stderr_path));
+    expect(result.stderr_archive_path).toBeNull();
+    expect(await readFile(invocation.trace_path, "utf8").catch(() => "")).toBe("");
+    expect(await readFile(invocation.stderr_path, "utf8").catch(() => "")).toBe("");
+    const trace = await readTraceArtifactText(invocation.trace_path);
+    expect(trace).toContain("[REDACTED]");
+    expect(trace).not.toContain("SECRET_TOKEN");
+    const stderr = await readTraceArtifactText(invocation.stderr_path);
+    expect(stderr).toContain("[REDACTED]");
+    expect(stderr).not.toContain("SECRET_TOKEN");
   });
 
   it("classifies idle timeouts and records termination timestamps", async () => {

@@ -15,6 +15,8 @@ export type ExecutionProfile = "conservative" | "balanced" | "aggressive";
 export type ReasoningEffort = "low" | "medium" | "high";
 export type RunnerAdapterId = "codex" | "custom";
 export type RunnerTraceMode = "raw" | "off";
+export type RunnerTraceRetention = "keep" | "remove_on_success" | "remove_always";
+export type RunnerTraceCompression = "none" | "gzip";
 export type RunnerTimeoutReason = "idle" | "wall_clock";
 export type RunnerCustomConfig = {
   command: string[];
@@ -24,6 +26,9 @@ export type RunnerTraceConfig = {
   mode: RunnerTraceMode;
   max_tail_bytes: number;
   capture_stderr: boolean;
+  retention?: RunnerTraceRetention;
+  compression?: RunnerTraceCompression;
+  redact_patterns?: string[];
 };
 export type RunnerTimeoutConfig = {
   wall_clock_ms: number;

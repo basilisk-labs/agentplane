@@ -7,6 +7,7 @@ import {
   readRunnerRunState,
   writeRunnerRunState,
 } from "./artifacts.js";
+import { finalizeTraceArtifact, redactTraceText } from "./trace-artifacts.js";
 import type {
   RunnerInvocation,
   RunnerProcessSignal,
@@ -42,6 +43,10 @@ export type SupervisedProcessResult = {
   kill_sent_at: string | null;
   force_killed: boolean;
   heartbeat_at: string;
+  trace_artifact_path: string | null;
+  trace_archive_path: string | null;
+  stderr_artifact_path: string | null;
+  stderr_archive_path: string | null;
 };
 
 function normalizeSignal(signal: NodeJS.Signals | null): RunnerProcessSignal | null {
@@ -178,6 +183,7 @@ export async function runSupervisedProcess(opts: {
     const traceMode = tracePolicy.mode;
     const captureStderr = tracePolicy.capture_stderr;
     const maxTailBytes = tracePolicy.max_tail_bytes;
+    const redactPatterns = tracePolicy.redact_patterns ?? [];
     let timeoutReason: RunnerTimeoutReason | null = null;
     let timeoutRequestedAt: string | null = null;
     let terminateSentAt: string | null = null;
@@ -403,20 +409,22 @@ export async function runSupervisedProcess(opts: {
 
     child.stdout.on("data", (chunk: Buffer | string) => {
       const text = chunk.toString();
+      const persistedText = redactTraceText(text, redactPatterns);
       heartbeat_at = new Date().toISOString();
       resetIdleTimer();
       stdout_bytes += Buffer.byteLength(text, "utf8");
-      stdout_tail = appendTail(stdout_tail, text, maxTailBytes);
-      stdout_buffer = flushTraceBuffer(`${stdout_buffer}${text}`, "stdout");
+      stdout_tail = appendTail(stdout_tail, persistedText, maxTailBytes);
+      stdout_buffer = flushTraceBuffer(`${stdout_buffer}${persistedText}`, "stdout");
     });
     child.stderr.on("data", (chunk: Buffer | string) => {
       const text = chunk.toString();
+      const persistedText = redactTraceText(text, redactPatterns);
       heartbeat_at = new Date().toISOString();
       resetIdleTimer();
       stderr_bytes += Buffer.byteLength(text, "utf8");
-      stderr_tail = appendTail(stderr_tail, text, maxTailBytes);
-      stderr_buffer = flushTraceBuffer(`${stderr_buffer}${text}`, "stderr");
-      queueAppend("stderr", text);
+      stderr_tail = appendTail(stderr_tail, persistedText, maxTailBytes);
+      stderr_buffer = flushTraceBuffer(`${stderr_buffer}${persistedText}`, "stderr");
+      queueAppend("stderr", persistedText);
     });
     child.on("error", finishWithError);
     child.on("close", async (code, signal) => {
@@ -431,12 +439,32 @@ export async function runSupervisedProcess(opts: {
       }
       await Promise.all([traceWriteChain, stderrWriteChain]);
       if (settled) return;
-      settled = true;
+      const normalizedSignal = normalizeSignal(signal);
       const currentState = await readRunnerRunState(opts.invocation.state_path);
       const supervision = currentState?.supervision;
+      const runStatus: "success" | "failed" | "cancelled" = supervision?.cancel_requested_at
+        ? "cancelled"
+        : timeoutReason
+          ? "failed"
+          : code === 0
+            ? "success"
+            : "failed";
+      const [traceArtifact, stderrArtifact] = await Promise.all([
+        finalizeTraceArtifact({
+          file_path: opts.invocation.trace_path,
+          policy: tracePolicy,
+          run_status: runStatus,
+        }),
+        finalizeTraceArtifact({
+          file_path: opts.invocation.stderr_path,
+          policy: tracePolicy,
+          run_status: runStatus,
+        }),
+      ]);
+      settled = true;
       resolve({
         exit_code: code,
-        exit_signal: normalizeSignal(signal),
+        exit_signal: normalizedSignal,
         stdout_tail,
         stderr_tail,
         stdout_bytes,
@@ -452,6 +480,10 @@ export async function runSupervisedProcess(opts: {
         kill_sent_at: supervision?.kill_sent_at ?? killSentAt,
         force_killed: supervision?.force_killed === true || killSentAt !== null,
         heartbeat_at: heartbeat_at || ended_at,
+        trace_artifact_path: traceArtifact.artifact_path,
+        trace_archive_path: traceArtifact.archive_path,
+        stderr_artifact_path: stderrArtifact.artifact_path,
+        stderr_archive_path: stderrArtifact.archive_path,
       });
     });
     if (timeoutPolicy.wall_clock_ms > 0) {

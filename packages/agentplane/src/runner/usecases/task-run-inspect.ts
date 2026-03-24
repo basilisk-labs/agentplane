@@ -5,6 +5,7 @@ import { loadCommandContext, type CommandContext } from "../../commands/shared/t
 import { CliError } from "../../shared/errors.js";
 import { readRunnerRunState } from "../artifacts.js";
 import { resolveTaskRunnerPaths, type TaskRunnerPaths } from "../task-run-paths.js";
+import { readTraceArtifactText } from "../trace-artifacts.js";
 import type { RunnerContextBundle, RunnerEvent, RunnerRunState } from "../types.js";
 
 export type LoadedTaskRunnerInspection = {
@@ -219,12 +220,22 @@ export async function readTaskRunnerTraceArtifact(opts: {
   run_id?: string;
 }): Promise<LoadedTaskRunnerInspection & { trace_text: string }> {
   const inspection = await loadTaskRunnerInspection(opts);
-  const trace_text = await readRequiredArtifactText({
-    file_path: inspection.paths.trace_path,
-    task_id: inspection.task_id,
-    run_id: inspection.run_id,
-    artifact_label: "trace",
-  });
+  let trace_text = "";
+  try {
+    trace_text = await readTraceArtifactText(inspection.paths.trace_path);
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException | null)?.code;
+    if (code === "ENOENT") {
+      throw new CliError({
+        exitCode: 4,
+        code: "E_IO",
+        message:
+          `Runner artifact not found for ${inspection.task_id}:${inspection.run_id} ` +
+          `(trace at ${inspection.paths.trace_path} or ${inspection.paths.trace_path}.gz)`,
+      });
+    }
+    throw err;
+  }
   return {
     ...inspection,
     trace_text,

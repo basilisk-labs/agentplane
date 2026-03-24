@@ -21,7 +21,11 @@ import {
   runnerAdapterSuccessResult,
   type RunnerAdapter,
 } from "./shared.js";
-import { exitCodeForSignal, runSupervisedProcess } from "../process-supervision.js";
+import {
+  exitCodeForSignal,
+  runSupervisedProcess,
+  type SupervisedProcessResult,
+} from "../process-supervision.js";
 import {
   InvalidRunnerResultManifestError,
   applyRunnerResultManifest,
@@ -103,14 +107,20 @@ async function readOptionalText(filePath?: string | null): Promise<string | null
 
 function buildCodexArtifacts(opts: {
   invocation: RunnerInvocation;
+  trace_artifact_path?: string | null;
+  trace_archive_path?: string | null;
+  stderr_artifact_path?: string | null;
+  stderr_archive_path?: string | null;
   invalid_manifest_path?: string | null;
 }): NonNullable<RunnerResult["artifacts"]> {
   return (
     runnerArtifactsFromSpecs([
       { path: opts.invocation.bundle_path, label: "bundle" },
       { path: opts.invocation.bootstrap_path, label: "bootstrap" },
-      { path: opts.invocation.trace_path, label: "raw-trace" },
-      { path: opts.invocation.stderr_path, label: "stderr-log" },
+      { path: opts.trace_artifact_path, label: "raw-trace" },
+      { path: opts.trace_archive_path, label: "raw-trace-gzip" },
+      { path: opts.stderr_artifact_path, label: "stderr-log" },
+      { path: opts.stderr_archive_path, label: "stderr-log-gzip" },
       { path: opts.invocation.output_last_message_path, label: "assistant-last-message" },
       { path: opts.invalid_manifest_path, label: "invalid-result-manifest" },
       { path: opts.invocation.result_path, label: "result-manifest" },
@@ -243,17 +253,24 @@ export class CodexRunnerAdapter implements RunnerAdapter {
 
   execute(invocation: RunnerInvocation): Promise<RunnerResult> {
     const started_at = new Date().toISOString();
+    let processResult: SupervisedProcessResult | null = null;
     return (async () => {
       try {
         assertCodexInvocation(invocation);
         const bootstrapText = await readFile(invocation.bootstrap_path!, "utf8");
-        const processResult = await runSupervisedProcess({
+        processResult = await runSupervisedProcess({
           invocation,
           stdin_text: bootstrapText,
           start_message: "codex exec started",
         });
         const lastMessage = await readOptionalText(invocation.output_last_message_path);
-        const artifacts = buildCodexArtifacts({ invocation });
+        const artifacts = buildCodexArtifacts({
+          invocation,
+          trace_artifact_path: processResult.trace_artifact_path,
+          trace_archive_path: processResult.trace_archive_path,
+          stderr_artifact_path: processResult.stderr_artifact_path,
+          stderr_archive_path: processResult.stderr_archive_path,
+        });
         const output_paths = artifacts.map((artifact) => artifact.path);
         const success = processResult.exit_code === 0;
         const ended_at = processResult.ended_at;
@@ -388,6 +405,10 @@ export class CodexRunnerAdapter implements RunnerAdapter {
             : null;
         const artifacts = buildCodexArtifacts({
           invocation,
+          trace_artifact_path: processResult?.trace_artifact_path,
+          trace_archive_path: processResult?.trace_archive_path,
+          stderr_artifact_path: processResult?.stderr_artifact_path,
+          stderr_archive_path: processResult?.stderr_archive_path,
           invalid_manifest_path: invalidManifestPath,
         });
         const output_paths = artifacts.map((artifact) => artifact.path);

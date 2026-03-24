@@ -15,6 +15,9 @@ describe("runner config", () => {
       mode: "raw",
       max_tail_bytes: 65_536,
       capture_stderr: true,
+      retention: "keep",
+      compression: "none",
+      redact_patterns: [],
     });
     expect(resolveRunnerTimeoutPolicy(config)).toEqual({
       wall_clock_ms: 900_000,
@@ -70,6 +73,9 @@ describe("runner config", () => {
       mode: "off",
       max_tail_bytes: 128,
       capture_stderr: false,
+      retention: "keep",
+      compression: "none",
+      redact_patterns: [],
     });
   });
 
@@ -81,6 +87,9 @@ describe("runner config", () => {
         mode: "raw",
         max_tail_bytes: 64,
         capture_stderr: true,
+        retention: "keep",
+        compression: "none",
+        redact_patterns: [],
       },
       timeouts: {
         wall_clock_ms: 2000,

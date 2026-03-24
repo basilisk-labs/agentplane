@@ -3,6 +3,10 @@ import path from "node:path";
 
 import { renderAgentplaneConfigSchemaJson } from "../packages/core/src/config/config-schema.ts";
 
+function normalizeJsonText(text) {
+  return JSON.stringify(JSON.parse(text));
+}
+
 function usage() {
   console.log("Usage: bun scripts/sync-schemas.mjs <check|sync>");
   throw new Error("Invalid usage");
@@ -18,9 +22,12 @@ function main() {
     path.join(repoRoot, "packages", "core", "schemas", "config.schema.json"),
   ];
   const rendered = renderAgentplaneConfigSchemaJson();
+  const normalizedRendered = normalizeJsonText(rendered);
 
   if (mode === "check") {
-    const drifted = targets.filter((target) => readFileSync(target, "utf8") !== rendered);
+    const drifted = targets.filter(
+      (target) => normalizeJsonText(readFileSync(target, "utf8")) !== normalizedRendered,
+    );
     if (drifted.length > 0) {
       const lines = drifted
         .map((target) => `Target: ${path.relative(repoRoot, target)}`)
@@ -33,7 +40,9 @@ function main() {
     return;
   }
 
-  const drifted = targets.filter((target) => readFileSync(target, "utf8") !== rendered);
+  const drifted = targets.filter(
+    (target) => normalizeJsonText(readFileSync(target, "utf8")) !== normalizedRendered,
+  );
   if (drifted.length === 0) {
     process.stdout.write("schemas already in sync\n");
     return;

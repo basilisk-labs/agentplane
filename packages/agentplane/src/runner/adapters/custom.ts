@@ -22,7 +22,11 @@ import {
   runnerAdapterSuccessResult,
   type RunnerAdapter,
 } from "./shared.js";
-import { exitCodeForSignal, runSupervisedProcess } from "../process-supervision.js";
+import {
+  exitCodeForSignal,
+  runSupervisedProcess,
+  type SupervisedProcessResult,
+} from "../process-supervision.js";
 import {
   InvalidRunnerResultManifestError,
   manifestFromRunnerResult,
@@ -102,6 +106,10 @@ function assertCustomBundle(bundle: RunnerContextBundle): void {
 
 function buildCustomArtifacts(opts: {
   invocation: RunnerInvocation;
+  trace_artifact_path?: string | null;
+  trace_archive_path?: string | null;
+  stderr_artifact_path?: string | null;
+  stderr_archive_path?: string | null;
   source_manifest_path?: string | null;
   invalid_manifest_path?: string | null;
 }): NonNullable<RunnerResult["artifacts"]> {
@@ -109,8 +117,10 @@ function buildCustomArtifacts(opts: {
     runnerArtifactsFromSpecs([
       { path: opts.invocation.bundle_path, label: "bundle" },
       { path: opts.invocation.bootstrap_path, label: "bootstrap" },
-      { path: opts.invocation.trace_path, label: "raw-trace" },
-      { path: opts.invocation.stderr_path, label: "stderr-log" },
+      { path: opts.trace_artifact_path, label: "raw-trace" },
+      { path: opts.trace_archive_path, label: "raw-trace-gzip" },
+      { path: opts.stderr_artifact_path, label: "stderr-log" },
+      { path: opts.stderr_archive_path, label: "stderr-log-gzip" },
       { path: opts.source_manifest_path, label: "source-result-manifest" },
       { path: opts.invalid_manifest_path, label: "invalid-result-manifest" },
       { path: opts.invocation.result_path, label: "result-manifest" },
@@ -242,13 +252,14 @@ export class CustomRunnerAdapter implements RunnerAdapter {
 
   execute(invocation: RunnerInvocation): Promise<RunnerResult> {
     const started_at = new Date().toISOString();
+    let processResult: SupervisedProcessResult | null = null;
     return (async () => {
       try {
         assertCustomInvocation(invocation);
         const bootstrapText = invocation.bootstrap_path
           ? await readFile(invocation.bootstrap_path, "utf8")
           : "";
-        const processResult = await runSupervisedProcess({
+        processResult = await runSupervisedProcess({
           invocation,
           stdin_text: bootstrapText,
           start_message: "custom runner started",
@@ -259,6 +270,10 @@ export class CustomRunnerAdapter implements RunnerAdapter {
           : null;
         const artifacts = buildCustomArtifacts({
           invocation,
+          trace_artifact_path: processResult?.trace_artifact_path,
+          trace_archive_path: processResult?.trace_archive_path,
+          stderr_artifact_path: processResult?.stderr_artifact_path,
+          stderr_archive_path: processResult?.stderr_archive_path,
           source_manifest_path: sourceManifestPath,
         });
         const output_paths = artifacts.map((artifact) => artifact.path);
@@ -399,6 +414,10 @@ export class CustomRunnerAdapter implements RunnerAdapter {
             : null;
         const artifacts = buildCustomArtifacts({
           invocation,
+          trace_artifact_path: processResult?.trace_artifact_path,
+          trace_archive_path: processResult?.trace_archive_path,
+          stderr_artifact_path: processResult?.stderr_artifact_path,
+          stderr_archive_path: processResult?.stderr_archive_path,
           source_manifest_path: sourceManifestPath,
           invalid_manifest_path: invalidManifestPath,
         });

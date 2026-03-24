@@ -206,6 +206,9 @@ describe("runCli", () => {
             mode?: string;
             max_tail_bytes?: number;
             capture_stderr?: boolean;
+            retention?: string;
+            compression?: string;
+            redact_patterns?: string[];
           };
           timeout_policy?: {
             wall_clock_ms?: number;
@@ -228,6 +231,9 @@ describe("runCli", () => {
         mode: "raw",
         max_tail_bytes: 65_536,
         capture_stderr: true,
+        retention: "keep",
+        compression: "none",
+        redact_patterns: [],
       });
       expect(bundle.execution.timeout_policy).toEqual({
         wall_clock_ms: 900_000,
@@ -479,6 +485,104 @@ describe("runCli", () => {
         } finally {
           io.restore();
         }
+      }
+    } finally {
+      process.env.PATH = originalPath;
+    }
+  });
+
+  it("task run trace reads gzipped trace artifacts and redacts configured patterns", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = {
+      command: ["custom-runner"],
+      env: {
+        CUSTOM_TOKEN: "runner-token",
+      },
+    };
+    config.runner.trace = {
+      ...config.runner.trace,
+      retention: "remove_on_success",
+      compression: "gzip",
+      redact_patterns: ["runner-token"],
+    };
+    await writeConfig(root, config);
+
+    const fakeBinDir = path.join(root, "bin");
+    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Runner compressed trace task",
+          "--description",
+          "Inspect compressed runner trace artifacts via CLI",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeRunnerPath,
+      [
+        "#!/bin/sh",
+        String.raw`printf "trace runner-token line\n"`,
+        String.raw`printf "stderr runner-token\n" 1>&2`,
+        "cat >/dev/null",
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeRunnerPath, 0o755);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before exercising compressed runner trace inspection in the CLI test.",
+      "--root",
+      root,
+    ]);
+
+    const originalPath = process.env.PATH;
+    try {
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
+      expect(await runCliSilent(["task", "run", taskId, "--root", root])).toBe(0);
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      const runEntries = await readdir(runsRoot);
+      const runDir = path.join(runsRoot, runEntries.toSorted()[0] ?? "");
+      expect(await pathExists(path.join(runDir, "agent-trace.jsonl"))).toBe(false);
+      expect(await pathExists(path.join(runDir, "stderr.log"))).toBe(false);
+      expect(await pathExists(path.join(runDir, "agent-trace.jsonl.gz"))).toBe(true);
+      expect(await pathExists(path.join(runDir, "stderr.log.gz"))).toBe(true);
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["task", "run", "trace", taskId, "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain('"raw":"trace [REDACTED] line"');
+        expect(io.stdout).not.toContain("runner-token");
+      } finally {
+        io.restore();
       }
     } finally {
       process.env.PATH = originalPath;
