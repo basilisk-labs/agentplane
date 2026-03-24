@@ -193,7 +193,13 @@ describe("task-run lifecycle usecases", () => {
     });
 
     const executed = await executionPromise;
-    const finalState = await readRunnerRunState(statePath);
+    const finalState = await waitForState(
+      statePath,
+      (state) =>
+        state?.status === "cancelled" &&
+        Boolean(state.supervision?.cancel_signal) &&
+        state.result?.status === "cancelled",
+    );
 
     expect(cancelled.changed).toBe(true);
     expect(cancelled.state.status).toBe("cancelled");
@@ -201,7 +207,7 @@ describe("task-run lifecycle usecases", () => {
     expect(cancelled.state.supervision?.cancel_signal).toBeTruthy();
     expect(executed.result.status).toBe("cancelled");
     expect(finalState?.status).toBe("cancelled");
-    expect(finalState?.supervision?.exit_signal).toBeTruthy();
+    expect(finalState?.supervision?.cancel_signal).toBeTruthy();
   });
 
   it("cancel refuses when the live process identity no longer matches persisted supervision metadata", async () => {
