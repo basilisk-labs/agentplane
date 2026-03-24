@@ -391,6 +391,111 @@ describe("runCli", () => {
   );
 
   it(
+    "finish --commit-from-comment records implementation hash in task metadata and uses a separate close commit for tracked task docs",
+    { timeout: 120_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "file.txt"), "seed\n", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
+
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Finish commit-from-comment close commit",
+          "--description",
+          "Finish should keep implementation commit provenance while recording tracked task docs separately",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+
+      await runCliSilent([
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--by",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]);
+
+      await runCliSilent([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: prepare commit-from-comment finish smoke path.",
+        "--root",
+        root,
+      ]);
+
+      await writeFile(path.join(root, "file.txt"), "seed\nchanged\n", "utf8");
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "finish",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Verified: finish commit-from-comment should create an implementation commit and then a deterministic close commit for the tracked task README.",
+          "--result",
+          "finish commit-from-comment close commit",
+          "--commit-from-comment",
+          "--commit-allow",
+          "file.txt",
+          "--commit-allow",
+          ".agentplane/tasks",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("creating commit from verification comment");
+        expect(io.stdout).toContain("creating deterministic close commit");
+        expect(io.stdout).toContain("✅ finished");
+      } finally {
+        io.restore();
+      }
+
+      const task = await readTask({ cwd: root, rootOverride: root, taskId });
+      const { stdout: headHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+      const { stdout: parentHash } = await execFileAsync("git", ["rev-parse", "HEAD^"], {
+        cwd: root,
+      });
+      const { stdout: headSubject } = await execFileAsync("git", ["show", "-s", "--format=%s"], {
+        cwd: root,
+      });
+
+      expect(task.frontmatter.commit?.hash).toBe(parentHash.trim());
+      expect(task.frontmatter.commit?.hash).not.toBe(headHash.trim());
+      expect(headSubject.trim()).toContain("close:");
+    },
+  );
+
+  it(
     "finish reports deterministic close-commit failures as close-commit phase errors",
     { timeout: 60_000 },
     async () => {

@@ -7,7 +7,7 @@ import { CliError } from "../../shared/errors.js";
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { buildGitCommitEnv, cmdCommit, commitFromComment } from "../guard/index.js";
+import { cmdCommit, commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import {
@@ -324,8 +324,14 @@ export async function cmdFinish(opts: {
       opts.taskIds.length === 1 &&
       !opts.commitFromComment &&
       !statusCommitRequested;
+    const statusPathRequiresTrackedTaskCommit =
+      backendWritesTaskReadmes &&
+      opts.taskIds.length === 1 &&
+      (opts.commitFromComment || statusCommitRequested);
     const shouldCloseCommit =
-      opts.closeCommit === true || (defaultDirectCloseCommit && opts.noCloseCommit !== true);
+      opts.closeCommit === true ||
+      statusPathRequiresTrackedTaskCommit ||
+      (defaultDirectCloseCommit && opts.noCloseCommit !== true);
 
     const metaTaskId = opts.taskIds.length === 1 ? (opts.taskIds[0] ?? "") : "";
     const wantMeta =
@@ -549,27 +555,6 @@ export async function cmdFinish(opts: {
         };
         await ctx.taskBackend.writeTask(nextTask);
       }
-    }
-
-    if (opts.commitFromComment && backendWritesTaskReadmes && primaryTaskId) {
-      const workflowReadmeRelPath = path.join(
-        ctx.config.paths.workflow_dir,
-        primaryTaskId,
-        "README.md",
-      );
-      await ctx.git.stage([workflowReadmeRelPath]);
-      const env = buildGitCommitEnv({
-        taskId: primaryTaskId,
-        agentId: executorAgent ?? undefined,
-        statusTo: "DONE",
-        allowTasks: true,
-        allowBase: false,
-        allowPolicy: false,
-        allowConfig: false,
-        allowHooks: false,
-        allowCI: false,
-      });
-      await ctx.git.commitAmendNoEdit({ env });
     }
 
     // tasks.json is export-only; generated via `agentplane task export`.

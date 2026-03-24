@@ -16,13 +16,11 @@ import type { TaskStorePatch } from "../shared/task-store.js";
 const mocks = vi.hoisted(() => ({
   commitFromComment: vi.fn(),
   cmdCommit: vi.fn(),
-  buildGitCommitEnv: vi.fn(),
   ensureReconciledBeforeMutation: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
   backendIsLocalFileBackend: vi.fn(),
   getTaskStore: vi.fn(),
-  readHeadCommit: vi.fn(),
   readCommitInfo: vi.fn(),
   nowIso: vi.fn(),
 }));
@@ -30,7 +28,6 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../guard/index.js", () => ({
   commitFromComment: mocks.commitFromComment,
   cmdCommit: mocks.cmdCommit,
-  buildGitCommitEnv: mocks.buildGitCommitEnv,
 }));
 vi.mock("../shared/reconcile-check.js", () => ({
   ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
@@ -59,7 +56,6 @@ vi.mock("./shared.js", async (importOriginal) => {
       : {};
   return {
     ...actual,
-    readHeadCommit: mocks.readHeadCommit,
     readCommitInfo: mocks.readCommitInfo,
     nowIso: mocks.nowIso,
   };
@@ -187,12 +183,10 @@ describe("task finish (unit)", () => {
     mocks.loadTaskFromContext.mockReset();
     mocks.backendIsLocalFileBackend.mockReset();
     mocks.getTaskStore.mockReset();
-    mocks.readHeadCommit.mockReset();
     mocks.readCommitInfo.mockReset();
     mocks.nowIso.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
-    mocks.readHeadCommit.mockResolvedValue({ hash: "h", message: "m" });
     mocks.readCommitInfo.mockResolvedValue({ hash: "hc", message: "mc" });
     mocks.nowIso.mockReturnValue("2026-02-09T00:00:00.000Z");
     mocks.commitFromComment.mockResolvedValue({
@@ -201,7 +195,6 @@ describe("task finish (unit)", () => {
       staged: ["packages/agentplane"],
     });
     mocks.cmdCommit.mockResolvedValue(0);
-    mocks.buildGitCommitEnv.mockReturnValue({});
     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
   });
 
@@ -333,7 +326,6 @@ describe("task finish (unit)", () => {
     expect(currentTask.commit ?? null).toBeNull();
     expect(storePatch).toHaveBeenCalledTimes(1);
     expect(mocks.commitFromComment).not.toHaveBeenCalled();
-    expect(mocks.readHeadCommit).not.toHaveBeenCalled();
   });
 
   it("runs deterministic close commit when --close-commit is enabled", async () => {
@@ -716,7 +708,6 @@ describe("task finish (unit)", () => {
     expect(mocks.readCommitInfo).toHaveBeenCalled();
 
     mocks.readCommitInfo.mockClear();
-    mocks.readHeadCommit.mockClear();
     await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -739,7 +730,6 @@ describe("task finish (unit)", () => {
       quiet: true,
     });
     expect(mocks.readCommitInfo).not.toHaveBeenCalled();
-    expect(mocks.readHeadCommit).not.toHaveBeenCalled();
   });
 
   it("rejects combining --commit-from-comment with --status-commit", async () => {
@@ -804,7 +794,7 @@ describe("task finish (unit)", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
-  it("creates the verification commit before writing DONE metadata and amends the README in local mode", async () => {
+  it("creates the verification commit before writing DONE metadata and records tracked task docs in a close commit", async () => {
     const writes: string[] = [];
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
       writes.push(String(chunk));
@@ -856,9 +846,6 @@ describe("task finish (unit)", () => {
       get: storeGet,
       patch: storePatch,
     });
-    const stageSpy = vi.spyOn(ctx.git, "stage").mockResolvedValue();
-    const amendSpy = vi.spyOn(ctx.git, "commitAmendNoEdit").mockResolvedValue();
-
     const { cmdFinish } = await import("./finish.js");
     const rc = await cmdFinish({
       ctx,
@@ -898,16 +885,19 @@ describe("task finish (unit)", () => {
     expect(typeof currentTask.doc_updated_at).toBe("string");
 
     expect(mocks.commitFromComment).toHaveBeenCalledTimes(1);
+    expect(mocks.cmdCommit).toHaveBeenCalledTimes(1);
     const call = mocks.commitFromComment.mock.calls[0]?.[0] as { emoji?: string; taskId?: string };
     expect(call.taskId).toBe("T-1");
     expect(call.emoji).toBe("✅");
-    expect(stageSpy).toHaveBeenCalledWith([".agentplane/tasks/T-1/README.md"]);
-    expect(amendSpy).toHaveBeenCalledTimes(1);
+    expect(mocks.cmdCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        close: true,
+      }),
+    );
     expect(writes.join("")).toContain("creating commit from verification comment");
+    expect(writes.join("")).toContain("creating deterministic close commit");
     expect(writes.join("")).toContain("finished");
-
-    stageSpy.mockRestore();
-    amendSpy.mockRestore();
     writeSpy.mockRestore();
   });
 
@@ -955,7 +945,7 @@ describe("task finish (unit)", () => {
     writeSpy.mockRestore();
   });
 
-  it("amends the generated commit when a projection-backed backend writes tracked task READMEs", async () => {
+  it("records tracked task READMEs in a deterministic close commit for projection-backed backends", async () => {
     let currentTask = mkTask({
       id: "T-1",
       status: "DOING",
@@ -989,9 +979,6 @@ describe("task finish (unit)", () => {
     });
     ctx.config.workflow_mode = "branch_pr";
     mocks.loadTaskFromContext.mockImplementation(() => Promise.resolve(currentTask));
-    const stageSpy = vi.spyOn(ctx.git, "stage").mockResolvedValue();
-    const amendSpy = vi.spyOn(ctx.git, "commitAmendNoEdit").mockResolvedValue();
-
     const { cmdFinish } = await import("./finish.js");
     const rc = await cmdFinish({
       ctx,
@@ -1019,11 +1006,12 @@ describe("task finish (unit)", () => {
 
     expect(rc).toBe(0);
     expect(writeTask).toHaveBeenCalledTimes(1);
-    expect(stageSpy).toHaveBeenCalledWith([".agentplane/tasks/T-1/README.md"]);
-    expect(amendSpy).toHaveBeenCalledTimes(1);
-
-    stageSpy.mockRestore();
-    amendSpy.mockRestore();
+    expect(mocks.cmdCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        close: true,
+      }),
+    );
   });
 
   it("prints close-commit progress before the deterministic close commit runs", async () => {
