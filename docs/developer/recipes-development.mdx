@@ -28,6 +28,8 @@ description: "Practical workflow for authoring and validating recipes."
 7. If the created task must be debugged independently, inspect the shared runner contract:
    - `agentplane task run <task-id> --dry-run`
 8. Confirm no additional runtime assumptions leaked into docs or tests.
+9. Regenerate the published recipes inventory if recipe manifests changed:
+   - `node scripts/generate-recipes-inventory.mjs`
 
 ## Designing scenarios
 

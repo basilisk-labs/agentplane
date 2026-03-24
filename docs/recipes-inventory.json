@@ -1,5 +1,4 @@
 {
-  "generated_at": "2026-03-10T00:00:00Z",
   "schema_version": "recipes-inventory@2",
   "runtime_contract": {
     "install_root": ".agentplane/recipes/<recipe-id>/",
@@ -15,34 +14,6 @@
   },
   "recipes": [
     {
-      "id": "viewer",
-      "name": "Viewer",
-      "version": "0.1.0",
-      "summary": "Local viewer for task artifacts.",
-      "source": "agentplane-recipes/recipes/viewer",
-      "self_contained": true,
-      "scenarios": [
-        {
-          "id": "viewer",
-          "summary": "Open the local task viewer through the shared runner.",
-          "use_when": [
-            "Need to inspect task artifacts in a browser.",
-            "Need a local preview before changing task data."
-          ],
-          "required_inputs": ["port"],
-          "outputs": ["viewer_url"],
-          "agents_involved": ["viewer-operator"],
-          "skills_used": ["viewer-analysis"],
-          "tools_used": ["viewer-server"],
-          "run_profile": {
-            "mode": "analysis",
-            "sandbox": "workspace-write",
-            "expected_exit_contract": "viewer_url"
-          }
-        }
-      ]
-    },
-    {
       "id": "dokploy",
       "name": "Dokploy",
       "version": "0.1.0",
@@ -51,26 +22,8 @@
       "self_contained": true,
       "scenarios": [
         {
-          "id": "list-projects",
-          "summary": "List Dokploy projects through the shared runner.",
-          "use_when": [
-            "Need to validate Dokploy connectivity.",
-            "Need to inspect available projects before deployment."
-          ],
-          "required_inputs": [],
-          "outputs": ["projects"],
-          "agents_involved": ["dokploy-operator"],
-          "skills_used": ["dokploy-analysis"],
-          "tools_used": ["dokploy"],
-          "run_profile": {
-            "mode": "analysis",
-            "sandbox": "workspace-write",
-            "expected_exit_contract": "projects"
-          }
-        },
-        {
           "id": "deploy-application",
-          "summary": "Deploy an application through Dokploy via the shared runner.",
+          "summary": "Prepare a run plan for deploying an application through Dokploy.",
           "use_when": [
             "Need to deploy an application through Dokploy.",
             "Need to review deployment permissions before execution."
@@ -85,6 +38,52 @@
             "sandbox": "workspace-write",
             "requires_human_approval": true,
             "expected_exit_contract": "deployment_status"
+          }
+        },
+        {
+          "id": "list-projects",
+          "summary": "Prepare a run plan for listing Dokploy projects.",
+          "use_when": [
+            "Need to validate Dokploy connectivity.",
+            "Need to inspect available projects before a deployment."
+          ],
+          "required_inputs": [],
+          "outputs": ["projects"],
+          "agents_involved": ["dokploy-operator"],
+          "skills_used": ["dokploy-analysis"],
+          "tools_used": ["dokploy"],
+          "run_profile": {
+            "mode": "analysis",
+            "sandbox": "workspace-write",
+            "expected_exit_contract": "projects"
+          }
+        }
+      ]
+    },
+    {
+      "id": "viewer",
+      "name": "Viewer",
+      "version": "0.1.0",
+      "summary": "Local viewer for task artifacts.",
+      "source": "agentplane-recipes/recipes/viewer",
+      "self_contained": true,
+      "scenarios": [
+        {
+          "id": "viewer",
+          "summary": "Prepare the local task viewer run plan.",
+          "use_when": [
+            "Need to inspect task artifacts in a browser.",
+            "Need a local preview before editing task data."
+          ],
+          "required_inputs": ["port"],
+          "outputs": ["viewer_url"],
+          "agents_involved": ["viewer-operator"],
+          "skills_used": ["viewer-analysis"],
+          "tools_used": ["viewer-server"],
+          "run_profile": {
+            "mode": "analysis",
+            "sandbox": "workspace-write",
+            "expected_exit_contract": "viewer_url"
           }
         }
       ]

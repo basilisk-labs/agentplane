@@ -54,6 +54,7 @@ const fastSteps = [
     },
   ],
   ["CLI docs freshness (check)", () => runCliDocsFreshnessStep()],
+  ["Recipes inventory freshness (check)", () => run("bun", ["run", "docs:recipes:check"])],
   ["Agent onboarding scenario (check)", () => run("bun", ["run", "docs:onboarding:check"])],
   ["Lint (core)", () => run("bun", ["run", "lint:core"])],
   ["Unit tests (fast)", () => run("bun", ["run", "test:fast"], testEnv)],
@@ -109,6 +110,9 @@ function runDocsOnlyFastPath() {
   runStep("Policy routing (check)", () => runCommand("bun", ["run", "policy:routing:check"]));
   runStep("Release parity (check)", () => runCommand("bun", ["run", "release:parity"]));
   runStep("CLI docs freshness (check)", () => runCliDocsFreshnessStep());
+  runStep("Recipes inventory freshness (check)", () =>
+    runCommand("bun", ["run", "docs:recipes:check"]),
+  );
   runStep("Agent onboarding scenario (check)", () =>
     runCommand("bun", ["run", "docs:onboarding:check"]),
   );
@@ -126,6 +130,9 @@ function runTargetedFastPath(plan) {
     runCommand("bun", ["run", "build"]);
   });
   runStep("CLI docs freshness (check)", () => runCliDocsFreshnessStep());
+  runStep("Recipes inventory freshness (check)", () =>
+    runCommand("bun", ["run", "docs:recipes:check"]),
+  );
   runStep("Agent onboarding scenario (check)", () =>
     runCommand("bun", ["run", "docs:onboarding:check"]),
   );

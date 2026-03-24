@@ -8,6 +8,10 @@ Recipes are optional extensions. Core workflow must remain usable with zero inst
 Recipes v1 are self-contained project-local capability bundles. The only public recipe entrypoint is a
 scenario descriptor exposed through `manifest.json`.
 
+The repository-level docs inventory (`docs/recipes-inventory.json`) is a generated projection sourced
+from `agentplane-recipes/index.json` plus the checked-in recipe manifests under
+`agentplane-recipes/recipes/*/manifest.json`.
+
 ## What a recipe contains
 
 A recipe archive (`.zip` or `.tar.gz`) must include `manifest.json` at archive root or in a single top-level directory.

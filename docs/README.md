@@ -38,3 +38,10 @@ Generated command reference:
 - If the linked dev binary reports a stale build inside the framework checkout, rebuild first or
   run the built dist entrypoint directly:
   `node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx`
+
+Generated recipes inventory:
+
+- `docs/recipes-inventory.json` is generated from `agentplane-recipes/index.json` plus the
+  recipe manifests under `agentplane-recipes/recipes/*/manifest.json`.
+- Refresh command:
+  `node scripts/generate-recipes-inventory.mjs`
