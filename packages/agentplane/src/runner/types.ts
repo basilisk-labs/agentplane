@@ -1,3 +1,5 @@
+import type { RunnerTraceConfig } from "@agentplaneorg/core";
+
 import type { TaskData, TaskEvent } from "../backends/task-backend.js";
 
 export const RUNNER_BUNDLE_SCHEMA_VERSION = 1 as const;
@@ -82,6 +84,8 @@ export type RunnerArtifactPaths = {
   stderr_path: string;
 };
 
+export type RunnerTracePolicy = RunnerTraceConfig;
+
 export type RunnerCapabilityLevel = "native" | "wrapper" | "advisory" | "unsupported";
 
 export type RunnerCapabilityChannel = "argv" | "env" | "result" | "none";
@@ -103,6 +107,7 @@ export type RunnerExecutionContract = {
   mode: "execute" | "dry_run";
   run_id: string;
   artifact_paths: RunnerArtifactPaths;
+  trace_policy: RunnerTracePolicy;
   adapter_capabilities?: RunnerAdapterCapabilities;
   approvals?: {
     require_plan?: boolean;
@@ -132,6 +137,7 @@ export type RunnerInvocation = {
   result_path: string;
   trace_path: string;
   stderr_path: string;
+  trace_policy: RunnerTracePolicy;
   bootstrap_path?: string | null;
   output_last_message_path?: string | null;
   argv: string[];
@@ -221,6 +227,7 @@ export type RunnerPreparedMetadata = {
   bootstrap_sha256: string;
   has_task_context: boolean;
   has_recipe_context: boolean;
+  trace_policy: RunnerTracePolicy;
   adapter_capabilities?: RunnerAdapterCapabilities;
   invocation: {
     executable: string | null;
@@ -246,6 +253,7 @@ export type RunnerRunState = {
   events_path: string;
   trace_path: string;
   stderr_path: string;
+  trace_policy: RunnerTracePolicy;
   created_at: string;
   updated_at: string;
   prepared_metadata?: RunnerPreparedMetadata;

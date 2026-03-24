@@ -194,6 +194,11 @@ describe("runCli", () => {
         execution: {
           mode: string;
           adapter_id: string;
+          trace_policy?: {
+            mode?: string;
+            max_tail_bytes?: number;
+            capture_stderr?: boolean;
+          };
           adapter_capabilities?: { adapter_id: string };
         };
         task: { task_id: string };
@@ -201,6 +206,11 @@ describe("runCli", () => {
       const bootstrap = await readFile(bootstrapPath, "utf8");
       expect(bundle.execution.mode).toBe("dry_run");
       expect(bundle.execution.adapter_id).toBe("codex");
+      expect(bundle.execution.trace_policy).toEqual({
+        mode: "raw",
+        max_tail_bytes: 65_536,
+        capture_stderr: true,
+      });
       expect(bundle.execution.adapter_capabilities?.adapter_id).toBe("codex");
       expect(bundle.task.task_id).toBe(taskId);
       expect(bootstrap).toContain(

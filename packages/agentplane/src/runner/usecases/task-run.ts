@@ -17,6 +17,7 @@ import { assembleRunnerTaskContext } from "../context/task-context.js";
 import { createRunnerRunId } from "../run-id.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { resolveTaskRunnerPaths } from "../task-run-paths.js";
+import { resolveRunnerTracePolicy } from "../config.js";
 import {
   RUNNER_API_VERSION,
   RUNNER_BUNDLE_SCHEMA_VERSION,
@@ -255,6 +256,7 @@ export async function prepareTaskRunnerExecution(opts: {
       mode: opts.mode,
       run_id,
       artifact_paths,
+      trace_policy: resolveRunnerTracePolicy(ctx.config),
       approvals: {
         require_plan: ctx.config.agents?.approvals.require_plan,
         require_verify: ctx.config.agents?.approvals.require_verify,

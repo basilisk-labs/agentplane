@@ -19,6 +19,8 @@ export {
   type ReasoningEffort,
   type RunnerAdapterId,
   type RunnerCustomConfig,
+  type RunnerTraceConfig,
+  type RunnerTraceMode,
   type StatusCommitPolicy,
   type WorkflowMode,
 } from "./config/config.js";

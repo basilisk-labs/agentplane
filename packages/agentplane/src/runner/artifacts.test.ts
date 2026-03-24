@@ -63,6 +63,11 @@ describe("runner artifacts", () => {
         adapter_id: "codex",
         mode: "dry_run",
         run_id: "2026-03-23T13-00-00-000Z",
+        trace_policy: {
+          mode: "raw",
+          max_tail_bytes: 65_536,
+          capture_stderr: true,
+        },
         artifact_paths: paths,
         adapter_capabilities: {
           adapter_id: "codex",
@@ -83,6 +88,14 @@ describe("runner artifacts", () => {
       bundle_path: paths.bundle_path,
       state_path: paths.state_path,
       events_path: paths.events_path,
+      result_path: paths.result_path,
+      trace_path: paths.trace_path,
+      stderr_path: paths.stderr_path,
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 65_536,
+        capture_stderr: true,
+      },
       bootstrap_path: paths.bootstrap_path,
       output_last_message_path: path.join(paths.run_dir, "codex-last-message.md"),
       argv: ["codex", "exec", "-"],
@@ -108,6 +121,11 @@ describe("runner artifacts", () => {
       prompt_count: 0,
       has_task_context: true,
       has_recipe_context: false,
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 65_536,
+        capture_stderr: true,
+      },
       adapter_capabilities: {
         adapter_id: "codex",
         fields: {
@@ -123,6 +141,7 @@ describe("runner artifacts", () => {
         argv_count: 3,
         env_keys: ["AGENTPLANE_RUNNER_ADAPTER", "AGENTPLANE_RUNNER_MODE"],
         cwd: paths.run_dir,
+        has_result_path: true,
         has_output_last_message_path: true,
       },
     });
@@ -138,6 +157,11 @@ describe("runner artifacts", () => {
       run_id: string;
       created_at: string;
       prepared_metadata?: {
+        trace_policy?: {
+          mode: string;
+          max_tail_bytes: number;
+          capture_stderr: boolean;
+        };
         adapter_capabilities?: {
           adapter_id: string;
         };
@@ -149,6 +173,11 @@ describe("runner artifacts", () => {
       created_at: "2026-03-23T13:00:00.000Z",
       trace_path: paths.trace_path,
       stderr_path: paths.stderr_path,
+    });
+    expect(writtenState.prepared_metadata?.trace_policy).toEqual({
+      mode: "raw",
+      max_tail_bytes: 65_536,
+      capture_stderr: true,
     });
     expect(writtenState.prepared_metadata?.adapter_capabilities?.adapter_id).toBe("codex");
 

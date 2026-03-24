@@ -164,15 +164,46 @@
     "runner": {
       "type": "object",
       "additionalProperties": true,
-      "required": ["default_adapter"],
+      "required": ["default_adapter", "trace"],
       "default": {
-        "default_adapter": "codex"
+        "default_adapter": "codex",
+        "trace": {
+          "mode": "raw",
+          "max_tail_bytes": 65536,
+          "capture_stderr": true
+        }
       },
       "properties": {
         "default_adapter": {
           "type": "string",
           "enum": ["codex", "custom"],
           "default": "codex"
+        },
+        "trace": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "max_tail_bytes", "capture_stderr"],
+          "default": {
+            "mode": "raw",
+            "max_tail_bytes": 65536,
+            "capture_stderr": true
+          },
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": ["raw", "off"],
+              "default": "raw"
+            },
+            "max_tail_bytes": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 65536
+            },
+            "capture_stderr": {
+              "type": "boolean",
+              "default": true
+            }
+          }
         },
         "custom": {
           "type": "object",

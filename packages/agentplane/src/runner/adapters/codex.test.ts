@@ -54,6 +54,11 @@ function makeBundle(): RunnerContextBundle {
       adapter_id: "codex",
       mode: "dry_run",
       run_id: "run-123",
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 65_536,
+        capture_stderr: true,
+      },
       artifact_paths: {
         run_dir: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123",
         bundle_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/bundle.json",
@@ -105,6 +110,11 @@ describe("CodexRunnerAdapter", () => {
       result_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/result.json",
       trace_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/agent-trace.jsonl",
       stderr_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/stderr.log",
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 65_536,
+        capture_stderr: true,
+      },
       bootstrap_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/bootstrap.md",
       output_last_message_path:
         "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/codex-last-message.md",

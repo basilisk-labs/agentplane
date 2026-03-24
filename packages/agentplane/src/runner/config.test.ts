@@ -1,12 +1,17 @@
 import { defaultConfig, validateConfig } from "@agentplaneorg/core";
 import { describe, expect, it } from "vitest";
 
-import { resolveRunnerAdapterId } from "./config.js";
+import { resolveRunnerAdapterId, resolveRunnerTracePolicy } from "./config.js";
 
 describe("runner config", () => {
   it("defaults the selected runner adapter to codex", () => {
     const config = validateConfig({});
     expect(resolveRunnerAdapterId(config)).toBe("codex");
+    expect(resolveRunnerTracePolicy(config)).toEqual({
+      mode: "raw",
+      max_tail_bytes: 65_536,
+      capture_stderr: true,
+    });
   });
 
   it("reads an explicit custom adapter selection from config", () => {
@@ -36,6 +41,26 @@ describe("runner config", () => {
       env: {
         CUSTOM_TOKEN: "token",
       },
+    });
+  });
+
+  it("reads explicit runner trace policy from config", () => {
+    const raw = defaultConfig() as unknown as Record<string, unknown>;
+    raw.runner = {
+      default_adapter: "codex",
+      trace: {
+        mode: "off",
+        max_tail_bytes: 128,
+        capture_stderr: false,
+      },
+    };
+
+    const config = validateConfig(raw);
+
+    expect(resolveRunnerTracePolicy(config)).toEqual({
+      mode: "off",
+      max_tail_bytes: 128,
+      capture_stderr: false,
     });
   });
 });

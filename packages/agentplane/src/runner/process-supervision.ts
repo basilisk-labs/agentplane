@@ -22,7 +22,6 @@ const SUPPORTED_SIGNALS = new Set<RunnerProcessSignal>([
   "SIGTERM",
   "SIGKILL",
 ]);
-const OUTPUT_TAIL_LIMIT_BYTES = 64 * 1024;
 
 export type SupervisedProcessResult = {
   exit_code: number | null;
@@ -75,11 +74,12 @@ function buildInvocationEventData(
       typeof invocation.trace_path === "string" && invocation.trace_path.trim().length > 0,
     has_stderr_path:
       typeof invocation.stderr_path === "string" && invocation.stderr_path.trim().length > 0,
+    trace_policy: invocation.trace_policy,
     pid,
   };
 }
 
-function appendTail(current: string, incoming: string, maxBytes = OUTPUT_TAIL_LIMIT_BYTES): string {
+function appendTail(current: string, incoming: string, maxBytes: number): string {
   const combined = Buffer.from(`${current}${incoming}`, "utf8");
   if (combined.length <= maxBytes) return combined.toString("utf8");
   return combined.subarray(combined.length - maxBytes).toString("utf8");
@@ -167,10 +167,16 @@ export async function runSupervisedProcess(opts: {
     let stderr_buffer = "";
     let trace_seq = 0;
     let settled = false;
+    const tracePolicy = opts.invocation.trace_policy;
+    const traceMode = tracePolicy.mode;
+    const captureStderr = tracePolicy.capture_stderr;
+    const maxTailBytes = tracePolicy.max_tail_bytes;
     let traceWriteChain = Promise.resolve();
     let stderrWriteChain = Promise.resolve();
 
     const queueAppend = (kind: "trace" | "stderr", text: string) => {
+      if (kind === "trace" && traceMode !== "raw") return;
+      if (kind === "stderr" && !captureStderr) return;
       const chain = kind === "trace" ? traceWriteChain : stderrWriteChain;
       const path = kind === "trace" ? opts.invocation.trace_path : opts.invocation.stderr_path;
       const next: Promise<void> = chain.then(() => appendFile(path, text, "utf8"));
@@ -257,14 +263,14 @@ export async function runSupervisedProcess(opts: {
       const text = chunk.toString();
       heartbeat_at = new Date().toISOString();
       stdout_bytes += Buffer.byteLength(text, "utf8");
-      stdout_tail = appendTail(stdout_tail, text);
+      stdout_tail = appendTail(stdout_tail, text, maxTailBytes);
       stdout_buffer = flushTraceBuffer(`${stdout_buffer}${text}`, "stdout");
     });
     child.stderr.on("data", (chunk: Buffer | string) => {
       const text = chunk.toString();
       heartbeat_at = new Date().toISOString();
       stderr_bytes += Buffer.byteLength(text, "utf8");
-      stderr_tail = appendTail(stderr_tail, text);
+      stderr_tail = appendTail(stderr_tail, text, maxTailBytes);
       stderr_buffer = flushTraceBuffer(`${stderr_buffer}${text}`, "stderr");
       queueAppend("stderr", text);
     });

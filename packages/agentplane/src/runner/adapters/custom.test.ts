@@ -46,6 +46,11 @@ function makeBundle(): RunnerContextBundle {
       adapter_id: "custom",
       mode: "dry_run",
       run_id: "run-789",
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 65_536,
+        capture_stderr: true,
+      },
       artifact_paths: {
         run_dir: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789",
         bundle_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/bundle.json",
@@ -122,6 +127,11 @@ describe("CustomRunnerAdapter", () => {
     expect(invocation.stderr_path).toBe(
       "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/stderr.log",
     );
+    expect(invocation.trace_policy).toEqual({
+      mode: "raw",
+      max_tail_bytes: 65_536,
+      capture_stderr: true,
+    });
   });
 
   it("exports resolved recipe run_profile policy for recipe-scenario bundles", async () => {

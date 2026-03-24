@@ -117,6 +117,11 @@ describe("config", () => {
     expect(cfg.execution.unsafe_actions_requiring_explicit_user_ok.length).toBeGreaterThan(0);
     expect(cfg.framework.cli.expected_version).toBeNull();
     expect(cfg.runner.default_adapter).toBe("codex");
+    expect(cfg.runner.trace).toEqual({
+      mode: "raw",
+      max_tail_bytes: 65_536,
+      capture_stderr: true,
+    });
   });
 
   it("default task README contract uses the active v3 sections", () => {
@@ -263,6 +268,33 @@ describe("config", () => {
         "runner.default_adapter",
         (raw) => ((raw.runner as Record<string, unknown>).default_adapter = "unknown"),
         schemaPath("runner.default_adapter"),
+      ],
+      [
+        "runner.trace",
+        (raw) => ((raw.runner as Record<string, unknown>).trace = "nope"),
+        schemaPath("runner.trace"),
+      ],
+      [
+        "runner.trace.mode",
+        (raw) =>
+          (((raw.runner as Record<string, unknown>).trace as Record<string, unknown>).mode = "bad"),
+        schemaPath("runner.trace.mode"),
+      ],
+      [
+        "runner.trace.max_tail_bytes",
+        (raw) =>
+          ((
+            (raw.runner as Record<string, unknown>).trace as Record<string, unknown>
+          ).max_tail_bytes = -1),
+        schemaPath("runner.trace.max_tail_bytes"),
+      ],
+      [
+        "runner.trace.capture_stderr",
+        (raw) =>
+          ((
+            (raw.runner as Record<string, unknown>).trace as Record<string, unknown>
+          ).capture_stderr = "nope"),
+        schemaPath("runner.trace.capture_stderr"),
       ],
       ["execution", (raw) => (raw.execution = "nope"), /execution must be object/],
       [

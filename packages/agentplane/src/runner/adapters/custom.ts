@@ -171,6 +171,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
       result_path: execution.artifact_paths.result_path,
       trace_path: execution.artifact_paths.trace_path,
       stderr_path: execution.artifact_paths.stderr_path,
+      trace_policy: execution.trace_policy,
       bootstrap_path: execution.artifact_paths.bootstrap_path,
       output_last_message_path: null,
       argv: command,
