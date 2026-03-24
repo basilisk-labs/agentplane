@@ -48,8 +48,8 @@ function seedRecipeTaskSummary(opts: RunnerRecipeContextEnvelope): string {
 function seedRecipeTaskScope(opts: RunnerRecipeContextEnvelope): string {
   const seeded = opts.scenario.task_template.doc?.scope?.trim();
   if (seeded) return seeded;
-  const requiredInputs = opts.selection.run_profile.required_inputs;
-  const outputs = opts.selection.run_profile.outputs;
+  const requiredInputs = opts.selection.required_inputs;
+  const outputs = opts.selection.outputs;
   return [
     `- In scope: execute recipe scenario "${opts.selection.recipe_id}:${opts.selection.scenario_id}" to achieve "${opts.scenario.goal}".`,
     `- Required inputs: ${requiredInputs.length > 0 ? requiredInputs.join(", ") : "none declared"}.`,

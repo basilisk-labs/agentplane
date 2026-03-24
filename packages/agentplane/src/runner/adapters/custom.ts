@@ -56,34 +56,6 @@ const CUSTOM_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
       level: "advisory",
       channel: "env",
     },
-    permissions: {
-      level: "advisory",
-      channel: "env",
-    },
-    agents_involved: {
-      level: "advisory",
-      channel: "env",
-    },
-    skills_used: {
-      level: "advisory",
-      channel: "env",
-    },
-    tools_used: {
-      level: "advisory",
-      channel: "env",
-    },
-    required_inputs: {
-      level: "advisory",
-      channel: "env",
-    },
-    outputs: {
-      level: "advisory",
-      channel: "env",
-    },
-    artifacts: {
-      level: "advisory",
-      channel: "env",
-    },
   },
 };
 

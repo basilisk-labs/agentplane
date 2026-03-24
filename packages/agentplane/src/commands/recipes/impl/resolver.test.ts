@@ -130,6 +130,11 @@ describe("resolveRecipeScenarioSelection", () => {
           scope: "Materialize a task from recipe context.",
         },
       });
+      expect(selection.required_inputs).toEqual([]);
+      expect(selection.outputs).toEqual(["report"]);
+      expect(selection.permissions).toEqual([]);
+      expect(selection.artifacts).toEqual([]);
+      expect(selection.agents_involved).toEqual(["RECIPE_AGENT"]);
     } finally {
       await rm(tempDir, { recursive: true, force: true });
     }

@@ -113,13 +113,6 @@ export type ResolvedRecipeRunProfile = {
   requires_human_approval: boolean;
   writes_artifacts_to: string[];
   expected_exit_contract?: string;
-  permissions: string[];
-  agents_involved: string[];
-  skills_used: string[];
-  tools_used: string[];
-  required_inputs: string[];
-  outputs: string[];
-  artifacts: string[];
 };
 
 export type ResolvedRecipeScenario = {
@@ -135,6 +128,13 @@ export type ResolvedRecipeScenario = {
   scenario_description?: string;
   use_when: string[];
   avoid_when: string[];
+  required_inputs: string[];
+  outputs: string[];
+  permissions: string[];
+  artifacts: string[];
+  agents_involved: string[];
+  skills_used: string[];
+  tools_used: string[];
   scenario_file: string;
   compatibility: RecipeResolverCompatibility;
   run_profile: ResolvedRecipeRunProfile;

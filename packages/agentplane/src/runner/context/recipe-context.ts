@@ -27,13 +27,13 @@ function toRecipeContext(opts: {
   scenario: ScenarioDefinition;
 }): RunnerRecipeContext {
   const agents = (opts.entry.manifest.agents ?? []).filter((agent) =>
-    opts.selection.run_profile.agents_involved.includes(agent.id),
+    opts.selection.agents_involved.includes(agent.id),
   );
   const skills = (opts.entry.manifest.skills ?? []).filter((skill) =>
-    opts.selection.run_profile.skills_used.includes(skill.id),
+    opts.selection.skills_used.includes(skill.id),
   );
   const tools = (opts.entry.manifest.tools ?? []).filter((tool) =>
-    opts.selection.run_profile.tools_used.includes(tool.id),
+    opts.selection.tools_used.includes(tool.id),
   );
 
   return {

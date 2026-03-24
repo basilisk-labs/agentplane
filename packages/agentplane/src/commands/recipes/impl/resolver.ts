@@ -175,20 +175,12 @@ export function normalizeResolvedRecipeRunProfile(
   scenario: RecipeScenarioDescriptor,
 ): ResolvedRecipeRunProfile {
   const declaredProfile: RecipeRunProfile = scenario.run_profile;
-  const permissions = dedupeStrings([...scenario.permissions]).toSorted();
   return {
     mode: declaredProfile.mode,
     sandbox: declaredProfile.sandbox,
     requires_human_approval: declaredProfile.requires_human_approval ?? false,
     writes_artifacts_to: dedupeStrings(declaredProfile.writes_artifacts_to ?? []).toSorted(),
     expected_exit_contract: declaredProfile.expected_exit_contract,
-    permissions,
-    agents_involved: dedupeStrings([...scenario.agents_involved]).toSorted(),
-    skills_used: dedupeStrings([...scenario.skills_used]).toSorted(),
-    tools_used: dedupeStrings([...scenario.tools_used]).toSorted(),
-    required_inputs: dedupeStrings([...scenario.required_inputs]).toSorted(),
-    outputs: dedupeStrings([...scenario.outputs]).toSorted(),
-    artifacts: dedupeStrings([...scenario.artifacts]).toSorted(),
   };
 }
 
@@ -212,6 +204,13 @@ function toResolvedRecipeScenarios(opts: {
       scenario_description: scenario.description,
       use_when: [...scenario.use_when],
       avoid_when: [...(scenario.avoid_when ?? [])],
+      required_inputs: dedupeStrings([...scenario.required_inputs]).toSorted(),
+      outputs: dedupeStrings([...scenario.outputs]).toSorted(),
+      permissions: dedupeStrings([...scenario.permissions]).toSorted(),
+      artifacts: dedupeStrings([...scenario.artifacts]).toSorted(),
+      agents_involved: dedupeStrings([...scenario.agents_involved]).toSorted(),
+      skills_used: dedupeStrings([...scenario.skills_used]).toSorted(),
+      tools_used: dedupeStrings([...scenario.tools_used]).toSorted(),
       scenario_file: path.join(recipeDir, scenario.file),
       compatibility: opts.compatibility,
       run_profile: normalizeResolvedRecipeRunProfile(scenario),
@@ -283,7 +282,7 @@ export async function resolveRecipeScenarioSelection(opts: {
     }
     if (
       availableInputs.length > 0 &&
-      candidate.run_profile.required_inputs.some((input) => !availableInputs.includes(input))
+      candidate.required_inputs.some((input) => !availableInputs.includes(input))
     ) {
       continue;
     }
@@ -299,10 +298,8 @@ export async function resolveRecipeScenarioSelection(opts: {
       selectionReasons.push(`matches required tags: ${requiredTags.join(", ")}`);
     }
     if (opts.flags.mode) selectionReasons.push(`matches requested mode: ${opts.flags.mode}`);
-    if (availableInputs.length > 0 && candidate.run_profile.required_inputs.length > 0) {
-      selectionReasons.push(
-        `required inputs satisfied: ${candidate.run_profile.required_inputs.join(", ")}`,
-      );
+    if (availableInputs.length > 0 && candidate.required_inputs.length > 0) {
+      selectionReasons.push(`required inputs satisfied: ${candidate.required_inputs.join(", ")}`);
     }
     matches.push({
       ...candidate,

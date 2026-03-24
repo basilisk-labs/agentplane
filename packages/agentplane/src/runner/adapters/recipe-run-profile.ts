@@ -6,13 +6,6 @@ export type RecipeRunProfileMetadata = {
   requires_human_approval?: boolean;
   writes_artifacts_to?: string[];
   expected_exit_contract?: string;
-  permissions?: string[];
-  agents_involved?: string[];
-  skills_used?: string[];
-  tools_used?: string[];
-  required_inputs?: string[];
-  outputs?: string[];
-  artifacts?: string[];
 };
 
 function normalizeOptionalString(value: unknown): string | undefined {
@@ -60,13 +53,6 @@ export function readRecipeRunProfile(
         : undefined,
     writes_artifacts_to: normalizeStringList(candidate.writes_artifacts_to),
     expected_exit_contract: normalizeOptionalString(candidate.expected_exit_contract),
-    permissions: normalizeStringList(candidate.permissions),
-    agents_involved: normalizeStringList(candidate.agents_involved),
-    skills_used: normalizeStringList(candidate.skills_used),
-    tools_used: normalizeStringList(candidate.tools_used),
-    required_inputs: normalizeStringList(candidate.required_inputs),
-    outputs: normalizeStringList(candidate.outputs),
-    artifacts: normalizeStringList(candidate.artifacts),
   };
 }
 
@@ -87,13 +73,6 @@ export function buildRecipeRunnerEnv(
   setBooleanEnv(env, "AGENTPLANE_RECIPE_REQUIRES_HUMAN_APPROVAL", profile.requires_human_approval);
   setStringEnv(env, "AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT", profile.expected_exit_contract);
   setJsonEnv(env, "AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO", profile.writes_artifacts_to);
-  setJsonEnv(env, "AGENTPLANE_RECIPE_PERMISSIONS", profile.permissions);
-  setJsonEnv(env, "AGENTPLANE_RECIPE_AGENTS_INVOLVED", profile.agents_involved);
-  setJsonEnv(env, "AGENTPLANE_RECIPE_SKILLS_USED", profile.skills_used);
-  setJsonEnv(env, "AGENTPLANE_RECIPE_TOOLS_USED", profile.tools_used);
-  setJsonEnv(env, "AGENTPLANE_RECIPE_REQUIRED_INPUTS", profile.required_inputs);
-  setJsonEnv(env, "AGENTPLANE_RECIPE_OUTPUTS", profile.outputs);
-  setJsonEnv(env, "AGENTPLANE_RECIPE_ARTIFACTS", profile.artifacts);
   setJsonEnv(env, "AGENTPLANE_RECIPE_RUN_PROFILE", profile as Record<string, unknown>);
   return env;
 }

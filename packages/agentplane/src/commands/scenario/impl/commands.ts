@@ -146,14 +146,10 @@ async function validateScenarioRecipeFiles(opts: {
   const tools = opts.entry.manifest.tools ?? [];
 
   const selectedAgents = agents.filter((agent) =>
-    opts.selection.run_profile.agents_involved.includes(agent.id),
+    opts.selection.agents_involved.includes(agent.id),
   );
-  const selectedSkills = skills.filter((skill) =>
-    opts.selection.run_profile.skills_used.includes(skill.id),
-  );
-  const selectedTools = tools.filter((tool) =>
-    opts.selection.run_profile.tools_used.includes(tool.id),
-  );
+  const selectedSkills = skills.filter((skill) => opts.selection.skills_used.includes(skill.id));
+  const selectedTools = tools.filter((tool) => opts.selection.tools_used.includes(tool.id));
 
   for (const agent of selectedAgents) {
     const agentFile = path.join(opts.selection.recipe_dir, agent.file);

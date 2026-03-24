@@ -332,13 +332,6 @@ describe("runCli scenario", () => {
         "  requires_human_approval: process.env.AGENTPLANE_RECIPE_REQUIRES_HUMAN_APPROVAL ?? null,",
         "  expected_exit_contract: process.env.AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT ?? null,",
         '  writes_artifacts_to: JSON.parse(process.env.AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO ?? "[]"),',
-        '  permissions: JSON.parse(process.env.AGENTPLANE_RECIPE_PERMISSIONS ?? "[]"),',
-        '  agents_involved: JSON.parse(process.env.AGENTPLANE_RECIPE_AGENTS_INVOLVED ?? "[]"),',
-        '  skills_used: JSON.parse(process.env.AGENTPLANE_RECIPE_SKILLS_USED ?? "[]"),',
-        '  tools_used: JSON.parse(process.env.AGENTPLANE_RECIPE_TOOLS_USED ?? "[]"),',
-        '  required_inputs: JSON.parse(process.env.AGENTPLANE_RECIPE_REQUIRED_INPUTS ?? "[]"),',
-        '  outputs: JSON.parse(process.env.AGENTPLANE_RECIPE_OUTPUTS ?? "[]"),',
-        '  artifacts: JSON.parse(process.env.AGENTPLANE_RECIPE_ARTIFACTS ?? "[]"),',
         '  run_profile: JSON.parse(process.env.AGENTPLANE_RECIPE_RUN_PROFILE ?? "{}"),',
         "};",
         "fs.writeFileSync(",
@@ -388,13 +381,6 @@ describe("runCli scenario", () => {
         requires_human_approval?: string;
         expected_exit_contract?: string;
         writes_artifacts_to?: string[];
-        permissions?: string[];
-        agents_involved?: string[];
-        skills_used?: string[];
-        tools_used?: string[];
-        required_inputs?: string[];
-        outputs?: string[];
-        artifacts?: string[];
         run_profile?: Record<string, unknown>;
       };
       expect(recipeEnv).toMatchObject({
@@ -405,13 +391,6 @@ describe("runCli scenario", () => {
         requires_human_approval: "false",
         expected_exit_contract: "report",
         writes_artifacts_to: ["logs/", "reports/"],
-        permissions: ["filesystem-write"],
-        agents_involved: ["RECIPE_AGENT"],
-        skills_used: ["RECIPE_SKILL"],
-        tools_used: ["RECIPE_TOOL"],
-        required_inputs: ["task_id"],
-        outputs: ["report"],
-        artifacts: ["artifact.txt"],
       });
       expect(recipeEnv.run_profile).toMatchObject({
         mode: "analysis",
@@ -419,13 +398,6 @@ describe("runCli scenario", () => {
         requires_human_approval: false,
         writes_artifacts_to: ["logs/", "reports/"],
         expected_exit_contract: "report",
-        permissions: ["filesystem-write"],
-        agents_involved: ["RECIPE_AGENT"],
-        skills_used: ["RECIPE_SKILL"],
-        tools_used: ["RECIPE_TOOL"],
-        required_inputs: ["task_id"],
-        outputs: ["report"],
-        artifacts: ["artifact.txt"],
       });
     } finally {
       process.env.PATH = originalPath;

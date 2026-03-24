@@ -142,13 +142,6 @@ describe("CustomRunnerAdapter", () => {
         requires_human_approval: false,
         writes_artifacts_to: ["logs/", "reports/"],
         expected_exit_contract: "report",
-        permissions: ["filesystem-write"],
-        agents_involved: ["RECIPE_AGENT"],
-        skills_used: ["RECIPE_SKILL"],
-        tools_used: ["RECIPE_TOOL"],
-        required_inputs: ["task_id"],
-        outputs: ["report"],
-        artifacts: ["artifact.txt"],
       },
     };
 
@@ -163,13 +156,6 @@ describe("CustomRunnerAdapter", () => {
       AGENTPLANE_RECIPE_REQUIRES_HUMAN_APPROVAL: "false",
       AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT: "report",
       AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO: JSON.stringify(["logs/", "reports/"]),
-      AGENTPLANE_RECIPE_PERMISSIONS: JSON.stringify(["filesystem-write"]),
-      AGENTPLANE_RECIPE_AGENTS_INVOLVED: JSON.stringify(["RECIPE_AGENT"]),
-      AGENTPLANE_RECIPE_SKILLS_USED: JSON.stringify(["RECIPE_SKILL"]),
-      AGENTPLANE_RECIPE_TOOLS_USED: JSON.stringify(["RECIPE_TOOL"]),
-      AGENTPLANE_RECIPE_REQUIRED_INPUTS: JSON.stringify(["task_id"]),
-      AGENTPLANE_RECIPE_OUTPUTS: JSON.stringify(["report"]),
-      AGENTPLANE_RECIPE_ARTIFACTS: JSON.stringify(["artifact.txt"]),
     });
     expect(JSON.parse(invocation.env.AGENTPLANE_RECIPE_RUN_PROFILE ?? "{}")).toMatchObject({
       mode: "analysis",
@@ -177,13 +163,6 @@ describe("CustomRunnerAdapter", () => {
       requires_human_approval: false,
       writes_artifacts_to: ["logs/", "reports/"],
       expected_exit_contract: "report",
-      permissions: ["filesystem-write"],
-      agents_involved: ["RECIPE_AGENT"],
-      skills_used: ["RECIPE_SKILL"],
-      tools_used: ["RECIPE_TOOL"],
-      required_inputs: ["task_id"],
-      outputs: ["report"],
-      artifacts: ["artifact.txt"],
     });
   });
 
