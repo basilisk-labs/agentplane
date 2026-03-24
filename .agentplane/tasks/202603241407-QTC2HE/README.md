@@ -1,10 +1,11 @@
 ---
 id: "202603241407-QTC2HE"
 title: "Refresh generated recipes inventory to canonical generator format"
-status: "DOING"
+result_summary: "scripts/generate-recipes-inventory.mjs now emits Prettier-compatible canonical output for docs/recipes-inventory.json."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-24T14:11:25.416Z"
   updated_by: "DOCS"
   note: "ok: the recipes inventory generator now formats its own output with Prettier, and docs:recipes:check passes on the refreshed file."
-commit: null
+commit:
+  hash: "7625cde06bd6cd8569c444267216b964c748b7a4"
+  message: "✅ QTC2HE docs: done"
 comments:
   -
     author: "DOCS"
     body: "Start: refresh docs/recipes-inventory.json in the generator’s canonical format only, verify docs:recipes:check passes, and clear the remaining pre-push blocker without widening the diff."
+  -
+    author: "DOCS"
+    body: "Verified: updated the recipes inventory generator to run Prettier on its own output, so docs:recipes:check and the pre-commit formatter now agree on one canonical file format."
 events:
   -
     type: "status"
@@ -48,8 +54,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "ok: the recipes inventory generator now formats its own output with Prettier, and docs:recipes:check passes on the refreshed file."
+  -
+    type: "status"
+    at: "2026-03-24T14:11:53.644Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: updated the recipes inventory generator to run Prettier on its own output, so docs:recipes:check and the pre-commit formatter now agree on one canonical file format."
 doc_version: 3
-doc_updated_at: "2026-03-24T14:11:25.426Z"
+doc_updated_at: "2026-03-24T14:11:53.646Z"
 doc_updated_by: "DOCS"
 description: "Regenerate docs/recipes-inventory.json in the exact canonical format emitted by scripts/generate-recipes-inventory.mjs so pre-push docs:recipes:check stops flagging the file as stale."
 sections:
