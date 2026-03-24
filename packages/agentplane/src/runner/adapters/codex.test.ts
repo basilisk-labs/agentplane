@@ -10,6 +10,10 @@ import type { RunnerContextBundle } from "../types.js";
 import { createRunnerAdapter } from "./index.js";
 import { CliError } from "../../shared/errors.js";
 
+const CYRILLIC_RE = /[\u0400-\u04FF]/u;
+const RUSSIAN_TRACE_LINE = "Привет из raw trace";
+const RUSSIAN_LAST_MESSAGE = "Привет из сообщения Codex";
+
 function makeBundle(): RunnerContextBundle {
   return {
     schema_version: 1,
@@ -280,8 +284,8 @@ describe("CodexRunnerAdapter", () => {
         "done",
         "cat >/dev/null",
         String.raw`printf '{"type":"session.started"}\n'`,
-        String.raw`printf 'Final fake Codex message\n' > "$out"`,
-        String.raw`printf 'fake stdout ok\n'`,
+        String.raw`printf '%s\n' '${RUSSIAN_LAST_MESSAGE}' > "$out"`,
+        String.raw`printf '%s\n' '${RUSSIAN_TRACE_LINE}'`,
         "exit 0",
       ].join("\n"),
       "utf8",
@@ -305,10 +309,11 @@ describe("CodexRunnerAdapter", () => {
     expect(result.stdout_summary).toBe(
       "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
     );
-    expect(result.stdout_summary).not.toContain("Final fake Codex message");
+    expect(result.summary).not.toMatch(CYRILLIC_RE);
+    expect(result.stdout_summary).not.toMatch(CYRILLIC_RE);
     expect(result.metrics?.stdout_bytes).toBeGreaterThan(0);
     expect(result.metrics?.duration_ms).toBeGreaterThanOrEqual(0);
-    expect(lastMessage).toContain("Final fake Codex message");
+    expect(lastMessage).toContain(RUSSIAN_LAST_MESSAGE);
     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
       status: string;
       prepared_metadata?: { bundle_bytes: number; bundle_sha256: string };
@@ -326,6 +331,8 @@ describe("CodexRunnerAdapter", () => {
     expect(state.result?.status).toBe("success");
     expect(state.result?.exit_code).toBe(0);
     expect(state.result?.summary).toBe("Codex execution completed successfully.");
+    expect(state.result?.summary).not.toMatch(CYRILLIC_RE);
+    expect(state.result?.stdout_summary).not.toMatch(CYRILLIC_RE);
     expect(state.result?.metrics?.stdout_bytes).toBeGreaterThan(0);
     expect(state.result?.metrics?.output_last_message_bytes).toBeGreaterThan(0);
     const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
@@ -340,7 +347,8 @@ describe("CodexRunnerAdapter", () => {
     expect(resultManifest.stdout_summary).toBe(
       "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
     );
-    expect(resultManifest.stdout_summary).not.toContain("Final fake Codex message");
+    expect(resultManifest.summary).not.toMatch(CYRILLIC_RE);
+    expect(resultManifest.stdout_summary).not.toMatch(CYRILLIC_RE);
     expect(resultManifest.artifacts).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ path: invocation.trace_path, label: "raw-trace" }),
@@ -358,9 +366,10 @@ describe("CodexRunnerAdapter", () => {
     expect(events).toContain('"type":"runner_execute_start"');
     expect(events).toContain('"type":"runner_execute_finish"');
     expect(events).toContain('"stdout_bytes"');
+    expect(trace).toContain(RUSSIAN_TRACE_LINE);
     expect(trace).toContain('"stream":"stdout"');
     expect(trace).toContain('"kind":"json_event"');
-    expect(trace).toContain("fake stdout ok");
+    expect(trace).toContain(RUSSIAN_TRACE_LINE);
 
     await rm(tempDir, { recursive: true, force: true });
   });

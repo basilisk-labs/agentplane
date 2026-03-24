@@ -59,6 +59,10 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
+const CYRILLIC_RE = /[\u0400-\u04FF]/u;
+const RUSSIAN_TRACE_LINE = "Привет из raw trace";
+const RUSSIAN_LAST_MESSAGE = "Привет из сообщения Codex";
+
 async function waitForRunnerState(opts: {
   root: string;
   taskId: string;
@@ -362,8 +366,8 @@ describe("runCli", () => {
         "done",
         "cat >/dev/null",
         String.raw`printf '{"type":"session.started"}\n'`,
-        String.raw`printf 'CLI fake Codex message\n' > "$out"`,
-        String.raw`printf 'cli fake stdout\n'`,
+        String.raw`printf '%s\n' '${RUSSIAN_LAST_MESSAGE}' > "$out"`,
+        String.raw`printf '%s\n' '${RUSSIAN_TRACE_LINE}'`,
         "exit 0",
       ].join("\n"),
       "utf8",
@@ -394,6 +398,7 @@ describe("runCli", () => {
       expect(io.stdout).toContain(
         "stdout: Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
       );
+      expect(io.stdout).not.toMatch(CYRILLIC_RE);
 
       const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
       const runEntries = await readdir(runsRoot);
@@ -401,6 +406,8 @@ describe("runCli", () => {
       expect(sortedRunEntries).toHaveLength(1);
       const runDir = path.join(runsRoot, sortedRunEntries[0] ?? "");
       const statePath = path.join(runDir, "run-state.json");
+      const tracePath = path.join(runDir, "agent-trace.jsonl");
+      const lastMessagePath = path.join(runDir, "codex-last-message.md");
       const state = JSON.parse(await readFile(statePath, "utf8")) as {
         status: string;
         result?: {
@@ -417,6 +424,13 @@ describe("runCli", () => {
       expect(state.result?.stdout_summary).toBe(
         "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
       );
+      expect(state.result?.summary).not.toMatch(CYRILLIC_RE);
+      expect(state.result?.stdout_summary).not.toMatch(CYRILLIC_RE);
+
+      const trace = await readFile(tracePath, "utf8");
+      const lastMessage = await readFile(lastMessagePath, "utf8");
+      expect(trace).toContain(RUSSIAN_TRACE_LINE);
+      expect(lastMessage).toContain(RUSSIAN_LAST_MESSAGE);
 
       const task = await readTask({ cwd: root, rootOverride: root, taskId });
       expect(task.frontmatter.verification?.state).toBe("pending");
@@ -433,7 +447,7 @@ describe("runCli", () => {
       expect(task.body).toContain("Summary: Codex runner completed successfully.");
       expect(task.body).toContain("assistant-last-message=");
       expect(task.body).toContain("codex-last-message.md");
-      expect(task.body).not.toContain("CLI fake Codex message");
+      expect(task.body).not.toMatch(CYRILLIC_RE);
       expect(task.body).toContain("VerificationHint: runner completed successfully");
     } finally {
       process.env.PATH = originalPath;
