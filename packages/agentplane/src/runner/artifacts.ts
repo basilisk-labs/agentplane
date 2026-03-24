@@ -40,6 +40,7 @@ function buildPreparedMetadata(opts: {
     trace_policy: opts.bundle.execution.trace_policy,
     timeout_policy: opts.bundle.execution.timeout_policy,
     adapter_capabilities: opts.bundle.execution.adapter_capabilities,
+    policy_decision: opts.bundle.execution.policy_decision,
     invocation: {
       executable: opts.invocation?.argv[0] ?? null,
       argv_count: opts.invocation?.argv.length ?? 0,
@@ -77,6 +78,7 @@ export function createRunnerRunState(opts: {
     stderr_path: opts.bundle.execution.artifact_paths.stderr_path,
     trace_policy: opts.bundle.execution.trace_policy,
     timeout_policy: opts.bundle.execution.timeout_policy,
+    policy_decision: opts.bundle.execution.policy_decision,
     created_at,
     updated_at: created_at,
     prepared_metadata: opts.prepared_metadata,
@@ -131,6 +133,7 @@ export async function writePreparedRunnerArtifacts(opts: {
         trace_policy: preparedMetadata.trace_policy,
         timeout_policy: preparedMetadata.timeout_policy,
         adapter_capabilities: preparedMetadata.adapter_capabilities,
+        policy_decision: preparedMetadata.policy_decision,
         invocation: preparedMetadata.invocation,
       },
     },

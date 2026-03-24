@@ -68,6 +68,18 @@ export const runTaskRun: CommandHandler<TaskRunParsed> = async (
     process.stdout.write(
       `capabilities: ${JSON.stringify(prepared.bundle.execution.adapter_capabilities ?? null)}\n`,
     );
+    process.stdout.write(
+      `policy_requested: ${JSON.stringify(prepared.bundle.execution.policy_decision?.requested ?? {})}\n`,
+    );
+    process.stdout.write(
+      `policy_effective: ${JSON.stringify(prepared.bundle.execution.policy_decision?.effective ?? {})}\n`,
+    );
+    process.stdout.write(
+      `policy_fields: ${JSON.stringify(prepared.bundle.execution.policy_decision?.fields ?? {})}\n`,
+    );
+    process.stdout.write(
+      `policy_refusal: ${JSON.stringify(prepared.bundle.execution.policy_decision?.refusal_reason ?? null)}\n`,
+    );
     process.stdout.write(`argv: ${prepared.invocation.argv.join(" ")}\n`);
     return 0;
   } catch (err) {

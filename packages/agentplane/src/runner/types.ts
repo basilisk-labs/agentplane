@@ -108,6 +108,33 @@ export type RunnerAdapterCapabilities = {
   fields: Record<string, RunnerCapabilityDescriptor>;
 };
 
+export type RunnerPolicyFieldStatus = "not_requested" | "enforced" | "advisory" | "unsupported";
+
+export type RunnerPolicyFieldDecision = {
+  requested?: unknown;
+  effective?: unknown;
+  status: RunnerPolicyFieldStatus;
+  capability_level: RunnerCapabilityLevel;
+  channel: RunnerCapabilityChannel;
+  supported_values?: string[];
+  note?: string;
+};
+
+export type RunnerPolicyRefusal = {
+  code: string;
+  message: string;
+  policy_field?: string;
+  declared_value?: unknown;
+};
+
+export type RunnerPolicyDecision = {
+  adapter_id: string;
+  requested: Record<string, unknown>;
+  effective: Record<string, unknown>;
+  fields: Record<string, RunnerPolicyFieldDecision>;
+  refusal_reason?: RunnerPolicyRefusal | null;
+};
+
 export type RunnerExecutionContract = {
   adapter_id: string;
   mode: "execute" | "dry_run";
@@ -116,6 +143,7 @@ export type RunnerExecutionContract = {
   trace_policy: RunnerTracePolicy;
   timeout_policy: RunnerTimeoutPolicy;
   adapter_capabilities?: RunnerAdapterCapabilities;
+  policy_decision?: RunnerPolicyDecision;
   approvals?: {
     require_plan?: boolean;
     require_verify?: boolean;
@@ -244,6 +272,7 @@ export type RunnerPreparedMetadata = {
   trace_policy: RunnerTracePolicy;
   timeout_policy: RunnerTimeoutPolicy;
   adapter_capabilities?: RunnerAdapterCapabilities;
+  policy_decision?: RunnerPolicyDecision;
   invocation: {
     executable: string | null;
     argv_count: number;
@@ -270,6 +299,7 @@ export type RunnerRunState = {
   stderr_path: string;
   trace_policy: RunnerTracePolicy;
   timeout_policy: RunnerTimeoutPolicy;
+  policy_decision?: RunnerPolicyDecision;
   created_at: string;
   updated_at: string;
   prepared_metadata?: RunnerPreparedMetadata;

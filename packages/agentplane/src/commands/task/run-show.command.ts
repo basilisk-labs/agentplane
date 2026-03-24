@@ -92,6 +92,18 @@ export const runTaskRunShow: CommandHandler<TaskRunShowParsed> = async (
       const lastEvent = inspection.events.at(-1);
       process.stdout.write(`last_event: ${lastEvent?.type ?? "unknown"}\n`);
     }
+    process.stdout.write(
+      `policy_requested: ${JSON.stringify(inspection.state.policy_decision?.requested ?? {})}\n`,
+    );
+    process.stdout.write(
+      `policy_effective: ${JSON.stringify(inspection.state.policy_decision?.effective ?? {})}\n`,
+    );
+    process.stdout.write(
+      `policy_fields: ${JSON.stringify(inspection.state.policy_decision?.fields ?? {})}\n`,
+    );
+    process.stdout.write(
+      `policy_refusal: ${JSON.stringify(inspection.state.policy_decision?.refusal_reason ?? null)}\n`,
+    );
     if (inspection.state.result?.summary) {
       process.stdout.write(`summary: ${inspection.state.result.summary}\n`);
     }

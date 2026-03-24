@@ -14,6 +14,7 @@ import { createRunnerAdapter } from "../adapters/index.js";
 import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
 import { collectRunnerBasePrompts } from "../context/base-prompts.js";
 import { assembleRunnerTaskContext } from "../context/task-context.js";
+import { applyRunnerPolicyRefusal, buildRunnerPolicyDecision } from "../policy-decision.js";
 import { createRunnerRunId } from "../run-id.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { resolveTaskRunnerPaths } from "../task-run-paths.js";
@@ -266,11 +267,26 @@ export async function prepareTaskRunnerExecution(opts: {
     },
   };
   bundle.execution.adapter_capabilities = adapter.describeCapabilities(bundle);
+  bundle.execution.policy_decision = buildRunnerPolicyDecision({
+    adapter_id: bundle.execution.adapter_id,
+    capabilities: bundle.execution.adapter_capabilities,
+    recipe: bundle.recipe,
+  });
   assertRunnerTaskExecutable(bundle);
   try {
     assertRunnerPolicyCompatibility(bundle);
   } catch (err) {
     if (err instanceof CliError) {
+      bundle.execution.policy_decision = applyRunnerPolicyRefusal({
+        decision:
+          bundle.execution.policy_decision ??
+          buildRunnerPolicyDecision({
+            adapter_id: bundle.execution.adapter_id,
+            capabilities: bundle.execution.adapter_capabilities,
+            recipe: bundle.recipe,
+          }),
+        error: err,
+      });
       const state = await writeRunnerRefusalArtifacts({ bundle, error: err });
       throw new RunnerPreparationCliError({ cause: err, bundle, state });
     }

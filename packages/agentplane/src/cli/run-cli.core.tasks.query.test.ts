@@ -179,6 +179,10 @@ describe("runCli", () => {
       expect(io.stdout).toContain("adapter: codex");
       expect(io.stdout).toContain("bundle:");
       expect(io.stdout).toContain('capabilities: {"adapter_id":"codex"');
+      expect(io.stdout).toContain("policy_requested: {}");
+      expect(io.stdout).toContain("policy_effective: {}");
+      expect(io.stdout).toContain("policy_fields:");
+      expect(io.stdout).toContain("policy_refusal: null");
       expect(io.stdout).toContain("argv: codex -a never exec --json --output-last-message");
 
       const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
@@ -209,6 +213,11 @@ describe("runCli", () => {
             terminate_grace_ms?: number;
           };
           adapter_capabilities?: { adapter_id: string };
+          policy_decision?: {
+            requested?: Record<string, unknown>;
+            effective?: Record<string, unknown>;
+            refusal_reason?: { policy_field?: string } | null;
+          };
         };
         task: { task_id: string };
       };
@@ -226,6 +235,9 @@ describe("runCli", () => {
         terminate_grace_ms: 1500,
       });
       expect(bundle.execution.adapter_capabilities?.adapter_id).toBe("codex");
+      expect(bundle.execution.policy_decision?.requested).toEqual({});
+      expect(bundle.execution.policy_decision?.effective).toEqual({});
+      expect(bundle.execution.policy_decision?.refusal_reason).toBeNull();
       expect(bundle.task.task_id).toBe(taskId);
       expect(bootstrap).toContain(
         "This invocation is already inside an approved runner execution.",
@@ -312,11 +324,28 @@ describe("runCli", () => {
     const runDir = path.join(root, ".agentplane", "tasks", taskId, "runs", "run-refused-cli");
     const state = JSON.parse(await readFile(path.join(runDir, "run-state.json"), "utf8")) as {
       status: string;
+      policy_decision?: {
+        requested?: Record<string, unknown>;
+        effective?: Record<string, unknown>;
+        refusal_reason?: { policy_field?: string; declared_value?: unknown } | null;
+      };
       result?: { status?: string; stderr_summary?: string };
     };
     expect(state.status).toBe("failed");
     expect(state.result?.status).toBe("failed");
     expect(state.result?.stderr_summary).toContain("requires_human_approval");
+    expect(state.policy_decision?.requested).toEqual({
+      mode: "analysis",
+      sandbox: "read-only",
+      requires_human_approval: true,
+    });
+    expect(state.policy_decision?.effective).toEqual({
+      sandbox: "read-only",
+    });
+    expect(state.policy_decision?.refusal_reason).toMatchObject({
+      policy_field: "requires_human_approval",
+      declared_value: true,
+    });
 
     const events = await readFile(path.join(runDir, "events.jsonl"), "utf8");
     expect(events).toContain('"type":"runner_prepared"');
@@ -407,6 +436,8 @@ describe("runCli", () => {
           expect(io.stdout).toContain("status: success");
           expect(io.stdout).toContain("adapter: custom");
           expect(io.stdout).toContain("events_count:");
+          expect(io.stdout).toContain("policy_requested: {}");
+          expect(io.stdout).toContain("policy_effective: {}");
           expect(io.stdout).toContain("summary: Custom runner execution completed successfully.");
           expect(io.stdout).toContain("trace:");
         } finally {
