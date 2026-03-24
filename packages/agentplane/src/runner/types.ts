@@ -60,6 +60,22 @@ export type RunnerTaskContext = {
   events: TaskEvent[];
   readme_path?: string;
   dependency_state?: RunnerDependencyState;
+  compaction?: RunnerTaskContextCompaction;
+};
+
+export type RunnerTaskContextCompactionEntry = {
+  original_bytes: number;
+  emitted_bytes: number;
+  original_count?: number;
+  emitted_count?: number;
+  truncated: boolean;
+};
+
+export type RunnerTaskContextCompaction = {
+  doc: RunnerTaskContextCompactionEntry;
+  sections: RunnerTaskContextCompactionEntry;
+  comments: RunnerTaskContextCompactionEntry;
+  events: RunnerTaskContextCompactionEntry;
 };
 
 export type RunnerRecipeContext = {

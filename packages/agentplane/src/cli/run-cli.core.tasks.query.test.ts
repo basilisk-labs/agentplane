@@ -20,7 +20,9 @@ import {
   defaultConfig,
   extractTaskSuffix,
   readTask,
+  renderTaskDocFromSections,
   renderTaskReadme,
+  taskDocToSectionMap,
   type ResolvedProject,
 } from "@agentplaneorg/core";
 
@@ -32,7 +34,7 @@ import {
   loadAgentsTemplate,
 } from "../agents/agents-template.js";
 import type * as taskBackend from "../backends/task-backend.js";
-import { loadCommandContext } from "../commands/shared/task-backend.js";
+import { loadCommandContext, loadTaskFromContext } from "../commands/shared/task-backend.js";
 import {
   captureStdIO,
   cleanGitEnv,
@@ -250,6 +252,110 @@ describe("runCli", () => {
       );
       expect(bootstrap).toContain("Do not run repository startup commands");
       expect(bootstrap).toContain("Open bundle.json immediately");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task run --dry-run writes bounded task context and truncation metadata for long-history tasks", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Runner compaction task",
+          "--description",
+          "Dry-run bundle should compact long task context history",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before preparing a bounded runner bundle for long task history.",
+      "--root",
+      root,
+    ]);
+
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await loadTaskFromContext({ ctx, taskId });
+    const currentSections = task.sections ?? {};
+    const longSections = {
+      ...currentSections,
+      Findings: "Long findings ".repeat(900),
+      Verification: "Long verification ".repeat(700),
+    };
+    const longDoc = renderTaskDocFromSections(longSections);
+    await ctx.taskBackend.writeTask({
+      ...task,
+      status: "DOING",
+      doc: longDoc,
+      sections: taskDocToSectionMap(longDoc),
+      comments: Array.from({ length: 26 }, (_, index) => ({
+        author: "CODER",
+        body: `${String(index).padStart(2, "0")} ${"Long comment payload ".repeat(180)}`,
+      })),
+      events: Array.from({ length: 48 }, (_, index) => ({
+        type: "comment",
+        at: `2026-03-23T14:${String(index % 60).padStart(2, "0")}:00.000Z`,
+        author: "CODER",
+        note: `${String(index).padStart(2, "0")} ${"Long event note ".repeat(120)}`,
+      })),
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "run", taskId, "--dry-run", "--root", root]);
+      expect(code).toBe(0);
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      const runEntries = await readdir(runsRoot);
+      const runDir = path.join(runsRoot, runEntries.toSorted()[0] ?? "");
+      const bundlePath = path.join(runDir, "bundle.json");
+      const bundle = JSON.parse(await readFile(bundlePath, "utf8")) as {
+        task: {
+          doc: string;
+          comments: { author: string; body: string }[];
+          events: { note?: string }[];
+          compaction?: {
+            doc?: { truncated?: boolean };
+            sections?: { truncated?: boolean };
+            comments?: { truncated?: boolean; original_count?: number; emitted_count?: number };
+            events?: { truncated?: boolean; original_count?: number; emitted_count?: number };
+          };
+        };
+      };
+      expect(bundle.task.compaction).toMatchObject({
+        doc: { truncated: true },
+        sections: { truncated: true },
+        comments: { truncated: true, original_count: 26 },
+        events: { truncated: true, original_count: 48 },
+      });
+      expect(bundle.task.comments.length).toBeLessThan(26);
+      expect(bundle.task.events.length).toBeLessThan(48);
+      expect(Buffer.byteLength(bundle.task.doc, "utf8")).toBeLessThanOrEqual(24_576);
+      expect(bundle.task.comments.at(-1)?.body).toContain("Long comment payload");
+      expect(bundle.task.events.at(-1)?.note).toContain("Long event note");
     } finally {
       io.restore();
     }

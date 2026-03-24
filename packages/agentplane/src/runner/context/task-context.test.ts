@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { createTask } from "@agentplaneorg/core";
+import { createTask, renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -10,7 +10,7 @@ import {
   writeDefaultConfig,
 } from "../../cli/run-cli.test-helpers.js";
 import { loadCommandContext, loadTaskFromContext } from "../../commands/shared/task-backend.js";
-import { assembleRunnerTaskContext } from "./task-context.js";
+import { assembleRunnerTaskContext, RUNNER_TASK_CONTEXT_BUDGETS } from "./task-context.js";
 
 installRunCliIntegrationHarness();
 
@@ -130,5 +130,87 @@ describe("assembleRunnerTaskContext", () => {
       exitCode: 4,
       code: "E_IO",
     });
+  });
+
+  it("compacts long task history and exposes truncation metadata deterministically", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeLocalBackendConfig(root);
+
+    const main = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "Long history task",
+      description: "Long task for runner compaction tests",
+      owner: "CODER",
+      priority: "high",
+      tags: ["code", "runner"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await loadTaskFromContext({ ctx, taskId: main.id });
+    const longBody = "Long comment payload ".repeat(180);
+    const longNote = "Long event note ".repeat(120);
+    const currentSections = task.sections ?? {};
+    const longSections = {
+      ...currentSections,
+      Findings: "Long findings ".repeat(900),
+      Verification: "Long verification ".repeat(700),
+    };
+    const longDoc = renderTaskDocFromSections(longSections);
+    await ctx.taskBackend.writeTask({
+      ...task,
+      status: "DOING",
+      doc: longDoc,
+      sections: taskDocToSectionMap(longDoc),
+      comments: Array.from({ length: 28 }, (_, index) => ({
+        author: "CODER",
+        body: `${String(index).padStart(2, "0")} ${longBody}`,
+      })),
+      events: Array.from({ length: 52 }, (_, index) => ({
+        type: "comment",
+        at: `2026-03-23T14:${String(index % 60).padStart(2, "0")}:00.000Z`,
+        author: "CODER",
+        note: `${String(index).padStart(2, "0")} ${longNote}`,
+      })),
+    });
+
+    const assembled = await assembleRunnerTaskContext({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: main.id,
+    });
+
+    expect(Buffer.byteLength(assembled.task.doc, "utf8")).toBeLessThanOrEqual(
+      RUNNER_TASK_CONTEXT_BUDGETS.doc_max_bytes,
+    );
+    expect(assembled.task.comments.length).toBeLessThanOrEqual(
+      RUNNER_TASK_CONTEXT_BUDGETS.comments_max_count,
+    );
+    expect(assembled.task.events.length).toBeLessThanOrEqual(
+      RUNNER_TASK_CONTEXT_BUDGETS.events_max_count,
+    );
+    expect(assembled.task.comments.at(-1)?.body).toContain("Long comment payload");
+    expect(assembled.task.comments[0]?.body).not.toContain("00 Long comment payload");
+    expect(assembled.task.compaction).toMatchObject({
+      doc: { truncated: true },
+      sections: { truncated: true },
+      comments: {
+        truncated: true,
+        original_count: 28,
+        emitted_count: assembled.task.comments.length,
+      },
+      events: {
+        truncated: true,
+        original_count: 52,
+        emitted_count: assembled.task.events.length,
+      },
+    });
+    expect(assembled.task.readme_path).toBe(
+      path.join(root, ".agentplane/tasks", main.id, "README.md"),
+    );
   });
 });
