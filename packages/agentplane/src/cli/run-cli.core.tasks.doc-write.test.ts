@@ -267,6 +267,69 @@ describe("runCli", () => {
     expect(updated).not.toContain(String.raw`Line one\nLine two`);
   });
 
+  it("task doc set replaces seeded Verify Steps when inline text uses escaped newlines", async () => {
+    const root = await writeAndConfigureRoot();
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify Steps escaped newline task",
+        "--description",
+        "Exercise Verify Steps doc writes with escaped inline newlines",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const ioDoc = captureStdIO();
+    try {
+      const codeDoc = await runCli([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        String.raw`1. Escaped newline first.\n2. Escaped newline second.`,
+        "--updated-by",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]);
+      expect(codeDoc).toBe(0);
+      expect(ioDoc.stderr).toContain("task doc set outcome=section-updated section=Verify Steps");
+    } finally {
+      ioDoc.restore();
+    }
+
+    const readme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme).toContain("## Verify Steps");
+    expect(readme).toContain("1. Escaped newline first.");
+    expect(readme).toContain("2. Escaped newline second.");
+    expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
+    expect(parseTaskReadme(readme).frontmatter.sections).toMatchObject({
+      "Verify Steps": "1. Escaped newline first.\n2. Escaped newline second.",
+    });
+  });
+
   it("task doc set dedupes repeated section headings", async () => {
     const root = await writeAndConfigureRoot();
     const taskId = "202601300002-ABCD";
