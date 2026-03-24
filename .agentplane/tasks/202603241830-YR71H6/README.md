@@ -1,10 +1,11 @@
 ---
 id: "202603241830-YR71H6"
 title: "Harden recipe artifact prefix checks against path traversal"
-status: "DOING"
+result_summary: "Recipe artifact prefix enforcement now uses normalized relative-path containment, closing traversal and lexical-prefix bypasses in runner result-manifest validation."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,15 +21,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-24T18:35:06.333Z"
+  updated_by: "CODER"
+  note: "Verified: bunx vitest run packages/agentplane/src/runner/result-manifest-policy.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts; bun run --filter=agentplane build; writes_artifacts_to now uses normalized relative-path containment instead of naive string-prefix matching."
+commit:
+  hash: "d6f88fb76f39609079fcb121ffe078d8282e0642"
+  message: "✅ YR71H6 code: normalize artifact prefix containment checks"
 comments:
   -
     author: "CODER"
     body: "Start: harden recipe writes_artifacts_to enforcement so external manifest paths are checked as normalized relative containment, not naive string prefixes, and traversal or absolute-path escapes fail deterministically."
+  -
+    author: "CODER"
+    body: "Verified: traversal, absolute-path, and sibling-prefix cases now fail deterministically while normal in-scope relative paths still pass, and agentplane build remained clean."
 events:
   -
     type: "status"
@@ -37,8 +43,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: harden recipe writes_artifacts_to enforcement so external manifest paths are checked as normalized relative containment, not naive string prefixes, and traversal or absolute-path escapes fail deterministically."
+  -
+    type: "verify"
+    at: "2026-03-24T18:35:06.333Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bunx vitest run packages/agentplane/src/runner/result-manifest-policy.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts; bun run --filter=agentplane build; writes_artifacts_to now uses normalized relative-path containment instead of naive string-prefix matching."
+  -
+    type: "status"
+    at: "2026-03-24T18:35:12.082Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: traversal, absolute-path, and sibling-prefix cases now fail deterministically while normal in-scope relative paths still pass, and agentplane build remained clean."
 doc_version: 3
-doc_updated_at: "2026-03-24T18:34:46.199Z"
+doc_updated_at: "2026-03-24T18:35:12.082Z"
 doc_updated_by: "CODER"
 description: "Replace lexical writes_artifacts_to prefix matching with normalized relative-path validation so external runner manifest paths cannot escape declared prefixes via ../ segments, duplicate separators, or absolute paths."
 sections:
@@ -59,6 +78,14 @@ sections:
     3. Inspect the updated writes_artifacts_to wording if docs changed. Expected: it describes normalized containment, not naive lexical prefix matching.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    #### 2026-03-24T18:35:06.333Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: bunx vitest run packages/agentplane/src/runner/result-manifest-policy.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts; bun run --filter=agentplane build; writes_artifacts_to now uses normalized relative-path containment instead of naive string-prefix matching.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-24T18:34:46.199Z, excerpt_hash=sha256:2c25899b9eb72e81af7db94c517f8c13c67bdd64e0857f0adbfd8300514e549d
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -95,6 +122,14 @@ Replace lexical writes_artifacts_to prefix matching with normalized relative-pat
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-24T18:35:06.333Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bunx vitest run packages/agentplane/src/runner/result-manifest-policy.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts; bun run --filter=agentplane build; writes_artifacts_to now uses normalized relative-path containment instead of naive string-prefix matching.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-24T18:34:46.199Z, excerpt_hash=sha256:2c25899b9eb72e81af7db94c517f8c13c67bdd64e0857f0adbfd8300514e549d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
