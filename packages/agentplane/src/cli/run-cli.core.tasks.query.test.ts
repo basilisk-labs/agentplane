@@ -556,6 +556,44 @@ describe("runCli", () => {
       {
         const io = captureStdIO();
         try {
+          const code = await runCli(["task", "run", "show", taskId, "--json", "--root", root]);
+          expect(code).toBe(0);
+          const payload = JSON.parse(io.stdout) as {
+            task_id: string;
+            run_id: string;
+            selection: string;
+            paths: { trace_path: string };
+            state: {
+              status: string;
+              adapter_id: string;
+              policy_decision?: { requested?: Record<string, unknown> };
+              result?: { summary?: string };
+            };
+            events_count: number;
+            last_event?: { type?: string } | null;
+          };
+          expect(payload.task_id).toBe(taskId);
+          expect(payload.run_id).toBe(runId);
+          expect(payload.selection).toBe("latest");
+          expect(payload.state.status).toBe("success");
+          expect(payload.state.adapter_id).toBe("custom");
+          expect(payload.state.policy_decision?.requested).toEqual({});
+          expect(payload.state.result?.summary).toBe(
+            "Custom runner execution completed successfully.",
+          );
+          expect(payload.events_count).toBeGreaterThan(0);
+          expect(payload.last_event?.type).toBeTruthy();
+          expect(payload.paths.trace_path).toContain(
+            path.join(taskId, "runs", runId, "agent-trace.jsonl"),
+          );
+        } finally {
+          io.restore();
+        }
+      }
+
+      {
+        const io = captureStdIO();
+        try {
           const code = await runCli(["task", "run", "trace", taskId, "--root", root]);
           expect(code).toBe(0);
           expect(io.stdout).toContain('"stream":"stdout"');

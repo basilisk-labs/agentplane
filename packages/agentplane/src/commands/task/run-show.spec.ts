@@ -1,7 +1,7 @@
 import type { CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 
-export type TaskRunShowParsed = { taskId: string; runId?: string };
+export type TaskRunShowParsed = { taskId: string; runId?: string; json: boolean };
 
 export const taskRunShowSpec: CommandSpec<TaskRunShowParsed> = {
   id: ["task", "run", "show"],
@@ -13,6 +13,14 @@ export const taskRunShowSpec: CommandSpec<TaskRunShowParsed> = {
     { name: "task-id", required: true, valueHint: "<task-id>" },
     { name: "run-id", required: false, valueHint: "[run-id]" },
   ],
+  options: [
+    {
+      kind: "boolean",
+      name: "json",
+      default: false,
+      description: "Emit machine-readable runner inspection JSON.",
+    },
+  ],
   examples: [
     {
       cmd: "agentplane task run show 202602030608-F1Q8AB",
@@ -21,6 +29,10 @@ export const taskRunShowSpec: CommandSpec<TaskRunShowParsed> = {
     {
       cmd: "agentplane task run show 202602030608-F1Q8AB run_20260323_abc123",
       why: "Inspect a specific run by run id.",
+    },
+    {
+      cmd: "agentplane task run show 202602030608-F1Q8AB --json",
+      why: "Inspect the latest run in machine-readable JSON form.",
     },
   ],
   validateRaw: (raw) => {
@@ -32,5 +44,6 @@ export const taskRunShowSpec: CommandSpec<TaskRunShowParsed> = {
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     runId: typeof raw.args["run-id"] === "string" ? raw.args["run-id"] : undefined,
+    json: raw.opts.json === true,
   }),
 };

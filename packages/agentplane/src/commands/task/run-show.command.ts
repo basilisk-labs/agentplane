@@ -61,6 +61,20 @@ function formatMetrics(
   return parts.length > 0 ? parts.join(", ") : null;
 }
 
+function buildRunShowJson(inspection: Awaited<ReturnType<typeof loadTaskRunnerInspection>>) {
+  return {
+    task_id: inspection.task_id,
+    run_id: inspection.run_id,
+    selection: inspection.selection,
+    paths: inspection.paths,
+    bundle: inspection.bundle,
+    state: inspection.state,
+    events: inspection.events,
+    events_count: inspection.events.length,
+    last_event: inspection.events.at(-1) ?? null,
+  };
+}
+
 export const runTaskRunShow: CommandHandler<TaskRunShowParsed> = async (
   ctx: CommandCtx,
   parsed: TaskRunShowParsed,
@@ -72,6 +86,10 @@ export const runTaskRunShow: CommandHandler<TaskRunShowParsed> = async (
       task_id: parsed.taskId,
       run_id: parsed.runId,
     });
+    if (parsed.json) {
+      process.stdout.write(`${JSON.stringify(buildRunShowJson(inspection), null, 2)}\n`);
+      return 0;
+    }
     process.stdout.write(`${infoMessage(`task run show: ${parsed.taskId}`)}\n`);
     process.stdout.write(`selection: ${inspection.selection}\n`);
     process.stdout.write(`run_id: ${inspection.run_id}\n`);
