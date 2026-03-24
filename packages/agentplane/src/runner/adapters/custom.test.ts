@@ -53,6 +53,8 @@ function makeBundle(): RunnerContextBundle {
         state_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/run-state.json",
         events_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/events.jsonl",
         result_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/result.json",
+        trace_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/agent-trace.jsonl",
+        stderr_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/stderr.log",
       },
     },
   };
@@ -213,6 +215,14 @@ describe("CustomRunnerAdapter", () => {
       bundle.execution.artifact_paths.run_dir,
       "result.json",
     );
+    bundle.execution.artifact_paths.trace_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "agent-trace.jsonl",
+    );
+    bundle.execution.artifact_paths.stderr_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "stderr.log",
+    );
 
     await mkdir(fakeBinDir, { recursive: true });
     await writeFile(
@@ -302,6 +312,14 @@ describe("CustomRunnerAdapter", () => {
     bundle.execution.artifact_paths.result_path = path.join(
       bundle.execution.artifact_paths.run_dir,
       "result.json",
+    );
+    bundle.execution.artifact_paths.trace_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "agent-trace.jsonl",
+    );
+    bundle.execution.artifact_paths.stderr_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "stderr.log",
     );
 
     await mkdir(fakeBinDir, { recursive: true });

@@ -19,7 +19,7 @@ describe("runner artifacts", () => {
     }
   });
 
-  it("writes bundle, bootstrap, state, and events layout deterministically", async () => {
+  it("writes bundle, bootstrap, trace, stderr, state, and events layout deterministically", async () => {
     tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-runner-artifacts-"));
     const paths = resolveTaskRunnerPaths({
       git_root: tempDir,
@@ -102,6 +102,8 @@ describe("runner artifacts", () => {
 
     expect(state.status).toBe("prepared");
     expect(state.bundle_path).toBe(paths.bundle_path);
+    expect(state.trace_path).toBe(paths.trace_path);
+    expect(state.stderr_path).toBe(paths.stderr_path);
     expect(state.prepared_metadata).toMatchObject({
       prompt_count: 0,
       has_task_context: true,
@@ -145,10 +147,14 @@ describe("runner artifacts", () => {
       status: "prepared",
       run_id: "2026-03-23T13-00-00-000Z",
       created_at: "2026-03-23T13:00:00.000Z",
+      trace_path: paths.trace_path,
+      stderr_path: paths.stderr_path,
     });
     expect(writtenState.prepared_metadata?.adapter_capabilities?.adapter_id).toBe("codex");
 
     expect(await readFile(paths.bootstrap_path, "utf8")).toBe("# bootstrap\n");
+    expect(await readFile(paths.trace_path, "utf8")).toBe("");
+    expect(await readFile(paths.stderr_path, "utf8")).toBe("");
     const initialEvents = await readFile(paths.events_path, "utf8");
     expect(initialEvents).toContain('"type":"runner_prepared"');
     expect(initialEvents).toContain('"bundle_sha256"');

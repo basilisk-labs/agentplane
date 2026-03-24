@@ -77,6 +77,8 @@ export type RunnerArtifactPaths = {
   state_path: string;
   events_path: string;
   result_path: string;
+  trace_path: string;
+  stderr_path: string;
 };
 
 export type RunnerCapabilityLevel = "native" | "wrapper" | "advisory" | "unsupported";
@@ -224,6 +226,8 @@ export type RunnerRunState = {
   result_path: string;
   bootstrap_path?: string | null;
   events_path: string;
+  trace_path: string;
+  stderr_path: string;
   created_at: string;
   updated_at: string;
   prepared_metadata?: RunnerPreparedMetadata;

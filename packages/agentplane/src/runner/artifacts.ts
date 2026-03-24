@@ -71,6 +71,8 @@ export function createRunnerRunState(opts: {
     result_path: opts.bundle.execution.artifact_paths.result_path,
     bootstrap_path: opts.bundle.execution.artifact_paths.bootstrap_path,
     events_path: opts.bundle.execution.artifact_paths.events_path,
+    trace_path: opts.bundle.execution.artifact_paths.trace_path,
+    stderr_path: opts.bundle.execution.artifact_paths.stderr_path,
     created_at,
     updated_at: created_at,
     prepared_metadata: opts.prepared_metadata,
@@ -106,6 +108,8 @@ export async function writePreparedRunnerArtifacts(opts: {
   await atomicWriteFile(paths.state_path, `${JSON.stringify(state, null, 2)}\n`, "utf8");
   await atomicWriteFile(paths.bootstrap_path, bootstrapText, "utf8");
   await atomicWriteFile(paths.events_path, "", "utf8");
+  await atomicWriteFile(paths.trace_path, "", "utf8");
+  await atomicWriteFile(paths.stderr_path, "", "utf8");
   await appendRunnerEvent({
     events_path: paths.events_path,
     event: {

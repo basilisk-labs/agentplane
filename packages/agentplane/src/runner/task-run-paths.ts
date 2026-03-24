@@ -7,6 +7,8 @@ export const RUNNER_BOOTSTRAP_FILENAME = "bootstrap.md";
 export const RUNNER_STATE_FILENAME = "run-state.json";
 export const RUNNER_EVENTS_FILENAME = "events.jsonl";
 export const RUNNER_RESULT_FILENAME = "result.json";
+export const RUNNER_TRACE_FILENAME = "agent-trace.jsonl";
+export const RUNNER_STDERR_FILENAME = "stderr.log";
 
 export type TaskRunnerPaths = RunnerArtifactPaths & {
   task_dir: string;
@@ -31,5 +33,7 @@ export function resolveTaskRunnerPaths(opts: {
     state_path: path.join(run_dir, RUNNER_STATE_FILENAME),
     events_path: path.join(run_dir, RUNNER_EVENTS_FILENAME),
     result_path: path.join(run_dir, RUNNER_RESULT_FILENAME),
+    trace_path: path.join(run_dir, RUNNER_TRACE_FILENAME),
+    stderr_path: path.join(run_dir, RUNNER_STDERR_FILENAME),
   };
 }

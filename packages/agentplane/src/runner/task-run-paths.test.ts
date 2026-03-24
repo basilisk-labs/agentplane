@@ -6,6 +6,8 @@ import {
   RUNNER_EVENTS_FILENAME,
   RUNNER_RESULT_FILENAME,
   RUNNER_STATE_FILENAME,
+  RUNNER_STDERR_FILENAME,
+  RUNNER_TRACE_FILENAME,
   resolveTaskRunnerPaths,
 } from "./task-run-paths.js";
 
@@ -28,5 +30,7 @@ describe("resolveTaskRunnerPaths", () => {
     expect(paths.state_path).toBe(`${paths.run_dir}/${RUNNER_STATE_FILENAME}`);
     expect(paths.events_path).toBe(`${paths.run_dir}/${RUNNER_EVENTS_FILENAME}`);
     expect(paths.result_path).toBe(`${paths.run_dir}/${RUNNER_RESULT_FILENAME}`);
+    expect(paths.trace_path).toBe(`${paths.run_dir}/${RUNNER_TRACE_FILENAME}`);
+    expect(paths.stderr_path).toBe(`${paths.run_dir}/${RUNNER_STDERR_FILENAME}`);
   });
 });
