@@ -85,6 +85,7 @@
     "schemas:sync": "bun scripts/sync-schemas.mjs sync",
     "coverage:significant": "node scripts/check-significant-coverage.mjs",
     "coverage:workflow-harness": "node scripts/check-workflow-harness-coverage.mjs",
+    "runner:codex:approval-probe": "bun scripts/run-runner-codex-approval-probe.mjs",
     "runner:codex:smoke": "bun scripts/run-runner-codex-smoke.mjs",
     "docs:cli:check": "node scripts/check-cli-reference-fresh.mjs",
     "docs:recipes:generate": "node scripts/generate-recipes-inventory.mjs",
