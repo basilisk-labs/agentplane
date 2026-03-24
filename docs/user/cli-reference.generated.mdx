@@ -115,6 +115,9 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task run cancel](#task-run-cancel)
   - [task run resume](#task-run-resume)
   - [task run retry](#task-run-retry)
+  - [task run show](#task-run-show)
+  - [task run tail](#task-run-tail)
+  - [task run trace](#task-run-trace)
   - [task scaffold](#task-scaffold)
   - [task scrub](#task-scrub)
   - [task search](#task-search)
@@ -2686,6 +2689,88 @@ agentplane task run retry 202602030608-F1Q8AB run_20260323_abc123
 ```
 
 - Create a new run from a failed/cancelled run snapshot and execute it.
+
+### task run show
+
+Inspect persisted runner state and result artifacts for an existing run.
+
+Loads an existing runner run from its artifacts and prints a structured summary of run-state, result metadata, and event counters. When run-id is omitted, the latest run for the task is selected.
+
+Usage:
+
+```text
+agentplane task run show <task-id> [[run-id]]
+```
+
+Examples:
+
+```sh
+agentplane task run show 202602030608-F1Q8AB
+```
+
+- Inspect the latest persisted runner run for a task.
+
+```sh
+agentplane task run show 202602030608-F1Q8AB run_20260323_abc123
+```
+
+- Inspect a specific run by run id.
+
+### task run tail
+
+Print the last N lines from the raw agent trace artifact for an existing runner run.
+
+Reads agent-trace.jsonl for an existing runner run and prints the last N lines. When run-id is omitted, the latest run for the task is selected.
+
+Usage:
+
+```text
+agentplane task run tail <task-id> [[run-id]] [options]
+```
+
+Options:
+
+- `--lines <n>`: Optional. Number of trace lines to print from the end (default: 40).
+
+Examples:
+
+```sh
+agentplane task run tail 202602030608-F1Q8AB
+```
+
+- Print the last 40 trace lines for the latest task run.
+
+```sh
+agentplane task run tail 202602030608-F1Q8AB run_20260323_abc123 --lines 10
+```
+
+- Print the last 10 trace lines for a specific run.
+
+### task run trace
+
+Print the raw agent trace artifact for an existing runner run.
+
+Reads agent-trace.jsonl for an existing runner run and writes it to stdout unchanged. When run-id is omitted, the latest run for the task is selected.
+
+Usage:
+
+```text
+agentplane task run trace <task-id> [[run-id]]
+```
+
+Examples:
+
+```sh
+agentplane task run trace 202602030608-F1Q8AB
+```
+
+- Print the raw trace for the latest run of a task.
+
+```sh
+agentplane task run trace 202602030608-F1Q8AB run_20260323_abc123
+```
+
+- Print the raw trace for a specific run.
 
 ### task scaffold
 
