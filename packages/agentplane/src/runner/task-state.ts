@@ -67,6 +67,24 @@ function runArtifactsDirForTask(taskId: string, runId: string): string {
   return `.agentplane/tasks/${taskId}/runs/${runId}`;
 }
 
+function formatRunnerAdapterLabel(adapterId: string): string {
+  const normalized = adapterId.trim();
+  if (!normalized) return "Runner";
+  return normalized.slice(0, 1).toUpperCase() + normalized.slice(1);
+}
+
+function renderTaskRunnerSummary(opts: {
+  adapter_id: string;
+  status: TaskRunnerHistoryEntry["status"];
+}): string {
+  const adapter = formatRunnerAdapterLabel(opts.adapter_id);
+  if (opts.status === "prepared") return `${adapter} runner is prepared.`;
+  if (opts.status === "running") return `${adapter} runner is running.`;
+  if (opts.status === "success") return `${adapter} runner completed successfully.`;
+  if (opts.status === "cancelled") return `${adapter} runner was cancelled.`;
+  return `${adapter} runner failed; inspect run artifacts for details.`;
+}
+
 function stripRunnerHistory(
   outcome: NonNullable<TaskData["runner"]> | TaskRunnerHistoryEntry,
 ): TaskRunnerHistoryEntry {
@@ -80,9 +98,8 @@ function stripRunnerHistory(
     ...(outcome.ended_at ? { ended_at: outcome.ended_at } : {}),
     exit_code: outcome.exit_code,
     target: { ...outcome.target },
+    ...(outcome.summary ? { summary: outcome.summary } : {}),
     ...(outcome.output_paths?.length ? { output_paths: [...outcome.output_paths] } : {}),
-    ...(outcome.stdout_summary ? { stdout_summary: outcome.stdout_summary } : {}),
-    ...(outcome.stderr_summary ? { stderr_summary: outcome.stderr_summary } : {}),
     ...(outcome.metrics ? { metrics: { ...outcome.metrics } } : {}),
   };
 }
@@ -120,23 +137,17 @@ function renderRunnerMetrics(
   return pairs.length > 0 ? pairs.join(", ") : null;
 }
 
-function renderVerificationHint(opts: {
-  status: RunnerRunState["status"];
-  verification_hints?: string[] | null;
-}): string {
-  if (opts.verification_hints && opts.verification_hints.length > 0) {
-    return opts.verification_hints.join(" | ");
-  }
-  if (opts.status === "success") {
+function renderVerificationHint(status: RunnerRunState["status"]): string {
+  if (status === "success") {
     return "runner completed successfully; human verification and closure remain explicit lifecycle steps.";
   }
-  if (opts.status === "failed") {
+  if (status === "failed") {
     return "runner failed; inspect artifacts before retrying or recording verification evidence.";
   }
-  if (opts.status === "cancelled") {
+  if (status === "cancelled") {
     return "runner was cancelled; verification evidence is incomplete until a later run succeeds.";
   }
-  if (opts.status === "running") {
+  if (status === "running") {
     return "runner is still executing; verification evidence is not complete yet.";
   }
   return "runner is prepared but has not produced verification-relevant output yet.";
@@ -147,11 +158,13 @@ function renderRunnerOutcomeEntry(opts: {
   entry: TaskRunnerHistoryEntry;
   state?: RunnerRunState;
 }): string {
-  const summary = opts.state?.result?.summary;
-  const findings = opts.state?.result?.findings;
+  const summary =
+    opts.entry.summary ??
+    renderTaskRunnerSummary({
+      adapter_id: opts.entry.adapter_id,
+      status: opts.entry.status,
+    });
   const capabilitiesUsed = opts.state?.result?.capabilities_used;
-  const entryStdout = opts.entry.stdout_summary;
-  const entryStderr = opts.entry.stderr_summary;
   const entryOutputPaths = opts.entry.output_paths;
   const entryMetrics = opts.entry.metrics;
   const lines = [
@@ -177,12 +190,6 @@ function renderRunnerOutcomeEntry(opts: {
   if (opts.entry.ended_at) {
     lines.push("", `EndedAt: ${opts.entry.ended_at}`);
   }
-  if (entryStdout) {
-    lines.push("", `Stdout: ${entryStdout}`);
-  }
-  if (entryStderr) {
-    lines.push("", `Stderr: ${entryStderr}`);
-  }
   if (summary) {
     lines.push("", `Summary: ${summary}`);
   }
@@ -194,26 +201,17 @@ function renderRunnerOutcomeEntry(opts: {
         .join(", ")}`,
     );
   }
-  if (findings?.length) {
-    lines.push("", `Findings: ${findings.join(" | ")}`);
+  if (!opts.state?.result?.artifacts?.length && entryOutputPaths?.length) {
+    lines.push("", `Outputs: ${entryOutputPaths.join(", ")}`);
   }
   if (capabilitiesUsed?.length) {
     lines.push("", `Capabilities: ${capabilitiesUsed.join(", ")}`);
-  }
-  if (entryOutputPaths?.length) {
-    lines.push("", `Outputs: ${entryOutputPaths.join(", ")}`);
   }
   const metrics = renderRunnerMetrics(entryMetrics);
   if (metrics) {
     lines.push("", `Metrics: ${metrics}`);
   }
-  lines.push(
-    "",
-    `VerificationHint: ${renderVerificationHint({
-      status: opts.entry.status,
-      verification_hints: opts.state?.result?.verification_hints ?? null,
-    })}`,
-  );
+  lines.push("", `VerificationHint: ${renderVerificationHint(opts.entry.status)}`);
   return `${lines.join("\n").trimEnd()}\n`;
 }
 
@@ -229,9 +227,11 @@ function buildTaskRunnerHistoryEntry(state: RunnerRunState): TaskRunnerHistoryEn
   };
   if (state.result?.started_at) outcome.started_at = state.result.started_at;
   if (state.result?.ended_at) outcome.ended_at = state.result.ended_at;
+  outcome.summary = renderTaskRunnerSummary({
+    adapter_id: state.adapter_id,
+    status: state.status,
+  });
   if (state.result?.output_paths?.length) outcome.output_paths = [...state.result.output_paths];
-  if (state.result?.stdout_summary) outcome.stdout_summary = state.result.stdout_summary;
-  if (state.result?.stderr_summary) outcome.stderr_summary = state.result.stderr_summary;
   if (state.result?.metrics) outcome.metrics = { ...state.result.metrics };
   return outcome;
 }

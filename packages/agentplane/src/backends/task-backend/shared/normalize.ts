@@ -158,6 +158,9 @@ function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry
     );
     if (outputPaths.length > 0) outcome.output_paths = outputPaths;
   }
+  if (typeof value.summary === "string" && value.summary.trim()) {
+    outcome.summary = value.summary.trim();
+  }
   if (typeof value.stdout_summary === "string" && value.stdout_summary.trim()) {
     outcome.stdout_summary = value.stdout_summary.trim();
   }

@@ -203,6 +203,7 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
                   "ended_at",
                   "exit_code",
                   "target",
+                  "summary",
                   "output_paths",
                   "stdout_summary",
                   "stderr_summary",

@@ -381,7 +381,9 @@ describe("runCli", () => {
       expect(io.stdout).toContain(`task run executed: ${taskId}`);
       expect(io.stdout).toContain("status: success");
       expect(io.stdout).toContain("runner_exit_code: 0");
-      expect(io.stdout).toContain("stdout: CLI fake Codex message");
+      expect(io.stdout).toContain(
+        "stdout: Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
+      );
 
       const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
       const runEntries = await readdir(runsRoot);
@@ -391,12 +393,20 @@ describe("runCli", () => {
       const statePath = path.join(runDir, "run-state.json");
       const state = JSON.parse(await readFile(statePath, "utf8")) as {
         status: string;
-        result?: { status: string; exit_code: number | null; stdout_summary?: string };
+        result?: {
+          status: string;
+          exit_code: number | null;
+          summary?: string;
+          stdout_summary?: string;
+        };
       };
       expect(state.status).toBe("success");
       expect(state.result?.status).toBe("success");
       expect(state.result?.exit_code).toBe(0);
-      expect(state.result?.stdout_summary).toContain("CLI fake Codex message");
+      expect(state.result?.summary).toBe("Codex execution completed successfully.");
+      expect(state.result?.stdout_summary).toBe(
+        "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
+      );
 
       const task = await readTask({ cwd: root, rootOverride: root, taskId });
       expect(task.frontmatter.verification?.state).toBe("pending");
@@ -410,6 +420,7 @@ describe("runCli", () => {
       });
       expect(task.body).toContain("<!-- BEGIN RUNNER OUTCOME -->");
       expect(task.body).toContain("RUNNER — success");
+      expect(task.body).toContain("Summary: Codex runner completed successfully.");
       expect(task.body).toContain("VerificationHint: runner completed successfully");
     } finally {
       process.env.PATH = originalPath;
@@ -481,7 +492,9 @@ describe("runCli", () => {
       expect(io.stdout).toContain(`task run executed: ${taskId}`);
       expect(io.stdout).toContain("status: failed");
       expect(io.stdout).toContain("runner_exit_code: 17");
-      expect(io.stderr).toContain("stderr: runner failed stderr");
+      expect(io.stderr).toContain(
+        "stderr: Failure details were captured in stderr.log and agent-trace.jsonl.",
+      );
 
       const task = await readTask({ cwd: root, rootOverride: root, taskId });
       expect(task.frontmatter.status).toBe("DOING");
@@ -494,7 +507,9 @@ describe("runCli", () => {
         target: { kind: "task", task_id: taskId },
       });
       expect(task.body).toContain("RUNNER — failed");
-      expect(task.body).toContain("Stderr: runner failed stderr");
+      expect(task.body).toContain(
+        "Summary: Codex runner failed; inspect run artifacts for details.",
+      );
       expect(task.body).toContain("VerificationHint: runner failed");
     } finally {
       process.env.PATH = originalPath;
@@ -578,7 +593,7 @@ describe("runCli", () => {
       expect(io.stdout).toContain("adapter: custom");
       expect(io.stdout).toContain("status: success");
       expect(io.stdout).toContain("runner_exit_code: 0");
-      expect(io.stdout).toContain("stdout: custom runner ok runner-token task");
+      expect(io.stdout).toContain("stdout: Raw execution trace was captured in agent-trace.jsonl.");
 
       const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
       const runEntries = await readdir(runsRoot);
@@ -616,7 +631,9 @@ describe("runCli", () => {
       expect(state.result?.status).toBe("success");
       expect(state.result?.exit_code).toBe(0);
       expect(state.result?.summary).toBe("custom manifest summary");
-      expect(state.result?.stdout_summary).toContain("custom runner ok runner-token task");
+      expect(state.result?.stdout_summary).toBe(
+        "Raw execution trace was captured in agent-trace.jsonl.",
+      );
       expect(state.result?.findings).toEqual(["custom finding"]);
       expect(state.result?.verification_hints).toEqual(["custom verification hint"]);
       expect(manifest.summary).toBe("custom manifest summary");
@@ -625,9 +642,9 @@ describe("runCli", () => {
       expect(manifest.capabilities_used).toEqual(["custom.report"]);
 
       const task = await readTask({ cwd: root, rootOverride: root, taskId });
-      expect(task.body).toContain("Summary: custom manifest summary");
-      expect(task.body).toContain("Findings: custom finding");
-      expect(task.body).toContain("VerificationHint: custom verification hint");
+      expect(task.body).toContain("Summary: Custom runner completed successfully.");
+      expect(task.body).not.toContain("custom finding");
+      expect(task.body).toContain("VerificationHint: runner completed successfully");
       expect(task.body).toContain("Capabilities: custom.report");
     } finally {
       process.env.PATH = originalPath;
@@ -715,7 +732,9 @@ describe("runCli", () => {
         target: { kind: "task", task_id: taskId },
       });
       expect(task.body).toContain("RUNNER — failed");
-      expect(task.body).toContain("Invalid runner result manifest");
+      expect(task.body).toContain(
+        "Summary: Custom runner failed; inspect run artifacts for details.",
+      );
 
       const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
       const runEntries = await readdir(runsRoot);
@@ -992,15 +1011,23 @@ describe("runCli", () => {
       expect(io.stdout).toContain(`task run resumed: ${taskId}`);
       expect(io.stdout).toContain("previous_status: prepared");
       expect(io.stdout).toContain("status: success");
-      expect(io.stdout).toContain("stdout: resume cli runner");
+      expect(io.stdout).toContain("stdout: Raw execution trace was captured in agent-trace.jsonl.");
 
       const state = JSON.parse(await readFile(prepared.invocation.state_path, "utf8")) as {
         status: string;
-        result?: { status: string; exit_code: number | null; stdout_summary?: string };
+        result?: {
+          status: string;
+          exit_code: number | null;
+          summary?: string;
+          stdout_summary?: string;
+        };
       };
       expect(state.status).toBe("success");
       expect(state.result?.status).toBe("success");
-      expect(state.result?.stdout_summary).toContain("resume cli runner");
+      expect(state.result?.summary).toBe("Custom runner execution completed successfully.");
+      expect(state.result?.stdout_summary).toBe(
+        "Raw execution trace was captured in agent-trace.jsonl.",
+      );
     } finally {
       process.env.PATH = originalPath;
       io.restore();
@@ -1109,7 +1136,7 @@ describe("runCli", () => {
       expect(io.stdout).toContain("source_run_id: run-retry-source-cli");
       expect(io.stdout).toContain("previous_status: failed");
       expect(io.stdout).toContain("status: success");
-      expect(io.stdout).toContain("stdout: retry cli runner");
+      expect(io.stdout).toContain("stdout: Raw execution trace was captured in agent-trace.jsonl.");
 
       const newRunId = /^run_id: (.+)$/m.exec(io.stdout)?.[1] ?? "";
       expect(newRunId).toBeTruthy();
@@ -1125,11 +1152,14 @@ describe("runCli", () => {
       );
       const state = JSON.parse(await readFile(newStatePath, "utf8")) as {
         status: string;
-        result?: { status: string; stdout_summary?: string };
+        result?: { status: string; summary?: string; stdout_summary?: string };
       };
       expect(state.status).toBe("success");
       expect(state.result?.status).toBe("success");
-      expect(state.result?.stdout_summary).toContain("retry cli runner");
+      expect(state.result?.summary).toBe("Custom runner execution completed successfully.");
+      expect(state.result?.stdout_summary).toBe(
+        "Raw execution trace was captured in agent-trace.jsonl.",
+      );
     } finally {
       process.env.PATH = originalPath;
       io.restore();

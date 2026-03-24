@@ -472,7 +472,9 @@ describe("runCli scenario", () => {
         mode: "execute",
       });
       expect(task.body).toContain("RUNNER — failed");
-      expect(task.body).toContain("requires_human_approval");
+      expect(task.body).toContain(
+        "Summary: Codex runner failed; inspect run artifacts for details.",
+      );
     } finally {
       io.restore();
     }

@@ -60,6 +60,7 @@ export type TaskRunnerHistoryEntry = {
   ended_at?: string;
   exit_code: number | null;
   target: TaskRunnerTarget;
+  summary?: string;
   output_paths?: string[];
   stdout_summary?: string;
   stderr_summary?: string;

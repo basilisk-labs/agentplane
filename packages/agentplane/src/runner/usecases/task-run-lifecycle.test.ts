@@ -231,7 +231,10 @@ describe("task-run lifecycle usecases", () => {
 
     expect(resumed.previous_status).toBe("prepared");
     expect(resumed.result.status).toBe("success");
-    expect(resumed.result.stdout_summary).toContain("resumed runner");
+    expect(resumed.result.summary).toBe("Custom runner execution completed successfully.");
+    expect(resumed.result.stdout_summary).toBe(
+      "Raw execution trace was captured in agent-trace.jsonl.",
+    );
     const state = await readRunnerRunState(resumed.invocation.state_path);
     expect(state?.status).toBe("success");
     const events = await readFile(resumed.invocation.events_path, "utf8");
@@ -294,7 +297,10 @@ describe("task-run lifecycle usecases", () => {
     expect(retried.source_run_id).toBe("run-retry-source");
     expect(retried.invocation.run_id).toBe("run-retry-dest");
     expect(retried.result.status).toBe("success");
-    expect(retried.result.stdout_summary).toContain("retried runner");
+    expect(retried.result.summary).toBe("Custom runner execution completed successfully.");
+    expect(retried.result.stdout_summary).toBe(
+      "Raw execution trace was captured in agent-trace.jsonl.",
+    );
     const newState = await readRunnerRunState(retried.invocation.state_path);
     expect(newState?.status).toBe("success");
     const sourceEvents = await readFile(prepared.invocation.events_path, "utf8");
