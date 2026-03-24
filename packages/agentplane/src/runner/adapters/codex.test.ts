@@ -287,6 +287,7 @@ describe("CodexRunnerAdapter", () => {
     });
 
     const result = await adapter.execute(invocation);
+    const lastMessage = await readFile(invocation.output_last_message_path!, "utf8");
 
     expect(result.status).toBe("success");
     expect(result.exit_code).toBe(0);
@@ -294,8 +295,10 @@ describe("CodexRunnerAdapter", () => {
     expect(result.stdout_summary).toBe(
       "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
     );
+    expect(result.stdout_summary).not.toContain("Final fake Codex message");
     expect(result.metrics?.stdout_bytes).toBeGreaterThan(0);
     expect(result.metrics?.duration_ms).toBeGreaterThanOrEqual(0);
+    expect(lastMessage).toContain("Final fake Codex message");
     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
       status: string;
       prepared_metadata?: { bundle_bytes: number; bundle_sha256: string };
@@ -327,6 +330,7 @@ describe("CodexRunnerAdapter", () => {
     expect(resultManifest.stdout_summary).toBe(
       "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
     );
+    expect(resultManifest.stdout_summary).not.toContain("Final fake Codex message");
     expect(resultManifest.artifacts).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ path: invocation.trace_path, label: "raw-trace" }),

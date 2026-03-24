@@ -421,6 +421,9 @@ describe("runCli", () => {
       expect(task.body).toContain("<!-- BEGIN RUNNER OUTCOME -->");
       expect(task.body).toContain("RUNNER — success");
       expect(task.body).toContain("Summary: Codex runner completed successfully.");
+      expect(task.body).toContain("assistant-last-message=");
+      expect(task.body).toContain("codex-last-message.md");
+      expect(task.body).not.toContain("CLI fake Codex message");
       expect(task.body).toContain("VerificationHint: runner completed successfully");
     } finally {
       process.env.PATH = originalPath;
