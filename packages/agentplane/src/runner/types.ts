@@ -204,6 +204,14 @@ export type RunnerExecutionMetrics = {
   output_last_message_bytes?: number | null;
 };
 
+export type RunnerResultEvidence = {
+  evidence_paths?: string[];
+  changed_paths?: string[];
+  files_changed_count?: number;
+  tests_run?: string[];
+  verification_candidates?: string[];
+};
+
 export type RunnerTraceStream = "stdout" | "stderr" | "system";
 
 export type RunnerTraceKind = "json_event" | "text";
@@ -256,6 +264,7 @@ export type RunnerResultManifest = {
   verification_hints?: string[];
   capabilities_used?: string[];
   metrics?: RunnerExecutionMetrics;
+  evidence?: RunnerResultEvidence;
 };
 
 export type RunnerResult = {
@@ -273,6 +282,7 @@ export type RunnerResult = {
   verification_hints?: string[];
   capabilities_used?: string[];
   metrics?: RunnerExecutionMetrics;
+  evidence?: RunnerResultEvidence;
 };
 
 export type RunnerLifecycleStatus = "prepared" | "running" | RunnerResultStatus;

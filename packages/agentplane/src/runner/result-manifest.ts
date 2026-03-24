@@ -4,6 +4,7 @@ import path from "node:path";
 import { atomicWriteFile } from "@agentplaneorg/core";
 
 import type {
+  RunnerResultEvidence,
   RunnerExecutionMetrics,
   RunnerResult,
   RunnerResultArtifact,
@@ -146,6 +147,30 @@ function normalizeMetrics(value: unknown): RunnerExecutionMetrics | undefined {
   return Object.keys(metrics).length > 0 ? metrics : undefined;
 }
 
+function normalizeEvidence(value: unknown): RunnerResultEvidence | undefined {
+  if (!isRecord(value)) return undefined;
+  const evidence: RunnerResultEvidence = {};
+  const evidencePaths = normalizeStringArray(value.evidence_paths);
+  if (evidencePaths) evidence.evidence_paths = evidencePaths;
+  const changedPaths = normalizeStringArray(value.changed_paths);
+  if (changedPaths) evidence.changed_paths = changedPaths;
+  const testsRun = normalizeStringArray(value.tests_run);
+  if (testsRun) evidence.tests_run = testsRun;
+  const verificationCandidates = normalizeStringArray(value.verification_candidates);
+  if (verificationCandidates) evidence.verification_candidates = verificationCandidates;
+  if (value.files_changed_count !== undefined) {
+    if (
+      typeof value.files_changed_count !== "number" ||
+      !Number.isInteger(value.files_changed_count) ||
+      value.files_changed_count < 0
+    ) {
+      throw new Error("evidence.files_changed_count must be a non-negative integer");
+    }
+    evidence.files_changed_count = value.files_changed_count;
+  }
+  return Object.keys(evidence).length > 0 ? evidence : undefined;
+}
+
 function normalizeStatus(value: unknown): RunnerResultStatus | undefined {
   return value === "success" || value === "failed" || value === "cancelled" ? value : undefined;
 }
@@ -243,6 +268,7 @@ export async function readRunnerResultManifest(
         "capabilities_used",
       );
       manifest.metrics = normalizeMetrics(raw.metrics);
+      manifest.evidence = normalizeEvidence(raw.evidence);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       invalidManifest(resultPath, message, rawText);
@@ -326,6 +352,7 @@ export function applyRunnerResultManifest(opts: {
       ...opts.base.metrics,
       ...opts.manifest.metrics,
     },
+    evidence: opts.manifest.evidence ?? opts.base.evidence,
   };
   if (merged.artifacts && merged.artifacts.length > 0) {
     merged.output_paths = merged.artifacts.map((artifact) => artifact.path);
@@ -351,5 +378,6 @@ export function manifestFromRunnerResult(result: RunnerResult): RunnerResultMani
     verification_hints: result.verification_hints,
     capabilities_used: result.capabilities_used,
     metrics: result.metrics,
+    evidence: result.evidence,
   };
 }

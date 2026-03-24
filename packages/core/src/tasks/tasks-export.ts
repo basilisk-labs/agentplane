@@ -8,6 +8,7 @@ import { resolveProject } from "../project/project-root.js";
 import {
   listTasks,
   type TaskOrigin,
+  type TaskRunnerEvidence,
   type TaskRunnerExecutionMetrics,
   type TaskRunnerHistoryEntry,
   type TaskRunnerOutcome,
@@ -76,6 +77,35 @@ function normalizeRunnerMetrics(value: unknown): TaskRunnerExecutionMetrics | un
   return Object.keys(metrics).length > 0 ? metrics : undefined;
 }
 
+function normalizeStringArray(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const entries = value
+    .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+    .map((item) => item.trim());
+  return entries.length > 0 ? entries : undefined;
+}
+
+function normalizeRunnerEvidence(value: unknown): TaskRunnerEvidence | undefined {
+  if (!isRecord(value)) return undefined;
+  const evidence: TaskRunnerEvidence = {};
+  const evidencePaths = normalizeStringArray(value.evidence_paths);
+  if (evidencePaths) evidence.evidence_paths = evidencePaths;
+  const changedPaths = normalizeStringArray(value.changed_paths);
+  if (changedPaths) evidence.changed_paths = changedPaths;
+  const testsRun = normalizeStringArray(value.tests_run);
+  if (testsRun) evidence.tests_run = testsRun;
+  const verificationCandidates = normalizeStringArray(value.verification_candidates);
+  if (verificationCandidates) evidence.verification_candidates = verificationCandidates;
+  if (
+    typeof value.files_changed_count === "number" &&
+    Number.isInteger(value.files_changed_count) &&
+    value.files_changed_count >= 0
+  ) {
+    evidence.files_changed_count = value.files_changed_count;
+  }
+  return Object.keys(evidence).length > 0 ? evidence : undefined;
+}
+
 function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry | undefined {
   if (!isRecord(value)) return undefined;
   const runId = typeof value.run_id === "string" ? value.run_id.trim() : "";
@@ -128,6 +158,8 @@ function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry
   }
   const metrics = normalizeRunnerMetrics(value.metrics);
   if (metrics) outcome.metrics = metrics;
+  const evidence = normalizeRunnerEvidence(value.evidence);
+  if (evidence) outcome.evidence = evidence;
   return outcome;
 }
 

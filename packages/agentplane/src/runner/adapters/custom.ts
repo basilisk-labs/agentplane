@@ -158,6 +158,7 @@ function applyCustomRunnerResultManifest(opts: {
       ...opts.base.metrics,
       ...opts.manifest.metrics,
     },
+    evidence: opts.manifest.evidence ?? opts.base.evidence,
   };
   if (merged.artifacts && merged.artifacts.length > 0) {
     merged.output_paths = merged.artifacts.map((artifact) => artifact.path);

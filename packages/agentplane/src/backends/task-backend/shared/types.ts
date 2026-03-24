@@ -23,6 +23,14 @@ export type TaskRunnerExecutionMetrics = {
   output_last_message_bytes?: number | null;
 };
 
+export type TaskRunnerEvidence = {
+  evidence_paths?: string[];
+  changed_paths?: string[];
+  files_changed_count?: number;
+  tests_run?: string[];
+  verification_candidates?: string[];
+};
+
 export type TaskRunnerTarget = {
   kind: "task" | "recipe_scenario";
   task_id?: string;
@@ -45,6 +53,7 @@ export type TaskRunnerHistoryEntry = {
   stdout_summary?: string;
   stderr_summary?: string;
   metrics?: TaskRunnerExecutionMetrics;
+  evidence?: TaskRunnerEvidence;
 };
 
 export type TaskRunnerOutcome = TaskRunnerHistoryEntry & {

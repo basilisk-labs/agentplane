@@ -27,6 +27,13 @@ describe("runner result manifest", () => {
           findings: ["finding"],
           artifacts: [{ path: "reports/out.txt", label: "report" }],
           metrics: { duration_ms: 12, stdout_bytes: 4, stderr_bytes: 0 },
+          evidence: {
+            evidence_paths: ["reports/out.txt", "logs/out.log"],
+            changed_paths: ["src/runner/task-state.ts"],
+            files_changed_count: 1,
+            tests_run: ["bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts"],
+            verification_candidates: ["inspect reports/out.txt"],
+          },
         },
         null,
         2,
@@ -44,6 +51,13 @@ describe("runner result manifest", () => {
       findings: ["finding"],
       artifacts: [{ path: "reports/out.txt", label: "report" }],
       metrics: { duration_ms: 12, stdout_bytes: 4, stderr_bytes: 0 },
+      evidence: {
+        evidence_paths: ["reports/out.txt", "logs/out.log"],
+        changed_paths: ["src/runner/task-state.ts"],
+        files_changed_count: 1,
+        tests_run: ["bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts"],
+        verification_candidates: ["inspect reports/out.txt"],
+      },
     });
   });
 
@@ -121,6 +135,13 @@ describe("runner result manifest", () => {
       ],
       metrics: { stdout_bytes: 10, stderr_bytes: 0 },
       capabilities_used: ["codex.exec"],
+      evidence: {
+        evidence_paths: ["reports/out.txt"],
+        changed_paths: ["src/runner/task-state.ts"],
+        files_changed_count: 1,
+        tests_run: ["bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts"],
+        verification_candidates: ["inspect reports/out.txt"],
+      },
     });
 
     expect(manifest).toEqual({
@@ -136,6 +157,13 @@ describe("runner result manifest", () => {
       ],
       metrics: { stdout_bytes: 10, stderr_bytes: 0 },
       capabilities_used: ["codex.exec"],
+      evidence: {
+        evidence_paths: ["reports/out.txt"],
+        changed_paths: ["src/runner/task-state.ts"],
+        files_changed_count: 1,
+        tests_run: ["bunx vitest run packages/agentplane/src/runner/result-manifest.test.ts"],
+        verification_candidates: ["inspect reports/out.txt"],
+      },
     });
   });
 });

@@ -3,6 +3,7 @@ import { isRecord } from "../../../shared/guards.js";
 import type {
   PlanApproval,
   TaskOrigin,
+  TaskRunnerEvidence,
   TaskRunnerExecutionMetrics,
   TaskRunnerHistoryEntry,
   TaskRunnerOutcome,
@@ -117,6 +118,35 @@ function normalizeTaskRunnerMetrics(value: unknown): TaskRunnerExecutionMetrics 
   return Object.keys(metrics).length > 0 ? metrics : null;
 }
 
+function normalizeStringArray(value: unknown): string[] | null {
+  if (!Array.isArray(value)) return null;
+  const entries = value
+    .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+    .map((item) => item.trim());
+  return entries.length > 0 ? entries : null;
+}
+
+function normalizeTaskRunnerEvidence(value: unknown): TaskRunnerEvidence | null {
+  if (!isRecord(value)) return null;
+  const evidence: TaskRunnerEvidence = {};
+  const evidencePaths = normalizeStringArray(value.evidence_paths);
+  if (evidencePaths) evidence.evidence_paths = evidencePaths;
+  const changedPaths = normalizeStringArray(value.changed_paths);
+  if (changedPaths) evidence.changed_paths = changedPaths;
+  const testsRun = normalizeStringArray(value.tests_run);
+  if (testsRun) evidence.tests_run = testsRun;
+  const verificationCandidates = normalizeStringArray(value.verification_candidates);
+  if (verificationCandidates) evidence.verification_candidates = verificationCandidates;
+  if (
+    typeof value.files_changed_count === "number" &&
+    Number.isInteger(value.files_changed_count) &&
+    value.files_changed_count >= 0
+  ) {
+    evidence.files_changed_count = value.files_changed_count;
+  }
+  return Object.keys(evidence).length > 0 ? evidence : null;
+}
+
 function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry | null {
   if (!isRecord(value)) return null;
   const runId = typeof value.run_id === "string" ? value.run_id.trim() : "";
@@ -169,6 +199,8 @@ function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry
   }
   const metrics = normalizeTaskRunnerMetrics(value.metrics);
   if (metrics) outcome.metrics = metrics;
+  const evidence = normalizeTaskRunnerEvidence(value.evidence);
+  if (evidence) outcome.evidence = evidence;
   return outcome;
 }
 

@@ -1044,7 +1044,7 @@ describe("runCli", () => {
       [
         "#!/bin/sh",
         String.raw`bootstrap_line="$(sed -n '1p' "$AGENTPLANE_RUNNER_BOOTSTRAP_PATH")"`,
-        String.raw`printf '%s\n' '{"schema_version":1,"summary":"Привет из custom manifest","artifacts":[{"path":"reports/custom.txt","label":"report"}],"findings":["русский finding"],"verification_hints":["русский hint"],"capabilities_used":["custom.report"]}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        String.raw`printf '%s\n' '{"schema_version":1,"summary":"Привет из custom manifest","artifacts":[{"path":"reports/custom.txt","label":"report"}],"findings":["русский finding"],"verification_hints":["русский hint"],"capabilities_used":["custom.report"],"evidence":{"evidence_paths":["reports/custom.txt","logs/custom.log"],"changed_paths":["src/runner/task-state.ts","src/runner/result-manifest.ts"],"files_changed_count":2,"tests_run":["bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts"],"verification_candidates":["inspect reports/custom.txt","inspect logs/custom.log"]}}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         String.raw`printf "custom runner ok %s %s %s\n" "$CUSTOM_TOKEN" "$AGENTPLANE_RUNNER_TARGET" "$bootstrap_line"`,
         "cat >/dev/null",
         "exit 0",
@@ -1096,6 +1096,13 @@ describe("runCli", () => {
           stdout_summary?: string;
           findings?: string[];
           verification_hints?: string[];
+          evidence?: {
+            evidence_paths?: string[];
+            changed_paths?: string[];
+            files_changed_count?: number;
+            tests_run?: string[];
+            verification_candidates?: string[];
+          };
         };
       };
       const bundle = JSON.parse(await readFile(bundlePath, "utf8")) as {
@@ -1107,6 +1114,13 @@ describe("runCli", () => {
         findings?: string[];
         verification_hints?: string[];
         capabilities_used?: string[];
+        evidence?: {
+          evidence_paths?: string[];
+          changed_paths?: string[];
+          files_changed_count?: number;
+          tests_run?: string[];
+          verification_candidates?: string[];
+        };
       };
       expect(bundle.execution.adapter_id).toBe("custom");
       expect(bundle.execution.mode).toBe("execute");
@@ -1120,6 +1134,13 @@ describe("runCli", () => {
       );
       expect(state.result?.findings).toBeUndefined();
       expect(state.result?.verification_hints).toBeUndefined();
+      expect(state.result?.evidence).toEqual({
+        evidence_paths: ["reports/custom.txt", "logs/custom.log"],
+        changed_paths: ["src/runner/task-state.ts", "src/runner/result-manifest.ts"],
+        files_changed_count: 2,
+        tests_run: ["bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts"],
+        verification_candidates: ["inspect reports/custom.txt", "inspect logs/custom.log"],
+      });
       expect(manifest.summary).toBe("Custom runner execution completed successfully.");
       expect(manifest.artifacts).toEqual(
         expect.arrayContaining([
@@ -1129,18 +1150,47 @@ describe("runCli", () => {
       expect(manifest.findings).toBeUndefined();
       expect(manifest.verification_hints).toBeUndefined();
       expect(manifest.capabilities_used).toEqual(["custom.report"]);
+      expect(manifest.evidence).toEqual({
+        evidence_paths: ["reports/custom.txt", "logs/custom.log"],
+        changed_paths: ["src/runner/task-state.ts", "src/runner/result-manifest.ts"],
+        files_changed_count: 2,
+        tests_run: ["bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts"],
+        verification_candidates: ["inspect reports/custom.txt", "inspect logs/custom.log"],
+      });
       expect(await pathExists(sourceResultPath)).toBe(true);
       expect(await readFile(sourceResultPath, "utf8")).toContain("Привет из custom manifest");
       expect(await readFile(sourceResultPath, "utf8")).toContain("русский finding");
       expect(await readFile(sourceResultPath, "utf8")).toContain("русский hint");
+      expect(await readFile(sourceResultPath, "utf8")).toContain('"files_changed_count":2');
 
       const task = await readTask({ cwd: root, rootOverride: root, taskId });
+      expect(task.frontmatter.runner).toMatchObject({
+        status: "success",
+        evidence: {
+          evidence_paths: ["reports/custom.txt", "logs/custom.log"],
+          changed_paths: ["src/runner/task-state.ts", "src/runner/result-manifest.ts"],
+          files_changed_count: 2,
+          tests_run: ["bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts"],
+          verification_candidates: ["inspect reports/custom.txt", "inspect logs/custom.log"],
+        },
+      });
       expect(task.body).toContain("Summary: Custom runner completed successfully.");
       expect(task.body).not.toContain("русский finding");
       expect(task.body).toContain("source-result-manifest=");
       expect(task.body).toContain("result.source.json");
       expect(task.body).toContain("VerificationHint: runner completed successfully");
       expect(task.body).toContain("Capabilities: custom.report");
+      expect(task.body).toContain("EvidencePaths: reports/custom.txt, logs/custom.log");
+      expect(task.body).toContain(
+        "ChangedPaths: src/runner/task-state.ts, src/runner/result-manifest.ts",
+      );
+      expect(task.body).toContain("FilesChangedCount: 2");
+      expect(task.body).toContain(
+        "TestsRun: bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts",
+      );
+      expect(task.body).toContain(
+        "VerificationCandidates: inspect reports/custom.txt | inspect logs/custom.log",
+      );
     } finally {
       process.env.PATH = originalPath;
       io.restore();

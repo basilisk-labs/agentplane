@@ -101,6 +101,7 @@ function stripRunnerHistory(
     ...(outcome.summary ? { summary: outcome.summary } : {}),
     ...(outcome.output_paths?.length ? { output_paths: [...outcome.output_paths] } : {}),
     ...(outcome.metrics ? { metrics: { ...outcome.metrics } } : {}),
+    ...(outcome.evidence ? { evidence: { ...outcome.evidence } } : {}),
   };
 }
 
@@ -153,6 +154,29 @@ function renderVerificationHint(status: RunnerRunState["status"]): string {
   return "runner is prepared but has not produced verification-relevant output yet.";
 }
 
+function renderRunnerEvidence(
+  evidence: TaskRunnerHistoryEntry["evidence"] | null | undefined,
+): string[] {
+  if (!evidence) return [];
+  const lines: string[] = [];
+  if (evidence.evidence_paths?.length) {
+    lines.push(`EvidencePaths: ${evidence.evidence_paths.join(", ")}`);
+  }
+  if (evidence.changed_paths?.length) {
+    lines.push(`ChangedPaths: ${evidence.changed_paths.join(", ")}`);
+  }
+  if (typeof evidence.files_changed_count === "number") {
+    lines.push(`FilesChangedCount: ${evidence.files_changed_count}`);
+  }
+  if (evidence.tests_run?.length) {
+    lines.push(`TestsRun: ${evidence.tests_run.join(" | ")}`);
+  }
+  if (evidence.verification_candidates?.length) {
+    lines.push(`VerificationCandidates: ${evidence.verification_candidates.join(" | ")}`);
+  }
+  return lines;
+}
+
 function renderRunnerOutcomeEntry(opts: {
   task_id: string;
   entry: TaskRunnerHistoryEntry;
@@ -167,6 +191,7 @@ function renderRunnerOutcomeEntry(opts: {
   const capabilitiesUsed = opts.state?.result?.capabilities_used;
   const entryOutputPaths = opts.entry.output_paths;
   const entryMetrics = opts.entry.metrics;
+  const entryEvidence = opts.entry.evidence;
   const lines = [
     `#### ${opts.entry.updated_at} — RUNNER — ${opts.entry.status}`,
     "",
@@ -211,6 +236,10 @@ function renderRunnerOutcomeEntry(opts: {
   if (metrics) {
     lines.push("", `Metrics: ${metrics}`);
   }
+  const evidenceLines = renderRunnerEvidence(entryEvidence);
+  if (evidenceLines.length > 0) {
+    lines.push("", ...evidenceLines);
+  }
   lines.push("", `VerificationHint: ${renderVerificationHint(opts.entry.status)}`);
   return `${lines.join("\n").trimEnd()}\n`;
 }
@@ -233,6 +262,7 @@ function buildTaskRunnerHistoryEntry(state: RunnerRunState): TaskRunnerHistoryEn
   });
   if (state.result?.output_paths?.length) outcome.output_paths = [...state.result.output_paths];
   if (state.result?.metrics) outcome.metrics = { ...state.result.metrics };
+  if (state.result?.evidence) outcome.evidence = { ...state.result.evidence };
   return outcome;
 }
 

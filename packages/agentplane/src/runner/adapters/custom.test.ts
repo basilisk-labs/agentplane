@@ -493,7 +493,7 @@ describe("CustomRunnerAdapter", () => {
       fakeRunnerPath,
       [
         "#!/bin/sh",
-        String.raw`printf '{"schema_version":1,"summary":"Привет из custom manifest","artifacts":[{"path":"reports/out.txt","label":"report"}],"findings":["русский finding"],"verification_hints":["русский hint"],"capabilities_used":["custom.report"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        String.raw`printf '{"schema_version":1,"summary":"Привет из custom manifest","artifacts":[{"path":"reports/out.txt","label":"report"}],"findings":["русский finding"],"verification_hints":["русский hint"],"capabilities_used":["custom.report"],"evidence":{"evidence_paths":["reports/out.txt","logs/out.log"],"changed_paths":["src/runner/task-state.ts","src/runner/result-manifest.ts"],"files_changed_count":2,"tests_run":["bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts"],"verification_candidates":["inspect reports/out.txt","inspect logs/out.log"]}}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "cat >/dev/null",
         "exit 0",
       ].join("\n"),
@@ -532,6 +532,13 @@ describe("CustomRunnerAdapter", () => {
       findings?: string[];
       verification_hints?: string[];
       capabilities_used?: string[];
+      evidence?: {
+        evidence_paths?: string[];
+        changed_paths?: string[];
+        files_changed_count?: number;
+        tests_run?: string[];
+        verification_candidates?: string[];
+      };
     };
     expect(normalized.summary).toBe("Custom runner execution completed successfully.");
     expect(normalized.artifacts).toEqual(
@@ -542,6 +549,13 @@ describe("CustomRunnerAdapter", () => {
     expect(normalized.findings).toBeUndefined();
     expect(normalized.verification_hints).toBeUndefined();
     expect(normalized.capabilities_used).toEqual(["custom.report"]);
+    expect(normalized.evidence).toEqual({
+      evidence_paths: ["reports/out.txt", "logs/out.log"],
+      changed_paths: ["src/runner/task-state.ts", "src/runner/result-manifest.ts"],
+      files_changed_count: 2,
+      tests_run: ["bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts"],
+      verification_candidates: ["inspect reports/out.txt", "inspect logs/out.log"],
+    });
 
     const sourceManifest = await readFile(
       path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
@@ -550,6 +564,7 @@ describe("CustomRunnerAdapter", () => {
     expect(sourceManifest).toContain("Привет из custom manifest");
     expect(sourceManifest).toContain("русский finding");
     expect(sourceManifest).toContain("русский hint");
+    expect(sourceManifest).toContain('"files_changed_count":2');
 
     await rm(tempDir, { recursive: true, force: true });
   });
