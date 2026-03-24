@@ -491,7 +491,7 @@ describe("runCli scenario", () => {
       fakeRunnerPath,
       [
         "#!/bin/sh",
-        String.raw`printf '{"schema_version":1,"summary":"bad artifact scope","artifacts":[{"path":"tmp/out.txt","label":"report"}],"evidence":{"evidence_paths":["outside/out.log"]}}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        String.raw`printf '{"schema_version":1,"summary":"bad artifact scope","artifacts":[{"path":"reports/../tmp/out.txt","label":"report"}],"evidence":{"evidence_paths":["/tmp/out.log"]}}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "cat >/dev/null",
         "exit 0",
       ].join("\n"),
@@ -512,8 +512,8 @@ describe("runCli scenario", () => {
       ]);
       expect(code).toBe(8);
       expect(io.stderr).toContain("writes_artifacts_to prefixes");
-      expect(io.stderr).toContain("tmp/out.txt");
-      expect(io.stderr).toContain("outside/out.log");
+      expect(io.stderr).toContain("reports/../tmp/out.txt");
+      expect(io.stderr).toContain("/tmp/out.log");
 
       const taskEntries = await readdir(path.join(root, ".agentplane", "tasks"));
       const taskIds = taskEntries.filter((entry) => /^\d{12}-[A-Z0-9]{6}$/u.test(entry));
@@ -523,7 +523,7 @@ describe("runCli scenario", () => {
       const runEntries = await readdir(runsRoot);
       const runDir = path.join(runsRoot, runEntries.toSorted()[0] ?? "");
       expect(await readFile(path.join(runDir, "result.source.json"), "utf8")).toContain(
-        '"tmp/out.txt"',
+        '"reports/../tmp/out.txt"',
       );
       const state = JSON.parse(await readFile(path.join(runDir, "run-state.json"), "utf8")) as {
         status: string;
@@ -532,6 +532,7 @@ describe("runCli scenario", () => {
       expect(state.status).toBe("failed");
       expect(state.result?.status).toBe("failed");
       expect(state.result?.stderr_summary).toContain("writes_artifacts_to prefixes");
+      expect(state.result?.stderr_summary).toContain("reports/../tmp/out.txt");
     } finally {
       process.env.PATH = originalPath;
       io.restore();

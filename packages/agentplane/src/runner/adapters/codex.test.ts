@@ -786,7 +786,7 @@ describe("CodexRunnerAdapter", () => {
         "      ;;",
         "  esac",
         "done",
-        String.raw`printf '{"schema_version":1,"artifacts":[{"path":"tmp/out.txt","label":"report"}],"evidence":{"evidence_paths":["outside/out.log"]}}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        String.raw`printf '{"schema_version":1,"artifacts":[{"path":"reports/../tmp/out.txt","label":"report"}],"evidence":{"evidence_paths":["/tmp/out.log"]}}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "cat >/dev/null",
         String.raw`printf 'Final fake Codex message\n' > "$out"`,
         "exit 0",
@@ -808,8 +808,8 @@ describe("CodexRunnerAdapter", () => {
     expect(result.status).toBe("failed");
     expect(result.summary).toBe("Codex execution failed before producing a valid result manifest.");
     expect(result.stderr_summary).toContain("writes_artifacts_to prefixes");
-    expect(result.stderr_summary).toContain("tmp/out.txt");
-    expect(result.stderr_summary).toContain("outside/out.log");
+    expect(result.stderr_summary).toContain("reports/../tmp/out.txt");
+    expect(result.stderr_summary).toContain("/tmp/out.log");
     expect(result.output_paths).toContain(
       path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
     );
@@ -818,7 +818,7 @@ describe("CodexRunnerAdapter", () => {
         path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
         "utf8",
       ),
-    ).toContain('"tmp/out.txt"');
+    ).toContain('"reports/../tmp/out.txt"');
 
     await rm(tempDir, { recursive: true, force: true });
   });

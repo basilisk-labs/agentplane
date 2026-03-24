@@ -1,14 +1,56 @@
+import path from "node:path";
+
 import { exitCodeForError } from "../cli/exit-codes.js";
 import { CliError } from "../shared/errors.js";
 
 import type { RunnerResultManifest } from "./types.js";
 
+function normalizeRelativePolicyPath(value: string): string | null {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return null;
+
+  const slashed = trimmed.replaceAll("\\", "/");
+  if (slashed.startsWith("/")) return null;
+  if (/^[A-Za-z]:\//u.test(slashed)) return null;
+
+  const normalized = path.posix.normalize(slashed);
+  if (!normalized || normalized === "." || normalized === "..") return null;
+  if (normalized.startsWith("../")) return null;
+
+  return normalized.replace(/\/+$/u, "");
+}
+
 function normalizeAllowedPrefixes(raw: string[] | undefined): string[] {
-  return (raw ?? []).map((entry) => entry.trim()).filter((entry) => entry.length > 0);
+  const invalidPrefixes: string[] = [];
+  const normalizedPrefixes = (raw ?? [])
+    .map((entry) => {
+      const normalized = normalizeRelativePolicyPath(entry);
+      if (!normalized) invalidPrefixes.push(entry);
+      return normalized;
+    })
+    .filter(Boolean) as string[];
+
+  if (invalidPrefixes.length > 0) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_RUNTIME"),
+      code: "E_RUNTIME",
+      message: `Recipe writes_artifacts_to contains invalid relative prefixes: ${invalidPrefixes.join(", ")}.`,
+      context: {
+        policy_field: "writes_artifacts_to",
+        invalid_declared_prefixes: invalidPrefixes,
+      },
+    });
+  }
+
+  return normalizedPrefixes;
 }
 
 function isAllowedPath(pathValue: string, allowedPrefixes: string[]): boolean {
-  return allowedPrefixes.some((prefix) => pathValue === prefix || pathValue.startsWith(prefix));
+  const normalizedPath = normalizeRelativePolicyPath(pathValue);
+  if (!normalizedPath) return false;
+  return allowedPrefixes.some(
+    (prefix) => normalizedPath === prefix || normalizedPath.startsWith(`${prefix}/`),
+  );
 }
 
 export function readRecipeArtifactPrefixesFromRunnerEnv(
@@ -16,15 +58,16 @@ export function readRecipeArtifactPrefixesFromRunnerEnv(
 ): string[] | undefined {
   const raw = env?.AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO;
   if (!raw) return undefined;
+  let parsed: unknown;
   try {
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return undefined;
-    return normalizeAllowedPrefixes(
-      parsed.filter((entry): entry is string => typeof entry === "string"),
-    );
+    parsed = JSON.parse(raw) as unknown;
   } catch {
     return undefined;
   }
+  if (!Array.isArray(parsed)) return undefined;
+  return normalizeAllowedPrefixes(
+    parsed.filter((entry): entry is string => typeof entry === "string"),
+  );
 }
 
 export function assertRunnerManifestArtifactPolicy(opts: {

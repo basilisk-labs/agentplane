@@ -182,7 +182,9 @@ legacy string for external catalog compatibility, but the main-repo runtime no l
 exports it because current values are recipe-specific labels without deterministic shared semantics.
 `run_profile.writes_artifacts_to` remains advisory at invocation time, but the shared runner now
 enforces it post-run against external `result.json` manifest paths only: `artifacts[].path` and
-`evidence.evidence_paths[]` must stay under the declared prefixes or the run fails deterministically.
+`evidence.evidence_paths[]` must resolve under the declared prefixes after normalized relative-path
+checks, so traversal forms and absolute paths fail deterministically instead of passing via lexical
+prefix matching.
 Runner-owned control artifacts such as `bundle.json`, `result.json`, trace files, and preserved
 source manifests are outside that prefix check because they are emitted by the framework itself, not
 by the recipe-controlled runner payload.
