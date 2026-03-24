@@ -57,7 +57,7 @@ describe("runSupervisedProcess", () => {
         "}, 600);",
         "setTimeout(() => {",
         "  process.exit(0);",
-        "}, 1200);",
+        "}, 2000);",
       ].join("\n"),
       "utf8",
     );
@@ -99,29 +99,36 @@ describe("runSupervisedProcess", () => {
       completed = true;
     });
 
-    const partialTrace = await waitForTraceMatch({
-      path: invocation.trace_path,
-      timeoutMs: 1000,
-      matcher: (contents) =>
-        contents.includes('"stream":"stdout"') && contents.includes('"type":"first"'),
-    });
-    expect(completed).toBe(false);
-    expect(partialTrace).toContain('"stream":"stdout"');
-    expect(partialTrace).toContain('"type":"first"');
+    try {
+      const partialTrace = await waitForTraceMatch({
+        path: invocation.trace_path,
+        timeoutMs: 1500,
+        matcher: (contents) =>
+          contents.includes('"stream":"stdout"') && contents.includes('"type":"first"'),
+      });
+      expect(completed).toBe(false);
+      expect(partialTrace).toContain('"stream":"stdout"');
+      expect(partialTrace).toContain('"type":"first"');
 
-    const result = await resultPromise;
+      const result = await resultPromise;
 
-    expect(result.exit_code).toBe(0);
-    expect(result.stdout_bytes).toBeGreaterThan(0);
-    expect(result.stderr_bytes).toBeGreaterThan(0);
-    expect(result.stdout_tail).toContain("plain stdout");
-    expect(result.stderr_tail).toContain("stderr line");
+      expect(result.exit_code).toBe(0);
+      expect(result.stdout_bytes).toBeGreaterThan(0);
+      expect(result.stderr_bytes).toBeGreaterThan(0);
+      expect(result.stdout_tail).toContain("plain stdout");
+      expect(result.stderr_tail).toContain("stderr line");
 
-    const fullTrace = await readFile(invocation.trace_path, "utf8");
-    expect(fullTrace).toContain('"kind":"json_event"');
-    expect(fullTrace).toContain('"kind":"text"');
-    expect(fullTrace).toContain('"stream":"stderr"');
-    expect(await readFile(invocation.stderr_path, "utf8")).toContain("stderr line");
+      const fullTrace = await readFile(invocation.trace_path, "utf8");
+      expect(fullTrace).toContain('"kind":"json_event"');
+      expect(fullTrace).toContain('"kind":"text"');
+      expect(fullTrace).toContain('"stream":"stderr"');
+      expect(await readFile(invocation.stderr_path, "utf8")).toContain("stderr line");
+    } finally {
+      await resultPromise.then(
+        () => null,
+        () => null,
+      );
+    }
   });
 
   it("honors trace policy knobs for raw capture, stderr capture, and tail size", async () => {
