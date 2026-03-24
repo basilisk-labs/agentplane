@@ -24,7 +24,6 @@ import type {
   RunnerRunState,
 } from "../types.js";
 import {
-  exitCodeForSignal,
   isProcessAlive,
   readObservedProcessIdentity,
   waitForProcessExit,
@@ -214,16 +213,18 @@ function buildSyntheticCancelledState(opts: {
   signal: RunnerProcessSignal;
   updated_at: string;
 }): RunnerRunState {
+  const priorSupervision = opts.state.supervision;
   const started_at =
     opts.state.result?.started_at ??
-    opts.state.supervision?.started_at ??
+    priorSupervision?.started_at ??
     opts.state.updated_at ??
     opts.updated_at;
   const result = runnerAdapterCancelledResult({
-    reason: `Runner cancelled via ${opts.signal}.`,
+    reason:
+      `Runner cancellation state synthesized after requested ${opts.signal}; ` +
+      "observed process exit metadata was unavailable.",
     started_at,
     ended_at: opts.updated_at,
-    exit_code: exitCodeForSignal(opts.signal),
     output_paths: [opts.state.bundle_path, opts.state.bootstrap_path].filter(
       (value): value is string => typeof value === "string" && value.trim().length > 0,
     ),
@@ -234,9 +235,11 @@ function buildSyntheticCancelledState(opts: {
     result,
     updated_at: opts.updated_at,
     supervision: {
-      ...opts.state.supervision,
+      ...priorSupervision,
       heartbeat_at: opts.updated_at,
-      exit_signal: opts.signal,
+      cancel_requested_at: priorSupervision?.cancel_requested_at ?? opts.updated_at,
+      cancel_signal: priorSupervision?.cancel_signal ?? opts.signal,
+      exit_signal: priorSupervision?.exit_signal ?? null,
     },
   });
 }
