@@ -178,7 +178,6 @@ export function normalizeResolvedRecipeRunProfile(
   return {
     mode: declaredProfile.mode,
     sandbox: declaredProfile.sandbox,
-    requires_human_approval: declaredProfile.requires_human_approval ?? false,
     writes_artifacts_to: dedupeStrings(declaredProfile.writes_artifacts_to ?? []).toSorted(),
     expected_exit_contract: declaredProfile.expected_exit_contract,
   };

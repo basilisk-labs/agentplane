@@ -329,7 +329,6 @@ export async function createRecipeArchive(opts?: {
         run_profile: {
           mode: "analysis",
           sandbox: "workspace-write",
-          requires_human_approval: false,
           writes_artifacts_to: ["logs/", "reports/"],
           expected_exit_contract: "report",
         },

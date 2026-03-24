@@ -329,7 +329,6 @@ describe("runCli scenario", () => {
         "  scenario_id: process.env.AGENTPLANE_SCENARIO_ID ?? null,",
         "  mode: process.env.AGENTPLANE_RECIPE_MODE ?? null,",
         "  sandbox: process.env.AGENTPLANE_RECIPE_SANDBOX ?? null,",
-        "  requires_human_approval: process.env.AGENTPLANE_RECIPE_REQUIRES_HUMAN_APPROVAL ?? null,",
         "  expected_exit_contract: process.env.AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT ?? null,",
         '  writes_artifacts_to: JSON.parse(process.env.AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO ?? "[]"),',
         '  run_profile: JSON.parse(process.env.AGENTPLANE_RECIPE_RUN_PROFILE ?? "{}"),',
@@ -378,7 +377,6 @@ describe("runCli scenario", () => {
         scenario_id?: string;
         mode?: string;
         sandbox?: string;
-        requires_human_approval?: string;
         expected_exit_contract?: string;
         writes_artifacts_to?: string[];
         run_profile?: Record<string, unknown>;
@@ -388,14 +386,12 @@ describe("runCli scenario", () => {
         scenario_id: "RECIPE_SCENARIO",
         mode: "analysis",
         sandbox: "workspace-write",
-        requires_human_approval: "false",
         expected_exit_contract: "report",
         writes_artifacts_to: ["logs/", "reports/"],
       });
       expect(recipeEnv.run_profile).toMatchObject({
         mode: "analysis",
         sandbox: "workspace-write",
-        requires_human_approval: false,
         writes_artifacts_to: ["logs/", "reports/"],
         expected_exit_contract: "report",
       });
@@ -426,7 +422,7 @@ describe("runCli scenario", () => {
     const scenarioRunProfile = scenarioDescriptor?.run_profile ?? {};
     scenarioDescriptor!.run_profile = {
       ...scenarioRunProfile,
-      requires_human_approval: true,
+      sandbox: "custom-sandbox",
     };
     await writeFile(manifestPath, JSON.stringify(manifestData, null, 2), "utf8");
 
@@ -440,8 +436,7 @@ describe("runCli scenario", () => {
         root,
       ]);
       expect(code).toBe(8);
-      expect(io.stderr).toContain("requires_human_approval");
-      expect(io.stderr).toContain("cannot enforce recipe policy field");
+      expect(io.stderr).toContain("does not support recipe sandbox");
 
       const taskEntries = await readdir(path.join(root, ".agentplane", "tasks"));
       const taskIds = taskEntries.filter((entry) => /^\d{12}-[A-Z0-9]{6}$/u.test(entry));
@@ -459,7 +454,7 @@ describe("runCli scenario", () => {
       };
       expect(state.status).toBe("failed");
       expect(state.result?.status).toBe("failed");
-      expect(state.result?.stderr_summary).toContain("requires_human_approval");
+      expect(state.result?.stderr_summary).toContain("does not support recipe sandbox");
 
       const events = await readFile(path.join(runDir, "events.jsonl"), "utf8");
       expect(events).toContain('"type":"runner_refused"');

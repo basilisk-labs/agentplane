@@ -3,7 +3,6 @@ import type { RunnerRecipeContext } from "../types.js";
 export type RecipeRunProfileMetadata = {
   mode?: string;
   sandbox?: string;
-  requires_human_approval?: boolean;
   writes_artifacts_to?: string[];
   expected_exit_contract?: string;
 };
@@ -19,10 +18,6 @@ function normalizeStringList(value: unknown): string[] | undefined {
     .filter((entry): entry is string => typeof entry === "string")
     .map((entry) => entry.trim())
     .filter((entry) => entry.length > 0);
-}
-
-function setBooleanEnv(env: Record<string, string>, key: string, value: boolean | undefined): void {
-  if (typeof value === "boolean") env[key] = String(value);
 }
 
 function setStringEnv(env: Record<string, string>, key: string, value: string | undefined): void {
@@ -47,10 +42,6 @@ export function readRecipeRunProfile(
   return {
     mode: normalizeOptionalString(candidate.mode),
     sandbox: normalizeOptionalString(candidate.sandbox),
-    requires_human_approval:
-      typeof candidate.requires_human_approval === "boolean"
-        ? candidate.requires_human_approval
-        : undefined,
     writes_artifacts_to: normalizeStringList(candidate.writes_artifacts_to),
     expected_exit_contract: normalizeOptionalString(candidate.expected_exit_contract),
   };
@@ -70,7 +61,6 @@ export function buildRecipeRunnerEnv(
 
   setStringEnv(env, "AGENTPLANE_RECIPE_MODE", profile.mode);
   setStringEnv(env, "AGENTPLANE_RECIPE_SANDBOX", profile.sandbox);
-  setBooleanEnv(env, "AGENTPLANE_RECIPE_REQUIRES_HUMAN_APPROVAL", profile.requires_human_approval);
   setStringEnv(env, "AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT", profile.expected_exit_contract);
   setJsonEnv(env, "AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO", profile.writes_artifacts_to);
   setJsonEnv(env, "AGENTPLANE_RECIPE_RUN_PROFILE", profile as Record<string, unknown>);

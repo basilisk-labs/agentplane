@@ -78,21 +78,21 @@ describe("classifyCodexSmokeRun", () => {
         status: "failed",
         policy_decision: {
           adapter_id: "codex",
-          requested: { requires_human_approval: true },
+          requested: { sandbox: "custom-sandbox" },
           effective: {},
           fields: {},
           refusal_reason: {
             code: "E_RUNTIME",
             message: "refused",
-            policy_field: "requires_human_approval",
-            declared_value: true,
+            policy_field: "sandbox",
+            declared_value: "custom-sandbox",
           },
         },
       }),
     );
 
     expect(classification.outcome).toBe("policy_refusal");
-    expect(classification.refusal_reason?.policy_field).toBe("requires_human_approval");
+    expect(classification.refusal_reason?.policy_field).toBe("sandbox");
   });
 
   it("classifies non-timeout failures as runner failures", () => {

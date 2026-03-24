@@ -57,12 +57,6 @@ function normalizeOptionalStringList(raw: unknown, field: string): string[] | un
   return normalizeStringList(raw, field);
 }
 
-function normalizeBoolean(raw: unknown, field: string): boolean | undefined {
-  if (raw === undefined) return undefined;
-  if (typeof raw !== "boolean") throw new Error(invalidFieldMessage(field, "boolean"));
-  return raw;
-}
-
 function normalizeNumber(raw: unknown, field: string): number | undefined {
   if (raw === undefined) return undefined;
   if (typeof raw !== "number" || Number.isNaN(raw)) {
@@ -101,10 +95,6 @@ function normalizeRunProfile(raw: unknown, field: string): RecipeRunProfile {
   return {
     mode: normalizeRequiredString(raw.mode, `${field}.mode`),
     sandbox: normalizeOptionalString(raw.sandbox, `${field}.sandbox`),
-    requires_human_approval: normalizeBoolean(
-      raw.requires_human_approval,
-      `${field}.requires_human_approval`,
-    ),
     writes_artifacts_to: normalizeOptionalStringList(
       raw.writes_artifacts_to,
       `${field}.writes_artifacts_to`,

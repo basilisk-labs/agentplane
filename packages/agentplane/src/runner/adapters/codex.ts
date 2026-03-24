@@ -53,11 +53,6 @@ const CODEX_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
       supported_values: SUPPORTED_CODEX_SANDBOXES,
       note: "Recipe sandbox is enforced through codex --sandbox argv mapping.",
     },
-    requires_human_approval: {
-      level: "advisory",
-      channel: "env",
-      note: "Recipe approval intent is exported for the runner process but is not mapped to codex approval flags.",
-    },
     writes_artifacts_to: {
       level: "advisory",
       channel: "env",

@@ -309,8 +309,7 @@ describe("runCli", () => {
           scenario_id: "RECIPE_SCENARIO",
           run_profile: {
             mode: "analysis",
-            sandbox: "read-only",
-            requires_human_approval: true,
+            sandbox: "custom-sandbox",
           },
         },
         target: {
@@ -323,7 +322,7 @@ describe("runCli", () => {
     ).rejects.toMatchObject({
       code: "E_RUNTIME",
       context: {
-        policy_field: "requires_human_approval",
+        policy_field: "sandbox",
       },
     });
 
@@ -339,18 +338,15 @@ describe("runCli", () => {
     };
     expect(state.status).toBe("failed");
     expect(state.result?.status).toBe("failed");
-    expect(state.result?.stderr_summary).toContain("requires_human_approval");
+    expect(state.result?.stderr_summary).toContain("does not support recipe sandbox");
     expect(state.policy_decision?.requested).toEqual({
       mode: "analysis",
-      sandbox: "read-only",
-      requires_human_approval: true,
+      sandbox: "custom-sandbox",
     });
-    expect(state.policy_decision?.effective).toEqual({
-      sandbox: "read-only",
-    });
+    expect(state.policy_decision?.effective).toEqual({});
     expect(state.policy_decision?.refusal_reason).toMatchObject({
-      policy_field: "requires_human_approval",
-      declared_value: true,
+      policy_field: "sandbox",
+      declared_value: "custom-sandbox",
     });
 
     const events = await readFile(path.join(runDir, "events.jsonl"), "utf8");

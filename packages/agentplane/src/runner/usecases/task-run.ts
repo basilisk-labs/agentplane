@@ -89,25 +89,6 @@ function assertRunnerPolicyCompatibility(bundle: RunnerContextBundle): void {
       });
     }
   }
-
-  if (profile.requires_human_approval === true) {
-    const approvalCapability = capabilities?.fields.requires_human_approval;
-    if (!isEnforcedCapabilityLevel(approvalCapability?.level)) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_RUNTIME"),
-        code: "E_RUNTIME",
-        message:
-          `Runner adapter ${JSON.stringify(adapterId)} cannot enforce recipe policy field ` +
-          `"requires_human_approval" before spawn; capability level is ${JSON.stringify(approvalCapability?.level ?? "unsupported")}.`,
-        context: {
-          adapter_id: adapterId,
-          policy_field: "requires_human_approval",
-          declared_value: true,
-          capability: approvalCapability ?? null,
-        },
-      });
-    }
-  }
 }
 
 async function writeRunnerRefusalArtifacts(opts: {

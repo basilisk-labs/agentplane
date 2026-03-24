@@ -95,7 +95,6 @@ describe("commands/recipes scenario", () => {
       compatibility: { ok: true },
       run_profile: {
         mode: "analysis",
-        requires_human_approval: false,
         writes_artifacts_to: [],
       },
     });

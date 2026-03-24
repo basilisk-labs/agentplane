@@ -49,10 +49,6 @@ const CUSTOM_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
       channel: "env",
       note: "Custom runner receives sandbox intent through env only; adapter does not enforce it.",
     },
-    requires_human_approval: {
-      level: "advisory",
-      channel: "env",
-    },
     writes_artifacts_to: {
       level: "advisory",
       channel: "env",
