@@ -2699,8 +2699,12 @@ Loads an existing runner run from its artifacts and prints a structured summary 
 Usage:
 
 ```text
-agentplane task run show <task-id> [[run-id]]
+agentplane task run show <task-id> [[run-id]] [options]
 ```
+
+Options:
+
+- `--json`: Emit machine-readable runner inspection JSON. (default=false)
 
 Examples:
 
@@ -2715,6 +2719,12 @@ agentplane task run show 202602030608-F1Q8AB run_20260323_abc123
 ```
 
 - Inspect a specific run by run id.
+
+```sh
+agentplane task run show 202602030608-F1Q8AB --json
+```
+
+- Inspect the latest run in machine-readable JSON form.
 
 ### task run tail
 
