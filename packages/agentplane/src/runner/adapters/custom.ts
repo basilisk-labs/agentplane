@@ -73,7 +73,8 @@ function buildCustomCapabilities(
               supported_values: [...CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES],
               note:
                 `${configuredModeNote} Custom runner sandbox is enforced through ` +
-                "`codex sandbox <platform> --full-auto` and currently supports workspace-write only.",
+                "`codex sandbox <platform> --full-auto` and currently supports workspace-write only, " +
+                "because the shared runner contract requires writable result and trace artifacts inside run_dir.",
             }
           : {
               level: "advisory",
@@ -148,6 +149,39 @@ function resolveCodexSandboxPlatform(
   return currentPlatform;
 }
 
+function unsupportedCustomSandboxError(opts: {
+  enforcementMode: string;
+  requestedSandbox: string;
+}): CliError {
+  const baseContext = {
+    adapter_id: "custom",
+    wrapper_mode: opts.enforcementMode,
+    policy_field: "sandbox",
+    declared_value: opts.requestedSandbox,
+    supported_values: CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES,
+  } as const;
+  if (opts.requestedSandbox === "read-only") {
+    return new CliError({
+      exitCode: exitCodeForError("E_RUNTIME"),
+      code: "E_RUNTIME",
+      message:
+        `Custom runner wrapper mode ${JSON.stringify(opts.enforcementMode)} cannot support recipe sandbox ` +
+        `${JSON.stringify(opts.requestedSandbox)} because the shared runner contract requires write access ` +
+        "to result.json and trace artifacts inside run_dir, while the default codex sandbox blocks writes " +
+        "to cwd and TMPDIR. Supported values: workspace-write.",
+      context: baseContext,
+    });
+  }
+  return new CliError({
+    exitCode: exitCodeForError("E_RUNTIME"),
+    code: "E_RUNTIME",
+    message:
+      `Custom runner wrapper mode ${JSON.stringify(opts.enforcementMode)} does not support recipe sandbox ` +
+      `${JSON.stringify(opts.requestedSandbox)}; supported values: ${CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES.join(", ")}.`,
+    context: baseContext,
+  });
+}
+
 function buildCustomCommand(opts: {
   config: RunnerCustomConfig | undefined;
   bundle: RunnerContextBundle;
@@ -160,19 +194,9 @@ function buildCustomCommand(opts: {
   const requestedSandbox = typeof runProfile?.sandbox === "string" ? runProfile.sandbox.trim() : "";
   if (!requestedSandbox) return opts.command;
   if (!CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES.includes(requestedSandbox)) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_RUNTIME"),
-      code: "E_RUNTIME",
-      message:
-        `Custom runner wrapper mode ${JSON.stringify(enforcement.mode)} does not support recipe sandbox ` +
-        `${JSON.stringify(requestedSandbox)}; supported values: ${CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES.join(", ")}.`,
-      context: {
-        adapter_id: "custom",
-        wrapper_mode: enforcement.mode,
-        policy_field: "sandbox",
-        declared_value: requestedSandbox,
-        supported_values: CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES,
-      },
+    throw unsupportedCustomSandboxError({
+      enforcementMode: enforcement.mode,
+      requestedSandbox,
     });
   }
 

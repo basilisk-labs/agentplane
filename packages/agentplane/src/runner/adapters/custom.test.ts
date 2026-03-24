@@ -135,6 +135,9 @@ describe("CustomRunnerAdapter", () => {
         },
       },
     });
+    expect(capabilities.fields.sandbox?.note).toContain(
+      "requires writable result and trace artifacts inside run_dir",
+    );
   });
 
   it("requires config.runner.custom.command and exports bundle paths via env", async () => {
@@ -304,7 +307,9 @@ describe("CustomRunnerAdapter", () => {
       },
     };
 
-    expect(() => adapter.prepare(bundle)).toThrow(/does not support recipe sandbox/);
+    expect(() => adapter.prepare(bundle)).toThrow(
+      /cannot support recipe sandbox "read-only" because the shared runner contract requires write access to result\.json and trace artifacts inside run_dir/i,
+    );
   });
 
   it("rejects custom adapter selection when no external command is configured", () => {

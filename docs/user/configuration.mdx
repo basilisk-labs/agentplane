@@ -107,6 +107,12 @@ Current supported wrapper-enforced sandbox values:
 
 - `workspace-write`
 
+`read-only` is intentionally unsupported for the `custom` wrapper path. The reason is not just
+"not implemented": the shared runner contract requires the wrapped process to write `result.json`
+and trace artifacts under `run_dir`, while the default `codex sandbox <platform>` mode blocks
+writes to both `cwd` and `TMPDIR`. Until the wrapper path can express a narrower writable allowlist
+for those required artifacts, the contract must stay fail-closed.
+
 If wrapper mode is configured, inspect `agentplane task run <task-id> --dry-run` or
 `agentplane task run show <task-id>` for the `capability[sandbox]` and `policy_field[sandbox]`
 lines. They surface the configured wrapper mode, capability level, and supported sandbox values

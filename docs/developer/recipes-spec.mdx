@@ -221,6 +221,13 @@ For the `custom` adapter, these lines must make wrapper mode visible without sou
 - supported sandbox values must be shown when wrapper mode is active
 - `policy_field[sandbox]` shows whether a scenario-backed run actually exercised that capability
 
+Current support matrix:
+
+- `workspace-write`: supported through `codex sandbox <platform> --full-auto`
+- `read-only`: intentionally rejected, because the shared runner contract requires writable
+  `result.json` and trace artifacts in `run_dir`, while the default codex sandbox blocks writes to
+  `cwd` and `TMPDIR`
+
 `task run` and `scenario execute` share the same projection rule: runner completion may update task-facing
 state, but only through the sanitized runner outcome layer, never by copying assistant prose from raw trace
 artifacts into task README sections.
