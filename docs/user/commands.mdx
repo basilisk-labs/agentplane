@@ -243,6 +243,11 @@ agentplane scenario execute <recipe:scenario>
 
 `scenario run` is preview-only. `scenario execute` materializes a recipe-backed task and runs it through the shared runner flow.
 
+Recipe `run_profile` no longer supports `requires_human_approval` in the main repo runtime. The
+current runner accepts only fields it can explain honestly in `task run show`; if an external recipe
+catalog or generated inventory still lists the legacy approval field, treat that as catalog lag until
+the separate catalog sync lands.
+
 ## CLI reference (generated)
 
 For the full, up-to-date command surface derived from the registry/spec, see:

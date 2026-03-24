@@ -51,6 +51,10 @@ Install and validation flows inherit the current process environment.
 Execution flows are delegated to the configured runner adapter. The CLI passes recipe and task context through the runner bundle and does not interpret recipe `steps` as a direct execution DSL.
 Recipe `run_profile` no longer declares a separate network policy. Real network approval outside the
 runner bundle continues to flow through the global `require_network` gate.
+Recipe `run_profile` also no longer exposes `requires_human_approval` in the main-repo runtime
+contract. The field was removed after a live Codex probe showed that non-interactive approval modes
+do not provide a trustworthy barrier. If an external recipe catalog still shows the legacy field,
+that is catalog lag, not active runner support.
 
 ## Caching behavior
 
