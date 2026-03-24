@@ -1,10 +1,11 @@
 ---
 id: "202603241335-YFM5RK"
 title: "Refresh recipes inventory after catalog approval-field removal"
-status: "DOING"
+result_summary: "docs/recipes-inventory.json now reflects submodule commit 021c99b and no longer projects the removed requires_human_approval field."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-24T14:01:32.853Z"
   updated_by: "CODER"
   note: "ok: regenerated docs/recipes-inventory.json from submodule commit 021c99b, confirmed the legacy field is gone, and passed docs:recipes:check, routing, and doctor."
-commit: null
+commit:
+  hash: "fa6718fa5043f7714578ec778d03b61740d549d5"
+  message: "✅ YFM5RK docs: done"
 comments:
   -
     author: "CODER"
     body: "Start: regenerate docs/recipes-inventory.json from the updated agentplane-recipes submodule pointer, keep the diff limited to the generated inventory, and rerun the freshness checks before closing."
+  -
+    author: "CODER"
+    body: "Verified: regenerated docs/recipes-inventory.json from the updated agentplane-recipes submodule pointer, removed the legacy requires_human_approval projection, and passed the inventory freshness plus routing and doctor checks."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "ok: regenerated docs/recipes-inventory.json from submodule commit 021c99b, confirmed the legacy field is gone, and passed docs:recipes:check, routing, and doctor."
+  -
+    type: "status"
+    at: "2026-03-24T14:02:33.810Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: regenerated docs/recipes-inventory.json from the updated agentplane-recipes submodule pointer, removed the legacy requires_human_approval projection, and passed the inventory freshness plus routing and doctor checks."
 doc_version: 3
-doc_updated_at: "2026-03-24T14:01:32.863Z"
+doc_updated_at: "2026-03-24T14:02:33.811Z"
 doc_updated_by: "CODER"
 description: "Update the main repo submodule pointer and regenerate docs/recipes-inventory.json after the external catalog removes the legacy requires_human_approval field."
 sections:
