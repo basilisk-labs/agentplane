@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "runner_api_version": "1",
+  "target": {
+    "kind": "task",
+    "task_id": "202603240826-47V72Z"
+  },
+  "base_prompts": [
+    {
+      "id": "base.framework_runner",
+      "role": "system",
+      "title": "Framework Runner Prompt",
+      "source": "bundled:runner-prompt:RUNNER.md",
+      "priority": 100,
+      "content": "# agentplane runner\n\nOperate as the agentplane execution runner.\n\n- Treat `bundle.json` as the authoritative input contract.\n- This invocation already passed repository preflight, plan approval, and task start lifecycle gates.\n- Do not run repository startup commands such as `agentplane config show`, `agentplane quickstart`, `agentplane task list`, `git status`, or `git rev-parse` unless the bundle explicitly requires them as task work.\n- Do not create, approve, start, verify, finish, block, or rerun tasks unless the bundle explicitly requires task-metadata edits as part of the requested work.\n- Do not recursively invoke `agentplane task run`, `agentplane scenario execute`, or similar runner entrypoints from inside the runner.\n- Apply prompt blocks in ascending `priority` order.\n- Framework and repository policy blocks override owner, task, and recipe context.\n- Do not reconstruct missing context from CLI argv.\n- Use task and recipe context from the bundle before making assumptions.\n- Keep outputs and evidence inside declared runner artifacts and allowed repository changes.\n- When the requested task outcome is satisfied, stop immediately instead of re-running repository bootstrap or lifecycle flows.\n"
+    },
+    {
+      "id": "base.policy_gateway",
+      "role": "policy",
+      "title": "Repository Policy Gateway (AGENTS.md)",
+      "source": "AGENTS.md",
+      "priority": 200,
+      "content": "<!--\nAGENTS_POLICY: gateway-v1.1\nrepo_namespace: .agentplane\ndefault_initiator: ORCHESTRATOR\n-->\n\n# PURPOSE\n\n`AGENTS.md` is the policy gateway for agents in this repository.\nIt provides strict routing, hard constraints, and command contracts.\nDetailed procedures live in canonical modules from `## CANONICAL DOCS`.\n\n---\n\n## PROJECT\n\n- Repository type: user project initialized with `agentplane`.\n- Gateway role: keep this file compact and deterministic; move scenario-specific details to policy modules.\n- CLI rule: use `agentplane` from `PATH`; if unavailable, stop and request installation guidance (do not invent repo-local entrypoints).\n- Startup shortcut: run `## COMMANDS -> Preflight`, then use `agentplane quickstart`; activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation.\n\n---\n\n## SOURCES OF TRUTH\n\nPriority order (highest first):\n\n1. Enforcement: CI, tests, linters, hooks, CLI validations.\n2. Policy gateway: `AGENTS.md`.\n3. Canonical policy modules from `## CANONICAL DOCS`.\n4. CLI guidance: `agentplane quickstart`, `agentplane role <ROLE>`, `.agentplane/config.json`.\n5. Reference examples from `## REFERENCE EXAMPLES`.\n\nConflict rule:\n\n- If documentation conflicts with enforcement, enforcement wins.\n- If lower-priority text conflicts with higher-priority policy, higher-priority policy wins.\n\n---\n\n## SCOPE BOUNDARY\n\n- MUST keep all actions inside this repository unless the user explicitly approves outside-repo access.\n- MUST NOT read or modify global user files (`~`, `/etc`, keychains, ssh keys, global git config) without explicit user approval.\n- MUST treat network access as approval-gated when `agents.approvals.require_network=true`.\n\n---\n\n## COMMANDS\n\n### Preflight\n\n```bash\nagentplane config show\nagentplane quickstart\nagentplane task list\ngit status --short --untracked-files=no\ngit rev-parse --abbrev-ref HEAD\n```\n\n### Task lifecycle\n\n```bash\nagentplane task new --title \"...\" --description \"...\" --priority med --owner <ROLE> --tag <tag>\nagentplane task plan set <task-id> --text \"...\" --updated-by <ROLE>\nagentplane task plan approve <task-id> --by ORCHESTRATOR\nagentplane task start-ready <task-id> --author <ROLE> --body \"Start: ...\"\nagentplane verify <task-id> --ok|--rework --by <ROLE> --note \"...\"\nagentplane finish <task-id> --author <ROLE> --body \"Verified: ...\" --result \"...\" --commit <git-rev>\n```\n\n### Verification\n\n```bash\nagentplane task verify-show <task-id>\nagentplane verify <task-id> --ok|--rework --by <ROLE> --note \"...\"\nagentplane doctor\nnode .agentplane/policy/check-routing.mjs\n```\n\n---\n\n## TOOLING\n\n- Use `## COMMANDS` as the canonical command source.\n- Use `agentplane quickstart` as the canonical installed startup path and `agentplane role <ROLE>` to activate the current role before role-scoped planning or execution.\n- For policy changes, routing validation MUST pass via `node .agentplane/policy/check-routing.mjs`.\n\n---\n\n## LOAD RULES\n\nRouting is strict. Load only modules that match the current task.\n\n### Always imports for mutating tasks\n\nCondition: task includes mutation (file edits, task-state changes, commits, merge/integrate, release/publish).\n\n- `@.agentplane/policy/security.must.md`\n- `@.agentplane/policy/dod.core.md`\n\n### Conditional imports (linear IF -> LOAD contract)\n\n1. IF `workflow_mode=direct` THEN LOAD `@.agentplane/policy/workflow.direct.md`.\n2. IF `workflow_mode=branch_pr` THEN LOAD `@.agentplane/policy/workflow.branch_pr.md`.\n3. IF task touches release/version/publish THEN LOAD `@.agentplane/policy/workflow.release.md`.\n4. IF task runs `agentplane upgrade` or touches `.agentplane/.upgrade/**` THEN LOAD `@.agentplane/policy/workflow.upgrade.md`.\n5. IF task modifies implementation code paths THEN LOAD `@.agentplane/policy/dod.code.md`.\n6. IF task modifies docs/policy-only paths (`AGENTS.md`, docs, `.agentplane/policy/**`) THEN LOAD `@.agentplane/policy/dod.docs.md`.\n7. IF task modifies policy files (`AGENTS.md` or `.agentplane/policy/**`) THEN LOAD `@.agentplane/policy/governance.md`.\n8. IF task modifies `.agentplane/policy/incidents.md` THEN LOAD `@.agentplane/policy/incidents.md`.\n\nRouting examples:\n\n- Example (docs-only task): rules `1|6` apply in `direct`; do not load `dod.code.md`.\n- Example (upgrade task): rules `4|7` apply plus workflow mode rule.\n\nRouting constraints:\n\n- MUST NOT load unrelated policy modules.\n- MUST NOT use wildcard policy paths.\n- MUST keep loaded policy set minimal (target: 2-4 files per task).\n- If routing is ambiguous, ask one clarifying question before loading extra modules.\n\n---\n\n## MUST / MUST NOT\n\n- MUST start with ORCHESTRATOR preflight and plan summary.\n- MUST NOT perform mutating actions before explicit user approval.\n- MUST create/reuse executable task IDs for any repo-state mutation.\n- MUST use `agentplane` commands for task lifecycle updates; MUST NOT manually edit `.agentplane/tasks.json`.\n- MUST run `agentplane task plan approve ...` and `agentplane task start-ready ...` sequentially (never in parallel).\n- MUST activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active task owner before owner-scoped execution or verification.\n- MUST keep repository artifacts in English by default (unless user explicitly requests another language for a specific artifact).\n- MUST NOT fabricate repository facts.\n- MUST stage/commit only intentional changes for the active task scope.\n- MUST stop and request re-approval when scope, risk, or verification criteria materially drift.\n- MUST NOT let ORCHESTRATOR perform owner-scoped implementation or verification once a task owner is known, unless the approved plan explicitly makes ORCHESTRATOR the owner.\n\nRole boundaries:\n\n- ORCHESTRATOR: preflight + plan + approvals.\n- PLANNER: executable task graph creation/update.\n- INTEGRATOR: base integration/finish in `branch_pr`.\n\n---\n\n## CORE DOD\n\nA task is done only when all are true:\n\n1. Approved scope is satisfied; no unresolved drift.\n2. Required checks from loaded policy modules passed.\n3. Security and approval gates were respected.\n4. Traceability exists (task ID + updated task docs).\n5. Verification evidence is recorded.\n6. No unintended tracked changes remain.\n\nDetailed DoD rules are in `.agentplane/policy/dod.core.md`, `.agentplane/policy/dod.code.md`, and `.agentplane/policy/dod.docs.md`.\n\n---\n\n## SIZE BUDGET\n\n- `AGENTS.md` MUST stay <= 250 lines.\n- Every policy markdown module under `.agentplane/policy/*.md` MUST stay <= 100 lines.\n- Worst-case loaded policy graph (always imports + all conditional imports) MUST stay <= 600 lines.\n- Enforced by `node .agentplane/policy/check-routing.mjs`.\n\n---\n\n## CANONICAL DOCS\n\n- DOC `.agentplane/policy/workflow.md`\n- DOC `.agentplane/policy/workflow.direct.md`\n- DOC `.agentplane/policy/workflow.branch_pr.md`\n- DOC `.agentplane/policy/workflow.release.md`\n- DOC `.agentplane/policy/workflow.upgrade.md`\n- DOC `.agentplane/policy/security.must.md`\n- DOC `.agentplane/policy/dod.core.md`\n- DOC `.agentplane/policy/dod.code.md`\n- DOC `.agentplane/policy/dod.docs.md`\n- DOC `.agentplane/policy/governance.md`\n- DOC `.agentplane/policy/incidents.md`\n\n---\n\n## REFERENCE EXAMPLES\n\n- EXAMPLE `.agentplane/policy/examples/pr-note.md`\n- EXAMPLE `.agentplane/policy/examples/unit-test-pattern.md`\n- EXAMPLE `.agentplane/policy/examples/migration-note.md`\n\n---\n\n## CHANGE CONTROL\n\n- Follow incident-log, immutability, and policy-budget rules in `.agentplane/policy/governance.md`.\n- Record situational incident rules only in `.agentplane/policy/incidents.md`; do not load/read that file during normal startup unless the task directly touches it or recovery/incident handling requires it.\n- Keep `AGENTS.md` as a gateway; move detailed procedures to canonical modules.\n"
+    },
+    {
+      "id": "base.owner_profile",
+      "role": "profile",
+      "title": "Owner Agent Profile (CODER)",
+      "source": ".agentplane/agents/CODER.json",
+      "priority": 300,
+      "content": "{\n  \"id\": \"CODER\",\n  \"role\": \"Implement approved task scope with the smallest coherent diff and explicit verification evidence.\",\n  \"description\": \"Translates approved tasks into code/config changes without widening scope, and surfaces residual risk or uncertainty early.\",\n  \"inputs\": [\n    \"References to one or more task IDs.\",\n    \"Extra technical context, constraints, or design notes from the user or other agents.\"\n  ],\n  \"outputs\": [\n    \"Code and config updates describing exact files changed, the reason for each change, and the checks run.\",\n    \"Transition guidance for the referenced task that separates confirmed results, blockers, and remaining risks.\",\n    \"Task README updates aligned with the active doc contract, including acceptance-oriented Verify Steps and task-local Findings when needed.\"\n  ],\n  \"permissions\": [\n    \"Project files: read + write within the active task scope.\",\n    \"git: inspection/local ops; commits via agentplane.\",\n    \"Terminal commands (tests/linters): run and summarize locally.\"\n  ],\n  \"workflow\": [\n    \"Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.\",\n    \"Restate the active task scope, target behavior, and any blocking unknowns before editing; inspect the repository first instead of guessing.\",\n    \"Keep diffs minimal, task-scoped, and easy to review; if the root cause or blast radius expands materially, stop and route drift back through ORCHESTRATOR or PLANNER.\",\n    \"Prefer existing patterns, helpers, and tests over new abstractions; explain deliberate deviations rather than silently introducing them.\",\n    \"Document edits with exact file paths and concise before/after rationale.\",\n    \"Run the smallest sufficient local commands (tests/linters/formatters) and summarize only the output lines that change a decision.\",\n    \"Prefer declared verify commands; treat `Verify Steps` as the acceptance contract and request PLANNER updates when the contract itself drifts.\",\n    \"Record local deviations, follow-ups, and incident candidates in the task-local observation section (`Notes` for v2, `Findings` for v3); do not promote directly into policy incidents.\",\n    \"Separate confirmed facts, inferred risks, and open questions in handoff summaries.\",\n    \"Coordinate handoffs to TESTER/REVIEWER/DOCS only when those roles already have explicit executable tasks; otherwise keep findings and verification in the same task.\",\n    \"Avoid task closure in branch_pr; keep commits task-scoped and update status via agentplane.\"\n  ]\n}\n"
+    }
+  ],
+  "repository": {
+    "git_root": "/Users/densmirnov/Github/agentplane",
+    "workflow_dir": ".agentplane/tasks",
+    "backend_id": "local",
+    "backend_config_path": "/Users/densmirnov/Github/agentplane/.agentplane/backends/local/backend.json",
+    "branch": "main",
+    "head_commit": "24ff2cb2fa8fde604f9d96aa11b9abb04f3e01ae"
+  },
+  "task": {
+    "task_id": "202603240826-47V72Z",
+    "data": {
+      "id": "202603240826-47V72Z",
+      "title": "Runner code smoke test: add prompt override regression assertion",
+      "description": "Use the shared runner to add one focused regression assertion in packages/agentplane/src/runner/context/base-prompts.test.ts confirming the framework runner prompt warns against recursive runner entrypoints, then stop without touching unrelated files.",
+      "status": "DOING",
+      "priority": "med",
+      "owner": "CODER",
+      "revision": 5,
+      "origin": {
+        "system": "manual"
+      },
+      "depends_on": [],
+      "tags": [
+        "code",
+        "runner",
+        "smoke"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-03-24T08:27:01.529Z",
+        "updated_by": "ORCHESTRATOR",
+        "note": null
+      },
+      "verification": {
+        "state": "pending",
+        "updated_at": null,
+        "updated_by": null,
+        "note": null
+      },
+      "commit": null,
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: use the shared runner to make one narrow regression-test update in packages/agentplane/src/runner/context/base-prompts.test.ts, verify the focused suite passes, and stop without touching unrelated files."
+        }
+      ],
+      "events": [
+        {
+          "type": "status",
+          "at": "2026-03-24T08:27:10.297Z",
+          "author": "CODER",
+          "from": "TODO",
+          "to": "DOING",
+          "note": "Start: use the shared runner to make one narrow regression-test update in packages/agentplane/src/runner/context/base-prompts.test.ts, verify the focused suite passes, and stop without touching unrelated files."
+        }
+      ],
+      "doc_version": 3,
+      "doc_updated_at": "2026-03-24T08:27:10.299Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nRunner code smoke test: add prompt override regression assertion\n\nUse the shared runner to add one focused regression assertion in packages/agentplane/src/runner/context/base-prompts.test.ts confirming the framework runner prompt warns against recursive runner entrypoints, then stop without touching unrelated files.\n\n## Scope\n\n- In scope: Use the shared runner to add one focused regression assertion in packages/agentplane/src/runner/context/base-prompts.test.ts confirming the framework runner prompt warns against recursive runner entrypoints, then stop without touching unrelated files.\n- Out of scope: unrelated refactors not required for \"Runner code smoke test: add prompt override regression assertion\".\n\n## Plan\n\n1. Update packages/agentplane/src/runner/context/base-prompts.test.ts with one focused regression assertion that the framework runner prompt warns against recursive runner entrypoints.\n2. Run the smallest relevant focused test for that file.\n3. Stop after the assertion and verification are complete; do not touch unrelated files.\n\n## Verify Steps\n\n1. Inspect `packages/agentplane/src/runner/context/base-prompts.test.ts`. Expected: exactly one new assertion checks that the framework runner prompt warns against recursive runner entrypoints.\n2. Run `bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts`. Expected: the focused suite passes.\n3. Run `git diff --stat`. Expected: only the intended test file and the task directory appear as changes before finish.\n\n## Verification\n\n<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\n- Revert task-related commit(s).\n- Re-run required checks to confirm rollback safety.\n\n## Findings",
+      "sections": {
+        "Summary": "Runner code smoke test: add prompt override regression assertion\n\nUse the shared runner to add one focused regression assertion in packages/agentplane/src/runner/context/base-prompts.test.ts confirming the framework runner prompt warns against recursive runner entrypoints, then stop without touching unrelated files.",
+        "Scope": "- In scope: Use the shared runner to add one focused regression assertion in packages/agentplane/src/runner/context/base-prompts.test.ts confirming the framework runner prompt warns against recursive runner entrypoints, then stop without touching unrelated files.\n- Out of scope: unrelated refactors not required for \"Runner code smoke test: add prompt override regression assertion\".",
+        "Plan": "1. Update packages/agentplane/src/runner/context/base-prompts.test.ts with one focused regression assertion that the framework runner prompt warns against recursive runner entrypoints.\n2. Run the smallest relevant focused test for that file.\n3. Stop after the assertion and verification are complete; do not touch unrelated files.",
+        "Verify Steps": "1. Inspect `packages/agentplane/src/runner/context/base-prompts.test.ts`. Expected: exactly one new assertion checks that the framework runner prompt warns against recursive runner entrypoints.\n2. Run `bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts`. Expected: the focused suite passes.\n3. Run `git diff --stat`. Expected: only the intended test file and the task directory appear as changes before finish.",
+        "Verification": "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+        "Rollback Plan": "- Revert task-related commit(s).\n- Re-run required checks to confirm rollback safety.",
+        "Findings": ""
+      }
+    },
+    "frontmatter": {
+      "id": "202603240826-47V72Z",
+      "title": "Runner code smoke test: add prompt override regression assertion",
+      "status": "DOING",
+      "priority": "med",
+      "owner": "CODER",
+      "revision": 5,
+      "origin": {
+        "system": "manual"
+      },
+      "depends_on": [],
+      "tags": [
+        "code",
+        "runner",
+        "smoke"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-03-24T08:27:01.529Z",
+        "updated_by": "ORCHESTRATOR",
+        "note": null
+      },
+      "verification": {
+        "state": "pending",
+        "updated_at": null,
+        "updated_by": null,
+        "note": null
+      },
+      "commit": null,
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: use the shared runner to make one narrow regression-test update in packages/agentplane/src/runner/context/base-prompts.test.ts, verify the focused suite passes, and stop without touching unrelated files."
+        }
+      ],
+      "events": [
+        {
+          "type": "status",
+          "at": "2026-03-24T08:27:10.297Z",
+          "author": "CODER",
+          "from": "TODO",
+          "to": "DOING",
+          "note": "Start: use the shared runner to make one narrow regression-test update in packages/agentplane/src/runner/context/base-prompts.test.ts, verify the focused suite passes, and stop without touching unrelated files."
+        }
+      ],
+      "doc_version": 3,
+      "doc_updated_at": "2026-03-24T08:27:10.299Z",
+      "doc_updated_by": "CODER",
+      "description": "Use the shared runner to add one focused regression assertion in packages/agentplane/src/runner/context/base-prompts.test.ts confirming the framework runner prompt warns against recursive runner entrypoints, then stop without touching unrelated files.",
+      "sections": {
+        "Summary": "Runner code smoke test: add prompt override regression assertion\n\nUse the shared runner to add one focused regression assertion in packages/agentplane/src/runner/context/base-prompts.test.ts confirming the framework runner prompt warns against recursive runner entrypoints, then stop without touching unrelated files.",
+        "Scope": "- In scope: Use the shared runner to add one focused regression assertion in packages/agentplane/src/runner/context/base-prompts.test.ts confirming the framework runner prompt warns against recursive runner entrypoints, then stop without touching unrelated files.\n- Out of scope: unrelated refactors not required for \"Runner code smoke test: add prompt override regression assertion\".",
+        "Plan": "1. Update packages/agentplane/src/runner/context/base-prompts.test.ts with one focused regression assertion that the framework runner prompt warns against recursive runner entrypoints.\n2. Run the smallest relevant focused test for that file.\n3. Stop after the assertion and verification are complete; do not touch unrelated files.",
+        "Verify Steps": "1. Inspect `packages/agentplane/src/runner/context/base-prompts.test.ts`. Expected: exactly one new assertion checks that the framework runner prompt warns against recursive runner entrypoints.\n2. Run `bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts`. Expected: the focused suite passes.\n3. Run `git diff --stat`. Expected: only the intended test file and the task directory appear as changes before finish.",
+        "Verification": "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+        "Rollback Plan": "- Revert task-related commit(s).\n- Re-run required checks to confirm rollback safety.",
+        "Findings": ""
+      },
+      "id_source": "generated"
+    },
+    "doc": "## Summary\n\nRunner code smoke test: add prompt override regression assertion\n\nUse the shared runner to add one focused regression assertion in packages/agentplane/src/runner/context/base-prompts.test.ts confirming the framework runner prompt warns against recursive runner entrypoints, then stop without touching unrelated files.\n\n## Scope\n\n- In scope: Use the shared runner to add one focused regression assertion in packages/agentplane/src/runner/context/base-prompts.test.ts confirming the framework runner prompt warns against recursive runner entrypoints, then stop without touching unrelated files.\n- Out of scope: unrelated refactors not required for \"Runner code smoke test: add prompt override regression assertion\".\n\n## Plan\n\n1. Update packages/agentplane/src/runner/context/base-prompts.test.ts with one focused regression assertion that the framework runner prompt warns against recursive runner entrypoints.\n2. Run the smallest relevant focused test for that file.\n3. Stop after the assertion and verification are complete; do not touch unrelated files.\n\n## Verify Steps\n\n1. Inspect `packages/agentplane/src/runner/context/base-prompts.test.ts`. Expected: exactly one new assertion checks that the framework runner prompt warns against recursive runner entrypoints.\n2. Run `bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts`. Expected: the focused suite passes.\n3. Run `git diff --stat`. Expected: only the intended test file and the task directory appear as changes before finish.\n\n## Verification\n\n<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\n- Revert task-related commit(s).\n- Re-run required checks to confirm rollback safety.\n\n## Findings",
+    "sections": {
+      "Summary": "Runner code smoke test: add prompt override regression assertion\n\nUse the shared runner to add one focused regression assertion in packages/agentplane/src/runner/context/base-prompts.test.ts confirming the framework runner prompt warns against recursive runner entrypoints, then stop without touching unrelated files.",
+      "Scope": "- In scope: Use the shared runner to add one focused regression assertion in packages/agentplane/src/runner/context/base-prompts.test.ts confirming the framework runner prompt warns against recursive runner entrypoints, then stop without touching unrelated files.\n- Out of scope: unrelated refactors not required for \"Runner code smoke test: add prompt override regression assertion\".",
+      "Plan": "1. Update packages/agentplane/src/runner/context/base-prompts.test.ts with one focused regression assertion that the framework runner prompt warns against recursive runner entrypoints.\n2. Run the smallest relevant focused test for that file.\n3. Stop after the assertion and verification are complete; do not touch unrelated files.",
+      "Verify Steps": "1. Inspect `packages/agentplane/src/runner/context/base-prompts.test.ts`. Expected: exactly one new assertion checks that the framework runner prompt warns against recursive runner entrypoints.\n2. Run `bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts`. Expected: the focused suite passes.\n3. Run `git diff --stat`. Expected: only the intended test file and the task directory appear as changes before finish.",
+      "Verification": "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+      "Rollback Plan": "- Revert task-related commit(s).\n- Re-run required checks to confirm rollback safety.",
+      "Findings": ""
+    },
+    "comments": [
+      {
+        "author": "CODER",
+        "body": "Start: use the shared runner to make one narrow regression-test update in packages/agentplane/src/runner/context/base-prompts.test.ts, verify the focused suite passes, and stop without touching unrelated files."
+      }
+    ],
+    "events": [
+      {
+        "type": "status",
+        "at": "2026-03-24T08:27:10.297Z",
+        "author": "CODER",
+        "from": "TODO",
+        "to": "DOING",
+        "note": "Start: use the shared runner to make one narrow regression-test update in packages/agentplane/src/runner/context/base-prompts.test.ts, verify the focused suite passes, and stop without touching unrelated files."
+      }
+    ],
+    "readme_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240826-47V72Z/README.md",
+    "dependency_state": {
+      "ready": true,
+      "missing": [],
+      "incomplete": [],
+      "completed": []
+    }
+  },
+  "execution": {
+    "adapter_id": "codex",
+    "mode": "execute",
+    "run_id": "2026-03-24T08-27-15-593Z",
+    "artifact_paths": {
+      "task_dir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240826-47V72Z",
+      "runs_dir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240826-47V72Z/runs",
+      "run_dir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z",
+      "bundle_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/bundle.json",
+      "bootstrap_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/bootstrap.md",
+      "state_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/run-state.json",
+      "events_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/events.jsonl",
+      "result_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/result.json"
+    },
+    "approvals": {
+      "require_plan": false,
+      "require_verify": false,
+      "require_network": true
+    },
+    "adapter_capabilities": {
+      "adapter_id": "codex",
+      "fields": {
+        "mode": {
+          "level": "advisory",
+          "channel": "env",
+          "note": "Recipe mode is exported for the runner process but does not affect codex argv."
+        },
+        "sandbox": {
+          "level": "native",
+          "channel": "argv",
+          "supported_values": [
+            "read-only",
+            "workspace-write",
+            "danger-full-access"
+          ],
+          "note": "Recipe sandbox is enforced through codex --sandbox argv mapping."
+        },
+        "requires_human_approval": {
+          "level": "advisory",
+          "channel": "env",
+          "note": "Recipe approval intent is exported for the runner process but is not mapped to codex approval flags."
+        },
+        "writes_artifacts_to": {
+          "level": "advisory",
+          "channel": "env"
+        },
+        "expected_exit_contract": {
+          "level": "advisory",
+          "channel": "env"
+        }
+      }
+    }
+  }
+}
