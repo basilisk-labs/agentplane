@@ -205,6 +205,93 @@ describe("runCli", () => {
     }
   });
 
+  it("prepareTaskRunnerExecution writes refusal artifacts before spawn when declared policy is unenforceable", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Runner refusal task",
+          "--description",
+          "Prepare runner refusal artifacts before spawn",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before verifying runner refusal artifacts for unenforceable recipe policy.",
+      "--root",
+      root,
+    ]);
+
+    const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    await expect(
+      prepareTaskRunnerExecution({
+        ctx: commandCtx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        mode: "dry_run",
+        run_id: "run-refused-cli",
+        recipe: {
+          recipe_id: "viewer",
+          scenario_id: "RECIPE_SCENARIO",
+          run_profile: {
+            mode: "analysis",
+            sandbox: "read-only",
+            requires_human_approval: true,
+          },
+        },
+        target: {
+          kind: "recipe_scenario",
+          recipe_id: "viewer",
+          scenario_id: "RECIPE_SCENARIO",
+          task_id: taskId,
+        },
+      }),
+    ).rejects.toMatchObject({
+      code: "E_RUNTIME",
+      context: {
+        policy_field: "requires_human_approval",
+      },
+    });
+
+    const runDir = path.join(root, ".agentplane", "tasks", taskId, "runs", "run-refused-cli");
+    const state = JSON.parse(await readFile(path.join(runDir, "run-state.json"), "utf8")) as {
+      status: string;
+      result?: { status?: string; stderr_summary?: string };
+    };
+    expect(state.status).toBe("failed");
+    expect(state.result?.status).toBe("failed");
+    expect(state.result?.stderr_summary).toContain("requires_human_approval");
+
+    const events = await readFile(path.join(runDir, "events.jsonl"), "utf8");
+    expect(events).toContain('"type":"runner_prepared"');
+    expect(events).toContain('"type":"runner_refused"');
+    expect(events).not.toContain('"type":"runner_execute_start"');
+  });
+
   it("task run without --dry-run executes the prepared runner adapter and persists run-state", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

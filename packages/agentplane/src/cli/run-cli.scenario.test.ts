@@ -433,6 +433,79 @@ describe("runCli scenario", () => {
     }
   });
 
+  it("scenario execute fails before spawn when adapter capabilities cannot enforce declared policy", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive();
+    const manifestId = String(manifest.id);
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+
+    const manifestPath = path.join(root, ".agentplane", "recipes", manifestId, "manifest.json");
+    const manifestData = JSON.parse(await readFile(manifestPath, "utf8")) as {
+      scenarios?: {
+        id?: string;
+        run_profile?: Record<string, unknown>;
+      }[];
+    };
+    const scenarioDescriptor = manifestData.scenarios?.find(
+      (entry) => entry.id === "RECIPE_SCENARIO",
+    );
+    expect(scenarioDescriptor).toBeTruthy();
+    const scenarioRunProfile = scenarioDescriptor?.run_profile ?? {};
+    scenarioDescriptor!.run_profile = {
+      ...scenarioRunProfile,
+      requires_human_approval: true,
+    };
+    await writeFile(manifestPath, JSON.stringify(manifestData, null, 2), "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "scenario",
+        "execute",
+        `${manifestId}:RECIPE_SCENARIO`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(8);
+      expect(io.stderr).toContain("requires_human_approval");
+      expect(io.stderr).toContain("cannot enforce recipe policy field");
+
+      const taskEntries = await readdir(path.join(root, ".agentplane", "tasks"));
+      const taskIds = taskEntries.filter((entry) => /^\d{12}-[A-Z0-9]{6}$/u.test(entry));
+      expect(taskIds).toHaveLength(1);
+      const taskId = taskIds[0] ?? "";
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      const runEntries = await readdir(runsRoot);
+      const sortedRunEntries = runEntries.toSorted();
+      expect(sortedRunEntries).toHaveLength(1);
+      const runDir = path.join(runsRoot, sortedRunEntries[0] ?? "");
+      const state = JSON.parse(await readFile(path.join(runDir, "run-state.json"), "utf8")) as {
+        status: string;
+        result?: { status?: string; stderr_summary?: string };
+      };
+      expect(state.status).toBe("failed");
+      expect(state.result?.status).toBe("failed");
+      expect(state.result?.stderr_summary).toContain("requires_human_approval");
+
+      const events = await readFile(path.join(runDir, "events.jsonl"), "utf8");
+      expect(events).toContain('"type":"runner_refused"');
+      expect(events).not.toContain('"type":"runner_execute_start"');
+
+      const task = await readTask({ cwd: root, rootOverride: root, taskId });
+      expect(task.frontmatter.runner).toMatchObject({
+        status: "failed",
+        adapter_id: "codex",
+        mode: "execute",
+      });
+      expect(task.body).toContain("RUNNER — failed");
+      expect(task.body).toContain("requires_human_approval");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("scenario run rejects missing scenario definition files", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
