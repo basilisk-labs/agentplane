@@ -79,11 +79,28 @@ export type RunnerArtifactPaths = {
   result_path: string;
 };
 
+export type RunnerCapabilityLevel = "native" | "wrapper" | "advisory" | "unsupported";
+
+export type RunnerCapabilityChannel = "argv" | "env" | "result" | "none";
+
+export type RunnerCapabilityDescriptor = {
+  level: RunnerCapabilityLevel;
+  channel: RunnerCapabilityChannel;
+  supported_values?: string[];
+  note?: string;
+};
+
+export type RunnerAdapterCapabilities = {
+  adapter_id: string;
+  fields: Record<string, RunnerCapabilityDescriptor>;
+};
+
 export type RunnerExecutionContract = {
   adapter_id: string;
   mode: "execute" | "dry_run";
   run_id: string;
   artifact_paths: RunnerArtifactPaths;
+  adapter_capabilities?: RunnerAdapterCapabilities;
   approvals?: {
     require_plan?: boolean;
     require_verify?: boolean;
@@ -184,6 +201,7 @@ export type RunnerPreparedMetadata = {
   bootstrap_sha256: string;
   has_task_context: boolean;
   has_recipe_context: boolean;
+  adapter_capabilities?: RunnerAdapterCapabilities;
   invocation: {
     executable: string | null;
     argv_count: number;

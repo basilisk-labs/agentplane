@@ -67,6 +67,26 @@ function makeBundle(): RunnerContextBundle {
 }
 
 describe("CodexRunnerAdapter", () => {
+  it("describes codex capabilities for recipe run_profile fields", () => {
+    const adapter = createRunnerAdapter(defaultConfig());
+    const capabilities = adapter.describeCapabilities(makeBundle());
+
+    expect(capabilities).toMatchObject({
+      adapter_id: "codex",
+      fields: {
+        sandbox: {
+          level: "native",
+          channel: "argv",
+          supported_values: ["read-only", "workspace-write", "danger-full-access"],
+        },
+        requires_human_approval: {
+          level: "advisory",
+          channel: "env",
+        },
+      },
+    });
+  });
+
   it("returns normalized invocation metadata from bundle path and config-selected adapter", async () => {
     const adapter = createRunnerAdapter(defaultConfig());
     const bundle = makeBundle();

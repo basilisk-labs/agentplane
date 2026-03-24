@@ -1,7 +1,12 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { RunnerContextBundle, RunnerInvocation, RunnerResult } from "../types.js";
+import type {
+  RunnerAdapterCapabilities,
+  RunnerContextBundle,
+  RunnerInvocation,
+  RunnerResult,
+} from "../types.js";
 import { CliError } from "../../shared/errors.js";
 import {
   appendRunnerEvent,
@@ -30,6 +35,63 @@ import { buildRecipeRunnerEnv, readRecipeRunProfile } from "./recipe-run-profile
 const CODEX_LAST_MESSAGE_FILENAME = "codex-last-message.md";
 const CODEX_SANDBOX_VALUES = new Set(["read-only", "workspace-write", "danger-full-access"]);
 const SUPPORTED_CODEX_SANDBOXES = [...CODEX_SANDBOX_VALUES];
+const CODEX_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
+  adapter_id: "codex",
+  fields: {
+    mode: {
+      level: "advisory",
+      channel: "env",
+      note: "Recipe mode is exported for the runner process but does not affect codex argv.",
+    },
+    sandbox: {
+      level: "native",
+      channel: "argv",
+      supported_values: SUPPORTED_CODEX_SANDBOXES,
+      note: "Recipe sandbox is enforced through codex --sandbox argv mapping.",
+    },
+    requires_human_approval: {
+      level: "advisory",
+      channel: "env",
+      note: "Recipe approval intent is exported for the runner process but is not mapped to codex approval flags.",
+    },
+    writes_artifacts_to: {
+      level: "advisory",
+      channel: "env",
+    },
+    expected_exit_contract: {
+      level: "advisory",
+      channel: "env",
+    },
+    permissions: {
+      level: "advisory",
+      channel: "env",
+    },
+    agents_involved: {
+      level: "advisory",
+      channel: "env",
+    },
+    skills_used: {
+      level: "advisory",
+      channel: "env",
+    },
+    tools_used: {
+      level: "advisory",
+      channel: "env",
+    },
+    required_inputs: {
+      level: "advisory",
+      channel: "env",
+    },
+    outputs: {
+      level: "advisory",
+      channel: "env",
+    },
+    artifacts: {
+      level: "advisory",
+      channel: "env",
+    },
+  },
+};
 
 function summarizeOutput(text: string, limit = 4000): string | undefined {
   const normalized = text.replaceAll("\r\n", "\n").trim();
@@ -135,6 +197,10 @@ function resolveCodexSandbox(value: unknown): string {
 
 export class CodexRunnerAdapter implements RunnerAdapter {
   readonly id = "codex" as const;
+
+  describeCapabilities(_bundle: RunnerContextBundle): RunnerAdapterCapabilities {
+    return structuredClone(CODEX_RUN_PROFILE_CAPABILITIES);
+  }
 
   prepare(bundle: RunnerContextBundle): Promise<RunnerInvocation> {
     assertCodexBundle(bundle);

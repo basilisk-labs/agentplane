@@ -134,6 +134,7 @@ export async function prepareTaskRunnerExecution(opts: {
       },
     },
   };
+  bundle.execution.adapter_capabilities = adapter.describeCapabilities(bundle);
   const invocation = await adapter.prepare(bundle);
   assertRunnerTaskExecutable(bundle);
   const state = await writePreparedRunnerArtifacts({

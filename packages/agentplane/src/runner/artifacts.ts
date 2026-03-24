@@ -37,6 +37,7 @@ function buildPreparedMetadata(opts: {
     bootstrap_sha256: sha256(opts.bootstrap_text),
     has_task_context: !!opts.bundle.task,
     has_recipe_context: !!opts.bundle.recipe,
+    adapter_capabilities: opts.bundle.execution.adapter_capabilities,
     invocation: {
       executable: opts.invocation?.argv[0] ?? null,
       argv_count: opts.invocation?.argv.length ?? 0,
@@ -119,6 +120,7 @@ export async function writePreparedRunnerArtifacts(opts: {
         bootstrap_sha256: preparedMetadata.bootstrap_sha256,
         has_task_context: preparedMetadata.has_task_context,
         has_recipe_context: preparedMetadata.has_recipe_context,
+        adapter_capabilities: preparedMetadata.adapter_capabilities,
         invocation: preparedMetadata.invocation,
       },
     },

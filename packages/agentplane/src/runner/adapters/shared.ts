@@ -1,6 +1,7 @@
 import type { RunnerAdapterId } from "@agentplaneorg/core";
 
 import type {
+  RunnerAdapterCapabilities,
   RunnerContextBundle,
   RunnerExecutionMetrics,
   RunnerInvocation,
@@ -14,6 +15,7 @@ function nowIso(): string {
 
 export type RunnerAdapter = {
   id: RunnerAdapterId;
+  describeCapabilities(bundle: RunnerContextBundle): RunnerAdapterCapabilities;
   prepare(bundle: RunnerContextBundle): Promise<RunnerInvocation>;
   execute(invocation: RunnerInvocation): Promise<RunnerResult>;
 };

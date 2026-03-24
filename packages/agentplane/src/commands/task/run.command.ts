@@ -65,6 +65,9 @@ export const runTaskRun: CommandHandler<TaskRunParsed> = async (
     process.stdout.write(`bootstrap: ${prepared.bundle.execution.artifact_paths.bootstrap_path}\n`);
     process.stdout.write(`state: ${prepared.bundle.execution.artifact_paths.state_path}\n`);
     process.stdout.write(`events: ${prepared.bundle.execution.artifact_paths.events_path}\n`);
+    process.stdout.write(
+      `capabilities: ${JSON.stringify(prepared.bundle.execution.adapter_capabilities ?? null)}\n`,
+    );
     process.stdout.write(`argv: ${prepared.invocation.argv.join(" ")}\n`);
     return 0;
   } catch (err) {

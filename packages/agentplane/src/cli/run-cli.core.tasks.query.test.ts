@@ -174,7 +174,8 @@ describe("runCli", () => {
       expect(io.stdout).toContain(`task run dry-run prepared: ${taskId}`);
       expect(io.stdout).toContain("adapter: codex");
       expect(io.stdout).toContain("bundle:");
-      expect(io.stdout).toContain("argv: codex exec --json --output-last-message");
+      expect(io.stdout).toContain('capabilities: {"adapter_id":"codex"');
+      expect(io.stdout).toContain("argv: codex -a never exec --json --output-last-message");
 
       const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
       expect(await pathExists(runsRoot)).toBe(true);
@@ -188,11 +189,16 @@ describe("runCli", () => {
       expect(await pathExists(statePath)).toBe(true);
 
       const bundle = JSON.parse(await readFile(bundlePath, "utf8")) as {
-        execution: { mode: string; adapter_id: string };
+        execution: {
+          mode: string;
+          adapter_id: string;
+          adapter_capabilities?: { adapter_id: string };
+        };
         task: { task_id: string };
       };
       expect(bundle.execution.mode).toBe("dry_run");
       expect(bundle.execution.adapter_id).toBe("codex");
+      expect(bundle.execution.adapter_capabilities?.adapter_id).toBe("codex");
       expect(bundle.task.task_id).toBe(taskId);
     } finally {
       io.restore();

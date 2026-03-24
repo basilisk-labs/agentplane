@@ -59,6 +59,30 @@ function makeBundle(): RunnerContextBundle {
 }
 
 describe("CustomRunnerAdapter", () => {
+  it("describes custom-runner capabilities as advisory env propagation", () => {
+    const raw = defaultConfig();
+    raw.runner.default_adapter = "custom";
+    raw.runner.custom = {
+      command: ["custom-runner", "--bundle-from-env"],
+    };
+    const adapter = createRunnerAdapter(raw);
+    const capabilities = adapter.describeCapabilities(makeBundle());
+
+    expect(capabilities).toMatchObject({
+      adapter_id: "custom",
+      fields: {
+        sandbox: {
+          level: "advisory",
+          channel: "env",
+        },
+        requires_human_approval: {
+          level: "advisory",
+          channel: "env",
+        },
+      },
+    });
+  });
+
   it("requires config.runner.custom.command and exports bundle paths via env", async () => {
     const raw = defaultConfig();
     raw.runner.default_adapter = "custom";

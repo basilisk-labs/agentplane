@@ -2,7 +2,12 @@ import { readFile } from "node:fs/promises";
 
 import type { RunnerCustomConfig } from "@agentplaneorg/core";
 
-import type { RunnerContextBundle, RunnerInvocation, RunnerResult } from "../types.js";
+import type {
+  RunnerAdapterCapabilities,
+  RunnerContextBundle,
+  RunnerInvocation,
+  RunnerResult,
+} from "../types.js";
 import {
   appendRunnerEvent,
   evolveRunnerRunState,
@@ -26,6 +31,61 @@ import {
   writeRunnerResultManifest,
 } from "../result-manifest.js";
 import { buildRecipeRunnerEnv } from "./recipe-run-profile.js";
+
+const CUSTOM_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
+  adapter_id: "custom",
+  fields: {
+    mode: {
+      level: "advisory",
+      channel: "env",
+    },
+    sandbox: {
+      level: "advisory",
+      channel: "env",
+      note: "Custom runner receives sandbox intent through env only; adapter does not enforce it.",
+    },
+    requires_human_approval: {
+      level: "advisory",
+      channel: "env",
+    },
+    writes_artifacts_to: {
+      level: "advisory",
+      channel: "env",
+    },
+    expected_exit_contract: {
+      level: "advisory",
+      channel: "env",
+    },
+    permissions: {
+      level: "advisory",
+      channel: "env",
+    },
+    agents_involved: {
+      level: "advisory",
+      channel: "env",
+    },
+    skills_used: {
+      level: "advisory",
+      channel: "env",
+    },
+    tools_used: {
+      level: "advisory",
+      channel: "env",
+    },
+    required_inputs: {
+      level: "advisory",
+      channel: "env",
+    },
+    outputs: {
+      level: "advisory",
+      channel: "env",
+    },
+    artifacts: {
+      level: "advisory",
+      channel: "env",
+    },
+  },
+};
 
 function summarizeOutput(text: string, limit = 4000): string | undefined {
   const normalized = text.replaceAll("\r\n", "\n").trim();
@@ -103,6 +163,10 @@ export class CustomRunnerAdapter implements RunnerAdapter {
   readonly id = "custom" as const;
 
   constructor(private readonly config: RunnerCustomConfig | undefined) {}
+
+  describeCapabilities(_bundle: RunnerContextBundle): RunnerAdapterCapabilities {
+    return structuredClone(CUSTOM_RUN_PROFILE_CAPABILITIES);
+  }
 
   prepare(bundle: RunnerContextBundle): Promise<RunnerInvocation> {
     assertCustomBundle(bundle);

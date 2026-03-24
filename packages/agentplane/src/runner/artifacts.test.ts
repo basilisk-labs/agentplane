@@ -64,6 +64,16 @@ describe("runner artifacts", () => {
         mode: "dry_run",
         run_id: "2026-03-23T13-00-00-000Z",
         artifact_paths: paths,
+        adapter_capabilities: {
+          adapter_id: "codex",
+          fields: {
+            sandbox: {
+              level: "native",
+              channel: "argv",
+              supported_values: ["read-only", "workspace-write", "danger-full-access"],
+            },
+          },
+        },
       },
     };
     const invocation = {
@@ -96,6 +106,16 @@ describe("runner artifacts", () => {
       prompt_count: 0,
       has_task_context: true,
       has_recipe_context: false,
+      adapter_capabilities: {
+        adapter_id: "codex",
+        fields: {
+          sandbox: {
+            level: "native",
+            channel: "argv",
+            supported_values: ["read-only", "workspace-write", "danger-full-access"],
+          },
+        },
+      },
       invocation: {
         executable: "codex",
         argv_count: 3,
@@ -109,17 +129,24 @@ describe("runner artifacts", () => {
       await readFile(paths.bundle_path, "utf8"),
     ) as RunnerContextBundle;
     expect(writtenBundle.execution.artifact_paths.run_dir).toBe(paths.run_dir);
+    expect(writtenBundle.execution.adapter_capabilities?.adapter_id).toBe("codex");
 
     const writtenState = JSON.parse(await readFile(paths.state_path, "utf8")) as {
       status: string;
       run_id: string;
       created_at: string;
+      prepared_metadata?: {
+        adapter_capabilities?: {
+          adapter_id: string;
+        };
+      };
     };
     expect(writtenState).toMatchObject({
       status: "prepared",
       run_id: "2026-03-23T13-00-00-000Z",
       created_at: "2026-03-23T13:00:00.000Z",
     });
+    expect(writtenState.prepared_metadata?.adapter_capabilities?.adapter_id).toBe("codex");
 
     expect(await readFile(paths.bootstrap_path, "utf8")).toBe("# bootstrap\n");
     const initialEvents = await readFile(paths.events_path, "utf8");
