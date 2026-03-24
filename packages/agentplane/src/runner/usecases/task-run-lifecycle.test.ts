@@ -181,6 +181,8 @@ describe("task-run lifecycle usecases", () => {
     );
     expect(runningState?.status).toBe("running");
     expect(runningState?.supervision?.pid).toBeGreaterThan(0);
+    expect(runningState?.supervision?.command).toContain("custom-runner");
+    expect(runningState?.supervision?.started_at).toMatch(/T/);
 
     const cancelled = await cancelTaskRunnerExecution({
       ctx,
@@ -200,6 +202,87 @@ describe("task-run lifecycle usecases", () => {
     expect(executed.result.status).toBe("cancelled");
     expect(finalState?.status).toBe("cancelled");
     expect(finalState?.supervision?.exit_signal).toBeTruthy();
+  });
+
+  it("cancel refuses when the live process identity no longer matches persisted supervision metadata", async () => {
+    const root = await makeTaskRoot();
+    await configureCustomRunner(root, [
+      "#!/bin/sh",
+      "trap 'exit 0' TERM",
+      "cat >/dev/null",
+      "while :; do sleep 1; done",
+    ]);
+    const taskId = await createDoingTask(root, "Cancel mismatched live run");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const runId = "run-live-mismatch";
+    const statePath = path.join(
+      root,
+      ".agentplane",
+      "tasks",
+      taskId,
+      "runs",
+      runId,
+      "run-state.json",
+    );
+    const eventsPath = path.join(
+      root,
+      ".agentplane",
+      "tasks",
+      taskId,
+      "runs",
+      runId,
+      "events.jsonl",
+    );
+    const executionPromise = executeTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      run_id: runId,
+    });
+
+    const runningState = await waitForState(
+      statePath,
+      (state) => state?.status === "running" && typeof state.supervision?.pid === "number",
+    );
+    const pid = runningState?.supervision?.pid;
+    expect(pid).toBeGreaterThan(0);
+    await writeRunnerRunState({
+      state_path: statePath,
+      state: evolveRunnerRunState({
+        state: runningState!,
+        status: "running",
+        updated_at: new Date().toISOString(),
+        supervision: {
+          ...runningState?.supervision,
+          command: "different-runner --bad-state",
+          started_at: "2000-01-01T00:00:00.000Z",
+        },
+      }),
+    });
+
+    await expect(
+      cancelTaskRunnerExecution({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        run_id: runId,
+      }),
+    ).rejects.toMatchObject({
+      code: "E_RUNTIME",
+      context: {
+        task_id: taskId,
+        run_id: runId,
+        pid,
+      },
+    });
+
+    expect(await readFile(eventsPath, "utf8")).toContain("runner_cancel_refused");
+
+    process.kill(pid!, "SIGKILL");
+    const executed = await executionPromise;
+    expect(executed.result.status).toBe("failed");
   });
 
   it("resume re-executes an existing prepared execute-mode run in place", async () => {

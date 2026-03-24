@@ -382,7 +382,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
               supervision: {
                 ...stateAfter.supervision,
                 pid: processResult.pid,
-                command: invocation.argv[0] ?? null,
+                command: invocation.argv.join(" "),
                 started_at: processResult.started_at,
                 heartbeat_at: processResult.heartbeat_at,
                 exit_signal: processResult.exit_signal,

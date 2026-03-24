@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
@@ -25,6 +26,7 @@ import type {
 import {
   exitCodeForSignal,
   isProcessAlive,
+  readObservedProcessIdentity,
   waitForProcessExit,
   waitForRunnerStateStop,
 } from "../process-supervision.js";
@@ -125,6 +127,75 @@ function assertExecuteMode(bundle: RunnerContextBundle, action: "resume" | "retr
 
 function readRunningPid(state: RunnerRunState): number | null {
   return typeof state.supervision?.pid === "number" ? state.supervision.pid : null;
+}
+
+function normalizeCommandFingerprint(command: string | null | undefined): string | null {
+  const firstToken = command?.trim().split(/\s+/u)[0] ?? "";
+  return firstToken ? path.basename(firstToken) : null;
+}
+
+function commandMatchesFingerprint(
+  expected: string | null | undefined,
+  observedCommand: string | null | undefined,
+): boolean {
+  const expectedFingerprint = normalizeCommandFingerprint(expected);
+  if (!expectedFingerprint || !observedCommand) return false;
+  return observedCommand.includes(expectedFingerprint);
+}
+
+function startedAtMatches(expected: string | null | undefined, observed: string | null): boolean {
+  const expectedMs = expected ? Date.parse(expected) : Number.NaN;
+  const observedMs = observed ? Date.parse(observed) : Number.NaN;
+  if (Number.isNaN(expectedMs) || Number.isNaN(observedMs)) return false;
+  return Math.abs(expectedMs - observedMs) <= 5000;
+}
+
+async function assertMatchingProcessIdentity(opts: {
+  task_id: string;
+  run_id: string;
+  state: RunnerRunState;
+  pid: number;
+}): Promise<void> {
+  const observed = await readObservedProcessIdentity(opts.pid);
+  if (!observed) {
+    if (!isProcessAlive(opts.pid)) return;
+    throw new CliError({
+      exitCode: 8,
+      code: "E_RUNTIME",
+      message:
+        `runner cancel refused because process identity could not be confirmed for ` +
+        `${opts.task_id}:${opts.run_id} pid=${opts.pid}.`,
+      context: {
+        task_id: opts.task_id,
+        run_id: opts.run_id,
+        pid: opts.pid,
+        expected_command: opts.state.supervision?.command ?? null,
+        expected_started_at: opts.state.supervision?.started_at ?? null,
+      },
+    });
+  }
+  const commandMatches = commandMatchesFingerprint(
+    opts.state.supervision?.command,
+    observed.command,
+  );
+  const startMatches = startedAtMatches(opts.state.supervision?.started_at, observed.started_at);
+  if (commandMatches && startMatches) return;
+  throw new CliError({
+    exitCode: 8,
+    code: "E_RUNTIME",
+    message:
+      `runner cancel refused because the live process no longer matches persisted supervision ` +
+      `metadata for ${opts.task_id}:${opts.run_id} pid=${opts.pid}.`,
+    context: {
+      task_id: opts.task_id,
+      run_id: opts.run_id,
+      pid: opts.pid,
+      expected_command: opts.state.supervision?.command ?? null,
+      observed_command: observed.command,
+      expected_started_at: opts.state.supervision?.started_at ?? null,
+      observed_started_at: observed.started_at,
+    },
+  });
 }
 
 function signalProcess(pid: number, signal: RunnerProcessSignal): boolean {
@@ -248,6 +319,32 @@ export async function cancelTaskRunnerExecution(opts: {
         code: "E_IO",
         message: `runner cancel requires supervision metadata for running run ${opts.task_id}:${opts.run_id}`,
       });
+    }
+    try {
+      await assertMatchingProcessIdentity({
+        task_id: opts.task_id,
+        run_id: opts.run_id,
+        state: loaded.state,
+        pid,
+      });
+    } catch (err) {
+      if (err instanceof CliError) {
+        const refusedAt = new Date().toISOString();
+        await appendRunnerEvent({
+          events_path: loaded.invocation.events_path,
+          event: {
+            at: refusedAt,
+            type: "runner_cancel_refused",
+            message: err.message,
+            data: err.context ?? {
+              task_id: opts.task_id,
+              run_id: opts.run_id,
+              pid,
+            },
+          },
+        });
+      }
+      throw err;
     }
     const requested_at = new Date().toISOString();
     const requestedState = evolveRunnerRunState({

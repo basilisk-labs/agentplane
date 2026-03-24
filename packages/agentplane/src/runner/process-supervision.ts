@@ -1,5 +1,6 @@
-import { spawn } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
 import { appendFile } from "node:fs/promises";
+import { promisify } from "node:util";
 
 import {
   appendRunnerEvent,
@@ -25,6 +26,8 @@ const SUPPORTED_SIGNALS = new Set<RunnerProcessSignal>([
   "SIGKILL",
 ]);
 
+const execFileAsync = promisify(execFile);
+
 export type SupervisedProcessResult = {
   exit_code: number | null;
   exit_signal: RunnerProcessSignal | null;
@@ -48,6 +51,20 @@ export type SupervisedProcessResult = {
   stderr_artifact_path: string | null;
   stderr_archive_path: string | null;
 };
+
+export type ObservedProcessIdentity = {
+  pid: number;
+  command: string | null;
+  started_at: string | null;
+};
+
+function renderInvocationCommand(invocation: RunnerInvocation): string | null {
+  const commandLine = invocation.argv
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0)
+    .join(" ");
+  return commandLine.length > 0 ? commandLine : null;
+}
 
 function normalizeSignal(signal: NodeJS.Signals | null): RunnerProcessSignal | null {
   if (!signal) return null;
@@ -131,6 +148,39 @@ export function isProcessAlive(pid: number): boolean {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ESRCH") return false;
     if (code === "EPERM") return true;
+    throw err;
+  }
+}
+
+export async function readObservedProcessIdentity(
+  pid: number,
+): Promise<ObservedProcessIdentity | null> {
+  try {
+    const { stdout } = await execFileAsync("ps", ["-o", "lstart=,command=", "-p", String(pid)], {
+      encoding: "utf8",
+    });
+    const line = stdout
+      .split("\n")
+      .map((entry) => entry.trim())
+      .find((entry) => entry.length > 0);
+    if (!line) return null;
+    const match =
+      /^([A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d\d:\d\d:\d\d\s+\d{4})\s+(.*)$/u.exec(line);
+    const startedAtRaw = match?.[1]?.trim() ?? null;
+    const command = match?.[2]?.trim() ?? null;
+    const parsedStartedAt =
+      startedAtRaw && !Number.isNaN(Date.parse(startedAtRaw))
+        ? new Date(startedAtRaw).toISOString()
+        : null;
+    return {
+      pid,
+      command,
+      started_at: parsedStartedAt,
+    };
+  } catch (err) {
+    const errno = (err as NodeJS.ErrnoException | null)?.code;
+    const exitCode = (err as { code?: number } | null)?.code;
+    if (errno === "ESRCH" || exitCode === 1) return null;
     throw err;
   }
 }
@@ -363,7 +413,7 @@ export async function runSupervisedProcess(opts: {
       if (!initialState) return;
       const supervision = mergeSupervisionState(initialState.supervision, {
         pid,
-        command,
+        command: renderInvocationCommand(opts.invocation),
         started_at,
         heartbeat_at,
         exit_signal: null,
