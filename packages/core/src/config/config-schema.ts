@@ -275,6 +275,26 @@ const AGENTPLANE_CONFIG_SCHEMA_JSON = String.raw`{
               "type": "object",
               "default": {},
               "additionalProperties": { "type": "string" }
+            },
+            "enforcement": {
+              "type": "object",
+              "additionalProperties": false,
+              "default": {
+                "mode": "none",
+                "platform": "auto"
+              },
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": ["none", "codex_sandbox_full_auto"],
+                  "default": "none"
+                },
+                "platform": {
+                  "type": "string",
+                  "enum": ["auto", "macos", "linux", "windows"],
+                  "default": "auto"
+                }
+              }
             }
           }
         }

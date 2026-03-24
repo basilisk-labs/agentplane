@@ -87,6 +87,32 @@ describe("config", () => {
     expect(loaded.config.runner.default_adapter).toBe("codex");
   });
 
+  it("validateConfig accepts custom runner enforcement settings", () => {
+    const raw = defaultConfig() as unknown as Record<string, unknown>;
+    raw.runner = {
+      ...raw.runner,
+      default_adapter: "custom",
+      custom: {
+        command: ["custom-runner", "--bundle-from-env"],
+        enforcement: {
+          mode: "codex_sandbox_full_auto",
+          platform: "macos",
+        },
+      },
+    };
+
+    const validated = validateConfig(raw);
+
+    expect(validated.runner.custom).toEqual({
+      command: ["custom-runner", "--bundle-from-env"],
+      env: {},
+      enforcement: {
+        mode: "codex_sandbox_full_auto",
+        platform: "macos",
+      },
+    });
+  });
+
   it("setByDottedKey sets nested fields and preserves object shape", () => {
     const cfg = defaultConfig() as unknown as Record<string, unknown>;
     setByDottedKey(cfg, "workflow_mode", "branch_pr");

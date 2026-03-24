@@ -42,6 +42,10 @@ describe("runner config", () => {
         env: {
           CUSTOM_TOKEN: "token",
         },
+        enforcement: {
+          mode: "codex_sandbox_full_auto",
+          platform: "linux",
+        },
       },
     };
 
@@ -52,6 +56,10 @@ describe("runner config", () => {
       command: ["custom-runner", "--flag"],
       env: {
         CUSTOM_TOKEN: "token",
+      },
+      enforcement: {
+        mode: "codex_sandbox_full_auto",
+        platform: "linux",
       },
     });
   });

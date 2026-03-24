@@ -60,4 +60,41 @@ describe("buildRunnerPolicyDecision", () => {
     });
     expect(decision.refusal_reason).toBeNull();
   });
+
+  it("marks wrapper-enforced sandbox fields as enforced when the adapter advertises wrapper support", () => {
+    const decision = buildRunnerPolicyDecision({
+      adapter_id: "custom",
+      capabilities: {
+        adapter_id: "custom",
+        fields: {
+          sandbox: {
+            level: "wrapper",
+            channel: "argv",
+            supported_values: ["workspace-write"],
+          },
+        },
+      },
+      recipe: {
+        recipe_id: "viewer",
+        scenario_id: "SCENARIO",
+        run_profile: {
+          sandbox: "workspace-write",
+        },
+      },
+    });
+
+    expect(decision.requested).toEqual({
+      sandbox: "workspace-write",
+    });
+    expect(decision.effective).toEqual({
+      sandbox: "workspace-write",
+    });
+    expect(decision.fields.sandbox).toMatchObject({
+      requested: "workspace-write",
+      effective: "workspace-write",
+      status: "enforced",
+      capability_level: "wrapper",
+      channel: "argv",
+    });
+  });
 });

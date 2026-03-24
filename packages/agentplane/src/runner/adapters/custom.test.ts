@@ -9,6 +9,23 @@ import { writePreparedRunnerArtifacts } from "../artifacts.js";
 import type { RunnerContextBundle } from "../types.js";
 import { createRunnerAdapter } from "./index.js";
 
+function currentCodexSandboxPlatform(): "macos" | "linux" | "windows" {
+  switch (process.platform) {
+    case "darwin": {
+      return "macos";
+    }
+    case "linux": {
+      return "linux";
+    }
+    case "win32": {
+      return "windows";
+    }
+    default: {
+      throw new Error(`Unsupported platform for codex sandbox test: ${process.platform}`);
+    }
+  }
+}
+
 function makeBundle(): RunnerContextBundle {
   return {
     schema_version: 1,
@@ -95,6 +112,31 @@ describe("CustomRunnerAdapter", () => {
     });
   });
 
+  it("describes sandbox as wrapper-enforced when codex full-auto enforcement is configured", () => {
+    const raw = defaultConfig();
+    raw.runner.default_adapter = "custom";
+    raw.runner.custom = {
+      command: ["custom-runner", "--bundle-from-env"],
+      enforcement: {
+        mode: "codex_sandbox_full_auto",
+        platform: "auto",
+      },
+    };
+    const adapter = createRunnerAdapter(raw);
+    const capabilities = adapter.describeCapabilities(makeBundle());
+
+    expect(capabilities).toMatchObject({
+      adapter_id: "custom",
+      fields: {
+        sandbox: {
+          level: "wrapper",
+          channel: "argv",
+          supported_values: ["workspace-write"],
+        },
+      },
+    });
+  });
+
   it("requires config.runner.custom.command and exports bundle paths via env", async () => {
     const raw = defaultConfig();
     raw.runner.default_adapter = "custom";
@@ -125,6 +167,8 @@ describe("CustomRunnerAdapter", () => {
         "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/events.jsonl",
       AGENTPLANE_RUNNER_RESULT_PATH:
         "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/result.json",
+      AGENTPLANE_RUNNER_ENFORCEMENT_MODE: "none",
+      AGENTPLANE_RUNNER_ENFORCEMENT_PLATFORM: "auto",
     });
     expect(invocation.trace_path).toBe(
       "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/agent-trace.jsonl",
@@ -189,6 +233,78 @@ describe("CustomRunnerAdapter", () => {
       writes_artifacts_to: ["logs/", "reports/"],
       expected_exit_contract: "report",
     });
+  });
+
+  it("wraps the custom command with codex sandbox full-auto when workspace-write enforcement is configured", async () => {
+    const raw = defaultConfig();
+    raw.runner.default_adapter = "custom";
+    raw.runner.custom = {
+      command: ["custom-runner", "--bundle-from-env"],
+      enforcement: {
+        mode: "codex_sandbox_full_auto",
+        platform: "auto",
+      },
+    };
+    const adapter = createRunnerAdapter(raw);
+    const bundle = makeBundle();
+    bundle.target = {
+      kind: "recipe_scenario",
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      task_id: "202603231410-XYZ789",
+    };
+    bundle.recipe = {
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      run_profile: {
+        sandbox: "workspace-write",
+      },
+    };
+
+    const invocation = await adapter.prepare(bundle);
+
+    expect(invocation.argv).toEqual([
+      "codex",
+      "sandbox",
+      currentCodexSandboxPlatform(),
+      "--full-auto",
+      "custom-runner",
+      "--bundle-from-env",
+    ]);
+    expect(invocation.env).toMatchObject({
+      AGENTPLANE_RUNNER_ENFORCEMENT_MODE: "codex_sandbox_full_auto",
+      AGENTPLANE_RUNNER_ENFORCEMENT_PLATFORM: "auto",
+      AGENTPLANE_RECIPE_SANDBOX: "workspace-write",
+    });
+  });
+
+  it("fails closed when codex sandbox wrapper mode receives an unsupported sandbox", () => {
+    const raw = defaultConfig();
+    raw.runner.default_adapter = "custom";
+    raw.runner.custom = {
+      command: ["custom-runner", "--bundle-from-env"],
+      enforcement: {
+        mode: "codex_sandbox_full_auto",
+        platform: "auto",
+      },
+    };
+    const adapter = createRunnerAdapter(raw);
+    const bundle = makeBundle();
+    bundle.target = {
+      kind: "recipe_scenario",
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      task_id: "202603231410-XYZ789",
+    };
+    bundle.recipe = {
+      recipe_id: "viewer",
+      scenario_id: "RECIPE_SCENARIO",
+      run_profile: {
+        sandbox: "read-only",
+      },
+    };
+
+    expect(() => adapter.prepare(bundle)).toThrow(/does not support recipe sandbox/);
   });
 
   it("rejects custom adapter selection when no external command is configured", () => {

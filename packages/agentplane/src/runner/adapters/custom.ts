@@ -2,6 +2,8 @@ import { readFile } from "node:fs/promises";
 
 import type { RunnerCustomConfig } from "@agentplaneorg/core";
 
+import { exitCodeForError } from "../../cli/exit-codes.js";
+import { CliError } from "../../shared/errors.js";
 import type {
   RunnerAdapterCapabilities,
   RunnerContextBundle,
@@ -35,30 +37,146 @@ import {
   readRunnerResultManifest,
   writeRunnerResultManifest,
 } from "../result-manifest.js";
-import { buildRecipeRunnerEnv } from "./recipe-run-profile.js";
+import { buildRecipeRunnerEnv, readRecipeRunProfile } from "./recipe-run-profile.js";
 
-const CUSTOM_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
-  adapter_id: "custom",
-  fields: {
-    mode: {
-      level: "advisory",
-      channel: "env",
+const CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES = ["workspace-write"];
+
+function normalizeCustomEnforcement(config: RunnerCustomConfig | undefined): {
+  mode: NonNullable<RunnerCustomConfig["enforcement"]>["mode"];
+  platform: NonNullable<RunnerCustomConfig["enforcement"]>["platform"];
+} {
+  return {
+    mode: config?.enforcement?.mode ?? "none",
+    platform: config?.enforcement?.platform ?? "auto",
+  };
+}
+
+function buildCustomCapabilities(
+  config: RunnerCustomConfig | undefined,
+): RunnerAdapterCapabilities {
+  const enforcement = normalizeCustomEnforcement(config);
+  return {
+    adapter_id: "custom",
+    fields: {
+      mode: {
+        level: "advisory",
+        channel: "env",
+      },
+      sandbox:
+        enforcement.mode === "codex_sandbox_full_auto"
+          ? {
+              level: "wrapper",
+              channel: "argv",
+              supported_values: [...CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES],
+              note: "Custom runner sandbox is enforced through `codex sandbox <platform> --full-auto`.",
+            }
+          : {
+              level: "advisory",
+              channel: "env",
+              note: "Custom runner receives sandbox intent through env only; adapter does not enforce it.",
+            },
+      writes_artifacts_to: {
+        level: "advisory",
+        channel: "env",
+      },
+      expected_exit_contract: {
+        level: "advisory",
+        channel: "env",
+      },
     },
-    sandbox: {
-      level: "advisory",
-      channel: "env",
-      note: "Custom runner receives sandbox intent through env only; adapter does not enforce it.",
-    },
-    writes_artifacts_to: {
-      level: "advisory",
-      channel: "env",
-    },
-    expected_exit_contract: {
-      level: "advisory",
-      channel: "env",
-    },
-  },
-};
+  };
+}
+
+function resolveCodexSandboxPlatform(
+  value: NonNullable<RunnerCustomConfig["enforcement"]>["platform"],
+): "macos" | "linux" | "windows" {
+  const currentPlatform = (() => {
+    switch (process.platform) {
+      case "darwin": {
+        return "macos";
+      }
+      case "linux": {
+        return "linux";
+      }
+      case "win32": {
+        return "windows";
+      }
+      default: {
+        return null;
+      }
+    }
+  })();
+  if (!currentPlatform) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_RUNTIME"),
+      code: "E_RUNTIME",
+      message: `Custom runner codex sandbox wrapper does not support current platform ${JSON.stringify(process.platform)}.`,
+      context: {
+        adapter_id: "custom",
+        wrapper_mode: "codex_sandbox_full_auto",
+        platform: process.platform,
+        policy_field: "sandbox",
+      },
+    });
+  }
+  if (value && value !== "auto") {
+    if (value !== currentPlatform) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_RUNTIME"),
+        code: "E_RUNTIME",
+        message:
+          `Custom runner codex sandbox wrapper is configured for ${JSON.stringify(value)} but current platform is ` +
+          `${JSON.stringify(currentPlatform)}.`,
+        context: {
+          adapter_id: "custom",
+          wrapper_mode: "codex_sandbox_full_auto",
+          configured_platform: value,
+          platform: currentPlatform,
+          policy_field: "sandbox",
+        },
+      });
+    }
+    return value;
+  }
+  return currentPlatform;
+}
+
+function buildCustomCommand(opts: {
+  config: RunnerCustomConfig | undefined;
+  bundle: RunnerContextBundle;
+  command: string[];
+}): string[] {
+  const enforcement = normalizeCustomEnforcement(opts.config);
+  if (enforcement.mode !== "codex_sandbox_full_auto") return opts.command;
+
+  const runProfile = readRecipeRunProfile(opts.bundle.recipe);
+  const requestedSandbox = typeof runProfile?.sandbox === "string" ? runProfile.sandbox.trim() : "";
+  if (!requestedSandbox) return opts.command;
+  if (!CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES.includes(requestedSandbox)) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_RUNTIME"),
+      code: "E_RUNTIME",
+      message:
+        `Custom runner wrapper mode ${JSON.stringify(enforcement.mode)} does not support recipe sandbox ` +
+        `${JSON.stringify(requestedSandbox)}; supported values: ${CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES.join(", ")}.`,
+      context: {
+        adapter_id: "custom",
+        wrapper_mode: enforcement.mode,
+        policy_field: "sandbox",
+        declared_value: requestedSandbox,
+        supported_values: CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES,
+      },
+    });
+  }
+
+  return [
+    "codex",
+    "sandbox",
+    resolveCodexSandboxPlatform(enforcement.platform),
+    "--full-auto",
+    ...opts.command,
+  ];
+}
 
 function durationMs(startedAt: string, endedAt: string): number | undefined {
   const started = Date.parse(startedAt);
@@ -201,7 +319,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
   constructor(private readonly config: RunnerCustomConfig | undefined) {}
 
   describeCapabilities(_bundle: RunnerContextBundle): RunnerAdapterCapabilities {
-    return structuredClone(CUSTOM_RUN_PROFILE_CAPABILITIES);
+    return structuredClone(buildCustomCapabilities(this.config));
   }
 
   prepare(bundle: RunnerContextBundle): Promise<RunnerInvocation> {
@@ -214,6 +332,12 @@ export class CustomRunnerAdapter implements RunnerAdapter {
     }
     const { execution } = bundle;
     const recipeEnv = buildRecipeRunnerEnv(bundle.recipe);
+    const enforcement = normalizeCustomEnforcement(this.config);
+    const preparedCommand = buildCustomCommand({
+      config: this.config,
+      bundle,
+      command,
+    });
     return Promise.resolve({
       adapter_id: this.id,
       run_id: execution.run_id,
@@ -228,7 +352,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
       timeout_policy: execution.timeout_policy,
       bootstrap_path: execution.artifact_paths.bootstrap_path,
       output_last_message_path: null,
-      argv: command,
+      argv: preparedCommand,
       env: {
         ...this.config?.env,
         AGENTPLANE_RUNNER_ADAPTER: this.id,
@@ -241,6 +365,8 @@ export class CustomRunnerAdapter implements RunnerAdapter {
         AGENTPLANE_RUNNER_STATE_PATH: execution.artifact_paths.state_path,
         AGENTPLANE_RUNNER_EVENTS_PATH: execution.artifact_paths.events_path,
         AGENTPLANE_RUNNER_RESULT_PATH: execution.artifact_paths.result_path,
+        AGENTPLANE_RUNNER_ENFORCEMENT_MODE: enforcement.mode ?? "none",
+        AGENTPLANE_RUNNER_ENFORCEMENT_PLATFORM: enforcement.platform ?? "auto",
         ...recipeEnv,
       },
       dry_run: execution.mode === "dry_run",

@@ -18,9 +18,16 @@ export type RunnerTraceMode = "raw" | "off";
 export type RunnerTraceRetention = "keep" | "remove_on_success" | "remove_always";
 export type RunnerTraceCompression = "none" | "gzip";
 export type RunnerTimeoutReason = "idle" | "wall_clock";
+export type RunnerCustomEnforcementMode = "none" | "codex_sandbox_full_auto";
+export type RunnerCustomSandboxPlatform = "auto" | "macos" | "linux" | "windows";
+export type RunnerCustomEnforcementConfig = {
+  mode?: RunnerCustomEnforcementMode;
+  platform?: RunnerCustomSandboxPlatform;
+};
 export type RunnerCustomConfig = {
   command: string[];
   env?: Record<string, string>;
+  enforcement?: RunnerCustomEnforcementConfig;
 };
 export type RunnerTraceConfig = {
   mode: RunnerTraceMode;
