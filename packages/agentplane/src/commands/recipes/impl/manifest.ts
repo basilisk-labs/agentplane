@@ -99,10 +99,6 @@ function normalizeRunProfile(raw: unknown, field: string): RecipeRunProfile {
       raw.writes_artifacts_to,
       `${field}.writes_artifacts_to`,
     ),
-    expected_exit_contract: normalizeOptionalString(
-      raw.expected_exit_contract,
-      `${field}.expected_exit_contract`,
-    ),
   };
 }
 

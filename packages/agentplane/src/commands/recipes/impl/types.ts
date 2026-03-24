@@ -11,7 +11,6 @@ export type RecipeRunProfile = {
   mode: string;
   sandbox?: string;
   writes_artifacts_to?: string[];
-  expected_exit_contract?: string;
 };
 
 export type RecipeTaskTemplateDoc = {

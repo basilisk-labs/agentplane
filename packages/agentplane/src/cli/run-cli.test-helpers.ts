@@ -330,7 +330,6 @@ export async function createRecipeArchive(opts?: {
           mode: "analysis",
           sandbox: "workspace-write",
           writes_artifacts_to: ["logs/", "reports/"],
-          expected_exit_contract: "report",
         },
         file: "scenarios/recipe-scenario.json",
       },

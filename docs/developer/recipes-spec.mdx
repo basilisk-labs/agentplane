@@ -178,9 +178,9 @@ classification label rather than a shared execution-policy field.
 The main-repo runner contract also no longer accepts `run_profile.requires_human_approval`: the live
 Codex probe showed that non-interactive approval modes remain permissive, so the field was removed
 from runtime execution surfaces instead of being documented as a fake enforcement guarantee.
-The same rule now applies to `run_profile.expected_exit_contract`: manifests may still carry the
-legacy string for external catalog compatibility, but the main-repo runtime no longer resolves or
-exports it because current values are recipe-specific labels without deterministic shared semantics.
+The same rule now applies to `run_profile.expected_exit_contract`: the field has been removed from
+the accepted main-repo recipe contract after the bundled catalog was cleaned, because current values
+are recipe-specific labels without deterministic shared semantics.
 `run_profile.writes_artifacts_to` remains advisory at invocation time, but the shared runner now
 rejects invalid declared prefixes before spawn and then enforces the field post-run against external
 `result.json` manifest paths only: `artifacts[].path` and `evidence.evidence_paths[]` must resolve
