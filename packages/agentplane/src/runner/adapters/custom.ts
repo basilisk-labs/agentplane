@@ -55,6 +55,9 @@ function buildCustomCapabilities(
   config: RunnerCustomConfig | undefined,
 ): RunnerAdapterCapabilities {
   const enforcement = normalizeCustomEnforcement(config);
+  const configuredModeNote =
+    `Configured via runner.custom.enforcement.mode=${JSON.stringify(enforcement.mode)} ` +
+    `(platform=${JSON.stringify(enforcement.platform)}).`;
   return {
     adapter_id: "custom",
     fields: {
@@ -68,12 +71,16 @@ function buildCustomCapabilities(
               level: "wrapper",
               channel: "argv",
               supported_values: [...CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES],
-              note: "Custom runner sandbox is enforced through `codex sandbox <platform> --full-auto`.",
+              note:
+                `${configuredModeNote} Custom runner sandbox is enforced through ` +
+                "`codex sandbox <platform> --full-auto` and currently supports workspace-write only.",
             }
           : {
               level: "advisory",
               channel: "env",
-              note: "Custom runner receives sandbox intent through env only; adapter does not enforce it.",
+              note:
+                `${configuredModeNote} Custom runner receives sandbox intent through env only; ` +
+                "the adapter does not enforce it.",
             },
       writes_artifacts_to: {
         level: "advisory",

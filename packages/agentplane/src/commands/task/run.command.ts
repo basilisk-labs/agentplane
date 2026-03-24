@@ -8,6 +8,10 @@ import {
   executeTaskRunnerExecution,
   prepareTaskRunnerExecution,
 } from "../../runner/usecases/task-run.js";
+import {
+  formatRunnerCapabilitySummaryLines,
+  formatRunnerPolicyFieldSummaryLines,
+} from "../../runner/policy-display.js";
 import { CliError } from "../../shared/errors.js";
 
 import type { TaskRunParsed } from "./run.spec.js";
@@ -68,6 +72,11 @@ export const runTaskRun: CommandHandler<TaskRunParsed> = async (
     process.stdout.write(
       `capabilities: ${JSON.stringify(prepared.bundle.execution.adapter_capabilities ?? null)}\n`,
     );
+    for (const line of formatRunnerCapabilitySummaryLines(
+      prepared.bundle.execution.adapter_capabilities,
+    )) {
+      process.stdout.write(`${line}\n`);
+    }
     process.stdout.write(
       `policy_requested: ${JSON.stringify(prepared.bundle.execution.policy_decision?.requested ?? {})}\n`,
     );
@@ -80,6 +89,11 @@ export const runTaskRun: CommandHandler<TaskRunParsed> = async (
     process.stdout.write(
       `policy_refusal: ${JSON.stringify(prepared.bundle.execution.policy_decision?.refusal_reason ?? null)}\n`,
     );
+    for (const line of formatRunnerPolicyFieldSummaryLines(
+      prepared.bundle.execution.policy_decision,
+    )) {
+      process.stdout.write(`${line}\n`);
+    }
     process.stdout.write(`argv: ${prepared.invocation.argv.join(" ")}\n`);
     return 0;
   } catch (err) {

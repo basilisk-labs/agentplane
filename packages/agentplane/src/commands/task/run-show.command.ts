@@ -3,6 +3,10 @@ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { infoMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  formatRunnerCapabilitySummaryLines,
+  formatRunnerPolicyFieldSummaryLines,
+} from "../../runner/policy-display.js";
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
 
 import type { TaskRunShowParsed } from "./run-show.spec.js";
@@ -110,6 +114,14 @@ export const runTaskRunShow: CommandHandler<TaskRunShowParsed> = async (
       const lastEvent = inspection.events.at(-1);
       process.stdout.write(`last_event: ${lastEvent?.type ?? "unknown"}\n`);
     }
+    const capabilities =
+      inspection.bundle.execution.adapter_capabilities ??
+      inspection.state.prepared_metadata?.adapter_capabilities ??
+      null;
+    process.stdout.write(`capabilities: ${JSON.stringify(capabilities)}\n`);
+    for (const line of formatRunnerCapabilitySummaryLines(capabilities ?? undefined)) {
+      process.stdout.write(`${line}\n`);
+    }
     process.stdout.write(
       `policy_requested: ${JSON.stringify(inspection.state.policy_decision?.requested ?? {})}\n`,
     );
@@ -122,6 +134,9 @@ export const runTaskRunShow: CommandHandler<TaskRunShowParsed> = async (
     process.stdout.write(
       `policy_refusal: ${JSON.stringify(inspection.state.policy_decision?.refusal_reason ?? null)}\n`,
     );
+    for (const line of formatRunnerPolicyFieldSummaryLines(inspection.state.policy_decision)) {
+      process.stdout.write(`${line}\n`);
+    }
     if (inspection.state.result?.summary) {
       process.stdout.write(`summary: ${inspection.state.result.summary}\n`);
     }

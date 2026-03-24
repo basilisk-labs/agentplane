@@ -120,8 +120,8 @@ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 `.agentplane/tasks/<task-id>/runs/<run-id>/`.
 
 - Start with `task run show`: it prints the selected run, status, adapter, effective policy,
-  refusal metadata, timeout reason, metrics, and artifact paths from `run-state.json` /
-  `result.json`.
+  refusal metadata, timeout reason, metrics, capability summaries, and artifact paths from
+  `run-state.json` / `result.json`.
 - Use `task run tail` when you only need the last N raw trace lines from `agent-trace.jsonl`.
 - Use `task run trace` when you need the full raw trace artifact unchanged. When `run-id` is
   omitted, `show`, `tail`, and `trace` all select the latest run for the task.
@@ -132,6 +132,13 @@ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 - If `task run show` reports `timeout_reason`, inspect `task run tail` first to see the last raw activity
   before the timeout. If it reports `policy_refusal`, inspect `policy_requested`, `policy_effective`,
   and `policy_fields` before changing recipe or runner settings.
+- `task run --dry-run` and `task run show` now print both raw JSON blocks and compact
+  `capability[...]` / `policy_field[...]` lines. Use these summaries to see whether a field is
+  `native`, `wrapper`, `advisory`, or `unsupported` without opening `bundle.json`.
+- For `runner.default_adapter=custom`, the `capability[sandbox]` note is the quickest way to tell
+  whether the adapter is still env-only or is configured to wrap execution through
+  `runner.custom.enforcement.mode=codex_sandbox_full_auto`. When wrapper mode is active, the same
+  line also shows the currently supported sandbox values.
 
 ## Task export (optional)
 
@@ -242,6 +249,8 @@ agentplane scenario execute <recipe:scenario>
 ```
 
 `scenario run` is preview-only. `scenario execute` materializes a recipe-backed task and runs it through the shared runner flow.
+Use `task run show <task-id>` after execution when you need the persisted capability and policy
+surface for that scenario-backed run.
 
 Recipe `run_profile` no longer supports `requires_human_approval` in the main repo runtime. The
 current runner accepts only fields it can explain honestly in `task run show`; if an external recipe

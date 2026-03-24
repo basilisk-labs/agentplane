@@ -211,6 +211,7 @@ describe("runCli scenario", () => {
         "done",
         "cat >/dev/null",
         String.raw`printf '{"type":"session.started"}\n'`,
+        String.raw`printf '{"schema_version":1,"status":"success","summary":"scenario execute success","capabilities_used":["codex.exec"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         String.raw`printf 'scenario execute final message\n' > "$out"`,
         String.raw`printf 'scenario execute stdout\n'`,
         "exit 0",

@@ -160,6 +160,20 @@ describe("runCli", () => {
         io.restore();
       }
     }
+    await runCliSilent([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      String.raw`1. Inspect the dry-run surface. Expected: the reported enforcement mode matches the custom wrapper configuration.\n2. Inspect the sandbox capability line. Expected: it shows wrapper enforcement and the supported sandbox values.\n3. Compare the task output against the dry-run contract. Expected: the task remains in scope with no unexpected errors.`,
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
     await runCliSilent([
       "task",
@@ -181,10 +195,16 @@ describe("runCli", () => {
       expect(io.stdout).toContain("adapter: codex");
       expect(io.stdout).toContain("bundle:");
       expect(io.stdout).toContain('capabilities: {"adapter_id":"codex"');
+      expect(io.stdout).toContain(
+        "capability[sandbox]: level=native channel=argv supported=read-only,workspace-write,danger-full-access",
+      );
       expect(io.stdout).toContain("policy_requested: {}");
       expect(io.stdout).toContain("policy_effective: {}");
       expect(io.stdout).toContain("policy_fields:");
       expect(io.stdout).toContain("policy_refusal: null");
+      expect(io.stdout).toContain(
+        "policy_field[sandbox]: status=not_requested capability=native channel=argv supported=read-only,workspace-write,danger-full-access",
+      );
       expect(io.stdout).toContain("argv: codex -a never exec --json --output-last-message");
 
       const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
@@ -252,6 +272,97 @@ describe("runCli", () => {
       );
       expect(bootstrap).toContain("Do not run repository startup commands");
       expect(bootstrap).toContain("Open bundle.json immediately");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task run --dry-run surfaces configured custom wrapper enforcement mode and supported sandbox semantics", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = {
+      command: ["custom-runner"],
+      enforcement: {
+        mode: "codex_sandbox_full_auto",
+        platform: "auto",
+      },
+    };
+    await writeConfig(root, config);
+
+    const ioCreate = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Runner custom wrapper dry-run task",
+        "--description",
+        "Inspect dry-run reporting for the custom wrapper enforcement mode",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioCreate.stdout.trim();
+    } finally {
+      ioCreate.restore();
+    }
+    const verifyStepsPath = path.join(root, ".task-verify-steps.md");
+    await writeFile(
+      verifyStepsPath,
+      [
+        "1. Inspect the dry-run surface. Expected: the reported enforcement mode matches the custom wrapper configuration.",
+        "2. Inspect the sandbox capability line. Expected: it shows wrapper enforcement and the supported sandbox values.",
+        "3. Compare the task output against the dry-run contract. Expected: the task remains in scope with no unexpected errors.",
+      ].join("\n"),
+      "utf8",
+    );
+    await runCliSilent([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--file",
+      verifyStepsPath,
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before inspecting custom wrapper dry-run reporting.",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "run", taskId, "--dry-run", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`task run dry-run prepared: ${taskId}`);
+      expect(io.stdout).toContain("adapter: custom");
+      expect(io.stdout).toContain('capabilities: {"adapter_id":"custom"');
+      expect(io.stdout).toContain(
+        'capability[sandbox]: level=wrapper channel=argv supported=workspace-write note=Configured via runner.custom.enforcement.mode="codex_sandbox_full_auto" (platform="auto").',
+      );
+      expect(io.stdout).toContain("policy_requested: {}");
+      expect(io.stdout).toContain(
+        'policy_field[sandbox]: status=not_requested capability=wrapper channel=argv supported=workspace-write note=Configured via runner.custom.enforcement.mode="codex_sandbox_full_auto" (platform="auto").',
+      );
     } finally {
       io.restore();
     }
@@ -544,8 +655,15 @@ describe("runCli", () => {
           expect(io.stdout).toContain("status: success");
           expect(io.stdout).toContain("adapter: custom");
           expect(io.stdout).toContain("events_count:");
+          expect(io.stdout).toContain('capabilities: {"adapter_id":"custom"');
+          expect(io.stdout).toContain(
+            'capability[sandbox]: level=advisory channel=env note=Configured via runner.custom.enforcement.mode="none" (platform="auto").',
+          );
           expect(io.stdout).toContain("policy_requested: {}");
           expect(io.stdout).toContain("policy_effective: {}");
+          expect(io.stdout).toContain(
+            'policy_field[sandbox]: status=not_requested capability=advisory channel=env note=Configured via runner.custom.enforcement.mode="none" (platform="auto").',
+          );
           expect(io.stdout).toContain("summary: Custom runner execution completed successfully.");
           expect(io.stdout).toContain("trace:");
         } finally {
@@ -1513,7 +1631,9 @@ describe("runCli", () => {
     await mkdir(fakeBinDir, { recursive: true });
     await writeFile(
       fakeRunnerPath,
-      ["#!/bin/sh", "trap 'exit 0' TERM", "cat >/dev/null", "while :; do sleep 1; done"].join("\n"),
+      ["#!/bin/sh", "trap 'exit 143' TERM", "cat >/dev/null", "while :; do sleep 1; done"].join(
+        "\n",
+      ),
       "utf8",
     );
     await chmod(fakeRunnerPath, 0o755);

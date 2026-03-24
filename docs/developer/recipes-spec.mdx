@@ -210,6 +210,17 @@ Required scenario definition support:
 `task run` is the runner-neutral task entrypoint. It materializes bundle artifacts for an existing task and
 either prints invocation metadata (`--dry-run`) or executes the configured runner adapter.
 
+`task run --dry-run` and `task run show` should be treated as the primary user-facing inspection
+surface for adapter enforcement. The raw JSON blocks remain canonical, but the compact
+`capability[...]` and `policy_field[...]` lines are the intended human-readable projection.
+
+For the `custom` adapter, these lines must make wrapper mode visible without source inspection:
+
+- `capability[sandbox]` shows whether sandbox is `advisory` or `wrapper`
+- the note must identify the configured `runner.custom.enforcement.mode`
+- supported sandbox values must be shown when wrapper mode is active
+- `policy_field[sandbox]` shows whether a scenario-backed run actually exercised that capability
+
 `task run` and `scenario execute` share the same projection rule: runner completion may update task-facing
 state, but only through the sanitized runner outcome layer, never by copying assistant prose from raw trace
 artifacts into task README sections.
