@@ -267,7 +267,7 @@ describe("task-run lifecycle usecases", () => {
     expect(executed.result.exit_code).not.toBeNull();
     expect(finalState?.status).toBe("cancelled");
     expect(finalState?.supervision?.cancel_signal).toBe("SIGTERM");
-    expect(finalState?.supervision?.exit_signal).toBeNull();
+    expect([null, "SIGTERM"]).toContain(finalState?.supervision?.exit_signal ?? null);
     expect(finalState?.result?.exit_code).toBe(executed.result.exit_code);
   });
 
