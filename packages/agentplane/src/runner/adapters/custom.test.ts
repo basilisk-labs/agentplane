@@ -215,7 +215,6 @@ describe("CustomRunnerAdapter", () => {
         mode: "analysis",
         sandbox: "workspace-write",
         writes_artifacts_to: ["logs/", "reports/"],
-        expected_exit_contract: "report",
       },
     };
 
@@ -227,14 +226,12 @@ describe("CustomRunnerAdapter", () => {
       AGENTPLANE_SCENARIO_ID: "RECIPE_SCENARIO",
       AGENTPLANE_RECIPE_MODE: "analysis",
       AGENTPLANE_RECIPE_SANDBOX: "workspace-write",
-      AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT: "report",
       AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO: JSON.stringify(["logs/", "reports/"]),
     });
     expect(JSON.parse(invocation.env.AGENTPLANE_RECIPE_RUN_PROFILE ?? "{}")).toMatchObject({
       mode: "analysis",
       sandbox: "workspace-write",
       writes_artifacts_to: ["logs/", "reports/"],
-      expected_exit_contract: "report",
     });
   });
 

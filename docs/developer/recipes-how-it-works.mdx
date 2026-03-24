@@ -55,6 +55,10 @@ Recipe `run_profile` also no longer exposes `requires_human_approval` in the mai
 contract. The field was removed after a live Codex probe showed that non-interactive approval modes
 do not provide a trustworthy barrier. If an external recipe catalog still shows the legacy field,
 that is catalog lag, not active runner support.
+Recipe `run_profile.expected_exit_contract` is treated the same way: the main-repo runtime no longer
+projects it into resolver output or runner env because current values are scenario-specific labels,
+not a deterministic shared contract. Legacy manifest fields may remain in external recipe sources,
+but they are ignored by the active runner surface.
 `run_profile.writes_artifacts_to` is now a partial enforcement contract: the adapter still receives
 the declared prefixes through env, and after execution the shared runner rejects external
 `result.json` manifest paths outside those prefixes. The check only applies to recipe-controlled

@@ -4,7 +4,6 @@ export type RecipeRunProfileMetadata = {
   mode?: string;
   sandbox?: string;
   writes_artifacts_to?: string[];
-  expected_exit_contract?: string;
 };
 
 function normalizeOptionalString(value: unknown): string | undefined {
@@ -43,7 +42,6 @@ export function readRecipeRunProfile(
     mode: normalizeOptionalString(candidate.mode),
     sandbox: normalizeOptionalString(candidate.sandbox),
     writes_artifacts_to: normalizeStringList(candidate.writes_artifacts_to),
-    expected_exit_contract: normalizeOptionalString(candidate.expected_exit_contract),
   };
 }
 
@@ -61,7 +59,6 @@ export function buildRecipeRunnerEnv(
 
   setStringEnv(env, "AGENTPLANE_RECIPE_MODE", profile.mode);
   setStringEnv(env, "AGENTPLANE_RECIPE_SANDBOX", profile.sandbox);
-  setStringEnv(env, "AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT", profile.expected_exit_contract);
   setJsonEnv(env, "AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO", profile.writes_artifacts_to);
   setJsonEnv(env, "AGENTPLANE_RECIPE_RUN_PROFILE", profile as Record<string, unknown>);
   return env;

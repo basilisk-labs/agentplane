@@ -173,7 +173,6 @@ describe("CodexRunnerAdapter", () => {
         mode: "analysis",
         sandbox: "read-only",
         writes_artifacts_to: ["reports", "logs"],
-        expected_exit_contract: "exit_zero",
       },
     };
 
@@ -196,7 +195,6 @@ describe("CodexRunnerAdapter", () => {
     expect(invocation.env).toMatchObject({
       AGENTPLANE_RECIPE_MODE: "analysis",
       AGENTPLANE_RECIPE_SANDBOX: "read-only",
-      AGENTPLANE_RECIPE_EXPECTED_EXIT_CONTRACT: "exit_zero",
       AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO: JSON.stringify(["reports", "logs"]),
     });
   });

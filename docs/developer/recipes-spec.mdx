@@ -177,6 +177,9 @@ Codex probe showed that non-interactive approval modes remain permissive, so the
 from runtime execution surfaces instead of being documented as a fake enforcement guarantee. External
 catalog projections may still show the legacy field until the `agentplane-recipes` submodule is
 synced separately.
+The same rule now applies to `run_profile.expected_exit_contract`: manifests may still carry the
+legacy string for external catalog compatibility, but the main-repo runtime no longer resolves or
+exports it because current values are recipe-specific labels without deterministic shared semantics.
 `run_profile.writes_artifacts_to` remains advisory at invocation time, but the shared runner now
 enforces it post-run against external `result.json` manifest paths only: `artifacts[].path` and
 `evidence.evidence_paths[]` must stay under the declared prefixes or the run fails deterministically.

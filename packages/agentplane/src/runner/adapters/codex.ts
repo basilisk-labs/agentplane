@@ -64,10 +64,6 @@ const CODEX_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
       channel: "env",
       note: "Recipe artifact prefixes are exported through env and enforced post-run against external manifest artifacts and evidence paths.",
     },
-    expected_exit_contract: {
-      level: "advisory",
-      channel: "env",
-    },
   },
 };
 

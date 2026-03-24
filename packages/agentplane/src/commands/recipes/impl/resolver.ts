@@ -179,7 +179,6 @@ export function normalizeResolvedRecipeRunProfile(
     mode: declaredProfile.mode,
     sandbox: declaredProfile.sandbox,
     writes_artifacts_to: dedupeStrings(declaredProfile.writes_artifacts_to ?? []).toSorted(),
-    expected_exit_contract: declaredProfile.expected_exit_contract,
   };
 }
 

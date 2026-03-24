@@ -110,7 +110,6 @@ export type ResolvedRecipeRunProfile = {
   mode: string;
   sandbox?: string;
   writes_artifacts_to: string[];
-  expected_exit_contract?: string;
 };
 
 export type ResolvedRecipeScenario = {
