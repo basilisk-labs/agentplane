@@ -252,6 +252,10 @@ By default, hooks run:
   - bootstrap/init integration paths such as `run-cli.core.init.test.ts`
   - any mixed CLI change that crosses help, runtime, hooks, guard, or broader infra-sensitive boundaries
 
+  The live Codex runner smoke harness stays outside this mandatory local path. Run it manually with
+  `bun run runner:codex:smoke -- --live` when you need an on-demand end-to-end probe against the
+  current repo-local binary; neither `ci:local:fast` nor the default `pre-push` hook should invoke it.
+
   Set `AGENTPLANE_HOOKS_FULL=1` to force `bun run ci:local:full`, which adds docs-site, workflows lint, platform-critical Windows tests, and the significant-file coverage guard. For release-tag pushes (or when `AGENTPLANE_HOOKS_RELEASE=1`/`AGENTPLANE_HOOKS_FULL=1`), it additionally runs release notes validation and `bun run release:prepublish`.
 
 `commit-msg` stale-dist guard is path-aware: it is enforced for staged `packages/agentplane/src/**`, `packages/core/src/**`, and `packages/agentplane/bin/agentplane.js` changes; docs-only/config-only commits skip this guard.

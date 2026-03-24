@@ -1,7 +1,13 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { describe, expect, it } from "vitest";
 
 import { classifyCodexSmokeRun } from "./codex-smoke.js";
 import type { RunnerRunState } from "./types.js";
+
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../..");
 
 function makeState(
   overrides: Partial<RunnerRunState> & { status: RunnerRunState["status"] },
@@ -109,5 +115,30 @@ describe("classifyCodexSmokeRun", () => {
     );
 
     expect(classification.outcome).toBe("runner_failure");
+  });
+
+  it("keeps live smoke opt-in outside mandatory local fast CI", async () => {
+    const packageJson = JSON.parse(
+      await readFile(path.join(REPO_ROOT, "package.json"), "utf8"),
+    ) as {
+      scripts?: Record<string, string>;
+    };
+    const localCiScript = await readFile(
+      path.join(REPO_ROOT, "scripts", "run-local-ci.mjs"),
+      "utf8",
+    );
+    const prePushHook = await readFile(
+      path.join(REPO_ROOT, "scripts", "run-pre-push-hook.mjs"),
+      "utf8",
+    );
+
+    expect(packageJson.scripts?.["runner:codex:smoke"]).toBe(
+      "bun scripts/run-runner-codex-smoke.mjs",
+    );
+    expect(packageJson.scripts?.["ci:local"] ?? "").not.toContain("runner:codex:smoke");
+    expect(packageJson.scripts?.["ci:local:fast"] ?? "").not.toContain("runner:codex:smoke");
+    expect(packageJson.scripts?.["ci:local:full"] ?? "").not.toContain("runner:codex:smoke");
+    expect(localCiScript).not.toContain("runner:codex:smoke");
+    expect(prePushHook).not.toContain("runner:codex:smoke");
   });
 });
