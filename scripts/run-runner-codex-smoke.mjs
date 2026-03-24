@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, readdir, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
@@ -14,7 +14,7 @@ const REPO_AGENTPLANE_BIN = path.join(REPO_ROOT, "packages", "agentplane", "bin"
 function usage() {
   console.log(
     [
-      "Usage: bun scripts/run-runner-codex-smoke.mjs (--live | --fixture-outcome <outcome>) [--keep-workspace]",
+      "Usage: bun scripts/run-runner-codex-smoke.mjs (--live | --live-custom-wrapper | --fixture-outcome <outcome>) [--keep-workspace]",
       "",
       "Outcomes: success | timeout | policy_refusal | runner_failure",
     ].join("\n"),
@@ -24,6 +24,7 @@ function usage() {
 function parseArgs(argv) {
   const out = {
     live: false,
+    liveCustomWrapper: false,
     keepWorkspace: false,
     fixtureOutcome: null,
   };
@@ -31,6 +32,10 @@ function parseArgs(argv) {
     const arg = argv[i];
     if (arg === "--live") {
       out.live = true;
+      continue;
+    }
+    if (arg === "--live-custom-wrapper") {
+      out.liveCustomWrapper = true;
       continue;
     }
     if (arg === "--keep-workspace") {
@@ -44,9 +49,12 @@ function parseArgs(argv) {
     }
     throw new Error(`Unknown argument: ${arg}`);
   }
-  const selectedModes = Number(out.live) + Number(out.fixtureOutcome !== null);
+  const selectedModes =
+    Number(out.live) + Number(out.liveCustomWrapper) + Number(out.fixtureOutcome !== null);
   if (selectedModes !== 1) {
-    throw new Error("Choose exactly one mode: --live or --fixture-outcome <outcome>.");
+    throw new Error(
+      "Choose exactly one mode: --live, --live-custom-wrapper, or --fixture-outcome <outcome>.",
+    );
   }
   return out;
 }
@@ -83,6 +91,12 @@ async function runAgentplane(args, cwd) {
   return runCommandStrict("node", [REPO_AGENTPLANE_BIN, ...args], cwd);
 }
 
+async function writeSmokeDocFile(root, fileName, lines) {
+  const filePath = path.join(root, fileName);
+  await writeFile(filePath, `${lines.join("\n")}\n`, "utf8");
+  return filePath;
+}
+
 async function initTempRepo() {
   const tempRoot = path.join(REPO_ROOT, ".agentplane", "tmp");
   await mkdir(tempRoot, { recursive: true });
@@ -109,6 +123,57 @@ async function initTempRepo() {
   await runAgentplane(["config", "set", "runner.timeouts.idle_ms", "60000"], root);
   await runAgentplane(["config", "set", "runner.timeouts.terminate_grace_ms", "1000"], root);
   return root;
+}
+
+async function configureCustomWrapperRunner(root) {
+  const runnerScriptPath = path.join(root, "custom-wrapper-smoke-runner.mjs");
+  const runnerScript = [
+    'import { mkdir, readFile, writeFile } from "node:fs/promises";',
+    'import path from "node:path";',
+    "",
+    "const bundlePath = process.env.AGENTPLANE_RUNNER_BUNDLE_PATH;",
+    "const resultPath = process.env.AGENTPLANE_RUNNER_RESULT_PATH;",
+    'if (!bundlePath || !resultPath) throw new Error("Missing runner env paths.");',
+    'const bundle = JSON.parse(await readFile(bundlePath, "utf8"));',
+    "const target = bundle.target ?? {};",
+    'const taskId = bundle.task?.task_id ?? target.task_id ?? (target.kind === "task" ? target.task_id : null);',
+    "const runDir = process.env.AGENTPLANE_RUNNER_RUN_DIR ?? path.dirname(resultPath);",
+    'if (!taskId) throw new Error("Missing task id in runner bundle.");',
+    'const smokeFile = path.join(runDir, "runner-custom-wrapper-smoke-output.md");',
+    "await mkdir(path.dirname(smokeFile), { recursive: true });",
+    String.raw`await writeFile(smokeFile, "# Runner Custom Wrapper Smoke Output\n\nRUNNER_CUSTOM_WRAPPER_SMOKE_OK\n", "utf8");`,
+    "await writeFile(",
+    "  resultPath,",
+    "  JSON.stringify(",
+    "    {",
+    "      schema_version: 1,",
+    '      status: "success",',
+    '      summary: "Custom wrapper smoke completed.",',
+    '      capabilities_used: ["custom.wrapper.smoke"],',
+    '      artifacts: [{ path: smokeFile, label: "smoke-output" }],',
+    "      evidence: {",
+    "        evidence_paths: [smokeFile],",
+    '        verification_candidates: ["Inspect runner-custom-wrapper-smoke-output.md"],',
+    "      },",
+    "    },",
+    "    null,",
+    "    2,",
+    "  ),",
+    '  "utf8",',
+    ");",
+    'console.log("custom wrapper smoke ok");',
+  ].join("\n");
+  await writeFile(runnerScriptPath, runnerScript, "utf8");
+  await runAgentplane(["config", "set", "runner.default_adapter", "custom"], root);
+  await runAgentplane(
+    ["config", "set", "runner.custom.command", JSON.stringify(["node", runnerScriptPath])],
+    root,
+  );
+  await runAgentplane(
+    ["config", "set", "runner.custom.enforcement.mode", "codex_sandbox_full_auto"],
+    root,
+  );
+  return { runnerScriptPath };
 }
 
 function buildFixtureState(outcome) {
@@ -217,6 +282,11 @@ async function createSmokeTask(root) {
   );
   const taskId = taskNew.stdout.trim();
   const smokeFile = `.agentplane/tasks/${taskId}/runner-live-smoke-output.md`;
+  const verifyStepsFile = await writeSmokeDocFile(root, ".runner-live-smoke-verify-steps.md", [
+    `1. Inspect ${smokeFile}. Expected: the file exists and contains RUNNER_LIVE_SMOKE_OK.`,
+    "2. Inspect the latest run-state.json. Expected: the smoke run ends in success, timeout, policy refusal, or runner failure with trace artifacts present.",
+    "3. Inspect git status --short. Expected: only .agentplane workflow files change inside the temp workspace.",
+  ]);
   await runAgentplane(
     [
       "task",
@@ -242,12 +312,8 @@ async function createSmokeTask(root) {
       taskId,
       "--section",
       "Verify Steps",
-      "--text",
-      [
-        `1. Inspect ${smokeFile}. Expected: the file exists and contains RUNNER_LIVE_SMOKE_OK.`,
-        "2. Inspect the latest run-state.json. Expected: the smoke run ends in success, timeout, policy refusal, or runner failure with trace artifacts present.",
-        "3. Inspect git status --short. Expected: only .agentplane workflow files change inside the temp workspace.",
-      ].join("\n"),
+      "--file",
+      verifyStepsFile,
       "--updated-by",
       "ORCHESTRATOR",
     ],
@@ -270,6 +336,124 @@ async function createSmokeTask(root) {
     root,
   );
   return { taskId, smokeFile };
+}
+
+async function installCustomWrapperSmokeRecipe(root) {
+  const recipeId = "custom-wrapper-smoke";
+  const scenarioId = "WRAPPER_SMOKE";
+  const recipeDir = path.join(root, ".agentplane", "recipes", recipeId);
+  const scenarioRelativePath = "scenarios/wrapper-smoke.json";
+  const scenarioPath = path.join(recipeDir, scenarioRelativePath);
+  await mkdir(path.dirname(scenarioPath), { recursive: true });
+  await writeFile(
+    path.join(recipeDir, "manifest.json"),
+    JSON.stringify(
+      {
+        schema_version: "1",
+        id: recipeId,
+        version: "0.0.1",
+        name: "Custom Wrapper Smoke",
+        summary: "Exercise the custom runner through codex sandbox full-auto.",
+        description:
+          "Minimal local recipe used by the live smoke harness for custom wrapper enforcement.",
+        tags: ["runner", "smoke", "custom"],
+        agents: [
+          {
+            id: "RECIPE_AGENT",
+            display_name: "Recipe Agent",
+            role: "executor",
+            summary: "Minimal recipe-local smoke agent.",
+            file: "agents/recipe-agent.json",
+          },
+        ],
+        scenarios: [
+          {
+            id: scenarioId,
+            name: "Wrapper smoke",
+            summary: "Run the custom wrapper smoke scenario.",
+            use_when: ["Validate custom wrapper enforcement."],
+            required_inputs: [],
+            outputs: ["runner-custom-wrapper-smoke-output.md"],
+            permissions: [],
+            artifacts: ["runner-custom-wrapper-smoke-output.md"],
+            agents_involved: ["RECIPE_AGENT"],
+            skills_used: [],
+            tools_used: [],
+            run_profile: {
+              mode: "analysis",
+              sandbox: "workspace-write",
+              expected_exit_contract: "report",
+            },
+            file: scenarioRelativePath,
+          },
+        ],
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+  await mkdir(path.join(recipeDir, "agents"), { recursive: true });
+  await writeFile(
+    path.join(recipeDir, "agents", "recipe-agent.json"),
+    JSON.stringify(
+      {
+        id: "RECIPE_AGENT",
+        display_name: "Recipe Agent",
+        role: "executor",
+        summary: "Minimal recipe-local smoke agent.",
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+  await writeFile(
+    path.join(recipeDir, "installed.json"),
+    JSON.stringify(
+      {
+        schema_version: 1,
+        id: recipeId,
+        version: "0.0.1",
+        source: "project-local-smoke",
+        installed_at: "2026-03-24T00:00:00.000Z",
+        tags: ["runner", "smoke", "custom"],
+        install_mode: "project-local",
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+  await writeFile(
+    scenarioPath,
+    JSON.stringify(
+      {
+        schema_version: "1",
+        id: scenarioId,
+        summary: "Run the custom wrapper smoke scenario.",
+        goal: "Create the run-local custom wrapper smoke output file and report success.",
+        task_template: {
+          title: "Runner live custom wrapper smoke task",
+          description: "Tiny custom-adapter runner smoke harness task under codex sandbox wrapper",
+          owner: "CODER",
+          priority: "med",
+          tags: ["code", "runner", "custom", "smoke"],
+          doc: {
+            verify_steps:
+              "1. Inspect the run-local smoke output file.\n2. Inspect run-state/result/trace artifacts.\n3. Confirm the run ends in success.",
+          },
+        },
+        inputs: [],
+        outputs: [{ name: "runner-custom-wrapper-smoke-output.md", type: "file" }],
+        steps: [],
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+  return { recipeId, scenarioId };
 }
 
 async function locateLatestRun(root, taskId) {
@@ -329,6 +513,58 @@ async function runLiveSmoke(opts) {
   }
 }
 
+async function runLiveCustomWrapperSmoke(opts) {
+  const root = await initTempRepo();
+  let retained = opts.keepWorkspace;
+  try {
+    await configureCustomWrapperRunner(root);
+    const { recipeId, scenarioId } = await installCustomWrapperSmokeRecipe(root);
+    const execution = await runCommand(
+      "node",
+      [REPO_AGENTPLANE_BIN, "scenario", "execute", `${recipeId}:${scenarioId}`],
+      root,
+    );
+    const taskId = /^task_id: (.+)$/mu.exec(execution.stdout)?.[1]?.trim();
+    if (!taskId) {
+      throw new Error(`Custom wrapper live smoke did not report a task_id.\n${execution.stdout}`);
+    }
+    const { runId, runDir, state } = await locateLatestRun(root, taskId);
+    const smokeFile = path.join(runDir, "runner-custom-wrapper-smoke-output.md");
+    const classification = classifyCodexSmokeRun(state);
+    if (classification.outcome !== "success") retained = true;
+    const smokeFileText = await readFile(smokeFile, "utf8").catch(() => null);
+    const gitStatus = await runCommandStrict("git", ["status", "--short"], root);
+    const output = {
+      mode: "live_custom_wrapper",
+      workspace: root,
+      workspace_retained: retained,
+      recipe_id: recipeId,
+      scenario_id: scenarioId,
+      task_id: taskId,
+      run_id: runId,
+      run_dir: runDir,
+      run_exit_code: execution.exitCode,
+      smoke_file: smokeFile,
+      smoke_file_present: typeof smokeFileText === "string",
+      smoke_marker_present: smokeFileText?.includes("RUNNER_CUSTOM_WRAPPER_SMOKE_OK") === true,
+      classification,
+      state_path: path.join(runDir, "run-state.json"),
+      trace_path: path.join(runDir, "agent-trace.jsonl"),
+      stderr_path: path.join(runDir, "stderr.log"),
+      result_path: path.join(runDir, "result.json"),
+      git_status: gitStatus.stdout.trim().split(/\r?\n/u).filter(Boolean),
+      stdout_excerpt: execution.stdout.trim().split(/\r?\n/u).slice(-8),
+      stderr_excerpt: execution.stderr.trim().split(/\r?\n/u).slice(-8),
+    };
+    console.log(JSON.stringify(output, null, 2));
+    return { exitCode: classification.outcome === "success" ? 0 : 1, retained, root };
+  } finally {
+    if (!retained) {
+      await rm(root, { recursive: true, force: true });
+    }
+  }
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.fixtureOutcome) {
@@ -341,6 +577,12 @@ async function main() {
     };
     console.log(JSON.stringify(output, null, 2));
     process.exitCode = classification.outcome === args.fixtureOutcome ? 0 : 1;
+    return;
+  }
+
+  if (args.liveCustomWrapper) {
+    const result = await runLiveCustomWrapperSmoke(args);
+    process.exitCode = result.exitCode;
     return;
   }
 
