@@ -121,6 +121,39 @@ Task-facing projection is stricter than raw trace capture:
 - they must not copy raw assistant prose or arbitrary trace lines from `agent-trace.jsonl` or adapter side artifacts;
 - raw trace artifacts may preserve the original assistant output, including non-English text, for debugging.
 
+## Runner inspection workflow
+
+When a runner execution needs inspection, use the CLI surfaces before opening files directly:
+
+1. `agentplane task run show <task-id> [run-id]`
+   - reads the selected `run-state.json` and `result.json`;
+   - prints lifecycle status, adapter, target, timeout reason, policy decision blocks, metrics, and artifact paths;
+   - if `run-id` is omitted, the latest run is selected.
+2. `agentplane task run tail <task-id> [run-id] --lines 20`
+   - reads the tail of `agent-trace.jsonl`;
+   - use this first when `show` reports `timeout_reason`, because it gives the last raw runner activity without dumping the full trace.
+3. `agentplane task run trace <task-id> [run-id]`
+   - writes the full raw `agent-trace.jsonl` payload unchanged;
+   - use this only when `tail` is insufficient or when you need exact adapter output for debugging.
+
+Interpretation rules:
+
+- `status=success` with `exit_code=0` means the adapter completed and wrote a normalized `result.json`.
+- `timeout_reason=idle` means the runner saw no new trace activity within the configured idle budget.
+- `timeout_reason=wall_clock` means the total execution exceeded the configured wall-clock budget.
+- `policy_refusal` in `task run show` means the run was rejected before spawn because the declared policy could not be enforced by the selected adapter.
+- raw trace and side artifacts remain debugging inputs only; task README summaries and runner history stay English-only and must not quote assistant prose.
+
+For live regression checks inside the framework checkout, the repository now ships an opt-in smoke harness:
+
+```bash
+bun run runner:codex:smoke -- --live
+```
+
+It creates a tiny temp task under `.agentplane/tmp/`, runs the shared runner through the current
+repo-local binary, and classifies the outcome as `success`, `timeout`, `policy_refusal`, or
+`runner_failure`.
+
 ## Resolver contract
 
 A deterministic resolver builds runtime context from:

@@ -109,6 +109,9 @@ agentplane task show <task-id>
 agentplane task new --title "..." --description "..." --priority med --owner CODER --tag nodejs
 agentplane task run <task-id> --dry-run
 agentplane task run <task-id>
+agentplane task run show <task-id> [run-id]
+agentplane task run tail <task-id> [run-id] --lines 20
+agentplane task run trace <task-id> [run-id]
 agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
@@ -116,10 +119,19 @@ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 `task run` and `scenario execute` both create run artifacts under
 `.agentplane/tasks/<task-id>/runs/<run-id>/`.
 
+- Start with `task run show`: it prints the selected run, status, adapter, effective policy,
+  refusal metadata, timeout reason, metrics, and artifact paths from `run-state.json` /
+  `result.json`.
+- Use `task run tail` when you only need the last N raw trace lines from `agent-trace.jsonl`.
+- Use `task run trace` when you need the full raw trace artifact unchanged. When `run-id` is
+  omitted, `show`, `tail`, and `trace` all select the latest run for the task.
 - Use `agent-trace.jsonl` and `stderr.log` when you need the raw runner trace.
 - Use `codex-last-message.md` only as a side artifact for human inspection when the adapter writes it.
 - Task-facing runner logs stay compact and English-only: they expose status, metrics, and artifact paths, but
   they do not copy assistant prose from raw trace artifacts back into the task README.
+- If `task run show` reports `timeout_reason`, inspect `task run tail` first to see the last raw activity
+  before the timeout. If it reports `policy_refusal`, inspect `policy_requested`, `policy_effective`,
+  and `policy_fields` before changing recipe or runner settings.
 
 ## Task export (optional)
 
