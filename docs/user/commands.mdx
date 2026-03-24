@@ -113,6 +113,14 @@ agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
 
+`task run` and `scenario execute` both create run artifacts under
+`.agentplane/tasks/<task-id>/runs/<run-id>/`.
+
+- Use `agent-trace.jsonl` and `stderr.log` when you need the raw runner trace.
+- Use `codex-last-message.md` only as a side artifact for human inspection when the adapter writes it.
+- Task-facing runner logs stay compact and English-only: they expose status, metrics, and artifact paths, but
+  they do not copy assistant prose from raw trace artifacts back into the task README.
+
 ## Task export (optional)
 
 Export an integration snapshot (typically `.agentplane/tasks.json`):

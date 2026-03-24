@@ -102,8 +102,24 @@ Project-local install/runtime state:
 - `.agentplane/tasks/<task-id>/runs/<run-id>/bootstrap.md`
 - `.agentplane/tasks/<task-id>/runs/<run-id>/run-state.json`
 - `.agentplane/tasks/<task-id>/runs/<run-id>/events.jsonl`
+- `.agentplane/tasks/<task-id>/runs/<run-id>/result.json`
+- `.agentplane/tasks/<task-id>/runs/<run-id>/agent-trace.jsonl`
+- `.agentplane/tasks/<task-id>/runs/<run-id>/stderr.log`
+- `.agentplane/tasks/<task-id>/runs/<run-id>/codex-last-message.md` when the selected adapter emits a side artifact for the final assistant message
 
 `AGENTPLANE_HOME` can override the global storage root.
+
+Runner artifacts are layered deliberately:
+
+- `bundle.json`, `bootstrap.md`, `run-state.json`, `events.jsonl`, and `result.json` are control artifacts.
+- `agent-trace.jsonl` and `stderr.log` are raw debugging artifacts.
+- adapter-specific side artifacts such as `codex-last-message.md` are human-inspection aids, not task-state inputs.
+
+Task-facing projection is stricter than raw trace capture:
+
+- task README runner blocks and persisted runner history may expose status, metrics, artifact paths, and fixed English summaries;
+- they must not copy raw assistant prose or arbitrary trace lines from `agent-trace.jsonl` or adapter side artifacts;
+- raw trace artifacts may preserve the original assistant output, including non-English text, for debugging.
 
 ## Resolver contract
 
@@ -155,6 +171,10 @@ Required scenario definition support:
 
 `task run` is the runner-neutral task entrypoint. It materializes bundle artifacts for an existing task and
 either prints invocation metadata (`--dry-run`) or executes the configured runner adapter.
+
+`task run` and `scenario execute` share the same projection rule: runner completion may update task-facing
+state, but only through the sanitized runner outcome layer, never by copying assistant prose from raw trace
+artifacts into task README sections.
 
 Scenario definitions can declare evidence requirements:
 
