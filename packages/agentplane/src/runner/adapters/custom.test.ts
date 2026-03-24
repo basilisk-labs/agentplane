@@ -46,6 +46,11 @@ function makeBundle(): RunnerContextBundle {
       adapter_id: "custom",
       mode: "dry_run",
       run_id: "run-789",
+      timeout_policy: {
+        wall_clock_ms: 900_000,
+        idle_ms: 180_000,
+        terminate_grace_ms: 1500,
+      },
       trace_policy: {
         mode: "raw",
         max_tail_bytes: 65_536,
@@ -131,6 +136,11 @@ describe("CustomRunnerAdapter", () => {
       mode: "raw",
       max_tail_bytes: 65_536,
       capture_stderr: true,
+    });
+    expect(invocation.timeout_policy).toEqual({
+      wall_clock_ms: 900_000,
+      idle_ms: 180_000,
+      terminate_grace_ms: 1500,
     });
   });
 

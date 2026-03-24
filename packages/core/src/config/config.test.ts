@@ -122,6 +122,11 @@ describe("config", () => {
       max_tail_bytes: 65_536,
       capture_stderr: true,
     });
+    expect(cfg.runner.timeouts).toEqual({
+      wall_clock_ms: 900_000,
+      idle_ms: 180_000,
+      terminate_grace_ms: 1500,
+    });
   });
 
   it("default task README contract uses the active v3 sections", () => {
@@ -295,6 +300,34 @@ describe("config", () => {
             (raw.runner as Record<string, unknown>).trace as Record<string, unknown>
           ).capture_stderr = "nope"),
         schemaPath("runner.trace.capture_stderr"),
+      ],
+      [
+        "runner.timeouts",
+        (raw) => ((raw.runner as Record<string, unknown>).timeouts = "nope"),
+        schemaPath("runner.timeouts"),
+      ],
+      [
+        "runner.timeouts.wall_clock_ms",
+        (raw) =>
+          ((
+            (raw.runner as Record<string, unknown>).timeouts as Record<string, unknown>
+          ).wall_clock_ms = -1),
+        schemaPath("runner.timeouts.wall_clock_ms"),
+      ],
+      [
+        "runner.timeouts.idle_ms",
+        (raw) =>
+          (((raw.runner as Record<string, unknown>).timeouts as Record<string, unknown>).idle_ms =
+            -1),
+        schemaPath("runner.timeouts.idle_ms"),
+      ],
+      [
+        "runner.timeouts.terminate_grace_ms",
+        (raw) =>
+          ((
+            (raw.runner as Record<string, unknown>).timeouts as Record<string, unknown>
+          ).terminate_grace_ms = -1),
+        schemaPath("runner.timeouts.terminate_grace_ms"),
       ],
       ["execution", (raw) => (raw.execution = "nope"), /execution must be object/],
       [

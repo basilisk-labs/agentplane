@@ -1,4 +1,9 @@
-import type { AgentplaneConfig, RunnerAdapterId, RunnerTraceConfig } from "@agentplaneorg/core";
+import type {
+  AgentplaneConfig,
+  RunnerAdapterId,
+  RunnerTimeoutConfig,
+  RunnerTraceConfig,
+} from "@agentplaneorg/core";
 
 export const KNOWN_RUNNER_ADAPTER_IDS: RunnerAdapterId[] = ["codex", "custom"];
 
@@ -10,4 +15,10 @@ export function resolveRunnerTracePolicy(
   config: Pick<AgentplaneConfig, "runner">,
 ): RunnerTraceConfig {
   return config.runner.trace;
+}
+
+export function resolveRunnerTimeoutPolicy(
+  config: Pick<AgentplaneConfig, "runner">,
+): RunnerTimeoutConfig {
+  return config.runner.timeouts;
 }

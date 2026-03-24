@@ -12,6 +12,7 @@ import type {
   RunnerProcessSignal,
   RunnerRunState,
   RunnerSupervisionState,
+  RunnerTimeoutReason,
 } from "./types.js";
 import { createRunnerTraceEvent, serializeRunnerTraceEvent } from "./trace.js";
 
@@ -35,6 +36,10 @@ export type SupervisedProcessResult = {
   ended_at: string;
   cancel_requested_at: string | null;
   cancel_signal: RunnerProcessSignal | null;
+  timeout_reason: RunnerTimeoutReason | null;
+  timeout_requested_at: string | null;
+  terminate_sent_at: string | null;
+  kill_sent_at: string | null;
   force_killed: boolean;
   heartbeat_at: string;
 };
@@ -75,6 +80,7 @@ function buildInvocationEventData(
     has_stderr_path:
       typeof invocation.stderr_path === "string" && invocation.stderr_path.trim().length > 0,
     trace_policy: invocation.trace_policy,
+    timeout_policy: invocation.timeout_policy,
     pid,
   };
 }
@@ -168,11 +174,19 @@ export async function runSupervisedProcess(opts: {
     let trace_seq = 0;
     let settled = false;
     const tracePolicy = opts.invocation.trace_policy;
+    const timeoutPolicy = opts.invocation.timeout_policy;
     const traceMode = tracePolicy.mode;
     const captureStderr = tracePolicy.capture_stderr;
     const maxTailBytes = tracePolicy.max_tail_bytes;
+    let timeoutReason: RunnerTimeoutReason | null = null;
+    let timeoutRequestedAt: string | null = null;
+    let terminateSentAt: string | null = null;
+    let killSentAt: string | null = null;
     let traceWriteChain = Promise.resolve();
     let stderrWriteChain = Promise.resolve();
+    let idleTimer: NodeJS.Timeout | null = null;
+    let wallTimer: NodeJS.Timeout | null = null;
+    let killTimer: NodeJS.Timeout | null = null;
 
     const queueAppend = (kind: "trace" | "stderr", text: string) => {
       if (kind === "trace" && traceMode !== "raw") return;
@@ -212,6 +226,132 @@ export async function runSupervisedProcess(opts: {
       return remainder;
     };
 
+    const clearTimers = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      if (wallTimer) clearTimeout(wallTimer);
+      if (killTimer) clearTimeout(killTimer);
+      idleTimer = null;
+      wallTimer = null;
+      killTimer = null;
+    };
+
+    const patchRunningSupervision = async (patch: Partial<RunnerSupervisionState>) => {
+      const currentState = await readRunnerRunState(opts.invocation.state_path);
+      if (!currentState) return;
+      await writeRunnerRunState({
+        state_path: opts.invocation.state_path,
+        state: evolveRunnerRunState({
+          state: currentState,
+          status: currentState.status,
+          updated_at: new Date().toISOString(),
+          supervision: mergeSupervisionState(currentState.supervision, patch),
+        }),
+      });
+    };
+
+    const requestTimeout = (reason: RunnerTimeoutReason) => {
+      if (settled || timeoutReason) return;
+      timeoutReason = reason;
+      timeoutRequestedAt = new Date().toISOString();
+      terminateSentAt = timeoutRequestedAt;
+      void patchRunningSupervision({
+        timeout_reason: reason,
+        timeout_requested_at: timeoutRequestedAt,
+        terminate_sent_at: terminateSentAt,
+        heartbeat_at: timeoutRequestedAt,
+      }).catch(finishWithError);
+      void appendRunnerEvent({
+        events_path: opts.invocation.events_path,
+        event: {
+          at: timeoutRequestedAt,
+          type: "runner_timeout_requested",
+          message: `runner timeout requested (${reason})`,
+          data: {
+            reason,
+            pid,
+            timeout_policy: timeoutPolicy,
+          },
+        },
+      }).catch(finishWithError);
+      if (pid && isProcessAlive(pid)) {
+        try {
+          process.kill(pid, "SIGTERM");
+        } catch (err) {
+          const code = (err as NodeJS.ErrnoException | null)?.code;
+          if (code !== "ESRCH") {
+            finishWithError(err);
+            return;
+          }
+        }
+      }
+      const graceMs = timeoutPolicy.terminate_grace_ms;
+      if (graceMs <= 0) {
+        killSentAt = new Date().toISOString();
+        void patchRunningSupervision({
+          timeout_reason: reason,
+          timeout_requested_at: timeoutRequestedAt,
+          terminate_sent_at: terminateSentAt,
+          kill_sent_at: killSentAt,
+          force_killed: true,
+          heartbeat_at: killSentAt,
+        }).catch(finishWithError);
+        if (pid && isProcessAlive(pid)) {
+          try {
+            process.kill(pid, "SIGKILL");
+          } catch (err) {
+            const code = (err as NodeJS.ErrnoException | null)?.code;
+            if (code !== "ESRCH") {
+              finishWithError(err);
+            }
+          }
+        }
+        return;
+      }
+      killTimer = setTimeout(() => {
+        if (settled || !timeoutReason) return;
+        killSentAt = new Date().toISOString();
+        void patchRunningSupervision({
+          timeout_reason: timeoutReason,
+          timeout_requested_at: timeoutRequestedAt,
+          terminate_sent_at: terminateSentAt,
+          kill_sent_at: killSentAt,
+          force_killed: true,
+          heartbeat_at: killSentAt,
+        }).catch(finishWithError);
+        void appendRunnerEvent({
+          events_path: opts.invocation.events_path,
+          event: {
+            at: killSentAt,
+            type: "runner_timeout_force_kill",
+            message: `runner force-killed after timeout (${timeoutReason})`,
+            data: {
+              reason: timeoutReason,
+              pid,
+              timeout_policy: timeoutPolicy,
+            },
+          },
+        }).catch(finishWithError);
+        if (pid && isProcessAlive(pid)) {
+          try {
+            process.kill(pid, "SIGKILL");
+          } catch (err) {
+            const code = (err as NodeJS.ErrnoException | null)?.code;
+            if (code !== "ESRCH") {
+              finishWithError(err);
+            }
+          }
+        }
+      }, graceMs);
+    };
+
+    const resetIdleTimer = () => {
+      if (timeoutPolicy.idle_ms <= 0 || settled || timeoutReason) return;
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        requestTimeout("idle");
+      }, timeoutPolicy.idle_ms);
+    };
+
     const updateRunningState = async () => {
       const initialState = await readRunnerRunState(opts.invocation.state_path);
       if (!initialState) return;
@@ -221,6 +361,7 @@ export async function runSupervisedProcess(opts: {
         started_at,
         heartbeat_at,
         exit_signal: null,
+        timeout_reason: null,
       });
       await writeRunnerRunState({
         state_path: opts.invocation.state_path,
@@ -244,6 +385,7 @@ export async function runSupervisedProcess(opts: {
 
     const finishWithError = (err: unknown) => {
       if (settled) return;
+      clearTimers();
       settled = true;
       reject(err instanceof Error ? err : new Error(String(err)));
     };
@@ -262,6 +404,7 @@ export async function runSupervisedProcess(opts: {
     child.stdout.on("data", (chunk: Buffer | string) => {
       const text = chunk.toString();
       heartbeat_at = new Date().toISOString();
+      resetIdleTimer();
       stdout_bytes += Buffer.byteLength(text, "utf8");
       stdout_tail = appendTail(stdout_tail, text, maxTailBytes);
       stdout_buffer = flushTraceBuffer(`${stdout_buffer}${text}`, "stdout");
@@ -269,6 +412,7 @@ export async function runSupervisedProcess(opts: {
     child.stderr.on("data", (chunk: Buffer | string) => {
       const text = chunk.toString();
       heartbeat_at = new Date().toISOString();
+      resetIdleTimer();
       stderr_bytes += Buffer.byteLength(text, "utf8");
       stderr_tail = appendTail(stderr_tail, text, maxTailBytes);
       stderr_buffer = flushTraceBuffer(`${stderr_buffer}${text}`, "stderr");
@@ -277,6 +421,7 @@ export async function runSupervisedProcess(opts: {
     child.on("error", finishWithError);
     child.on("close", async (code, signal) => {
       if (settled) return;
+      clearTimers();
       const ended_at = new Date().toISOString();
       if (stdout_buffer) {
         writeTraceLine("stdout", stdout_buffer);
@@ -301,10 +446,20 @@ export async function runSupervisedProcess(opts: {
         ended_at,
         cancel_requested_at: supervision?.cancel_requested_at ?? null,
         cancel_signal: supervision?.cancel_signal ?? null,
-        force_killed: supervision?.force_killed === true,
+        timeout_reason: supervision?.timeout_reason ?? timeoutReason,
+        timeout_requested_at: supervision?.timeout_requested_at ?? timeoutRequestedAt,
+        terminate_sent_at: supervision?.terminate_sent_at ?? terminateSentAt,
+        kill_sent_at: supervision?.kill_sent_at ?? killSentAt,
+        force_killed: supervision?.force_killed === true || killSentAt !== null,
         heartbeat_at: heartbeat_at || ended_at,
       });
     });
+    if (timeoutPolicy.wall_clock_ms > 0) {
+      wallTimer = setTimeout(() => {
+        requestTimeout("wall_clock");
+      }, timeoutPolicy.wall_clock_ms);
+    }
+    resetIdleTimer();
     child.stdin.end(opts.stdin_text);
   });
 }

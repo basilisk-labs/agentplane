@@ -1,4 +1,9 @@
-import type { RunnerTraceConfig } from "@agentplaneorg/core";
+import type {
+  RunnerTimeoutConfig,
+  RunnerTimeoutReason,
+  RunnerTraceConfig,
+} from "@agentplaneorg/core";
+export type { RunnerTimeoutReason } from "@agentplaneorg/core";
 
 import type { TaskData, TaskEvent } from "../backends/task-backend.js";
 
@@ -85,6 +90,7 @@ export type RunnerArtifactPaths = {
 };
 
 export type RunnerTracePolicy = RunnerTraceConfig;
+export type RunnerTimeoutPolicy = RunnerTimeoutConfig;
 
 export type RunnerCapabilityLevel = "native" | "wrapper" | "advisory" | "unsupported";
 
@@ -108,6 +114,7 @@ export type RunnerExecutionContract = {
   run_id: string;
   artifact_paths: RunnerArtifactPaths;
   trace_policy: RunnerTracePolicy;
+  timeout_policy: RunnerTimeoutPolicy;
   adapter_capabilities?: RunnerAdapterCapabilities;
   approvals?: {
     require_plan?: boolean;
@@ -138,6 +145,7 @@ export type RunnerInvocation = {
   trace_path: string;
   stderr_path: string;
   trace_policy: RunnerTracePolicy;
+  timeout_policy: RunnerTimeoutPolicy;
   bootstrap_path?: string | null;
   output_last_message_path?: string | null;
   argv: string[];
@@ -181,6 +189,10 @@ export type RunnerSupervisionState = {
   heartbeat_at?: string | null;
   cancel_requested_at?: string | null;
   cancel_signal?: RunnerProcessSignal | null;
+  timeout_reason?: RunnerTimeoutReason | null;
+  timeout_requested_at?: string | null;
+  terminate_sent_at?: string | null;
+  kill_sent_at?: string | null;
   force_killed?: boolean;
   exit_signal?: RunnerProcessSignal | null;
 };
@@ -194,6 +206,7 @@ export type RunnerResultManifest = {
   summary?: string;
   stdout_summary?: string;
   stderr_summary?: string;
+  timeout_reason?: RunnerTimeoutReason | null;
   artifacts?: RunnerResultArtifact[];
   findings?: string[];
   verification_hints?: string[];
@@ -209,6 +222,7 @@ export type RunnerResult = {
   summary?: string;
   stdout_summary?: string;
   stderr_summary?: string;
+  timeout_reason?: RunnerTimeoutReason | null;
   output_paths?: string[];
   artifacts?: RunnerResultArtifact[];
   findings?: string[];
@@ -228,6 +242,7 @@ export type RunnerPreparedMetadata = {
   has_task_context: boolean;
   has_recipe_context: boolean;
   trace_policy: RunnerTracePolicy;
+  timeout_policy: RunnerTimeoutPolicy;
   adapter_capabilities?: RunnerAdapterCapabilities;
   invocation: {
     executable: string | null;
@@ -254,6 +269,7 @@ export type RunnerRunState = {
   trace_path: string;
   stderr_path: string;
   trace_policy: RunnerTracePolicy;
+  timeout_policy: RunnerTimeoutPolicy;
   created_at: string;
   updated_at: string;
   prepared_metadata?: RunnerPreparedMetadata;

@@ -76,6 +76,11 @@ describe("runSupervisedProcess", () => {
         max_tail_bytes: 64 * 1024,
         capture_stderr: true,
       },
+      timeout_policy: {
+        wall_clock_ms: 10_000,
+        idle_ms: 10_000,
+        terminate_grace_ms: 100,
+      },
       bootstrap_path: null,
       output_last_message_path: null,
       argv: [process.execPath, scriptPath],
@@ -148,6 +153,11 @@ describe("runSupervisedProcess", () => {
         max_tail_bytes: 4,
         capture_stderr: false,
       },
+      timeout_policy: {
+        wall_clock_ms: 10_000,
+        idle_ms: 10_000,
+        terminate_grace_ms: 100,
+      },
       bootstrap_path: null,
       output_last_message_path: null,
       argv: [process.execPath, scriptPath],
@@ -165,5 +175,114 @@ describe("runSupervisedProcess", () => {
     expect(result.stderr_tail).toBe("ine\n");
     expect(await readFile(invocation.trace_path, "utf8").catch(() => "")).toBe("");
     expect(await readFile(invocation.stderr_path, "utf8").catch(() => "")).toBe("");
+  });
+
+  it("classifies idle timeouts and records termination timestamps", async () => {
+    tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-idle-"));
+    const runDir = path.join(tempDir, "run");
+    const scriptPath = path.join(tempDir, "runner.mjs");
+    await mkdir(runDir, { recursive: true });
+    await writeFile(
+      scriptPath,
+      ["setTimeout(() => {", String.raw`  process.stdout.write('too late\n');`, "}, 2000);"].join(
+        "\n",
+      ),
+      "utf8",
+    );
+
+    const invocation = {
+      adapter_id: "custom",
+      run_id: "run-idle-timeout",
+      run_dir: runDir,
+      bundle_path: path.join(runDir, "bundle.json"),
+      state_path: path.join(runDir, "run-state.json"),
+      events_path: path.join(runDir, "events.jsonl"),
+      result_path: path.join(runDir, "result.json"),
+      trace_path: path.join(runDir, "agent-trace.jsonl"),
+      stderr_path: path.join(runDir, "stderr.log"),
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 64 * 1024,
+        capture_stderr: true,
+      },
+      timeout_policy: {
+        wall_clock_ms: 5000,
+        idle_ms: 100,
+        terminate_grace_ms: 250,
+      },
+      bootstrap_path: null,
+      output_last_message_path: null,
+      argv: [process.execPath, scriptPath],
+      env: {},
+      dry_run: false,
+    } as const;
+
+    const result = await runSupervisedProcess({
+      invocation,
+      stdin_text: "",
+      start_message: "test runner started",
+    });
+
+    expect(result.timeout_reason).toBe("idle");
+    expect(result.timeout_requested_at).toBeTruthy();
+    expect(result.terminate_sent_at).toBeTruthy();
+    expect(result.kill_sent_at).toBeNull();
+    expect(result.force_killed).toBe(false);
+    expect(result.exit_signal).toBe("SIGTERM");
+  });
+
+  it("classifies wall-clock timeouts and force-kill escalation", async () => {
+    tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-wall-"));
+    const runDir = path.join(tempDir, "run");
+    const scriptPath = path.join(tempDir, "runner.mjs");
+    await mkdir(runDir, { recursive: true });
+    await writeFile(
+      scriptPath,
+      [
+        "process.on('SIGTERM', () => {});",
+        String.raw`setInterval(() => process.stdout.write('tick\n'), 20);`,
+      ].join("\n"),
+      "utf8",
+    );
+
+    const invocation = {
+      adapter_id: "custom",
+      run_id: "run-wall-timeout",
+      run_dir: runDir,
+      bundle_path: path.join(runDir, "bundle.json"),
+      state_path: path.join(runDir, "run-state.json"),
+      events_path: path.join(runDir, "events.jsonl"),
+      result_path: path.join(runDir, "result.json"),
+      trace_path: path.join(runDir, "agent-trace.jsonl"),
+      stderr_path: path.join(runDir, "stderr.log"),
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 64 * 1024,
+        capture_stderr: true,
+      },
+      timeout_policy: {
+        wall_clock_ms: 120,
+        idle_ms: 1000,
+        terminate_grace_ms: 0,
+      },
+      bootstrap_path: null,
+      output_last_message_path: null,
+      argv: [process.execPath, scriptPath],
+      env: {},
+      dry_run: false,
+    } as const;
+
+    const result = await runSupervisedProcess({
+      invocation,
+      stdin_text: "",
+      start_message: "test runner started",
+    });
+
+    expect(result.timeout_reason).toBe("wall_clock");
+    expect(result.timeout_requested_at).toBeTruthy();
+    expect(result.terminate_sent_at).toBeTruthy();
+    expect(result.kill_sent_at).toBeTruthy();
+    expect(result.force_killed).toBe(true);
+    expect(result.exit_signal).toBe("SIGKILL");
   });
 });

@@ -15,6 +15,7 @@ export type ExecutionProfile = "conservative" | "balanced" | "aggressive";
 export type ReasoningEffort = "low" | "medium" | "high";
 export type RunnerAdapterId = "codex" | "custom";
 export type RunnerTraceMode = "raw" | "off";
+export type RunnerTimeoutReason = "idle" | "wall_clock";
 export type RunnerCustomConfig = {
   command: string[];
   env?: Record<string, string>;
@@ -23,6 +24,11 @@ export type RunnerTraceConfig = {
   mode: RunnerTraceMode;
   max_tail_bytes: number;
   capture_stderr: boolean;
+};
+export type RunnerTimeoutConfig = {
+  wall_clock_ms: number;
+  idle_ms: number;
+  terminate_grace_ms: number;
 };
 
 export type AgentplaneConfig = {
@@ -57,6 +63,7 @@ export type AgentplaneConfig = {
   runner: {
     default_adapter: RunnerAdapterId;
     trace: RunnerTraceConfig;
+    timeouts: RunnerTimeoutConfig;
     custom?: RunnerCustomConfig;
   };
   paths: {

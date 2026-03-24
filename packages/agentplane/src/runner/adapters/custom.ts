@@ -73,6 +73,8 @@ function buildInvocationEventData(invocation: RunnerInvocation): Record<string, 
     argv_count: invocation.argv.length,
     cwd: invocation.run_dir,
     env_keys: Object.keys(invocation.env).toSorted(),
+    trace_policy: invocation.trace_policy,
+    timeout_policy: invocation.timeout_policy,
     has_bootstrap_path:
       typeof invocation.bootstrap_path === "string" && invocation.bootstrap_path.trim().length > 0,
   };
@@ -216,6 +218,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
       trace_path: execution.artifact_paths.trace_path,
       stderr_path: execution.artifact_paths.stderr_path,
       trace_policy: execution.trace_policy,
+      timeout_policy: execution.timeout_policy,
       bootstrap_path: execution.artifact_paths.bootstrap_path,
       output_last_message_path: null,
       argv: command,
@@ -261,50 +264,66 @@ export class CustomRunnerAdapter implements RunnerAdapter {
         const output_paths = artifacts.map((artifact) => artifact.path);
         const success = processResult.exit_code === 0;
         const ended_at = processResult.ended_at;
+        const timedOut = processResult.timeout_reason !== null;
         const resultMetrics = {
           duration_ms: durationMs(processResult.started_at, ended_at),
           stdout_bytes: processResult.stdout_bytes,
           stderr_bytes: processResult.stderr_bytes,
         };
-        const baseResult = processResult.cancel_requested_at
-          ? runnerAdapterCancelledResult({
-              reason: processResult.cancel_signal
-                ? `Custom runner cancelled via ${processResult.cancel_signal}.`
-                : "Custom runner cancelled.",
-              summary: "Custom runner execution was cancelled.",
-              stderr_summary:
-                "Cancellation details were recorded in stderr.log and agent-trace.jsonl.",
+        const baseResult = timedOut
+          ? runnerAdapterFailureResult({
+              err: new Error(
+                `Custom runner execution timed out (${processResult.timeout_reason}).`,
+              ),
+              summary: `Custom runner execution timed out (${processResult.timeout_reason}).`,
+              stderr_summary: "Timeout details were captured in stderr.log and agent-trace.jsonl.",
               started_at: processResult.started_at,
               ended_at,
-              exit_code:
-                processResult.exit_code ?? exitCodeForSignal(processResult.exit_signal) ?? null,
+              exit_code: 124,
               output_paths,
               metrics: resultMetrics,
+              timeout_reason: processResult.timeout_reason,
             })
-          : success
-            ? runnerAdapterSuccessResult({
-                summary: "Custom runner execution completed successfully.",
-                started_at: processResult.started_at,
-                ended_at,
-                exit_code: processResult.exit_code ?? 0,
-                stdout_summary: "Raw execution trace was captured in agent-trace.jsonl.",
-                output_paths,
-                metrics: resultMetrics,
-              })
-            : runnerAdapterFailureResult({
-                err: new Error(
-                  `Custom runner exited with code ${processResult.exit_code ?? "unknown"}`,
-                ),
-                summary: "Custom runner execution failed.",
+          : processResult.cancel_requested_at
+            ? runnerAdapterCancelledResult({
+                reason: processResult.cancel_signal
+                  ? `Custom runner cancelled via ${processResult.cancel_signal}.`
+                  : "Custom runner cancelled.",
+                summary: "Custom runner execution was cancelled.",
                 stderr_summary:
-                  "Failure details were captured in stderr.log and agent-trace.jsonl.",
+                  "Cancellation details were recorded in stderr.log and agent-trace.jsonl.",
                 started_at: processResult.started_at,
                 ended_at,
                 exit_code:
-                  processResult.exit_code ?? exitCodeForSignal(processResult.exit_signal) ?? 1,
+                  processResult.exit_code ?? exitCodeForSignal(processResult.exit_signal) ?? null,
                 output_paths,
                 metrics: resultMetrics,
-              });
+              })
+            : success
+              ? runnerAdapterSuccessResult({
+                  summary: "Custom runner execution completed successfully.",
+                  started_at: processResult.started_at,
+                  ended_at,
+                  exit_code: processResult.exit_code ?? 0,
+                  stdout_summary: "Raw execution trace was captured in agent-trace.jsonl.",
+                  output_paths,
+                  metrics: resultMetrics,
+                })
+              : runnerAdapterFailureResult({
+                  err: new Error(
+                    `Custom runner exited with code ${processResult.exit_code ?? "unknown"}`,
+                  ),
+                  summary: "Custom runner execution failed.",
+                  stderr_summary:
+                    "Failure details were captured in stderr.log and agent-trace.jsonl.",
+                  started_at: processResult.started_at,
+                  ended_at,
+                  exit_code:
+                    processResult.exit_code ?? exitCodeForSignal(processResult.exit_signal) ?? 1,
+                  output_paths,
+                  metrics: resultMetrics,
+                  timeout_reason: processResult.timeout_reason,
+                });
         const result = applyCustomRunnerResultManifest({
           base: {
             ...baseResult,
@@ -332,6 +351,11 @@ export class CustomRunnerAdapter implements RunnerAdapter {
                 started_at: processResult.started_at,
                 heartbeat_at: processResult.heartbeat_at,
                 exit_signal: processResult.exit_signal,
+                timeout_reason: processResult.timeout_reason,
+                timeout_requested_at: processResult.timeout_requested_at,
+                terminate_sent_at: processResult.terminate_sent_at,
+                kill_sent_at: processResult.kill_sent_at,
+                force_killed: processResult.force_killed,
               },
             }),
           });
@@ -348,6 +372,10 @@ export class CustomRunnerAdapter implements RunnerAdapter {
               exit_signal: processResult.exit_signal,
               cancel_requested_at: processResult.cancel_requested_at,
               cancel_signal: processResult.cancel_signal,
+              timeout_reason: processResult.timeout_reason,
+              timeout_requested_at: processResult.timeout_requested_at,
+              terminate_sent_at: processResult.terminate_sent_at,
+              kill_sent_at: processResult.kill_sent_at,
               force_killed: processResult.force_killed,
               exit_code: result.exit_code,
               output_paths,

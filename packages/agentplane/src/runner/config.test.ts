@@ -1,7 +1,11 @@
 import { defaultConfig, validateConfig } from "@agentplaneorg/core";
 import { describe, expect, it } from "vitest";
 
-import { resolveRunnerAdapterId, resolveRunnerTracePolicy } from "./config.js";
+import {
+  resolveRunnerAdapterId,
+  resolveRunnerTimeoutPolicy,
+  resolveRunnerTracePolicy,
+} from "./config.js";
 
 describe("runner config", () => {
   it("defaults the selected runner adapter to codex", () => {
@@ -11,6 +15,11 @@ describe("runner config", () => {
       mode: "raw",
       max_tail_bytes: 65_536,
       capture_stderr: true,
+    });
+    expect(resolveRunnerTimeoutPolicy(config)).toEqual({
+      wall_clock_ms: 900_000,
+      idle_ms: 180_000,
+      terminate_grace_ms: 1500,
     });
   });
 
@@ -61,6 +70,31 @@ describe("runner config", () => {
       mode: "off",
       max_tail_bytes: 128,
       capture_stderr: false,
+    });
+  });
+
+  it("reads explicit runner timeout policy from config", () => {
+    const raw = defaultConfig() as unknown as Record<string, unknown>;
+    raw.runner = {
+      default_adapter: "codex",
+      trace: {
+        mode: "raw",
+        max_tail_bytes: 64,
+        capture_stderr: true,
+      },
+      timeouts: {
+        wall_clock_ms: 2000,
+        idle_ms: 250,
+        terminate_grace_ms: 50,
+      },
+    };
+
+    const config = validateConfig(raw);
+
+    expect(resolveRunnerTimeoutPolicy(config)).toEqual({
+      wall_clock_ms: 2000,
+      idle_ms: 250,
+      terminate_grace_ms: 50,
     });
   });
 });

@@ -203,6 +203,11 @@ describe("runCli", () => {
             max_tail_bytes?: number;
             capture_stderr?: boolean;
           };
+          timeout_policy?: {
+            wall_clock_ms?: number;
+            idle_ms?: number;
+            terminate_grace_ms?: number;
+          };
           adapter_capabilities?: { adapter_id: string };
         };
         task: { task_id: string };
@@ -214,6 +219,11 @@ describe("runCli", () => {
         mode: "raw",
         max_tail_bytes: 65_536,
         capture_stderr: true,
+      });
+      expect(bundle.execution.timeout_policy).toEqual({
+        wall_clock_ms: 900_000,
+        idle_ms: 180_000,
+        terminate_grace_ms: 1500,
       });
       expect(bundle.execution.adapter_capabilities?.adapter_id).toBe("codex");
       expect(bundle.task.task_id).toBe(taskId);
@@ -680,6 +690,132 @@ describe("runCli", () => {
       expect(task.body).toContain("result.source.json");
       expect(task.body).toContain("VerificationHint: runner completed successfully");
       expect(task.body).toContain("Capabilities: custom.report");
+    } finally {
+      process.env.PATH = originalPath;
+      io.restore();
+    }
+  });
+
+  it("task run classifies idle timeouts and persists timeout metadata", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = {
+      command: ["custom-runner"],
+    };
+    config.runner.timeouts = {
+      wall_clock_ms: 5000,
+      idle_ms: 150,
+      terminate_grace_ms: 50,
+    };
+    await writeConfig(root, config);
+
+    const fakeBinDir = path.join(root, "bin");
+    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Custom runner timeout task",
+          "--description",
+          "Execution path classifies idle timeout",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeRunnerPath,
+      ["#!/bin/sh", "cat >/dev/null", "while :; do sleep 1; done"].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeRunnerPath, 0o755);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before exercising idle timeout classification in the custom runner CLI test.",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    const originalPath = process.env.PATH;
+    try {
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
+      const code = await runCli(["task", "run", taskId, "--root", root]);
+      expect(code).toBe(124);
+      expect(io.stdout).toContain(`task run executed: ${taskId}`);
+      expect(io.stdout).toContain("adapter: custom");
+      expect(io.stdout).toContain("status: failed");
+      expect(io.stdout).toContain("runner_exit_code: 124");
+      expect(io.stderr).toContain(
+        "stderr: Timeout details were captured in stderr.log and agent-trace.jsonl.",
+      );
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      const runEntries = await readdir(runsRoot);
+      const runDir = path.join(runsRoot, runEntries.toSorted()[0] ?? "");
+      const statePath = path.join(runDir, "run-state.json");
+      const eventsPath = path.join(runDir, "events.jsonl");
+      const state = JSON.parse(await readFile(statePath, "utf8")) as {
+        status: string;
+        supervision?: {
+          timeout_reason?: string | null;
+          timeout_requested_at?: string | null;
+          terminate_sent_at?: string | null;
+          kill_sent_at?: string | null;
+        };
+        result?: {
+          status?: string;
+          exit_code?: number | null;
+          summary?: string;
+          timeout_reason?: string | null;
+        };
+      };
+      expect(state.status).toBe("failed");
+      expect(state.result?.status).toBe("failed");
+      expect(state.result?.exit_code).toBe(124);
+      expect(state.result?.summary).toBe("Custom runner execution timed out (idle).");
+      expect(state.result?.timeout_reason).toBe("idle");
+      expect(state.supervision?.timeout_reason).toBe("idle");
+      expect(state.supervision?.timeout_requested_at).toBeTruthy();
+      expect(state.supervision?.terminate_sent_at).toBeTruthy();
+      expect(state.supervision?.kill_sent_at).toBeNull();
+
+      const events = await readFile(eventsPath, "utf8");
+      expect(events).toContain('"type":"runner_timeout_requested"');
+      expect(events).toContain('"reason":"idle"');
+
+      const task = await readTask({ cwd: root, rootOverride: root, taskId });
+      expect(task.frontmatter.runner).toMatchObject({
+        status: "failed",
+        adapter_id: "custom",
+        exit_code: 124,
+        target: { kind: "task", task_id: taskId },
+      });
+      expect(task.body).toContain("RUNNER — failed");
+      expect(task.body).toContain(
+        "Summary: Custom runner failed; inspect run artifacts for details.",
+      );
     } finally {
       process.env.PATH = originalPath;
       io.restore();

@@ -58,6 +58,11 @@ function makeBundle(): RunnerContextBundle {
       adapter_id: "codex",
       mode: "dry_run",
       run_id: "run-123",
+      timeout_policy: {
+        wall_clock_ms: 900_000,
+        idle_ms: 180_000,
+        terminate_grace_ms: 1500,
+      },
       trace_policy: {
         mode: "raw",
         max_tail_bytes: 65_536,
@@ -118,6 +123,11 @@ describe("CodexRunnerAdapter", () => {
         mode: "raw",
         max_tail_bytes: 65_536,
         capture_stderr: true,
+      },
+      timeout_policy: {
+        wall_clock_ms: 900_000,
+        idle_ms: 180_000,
+        terminate_grace_ms: 1500,
       },
       bootstrap_path: "/repo/.agentplane/tasks/202603231410-ABC123/runs/run-123/bootstrap.md",
       output_last_message_path:

@@ -9,6 +9,7 @@ import type {
   RunnerResultArtifact,
   RunnerResultManifest,
   RunnerResultStatus,
+  RunnerTimeoutReason,
 } from "./types.js";
 
 export const RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 1 as const;
@@ -119,6 +120,10 @@ function normalizeStatus(value: unknown): RunnerResultStatus | undefined {
   return value === "success" || value === "failed" || value === "cancelled" ? value : undefined;
 }
 
+function normalizeTimeoutReason(value: unknown): RunnerTimeoutReason | undefined {
+  return value === "idle" || value === "wall_clock" ? value : undefined;
+}
+
 export async function readRunnerResultManifest(
   resultPath: string,
 ): Promise<RunnerResultManifest | null> {
@@ -187,6 +192,17 @@ export async function readRunnerResultManifest(
         );
       }
       manifest.stderr_summary = raw.stderr_summary.trim();
+    }
+    if (raw.timeout_reason !== undefined) {
+      const timeoutReason = normalizeTimeoutReason(raw.timeout_reason);
+      if (!timeoutReason) {
+        invalidManifest(
+          resultPath,
+          "timeout_reason must be idle or wall_clock when present",
+          rawText,
+        );
+      }
+      manifest.timeout_reason = timeoutReason;
     }
     try {
       manifest.artifacts = normalizeArtifacts(raw.artifacts);
@@ -268,6 +284,7 @@ export function applyRunnerResultManifest(opts: {
     summary: opts.manifest.summary ?? opts.base.summary,
     stdout_summary: opts.manifest.stdout_summary ?? opts.base.stdout_summary,
     stderr_summary: opts.manifest.stderr_summary ?? opts.base.stderr_summary,
+    timeout_reason: opts.manifest.timeout_reason ?? opts.base.timeout_reason,
     artifacts: opts.manifest.artifacts ?? opts.base.artifacts,
     findings: opts.manifest.findings ?? opts.base.findings,
     verification_hints: opts.manifest.verification_hints ?? opts.base.verification_hints,
@@ -291,6 +308,7 @@ export function manifestFromRunnerResult(result: RunnerResult): RunnerResultMani
     summary: result.summary,
     stdout_summary: result.stdout_summary,
     stderr_summary: result.stderr_summary,
+    timeout_reason: result.timeout_reason,
     artifacts:
       result.artifacts ??
       result.output_paths?.map((outputPath) => ({

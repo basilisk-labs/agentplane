@@ -38,6 +38,7 @@ function buildPreparedMetadata(opts: {
     has_task_context: !!opts.bundle.task,
     has_recipe_context: !!opts.bundle.recipe,
     trace_policy: opts.bundle.execution.trace_policy,
+    timeout_policy: opts.bundle.execution.timeout_policy,
     adapter_capabilities: opts.bundle.execution.adapter_capabilities,
     invocation: {
       executable: opts.invocation?.argv[0] ?? null,
@@ -75,6 +76,7 @@ export function createRunnerRunState(opts: {
     trace_path: opts.bundle.execution.artifact_paths.trace_path,
     stderr_path: opts.bundle.execution.artifact_paths.stderr_path,
     trace_policy: opts.bundle.execution.trace_policy,
+    timeout_policy: opts.bundle.execution.timeout_policy,
     created_at,
     updated_at: created_at,
     prepared_metadata: opts.prepared_metadata,
@@ -127,6 +129,7 @@ export async function writePreparedRunnerArtifacts(opts: {
         has_task_context: preparedMetadata.has_task_context,
         has_recipe_context: preparedMetadata.has_recipe_context,
         trace_policy: preparedMetadata.trace_policy,
+        timeout_policy: preparedMetadata.timeout_policy,
         adapter_capabilities: preparedMetadata.adapter_capabilities,
         invocation: preparedMetadata.invocation,
       },

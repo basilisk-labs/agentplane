@@ -82,6 +82,8 @@ function buildInvocationEventData(invocation: RunnerInvocation): Record<string, 
     argv_count: invocation.argv.length,
     cwd: invocation.run_dir,
     env_keys: Object.keys(invocation.env).toSorted(),
+    trace_policy: invocation.trace_policy,
+    timeout_policy: invocation.timeout_policy,
     has_bootstrap_path:
       typeof invocation.bootstrap_path === "string" && invocation.bootstrap_path.trim().length > 0,
     has_output_last_message_path:
@@ -207,6 +209,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
       trace_path: execution.artifact_paths.trace_path,
       stderr_path: execution.artifact_paths.stderr_path,
       trace_policy: execution.trace_policy,
+      timeout_policy: execution.timeout_policy,
       bootstrap_path: execution.artifact_paths.bootstrap_path,
       output_last_message_path: path.join(
         execution.artifact_paths.run_dir,
@@ -254,51 +257,65 @@ export class CodexRunnerAdapter implements RunnerAdapter {
         const output_paths = artifacts.map((artifact) => artifact.path);
         const success = processResult.exit_code === 0;
         const ended_at = processResult.ended_at;
+        const timedOut = processResult.timeout_reason !== null;
         const metrics = {
           duration_ms: durationMs(processResult.started_at, ended_at),
           stdout_bytes: processResult.stdout_bytes,
           stderr_bytes: processResult.stderr_bytes,
           output_last_message_bytes: lastMessage === null ? null : byteLength(lastMessage),
         };
-        const baseResult = processResult.cancel_requested_at
-          ? runnerAdapterCancelledResult({
-              reason: processResult.cancel_signal
-                ? `Codex runner cancelled via ${processResult.cancel_signal}.`
-                : "Codex runner cancelled.",
-              summary: "Codex execution was cancelled.",
-              stderr_summary:
-                "Cancellation details were recorded in stderr.log and agent-trace.jsonl.",
+        const baseResult = timedOut
+          ? runnerAdapterFailureResult({
+              err: new Error(`Codex execution timed out (${processResult.timeout_reason}).`),
+              summary: `Codex execution timed out (${processResult.timeout_reason}).`,
+              stderr_summary: "Timeout details were captured in stderr.log and agent-trace.jsonl.",
               started_at: processResult.started_at,
               ended_at,
-              exit_code:
-                processResult.exit_code ?? exitCodeForSignal(processResult.exit_signal) ?? null,
+              exit_code: 124,
               output_paths,
               metrics,
+              timeout_reason: processResult.timeout_reason,
             })
-          : success
-            ? runnerAdapterSuccessResult({
-                summary: "Codex execution completed successfully.",
-                started_at: processResult.started_at,
-                ended_at,
-                exit_code: processResult.exit_code ?? 0,
-                stdout_summary: lastMessage?.trim()
-                  ? "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl."
-                  : "Raw execution trace was captured in agent-trace.jsonl.",
-                output_paths,
-                metrics,
-              })
-            : runnerAdapterFailureResult({
-                err: new Error(`Codex exited with code ${processResult.exit_code ?? "unknown"}`),
-                summary: "Codex execution failed.",
+          : processResult.cancel_requested_at
+            ? runnerAdapterCancelledResult({
+                reason: processResult.cancel_signal
+                  ? `Codex runner cancelled via ${processResult.cancel_signal}.`
+                  : "Codex runner cancelled.",
+                summary: "Codex execution was cancelled.",
                 stderr_summary:
-                  "Failure details were captured in stderr.log and agent-trace.jsonl.",
+                  "Cancellation details were recorded in stderr.log and agent-trace.jsonl.",
                 started_at: processResult.started_at,
                 ended_at,
                 exit_code:
-                  processResult.exit_code ?? exitCodeForSignal(processResult.exit_signal) ?? 1,
+                  processResult.exit_code ?? exitCodeForSignal(processResult.exit_signal) ?? null,
                 output_paths,
                 metrics,
-              });
+              })
+            : success
+              ? runnerAdapterSuccessResult({
+                  summary: "Codex execution completed successfully.",
+                  started_at: processResult.started_at,
+                  ended_at,
+                  exit_code: processResult.exit_code ?? 0,
+                  stdout_summary: lastMessage?.trim()
+                    ? "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl."
+                    : "Raw execution trace was captured in agent-trace.jsonl.",
+                  output_paths,
+                  metrics,
+                })
+              : runnerAdapterFailureResult({
+                  err: new Error(`Codex exited with code ${processResult.exit_code ?? "unknown"}`),
+                  summary: "Codex execution failed.",
+                  stderr_summary:
+                    "Failure details were captured in stderr.log and agent-trace.jsonl.",
+                  started_at: processResult.started_at,
+                  ended_at,
+                  exit_code:
+                    processResult.exit_code ?? exitCodeForSignal(processResult.exit_signal) ?? 1,
+                  output_paths,
+                  metrics,
+                  timeout_reason: processResult.timeout_reason,
+                });
         const manifest = await readRunnerResultManifest(invocation.result_path);
         const result = applyRunnerResultManifest({
           base: {
@@ -327,6 +344,11 @@ export class CodexRunnerAdapter implements RunnerAdapter {
                 started_at: processResult.started_at,
                 heartbeat_at: processResult.heartbeat_at,
                 exit_signal: processResult.exit_signal,
+                timeout_reason: processResult.timeout_reason,
+                timeout_requested_at: processResult.timeout_requested_at,
+                terminate_sent_at: processResult.terminate_sent_at,
+                kill_sent_at: processResult.kill_sent_at,
+                force_killed: processResult.force_killed,
               },
             }),
           });
@@ -343,6 +365,10 @@ export class CodexRunnerAdapter implements RunnerAdapter {
               exit_signal: processResult.exit_signal,
               cancel_requested_at: processResult.cancel_requested_at,
               cancel_signal: processResult.cancel_signal,
+              timeout_reason: processResult.timeout_reason,
+              timeout_requested_at: processResult.timeout_requested_at,
+              terminate_sent_at: processResult.terminate_sent_at,
+              kill_sent_at: processResult.kill_sent_at,
               force_killed: processResult.force_killed,
               exit_code: result.exit_code,
               output_paths,

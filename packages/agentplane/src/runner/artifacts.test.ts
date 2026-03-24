@@ -63,6 +63,11 @@ describe("runner artifacts", () => {
         adapter_id: "codex",
         mode: "dry_run",
         run_id: "2026-03-23T13-00-00-000Z",
+        timeout_policy: {
+          wall_clock_ms: 900_000,
+          idle_ms: 180_000,
+          terminate_grace_ms: 1500,
+        },
         trace_policy: {
           mode: "raw",
           max_tail_bytes: 65_536,
@@ -96,6 +101,11 @@ describe("runner artifacts", () => {
         max_tail_bytes: 65_536,
         capture_stderr: true,
       },
+      timeout_policy: {
+        wall_clock_ms: 900_000,
+        idle_ms: 180_000,
+        terminate_grace_ms: 1500,
+      },
       bootstrap_path: paths.bootstrap_path,
       output_last_message_path: path.join(paths.run_dir, "codex-last-message.md"),
       argv: ["codex", "exec", "-"],
@@ -125,6 +135,11 @@ describe("runner artifacts", () => {
         mode: "raw",
         max_tail_bytes: 65_536,
         capture_stderr: true,
+      },
+      timeout_policy: {
+        wall_clock_ms: 900_000,
+        idle_ms: 180_000,
+        terminate_grace_ms: 1500,
       },
       adapter_capabilities: {
         adapter_id: "codex",
@@ -162,6 +177,11 @@ describe("runner artifacts", () => {
           max_tail_bytes: number;
           capture_stderr: boolean;
         };
+        timeout_policy?: {
+          wall_clock_ms: number;
+          idle_ms: number;
+          terminate_grace_ms: number;
+        };
         adapter_capabilities?: {
           adapter_id: string;
         };
@@ -178,6 +198,11 @@ describe("runner artifacts", () => {
       mode: "raw",
       max_tail_bytes: 65_536,
       capture_stderr: true,
+    });
+    expect(writtenState.prepared_metadata?.timeout_policy).toEqual({
+      wall_clock_ms: 900_000,
+      idle_ms: 180_000,
+      terminate_grace_ms: 1500,
     });
     expect(writtenState.prepared_metadata?.adapter_capabilities?.adapter_id).toBe("codex");
 

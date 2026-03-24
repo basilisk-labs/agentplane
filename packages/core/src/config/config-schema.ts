@@ -164,13 +164,18 @@ const AGENTPLANE_CONFIG_SCHEMA_JSON = String.raw`{
     "runner": {
       "type": "object",
       "additionalProperties": true,
-      "required": ["default_adapter", "trace"],
+      "required": ["default_adapter", "trace", "timeouts"],
       "default": {
         "default_adapter": "codex",
         "trace": {
           "mode": "raw",
           "max_tail_bytes": 65536,
           "capture_stderr": true
+        },
+        "timeouts": {
+          "wall_clock_ms": 900000,
+          "idle_ms": 180000,
+          "terminate_grace_ms": 1500
         }
       },
       "properties": {
@@ -202,6 +207,33 @@ const AGENTPLANE_CONFIG_SCHEMA_JSON = String.raw`{
             "capture_stderr": {
               "type": "boolean",
               "default": true
+            }
+          }
+        },
+        "timeouts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["wall_clock_ms", "idle_ms", "terminate_grace_ms"],
+          "default": {
+            "wall_clock_ms": 900000,
+            "idle_ms": 180000,
+            "terminate_grace_ms": 1500
+          },
+          "properties": {
+            "wall_clock_ms": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 900000
+            },
+            "idle_ms": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 180000
+            },
+            "terminate_grace_ms": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 1500
             }
           }
         },

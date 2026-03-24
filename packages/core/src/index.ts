@@ -19,6 +19,8 @@ export {
   type ReasoningEffort,
   type RunnerAdapterId,
   type RunnerCustomConfig,
+  type RunnerTimeoutConfig,
+  type RunnerTimeoutReason,
   type RunnerTraceConfig,
   type RunnerTraceMode,
   type StatusCommitPolicy,

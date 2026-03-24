@@ -7,6 +7,7 @@ import type {
   RunnerInvocation,
   RunnerResultArtifact,
   RunnerResult,
+  RunnerTimeoutReason,
 } from "../types.js";
 
 function nowIso(): string {
@@ -28,6 +29,7 @@ export function runnerAdapterSuccessResult(opts: {
   stdout_summary: string;
   output_paths?: string[];
   metrics?: RunnerExecutionMetrics;
+  timeout_reason?: RunnerTimeoutReason | null;
 }): RunnerResult {
   const started_at = opts.started_at ?? nowIso();
   const ended_at = opts.ended_at ?? nowIso();
@@ -40,6 +42,7 @@ export function runnerAdapterSuccessResult(opts: {
     stdout_summary: opts.stdout_summary,
     output_paths: opts.output_paths,
     metrics: opts.metrics,
+    timeout_reason: opts.timeout_reason,
   };
 }
 
@@ -52,6 +55,7 @@ export function runnerAdapterFailureResult(opts: {
   stderr_summary?: string;
   output_paths?: string[];
   metrics?: RunnerExecutionMetrics;
+  timeout_reason?: RunnerTimeoutReason | null;
 }): RunnerResult {
   const started_at = opts.started_at ?? nowIso();
   const ended_at = opts.ended_at ?? nowIso();
@@ -66,6 +70,7 @@ export function runnerAdapterFailureResult(opts: {
     stderr_summary: message,
     output_paths: opts.output_paths,
     metrics: opts.metrics,
+    timeout_reason: opts.timeout_reason,
   };
 }
 
@@ -78,6 +83,7 @@ export function runnerAdapterCancelledResult(opts: {
   stderr_summary?: string;
   output_paths?: string[];
   metrics?: RunnerExecutionMetrics;
+  timeout_reason?: RunnerTimeoutReason | null;
 }): RunnerResult {
   const started_at = opts.started_at ?? nowIso();
   const ended_at = opts.ended_at ?? nowIso();
@@ -90,6 +96,7 @@ export function runnerAdapterCancelledResult(opts: {
     stderr_summary: opts.stderr_summary ?? opts.reason,
     output_paths: opts.output_paths,
     metrics: opts.metrics,
+    timeout_reason: opts.timeout_reason,
   };
 }
 
