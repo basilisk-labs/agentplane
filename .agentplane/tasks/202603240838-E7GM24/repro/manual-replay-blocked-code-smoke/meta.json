@@ -1,0 +1,26 @@
+{
+  "status": "exited",
+  "pid": 44253,
+  "returncode": 0,
+  "duration_seconds": 140.209,
+  "stdout_bytes": 287573,
+  "stderr_bytes": 760,
+  "last_message_exists": true,
+  "result_exists": false,
+  "cmd": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--json",
+    "--output-last-message",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240838-E7GM24/repro/manual-replay-blocked-code-smoke/codex-last-message.md",
+    "-C",
+    "/Users/densmirnov/Github/agentplane",
+    "-s",
+    "danger-full-access",
+    "-"
+  ],
+  "source_run": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z",
+  "repro_dir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240838-E7GM24/repro/manual-replay-blocked-code-smoke"
+}
