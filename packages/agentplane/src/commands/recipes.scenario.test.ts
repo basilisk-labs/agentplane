@@ -85,17 +85,17 @@ describe("commands/recipes scenario", () => {
     expect(resolvedScenarios[0]).toMatchObject({
       recipe_id: "viewer",
       scenario_id: "RECIPE_SCENARIO",
+      required_inputs: [],
+      outputs: [],
+      permissions: [],
+      artifacts: [],
+      agents_involved: ["RECIPE_AGENT"],
+      skills_used: ["RECIPE_SKILL"],
+      tools_used: ["RECIPE_TOOL"],
       compatibility: { ok: true },
       run_profile: {
         mode: "analysis",
         requires_human_approval: false,
-        permissions: [],
-        agents_involved: ["RECIPE_AGENT"],
-        skills_used: ["RECIPE_SKILL"],
-        tools_used: ["RECIPE_TOOL"],
-        required_inputs: [],
-        outputs: [],
-        artifacts: [],
         writes_artifacts_to: [],
       },
     });
@@ -144,9 +144,9 @@ describe("commands/recipes scenario", () => {
     expect(selection.run_profile).toMatchObject({
       mode: "analysis",
       sandbox: "read-only",
-      required_inputs: ["task_id"],
-      permissions: ["network"],
     });
+    expect(selection.required_inputs).toEqual(["task_id"]);
+    expect(selection.permissions).toEqual(["network"]);
     expect(selection.selection_reasons).toEqual(
       expect.arrayContaining([
         "recipe compatibility satisfied",
