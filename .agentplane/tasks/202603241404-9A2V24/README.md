@@ -1,10 +1,11 @@
 ---
 id: "202603241404-9A2V24"
 title: "Refresh generated CLI reference after runner subcommands drift"
-status: "DOING"
+result_summary: "docs/user/cli-reference.generated.mdx now matches the shipped CLI command catalog again."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-24T14:05:47.316Z"
   updated_by: "DOCS"
   note: "ok: regenerated docs/user/cli-reference.generated.mdx, confirmed the new runner subcommands appear in the generated reference, and passed check-cli-reference-fresh."
-commit: null
+commit:
+  hash: "1d31fa8dd24506cdfdc7e0543d339bd900c8997b"
+  message: "✅ 9A2V24 docs: done"
 comments:
   -
     author: "DOCS"
     body: "Start: regenerate the generated CLI reference, keep the diff limited to docs/user/cli-reference.generated.mdx, and clear the pre-push docs:cli:check blocker before retrying the push."
+  -
+    author: "DOCS"
+    body: "Verified: regenerated the generated CLI reference from the current command catalog, added the missing task run show/tail/trace sections, and cleared the pre-push docs:cli:check blocker."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "ok: regenerated docs/user/cli-reference.generated.mdx, confirmed the new runner subcommands appear in the generated reference, and passed check-cli-reference-fresh."
+  -
+    type: "status"
+    at: "2026-03-24T14:06:09.501Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: regenerated the generated CLI reference from the current command catalog, added the missing task run show/tail/trace sections, and cleared the pre-push docs:cli:check blocker."
 doc_version: 3
-doc_updated_at: "2026-03-24T14:05:47.332Z"
+doc_updated_at: "2026-03-24T14:06:09.501Z"
 doc_updated_by: "DOCS"
 description: "Regenerate docs/user/cli-reference.generated.mdx so pre-push docs:cli:check matches the current shipped command catalog, including task run show/tail/trace."
 sections:
