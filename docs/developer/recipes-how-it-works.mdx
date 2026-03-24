@@ -56,8 +56,7 @@ runner no longer exports it through adapter env or capability display. It is tre
 classification label, not as an execution-policy field.
 Recipe `run_profile` also no longer exposes `requires_human_approval` in the main-repo runtime
 contract. The field was removed after a live Codex probe showed that non-interactive approval modes
-do not provide a trustworthy barrier. If an external recipe catalog still shows the legacy field,
-that is catalog lag, not active runner support.
+do not provide a trustworthy barrier.
 Recipe `run_profile.expected_exit_contract` is treated the same way: the main-repo runtime no longer
 projects it into resolver output or runner env because current values are scenario-specific labels,
 not a deterministic shared contract. Legacy manifest fields may remain in external recipe sources,

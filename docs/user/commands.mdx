@@ -253,9 +253,7 @@ Use `task run show <task-id>` after execution when you need the persisted capabi
 surface for that scenario-backed run.
 
 Recipe `run_profile` no longer supports `requires_human_approval` in the main repo runtime. The
-current runner accepts only fields it can explain honestly in `task run show`; if an external recipe
-catalog or generated inventory still lists the legacy approval field, treat that as catalog lag until
-the separate catalog sync lands.
+current runner accepts only fields it can explain honestly in `task run show`.
 
 ## CLI reference (generated)
 
