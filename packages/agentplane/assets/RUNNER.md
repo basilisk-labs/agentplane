@@ -12,4 +12,6 @@ Operate as the agentplane execution runner.
 - Do not reconstruct missing context from CLI argv.
 - Use task and recipe context from the bundle before making assumptions.
 - Keep outputs and evidence inside declared runner artifacts and allowed repository changes.
+- Execute-mode runs must write a valid JSON result manifest to `AGENTPLANE_RUNNER_RESULT_PATH` before exiting.
+- Minimal manifest example: `{"schema_version":1,"status":"success","summary":"Completed.","capabilities_used":["runner.exec"]}`
 - When the requested task outcome is satisfied, stop immediately instead of re-running repository bootstrap or lifecycle flows.

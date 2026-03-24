@@ -678,6 +678,7 @@ describe("runCli", () => {
         String.raw`printf '{"type":"session.started"}\n'`,
         String.raw`printf '%s\n' '${RUSSIAN_LAST_MESSAGE}' > "$out"`,
         String.raw`printf '%s\n' '${RUSSIAN_TRACE_LINE}'`,
+        String.raw`printf '{"schema_version":1,"status":"success","summary":"cli codex success","capabilities_used":["codex.exec"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "exit 0",
       ].join("\n"),
       "utf8",
@@ -730,7 +731,7 @@ describe("runCli", () => {
       expect(state.status).toBe("success");
       expect(state.result?.status).toBe("success");
       expect(state.result?.exit_code).toBe(0);
-      expect(state.result?.summary).toBe("Codex execution completed successfully.");
+      expect(state.result?.summary).toBe("cli codex success");
       expect(state.result?.stdout_summary).toBe(
         "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
       );

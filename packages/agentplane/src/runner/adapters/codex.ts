@@ -7,6 +7,7 @@ import type {
   RunnerInvocation,
   RunnerResult,
 } from "../types.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import {
   appendRunnerEvent,
@@ -190,6 +191,30 @@ function resolveCodexSandbox(value: unknown): string {
   });
 }
 
+function assertExecuteModeManifest(opts: {
+  invocation: RunnerInvocation;
+  processResult: SupervisedProcessResult;
+  manifest: Awaited<ReturnType<typeof readRunnerResultManifest>>;
+}): void {
+  if (opts.invocation.dry_run) return;
+  if (opts.processResult.exit_code !== 0) return;
+  if (opts.processResult.timeout_reason !== null) return;
+  if (opts.processResult.cancel_requested_at) return;
+  if (opts.manifest !== null) return;
+  throw new CliError({
+    exitCode: exitCodeForError("E_RUNTIME"),
+    code: "E_RUNTIME",
+    message:
+      `Codex exited successfully but did not write a valid runner result manifest to ` +
+      `${JSON.stringify(opts.invocation.result_path)}.`,
+    context: {
+      adapter_id: "codex",
+      result_path: opts.invocation.result_path,
+      exit_code: opts.processResult.exit_code,
+    },
+  });
+}
+
 export class CodexRunnerAdapter implements RunnerAdapter {
   readonly id = "codex" as const;
 
@@ -329,6 +354,11 @@ export class CodexRunnerAdapter implements RunnerAdapter {
                   timeout_reason: processResult.timeout_reason,
                 });
         const manifest = await readRunnerResultManifest(invocation.result_path);
+        assertExecuteModeManifest({
+          invocation,
+          processResult,
+          manifest,
+        });
         const result = applyRunnerResultManifest({
           base: {
             ...baseResult,
@@ -412,6 +442,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           summary: "Codex execution failed before producing a valid result manifest.",
           started_at,
           ended_at,
+          exit_code: err instanceof CliError ? err.exitCode : undefined,
           output_paths,
         });
         await writeRunnerResultManifest({

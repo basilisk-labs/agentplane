@@ -294,6 +294,7 @@ describe("CodexRunnerAdapter", () => {
         String.raw`printf '{"type":"session.started"}\n'`,
         String.raw`printf '%s\n' '${RUSSIAN_LAST_MESSAGE}' > "$out"`,
         String.raw`printf '%s\n' '${RUSSIAN_TRACE_LINE}'`,
+        String.raw`printf '{"schema_version":1,"status":"success","summary":"custom codex success","capabilities_used":["codex.exec"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "exit 0",
       ].join("\n"),
       "utf8",
@@ -313,7 +314,7 @@ describe("CodexRunnerAdapter", () => {
 
     expect(result.status).toBe("success");
     expect(result.exit_code).toBe(0);
-    expect(result.summary).toBe("Codex execution completed successfully.");
+    expect(result.summary).toBe("custom codex success");
     expect(result.stdout_summary).toBe(
       "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
     );
@@ -338,7 +339,7 @@ describe("CodexRunnerAdapter", () => {
     expect(state.prepared_metadata?.bundle_sha256).toMatch(/^[a-f0-9]{64}$/);
     expect(state.result?.status).toBe("success");
     expect(state.result?.exit_code).toBe(0);
-    expect(state.result?.summary).toBe("Codex execution completed successfully.");
+    expect(state.result?.summary).toBe("custom codex success");
     expect(state.result?.summary).not.toMatch(CYRILLIC_RE);
     expect(state.result?.stdout_summary).not.toMatch(CYRILLIC_RE);
     expect(state.result?.metrics?.stdout_bytes).toBeGreaterThan(0);
@@ -351,7 +352,7 @@ describe("CodexRunnerAdapter", () => {
       capabilities_used?: string[];
     };
     expect(resultManifest.status).toBe("success");
-    expect(resultManifest.summary).toBe("Codex execution completed successfully.");
+    expect(resultManifest.summary).toBe("custom codex success");
     expect(resultManifest.stdout_summary).toBe(
       "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl.",
     );
@@ -378,6 +379,119 @@ describe("CodexRunnerAdapter", () => {
     expect(trace).toContain('"stream":"stdout"');
     expect(trace).toContain('"kind":"json_event"');
     expect(trace).toContain(RUSSIAN_TRACE_LINE);
+
+    await rm(tempDir, { recursive: true, force: true });
+  });
+
+  it("fails execute-mode success when codex exits 0 without writing a result manifest", async () => {
+    const adapter = createRunnerAdapter(defaultConfig());
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-missing-"));
+    const fakeBinDir = path.join(tempDir, "bin");
+    const fakeCodexPath = path.join(fakeBinDir, "codex");
+    const bundle = makeBundle();
+    bundle.repository.git_root = tempDir;
+    bundle.execution.mode = "execute";
+    bundle.execution.artifact_paths.run_dir = path.join(tempDir, "runs", "run-missing");
+    bundle.execution.artifact_paths.bundle_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "bundle.json",
+    );
+    bundle.execution.artifact_paths.bootstrap_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "bootstrap.md",
+    );
+    bundle.execution.artifact_paths.state_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "run-state.json",
+    );
+    bundle.execution.artifact_paths.events_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "events.jsonl",
+    );
+    bundle.execution.artifact_paths.result_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "result.json",
+    );
+    bundle.execution.artifact_paths.trace_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "agent-trace.jsonl",
+    );
+    bundle.execution.artifact_paths.stderr_path = path.join(
+      bundle.execution.artifact_paths.run_dir,
+      "stderr.log",
+    );
+
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeCodexPath,
+      [
+        "#!/bin/sh",
+        'out=""',
+        'while [ "$#" -gt 0 ]; do',
+        '  case "$1" in',
+        "    exec|--json|-|danger-full-access|never)",
+        "      shift",
+        "      ;;",
+        "    --output-last-message|-C|-s|-a)",
+        '      if [ "$1" = "--output-last-message" ]; then out="$2"; fi',
+        "      shift 2",
+        "      ;;",
+        "    *)",
+        "      shift",
+        "      ;;",
+        "  esac",
+        "done",
+        "cat >/dev/null",
+        String.raw`printf '%s\n' 'missing manifest path exercised' > "$out"`,
+        String.raw`printf '{"type":"session.started"}\n'`,
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeCodexPath, 0o755);
+
+    const invocation = await adapter.prepare(bundle);
+    invocation.env.PATH = `${fakeBinDir}:${process.env.PATH ?? ""}`;
+    await writePreparedRunnerArtifacts({
+      bundle,
+      bootstrap_markdown: "Read the bundle and act on it.\n",
+      invocation,
+    });
+
+    const result = await adapter.execute(invocation);
+
+    expect(result.status).toBe("failed");
+    expect(result.exit_code).toBe(8);
+    expect(result.summary).toBe("Codex execution failed before producing a valid result manifest.");
+    expect(result.stderr_summary).toContain("did not write a valid runner result manifest");
+    const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
+      status: string;
+      result?: {
+        status?: string;
+        exit_code?: number | null;
+        summary?: string;
+        stderr_summary?: string;
+      };
+    };
+    expect(state.status).toBe("failed");
+    expect(state.result).toMatchObject({
+      status: "failed",
+      exit_code: 8,
+      summary: "Codex execution failed before producing a valid result manifest.",
+    });
+    expect(state.result?.stderr_summary).toContain("did not write a valid runner result manifest");
+    const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
+      status?: string;
+      exit_code?: number | null;
+      summary?: string;
+      stderr_summary?: string;
+    };
+    expect(resultManifest.status).toBe("failed");
+    expect(resultManifest.exit_code).toBe(8);
+    expect(resultManifest.summary).toBe(
+      "Codex execution failed before producing a valid result manifest.",
+    );
+    expect(resultManifest.stderr_summary).toContain("did not write a valid runner result manifest");
 
     await rm(tempDir, { recursive: true, force: true });
   });
