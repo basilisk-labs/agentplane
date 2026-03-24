@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "runner_api_version": "1",
+  "target": {
+    "kind": "task",
+    "task_id": "202603240804-TYN9BJ"
+  },
+  "base_prompts": [
+    {
+      "id": "base.framework_runner",
+      "role": "system",
+      "title": "Framework Runner Prompt",
+      "source": "bundled:runner-prompt:RUNNER.md",
+      "priority": 100,
+      "content": "# agentplane runner\n\nOperate as the agentplane execution runner.\n\n- Treat `bundle.json` as the authoritative input contract.\n- Apply prompt blocks in ascending `priority` order.\n- Framework and repository policy blocks override owner, task, and recipe context.\n- Do not reconstruct missing context from CLI argv.\n- Use task and recipe context from the bundle before making assumptions.\n- Keep outputs and evidence inside declared runner artifacts and allowed repository changes.\n"
+    },
+    {
+      "id": "base.policy_gateway",
+      "role": "policy",
+      "title": "Repository Policy Gateway (AGENTS.md)",
+      "source": "AGENTS.md",
+      "priority": 200,
+      "content": "<!--\nAGENTS_POLICY: gateway-v1.1\nrepo_namespace: .agentplane\ndefault_initiator: ORCHESTRATOR\n-->\n\n# PURPOSE\n\n`AGENTS.md` is the policy gateway for agents in this repository.\nIt provides strict routing, hard constraints, and command contracts.\nDetailed procedures live in canonical modules from `## CANONICAL DOCS`.\n\n---\n\n## PROJECT\n\n- Repository type: user project initialized with `agentplane`.\n- Gateway role: keep this file compact and deterministic; move scenario-specific details to policy modules.\n- CLI rule: use `agentplane` from `PATH`; if unavailable, stop and request installation guidance (do not invent repo-local entrypoints).\n- Startup shortcut: run `## COMMANDS -> Preflight`, then use `agentplane quickstart`; activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation.\n\n---\n\n## SOURCES OF TRUTH\n\nPriority order (highest first):\n\n1. Enforcement: CI, tests, linters, hooks, CLI validations.\n2. Policy gateway: `AGENTS.md`.\n3. Canonical policy modules from `## CANONICAL DOCS`.\n4. CLI guidance: `agentplane quickstart`, `agentplane role <ROLE>`, `.agentplane/config.json`.\n5. Reference examples from `## REFERENCE EXAMPLES`.\n\nConflict rule:\n\n- If documentation conflicts with enforcement, enforcement wins.\n- If lower-priority text conflicts with higher-priority policy, higher-priority policy wins.\n\n---\n\n## SCOPE BOUNDARY\n\n- MUST keep all actions inside this repository unless the user explicitly approves outside-repo access.\n- MUST NOT read or modify global user files (`~`, `/etc`, keychains, ssh keys, global git config) without explicit user approval.\n- MUST treat network access as approval-gated when `agents.approvals.require_network=true`.\n\n---\n\n## COMMANDS\n\n### Preflight\n\n```bash\nagentplane config show\nagentplane quickstart\nagentplane task list\ngit status --short --untracked-files=no\ngit rev-parse --abbrev-ref HEAD\n```\n\n### Task lifecycle\n\n```bash\nagentplane task new --title \"...\" --description \"...\" --priority med --owner <ROLE> --tag <tag>\nagentplane task plan set <task-id> --text \"...\" --updated-by <ROLE>\nagentplane task plan approve <task-id> --by ORCHESTRATOR\nagentplane task start-ready <task-id> --author <ROLE> --body \"Start: ...\"\nagentplane verify <task-id> --ok|--rework --by <ROLE> --note \"...\"\nagentplane finish <task-id> --author <ROLE> --body \"Verified: ...\" --result \"...\" --commit <git-rev>\n```\n\n### Verification\n\n```bash\nagentplane task verify-show <task-id>\nagentplane verify <task-id> --ok|--rework --by <ROLE> --note \"...\"\nagentplane doctor\nnode .agentplane/policy/check-routing.mjs\n```\n\n---\n\n## TOOLING\n\n- Use `## COMMANDS` as the canonical command source.\n- Use `agentplane quickstart` as the canonical installed startup path and `agentplane role <ROLE>` to activate the current role before role-scoped planning or execution.\n- For policy changes, routing validation MUST pass via `node .agentplane/policy/check-routing.mjs`.\n\n---\n\n## LOAD RULES\n\nRouting is strict. Load only modules that match the current task.\n\n### Always imports for mutating tasks\n\nCondition: task includes mutation (file edits, task-state changes, commits, merge/integrate, release/publish).\n\n- `@.agentplane/policy/security.must.md`\n- `@.agentplane/policy/dod.core.md`\n\n### Conditional imports (linear IF -> LOAD contract)\n\n1. IF `workflow_mode=direct` THEN LOAD `@.agentplane/policy/workflow.direct.md`.\n2. IF `workflow_mode=branch_pr` THEN LOAD `@.agentplane/policy/workflow.branch_pr.md`.\n3. IF task touches release/version/publish THEN LOAD `@.agentplane/policy/workflow.release.md`.\n4. IF task runs `agentplane upgrade` or touches `.agentplane/.upgrade/**` THEN LOAD `@.agentplane/policy/workflow.upgrade.md`.\n5. IF task modifies implementation code paths THEN LOAD `@.agentplane/policy/dod.code.md`.\n6. IF task modifies docs/policy-only paths (`AGENTS.md`, docs, `.agentplane/policy/**`) THEN LOAD `@.agentplane/policy/dod.docs.md`.\n7. IF task modifies policy files (`AGENTS.md` or `.agentplane/policy/**`) THEN LOAD `@.agentplane/policy/governance.md`.\n8. IF task modifies `.agentplane/policy/incidents.md` THEN LOAD `@.agentplane/policy/incidents.md`.\n\nRouting examples:\n\n- Example (docs-only task): rules `1|6` apply in `direct`; do not load `dod.code.md`.\n- Example (upgrade task): rules `4|7` apply plus workflow mode rule.\n\nRouting constraints:\n\n- MUST NOT load unrelated policy modules.\n- MUST NOT use wildcard policy paths.\n- MUST keep loaded policy set minimal (target: 2-4 files per task).\n- If routing is ambiguous, ask one clarifying question before loading extra modules.\n\n---\n\n## MUST / MUST NOT\n\n- MUST start with ORCHESTRATOR preflight and plan summary.\n- MUST NOT perform mutating actions before explicit user approval.\n- MUST create/reuse executable task IDs for any repo-state mutation.\n- MUST use `agentplane` commands for task lifecycle updates; MUST NOT manually edit `.agentplane/tasks.json`.\n- MUST run `agentplane task plan approve ...` and `agentplane task start-ready ...` sequentially (never in parallel).\n- MUST activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active task owner before owner-scoped execution or verification.\n- MUST keep repository artifacts in English by default (unless user explicitly requests another language for a specific artifact).\n- MUST NOT fabricate repository facts.\n- MUST stage/commit only intentional changes for the active task scope.\n- MUST stop and request re-approval when scope, risk, or verification criteria materially drift.\n- MUST NOT let ORCHESTRATOR perform owner-scoped implementation or verification once a task owner is known, unless the approved plan explicitly makes ORCHESTRATOR the owner.\n\nRole boundaries:\n\n- ORCHESTRATOR: preflight + plan + approvals.\n- PLANNER: executable task graph creation/update.\n- INTEGRATOR: base integration/finish in `branch_pr`.\n\n---\n\n## CORE DOD\n\nA task is done only when all are true:\n\n1. Approved scope is satisfied; no unresolved drift.\n2. Required checks from loaded policy modules passed.\n3. Security and approval gates were respected.\n4. Traceability exists (task ID + updated task docs).\n5. Verification evidence is recorded.\n6. No unintended tracked changes remain.\n\nDetailed DoD rules are in `.agentplane/policy/dod.core.md`, `.agentplane/policy/dod.code.md`, and `.agentplane/policy/dod.docs.md`.\n\n---\n\n## SIZE BUDGET\n\n- `AGENTS.md` MUST stay <= 250 lines.\n- Every policy markdown module under `.agentplane/policy/*.md` MUST stay <= 100 lines.\n- Worst-case loaded policy graph (always imports + all conditional imports) MUST stay <= 600 lines.\n- Enforced by `node .agentplane/policy/check-routing.mjs`.\n\n---\n\n## CANONICAL DOCS\n\n- DOC `.agentplane/policy/workflow.md`\n- DOC `.agentplane/policy/workflow.direct.md`\n- DOC `.agentplane/policy/workflow.branch_pr.md`\n- DOC `.agentplane/policy/workflow.release.md`\n- DOC `.agentplane/policy/workflow.upgrade.md`\n- DOC `.agentplane/policy/security.must.md`\n- DOC `.agentplane/policy/dod.core.md`\n- DOC `.agentplane/policy/dod.code.md`\n- DOC `.agentplane/policy/dod.docs.md`\n- DOC `.agentplane/policy/governance.md`\n- DOC `.agentplane/policy/incidents.md`\n\n---\n\n## REFERENCE EXAMPLES\n\n- EXAMPLE `.agentplane/policy/examples/pr-note.md`\n- EXAMPLE `.agentplane/policy/examples/unit-test-pattern.md`\n- EXAMPLE `.agentplane/policy/examples/migration-note.md`\n\n---\n\n## CHANGE CONTROL\n\n- Follow incident-log, immutability, and policy-budget rules in `.agentplane/policy/governance.md`.\n- Record situational incident rules only in `.agentplane/policy/incidents.md`; do not load/read that file during normal startup unless the task directly touches it or recovery/incident handling requires it.\n- Keep `AGENTS.md` as a gateway; move detailed procedures to canonical modules.\n"
+    },
+    {
+      "id": "base.owner_profile",
+      "role": "profile",
+      "title": "Owner Agent Profile (DOCS)",
+      "source": ".agentplane/agents/DOCS.json",
+      "priority": 300,
+      "content": "{\n  \"id\": \"DOCS\",\n  \"role\": \"Document shipped behavior and task artifacts without drifting from actual runtime behavior.\",\n  \"description\": \"Updates task documentation, user docs, and developer docs from confirmed behavior rather than inferred intent.\",\n  \"inputs\": [\n    \"List of completed tasks or features (with task IDs).\",\n    \"Pointers to relevant modules, APIs, files, or user-visible changes.\"\n  ],\n  \"outputs\": [\n    \"One task artifact per task ID under .agentplane/tasks/<task-id>/README.md.\",\n    \"Documentation updates (README/docs) that reflect confirmed behavior and caveats.\",\n    \"A concise mapping from each task ID to artifacts/docs touched and any remaining documentation gaps.\"\n  ],\n  \"permissions\": [\n    \"Documentation files: read + write; task docs via agentplane.\",\n    \"git: inspection/local ops; commits via agentplane.\"\n  ],\n  \"workflow\": [\n    \"Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.\",\n    \"Confirm behavior from code, help output, tests, or verification evidence before editing docs; do not document intended behavior as if it already ships.\",\n    \"Create/update task README content via agentplane task doc set; keep the active doc_version contract explicit and treat v3 `Findings` as task-local observation memory, not policy incidents.\",\n    \"Update only the docs surfaces required for the changed behavior and keep wording aligned with gateway/policy/CLI precedence.\",\n    \"When generated or mirrored docs exist, update the canonical source or generation path instead of hand-editing downstream artifacts.\",\n    \"Keep PR artifact docs and notes current when required; add handoff notes for INTEGRATOR.\",\n    \"Separate confirmed behavior, known caveats, and deferred follow-up in summaries.\",\n    \"Avoid extra commits and standalone docs-only tasks unless documentation itself is the independent deliverable.\"\n  ]\n}\n"
+    }
+  ],
+  "repository": {
+    "git_root": "/Users/densmirnov/Github/agentplane",
+    "workflow_dir": ".agentplane/tasks",
+    "backend_id": "local",
+    "backend_config_path": "/Users/densmirnov/Github/agentplane/.agentplane/backends/local/backend.json",
+    "branch": "main",
+    "head_commit": "f8d5c422c9342236673c8e3c3973c529b718a53e"
+  },
+  "task": {
+    "task_id": "202603240804-TYN9BJ",
+    "data": {
+      "id": "202603240804-TYN9BJ",
+      "title": "Runner smoke test: materialize task-local artifact",
+      "description": "Use the shared runner to create a deterministic markdown artifact inside this task directory and record completion in the task Findings section without touching unrelated repository files.",
+      "status": "DOING",
+      "priority": "med",
+      "owner": "DOCS",
+      "revision": 5,
+      "origin": {
+        "system": "manual"
+      },
+      "depends_on": [],
+      "tags": [
+        "docs",
+        "runner",
+        "smoke"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-03-24T08:04:52.259Z",
+        "updated_by": "ORCHESTRATOR",
+        "note": null
+      },
+      "verification": {
+        "state": "pending",
+        "updated_at": null,
+        "updated_by": null,
+        "note": null
+      },
+      "commit": null,
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: run a contained smoke test through the shared runner by creating the requested task-local artifact with the exact marker text and updating the task Findings section only inside this task directory."
+        }
+      ],
+      "events": [
+        {
+          "type": "status",
+          "at": "2026-03-24T08:05:25.300Z",
+          "author": "DOCS",
+          "from": "TODO",
+          "to": "DOING",
+          "note": "Start: run a contained smoke test through the shared runner by creating the requested task-local artifact with the exact marker text and updating the task Findings section only inside this task directory."
+        }
+      ],
+      "doc_version": 3,
+      "doc_updated_at": "2026-03-24T08:05:25.302Z",
+      "doc_updated_by": "DOCS",
+      "id_source": "generated",
+      "doc": "## Summary\n\nRunner smoke test: materialize task-local artifact\n\nUse the shared runner to create `.agentplane/tasks/202603240804-TYN9BJ/runner-smoke-output.md` with the exact marker line `RUNNER_SMOKE_OK`, then record completion in this task's `Findings` section without touching unrelated repository files.\n\n## Scope\n\n- In scope: Use the shared runner to create a deterministic markdown artifact inside this task directory and record completion in the task Findings section without touching unrelated repository files.\n- Out of scope: unrelated refactors not required for \"Runner smoke test: materialize task-local artifact\".\n\n## Plan\n\n1. Run the shared runner against this task in execute mode with instructions limited to the task directory.\n2. Expect the runner to create `.agentplane/tasks/202603240804-TYN9BJ/runner-smoke-output.md` with deterministic content and update this task README Findings section.\n3. Inspect run artifacts, the task-local file diff, and task state after execution, then record whether the runner completed the task as instructed.\n\n## Verify Steps\n\n<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->\n\n1. <Action>. Expected: <observable result>.\n2. <Action>. Expected: <observable result>.\n3. <Action>. Expected: <observable result>.\n\n## Verification\n\n<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\n- Revert task-related commit(s).\n- Re-run required checks to confirm rollback safety.\n\n## Findings",
+      "sections": {
+        "Summary": "Runner smoke test: materialize task-local artifact\n\nUse the shared runner to create `.agentplane/tasks/202603240804-TYN9BJ/runner-smoke-output.md` with the exact marker line `RUNNER_SMOKE_OK`, then record completion in this task's `Findings` section without touching unrelated repository files.",
+        "Scope": "- In scope: Use the shared runner to create a deterministic markdown artifact inside this task directory and record completion in the task Findings section without touching unrelated repository files.\n- Out of scope: unrelated refactors not required for \"Runner smoke test: materialize task-local artifact\".",
+        "Plan": "1. Run the shared runner against this task in execute mode with instructions limited to the task directory.\n2. Expect the runner to create `.agentplane/tasks/202603240804-TYN9BJ/runner-smoke-output.md` with deterministic content and update this task README Findings section.\n3. Inspect run artifacts, the task-local file diff, and task state after execution, then record whether the runner completed the task as instructed.",
+        "Verify Steps": "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->\n\n1. <Action>. Expected: <observable result>.\n2. <Action>. Expected: <observable result>.\n3. <Action>. Expected: <observable result>.",
+        "Verification": "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+        "Rollback Plan": "- Revert task-related commit(s).\n- Re-run required checks to confirm rollback safety.",
+        "Findings": ""
+      }
+    },
+    "frontmatter": {
+      "id": "202603240804-TYN9BJ",
+      "title": "Runner smoke test: materialize task-local artifact",
+      "status": "DOING",
+      "priority": "med",
+      "owner": "DOCS",
+      "revision": 5,
+      "origin": {
+        "system": "manual"
+      },
+      "depends_on": [],
+      "tags": [
+        "docs",
+        "runner",
+        "smoke"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-03-24T08:04:52.259Z",
+        "updated_by": "ORCHESTRATOR",
+        "note": null
+      },
+      "verification": {
+        "state": "pending",
+        "updated_at": null,
+        "updated_by": null,
+        "note": null
+      },
+      "commit": null,
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: run a contained smoke test through the shared runner by creating the requested task-local artifact with the exact marker text and updating the task Findings section only inside this task directory."
+        }
+      ],
+      "events": [
+        {
+          "type": "status",
+          "at": "2026-03-24T08:05:25.300Z",
+          "author": "DOCS",
+          "from": "TODO",
+          "to": "DOING",
+          "note": "Start: run a contained smoke test through the shared runner by creating the requested task-local artifact with the exact marker text and updating the task Findings section only inside this task directory."
+        }
+      ],
+      "doc_version": 3,
+      "doc_updated_at": "2026-03-24T08:05:25.302Z",
+      "doc_updated_by": "DOCS",
+      "description": "Use the shared runner to create a deterministic markdown artifact inside this task directory and record completion in the task Findings section without touching unrelated repository files.",
+      "sections": {
+        "Summary": "Runner smoke test: materialize task-local artifact\n\nUse the shared runner to create `.agentplane/tasks/202603240804-TYN9BJ/runner-smoke-output.md` with the exact marker line `RUNNER_SMOKE_OK`, then record completion in this task's `Findings` section without touching unrelated repository files.",
+        "Scope": "- In scope: Use the shared runner to create a deterministic markdown artifact inside this task directory and record completion in the task Findings section without touching unrelated repository files.\n- Out of scope: unrelated refactors not required for \"Runner smoke test: materialize task-local artifact\".",
+        "Plan": "1. Run the shared runner against this task in execute mode with instructions limited to the task directory.\n2. Expect the runner to create `.agentplane/tasks/202603240804-TYN9BJ/runner-smoke-output.md` with deterministic content and update this task README Findings section.\n3. Inspect run artifacts, the task-local file diff, and task state after execution, then record whether the runner completed the task as instructed.",
+        "Verify Steps": "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->\n\n1. <Action>. Expected: <observable result>.\n2. <Action>. Expected: <observable result>.\n3. <Action>. Expected: <observable result>.",
+        "Verification": "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+        "Rollback Plan": "- Revert task-related commit(s).\n- Re-run required checks to confirm rollback safety.",
+        "Findings": ""
+      },
+      "id_source": "generated"
+    },
+    "doc": "## Summary\n\nRunner smoke test: materialize task-local artifact\n\nUse the shared runner to create `.agentplane/tasks/202603240804-TYN9BJ/runner-smoke-output.md` with the exact marker line `RUNNER_SMOKE_OK`, then record completion in this task's `Findings` section without touching unrelated repository files.\n\n## Scope\n\n- In scope: Use the shared runner to create a deterministic markdown artifact inside this task directory and record completion in the task Findings section without touching unrelated repository files.\n- Out of scope: unrelated refactors not required for \"Runner smoke test: materialize task-local artifact\".\n\n## Plan\n\n1. Run the shared runner against this task in execute mode with instructions limited to the task directory.\n2. Expect the runner to create `.agentplane/tasks/202603240804-TYN9BJ/runner-smoke-output.md` with deterministic content and update this task README Findings section.\n3. Inspect run artifacts, the task-local file diff, and task state after execution, then record whether the runner completed the task as instructed.\n\n## Verify Steps\n\n<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->\n\n1. <Action>. Expected: <observable result>.\n2. <Action>. Expected: <observable result>.\n3. <Action>. Expected: <observable result>.\n\n## Verification\n\n<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\n- Revert task-related commit(s).\n- Re-run required checks to confirm rollback safety.\n\n## Findings",
+    "sections": {
+      "Summary": "Runner smoke test: materialize task-local artifact\n\nUse the shared runner to create `.agentplane/tasks/202603240804-TYN9BJ/runner-smoke-output.md` with the exact marker line `RUNNER_SMOKE_OK`, then record completion in this task's `Findings` section without touching unrelated repository files.",
+      "Scope": "- In scope: Use the shared runner to create a deterministic markdown artifact inside this task directory and record completion in the task Findings section without touching unrelated repository files.\n- Out of scope: unrelated refactors not required for \"Runner smoke test: materialize task-local artifact\".",
+      "Plan": "1. Run the shared runner against this task in execute mode with instructions limited to the task directory.\n2. Expect the runner to create `.agentplane/tasks/202603240804-TYN9BJ/runner-smoke-output.md` with deterministic content and update this task README Findings section.\n3. Inspect run artifacts, the task-local file diff, and task state after execution, then record whether the runner completed the task as instructed.",
+      "Verify Steps": "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->\n\n1. <Action>. Expected: <observable result>.\n2. <Action>. Expected: <observable result>.\n3. <Action>. Expected: <observable result>.",
+      "Verification": "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+      "Rollback Plan": "- Revert task-related commit(s).\n- Re-run required checks to confirm rollback safety.",
+      "Findings": ""
+    },
+    "comments": [
+      {
+        "author": "DOCS",
+        "body": "Start: run a contained smoke test through the shared runner by creating the requested task-local artifact with the exact marker text and updating the task Findings section only inside this task directory."
+      }
+    ],
+    "events": [
+      {
+        "type": "status",
+        "at": "2026-03-24T08:05:25.300Z",
+        "author": "DOCS",
+        "from": "TODO",
+        "to": "DOING",
+        "note": "Start: run a contained smoke test through the shared runner by creating the requested task-local artifact with the exact marker text and updating the task Findings section only inside this task directory."
+      }
+    ],
+    "readme_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/README.md",
+    "dependency_state": {
+      "ready": true,
+      "missing": [],
+      "incomplete": [],
+      "completed": []
+    }
+  },
+  "execution": {
+    "adapter_id": "codex",
+    "mode": "execute",
+    "run_id": "2026-03-24T08-05-32-244Z",
+    "artifact_paths": {
+      "task_dir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ",
+      "runs_dir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs",
+      "run_dir": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z",
+      "bundle_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/bundle.json",
+      "bootstrap_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/bootstrap.md",
+      "state_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/run-state.json",
+      "events_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/events.jsonl",
+      "result_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/result.json"
+    },
+    "approvals": {
+      "require_plan": false,
+      "require_verify": false,
+      "require_network": true
+    },
+    "adapter_capabilities": {
+      "adapter_id": "codex",
+      "fields": {
+        "mode": {
+          "level": "advisory",
+          "channel": "env",
+          "note": "Recipe mode is exported for the runner process but does not affect codex argv."
+        },
+        "sandbox": {
+          "level": "native",
+          "channel": "argv",
+          "supported_values": [
+            "read-only",
+            "workspace-write",
+            "danger-full-access"
+          ],
+          "note": "Recipe sandbox is enforced through codex --sandbox argv mapping."
+        },
+        "requires_human_approval": {
+          "level": "advisory",
+          "channel": "env",
+          "note": "Recipe approval intent is exported for the runner process but is not mapped to codex approval flags."
+        },
+        "writes_artifacts_to": {
+          "level": "advisory",
+          "channel": "env"
+        },
+        "expected_exit_contract": {
+          "level": "advisory",
+          "channel": "env"
+        }
+      }
+    }
+  }
+}

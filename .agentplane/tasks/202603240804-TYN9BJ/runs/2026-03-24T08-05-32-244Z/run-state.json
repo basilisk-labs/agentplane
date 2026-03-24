@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "runner_api_version": "1",
+  "run_id": "2026-03-24T08-05-32-244Z",
+  "adapter_id": "codex",
+  "target": {
+    "kind": "task",
+    "task_id": "202603240804-TYN9BJ"
+  },
+  "status": "cancelled",
+  "mode": "execute",
+  "bundle_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/bundle.json",
+  "result_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/result.json",
+  "bootstrap_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/bootstrap.md",
+  "events_path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/events.jsonl",
+  "created_at": "2026-03-24T08:05:32.248Z",
+  "updated_at": "2026-03-24T08:08:53.387Z",
+  "prepared_metadata": {
+    "prompt_count": 3,
+    "bundle_bytes": 26310,
+    "bootstrap_bytes": 889,
+    "bundle_sha256": "d1e2475c05736dce0509e0192d597613038e2c0383e1a8427adc8992ca5b9e33",
+    "bootstrap_sha256": "b0fab5d809e95084ec129ef8e11b19d91abeb0f16702a9857a8fe560c7775d2f",
+    "has_task_context": true,
+    "has_recipe_context": false,
+    "adapter_capabilities": {
+      "adapter_id": "codex",
+      "fields": {
+        "mode": {
+          "level": "advisory",
+          "channel": "env",
+          "note": "Recipe mode is exported for the runner process but does not affect codex argv."
+        },
+        "sandbox": {
+          "level": "native",
+          "channel": "argv",
+          "supported_values": [
+            "read-only",
+            "workspace-write",
+            "danger-full-access"
+          ],
+          "note": "Recipe sandbox is enforced through codex --sandbox argv mapping."
+        },
+        "requires_human_approval": {
+          "level": "advisory",
+          "channel": "env",
+          "note": "Recipe approval intent is exported for the runner process but is not mapped to codex approval flags."
+        },
+        "writes_artifacts_to": {
+          "level": "advisory",
+          "channel": "env"
+        },
+        "expected_exit_contract": {
+          "level": "advisory",
+          "channel": "env"
+        }
+      }
+    },
+    "invocation": {
+      "executable": "codex",
+      "argv_count": 12,
+      "env_keys": [
+        "AGENTPLANE_RUNNER_ADAPTER",
+        "AGENTPLANE_RUNNER_API_VERSION",
+        "AGENTPLANE_RUNNER_MODE",
+        "AGENTPLANE_RUNNER_RESULT_PATH",
+        "AGENTPLANE_RUNNER_TARGET"
+      ],
+      "cwd": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z",
+      "has_result_path": true,
+      "has_output_last_message_path": true
+    }
+  },
+  "supervision": {
+    "pid": 9117,
+    "command": "codex",
+    "started_at": "2026-03-24T08:05:32.252Z",
+    "heartbeat_at": "2026-03-24T08:08:39.290Z",
+    "exit_signal": null,
+    "cancel_requested_at": "2026-03-24T08:08:53.376Z",
+    "cancel_signal": "SIGTERM"
+  },
+  "result": {
+    "status": "cancelled",
+    "exit_code": 0,
+    "started_at": "2026-03-24T08:05:32.252Z",
+    "ended_at": "2026-03-24T08:08:53.386Z",
+    "stderr_summary": "Codex runner cancelled via SIGTERM.",
+    "output_paths": [
+      "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/bundle.json",
+      "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/bootstrap.md",
+      "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/codex-last-message.md"
+    ],
+    "metrics": {
+      "duration_ms": 201134,
+      "stdout_bytes": 305228,
+      "stderr_bytes": 760,
+      "output_last_message_bytes": null
+    },
+    "summary": "Codex runner cancelled via SIGTERM.",
+    "artifacts": [
+      {
+        "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/bundle.json"
+      },
+      {
+        "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/bootstrap.md"
+      },
+      {
+        "path": "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202603240804-TYN9BJ/runs/2026-03-24T08-05-32-244Z/codex-last-message.md"
+      }
+    ],
+    "capabilities_used": [
+      "codex.exec"
+    ]
+  }
+}
