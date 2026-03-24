@@ -324,7 +324,7 @@ describe("CustomRunnerAdapter", () => {
     await rm(tempDir, { recursive: true, force: true });
   });
 
-  it("fails deterministically and preserves malformed custom runner manifests", async () => {
+  it("fails deterministically and preserves structurally invalid custom runner manifests", async () => {
     const raw = defaultConfig();
     raw.runner.default_adapter = "custom";
     raw.runner.custom = {
@@ -372,7 +372,7 @@ describe("CustomRunnerAdapter", () => {
       fakeRunnerPath,
       [
         "#!/bin/sh",
-        String.raw`printf '{"schema_version":1,"findings":[42]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        String.raw`printf '{"schema_version":1,"artifacts":[{"path":"reports/out.txt","label":"Bad Label"}],"capabilities_used":["custom report"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "cat >/dev/null",
         String.raw`printf "custom runner wrote invalid manifest\n"`,
         "exit 0",
@@ -401,11 +401,21 @@ describe("CustomRunnerAdapter", () => {
     expect(result.output_paths).toContain(
       path.join(bundle.execution.artifact_paths.run_dir, "result.invalid.json"),
     );
+    expect(result.output_paths).toContain(
+      path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
+    );
     const preserved = await readFile(
       path.join(bundle.execution.artifact_paths.run_dir, "result.invalid.json"),
       "utf8",
     );
-    expect(preserved).toContain('"findings":[42]');
+    expect(preserved).toContain('"label":"Bad Label"');
+    expect(preserved).toContain('"capabilities_used":["custom report"]');
+    const sourceManifest = await readFile(
+      path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
+      "utf8",
+    );
+    expect(sourceManifest).toContain('"label":"Bad Label"');
+    expect(sourceManifest).toContain('"capabilities_used":["custom report"]');
     const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
       status?: string;
       summary?: string;
@@ -419,6 +429,9 @@ describe("CustomRunnerAdapter", () => {
     expect(resultManifest.stderr_summary).toContain("Invalid runner result manifest");
     expect(resultManifest.artifacts?.map((artifact) => artifact.path)).toContain(
       path.join(bundle.execution.artifact_paths.run_dir, "result.invalid.json"),
+    );
+    expect(resultManifest.artifacts?.map((artifact) => artifact.path)).toContain(
+      path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
     );
     const trace = await readFile(invocation.trace_path, "utf8");
     expect(trace).toContain("custom runner wrote invalid manifest");
@@ -483,7 +496,7 @@ describe("CustomRunnerAdapter", () => {
       fakeRunnerPath,
       [
         "#!/bin/sh",
-        String.raw`printf '{"schema_version":1,"summary":"Привет из custom manifest","findings":["русский finding"],"verification_hints":["русский hint"],"capabilities_used":["custom.report"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        String.raw`printf '{"schema_version":1,"summary":"Привет из custom manifest","artifacts":[{"path":"reports/out.txt","label":"report"}],"findings":["русский finding"],"verification_hints":["русский hint"],"capabilities_used":["custom.report"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "cat >/dev/null",
         "exit 0",
       ].join("\n"),
@@ -508,6 +521,7 @@ describe("CustomRunnerAdapter", () => {
     expect(result.artifacts).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ path: invocation.result_path, label: "result-manifest" }),
+        expect.objectContaining({ path: "reports/out.txt", label: "report" }),
         expect.objectContaining({
           path: path.join(bundle.execution.artifact_paths.run_dir, "result.source.json"),
           label: "source-result-manifest",
@@ -517,11 +531,17 @@ describe("CustomRunnerAdapter", () => {
 
     const normalized = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
       summary?: string;
+      artifacts?: { path: string; label?: string }[];
       findings?: string[];
       verification_hints?: string[];
       capabilities_used?: string[];
     };
     expect(normalized.summary).toBe("Custom runner execution completed successfully.");
+    expect(normalized.artifacts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: "reports/out.txt", label: "report" }),
+      ]),
+    );
     expect(normalized.findings).toBeUndefined();
     expect(normalized.verification_hints).toBeUndefined();
     expect(normalized.capabilities_used).toEqual(["custom.report"]);

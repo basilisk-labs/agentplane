@@ -42,6 +42,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
+const MACHINE_IDENTIFIER_RE = /^[a-z0-9]+(?:[._:-][a-z0-9]+)*$/;
+const MACHINE_IDENTIFIER_MAX_LENGTH = 64;
+
 function normalizeStringArray(value: unknown): string[] | undefined {
   if (!Array.isArray(value)) return undefined;
   const entries = value.map((entry) => {
@@ -57,6 +60,33 @@ function normalizeStringArray(value: unknown): string[] | undefined {
   return entries.length > 0 ? entries : undefined;
 }
 
+function normalizeMachineIdentifier(value: unknown, field: string): string {
+  if (typeof value !== "string") {
+    throw new Error(`${field} must be a non-empty string`);
+  }
+  const normalized = value.trim();
+  if (!normalized) {
+    throw new Error(`${field} must be a non-empty string`);
+  }
+  if (normalized.length > MACHINE_IDENTIFIER_MAX_LENGTH) {
+    throw new Error(`${field} must be at most ${String(MACHINE_IDENTIFIER_MAX_LENGTH)} characters`);
+  }
+  if (!MACHINE_IDENTIFIER_RE.test(normalized)) {
+    throw new Error(
+      `${field} must match ${String(MACHINE_IDENTIFIER_RE)} and contain only lower-case machine-safe identifier tokens`,
+    );
+  }
+  return normalized;
+}
+
+function normalizeMachineIdentifierArray(value: unknown, field: string): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const entries = value.map((entry, index) =>
+    normalizeMachineIdentifier(entry, `${field}[${String(index)}]`),
+  );
+  return entries.length > 0 ? entries : undefined;
+}
+
 function normalizeArtifacts(value: unknown): RunnerResultArtifact[] | undefined {
   if (!Array.isArray(value)) return undefined;
   const artifacts = value.map((entry) => {
@@ -68,10 +98,10 @@ function normalizeArtifacts(value: unknown): RunnerResultArtifact[] | undefined 
       throw new Error("artifacts[].path must be a non-empty string");
     }
     if (entry.label === undefined) return { path: pathValue };
-    if (typeof entry.label !== "string" || !entry.label.trim()) {
-      throw new Error("artifacts[].label must be a non-empty string when present");
-    }
-    return { path: pathValue, label: entry.label.trim() };
+    return {
+      path: pathValue,
+      label: normalizeMachineIdentifier(entry.label, "artifacts[].label"),
+    };
   });
   return artifacts.length > 0 ? artifacts : undefined;
 }
@@ -208,7 +238,10 @@ export async function readRunnerResultManifest(
       manifest.artifacts = normalizeArtifacts(raw.artifacts);
       manifest.findings = normalizeStringArray(raw.findings);
       manifest.verification_hints = normalizeStringArray(raw.verification_hints);
-      manifest.capabilities_used = normalizeStringArray(raw.capabilities_used);
+      manifest.capabilities_used = normalizeMachineIdentifierArray(
+        raw.capabilities_used,
+        "capabilities_used",
+      );
       manifest.metrics = normalizeMetrics(raw.metrics);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);

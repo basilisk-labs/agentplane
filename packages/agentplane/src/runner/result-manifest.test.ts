@@ -59,6 +59,31 @@ describe("runner result manifest", () => {
     });
   });
 
+  it("rejects structural identifiers that are not machine-safe", async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-result-manifest-ident-"));
+    const resultPath = path.join(tempDir, "result.json");
+    await writeFile(
+      resultPath,
+      JSON.stringify({
+        schema_version: 1,
+        artifacts: [{ path: "reports/out.txt", label: "Bad Label" }],
+        capabilities_used: ["custom report"],
+      }),
+      "utf8",
+    );
+
+    let error: InvalidRunnerResultManifestError | null = null;
+    try {
+      await readRunnerResultManifest(resultPath);
+    } catch (err) {
+      error = err as InvalidRunnerResultManifestError;
+    }
+
+    expect(error).toBeInstanceOf(InvalidRunnerResultManifestError);
+    expect(error?.result_path).toBe(resultPath);
+    expect(error?.reason).toContain("artifacts[].label");
+  });
+
   it("preserves malformed manifest payloads for later inspection", async () => {
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-result-manifest-preserve-"));
     const resultPath = path.join(tempDir, "result.json");

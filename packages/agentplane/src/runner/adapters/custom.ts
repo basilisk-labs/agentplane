@@ -385,6 +385,10 @@ export class CustomRunnerAdapter implements RunnerAdapter {
         });
         return result;
       } catch (err) {
+        const sourceManifestPath =
+          err instanceof InvalidRunnerResultManifestError
+            ? await preserveRunnerResultManifestSource(invocation.result_path)
+            : null;
         const ended_at = new Date().toISOString();
         const invalidManifestPath =
           err instanceof InvalidRunnerResultManifestError
@@ -395,6 +399,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
             : null;
         const artifacts = buildCustomArtifacts({
           invocation,
+          source_manifest_path: sourceManifestPath,
           invalid_manifest_path: invalidManifestPath,
         });
         const output_paths = artifacts.map((artifact) => artifact.path);

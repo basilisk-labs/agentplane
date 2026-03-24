@@ -858,6 +858,7 @@ describe("runCli", () => {
       };
       const manifest = JSON.parse(await readFile(resultPath, "utf8")) as {
         summary?: string;
+        artifacts?: { path: string; label?: string }[];
         findings?: string[];
         verification_hints?: string[];
         capabilities_used?: string[];
@@ -875,6 +876,11 @@ describe("runCli", () => {
       expect(state.result?.findings).toBeUndefined();
       expect(state.result?.verification_hints).toBeUndefined();
       expect(manifest.summary).toBe("Custom runner execution completed successfully.");
+      expect(manifest.artifacts).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ path: "reports/custom.txt", label: "report" }),
+        ]),
+      );
       expect(manifest.findings).toBeUndefined();
       expect(manifest.verification_hints).toBeUndefined();
       expect(manifest.capabilities_used).toEqual(["custom.report"]);
@@ -1062,7 +1068,7 @@ describe("runCli", () => {
       fakeRunnerPath,
       [
         "#!/bin/sh",
-        String.raw`printf '{"schema_version":1,"findings":[42]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+        String.raw`printf '{"schema_version":1,"artifacts":[{"path":"reports/out.txt","label":"Bad Label"}],"capabilities_used":["custom report"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "cat >/dev/null",
         String.raw`printf "custom runner wrote invalid manifest\n"`,
         "exit 0",
@@ -1108,9 +1114,18 @@ describe("runCli", () => {
       const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
       const runEntries = await readdir(runsRoot);
       const runDir = path.join(runsRoot, runEntries.toSorted()[0] ?? "");
+      const sourceManifestPath = path.join(runDir, "result.source.json");
       const preservedManifestPath = path.join(runDir, "result.invalid.json");
+      expect(await pathExists(sourceManifestPath)).toBe(true);
       expect(await pathExists(preservedManifestPath)).toBe(true);
-      expect(await readFile(preservedManifestPath, "utf8")).toContain('"findings":[42]');
+      expect(await readFile(sourceManifestPath, "utf8")).toContain('"label":"Bad Label"');
+      expect(await readFile(sourceManifestPath, "utf8")).toContain(
+        '"capabilities_used":["custom report"]',
+      );
+      expect(await readFile(preservedManifestPath, "utf8")).toContain('"label":"Bad Label"');
+      expect(await readFile(preservedManifestPath, "utf8")).toContain(
+        '"capabilities_used":["custom report"]',
+      );
     } finally {
       process.env.PATH = originalPath;
       io.restore();
