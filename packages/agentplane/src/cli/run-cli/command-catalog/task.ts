@@ -23,6 +23,9 @@ import { taskRunSpec } from "../../../commands/task/run.spec.js";
 import { taskRunCancelSpec } from "../../../commands/task/run-cancel.spec.js";
 import { taskRunResumeSpec } from "../../../commands/task/run-resume.spec.js";
 import { taskRunRetrySpec } from "../../../commands/task/run-retry.spec.js";
+import { taskRunShowSpec } from "../../../commands/task/run-show.spec.js";
+import { taskRunTailSpec } from "../../../commands/task/run-tail.spec.js";
+import { taskRunTraceSpec } from "../../../commands/task/run-trace.spec.js";
 import { taskScaffoldSpec } from "../../../commands/task/scaffold.command.js";
 import { taskScrubSpec } from "../../../commands/task/scrub.command.js";
 import { taskSearchSpec } from "../../../commands/task/search.spec.js";
@@ -57,6 +60,15 @@ export const TASK_COMMANDS = [
   ),
   entry(taskShowSpec, (deps) =>
     import("../../../commands/task/show.run.js").then((m) => m.makeRunTaskShowHandler(deps.getCtx)),
+  ),
+  entry(taskRunShowSpec, () =>
+    import("../../../commands/task/run-show.command.js").then((m) => m.runTaskRunShow),
+  ),
+  entry(taskRunTraceSpec, () =>
+    import("../../../commands/task/run-trace.command.js").then((m) => m.runTaskRunTrace),
+  ),
+  entry(taskRunTailSpec, () =>
+    import("../../../commands/task/run-tail.command.js").then((m) => m.runTaskRunTail),
   ),
   entry(taskRunSpec, () =>
     import("../../../commands/task/run.command.js").then((m) => m.runTaskRun),

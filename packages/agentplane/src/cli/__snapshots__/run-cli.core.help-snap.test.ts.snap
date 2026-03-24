@@ -116,6 +116,9 @@ Commands:
     task run cancel  Cancel an existing runner run and stop the supervised process when present.
     task run resume  Resume an existing execute-mode runner run in place.
     task run retry  Retry an existing execute-mode runner run into a new run id.
+    task run show  Inspect persisted runner state and result artifacts for an existing run.
+    task run tail  Print the last N lines from the raw agent trace artifact for an existing runner run.
+    task run trace  Print the raw agent trace artifact for an existing runner run.
     task scaffold  Write a task README file scaffold (for the current doc template).
     task scrub  Replace a string across all tasks (frontmatter + docs).
     task search  Search tasks by text or regex with optional filters.

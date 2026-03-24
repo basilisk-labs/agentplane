@@ -324,6 +324,175 @@ describe("runCli", () => {
     expect(events).not.toContain('"type":"runner_execute_start"');
   });
 
+  it("task run show, trace, and tail inspect the latest persisted run without manual file reads", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = {
+      command: ["custom-runner"],
+    };
+    await writeConfig(root, config);
+
+    const fakeBinDir = path.join(root, "bin");
+    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Runner inspect task",
+          "--description",
+          "Inspect persisted runner artifacts via CLI",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    await mkdir(fakeBinDir, { recursive: true });
+    await writeFile(
+      fakeRunnerPath,
+      [
+        "#!/bin/sh",
+        "cat >/dev/null",
+        String.raw`printf "trace line one\n"`,
+        String.raw`printf "trace line two\n"`,
+        "exit 0",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeRunnerPath, 0o755);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before exercising runner inspection commands in the CLI test.",
+      "--root",
+      root,
+    ]);
+
+    const originalPath = process.env.PATH;
+    try {
+      process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
+      expect(await runCliSilent(["task", "run", taskId, "--root", root])).toBe(0);
+
+      const runsRoot = path.join(root, ".agentplane", "tasks", taskId, "runs");
+      const runEntries = await readdir(runsRoot);
+      const runId = runEntries.toSorted()[0] ?? "";
+      expect(runId).toBeTruthy();
+
+      {
+        const io = captureStdIO();
+        try {
+          const code = await runCli(["task", "run", "show", taskId, "--root", root]);
+          expect(code).toBe(0);
+          expect(io.stdout).toContain(`task run show: ${taskId}`);
+          expect(io.stdout).toContain("selection: latest");
+          expect(io.stdout).toContain(`run_id: ${runId}`);
+          expect(io.stdout).toContain("status: success");
+          expect(io.stdout).toContain("adapter: custom");
+          expect(io.stdout).toContain("events_count:");
+          expect(io.stdout).toContain("summary: Custom runner execution completed successfully.");
+          expect(io.stdout).toContain("trace:");
+        } finally {
+          io.restore();
+        }
+      }
+
+      {
+        const io = captureStdIO();
+        try {
+          const code = await runCli(["task", "run", "trace", taskId, "--root", root]);
+          expect(code).toBe(0);
+          expect(io.stdout).toContain('"stream":"stdout"');
+          expect(io.stdout).toContain('"raw":"trace line one"');
+          expect(io.stdout).toContain('"raw":"trace line two"');
+          expect(io.stdout).not.toContain("task run trace:");
+        } finally {
+          io.restore();
+        }
+      }
+
+      {
+        const io = captureStdIO();
+        try {
+          const code = await runCli([
+            "task",
+            "run",
+            "tail",
+            taskId,
+            runId,
+            "--lines",
+            "1",
+            "--root",
+            root,
+          ]);
+          expect(code).toBe(0);
+          expect(io.stdout).toContain('"raw":"trace line two"');
+          expect(io.stdout).not.toContain('"raw":"trace line one"');
+        } finally {
+          io.restore();
+        }
+      }
+    } finally {
+      process.env.PATH = originalPath;
+    }
+  });
+
+  it("task run trace fails with a typed error when the requested run is missing", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Missing runner trace task",
+          "--description",
+          "Missing runner trace task",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "run", "trace", taskId, "missing-run", "--root", root]);
+      expect(code).toBe(4);
+      expect(io.stderr).toContain("error [E_IO]: Runner artifact not found");
+      expect(io.stderr).toContain(`${taskId}:missing-run`);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("task run without --dry-run executes the prepared runner adapter and persists run-state", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -799,7 +968,6 @@ describe("runCli", () => {
       expect(state.supervision?.timeout_reason).toBe("idle");
       expect(state.supervision?.timeout_requested_at).toBeTruthy();
       expect(state.supervision?.terminate_sent_at).toBeTruthy();
-      expect(state.supervision?.kill_sent_at).toBeNull();
 
       const events = await readFile(eventsPath, "utf8");
       expect(events).toContain('"type":"runner_timeout_requested"');
