@@ -1,10 +1,11 @@
 ---
 id: "202603250509-KYAC8B"
 title: "Allow deterministic close commits on base branch during branch_pr finish"
-status: "DOING"
+result_summary: "integrate: squash task/202603250509-KYAC8B/close-commit"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-25T05:42:12.685Z"
   updated_by: "CODER"
   note: "Targeted finish/guard regressions, build, and style checks passed; branch_pr close-commit path now allows canonical base-branch close commits."
-commit: null
+commit:
+  hash: "59837201d6239524351b91a46196e699c1182990"
+  message: "📝 KYAC8B tasks: persist branch_pr PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the branch_pr base-branch close guard and allow canonical deterministic finish commits without workaround branches."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603250509-KYAC8B/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted finish/guard regressions, build, and style checks passed; branch_pr close-commit path now allows canonical base-branch close commits."
+  -
+    type: "status"
+    at: "2026-03-25T06:04:28.508Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603250509-KYAC8B/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T05:42:12.686Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T06:04:28.509Z"
+doc_updated_by: "INTEGRATOR"
 description: "Repair the branch_pr close path so finish/close-commit can create the deterministic task close commit on the pinned base branch without forcing a temporary workaround branch."
 sections:
   Summary: |-
