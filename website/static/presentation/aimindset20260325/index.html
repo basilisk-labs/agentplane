@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Скучные агенты: жёсткие рамки вместо магии</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="deck" data-slide-count="9">
+      <header class="topbar" aria-label="Навигация презентации">
+        <div class="wordmark">agent<span class="slash">/</span>plane</div>
+        <div class="meta">
+          <span id="slide-indicator">01 / 09</span>
+          <span class="pixel-tag">WF-01</span>
+        </div>
+      </header>
+      <div class="progress-track" aria-hidden="true">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+
+      <main id="slides" tabindex="-1">
+        <section class="slide active grid-paper" data-title="Титул + тезис">
+          <p class="kicker">Слайд 1</p>
+          <h1>Скучные агенты: жёсткие рамки вместо магии</h1>
+          <p class="lead">
+            Агентам в разработке нужна не «автономия демо», а инженерный процесс: гейты, роли,
+            апрувы и verify.
+          </p>
+          <div class="artifact-block">
+            <pre>Preflight → Plan → Approval → Tasks → Verify → Finish → Export</pre>
+          </div>
+          <aside class="margin-note">
+            <strong>INVARIANT</strong>: контрольный слой важнее «магии» модели.
+          </aside>
+        </section>
+
+        <section class="slide slide-peek" data-title="Обо мне: процесс">
+          <p class="kicker">Слайд 2</p>
+          <h2>Процессы → вайбкодинг → процесс для агентов</h2>
+          <ul>
+            <li>Цель: воспроизводимость и предсказуемость сложных систем.</li>
+            <li>Вайбкодинг ускоряет переход от намерения к коду.</li>
+            <li>Без процесса агент делает лишнее и оставляет побочные эффекты.</li>
+            <li>`AGENTS.md` + CLI превращают поведение в исполняемый контракт.</li>
+          </ul>
+          <div class="artifact-block">
+            <pre>intent → directives → AGENTS.md → CLI enforcement → reproducible result</pre>
+          </div>
+          <div class="peek-pane" aria-hidden="true">
+            <img class="peek-image" src="assets/slide2.png" alt="Скриншот AGENTS.md в редакторе" />
+          </div>
+        </section>
+
+        <section class="slide" data-title="Проблема магических агентов">
+          <p class="kicker">Слайд 3</p>
+          <h2>Разрыв между демо и реальным репозиторием</h2>
+          <ol>
+            <li><strong>Действия без контракта</strong>: правки до фиксации плана и границ.</li>
+            <li><strong>Нет трассируемости</strong>: решения и критерии не инспектируются.</li>
+            <li><strong>Нет ограничений</strong>: внешние действия без явных гейтов.</li>
+          </ol>
+          <div class="artifact-block">
+            <pre>Scope -> Approval -> Authority -> Verify -> Done</pre>
+          </div>
+          <aside class="margin-note">
+            <strong>RISK</strong>: это системная проблема процесса, не «плохой модели».
+          </aside>
+          <div class="peek-pane funnel-pane" aria-hidden="true">
+            <div class="funnel-row w1">
+              <span class="funnel-label">Scope</span>
+              <i class="funnel-line"></i>
+            </div>
+            <div class="funnel-row w2">
+              <span class="funnel-label">Approval</span>
+              <i class="funnel-line"></i>
+            </div>
+            <div class="funnel-row w3">
+              <span class="funnel-label">Authority</span>
+              <i class="funnel-line"></i>
+            </div>
+            <div class="funnel-row w4">
+              <span class="funnel-label">Verify</span>
+              <i class="funnel-line"></i>
+            </div>
+            <div class="funnel-row w5">
+              <span class="funnel-label">Done</span>
+              <i class="funnel-line"></i>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-title="Инсайт: качество = гейты">
+          <p class="kicker">Слайд 4</p>
+          <h2>Качество = гейты, сжимающие пространство ошибки</h2>
+          <div class="two-col">
+            <div>
+              <ul>
+                <li>Scope boundary: только внутри репозитория.</li>
+                <li>Approval gates: сеть и outside-repo только по разрешению.</li>
+                <li>Authority boundaries: явные роли и права.</li>
+              </ul>
+            </div>
+            <div>
+              <ul>
+                <li>Неперепрыгиваемый pipeline.</li>
+                <li>Verify как контракт готовности.</li>
+                <li>Меньше сюрпризов, меньше шума в diff.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="artifact-block">
+            <pre>Scope -> Approval -> Authority -> Verify -> Done</pre>
+          </div>
+          <div class="peek-pane funnel-pane" aria-hidden="true">
+            <div class="funnel-row w1">
+              <span class="funnel-label">Scope</span>
+              <i class="funnel-line"></i>
+            </div>
+            <div class="funnel-row w2">
+              <span class="funnel-label">Approval</span>
+              <i class="funnel-line"></i>
+            </div>
+            <div class="funnel-row w3">
+              <span class="funnel-label">Authority</span>
+              <i class="funnel-line"></i>
+            </div>
+            <div class="funnel-row w4">
+              <span class="funnel-label">Verify</span>
+              <i class="funnel-line"></i>
+            </div>
+            <div class="funnel-row w5">
+              <span class="funnel-label">Done</span>
+              <i class="funnel-line"></i>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-title="AGENTS.md как конституция">
+          <p class="kicker">Слайд 5</p>
+          <h2>AGENTS.md как конституция</h2>
+          <ul>
+            <li>Источник истины и приоритеты правил в явном виде.</li>
+            <li>Не перегружать директивами и не замусоривать контекст.</li>
+            <li>Жёсткие инварианты правды и безопасности (`MUST NOT`).</li>
+            <li>Запрет внешних действий без отдельного approval-гейта.</li>
+            <li>Объяснимость через артефакты, а не «магическое рассуждение».</li>
+          </ul>
+          <div class="artifact-block">
+            <pre>
+Artifacts: Preflight Summary, Plan, Assumptions, Decisions, Trade-offs, Verify</pre
+            >
+          </div>
+          <p class="external-link">
+            Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?
+            <a href="https://arxiv.org/pdf/2602.11988" target="_blank" rel="noopener noreferrer"
+              >https://arxiv.org/pdf/2602.11988</a
+            >
+          </p>
+        </section>
+
+        <section class="slide" data-title="AgentPlane как контрольный слой">
+          <p class="kicker">Слайд 6</p>
+          <h2>agent/plane: CLI-движок процесса + policy-layer</h2>
+          <div class="diagram">
+            <div>AGENTS.md</div>
+            <div class="arrow">+</div>
+            <div>agentplane CLI</div>
+            <div class="arrow">=</div>
+            <div>Control Layer</div>
+          </div>
+          <ul>
+            <li>Трассируемость задач и состояний в структуре проекта.</li>
+            <li>Режимы `direct` и `branch_pr` для разных контуров работы.</li>
+            <li>Безопасность по умолчанию: нет «тихих» внешних действий.</li>
+            <li>Динамические профили агентов под контекст задачи и режим исполнения.</li>
+            <li>
+              Создание новых специализированных агентов по запросу, когда не хватает текущих ролей.
+            </li>
+          </ul>
+          <div class="cli-pane" aria-hidden="true">
+            <img
+              class="cli-image"
+              src="assets/agentplane-cli.png"
+              alt="agentplane CLI screenshot"
+            />
+          </div>
+        </section>
+
+        <section class="slide" data-title="Неперепрыгиваемый pipeline">
+          <p class="kicker">Слайд 7</p>
+          <h2>От намерения к проверяемому результату</h2>
+          <div class="workflow-line" role="img" aria-label="Линия процесса">
+            <span class="wf-preflight">Preflight</span><span>→</span
+            ><span class="wf-plan">Plan</span><span>→</span><span class="wf-approval">Approval</span
+            ><span>→</span><span class="wf-tasks">Tasks</span><span>→</span
+            ><span class="wf-verify">Verify</span><span>→</span><span class="wf-finish">Finish</span
+            ><span>→</span><span class="wf-export">Export</span>
+          </div>
+          <p>
+            Ключевой тезис: мы не пытаемся сделать агента умнее промптом. Мы делаем так, чтобы он не
+            мог перепрыгнуть через контроль качества.
+          </p>
+          <aside class="margin-note"><strong>GATE</strong>: verify перед finish.</aside>
+          <div class="peek-pane funnel-pane funnel-pane-color" aria-hidden="true">
+            <div class="funnel-row w1">
+              <span class="funnel-label funnel-label-lg wf-preflight">Preflight</span>
+              <i class="funnel-line wf-line-preflight"></i>
+            </div>
+            <div class="funnel-row w2">
+              <span class="funnel-label funnel-label-lg wf-plan">Plan</span>
+              <i class="funnel-line wf-line-plan"></i>
+            </div>
+            <div class="funnel-row w3">
+              <span class="funnel-label funnel-label-lg wf-approval">Approval</span>
+              <i class="funnel-line wf-line-approval"></i>
+            </div>
+            <div class="funnel-row w4">
+              <span class="funnel-label funnel-label-lg wf-tasks">Tasks</span>
+              <i class="funnel-line wf-line-tasks"></i>
+            </div>
+            <div class="funnel-row w5">
+              <span class="funnel-label funnel-label-lg wf-verify">Verify</span>
+              <i class="funnel-line wf-line-verify"></i>
+            </div>
+            <div class="funnel-row w6">
+              <span class="funnel-label funnel-label-lg wf-finish">Finish</span>
+              <i class="funnel-line wf-line-finish"></i>
+            </div>
+            <div class="funnel-row w7">
+              <span class="funnel-label funnel-label-lg wf-export">Export</span>
+              <i class="funnel-line wf-line-export"></i>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-title="Любую рутину в dev-задачу">
+          <p class="kicker">Слайд 8</p>
+          <h2>Любую рутину → в dev-задачу</h2>
+          <ol>
+            <li>Сначала интерфейс результата: файл, отчёт, PR, diff.</li>
+            <li>Потом ограничения и гейты: scope, роли, network policy.</li>
+            <li>Затем verify-контракт: как объективно понять «готово».</li>
+          </ol>
+          <div class="artifact-block">
+            <pre>plan → tasks → artifacts → verify → reproducible outcome</pre>
+          </div>
+          <div class="peek-pane" aria-hidden="true">
+            <img
+              class="peek-image"
+              src="assets/slide8.png"
+              alt="Скриншот рабочего процесса agentplane"
+            />
+          </div>
+        </section>
+
+        <section class="slide" data-title="Быстрый старт">
+          <p class="kicker">Слайд 9</p>
+          <h2>Быстрый старт с AgentPlane</h2>
+          <ul>
+            <li>Нужен установленный <strong>Node.js</strong>.</li>
+            <li>
+              Установка CLI одной командой:
+              <code>npm i -g agentplane@latest</code>.
+            </li>
+            <li>
+              В рабочем репозитории запустить
+              <code>agentplane init</code>.
+            </li>
+            <li>Выбрать режим: <code>direct</code> или <code>branch_pr</code>.</li>
+            <li>Дальше идти по пайплайну: preflight → plan → approval → tasks → verify.</li>
+          </ul>
+          <div class="command-highlight">
+            <code>npm i -g agentplane@latest</code>
+          </div>
+          <div class="artifact-block">
+            <pre>https://github.com/basilisk-labs/agentplane</pre>
+          </div>
+          <p class="lead">
+            Минимальный вход: установить CLI, инициализировать проект и сразу работать через
+            verify-ориентированный процесс.
+          </p>
+        </section>
+      </main>
+
+      <footer class="bottombar">
+        <p>
+          Навигация: <kbd>←</kbd> <kbd>→</kbd> <kbd>Space</kbd> <kbd>Shift+Space</kbd>
+          <kbd>Home</kbd> <kbd>End</kbd>
+        </p>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
