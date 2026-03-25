@@ -1,10 +1,11 @@
 ---
 id: "202603251236-YZ5HXQ"
 title: "Repair branch_pr policy template sync after false close"
-status: "DOING"
+result_summary: "integrate: squash task/202603251236-YZ5HXQ/repair-branch-pr-policy-sync"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-25T12:39:17.412Z"
   updated_by: "CODER"
   note: "The one-line generated branch_pr policy drift is now committed directly, bun run agents:check passes, and the remaining push path should no longer fail on agent template sync."
-commit: null
+commit:
+  hash: "2cf17c5973f7a7b6690485a37f3f72d900716e92"
+  message: "📝 YZ5HXQ tasks: persist branch_pr PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: repairing the still-unsynced generated branch_pr policy target after RK1M7J closed without the actual policy file, keeping the scope to the one generated policy artifact and rerunning the blocked template check before another push attempt."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603251236-YZ5HXQ/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "The one-line generated branch_pr policy drift is now committed directly, bun run agents:check passes, and the remaining push path should no longer fail on agent template sync."
+  -
+    type: "status"
+    at: "2026-03-25T12:40:45.467Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603251236-YZ5HXQ/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T12:39:17.440Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T12:40:45.469Z"
+doc_updated_by: "INTEGRATOR"
 description: "Actually sync .agentplane/policy/workflow.branch_pr.md with the canonical branch_pr workflow asset after RK1M7J closed without committing the policy file, so agents:check and pre-push return to green."
 sections:
   Summary: |-

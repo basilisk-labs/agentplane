@@ -1,0 +1,7 @@
+ .agentplane/policy/workflow.branch_pr.md           |   1 -
+ .agentplane/tasks/202603251236-YZ5HXQ/README.md    | 123 +++++++++++++++++++++
+ .../tasks/202603251236-YZ5HXQ/pr/diffstat.txt      |   0
+ .agentplane/tasks/202603251236-YZ5HXQ/pr/meta.json |  12 ++
+ .agentplane/tasks/202603251236-YZ5HXQ/pr/review.md |  22 ++++
+ .../tasks/202603251236-YZ5HXQ/pr/verify.log        |   0
+ 6 files changed, 157 insertions(+), 1 deletion(-)
