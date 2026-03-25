@@ -575,7 +575,7 @@ export async function cmdFinish(opts: {
         allow: [],
         autoAllow: false,
         allowTasks: true,
-        allowBase: false,
+        allowBase: ctx.config.workflow_mode === "branch_pr",
         allowPolicy: false,
         allowConfig: false,
         allowHooks: false,

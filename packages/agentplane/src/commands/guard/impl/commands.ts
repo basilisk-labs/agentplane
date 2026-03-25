@@ -382,7 +382,7 @@ export async function cmdCommit(opts: {
         taskId: opts.taskId,
         message: msg.subject,
         allow,
-        allowBase: false,
+        allowBase: opts.allowBase,
         allowTasks: true,
         allowPolicy: false,
         allowConfig: false,
@@ -395,7 +395,7 @@ export async function cmdCommit(opts: {
       const env = buildGitCommitEnv({
         taskId: opts.taskId,
         allowTasks: true,
-        allowBase: false,
+        allowBase: opts.allowBase,
         allowPolicy: false,
         allowConfig: false,
         allowHooks: false,
