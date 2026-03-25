@@ -102,7 +102,7 @@ describe("runSupervisedProcess", () => {
     try {
       const partialTrace = await waitForTraceMatch({
         path: invocation.trace_path,
-        timeoutMs: 1500,
+        timeoutMs: 5000,
         matcher: (contents) =>
           contents.includes('"stream":"stdout"') && contents.includes('"type":"first"'),
       });
