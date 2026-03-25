@@ -1,10 +1,11 @@
 ---
 id: "202603251311-E7NRK6"
 title: "Make Redmine live backend suite opt-in for fast CI"
-status: "DOING"
+result_summary: "integrate: squash task/202603251311-E7NRK6/redmine-live-optin"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-25T13:16:54.019Z"
   updated_by: "CODER"
   note: "Checks passed: Redmine live test file now runs only gating assertions by default and skips live cases without the opt-in flag; bun run test:backend:redmine-live passes with the explicit opt-in path; bun run test:fast passes end-to-end with redmine/live.test.ts reporting 2 skipped live cases; eslint and agentplane build passed on the task diff."
-commit: null
+commit:
+  hash: "5e59d98de7cab1a861b56838ce334df9bdb3199c"
+  message: "✨ E7NRK6 test: refresh local PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: making the Redmine live backend suite opt-in so local fast CI and pre-push stay deterministic even when local AGENTPLANE_REDMINE_* credentials exist, while preserving the dedicated live-suite entrypoint for explicit backend checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603251311-E7NRK6/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Checks passed: Redmine live test file now runs only gating assertions by default and skips live cases without the opt-in flag; bun run test:backend:redmine-live passes with the explicit opt-in path; bun run test:fast passes end-to-end with redmine/live.test.ts reporting 2 skipped live cases; eslint and agentplane build passed on the task diff."
+  -
+    type: "status"
+    at: "2026-03-25T13:19:11.254Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603251311-E7NRK6/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T13:16:54.021Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T13:19:11.254Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent local fast CI and pre-push from silently running the live Redmine backend suite whenever AGENTPLANE_REDMINE_* env vars exist. Keep the dedicated live suite working via an explicit opt-in path."
 sections:
   Summary: |-

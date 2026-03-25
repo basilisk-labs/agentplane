@@ -1,0 +1,8 @@
+ .agentplane/tasks/202603251311-E7NRK6/README.md    | 124 +++++++++++++++++++++
+ .../tasks/202603251311-E7NRK6/pr/diffstat.txt      |   0
+ .agentplane/tasks/202603251311-E7NRK6/pr/meta.json |  12 ++
+ .agentplane/tasks/202603251311-E7NRK6/pr/review.md |  22 ++++
+ .../tasks/202603251311-E7NRK6/pr/verify.log        |   0
+ .../src/backends/task-backend/redmine/live.test.ts |  33 +++++-
+ scripts/run-backend-live-suite.mjs                 |   5 +-
+ 7 files changed, 192 insertions(+), 4 deletions(-)
