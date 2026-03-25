@@ -466,11 +466,27 @@ export function validateTaskReadmeFrontmatter(value: unknown): TaskFrontmatter {
   return assertValid("task README frontmatter", validateTaskReadmeFrontmatterSchema, value);
 }
 
+function normalizeLegacyTaskPriority(value: unknown): unknown {
+  if (typeof value !== "string") return value;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "medium") return "med";
+  if (
+    normalized === "low" ||
+    normalized === "normal" ||
+    normalized === "med" ||
+    normalized === "high"
+  ) {
+    return normalized;
+  }
+  return value;
+}
+
 export function withTaskReadmeFrontmatterDefaults(
   value: Record<string, unknown>,
 ): Record<string, unknown> {
   return {
     ...value,
+    priority: normalizeLegacyTaskPriority(value.priority),
     depends_on: Array.isArray(value.depends_on) ? value.depends_on : [],
     tags: Array.isArray(value.tags) ? value.tags : [],
     verify: Array.isArray(value.verify) ? value.verify : [],

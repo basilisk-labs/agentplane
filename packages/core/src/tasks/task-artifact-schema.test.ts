@@ -10,6 +10,7 @@ import {
   validateTaskPrMeta,
   validateTaskReadmeFrontmatter,
   validateTasksExportSnapshot,
+  withTaskReadmeFrontmatterDefaults,
 } from "../index.js";
 
 describe("task-artifact-schema", () => {
@@ -97,6 +98,30 @@ describe("task-artifact-schema", () => {
         id_source: "generated",
         commit: { hash: "abc", message: "external backend reference" },
       } satisfies Record<string, unknown>),
+    ).not.toThrow();
+  });
+
+  it("normalizes legacy medium priority before README schema validation", () => {
+    expect(() =>
+      validateTaskReadmeFrontmatter(
+        withTaskReadmeFrontmatterDefaults({
+          id: "202603251535-DPZ4NN",
+          title: "Legacy medium priority fixture",
+          status: "TODO",
+          priority: "medium",
+          owner: "CODER",
+          depends_on: [],
+          tags: [],
+          verify: [],
+          plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-03-25T17:30:00.000Z",
+          doc_updated_by: "CODER",
+          description: "Fixture",
+        }),
+      ),
     ).not.toThrow();
   });
 });
