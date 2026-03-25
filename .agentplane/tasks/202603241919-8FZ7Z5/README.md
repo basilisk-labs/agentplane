@@ -1,10 +1,11 @@
 ---
 id: "202603241919-8FZ7Z5"
 title: "Workflow audit: remove remaining direct-main assumptions from integration and release guidance"
-status: "DOING"
+result_summary: "integrate: squash task/202603241919-8FZ7Z5/branch-pr-runtime-guidance"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-25T06:30:04.244Z"
   updated_by: "CODER"
   note: "Removed the remaining branch_pr direct-main wording from runtime-generated startup/role guidance, regenerated the bootstrap doc, and verified build/command-guide test/prettier/eslint in touched scope."
-commit: null
+commit:
+  hash: "4939c723d03e20e4326517109c8dacc6149549d5"
+  message: "📝 8FZ7Z5 tasks: persist branch_pr PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: align runtime-generated startup and integration guidance with the branch_pr remote-check gate and keep release-only push paths clearly separate."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603241919-8FZ7Z5/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed the remaining branch_pr direct-main wording from runtime-generated startup/role guidance, regenerated the bootstrap doc, and verified build/command-guide test/prettier/eslint in touched scope."
+  -
+    type: "status"
+    at: "2026-03-25T06:31:11.133Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603241919-8FZ7Z5/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T06:30:04.246Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T06:31:11.133Z"
+doc_updated_by: "INTEGRATOR"
 description: "Audit integration and release surfaces for any remaining assumptions that ordinary task work can push directly to main, and align those surfaces with the branch_pr-first remote-green workflow."
 sections:
   Summary: |-
