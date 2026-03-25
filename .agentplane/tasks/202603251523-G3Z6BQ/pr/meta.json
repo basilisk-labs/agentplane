@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603251523-G3Z6BQ/framework-refactor-ledger",
   "created_at": "2026-03-25T15:45:43.271Z",
+  "head_sha": "138097361df0b5349ee92c5963fb58ab15332998",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "03bc31af4eef4165ace2cd6ab0bab7b28197a39d",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-25T15:57:48.731Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603251523-G3Z6BQ",
-  "updated_at": "2026-03-25T15:55:59.732Z",
+  "updated_at": "2026-03-25T15:57:48.731Z",
   "verify": {
     "status": "skipped"
   }

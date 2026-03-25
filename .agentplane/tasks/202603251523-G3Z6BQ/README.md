@@ -1,10 +1,11 @@
 ---
 id: "202603251523-G3Z6BQ"
 title: "Create framework code map and aggregate refactor ledger"
-status: "DOING"
+result_summary: "integrate: squash task/202603251523-G3Z6BQ/framework-refactor-ledger"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-25T15:44:43.568Z"
   updated_by: "CODER"
   note: "Verified: framework code map, subsystem analysis ledger, and sequential refactor backlog were aligned; Prettier and policy-routing checks passed."
-commit: null
+commit:
+  hash: "03bc31af4eef4165ace2cd6ab0bab7b28197a39d"
+  message: "✨ G3Z6BQ task: refresh planning PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: build the aggregate refactor ledger, map subsystem boundaries, collect per-area findings, and derive an ordered refactor roadmap from the combined analysis."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603251523-G3Z6BQ/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: framework code map, subsystem analysis ledger, and sequential refactor backlog were aligned; Prettier and policy-routing checks passed."
+  -
+    type: "status"
+    at: "2026-03-25T15:57:49.101Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603251523-G3Z6BQ/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T15:44:43.575Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T15:57:49.101Z"
+doc_updated_by: "INTEGRATOR"
 description: "Build a current code map of the framework repository, create the aggregate analysis ledger at docs/developer/framework-refactor-program.mdx, define logical subsystem boundaries, and act as the collection point for area-level analysis results and the eventual refactor backlog."
 sections:
   Summary: |-
