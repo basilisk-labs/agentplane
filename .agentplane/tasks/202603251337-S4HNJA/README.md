@@ -1,10 +1,11 @@
 ---
 id: "202603251337-S4HNJA"
 title: "Stabilize Windows timeout in platform-critical upgrade test"
-status: "DOING"
+result_summary: "integrate: squash task/202603251337-S4HNJA/windows-upgrade-timeout"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ verification:
     Result: pass
     Evidence: agentplane build exited with code 0.
     Scope: packages/agentplane
-commit: null
+commit:
+  hash: "1de514ef93325c19c28aed68887e76d00120b4a8"
+  message: "✨ S4HNJA test: refresh local PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the Windows platform-critical timeout, keep the fix narrow to the upgrade test path, and record verification against the declared init+upgrade suite."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603251337-S4HNJA/pr."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
       Result: pass
       Evidence: agentplane build exited with code 0.
       Scope: packages/agentplane
+  -
+    type: "status"
+    at: "2026-03-25T13:44:25.809Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603251337-S4HNJA/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T13:43:23.510Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T13:44:25.809Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the failing GitHub Actions Windows check where run-cli.core.upgrade.test.ts times out inside the platform-critical init+upgrade suite. Keep the fix narrow: stabilize the test or its invocation without weakening the upgrade contract."
 sections:
   Summary: |-
