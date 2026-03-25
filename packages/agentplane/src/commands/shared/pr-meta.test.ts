@@ -2,7 +2,7 @@ import os from "node:os";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as git from "./git.js";
-import { resolveShellInvocation, runShellCommand } from "./pr-meta.js";
+import { parsePrMeta, resolveShellInvocation, runShellCommand } from "./pr-meta.js";
 
 describe("pr-meta shell invocations", () => {
   let originalComspec: string | undefined;
@@ -64,5 +64,19 @@ describe("pr-meta shell invocations", () => {
       expect.objectContaining({ cwd: process.cwd() }),
     );
     expect(result).toEqual({ code: 0, output: "ok" });
+  });
+
+  it("rejects invalid pr/meta schema shapes", () => {
+    expect(() =>
+      parsePrMeta(
+        JSON.stringify({
+          schema_version: 1,
+          task_id: "202601010101-ABCDE",
+          created_at: 123,
+          updated_at: "2026-01-27T00:00:00Z",
+        }),
+        "202601010101-ABCDE",
+      ),
+    ).toThrow(/pr\/meta\.json schema validation failed/u);
   });
 });
