@@ -1,0 +1,6 @@
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 124 +++++++++++++++++++
+ .../agentplane/src/commands/pr/integrate/cmd.ts    |  13 +-
+ .../commands/pr/integrate/internal/merge.test.ts   |   6 +
+ .../src/commands/pr/integrate/internal/merge.ts    | 136 +++++++++++++++++++++
+ .../src/commands/pr/integrate/internal/prepare.ts  |   2 +
+ 5 files changed, 280 insertions(+), 1 deletion(-)

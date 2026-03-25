@@ -39,6 +39,8 @@ describe("pr/integrate/internal/merge", () => {
       branch: "task/T-1",
       headBeforeMerge: "before",
       taskId: "202602111653-X32XPT",
+      workflowDir: ".agentplane/tasks",
+      changedPaths: [],
       genericTokens: ["wip"],
     });
     expect(hash).toBe("deadbeefcafebabe");
@@ -63,6 +65,8 @@ describe("pr/integrate/internal/merge", () => {
         branch: "task/T-2",
         headBeforeMerge: "before",
         taskId: "202602111653-X32XPT",
+        workflowDir: ".agentplane/tasks",
+        changedPaths: [],
         genericTokens: ["wip"],
       }),
     ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
@@ -83,6 +87,8 @@ describe("pr/integrate/internal/merge", () => {
         gitRoot: "/repo",
         branch: "task/T-3",
         taskId: "202602111653-X32XPT",
+        workflowDir: ".agentplane/tasks",
+        changedPaths: [],
       }),
     ).rejects.toMatchObject<CliError>({ code: "E_GIT" });
     expect(mocks.execFileAsync).toHaveBeenCalledWith(

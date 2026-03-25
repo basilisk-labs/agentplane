@@ -271,6 +271,130 @@ describe("runCli", () => {
     expect(meta).not.toHaveProperty("base_branch");
   }, 120_000);
 
+  it("integrate succeeds when branch_pr task artifacts already exist untracked on the base checkout", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+    await stageGitignoreIfPresent(root);
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate task artifacts collision",
+        "--description",
+        "Branch integration should tolerate untracked local-backend task artifacts on main.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
+
+    const branch = `task/${taskId}/integrate-artifacts`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", "feature.txt", `.agentplane/tasks/${taskId}`], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature and task artifacts`], {
+      cwd: root,
+    });
+
+    const taskReadmeText = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    const prMetaText = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"),
+      "utf8",
+    );
+    const prReviewText = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "review.md"),
+      "utf8",
+    );
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await mkdir(path.join(root, ".agentplane", "tasks", taskId, "pr"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      taskReadmeText,
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"),
+      prMetaText,
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "review.md"),
+      prReviewText,
+      "utf8",
+    );
+
+    const { stdout: statusBefore } = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=all"],
+      { cwd: root },
+    );
+    expect(statusBefore).toContain(`?? .agentplane/tasks/${taskId}/README.md`);
+    expect(statusBefore).toContain(`?? .agentplane/tasks/${taskId}/pr/meta.json`);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ integrate");
+    } finally {
+      io.restore();
+    }
+
+    const { stdout: statusAfter } = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=all"],
+      {
+        cwd: root,
+      },
+    );
+    expect(statusAfter).not.toContain(`?? .agentplane/tasks/${taskId}/README.md`);
+    expect(statusAfter).not.toContain(`?? .agentplane/tasks/${taskId}/pr/meta.json`);
+    const backupDir = path.join(root, ".agentplane", "tmp", "integrate-backups");
+    if (await pathExists(backupDir)) {
+      expect(await readdir(backupDir)).toEqual([]);
+    }
+    expect(await pathExists(path.join(root, "feature.txt"))).toBe(true);
+    const task = await readTask({ cwd: root, taskId });
+    expect(task.frontmatter.status).toBe("DONE");
+    const metaText = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"),
+      "utf8",
+    );
+    expect(metaText).toContain('"status": "MERGED"');
+  }, 120_000);
+
   it("integrate uses a compliant fallback commit subject when branch subject is invalid (squash)", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);

@@ -1,3 +1,6 @@
+import { mkdir, rename, rm } from "node:fs/promises";
+import path from "node:path";
+
 import { extractTaskSuffix, validateCommitSubject } from "@agentplaneorg/core";
 
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
@@ -8,14 +11,123 @@ import type { PrMeta } from "../../../shared/pr-meta.js";
 
 import { computeVerifyState, runVerifyCommands } from "../verify.js";
 
+type MovedTaskArtifact = {
+  relativePath: string;
+  backupPath: string;
+};
+
+const noopPromise = (): Promise<void> => Promise.resolve();
+
+async function listUntrackedTaskArtifacts(opts: {
+  gitRoot: string;
+  taskPrefix: string;
+}): Promise<string[]> {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["status", "--short", "--untracked-files=all", "--", opts.taskPrefix],
+    {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    },
+  );
+  return stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith("?? "))
+    .map((line) => line.slice(3).trim())
+    .filter(Boolean);
+}
+
+async function moveCollidingTaskArtifacts(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  taskId: string;
+  changedPaths: string[];
+}): Promise<{
+  moved: MovedTaskArtifact[];
+  restore: () => Promise<void>;
+  cleanup: () => Promise<void>;
+}> {
+  const taskPrefix = `${opts.workflowDir.replaceAll("\\", "/")}/${opts.taskId}`;
+  const candidatePaths = opts.changedPaths.filter(
+    (changedPath) => changedPath === taskPrefix || changedPath.startsWith(`${taskPrefix}/`),
+  );
+  if (candidatePaths.length === 0) {
+    return {
+      moved: [],
+      restore: noopPromise,
+      cleanup: noopPromise,
+    };
+  }
+
+  const untrackedPaths = await listUntrackedTaskArtifacts({
+    gitRoot: opts.gitRoot,
+    taskPrefix,
+  });
+  const collidingPaths = untrackedPaths.filter((untrackedPath) =>
+    candidatePaths.includes(untrackedPath),
+  );
+  if (collidingPaths.length === 0) {
+    return {
+      moved: [],
+      restore: noopPromise,
+      cleanup: noopPromise,
+    };
+  }
+
+  const backupRoot = path.join(
+    opts.gitRoot,
+    ".agentplane",
+    "tmp",
+    "integrate-backups",
+    `${opts.taskId}-${Date.now()}`,
+  );
+  const backupParent = path.dirname(backupRoot);
+  const backupGrandparent = path.dirname(backupParent);
+  const moved: MovedTaskArtifact[] = [];
+  for (const relativePath of collidingPaths) {
+    const sourcePath = path.join(opts.gitRoot, relativePath);
+    const backupPath = path.join(backupRoot, relativePath);
+    await mkdir(path.dirname(backupPath), { recursive: true });
+    await rename(sourcePath, backupPath);
+    moved.push({ relativePath, backupPath });
+  }
+
+  return {
+    moved,
+    restore: async () => {
+      for (const entry of moved.toReversed()) {
+        await mkdir(path.dirname(path.join(opts.gitRoot, entry.relativePath)), { recursive: true });
+        await rename(entry.backupPath, path.join(opts.gitRoot, entry.relativePath));
+      }
+      await rm(backupRoot, { recursive: true, force: true }).catch(() => null);
+      await rm(backupParent).catch(() => null);
+      await rm(backupGrandparent).catch(() => null);
+    },
+    cleanup: async () => {
+      await rm(backupRoot, { recursive: true, force: true }).catch(() => null);
+      await rm(backupParent).catch(() => null);
+      await rm(backupGrandparent).catch(() => null);
+    },
+  };
+}
+
 export async function runSquashMerge(opts: {
   gitRoot: string;
   base: string;
   branch: string;
   headBeforeMerge: string;
   taskId: string;
+  workflowDir: string;
+  changedPaths: string[];
   genericTokens: string[];
 }): Promise<string> {
+  const movedArtifacts = await moveCollidingTaskArtifacts({
+    gitRoot: opts.gitRoot,
+    workflowDir: opts.workflowDir,
+    taskId: opts.taskId,
+    changedPaths: opts.changedPaths,
+  });
   try {
     await execFileAsync("git", ["merge", "--squash", opts.branch], {
       cwd: opts.gitRoot,
@@ -26,6 +138,7 @@ export async function runSquashMerge(opts: {
       cwd: opts.gitRoot,
       env: gitEnv(),
     });
+    await movedArtifacts.restore();
     const message = err instanceof Error ? err.message : "git merge --squash failed";
     throw new CliError({ exitCode: exitCodeForError("E_GIT"), code: "E_GIT", message });
   }
@@ -39,6 +152,7 @@ export async function runSquashMerge(opts: {
       cwd: opts.gitRoot,
       env: gitEnv(),
     });
+    await movedArtifacts.restore();
     throw new CliError({
       exitCode: exitCodeForError("E_USAGE"),
       code: "E_USAGE",
@@ -81,10 +195,12 @@ export async function runSquashMerge(opts: {
       cwd: opts.gitRoot,
       env: gitEnv(),
     });
+    await movedArtifacts.restore();
     const message = err instanceof Error ? err.message : "git commit failed";
     throw new CliError({ exitCode: exitCodeForError("E_GIT"), code: "E_GIT", message });
   }
 
+  await movedArtifacts.cleanup();
   return await gitRevParse(opts.gitRoot, ["HEAD"]);
 }
 
@@ -92,8 +208,16 @@ export async function runMergeCommit(opts: {
   gitRoot: string;
   branch: string;
   taskId: string;
+  workflowDir: string;
+  changedPaths: string[];
 }): Promise<string> {
   const suffix = extractTaskSuffix(opts.taskId);
+  const movedArtifacts = await moveCollidingTaskArtifacts({
+    gitRoot: opts.gitRoot,
+    workflowDir: opts.workflowDir,
+    taskId: opts.taskId,
+    changedPaths: opts.changedPaths,
+  });
   const env = {
     ...process.env,
     AGENTPLANE_TASK_ID: opts.taskId,
@@ -108,9 +232,11 @@ export async function runMergeCommit(opts: {
     );
   } catch (err) {
     await execFileAsync("git", ["merge", "--abort"], { cwd: opts.gitRoot, env: gitEnv() });
+    await movedArtifacts.restore();
     const message = err instanceof Error ? err.message : "git merge failed";
     throw new CliError({ exitCode: exitCodeForError("E_GIT"), code: "E_GIT", message });
   }
+  await movedArtifacts.cleanup();
   return await gitRevParse(opts.gitRoot, ["HEAD"]);
 }
 
@@ -129,6 +255,8 @@ export async function runRebaseFastForward(opts: {
   shouldRunVerify: boolean;
   quiet: boolean;
   taskId: string;
+  workflowDir: string;
+  changedPaths: string[];
 }): Promise<{
   mergeHash: string;
   branchHeadSha: string;
@@ -171,6 +299,12 @@ export async function runRebaseFastForward(opts: {
     );
   }
 
+  const movedArtifacts = await moveCollidingTaskArtifacts({
+    gitRoot: opts.gitRoot,
+    workflowDir: opts.workflowDir,
+    taskId: opts.taskId,
+    changedPaths: opts.changedPaths,
+  });
   try {
     await execFileAsync("git", ["merge", "--ff-only", opts.branch], {
       cwd: opts.gitRoot,
@@ -181,12 +315,14 @@ export async function runRebaseFastForward(opts: {
       cwd: opts.gitRoot,
       env: gitEnv(),
     }).catch(() => null);
+    await movedArtifacts.restore();
     const message = err instanceof Error ? err.message : "git merge --ff-only failed";
     throw new CliError({ exitCode: exitCodeForError("E_GIT"), code: "E_GIT", message });
   }
 
   const mergeHash = await gitRevParse(opts.gitRoot, ["HEAD"]);
   branchHeadSha = await gitRevParse(opts.gitRoot, [opts.branch]);
+  await movedArtifacts.cleanup();
 
   return { mergeHash, branchHeadSha, verifyEntries, alreadyVerifiedSha, shouldRunVerify };
 }
