@@ -441,7 +441,7 @@
       "properties": {
         "hash": {
           "type": "string",
-          "minLength": 7
+          "minLength": 1
         },
         "message": {
           "type": "string",

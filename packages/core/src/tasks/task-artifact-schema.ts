@@ -127,7 +127,7 @@ const TASK_COMMIT_SCHEMA = {
   additionalProperties: false,
   required: ["hash", "message"],
   properties: {
-    hash: { type: "string", minLength: 7 },
+    hash: { type: "string", minLength: 1 },
     message: { type: "string", minLength: 1 },
   },
 } as const;

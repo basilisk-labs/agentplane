@@ -17,6 +17,31 @@ import { toStringArray } from "./strings.js";
 import type { TaskData, TaskEvent } from "./types.js";
 
 const DEFAULT_EXPORT_DOC_UPDATED_AT = "1970-01-01T00:00:00.000Z";
+const DEFAULT_EXPORT_TITLE = "(untitled task)";
+const DEFAULT_EXPORT_OWNER = "UNKNOWN";
+
+function normalizeExportTitle(value: TaskData["title"]): string {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : DEFAULT_EXPORT_TITLE;
+}
+
+function normalizeExportStatus(value: TaskData["status"]): "TODO" | "DOING" | "DONE" | "BLOCKED" {
+  if (typeof value === "string") {
+    const normalized = value.trim().toUpperCase();
+    if (
+      normalized === "TODO" ||
+      normalized === "DOING" ||
+      normalized === "DONE" ||
+      normalized === "BLOCKED"
+    ) {
+      return normalized;
+    }
+  }
+  return "TODO";
+}
+
+function normalizeExportOwner(value: TaskData["owner"]): string {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : DEFAULT_EXPORT_OWNER;
+}
 
 function normalizeExportPriority(value: TaskData["priority"]): "low" | "normal" | "med" | "high" {
   if (value === "low" || value === "normal" || value === "med" || value === "high") return value;
@@ -45,11 +70,11 @@ function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_sourc
   const base = {
     ...task,
     id: task.id,
-    title: task.title ?? "",
+    title: normalizeExportTitle(task.title),
     description: task.description ?? "",
-    status: task.status ?? "",
+    status: normalizeExportStatus(task.status),
     priority: normalizeExportPriority(task.priority),
-    owner: task.owner ?? "",
+    owner: normalizeExportOwner(task.owner),
     result_summary: typeof task.result_summary === "string" ? task.result_summary : undefined,
     risk_level:
       task.risk_level === "low" || task.risk_level === "med" || task.risk_level === "high"

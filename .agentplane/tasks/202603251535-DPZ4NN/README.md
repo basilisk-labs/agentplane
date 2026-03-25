@@ -4,7 +4,7 @@ title: "Generate and enforce canonical task artifact schemas from runtime contra
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-03-25T16:35:51.609Z"
+  updated_at: "2026-03-25T17:22:45.300Z"
   updated_by: "CODER"
-  note: "Validated canonical task artifact schemas from one runtime source. Checks: bun scripts/sync-schemas.mjs check; bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-export.test.ts packages/core/src/tasks/tasks-lint.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts; bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; bunx prettier --check targeted files; bunx eslint targeted files."
+  note: "Validated the PR #9 follow-up compatibility fix. Checks: bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts packages/agentplane/src/commands/doctor.command.test.ts -t \"accepts short non-git commit hashes in task README frontmatter|creates issues on writeTask and writes custom fields|prefers live task projection over a stale exported snapshot for README migration checks\"; bunx vitest run packages/agentplane/src/backends/task-backend.load.test.ts -t \"exports task snapshots with canonicalized fields\"; bun run test:fast; bun scripts/sync-schemas.mjs check; bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; bunx eslint targeted files; bunx prettier --check targeted files and generated schemas. Result: restored server-compatible task artifact validation and export coercion without widening runtime policy."
 commit: null
 comments:
   -
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Validated canonical task artifact schemas from one runtime source. Checks: bun scripts/sync-schemas.mjs check; bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-export.test.ts packages/core/src/tasks/tasks-lint.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts; bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; bunx prettier --check targeted files; bunx eslint targeted files."
+  -
+    type: "verify"
+    at: "2026-03-25T17:22:45.300Z"
+    author: "CODER"
+    state: "ok"
+    note: "Validated the PR #9 follow-up compatibility fix. Checks: bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts packages/agentplane/src/commands/doctor.command.test.ts -t \"accepts short non-git commit hashes in task README frontmatter|creates issues on writeTask and writes custom fields|prefers live task projection over a stale exported snapshot for README migration checks\"; bunx vitest run packages/agentplane/src/backends/task-backend.load.test.ts -t \"exports task snapshots with canonicalized fields\"; bun run test:fast; bun scripts/sync-schemas.mjs check; bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; bunx eslint targeted files; bunx prettier --check targeted files and generated schemas. Result: restored server-compatible task artifact validation and export coercion without widening runtime policy."
 doc_version: 3
-doc_updated_at: "2026-03-25T16:35:51.621Z"
+doc_updated_at: "2026-03-25T17:22:45.308Z"
 doc_updated_by: "CODER"
 description: "Make task README frontmatter and tasks export artifacts derive from one executable runtime contract, then sync generated schema/example artifacts from that source instead of maintaining partial handwritten drift across core and spec."
 sections:
@@ -72,6 +78,14 @@ sections:
     Note: Validated canonical task artifact schemas from one runtime source. Checks: bun scripts/sync-schemas.mjs check; bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-export.test.ts packages/core/src/tasks/tasks-lint.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts; bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; bunx prettier --check targeted files; bunx eslint targeted files.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-25T16:00:24.656Z, excerpt_hash=sha256:49b8d6c8312ecc1ce6238772ca09bbcb676c36ccbc9bb76a6095157080bacbe9
+    
+    #### 2026-03-25T17:22:45.300Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Validated the PR #9 follow-up compatibility fix. Checks: bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts packages/agentplane/src/commands/doctor.command.test.ts -t "accepts short non-git commit hashes in task README frontmatter|creates issues on writeTask and writes custom fields|prefers live task projection over a stale exported snapshot for README migration checks"; bunx vitest run packages/agentplane/src/backends/task-backend.load.test.ts -t "exports task snapshots with canonicalized fields"; bun run test:fast; bun scripts/sync-schemas.mjs check; bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; bunx eslint targeted files; bunx prettier --check targeted files and generated schemas. Result: restored server-compatible task artifact validation and export coercion without widening runtime policy.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-25T16:35:51.621Z, excerpt_hash=sha256:49b8d6c8312ecc1ce6238772ca09bbcb676c36ccbc9bb76a6095157080bacbe9
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -113,6 +127,14 @@ By: CODER
 Note: Validated canonical task artifact schemas from one runtime source. Checks: bun scripts/sync-schemas.mjs check; bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-export.test.ts packages/core/src/tasks/tasks-lint.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts; bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; bunx prettier --check targeted files; bunx eslint targeted files.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-25T16:00:24.656Z, excerpt_hash=sha256:49b8d6c8312ecc1ce6238772ca09bbcb676c36ccbc9bb76a6095157080bacbe9
+
+#### 2026-03-25T17:22:45.300Z — VERIFY — ok
+
+By: CODER
+
+Note: Validated the PR #9 follow-up compatibility fix. Checks: bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts packages/agentplane/src/commands/doctor.command.test.ts -t "accepts short non-git commit hashes in task README frontmatter|creates issues on writeTask and writes custom fields|prefers live task projection over a stale exported snapshot for README migration checks"; bunx vitest run packages/agentplane/src/backends/task-backend.load.test.ts -t "exports task snapshots with canonicalized fields"; bun run test:fast; bun scripts/sync-schemas.mjs check; bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; bunx eslint targeted files; bunx prettier --check targeted files and generated schemas. Result: restored server-compatible task artifact validation and export coercion without widening runtime policy.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-25T16:35:51.621Z, excerpt_hash=sha256:49b8d6c8312ecc1ce6238772ca09bbcb676c36ccbc9bb76a6095157080bacbe9
 
 <!-- END VERIFICATION RESULTS -->
 

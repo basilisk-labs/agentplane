@@ -74,4 +74,29 @@ describe("task-artifact-schema", () => {
     ).not.toThrow();
     expect(() => validateTaskPrMeta(JSON.parse(prMetaExample) as unknown)).not.toThrow();
   });
+
+  it("accepts short non-git commit hashes in task README frontmatter", () => {
+    expect(() =>
+      validateTaskReadmeFrontmatter({
+        id: "202603251535-DPZ4NN",
+        title: "Short commit hash fixture",
+        status: "DONE",
+        priority: "high",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["code"],
+        verify: [],
+        plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+        verification: { state: "ok", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        events: [],
+        doc_version: 3,
+        doc_updated_at: "2026-03-25T17:20:00.000Z",
+        doc_updated_by: "CODER",
+        description: "Fixture",
+        id_source: "generated",
+        commit: { hash: "abc", message: "external backend reference" },
+      } satisfies Record<string, unknown>),
+    ).not.toThrow();
+  });
 });
