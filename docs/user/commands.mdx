@@ -176,9 +176,14 @@ Configured branch_pr path in this repository:
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
+git push -u origin task/<task-id>/<slug>
+gh pr create --base main --head task/<task-id>/<slug> --fill
+gh pr checks --watch --required --fail-fast
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
 ```
+
+`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`. Hosted GitHub PR creation and required-check waiting are separate `gh` steps.
 
 Direct-mode alternative:
 
@@ -237,6 +242,9 @@ Status/comment-driven commits are allowed only on major transitions:
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
 agentplane pr open <task-id>
 agentplane pr update <task-id>
+git push -u origin task/<task-id>/<slug>
+gh pr create --base main --head task/<task-id>/<slug> --fill
+gh pr checks --watch --required --fail-fast
 agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 ```

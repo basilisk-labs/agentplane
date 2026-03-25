@@ -10,9 +10,10 @@ This repository is configured for `branch_pr`, so the normal guarded route is:
 1. Run preflight.
 2. Create the task, set the plan, and approve it.
 3. Start a dedicated branch/worktree with `agentplane work start ... --worktree`.
-4. Implement changes on the task branch and keep PR artifacts current.
-5. Record verification on the task branch, then integrate on the base branch.
-6. Finish on the base branch after integration.
+4. Implement changes on the task branch and keep local PR artifacts current.
+5. Push the task branch, open a hosted PR, and wait for required remote checks.
+6. Record verification on the task branch, then integrate on the base branch only after remote green.
+7. Finish on the base branch after integration.
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
 
@@ -24,6 +25,9 @@ git status --short --untracked-files=no
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
+git push -u origin task/<task-id>/<slug>
+gh pr create --base main --head task/<task-id>/<slug> --fill
+gh pr checks --watch --required --fail-fast
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
 ```
@@ -90,7 +94,9 @@ agentplane workflow restore
 - One task per branch/worktree.
 - PR artifacts live under `.agentplane/tasks/<task-id>/pr/`.
 - `agentplane work start ... --worktree` is required.
-- Integration runs through `agentplane integrate`.
+- Local integration runs through `agentplane integrate`.
+- Hosted PR creation and remote required checks run through `gh`.
+- When remote checks are required, `agentplane integrate` and `finish` happen only after `gh pr checks --watch --required` returns green.
 
 ## Status transitions
 
