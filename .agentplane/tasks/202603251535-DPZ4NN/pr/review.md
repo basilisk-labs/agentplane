@@ -19,15 +19,15 @@ Branch: task/202603251535-DPZ4NN/task-artifact-schemas
 <!-- Add review notes here. -->
 
 <!-- BEGIN AUTO SUMMARY -->
-- Updated: 2026-03-25T17:23:13.762Z
+- Updated: 2026-03-25T17:35:20.982Z
 - Branch: task/202603251535-DPZ4NN/task-artifact-schemas
-- Head: 1868366d7219
+- Head: 6cf1fd7936e0
 - Diffstat:
 ```
- .agentplane/tasks/202603251535-DPZ4NN/README.md    |  74 ++-
- .../tasks/202603251535-DPZ4NN/pr/diffstat.txt      |  26 +
+ .agentplane/tasks/202603251535-DPZ4NN/README.md    |  96 +++-
+ .../tasks/202603251535-DPZ4NN/pr/diffstat.txt      |  32 ++
  .agentplane/tasks/202603251535-DPZ4NN/pr/meta.json |  12 +
- .agentplane/tasks/202603251535-DPZ4NN/pr/review.md |  54 ++
+ .agentplane/tasks/202603251535-DPZ4NN/pr/review.md |  60 ++
  .../tasks/202603251535-DPZ4NN/pr/verify.log        |   0
  .../src/backends/task-backend.load.test.ts         |   9 +-
  .../src/backends/task-backend.local.test.ts        |  50 ++
@@ -42,8 +42,8 @@ Branch: task/202603251535-DPZ4NN/task-artifact-schemas
  .../schemas/task-readme-frontmatter.schema.json    | 536 +++++++++++++++++
  packages/core/schemas/tasks-export.schema.json     | 573 +++++++++++++++++++
  packages/core/src/index.ts                         |  14 +
- .../core/src/tasks/task-artifact-schema.test.ts    | 102 ++++
- packages/core/src/tasks/task-artifact-schema.ts    | 513 +++++++++++++++++
+ .../core/src/tasks/task-artifact-schema.test.ts    | 127 +++++
+ packages/core/src/tasks/task-artifact-schema.ts    | 529 +++++++++++++++++
  packages/core/src/tasks/task-store.test.ts         |  38 ++
  packages/core/src/tasks/task-store.ts              |  34 +-
  packages/core/src/tasks/tasks-export.test.ts       |  18 +-
@@ -55,6 +55,6 @@ Branch: task/202603251535-DPZ4NN/task-artifact-schemas
  .../schemas/task-readme-frontmatter.schema.json    | 521 ++++++++++++++++-
  packages/spec/schemas/tasks-export.schema.json     | 632 ++++++++++++++++++---
  scripts/sync-schemas.mjs                           |  95 +++-
- 31 files changed, 3527 insertions(+), 218 deletions(-)
+ 31 files changed, 3602 insertions(+), 218 deletions(-)
 ```
 <!-- END AUTO SUMMARY -->
