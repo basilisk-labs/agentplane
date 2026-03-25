@@ -1,3 +1,8 @@
- .../src/cli/run-cli.core.pr-flow.test.ts           | 123 +++++++++++++++++++++
- .../agentplane/src/commands/branch/work-start.ts   |  34 +++++-
- 2 files changed, 156 insertions(+), 1 deletion(-)
+ .agentplane/tasks/202603250509-6CN8CS/README.md    | 152 +++++++++++++++++++++
+ .../tasks/202603250509-6CN8CS/pr/diffstat.txt      |   3 +
+ .agentplane/tasks/202603250509-6CN8CS/pr/meta.json |  12 ++
+ .agentplane/tasks/202603250509-6CN8CS/pr/review.md |  31 +++++
+ .../tasks/202603250509-6CN8CS/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.test.ts           | 123 +++++++++++++++++
+ .../agentplane/src/commands/branch/work-start.ts   |  34 ++++-
+ 7 files changed, 354 insertions(+), 1 deletion(-)

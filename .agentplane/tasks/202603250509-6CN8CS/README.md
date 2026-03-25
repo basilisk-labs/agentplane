@@ -1,10 +1,11 @@
 ---
 id: "202603250509-6CN8CS"
 title: "Fix branch_pr worktrees to materialize local-backend task READMEs"
-status: "DOING"
+result_summary: "integrate: squash task/202603250509-6CN8CS/worktree-readme-bootstrap"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ verification:
     Result: pass
     Evidence: prettier matched and eslint reported no findings.
     Scope: changed files only.
-commit: null
+commit:
+  hash: "216b873f54fde1646953c2d8929f8c04f8a98f98"
+  message: "📝 6CN8CS tasks: persist branch_pr PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: implement local-backend README seeding for fresh branch_pr worktrees and lock it with an integration regression."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603250509-6CN8CS/pr."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
       Result: pass
       Evidence: prettier matched and eslint reported no findings.
       Scope: changed files only.
+  -
+    type: "status"
+    at: "2026-03-25T06:05:08.133Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603250509-6CN8CS/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T05:23:38.355Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T06:05:08.133Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure a fresh branch_pr worktree can run owner-scoped lifecycle commands against local-backend tasks without manual README copying from the base checkout."
 sections:
   Summary: |-
