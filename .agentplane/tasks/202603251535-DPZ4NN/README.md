@@ -4,7 +4,7 @@ title: "Generate and enforce canonical task artifact schemas from runtime contra
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -15,9 +15,9 @@ tags:
   - "refactor"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-25T15:58:32.080Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -28,8 +28,8 @@ commit: null
 comments: []
 events: []
 doc_version: 3
-doc_updated_at: "2026-03-25T15:35:08.154Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T15:58:31.686Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Make task README frontmatter and tasks export artifacts derive from one executable runtime contract, then sync generated schema/example artifacts from that source instead of maintaining partial handwritten drift across core and spec."
 sections:
   Summary: |-
@@ -40,15 +40,13 @@ sections:
     - In scope: Make task README frontmatter and tasks export artifacts derive from one executable runtime contract, then sync generated schema/example artifacts from that source instead of maintaining partial handwritten drift across core and spec.
     - Out of scope: unrelated refactors not required for "Generate and enforce canonical task artifact schemas from runtime contracts".
   Plan: |-
-    1. Implement the change for "Generate and enforce canonical task artifact schemas from runtime contracts".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+    1. Inventory every runtime task artifact shape that currently acts as a contract boundary: task README frontmatter, task export snapshot, task index entry, PR meta, and any generated schema mirrors.
+    2. Choose one canonical contract source for those artifacts and implement generated runtime validation plus schema emission from that source.
+    3. Wire task read/write paths to validate against the canonical contract, add targeted regression coverage, and record any remaining follow-up seams for later projection refactors.
   Verify Steps: |-
-    <!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-    
-    1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+    1. Run targeted task artifact tests. Expected: task README/frontmatter, export, and schema generation paths validate against the same canonical contract.
+    2. Review generated schema artifacts and runtime validators. Expected: one contract source drives both runtime validation and emitted schemas without drift.
+    3. Run the smallest relevant build/test commands for touched packages. Expected: the refactor preserves existing task lifecycle behavior while rejecting invalid artifact shapes deterministically.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -71,17 +69,15 @@ Make task README frontmatter and tasks export artifacts derive from one executab
 
 ## Plan
 
-1. Implement the change for "Generate and enforce canonical task artifact schemas from runtime contracts".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Inventory every runtime task artifact shape that currently acts as a contract boundary: task README frontmatter, task export snapshot, task index entry, PR meta, and any generated schema mirrors.
+2. Choose one canonical contract source for those artifacts and implement generated runtime validation plus schema emission from that source.
+3. Wire task read/write paths to validate against the canonical contract, add targeted regression coverage, and record any remaining follow-up seams for later projection refactors.
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. Run targeted task artifact tests. Expected: task README/frontmatter, export, and schema generation paths validate against the same canonical contract.
+2. Review generated schema artifacts and runtime validators. Expected: one contract source drives both runtime validation and emitted schemas without drift.
+3. Run the smallest relevant build/test commands for touched packages. Expected: the refactor preserves existing task lifecycle behavior while rejecting invalid artifact shapes deterministically.
 
 ## Verification
 
