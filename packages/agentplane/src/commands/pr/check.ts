@@ -7,14 +7,55 @@ import { fileExists } from "../../cli/fs-utils.js";
 import { successMessage, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
+import { gitListTaskBranches, parseTaskIdFromBranch } from "../shared/git-worktree.js";
 import {
   loadBackendTask,
   loadCommandContext,
   type CommandContext,
 } from "../shared/task-backend.js";
 
-import { resolvePrPaths } from "./internal/pr-paths.js";
+import { readPrArtifact, resolvePrPaths } from "./internal/pr-paths.js";
 import { validateReviewContents } from "./internal/review-template.js";
+
+async function resolveArtifactBranch(opts: {
+  ctx: CommandContext;
+  resolved: { gitRoot: string };
+  taskId: string;
+}): Promise<string | null> {
+  const prefix = opts.ctx.config.branch.task_prefix;
+  const branches = await gitListTaskBranches(opts.resolved.gitRoot, prefix);
+  const matches = branches.filter(
+    (branch) => parseTaskIdFromBranch(prefix, branch) === opts.taskId,
+  );
+  if (matches.length === 1) return matches[0] ?? null;
+  if (matches.length > 1) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Multiple task branches match ${opts.taskId}: ${matches.join(", ")}`,
+    });
+  }
+  return null;
+}
+
+async function readPrArtifactWithOptionalBranch(opts: {
+  resolved: { gitRoot: string };
+  prDir: string;
+  fileName: string;
+  branch: string | null;
+}): Promise<string | null> {
+  const localPath = path.join(opts.prDir, opts.fileName);
+  if (await fileExists(localPath)) {
+    return await readFile(localPath, "utf8");
+  }
+  if (!opts.branch) return null;
+  return await readPrArtifact({
+    resolved: opts.resolved,
+    prDir: opts.prDir,
+    fileName: opts.fileName,
+    branch: opts.branch,
+  });
+}
 
 export async function cmdPrCheck(opts: {
   ctx?: CommandContext;
@@ -49,25 +90,56 @@ export async function cmdPrCheck(opts: {
     const relDiffstatPath = path.relative(resolved.gitRoot, diffstatPath);
     const relVerifyLogPath = path.relative(resolved.gitRoot, verifyLogPath);
     const relReviewPath = path.relative(resolved.gitRoot, reviewPath);
-    if (!(await fileExists(prDir))) errors.push(`Missing PR directory: ${relPrDir}`);
-    if (!(await fileExists(metaPath))) errors.push(`Missing ${relMetaPath}`);
-    if (!(await fileExists(diffstatPath))) errors.push(`Missing ${relDiffstatPath}`);
-    if (!(await fileExists(verifyLogPath))) errors.push(`Missing ${relVerifyLogPath}`);
-    if (!(await fileExists(reviewPath))) errors.push(`Missing ${relReviewPath}`);
+    const branch = await resolveArtifactBranch({ ctx, resolved, taskId: task.id });
 
     let meta: PrMeta | null = null;
-    if (await fileExists(metaPath)) {
+    const metaText = await readPrArtifactWithOptionalBranch({
+      resolved,
+      prDir,
+      fileName: "meta.json",
+      branch,
+    });
+    if (metaText) {
       try {
-        meta = parsePrMeta(await readFile(metaPath, "utf8"), task.id);
+        meta = parsePrMeta(metaText, task.id);
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         errors.push(message);
       }
+    } else {
+      errors.push(`Missing PR directory: ${relPrDir}`, `Missing ${relMetaPath}`);
     }
 
-    if (await fileExists(reviewPath)) {
-      const review = await readFile(reviewPath, "utf8");
-      validateReviewContents(review, errors);
+    const diffstatText = await readPrArtifactWithOptionalBranch({
+      resolved,
+      prDir,
+      fileName: "diffstat.txt",
+      branch,
+    });
+    if (diffstatText === null) {
+      errors.push(`Missing ${relDiffstatPath}`);
+    }
+
+    const verifyLogText = await readPrArtifactWithOptionalBranch({
+      resolved,
+      prDir,
+      fileName: "verify.log",
+      branch,
+    });
+    if (verifyLogText === null) {
+      errors.push(`Missing ${relVerifyLogPath}`);
+    }
+
+    const reviewText = await readPrArtifactWithOptionalBranch({
+      resolved,
+      prDir,
+      fileName: "review.md",
+      branch,
+    });
+    if (reviewText) {
+      validateReviewContents(reviewText, errors);
+    } else {
+      errors.push(`Missing ${relReviewPath}`);
     }
 
     if (task.verify && task.verify.length > 0) {

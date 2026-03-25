@@ -20,6 +20,7 @@ Configured in `.agentplane/config.json`.
 - `agentplane work start` must run on base branch and must include `--worktree`.
 - Canonical task writes happen only on base branch.
 - INTEGRATOR performs verify, merge, and finish.
+- Local `agentplane pr ...` commands manage tracked PR artifacts only. They do not open or merge a hosted GitHub PR.
 
 ## Task Branches and Worktrees
 
@@ -31,6 +32,18 @@ Configured in `.agentplane/config.json`.
 - Location: `.agentplane/tasks/<task-id>/pr/`.
 - Files: `meta.json`, `diffstat.txt`, `verify.log`, `review.md`.
 - Purpose: local PR simulation for review and integration.
+
+## Local PR artifacts vs hosted PR checks
+
+Treat these as two separate layers:
+
+1. `agentplane pr open|update|check` maintains the repository-local review packet under `.agentplane/tasks/<task-id>/pr/`.
+2. `gh pr ...` is the hosted-review layer that triggers server-side required checks.
+
+If this repository requires remote checks before `main` moves, do both:
+
+- keep local PR artifacts current with `agentplane`;
+- push the task branch and wait for hosted required checks with the workflow helper or raw `gh`.
 
 ## Handoff Notes
 
@@ -47,7 +60,18 @@ Typical branch_pr flow:
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
+git push -u origin task/<task-id>/<slug>
+gh pr create --base main --head task/<task-id>/<slug> --fill
+bun run workflow:wait-remote-checks
 agentplane pr check <task-id>
-agentplane integrate <task-id> --run-verify
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "<one line>"
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "<one line>" --commit <git-rev> --close-commit
 ```
+
+Underlying hosted-check command:
+
+```bash
+gh pr checks --watch --required --fail-fast
+```
+
+Hosted checks are the gate. Do not integrate or finish on base branch until `bun run workflow:wait-remote-checks` returns green.

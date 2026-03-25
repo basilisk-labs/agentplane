@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603241918-K4BDTF/remote-check-guide",
+  "created_at": "2026-03-25T06:15:28.735Z",
+  "head_sha": "9cca11966b68b2db5a5f3ba4100d2beb69aca2c0",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "32af8d81a57ba7bba47a6e9fff29c2aa3dcc34be",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-25T06:16:00.445Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603241918-K4BDTF",
+  "updated_at": "2026-03-25T06:16:00.445Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

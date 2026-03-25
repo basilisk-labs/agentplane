@@ -11,6 +11,7 @@ import { LocalBackend } from "../local-backend.js";
 import { RedmineBackend } from "../redmine-backend.js";
 
 const TMP_PREFIX = "agentplane-redmine-live-";
+const LIVE_OPT_IN_ENV_KEY = "AGENTPLANE_ENABLE_BACKEND_LIVE_TESTS";
 const REQUIRED_ENV_KEYS = [
   "AGENTPLANE_REDMINE_URL",
   "AGENTPLANE_REDMINE_API_KEY",
@@ -28,16 +29,20 @@ function loadRepoDotEnv(): void {
   }
 }
 
-function missingRequiredEnvKeys(): string[] {
+function missingRequiredEnvKeys(env: NodeJS.ProcessEnv = process.env): string[] {
   return REQUIRED_ENV_KEYS.filter((key) => {
-    const value = process.env[key];
+    const value = env[key];
     return typeof value !== "string" || value.trim().length === 0;
   });
 }
 
+export function shouldRunRedmineLiveSuite(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env[LIVE_OPT_IN_ENV_KEY] === "1" && missingRequiredEnvKeys(env).length === 0;
+}
+
 loadRepoDotEnv();
 
-const describeWhenEnvPresent = missingRequiredEnvKeys().length === 0 ? describe : describe.skip;
+const describeWhenEnvPresent = shouldRunRedmineLiveSuite() ? describe : describe.skip;
 
 let restoreStdIO: (() => void) | null = null;
 
@@ -48,6 +53,28 @@ beforeEach(() => {
 afterEach(() => {
   restoreStdIO?.();
   restoreStdIO = null;
+});
+
+describe("Redmine live suite gating", () => {
+  const requiredEnv = {
+    AGENTPLANE_REDMINE_URL: "https://redmine.example.test",
+    AGENTPLANE_REDMINE_API_KEY: "test-key",
+    AGENTPLANE_REDMINE_PROJECT_ID: "sandbox",
+    AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID: "123",
+  } satisfies Partial<NodeJS.ProcessEnv>;
+
+  it("stays disabled by default even when Redmine env is present", () => {
+    expect(shouldRunRedmineLiveSuite(requiredEnv)).toBe(false);
+  });
+
+  it("enables the live suite only when the explicit opt-in flag is set", () => {
+    expect(
+      shouldRunRedmineLiveSuite({
+        ...requiredEnv,
+        AGENTPLANE_ENABLE_BACKEND_LIVE_TESTS: "1",
+      }),
+    ).toBe(true);
+  });
 });
 
 describeWhenEnvPresent("Redmine live projection contract", () => {

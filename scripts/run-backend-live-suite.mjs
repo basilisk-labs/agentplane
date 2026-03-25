@@ -81,7 +81,10 @@ function main() {
     {
       stdio: "inherit",
       cwd: rootDir,
-      env: process.env,
+      env: {
+        ...process.env,
+        AGENTPLANE_ENABLE_BACKEND_LIVE_TESTS: "1",
+      },
     },
   );
 

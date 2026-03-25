@@ -1,0 +1,8 @@
+ .agentplane/tasks/202603250545-PX1491/README.md    | 124 +++++++++++++++++++++
+ .../tasks/202603250545-PX1491/pr/diffstat.txt      |   3 +
+ .agentplane/tasks/202603250545-PX1491/pr/meta.json |  12 ++
+ .agentplane/tasks/202603250545-PX1491/pr/review.md |  31 ++++++
+ .../tasks/202603250545-PX1491/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  68 +++++++++++
+ packages/agentplane/src/commands/pr/check.ts       |  94 ++++++++++++++--
+ 7 files changed, 321 insertions(+), 11 deletions(-)

@@ -48,6 +48,7 @@ export type PreparedIntegrate = {
   verifyLogText: string;
 
   branchHeadSha: string;
+  changedPaths: string[];
   verifyCommands: string[];
   alreadyVerifiedSha: string | null;
   shouldRunVerify: boolean;
@@ -209,6 +210,7 @@ export async function prepareIntegrate(opts: {
     base,
     verifyLogText,
     branchHeadSha,
+    changedPaths,
     verifyCommands: initialVerifyState.verifyCommands,
     alreadyVerifiedSha: initialVerifyState.alreadyVerifiedSha,
     shouldRunVerify: initialVerifyState.shouldRunVerify,

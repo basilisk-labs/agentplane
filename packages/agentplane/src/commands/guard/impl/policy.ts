@@ -9,6 +9,7 @@ export type GuardCommitOptions = {
   ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
+  baseBranchOverride?: string | null;
   taskId: string;
   message: string;
   allow: string[];
@@ -31,13 +32,16 @@ export async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> 
   const unstagedTrackedPaths = opts.requireClean ? await ctx.git.statusUnstagedTrackedPaths() : [];
 
   const inBranchPr = ctx.config.workflow_mode === "branch_pr";
+  const explicitBaseBranch = opts.baseBranchOverride?.trim();
   const baseBranch = inBranchPr
-    ? await resolveBaseBranch({
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride ?? null,
-        cliBaseOpt: null,
-        mode: ctx.config.workflow_mode,
-      })
+    ? explicitBaseBranch && explicitBaseBranch.length > 0
+      ? explicitBaseBranch
+      : await resolveBaseBranch({
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride ?? null,
+          cliBaseOpt: null,
+          mode: ctx.config.workflow_mode,
+        })
     : null;
   const currentBranch = inBranchPr
     ? await gitCurrentBranch(ctx.resolvedProject.gitRoot)

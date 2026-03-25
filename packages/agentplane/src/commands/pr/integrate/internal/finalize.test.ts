@@ -93,6 +93,12 @@ describe("pr/integrate/internal/finalize", () => {
       " src/app.ts | 1 +\n",
     );
     expect(mocks.cmdFinish).toHaveBeenCalledTimes(1);
+    expect(mocks.cmdFinish).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskIds: ["T-1"],
+        closeCommit: true,
+      }),
+    );
   });
 
   it("skips verify metadata update when verify commands are absent", async () => {

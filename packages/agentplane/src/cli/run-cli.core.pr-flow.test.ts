@@ -365,4 +365,127 @@ describe("runCli", () => {
     },
     WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
   );
+
+  it(
+    "work start seeds local-backend task READMEs into a fresh worktree",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      const createTask = async (title: string, description: string): Promise<string> => {
+        const ioTask = captureStdIO();
+        try {
+          const code = await runCli([
+            "task",
+            "new",
+            "--title",
+            title,
+            "--description",
+            description,
+            "--priority",
+            "med",
+            "--owner",
+            "CODER",
+            "--tag",
+            "nodejs",
+            "--root",
+            root,
+          ]);
+          expect(code).toBe(0);
+          return ioTask.stdout.trim();
+        } finally {
+          ioTask.restore();
+        }
+      };
+
+      const taskId = await createTask(
+        "Seeded worktree task",
+        "Fresh branch_pr worktree should inherit local backend task README files.",
+      );
+      const siblingTaskId = await createTask(
+        "Sibling task for worktree snapshot",
+        "A sibling task proves the local backend snapshot is broader than the active task.",
+      );
+      await approveTaskPlan(root, taskId);
+      await approveTaskPlan(root, siblingTaskId);
+
+      const worktreeIo = captureStdIO();
+      const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-seed-readmes`);
+      try {
+        const code = await runCli([
+          "work",
+          "start",
+          taskId,
+          "--agent",
+          "CODER",
+          "--slug",
+          "seed-readmes",
+          "--worktree",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        worktreeIo.restore();
+      }
+
+      const taskReadmePath = path.join(worktreePath, ".agentplane", "tasks", taskId, "README.md");
+      const siblingReadmePath = path.join(
+        worktreePath,
+        ".agentplane",
+        "tasks",
+        siblingTaskId,
+        "README.md",
+      );
+      expect(await pathExists(taskReadmePath)).toBe(true);
+      expect(await pathExists(siblingReadmePath)).toBe(true);
+
+      const showIo = captureStdIO();
+      try {
+        const code = await runCli(["task", "show", siblingTaskId, "--root", worktreePath]);
+        expect(code).toBe(0);
+        expect(showIo.stdout).toContain(siblingTaskId);
+      } finally {
+        showIo.restore();
+      }
+
+      const startIo = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "start-ready",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: bootstrap the fresh worktree from a seeded local-backend snapshot.",
+          "--root",
+          worktreePath,
+        ]);
+        expect(code).toBe(0);
+        expect(startIo.stdout).toContain("✅ ready");
+      } finally {
+        startIo.restore();
+      }
+
+      const seededReadme = await readFile(taskReadmePath, "utf8");
+      const baseReadme = await readFile(
+        path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+        "utf8",
+      );
+      expect(seededReadme).toContain('status: "DOING"');
+      expect(baseReadme).toContain('status: "TODO"');
+    },
+    WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
+  );
 });

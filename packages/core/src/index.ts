@@ -45,6 +45,20 @@ export {
 export { readTaskReadme, updateTaskReadmeAtomic } from "./tasks/task-readme-io.js";
 
 export {
+  listTaskPrMetaSchemaErrors,
+  listTaskReadmeFrontmatterSchemaErrors,
+  listTasksExportSnapshotSchemaErrors,
+  renderTaskPrMetaSchemaJson,
+  renderTaskReadmeFrontmatterSchemaJson,
+  renderTasksExportSchemaJson,
+  validateTaskPrMeta,
+  validateTaskReadmeFrontmatter,
+  validateTasksExportSnapshot,
+  withTaskReadmeFrontmatterDefaults,
+  type TaskPrMeta,
+} from "./tasks/task-artifact-schema.js";
+
+export {
   docChanged,
   ensureDocSections,
   extractTaskDoc,

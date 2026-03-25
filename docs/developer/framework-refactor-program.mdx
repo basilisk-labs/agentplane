@@ -1,0 +1,330 @@
+---
+title: "Framework refactor program"
+description: "Current code map, subsystem analysis ledger, and ordered refactor roadmap for the Agent Plane framework repository."
+---
+
+## Purpose
+
+This document is the aggregate ledger for framework architecture analysis and refactor planning.
+
+It serves three roles:
+
+1. A current code map of the repository.
+2. A collection point for subsystem analysis findings.
+3. An ordered refactor roadmap derived from those findings.
+
+## Code map
+
+### Repository layers
+
+1. `packages/core/`
+   Shared contracts, config parsing, git/task primitives, and task document utilities.
+2. `packages/spec/`
+   Canonical schema source and examples mirrored into runtime packages.
+3. `packages/agentplane/`
+   CLI runtime, command handlers, workflow logic, backends, runner, harness, and assets.
+4. `packages/recipes/`
+   Recipe runtime helpers and recipe-adjacent shared code.
+5. `packages/testkit/`
+   Shared testing utilities.
+6. `scripts/`
+   CI, sync, freshness checks, smoke harnesses, release helpers, and repo maintenance tooling.
+7. `docs/`
+   User and developer reference surfaces, including generated artifacts.
+
+### Runtime slices
+
+1. `packages/core/src/`
+   Core contracts and data model (`config`, `commit`, `git`, `tasks`, `project`, `fs`).
+2. `packages/agentplane/src/cli/`
+   CLI shell, command registry, help/spec rendering, integration harness, and CLI-focused tests.
+3. `packages/agentplane/src/commands/`
+   Operational workflows: task lifecycle, guard, branch/PR/integrate, backend, recipes, release, upgrade, docs.
+4. `packages/agentplane/src/backends/`
+   Task backend loading plus local and Redmine persistence/integration layers.
+5. `packages/agentplane/src/runner/`
+   Shared runner flow, adapters, lifecycle, context assembly, traces, and task projection.
+6. `packages/agentplane/src/recipes/` and recipe command surfaces
+   Recipe catalog, bundled catalog, scenario selection, and recipe-facing runtime helpers.
+7. `scripts/`
+   Delivery and maintenance control surface around the framework runtime.
+
+### Approximate code volume by area
+
+1. `packages/core/src`: 29 files
+2. `packages/agentplane/src/cli`: 130 files
+3. `packages/agentplane/src/commands`: 314 files
+4. `packages/agentplane/src/runner`: 44 files
+5. `packages/agentplane/src/backends` + `src/adapters/task-backend`: 34 files
+6. `commands/recipes` + `commands/scenario` + `packages/recipes/src`: 45 files
+7. `commands/release` + `commands/upgrade`: 24 files
+8. `scripts`: 51 files
+
+### Primary subsystem boundaries
+
+1. Core contracts and schema mirrors
+2. CLI surface and command wiring
+3. Workflow and lifecycle state machine
+4. Backend and persistence layer
+5. Runner execution layer
+6. Recipes, scenario, upgrade, and release delivery surfaces
+7. Scripts, CI, and generated-doc tooling
+
+## Analysis tasks
+
+The tasks below are provenance for how the map and backlog were built. They are evidence inputs, not execution gates for the refactor backlog.
+
+1. `202603251524-TWPGMJ` — core/spec analysis
+2. `202603251524-F0K0XN` — CLI surface analysis
+3. `202603251524-A2J1QM` — workflow/task/pr/guard analysis
+4. `202603251524-QNAVNV` — backend/persistence analysis
+5. `202603251524-AE6NXQ` — runner analysis
+6. `202603251524-6FPV9H` — recipes/scenario/upgrade/release analysis
+7. `202603251524-R96N8W` — scripts/CI/docs tooling analysis
+8. `202603251524-XSN1J7` — refactor roadmap synthesis; depends on analysis tasks 1-7
+
+## Subsystem analysis
+
+### 1. Core/spec
+
+Facts:
+
+- `packages/core` is the effective shared runtime contract layer for config, task documents, exports, and some git/policy primitives.
+- `config` is already close to a single-source-of-truth model: schema is rendered from runtime code, validated through AJV, mirrored into `packages/spec` and `packages/core/schemas`, and checked by sync tooling.
+- `task` contracts are weaker: task README frontmatter and `tasks.json` are parsed permissively and then cast into runtime types, without full schema validation on read/write.
+- `packages/spec` only mirrors `config.schema.json` in a reliable way. It does not act as an enforced canonical source for task/PR artifacts despite several docs implying a broader role.
+
+Weak seams:
+
+- Task frontmatter, task export, task backend data, and examples in `packages/spec` already drift in shape and version.
+- `renderTaskReadme` and runtime task types know fields that `packages/spec` does not model.
+- `tasks.json` has three separate authorities: exporter logic, handwritten linter logic, and permissive JSON schema.
+- Task document section rules are spread across runtime config defaults, scaffolding, task-doc helpers, and renderer logic.
+
+Refactor opportunities:
+
+1. Establish one executable contract source per artifact: either schema-first with generated TS validators or core-first with generated spec artifacts.
+2. Add full runtime validation for task frontmatter and task export boundaries.
+3. Collapse parallel task models into one domain entity plus explicit projections.
+4. Introduce one `TaskDocContract` module for section set, ordering, versioning, and projection rules.
+5. Either raise `packages/spec` to a fully enforced contract layer or narrow its documented role.
+
+### 2. CLI surface
+
+Facts:
+
+- CLI entry is centralized in `run-cli.ts`, which handles global flags, help fast-paths, project/config bootstrapping, and runtime dispatch.
+- The command catalog is statically assembled from multiple arrays with per-command bootstrap metadata (`needsProject`, `needsConfig`, `needsTaskContext`).
+- The parser/help/spec layer itself is relatively cohesive.
+- Documentation generation already reads command registry/spec directly instead of shelling out through help text.
+
+Weak seams:
+
+- Routing exists twice: a fast catalog matcher and a runtime registry matcher.
+- Group commands keep handwritten subcommand lists outside the registry, which creates a second command tree.
+- CLI help mixes invocation contract with workflow/policy narrative.
+- Command validation is split between spec files and runtime handlers, often duplicating shape checks and business validation.
+- Test harnesses split between in-process monkey-patch helpers and subprocess critical harnesses.
+
+Refactor opportunities:
+
+1. Reduce routing to one registry that owns matching, bootstrap metadata, and help generation.
+2. Normalize command definition shape: `spec + metadata + handler`, with domain logic separated from CLI glue.
+3. Generate group/root command surfaces from the registry tree instead of maintaining manual lists.
+4. Separate workflow narrative from invocation help.
+5. Simplify CLI harness strategy and reduce global I/O monkey-patching.
+
+### 3. Workflow/task/pr/guard
+
+Facts:
+
+- Workflow state is split across at least three axes: `status`, `plan_approval`, and `verification`.
+- The task status automaton itself is simple, but several high-value commands mutate task state outside a single reducer.
+- Guard policy is centralized around `evaluatePolicy`, while branch protection for `branch_pr` is enforced via policy rules.
+- Integration is implemented as orchestration over git state plus PR artifacts, and `finalizeIntegrate` re-enters task lifecycle through `cmdFinish`.
+- For local backend, workflow state can partially live in git branches because base commands may read task snapshots from task branches.
+
+Weak seams:
+
+- `finish` bypasses the explicit status transition graph.
+- `verify --rework` can also bypass normal status transitions and clear commit metadata from unexpected states.
+- `PrMeta` is under-typed; actual persisted PR artifact shape is richer than its declared type.
+- `pr open` and `pr update` rely heavily on current branch/HEAD without strong task-branch validation.
+- Mutating task commands duplicate the same “comment -> transition check -> mutate -> commit/doc side effects” pattern.
+
+Refactor opportunities:
+
+1. Introduce one workflow reducer / transition service for status, plan approval, verification, commit, and doc side effects.
+2. Separate task domain transitions from git/PR artifact orchestration.
+3. Introduce a typed PR state schema and remove `Record<string, unknown>` drift.
+4. Collapse duplicated `useStore` vs direct backend mutation paths into one mutation adapter.
+5. Move syntax validation to spec and keep runtime validation state-centric.
+
+### 4. Backends/persistence
+
+Facts:
+
+- `TaskBackend` is a wide interface that mixes query, write, doc, sync, export, and inspect concerns.
+- Local storage uses task `README.md` as the canonical task record.
+- `tasks-index.v2.json` is already rebuildable cache, not canonical state.
+- `RedmineBackend` uses remote state as canonical but serves ordinary reads through local shadow projections.
+- Redmine state mapping depends on issue fields, custom fields, and optional `canonical_state` JSON.
+
+Weak seams:
+
+- `listTasks()` returns compact projections under the same type as full task entities.
+- One task state exists in multiple serialized forms: README body/frontmatter, task index, export snapshot, Redmine projection, and `canonical_state`.
+- Command layer still needs to know backend-specific behavior (`backendId === "local"`, branch fallback, memoized task list).
+- Redmine field binding is configuration-heavy and drift is mostly detected via explicit inspect flows.
+- `syncPull()` can preserve stale local projection entries for removed remote tasks.
+
+Refactor opportunities:
+
+1. Split backend contracts into explicit ports: query, mutation, doc, sync, export, inspection.
+2. Add separate summary/full-entity read contracts.
+3. Introduce a shared codec layer for task entity to README, export, index, and Redmine projection forms.
+4. Isolate projection/cache storage behind its own port instead of letting Redmine depend on `LocalBackend`.
+5. Make Redmine binding validation stricter and earlier.
+
+### 5. Runner
+
+Facts:
+
+- The runner is a substantial orchestration-heavy subsystem with a shared prepare/execute/lifecycle flow.
+- Run artifacts are file-based and explicit: bundle, bootstrap, state, events, result, trace, stderr.
+- `codex` and `custom` adapters share most execution/supervision machinery.
+- `scenario execute` is a task materialization wrapper around the same runner flow.
+
+Weak seams:
+
+- Context compaction is only partial because compact fields coexist with full `task.data`.
+- Task-facing runner projection is lossy relative to normalized run result artifacts.
+- Lifecycle commands rebuild invocation from mutable current config instead of a persisted canonical invocation.
+- `result.json` success semantics differ across adapters.
+- The runner still knows too much about task/backend/README storage details.
+
+Refactor opportunities:
+
+1. Introduce `RunnerRunRepository` and `TaskRunnerProjection` ports.
+2. Make context budget real by removing duplicated full task payloads from bundle.
+3. Persist canonical invocation data and reuse it for lifecycle operations.
+4. Extract a common adapter harness so `codex` and `custom` become thin strategies.
+5. Define one canonical result source and make task projection explicitly derived from it.
+
+### 6. Recipes, scenario, upgrade, and release
+
+Facts:
+
+- Recipes already behave like a domain, but most of that domain still lives under CLI command implementation paths.
+- `scenario execute` crosses from recipe selection into task materialization and runner execution.
+- `release` is more modular than `upgrade`, but both still implement similar operator pipelines independently.
+- `packages/recipes` exists but is effectively empty compared with the real recipe runtime code in `packages/agentplane`.
+
+Weak seams:
+
+- Recipe/scenario selection logic is split across recipes command internals, scenario commands, and runner context assembly.
+- `scenario execute` mixes delivery concerns with workflow/runtime concerns.
+- `release apply` and `upgrade` duplicate high-level operator phases.
+- Thin CLI wrapper commands add low-signal boilerplate around subcommand groups.
+
+Refactor opportunities:
+
+1. Extract a real `recipe-domain` package into `packages/recipes`.
+2. Move schema parsing, compatibility resolution, installed state, and remote catalog logic into that package.
+3. Build one shared operator pipeline abstraction for `upgrade` and `release apply`.
+4. Split `upgrade.ts` into source acquisition, managed reconcile, and post-apply side effects.
+5. Centralize release parity/version helpers and clean-tree checks.
+
+### 7. Scripts, CI, and generated-doc tooling
+
+Facts:
+
+- `run-local-ci.mjs` orchestrates fast/full pipelines procedurally and repeats a common preamble across the full-fast path, docs-only fast path, and targeted fast path.
+- `run-pre-push-hook.mjs` shells into local CI and adds its own tracked-change checks, so hook semantics are split between hook code and CI runner code.
+- Freshness checks for generated docs follow the same pattern repeatedly: build/generate into temp dir, compare with committed artifact, fail on drift.
+- Sync scripts for schemas and agent templates are handwritten one-offs with their own diff/copy logic.
+- Some freshness checks depend on built dist while generation logic lives in source modules, which creates another source/dist coordination seam.
+
+Weak seams:
+
+- CI step definitions are duplicated procedurally instead of being declared once and filtered.
+- Freshness checks do not share a generator/check framework despite using the same control pattern.
+- Sync/check scripts each implement their own file-walking and compare behavior.
+- Dist-based checks and source-based generators create avoidable bootstrap coupling.
+
+Refactor opportunities:
+
+1. Define CI pipelines declaratively and let fast/full/targeted selection filter one step graph.
+2. Introduce a shared freshness-check helper for generated docs and inventories.
+3. Introduce a shared sync/check helper for mirrored artifacts.
+4. Standardize whether a given generated artifact is checked from source or from built dist.
+5. Reduce hook logic to orchestration only, with more behavior moved into reusable libraries.
+
+## Cross-cutting findings
+
+1. There is no consistent single source of truth for several high-value artifacts:
+   - task frontmatter and task export,
+   - CLI routing and group command topology,
+   - workflow/PR state,
+   - runner result vs task projection,
+   - recipe domain vs delivery surface,
+   - generated docs and sync scripts.
+2. Several subsystems confuse canonical entity state with projections or caches:
+   - task index,
+   - local vs Redmine task state,
+   - runner result vs task history,
+   - task README body vs frontmatter.
+3. Domain logic and delivery/orchestration logic are mixed in at least four places:
+   - task workflow commands,
+   - runner use cases,
+   - recipes/scenario runtime,
+   - upgrade/release flows.
+4. Handwritten registries and parallel metadata layers recur:
+   - CLI command routing,
+   - group commands,
+   - PR artifact shape,
+   - backend capability flags,
+   - script freshness/sync definitions.
+5. The codebase has good test coverage, but many correctness guarantees still depend on tests catching drift rather than on types/contracts making drift impossible.
+
+## Ordered refactor roadmap
+
+### Analysis gate
+
+1. `202603251523-G3Z6BQ` — canonical planning gate for the framework refactor program.
+   Result: one aggregated document and one ordered execution backlog.
+2. `202603251524-XSN1J7` — synthesis provenance task for the original multi-task analysis sweep.
+   Result: historical trace of how the backlog was derived, but not a hard blocker for execution once `G3Z6BQ` is verified and integrated.
+
+### Sequential execution plan
+
+1. `202603251535-DPZ4NN` — generate and enforce canonical task artifact schemas from runtime contracts.
+   Objective: make task and PR artifact boundaries executable instead of convention-based.
+2. `202603251535-DNNMD4` — introduce `TaskDocContract` and unify task entity projections.
+   Objective: collapse README/frontmatter/export/index drift behind one task-domain contract.
+3. `202603251535-3DZ26K` — introduce a unified workflow transition service for task lifecycle mutations.
+   Objective: move lifecycle state changes behind one reducer/service instead of many command-specific mutation paths.
+4. `202603251535-H2EGEM` — type PR artifact state and decouple `integrate`/`finalize` from `finish` command reuse.
+   Objective: stop letting PR/base orchestration depend on loosely typed side artifacts and lifecycle command re-entry.
+5. `202603251538-CZ19GT` — split `TaskBackend` ports and separate summary/full task reads.
+   Objective: separate canonical entity storage from projections, caches, sync, and inspection concerns.
+6. `202603251538-Y8DE9D` — introduce `RunnerRunRepository` and canonical invocation/result contracts.
+   Objective: give runner lifecycle, adapters, and task projection one persisted run contract instead of mutable reconstructions.
+7. `202603251538-VJ5GHJ` — unify CLI registry, routing, and bootstrap metadata.
+   Objective: remove duplicate command matching layers and make one registry authoritative.
+8. `202603251538-NQSPGC` — generate group commands and simplify CLI harness layers.
+   Objective: derive group surfaces and help from the canonical registry, then narrow the CLI test/runtime harness surface.
+9. `202603251538-CMY5ZN` — extract recipe domain into `packages/recipes` and narrow scenario coupling.
+   Objective: move recipe logic out of command glue and reduce cross-domain scenario ownership.
+10. `202603251539-1WNAZX` — consolidate upgrade and release into one operator pipeline.
+    Objective: reuse one delivery pipeline for acquisition, reconcile, verify, and post-apply effects.
+11. `202603251539-YTQX10` — consolidate CI, freshness, and sync tooling into shared generators.
+    Objective: clean up repo tooling only after artifact contracts and command surfaces stop moving.
+
+### Why this order
+
+1. The first four tasks tighten the task and workflow contract, because that contract currently leaks into every other subsystem.
+2. Backend and runner refactors come next because they depend on canonical task/workflow state and then become the execution substrate for higher layers.
+3. CLI refactors follow once backend and runner contracts stop shifting under the command surface.
+4. Recipe, scenario, upgrade, and release refactors become safer after CLI and runner seams are explicit.
+5. Scripts and CI are last because they should consume stabilized artifacts and command surfaces, not chase moving internals.

@@ -17,7 +17,7 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 - Repository type: user project initialized with `agentplane`.
 - Gateway role: keep this file compact and deterministic; move scenario-specific details to policy modules.
 - CLI rule: use `agentplane` from `PATH`; if unavailable, stop and request installation guidance (do not invent repo-local entrypoints).
-- Startup shortcut: run `## COMMANDS -> Preflight`, then use `agentplane quickstart`; activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation.
+- Startup shortcut: run `## COMMANDS -> Preflight`, then use `agentplane quickstart`; activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation. In this repository, `workflow_mode=branch_pr`, so the normal guarded route starts from `agentplane work start ... --worktree` on the base branch; treat `direct` as an explicit alternative only when intentionally selected.
 
 ---
 
@@ -67,6 +67,16 @@ agentplane task plan approve <task-id> --by ORCHESTRATOR
 agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
 agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>
+```
+
+### branch_pr lifecycle
+
+```bash
+agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
+agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
+agentplane pr update <task-id>
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
 
 ### Verification

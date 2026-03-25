@@ -63,6 +63,7 @@ describe("command-guide", () => {
     expect(text).toContain("## Go deeper");
     expect(text).toContain("activate ORCHESTRATOR for planning and the task owner role");
     expect(text).toContain("agentplane task start-ready");
+    expect(text).toContain("workflow:wait-remote-checks");
     expect(text).not.toContain("docs/user/agent-bootstrap.generated.mdx");
     expect(text).not.toContain("## Commit message format");
   });
@@ -73,5 +74,6 @@ describe("command-guide", () => {
     expect(text).toContain("## 1. Preflight");
     expect(text).toContain("## Copy-paste start block");
     expect(text).toContain("Use `agentplane role ORCHESTRATOR` during planning");
+    expect(text).toContain("workflow:wait-remote-checks");
   });
 });

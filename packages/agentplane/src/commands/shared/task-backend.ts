@@ -1,13 +1,19 @@
 import path from "node:path";
 import {
+  parseTaskReadme,
   taskDocToSectionMap,
+  validateTaskReadmeFrontmatter,
+  withTaskReadmeFrontmatterDefaults,
+  type TaskRecord,
   type AgentplaneConfig,
   type ResolvedProject,
 } from "@agentplaneorg/core";
 
 import { CliError } from "../../shared/errors.js";
-import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
+import { loadTaskBackend, taskRecordToData, type TaskData } from "../../backends/task-backend.js";
+import { gitShowFile, toGitPath } from "./git-diff.js";
 import { GitContext } from "./git-context.js";
+import { gitListTaskBranches, parseTaskIdFromBranch } from "./git-worktree.js";
 
 export type CommandMemo = {
   taskList?: Promise<TaskData[]>;
@@ -124,19 +130,79 @@ export async function loadTaskFromContext(opts: {
   taskId: string;
 }): Promise<TaskData> {
   const task = await opts.ctx.taskBackend.getTask(opts.taskId);
-  if (!task) {
-    const tasksDir = path.join(
-      opts.ctx.resolvedProject.gitRoot,
-      opts.ctx.config.paths.workflow_dir,
-    );
-    const readmePath = path.join(tasksDir, opts.taskId, "README.md");
+  if (task) return task;
+
+  const tasksDir = path.join(opts.ctx.resolvedProject.gitRoot, opts.ctx.config.paths.workflow_dir);
+  const readmePath = path.join(tasksDir, opts.taskId, "README.md");
+  const branchFallback = await loadTaskFromBranchSnapshot({
+    ctx: opts.ctx,
+    taskId: opts.taskId,
+    readmePath,
+  });
+  if (branchFallback) return branchFallback;
+
+  throw new CliError({
+    exitCode: 4,
+    code: "E_IO",
+    message: `ENOENT: no such file or directory, open '${readmePath}'`,
+  });
+}
+
+export async function loadTaskFromBranchSnapshot(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  readmePath: string;
+}): Promise<TaskData | null> {
+  if (opts.ctx.backendId !== "local") {
+    return null;
+  }
+
+  const branch = await resolveSingleTaskBranch(opts.ctx, opts.taskId);
+  if (!branch) return null;
+
+  const relReadmePath = toGitPath(path.relative(opts.ctx.resolvedProject.gitRoot, opts.readmePath));
+
+  let text = "";
+  try {
+    text = await gitShowFile(opts.ctx.resolvedProject.gitRoot, branch, relReadmePath);
+  } catch {
+    return null;
+  }
+
+  const parsed = parseTaskReadme(text);
+  const frontmatter = validateTaskReadmeFrontmatter(
+    withTaskReadmeFrontmatterDefaults({
+      ...parsed.frontmatter,
+      id:
+        typeof parsed.frontmatter.id === "string" && parsed.frontmatter.id.trim().length > 0
+          ? parsed.frontmatter.id
+          : opts.taskId,
+    }),
+  );
+  return taskRecordToData({
+    id: opts.taskId,
+    frontmatter: frontmatter as unknown as TaskRecord["frontmatter"],
+    body: parsed.body,
+    readmePath: opts.readmePath,
+  });
+}
+
+async function resolveSingleTaskBranch(
+  ctx: CommandContext,
+  taskId: string,
+): Promise<string | null> {
+  const prefix = ctx.config.branch.task_prefix;
+  const branches = await gitListTaskBranches(ctx.resolvedProject.gitRoot, prefix);
+  const matches = branches.filter((branch) => parseTaskIdFromBranch(prefix, branch) === taskId);
+  if (matches.length === 1) return matches[0] ?? null;
+  if (matches.length > 1) {
     throw new CliError({
-      exitCode: 4,
-      code: "E_IO",
-      message: `ENOENT: no such file or directory, open '${readmePath}'`,
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: `Multiple task branches match ${taskId}: ${matches.join(", ")}`,
     });
   }
-  return task;
+  return null;
 }
 
 export async function loadBackendTask(opts: {

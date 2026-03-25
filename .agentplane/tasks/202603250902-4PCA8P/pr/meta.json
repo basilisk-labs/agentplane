@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603250902-4PCA8P/integrate-close-artifacts",
+  "created_at": "2026-03-25T09:54:25.924Z",
+  "head_sha": "1cb62927df78b28073ab46f80d9fa993eb2fa8ce",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "a8c2915726dc48b2bf69dc87c560dc5a3e0fe742",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-25T12:19:37.046Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603250902-4PCA8P",
+  "updated_at": "2026-03-25T12:19:37.046Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

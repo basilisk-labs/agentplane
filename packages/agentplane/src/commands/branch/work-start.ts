@@ -1,8 +1,9 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { resolveBaseBranch } from "@agentplaneorg/core";
 
+import { LocalBackend } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
@@ -57,6 +58,32 @@ async function writeDirectWorkLock(agentplaneDir: string, lock: DirectWorkLock):
   const dir = path.dirname(directWorkLockPath(agentplaneDir));
   await mkdir(dir, { recursive: true });
   await writeFile(directWorkLockPath(agentplaneDir), JSON.stringify(lock, null, 2) + "\n", "utf8");
+}
+
+async function materializeLocalBackendReadmesForWorktree(opts: {
+  backend: CommandContext["taskBackend"];
+  repoRoot: string;
+  worktreePath: string;
+}): Promise<void> {
+  if (!(opts.backend instanceof LocalBackend)) return;
+
+  const sourceRoot = path.resolve(opts.backend.root);
+  if (!isPathWithin(opts.repoRoot, sourceRoot)) return;
+
+  const relativeRoot = path.relative(opts.repoRoot, sourceRoot);
+  const targetRoot = path.join(opts.worktreePath, relativeRoot);
+  const entries = await readdir(sourceRoot, { withFileTypes: true }).catch(() => []);
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+
+    const sourceReadme = path.join(sourceRoot, entry.name, "README.md");
+    if (!(await fileExists(sourceReadme))) continue;
+
+    const targetReadme = path.join(targetRoot, entry.name, "README.md");
+    await mkdir(path.dirname(targetReadme), { recursive: true });
+    await copyFile(sourceReadme, targetReadme);
+  }
 }
 
 async function ensureGitClean(gitRoot: string): Promise<void> {
@@ -228,6 +255,11 @@ export async function cmdWorkStart(opts: {
         ? ["worktree", "add", worktreePath, branchName]
         : ["worktree", "add", "-b", branchName, worktreePath, baseRef];
       await execFileAsync("git", worktreeArgs, { cwd: resolved.gitRoot, env: gitEnv() });
+      await materializeLocalBackendReadmesForWorktree({
+        backend: ctx.taskBackend,
+        repoRoot: resolved.gitRoot,
+        worktreePath,
+      });
     } else {
       if (branchExists) {
         if (currentBranch !== branchName) {

@@ -3,14 +3,17 @@ title: "Workflow"
 description: "How work moves from plan to completion in Agent Plane."
 ---
 
-## Default direct path
+## Default path in this repository
+
+This repository is configured for `branch_pr`, so the normal guarded route is:
 
 1. Run preflight.
 2. Create the task, set the plan, and approve it.
-3. Start with `agentplane task start-ready`.
-4. Implement changes.
-5. Run `agentplane task verify-show`, then record the result with `agentplane verify`.
-6. Finish with `agentplane finish ... --result ... --commit <git-rev>`.
+3. Start a dedicated branch/worktree with `agentplane work start ... --worktree`.
+4. Implement changes on the task branch and keep local PR artifacts current.
+5. Push the task branch, open a hosted PR, and wait for required remote checks.
+6. Record verification on the task branch, then integrate on the base branch only after remote green.
+7. Finish on the base branch after integration.
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
 
@@ -19,13 +22,21 @@ agentplane config show
 agentplane quickstart
 agentplane task list
 git status --short --untracked-files=no
-agentplane task start-ready <task-id> --author CODER --body "Start: ..."
-agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
-agentplane finish <task-id> --author CODER --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
+agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
+agentplane pr update <task-id>
+git push -u origin task/<task-id>/<slug>
+gh pr create --base main --head task/<task-id>/<slug> --fill
+bun run workflow:wait-remote-checks
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
 ```
 
-This is the normal `direct` route. Recovery, `branch_pr`, and manual close handling are non-default paths.
+`direct` remains supported, but in this repository it is an explicit alternative rather than the default guarded path.
+
+## Default direct path
+
+When a repository intentionally operates in `direct`, the default happy path is `task start-ready -> task verify-show -> verify -> finish`.
 
 ## Core flow
 
@@ -87,7 +98,9 @@ agentplane workflow restore
 - One task per branch/worktree.
 - PR artifacts live under `.agentplane/tasks/<task-id>/pr/`.
 - `agentplane work start ... --worktree` is required.
-- Integration runs through `agentplane integrate`.
+- Local integration runs through `agentplane integrate`.
+- Hosted PR creation and remote required checks run through `gh`.
+- When remote checks are required, `agentplane integrate` and `finish` happen only after `bun run workflow:wait-remote-checks` returns green.
 
 ## Status transitions
 

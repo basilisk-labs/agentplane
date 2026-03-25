@@ -1,11 +1,19 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
+import { execFile } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
+import { promisify } from "node:util";
 
-import { createTask, loadConfig, resolveProject } from "@agentplaneorg/core";
+import { createTask, defaultConfig, loadConfig, resolveProject } from "@agentplaneorg/core";
 import { describe, expect, it } from "vitest";
 
-import { mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helpers.js";
+import {
+  configureGitUser,
+  mkGitRepoRoot,
+  mkGitRepoRootWithBranch,
+  writeConfig,
+  writeDefaultConfig,
+} from "../../cli/run-cli.test-helpers.js";
 import { loadCommandContext, loadTaskFromContext } from "./task-backend.js";
 
 async function writeLocalBackendConfig(root: string): Promise<void> {
@@ -75,5 +83,45 @@ describe("commands/shared/task-backend CommandContext", () => {
 
     expect(ctx.resolvedProject.gitRoot).toBe(root);
     expect(ctx.backendId).toBe("local");
+  });
+
+  it("loadTaskFromContext falls back to a branch-backed task README in branch_pr mode", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await writeLocalBackendConfig(root);
+
+    const execFileAsync = promisify(execFile);
+    const created = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "Context branch fallback",
+      description: "Load task README from the task branch when base does not have a local copy",
+      owner: "TESTER",
+      priority: "med",
+      tags: ["testing"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${created.id} scaffold`], { cwd: root });
+
+    const branch = `task/${created.id}/context-fallback`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+
+    await rm(path.join(root, ".agentplane", "tasks", created.id), { recursive: true, force: true });
+    await execFileAsync("git", ["add", "-A", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${created.id} remove base task snapshot`], {
+      cwd: root,
+    });
+
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await loadTaskFromContext({ ctx, taskId: created.id });
+    expect(task.id).toBe(created.id);
+    expect(task.title).toBe("Context branch fallback");
   });
 });

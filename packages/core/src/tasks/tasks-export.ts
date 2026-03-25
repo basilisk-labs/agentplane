@@ -5,6 +5,7 @@ import path from "node:path";
 import { loadConfig } from "../config/config.js";
 import { atomicWriteFile } from "../fs/atomic-write.js";
 import { resolveProject } from "../project/project-root.js";
+import { validateTasksExportSnapshot } from "./task-artifact-schema.js";
 import {
   listTasks,
   type TaskOrigin,
@@ -200,10 +201,26 @@ export type TasksExportMeta = {
 export type TasksExportTask = {
   id: string;
   title: string;
+  result_summary?: string;
+  risk_level?: "low" | "med" | "high";
+  breaking?: boolean;
   status: string;
   priority: string;
   owner: string;
+  revision?: number;
   origin?: TaskOrigin;
+  plan_approval: {
+    state: "pending" | "approved" | "rejected";
+    updated_at: string | null;
+    updated_by: string | null;
+    note: string | null;
+  };
+  verification: {
+    state: "pending" | "ok" | "needs_rework";
+    updated_at: string | null;
+    updated_by: string | null;
+    note: string | null;
+  };
   runner?: TaskRunnerOutcome;
   depends_on: string[];
   tags: string[];
@@ -316,10 +333,66 @@ export async function buildTasksExportSnapshot(opts: {
     const base = {
       id: typeof fm.id === "string" ? fm.id : t.id,
       title: typeof fm.title === "string" ? fm.title : "",
+      result_summary: typeof fm.result_summary === "string" ? fm.result_summary : undefined,
+      risk_level:
+        fm.risk_level === "low" || fm.risk_level === "med" || fm.risk_level === "high"
+          ? fm.risk_level
+          : undefined,
+      breaking: typeof fm.breaking === "boolean" ? fm.breaking : undefined,
       status: typeof fm.status === "string" ? fm.status : "",
       priority: typeof fm.priority === "string" ? fm.priority : "",
       owner: typeof fm.owner === "string" ? fm.owner : "",
+      revision:
+        typeof fm.revision === "number" && Number.isInteger(fm.revision) && fm.revision > 0
+          ? fm.revision
+          : undefined,
       origin: normalizeTaskOrigin(fm.origin),
+      plan_approval:
+        isRecord(fm.plan_approval) &&
+        (fm.plan_approval.state === "pending" ||
+          fm.plan_approval.state === "approved" ||
+          fm.plan_approval.state === "rejected")
+          ? {
+              state: fm.plan_approval.state,
+              updated_at:
+                typeof fm.plan_approval.updated_at === "string" ||
+                fm.plan_approval.updated_at === null
+                  ? fm.plan_approval.updated_at
+                  : null,
+              updated_by:
+                typeof fm.plan_approval.updated_by === "string" ||
+                fm.plan_approval.updated_by === null
+                  ? fm.plan_approval.updated_by
+                  : null,
+              note:
+                typeof fm.plan_approval.note === "string" || fm.plan_approval.note === null
+                  ? fm.plan_approval.note
+                  : null,
+            }
+          : { state: "pending", updated_at: null, updated_by: null, note: null },
+      verification:
+        isRecord(fm.verification) &&
+        (fm.verification.state === "pending" ||
+          fm.verification.state === "ok" ||
+          fm.verification.state === "needs_rework")
+          ? {
+              state: fm.verification.state,
+              updated_at:
+                typeof fm.verification.updated_at === "string" ||
+                fm.verification.updated_at === null
+                  ? fm.verification.updated_at
+                  : null,
+              updated_by:
+                typeof fm.verification.updated_by === "string" ||
+                fm.verification.updated_by === null
+                  ? fm.verification.updated_by
+                  : null,
+              note:
+                typeof fm.verification.note === "string" || fm.verification.note === null
+                  ? fm.verification.note
+                  : null,
+            }
+          : { state: "pending", updated_at: null, updated_by: null, note: null },
       runner: normalizeTaskRunnerOutcome(fm.runner),
       depends_on: dependsOn,
       tags,
@@ -342,8 +415,7 @@ export async function buildTasksExportSnapshot(opts: {
 
   const sorted = exportTasks.toSorted((a, b) => a.id.localeCompare(b.id));
   const checksum = computeTasksChecksum(sorted);
-
-  return {
+  const snapshot = validateTasksExportSnapshot({
     tasks: sorted,
     meta: {
       schema_version: 1,
@@ -351,7 +423,9 @@ export async function buildTasksExportSnapshot(opts: {
       checksum_algo: "sha256",
       checksum,
     },
-  };
+  });
+
+  return snapshot;
 }
 
 export async function writeTasksExport(opts: {

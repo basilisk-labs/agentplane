@@ -1,5 +1,5 @@
 import { execFile, spawn } from "node:child_process";
-import { appendFile } from "node:fs/promises";
+import { appendFileSync } from "node:fs";
 import { promisify } from "node:util";
 
 import {
@@ -238,8 +238,6 @@ export async function runSupervisedProcess(opts: {
     let timeoutRequestedAt: string | null = null;
     let terminateSentAt: string | null = null;
     let killSentAt: string | null = null;
-    let traceWriteChain = Promise.resolve();
-    let stderrWriteChain = Promise.resolve();
     let idleTimer: NodeJS.Timeout | null = null;
     let wallTimer: NodeJS.Timeout | null = null;
     let killTimer: NodeJS.Timeout | null = null;
@@ -247,14 +245,11 @@ export async function runSupervisedProcess(opts: {
     const queueAppend = (kind: "trace" | "stderr", text: string) => {
       if (kind === "trace" && traceMode !== "raw") return;
       if (kind === "stderr" && !captureStderr) return;
-      const chain = kind === "trace" ? traceWriteChain : stderrWriteChain;
       const path = kind === "trace" ? opts.invocation.trace_path : opts.invocation.stderr_path;
-      const next: Promise<void> = chain.then(() => appendFile(path, text, "utf8"));
-      void next.catch(finishWithError);
-      if (kind === "trace") {
-        traceWriteChain = next;
-      } else {
-        stderrWriteChain = next;
+      try {
+        appendFileSync(path, text, "utf8");
+      } catch (err) {
+        finishWithError(err);
       }
     };
 
@@ -487,7 +482,6 @@ export async function runSupervisedProcess(opts: {
       if (stderr_buffer) {
         writeTraceLine("stderr", stderr_buffer);
       }
-      await Promise.all([traceWriteChain, stderrWriteChain]);
       if (settled) return;
       const normalizedSignal = normalizeSignal(signal);
       const currentState = await readRunnerRunState(opts.invocation.state_path);

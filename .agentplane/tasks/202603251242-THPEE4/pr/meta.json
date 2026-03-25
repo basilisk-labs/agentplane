@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603251242-THPEE4/repair-onboarding-bootstrap-direct-path",
+  "created_at": "2026-03-25T12:57:22.626Z",
+  "head_sha": "a51c8facc6a1bb2dbd3d842f91c137a36744b138",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "7afd1516c145a3443d28fc90919132d62e2d4030",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-25T12:59:05.188Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603251242-THPEE4",
+  "updated_at": "2026-03-25T12:59:05.188Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

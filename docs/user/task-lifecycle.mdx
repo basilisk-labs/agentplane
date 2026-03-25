@@ -5,9 +5,39 @@ description: "How tasks move from idea to closure in direct and branch_pr workfl
 
 ## Overview
 
+## Minimal branch_pr lifecycle
+
+This repository is configured for `branch_pr`, so the normal guarded route is:
+
+1. Preflight.
+2. Create the task and approve the plan.
+3. `work start ... --worktree`.
+4. Implement changes on the task branch and keep local PR artifacts current.
+5. Push the task branch, open a hosted PR, and wait for required remote checks.
+6. `verify` on the task branch, then `integrate` on the base branch only after remote green.
+7. `finish` on the base branch with `--result` and `--commit`.
+
+```bash
+agentplane config show
+agentplane quickstart
+agentplane task list
+git status --short --untracked-files=no
+agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
+agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
+agentplane pr update <task-id>
+git push -u origin task/<task-id>/<slug>
+gh pr create --base main --head task/<task-id>/<slug> --fill
+bun run workflow:wait-remote-checks
+agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
+```
+
+`direct` remains supported, but here it is an explicit alternative rather than the default guarded route.
+
 ## Minimal direct lifecycle
 
-If you are not in `branch_pr` and nothing is broken, the shortest agent-first route is:
+If the repository is intentionally operating in `direct`, the shortest agent-first route is:
 
 1. Preflight.
 2. Create the task and approve the plan.
@@ -116,6 +146,7 @@ sequenceDiagram
 - PR artifacts are required under `.agentplane/tasks/<task-id>/pr/`.
 - Canonical task writes happen on the base branch only.
 - Handoff notes are appended during review and carried into closure.
+- Hosted PRs and server-side required checks are separate from local `agentplane pr ...` artifacts.
 
 ### Sequence diagram (branch_pr)
 
@@ -141,6 +172,8 @@ sequenceDiagram
   CLI->>G: Create branch + worktree
   E->>CLI: pr open / update
   CLI->>B: Write PR artifacts
+  E->>G: Push task branch to origin
+  E->>G: Open hosted PR + wait for required checks
   E->>CLI: start <task-id>
   CLI->>B: Update task status + comment
   E->>G: Implement changes
@@ -149,6 +182,7 @@ sequenceDiagram
   E->>G: Commit changes
   E->>CLI: pr update / note
   CLI->>B: Update PR artifacts + handoff notes
+  G-->>E: Required checks green
   I->>CLI: pr check / integrate
   CLI->>G: Merge to base (squash)
   CLI->>B: Refresh diffstat + README summary

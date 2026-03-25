@@ -1,0 +1,11 @@
+ .agentplane/tasks/202603241919-8FZ7Z5/README.md    | 125 +++++++++++++++++++++
+ .../tasks/202603241919-8FZ7Z5/pr/diffstat.txt      |   0
+ .agentplane/tasks/202603241919-8FZ7Z5/pr/meta.json |  12 ++
+ .agentplane/tasks/202603241919-8FZ7Z5/pr/review.md |  22 ++++
+ .../tasks/202603241919-8FZ7Z5/pr/verify.log        |   0
+ docs/user/agent-bootstrap.generated.mdx            |   4 +-
+ docs/user/agents.mdx                               |   2 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |   4 +-
+ packages/agentplane/src/cli/command-guide.test.ts  |   2 +
+ packages/agentplane/src/cli/command-guide.ts       |   8 +-
+ 10 files changed, 170 insertions(+), 9 deletions(-)

@@ -4,6 +4,7 @@ import path from "node:path";
 import type { AgentplaneConfig } from "../config/config.js";
 import { loadConfig } from "../config/config.js";
 import { resolveProject } from "../project/project-root.js";
+import { listTasksExportSnapshotSchemaErrors } from "./task-artifact-schema.js";
 import {
   computeTasksChecksum,
   type TasksExportSnapshot,
@@ -80,6 +81,8 @@ export function lintTasksSnapshot(
   if (!isRecord(snapshot) || !Array.isArray(snapshot.tasks) || !isRecord(snapshot.meta)) {
     return { errors: ["tasks.json must have { tasks: [], meta: {} }"] };
   }
+
+  errors.push(...listTasksExportSnapshotSchemaErrors(snapshot));
 
   if (snapshot.meta.schema_version !== 1) errors.push("tasks.json meta.schema_version must be 1");
   if (typeof snapshot.meta.managed_by !== "string" || snapshot.meta.managed_by.length === 0) {

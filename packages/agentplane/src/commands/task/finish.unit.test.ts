@@ -1010,6 +1010,61 @@ describe("task finish (unit)", () => {
       expect.objectContaining({
         taskId: "T-1",
         close: true,
+        allowBase: true,
+        closeStageTaskArtifacts: true,
+      }),
+    );
+  });
+
+  it("allows deterministic close commit on the base branch in branch_pr mode", async () => {
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        id: "T-1",
+        status: "DOING",
+        tags: ["docs"],
+        verification: {
+          state: "ok",
+          updated_at: "2026-02-09T00:00:00.000Z",
+          updated_by: "REVIEWER",
+          note: "ok",
+        },
+      }),
+    );
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "INTEGRATOR",
+      body: "Verified: base-branch close commit should be allowed in branch_pr mode.",
+      result: "branch_pr close commit",
+      commit: "abc123",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      closeCommit: true,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(mocks.cmdCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        close: true,
+        allowBase: true,
+        closeStageTaskArtifacts: true,
       }),
     );
   });

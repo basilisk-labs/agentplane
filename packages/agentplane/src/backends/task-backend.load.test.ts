@@ -263,7 +263,7 @@ describe("loadTaskBackend", () => {
     await expect(loadTaskBackend({ cwd: tempDir })).rejects.toBeInstanceOf(Error);
   });
 
-  it("exports task snapshots with coerced fields", () => {
+  it("exports task snapshots with canonicalized fields", () => {
     const snapshot = buildTasksExportSnapshotFromTasks([
       {
         id: "202601300000-ABCD",
@@ -293,12 +293,15 @@ describe("loadTaskBackend", () => {
       } as TaskData,
     ]);
     const task = snapshot.tasks[0];
-    expect(task?.priority).toBe("3");
+    expect(task?.title).toBe("(untitled task)");
+    expect(task?.status).toBe("TODO");
+    expect(task?.owner).toBe("UNKNOWN");
+    expect(task?.priority).toBe("med");
     expect(task?.depends_on).toEqual([]);
     expect(task?.tags).toEqual(["tag"]);
     expect(task?.verify).toEqual(["echo ok"]);
     expect(task?.comments).toEqual([{ author: "a", body: "b" }]);
-    expect(snapshot.tasks[1]?.priority).toBe("");
+    expect(snapshot.tasks[1]?.priority).toBe("med");
   });
 
   it("falls back to local backend when backend config is not an object", async () => {

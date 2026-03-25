@@ -222,6 +222,7 @@ export async function cmdFinish(opts: {
   closeCommit?: boolean;
   noCloseCommit?: boolean;
   closeUnstageOthers?: boolean;
+  baseBranchOverride?: string;
   quiet: boolean;
 }): Promise<number> {
   try {
@@ -560,6 +561,7 @@ export async function cmdFinish(opts: {
     // tasks.json is export-only; generated via `agentplane task export`.
 
     if (shouldCloseCommit && primaryTaskId) {
+      ctx.git.invalidateStatus();
       if (!opts.quiet) {
         process.stdout.write(
           `${infoMessage("task marked DONE; creating deterministic close commit")}\n`,
@@ -569,13 +571,14 @@ export async function cmdFinish(opts: {
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
+        baseBranchOverride: opts.baseBranchOverride ?? null,
         taskId: primaryTaskId,
         message: "",
         close: true,
         allow: [],
         autoAllow: false,
         allowTasks: true,
-        allowBase: false,
+        allowBase: ctx.config.workflow_mode === "branch_pr",
         allowPolicy: false,
         allowConfig: false,
         allowHooks: false,
@@ -584,6 +587,7 @@ export async function cmdFinish(opts: {
         quiet: opts.quiet,
         closeUnstageOthers: opts.closeCommit === true && opts.closeUnstageOthers === true,
         closeCheckOnly: false,
+        closeStageTaskArtifacts: ctx.config.workflow_mode === "branch_pr",
       });
     }
 

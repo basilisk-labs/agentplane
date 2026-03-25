@@ -193,7 +193,13 @@ describe("task-run lifecycle usecases", () => {
     });
 
     const executed = await executionPromise;
-    const finalState = await readRunnerRunState(statePath);
+    const finalState = await waitForState(
+      statePath,
+      (state) =>
+        state?.status === "cancelled" &&
+        Boolean(state.supervision?.cancel_signal) &&
+        state.result?.status === "cancelled",
+    );
 
     expect(cancelled.changed).toBe(true);
     expect(cancelled.state.status).toBe("cancelled");
@@ -201,7 +207,68 @@ describe("task-run lifecycle usecases", () => {
     expect(cancelled.state.supervision?.cancel_signal).toBeTruthy();
     expect(executed.result.status).toBe("cancelled");
     expect(finalState?.status).toBe("cancelled");
-    expect(finalState?.supervision?.exit_signal).toBeTruthy();
+    expect(finalState?.supervision?.cancel_signal).toBeTruthy();
+  });
+
+  it("cancel keeps cancel_signal and exit_signal semantics distinct during TERM cancellation", async () => {
+    const root = await makeTaskRoot();
+    await configureCustomRunner(root, [
+      "#!/bin/sh",
+      "trap 'exit 0' TERM",
+      "cat >/dev/null",
+      "while :; do sleep 1; done",
+    ]);
+    const taskId = await createDoingTask(root, "Cancel graceful TERM run");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const runId = "run-graceful-term-cancel";
+    const statePath = path.join(
+      root,
+      ".agentplane",
+      "tasks",
+      taskId,
+      "runs",
+      runId,
+      "run-state.json",
+    );
+    const executionPromise = executeTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      run_id: runId,
+    });
+
+    const runningState = await waitForState(
+      statePath,
+      (state) => state?.status === "running" && typeof state.supervision?.pid === "number",
+    );
+    expect(runningState?.status).toBe("running");
+
+    const cancelled = await cancelTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      run_id: runId,
+    });
+
+    const executed = await executionPromise;
+    const finalState = await waitForState(
+      statePath,
+      (state) =>
+        state?.status === "cancelled" &&
+        state.supervision?.cancel_signal === "SIGTERM" &&
+        state.result?.status === "cancelled",
+    );
+
+    expect(cancelled.state.status).toBe("cancelled");
+    expect(cancelled.state.supervision?.cancel_signal).toBe("SIGTERM");
+    expect(executed.result.status).toBe("cancelled");
+    expect(executed.result.exit_code).not.toBeNull();
+    expect(finalState?.status).toBe("cancelled");
+    expect(finalState?.supervision?.cancel_signal).toBe("SIGTERM");
+    expect([null, "SIGTERM"]).toContain(finalState?.supervision?.exit_signal ?? null);
+    expect(finalState?.result?.exit_code).toBe(executed.result.exit_code);
   });
 
   it("cancel refuses when the live process identity no longer matches persisted supervision metadata", async () => {

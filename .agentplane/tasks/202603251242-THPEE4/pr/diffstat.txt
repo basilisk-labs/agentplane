@@ -1,0 +1,10 @@
+ .agentplane/tasks/202603251242-THPEE4/README.md    | 137 +++++++++++++++++++++
+ .../tasks/202603251242-THPEE4/pr/diffstat.txt      |   0
+ .agentplane/tasks/202603251242-THPEE4/pr/meta.json |  12 ++
+ .agentplane/tasks/202603251242-THPEE4/pr/review.md |  22 ++++
+ .../tasks/202603251242-THPEE4/pr/verify.log        |   0
+ docs/user/agent-bootstrap.generated.mdx            |   2 +-
+ docs/user/task-lifecycle.mdx                       |   2 +-
+ docs/user/workflow.mdx                             |   6 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |   2 +-
+ 9 files changed, 179 insertions(+), 4 deletions(-)

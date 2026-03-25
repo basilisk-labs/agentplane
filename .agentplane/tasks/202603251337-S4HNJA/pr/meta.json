@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603251337-S4HNJA/windows-upgrade-timeout",
+  "created_at": "2026-03-25T13:42:52.358Z",
+  "head_sha": "2611964adf021003473c6ac106bab5d37f98e656",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "1de514ef93325c19c28aed68887e76d00120b4a8",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-25T13:44:25.478Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603251337-S4HNJA",
+  "updated_at": "2026-03-25T13:44:25.478Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

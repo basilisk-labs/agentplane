@@ -91,6 +91,52 @@ async function waitForRunnerState(opts: {
 }
 
 describe("runCli", () => {
+  it("task rebuild-index recreates the cache from tracked task artifacts when the cache file is missing", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Rebuild index task",
+          "--description",
+          "Exercise task rebuild-index on a missing cache file",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    const cachePath = path.join(root, ".agentplane", "cache", "tasks-index.v2.json");
+    await rm(cachePath, { force: true });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "rebuild-index", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(await readFile(cachePath, "utf8")) as {
+        schema_version: number;
+        byId: Record<string, { task: { id: string } }>;
+      };
+      expect(parsed.schema_version).toBe(2);
+      expect(parsed.byId[taskId]?.task.id).toBe(taskId);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("task run rejects tasks that have not entered DOING yet", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -557,7 +603,6 @@ describe("runCli", () => {
     expect(state.result?.status).toBe("failed");
     expect(state.result?.stderr_summary).toContain("does not support recipe sandbox");
     expect(state.policy_decision?.requested).toEqual({
-      mode: "analysis",
       sandbox: "custom-sandbox",
     });
     expect(state.policy_decision?.effective).toEqual({});
@@ -1712,13 +1757,18 @@ describe("runCli", () => {
 
       const finalState = JSON.parse(await readFile(liveRun.statePath, "utf8")) as {
         status: string;
-        supervision?: { cancel_requested_at?: string | null; exit_signal?: string | null };
+        supervision?: {
+          cancel_requested_at?: string | null;
+          cancel_signal?: string | null;
+          exit_signal?: string | null;
+        };
         result?: { status?: string };
       };
       expect(finalState.status).toBe("cancelled");
       expect(finalState.result?.status).toBe("cancelled");
       expect(finalState.supervision?.cancel_requested_at).toBeTruthy();
-      expect(finalState.supervision?.exit_signal).toBeTruthy();
+      expect(finalState.supervision?.cancel_signal).toBeTruthy();
+      expect([null, "SIGTERM"]).toContain(finalState.supervision?.exit_signal ?? null);
     } finally {
       process.env.PATH = originalPath;
       io.restore();

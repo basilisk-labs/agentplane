@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603241919-8FZ7Z5/branch-pr-runtime-guidance",
+  "created_at": "2026-03-25T06:30:36.538Z",
+  "head_sha": "3e689bf01ad7e71097104cbd25ab057f94ca400b",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "4939c723d03e20e4326517109c8dacc6149549d5",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-25T06:31:10.820Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603241919-8FZ7Z5",
+  "updated_at": "2026-03-25T06:31:10.820Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

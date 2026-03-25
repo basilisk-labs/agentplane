@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "workflow_mode": "direct",
+  "workflow_mode": "branch_pr",
   "status_commit_policy": "confirm",
   "finish_auto_status_commit": false,
   "agents": {

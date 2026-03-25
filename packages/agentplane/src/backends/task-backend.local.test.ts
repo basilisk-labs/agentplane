@@ -124,6 +124,62 @@ describe("LocalBackend", () => {
     expect(secondMtime).toBe(firstMtime);
   });
 
+  it("rebuilds the task index cache after the cache file is deleted", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202601300004-ABCD",
+      title: "Index rebuild",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    };
+    await backend.writeTask(task);
+    await backend.listTasks();
+    const indexPath = path.join(tempDir, ".cache", "tasks-index.v2.json");
+    await rm(indexPath, { force: true });
+
+    const listed = await backend.listTasks();
+    const rebuilt = JSON.parse(await readFile(indexPath, "utf8")) as {
+      byId: Record<string, { task: TaskData }>;
+    };
+
+    expect(listed.map((entry) => entry.id)).toContain(task.id);
+    expect(rebuilt.byId[task.id]?.task.id).toBe(task.id);
+  });
+
+  it("recovers from a corrupt task index cache by rebuilding it", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202601300005-ABCD",
+      title: "Index recover",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    };
+    await backend.writeTask(task);
+    await backend.listTasks();
+    const indexPath = path.join(tempDir, ".cache", "tasks-index.v2.json");
+    await writeFile(indexPath, "{not-json", "utf8");
+
+    const listed = await backend.listTasks();
+    const rebuilt = JSON.parse(await readFile(indexPath, "utf8")) as {
+      schema_version: number;
+      byId: Record<string, { task: TaskData }>;
+    };
+
+    expect(listed.map((entry) => entry.id)).toContain(task.id);
+    expect(rebuilt.schema_version).toBe(2);
+    expect(rebuilt.byId[task.id]?.task.id).toBe(task.id);
+  });
+
   it("defaults doc_updated_by to last comment author", async () => {
     const backend = new LocalBackend({ dir: tempDir, updatedBy: "agentplane" });
     const task: TaskData = {
@@ -284,6 +340,15 @@ describe("LocalBackend", () => {
         'status: "TODO"',
         'priority: "med"',
         'owner: "tester"',
+        "depends_on: []",
+        "tags: []",
+        "verify: []",
+        'plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null }',
+        'verification: { state: "pending", updated_at: null, updated_by: null, note: null }',
+        "comments: []",
+        "doc_version: 3",
+        `doc_updated_at: "${new Date().toISOString()}"`,
+        'doc_updated_by: "tester"',
         "---",
         "## Summary",
         "",
@@ -321,6 +386,12 @@ describe("LocalBackend", () => {
         depends_on: [],
         tags: [],
         verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-01-30T00:00:00Z",
+        doc_updated_by: "tester",
       },
       "## Summary\n\nDoc",
     );
@@ -346,6 +417,41 @@ describe("LocalBackend", () => {
     const readmeDir = path.join(tempDir, taskId, "README.md");
     await mkdir(readmeDir, { recursive: true });
     await expect(backend.getTask(taskId)).rejects.toBeInstanceOf(Error);
+  });
+
+  it("rejects invalid task README frontmatter in getTask", async () => {
+    const backend = new LocalBackend({ dir: tempDir });
+    const taskId = "202601300099-ABCD";
+    await mkdir(path.join(tempDir, taskId), { recursive: true });
+    await writeFile(
+      path.join(tempDir, taskId, "README.md"),
+      [
+        "---",
+        `id: "${taskId}"`,
+        `title: "Broken"`,
+        'status: "TODO"',
+        'priority: "med"',
+        'owner: "tester"',
+        "depends_on: []",
+        "tags: []",
+        "verify: []",
+        'plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null }',
+        'verification: { state: "pending", updated_at: null, updated_by: null, note: null }',
+        "comments: []",
+        "doc_version: 3",
+        `doc_updated_at: "${new Date().toISOString()}"`,
+        'doc_updated_by: "tester"',
+        'description: "Broken"',
+        'dirty: "no"',
+        "---",
+        "## Summary",
+      ].join("\n"),
+      "utf8",
+    );
+
+    await expect(backend.getTask(taskId)).rejects.toThrow(
+      /task README frontmatter schema validation failed/u,
+    );
   });
 
   it("rejects writeTask when id is missing", async () => {

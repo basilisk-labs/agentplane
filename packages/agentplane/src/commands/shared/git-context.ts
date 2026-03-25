@@ -122,6 +122,10 @@ export class GitContext {
     return status.unstagedTrackedPaths;
   }
 
+  invalidateStatus(): void {
+    this.memo.status = undefined;
+  }
+
   headCommit(): Promise<string> {
     this.memo.headCommit ??= (async () => {
       const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
@@ -140,8 +144,7 @@ export class GitContext {
       cwd: this.gitRoot,
       env: gitEnv(),
     });
-    // Invalidate memoized status: staging changes index state.
-    this.memo.status = undefined;
+    this.invalidateStatus();
   }
 
   async commit(opts: { message: string; body?: string; env?: NodeJS.ProcessEnv }): Promise<void> {

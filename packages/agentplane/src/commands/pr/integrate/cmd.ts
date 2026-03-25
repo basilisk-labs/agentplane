@@ -1,7 +1,10 @@
+import path from "node:path";
+
 import { mapBackendError } from "../../../cli/error-map.js";
 import { successMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
 
+import { cleanupIntegratedBranch } from "./internal/cleanup.js";
 import { execFileAsync, gitEnv } from "../../shared/git.js";
 import { gitRevParse } from "../../shared/git-ops.js";
 import type { CommandContext } from "../../shared/task-backend.js";
@@ -56,6 +59,7 @@ export async function cmdIntegrate(opts: {
     let alreadyVerifiedSha = prepared.alreadyVerifiedSha;
     let shouldRunVerify = prepared.shouldRunVerify;
     let branchHeadSha = prepared.branchHeadSha;
+    const changedPaths = prepared.changedPaths;
 
     if (opts.dryRun) {
       if (!opts.quiet) {
@@ -113,10 +117,18 @@ export async function cmdIntegrate(opts: {
         branch,
         headBeforeMerge,
         taskId: task.id,
+        workflowDir: loadedConfig.paths.workflow_dir,
+        changedPaths,
         genericTokens: loadedConfig.commit.generic_tokens,
       });
     } else if (opts.mergeStrategy === "merge") {
-      mergeHash = await runMergeCommit({ gitRoot: resolved.gitRoot, branch, taskId: task.id });
+      mergeHash = await runMergeCommit({
+        gitRoot: resolved.gitRoot,
+        branch,
+        taskId: task.id,
+        workflowDir: loadedConfig.paths.workflow_dir,
+        changedPaths,
+      });
     } else {
       if (!worktreePath) {
         throw new CliError({
@@ -141,6 +153,8 @@ export async function cmdIntegrate(opts: {
         shouldRunVerify,
         quiet: opts.quiet,
         taskId: task.id,
+        workflowDir: loadedConfig.paths.workflow_dir,
+        changedPaths,
       });
 
       mergeHash = rebaseRes.mergeHash;
@@ -171,6 +185,21 @@ export async function cmdIntegrate(opts: {
       shouldRunVerify,
       quiet: opts.quiet,
     });
+
+    const cleanup = await cleanupIntegratedBranch({
+      gitRoot: resolved.gitRoot,
+      branch,
+      worktreePathHint: worktreePath,
+    });
+    if (
+      cleanup.removedWorktree &&
+      cleanup.worktreePath &&
+      tempWorktreePath &&
+      path.resolve(cleanup.worktreePath) === path.resolve(tempWorktreePath)
+    ) {
+      tempWorktreePath = null;
+      createdTempWorktree = false;
+    }
 
     return 0;
   } catch (err) {
