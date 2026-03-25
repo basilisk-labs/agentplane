@@ -1,10 +1,11 @@
 ---
 id: "202603251024-2KQ7QT"
 title: "Auto-remove task branch and worktree after successful integrate"
-status: "DOING"
+result_summary: "Integrated on main with the stacked branch_pr merge rooted at 202603250902-4PCA8P."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-25T10:31:45.561Z"
   updated_by: "CODER"
   note: "Verified: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/*.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts; bun run --filter=agentplane build; bunx prettier --check packages/agentplane/src/commands/pr/integrate/cmd.ts packages/agentplane/src/commands/pr/integrate/internal/cleanup.ts packages/agentplane/src/commands/pr/integrate/internal/cleanup.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts; bunx eslint packages/agentplane/src/commands/pr/integrate/cmd.ts packages/agentplane/src/commands/pr/integrate/internal/cleanup.ts packages/agentplane/src/commands/pr/integrate/internal/cleanup.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts. Result: pass. Evidence: successful integrate now deletes the merged task branch, removes repo-local task worktrees, removes temporary verify worktrees after success, keeps dry-run branches intact, and leaves failure paths untouched for recovery. Scope: post-integrate cleanup only."
-commit: null
+commit:
+  hash: "a8c2915726dc48b2bf69dc87c560dc5a3e0fe742"
+  message: "🧩 4PCA8P integrate: squash task/202603250902-4PCA8P/integrate-close-artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: implementing automatic removal of the integrated task branch and its repo-local worktree after a successful branch_pr integrate path, stacked on top of 4PCA8P and C26JTM while those tasks remain on the same task branch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged on main via the stacked integrate flow rooted at 202603250902-4PCA8P; the automatic branch/worktree cleanup change landed in commit a8c2915726dc and the recorded verification evidence remains valid on base."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/*.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts; bun run --filter=agentplane build; bunx prettier --check packages/agentplane/src/commands/pr/integrate/cmd.ts packages/agentplane/src/commands/pr/integrate/internal/cleanup.ts packages/agentplane/src/commands/pr/integrate/internal/cleanup.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts; bunx eslint packages/agentplane/src/commands/pr/integrate/cmd.ts packages/agentplane/src/commands/pr/integrate/internal/cleanup.ts packages/agentplane/src/commands/pr/integrate/internal/cleanup.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts. Result: pass. Evidence: successful integrate now deletes the merged task branch, removes repo-local task worktrees, removes temporary verify worktrees after success, keeps dry-run branches intact, and leaves failure paths untouched for recovery. Scope: post-integrate cleanup only."
+  -
+    type: "status"
+    at: "2026-03-25T12:20:34.522Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged on main via the stacked integrate flow rooted at 202603250902-4PCA8P; the automatic branch/worktree cleanup change landed in commit a8c2915726dc and the recorded verification evidence remains valid on base."
 doc_version: 3
-doc_updated_at: "2026-03-25T10:31:45.567Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T12:20:34.523Z"
+doc_updated_by: "INTEGRATOR"
 description: "Teach branch_pr integrate to remove the integrated task branch and its repo-local worktree automatically after a successful finalize/close path, while keeping failure and dry-run behavior deterministic."
 sections:
   Summary: |-
