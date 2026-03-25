@@ -1,10 +1,11 @@
 ---
 id: "202603251134-WR51C7"
 title: "Allow branch_pr base commands to load branch-backed task README"
-status: "DOING"
+result_summary: "Integrated on main with the stacked branch_pr merge rooted at 202603250902-4PCA8P."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-25T12:14:31.256Z"
   updated_by: "CODER"
   note: "Focused branch_pr coverage passed: isolated integrate fallback scenario, task-backend branch snapshot fallback, PR artifact branch fallback, reconcile warning suppression, and agentplane build all completed successfully."
-commit: null
+commit:
+  hash: "a8c2915726dc48b2bf69dc87c560dc5a3e0fe742"
+  message: "🧩 4PCA8P integrate: squash task/202603250902-4PCA8P/integrate-close-artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: reproducing the fresh base-worktree branch_pr failure, then patching command-layer task loading so base commands can read branch-backed task README snapshots before merge in stacked integration flows."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged on main via the stacked integrate flow rooted at 202603250902-4PCA8P; the branch-backed task README fallback change landed in commit a8c2915726dc and the focused verification evidence remains valid on base."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused branch_pr coverage passed: isolated integrate fallback scenario, task-backend branch snapshot fallback, PR artifact branch fallback, reconcile warning suppression, and agentplane build all completed successfully."
+  -
+    type: "status"
+    at: "2026-03-25T12:20:50.630Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged on main via the stacked integrate flow rooted at 202603250902-4PCA8P; the branch-backed task README fallback change landed in commit a8c2915726dc and the focused verification evidence remains valid on base."
 doc_version: 3
-doc_updated_at: "2026-03-25T12:14:31.267Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T12:20:50.631Z"
+doc_updated_by: "INTEGRATOR"
 description: "Teach branch_pr base-worktree commands such as pr check and integrate to resolve task data from the task branch when the local backend README is not yet present on base, so stacked tasks can be integrated from a fresh base checkout without manual artifact seeding."
 sections:
   Summary: |-
