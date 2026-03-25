@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603250509-YN909A/integrate-artifacts",
   "created_at": "2026-03-25T05:35:16.563Z",
+  "head_sha": "4715bd05e1ef879e1202dc3fc6759b3057bbef50",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "35937b4744a0404e59e6fc495ae0ab0ece06dc33",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-25T06:01:55.808Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603250509-YN909A",
-  "updated_at": "2026-03-25T05:35:22.993Z",
+  "updated_at": "2026-03-25T06:01:55.808Z",
   "verify": {
     "status": "skipped"
   }

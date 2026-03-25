@@ -1,10 +1,11 @@
 ---
 id: "202603250509-YN909A"
 title: "Fix branch_pr integrate with local-backend task artifacts on base checkout"
-status: "DOING"
+result_summary: "integrate: squash task/202603250509-YN909A/integrate-artifacts"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ verification:
     Result: pass
     Evidence: prettier matched and eslint reported no findings.
     Scope: changed files only.
-commit: null
+commit:
+  hash: "35937b4744a0404e59e6fc495ae0ab0ece06dc33"
+  message: "📝 YN909A tasks: persist branch_pr PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the base-checkout integrate collision with local-backend task artifacts and remove the need for manual artifact shuffling."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603250509-YN909A/pr."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
       Result: pass
       Evidence: prettier matched and eslint reported no findings.
       Scope: changed files only.
+  -
+    type: "status"
+    at: "2026-03-25T06:01:55.940Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603250509-YN909A/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T05:34:38.821Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T06:01:55.940Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make branch_pr integration succeed when local-backend task README and pr artifacts already exist on the base checkout, instead of failing because git merge refuses to overwrite untracked task files."
 sections:
   Summary: |-
