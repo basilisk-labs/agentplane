@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603251236-YZ5HXQ/repair-branch-pr-policy-sync",
+  "created_at": "2026-03-25T12:39:32.230Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603251236-YZ5HXQ",
+  "updated_at": "2026-03-25T12:39:32.230Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

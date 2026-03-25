@@ -1,7 +1,6 @@
 # Workflow: branch_pr
 
 Use this module when `workflow_mode=branch_pr`.
-In repositories configured this way, this is the normal guarded route; `direct` remains an explicit alternative only when intentionally selected.
 
 ## Required sequence
 
