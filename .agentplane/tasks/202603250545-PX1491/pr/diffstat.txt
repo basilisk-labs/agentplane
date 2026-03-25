@@ -1,0 +1,3 @@
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 68 ++++++++++++++++
+ packages/agentplane/src/commands/pr/check.ts       | 94 +++++++++++++++++++---
+ 2 files changed, 151 insertions(+), 11 deletions(-)
