@@ -1,10 +1,11 @@
 ---
 id: "202603241918-W2SFZ6"
 title: "Docs/policy: make branch_pr the default workflow contract"
-status: "TODO"
+result_summary: "integrate: squash task/202603241918-W2SFZ6/branch-pr-default"
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -47,8 +48,13 @@ verification:
     Evidence: no matches; the touched surfaces no longer describe direct as the normal guarded default.
     Scope: repo policy/docs and bootstrap/quickstart wording.
     Links: packages/agentplane/assets/AGENTS.md, docs/user/workflow.mdx, docs/user/task-lifecycle.mdx, docs/user/commands.mdx
-commit: null
-comments: []
+commit:
+  hash: "b18e86bc100faa4c84a2ab88e3ed28bf7df9e1c4"
+  message: "📝 W2SFZ6 docs: add branch_pr handoff artifacts"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603241918-W2SFZ6/pr."
 events:
   -
     type: "verify"
@@ -79,9 +85,16 @@ events:
       Evidence: no matches; the touched surfaces no longer describe direct as the normal guarded default.
       Scope: repo policy/docs and bootstrap/quickstart wording.
       Links: packages/agentplane/assets/AGENTS.md, docs/user/workflow.mdx, docs/user/task-lifecycle.mdx, docs/user/commands.mdx
+  -
+    type: "status"
+    at: "2026-03-25T06:06:52.890Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603241918-W2SFZ6/pr."
 doc_version: 3
-doc_updated_at: "2026-03-24T20:07:56.571Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-03-25T06:06:52.890Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update AGENTS and workflow policy/docs so they consistently describe branch_pr as the default execution path and no longer imply that direct pushes to main are the normal guarded route."
 sections:
   Summary: |-
