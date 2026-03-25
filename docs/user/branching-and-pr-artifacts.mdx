@@ -43,7 +43,7 @@ Treat these as two separate layers:
 If this repository requires remote checks before `main` moves, do both:
 
 - keep local PR artifacts current with `agentplane`;
-- push the task branch and wait for hosted required checks with `gh`.
+- push the task branch and wait for hosted required checks with the workflow helper or raw `gh`.
 
 ## Handoff Notes
 
@@ -62,10 +62,16 @@ agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
 git push -u origin task/<task-id>/<slug>
 gh pr create --base main --head task/<task-id>/<slug> --fill
-gh pr checks --watch --required --fail-fast
+bun run workflow:wait-remote-checks
 agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "<one line>" --commit <git-rev> --close-commit
 ```
 
-Hosted checks are the gate. Do not integrate or finish on base branch until `gh pr checks --watch --required` returns green.
+Underlying hosted-check command:
+
+```bash
+gh pr checks --watch --required --fail-fast
+```
+
+Hosted checks are the gate. Do not integrate or finish on base branch until `bun run workflow:wait-remote-checks` returns green.

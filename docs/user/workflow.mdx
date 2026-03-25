@@ -27,7 +27,7 @@ agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
 git push -u origin task/<task-id>/<slug>
 gh pr create --base main --head task/<task-id>/<slug> --fill
-gh pr checks --watch --required --fail-fast
+bun run workflow:wait-remote-checks
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
 ```
@@ -96,7 +96,7 @@ agentplane workflow restore
 - `agentplane work start ... --worktree` is required.
 - Local integration runs through `agentplane integrate`.
 - Hosted PR creation and remote required checks run through `gh`.
-- When remote checks are required, `agentplane integrate` and `finish` happen only after `gh pr checks --watch --required` returns green.
+- When remote checks are required, `agentplane integrate` and `finish` happen only after `bun run workflow:wait-remote-checks` returns green.
 
 ## Status transitions
 
