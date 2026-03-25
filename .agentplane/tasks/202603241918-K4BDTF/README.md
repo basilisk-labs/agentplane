@@ -1,10 +1,11 @@
 ---
 id: "202603241918-K4BDTF"
 title: "Docs: publish a branch_pr operating guide with remote-check waiting"
-status: "DOING"
+result_summary: "integrate: squash task/202603241918-K4BDTF/remote-check-guide"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-25T06:13:00.326Z"
   updated_by: "DOCS"
   note: "Reviewed the branch_pr guide text, confirmed the remote-check sequence is concrete, ran prettier on the touched docs, and matched agentplane/gh commands to the installed help surface."
-commit: null
+commit:
+  hash: "32af8d81a57ba7bba47a6e9fff29c2aa3dcc34be"
+  message: "📝 K4BDTF tasks: persist branch_pr PR artifacts"
 comments:
   -
     author: "DOCS"
     body: "Start: document the concrete branch_pr operating path for task branches, PR artifacts, remote check waiting, and merge only after GitHub required checks are green."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603241918-K4BDTF/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Reviewed the branch_pr guide text, confirmed the remote-check sequence is concrete, ran prettier on the touched docs, and matched agentplane/gh commands to the installed help surface."
+  -
+    type: "status"
+    at: "2026-03-25T06:16:00.741Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603241918-K4BDTF/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T06:13:00.327Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-03-25T06:16:00.741Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document the operational path for task branches, PR opening, waiting for remote checks, and merging only after green so the repository has a concrete remote-green-before-main workflow."
 sections:
   Summary: |-
