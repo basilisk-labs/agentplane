@@ -1,10 +1,11 @@
 ---
 id: "202603251242-THPEE4"
 title: "Repair onboarding bootstrap direct lifecycle section"
-status: "DOING"
+result_summary: "integrate: squash task/202603251242-THPEE4/repair-onboarding-bootstrap-direct-path"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,7 +24,9 @@ verification:
   updated_at: "2026-03-25T12:56:38.616Z"
   updated_by: "CODER"
   note: "Checks passed: docs:onboarding:check; prettier check on onboarding docs and bootstrap generator surfaces."
-commit: null
+commit:
+  hash: "7afd1516c145a3443d28fc90919132d62e2d4030"
+  message: "✨ THPEE4 docs: refresh local PR artifacts"
 comments:
   -
     author: "CODER"
@@ -31,6 +34,9 @@ comments:
   -
     author: "CODER"
     body: "Start: repairing the generated onboarding bootstrap heading so docs:onboarding:check finds the expected direct lifecycle section again, regenerating the docs artifact from source, and rerunning the exact blocked check before another push attempt."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603251242-THPEE4/pr."
 events:
   -
     type: "status"
@@ -52,9 +58,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Checks passed: docs:onboarding:check; prettier check on onboarding docs and bootstrap generator surfaces."
+  -
+    type: "status"
+    at: "2026-03-25T12:59:07.752Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603251242-THPEE4/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T12:56:38.634Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T12:59:07.753Z"
+doc_updated_by: "INTEGRATOR"
 description: "Restore the direct-lifecycle onboarding text required by docs:onboarding:check so the generated agent bootstrap surface again includes the expected direct happy path guidance and pre-push can complete."
 sections:
   Summary: |-
