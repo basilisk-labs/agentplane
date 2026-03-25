@@ -1,10 +1,11 @@
 ---
 id: "202603250902-4PCA8P"
 title: "Make branch_pr integrate persist tracked task artifacts without extra close commit"
-status: "DOING"
+result_summary: "integrate: squash task/202603250902-4PCA8P/integrate-close-artifacts"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-25T09:50:09.367Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/commands/shared/git-context.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts; bun run --filter=agentplane build; bunx prettier --check packages/agentplane/src/commands/guard/impl/commands.ts packages/agentplane/src/commands/guard/impl/policy.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/shared/git-context.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts. Result: pass. Evidence: 76 targeted tests across integrate, finish, guard, finalize, and git-context passed; agentplane build passed; integrate fixtures now end on a close commit that persists tracked task artifacts and the tracked tasks-index cache without a follow-up base artifact commit. Scope: branch_pr integrate/finish artifact persistence only."
-commit: null
+commit:
+  hash: "a8c2915726dc48b2bf69dc87c560dc5a3e0fe742"
+  message: "🧩 4PCA8P integrate: squash task/202603250902-4PCA8P/integrate-close-artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: Inspect branch_pr integrate and finish flow, implement the smallest coherent change that persists tracked task and PR artifacts on base without a separate artifact-only close commit, and verify the guarded workflow with focused regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603250902-4PCA8P/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/shared/git-context.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts; bun run --filter=agentplane build; bunx prettier --check packages/agentplane/src/commands/guard/impl/commands.ts packages/agentplane/src/commands/guard/impl/policy.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/shared/git-context.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts. Result: pass. Evidence: 76 targeted tests across integrate, finish, guard, finalize, and git-context passed; agentplane build passed; integrate fixtures now end on a close commit that persists tracked task artifacts and the tracked tasks-index cache without a follow-up base artifact commit. Scope: branch_pr integrate/finish artifact persistence only."
+  -
+    type: "status"
+    at: "2026-03-25T12:19:38.262Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603250902-4PCA8P/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T09:50:09.370Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T12:19:38.262Z"
+doc_updated_by: "INTEGRATOR"
 description: "Eliminate the remaining branch_pr workflow gap where integrate on base merges code but still requires a separate close commit to persist tracked task and PR artifacts. The canonical integrate/finish path should leave base in a final task-artifact state without an extra manual artifact-only commit."
 sections:
   Summary: |-

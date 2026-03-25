@@ -1,0 +1,36 @@
+ .agentplane/tasks/202603250902-4PCA8P/README.md    | 124 ++++++++++++++++
+ .../tasks/202603250902-4PCA8P/pr/diffstat.txt      |   0
+ .agentplane/tasks/202603250902-4PCA8P/pr/meta.json |  12 ++
+ .agentplane/tasks/202603250902-4PCA8P/pr/review.md |  22 +++
+ .../tasks/202603250902-4PCA8P/pr/verify.log        |   0
+ .agentplane/tasks/202603251001-C26JTM/README.md    | 125 ++++++++++++++++
+ .../tasks/202603251001-C26JTM/pr/diffstat.txt      |   0
+ .agentplane/tasks/202603251001-C26JTM/pr/meta.json |  12 ++
+ .agentplane/tasks/202603251001-C26JTM/pr/review.md |  22 +++
+ .../tasks/202603251001-C26JTM/pr/verify.log        |   0
+ .agentplane/tasks/202603251024-2KQ7QT/README.md    | 125 ++++++++++++++++
+ .../tasks/202603251024-2KQ7QT/pr/diffstat.txt      |   0
+ .agentplane/tasks/202603251024-2KQ7QT/pr/meta.json |  12 ++
+ .agentplane/tasks/202603251024-2KQ7QT/pr/review.md |  22 +++
+ .../tasks/202603251024-2KQ7QT/pr/verify.log        |   0
+ .agentplane/tasks/202603251134-WR51C7/README.md    | 125 ++++++++++++++++
+ .../src/backends/task-backend.local.test.ts        |  56 ++++++++
+ .../cli/run-cli.core.guard.commit-wrapper.test.ts  |   2 +-
+ .../run-cli.core.pr-flow.cleanup-merged.test.ts    |   7 +-
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 158 +++++++++++++++++++--
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |   8 ++
+ .../src/cli/run-cli.core.tasks.query.test.ts       |  56 +++++++-
+ .../agentplane/src/commands/guard/impl/commands.ts |  27 +++-
+ .../agentplane/src/commands/guard/impl/policy.ts   |  16 ++-
+ .../agentplane/src/commands/pr/integrate/cmd.ts    |  18 +++
+ .../commands/pr/integrate/internal/cleanup.test.ts |  95 +++++++++++++
+ .../src/commands/pr/integrate/internal/cleanup.ts  |  61 ++++++++
+ .../pr/integrate/internal/finalize.test.ts         |   6 +
+ .../src/commands/pr/integrate/internal/finalize.ts |   2 +
+ .../agentplane/src/commands/shared/git-context.ts  |   7 +-
+ .../src/commands/shared/reconcile-check.ts         |  45 +++++-
+ .../src/commands/shared/task-backend.test.ts       |  54 ++++++-
+ .../agentplane/src/commands/shared/task-backend.ts |  77 ++++++++--
+ packages/agentplane/src/commands/task/finish.ts    |   4 +
+ .../src/commands/task/finish.unit.test.ts          |   2 +
+ 35 files changed, 1256 insertions(+), 46 deletions(-)
