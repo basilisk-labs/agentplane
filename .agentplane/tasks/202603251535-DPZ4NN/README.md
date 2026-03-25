@@ -1,10 +1,11 @@
 ---
 id: "202603251535-DPZ4NN"
 title: "Generate and enforce canonical task artifact schemas from runtime contracts"
-status: "DOING"
+result_summary: "integrate: squash task/202603251535-DPZ4NN/task-artifact-schemas"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-25T17:34:57.450Z"
   updated_by: "CODER"
   note: "Verified legacy README priority alias compatibility after canonical schema enforcement. Checks: bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts; bun run test:fast; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build."
-commit: null
+commit:
+  hash: "4e2586d2e1394f0bc0b343a85d5b1f6c3afb0dc0"
+  message: "✨ DPZ4NN task: refresh local PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: implement one canonical source for task artifact contracts, emit generated schemas from it, and wire runtime validation across task artifact read and write boundaries before downstream projection refactors."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603251535-DPZ4NN/pr."
 events:
   -
     type: "status"
@@ -55,9 +61,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified legacy README priority alias compatibility after canonical schema enforcement. Checks: bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts; bun run test:fast; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build."
+  -
+    type: "status"
+    at: "2026-03-25T17:42:43.522Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603251535-DPZ4NN/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T17:34:57.458Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T17:42:43.522Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make task README frontmatter and tasks export artifacts derive from one executable runtime contract, then sync generated schema/example artifacts from that source instead of maintaining partial handwritten drift across core and spec."
 sections:
   Summary: |-
