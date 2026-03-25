@@ -60,6 +60,8 @@ function normalizeSlashes(value: string): string {
   return value.replaceAll("\\", "/");
 }
 
+const WORKFLOW_RUNTIME_ARTIFACTS_TIMEOUT_MS = os.platform() === "win32" ? 120_000 : 60_000;
+
 installRunCliIntegrationHarness();
 
 describe("runCli", () => {
@@ -150,7 +152,7 @@ describe("runCli", () => {
 
   it(
     "upgrade restores workflow runtime artifacts even when managed files are otherwise unchanged",
-    { timeout: 60_000 },
+    { timeout: WORKFLOW_RUNTIME_ARTIFACTS_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await configureGitUser(root);
