@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603251523-G3Z6BQ/framework-refactor-ledger",
+  "created_at": "2026-03-25T15:45:43.271Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603251523-G3Z6BQ",
+  "updated_at": "2026-03-25T15:55:59.732Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
