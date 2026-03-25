@@ -340,6 +340,15 @@ describe("LocalBackend", () => {
         'status: "TODO"',
         'priority: "med"',
         'owner: "tester"',
+        "depends_on: []",
+        "tags: []",
+        "verify: []",
+        'plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null }',
+        'verification: { state: "pending", updated_at: null, updated_by: null, note: null }',
+        "comments: []",
+        "doc_version: 3",
+        `doc_updated_at: "${new Date().toISOString()}"`,
+        'doc_updated_by: "tester"',
         "---",
         "## Summary",
         "",
@@ -377,6 +386,12 @@ describe("LocalBackend", () => {
         depends_on: [],
         tags: [],
         verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-01-30T00:00:00Z",
+        doc_updated_by: "tester",
       },
       "## Summary\n\nDoc",
     );
@@ -402,6 +417,41 @@ describe("LocalBackend", () => {
     const readmeDir = path.join(tempDir, taskId, "README.md");
     await mkdir(readmeDir, { recursive: true });
     await expect(backend.getTask(taskId)).rejects.toBeInstanceOf(Error);
+  });
+
+  it("rejects invalid task README frontmatter in getTask", async () => {
+    const backend = new LocalBackend({ dir: tempDir });
+    const taskId = "202601300099-ABCD";
+    await mkdir(path.join(tempDir, taskId), { recursive: true });
+    await writeFile(
+      path.join(tempDir, taskId, "README.md"),
+      [
+        "---",
+        `id: "${taskId}"`,
+        `title: "Broken"`,
+        'status: "TODO"',
+        'priority: "med"',
+        'owner: "tester"',
+        "depends_on: []",
+        "tags: []",
+        "verify: []",
+        'plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null }',
+        'verification: { state: "pending", updated_at: null, updated_by: null, note: null }',
+        "comments: []",
+        "doc_version: 3",
+        `doc_updated_at: "${new Date().toISOString()}"`,
+        'doc_updated_by: "tester"',
+        'description: "Broken"',
+        'dirty: "no"',
+        "---",
+        "## Summary",
+      ].join("\n"),
+      "utf8",
+    );
+
+    await expect(backend.getTask(taskId)).rejects.toThrow(
+      /task README frontmatter schema validation failed/u,
+    );
   });
 
   it("rejects writeTask when id is missing", async () => {

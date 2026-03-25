@@ -593,4 +593,42 @@ describe("task-store", () => {
     const updated = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
     expect(updated.frontmatter.doc_version).toBe(3);
   });
+
+  it("readTask rejects invalid frontmatter schema", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202603130001-BADFM";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      [
+        "---",
+        `id: "${taskId}"`,
+        'title: "Bad frontmatter"',
+        'status: "TODO"',
+        'priority: "med"',
+        'owner: "CODER"',
+        "depends_on: []",
+        "tags: []",
+        "verify: []",
+        'plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null }',
+        'verification: { state: "pending", updated_at: null, updated_by: null, note: null }',
+        "comments: []",
+        "doc_version: 3",
+        `doc_updated_at: "${new Date().toISOString()}"`,
+        'doc_updated_by: "CODER"',
+        'description: "Why it matters"',
+        'dirty: "no"',
+        "---",
+        "## Summary",
+        "",
+        "Body",
+      ].join("\n"),
+      "utf8",
+    );
+
+    await expect(readTask({ cwd: root, rootOverride: root, taskId })).rejects.toThrow(
+      /task README frontmatter schema validation failed/u,
+    );
+  });
 });

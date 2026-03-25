@@ -7,6 +7,8 @@ import {
   renderTaskReadme,
   taskDocToSectionMap,
   taskReadmePath,
+  validateTaskReadmeFrontmatter,
+  withTaskReadmeFrontmatterDefaults,
   type TaskRecord,
 } from "@agentplaneorg/core";
 
@@ -181,10 +183,23 @@ export class LocalBackend implements TaskBackend {
         warnings.push(`skip:${dirName}: empty_or_invalid_frontmatter`);
         return null;
       }
-      const taskId = (typeof fm.id === "string" ? fm.id : dirName).trim();
+      const fallbackTaskId = (typeof fm.id === "string" ? fm.id : dirName).trim();
+      let frontmatter;
+      try {
+        frontmatter = validateTaskReadmeFrontmatter(
+          withTaskReadmeFrontmatterDefaults({
+            ...fm,
+            id: fallbackTaskId,
+          }),
+        );
+      } catch {
+        warnings.push(`skip:${dirName}: invalid_readme_frontmatter`);
+        return null;
+      }
+      const taskId = fallbackTaskId;
       const task = taskRecordToData({
         id: taskId,
-        frontmatter: fm as unknown as TaskRecord["frontmatter"],
+        frontmatter: frontmatter as unknown as TaskRecord["frontmatter"],
         body: parsed.body,
         readmePath: readme,
       });
@@ -253,9 +268,18 @@ export class LocalBackend implements TaskBackend {
       throw err;
     }
     const parsed = parseTaskReadme(text);
+    const frontmatter = validateTaskReadmeFrontmatter(
+      withTaskReadmeFrontmatterDefaults({
+        ...parsed.frontmatter,
+        id:
+          typeof parsed.frontmatter.id === "string" && parsed.frontmatter.id.trim().length > 0
+            ? parsed.frontmatter.id
+            : taskId,
+      }),
+    );
     const task = taskRecordToData({
       id: taskId,
-      frontmatter: parsed.frontmatter as unknown as TaskRecord["frontmatter"],
+      frontmatter: frontmatter as unknown as TaskRecord["frontmatter"],
       body: parsed.body,
       readmePath: readme,
     });
@@ -271,6 +295,15 @@ export class LocalBackend implements TaskBackend {
     const readme = taskReadmePath(this.root, taskId);
     const text = await readFile(readme, "utf8");
     const parsed = parseTaskReadme(text);
+    validateTaskReadmeFrontmatter(
+      withTaskReadmeFrontmatterDefaults({
+        ...parsed.frontmatter,
+        id:
+          typeof parsed.frontmatter.id === "string" && parsed.frontmatter.id.trim().length > 0
+            ? parsed.frontmatter.id
+            : taskId,
+      }),
+    );
     return extractTaskDoc(parsed.body);
   }
 
@@ -375,6 +408,7 @@ export class LocalBackend implements TaskBackend {
       payload.doc_updated_by = resolveDocUpdatedByFromTask(task, this.updatedBy);
     }
 
+    validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(payload));
     await mkdir(path.dirname(readme), { recursive: true });
     const text = renderTaskReadme(payload, body || "");
     await writeTextIfChanged(readme, text.endsWith("\n") ? text : `${text}\n`);
@@ -396,7 +430,13 @@ export class LocalBackend implements TaskBackend {
     });
     const docText = String(doc ?? "");
     const body = mergeTaskDoc(parsed.body, docText);
-    const frontmatter = { ...parsed.frontmatter } as Record<string, unknown>;
+    const frontmatter = {
+      ...parsed.frontmatter,
+      id:
+        typeof parsed.frontmatter.id === "string" && parsed.frontmatter.id.trim().length > 0
+          ? parsed.frontmatter.id
+          : taskId,
+    } as Record<string, unknown>;
     const currentDocVersion = normalizeDocVersion(frontmatter.doc_version);
     if (docChanged(extractTaskDoc(parsed.body), docText) || !frontmatter.doc_updated_at) {
       frontmatter.doc_version = currentDocVersion;
@@ -409,6 +449,7 @@ export class LocalBackend implements TaskBackend {
     }
     frontmatter.sections = taskDocToSectionMap(docText);
     frontmatter.doc_version = normalizeDocVersion(frontmatter.doc_version, currentDocVersion);
+    validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(frontmatter));
     const next = renderTaskReadme(frontmatter, body);
     await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
   }
@@ -426,7 +467,13 @@ export class LocalBackend implements TaskBackend {
       expectedRevision: opts?.expectedRevision,
       currentRevision: storedRevisionFromFrontmatter(parsed.frontmatter, 1),
     });
-    const frontmatter = { ...parsed.frontmatter } as Record<string, unknown>;
+    const frontmatter = {
+      ...parsed.frontmatter,
+      id:
+        typeof parsed.frontmatter.id === "string" && parsed.frontmatter.id.trim().length > 0
+          ? parsed.frontmatter.id
+          : taskId,
+    } as Record<string, unknown>;
     frontmatter.doc_version = normalizeDocVersion(frontmatter.doc_version);
     frontmatter.doc_updated_at = nowIso();
     frontmatter.doc_updated_by = resolveDocUpdatedByFromFrontmatter(
@@ -438,6 +485,7 @@ export class LocalBackend implements TaskBackend {
       isRecord(frontmatter.sections) && Object.keys(frontmatter.sections).length > 0
         ? frontmatter.sections
         : taskDocToSectionMap(extractTaskDoc(parsed.body));
+    validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(frontmatter));
     const next = renderTaskReadme(frontmatter, parsed.body || "");
     await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
   }
@@ -477,13 +525,25 @@ export class LocalBackend implements TaskBackend {
         if (!isRecord(fm) || Object.keys(fm).length === 0) {
           return { taskId: "", scanned: false, changed: false };
         }
+        const fallbackTaskId = (typeof fm.id === "string" ? fm.id : dirName).trim();
+        let frontmatter;
+        try {
+          frontmatter = validateTaskReadmeFrontmatter(
+            withTaskReadmeFrontmatterDefaults({
+              ...fm,
+              id: fallbackTaskId,
+            }),
+          );
+        } catch {
+          return { taskId: "", scanned: false, changed: false };
+        }
 
-        const taskId = (typeof fm.id === "string" ? fm.id : dirName).trim();
+        const taskId = fallbackTaskId;
         if (taskId) validateTaskId(taskId);
 
         const task = taskRecordToData({
           id: taskId,
-          frontmatter: fm as unknown as TaskRecord["frontmatter"],
+          frontmatter: frontmatter as unknown as TaskRecord["frontmatter"],
           body: parsed.body,
           readmePath: readme,
         });
@@ -531,6 +591,7 @@ export class LocalBackend implements TaskBackend {
           payload.sections = taskDocToSectionMap(task.doc);
         }
 
+        validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(payload));
         const next = renderTaskReadme(payload, parsed.body || "");
         const didWrite = await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
         return { taskId, scanned: true, changed: didWrite };

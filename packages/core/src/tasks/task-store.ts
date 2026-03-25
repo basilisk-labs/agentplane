@@ -4,6 +4,10 @@ import path from "node:path";
 import { loadConfig } from "../config/config.js";
 import { atomicWriteFile } from "../fs/atomic-write.js";
 import { resolveProject } from "../project/project-root.js";
+import {
+  validateTaskReadmeFrontmatter,
+  withTaskReadmeFrontmatterDefaults,
+} from "./task-artifact-schema.js";
 import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
 import { updateTaskReadmeAtomic } from "./task-readme-io.js";
 import { ensureDocSections, setMarkdownSection, taskDocToSectionMap } from "./task-doc.js";
@@ -83,6 +87,9 @@ export type TaskRunnerOutcome = TaskRunnerHistoryEntry & {
 export type TaskFrontmatter = {
   id: string;
   title: string;
+  result_summary?: string;
+  risk_level?: "low" | "med" | "high";
+  breaking?: boolean;
   status: TaskStatus;
   priority: TaskPriority;
   owner: string;
@@ -112,6 +119,8 @@ export type TaskFrontmatter = {
   description: string;
   sections?: Record<string, string>;
   commit?: { hash: string; message: string } | null;
+  dirty?: boolean;
+  id_source?: string;
 };
 
 export type TaskRecord = {
@@ -314,6 +323,7 @@ export async function createTask(opts: {
 
   const body = defaultTaskBody();
   frontmatter.sections = taskDocToSectionMap(body);
+  validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(frontmatter));
   const text = renderTaskReadme(frontmatter as unknown as Record<string, unknown>, body);
   await atomicWriteFile(readmePath, text, "utf8");
   return { id, readmePath };
@@ -351,6 +361,7 @@ export async function setTaskDocSection(opts: {
       loaded.config.tasks.doc.required_sections,
     );
     nextFrontmatter.sections = taskDocToSectionMap(nextBody);
+    validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(nextFrontmatter));
     return { frontmatter: nextFrontmatter, body: nextBody };
   });
   return { readmePath };
@@ -368,9 +379,18 @@ export async function readTask(opts: {
   const readmePath = taskReadmePath(tasksDir, opts.taskId);
   const text = await readFile(readmePath, "utf8");
   const parsed = parseTaskReadme(text);
+  const frontmatter = validateTaskReadmeFrontmatter(
+    withTaskReadmeFrontmatterDefaults({
+      ...parsed.frontmatter,
+      id:
+        typeof parsed.frontmatter.id === "string" && parsed.frontmatter.id.trim().length > 0
+          ? parsed.frontmatter.id
+          : opts.taskId,
+    }),
+  );
   return {
     id: opts.taskId,
-    frontmatter: parsed.frontmatter as unknown as TaskFrontmatter,
+    frontmatter,
     body: parsed.body,
     readmePath,
   };
@@ -393,9 +413,19 @@ export async function listTasks(opts: {
     try {
       const text = await readFile(readmePath, "utf8");
       const parsed = parseTaskReadme(text);
+      const fallbackId =
+        typeof parsed.frontmatter.id === "string" && parsed.frontmatter.id.trim().length > 0
+          ? parsed.frontmatter.id
+          : id;
+      const frontmatter = validateTaskReadmeFrontmatter(
+        withTaskReadmeFrontmatterDefaults({
+          ...parsed.frontmatter,
+          id: fallbackId,
+        }),
+      );
       tasks.push({
         id,
-        frontmatter: parsed.frontmatter as unknown as TaskFrontmatter,
+        frontmatter,
         body: parsed.body,
         readmePath,
       });

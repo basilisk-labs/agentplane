@@ -2,6 +2,8 @@ import path from "node:path";
 import {
   parseTaskReadme,
   taskDocToSectionMap,
+  validateTaskReadmeFrontmatter,
+  withTaskReadmeFrontmatterDefaults,
   type TaskRecord,
   type AgentplaneConfig,
   type ResolvedProject,
@@ -168,9 +170,18 @@ export async function loadTaskFromBranchSnapshot(opts: {
   }
 
   const parsed = parseTaskReadme(text);
+  const frontmatter = validateTaskReadmeFrontmatter(
+    withTaskReadmeFrontmatterDefaults({
+      ...parsed.frontmatter,
+      id:
+        typeof parsed.frontmatter.id === "string" && parsed.frontmatter.id.trim().length > 0
+          ? parsed.frontmatter.id
+          : opts.taskId,
+    }),
+  );
   return taskRecordToData({
     id: opts.taskId,
-    frontmatter: parsed.frontmatter as unknown as TaskRecord["frontmatter"],
+    frontmatter: frontmatter as unknown as TaskRecord["frontmatter"],
     body: parsed.body,
     readmePath: opts.readmePath,
   });

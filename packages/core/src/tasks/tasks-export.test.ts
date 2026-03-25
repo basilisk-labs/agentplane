@@ -30,7 +30,7 @@ describe("tasks-export", () => {
     const parsed = JSON.parse(raw) as { tasks: TasksExportTask[] };
 
     const checksum = computeTasksChecksum(parsed.tasks);
-    expect(checksum).toBe("6e37f07cf2b1a6b2295946722fa1a29362a28c564d0bc2ba48f48d324f9d6670");
+    expect(checksum).toBe("bd96120b48a3c2cc157c2edbacc73e03758447113fd859e0693e0a95666801b6");
   });
 
   it("writeTasksExport writes .agentplane/tasks.json with matching checksum", async () => {
@@ -96,11 +96,10 @@ describe("tasks-export", () => {
     expect(snapshot.tasks.find((t) => t.id === created.id)?.origin).toEqual({ system: "manual" });
 
     const malformed = snapshot.tasks.find((t) => t.id === malformedId);
-    expect(malformed?.commit).toEqual({ hash: "abc1234", message: "done" });
-    expect(malformed?.comments).toEqual([{ author: "owner", body: "ok" }]);
+    expect(malformed).toBeUndefined();
   });
 
-  it("buildTasksExportSnapshot drops invalid commit and comments", async () => {
+  it("buildTasksExportSnapshot skips readmes that violate the canonical frontmatter schema", async () => {
     const root = await mkGitRepoRoot();
 
     const taskId = "202601010101-ABCDE";
@@ -132,12 +131,7 @@ describe("tasks-export", () => {
 
     const { snapshot } = await writeTasksExport({ cwd: root, rootOverride: root });
     const exported = snapshot.tasks.find((t) => t.id === taskId);
-    expect(exported?.commit).toBeNull();
-    expect(exported?.comments).toEqual([]);
-    expect(exported?.tags).toEqual(["ok"]);
-    expect(exported?.verify).toEqual(["run"]);
-    expect(exported?.title).toBe("");
-    expect(exported?.description).toBe("");
+    expect(exported).toBeUndefined();
   });
 
   it("exports append-only events when present", async () => {
@@ -158,6 +152,8 @@ describe("tasks-export", () => {
         "depends_on: []",
         "tags: []",
         "verify: []",
+        'plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null }',
+        'verification: { state: "pending", updated_at: null, updated_by: null, note: null }',
         "comments: []",
         "events:",
         '  - { type: "status", at: "2026-02-07T10:00:00.000Z", author: "CODER", from: "TODO", to: "DOING" }',
@@ -195,6 +191,8 @@ describe("tasks-export", () => {
         "depends_on: []",
         "tags: []",
         "verify: []",
+        'plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null }',
+        'verification: { state: "pending", updated_at: null, updated_by: null, note: null }',
         "comments: []",
         "doc_version: 3",
         `doc_updated_at: "${new Date().toISOString()}"`,

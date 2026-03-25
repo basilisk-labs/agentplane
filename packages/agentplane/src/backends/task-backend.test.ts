@@ -192,16 +192,29 @@ describe("task-backend helpers", () => {
 
     const task = snapshot.tasks[0];
     if (!task) throw new Error("missing task");
-    expect(task.priority).toBe("2");
+    expect(task.priority).toBe("med");
     expect(task.depends_on).toEqual([]);
     expect(task.tags).toEqual(["ok"]);
     expect(task.verify).toEqual([]);
     expect(task.origin).toEqual({ system: "manual", run_id: "run-123" });
     expect(task.comments).toEqual([{ author: "a", body: "b" }]);
     expect(task.doc_version).toBe(3);
+    expect(task.doc_updated_at).toBe("1970-01-01T00:00:00.000Z");
     expect(task.doc_updated_by).toBe("a");
     expect(task.dirty).toBe(false);
     expect(task.id_source).toBe("generated");
+    expect(task.plan_approval).toEqual({
+      state: "pending",
+      updated_at: null,
+      updated_by: null,
+      note: null,
+    });
+    expect(task.verification).toEqual({
+      state: "pending",
+      updated_at: null,
+      updated_by: null,
+      note: null,
+    });
   });
   it("taskRecordToData parses doc, comments, commit, and dirty", () => {
     const record = {

@@ -2,7 +2,11 @@ import { createHash } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
-import { canonicalizeJson } from "@agentplaneorg/core";
+import {
+  canonicalizeJson,
+  validateTasksExportSnapshot,
+  type TasksExportSnapshot,
+} from "@agentplaneorg/core";
 
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 
@@ -12,6 +16,31 @@ import { normalizeTaskOrigin, normalizeTaskRunnerOutcome } from "./normalize.js"
 import { toStringArray } from "./strings.js";
 import type { TaskData, TaskEvent } from "./types.js";
 
+const DEFAULT_EXPORT_DOC_UPDATED_AT = "1970-01-01T00:00:00.000Z";
+
+function normalizeExportPriority(value: TaskData["priority"]): "low" | "normal" | "med" | "high" {
+  if (value === "low" || value === "normal" || value === "med" || value === "high") return value;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "medium") return "med";
+    if (
+      normalized === "low" ||
+      normalized === "normal" ||
+      normalized === "med" ||
+      normalized === "high"
+    ) {
+      return normalized;
+    }
+  }
+  return "med";
+}
+
+function normalizeExportDocUpdatedAt(value: TaskData["doc_updated_at"]): string {
+  return typeof value === "string" && !Number.isNaN(Date.parse(value))
+    ? value
+    : DEFAULT_EXPORT_DOC_UPDATED_AT;
+}
+
 function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_source: string } {
   const base = {
     ...task,
@@ -19,13 +48,35 @@ function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_sourc
     title: task.title ?? "",
     description: task.description ?? "",
     status: task.status ?? "",
-    priority: typeof task.priority === "number" ? String(task.priority) : (task.priority ?? ""),
+    priority: normalizeExportPriority(task.priority),
     owner: task.owner ?? "",
+    result_summary: typeof task.result_summary === "string" ? task.result_summary : undefined,
+    risk_level:
+      task.risk_level === "low" || task.risk_level === "med" || task.risk_level === "high"
+        ? task.risk_level
+        : undefined,
+    breaking: typeof task.breaking === "boolean" ? task.breaking : undefined,
+    revision:
+      typeof task.revision === "number" && Number.isInteger(task.revision) && task.revision > 0
+        ? task.revision
+        : undefined,
     origin: normalizeTaskOrigin(task.origin) ?? undefined,
     runner: normalizeTaskRunnerOutcome(task.runner) ?? undefined,
     depends_on: toStringArray(task.depends_on),
     tags: toStringArray(task.tags),
     verify: toStringArray(task.verify),
+    plan_approval: task.plan_approval ?? {
+      state: "pending",
+      updated_at: null,
+      updated_by: null,
+      note: null,
+    },
+    verification: task.verification ?? {
+      state: "pending",
+      updated_at: null,
+      updated_by: null,
+      note: null,
+    },
     commit: task.commit ?? null,
     comments: Array.isArray(task.comments)
       ? task.comments.filter(
@@ -34,7 +85,7 @@ function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_sourc
         )
       : [],
     doc_version: normalizeDocVersion(task.doc_version),
-    doc_updated_at: task.doc_updated_at ?? "",
+    doc_updated_at: normalizeExportDocUpdatedAt(task.doc_updated_at),
     doc_updated_by: resolveDocUpdatedByFromTask(task, DEFAULT_DOC_UPDATED_BY),
     dirty: Boolean(task.dirty),
     id_source: task.id_source ?? "generated",
@@ -54,15 +105,12 @@ function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_sourc
   return base;
 }
 
-export function buildTasksExportSnapshotFromTasks(tasks: TaskData[]): {
-  tasks: TaskData[];
-  meta: { schema_version: 1; managed_by: string; checksum_algo: "sha256"; checksum: string };
-} {
+export function buildTasksExportSnapshotFromTasks(tasks: TaskData[]): TasksExportSnapshot {
   const exportTasks = tasks.map((task) => taskDataToExport(task));
   const sorted = exportTasks.toSorted((a, b) => a.id.localeCompare(b.id));
   const canonical = JSON.stringify(canonicalizeJson({ tasks: sorted }));
   const checksum = createHash("sha256").update(canonical, "utf8").digest("hex");
-  return {
+  return validateTasksExportSnapshot({
     tasks: sorted,
     meta: {
       schema_version: 1,
@@ -70,7 +118,7 @@ export function buildTasksExportSnapshotFromTasks(tasks: TaskData[]): {
       checksum_algo: "sha256",
       checksum,
     },
-  };
+  });
 }
 
 export async function writeTasksExportFromTasks(opts: {

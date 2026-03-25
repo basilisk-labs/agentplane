@@ -2,26 +2,11 @@ import { mkdir, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
+import { validateTaskPrMeta, type TaskPrMeta } from "@agentplaneorg/core";
+
 import { execFileAsync } from "./git.js";
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
-
-function isIsoDate(value: unknown): boolean {
-  return typeof value === "string" && !Number.isNaN(Date.parse(value));
-}
-
-export type PrMeta = {
-  schema_version: 1;
-  task_id: string;
-  branch?: string;
-  created_at: string;
-  updated_at: string;
-  last_verified_sha: string | null;
-  last_verified_at: string | null;
-  verify?: { status?: "pass" | "fail" | "skipped"; command?: string };
-};
+export type PrMeta = TaskPrMeta;
 
 export type ShellInvocation = {
   command: string;
@@ -46,12 +31,9 @@ export function parsePrMeta(raw: string, taskId: string): PrMeta {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`JSON Parse error: ${message}`);
   }
-  if (!isRecord(parsed)) throw new Error("pr/meta.json must be an object");
-  if (parsed.schema_version !== 1) throw new Error("pr/meta.json schema_version must be 1");
-  if (parsed.task_id !== taskId) throw new Error("pr/meta.json task_id mismatch");
-  if (!isIsoDate(parsed.created_at)) throw new Error("pr/meta.json created_at must be ISO");
-  if (!isIsoDate(parsed.updated_at)) throw new Error("pr/meta.json updated_at must be ISO");
-  return parsed as PrMeta;
+  const meta = validateTaskPrMeta(parsed);
+  if (meta.task_id !== taskId) throw new Error("pr/meta.json task_id mismatch");
+  return meta;
 }
 
 export function extractLastVerifiedSha(logText: string): string | null {
