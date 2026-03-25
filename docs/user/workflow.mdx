@@ -34,6 +34,10 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 
 `direct` remains supported, but in this repository it is an explicit alternative rather than the default guarded path.
 
+## Default direct path
+
+When a repository intentionally operates in `direct`, the default happy path is `task start-ready -> task verify-show -> verify -> finish`.
+
 ## Core flow
 
 1. Plan and create task graph.
@@ -86,7 +90,7 @@ agentplane workflow restore
 - Work in a single checkout.
 - `agentplane work start` records the active task lock for that checkout.
 - Per-task branches/worktrees are not required.
-- The shortest direct-mode path is `task start-ready -> task verify-show -> verify -> finish`.
+- The default happy path is `task start-ready -> task verify-show -> verify -> finish`.
 - In direct mode, `finish` creates the deterministic close commit by default.
 
 ## branch_pr mode

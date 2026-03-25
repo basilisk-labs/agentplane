@@ -50,7 +50,7 @@ export const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
     ],
   },
   {
-    heading: "2. Direct-mode reference path",
+    heading: "2. Direct happy path",
     summary:
       "When a repository is intentionally configured for direct mode, use one short route: create the task, approve it, start it, verify it, and finish it.",
     commands: BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS,
