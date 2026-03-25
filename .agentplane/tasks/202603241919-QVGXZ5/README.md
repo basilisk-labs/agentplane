@@ -1,10 +1,11 @@
 ---
 id: "202603241919-QVGXZ5"
 title: "Workflow tooling/docs: require waiting for remote checks before merge"
-status: "DOING"
+result_summary: "integrate: squash task/202603241919-QVGXZ5/remote-check-wait"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-25T06:22:48.536Z"
   updated_by: "CODER"
   note: "Added a small gh-based remote-check wait helper, exposed it via package.json, updated branch_pr docs to use one canonical wait step, and verified help/vitest/prettier/eslint in touched scope."
-commit: null
+commit:
+  hash: "0bb81d4405f04601a09c7f32d97a914364921788"
+  message: "📝 QVGXZ5 tasks: persist branch_pr PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: add a small gh-based remote-check wait helper and wire it into the branch_pr workflow guidance."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603241919-QVGXZ5/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added a small gh-based remote-check wait helper, exposed it via package.json, updated branch_pr docs to use one canonical wait step, and verified help/vitest/prettier/eslint in touched scope."
+  -
+    type: "status"
+    at: "2026-03-25T06:23:45.052Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603241919-QVGXZ5/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T06:22:48.537Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T06:23:45.052Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a documented or scripted remote-check wait step based on gh so PR integration is not considered complete until the required GitHub checks for the target SHA are green."
 sections:
   Summary: |-

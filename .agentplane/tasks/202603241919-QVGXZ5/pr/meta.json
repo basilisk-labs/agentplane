@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603241919-QVGXZ5/remote-check-wait",
   "created_at": "2026-03-25T06:23:09.875Z",
+  "head_sha": "caa07cf514c2b846c04d60b4aec8a70f9844277b",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "0bb81d4405f04601a09c7f32d97a914364921788",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-25T06:23:44.721Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603241919-QVGXZ5",
-  "updated_at": "2026-03-25T06:23:09.875Z",
+  "updated_at": "2026-03-25T06:23:44.721Z",
   "verify": {
     "status": "skipped"
   }
