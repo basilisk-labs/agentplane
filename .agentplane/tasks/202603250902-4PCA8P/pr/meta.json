@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603250902-4PCA8P/integrate-close-artifacts",
+  "created_at": "2026-03-25T09:54:25.924Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603250902-4PCA8P",
+  "updated_at": "2026-03-25T09:54:25.924Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

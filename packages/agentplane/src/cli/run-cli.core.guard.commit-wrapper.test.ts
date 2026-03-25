@@ -771,7 +771,7 @@ describe("runCli", () => {
       expect(io.stderr).toContain("close commit requires an empty index");
       expect(io.stderr).toContain("state: close commit cannot run with a non-empty git index");
       expect(io.stderr).toContain(
-        "likely_cause: deterministic close commits only stage the task README, but other staged files are already in the index",
+        "likely_cause: deterministic close commits only stage the active task artifact scope, but other staged files are already in the index",
       );
       expect(io.stderr).toContain("next_action: git restore --staged -- .");
       expect(io.stderr).toContain("--unstage-others");

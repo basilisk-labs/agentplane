@@ -118,6 +118,8 @@ export async function finalizeIntegrate(opts: {
     statusCommitAutoAllow: false,
     statusCommitRequireClean: false,
     confirmStatusCommit: false,
+    closeCommit: true,
+    baseBranchOverride: opts.base,
     quiet: opts.quiet,
   });
 

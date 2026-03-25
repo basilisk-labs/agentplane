@@ -60,6 +60,7 @@ installRunCliIntegrationHarness();
 describe("runCli", () => {
   const CLEANUP_MERGED_LIST_TIMEOUT_MS = 120_000;
   const CLEANUP_MERGED_MUTATION_TIMEOUT_MS = 120_000;
+  const TEST_WORKFLOW_GITIGNORE = ".agentplane/worktrees\n.agentplane/cache\n";
 
   it("cleanup merged requires branch_pr workflow", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -279,7 +280,7 @@ describe("runCli", () => {
       await writeConfig(root, config);
 
       await writeFile(path.join(root, "README.md"), "base\n", "utf8");
-      await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
       await commitAll(root, "chore base");
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
@@ -353,7 +354,7 @@ describe("runCli", () => {
       await writeConfig(root, config);
 
       await writeFile(path.join(root, "README.md"), "base\n", "utf8");
-      await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
       await commitAll(root, "chore base");
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
@@ -436,7 +437,7 @@ describe("runCli", () => {
       await writeConfig(root, config);
 
       await writeFile(path.join(root, "README.md"), "base\n", "utf8");
-      await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
       await commitAll(root, "chore base");
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 

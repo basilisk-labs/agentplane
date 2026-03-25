@@ -463,6 +463,14 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await rm(path.join(root, ".agentplane", "tasks", taskId), { recursive: true, force: true });
+    await execFileAsync("git", ["add", "-A", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} remove base task snapshot`], {
+      cwd: root,
+    });
+    expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
+      false,
+    );
     expect(
       await pathExists(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json")),
     ).toBe(false);

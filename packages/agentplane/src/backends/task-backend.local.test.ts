@@ -124,6 +124,62 @@ describe("LocalBackend", () => {
     expect(secondMtime).toBe(firstMtime);
   });
 
+  it("rebuilds the task index cache after the cache file is deleted", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202601300004-ABCD",
+      title: "Index rebuild",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    };
+    await backend.writeTask(task);
+    await backend.listTasks();
+    const indexPath = path.join(tempDir, ".cache", "tasks-index.v2.json");
+    await rm(indexPath, { force: true });
+
+    const listed = await backend.listTasks();
+    const rebuilt = JSON.parse(await readFile(indexPath, "utf8")) as {
+      byId: Record<string, { task: TaskData }>;
+    };
+
+    expect(listed.map((entry) => entry.id)).toContain(task.id);
+    expect(rebuilt.byId[task.id]?.task.id).toBe(task.id);
+  });
+
+  it("recovers from a corrupt task index cache by rebuilding it", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202601300005-ABCD",
+      title: "Index recover",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    };
+    await backend.writeTask(task);
+    await backend.listTasks();
+    const indexPath = path.join(tempDir, ".cache", "tasks-index.v2.json");
+    await writeFile(indexPath, "{not-json", "utf8");
+
+    const listed = await backend.listTasks();
+    const rebuilt = JSON.parse(await readFile(indexPath, "utf8")) as {
+      schema_version: number;
+      byId: Record<string, { task: TaskData }>;
+    };
+
+    expect(listed.map((entry) => entry.id)).toContain(task.id);
+    expect(rebuilt.schema_version).toBe(2);
+    expect(rebuilt.byId[task.id]?.task.id).toBe(task.id);
+  });
+
   it("defaults doc_updated_by to last comment author", async () => {
     const backend = new LocalBackend({ dir: tempDir, updatedBy: "agentplane" });
     const task: TaskData = {

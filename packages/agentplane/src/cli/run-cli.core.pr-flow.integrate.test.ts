@@ -58,6 +58,7 @@ import * as prompts from "./prompts.js";
 installRunCliIntegrationHarness();
 
 const INTEGRATE_REBASE_TIMEOUT_MS = 120_000;
+const TEST_WORKFLOW_GITIGNORE = ".agentplane/worktrees\n.agentplane/cache\n";
 
 describe("runCli", () => {
   it("integrate requires a task id", async () => {
@@ -204,9 +205,9 @@ describe("runCli", () => {
 
     const execFileAsync = promisify(execFile);
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
-    await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
     await stageGitignoreIfPresent(root);
-    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["add", "README.md", ".agentplane/config.json"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
 
     let taskId = "";
@@ -241,6 +242,14 @@ describe("runCli", () => {
     const branch = `task/${taskId}/integrate`;
     await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
     await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    const branchReadmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const branchReadme = await readFile(branchReadmePath, "utf8");
+    await writeFile(
+      branchReadmePath,
+      `${branchReadme}\n\n<!-- branch-backed task snapshot for integrate fallback -->\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", branchReadmePath], { cwd: root });
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
@@ -262,6 +271,7 @@ describe("runCli", () => {
 
     const task = await readTask({ cwd: root, taskId });
     expect(task.frontmatter.status).toBe("DONE");
+    expect(await gitBranchExists(root, branch)).toBe(false);
 
     const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
     const metaText = await readFile(metaPath, "utf8");
@@ -269,6 +279,84 @@ describe("runCli", () => {
     const meta = JSON.parse(metaText) as Record<string, unknown>;
     expect(meta.base).toBe("main");
     expect(meta).not.toHaveProperty("base_branch");
+  }, 120_000);
+
+  it("integrate falls back to a branch-backed task README when base lacks the local task snapshot", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+    await stageGitignoreIfPresent(root);
+    await execFileAsync("git", ["add", "README.md", ".agentplane/config.json"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate branch-backed task fallback",
+        "--description",
+        "Base integrate should resolve the task from the task branch when the local README is missing.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    const branch = `task/${taskId}/integrate-branch-fallback`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    const branchReadmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const branchReadme = await readFile(branchReadmePath, "utf8");
+    await writeFile(
+      branchReadmePath,
+      `${branchReadme}\n\n<!-- branch-backed task snapshot for integrate fallback -->\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["add", branchReadmePath], { cwd: root });
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
+      false,
+    );
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ integrate");
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, taskId });
+    expect(task.frontmatter.status).toBe("DONE");
   }, 120_000);
 
   it("integrate succeeds when branch_pr task artifacts already exist untracked on the base checkout", async () => {
@@ -280,7 +368,7 @@ describe("runCli", () => {
 
     const execFileAsync = promisify(execFile);
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
-    await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
     await stageGitignoreIfPresent(root);
     await execFileAsync("git", ["add", "README.md"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
@@ -379,8 +467,12 @@ describe("runCli", () => {
         cwd: root,
       },
     );
+    expect(statusAfter).not.toContain(".agentplane/cache/tasks-index.v2.json");
     expect(statusAfter).not.toContain(`?? .agentplane/tasks/${taskId}/README.md`);
     expect(statusAfter).not.toContain(`?? .agentplane/tasks/${taskId}/pr/meta.json`);
+    expect(statusAfter).not.toContain(`.agentplane/tasks/${taskId}/README.md`);
+    expect(statusAfter).not.toContain(`.agentplane/tasks/${taskId}/pr/meta.json`);
+    expect(statusAfter).not.toContain(`.agentplane/tasks/${taskId}/pr/diffstat.txt`);
     const backupDir = path.join(root, ".agentplane", "tmp", "integrate-backups");
     if (await pathExists(backupDir)) {
       expect(await readdir(backupDir)).toEqual([]);
@@ -393,6 +485,20 @@ describe("runCli", () => {
       "utf8",
     );
     expect(metaText).toContain('"status": "MERGED"');
+    const { stdout: headSubject } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+      cwd: root,
+    });
+    expect(headSubject.trim()).toContain("close:");
+    const { stdout: headFiles } = await execFileAsync("git", ["show", "--name-only", "--format="], {
+      cwd: root,
+    });
+    const changedFiles = headFiles
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/README.md`);
+    expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/pr/meta.json`);
+    expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/pr/diffstat.txt`);
   }, 120_000);
 
   it("integrate uses a compliant fallback commit subject when branch subject is invalid (squash)", async () => {
@@ -404,7 +510,7 @@ describe("runCli", () => {
 
     const execFileAsync = promisify(execFile);
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
-    await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
     await stageGitignoreIfPresent(root);
     await execFileAsync("git", ["add", "README.md"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
@@ -459,15 +565,24 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const { stdout: subjectOut } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+    const { stdout: subjectOut } = await execFileAsync("git", ["log", "-2", "--pretty=%s"], {
       cwd: root,
       env: cleanGitEnv(),
     });
-    const subject = subjectOut.trim();
+    const subjects = subjectOut
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
     const suffix = extractTaskSuffix(taskId);
-    expect(subject.startsWith(`🧩 ${suffix} integrate:`)).toBe(true);
+    expect(subjects[0]?.includes("close:")).toBe(true);
+    const mergeSubject = subjects[1] ?? "";
+    expect(mergeSubject.startsWith(`🧩 ${suffix} integrate:`)).toBe(true);
     expect(
-      validateCommitSubject({ subject, taskId, genericTokens: config.commit.generic_tokens }).ok,
+      validateCommitSubject({
+        subject: mergeSubject,
+        taskId,
+        genericTokens: config.commit.generic_tokens,
+      }).ok,
     ).toBe(true);
   }, 120_000);
 
@@ -482,7 +597,7 @@ describe("runCli", () => {
 
       const execFileAsync = promisify(execFile);
       await writeFile(path.join(root, "README.md"), "base\n", "utf8");
-      await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
       await stageGitignoreIfPresent(root);
       await execFileAsync("git", ["add", "README.md"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
@@ -553,6 +668,7 @@ describe("runCli", () => {
         cwd: root,
       });
       expect(headAfter.trim()).toBe(headBefore.trim());
+      expect(await gitBranchExists(root, branch)).toBe(true);
     },
     INTEGRATE_REBASE_TIMEOUT_MS,
   );
@@ -568,6 +684,8 @@ describe("runCli", () => {
 
       const execFileAsync = promisify(execFile);
       await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+      await stageGitignoreIfPresent(root);
       await execFileAsync("git", ["add", "README.md"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
 
@@ -630,6 +748,8 @@ describe("runCli", () => {
       } finally {
         io.restore();
       }
+
+      expect(await gitBranchExists(root, branch)).toBe(false);
     },
     INTEGRATE_REBASE_TIMEOUT_MS,
   );
@@ -645,6 +765,8 @@ describe("runCli", () => {
 
       const execFileAsync = promisify(execFile);
       await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+      await stageGitignoreIfPresent(root);
       await execFileAsync("git", ["add", "README.md"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
 
@@ -692,7 +814,7 @@ describe("runCli", () => {
       await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
       await execFileAsync("git", ["add", "base.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "chore base update"], { cwd: root });
-      const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-rebase-"));
+      const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-rebase`);
       await execFileAsync("git", ["worktree", "add", worktreePath, branch], {
         cwd: root,
         env: cleanGitEnv(),
@@ -715,6 +837,9 @@ describe("runCli", () => {
       } finally {
         io.restore();
       }
+
+      expect(await gitBranchExists(root, branch)).toBe(false);
+      expect(await pathExists(worktreePath)).toBe(false);
     },
     INTEGRATE_REBASE_TIMEOUT_MS,
   );
@@ -730,6 +855,8 @@ describe("runCli", () => {
 
       const execFileAsync = promisify(execFile);
       await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+      await stageGitignoreIfPresent(root);
       await execFileAsync("git", ["add", "README.md"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -821,6 +948,8 @@ describe("runCli", () => {
 
       const execFileAsync = promisify(execFile);
       await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+      await stageGitignoreIfPresent(root);
       await execFileAsync("git", ["add", "README.md"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -904,6 +1033,8 @@ describe("runCli", () => {
 
     const execFileAsync = promisify(execFile);
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+    await stageGitignoreIfPresent(root);
     await execFileAsync("git", ["add", "README.md"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
 
@@ -982,6 +1113,8 @@ describe("runCli", () => {
 
     const execFileAsync = promisify(execFile);
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+    await stageGitignoreIfPresent(root);
     await execFileAsync("git", ["add", "README.md"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
 
@@ -1045,6 +1178,11 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
+
+    expect(await gitBranchExists(root, branch)).toBe(false);
+    expect(
+      await pathExists(path.join(root, ".agentplane", "worktrees", `_integrate_tmp_${taskId}`)),
+    ).toBe(false);
 
     const verifyLog = await readFile(
       path.join(root, ".agentplane", "tasks", taskId, "pr", "verify.log"),

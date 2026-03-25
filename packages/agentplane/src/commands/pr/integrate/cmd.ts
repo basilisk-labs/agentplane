@@ -1,7 +1,10 @@
+import path from "node:path";
+
 import { mapBackendError } from "../../../cli/error-map.js";
 import { successMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
 
+import { cleanupIntegratedBranch } from "./internal/cleanup.js";
 import { execFileAsync, gitEnv } from "../../shared/git.js";
 import { gitRevParse } from "../../shared/git-ops.js";
 import type { CommandContext } from "../../shared/task-backend.js";
@@ -182,6 +185,21 @@ export async function cmdIntegrate(opts: {
       shouldRunVerify,
       quiet: opts.quiet,
     });
+
+    const cleanup = await cleanupIntegratedBranch({
+      gitRoot: resolved.gitRoot,
+      branch,
+      worktreePathHint: worktreePath,
+    });
+    if (
+      cleanup.removedWorktree &&
+      cleanup.worktreePath &&
+      tempWorktreePath &&
+      path.resolve(cleanup.worktreePath) === path.resolve(tempWorktreePath)
+    ) {
+      tempWorktreePath = null;
+      createdTempWorktree = false;
+    }
 
     return 0;
   } catch (err) {

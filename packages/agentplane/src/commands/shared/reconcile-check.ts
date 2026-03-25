@@ -1,7 +1,9 @@
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { withDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
-import { listTasksMemo, type CommandContext } from "./task-backend.js";
+import path from "node:path";
+
+import { listTasksMemo, loadTaskFromBranchSnapshot, type CommandContext } from "./task-backend.js";
 
 function compactError(err: unknown): string {
   if (err instanceof Error) {
@@ -139,7 +141,10 @@ export async function ensureReconciledBeforeMutation(opts: {
     });
   }
 
-  const warnings = opts.ctx.taskBackend.getLastListWarnings?.() ?? [];
+  const warnings = await filterWarningsResolvedFromTaskBranch(
+    opts.ctx,
+    opts.ctx.taskBackend.getLastListWarnings?.() ?? [],
+  );
   if (warnings.length === 0) return;
 
   throw new CliError({
@@ -155,4 +160,40 @@ export async function ensureReconciledBeforeMutation(opts: {
       buildWarningDiagnostic(warnings),
     ),
   });
+}
+
+async function filterWarningsResolvedFromTaskBranch(
+  ctx: CommandContext,
+  warnings: string[],
+): Promise<string[]> {
+  if (warnings.length === 0 || ctx.backendId !== "local") {
+    return warnings;
+  }
+
+  const kept: string[] = [];
+  for (const raw of warnings) {
+    const parsed = parseTaskScanWarning(raw);
+    if (
+      !parsed.taskId ||
+      (parsed.kind !== "missing_or_unreadable_readme" && parsed.kind !== "unreadable_readme")
+    ) {
+      kept.push(raw);
+      continue;
+    }
+    const taskId = parsed.taskId;
+
+    const readmePath = path.join(
+      ctx.resolvedProject.gitRoot,
+      ctx.config.paths.workflow_dir,
+      taskId,
+      "README.md",
+    );
+    const snapshot = await loadTaskFromBranchSnapshot({
+      ctx,
+      taskId,
+      readmePath,
+    });
+    if (!snapshot) kept.push(raw);
+  }
+  return kept;
 }

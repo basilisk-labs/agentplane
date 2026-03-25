@@ -288,6 +288,7 @@ export async function cmdCommit(opts: {
   ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
+  baseBranchOverride?: string | null;
   taskId: string;
   message: string;
   close: boolean;
@@ -303,6 +304,7 @@ export async function cmdCommit(opts: {
   quiet: boolean;
   closeUnstageOthers: boolean;
   closeCheckOnly: boolean;
+  closeStageTaskArtifacts?: boolean;
 }): Promise<number> {
   try {
     const ctx =
@@ -336,7 +338,7 @@ export async function cmdCommit(opts: {
             {
               state: "close commit cannot run with a non-empty git index",
               likelyCause:
-                "deterministic close commits only stage the task README, but other staged files are already in the index",
+                "deterministic close commits only stage the active task artifact scope, but other staged files are already in the index",
               nextAction: {
                 command: "git restore --staged -- .",
                 reason: "clear the current index before rerunning the close commit flow",
@@ -370,18 +372,32 @@ export async function cmdCommit(opts: {
         }
         return 0;
       }
-      await ctx.git.stage([readmeRel]);
+      await (opts.closeStageTaskArtifacts === true
+        ? stageAllowlist({
+            ctx,
+            allow: [],
+            allowTasks: true,
+            tasksPath: ctx.config.paths.tasks_path,
+            workflowDir: ctx.config.paths.workflow_dir,
+            taskId: opts.taskId,
+            allowTaskOnly: true,
+            emptyAllowMessage:
+              "No changed task artifacts to stage for the deterministic close commit.",
+            noMatchMessage:
+              "No changed files matched the active task artifact scope for the deterministic close commit.",
+          })
+        : ctx.git.stage([readmeRel]));
 
       // Close commits should not require manual --allow flags:
-      // the command stages exactly one task README under workflow_dir.
-      const allow = [ctx.config.paths.workflow_dir];
+      // the command stages only the active task artifact scope.
       await guardCommitCheck({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
+        baseBranchOverride: opts.baseBranchOverride ?? null,
         taskId: opts.taskId,
         message: msg.subject,
-        allow,
+        allow: [],
         allowBase: opts.allowBase,
         allowTasks: true,
         allowPolicy: false,
@@ -461,6 +477,7 @@ export async function cmdCommit(opts: {
       ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
+      baseBranchOverride: opts.baseBranchOverride ?? null,
       taskId: opts.taskId,
       message: opts.message,
       allow: opts.allow,

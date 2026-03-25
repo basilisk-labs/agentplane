@@ -1011,6 +1011,7 @@ describe("task finish (unit)", () => {
         taskId: "T-1",
         close: true,
         allowBase: true,
+        closeStageTaskArtifacts: true,
       }),
     );
   });
@@ -1063,6 +1064,7 @@ describe("task finish (unit)", () => {
         taskId: "T-1",
         close: true,
         allowBase: true,
+        closeStageTaskArtifacts: true,
       }),
     );
   });
