@@ -19,16 +19,22 @@ Branch: task/202603251535-DPZ4NN/task-artifact-schemas
 <!-- Add review notes here. -->
 
 <!-- BEGIN AUTO SUMMARY -->
-- Updated: 2026-03-25T16:56:26.259Z
+- Updated: 2026-03-25T17:23:13.762Z
 - Branch: task/202603251535-DPZ4NN/task-artifact-schemas
-- Head: d6ffcb425435
+- Head: 1868366d7219
 - Diffstat:
 ```
- .agentplane/tasks/202603251535-DPZ4NN/README.md    |  52 +-
+ .agentplane/tasks/202603251535-DPZ4NN/README.md    |  74 ++-
+ .../tasks/202603251535-DPZ4NN/pr/diffstat.txt      |  26 +
+ .agentplane/tasks/202603251535-DPZ4NN/pr/meta.json |  12 +
+ .agentplane/tasks/202603251535-DPZ4NN/pr/review.md |  54 ++
+ .../tasks/202603251535-DPZ4NN/pr/verify.log        |   0
+ .../src/backends/task-backend.load.test.ts         |   9 +-
  .../src/backends/task-backend.local.test.ts        |  50 ++
  .../agentplane/src/backends/task-backend.test.ts   |  15 +-
  .../src/backends/task-backend/local-backend.ts     |  75 ++-
- .../src/backends/task-backend/shared/export.ts     |  66 ++-
+ .../src/backends/task-backend/shared/export.ts     |  97 +++-
+ .../agentplane/src/commands/doctor.command.test.ts |   4 +-
  .../agentplane/src/commands/shared/pr-meta.test.ts |  16 +-
  packages/agentplane/src/commands/shared/pr-meta.ts |  30 +-
  .../agentplane/src/commands/shared/task-backend.ts |  13 +-
@@ -36,7 +42,7 @@ Branch: task/202603251535-DPZ4NN/task-artifact-schemas
  .../schemas/task-readme-frontmatter.schema.json    | 536 +++++++++++++++++
  packages/core/schemas/tasks-export.schema.json     | 573 +++++++++++++++++++
  packages/core/src/index.ts                         |  14 +
- .../core/src/tasks/task-artifact-schema.test.ts    |  77 +++
+ .../core/src/tasks/task-artifact-schema.test.ts    | 102 ++++
  packages/core/src/tasks/task-artifact-schema.ts    | 513 +++++++++++++++++
  packages/core/src/tasks/task-store.test.ts         |  38 ++
  packages/core/src/tasks/task-store.ts              |  34 +-
@@ -49,6 +55,6 @@ Branch: task/202603251535-DPZ4NN/task-artifact-schemas
  .../schemas/task-readme-frontmatter.schema.json    | 521 ++++++++++++++++-
  packages/spec/schemas/tasks-export.schema.json     | 632 ++++++++++++++++++---
  scripts/sync-schemas.mjs                           |  95 +++-
- 25 files changed, 3352 insertions(+), 210 deletions(-)
+ 31 files changed, 3527 insertions(+), 218 deletions(-)
 ```
 <!-- END AUTO SUMMARY -->
