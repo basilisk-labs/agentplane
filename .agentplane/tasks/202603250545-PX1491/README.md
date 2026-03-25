@@ -1,10 +1,11 @@
 ---
 id: "202603250545-PX1491"
 title: "Repair branch_pr PR artifact resolution on base checkout for local backend"
-status: "DOING"
+result_summary: "integrate: squash task/202603250545-PX1491/pr-artifacts-base"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-25T05:56:13.367Z"
   updated_by: "CODER"
   note: "Targeted pr-flow regressions passed, source build succeeded, and a live base-checkout pr check succeeded against branch-backed PR artifacts."
-commit: null
+commit:
+  hash: "be8bd4fdab5020a4f9058c84764c0942967f4496"
+  message: "📝 PX1491 tasks: persist branch_pr PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: repair branch_pr base-checkout PR artifact resolution so pr check and integrate can consume canonical owner-side PR artifacts without manual copying."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603250545-PX1491/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted pr-flow regressions passed, source build succeeded, and a live base-checkout pr check succeeded against branch-backed PR artifacts."
+  -
+    type: "status"
+    at: "2026-03-25T06:04:52.958Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603250545-PX1491/pr."
 doc_version: 3
-doc_updated_at: "2026-03-25T05:56:13.369Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-25T06:04:52.958Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make branch_pr pr check/integrate work from the base checkout when PR artifacts live only in a task worktree under the local backend, without manual copying or bypassing canonical workflow."
 sections:
   Summary: |-
