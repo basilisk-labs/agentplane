@@ -5,9 +5,35 @@ description: "How tasks move from idea to closure in direct and branch_pr workfl
 
 ## Overview
 
-## Minimal direct lifecycle
+## Minimal branch_pr lifecycle
 
-If you are not in `branch_pr` and nothing is broken, the shortest agent-first route is:
+This repository is configured for `branch_pr`, so the normal guarded route is:
+
+1. Preflight.
+2. Create the task and approve the plan.
+3. `work start ... --worktree`.
+4. Implement changes on the task branch and keep PR artifacts current.
+5. `verify` on the task branch, then `integrate` on the base branch.
+6. `finish` on the base branch with `--result` and `--commit`.
+
+```bash
+agentplane config show
+agentplane quickstart
+agentplane task list
+git status --short --untracked-files=no
+agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
+agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
+agentplane pr update <task-id>
+agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
+```
+
+`direct` remains supported, but here it is an explicit alternative rather than the default guarded route.
+
+## Minimal direct-mode lifecycle
+
+If the repository is intentionally operating in `direct`, the shortest agent-first route is:
 
 1. Preflight.
 2. Create the task and approve the plan.

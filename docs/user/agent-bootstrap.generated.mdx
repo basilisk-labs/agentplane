@@ -17,7 +17,7 @@ git status --short --untracked-files=no
 git rev-parse --abbrev-ref HEAD
 ```
 
-After preflight, stay on the direct happy path unless the repository state is broken or you are explicitly in `branch_pr`.
+After preflight, follow the configured workflow mode. In repositories configured for `branch_pr`, start with `agentplane help work start`; use the direct-mode route below only when `workflow_mode=direct` is intentional.
 
 ## 1. Preflight
 
@@ -32,9 +32,9 @@ Establish workflow mode, current branch, current task state, and tracked working
 - Run this before any mutation.
 - If the project is not initialized, stop and use `agentplane init` first.
 
-## 2. Direct happy path
+## 2. Direct-mode reference path
 
-Use one short direct-mode route: create the task, approve it, start it, verify it, and finish it.
+When a repository is intentionally configured for direct mode, use one short route: create the task, approve it, start it, verify it, and finish it.
 
 - `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`
 - `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`
@@ -65,6 +65,6 @@ Keep exceptional paths out of the normal route: use these only for recovery, fra
 
 ## Non-default paths
 
-- `direct`: the default route is `task new/plan approve/start-ready -> task verify-show -> verify -> finish`.
-- `branch_pr`: start a task branch/worktree, maintain PR artifacts, and let INTEGRATOR close on base.
+- `branch_pr`: in repositories configured this way, start a task branch/worktree, maintain PR artifacts, and let INTEGRATOR close on base.
+- `direct`: use `task new/plan approve/start-ready -> task verify-show -> verify -> finish` only when `workflow_mode=direct` is intentional.
 - Use manual close flags only when a specific policy or recovery situation requires them.

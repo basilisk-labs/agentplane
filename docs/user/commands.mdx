@@ -170,7 +170,17 @@ do not implicitly refresh from the network.
 
 ## Workflow
 
-Default direct happy path:
+Configured branch_pr path in this repository:
+
+```bash
+agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
+agentplane pr update <task-id>
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
+```
+
+Direct-mode alternative:
 
 ```bash
 agentplane task start-ready <task-id> --author CODER --body "Start: ..."
@@ -179,7 +189,8 @@ agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
 agentplane finish <task-id> --author CODER --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
 ```
 
-In `direct`, `finish` creates the deterministic close commit by default. Use `--no-close-commit`
+In `direct`, `finish` creates the deterministic close commit by default. In this repository,
+`direct` is an explicit alternative rather than the default guarded route; use `--no-close-commit`
 only when close handling must stay manual.
 
 Fallback/manual paths:

@@ -3,14 +3,16 @@ title: "Workflow"
 description: "How work moves from plan to completion in Agent Plane."
 ---
 
-## Default direct path
+## Default path in this repository
+
+This repository is configured for `branch_pr`, so the normal guarded route is:
 
 1. Run preflight.
 2. Create the task, set the plan, and approve it.
-3. Start with `agentplane task start-ready`.
-4. Implement changes.
-5. Run `agentplane task verify-show`, then record the result with `agentplane verify`.
-6. Finish with `agentplane finish ... --result ... --commit <git-rev>`.
+3. Start a dedicated branch/worktree with `agentplane work start ... --worktree`.
+4. Implement changes on the task branch and keep PR artifacts current.
+5. Record verification on the task branch, then integrate on the base branch.
+6. Finish on the base branch after integration.
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
 
@@ -19,13 +21,14 @@ agentplane config show
 agentplane quickstart
 agentplane task list
 git status --short --untracked-files=no
-agentplane task start-ready <task-id> --author CODER --body "Start: ..."
-agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
-agentplane finish <task-id> --author CODER --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
+agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
+agentplane pr update <task-id>
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
 ```
 
-This is the normal `direct` route. Recovery, `branch_pr`, and manual close handling are non-default paths.
+`direct` remains supported, but in this repository it is an explicit alternative rather than the default guarded path.
 
 ## Core flow
 
@@ -79,7 +82,7 @@ agentplane workflow restore
 - Work in a single checkout.
 - `agentplane work start` records the active task lock for that checkout.
 - Per-task branches/worktrees are not required.
-- The default happy path is `task start-ready -> task verify-show -> verify -> finish`.
+- The shortest direct-mode path is `task start-ready -> task verify-show -> verify -> finish`.
 - In direct mode, `finish` creates the deterministic close commit by default.
 
 ## branch_pr mode

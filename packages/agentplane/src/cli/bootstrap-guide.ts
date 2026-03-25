@@ -50,9 +50,9 @@ export const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
     ],
   },
   {
-    heading: "2. Direct happy path",
+    heading: "2. Direct-mode reference path",
     summary:
-      "Use one short direct-mode route: create the task, approve it, start it, verify it, and finish it.",
+      "When a repository is intentionally configured for direct mode, use one short route: create the task, approve it, start it, verify it, and finish it.",
     commands: BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS,
     notes: [
       "Use `agentplane role ORCHESTRATOR` during planning, then switch to `agentplane role <OWNER>` before owner-scoped execution.",
@@ -118,14 +118,14 @@ export function renderBootstrapDoc(): string {
     "",
     ...renderCommandBlock(BOOTSTRAP_PREFLIGHT_COMMANDS),
     "",
-    "After preflight, stay on the direct happy path unless the repository state is broken or you are explicitly in `branch_pr`.",
+    "After preflight, follow the configured workflow mode. In repositories configured for `branch_pr`, start with `agentplane help work start`; use the direct-mode route below only when `workflow_mode=direct` is intentional.",
     "",
     ...renderBootstrapSectionLines(BOOTSTRAP_SECTIONS),
     "",
     "## Non-default paths",
     "",
-    "- `direct`: the default route is `task new/plan approve/start-ready -> task verify-show -> verify -> finish`.",
-    "- `branch_pr`: start a task branch/worktree, maintain PR artifacts, and let INTEGRATOR close on base.",
+    "- `branch_pr`: in repositories configured this way, start a task branch/worktree, maintain PR artifacts, and let INTEGRATOR close on base.",
+    "- `direct`: use `task new/plan approve/start-ready -> task verify-show -> verify -> finish` only when `workflow_mode=direct` is intentional.",
     "- Use manual close flags only when a specific policy or recovery situation requires them.",
     "",
   ];
