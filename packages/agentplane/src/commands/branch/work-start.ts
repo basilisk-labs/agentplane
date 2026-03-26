@@ -10,7 +10,8 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
-import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
+import { gitAheadBehind } from "../shared/git-diff.js";
+import { gitBranchExists, gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
 import { isPathWithin } from "../shared/path.js";
 import {
   loadBackendTask,
@@ -129,6 +130,22 @@ async function ensureGitClean(gitRoot: string): Promise<void> {
   });
 }
 
+async function ensureCurrentBaseBranch(gitRoot: string, baseBranch: string): Promise<void> {
+  const upstreamBranch = await gitBranchUpstream(gitRoot, baseBranch);
+  if (!upstreamBranch) return;
+
+  const { behind } = await gitAheadBehind(gitRoot, upstreamBranch, baseBranch);
+  if (behind === 0) return;
+
+  throw new CliError({
+    exitCode: exitCodeForError("E_GIT"),
+    code: "E_GIT",
+    message:
+      `Base branch ${baseBranch} is behind its upstream ${upstreamBranch} by ${behind} commit(s). ` +
+      "Refresh the base branch before `agentplane work start` to avoid DIRTY hosted PRs.",
+  });
+}
+
 export async function cmdWorkStart(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -224,6 +241,7 @@ export async function cmdWorkStart(opts: {
           message: `work start must be run on base branch ${baseBranch} (current: ${currentBranch})`,
         });
       }
+      await ensureCurrentBaseBranch(resolved.gitRoot, baseBranch);
       baseRef = baseBranch;
     }
 
