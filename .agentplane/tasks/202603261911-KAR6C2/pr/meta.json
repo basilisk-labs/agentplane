@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603261911-KAR6C2/presentation-route-recursion",
+  "created_at": "2026-03-26T19:13:30.164Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603261911-KAR6C2",
+  "updated_at": "2026-03-26T19:13:30.164Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
