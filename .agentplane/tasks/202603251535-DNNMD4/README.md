@@ -4,7 +4,7 @@ title: "Introduce TaskDocContract and unify task entity projections"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-03-26T15:57:34.970Z"
+  updated_at: "2026-03-26T17:08:05.094Z"
   updated_by: "CODER"
-  note: "Local checks passed: bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx eslint on touched files; bunx prettier --check on touched files; bunx vitest run packages/core/src/tasks/task-doc.test.ts packages/core/src/tasks/task-readme.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-export.test.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts."
+  note: "Local checks passed after tightening TaskDocContract validation, strict ISO metadata checks, and doc-version section enforcement."
 commit: null
 comments: []
 events:
@@ -33,8 +33,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local checks passed: bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx eslint on touched files; bunx prettier --check on touched files; bunx vitest run packages/core/src/tasks/task-doc.test.ts packages/core/src/tasks/task-readme.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-export.test.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts."
+  -
+    type: "verify"
+    at: "2026-03-26T17:08:05.094Z"
+    author: "CODER"
+    state: "ok"
+    note: "Local checks passed after tightening TaskDocContract validation, strict ISO metadata checks, and doc-version section enforcement."
 doc_version: 3
-doc_updated_at: "2026-03-26T15:57:34.982Z"
+doc_updated_at: "2026-03-26T17:08:05.099Z"
 doc_updated_by: "CODER"
 description: "Centralize task document versioning, section order, required sections, and projection rules, and reduce duplicate task entity shapes across core and backend projection layers."
 sections:
@@ -55,13 +61,21 @@ sections:
     3. Run the smallest relevant package builds. Expected: core and agentplane compile cleanly with the new shared contract and without downstream import breakage.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    #### 2026-03-26T15:57:34.970Z — VERIFY — ok
+    ### 2026-03-26T15:57:34.970Z — VERIFY — ok
     
     By: CODER
     
     Note: Local checks passed: bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx eslint on touched files; bunx prettier --check on touched files; bunx vitest run packages/core/src/tasks/task-doc.test.ts packages/core/src/tasks/task-readme.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-export.test.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-26T15:40:05.908Z, excerpt_hash=sha256:c42119d1f54ceddb6bf49ebf41665edda61598283de76d6eeeef8d06238aa4ee
+    
+    ### 2026-03-26T17:08:05.094Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Local checks passed after tightening TaskDocContract validation, strict ISO metadata checks, and doc-version section enforcement.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-26T15:57:34.982Z, excerpt_hash=sha256:c42119d1f54ceddb6bf49ebf41665edda61598283de76d6eeeef8d06238aa4ee
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -96,13 +110,21 @@ Centralize task document versioning, section order, required sections, and proje
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-03-26T15:57:34.970Z — VERIFY — ok
+### 2026-03-26T15:57:34.970Z — VERIFY — ok
 
 By: CODER
 
 Note: Local checks passed: bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx eslint on touched files; bunx prettier --check on touched files; bunx vitest run packages/core/src/tasks/task-doc.test.ts packages/core/src/tasks/task-readme.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-export.test.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-26T15:40:05.908Z, excerpt_hash=sha256:c42119d1f54ceddb6bf49ebf41665edda61598283de76d6eeeef8d06238aa4ee
+
+### 2026-03-26T17:08:05.094Z — VERIFY — ok
+
+By: CODER
+
+Note: Local checks passed after tightening TaskDocContract validation, strict ISO metadata checks, and doc-version section enforcement.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-26T15:57:34.982Z, excerpt_hash=sha256:c42119d1f54ceddb6bf49ebf41665edda61598283de76d6eeeef8d06238aa4ee
 
 <!-- END VERIFICATION RESULTS -->
 
