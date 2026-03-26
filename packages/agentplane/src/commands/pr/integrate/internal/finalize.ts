@@ -1,6 +1,7 @@
 import path from "node:path";
 import { readFile } from "node:fs/promises";
 
+import type { TaskData } from "../../../../backends/task-backend.js";
 import { fileExists } from "../../../../cli/fs-utils.js";
 import { successMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
@@ -9,15 +10,23 @@ import {
   writeTextIfChanged,
 } from "../../../../shared/write-if-changed.js";
 import { gitDiffStat } from "../../../shared/git-diff.js";
-import { appendVerifyLog, parsePrMeta } from "../../../shared/pr-meta.js";
-
-import { cmdFinish } from "../../../task/index.js";
+import {
+  appendVerifyLog,
+  buildIntegratedPrMeta,
+  parsePrMeta,
+  type PrMeta,
+} from "../../../shared/pr-meta.js";
+import { readCommitInfo } from "../../../task/shared.js";
+import { createTaskCloseCommit, writeFinishedTasks } from "../../../task/finish-shared.js";
+import type { CommandContext } from "../../../shared/task-backend.js";
 
 function nowIso(): string {
   return new Date().toISOString();
 }
 
 export async function finalizeIntegrate(opts: {
+  ctx: CommandContext;
+  task: TaskData;
   cwd: string;
   rootOverride?: string;
   gitRoot: string;
@@ -58,25 +67,18 @@ export async function finalizeIntegrate(opts: {
   const rawMeta = await readFile(opts.metaPath, "utf8");
   const mergedMeta = parsePrMeta(rawMeta, opts.taskId);
   const now = nowIso();
-  const nextMeta: Record<string, unknown> = {
-    ...mergedMeta,
+  const nextMeta: PrMeta = buildIntegratedPrMeta({
+    meta: mergedMeta,
     branch: opts.branch,
     base: opts.base,
-    merge_strategy: opts.mergeStrategy,
-    status: "MERGED",
-    merged_at: (mergedMeta as Record<string, unknown>).merged_at ?? now,
-    merge_commit: opts.mergeHash,
-    head_sha: opts.branchHeadSha,
-    updated_at: now,
-  };
-
-  if (opts.verifyCommands.length > 0 && (opts.shouldRunVerify || opts.alreadyVerifiedSha)) {
-    nextMeta.last_verified_sha = opts.branchHeadSha;
-    nextMeta.last_verified_at = now;
-    nextMeta.verify = mergedMeta.verify
-      ? { ...mergedMeta.verify, status: "pass" }
-      : { status: "pass", command: opts.verifyCommands.join(" && ") };
-  }
+    mergeStrategy: opts.mergeStrategy,
+    mergeHash: opts.mergeHash,
+    branchHeadSha: opts.branchHeadSha,
+    at: now,
+    verifyCommands: opts.verifyCommands,
+    shouldRunVerify: opts.shouldRunVerify,
+    alreadyVerifiedSha: opts.alreadyVerifiedSha,
+  });
   await writeJsonStableIfChanged(opts.metaPath, nextMeta);
 
   const diffstat = await gitDiffStat(opts.gitRoot, opts.baseShaBeforeMerge, opts.branch);
@@ -94,31 +96,26 @@ export async function finalizeIntegrate(opts: {
     opts.gitRoot,
     opts.prDir,
   )}.`;
-
-  await cmdFinish({
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride,
-    taskIds: [opts.taskId],
+  const resultSummary = `integrate: ${opts.mergeStrategy} ${opts.branch}`;
+  const taskCommitInfo = await readCommitInfo(opts.gitRoot, opts.mergeHash);
+  await writeFinishedTasks({
+    ctx: opts.ctx,
+    loadedTasks: [{ taskId: opts.taskId, task: opts.task }],
+    metaTaskId: opts.taskId,
     author: "INTEGRATOR",
     body: finishBody,
-    result: `integrate: ${opts.mergeStrategy} ${opts.branch}`,
-    risk: undefined,
-    breaking: false,
-    commit: opts.mergeHash,
     force: false,
-    commitFromComment: false,
-    commitEmoji: undefined,
-    commitAllow: [],
-    commitAutoAllow: false,
-    commitAllowTasks: false,
-    commitRequireClean: false,
-    statusCommit: false,
-    statusCommitEmoji: undefined,
-    statusCommitAllow: [],
-    statusCommitAutoAllow: false,
-    statusCommitRequireClean: false,
-    confirmStatusCommit: false,
-    closeCommit: true,
+    resultProvided: true,
+    resultSummary,
+    riskLevel: undefined,
+    breaking: false,
+    taskCommitInfo,
+  });
+  await createTaskCloseCommit({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    taskId: opts.taskId,
     baseBranchOverride: opts.base,
     quiet: opts.quiet,
   });

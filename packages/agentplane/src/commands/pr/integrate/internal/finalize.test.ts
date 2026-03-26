@@ -10,7 +10,10 @@ const mocks = vi.hoisted(() => ({
   gitDiffStat: vi.fn(),
   appendVerifyLog: vi.fn(),
   parsePrMeta: vi.fn(),
-  cmdFinish: vi.fn(),
+  buildIntegratedPrMeta: vi.fn(),
+  readCommitInfo: vi.fn(),
+  writeFinishedTasks: vi.fn(),
+  createTaskCloseCommit: vi.fn(),
 }));
 
 vi.mock("../../../../cli/fs-utils.js", () => ({ fileExists: mocks.fileExists }));
@@ -23,12 +26,19 @@ vi.mock("../../../shared/git-diff.js", () => ({ gitDiffStat: mocks.gitDiffStat }
 vi.mock("../../../shared/pr-meta.js", () => ({
   appendVerifyLog: mocks.appendVerifyLog,
   parsePrMeta: mocks.parsePrMeta,
+  buildIntegratedPrMeta: mocks.buildIntegratedPrMeta,
 }));
-vi.mock("../../../task/index.js", () => ({ cmdFinish: mocks.cmdFinish }));
+vi.mock("../../../task/shared.js", () => ({ readCommitInfo: mocks.readCommitInfo }));
+vi.mock("../../../task/finish-shared.js", () => ({
+  writeFinishedTasks: mocks.writeFinishedTasks,
+  createTaskCloseCommit: mocks.createTaskCloseCommit,
+}));
 
 function baseOpts() {
   return {
     cwd: "/repo",
+    ctx: { config: {}, git: {}, taskBackend: {} },
+    task: { id: "T-1", status: "DOING", title: "Task" },
     gitRoot: "/repo",
     prDir: "/repo/.agentplane/tasks/T-1/pr",
     metaPath: "/repo/.agentplane/tasks/T-1/pr/meta.json",
@@ -67,11 +77,19 @@ describe("pr/integrate/internal/finalize", () => {
     mocks.fileExists.mockResolvedValue(true);
     mocks.readFile.mockResolvedValue('{"verify":{"status":"skipped"}}');
     mocks.parsePrMeta.mockReturnValue({
+      schema_version: 1,
+      task_id: "T-1",
       verify: { status: "skipped" },
       merged_at: "2026-02-10T00:00:00.000Z",
     });
+    mocks.buildIntegratedPrMeta.mockReturnValue({
+      schema_version: 1,
+      task_id: "T-1",
+      status: "MERGED",
+      verify: { status: "pass" },
+    });
     mocks.gitDiffStat.mockResolvedValue(" src/app.ts | 1 +");
-    mocks.cmdFinish.mockResolvedValue(0);
+    mocks.readCommitInfo.mockResolvedValue({ hash: "deadbeef", message: "merge" });
 
     await finalizeIntegrate({
       ...baseOpts(),
@@ -82,21 +100,30 @@ describe("pr/integrate/internal/finalize", () => {
 
     expect(mocks.appendVerifyLog).toHaveBeenCalledTimes(1);
     expect(mocks.writeJsonStableIfChanged).toHaveBeenCalledTimes(1);
-    const writeMetaCall = mocks.writeJsonStableIfChanged.mock.calls.at(-1)?.[1] as Record<
-      string,
-      unknown
-    >;
-    expect(writeMetaCall.status).toBe("MERGED");
-    expect((writeMetaCall.verify as Record<string, unknown>)?.status).toBe("pass");
+    expect(mocks.buildIntegratedPrMeta).toHaveBeenCalledWith(
+      expect.objectContaining({
+        branch: "task/T-1",
+        base: "main",
+        mergeStrategy: "squash",
+        verifyCommands: ["bun test"],
+      }),
+    );
     expect(mocks.writeTextIfChanged).toHaveBeenCalledWith(
       "/repo/.agentplane/tasks/T-1/pr/diffstat.txt",
       " src/app.ts | 1 +\n",
     );
-    expect(mocks.cmdFinish).toHaveBeenCalledTimes(1);
-    expect(mocks.cmdFinish).toHaveBeenCalledWith(
+    expect(mocks.writeFinishedTasks).toHaveBeenCalledTimes(1);
+    expect(mocks.writeFinishedTasks).toHaveBeenCalledWith(
       expect.objectContaining({
-        taskIds: ["T-1"],
-        closeCommit: true,
+        loadedTasks: [{ taskId: "T-1", task: { id: "T-1", status: "DOING", title: "Task" } }],
+        metaTaskId: "T-1",
+        taskCommitInfo: { hash: "deadbeef", message: "merge" },
+      }),
+    );
+    expect(mocks.createTaskCloseCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        baseBranchOverride: "main",
       }),
     );
   });
@@ -105,17 +132,19 @@ describe("pr/integrate/internal/finalize", () => {
     const { finalizeIntegrate } = await import("./finalize.js");
     mocks.fileExists.mockResolvedValue(true);
     mocks.readFile.mockResolvedValue("{}");
-    mocks.parsePrMeta.mockReturnValue({});
+    mocks.parsePrMeta.mockReturnValue({ schema_version: 1, task_id: "T-1" });
+    mocks.buildIntegratedPrMeta.mockReturnValue({ schema_version: 1, task_id: "T-1" });
     mocks.gitDiffStat.mockResolvedValue("");
-    mocks.cmdFinish.mockResolvedValue(0);
+    mocks.readCommitInfo.mockResolvedValue({ hash: "deadbeef", message: "merge" });
 
     await finalizeIntegrate(baseOpts());
 
-    const writeMetaCall = mocks.writeJsonStableIfChanged.mock.calls[0]?.[1] as Record<
-      string,
-      unknown
-    >;
-    expect(writeMetaCall.last_verified_sha).toBeUndefined();
-    expect(writeMetaCall.verify).toBeUndefined();
+    expect(mocks.buildIntegratedPrMeta).toHaveBeenCalledWith(
+      expect.objectContaining({
+        verifyCommands: [],
+        shouldRunVerify: false,
+        alreadyVerifiedSha: null,
+      }),
+    );
   });
 });

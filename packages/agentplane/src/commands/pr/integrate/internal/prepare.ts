@@ -157,7 +157,7 @@ export async function prepareIntegrate(opts: {
       ),
       task.id,
     );
-  const baseCandidate = opts.base ?? (metaSource as Record<string, unknown>).base ?? baseBranch;
+  const baseCandidate = opts.base ?? metaSource.base ?? baseBranch;
   const base =
     typeof baseCandidate === "string" && baseCandidate.trim().length > 0
       ? baseCandidate.trim()

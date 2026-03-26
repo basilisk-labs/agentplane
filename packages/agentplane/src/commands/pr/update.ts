@@ -10,7 +10,7 @@ import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
-import { parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
+import { buildUpdatedPrMeta, parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
 import {
   loadBackendTask,
   loadCommandContext,
@@ -107,13 +107,7 @@ export async function cmdPrUpdate(opts: {
 
     const rawMeta = await readFile(metaPath, "utf8");
     const meta = parsePrMeta(rawMeta, opts.taskId);
-    const nextMeta: PrMeta = {
-      ...meta,
-      branch,
-      updated_at: nowIso(),
-      last_verified_sha: meta.last_verified_sha ?? null,
-      last_verified_at: meta.last_verified_at ?? null,
-    };
+    const nextMeta: PrMeta = buildUpdatedPrMeta({ meta, branch, at: nowIso() });
     await writeJsonStableIfChanged(metaPath, nextMeta);
 
     process.stdout.write(

@@ -9,8 +9,14 @@ export type TaskPrMeta = {
   schema_version: 1;
   task_id: string;
   branch?: string;
+  base?: string;
   created_at: string;
   updated_at: string;
+  status?: "MERGED";
+  merge_strategy?: "squash" | "merge" | "rebase";
+  merged_at?: string;
+  merge_commit?: string;
+  head_sha?: string;
   last_verified_sha?: string | null;
   last_verified_at?: string | null;
   verify?: {
@@ -395,8 +401,14 @@ export const TASK_PR_META_SCHEMA = {
     schema_version: { type: "integer", const: 1 },
     task_id: { type: "string", minLength: 1 },
     branch: { type: "string", minLength: 1 },
+    base: { type: "string", minLength: 1 },
     created_at: { type: "string", format: "date-time" },
     updated_at: { type: "string", format: "date-time" },
+    status: { type: "string", enum: ["MERGED"] },
+    merge_strategy: { type: "string", enum: ["squash", "merge", "rebase"] },
+    merged_at: { type: "string", format: "date-time" },
+    merge_commit: { type: "string", minLength: 1 },
+    head_sha: { type: "string", minLength: 1 },
     last_verified_sha: { type: ["string", "null"], minLength: 7 },
     last_verified_at: { type: ["string", "null"], format: "date-time" },
     verify: {

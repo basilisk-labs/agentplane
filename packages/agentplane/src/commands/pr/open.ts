@@ -10,7 +10,7 @@ import { successMessage, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
-import { parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
+import { buildOpenedPrMeta, parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
 import {
   loadBackendTask,
   loadCommandContext,
@@ -80,16 +80,12 @@ export async function cmdPrOpen(opts: {
       meta = parsePrMeta(raw, task.id);
     }
     const createdAt = meta?.created_at ?? now;
-    const nextMeta: PrMeta = {
-      schema_version: 1,
-      task_id: task.id,
+    const nextMeta: PrMeta = buildOpenedPrMeta({
+      taskId: task.id,
       branch,
-      created_at: createdAt,
-      updated_at: now,
-      last_verified_sha: meta?.last_verified_sha ?? null,
-      last_verified_at: meta?.last_verified_at ?? null,
-      verify: meta?.verify ?? { status: "skipped" },
-    };
+      at: now,
+      previousMeta: meta,
+    });
     await writeJsonStableIfChanged(metaPath, nextMeta);
 
     await writeTextIfChanged(diffstatPath, "");

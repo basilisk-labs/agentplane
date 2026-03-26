@@ -165,6 +165,8 @@ export async function cmdIntegrate(opts: {
     }
 
     await finalizeIntegrate({
+      ctx: prepared.ctx,
+      task,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       gitRoot: resolved.gitRoot,
