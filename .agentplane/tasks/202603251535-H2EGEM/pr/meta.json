@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603251535-H2EGEM/pr-artifact-state",
+  "created_at": "2026-03-26T19:40:10.943Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603251535-H2EGEM",
+  "updated_at": "2026-03-26T19:40:16.297Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
