@@ -497,6 +497,24 @@ describe("task-store", () => {
     expect(errors).toEqual([]);
   });
 
+  it("validateTaskDocMetadata accepts quoted doc_version and rejects loose timestamps", () => {
+    expect(
+      validateTaskDocMetadata({
+        doc_version: "2",
+        doc_updated_at: "2026-02-05T00:00:00.000Z",
+        doc_updated_by: "CODER",
+      }),
+    ).toEqual([]);
+
+    expect(
+      validateTaskDocMetadata({
+        doc_version: 3,
+        doc_updated_at: "2026-02-05 00:00:00Z",
+        doc_updated_by: "CODER",
+      }),
+    ).toEqual(["doc_updated_at must be an ISO timestamp"]);
+  });
+
   it("setTaskDocSection prefers existing doc_updated_by when available", async () => {
     const root = await mkGitRepoRoot();
     const created = await createTask({
@@ -592,6 +610,58 @@ describe("task-store", () => {
 
     const updated = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
     expect(updated.frontmatter.doc_version).toBe(3);
+  });
+
+  it("setTaskDocSection derives section shape from doc_version instead of config", async () => {
+    const root = await mkGitRepoRoot();
+    const created = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "My task",
+      description: "Why it matters",
+      owner: "CODER",
+      priority: "med",
+      tags: ["nodejs"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    const config = defaultConfig();
+    config.tasks.doc.sections = [
+      "Summary",
+      "Scope",
+      "Plan",
+      "Risks",
+      "Verify Steps",
+      "Rollback Plan",
+      "Notes",
+    ];
+    config.tasks.doc.required_sections = [...config.tasks.doc.sections];
+    await saveConfig(path.join(root, ".agentplane"), config);
+
+    await setTaskDocSection({
+      cwd: root,
+      rootOverride: root,
+      taskId: created.id,
+      section: "Findings",
+      text: "Version-aware section write",
+      updatedBy: "CODER",
+    });
+
+    const updated = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
+    expect(updated.body).toContain("## Findings");
+    expect(updated.body).toContain("Version-aware section write");
+
+    await expect(
+      setTaskDocSection({
+        cwd: root,
+        rootOverride: root,
+        taskId: created.id,
+        section: "Notes",
+        text: "Legacy section",
+        updatedBy: "CODER",
+      }),
+    ).rejects.toThrow(/unknown doc section/i);
   });
 
   it("readTask rejects invalid frontmatter schema", async () => {

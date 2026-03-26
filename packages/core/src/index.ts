@@ -62,6 +62,7 @@ export {
   buildDefaultTaskDoc,
   DEFAULT_TASK_DOC_VERSION,
   getTaskDocContract,
+  isIsoUtcTimestamp,
   normalizeTaskDocVersion,
   TASK_DOC_CONTRACTS,
   TASK_DOC_SECTION_ORDER,

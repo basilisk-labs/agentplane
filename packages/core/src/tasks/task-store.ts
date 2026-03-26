@@ -14,6 +14,7 @@ import { ensureDocSections, setMarkdownSection, taskDocToSectionMap } from "./ta
 import {
   buildDefaultTaskDoc,
   DEFAULT_TASK_DOC_VERSION,
+  getTaskDocContract,
   normalizeTaskDocVersion,
   type TaskDocSections,
   type TaskDocVersion,
@@ -300,25 +301,26 @@ export async function setTaskDocSection(opts: {
   const resolved = await resolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
   const loaded = await loadConfig(resolved.agentplaneDir);
 
-  const allowed = loaded.config.tasks.doc.sections;
-  if (!allowed.includes(opts.section)) {
-    throw new Error(`Unknown doc section: ${opts.section}`);
-  }
-
   const tasksDir = path.join(resolved.gitRoot, loaded.config.paths.workflow_dir);
   const readmePath = taskReadmePath(tasksDir, opts.taskId);
   await updateTaskReadmeAtomic(readmePath, (parsed) => {
+    const docVersion = normalizeTaskDocVersion(parsed.frontmatter.doc_version);
+    const requiredSections = [...getTaskDocContract(docVersion).sections];
+    if (!requiredSections.includes(opts.section)) {
+      throw new Error(`Unknown doc section: ${opts.section}`);
+    }
+
     const updatedBy = resolveDocUpdatedBy(parsed.frontmatter, opts.updatedBy);
     const nextFrontmatter: Record<string, unknown> = {
       ...parsed.frontmatter,
-      doc_version: normalizeTaskDocVersion(parsed.frontmatter.doc_version),
+      doc_version: docVersion,
       doc_updated_at: nowIso(),
       doc_updated_by: updatedBy,
     };
-    const baseDoc = ensureDocSections(parsed.body, loaded.config.tasks.doc.required_sections);
+    const baseDoc = ensureDocSections(parsed.body, requiredSections);
     const nextBody = ensureDocSections(
       setMarkdownSection(baseDoc, opts.section, opts.text),
-      loaded.config.tasks.doc.required_sections,
+      requiredSections,
     );
     nextFrontmatter.sections = taskDocToSectionMap(nextBody);
     validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(nextFrontmatter));
