@@ -209,6 +209,21 @@ workspace is in an active v2/v3 mixed state.
 - Use full incident procedure:
   - [Broken workflow runbook](broken-workflow-runbook)
 
+## Hosted PR checks stay on `Expected — Waiting for status to be reported`
+
+**Symptom:** the GitHub PR page shows successful `pull_request` workflow jobs, but the merge gate
+still lists `Core CI / test`, `Core CI / test-windows`, or `Docs CI / docs` as `Expected`.
+
+**Fix:**
+
+- Audit branch protection directly:
+  - `bun run workflow:github-protection:check`
+- If the audit reports `app_id=null`, rewrite branch protection so the required checks are bound to
+  the real GitHub Actions app instead of legacy unbound status contexts.
+- Re-run or refresh the PR after the protection fix so GitHub emits a fresh `pull_request` cycle
+  against the corrected required-check contract.
+- Do not merge until the three canonical required checks are all green on the current PR head SHA.
+
 ## Sync fails for remote backend
 
 **Symptom:** `agentplane backend sync ...` errors or reports network failures.

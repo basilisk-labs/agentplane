@@ -185,6 +185,16 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 
 `agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`. Hosted GitHub PR creation still uses `gh pr create`, and the canonical required-check wait step is `bun run workflow:wait-remote-checks`, which delegates to `gh pr checks --watch --required --fail-fast`.
 
+GitHub protection audit for this repository:
+
+```bash
+bun run workflow:github-protection:check
+```
+
+Use this when a hosted PR shows `Expected — Waiting for status to be reported` for the required
+checks even though the `pull_request` workflows appear green. The audit validates the canonical
+required-check set on `main` and rejects unbound `app_id=null` status entries.
+
 Direct-mode alternative:
 
 ```bash
