@@ -1,4 +1,5 @@
 import { parse as parseYaml } from "yaml";
+import { TASK_DOC_SECTION_ORDER } from "./task-doc-contract.js";
 import { renderTaskDocFromSections } from "./task-doc.js";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -221,17 +222,7 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
                   : key === "commit"
                     ? (["hash", "message"] as const)
                     : key === "sections"
-                      ? ([
-                          "Summary",
-                          "Scope",
-                          "Plan",
-                          "Risks",
-                          "Verify Steps",
-                          "Verification",
-                          "Rollback Plan",
-                          "Notes",
-                          "Findings",
-                        ] as const)
+                      ? TASK_DOC_SECTION_ORDER
                       : null;
     const inner = renderMapLines(value, `${indent}  `, preferred);
     if (inner.length === 0) return [`${indent}${key}: {}`];

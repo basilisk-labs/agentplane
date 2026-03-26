@@ -11,13 +11,39 @@ import {
 import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
 import { updateTaskReadmeAtomic } from "./task-readme-io.js";
 import { ensureDocSections, setMarkdownSection, taskDocToSectionMap } from "./task-doc.js";
+import {
+  buildDefaultTaskDoc,
+  DEFAULT_TASK_DOC_VERSION,
+  normalizeTaskDocVersion,
+  type TaskDocSections,
+  type TaskDocVersion,
+} from "./task-doc-contract.js";
 import { generateTaskId } from "./task-id.js";
+
+export { validateTaskDocMetadata } from "./task-doc-contract.js";
 
 export type TaskStatus = "TODO" | "DOING" | "DONE" | "BLOCKED";
 export type TaskPriority = "low" | "normal" | "med" | "high";
+export type PlanApprovalState = "pending" | "approved" | "rejected";
+export type PlanApproval = {
+  state: PlanApprovalState;
+  updated_at: string | null;
+  updated_by: string | null;
+  note: string | null;
+};
+
+export type VerificationState = "pending" | "ok" | "needs_rework";
+export type VerificationResult = {
+  state: VerificationState;
+  updated_at: string | null;
+  updated_by: string | null;
+  note: string | null;
+};
+
+export type TaskEventType = "status" | "comment" | "verify";
 
 export type TaskEvent = {
-  type: "status" | "comment" | "verify";
+  type: TaskEventType;
   at: string;
   author: string;
   from?: string;
@@ -98,26 +124,16 @@ export type TaskFrontmatter = {
   depends_on: string[];
   tags: string[];
   verify: string[];
-  plan_approval?: {
-    state: "pending" | "approved" | "rejected";
-    updated_at: string | null;
-    updated_by: string | null;
-    note: string | null;
-  };
-  verification?: {
-    state: "pending" | "ok" | "needs_rework";
-    updated_at: string | null;
-    updated_by: string | null;
-    note: string | null;
-  };
+  plan_approval?: PlanApproval;
+  verification?: VerificationResult;
   runner?: TaskRunnerOutcome;
   comments: { author: string; body: string }[];
   events?: TaskEvent[];
-  doc_version: 2 | 3;
+  doc_version: TaskDocVersion;
   doc_updated_at: string;
   doc_updated_by: string;
   description: string;
-  sections?: Record<string, string>;
+  sections?: TaskDocSections;
   commit?: { hash: string; message: string } | null;
   dirty?: boolean;
   id_source?: string;
@@ -136,30 +152,6 @@ function nowIso(): string {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
-}
-
-export function validateTaskDocMetadata(frontmatter: Record<string, unknown>): string[] {
-  const errors: string[] = [];
-
-  if (frontmatter.doc_version !== 2 && frontmatter.doc_version !== 3) {
-    errors.push("doc_version must be 2 or 3");
-  }
-
-  const updatedAt = frontmatter.doc_updated_at;
-  if (typeof updatedAt !== "string" || Number.isNaN(Date.parse(updatedAt))) {
-    errors.push("doc_updated_at must be an ISO timestamp");
-  }
-
-  const updatedBy = frontmatter.doc_updated_by;
-  if (typeof updatedBy !== "string" || updatedBy.trim().length === 0) {
-    errors.push("doc_updated_by must be a non-empty string");
-  }
-
-  return errors;
-}
-
-function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 3): 2 | 3 {
-  return value === 3 ? 3 : value === 2 ? 2 : fallback;
 }
 
 async function fileExists(filePath: string): Promise<boolean> {
@@ -188,38 +180,6 @@ export async function getTasksDir(opts: { cwd: string; rootOverride?: string | n
 
 export function taskReadmePath(tasksDir: string, taskId: string): string {
   return path.join(tasksDir, taskId, "README.md");
-}
-
-function defaultTaskBody(): string {
-  return [
-    "## Summary",
-    "",
-    "",
-    "## Scope",
-    "",
-    "",
-    "## Plan",
-    "",
-    "",
-    "## Verify Steps",
-    "",
-    "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
-    "",
-    "1. <Action>. Expected: <observable result>.",
-    "2. <Action>. Expected: <observable result>.",
-    "3. <Action>. Expected: <observable result>.",
-    "",
-    "## Verification",
-    "",
-    "<!-- BEGIN VERIFICATION RESULTS -->",
-    "<!-- END VERIFICATION RESULTS -->",
-    "",
-    "## Rollback Plan",
-    "",
-    "",
-    "## Findings",
-    "",
-  ].join("\n");
 }
 
 function getLastCommentAuthor(frontmatter: Record<string, unknown>): string | null {
@@ -315,13 +275,13 @@ export async function createTask(opts: {
     },
     comments: [],
     events: [],
-    doc_version: 3,
+    doc_version: DEFAULT_TASK_DOC_VERSION,
     doc_updated_at: nowIso(),
     doc_updated_by: opts.owner,
     description: opts.description,
   };
 
-  const body = defaultTaskBody();
+  const body = buildDefaultTaskDoc(frontmatter.doc_version);
   frontmatter.sections = taskDocToSectionMap(body);
   validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(frontmatter));
   const text = renderTaskReadme(frontmatter as unknown as Record<string, unknown>, body);

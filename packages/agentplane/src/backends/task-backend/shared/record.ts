@@ -1,4 +1,4 @@
-import type { TaskRecord } from "@agentplaneorg/core";
+import { normalizeTaskDocVersion, type TaskRecord } from "@agentplaneorg/core";
 
 import { isRecord } from "../../../shared/guards.js";
 
@@ -82,7 +82,8 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     commit,
     comments,
     events,
-    doc_version: typeof fm.doc_version === "number" ? fm.doc_version : undefined,
+    doc_version:
+      typeof fm.doc_version === "number" ? normalizeTaskDocVersion(fm.doc_version) : undefined,
     doc_updated_at: typeof fm.doc_updated_at === "string" ? fm.doc_updated_at : undefined,
     doc_updated_by: typeof fm.doc_updated_by === "string" ? fm.doc_updated_by : undefined,
     dirty: typeof fm.dirty === "boolean" ? fm.dirty : undefined,

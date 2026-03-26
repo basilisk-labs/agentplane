@@ -994,7 +994,7 @@ export class RedmineBackend implements TaskBackend {
     return maybeParseRedmineJson(value);
   }
 
-  private coerceDocVersion(value: unknown): number | null {
+  private coerceDocVersion(value: unknown): 2 | 3 | null {
     return coerceRedmineDocVersion(value);
   }
 

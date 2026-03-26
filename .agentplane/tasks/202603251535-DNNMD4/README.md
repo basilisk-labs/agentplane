@@ -4,7 +4,7 @@ title: "Introduce TaskDocContract and unify task entity projections"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -15,20 +15,26 @@ tags:
   - "refactor"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-26T15:40:16.685Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-26T15:57:34.970Z"
+  updated_by: "CODER"
+  note: "Local checks passed: bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx eslint on touched files; bunx prettier --check on touched files; bunx vitest run packages/core/src/tasks/task-doc.test.ts packages/core/src/tasks/task-readme.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-export.test.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts."
 commit: null
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-03-26T15:57:34.970Z"
+    author: "CODER"
+    state: "ok"
+    note: "Local checks passed: bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx eslint on touched files; bunx prettier --check on touched files; bunx vitest run packages/core/src/tasks/task-doc.test.ts packages/core/src/tasks/task-readme.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-export.test.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts."
 doc_version: 3
-doc_updated_at: "2026-03-25T15:35:08.443Z"
+doc_updated_at: "2026-03-26T15:57:34.982Z"
 doc_updated_by: "CODER"
 description: "Centralize task document versioning, section order, required sections, and projection rules, and reduce duplicate task entity shapes across core and backend projection layers."
 sections:
@@ -40,17 +46,23 @@ sections:
     - In scope: Centralize task document versioning, section order, required sections, and projection rules, and reduce duplicate task entity shapes across core and backend projection layers.
     - Out of scope: unrelated refactors not required for "Introduce TaskDocContract and unify task entity projections".
   Plan: |-
-    1. Implement the change for "Introduce TaskDocContract and unify task entity projections".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+    1. Introduce one TaskDocContract seam in core that owns doc_version support, section order, required sections, and doc rendering/parsing helpers instead of duplicating those rules across task-readme and backend shared layers.
+    2. Reuse that contract from backend shared code and unify the primary task projection type so task read/write, local backend projection, and exported task entities no longer maintain parallel shapes for the same fields.
+    3. Add targeted regression coverage for doc-version section projection and backend/core projection parity, then run focused tests plus build checks and record any residual follow-up in Findings.
   Verify Steps: |-
-    <!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-    
-    1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+    1. Compare doc-version section handling in core and backend shared code after the refactor. Expected: one contract source defines section order, supported doc versions, and section projection behavior for both layers.
+    2. Run targeted task-doc/task-backend tests. Expected: README parsing/rendering, backend record conversion, and exported task projections stay consistent across the same canonical task fields.
+    3. Run the smallest relevant package builds. Expected: core and agentplane compile cleanly with the new shared contract and without downstream import breakage.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    #### 2026-03-26T15:57:34.970Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Local checks passed: bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx eslint on touched files; bunx prettier --check on touched files; bunx vitest run packages/core/src/tasks/task-doc.test.ts packages/core/src/tasks/task-readme.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-export.test.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-26T15:40:05.908Z, excerpt_hash=sha256:c42119d1f54ceddb6bf49ebf41665edda61598283de76d6eeeef8d06238aa4ee
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -71,21 +83,27 @@ Centralize task document versioning, section order, required sections, and proje
 
 ## Plan
 
-1. Implement the change for "Introduce TaskDocContract and unify task entity projections".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Introduce one TaskDocContract seam in core that owns doc_version support, section order, required sections, and doc rendering/parsing helpers instead of duplicating those rules across task-readme and backend shared layers.
+2. Reuse that contract from backend shared code and unify the primary task projection type so task read/write, local backend projection, and exported task entities no longer maintain parallel shapes for the same fields.
+3. Add targeted regression coverage for doc-version section projection and backend/core projection parity, then run focused tests plus build checks and record any residual follow-up in Findings.
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. Compare doc-version section handling in core and backend shared code after the refactor. Expected: one contract source defines section order, supported doc versions, and section projection behavior for both layers.
+2. Run targeted task-doc/task-backend tests. Expected: README parsing/rendering, backend record conversion, and exported task projections stay consistent across the same canonical task fields.
+3. Run the smallest relevant package builds. Expected: core and agentplane compile cleanly with the new shared contract and without downstream import breakage.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-26T15:57:34.970Z — VERIFY — ok
+
+By: CODER
+
+Note: Local checks passed: bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx eslint on touched files; bunx prettier --check on touched files; bunx vitest run packages/core/src/tasks/task-doc.test.ts packages/core/src/tasks/task-readme.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-export.test.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-26T15:40:05.908Z, excerpt_hash=sha256:c42119d1f54ceddb6bf49ebf41665edda61598283de76d6eeeef8d06238aa4ee
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
