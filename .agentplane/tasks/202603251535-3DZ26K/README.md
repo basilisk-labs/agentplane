@@ -1,10 +1,11 @@
 ---
 id: "202603251535-3DZ26K"
 title: "Introduce unified workflow transition service for task lifecycle mutations"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #16 after green CI."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -38,11 +39,16 @@ verification:
     Result: pass
     Evidence: all touched lifecycle files passed lint and formatting checks after the service extraction.
     Scope: touched source files and the new unit test.
-commit: null
+commit:
+  hash: "035858b8170fdc4c802ab501fcb00f6f81584563"
+  message: "✨ 3DZ26K task: unify workflow transition mutations (#16)"
 comments:
   -
     author: "CODER"
     body: "Start: implement the shared workflow transition service and migrate task lifecycle mutation paths without changing observable task or verification behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Hosted PR #16 merged on main after fresh green checks; local verification evidence from the task branch already covers the extracted transition service and migrated lifecycle flows."
 events:
   -
     type: "verify"
@@ -91,9 +97,16 @@ events:
       Result: pass
       Evidence: all touched lifecycle files passed lint and formatting checks after the service extraction.
       Scope: touched source files and the new unit test.
+  -
+    type: "status"
+    at: "2026-03-26T19:06:26.876Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Hosted PR #16 merged on main after fresh green checks; local verification evidence from the task branch already covers the extracted transition service and migrated lifecycle flows."
 doc_version: 3
-doc_updated_at: "2026-03-26T18:56:18.063Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-26T19:06:26.876Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace ad hoc task state mutations across start, block, set-status, verify, and finish with one transition service that owns status, plan approval, verification, commit, and comment/event side effects."
 sections:
   Summary: |-
