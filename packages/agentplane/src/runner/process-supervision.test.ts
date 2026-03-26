@@ -7,6 +7,9 @@ import { afterEach, describe, expect, it } from "vitest";
 import { runSupervisedProcess } from "./process-supervision.js";
 import { compressedTraceArtifactPath, readTraceArtifactText } from "./trace-artifacts.js";
 
+/**
+ * Polls a trace file until the provided matcher succeeds or the timeout expires.
+ */
 async function waitForTraceMatch(opts: {
   path: string;
   timeoutMs: number;
@@ -40,6 +43,9 @@ describe("runSupervisedProcess", () => {
     }
   });
 
+  /**
+   * Verifies that raw stdout and stderr are written to trace artifacts before the process exits.
+   */
   it("streams stdout/stderr into trace artifacts before process exit", async () => {
     tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-"));
     const runDir = path.join(tempDir, "run");
@@ -131,6 +137,9 @@ describe("runSupervisedProcess", () => {
     }
   });
 
+  /**
+   * Verifies that trace policy knobs control raw capture, stderr capture, and tail truncation.
+   */
   it("honors trace policy knobs for raw capture, stderr capture, and tail size", async () => {
     tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-policy-"));
     const runDir = path.join(tempDir, "run");
@@ -185,6 +194,9 @@ describe("runSupervisedProcess", () => {
     expect(await readFile(invocation.stderr_path, "utf8").catch(() => "")).toBe("");
   });
 
+  /**
+   * Verifies that redaction and gzip retention are applied after successful runs.
+   */
   it("applies trace redaction and gzip retention policy after successful runs", async () => {
     tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-retention-"));
     const runDir = path.join(tempDir, "run");
@@ -254,6 +266,9 @@ describe("runSupervisedProcess", () => {
     expect(stderr).not.toContain("SECRET_TOKEN");
   });
 
+  /**
+   * Verifies that idle timeouts are classified and termination timestamps are captured.
+   */
   it("classifies idle timeouts and records termination timestamps", async () => {
     tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-idle-"));
     const runDir = path.join(tempDir, "run");
@@ -308,6 +323,9 @@ describe("runSupervisedProcess", () => {
     expect(result.exit_signal).toBe("SIGTERM");
   });
 
+  /**
+   * Verifies that wall-clock timeouts escalate to force-kill when the process ignores SIGTERM.
+   */
   it("classifies wall-clock timeouts and force-kill escalation", async () => {
     tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-wall-"));
     const runDir = path.join(tempDir, "run");
