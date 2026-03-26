@@ -15,25 +15,16 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import {
-  appendTaskCommentIntent,
-  appendTaskEventIntent,
-  backendIsLocalFileBackend,
-  getTaskStore,
-  mutateTaskStore,
-  setTaskFieldsIntent,
-  touchTaskDocMetaIntent,
-} from "../shared/task-store.js";
+import { backendIsLocalFileBackend, getTaskStore, mutateTaskStore } from "../shared/task-store.js";
 
 import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 
 import {
-  appendTaskEvent,
+  buildTaskStatusTransition,
   defaultCommitEmojiForStatus,
   enforceStatusCommitPolicy,
   ensureAgentFilledRequiredDocSections,
   ensureVerificationSatisfiedIfRequired,
-  normalizeTaskDocVersion,
   nowIso,
   readCommitInfo,
   requireStructuredComment,
@@ -487,75 +478,58 @@ export async function cmdFinish(opts: {
 
     for (const { taskId, task } of loadedTasks) {
       const at = nowIso();
-      if (useStore) {
-        await mutateTaskStore(store!, taskId, (current) => {
-          assertTaskCanFinish({
-            task: current,
-            config: ctx.config,
-            taskCount: opts.taskIds.length,
-            isMetaTask: taskId === metaTaskId,
-            resultProvided,
-            resultSummary,
-            force: opts.force,
-          });
-          const currentStatus = String(current.status || "TODO").toUpperCase();
-          return [
-            setTaskFieldsIntent({
-              status: "DONE",
-              ...(taskCommitInfo
-                ? { commit: { hash: taskCommitInfo.hash, message: taskCommitInfo.message } }
-                : {}),
-              ...(taskId === metaTaskId && resultSummary ? { result_summary: resultSummary } : {}),
-              ...(taskId === metaTaskId && riskLevel ? { risk_level: riskLevel } : {}),
-              ...(taskId === metaTaskId && breaking ? { breaking: true } : {}),
-            }),
-            appendTaskCommentIntent({ author: opts.author, body: opts.body }),
-            appendTaskEventIntent({
-              type: "status",
+      await (useStore
+        ? mutateTaskStore(store!, taskId, (current) => {
+            assertTaskCanFinish({
+              task: current,
+              config: ctx.config,
+              taskCount: opts.taskIds.length,
+              isMetaTask: taskId === metaTaskId,
+              resultProvided,
+              resultSummary,
+              force: opts.force,
+            });
+            return buildTaskStatusTransition({
+              task: current,
               at,
-              author: opts.author,
-              from: currentStatus,
-              to: "DONE",
-              note: opts.body,
-            }),
-            touchTaskDocMetaIntent({
+              toStatus: "DONE",
+              eventAuthor: opts.author,
               updatedBy: opts.author,
-              version: normalizeTaskDocVersion(current.doc_version),
-            }),
-          ];
-        });
-      } else {
-        const existingComments = Array.isArray(task.comments)
-          ? task.comments.filter(
-              (item): item is { author: string; body: string } =>
-                !!item && typeof item.author === "string" && typeof item.body === "string",
-            )
-          : [];
-        const nextTask: TaskData = {
-          ...task,
-          status: "DONE",
-          ...(taskCommitInfo
-            ? { commit: { hash: taskCommitInfo.hash, message: taskCommitInfo.message } }
-            : {}),
-          comments: [...existingComments, { author: opts.author, body: opts.body }],
-          events: appendTaskEvent(task, {
-            type: "status",
-            at,
-            author: opts.author,
-            from: String(task.status || "TODO").toUpperCase(),
-            to: "DONE",
-            note: opts.body,
-          }),
-          result_summary:
-            taskId === metaTaskId && resultSummary ? resultSummary : task.result_summary,
-          risk_level: taskId === metaTaskId && riskLevel ? riskLevel : task.risk_level,
-          breaking: taskId === metaTaskId && breaking ? true : task.breaking,
-          doc_version: normalizeTaskDocVersion(task.doc_version),
-          doc_updated_at: at,
-          doc_updated_by: opts.author,
-        };
-        await ctx.taskBackend.writeTask(nextTask);
-      }
+              note: opts.body,
+              comment: { author: opts.author, body: opts.body },
+              commit: taskCommitInfo
+                ? { hash: taskCommitInfo.hash, message: taskCommitInfo.message }
+                : undefined,
+              extraFields: {
+                ...(taskId === metaTaskId && resultSummary
+                  ? { result_summary: resultSummary }
+                  : {}),
+                ...(taskId === metaTaskId && riskLevel ? { risk_level: riskLevel } : {}),
+                ...(taskId === metaTaskId && breaking ? { breaking: true } : {}),
+              },
+            }).intents;
+          })
+        : ctx.taskBackend.writeTask(
+            buildTaskStatusTransition({
+              task,
+              at,
+              toStatus: "DONE",
+              eventAuthor: opts.author,
+              updatedBy: opts.author,
+              note: opts.body,
+              comment: { author: opts.author, body: opts.body },
+              commit: taskCommitInfo
+                ? { hash: taskCommitInfo.hash, message: taskCommitInfo.message }
+                : undefined,
+              extraFields: {
+                ...(taskId === metaTaskId && resultSummary
+                  ? { result_summary: resultSummary }
+                  : {}),
+                ...(taskId === metaTaskId && riskLevel ? { risk_level: riskLevel } : {}),
+                ...(taskId === metaTaskId && breaking ? { breaking: true } : {}),
+              },
+            }).nextTask,
+          ));
     }
 
     // tasks.json is export-only; generated via `agentplane task export`.

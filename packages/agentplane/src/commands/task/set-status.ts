@@ -1,4 +1,3 @@
-import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage, warnMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
@@ -12,24 +11,15 @@ import {
   resolveDocUpdatedBy,
   type CommandContext,
 } from "../shared/task-backend.js";
-import {
-  appendTaskCommentIntent,
-  appendTaskEventIntent,
-  backendIsLocalFileBackend,
-  getTaskStore,
-  mutateTaskStore,
-  setTaskFieldsIntent,
-  touchTaskDocMetaIntent,
-} from "../shared/task-store.js";
+import { backendIsLocalFileBackend, getTaskStore, mutateTaskStore } from "../shared/task-store.js";
 
 import {
-  appendTaskEvent,
+  buildTaskStatusTransition,
   dependencyWarningMessages,
   defaultCommitEmojiForStatus,
   ensureCommentCommitAllowed,
   resolveCommentCommitWarning,
   ensureStatusTransitionAllowed,
-  normalizeTaskDocVersion,
   normalizeTaskStatus,
   nowIso,
   readCommitInfo,
@@ -133,19 +123,11 @@ export async function cmdTaskSetStatus(opts: {
       });
     }
 
-    const existingComments = Array.isArray(task.comments)
-      ? task.comments.filter(
-          (item): item is { author: string; body: string } =>
-            !!item && typeof item.author === "string" && typeof item.body === "string",
-        )
-      : [];
-    let comments = existingComments;
     let commentBody: string | undefined;
     if (opts.author && opts.body) {
       commentBody = opts.commitFromComment
         ? formatCommentBodyForCommit(opts.body, config)
         : opts.body;
-      comments = [...existingComments, { author: opts.author, body: commentBody }];
     }
 
     const at = nowIso();
@@ -157,25 +139,6 @@ export async function cmdTaskSetStatus(opts: {
     let currentStatusForCommit = currentStatus;
     let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
     let deferredWarnings: string[] = [];
-    const next: TaskData = {
-      ...task,
-      status: nextStatus,
-      comments,
-      events: appendTaskEvent(task, {
-        type: "status",
-        at,
-        author: eventAuthor,
-        from: currentStatus,
-        to: nextStatus,
-        note: commentBody,
-      }),
-      doc_version: normalizeTaskDocVersion(task.doc_version),
-      doc_updated_at: at,
-      doc_updated_by: eventAuthor,
-    };
-    if (opts.commit) {
-      next.commit = nextCommit;
-    }
     try {
       await (useStore
         ? mutateTaskStore(store!, opts.taskId, async (current) => {
@@ -210,34 +173,31 @@ export async function cmdTaskSetStatus(opts: {
             });
             if (commitWarning) deferredWarnings.push(commitWarning);
             const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
-            const intents = [
-              setTaskFieldsIntent({
-                status: nextStatus,
-                ...(nextCommit ? { commit: nextCommit } : {}),
-              }),
-              appendTaskEventIntent({
-                type: "status",
-                at,
-                author: currentEventAuthor,
-                from: currentStatus,
-                to: nextStatus,
-                note: commentBody,
-              }),
-              touchTaskDocMetaIntent({
-                updatedBy: currentEventAuthor,
-                version: normalizeTaskDocVersion(current.doc_version),
-              }),
-            ];
-            if (commentBody) {
-              intents.splice(
-                1,
-                0,
-                appendTaskCommentIntent({ author: opts.author!, body: commentBody }),
-              );
-            }
-            return intents;
+            return buildTaskStatusTransition({
+              task: current,
+              at,
+              toStatus: nextStatus,
+              eventAuthor: currentEventAuthor,
+              updatedBy: currentEventAuthor,
+              note: commentBody,
+              comment:
+                commentBody && opts.author ? { author: opts.author, body: commentBody } : undefined,
+              commit: nextCommit,
+            }).intents;
           })
-        : ctx.taskBackend.writeTask(next));
+        : ctx.taskBackend.writeTask(
+            buildTaskStatusTransition({
+              task,
+              at,
+              toStatus: nextStatus,
+              eventAuthor,
+              updatedBy: eventAuthor,
+              note: commentBody,
+              comment:
+                commentBody && opts.author ? { author: opts.author, body: commentBody } : undefined,
+              commit: nextCommit,
+            }).nextTask,
+          ));
     } catch (err) {
       if (err instanceof CliError && !opts.quiet) {
         for (const warning of new Set(deferredWarnings)) {

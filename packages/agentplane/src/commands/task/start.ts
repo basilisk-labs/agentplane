@@ -11,20 +11,12 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import {
-  appendTaskCommentIntent,
-  appendTaskEventIntent,
-  backendIsLocalFileBackend,
-  getTaskStore,
-  mutateTaskStore,
-  setTaskFieldsIntent,
-  touchTaskDocMetaIntent,
-} from "../shared/task-store.js";
+import { backendIsLocalFileBackend, getTaskStore, mutateTaskStore } from "../shared/task-store.js";
 
 import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 
 import {
-  appendTaskEvent,
+  buildTaskStatusTransition,
   ensurePlanApprovedIfRequired,
   ensureCommentCommitAllowed,
   ensureStatusTransitionAllowed,
@@ -172,17 +164,6 @@ export async function cmdStart(opts: {
       : null;
     const commentBody = formattedComment ?? opts.body;
 
-    const existingComments = Array.isArray(task.comments)
-      ? task.comments.filter(
-          (item): item is { author: string; body: string } =>
-            !!item && typeof item.author === "string" && typeof item.body === "string",
-        )
-      : [];
-    const commentsValue: { author: string; body: string }[] = [
-      ...existingComments,
-      { author: opts.author, body: commentBody },
-    ];
-
     const at = nowIso();
     let currentStatusForCommit = currentStatus;
     let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
@@ -198,39 +179,27 @@ export async function cmdStart(opts: {
             nextStatus: "DOING",
             force: opts.force,
           });
-          return [
-            setTaskFieldsIntent({ status: "DOING" }),
-            appendTaskCommentIntent({ author: opts.author, body: commentBody }),
-            appendTaskEventIntent({
-              type: "status",
-              at,
-              author: opts.author,
-              from: currentStatus,
-              to: "DOING",
-              note: commentBody,
-            }),
-            touchTaskDocMetaIntent({
-              updatedBy: opts.author,
-              version: normalizeTaskDocVersion(current.doc_version),
-            }),
-          ];
-        })
-      : ctx.taskBackend.writeTask({
-          ...task,
-          status: "DOING",
-          comments: commentsValue,
-          events: appendTaskEvent(task, {
-            type: "status",
+          return buildTaskStatusTransition({
+            task: current,
             at,
-            author: opts.author,
-            from: currentStatus,
-            to: "DOING",
+            toStatus: "DOING",
+            eventAuthor: opts.author,
+            updatedBy: opts.author,
             note: commentBody,
-          }),
-          doc_version: normalizeTaskDocVersion(task.doc_version),
-          doc_updated_at: at,
-          doc_updated_by: opts.author,
-        }));
+            comment: { author: opts.author, body: commentBody },
+          }).intents;
+        })
+      : ctx.taskBackend.writeTask(
+          buildTaskStatusTransition({
+            task,
+            at,
+            toStatus: "DOING",
+            eventAuthor: opts.author,
+            updatedBy: opts.author,
+            note: commentBody,
+            comment: { author: opts.author, body: commentBody },
+          }).nextTask,
+        ));
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {

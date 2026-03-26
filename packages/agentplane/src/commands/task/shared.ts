@@ -54,6 +54,11 @@ export {
   defaultCommitEmojiForStatus,
 } from "./shared/transitions.js";
 export {
+  buildTaskStatusTransition,
+  buildTaskVerificationTransition,
+  type TaskTransitionWrite,
+} from "./shared/workflow-transition-service.js";
+export {
   type TaskListFilters,
   parseTaskListFilters,
   handleTaskListWarnings,
