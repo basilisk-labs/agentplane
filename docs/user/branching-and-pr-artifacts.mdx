@@ -75,3 +75,20 @@ gh pr checks --watch --required --fail-fast
 ```
 
 Hosted checks are the gate. Do not integrate or finish on base branch until `bun run workflow:wait-remote-checks` returns green.
+
+When GitHub UI shows `Expected — Waiting for status to be reported` for one of the required checks even though
+PR workflow jobs already look green, audit branch protection directly:
+
+```bash
+bun run workflow:github-protection:check
+```
+
+For this repository the canonical merge gate is exactly:
+
+- `Core CI / test`
+- `Core CI / test-windows`
+- `Docs CI / docs`
+
+Each required check must be bound to a concrete GitHub app in branch protection. Unbound
+`app_id=null` entries can leave PRs stuck in `Expected` even when GitHub Actions already emitted
+successful `pull_request` check-runs.
