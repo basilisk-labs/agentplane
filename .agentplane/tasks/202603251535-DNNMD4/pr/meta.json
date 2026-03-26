@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603251535-DNNMD4/task-doc-contract",
+  "created_at": "2026-03-26T15:59:20.469Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603251535-DNNMD4",
+  "updated_at": "2026-03-26T15:59:20.469Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
