@@ -1,20 +1,8 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { type CommandContext } from "../shared/task-backend.js";
-import {
-  appendTaskCommentIntent,
-  appendTaskEventIntent,
-  backendIsLocalFileBackend,
-  getTaskStore,
-  setTaskFieldsIntent,
-  touchTaskDocMetaIntent,
-} from "../shared/task-store.js";
-import {
-  appendTaskEvent,
-  normalizeTaskDocVersion,
-  nowIso,
-  requireStructuredComment,
-} from "./shared.js";
+import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import { buildTaskStatusTransition, nowIso, requireStructuredComment } from "./shared.js";
 
 export async function recordVerifiedNoopClosure(opts: {
   ctx: CommandContext;
@@ -50,50 +38,37 @@ export async function recordVerifiedNoopClosure(opts: {
             message: `Task is already DONE: ${opts.taskId} (use --force to override)`,
           });
         }
-        return [
-          setTaskFieldsIntent({
-            status: "DONE",
+        return buildTaskStatusTransition({
+          task: current,
+          at,
+          toStatus: "DONE",
+          eventAuthor: opts.author,
+          updatedBy: opts.author,
+          note: opts.body,
+          comment: { author: opts.author, body: opts.body },
+          extraFields: {
             result_summary: opts.resultSummary,
             risk_level: "low",
             breaking: false,
-          }),
-          appendTaskCommentIntent({ author: opts.author, body: opts.body }),
-          appendTaskEventIntent({
-            type: "status",
-            at,
-            author: opts.author,
-            from: String(current.status || "TODO").toUpperCase(),
-            to: "DONE",
-            note: opts.body,
-          }),
-          touchTaskDocMetaIntent({
-            updatedBy: opts.author,
-            version: normalizeTaskDocVersion(current.doc_version),
-          }),
-        ];
+          },
+        }).intents;
       })
-    : opts.ctx.taskBackend.writeTask({
-        ...opts.task,
-        status: "DONE",
-        comments: [
-          ...(Array.isArray(opts.task.comments) ? opts.task.comments : []),
-          { author: opts.author, body: opts.body },
-        ],
-        events: appendTaskEvent(opts.task, {
-          type: "status",
+    : opts.ctx.taskBackend.writeTask(
+        buildTaskStatusTransition({
+          task: opts.task,
           at,
-          author: opts.author,
-          from: String(opts.task.status || "TODO").toUpperCase(),
-          to: "DONE",
+          toStatus: "DONE",
+          eventAuthor: opts.author,
+          updatedBy: opts.author,
           note: opts.body,
-        }),
-        result_summary: opts.resultSummary,
-        risk_level: "low",
-        breaking: false,
-        doc_version: normalizeTaskDocVersion(opts.task.doc_version),
-        doc_updated_at: at,
-        doc_updated_by: opts.author,
-      }));
+          comment: { author: opts.author, body: opts.body },
+          extraFields: {
+            result_summary: opts.resultSummary,
+            risk_level: "low",
+            breaking: false,
+          },
+        }).nextTask,
+      ));
 
   if (!opts.quiet) {
     process.stdout.write(`${opts.successMessage}\n`);

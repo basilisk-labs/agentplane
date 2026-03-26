@@ -13,17 +13,10 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import {
-  appendTaskEventIntent,
-  backendIsLocalFileBackend,
-  getTaskStore,
-  setTaskFieldsIntent,
-  setTaskSectionIntent,
-  touchTaskDocMetaIntent,
-} from "../shared/task-store.js";
+import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
 import {
-  appendTaskEvent,
+  buildTaskVerificationTransition,
   decodeEscapedTaskTextNewlines,
   extractDocSection,
   normalizeTaskDocVersion,
@@ -147,32 +140,21 @@ async function recordVerificationResult(opts: {
         verifyStepsRef,
       });
       const nextVerification = appendBetweenMarkers(verificationSection, entry, docVersion);
+      const nextDoc = ensureDocSections(
+        setMarkdownSection(baseDoc, "Verification", nextVerification),
+        config.tasks.doc.required_sections,
+      );
 
-      return [
-        setTaskFieldsIntent({
-          status: opts.state === "needs_rework" ? "DOING" : current.status,
-          commit: opts.state === "needs_rework" ? null : (current.commit ?? null),
-          verification: {
-            state: opts.state,
-            updated_at: at,
-            updated_by: opts.by,
-            note: opts.note,
-          },
-        }),
-        setTaskSectionIntent({
-          section: "Verification",
-          text: nextVerification,
-          requiredSections: config.tasks.doc.required_sections,
-        }),
-        appendTaskEventIntent({
-          type: "verify",
-          at,
-          author: opts.by,
-          state: opts.state,
-          note: opts.note,
-        }),
-        touchTaskDocMetaIntent({ updatedBy: opts.by }),
-      ];
+      return buildTaskVerificationTransition({
+        task: current,
+        at,
+        by: opts.by,
+        note: opts.note,
+        state: opts.state,
+        verificationSection: nextVerification,
+        nextDoc,
+        requiredSections: config.tasks.doc.required_sections,
+      }).intents;
     });
   } else {
     const remoteTask = task!;
@@ -205,26 +187,18 @@ async function recordVerificationResult(opts: {
       config.tasks.doc.required_sections,
     );
 
-    await backend.writeTask({
-      ...remoteTask,
-      status: opts.state === "needs_rework" ? "DOING" : remoteTask.status,
-      commit: opts.state === "needs_rework" ? null : (remoteTask.commit ?? null),
-      doc: nextDoc,
-      doc_updated_by: opts.by,
-      events: appendTaskEvent(remoteTask, {
-        type: "verify",
+    await backend.writeTask(
+      buildTaskVerificationTransition({
+        task: remoteTask,
         at,
-        author: opts.by,
-        state: opts.state,
+        by: opts.by,
         note: opts.note,
-      }),
-      verification: {
         state: opts.state,
-        updated_at: at,
-        updated_by: opts.by,
-        note: opts.note,
-      },
-    });
+        verificationSection: nextVerification,
+        nextDoc,
+        requiredSections: config.tasks.doc.required_sections,
+      }).nextTask,
+    );
   }
 
   if (!opts.quiet) {

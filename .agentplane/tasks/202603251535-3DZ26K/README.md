@@ -1,10 +1,10 @@
 ---
 id: "202603251535-3DZ26K"
 title: "Introduce unified workflow transition service for task lifecycle mutations"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -15,20 +15,84 @@ tags:
   - "refactor"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-26T18:39:11.594Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-26T18:56:18.056Z"
+  updated_by: "CODER"
+  note: |-
+    Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build
+    Result: pass
+    Evidence: both package builds stayed clean after routing lifecycle writes through the shared workflow transition service.
+    Scope: packages/core and packages/agentplane build graph.
+    
+    Command: bunx vitest run packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: 11 files, 159 tests passed across the shared service plus migrated lifecycle commands and CLI flows.
+    Scope: task lifecycle mutation behavior and regression surface.
+    
+    Command: bunx eslint packages/agentplane/src/commands/task/block.ts packages/agentplane/src/commands/task/close-shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/set-status.ts packages/agentplane/src/commands/task/shared.ts packages/agentplane/src/commands/task/shared/workflow-transition-service.ts packages/agentplane/src/commands/task/start.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts && bunx prettier --check packages/agentplane/src/commands/task/block.ts packages/agentplane/src/commands/task/close-shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/set-status.ts packages/agentplane/src/commands/task/shared.ts packages/agentplane/src/commands/task/shared/workflow-transition-service.ts packages/agentplane/src/commands/task/start.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts
+    Result: pass
+    Evidence: all touched lifecycle files passed lint and formatting checks after the service extraction.
+    Scope: touched source files and the new unit test.
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: implement the shared workflow transition service and migrate task lifecycle mutation paths without changing observable task or verification behavior."
+events:
+  -
+    type: "verify"
+    at: "2026-03-26T18:53:28.490Z"
+    author: "CODER"
+    state: "ok"
+    note: |-
+      Command: bun run --filter=agentplane build
+      Result: pass
+      Evidence: agentplane compiled cleanly after introducing the shared workflow transition service and migrating start/block/set-status/verify/finish write paths to it.
+      Scope: packages/agentplane task lifecycle mutation paths.
+      
+      Command: bunx vitest run packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --testTimeout 60000 --hookTimeout 60000
+      Result: pass
+      Evidence: 11 files, 159 tests passed, covering the new transition service plus the migrated lifecycle commands and CLI flows.
+      Scope: lifecycle mutation behavior and regression surface.
+      
+      Command: bunx eslint <touched-files> && bunx prettier --check <touched-files>
+      Result: pass
+      Evidence: all touched task lifecycle files passed lint and formatting checks after the service extraction.
+      Scope: touched source and new unit test.
+  -
+    type: "status"
+    at: "2026-03-26T18:56:03.075Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: implement the shared workflow transition service and migrate task lifecycle mutation paths without changing observable task or verification behavior."
+  -
+    type: "verify"
+    at: "2026-03-26T18:56:18.056Z"
+    author: "CODER"
+    state: "ok"
+    note: |-
+      Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build
+      Result: pass
+      Evidence: both package builds stayed clean after routing lifecycle writes through the shared workflow transition service.
+      Scope: packages/core and packages/agentplane build graph.
+      
+      Command: bunx vitest run packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --testTimeout 60000 --hookTimeout 60000
+      Result: pass
+      Evidence: 11 files, 159 tests passed across the shared service plus migrated lifecycle commands and CLI flows.
+      Scope: task lifecycle mutation behavior and regression surface.
+      
+      Command: bunx eslint packages/agentplane/src/commands/task/block.ts packages/agentplane/src/commands/task/close-shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/set-status.ts packages/agentplane/src/commands/task/shared.ts packages/agentplane/src/commands/task/shared/workflow-transition-service.ts packages/agentplane/src/commands/task/start.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts && bunx prettier --check packages/agentplane/src/commands/task/block.ts packages/agentplane/src/commands/task/close-shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/set-status.ts packages/agentplane/src/commands/task/shared.ts packages/agentplane/src/commands/task/shared/workflow-transition-service.ts packages/agentplane/src/commands/task/start.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts
+      Result: pass
+      Evidence: all touched lifecycle files passed lint and formatting checks after the service extraction.
+      Scope: touched source files and the new unit test.
 doc_version: 3
-doc_updated_at: "2026-03-25T15:35:08.452Z"
+doc_updated_at: "2026-03-26T18:56:18.063Z"
 doc_updated_by: "CODER"
 description: "Replace ad hoc task state mutations across start, block, set-status, verify, and finish with one transition service that owns status, plan approval, verification, commit, and comment/event side effects."
 sections:
@@ -40,17 +104,57 @@ sections:
     - In scope: Replace ad hoc task state mutations across start, block, set-status, verify, and finish with one transition service that owns status, plan approval, verification, commit, and comment/event side effects.
     - Out of scope: unrelated refactors not required for "Introduce unified workflow transition service for task lifecycle mutations".
   Plan: |-
-    1. Implement the change for "Introduce unified workflow transition service for task lifecycle mutations".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+    1. Inventory every direct task-state mutation path across start-ready, block, set-status, verify, finish, and shared task backend helpers, and define one canonical transition service API that owns status, approval, verification, commit, comment, and event writes.
+    2. Implement that transition service in the shared task domain, migrate the touched commands to it incrementally, and keep task doc/task backend projections behaviorally stable.
+    3. Add focused regression coverage for each migrated lifecycle path, then run the smallest targeted build/test surface and record remaining follow-up in Findings.
   Verify Steps: |-
-    <!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-    
-    1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+    1. Inspect the migrated lifecycle commands and shared task-domain writes. Expected: start-ready, block, set-status, verify, and finish all route their status/comment/event/verification updates through one shared transition service instead of each command mutating task state ad hoc.
+    2. Run focused lifecycle and task-backend regression tests covering the migrated commands. Expected: task status, plan approval, verification records, commit metadata, and emitted comments/events stay identical to the pre-refactor behavior for the touched flows.
+    3. Run the smallest relevant package builds for core and agentplane. Expected: the new transition service compiles cleanly, and no downstream command/import breakage appears in touched lifecycle paths.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-26T18:53:28.490Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run --filter=agentplane build
+    Result: pass
+    Evidence: agentplane compiled cleanly after introducing the shared workflow transition service and migrating start/block/set-status/verify/finish write paths to it.
+    Scope: packages/agentplane task lifecycle mutation paths.
+    
+    Command: bunx vitest run packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: 11 files, 159 tests passed, covering the new transition service plus the migrated lifecycle commands and CLI flows.
+    Scope: lifecycle mutation behavior and regression surface.
+    
+    Command: bunx eslint <touched-files> && bunx prettier --check <touched-files>
+    Result: pass
+    Evidence: all touched task lifecycle files passed lint and formatting checks after the service extraction.
+    Scope: touched source and new unit test.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-26T18:39:11.318Z, excerpt_hash=sha256:a54a16c2b945e7e1288a9f8f691d873a0a4ac4c88507f3c397a376ff9ceec383
+    
+    ### 2026-03-26T18:56:18.056Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build
+    Result: pass
+    Evidence: both package builds stayed clean after routing lifecycle writes through the shared workflow transition service.
+    Scope: packages/core and packages/agentplane build graph.
+    
+    Command: bunx vitest run packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: 11 files, 159 tests passed across the shared service plus migrated lifecycle commands and CLI flows.
+    Scope: task lifecycle mutation behavior and regression surface.
+    
+    Command: bunx eslint packages/agentplane/src/commands/task/block.ts packages/agentplane/src/commands/task/close-shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/set-status.ts packages/agentplane/src/commands/task/shared.ts packages/agentplane/src/commands/task/shared/workflow-transition-service.ts packages/agentplane/src/commands/task/start.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts && bunx prettier --check packages/agentplane/src/commands/task/block.ts packages/agentplane/src/commands/task/close-shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/set-status.ts packages/agentplane/src/commands/task/shared.ts packages/agentplane/src/commands/task/shared/workflow-transition-service.ts packages/agentplane/src/commands/task/start.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts
+    Result: pass
+    Evidence: all touched lifecycle files passed lint and formatting checks after the service extraction.
+    Scope: touched source files and the new unit test.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-26T18:56:03.075Z, excerpt_hash=sha256:a54a16c2b945e7e1288a9f8f691d873a0a4ac4c88507f3c397a376ff9ceec383
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -71,21 +175,61 @@ Replace ad hoc task state mutations across start, block, set-status, verify, and
 
 ## Plan
 
-1. Implement the change for "Introduce unified workflow transition service for task lifecycle mutations".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Inventory every direct task-state mutation path across start-ready, block, set-status, verify, finish, and shared task backend helpers, and define one canonical transition service API that owns status, approval, verification, commit, comment, and event writes.
+2. Implement that transition service in the shared task domain, migrate the touched commands to it incrementally, and keep task doc/task backend projections behaviorally stable.
+3. Add focused regression coverage for each migrated lifecycle path, then run the smallest targeted build/test surface and record remaining follow-up in Findings.
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. Inspect the migrated lifecycle commands and shared task-domain writes. Expected: start-ready, block, set-status, verify, and finish all route their status/comment/event/verification updates through one shared transition service instead of each command mutating task state ad hoc.
+2. Run focused lifecycle and task-backend regression tests covering the migrated commands. Expected: task status, plan approval, verification records, commit metadata, and emitted comments/events stay identical to the pre-refactor behavior for the touched flows.
+3. Run the smallest relevant package builds for core and agentplane. Expected: the new transition service compiles cleanly, and no downstream command/import breakage appears in touched lifecycle paths.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-26T18:53:28.490Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run --filter=agentplane build
+Result: pass
+Evidence: agentplane compiled cleanly after introducing the shared workflow transition service and migrating start/block/set-status/verify/finish write paths to it.
+Scope: packages/agentplane task lifecycle mutation paths.
+
+Command: bunx vitest run packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --testTimeout 60000 --hookTimeout 60000
+Result: pass
+Evidence: 11 files, 159 tests passed, covering the new transition service plus the migrated lifecycle commands and CLI flows.
+Scope: lifecycle mutation behavior and regression surface.
+
+Command: bunx eslint <touched-files> && bunx prettier --check <touched-files>
+Result: pass
+Evidence: all touched task lifecycle files passed lint and formatting checks after the service extraction.
+Scope: touched source and new unit test.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-26T18:39:11.318Z, excerpt_hash=sha256:a54a16c2b945e7e1288a9f8f691d873a0a4ac4c88507f3c397a376ff9ceec383
+
+### 2026-03-26T18:56:18.056Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build
+Result: pass
+Evidence: both package builds stayed clean after routing lifecycle writes through the shared workflow transition service.
+Scope: packages/core and packages/agentplane build graph.
+
+Command: bunx vitest run packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --testTimeout 60000 --hookTimeout 60000
+Result: pass
+Evidence: 11 files, 159 tests passed across the shared service plus migrated lifecycle commands and CLI flows.
+Scope: task lifecycle mutation behavior and regression surface.
+
+Command: bunx eslint packages/agentplane/src/commands/task/block.ts packages/agentplane/src/commands/task/close-shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/set-status.ts packages/agentplane/src/commands/task/shared.ts packages/agentplane/src/commands/task/shared/workflow-transition-service.ts packages/agentplane/src/commands/task/start.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts && bunx prettier --check packages/agentplane/src/commands/task/block.ts packages/agentplane/src/commands/task/close-shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/set-status.ts packages/agentplane/src/commands/task/shared.ts packages/agentplane/src/commands/task/shared/workflow-transition-service.ts packages/agentplane/src/commands/task/start.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts
+Result: pass
+Evidence: all touched lifecycle files passed lint and formatting checks after the service extraction.
+Scope: touched source files and the new unit test.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-26T18:56:03.075Z, excerpt_hash=sha256:a54a16c2b945e7e1288a9f8f691d873a0a4ac4c88507f3c397a376ff9ceec383
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
