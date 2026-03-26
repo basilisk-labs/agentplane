@@ -367,6 +367,99 @@ describe("runCli", () => {
   );
 
   it(
+    "work start rejects a base branch that is behind its upstream tracking ref",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await execFileAsync("git", ["remote", "add", "origin", "."], { cwd: root });
+      await execFileAsync("git", ["config", "branch.main.remote", "origin"], { cwd: root });
+      await execFileAsync("git", ["config", "branch.main.merge", "refs/heads/main"], {
+        cwd: root,
+      });
+
+      await execFileAsync("git", ["branch", "upstream-main"], { cwd: root });
+      await execFileAsync("git", ["checkout", "upstream-main"], { cwd: root });
+      await writeFile(path.join(root, "upstream.txt"), "upstream", "utf8");
+      await execFileAsync("git", ["add", "upstream.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "upstream"], { cwd: root });
+      const { stdout: upstreamShaOut } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
+      await execFileAsync("git", ["checkout", "main"], { cwd: root });
+      await execFileAsync(
+        "git",
+        ["update-ref", "refs/remotes/origin/main", upstreamShaOut.trim()],
+        { cwd: root },
+      );
+
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Stale base work start",
+          "--description",
+          "Branch_pr work start should reject stale base branches before creating task branches.",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await approveTaskPlan(root, taskId);
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "work",
+          "start",
+          taskId,
+          "--agent",
+          "CODER",
+          "--slug",
+          "stale-base",
+          "--worktree",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(5);
+        expect(io.stderr).toContain(
+          "Base branch main is behind its upstream origin/main by 1 commit",
+        );
+        expect(io.stderr).toContain("Refresh the base branch before `agentplane work start`");
+      } finally {
+        io.restore();
+      }
+
+      expect(
+        await pathExists(path.join(root, ".agentplane", "worktrees", `${taskId}-stale-base`)),
+      ).toBe(false);
+      expect(await gitBranchExists(root, `task/${taskId}/stale-base`)).toBe(false);
+    },
+    WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
+  );
+
+  it(
     "work start seeds local-backend task READMEs into a fresh worktree",
     async () => {
       const root = await mkGitRepoRootWithBranch("main");

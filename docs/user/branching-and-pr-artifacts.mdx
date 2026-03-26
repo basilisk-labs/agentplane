@@ -18,6 +18,7 @@ Configured in `.agentplane/config.json`.
 
 - Task branches and worktrees are required.
 - `agentplane work start` must run on base branch and must include `--worktree`.
+- `agentplane work start` now fails fast when the pinned base branch is behind its upstream tracking ref; refresh the base branch first instead of opening a hosted PR from stale history.
 - Canonical task writes happen only on base branch.
 - INTEGRATOR performs verify, merge, and finish.
 - Local `agentplane pr ...` commands manage tracked PR artifacts only. They do not open or merge a hosted GitHub PR.

@@ -51,6 +51,23 @@ export async function gitBranchExists(cwd: string, branch: string): Promise<bool
   }
 }
 
+export async function gitBranchUpstream(cwd: string, branch: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync(
+      "git",
+      ["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`],
+      {
+        cwd,
+        env: gitEnv(),
+      },
+    );
+    const trimmed = stdout.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function gitListBranches(cwd: string): Promise<string[]> {
   const { stdout } = await execFileAsync("git", ["branch", "--format=%(refname:short)"], {
     cwd,
