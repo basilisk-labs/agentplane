@@ -108,6 +108,7 @@ describe("runSupervisedProcess", () => {
     try {
       const partialTrace = await waitForTraceMatch({
         path: invocation.trace_path,
+        // CI and Windows runners can delay the first trace flush beyond 1500ms in this streaming test.
         timeoutMs: 5000,
         matcher: (contents) =>
           contents.includes('"stream":"stdout"') && contents.includes('"type":"first"'),
