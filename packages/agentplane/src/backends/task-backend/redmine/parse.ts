@@ -1,3 +1,5 @@
+import { type TaskDocVersion } from "@agentplaneorg/core";
+
 import { toStringSafe } from "../shared.js";
 
 export function maybeParseJson(value: unknown): unknown {
@@ -14,10 +16,11 @@ export function maybeParseJson(value: unknown): unknown {
   return raw;
 }
 
-export function coerceDocVersion(value: unknown): number | null {
+export function coerceDocVersion(value: unknown): TaskDocVersion | null {
   if (value === null || value === undefined) return null;
-  if (typeof value === "number") return value;
+  if (value === 2 || value === 3) return value;
   const raw = toStringSafe(value).trim();
-  if (/^\d+$/u.test(raw)) return Number(raw);
+  if (raw === "2") return 2;
+  if (raw === "3") return 3;
   return null;
 }

@@ -5,6 +5,7 @@ import type { AgentplaneConfig } from "../config/config.js";
 import { loadConfig } from "../config/config.js";
 import { resolveProject } from "../project/project-root.js";
 import { listTasksExportSnapshotSchemaErrors } from "./task-artifact-schema.js";
+import { isIsoUtcTimestamp } from "./task-doc-contract.js";
 import {
   computeTasksChecksum,
   type TasksExportSnapshot,
@@ -140,7 +141,7 @@ export function lintTasksSnapshot(
     if (t.doc_version !== 2 && t.doc_version !== 3) {
       errors.push(`${id}: doc_version must be 2 or 3`);
     }
-    if (typeof t.doc_updated_at !== "string" || Number.isNaN(Date.parse(t.doc_updated_at))) {
+    if (!isIsoUtcTimestamp(t.doc_updated_at)) {
       errors.push(`${id}: doc_updated_at must be ISO date-time`);
     }
     if (typeof t.doc_updated_by !== "string" || t.doc_updated_by.trim().length === 0) {

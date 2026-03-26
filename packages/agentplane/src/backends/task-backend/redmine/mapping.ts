@@ -1,4 +1,8 @@
-import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core";
+import {
+  renderTaskDocFromSections,
+  taskDocToSectionMap,
+  type TaskDocVersion,
+} from "@agentplaneorg/core";
 
 import { isRecord } from "../../../shared/guards.js";
 
@@ -64,7 +68,7 @@ export function issueToTask(opts: {
   reverseStatus: Map<number, string>;
   customFields: Record<string, unknown>;
   ownerAgent: string;
-  defaultDocVersion: number;
+  defaultDocVersion: TaskDocVersion;
 }): TaskData | null {
   const taskId = opts.taskIdOverride ?? customFieldValue(opts.issue, opts.customFields.task_id);
   if (!taskId) return null;

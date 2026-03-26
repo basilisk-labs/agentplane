@@ -5,6 +5,7 @@ import path from "node:path";
 import { loadConfig } from "../config/config.js";
 import { atomicWriteFile } from "../fs/atomic-write.js";
 import { resolveProject } from "../project/project-root.js";
+import { normalizeTaskDocVersion, type TaskDocVersion } from "./task-doc-contract.js";
 import { validateTasksExportSnapshot } from "./task-artifact-schema.js";
 import {
   listTasks,
@@ -18,10 +19,6 @@ import {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
-}
-
-function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 3): 2 | 3 {
-  return value === 3 ? 3 : value === 2 ? 2 : fallback;
 }
 
 function normalizeTaskOrigin(value: unknown): TaskOrigin | undefined {
@@ -237,7 +234,7 @@ export type TasksExportTask = {
     note?: string;
     body?: string;
   }[];
-  doc_version: 2 | 3;
+  doc_version: TaskDocVersion;
   doc_updated_at: string;
   doc_updated_by: string;
   description: string;

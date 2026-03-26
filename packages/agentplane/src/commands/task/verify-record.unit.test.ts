@@ -314,7 +314,7 @@ describe("task verify record (unit)", () => {
     expect(next?.events?.at(-1)?.type).toBe("verify");
     expect(next?.doc).toContain("### Plan");
     expect(next?.doc).toContain("### Results");
-    expect(next?.doc).toContain("#### 2026-02-09T00:00:00.000Z — VERIFY — ok");
+    expect(next?.doc).toContain("### 2026-02-09T00:00:00.000Z — VERIFY — ok");
     expect(next?.doc).toContain("By: TESTER");
     expect(next?.doc).toContain("Note: ok");
     expect(writes.join("")).toContain(
@@ -381,7 +381,7 @@ describe("task verify record (unit)", () => {
     expect(next?.doc).not.toContain("### Plan");
     expect(next?.doc).not.toContain("### Results");
     expect(next?.doc).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
-    expect(next?.doc).toContain("#### 2026-02-09T00:00:00.000Z — VERIFY — ok");
+    expect(next?.doc).toContain("### 2026-02-09T00:00:00.000Z — VERIFY — ok");
   });
 
   it("cmdTaskVerifyOk decodes escaped newlines in verification details", async () => {
@@ -702,7 +702,7 @@ describe("task verify record (unit)", () => {
     expect(currentTask.verification?.state).toBe("ok");
     expect(currentTask.doc).toContain("## Summary\nConcurrent summary");
     expect(currentTask.doc).toContain("## Verify Steps\nConcurrent verify steps");
-    expect(currentTask.doc).toContain("#### 2026-02-09T00:00:00.000Z — VERIFY — ok");
+    expect(currentTask.doc).toContain("### 2026-02-09T00:00:00.000Z — VERIFY — ok");
     expect(currentTask.doc).toContain("VerifyStepsRef: doc_version=3");
     expect(currentTask.doc_updated_by).toBe("TESTER");
   });

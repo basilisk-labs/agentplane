@@ -72,7 +72,7 @@ function renderVerificationEntry(opts: {
   verifyStepsRef?: string | null;
 }): string {
   const lines = [
-    `#### ${opts.at} — VERIFY — ${opts.state}`,
+    `### ${opts.at} — VERIFY — ${opts.state}`,
     "",
     `By: ${opts.by}`,
     "",

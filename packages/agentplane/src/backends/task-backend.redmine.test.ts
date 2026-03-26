@@ -1080,7 +1080,7 @@ describe("RedmineBackend (mocked)", () => {
     expect(helpers.maybeParseJson("  ")).toBeNull();
 
     expect(helpers.coerceDocVersion(3)).toBe(3);
-    expect(helpers.coerceDocVersion("7")).toBe(7);
+    expect(helpers.coerceDocVersion("7")).toBeNull();
     expect(helpers.coerceDocVersion("v2")).toBeNull();
 
     expect(helpers.normalizeComments(" note ")).toEqual([{ author: "redmine", body: "note" }]);

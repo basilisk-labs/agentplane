@@ -1,17 +1,7 @@
 const DOC_SECTION_HEADER = "## Summary";
 const DOC_SECTION_HEADER_RE = /^##\s+Summary(?:\s|$|#)/;
 const AUTO_SUMMARY_HEADER = "## Changes Summary (auto)";
-const PREFERRED_TASK_SECTION_ORDER = [
-  "Summary",
-  "Scope",
-  "Plan",
-  "Risks",
-  "Verify Steps",
-  "Verification",
-  "Rollback Plan",
-  "Notes",
-  "Findings",
-] as const;
+import { TASK_DOC_SECTION_ORDER } from "./task-doc-contract.js";
 
 export function normalizeDocSectionName(section: string): string {
   return section.trim().replaceAll(/\s+/g, " ").toLowerCase();
@@ -360,9 +350,9 @@ export function parseDocSections(doc: string): {
 
 function orderedTaskSectionTitles(sections: Record<string, string>): string[] {
   const all = Object.keys(sections).filter((title) => title.trim().length > 0);
-  const preferred = PREFERRED_TASK_SECTION_ORDER.filter((title) => title in sections);
+  const preferred = TASK_DOC_SECTION_ORDER.filter((title) => title in sections);
   const remaining = all
-    .filter((title) => !preferred.includes(title as (typeof PREFERRED_TASK_SECTION_ORDER)[number]))
+    .filter((title) => !preferred.includes(title as (typeof TASK_DOC_SECTION_ORDER)[number]))
     .toSorted((a, b) => a.localeCompare(b));
   return [...preferred, ...remaining];
 }

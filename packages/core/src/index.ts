@@ -59,6 +59,19 @@ export {
 } from "./tasks/task-artifact-schema.js";
 
 export {
+  buildDefaultTaskDoc,
+  DEFAULT_TASK_DOC_VERSION,
+  getTaskDocContract,
+  isIsoUtcTimestamp,
+  normalizeTaskDocVersion,
+  TASK_DOC_CONTRACTS,
+  TASK_DOC_SECTION_ORDER,
+  type TaskDocContract,
+  type TaskDocSections,
+  type TaskDocVersion,
+} from "./tasks/task-doc-contract.js";
+
+export {
   docChanged,
   ensureDocSections,
   extractTaskDoc,
@@ -84,12 +97,23 @@ export {
   setTaskDocSection,
   taskReadmePath,
   validateTaskDocMetadata,
+  type PlanApproval,
+  type PlanApprovalState,
+  type TaskEvent,
+  type TaskEventType,
   type TaskFrontmatter,
   type TaskOrigin,
   type TaskPriority,
   type TaskRecord,
+  type TaskRunnerEvidence,
+  type TaskRunnerExecutionMetrics,
   type TaskRunnerHistoryEntry,
+  type TaskRunnerOutcome,
+  type TaskRunnerOutcomeStatus,
+  type TaskRunnerTarget,
   type TaskStatus,
+  type VerificationResult,
+  type VerificationState,
 } from "./tasks/task-store.js";
 
 export {

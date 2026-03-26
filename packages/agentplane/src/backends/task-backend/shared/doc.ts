@@ -1,6 +1,7 @@
 import {
   extractTaskDoc as extractTaskDocCore,
   mergeTaskDoc as mergeTaskDocCore,
+  normalizeTaskDocVersion as normalizeTaskDocVersionCore,
 } from "@agentplaneorg/core";
 
 import { isRecord } from "../../../shared/guards.js";
@@ -10,9 +11,11 @@ import type { TaskData, TaskDocMeta } from "./types.js";
 
 type ExtractTaskDoc = (body: string) => string;
 type MergeTaskDoc = (body: string, doc: string) => string;
+type NormalizeTaskDocVersion = (value: unknown, fallback?: 2 | 3) => 2 | 3;
 
 const extractTaskDoc: ExtractTaskDoc = extractTaskDocCore;
 const mergeTaskDoc: MergeTaskDoc = mergeTaskDocCore;
+const normalizeTaskDocVersion: NormalizeTaskDocVersion = normalizeTaskDocVersionCore;
 
 export function nowIso(): string {
   return new Date().toISOString();
@@ -72,7 +75,7 @@ export function resolveDocUpdatedByFromTask(task: TaskData, fallback: string): s
 }
 
 export function normalizeDocVersion(value: unknown, fallback: 2 | 3 = DOC_VERSION): 2 | 3 {
-  return value === 3 ? 3 : value === 2 ? 2 : fallback;
+  return normalizeTaskDocVersion(value, fallback);
 }
 
 export function ensureDocMetadata(
