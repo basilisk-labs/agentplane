@@ -17,12 +17,15 @@ export type CommandEntry = {
   needsProject: boolean;
   needsConfig: boolean;
   needsTaskContext: boolean;
+  invocation?: string;
 };
 
 export function entry<TParsed>(
   spec: CommandSpec<TParsed>,
   load: (deps: RunDeps) => Promise<CommandHandler<TParsed>>,
-  meta?: Partial<Pick<CommandEntry, "needsProject" | "needsConfig" | "needsTaskContext">>,
+  meta?: Partial<
+    Pick<CommandEntry, "needsProject" | "needsConfig" | "needsTaskContext" | "invocation">
+  >,
 ): CommandEntry {
   return {
     spec: spec as CommandSpec<unknown>,
@@ -30,5 +33,6 @@ export function entry<TParsed>(
     needsProject: meta?.needsProject ?? true,
     needsConfig: meta?.needsConfig ?? meta?.needsProject ?? true,
     needsTaskContext: meta?.needsTaskContext ?? true,
+    invocation: meta?.invocation,
   };
 }

@@ -16,7 +16,7 @@ import { parseCommandArgv } from "./spec/parse.js";
 import { helpSpec } from "./spec/help.js";
 import { usageError } from "./spec/errors.js";
 import { suggestOne } from "./spec/suggest.js";
-import { matchCommandCatalog } from "./run-cli/catalog.js";
+import { matchCommandCatalog } from "./run-cli/command-catalog.js";
 import {
   prescanJsonErrors,
   parseGlobalArgs,

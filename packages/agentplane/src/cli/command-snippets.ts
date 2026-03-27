@@ -1,15 +1,21 @@
+import { requireCanonicalCommandInvocation } from "./command-invocations.js";
+
+const invoke = (id: readonly string[]): string => requireCanonicalCommandInvocation(id);
+
 export const COMMAND_SNIPPETS = {
   core: {
-    taskList: "agentplane task list",
-    taskShow: "agentplane task show <task-id>",
-    taskNew:
-      'agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>',
-    startTask: 'agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."',
-    verifyTask: 'agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."',
-    finishTask:
-      'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --commit <git-rev>',
-    quickstart: "agentplane quickstart",
-    role: "agentplane role <ROLE>",
+    configShow: invoke(["config", "show"]),
+    taskList: invoke(["task", "list"]),
+    taskShow: invoke(["task", "show"]),
+    taskNew: invoke(["task", "new"]),
+    taskPlanSet: invoke(["task", "plan", "set"]),
+    taskPlanApprove: invoke(["task", "plan", "approve"]),
+    taskVerifyShow: invoke(["task", "verify-show"]),
+    startTask: invoke(["task", "start-ready"]),
+    verifyTask: invoke(["verify"]),
+    finishTask: invoke(["finish"]),
+    quickstart: invoke(["quickstart"]),
+    role: invoke(["role"]),
   },
   sync: {
     pullConfigured: "agentplane sync --direction pull",
