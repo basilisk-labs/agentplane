@@ -1,10 +1,10 @@
 ---
 id: "202603251538-NQSPGC"
 title: "Generate group commands and simplify CLI harness layers"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -15,18 +15,36 @@ tags:
   - "refactor"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-27T16:02:00.840Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
+  state: "ok"
+  updated_at: "2026-03-27T16:25:46.422Z"
+  updated_by: "CODER"
+  note: "Implemented canonical group-command helpers, removed duplicated CLI harness shims, and verified targeted CLI registry/help/pr-flow/scaffold regressions plus build, eslint, and prettier."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: VJ5GHJ is already merged on GitHub main via PR #21; proceed from the canonical CLI registry baseline to generate group commands and collapse duplicate CLI harness layers."
+events:
+  -
+    type: "status"
+    at: "2026-03-27T16:02:23.544Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: VJ5GHJ is already merged on GitHub main via PR #21; proceed from the canonical CLI registry baseline to generate group commands and collapse duplicate CLI harness layers."
+  -
+    type: "verify"
+    at: "2026-03-27T16:25:46.422Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented canonical group-command helpers, removed duplicated CLI harness shims, and verified targeted CLI registry/help/pr-flow/scaffold regressions plus build, eslint, and prettier."
 doc_version: 3
-doc_updated_at: "2026-03-25T15:38:48.214Z"
+doc_updated_at: "2026-03-27T16:25:46.427Z"
 doc_updated_by: "CODER"
 description: "Derive group-command surfaces and help output from the canonical CLI registry, then reduce duplicated CLI harness layers so parser, help, and command execution tests share a narrower set of runtime helpers."
 sections:
@@ -38,17 +56,23 @@ sections:
     - In scope: Derive group-command surfaces and help output from the canonical CLI registry, then reduce duplicated CLI harness layers so parser, help, and command execution tests share a narrower set of runtime helpers.
     - Out of scope: unrelated refactors not required for "Generate group commands and simplify CLI harness layers".
   Plan: |-
-    1. Implement the change for "Generate group commands and simplify CLI harness layers".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+    1. Generate group and root command surfaces directly from the canonical CLI registry so help metadata, group listings, and invocation snippets stop depending on duplicated hand-maintained tables.
+    2. Collapse duplicated CLI harness layers around parser/help/execution into a narrower shared runtime path so run-cli tests and command help exercise the same command-catalog and invocation plumbing.
+    3. Add focused CLI registry/help/harness regressions and run the smallest relevant builds so remaining debt is explicit in Findings rather than hidden in helper indirection.
   Verify Steps: |-
-    <!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-    
-    1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+    1. Compare root and group command help against the canonical registry after the refactor. Expected: group listings and help surfaces are derived from registry metadata without separate hand-maintained command tables.
+    2. Run targeted CLI parser/help/execution regressions. Expected: the simplified harness still drives the same command-catalog runtime path for parsing, help rendering, and command dispatch.
+    3. Run the smallest relevant package builds. Expected: agentplane compiles cleanly after the harness simplification and any remaining generator-only follow-up is explicit in Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-27T16:25:46.422Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Implemented canonical group-command helpers, removed duplicated CLI harness shims, and verified targeted CLI registry/help/pr-flow/scaffold regressions plus build, eslint, and prettier.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-27T16:02:23.546Z, excerpt_hash=sha256:ac735a840c58f06e61574b1328612f1487424fefb665908902df0bf32479b844
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -69,21 +93,27 @@ Derive group-command surfaces and help output from the canonical CLI registry, t
 
 ## Plan
 
-1. Implement the change for "Generate group commands and simplify CLI harness layers".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Generate group and root command surfaces directly from the canonical CLI registry so help metadata, group listings, and invocation snippets stop depending on duplicated hand-maintained tables.
+2. Collapse duplicated CLI harness layers around parser/help/execution into a narrower shared runtime path so run-cli tests and command help exercise the same command-catalog and invocation plumbing.
+3. Add focused CLI registry/help/harness regressions and run the smallest relevant builds so remaining debt is explicit in Findings rather than hidden in helper indirection.
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. Compare root and group command help against the canonical registry after the refactor. Expected: group listings and help surfaces are derived from registry metadata without separate hand-maintained command tables.
+2. Run targeted CLI parser/help/execution regressions. Expected: the simplified harness still drives the same command-catalog runtime path for parsing, help rendering, and command dispatch.
+3. Run the smallest relevant package builds. Expected: agentplane compiles cleanly after the harness simplification and any remaining generator-only follow-up is explicit in Findings.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-27T16:25:46.422Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented canonical group-command helpers, removed duplicated CLI harness shims, and verified targeted CLI registry/help/pr-flow/scaffold regressions plus build, eslint, and prettier.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-27T16:02:23.546Z, excerpt_hash=sha256:ac735a840c58f06e61574b1328612f1487424fefb665908902df0bf32479b844
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
