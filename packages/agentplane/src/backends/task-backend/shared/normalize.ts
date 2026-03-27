@@ -2,7 +2,9 @@ import { isRecord } from "../../../shared/guards.js";
 
 import type {
   PlanApproval,
+  TaskData,
   TaskOrigin,
+  TaskSummary,
   TaskRunnerEvidence,
   TaskRunnerExecutionMetrics,
   TaskRunnerHistoryEntry,
@@ -216,4 +218,16 @@ export function normalizeTaskRunnerOutcome(value: unknown): TaskRunnerOutcome | 
     : [];
 
   return history.length > 0 ? { ...outcome, history } : outcome;
+}
+
+export function toTaskSummary(task: TaskData): TaskSummary {
+  const { doc, sections, events, ...summary } = task;
+  void doc;
+  void sections;
+  void events;
+  return summary;
+}
+
+export function toTaskSummaries(tasks: TaskData[]): TaskSummary[] {
+  return tasks.map((task) => toTaskSummary(task));
 }

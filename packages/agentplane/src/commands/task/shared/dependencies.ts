@@ -1,4 +1,9 @@
-import type { TaskBackend, TaskData } from "../../../backends/task-backend.js";
+import {
+  toTaskSummary,
+  type TaskBackend,
+  type TaskData,
+  type TaskSummary,
+} from "../../../backends/task-backend.js";
 import { CliError } from "../../../shared/errors.js";
 import { dedupeStrings } from "../../../shared/strings.js";
 import { toStringArray } from "./tags.js";
@@ -42,7 +47,7 @@ function hasDependsOnCycle(dependsOnMap: Map<string, string[]>): string[] | null
 }
 
 export async function ensureTaskDependsOnGraphIsAcyclic(opts: {
-  backend: Pick<TaskBackend, "listTasks">;
+  backend: Pick<TaskBackend, "listTasks" | "listProjectionTasks">;
   taskId: string;
   dependsOn: string[];
 }): Promise<void> {
@@ -55,9 +60,15 @@ export async function ensureTaskDependsOnGraphIsAcyclic(opts: {
     });
   }
 
-  const allTasks = await opts.backend.listTasks();
+  let normalizedTasks: TaskSummary[];
+  if (opts.backend.listProjectionTasks) {
+    normalizedTasks = await opts.backend.listProjectionTasks();
+  } else {
+    const tasks = await opts.backend.listTasks();
+    normalizedTasks = tasks.map((task) => toTaskSummary(task));
+  }
   const depMap = new Map<string, string[]>();
-  for (const task of allTasks) {
+  for (const task of normalizedTasks) {
     const taskId = String(task.id || "").trim();
     if (!taskId) continue;
     if (taskId === opts.taskId) continue;
@@ -113,7 +124,7 @@ export function dependencyWarningMessages(dep: DependencyState): string[] {
   return warnings;
 }
 
-export function buildDependencyState(tasks: TaskData[]): Map<string, DependencyState> {
+export function buildDependencyState(tasks: TaskSummary[]): Map<string, DependencyState> {
   const byId = new Map(tasks.map((task) => [task.id, task]));
   const state = new Map<string, DependencyState>();
   for (const task of tasks) {
@@ -150,7 +161,7 @@ function formatDepsSummary(dep: DependencyState | undefined): string | null {
   return `deps=${parts.join(",")}`;
 }
 
-export function formatTaskLine(task: TaskData, depState?: DependencyState): string {
+export function formatTaskLine(task: TaskSummary, depState?: DependencyState): string {
   const status = String(task.status || "TODO").toUpperCase();
   const extras: string[] = [];
   if (task.owner?.trim()) extras.push(`owner=${task.owner.trim()}`);

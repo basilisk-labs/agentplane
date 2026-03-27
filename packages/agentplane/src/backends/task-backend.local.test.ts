@@ -70,6 +70,36 @@ describe("LocalBackend", () => {
     expect(projectionRaw.tasks).toHaveLength(1);
   });
 
+  it("lists projection tasks without doc-heavy fields", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202601300006-ABCD",
+      title: "Projection",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: ["tag"],
+      verify: [],
+      comments: [{ author: "DOCS", body: "keep comment searchability" }],
+      events: [
+        { type: "status", at: new Date().toISOString(), author: "DOCS", from: "TODO", to: "DOING" },
+      ],
+      doc: "## Summary\n\nProjection body",
+    };
+    await backend.writeTask(task);
+
+    const projection = await backend.listProjectionTasks();
+
+    expect(projection).toHaveLength(1);
+    expect(projection[0]?.id).toBe(task.id);
+    expect(projection[0]?.comments).toEqual(task.comments);
+    expect(projection[0]).not.toHaveProperty("doc");
+    expect(projection[0]).not.toHaveProperty("sections");
+    expect(projection[0]).not.toHaveProperty("events");
+  });
+
   it("writes a task index cache for local tasks", async () => {
     const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
     const task: TaskData = {

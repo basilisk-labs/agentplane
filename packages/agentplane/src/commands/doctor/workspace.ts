@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import { parseTaskReadme, renderTaskDocFromSections } from "@agentplaneorg/core";
 
-import type { TaskData } from "../../backends/task-backend.js";
+import type { TaskSummary } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../../shared/diagnostics.js";
 import { resolvePolicyGatewayForRepo } from "../../shared/policy-gateway.js";
 import { GitContext } from "../shared/git-context.js";
@@ -61,7 +61,7 @@ async function listMissingManagedPolicyFiles(repoRoot: string): Promise<string[]
   return missing.toSorted();
 }
 
-function taskDataToSnapshot(task: TaskData): TaskDocSnapshot {
+function taskDataToSnapshot(task: TaskSummary): TaskDocSnapshot {
   return {
     id: task.id,
     status: task.status,

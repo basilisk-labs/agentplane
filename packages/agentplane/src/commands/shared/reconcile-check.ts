@@ -3,7 +3,11 @@ import { withDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import path from "node:path";
 
-import { listTasksMemo, loadTaskFromBranchSnapshot, type CommandContext } from "./task-backend.js";
+import {
+  listTaskSummariesMemo,
+  loadTaskFromBranchSnapshot,
+  type CommandContext,
+} from "./task-backend.js";
 
 function compactError(err: unknown): string {
   if (err instanceof Error) {
@@ -128,7 +132,7 @@ export async function ensureReconciledBeforeMutation(opts: {
   if (opts.strictTaskScan === false) return;
 
   try {
-    await listTasksMemo(opts.ctx);
+    await listTaskSummariesMemo(opts.ctx);
   } catch (err) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
