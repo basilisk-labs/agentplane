@@ -220,7 +220,6 @@ export async function createTaskCloseCommit(opts: {
   quiet: boolean;
   closeUnstageOthers?: boolean;
 }): Promise<void> {
-  opts.ctx.git.invalidateStatus();
   await cmdCommit({
     ctx: opts.ctx,
     cwd: opts.cwd,

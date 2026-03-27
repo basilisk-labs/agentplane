@@ -4,13 +4,15 @@ import path from "node:path";
 import { normalizeTaskDocVersion, type TaskPrMeta } from "@agentplaneorg/core";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { execFileAsync } from "../shared/git.js";
+import { parseTaskIdFromBranch } from "../shared/git-worktree.js";
 import { parsePrMeta } from "../shared/pr-meta.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { appendTaskEvent } from "./shared.js";
 
-type HostedMergedPr = {
+export type HostedMergedPr = {
   number: number;
   title?: string | null;
   url?: string | null;
@@ -19,6 +21,12 @@ type HostedMergedPr = {
   headRefName?: string | null;
   headRefOid?: string | null;
   mergeCommit?: { oid?: string | null } | null;
+};
+
+export type HostedMergeTarget = {
+  taskId: string;
+  branch: string;
+  mergedPr: HostedMergedPr;
 };
 
 type HostedMergeSyncResult = {
@@ -54,6 +62,39 @@ function normalizeMergedPr(value: unknown): HostedMergedPr | null {
   };
 }
 
+function normalizePullRequestLike(value: unknown): HostedMergedPr | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const record = value as Record<string, unknown>;
+  if (record.merged !== true) return null;
+  const number = typeof record.number === "number" ? record.number : null;
+  const mergeCommitSha =
+    typeof record.merge_commit_sha === "string" && record.merge_commit_sha.trim().length > 0
+      ? record.merge_commit_sha.trim()
+      : null;
+  const head =
+    record.head && typeof record.head === "object" && !Array.isArray(record.head)
+      ? (record.head as Record<string, unknown>)
+      : null;
+  const base =
+    record.base && typeof record.base === "object" && !Array.isArray(record.base)
+      ? (record.base as Record<string, unknown>)
+      : null;
+  const headRefName = typeof head?.ref === "string" ? head.ref : null;
+  const headRefOid = typeof head?.sha === "string" ? head.sha : null;
+  const baseRefName = typeof base?.ref === "string" ? base.ref : null;
+  if (!number || number <= 0 || !mergeCommitSha || !headRefName) return null;
+  return {
+    number,
+    title: typeof record.title === "string" ? record.title : null,
+    url: typeof record.html_url === "string" ? record.html_url : null,
+    mergedAt: typeof record.merged_at === "string" ? record.merged_at : null,
+    baseRefName,
+    headRefName,
+    headRefOid,
+    mergeCommit: { oid: mergeCommitSha },
+  };
+}
+
 function pickHostedMergedPr(records: unknown[]): HostedMergedPr | null {
   const merged = records
     .map((record) => normalizeMergedPr(record))
@@ -66,6 +107,23 @@ function pickHostedMergedPr(records: unknown[]): HostedMergedPr | null {
       return right.localeCompare(left);
     })[0] ?? null
   );
+}
+
+export function resolveHostedMergeTargetFromEvent(opts: {
+  event: unknown;
+  branchPrefix: string;
+}): HostedMergeTarget | null {
+  if (!opts.event || typeof opts.event !== "object" || Array.isArray(opts.event)) return null;
+  const pullRequest = (opts.event as { pull_request?: unknown }).pull_request;
+  const mergedPr = normalizePullRequestLike(pullRequest);
+  if (!mergedPr?.headRefName || !mergedPr.mergeCommit?.oid) return null;
+  const taskId = parseTaskIdFromBranch(opts.branchPrefix, mergedPr.headRefName);
+  if (!taskId) return null;
+  return {
+    taskId,
+    branch: mergedPr.headRefName,
+    mergedPr,
+  };
 }
 
 async function resolveHostedMergedPr(opts: {
@@ -118,7 +176,7 @@ function buildSyncedTask(opts: { task: TaskData; mergedPr: HostedMergedPr }): Ta
   const currentStatus = String(opts.task.status || "TODO").toUpperCase();
   const note =
     `Hosted PR #${opts.mergedPr.number} merged on GitHub main; ` +
-    "local task projection reconciled from PR artifacts.";
+    "task projection reconciled from hosted PR artifacts.";
   const statusEvent = {
     type: "status" as const,
     at,
@@ -133,16 +191,16 @@ function buildSyncedTask(opts: { task: TaskData; mergedPr: HostedMergedPr }): Ta
     ...opts.task,
     status: "DONE",
     result_summary: opts.task.result_summary ?? `Merged via PR #${opts.mergedPr.number}.`,
-    commit:
-      opts.task.commit ??
-      (mergeHash
+    commit: opts.task.commit?.hash?.trim()
+      ? opts.task.commit
+      : mergeHash
         ? {
             hash: mergeHash,
             message:
               (mergeMessage && mergeMessage.length > 0 ? mergeMessage : null) ??
               `Hosted PR #${opts.mergedPr.number} merged on GitHub main`,
           }
-        : null),
+        : null,
     events: appendTaskEvent(opts.task, statusEvent),
     doc_version: normalizeTaskDocVersion(opts.task.doc_version),
     doc_updated_at: at,
@@ -169,6 +227,89 @@ async function readPrMetaIfPresent(opts: {
   }
 }
 
+function needsHostedMergeSync(opts: {
+  task: TaskData;
+  meta: TaskPrMeta;
+  mergedPr: HostedMergedPr;
+  branch: string;
+}): boolean {
+  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  const expectedCommit = opts.mergedPr.mergeCommit?.oid ?? "";
+  const expectedBase = opts.mergedPr.baseRefName ?? opts.meta.base ?? "";
+  const expectedHeadSha = opts.mergedPr.headRefOid ?? opts.meta.head_sha ?? "";
+  if (currentStatus !== "DONE") return true;
+  if ((opts.task.commit?.hash ?? "") !== expectedCommit) return true;
+  if (opts.meta.status !== "MERGED") return true;
+  if ((opts.meta.merge_commit ?? "") !== expectedCommit) return true;
+  if ((opts.meta.branch ?? "") !== opts.branch) return true;
+  if ((opts.meta.base ?? "") !== expectedBase) return true;
+  if (opts.meta.head_sha?.trim() !== expectedHeadSha) return true;
+  return false;
+}
+
+export async function syncHostedMergedTask(opts: {
+  ctx: CommandContext;
+  tasks: TaskData[];
+  target: HostedMergeTarget;
+  missingTask?: "noop" | "error";
+  missingPrMeta?: "noop" | "error";
+}): Promise<HostedMergeSyncResult> {
+  if (opts.ctx.backendId !== "local" || opts.ctx.config.workflow_mode !== "branch_pr") {
+    return { tasks: opts.tasks, synced: 0 };
+  }
+
+  const task = opts.tasks.find((entry) => entry.id === opts.target.taskId);
+  if (!task) {
+    if (opts.missingTask === "error") {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: `Hosted task closure could not find task artifact: ${opts.target.taskId}`,
+      });
+    }
+    return { tasks: opts.tasks, synced: 0 };
+  }
+
+  const prMetaRecord = await readPrMetaIfPresent({ ctx: opts.ctx, taskId: opts.target.taskId });
+  if (!prMetaRecord) {
+    if (opts.missingPrMeta === "error") {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: `Hosted task closure could not find pr/meta.json for ${opts.target.taskId}`,
+      });
+    }
+    return { tasks: opts.tasks, synced: 0 };
+  }
+
+  if (
+    !needsHostedMergeSync({
+      task,
+      meta: prMetaRecord.meta,
+      mergedPr: opts.target.mergedPr,
+      branch: opts.target.branch,
+    })
+  ) {
+    return { tasks: opts.tasks, synced: 0 };
+  }
+
+  const nextMeta = buildSyncedPrMeta({
+    meta: prMetaRecord.meta,
+    mergedPr: opts.target.mergedPr,
+    branch: opts.target.branch,
+  });
+  await writeJsonStableIfChanged(prMetaRecord.metaPath, nextMeta);
+
+  return {
+    tasks: opts.tasks.map((entry) =>
+      entry.id === opts.target.taskId
+        ? buildSyncedTask({ task: entry, mergedPr: opts.target.mergedPr })
+        : entry,
+    ),
+    synced: 1,
+  };
+}
+
 export async function syncHostedMergedTasks(opts: {
   ctx: CommandContext;
   tasks: TaskData[];
@@ -181,13 +322,6 @@ export async function syncHostedMergedTasks(opts: {
   let synced = 0;
 
   for (const task of opts.tasks) {
-    const currentStatus = String(task.status || "TODO").toUpperCase();
-    const needsSync = currentStatus !== "DONE" || !task.commit?.hash;
-    if (!needsSync) {
-      nextTasks.push(task);
-      continue;
-    }
-
     const prMetaRecord = await readPrMetaIfPresent({ ctx: opts.ctx, taskId: task.id });
     if (!prMetaRecord) {
       nextTasks.push(task);
@@ -209,14 +343,15 @@ export async function syncHostedMergedTasks(opts: {
       continue;
     }
 
-    const nextMeta = buildSyncedPrMeta({
-      meta: prMetaRecord.meta,
-      mergedPr,
-      branch,
+    const syncedTask = await syncHostedMergedTask({
+      ctx: opts.ctx,
+      tasks: [task],
+      target: { taskId: task.id, branch, mergedPr },
+      missingTask: "noop",
+      missingPrMeta: "noop",
     });
-    await writeJsonStableIfChanged(prMetaRecord.metaPath, nextMeta);
-    nextTasks.push(buildSyncedTask({ task, mergedPr }));
-    synced += 1;
+    nextTasks.push(syncedTask.tasks[0] ?? task);
+    synced += syncedTask.synced;
   }
 
   return { tasks: nextTasks, synced };

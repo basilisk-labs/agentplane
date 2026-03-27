@@ -10,6 +10,7 @@ import { taskExportSpec } from "../../../commands/task/export.command.js";
 import { taskHandoffRecordSpec } from "../../../commands/task/handoff-record.command.js";
 import { taskHandoffShowSpec } from "../../../commands/task/handoff-show.command.js";
 import { taskHandoffSpec } from "../../../commands/task/handoff.command.js";
+import { taskHostedCloseSpec } from "../../../commands/task/hosted-close.command.js";
 import { taskLintSpec } from "../../../commands/task/lint.command.js";
 import { taskListSpec } from "../../../commands/task/list.spec.js";
 import { taskMigrateDocSpec } from "../../../commands/task/migrate-doc.command.js";
@@ -67,6 +68,11 @@ export const TASK_COMMANDS = [
   ),
   entry(taskHandoffShowSpec, () =>
     import("../../../commands/task/handoff-show.command.js").then((m) => m.runTaskHandoffShow),
+  ),
+  entry(taskHostedCloseSpec, (deps) =>
+    import("../../../commands/task/hosted-close.command.js").then((m) =>
+      m.makeRunTaskHostedCloseHandler(deps.getCtx),
+    ),
   ),
   entry(
     taskListSpec,

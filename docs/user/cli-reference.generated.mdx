@@ -102,6 +102,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task handoff](#task-handoff)
   - [task handoff record](#task-handoff-record)
   - [task handoff show](#task-handoff-show)
+  - [task hosted-close](#task-hosted-close)
   - [task lint](#task-lint)
   - [task list](#task-list)
   - [task migrate](#task-migrate)
@@ -2032,6 +2033,12 @@ agentplane task handoff record <task-id> --from CODER --reason "Paused for hando
 - Persist a first-class handoff snapshot.
 
 ```sh
+agentplane task hosted-close --event-json "$GITHUB_EVENT_PATH"
+```
+
+- Apply deterministic task closure from a merged hosted PR event on an automation branch.
+
+```sh
 agentplane task resume-context <task-id>
 ```
 
@@ -2327,6 +2334,29 @@ agentplane task handoff show <task-id> [options]
 Options:
 
 - `--json`: Emit machine-readable handoff JSON. (default=false)
+
+### task hosted-close
+
+Close a branch_pr task on the current branch from a merged hosted PR event payload.
+
+Usage:
+
+```text
+agentplane task hosted-close [options]
+```
+
+Options:
+
+- `--event-json <path>`: Path to the GitHub pull_request closed event payload.
+- `--quiet`: Suppress normal output (still prints errors). (default=false)
+
+Examples:
+
+```sh
+agentplane task hosted-close --event-json "$GITHUB_EVENT_PATH"
+```
+
+- Apply the canonical branch_pr closure payload on an automation branch after a hosted PR merge.
 
 ### task lint
 

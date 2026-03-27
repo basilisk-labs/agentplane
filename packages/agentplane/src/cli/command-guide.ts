@@ -85,6 +85,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     lines: [
       SHARED_STARTUP_NOTE,
       '- branch_pr: require a green hosted PR gate first (`bun run workflow:wait-remote-checks` on the task branch or PR), then run `agentplane pr check <task-id>` -> `agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify` -> `agentplane finish <task-id> --commit <git-rev> --author INTEGRATOR --body "Verified: ..." --result "..." --close-commit` on the base branch.',
+      "- branch_pr hosted shortcut: if GitHub merges the task PR directly, `Task Hosted Close` opens the follow-up closure PR automatically; pull the updated base branch after that PR merges instead of creating a local finish-only tail commit.",
       `- direct: the task owner normally closes with \`${COMMAND_SNIPPETS.core.finishTask}\` plus \`--result "..." \`.`,
       "- For branch-level flags and branch/base diagnostics, use `agentplane help work start`, `agentplane help integrate`, and `agentplane help branch base`.",
     ],

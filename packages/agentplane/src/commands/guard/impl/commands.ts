@@ -1,3 +1,7 @@
+import { mkdir, rm, writeFile } from "node:fs/promises";
+import path from "node:path";
+
+import { resolveTaskIndexPath } from "../../../backends/task-index.js";
 import { mapCoreError } from "../../../cli/error-map.js";
 import { infoMessage, successMessage } from "../../../cli/output.js";
 import { stripAnsi } from "../../../cli/shared/ansi.js";
@@ -36,6 +40,37 @@ const FORMATTER_SIGNAL_PATTERNS = [
   /Run Prettier with --write/i,
 ] as const;
 const ESLINT_SIGNAL_PATTERNS = [/\bESLint\b/i, /\b[0-9]+\s+problems?\b/i] as const;
+
+async function resetRebuildableTaskIndexCache(ctx: CommandContext): Promise<void> {
+  const gitRoot = path.resolve(ctx.resolvedProject.gitRoot);
+  const workflowDirAbs = path.resolve(gitRoot, ctx.config.paths.workflow_dir);
+  const cachePath = path.resolve(resolveTaskIndexPath(workflowDirAbs));
+  const relativeCachePath = path.relative(gitRoot, cachePath);
+  if (!relativeCachePath || relativeCachePath.startsWith("..")) return;
+
+  try {
+    await execFileAsync("git", ["ls-files", "--error-unmatch", "--", relativeCachePath], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    const gitPath = relativeCachePath.split(path.sep).join("/");
+    const cacheBlob = await execFileAsync("git", ["show", `HEAD:${gitPath}`], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    await mkdir(path.dirname(cachePath), { recursive: true });
+    await writeFile(cachePath, cacheBlob.stdout, "utf8");
+    await execFileAsync("git", ["restore", "--staged", "--", relativeCachePath], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+  } catch {
+    // The task index is a rebuildable cache. If it is absent from HEAD here, remove it so
+    // deterministic close commits only see canonical task artifacts.
+    await rm(cachePath, { force: true });
+  }
+  ctx.git.invalidateStatus();
+}
 
 function readText(value: unknown): string {
   if (typeof value === "string") return value;
@@ -314,6 +349,7 @@ export async function cmdCommit(opts: {
     if (opts.close) {
       if (!opts.closeCheckOnly) {
         await ensureReconciledBeforeMutation({ ctx, command: "commit" });
+        await resetRebuildableTaskIndexCache(ctx);
       }
 
       // Make the close commit deterministic: start from a clean index unless --unstage-others is used.
