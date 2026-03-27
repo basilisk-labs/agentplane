@@ -1,10 +1,11 @@
 ---
 id: "202603251539-1WNAZX"
 title: "Consolidate upgrade and release into one operator pipeline"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #26 after the shared operator pipeline landed."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-27T18:17:54.146Z"
   updated_by: "CODER"
   note: "Introduced a shared operator pipeline shell for release apply and upgrade, rewired both flows through the common init/preflight/materialize/execute/finalize shape without collapsing their domain-specific commit/tag/managed-file semantics, and verified the seam with focused release/upgrade regressions plus build, lint, and format checks."
-commit: null
+commit:
+  hash: "fcdacf8d387309457d3bbf2790c58f0524cedba4"
+  message: "1WNAZX: consolidate release and upgrade onto a shared operator shell (#26)"
 comments:
   -
     author: "CODER"
     body: "Start: extract the shared operator-run shell first, then rewire release and upgrade around that seam without collapsing their command-specific guards or prompts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #26 after the shared operator pipeline landed."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Introduced a shared operator pipeline shell for release apply and upgrade, rewired both flows through the common init/preflight/materialize/execute/finalize shape without collapsing their domain-specific commit/tag/managed-file semantics, and verified the seam with focused release/upgrade regressions plus build, lint, and format checks."
+  -
+    type: "status"
+    at: "2026-03-27T19:07:13.693Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #26 after the shared operator pipeline landed."
 doc_version: 3
-doc_updated_at: "2026-03-27T18:17:54.150Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:13.693Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor upgrade and release flows onto a shared operator pipeline for source acquisition, reconcile, verification, and post-apply side effects, so both surfaces reuse one execution model instead of parallel bespoke orchestration stacks."
 sections:
   Summary: |-

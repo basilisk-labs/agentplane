@@ -1,10 +1,11 @@
 ---
 id: "202603261739-GWD3WX"
 title: "Audit GitHub protection and required-check flow"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #14 after the GitHub protection audit landed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ verification:
     Result: pass
     Evidence: formatting and lint both passed for the touched script, test, docs, and package script surface.
     Scope: touched code/docs hygiene.
-commit: null
+commit:
+  hash: "b653bdeb8f31745c126d775eda078a83b316f073"
+  message: "✨ GWD3WX workflow: audit GitHub protection contract (#14)"
 comments:
   -
     author: "CODER"
     body: "Start: audit GitHub branch protection, codify a required-check drift guard, and document the canonical branch_pr merge diagnostics so Expected-without-reported-status failures are caught early."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #14 after the GitHub protection audit landed."
 events:
   -
     type: "status"
@@ -71,9 +77,16 @@ events:
       Result: pass
       Evidence: formatting and lint both passed for the touched script, test, docs, and package script surface.
       Scope: touched code/docs hygiene.
+  -
+    type: "status"
+    at: "2026-03-27T19:07:14.387Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #14 after the GitHub protection audit landed."
 doc_version: 3
-doc_updated_at: "2026-03-26T17:49:43.912Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:14.387Z"
+doc_updated_by: "INTEGRATOR"
 description: "Analyze the current GitHub branch protection and Actions check behavior, codify a repository-level audit for required check drift, and document the canonical branch_pr merge gate so Expected-without-reported-status regressions are detected automatically."
 sections:
   Summary: |-

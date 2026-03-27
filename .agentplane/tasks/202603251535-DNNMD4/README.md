@@ -1,10 +1,11 @@
 ---
 id: "202603251535-DNNMD4"
 title: "Introduce TaskDocContract and unify task entity projections"
-status: "TODO"
+result_summary: "Merged on GitHub main via PR #13 after the TaskDocContract refactor landed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,8 +25,13 @@ verification:
   updated_at: "2026-03-26T17:08:05.094Z"
   updated_by: "CODER"
   note: "Local checks passed after tightening TaskDocContract validation, strict ISO metadata checks, and doc-version section enforcement."
-commit: null
-comments: []
+commit:
+  hash: "5980bbae43e6ff287924125fa439c1b9639ab84f"
+  message: "✨ DNNMD4 task: unify task doc contract (#13)"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #13 after the TaskDocContract refactor landed."
 events:
   -
     type: "verify"
@@ -39,9 +45,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local checks passed after tightening TaskDocContract validation, strict ISO metadata checks, and doc-version section enforcement."
+  -
+    type: "status"
+    at: "2026-03-27T19:07:11.224Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #13 after the TaskDocContract refactor landed."
 doc_version: 3
-doc_updated_at: "2026-03-26T17:08:05.099Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:11.225Z"
+doc_updated_by: "INTEGRATOR"
 description: "Centralize task document versioning, section order, required sections, and projection rules, and reduce duplicate task entity shapes across core and backend projection layers."
 sections:
   Summary: |-

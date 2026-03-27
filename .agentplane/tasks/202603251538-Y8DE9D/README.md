@@ -1,10 +1,11 @@
 ---
 id: "202603251538-Y8DE9D"
 title: "Introduce RunnerRunRepository and canonical invocation/result contracts"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #20 after RunnerRunRepository landed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-27T10:05:00.200Z"
   updated_by: "CODER"
   note: "Verified RunnerRunRepository refactor: task-run, task-run-lifecycle, and task-run-inspect now load bundle/state/events through repository APIs; codex/custom adapters use the same repository seam for state/event persistence; targeted runner regressions and core/agentplane builds passed."
-commit: null
+commit:
+  hash: "df97183086761dce47b51908c0d1f2f8ea608a13"
+  message: "runner: introduce RunnerRunRepository and canonical invocation/result contracts (#20)"
 comments:
   -
     author: "CODER"
     body: "Start: introduce a runner repository boundary for invocation/state/result persistence before changing adapter and task-projection seams."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #20 after RunnerRunRepository landed."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified RunnerRunRepository refactor: task-run, task-run-lifecycle, and task-run-inspect now load bundle/state/events through repository APIs; codex/custom adapters use the same repository seam for state/event persistence; targeted runner regressions and core/agentplane builds passed."
+  -
+    type: "status"
+    at: "2026-03-27T19:07:12.275Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #20 after RunnerRunRepository landed."
 doc_version: 3
-doc_updated_at: "2026-03-27T10:05:00.257Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:12.275Z"
+doc_updated_by: "INTEGRATOR"
 description: "Separate runner persistence from task projection by introducing a dedicated run repository, canonical invocation snapshot, and one normalized result contract that lifecycle operations and adapters reuse instead of rebuilding state from mutable config and per-adapter conventions."
 sections:
   Summary: |-

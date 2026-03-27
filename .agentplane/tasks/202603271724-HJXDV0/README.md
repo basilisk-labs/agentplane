@@ -1,10 +1,11 @@
 ---
 id: "202603271724-HJXDV0"
 title: "Make branch_pr task projection converge after hosted merges"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #24 after hosted-merge task projection reconcile landed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-27T17:38:08.326Z"
   updated_by: "CODER"
   note: "Added hosted-merge reconciliation to task normalize: branch_pr local clones can now query GitHub by PR artifact branch name, persist merged PR meta, and normalize stale local task state to DONE without relying on hidden local close-commit history on main. Verified with focused CLI/tests plus build/help snapshots."
-commit: null
+commit:
+  hash: "b9d372365e3dddeed56a20cb4e4e69bec7a18aad"
+  message: "HJXDV0: reconcile hosted merges during task normalize (#24)"
 comments:
   -
     author: "CODER"
     body: "Start: make ordinary branch_pr task reads converge on hosted-merge reality by deriving an effective merged state from local PR artifacts and reachable base history, then wire task list/show/doctor through that shared projection path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #24 after hosted-merge task projection reconcile landed."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added hosted-merge reconciliation to task normalize: branch_pr local clones can now query GitHub by PR artifact branch name, persist merged PR meta, and normalize stale local task state to DONE without relying on hidden local close-commit history on main. Verified with focused CLI/tests plus build/help snapshots."
+  -
+    type: "status"
+    at: "2026-03-27T19:07:15.772Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #24 after hosted-merge task projection reconcile landed."
 doc_version: 3
-doc_updated_at: "2026-03-27T17:38:08.339Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:15.772Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stop ordinary task reads from showing stale TODO/DOING state after a task branch is already merged on GitHub main. Introduce a deterministic merge-aware task projection or reconcile path so fresh local clones can recover effective task state without relying on hidden local close-commit history on main."
 sections:
   Summary: |-

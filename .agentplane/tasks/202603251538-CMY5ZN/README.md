@@ -1,10 +1,11 @@
 ---
 id: "202603251538-CMY5ZN"
 title: "Extract recipe domain into packages/recipes and narrow scenario coupling"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #25 after the recipe domain extraction landed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-27T18:02:24.585Z"
   updated_by: "CODER"
   note: "Extracted the pure recipe domain into @agentplane/recipes (types, normalize/constants, manifest and scenario parsing), wired the package into installed-recipe, resolver, install/explain, and recipe facade consumers, and verified the seam with package build plus recipe/scenario/runner-focused regressions."
-commit: null
+commit:
+  hash: "c12a3e7c3272bf7e209dd83273f53f328bdbce2f"
+  message: "CMY5ZN: extract recipe domain into packages/recipes (#25)"
 comments:
   -
     author: "CODER"
     body: "Start: extract the pure recipe contracts and parsers into packages/recipes first, then rewire resolver/scenario consumers around that package so the domain move lands before any broader scenario or runner cleanup."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #25 after the recipe domain extraction landed."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Extracted the pure recipe domain into @agentplane/recipes (types, normalize/constants, manifest and scenario parsing), wired the package into installed-recipe, resolver, install/explain, and recipe facade consumers, and verified the seam with package build plus recipe/scenario/runner-focused regressions."
+  -
+    type: "status"
+    at: "2026-03-27T19:07:13.335Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #25 after the recipe domain extraction landed."
 doc_version: 3
-doc_updated_at: "2026-03-27T18:02:24.589Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:13.335Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move recipe schema parsing, installed-state logic, compatibility resolution, and catalog/runtime helpers into packages/recipes, then reduce scenario execution glue so delivery concerns no longer own the recipe domain directly."
 sections:
   Summary: |-

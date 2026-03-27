@@ -1,10 +1,11 @@
 ---
 id: "202603261911-KAR6C2"
 title: "Fix presentation route recursion for AIMindset deck"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #17 after the presentation route recursion fix landed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +33,16 @@ verification:
     Result: pass
     Evidence: the built file starts with the static Russian presentation document title and deck markup, not a docs-shell page.
     Scope: generated presentation artifact for /presentation/aimindset20260325/.
-commit: null
+commit:
+  hash: "87b87cc6895fa411fff946763d5cda48c2120fa9"
+  message: "✨ KAR6C2 site: fix AIMindset presentation route recursion (#17)"
 comments:
   -
     author: "CODER"
     body: "Start: remove the recursive Docusaurus route so the AIMindset presentation path resolves directly to the static deck."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #17 after the presentation route recursion fix landed."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
       Result: pass
       Evidence: the built file starts with the static Russian presentation document title and deck markup, not a docs-shell page.
       Scope: generated presentation artifact for /presentation/aimindset20260325/.
+  -
+    type: "status"
+    at: "2026-03-27T19:07:15.076Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #17 after the presentation route recursion fix landed."
 doc_version: 3
-doc_updated_at: "2026-03-26T19:13:16.846Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:15.076Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove the Docusaurus route that shadows /presentation/aimindset20260325/index.html so the public URL serves the static presentation instead of recursively embedding the same page."
 sections:
   Summary: |-

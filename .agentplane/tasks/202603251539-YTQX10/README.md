@@ -1,10 +1,11 @@
 ---
 id: "202603251539-YTQX10"
 title: "Consolidate CI, freshness, and sync tooling into shared generators"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #27 after the tooling generator consolidation landed."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-27T18:41:28.926Z"
   updated_by: "CODER"
   note: "Consolidated generated-artifact freshness scripts onto shared helpers, consolidated sync scripts onto shared directory/schema helpers, and collapsed run-local-ci baseline step duplication. Verified with docs freshness scripts, sync checks, local-ci selection tests, prettier, eslint, and agentplane build."
-commit: null
+commit:
+  hash: "ee0e7698eb5cf8fa567b68090d22a80f61a388a4"
+  message: "YTQX10: consolidate CI, freshness, and sync tooling (#27)"
 comments:
   -
     author: "CODER"
     body: "Start: extracting shared freshness and sync harnesses for generated artifacts and local CI orchestration without changing task routing semantics or broadening the refactor surface."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #27 after the tooling generator consolidation landed."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Consolidated generated-artifact freshness scripts onto shared helpers, consolidated sync scripts onto shared directory/schema helpers, and collapsed run-local-ci baseline step duplication. Verified with docs freshness scripts, sync checks, local-ci selection tests, prettier, eslint, and agentplane build."
+  -
+    type: "status"
+    at: "2026-03-27T19:07:14.036Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #27 after the tooling generator consolidation landed."
 doc_version: 3
-doc_updated_at: "2026-03-27T18:41:28.940Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:14.037Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace duplicated CI orchestration, freshness checks, and mirror-sync scripts with declarative shared helpers so generated docs, inventories, schemas, and local CI pipelines derive from one reusable control model."
 sections:
   Summary: |-
