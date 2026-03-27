@@ -19,18 +19,19 @@ Branch: task/202603271940-EG3B0C/hosted-closure-automation
 <!-- Add review notes here. -->
 
 <!-- BEGIN AUTO SUMMARY -->
-- Updated: 2026-03-27T20:14:47.289Z
+- Updated: 2026-03-27T20:32:47.357Z
 - Branch: task/202603271940-EG3B0C/hosted-closure-automation
-- Head: 9a7da2490da5
+- Head: 4d9df7aff242
 - Diffstat:
 ```
  .agentplane/tasks/202603271940-EG3B0C/README.md    | 124 ++++++++++++
- .../tasks/202603271940-EG3B0C/pr/diffstat.txt      |  16 ++
+ .../tasks/202603271940-EG3B0C/pr/diffstat.txt      |  22 ++
  .agentplane/tasks/202603271940-EG3B0C/pr/meta.json |  12 ++
- .agentplane/tasks/202603271940-EG3B0C/pr/review.md |  44 ++++
+ .agentplane/tasks/202603271940-EG3B0C/pr/review.md |  50 +++++
  .../tasks/202603271940-EG3B0C/pr/verify.log        |   0
- .github/workflows/task-hosted-close.yml            | 146 +++++++++++++
- docs/user/branching-and-pr-artifacts.mdx           |  12 ++
+ .github/workflows/publish.yml                      |  12 +-
+ .github/workflows/task-hosted-close.yml            | 191 +++++++++++++++++
+ docs/user/branching-and-pr-artifacts.mdx           |  15 ++
  docs/user/cli-reference.generated.mdx              |  30 +++
  packages/agentplane/src/cli/command-guide.ts       |   1 +
  .../cli/prepare-hosted-task-closure-script.test.ts | 114 +++++++++++
@@ -45,6 +46,6 @@ Branch: task/202603271940-EG3B0C/hosted-closure-automation
  .../src/commands/task/hosted-merge-sync.ts         | 175 ++++++++++++++--
  .../agentplane/src/commands/task/task.command.ts   |   6 +
  scripts/prepare-hosted-task-closure.mjs            | 128 ++++++++++++
- 21 files changed, 1337 insertions(+), 23 deletions(-)
+ 22 files changed, 1404 insertions(+), 28 deletions(-)
 ```
 <!-- END AUTO SUMMARY -->
