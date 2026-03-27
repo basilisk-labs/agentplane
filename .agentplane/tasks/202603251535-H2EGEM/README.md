@@ -1,10 +1,11 @@
 ---
 id: "202603251535-H2EGEM"
 title: "Type PR artifact state and decouple integrate/finalize from finish command reuse"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #18 after typed PR artifact state landed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-26T19:39:17.463Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx eslint packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish-shared.ts packages/agentplane/src/commands/shared/pr-meta.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts; bunx prettier --check packages/core/src/tasks/task-artifact-schema.ts packages/core/schemas/pr-meta.schema.json packages/spec/schemas/pr-meta.schema.json packages/spec/examples/pr-meta.json packages/agentplane/src/commands/shared/pr-meta.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/task/finish-shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/pr/open.ts packages/agentplane/src/commands/pr/update.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts. Result: pass. Evidence: 7 test files / 88 tests passed; focused finish unit passed; core and agentplane builds passed after worktree-local core symlink bootstrap. Scope: PR meta typing, integrate finalize close path, finish handoff, schema sync."
-commit: null
+commit:
+  hash: "c53b7024b92fc489ee6e8aa7a4f1fccf20c6d57e"
+  message: "H2EGEM: type PR artifact state and decouple integrate finalization (#18)"
 comments:
   -
     author: "CODER"
     body: "Start: introduce a typed PR artifact state contract and decouple integrate/finalize from finish-command reuse without changing merge or close semantics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #18 after typed PR artifact state landed."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx eslint packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish-shared.ts packages/agentplane/src/commands/shared/pr-meta.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts; bunx prettier --check packages/core/src/tasks/task-artifact-schema.ts packages/core/schemas/pr-meta.schema.json packages/spec/schemas/pr-meta.schema.json packages/spec/examples/pr-meta.json packages/agentplane/src/commands/shared/pr-meta.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/task/finish-shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/pr/open.ts packages/agentplane/src/commands/pr/update.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts. Result: pass. Evidence: 7 test files / 88 tests passed; focused finish unit passed; core and agentplane builds passed after worktree-local core symlink bootstrap. Scope: PR meta typing, integrate finalize close path, finish handoff, schema sync."
+  -
+    type: "status"
+    at: "2026-03-27T19:07:11.588Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #18 after typed PR artifact state landed."
 doc_version: 3
-doc_updated_at: "2026-03-26T19:39:17.464Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:11.588Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce a typed PR state contract and stop integrating through loose Record-based PR metadata plus recursive finish-command reuse inside finalize flows."
 sections:
   Summary: |-

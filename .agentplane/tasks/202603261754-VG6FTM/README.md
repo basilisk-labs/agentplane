@@ -1,10 +1,11 @@
 ---
 id: "202603261754-VG6FTM"
 title: "Make branch_pr task branches start from current remote base"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #15 after the stale-base guard landed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -33,11 +34,16 @@ verification:
     Result: pass
     Evidence: formatting and lint both passed for the touched code/docs surfaces.
     Scope: touched guard implementation and docs.
-commit: null
+commit:
+  hash: "ef8bacdbde11a1fee971d4d1eb4932a91092b85c"
+  message: "✨ VG6FTM workflow: guard stale base before work start (#15)"
 comments:
   -
     author: "CODER"
     body: "Start: add a stale-base guard to branch_pr work start so task branches fail fast when the pinned base branch lags its upstream tracking ref, then cover it with integration tests and update workflow guidance."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #15 after the stale-base guard landed."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
       Result: pass
       Evidence: formatting and lint both passed for the touched code/docs surfaces.
       Scope: touched guard implementation and docs.
+  -
+    type: "status"
+    at: "2026-03-27T19:07:14.730Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #15 after the stale-base guard landed."
 doc_version: 3
-doc_updated_at: "2026-03-26T18:02:27.962Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:14.730Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the branch_pr bootstrap flow so task branches and hosted PRs do not inherit stale local main history. The workflow should make the base branch explicit and current before branch/worktree execution, or fail with a precise actionable diagnostic instead of producing DIRTY PRs."
 sections:
   Summary: |-

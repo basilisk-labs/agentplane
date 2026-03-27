@@ -1,10 +1,11 @@
 ---
 id: "202603251538-NQSPGC"
 title: "Generate group commands and simplify CLI harness layers"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #23 after generated group commands landed."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-27T16:25:46.422Z"
   updated_by: "CODER"
   note: "Implemented canonical group-command helpers, removed duplicated CLI harness shims, and verified targeted CLI registry/help/pr-flow/scaffold regressions plus build, eslint, and prettier."
-commit: null
+commit:
+  hash: "58fa30ba17f639f830f5c6a403d21150ac461d72"
+  message: "Generate group commands and simplify CLI harness layers (#23)"
 comments:
   -
     author: "CODER"
     body: "Start: VJ5GHJ is already merged on GitHub main via PR #21; proceed from the canonical CLI registry baseline to generate group commands and collapse duplicate CLI harness layers."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #23 after generated group commands landed."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented canonical group-command helpers, removed duplicated CLI harness shims, and verified targeted CLI registry/help/pr-flow/scaffold regressions plus build, eslint, and prettier."
+  -
+    type: "status"
+    at: "2026-03-27T19:07:12.989Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #23 after generated group commands landed."
 doc_version: 3
-doc_updated_at: "2026-03-27T16:25:46.427Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:12.990Z"
+doc_updated_by: "INTEGRATOR"
 description: "Derive group-command surfaces and help output from the canonical CLI registry, then reduce duplicated CLI harness layers so parser, help, and command execution tests share a narrower set of runtime helpers."
 sections:
   Summary: |-

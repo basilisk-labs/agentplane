@@ -1,10 +1,11 @@
 ---
 id: "202603271156-EAMB43"
 title: "Make framework dev bootstrap first-class"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #22 after framework dev bootstrap became first-class."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-27T12:30:28.762Z"
   updated_by: "CODER"
   note: "Extended the framework bootstrap contract by sanitizing hook-propagated git env before local CI subprocesses; full contaminated run-local-ci path now passes without mutating the active task branch."
-commit: null
+commit:
+  hash: "59dc9c5053f3ecd15318ffca6a1c76147104eb6a"
+  message: "EAMB43: make framework dev bootstrap first-class (#22)"
 comments:
   -
     author: "CODER"
     body: "Start: make fresh framework clones and worktrees self-bootstrap into a repo-local runtime contract, then repoint wrapper/runtime/doctor/local-CI to that canonical bootstrap surface."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #22 after framework dev bootstrap became first-class."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Extended the framework bootstrap contract by sanitizing hook-propagated git env before local CI subprocesses; full contaminated run-local-ci path now passes without mutating the active task branch."
+  -
+    type: "status"
+    at: "2026-03-27T19:07:15.429Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #22 after framework dev bootstrap became first-class."
 doc_version: 3
-doc_updated_at: "2026-03-27T12:30:42.339Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:15.429Z"
+doc_updated_by: "INTEGRATOR"
 description: "Establish a deterministic repo-local development runtime for the framework itself so fresh clones and worktrees can run lifecycle commands, hooks, tests, and local CLI flows without manual dist symlinks, package-level node_modules wiring, or stale-dist overrides. Keep installed/PATH agentplane as a separate smoke and compatibility path, not the default inner-loop runtime."
 sections:
   Summary: |-

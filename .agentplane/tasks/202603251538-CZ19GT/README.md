@@ -1,10 +1,11 @@
 ---
 id: "202603251538-CZ19GT"
 title: "Split TaskBackend ports and separate summary/full task reads"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #19 after TaskBackend port split landed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-27T09:17:21.152Z"
   updated_by: "CODER"
   note: "Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; bunx vitest run packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts; bunx eslint touched backend/query files; bunx prettier --check touched backend/query files. Result: pass. Evidence: 5 test files / 122 tests passed. Scope: TaskBackend port split, summary projection reads, local/redmine backend projection typing, summary-consumer command helpers."
-commit: null
+commit:
+  hash: "1c2939524795a0649e9e4a45c44067fae9e46cf1"
+  message: "Refactor TaskBackend ports and separate summary/full task reads (#19)"
 comments:
   -
     author: "CODER"
     body: "Start: split TaskBackend into explicit ports and separate summary reads from full task loads before touching runner/backend consumers."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #19 after TaskBackend port split landed."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; bunx vitest run packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/backends/task-backend.redmine.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts; bunx eslint touched backend/query files; bunx prettier --check touched backend/query files. Result: pass. Evidence: 5 test files / 122 tests passed. Scope: TaskBackend port split, summary projection reads, local/redmine backend projection typing, summary-consumer command helpers."
+  -
+    type: "status"
+    at: "2026-03-27T19:07:11.931Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #19 after TaskBackend port split landed."
 doc_version: 3
-doc_updated_at: "2026-03-27T09:17:21.157Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:11.931Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor task backend contracts into explicit query, mutation, doc, sync, export, and inspection ports, and introduce distinct summary versus full task entity reads so commands and backends stop overloading one task shape for every persistence surface."
 sections:
   Summary: |-

@@ -1,10 +1,11 @@
 ---
 id: "202603251538-VJ5GHJ"
 title: "Unify CLI registry, routing, and bootstrap metadata"
-status: "DOING"
+result_summary: "Merged on GitHub main via PR #21 after CLI registry and routing unification landed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-27T10:51:45.655Z"
   updated_by: "CODER"
   note: "Verified CLI registry unification: command-catalog now owns the runtime matcher, canonical invocation strings are shared between registry entries and bootstrap/quickstart guidance, help/quickstart CLI regressions passed, and core/agentplane builds are clean after removing the extra catalog seam."
-commit: null
+commit:
+  hash: "8c9bb5a56ac94438b573dbcc3625c247d89fe433"
+  message: "cli: unify registry, routing, and bootstrap metadata (#21)"
 comments:
   -
     author: "CODER"
     body: "Start: unify the cli registry so routing, help/spec generation, and bootstrap metadata all read from one canonical command contract."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Merged on GitHub main via PR #21 after CLI registry and routing unification landed."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified CLI registry unification: command-catalog now owns the runtime matcher, canonical invocation strings are shared between registry entries and bootstrap/quickstart guidance, help/quickstart CLI regressions passed, and core/agentplane builds are clean after removing the extra catalog seam."
+  -
+    type: "status"
+    at: "2026-03-27T19:07:12.644Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Merged on GitHub main via PR #21 after CLI registry and routing unification landed."
 doc_version: 3
-doc_updated_at: "2026-03-27T10:51:45.663Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T19:07:12.645Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace duplicated command catalog and registry matching with one canonical CLI registry that owns command matching, bootstrap requirements, metadata, and help/spec generation, while keeping business logic outside the CLI glue layer."
 sections:
   Summary: |-
