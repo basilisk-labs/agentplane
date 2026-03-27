@@ -1,0 +1,15 @@
+ .../agentplane/src/commands/pr/integrate/cmd.ts    |   2 +
+ .../pr/integrate/internal/finalize.test.ts         |  71 ++++--
+ .../src/commands/pr/integrate/internal/finalize.ts |  81 ++++---
+ .../src/commands/pr/integrate/internal/prepare.ts  |   2 +-
+ packages/agentplane/src/commands/pr/open.ts        |  16 +-
+ packages/agentplane/src/commands/pr/update.ts      |  10 +-
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  42 +++-
+ packages/agentplane/src/commands/shared/pr-meta.ts |  78 +++++++
+ .../agentplane/src/commands/task/finish-shared.ts  | 246 ++++++++++++++++++++
+ packages/agentplane/src/commands/task/finish.ts    | 248 +++------------------
+ packages/core/schemas/pr-meta.schema.json          |  24 ++
+ packages/core/src/tasks/task-artifact-schema.ts    |  12 +
+ packages/spec/examples/pr-meta.json                |   1 +
+ packages/spec/schemas/pr-meta.schema.json          |  24 ++
+ 14 files changed, 552 insertions(+), 305 deletions(-)

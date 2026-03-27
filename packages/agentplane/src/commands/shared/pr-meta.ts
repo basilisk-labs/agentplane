@@ -7,6 +7,84 @@ import { validateTaskPrMeta, type TaskPrMeta } from "@agentplaneorg/core";
 import { execFileAsync } from "./git.js";
 
 export type PrMeta = TaskPrMeta;
+export type PrArtifactTextState = {
+  diffstatText: string | null;
+  verifyLogText: string | null;
+  reviewText: string | null;
+};
+
+export type PrArtifactState = PrArtifactTextState & {
+  meta: PrMeta;
+};
+
+function nowOrExisting(value: string | undefined, fallback: string): string {
+  const trimmed = value?.trim() ?? "";
+  return trimmed || fallback;
+}
+
+export function buildOpenedPrMeta(opts: {
+  taskId: string;
+  branch: string;
+  at: string;
+  previousMeta: PrMeta | null;
+}): PrMeta {
+  return {
+    schema_version: 1,
+    task_id: opts.taskId,
+    branch: opts.branch,
+    created_at: opts.previousMeta?.created_at ?? opts.at,
+    updated_at: opts.at,
+    last_verified_sha: opts.previousMeta?.last_verified_sha ?? null,
+    last_verified_at: opts.previousMeta?.last_verified_at ?? null,
+    verify: opts.previousMeta?.verify ?? { status: "skipped" },
+    base: opts.previousMeta?.base,
+  };
+}
+
+export function buildUpdatedPrMeta(opts: { meta: PrMeta; branch: string; at: string }): PrMeta {
+  return {
+    ...opts.meta,
+    branch: opts.branch,
+    updated_at: opts.at,
+    last_verified_sha: opts.meta.last_verified_sha ?? null,
+    last_verified_at: opts.meta.last_verified_at ?? null,
+  };
+}
+
+export function buildIntegratedPrMeta(opts: {
+  meta: PrMeta;
+  branch: string;
+  base: string;
+  mergeStrategy: "squash" | "merge" | "rebase";
+  mergeHash: string;
+  branchHeadSha: string;
+  at: string;
+  verifyCommands: string[];
+  shouldRunVerify: boolean;
+  alreadyVerifiedSha: string | null;
+}): PrMeta {
+  const nextMeta: PrMeta = {
+    ...opts.meta,
+    branch: opts.branch,
+    base: opts.base,
+    merge_strategy: opts.mergeStrategy,
+    status: "MERGED",
+    merged_at: nowOrExisting(opts.meta.merged_at, opts.at),
+    merge_commit: opts.mergeHash,
+    head_sha: opts.branchHeadSha,
+    updated_at: opts.at,
+  };
+
+  if (opts.verifyCommands.length > 0 && (opts.shouldRunVerify || opts.alreadyVerifiedSha)) {
+    nextMeta.last_verified_sha = opts.branchHeadSha;
+    nextMeta.last_verified_at = opts.at;
+    nextMeta.verify = opts.meta.verify
+      ? { ...opts.meta.verify, status: "pass" }
+      : { status: "pass", command: opts.verifyCommands.join(" && ") };
+  }
+
+  return nextMeta;
+}
 
 export type ShellInvocation = {
   command: string;

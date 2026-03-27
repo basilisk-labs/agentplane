@@ -1,5 +1,3 @@
-import { type TaskData } from "../../backends/task-backend.js";
-import { ensureDocSections } from "@agentplaneorg/core";
 import { mapBackendError } from "../../cli/error-map.js";
 import { infoMessage, invalidValueMessage, successMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
@@ -7,29 +5,27 @@ import { CliError } from "../../shared/errors.js";
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { cmdCommit, commitFromComment } from "../guard/index.js";
+import { commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
-import {
-  loadCommandContext,
-  loadTaskFromContext,
-  type CommandContext,
-} from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore, mutateTaskStore } from "../shared/task-store.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
 import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
+import {
+  createTaskCloseCommit,
+  existingCommitInfo,
+  loadTaskForFinish,
+  type LoadedFinishTask,
+  type ResolvedCommitInfo,
+  writeFinishedTasks,
+} from "./finish-shared.js";
 
 import {
-  buildTaskStatusTransition,
   defaultCommitEmojiForStatus,
   enforceStatusCommitPolicy,
-  ensureAgentFilledRequiredDocSections,
-  ensureVerificationSatisfiedIfRequired,
-  nowIso,
   readCommitInfo,
   requireStructuredComment,
-  resolvePrimaryTag,
-  toStringArray,
 } from "./shared.js";
 
 async function clearDirectWorkLockIfMatches(opts: {
@@ -46,142 +42,6 @@ async function clearDirectWorkLockIfMatches(opts: {
     await rm(lockPath, { force: true });
   } catch {
     // best-effort
-  }
-}
-
-type ResolvedCommitInfo = { hash: string; message: string };
-type LoadedFinishTask = {
-  taskId: string;
-  task: TaskData;
-};
-
-function existingCommitInfo(task: TaskData): ResolvedCommitInfo | null {
-  const hash = typeof task.commit?.hash === "string" ? task.commit.hash.trim() : "";
-  if (!hash) return null;
-  const message = typeof task.commit?.message === "string" ? task.commit.message.trim() : "";
-  return { hash, message };
-}
-
-async function loadTaskForFinish(opts: {
-  ctx: CommandContext;
-  store: ReturnType<typeof getTaskStore> | null;
-  useStore: boolean;
-  taskId: string;
-  taskCount: number;
-  metaTaskId: string;
-  resultProvided: boolean;
-  resultSummary: string;
-  force: boolean;
-  capturePrimaryLifecycleMeta: boolean;
-}): Promise<{
-  loaded: LoadedFinishTask;
-  primaryStatusFrom: string | null;
-  primaryTag: string | null;
-}> {
-  let primaryStatusFrom: string | null = null;
-  let primaryTag: string | null = null;
-  if (opts.useStore) {
-    let captured: TaskData | null = null;
-    await mutateTaskStore(opts.store!, opts.taskId, (current) => {
-      assertTaskCanFinish({
-        task: current,
-        config: opts.ctx.config,
-        taskCount: opts.taskCount,
-        isMetaTask: opts.taskId === opts.metaTaskId,
-        resultProvided: opts.resultProvided,
-        resultSummary: opts.resultSummary,
-        force: opts.force,
-      });
-      captured = current;
-      if (opts.capturePrimaryLifecycleMeta) {
-        primaryStatusFrom = String(current.status || "TODO").toUpperCase();
-        primaryTag = resolvePrimaryTag(toStringArray(current.tags), opts.ctx).primary;
-      }
-      return [];
-    });
-    if (!captured) {
-      throw new CliError({
-        exitCode: 4,
-        code: "E_IO",
-        message: `Task not found: ${opts.taskId}`,
-      });
-    }
-    return {
-      loaded: { taskId: opts.taskId, task: captured },
-      primaryStatusFrom,
-      primaryTag,
-    };
-  }
-
-  const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
-  assertTaskCanFinish({
-    task,
-    config: opts.ctx.config,
-    taskCount: opts.taskCount,
-    isMetaTask: opts.taskId === opts.metaTaskId,
-    resultProvided: opts.resultProvided,
-    resultSummary: opts.resultSummary,
-    force: opts.force,
-  });
-  if (opts.capturePrimaryLifecycleMeta) {
-    primaryStatusFrom = String(task.status || "TODO").toUpperCase();
-    primaryTag = resolvePrimaryTag(toStringArray(task.tags), opts.ctx).primary;
-  }
-  return {
-    loaded: { taskId: opts.taskId, task },
-    primaryStatusFrom,
-    primaryTag,
-  };
-}
-
-function assertTaskCanFinish(opts: {
-  task: TaskData;
-  config: CommandContext["config"];
-  taskCount: number;
-  isMetaTask: boolean;
-  resultProvided: boolean;
-  resultSummary: string;
-  force: boolean;
-}): void {
-  if (!opts.force && String(opts.task.status || "TODO").toUpperCase() === "DONE") {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: `Task is already DONE: ${opts.task.id} (use --force to override)`,
-    });
-  }
-
-  ensureVerificationSatisfiedIfRequired(opts.task, opts.config);
-  const normalizedDoc = ensureDocSections(
-    typeof opts.task.doc === "string" ? opts.task.doc : "",
-    opts.config.tasks.doc.required_sections,
-  );
-  ensureAgentFilledRequiredDocSections({
-    task: opts.task,
-    config: opts.config,
-    doc: normalizedDoc,
-    action: "finish task",
-  });
-
-  if (!opts.isMetaTask) return;
-
-  const tags = Array.isArray(opts.task.tags)
-    ? opts.task.tags.filter((t): t is string => typeof t === "string")
-    : [];
-  const isSpike = tags.includes("spike");
-  if (!isSpike && opts.taskCount === 1 && !opts.resultSummary) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: "Missing required --result for non-spike tasks.",
-    });
-  }
-  if (opts.resultProvided && !opts.resultSummary) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: "Invalid value for --result: empty.",
-    });
   }
 }
 
@@ -476,92 +336,36 @@ export async function cmdFinish(opts: {
       });
     }
 
-    for (const { taskId, task } of loadedTasks) {
-      const at = nowIso();
-      await (useStore
-        ? mutateTaskStore(store!, taskId, (current) => {
-            assertTaskCanFinish({
-              task: current,
-              config: ctx.config,
-              taskCount: opts.taskIds.length,
-              isMetaTask: taskId === metaTaskId,
-              resultProvided,
-              resultSummary,
-              force: opts.force,
-            });
-            return buildTaskStatusTransition({
-              task: current,
-              at,
-              toStatus: "DONE",
-              eventAuthor: opts.author,
-              updatedBy: opts.author,
-              note: opts.body,
-              comment: { author: opts.author, body: opts.body },
-              commit: taskCommitInfo
-                ? { hash: taskCommitInfo.hash, message: taskCommitInfo.message }
-                : undefined,
-              extraFields: {
-                ...(taskId === metaTaskId && resultSummary
-                  ? { result_summary: resultSummary }
-                  : {}),
-                ...(taskId === metaTaskId && riskLevel ? { risk_level: riskLevel } : {}),
-                ...(taskId === metaTaskId && breaking ? { breaking: true } : {}),
-              },
-            }).intents;
-          })
-        : ctx.taskBackend.writeTask(
-            buildTaskStatusTransition({
-              task,
-              at,
-              toStatus: "DONE",
-              eventAuthor: opts.author,
-              updatedBy: opts.author,
-              note: opts.body,
-              comment: { author: opts.author, body: opts.body },
-              commit: taskCommitInfo
-                ? { hash: taskCommitInfo.hash, message: taskCommitInfo.message }
-                : undefined,
-              extraFields: {
-                ...(taskId === metaTaskId && resultSummary
-                  ? { result_summary: resultSummary }
-                  : {}),
-                ...(taskId === metaTaskId && riskLevel ? { risk_level: riskLevel } : {}),
-                ...(taskId === metaTaskId && breaking ? { breaking: true } : {}),
-              },
-            }).nextTask,
-          ));
-    }
+    await writeFinishedTasks({
+      ctx,
+      loadedTasks,
+      metaTaskId,
+      author: opts.author,
+      body: opts.body,
+      force: opts.force,
+      resultProvided,
+      resultSummary,
+      riskLevel,
+      breaking,
+      taskCommitInfo,
+    });
 
     // tasks.json is export-only; generated via `agentplane task export`.
 
     if (shouldCloseCommit && primaryTaskId) {
-      ctx.git.invalidateStatus();
       if (!opts.quiet) {
         process.stdout.write(
           `${infoMessage("task marked DONE; creating deterministic close commit")}\n`,
         );
       }
-      await cmdCommit({
+      await createTaskCloseCommit({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
-        baseBranchOverride: opts.baseBranchOverride ?? null,
         taskId: primaryTaskId,
-        message: "",
-        close: true,
-        allow: [],
-        autoAllow: false,
-        allowTasks: true,
-        allowBase: ctx.config.workflow_mode === "branch_pr",
-        allowPolicy: false,
-        allowConfig: false,
-        allowHooks: false,
-        allowCI: false,
-        requireClean: true,
+        baseBranchOverride: opts.baseBranchOverride,
         quiet: opts.quiet,
         closeUnstageOthers: opts.closeCommit === true && opts.closeUnstageOthers === true,
-        closeCheckOnly: false,
-        closeStageTaskArtifacts: ctx.config.workflow_mode === "branch_pr",
       });
     }
 
