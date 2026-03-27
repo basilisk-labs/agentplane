@@ -27,6 +27,11 @@ const RUNNER_OUTCOME_BEGIN = "<!-- BEGIN RUNNER OUTCOME -->";
 const RUNNER_OUTCOME_END = "<!-- END RUNNER OUTCOME -->";
 const MAX_TASK_RUNNER_HISTORY = 5;
 
+type RunnerOutcomeProjection = {
+  state: RunnerRunState;
+  result: RunnerRunState["result"] | null;
+};
+
 function formatRunnerTarget(target: RunnerTarget | TaskRunnerTarget): string {
   if (target.kind === "task") return `task ${target.task_id}`;
   const base = `recipe ${target.recipe_id}:${target.scenario_id}`;
@@ -180,7 +185,7 @@ function renderRunnerEvidence(
 function renderRunnerOutcomeEntry(opts: {
   task_id: string;
   entry: TaskRunnerHistoryEntry;
-  state?: RunnerRunState;
+  projection?: RunnerOutcomeProjection;
 }): string {
   const summary =
     opts.entry.summary ??
@@ -188,7 +193,7 @@ function renderRunnerOutcomeEntry(opts: {
       adapter_id: opts.entry.adapter_id,
       status: opts.entry.status,
     });
-  const capabilitiesUsed = opts.state?.result?.capabilities_used;
+  const capabilitiesUsed = opts.projection?.result?.capabilities_used;
   const entryOutputPaths = opts.entry.output_paths;
   const entryMetrics = opts.entry.metrics;
   const entryEvidence = opts.entry.evidence;
@@ -218,15 +223,15 @@ function renderRunnerOutcomeEntry(opts: {
   if (summary) {
     lines.push("", `Summary: ${summary}`);
   }
-  if (opts.state?.result?.artifacts?.length) {
+  if (opts.projection?.result?.artifacts?.length) {
     lines.push(
       "",
-      `Artifacts: ${opts.state.result.artifacts
+      `Artifacts: ${opts.projection.result.artifacts
         .map((artifact) => (artifact.label ? `${artifact.label}=${artifact.path}` : artifact.path))
         .join(", ")}`,
     );
   }
-  if (!opts.state?.result?.artifacts?.length && entryOutputPaths?.length) {
+  if (!opts.projection?.result?.artifacts?.length && entryOutputPaths?.length) {
     lines.push("", `Outputs: ${entryOutputPaths.join(", ")}`);
   }
   if (capabilitiesUsed?.length) {
@@ -244,7 +249,8 @@ function renderRunnerOutcomeEntry(opts: {
   return `${lines.join("\n").trimEnd()}\n`;
 }
 
-function buildTaskRunnerHistoryEntry(state: RunnerRunState): TaskRunnerHistoryEntry {
+function buildTaskRunnerHistoryEntry(projection: RunnerOutcomeProjection): TaskRunnerHistoryEntry {
+  const { state, result } = projection;
   const outcome: TaskRunnerHistoryEntry = {
     run_id: state.run_id,
     status: state.status,
@@ -254,15 +260,15 @@ function buildTaskRunnerHistoryEntry(state: RunnerRunState): TaskRunnerHistoryEn
     exit_code: state.result?.exit_code ?? null,
     target: { ...state.target },
   };
-  if (state.result?.started_at) outcome.started_at = state.result.started_at;
-  if (state.result?.ended_at) outcome.ended_at = state.result.ended_at;
+  if (result?.started_at) outcome.started_at = result.started_at;
+  if (result?.ended_at) outcome.ended_at = result.ended_at;
   outcome.summary = renderTaskRunnerSummary({
     adapter_id: state.adapter_id,
     status: state.status,
   });
-  if (state.result?.output_paths?.length) outcome.output_paths = [...state.result.output_paths];
-  if (state.result?.metrics) outcome.metrics = { ...state.result.metrics };
-  if (state.result?.evidence) outcome.evidence = { ...state.result.evidence };
+  if (result?.output_paths?.length) outcome.output_paths = [...result.output_paths];
+  if (result?.metrics) outcome.metrics = { ...result.metrics };
+  if (result?.evidence) outcome.evidence = { ...result.evidence };
   return outcome;
 }
 
@@ -282,10 +288,10 @@ function mergeTaskRunnerHistory(opts: {
 }
 
 function buildTaskRunnerOutcome(opts: {
-  state: RunnerRunState;
+  projection: RunnerOutcomeProjection;
   previous?: NonNullable<TaskData["runner"]> | null;
 }): NonNullable<TaskData["runner"]> {
-  const latest = buildTaskRunnerHistoryEntry(opts.state);
+  const latest = buildTaskRunnerHistoryEntry(opts.projection);
   const history = mergeTaskRunnerHistory({ latest, previous: opts.previous });
   return history.length > 1 ? { ...latest, history } : latest;
 }
@@ -293,14 +299,18 @@ function buildTaskRunnerOutcome(opts: {
 function renderRunnerOutcomeHistory(opts: {
   task_id: string;
   outcome: NonNullable<TaskData["runner"]>;
-  state: RunnerRunState;
+  projection: RunnerOutcomeProjection;
 }): string {
   const history = opts.outcome.history?.length
     ? opts.outcome.history
     : [stripRunnerHistory(opts.outcome)];
   const [latest, ...previous] = history;
   return [
-    renderRunnerOutcomeEntry({ task_id: opts.task_id, entry: latest, state: opts.state }),
+    renderRunnerOutcomeEntry({
+      task_id: opts.task_id,
+      entry: latest,
+      projection: opts.projection,
+    }),
     ...previous.map((entry) => renderRunnerOutcomeEntry({ task_id: opts.task_id, entry })),
   ]
     .join("\n")
@@ -336,8 +346,12 @@ export async function persistRunnerOutcomeToTask(opts: {
   if (useStore) {
     const store = getTaskStore(opts.ctx);
     await store.mutate(opts.task_id, (current) => {
-      const outcome = buildTaskRunnerOutcome({
+      const projection: RunnerOutcomeProjection = {
         state: opts.state,
+        result: opts.state.result ?? null,
+      };
+      const outcome = buildTaskRunnerOutcome({
+        projection,
         previous: current.runner ?? null,
       });
       const baseDoc = ensureDocSections(
@@ -352,7 +366,7 @@ export async function persistRunnerOutcomeToTask(opts: {
         renderRunnerOutcomeHistory({
           task_id: opts.task_id,
           outcome,
-          state: opts.state,
+          projection,
         }),
       );
       return [
@@ -372,8 +386,12 @@ export async function persistRunnerOutcomeToTask(opts: {
   }
 
   const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.task_id });
-  const outcome = buildTaskRunnerOutcome({
+  const projection: RunnerOutcomeProjection = {
     state: opts.state,
+    result: opts.state.result ?? null,
+  };
+  const outcome = buildTaskRunnerOutcome({
+    projection,
     previous: task.runner ?? null,
   });
   const baseDoc = ensureDocSections(
@@ -388,7 +406,7 @@ export async function persistRunnerOutcomeToTask(opts: {
     renderRunnerOutcomeHistory({
       task_id: opts.task_id,
       outcome,
-      state: opts.state,
+      projection,
     }),
   );
   const nextDoc = ensureDocSections(

@@ -287,6 +287,26 @@ export type RunnerResult = {
 
 export type RunnerLifecycleStatus = "prepared" | "running" | RunnerResultStatus;
 
+export type RunnerInvocationSnapshot = {
+  executable: string | null;
+  argv: string[];
+  argv_count: number;
+  env_keys: string[];
+  cwd: string | null;
+  run_dir: string | null;
+  bundle_path: string | null;
+  state_path: string | null;
+  events_path: string | null;
+  result_path: string | null;
+  trace_path: string | null;
+  stderr_path: string | null;
+  bootstrap_path: string | null;
+  output_last_message_path: string | null;
+  dry_run: boolean;
+  has_result_path: boolean;
+  has_output_last_message_path: boolean;
+};
+
 export type RunnerPreparedMetadata = {
   prompt_count: number;
   bundle_bytes: number;
@@ -299,14 +319,7 @@ export type RunnerPreparedMetadata = {
   timeout_policy: RunnerTimeoutPolicy;
   adapter_capabilities?: RunnerAdapterCapabilities;
   policy_decision?: RunnerPolicyDecision;
-  invocation: {
-    executable: string | null;
-    argv_count: number;
-    env_keys: string[];
-    cwd: string | null;
-    has_result_path: boolean;
-    has_output_last_message_path: boolean;
-  };
+  invocation: RunnerInvocationSnapshot;
 };
 
 export type RunnerRunState = {
@@ -338,4 +351,10 @@ export type RunnerEvent = {
   type: string;
   message: string;
   data?: Record<string, unknown>;
+};
+
+export type RunnerRunRecord = {
+  bundle: RunnerContextBundle;
+  state: RunnerRunState;
+  result: RunnerResult | null;
 };

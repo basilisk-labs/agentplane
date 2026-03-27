@@ -11,12 +11,7 @@ import type {
   RunnerResultArtifact,
   RunnerResult,
 } from "../types.js";
-import {
-  appendRunnerEvent,
-  evolveRunnerRunState,
-  readRunnerRunState,
-  writeRunnerRunState,
-} from "../artifacts.js";
+import { evolveRunnerRunState } from "../artifacts.js";
 import {
   runnerArtifactsFromSpecs,
   runnerAdapterCancelledResult,
@@ -37,6 +32,7 @@ import {
   readRunnerResultManifest,
   writeRunnerResultManifest,
 } from "../result-manifest.js";
+import { RunnerRunRepository } from "../run-repository.js";
 import {
   assertRunnerManifestArtifactPolicy,
   readRecipeArtifactPrefixesFromRunnerEnv,
@@ -407,6 +403,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
     return (async () => {
       try {
         assertCustomInvocation(invocation);
+        const repository = RunnerRunRepository.fromInvocation(invocation);
         const bootstrapText = invocation.bootstrap_path
           ? await readFile(invocation.bootstrap_path, "utf8")
           : "";
@@ -507,11 +504,10 @@ export class CustomRunnerAdapter implements RunnerAdapter {
           result_path: invocation.result_path,
           manifest: manifestFromRunnerResult(result),
         });
-        const stateAfter = await readRunnerRunState(invocation.state_path);
+        const stateAfter = await repository.readState();
         if (stateAfter) {
-          await writeRunnerRunState({
-            state_path: invocation.state_path,
-            state: evolveRunnerRunState({
+          await repository.writeState(
+            evolveRunnerRunState({
               state: stateAfter,
               status: result.status,
               result,
@@ -529,29 +525,26 @@ export class CustomRunnerAdapter implements RunnerAdapter {
                 force_killed: processResult.force_killed,
               },
             }),
-          });
+          );
         }
-        await appendRunnerEvent({
-          events_path: invocation.events_path,
-          event: {
-            at: result.ended_at,
-            type: "runner_execute_finish",
-            message: `custom runner finished with status=${result.status}`,
-            data: {
-              ...buildInvocationEventData(invocation),
-              pid: processResult.pid,
-              exit_signal: processResult.exit_signal,
-              cancel_requested_at: processResult.cancel_requested_at,
-              cancel_signal: processResult.cancel_signal,
-              timeout_reason: processResult.timeout_reason,
-              timeout_requested_at: processResult.timeout_requested_at,
-              terminate_sent_at: processResult.terminate_sent_at,
-              kill_sent_at: processResult.kill_sent_at,
-              force_killed: processResult.force_killed,
-              exit_code: result.exit_code,
-              output_paths,
-              metrics: result.metrics,
-            },
+        await repository.appendEvent({
+          at: result.ended_at,
+          type: "runner_execute_finish",
+          message: `custom runner finished with status=${result.status}`,
+          data: {
+            ...buildInvocationEventData(invocation),
+            pid: processResult.pid,
+            exit_signal: processResult.exit_signal,
+            cancel_requested_at: processResult.cancel_requested_at,
+            cancel_signal: processResult.cancel_signal,
+            timeout_reason: processResult.timeout_reason,
+            timeout_requested_at: processResult.timeout_requested_at,
+            terminate_sent_at: processResult.terminate_sent_at,
+            kill_sent_at: processResult.kill_sent_at,
+            force_killed: processResult.force_killed,
+            exit_code: result.exit_code,
+            output_paths,
+            metrics: result.metrics,
           },
         });
         return result;
@@ -591,29 +584,26 @@ export class CustomRunnerAdapter implements RunnerAdapter {
             capabilities_used: [`custom:${invocation.argv[0] ?? "runner"}`],
           }),
         });
-        const stateAfter = await readRunnerRunState(invocation.state_path);
+        const repository = RunnerRunRepository.fromInvocation(invocation);
+        const stateAfter = await repository.readState();
         if (stateAfter) {
-          await writeRunnerRunState({
-            state_path: invocation.state_path,
-            state: evolveRunnerRunState({
+          await repository.writeState(
+            evolveRunnerRunState({
               state: stateAfter,
               status: result.status,
               result,
             }),
-          });
+          );
         }
-        await appendRunnerEvent({
-          events_path: invocation.events_path,
-          event: {
-            at: result.ended_at,
-            type: "runner_execute_finish",
-            message: `custom runner failed with status=${result.status}`,
-            data: {
-              ...buildInvocationEventData(invocation),
-              exit_code: result.exit_code,
-              output_paths,
-              metrics: result.metrics,
-            },
+        await repository.appendEvent({
+          at: result.ended_at,
+          type: "runner_execute_finish",
+          message: `custom runner failed with status=${result.status}`,
+          data: {
+            ...buildInvocationEventData(invocation),
+            exit_code: result.exit_code,
+            output_paths,
+            metrics: result.metrics,
           },
         });
         return result;
