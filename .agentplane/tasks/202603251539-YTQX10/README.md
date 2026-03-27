@@ -4,7 +4,7 @@ title: "Consolidate CI, freshness, and sync tooling into shared generators"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -20,10 +20,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-27T18:41:28.926Z"
+  updated_by: "CODER"
+  note: "Consolidated generated-artifact freshness scripts onto shared helpers, consolidated sync scripts onto shared directory/schema helpers, and collapsed run-local-ci baseline step duplication. Verified with docs freshness scripts, sync checks, local-ci selection tests, prettier, eslint, and agentplane build."
 commit: null
 comments:
   -
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: extracting shared freshness and sync harnesses for generated artifacts and local CI orchestration without changing task routing semantics or broadening the refactor surface."
+  -
+    type: "verify"
+    at: "2026-03-27T18:41:28.926Z"
+    author: "CODER"
+    state: "ok"
+    note: "Consolidated generated-artifact freshness scripts onto shared helpers, consolidated sync scripts onto shared directory/schema helpers, and collapsed run-local-ci baseline step duplication. Verified with docs freshness scripts, sync checks, local-ci selection tests, prettier, eslint, and agentplane build."
 doc_version: 3
-doc_updated_at: "2026-03-27T18:33:06.164Z"
+doc_updated_at: "2026-03-27T18:41:28.940Z"
 doc_updated_by: "CODER"
 description: "Replace duplicated CI orchestration, freshness checks, and mirror-sync scripts with declarative shared helpers so generated docs, inventories, schemas, and local CI pipelines derive from one reusable control model."
 sections:
@@ -59,6 +65,14 @@ sections:
     3. Run the smallest relevant builds/format/lint pass for touched script and CLI surfaces. Expected: the refactor stays task-scoped and leaves no generated artifact drift behind.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-27T18:41:28.926Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Consolidated generated-artifact freshness scripts onto shared helpers, consolidated sync scripts onto shared directory/schema helpers, and collapsed run-local-ci baseline step duplication. Verified with docs freshness scripts, sync checks, local-ci selection tests, prettier, eslint, and agentplane build.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-27T18:33:06.164Z, excerpt_hash=sha256:d114982638abb53e1d72fd2ab6d6d80f547b6c99c58e5211f1d3835710e192f9
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -92,6 +106,14 @@ Replace duplicated CI orchestration, freshness checks, and mirror-sync scripts w
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-27T18:41:28.926Z — VERIFY — ok
+
+By: CODER
+
+Note: Consolidated generated-artifact freshness scripts onto shared helpers, consolidated sync scripts onto shared directory/schema helpers, and collapsed run-local-ci baseline step duplication. Verified with docs freshness scripts, sync checks, local-ci selection tests, prettier, eslint, and agentplane build.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-27T18:33:06.164Z, excerpt_hash=sha256:d114982638abb53e1d72fd2ab6d6d80f547b6c99c58e5211f1d3835710e192f9
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
