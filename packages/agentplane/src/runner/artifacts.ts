@@ -8,6 +8,7 @@ import type {
   RunnerContextBundle,
   RunnerEvent,
   RunnerInvocation,
+  RunnerInvocationSnapshot,
   RunnerLifecycleStatus,
   RunnerPreparedMetadata,
   RunnerResult,
@@ -21,6 +22,33 @@ function sha256(text: string): string {
 
 function byteLength(text: string): number {
   return Buffer.byteLength(text, "utf8");
+}
+
+export function createRunnerInvocationSnapshot(
+  invocation?: RunnerInvocation | null,
+): RunnerInvocationSnapshot {
+  return {
+    executable: invocation?.argv[0] ?? null,
+    argv: [...(invocation?.argv ?? [])],
+    argv_count: invocation?.argv.length ?? 0,
+    env_keys: Object.keys(invocation?.env ?? {}).toSorted(),
+    cwd: invocation?.run_dir ?? null,
+    run_dir: invocation?.run_dir ?? null,
+    bundle_path: invocation?.bundle_path ?? null,
+    state_path: invocation?.state_path ?? null,
+    events_path: invocation?.events_path ?? null,
+    result_path: invocation?.result_path ?? null,
+    trace_path: invocation?.trace_path ?? null,
+    stderr_path: invocation?.stderr_path ?? null,
+    bootstrap_path: invocation?.bootstrap_path ?? null,
+    output_last_message_path: invocation?.output_last_message_path ?? null,
+    dry_run: invocation?.dry_run ?? false,
+    has_result_path:
+      typeof invocation?.result_path === "string" && invocation.result_path.length > 0,
+    has_output_last_message_path:
+      typeof invocation?.output_last_message_path === "string" &&
+      invocation.output_last_message_path.trim().length > 0,
+  };
 }
 
 function buildPreparedMetadata(opts: {
@@ -41,17 +69,7 @@ function buildPreparedMetadata(opts: {
     timeout_policy: opts.bundle.execution.timeout_policy,
     adapter_capabilities: opts.bundle.execution.adapter_capabilities,
     policy_decision: opts.bundle.execution.policy_decision,
-    invocation: {
-      executable: opts.invocation?.argv[0] ?? null,
-      argv_count: opts.invocation?.argv.length ?? 0,
-      env_keys: Object.keys(opts.invocation?.env ?? {}).toSorted(),
-      cwd: opts.invocation?.run_dir ?? null,
-      has_result_path:
-        typeof opts.invocation?.result_path === "string" && opts.invocation.result_path.length > 0,
-      has_output_last_message_path:
-        typeof opts.invocation?.output_last_message_path === "string" &&
-        opts.invocation.output_last_message_path.trim().length > 0,
-    },
+    invocation: createRunnerInvocationSnapshot(opts.invocation),
   };
 }
 

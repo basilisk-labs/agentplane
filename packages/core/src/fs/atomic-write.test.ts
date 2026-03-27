@@ -46,4 +46,16 @@ describe("atomicWriteFile", () => {
     const contents = await readFile(target, "utf8");
     expect(contents).toBe("old\n");
   });
+
+  it("keeps temp paths unique across concurrent writes in one process", async () => {
+    const dir = await makeTempDir();
+    const target = path.join(dir, "concurrent.txt");
+
+    await expect(
+      Promise.all([atomicWriteFile(target, "first\n"), atomicWriteFile(target, "second\n")]),
+    ).resolves.toBeDefined();
+
+    const contents = await readFile(target, "utf8");
+    expect(["first\n", "second\n"]).toContain(contents);
+  });
 });

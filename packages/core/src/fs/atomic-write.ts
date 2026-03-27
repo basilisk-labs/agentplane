@@ -1,6 +1,8 @@
 import { mkdir, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+let atomicWriteNonce = 0;
+
 export async function atomicWriteFile(
   filePath: string,
   contents: string | Buffer,
@@ -8,7 +10,7 @@ export async function atomicWriteFile(
 ): Promise<void> {
   const dir = path.dirname(filePath);
   await mkdir(dir, { recursive: true });
-  const tmpPath = `${filePath}.tmp-${process.pid}-${Date.now()}`;
+  const tmpPath = `${filePath}.tmp-${process.pid}-${Date.now()}-${atomicWriteNonce++}`;
   await writeFile(tmpPath, contents, typeof contents === "string" ? encoding : undefined);
   await rename(tmpPath, filePath);
 }

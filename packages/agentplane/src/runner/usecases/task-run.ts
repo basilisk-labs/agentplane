@@ -3,13 +3,7 @@ import { loadCommandContext, type CommandContext } from "../../commands/shared/t
 import { CliError } from "../../shared/errors.js";
 
 import type { RunnerAdapter } from "../adapters/shared.js";
-import {
-  appendRunnerEvent,
-  evolveRunnerRunState,
-  readRunnerRunState,
-  writeRunnerRunState,
-  writePreparedRunnerArtifacts,
-} from "../artifacts.js";
+import { evolveRunnerRunState } from "../artifacts.js";
 import { createRunnerAdapter } from "../adapters/index.js";
 import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
 import { collectRunnerBasePrompts } from "../context/base-prompts.js";
@@ -17,6 +11,7 @@ import { assembleRunnerTaskContext } from "../context/task-context.js";
 import { applyRunnerPolicyRefusal, buildRunnerPolicyDecision } from "../policy-decision.js";
 import { createRunnerRunId } from "../run-id.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
+import { RunnerRunRepository } from "../run-repository.js";
 import { resolveTaskRunnerPaths } from "../task-run-paths.js";
 import { resolveRunnerTimeoutPolicy, resolveRunnerTracePolicy } from "../config.js";
 import { normalizeRecipeArtifactPrefixes } from "../result-manifest-policy.js";
@@ -99,7 +94,8 @@ async function writeRunnerRefusalArtifacts(opts: {
   bundle: RunnerContextBundle;
   error: CliError;
 }): Promise<RunnerRunState> {
-  const prepared = await writePreparedRunnerArtifacts({
+  const repository = RunnerRunRepository.fromBundle(opts.bundle);
+  const prepared = await repository.writePrepared({
     bundle: opts.bundle,
     bootstrap_markdown: renderTaskRunnerBootstrap(opts.bundle),
   });
@@ -117,27 +113,21 @@ async function writeRunnerRefusalArtifacts(opts: {
     result,
     updated_at: prepared.created_at,
   });
-  await writeRunnerRunState({
-    state_path: opts.bundle.execution.artifact_paths.state_path,
-    state: refused,
-  });
-  await appendRunnerEvent({
-    events_path: opts.bundle.execution.artifact_paths.events_path,
-    event: {
-      at: prepared.created_at,
-      type: "runner_refused",
-      message: `runner refused before adapter prepare: ${opts.error.message}`,
-      data: opts.error.context
-        ? {
-            code: opts.error.code,
-            exit_code: opts.error.exitCode,
-            ...opts.error.context,
-          }
-        : {
-            code: opts.error.code,
-            exit_code: opts.error.exitCode,
-          },
-    },
+  await repository.writeState(refused);
+  await repository.appendEvent({
+    at: prepared.created_at,
+    type: "runner_refused",
+    message: `runner refused before adapter prepare: ${opts.error.message}`,
+    data: opts.error.context
+      ? {
+          code: opts.error.code,
+          exit_code: opts.error.exitCode,
+          ...opts.error.context,
+        }
+      : {
+          code: opts.error.code,
+          exit_code: opts.error.exitCode,
+        },
   });
   return refused;
 }
@@ -281,7 +271,8 @@ export async function prepareTaskRunnerExecution(opts: {
     throw err;
   }
   const invocation = await adapter.prepare(bundle);
-  const state = await writePreparedRunnerArtifacts({
+  const repository = RunnerRunRepository.fromBundle(bundle);
+  const state = await repository.writePrepared({
     bundle,
     bootstrap_markdown: renderTaskRunnerBootstrap(bundle, invocation),
     invocation,
@@ -326,8 +317,9 @@ export async function executeTaskRunnerExecution(opts: {
   }
   const adapter = createRunnerAdapter(ctx.config);
   const result = await adapter.execute(prepared.invocation);
+  const repository = RunnerRunRepository.fromInvocation(prepared.invocation);
   const state =
-    (await readRunnerRunState(prepared.invocation.state_path)) ??
+    (await repository.readState()) ??
     evolveRunnerRunState({
       state: prepared.state,
       status: result.status,

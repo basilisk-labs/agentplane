@@ -1,4 +1,3 @@
-import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -6,13 +5,8 @@ import { loadCommandContext, type CommandContext } from "../../commands/shared/t
 import { CliError } from "../../shared/errors.js";
 import { createRunnerAdapter } from "../adapters/index.js";
 import { runnerAdapterCancelledResult } from "../adapters/shared.js";
-import {
-  appendRunnerEvent,
-  evolveRunnerRunState,
-  readRunnerRunState,
-  writePreparedRunnerArtifacts,
-  writeRunnerRunState,
-} from "../artifacts.js";
+import { evolveRunnerRunState } from "../artifacts.js";
+import { assertRunnerBundleMatchesTask, RunnerRunRepository } from "../run-repository.js";
 import { createRunnerRunId } from "../run-id.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { resolveTaskRunnerPaths } from "../task-run-paths.js";
@@ -40,6 +34,7 @@ import {
 type LoadedRunnerExecution = PreparedTaskRunnerExecution & {
   ctx: CommandContext;
   state: RunnerRunState;
+  repository: RunnerRunRepository;
 };
 
 export type CancelledTaskRunnerExecution = LoadedRunnerExecution & {
@@ -81,36 +76,6 @@ function assertCurrentTaskDoing(taskId: string, task: TaskData | null): void {
       `${taskId}: runner lifecycle commands require task status DOING ` +
       `(current=${JSON.stringify(status)}; use \`agentplane task start-ready ${taskId} --author <ROLE> --body "Start: ..."\` first).`,
   });
-}
-
-async function readRunnerBundle(bundlePath: string): Promise<RunnerContextBundle | null> {
-  try {
-    return JSON.parse(await readFile(bundlePath, "utf8")) as RunnerContextBundle;
-  } catch (err) {
-    const code = (err as { code?: string } | null)?.code;
-    if (code === "ENOENT") return null;
-    throw err;
-  }
-}
-
-function assertBundleMatchesTask(bundle: RunnerContextBundle, taskId: string, runId: string): void {
-  const bundleTaskId =
-    bundle.task?.task_id ??
-    (bundle.target.kind === "task" ? bundle.target.task_id : (bundle.target.task_id ?? null));
-  if (bundle.execution.run_id !== runId) {
-    throw new CliError({
-      exitCode: 4,
-      code: "E_IO",
-      message: `Runner bundle/run mismatch for ${taskId}:${runId} (bundle.run_id=${bundle.execution.run_id})`,
-    });
-  }
-  if (!bundleTaskId || bundleTaskId !== taskId) {
-    throw new CliError({
-      exitCode: 4,
-      code: "E_IO",
-      message: `Runner bundle/task mismatch for ${taskId}:${runId}`,
-    });
-  }
 }
 
 function assertExecuteMode(bundle: RunnerContextBundle, action: "resume" | "retry"): void {
@@ -259,33 +224,31 @@ async function loadExistingRunnerExecution(opts: {
     assertCurrentTaskDoing(opts.task_id, await ctx.taskBackend.getTask(opts.task_id));
   }
 
-  const paths = resolveTaskRunnerPaths({
+  const repository = RunnerRunRepository.forTaskRun({
     git_root: ctx.resolvedProject.gitRoot,
     workflow_dir: ctx.config.paths.workflow_dir,
     task_id: opts.task_id,
     run_id: opts.run_id,
   });
-  const [bundle, state] = await Promise.all([
-    readRunnerBundle(paths.bundle_path),
-    readRunnerRunState(paths.state_path),
-  ]);
-  if (!bundle || !state) {
+  const record = await repository.readRecord();
+  if (!record) {
     throw new CliError({
       exitCode: 4,
       code: "E_IO",
       message: `Runner artifacts not found for ${opts.task_id}:${opts.run_id}`,
     });
   }
-  assertBundleMatchesTask(bundle, opts.task_id, opts.run_id);
-  assertRunnerTaskExecutable(bundle);
+  assertRunnerBundleMatchesTask(record.bundle, opts.task_id, opts.run_id);
+  assertRunnerTaskExecutable(record.bundle);
 
   const adapter = createRunnerAdapter(ctx.config);
-  const invocation = await adapter.prepare(bundle);
+  const invocation = await adapter.prepare(record.bundle);
   return {
     ctx,
-    bundle,
+    bundle: record.bundle,
     invocation,
-    state,
+    state: record.state,
+    repository,
   };
 }
 
@@ -333,17 +296,14 @@ export async function cancelTaskRunnerExecution(opts: {
     } catch (err) {
       if (err instanceof CliError) {
         const refusedAt = new Date().toISOString();
-        await appendRunnerEvent({
-          events_path: loaded.invocation.events_path,
-          event: {
-            at: refusedAt,
-            type: "runner_cancel_refused",
-            message: err.message,
-            data: err.context ?? {
-              task_id: opts.task_id,
-              run_id: opts.run_id,
-              pid,
-            },
+        await loaded.repository.appendEvent({
+          at: refusedAt,
+          type: "runner_cancel_refused",
+          message: err.message,
+          data: err.context ?? {
+            task_id: opts.task_id,
+            run_id: opts.run_id,
+            pid,
           },
         });
       }
@@ -361,21 +321,15 @@ export async function cancelTaskRunnerExecution(opts: {
         heartbeat_at: requested_at,
       },
     });
-    await writeRunnerRunState({
-      state_path: loaded.invocation.state_path,
-      state: requestedState,
-    });
-    await appendRunnerEvent({
-      events_path: loaded.invocation.events_path,
-      event: {
-        at: requested_at,
-        type: "runner_cancel_requested",
-        message: `runner cancel requested via SIGTERM for pid=${pid}`,
-        data: {
-          previous_status: loaded.state.status,
-          pid,
-          signal: "SIGTERM",
-        },
+    await loaded.repository.writeState(requestedState);
+    await loaded.repository.appendEvent({
+      at: requested_at,
+      type: "runner_cancel_requested",
+      message: `runner cancel requested via SIGTERM for pid=${pid}`,
+      data: {
+        previous_status: loaded.state.status,
+        pid,
+        signal: "SIGTERM",
       },
     });
     const exitedAfterTerm = signalProcess(pid, "SIGTERM")
@@ -396,21 +350,15 @@ export async function cancelTaskRunnerExecution(opts: {
           heartbeat_at: killRequestedAt,
         },
       });
-      await writeRunnerRunState({
-        state_path: loaded.invocation.state_path,
-        state: killRequestedState,
-      });
-      await appendRunnerEvent({
-        events_path: loaded.invocation.events_path,
-        event: {
-          at: killRequestedAt,
-          type: "runner_force_kill_requested",
-          message: `runner cancel escalated to SIGKILL for pid=${pid}`,
-          data: {
-            previous_status: loaded.state.status,
-            pid,
-            signal: "SIGKILL",
-          },
+      await loaded.repository.writeState(killRequestedState);
+      await loaded.repository.appendEvent({
+        at: killRequestedAt,
+        type: "runner_force_kill_requested",
+        message: `runner cancel escalated to SIGKILL for pid=${pid}`,
+        data: {
+          previous_status: loaded.state.status,
+          pid,
+          signal: "SIGKILL",
         },
       });
       signalProcess(pid, "SIGKILL");
@@ -424,26 +372,20 @@ export async function cancelTaskRunnerExecution(opts: {
     const nextState =
       settledState ??
       buildSyntheticCancelledState({
-        state: (await readRunnerRunState(loaded.invocation.state_path)) ?? requestedState,
+        state: (await loaded.repository.readState()) ?? requestedState,
         signal: finalSignal,
         updated_at: new Date().toISOString(),
       });
     if (!settledState) {
-      await writeRunnerRunState({
-        state_path: loaded.invocation.state_path,
-        state: nextState,
-      });
-      await appendRunnerEvent({
-        events_path: loaded.invocation.events_path,
-        event: {
-          at: nextState.updated_at,
-          type: "runner_cancelled",
-          message: `runner process exited after ${finalSignal}; state synthesized as cancelled`,
-          data: {
-            previous_status: loaded.state.status,
-            pid,
-            signal: finalSignal,
-          },
+      await loaded.repository.writeState(nextState);
+      await loaded.repository.appendEvent({
+        at: nextState.updated_at,
+        type: "runner_cancelled",
+        message: `runner process exited after ${finalSignal}; state synthesized as cancelled`,
+        data: {
+          previous_status: loaded.state.status,
+          pid,
+          signal: finalSignal,
         },
       });
     }
@@ -466,19 +408,13 @@ export async function cancelTaskRunnerExecution(opts: {
     status: "cancelled",
     updated_at,
   });
-  await writeRunnerRunState({
-    state_path: loaded.invocation.state_path,
-    state: nextState,
-  });
-  await appendRunnerEvent({
-    events_path: loaded.invocation.events_path,
-    event: {
-      at: updated_at,
-      type: "runner_cancelled",
-      message: `runner marked cancelled from status=${loaded.state.status}`,
-      data: {
-        previous_status: loaded.state.status,
-      },
+  await loaded.repository.writeState(nextState);
+  await loaded.repository.appendEvent({
+    at: updated_at,
+    type: "runner_cancelled",
+    message: `runner marked cancelled from status=${loaded.state.status}`,
+    data: {
+      previous_status: loaded.state.status,
     },
   });
   await persistRunnerOutcomeToTask({
@@ -521,24 +457,18 @@ export async function resumeTaskRunnerExecution(opts: {
     status: "prepared",
     updated_at: requested_at,
   });
-  await writeRunnerRunState({
-    state_path: loaded.invocation.state_path,
-    state: resetState,
-  });
-  await appendRunnerEvent({
-    events_path: loaded.invocation.events_path,
-    event: {
-      at: requested_at,
-      type: "runner_resume_requested",
-      message: `runner resume requested from status=${loaded.state.status}`,
-      data: {
-        previous_status: loaded.state.status,
-      },
+  await loaded.repository.writeState(resetState);
+  await loaded.repository.appendEvent({
+    at: requested_at,
+    type: "runner_resume_requested",
+    message: `runner resume requested from status=${loaded.state.status}`,
+    data: {
+      previous_status: loaded.state.status,
     },
   });
 
   const result = await createRunnerAdapter(loaded.ctx.config).execute(loaded.invocation);
-  const nextState = (await readRunnerRunState(loaded.invocation.state_path)) ?? resetState;
+  const nextState = (await loaded.repository.readState()) ?? resetState;
   await persistRunnerOutcomeToTask({
     ctx: loaded.ctx,
     task_id: opts.task_id,
@@ -592,37 +522,32 @@ export async function retryTaskRunnerExecution(opts: {
   };
   const adapter = createRunnerAdapter(source.ctx.config);
   const invocation = await adapter.prepare(retriedBundle);
-  const state = await writePreparedRunnerArtifacts({
+  const retryRepository = RunnerRunRepository.fromBundle(retriedBundle);
+  const state = await retryRepository.writePrepared({
     bundle: retriedBundle,
     bootstrap_markdown: renderTaskRunnerBootstrap(retriedBundle, invocation),
     invocation,
   });
   const requested_at = new Date().toISOString();
-  await appendRunnerEvent({
-    events_path: source.invocation.events_path,
-    event: {
-      at: requested_at,
-      type: "runner_retry_requested",
-      message: `runner retry requested into run_id=${nextRunId}`,
-      data: {
-        next_run_id: nextRunId,
-      },
+  await source.repository.appendEvent({
+    at: requested_at,
+    type: "runner_retry_requested",
+    message: `runner retry requested into run_id=${nextRunId}`,
+    data: {
+      next_run_id: nextRunId,
     },
   });
-  await appendRunnerEvent({
-    events_path: invocation.events_path,
-    event: {
-      at: requested_at,
-      type: "runner_retry_created",
-      message: `runner retry created from run_id=${source.state.run_id}`,
-      data: {
-        source_run_id: source.state.run_id,
-        source_status: source.state.status,
-      },
+  await retryRepository.appendEvent({
+    at: requested_at,
+    type: "runner_retry_created",
+    message: `runner retry created from run_id=${source.state.run_id}`,
+    data: {
+      source_run_id: source.state.run_id,
+      source_status: source.state.status,
     },
   });
   const result = await adapter.execute(invocation);
-  const nextState = (await readRunnerRunState(invocation.state_path)) ?? state;
+  const nextState = (await retryRepository.readState()) ?? state;
   await persistRunnerOutcomeToTask({
     ctx: source.ctx,
     task_id: opts.task_id,
