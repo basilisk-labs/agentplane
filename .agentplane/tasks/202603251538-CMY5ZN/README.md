@@ -4,7 +4,7 @@ title: "Extract recipe domain into packages/recipes and narrow scenario coupling
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -20,10 +20,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-27T18:02:24.585Z"
+  updated_by: "CODER"
+  note: "Extracted the pure recipe domain into @agentplane/recipes (types, normalize/constants, manifest and scenario parsing), wired the package into installed-recipe, resolver, install/explain, and recipe facade consumers, and verified the seam with package build plus recipe/scenario/runner-focused regressions."
 commit: null
 comments:
   -
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: extract the pure recipe contracts and parsers into packages/recipes first, then rewire resolver/scenario consumers around that package so the domain move lands before any broader scenario or runner cleanup."
+  -
+    type: "verify"
+    at: "2026-03-27T18:02:24.585Z"
+    author: "CODER"
+    state: "ok"
+    note: "Extracted the pure recipe domain into @agentplane/recipes (types, normalize/constants, manifest and scenario parsing), wired the package into installed-recipe, resolver, install/explain, and recipe facade consumers, and verified the seam with package build plus recipe/scenario/runner-focused regressions."
 doc_version: 3
-doc_updated_at: "2026-03-27T17:53:12.409Z"
+doc_updated_at: "2026-03-27T18:02:24.589Z"
 doc_updated_by: "CODER"
 description: "Move recipe schema parsing, installed-state logic, compatibility resolution, and catalog/runtime helpers into packages/recipes, then reduce scenario execution glue so delivery concerns no longer own the recipe domain directly."
 sections:
@@ -59,6 +65,14 @@ sections:
     3. Run the smallest relevant runner-facing regression plus builds. Expected: runner/context consumers still materialize recipe-backed scenarios correctly and both package builds pass.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-27T18:02:24.585Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Extracted the pure recipe domain into @agentplane/recipes (types, normalize/constants, manifest and scenario parsing), wired the package into installed-recipe, resolver, install/explain, and recipe facade consumers, and verified the seam with package build plus recipe/scenario/runner-focused regressions.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-27T17:53:12.409Z, excerpt_hash=sha256:32d4a28b5a1b3d9da475da0f4c35ee76960bd85151e3cba6b9d0bf382e35d523
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -92,6 +106,14 @@ Move recipe schema parsing, installed-state logic, compatibility resolution, and
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-27T18:02:24.585Z — VERIFY — ok
+
+By: CODER
+
+Note: Extracted the pure recipe domain into @agentplane/recipes (types, normalize/constants, manifest and scenario parsing), wired the package into installed-recipe, resolver, install/explain, and recipe facade consumers, and verified the seam with package build plus recipe/scenario/runner-focused regressions.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-27T17:53:12.409Z, excerpt_hash=sha256:32d4a28b5a1b3d9da475da0f4c35ee76960bd85151e3cba6b9d0bf382e35d523
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
