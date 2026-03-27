@@ -4,7 +4,7 @@ title: "Make framework dev bootstrap first-class"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-03-27T12:10:50.112Z"
+  updated_at: "2026-03-27T12:30:28.762Z"
   updated_by: "CODER"
-  note: "Implemented a first-class framework dev bootstrap contract and verified it on a fresh worktree."
+  note: "Extended the framework bootstrap contract by sanitizing hook-propagated git env before local CI subprocesses; full contaminated run-local-ci path now passes without mutating the active task branch."
 commit: null
 comments:
   -
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented a first-class framework dev bootstrap contract and verified it on a fresh worktree."
+  -
+    type: "verify"
+    at: "2026-03-27T12:30:28.762Z"
+    author: "CODER"
+    state: "ok"
+    note: "Extended the framework bootstrap contract by sanitizing hook-propagated git env before local CI subprocesses; full contaminated run-local-ci path now passes without mutating the active task branch."
 doc_version: 3
-doc_updated_at: "2026-03-27T12:10:50.115Z"
+doc_updated_at: "2026-03-27T12:30:42.339Z"
 doc_updated_by: "CODER"
 description: "Establish a deterministic repo-local development runtime for the framework itself so fresh clones and worktrees can run lifecycle commands, hooks, tests, and local CLI flows without manual dist symlinks, package-level node_modules wiring, or stale-dist overrides. Keep installed/PATH agentplane as a separate smoke and compatibility path, not the default inner-loop runtime."
 sections:
@@ -92,6 +98,14 @@ sections:
     - wrapper/runtime explain/doctor now converge on one bootstrap command
     - local CI no longer depends on AGENTPLANE_DEV_ALLOW_STALE_DIST=1 for CLI docs freshness
     
+    #### 2026-03-27T12:30:28.762Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Extended the framework bootstrap contract by sanitizing hook-propagated git env before local CI subprocesses; full contaminated run-local-ci path now passes without mutating the active task branch.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-27T12:10:50.115Z, excerpt_hash=sha256:05aa9c5552c81ae109d0bdc70f24731f77b9f22e916b7b529c1dbeeb4ffd9e3a
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -101,7 +115,8 @@ sections:
     2. Fresh clones were missing three separate prerequisites, not one: workspace dependencies, built dist output, and an initialized recipes submodule. Treating this as just a build problem would have left fresh worktrees half-broken.
     3. The superproject gitlink for agentplane-recipes was pinned to 770738b0b35857b08c38756aab1f80f209ca19b3, which is not available on the remote. The bootstrap contract therefore also needed the repo to move the gitlink to the reachable remote main commit 021c99bc8527220bf9339872903cf30105adea97.
     4. scripts/run-local-ci.mjs carried a hidden AGENTPLANE_DEV_ALLOW_STALE_DIST=1 escape hatch for docs:cli:check. That masked the real process gap instead of fixing it; the override is now removed.
-    5. Residual constraint: a brand-new framework clone still needs one explicit bootstrap step, bun run framework:dev:bootstrap, before normal repo-local lifecycle commands. This task makes that step canonical and documented; it does not auto-install or auto-build on every CLI invocation.
+    5. Hook-driven local CI inherited worktree git bindings into child bun/vitest/git processes. In fresh framework worktrees that contamination let test fixtures mutate the active task branch itself, so run-local-ci now sanitizes git repository environment before launching CI subprocesses.
+    6. Residual contract: a brand-new framework clone or worktree still needs one explicit bootstrap step, bun run framework:dev:bootstrap, before normal repo-local lifecycle commands and hooks. This task makes that step canonical and documented; it does not auto-install or auto-build on every CLI invocation.
 id_source: "generated"
 ---
 ## Summary
@@ -157,6 +172,14 @@ Outcome:
 - wrapper/runtime explain/doctor now converge on one bootstrap command
 - local CI no longer depends on AGENTPLANE_DEV_ALLOW_STALE_DIST=1 for CLI docs freshness
 
+#### 2026-03-27T12:30:28.762Z — VERIFY — ok
+
+By: CODER
+
+Note: Extended the framework bootstrap contract by sanitizing hook-propagated git env before local CI subprocesses; full contaminated run-local-ci path now passes without mutating the active task branch.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-27T12:10:50.115Z, excerpt_hash=sha256:05aa9c5552c81ae109d0bdc70f24731f77b9f22e916b7b529c1dbeeb4ffd9e3a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -170,4 +193,5 @@ Outcome:
 2. Fresh clones were missing three separate prerequisites, not one: workspace dependencies, built dist output, and an initialized recipes submodule. Treating this as just a build problem would have left fresh worktrees half-broken.
 3. The superproject gitlink for agentplane-recipes was pinned to 770738b0b35857b08c38756aab1f80f209ca19b3, which is not available on the remote. The bootstrap contract therefore also needed the repo to move the gitlink to the reachable remote main commit 021c99bc8527220bf9339872903cf30105adea97.
 4. scripts/run-local-ci.mjs carried a hidden AGENTPLANE_DEV_ALLOW_STALE_DIST=1 escape hatch for docs:cli:check. That masked the real process gap instead of fixing it; the override is now removed.
-5. Residual constraint: a brand-new framework clone still needs one explicit bootstrap step, bun run framework:dev:bootstrap, before normal repo-local lifecycle commands. This task makes that step canonical and documented; it does not auto-install or auto-build on every CLI invocation.
+5. Hook-driven local CI inherited worktree git bindings into child bun/vitest/git processes. In fresh framework worktrees that contamination let test fixtures mutate the active task branch itself, so run-local-ci now sanitizes git repository environment before launching CI subprocesses.
+6. Residual contract: a brand-new framework clone or worktree still needs one explicit bootstrap step, bun run framework:dev:bootstrap, before normal repo-local lifecycle commands and hooks. This task makes that step canonical and documented; it does not auto-install or auto-build on every CLI invocation.

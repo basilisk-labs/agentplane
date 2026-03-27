@@ -6,15 +6,28 @@ import {
   shouldRunCliDocsCheck,
 } from "./lib/local-ci-selection.mjs";
 
+function sanitizeGitProcessEnv(env) {
+  const nextEnv = { ...env };
+  delete nextEnv.GIT_DIR;
+  delete nextEnv.GIT_WORK_TREE;
+  delete nextEnv.GIT_COMMON_DIR;
+  delete nextEnv.GIT_INDEX_FILE;
+  delete nextEnv.GIT_OBJECT_DIRECTORY;
+  delete nextEnv.GIT_ALTERNATE_OBJECT_DIRECTORIES;
+  delete nextEnv.GIT_PREFIX;
+  return nextEnv;
+}
+
+const baseEnv = sanitizeGitProcessEnv(process.env);
 const testEnv = {
-  ...process.env,
+  ...baseEnv,
   GIT_AUTHOR_NAME: "agentplane-ci",
   GIT_AUTHOR_EMAIL: "agentplane-ci@example.com",
   GIT_COMMITTER_NAME: "agentplane-ci",
   GIT_COMMITTER_EMAIL: "agentplane-ci@example.com",
 };
 
-function run(cmd, args, env = process.env) {
+function run(cmd, args, env = baseEnv) {
   execFileSync(cmd, args, { stdio: "inherit", env });
 }
 
@@ -23,7 +36,7 @@ function runStep(label, fn) {
   fn();
 }
 
-function runCommand(cmd, args, env = process.env) {
+function runCommand(cmd, args, env = baseEnv) {
   run(cmd, args, env);
 }
 
@@ -88,7 +101,7 @@ const fullOnlySteps = [
   ["Coverage threshold (significant)", () => run("bun", ["run", "coverage:significant"])],
 ];
 
-const changedFiles = parseChangedFilesEnv(process.env.AGENTPLANE_FAST_CHANGED_FILES);
+const changedFiles = parseChangedFilesEnv(baseEnv.AGENTPLANE_FAST_CHANGED_FILES);
 const fastPlan = selectFastCiPlan(changedFiles);
 const runCliDocsCheck = shouldRunCliDocsCheck(changedFiles);
 
