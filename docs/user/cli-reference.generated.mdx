@@ -99,6 +99,9 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task doc set](#task-doc-set)
   - [task doc show](#task-doc-show)
   - [task export](#task-export)
+  - [task handoff](#task-handoff)
+  - [task handoff record](#task-handoff-record)
+  - [task handoff show](#task-handoff-show)
   - [task lint](#task-lint)
   - [task list](#task-list)
   - [task migrate](#task-migrate)
@@ -111,6 +114,8 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task plan reject](#task-plan-reject)
   - [task plan set](#task-plan-set)
   - [task rebuild-index](#task-rebuild-index)
+  - [task reclaim](#task-reclaim)
+  - [task resume-context](#task-resume-context)
   - [task run](#task-run)
   - [task run cancel](#task-run-cancel)
   - [task run resume](#task-run-resume)
@@ -2020,6 +2025,18 @@ agentplane task run <task-id>
 
 - Run an existing task through the shared runner flow.
 
+```sh
+agentplane task handoff record <task-id> --from CODER --reason "Paused for handoff"
+```
+
+- Persist a first-class handoff snapshot.
+
+```sh
+agentplane task resume-context <task-id>
+```
+
+- Inspect deterministic recovery context before resuming or retrying a run.
+
 ### task add
 
 Create one or more tasks with explicit ids (prints the created task ids).
@@ -2262,6 +2279,54 @@ agentplane task export
 ```
 
 - Write tasks export JSON and print the path.
+
+### task handoff
+
+Task handoff commands (record/show).
+
+Usage:
+
+```text
+agentplane task handoff record <task-id> --from <role> --reason <text> [--to <role>] [--run-id <id>]
+agentplane task handoff show <task-id> [--json]
+```
+
+### task handoff record
+
+Record a task handoff snapshot with runner recovery hints.
+
+Usage:
+
+```text
+agentplane task handoff record <task-id> [options]
+```
+
+Options:
+
+- `--from <role>`: Role handing off the task.
+- `--to <role>`: Optional. Intended receiving role.
+- `--reason <text>`: Why the handoff is happening.
+- `--note <text>`: Optional. Free-form handoff note.
+- `--run-id <run-id>`: Optional. Pin handoff hints to a specific runner run.
+- `--next-action <text>`: Repeatable. Human next actions for the receiving agent. (repeatable)
+- `--risk <text>`: Repeatable. Risks or watch-outs that remain open. (repeatable)
+- `--question <text>`: Repeatable. Open questions for the next agent. (repeatable)
+- `--evidence-path <path>`: Repeatable. Relevant evidence or artifact paths. (repeatable)
+- `--json`: Emit the persisted handoff snapshot as JSON. (default=false)
+
+### task handoff show
+
+Show the latest persisted task handoff snapshot.
+
+Usage:
+
+```text
+agentplane task handoff show <task-id> [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable handoff JSON. (default=false)
 
 ### task lint
 
@@ -2606,6 +2671,37 @@ agentplane task rebuild-index
 ```
 
 - Rebuild tasks index cache.
+
+### task reclaim
+
+Claim an interrupted task and persist a recovery handoff snapshot.
+
+Usage:
+
+```text
+agentplane task reclaim <task-id> [options]
+```
+
+Options:
+
+- `--author <role>`: Role reclaiming the task.
+- `--reason <text>`: Why the task is being reclaimed.
+- `--force`: Allow reclaim even when the latest run still appears alive. (default=false)
+- `--json`: Emit the persisted reclaim handoff as JSON. (default=false)
+
+### task resume-context
+
+Print deterministic recovery context for continuing a task after interruption.
+
+Usage:
+
+```text
+agentplane task resume-context <task-id> [[run-id]] [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable resume context JSON. (default=false)
 
 ### task run
 

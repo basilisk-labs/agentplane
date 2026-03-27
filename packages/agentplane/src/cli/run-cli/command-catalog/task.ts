@@ -7,6 +7,9 @@ import { taskDocSetSpec } from "../../../commands/task/doc-set.command.js";
 import { taskDocShowSpec } from "../../../commands/task/doc-show.command.js";
 import { taskDocSpec } from "../../../commands/task/doc.command.js";
 import { taskExportSpec } from "../../../commands/task/export.command.js";
+import { taskHandoffRecordSpec } from "../../../commands/task/handoff-record.command.js";
+import { taskHandoffShowSpec } from "../../../commands/task/handoff-show.command.js";
+import { taskHandoffSpec } from "../../../commands/task/handoff.command.js";
 import { taskLintSpec } from "../../../commands/task/lint.command.js";
 import { taskListSpec } from "../../../commands/task/list.spec.js";
 import { taskMigrateDocSpec } from "../../../commands/task/migrate-doc.command.js";
@@ -19,6 +22,8 @@ import { taskPlanRejectSpec } from "../../../commands/task/plan-reject.command.j
 import { taskPlanSetSpec } from "../../../commands/task/plan-set.command.js";
 import { taskPlanSpec } from "../../../commands/task/plan.command.js";
 import { taskRebuildIndexSpec } from "../../../commands/task/rebuild-index.command.js";
+import { taskReclaimSpec } from "../../../commands/task/reclaim.command.js";
+import { taskResumeContextSpec } from "../../../commands/task/resume-context.command.js";
 import { taskRunSpec } from "../../../commands/task/run.spec.js";
 import { taskRunCancelSpec } from "../../../commands/task/run-cancel.spec.js";
 import { taskRunResumeSpec } from "../../../commands/task/run-resume.spec.js";
@@ -48,6 +53,21 @@ export const TASK_COMMANDS = [
     needsConfig: false,
     needsTaskContext: false,
   }),
+  entry(
+    taskHandoffSpec,
+    () => import("../../../commands/task/handoff.command.js").then((m) => m.runTaskHandoff),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
+  ),
+  entry(taskHandoffRecordSpec, () =>
+    import("../../../commands/task/handoff-record.command.js").then((m) => m.runTaskHandoffRecord),
+  ),
+  entry(taskHandoffShowSpec, () =>
+    import("../../../commands/task/handoff-show.command.js").then((m) => m.runTaskHandoffShow),
+  ),
   entry(
     taskListSpec,
     (deps) =>
@@ -259,5 +279,11 @@ export const TASK_COMMANDS = [
     import("../../../commands/task/rebuild-index.command.js").then((m) =>
       m.makeRunTaskRebuildIndexHandler(deps.getCtx),
     ),
+  ),
+  entry(taskResumeContextSpec, () =>
+    import("../../../commands/task/resume-context.command.js").then((m) => m.runTaskResumeContext),
+  ),
+  entry(taskReclaimSpec, () =>
+    import("../../../commands/task/reclaim.command.js").then((m) => m.runTaskReclaim),
   ),
 ] as const satisfies readonly CommandEntry[];

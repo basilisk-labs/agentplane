@@ -8,6 +8,7 @@ v1 focuses on stabilizing:
 - Task README frontmatter (YAML, represented here as a JSON object schema)
 - `tasks.json` export snapshot (including checksum metadata)
 - PR artifact metadata (`pr/meta.json`)
+- Task handoff metadata (`handoff/latest.json`)
 
 ## Canonicalization notes (checksum-bearing files)
 
@@ -32,9 +33,11 @@ packages/spec/
     task-readme-frontmatter.schema.json
     tasks-export.schema.json
     pr-meta.schema.json
+    task-handoff.schema.json
   examples/
     config.json
     task-readme-frontmatter.json
     tasks.json
     pr-meta.json
+    task-handoff.json
 ```

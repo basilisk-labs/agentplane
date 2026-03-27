@@ -4,9 +4,11 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import {
+  renderTaskHandoffSchemaJson,
   renderTaskPrMetaSchemaJson,
   renderTaskReadmeFrontmatterSchemaJson,
   renderTasksExportSchemaJson,
+  validateTaskHandoff,
   validateTaskPrMeta,
   validateTaskReadmeFrontmatter,
   validateTasksExportSnapshot,
@@ -24,48 +26,62 @@ describe("task-artifact-schema", () => {
       import.meta.url,
     );
     const specPrMetaUrl = new URL("../../../spec/schemas/pr-meta.schema.json", import.meta.url);
+    const specTaskHandoffUrl = new URL(
+      "../../../spec/schemas/task-handoff.schema.json",
+      import.meta.url,
+    );
     const coreTaskReadmeUrl = new URL(
       "../../schemas/task-readme-frontmatter.schema.json",
       import.meta.url,
     );
     const coreTasksExportUrl = new URL("../../schemas/tasks-export.schema.json", import.meta.url);
     const corePrMetaUrl = new URL("../../schemas/pr-meta.schema.json", import.meta.url);
+    const coreTaskHandoffUrl = new URL("../../schemas/task-handoff.schema.json", import.meta.url);
 
     const renderedTaskReadme = JSON.parse(renderTaskReadmeFrontmatterSchemaJson()) as unknown;
     const renderedTasksExport = JSON.parse(renderTasksExportSchemaJson()) as unknown;
     const renderedPrMeta = JSON.parse(renderTaskPrMetaSchemaJson()) as unknown;
+    const renderedTaskHandoff = JSON.parse(renderTaskHandoffSchemaJson()) as unknown;
 
     const [
       specTaskReadme,
       specTasksExport,
       specPrMeta,
+      specTaskHandoff,
       coreTaskReadme,
       coreTasksExport,
       corePrMeta,
+      coreTaskHandoff,
     ] = await Promise.all([
       readFile(fileURLToPath(specTaskReadmeUrl), "utf8"),
       readFile(fileURLToPath(specTasksExportUrl), "utf8"),
       readFile(fileURLToPath(specPrMetaUrl), "utf8"),
+      readFile(fileURLToPath(specTaskHandoffUrl), "utf8"),
       readFile(fileURLToPath(coreTaskReadmeUrl), "utf8"),
       readFile(fileURLToPath(coreTasksExportUrl), "utf8"),
       readFile(fileURLToPath(corePrMetaUrl), "utf8"),
+      readFile(fileURLToPath(coreTaskHandoffUrl), "utf8"),
     ]);
 
     expect(JSON.parse(specTaskReadme)).toEqual(renderedTaskReadme);
     expect(JSON.parse(specTasksExport)).toEqual(renderedTasksExport);
     expect(JSON.parse(specPrMeta)).toEqual(renderedPrMeta);
+    expect(JSON.parse(specTaskHandoff)).toEqual(renderedTaskHandoff);
     expect(JSON.parse(coreTaskReadme)).toEqual(renderedTaskReadme);
     expect(JSON.parse(coreTasksExport)).toEqual(renderedTasksExport);
     expect(JSON.parse(corePrMeta)).toEqual(renderedPrMeta);
+    expect(JSON.parse(coreTaskHandoff)).toEqual(renderedTaskHandoff);
   });
 
   it("runtime validators accept the published spec examples", async () => {
     const examplesRoot = path.join(process.cwd(), "packages", "spec", "examples");
-    const [taskReadmeExample, tasksExportExample, prMetaExample] = await Promise.all([
-      readFile(path.join(examplesRoot, "task-readme-frontmatter.json"), "utf8"),
-      readFile(path.join(examplesRoot, "tasks.json"), "utf8"),
-      readFile(path.join(examplesRoot, "pr-meta.json"), "utf8"),
-    ]);
+    const [taskReadmeExample, tasksExportExample, prMetaExample, taskHandoffExample] =
+      await Promise.all([
+        readFile(path.join(examplesRoot, "task-readme-frontmatter.json"), "utf8"),
+        readFile(path.join(examplesRoot, "tasks.json"), "utf8"),
+        readFile(path.join(examplesRoot, "pr-meta.json"), "utf8"),
+        readFile(path.join(examplesRoot, "task-handoff.json"), "utf8"),
+      ]);
 
     expect(() =>
       validateTaskReadmeFrontmatter(JSON.parse(taskReadmeExample) as unknown),
@@ -74,6 +90,7 @@ describe("task-artifact-schema", () => {
       validateTasksExportSnapshot(JSON.parse(tasksExportExample) as unknown),
     ).not.toThrow();
     expect(() => validateTaskPrMeta(JSON.parse(prMetaExample) as unknown)).not.toThrow();
+    expect(() => validateTaskHandoff(JSON.parse(taskHandoffExample) as unknown)).not.toThrow();
   });
 
   it("accepts short non-git commit hashes in task README frontmatter", () => {

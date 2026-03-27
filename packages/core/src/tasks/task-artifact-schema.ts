@@ -25,6 +25,46 @@ export type TaskPrMeta = {
   };
 };
 
+export type TaskHandoffRunnerNextAction =
+  | "run"
+  | "resume"
+  | "retry"
+  | "wait"
+  | "cancel_then_resume"
+  | "none";
+
+export type TaskHandoffRunnerState = {
+  run_id?: string | null;
+  status?: "prepared" | "running" | "success" | "failed" | "cancelled" | null;
+  heartbeat_at?: string | null;
+  next_action?: TaskHandoffRunnerNextAction | null;
+  next_command?: string | null;
+  resume_command?: string | null;
+  retry_command?: string | null;
+  state_path?: string | null;
+  trace_path?: string | null;
+};
+
+export type TaskHandoff = {
+  schema_version: 1;
+  task_id: string;
+  created_at: string;
+  from_role: string;
+  to_role?: string | null;
+  reason: string;
+  note?: string;
+  branch?: string | null;
+  base_branch?: string | null;
+  head_sha?: string | null;
+  workspace_root?: string | null;
+  pr_branch?: string | null;
+  runner?: TaskHandoffRunnerState;
+  next_actions?: string[];
+  risks?: string[];
+  open_questions?: string[];
+  evidence_paths?: string[];
+};
+
 type AjvInstance = {
   compile: <T>(schema: unknown) => ValidateFunction<T>;
   errorsText: (errors?: ErrorObject[] | null, opts?: { dataVar?: string }) => string;
@@ -422,11 +462,72 @@ export const TASK_PR_META_SCHEMA = {
   },
 } as const;
 
+export const TASK_HANDOFF_SCHEMA = {
+  $schema: "http://json-schema.org/draft-07/schema#",
+  $id: "https://agentplane.dev/schemas/task-handoff.schema.json",
+  title: "Task handoff artifact (v1)",
+  type: "object",
+  additionalProperties: true,
+  required: ["schema_version", "task_id", "created_at", "from_role", "reason"],
+  properties: {
+    schema_version: { type: "integer", const: 1 },
+    task_id: { type: "string", minLength: 1 },
+    created_at: { type: "string", format: "date-time" },
+    from_role: { type: "string", minLength: 1 },
+    to_role: { type: ["string", "null"], minLength: 1 },
+    reason: { type: "string", minLength: 1 },
+    note: { type: "string" },
+    branch: { type: ["string", "null"], minLength: 1 },
+    base_branch: { type: ["string", "null"], minLength: 1 },
+    head_sha: { type: ["string", "null"], minLength: 7 },
+    workspace_root: { type: ["string", "null"], minLength: 1 },
+    pr_branch: { type: ["string", "null"], minLength: 1 },
+    runner: {
+      type: "object",
+      additionalProperties: true,
+      properties: {
+        run_id: { type: ["string", "null"], minLength: 1 },
+        status: {
+          type: ["string", "null"],
+          enum: ["prepared", "running", "success", "failed", "cancelled", null],
+        },
+        heartbeat_at: { type: ["string", "null"], format: "date-time" },
+        next_action: {
+          type: ["string", "null"],
+          enum: ["run", "resume", "retry", "wait", "cancel_then_resume", "none", null],
+        },
+        next_command: { type: ["string", "null"] },
+        resume_command: { type: ["string", "null"] },
+        retry_command: { type: ["string", "null"] },
+        state_path: { type: ["string", "null"] },
+        trace_path: { type: ["string", "null"] },
+      },
+    },
+    next_actions: {
+      type: "array",
+      items: { type: "string", minLength: 1 },
+    },
+    risks: {
+      type: "array",
+      items: { type: "string", minLength: 1 },
+    },
+    open_questions: {
+      type: "array",
+      items: { type: "string", minLength: 1 },
+    },
+    evidence_paths: {
+      type: "array",
+      items: { type: "string", minLength: 1 },
+    },
+  },
+} as const;
+
 const validateTaskReadmeFrontmatterSchema = AJV.compile<TaskFrontmatter>(
   TASK_README_FRONTMATTER_SCHEMA,
 );
 const validateTasksExportSnapshotSchema = AJV.compile<TasksExportSnapshot>(TASKS_EXPORT_SCHEMA);
 const validateTaskPrMetaSchema = AJV.compile<TaskPrMeta>(TASK_PR_META_SCHEMA);
+const validateTaskHandoffSchema = AJV.compile<TaskHandoff>(TASK_HANDOFF_SCHEMA);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
@@ -528,6 +629,14 @@ export function validateTaskPrMeta(value: unknown): TaskPrMeta {
   return assertValid("pr/meta.json", validateTaskPrMetaSchema, value);
 }
 
+export function listTaskHandoffSchemaErrors(value: unknown): string[] {
+  return schemaErrors("handoff/latest.json", validateTaskHandoffSchema, value);
+}
+
+export function validateTaskHandoff(value: unknown): TaskHandoff {
+  return assertValid("handoff/latest.json", validateTaskHandoffSchema, value);
+}
+
 export function renderTaskReadmeFrontmatterSchemaJson(): string {
   return `${JSON.stringify(TASK_README_FRONTMATTER_SCHEMA, null, 2)}\n`;
 }
@@ -538,4 +647,8 @@ export function renderTasksExportSchemaJson(): string {
 
 export function renderTaskPrMetaSchemaJson(): string {
   return `${JSON.stringify(TASK_PR_META_SCHEMA, null, 2)}\n`;
+}
+
+export function renderTaskHandoffSchemaJson(): string {
+  return `${JSON.stringify(TASK_HANDOFF_SCHEMA, null, 2)}\n`;
 }
