@@ -45,16 +45,22 @@ export {
 export { readTaskReadme, updateTaskReadmeAtomic } from "./tasks/task-readme-io.js";
 
 export {
+  listTaskHandoffSchemaErrors,
   listTaskPrMetaSchemaErrors,
   listTaskReadmeFrontmatterSchemaErrors,
   listTasksExportSnapshotSchemaErrors,
+  renderTaskHandoffSchemaJson,
   renderTaskPrMetaSchemaJson,
   renderTaskReadmeFrontmatterSchemaJson,
   renderTasksExportSchemaJson,
+  validateTaskHandoff,
   validateTaskPrMeta,
   validateTaskReadmeFrontmatter,
   validateTasksExportSnapshot,
   withTaskReadmeFrontmatterDefaults,
+  type TaskHandoff,
+  type TaskHandoffRunnerNextAction,
+  type TaskHandoffRunnerState,
   type TaskPrMeta,
 } from "./tasks/task-artifact-schema.js";
 

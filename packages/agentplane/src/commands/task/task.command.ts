@@ -12,6 +12,9 @@ import { taskCommentSpec } from "./comment.command.js";
 import { taskDeriveSpec } from "./derive.command.js";
 import { taskDocSpec } from "./doc.command.js";
 import { taskExportSpec } from "./export.command.js";
+import { taskHandoffSpec } from "./handoff.command.js";
+import { taskHandoffRecordSpec } from "./handoff-record.command.js";
+import { taskHandoffShowSpec } from "./handoff-show.command.js";
 import { taskLintSpec } from "./lint.command.js";
 import { taskListSpec } from "./list.spec.js";
 import { taskMigrateDocSpec } from "./migrate-doc.command.js";
@@ -21,6 +24,8 @@ import { taskNextSpec } from "./next.spec.js";
 import { taskNormalizeSpec } from "./normalize.command.js";
 import { taskPlanSpec } from "./plan.command.js";
 import { taskRebuildIndexSpec } from "./rebuild-index.command.js";
+import { taskReclaimSpec } from "./reclaim.command.js";
+import { taskResumeContextSpec } from "./resume-context.command.js";
 import { taskRunSpec } from "./run.spec.js";
 import { taskScrubSpec } from "./scrub.command.js";
 import { taskSearchSpec } from "./search.spec.js";
@@ -39,6 +44,9 @@ const TASK_CHILD_SPECS = [
   taskDeriveSpec,
   taskDocSpec,
   taskExportSpec,
+  taskHandoffSpec,
+  taskHandoffRecordSpec,
+  taskHandoffShowSpec,
   taskLintSpec,
   taskListSpec,
   taskMigrateSpec,
@@ -48,6 +56,8 @@ const TASK_CHILD_SPECS = [
   taskNormalizeSpec,
   taskPlanSpec,
   taskRebuildIndexSpec,
+  taskReclaimSpec,
+  taskResumeContextSpec,
   taskRunSpec,
   taskScrubSpec,
   taskSearchSpec,
@@ -91,6 +101,14 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
     {
       cmd: "agentplane task run <task-id>",
       why: "Run an existing task through the shared runner flow.",
+    },
+    {
+      cmd: 'agentplane task handoff record <task-id> --from CODER --reason "Paused for handoff"',
+      why: "Persist a first-class handoff snapshot.",
+    },
+    {
+      cmd: "agentplane task resume-context <task-id>",
+      why: "Inspect deterministic recovery context before resuming or retrying a run.",
     },
   ],
   parse: (raw) => parseGroupCommand(raw),

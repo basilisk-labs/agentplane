@@ -1,0 +1,225 @@
+import { appendFile, mkdir, readFile } from "node:fs/promises";
+import path from "node:path";
+
+import {
+  validateTaskHandoff,
+  type TaskHandoff,
+  type TaskHandoffRunnerNextAction,
+  type TaskHandoffRunnerState,
+} from "@agentplaneorg/core";
+
+import { CliError } from "../../shared/errors.js";
+import { execFileAsync, gitEnv } from "./git.js";
+import type { CommandContext } from "./task-backend.js";
+import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+
+export type TaskHandoffArtifact = TaskHandoff;
+export type TaskHandoffRunnerHint = TaskHandoffRunnerState;
+
+export type TaskHandoffPaths = {
+  handoff_dir: string;
+  latest_path: string;
+  history_path: string;
+};
+
+function trimOrNull(value: string | null | undefined): string | null {
+  const trimmed = value?.trim() ?? "";
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function normalizeStringList(values: string[] | undefined): string[] | undefined {
+  if (!values?.length) return undefined;
+  const normalized = values.map((value) => value.trim()).filter((value) => value.length > 0);
+  return normalized.length > 0 ? normalized : undefined;
+}
+
+export function resolveTaskHandoffPaths(opts: {
+  git_root: string;
+  workflow_dir: string;
+  task_id: string;
+}): TaskHandoffPaths {
+  const handoff_dir = path.join(opts.git_root, opts.workflow_dir, opts.task_id, "handoff");
+  return {
+    handoff_dir,
+    latest_path: path.join(handoff_dir, "latest.json"),
+    history_path: path.join(handoff_dir, "history.jsonl"),
+  };
+}
+
+export async function readTaskHandoffLatest(
+  paths: TaskHandoffPaths,
+): Promise<TaskHandoffArtifact | null> {
+  try {
+    const raw = await readFile(paths.latest_path, "utf8");
+    return validateTaskHandoff(JSON.parse(raw) as unknown);
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException | null)?.code;
+    if (code === "ENOENT") return null;
+    throw err;
+  }
+}
+
+export async function readTaskHandoffLatestRequired(opts: {
+  task_id: string;
+  paths: TaskHandoffPaths;
+}): Promise<TaskHandoffArtifact> {
+  const handoff = await readTaskHandoffLatest(opts.paths);
+  if (handoff) return handoff;
+  throw new CliError({
+    exitCode: 4,
+    code: "E_IO",
+    message: `Task handoff artifact not found for ${opts.task_id} (${opts.paths.latest_path})`,
+  });
+}
+
+export async function writeTaskHandoff(opts: {
+  paths: TaskHandoffPaths;
+  handoff: TaskHandoffArtifact;
+}): Promise<void> {
+  await mkdir(opts.paths.handoff_dir, { recursive: true });
+  await writeJsonStableIfChanged(opts.paths.latest_path, opts.handoff);
+  await appendFile(opts.paths.history_path, `${JSON.stringify(opts.handoff)}\n`, "utf8");
+}
+
+export async function currentGitBranch(gitRoot: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", ["branch", "--show-current"], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    return trimOrNull(stdout);
+  } catch {
+    return null;
+  }
+}
+
+export async function readTaskPrBranch(opts: {
+  ctx: CommandContext;
+  task_id: string;
+}): Promise<string | null> {
+  const summary = await readTaskPrMetaSummary(opts);
+  return summary.branch;
+}
+
+export async function readTaskPrMetaSummary(opts: {
+  ctx: CommandContext;
+  task_id: string;
+}): Promise<{ branch: string | null; base: string | null }> {
+  const prMetaPath = path.join(
+    opts.ctx.resolvedProject.gitRoot,
+    opts.ctx.config.paths.workflow_dir,
+    opts.task_id,
+    "pr",
+    "meta.json",
+  );
+  try {
+    const raw = JSON.parse(await readFile(prMetaPath, "utf8")) as {
+      branch?: string;
+      base?: string;
+    };
+    return {
+      branch: trimOrNull(raw.branch),
+      base: trimOrNull(raw.base),
+    };
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException | null)?.code;
+    if (code === "ENOENT") return { branch: null, base: null };
+    throw err;
+  }
+}
+
+export function buildTaskHandoffArtifact(opts: {
+  task_id: string;
+  created_at: string;
+  from_role: string;
+  to_role?: string | null;
+  reason: string;
+  note?: string;
+  branch?: string | null;
+  base_branch?: string | null;
+  head_sha?: string | null;
+  workspace_root?: string | null;
+  pr_branch?: string | null;
+  runner?: TaskHandoffRunnerHint | undefined;
+  next_actions?: string[] | undefined;
+  risks?: string[] | undefined;
+  open_questions?: string[] | undefined;
+  evidence_paths?: string[] | undefined;
+}): TaskHandoffArtifact {
+  return validateTaskHandoff({
+    schema_version: 1,
+    task_id: opts.task_id,
+    created_at: opts.created_at,
+    from_role: opts.from_role.trim(),
+    to_role: trimOrNull(opts.to_role),
+    reason: opts.reason.trim(),
+    note: trimOrNull(opts.note) ?? undefined,
+    branch: trimOrNull(opts.branch),
+    base_branch: trimOrNull(opts.base_branch),
+    head_sha: trimOrNull(opts.head_sha),
+    workspace_root: trimOrNull(opts.workspace_root),
+    pr_branch: trimOrNull(opts.pr_branch),
+    runner: opts.runner,
+    next_actions: normalizeStringList(opts.next_actions),
+    risks: normalizeStringList(opts.risks),
+    open_questions: normalizeStringList(opts.open_questions),
+    evidence_paths: normalizeStringList(opts.evidence_paths),
+  } satisfies TaskHandoffArtifact);
+}
+
+export function buildRunnerHintCommands(opts: {
+  task_id: string;
+  run_id: string | null;
+  status: string | null;
+}): {
+  next_action: TaskHandoffRunnerNextAction;
+  next_command: string | null;
+  resume_command: string | null;
+  retry_command: string | null;
+} {
+  const taskRunCommand = `agentplane task run ${opts.task_id}`;
+  const resumeCommand = opts.run_id
+    ? `agentplane task run resume ${opts.task_id} ${opts.run_id}`
+    : null;
+  const retryCommand = opts.run_id
+    ? `agentplane task run retry ${opts.task_id} ${opts.run_id}`
+    : null;
+  if (!opts.run_id || !opts.status) {
+    return {
+      next_action: "run",
+      next_command: taskRunCommand,
+      resume_command: null,
+      retry_command: null,
+    };
+  }
+  if (opts.status === "prepared") {
+    return {
+      next_action: "resume",
+      next_command: resumeCommand,
+      resume_command: resumeCommand,
+      retry_command: retryCommand,
+    };
+  }
+  if (opts.status === "failed" || opts.status === "cancelled") {
+    return {
+      next_action: "retry",
+      next_command: retryCommand,
+      resume_command: resumeCommand,
+      retry_command: retryCommand,
+    };
+  }
+  if (opts.status === "success") {
+    return {
+      next_action: "none",
+      next_command: null,
+      resume_command: resumeCommand,
+      retry_command: retryCommand,
+    };
+  }
+  return {
+    next_action: "wait",
+    next_command: null,
+    resume_command: resumeCommand,
+    retry_command: retryCommand,
+  };
+}
