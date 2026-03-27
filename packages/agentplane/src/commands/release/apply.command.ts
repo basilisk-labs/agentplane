@@ -10,6 +10,7 @@ import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { GitContext } from "../shared/git-context.js";
 import { ensureNetworkApproved } from "../shared/network-approval.js";
+import { runOperatorPipeline } from "../shared/operator-pipeline.js";
 import {
   cleanHookEnv,
   maybePersistExpectedCliVersion,
@@ -343,63 +344,79 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
     });
   }
 
-  const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
-  const gitRoot = resolved.gitRoot;
-  const { planDir, plan, notesPath } = await resolveReleasePlanInputs({
-    gitRoot,
-    planOverride: flags.plan,
-  });
+  return await runOperatorPipeline({
+    init: async () => {
+      const resolved = await resolveProject({
+        cwd: ctx.cwd,
+        rootOverride: ctx.rootOverride ?? null,
+      });
+      const gitRoot = resolved.gitRoot;
+      const { planDir, plan, notesPath } = await resolveReleasePlanInputs({
+        gitRoot,
+        planOverride: flags.plan,
+      });
+      return {
+        resolved,
+        gitRoot,
+        planDir,
+        plan,
+        notesPath,
+        corePkgPath: path.join(gitRoot, "packages", "core", "package.json"),
+        agentplanePkgPath: path.join(gitRoot, "packages", "agentplane", "package.json"),
+        npmVersionChecked: false,
+      };
+    },
+    preflight: async (state) => {
+      if ((state.plan.bump === "minor" || state.plan.bump === "major") && flags.yes !== true) {
+        throw usageError({
+          spec: releaseApplySpec,
+          command: "release apply",
+          message: `Bump '${state.plan.bump}' requires explicit approval. Re-run with --yes.`,
+        });
+      }
 
-  if ((plan.bump === "minor" || plan.bump === "major") && flags.yes !== true) {
-    throw usageError({
-      spec: releaseApplySpec,
-      command: "release apply",
-      message: `Bump '${plan.bump}' requires explicit approval. Re-run with --yes.`,
-    });
-  }
+      await ensureReleasePlanMatchesRepoState({
+        gitRoot: state.gitRoot,
+        plan: state.plan,
+        corePkgPath: state.corePkgPath,
+        agentplanePkgPath: state.agentplanePkgPath,
+      });
 
-  const corePkgPath = path.join(gitRoot, "packages", "core", "package.json");
-  const agentplanePkgPath = path.join(gitRoot, "packages", "agentplane", "package.json");
-  await ensureReleasePlanMatchesRepoState({
-    gitRoot,
-    plan,
-    corePkgPath,
-    agentplanePkgPath,
-  });
-
-  let npmVersionChecked = false;
-  if (flags.push) {
-    npmVersionChecked = await runPushPreflight({
-      agentplaneDir: resolved.agentplaneDir,
-      gitRoot,
-      remote: flags.remote,
-      nextTag: plan.nextTag,
-      nextVersion: plan.nextVersion,
-      yes: flags.yes,
-    });
-  }
-
-  const git = new GitContext({ gitRoot });
-  const { releaseCommit } = await applyReleaseMutation({
-    agentplaneDir: resolved.agentplaneDir,
-    gitRoot,
-    git,
-    notesPath,
-    corePkgPath,
-    agentplanePkgPath,
-    nextTag: plan.nextTag,
-    nextVersion: plan.nextVersion,
-  });
-
-  return await finalizeReleaseApply({
-    gitRoot,
-    planDir,
-    notesPath,
-    plan,
-    npmVersionChecked,
-    releaseCommit,
-    push: flags.push,
-    remote: flags.remote,
+      if (flags.push) {
+        state.npmVersionChecked = await runPushPreflight({
+          agentplaneDir: state.resolved.agentplaneDir,
+          gitRoot: state.gitRoot,
+          remote: flags.remote,
+          nextTag: state.plan.nextTag,
+          nextVersion: state.plan.nextVersion,
+          yes: flags.yes,
+        });
+      }
+    },
+    execute: async (state) => {
+      const git = new GitContext({ gitRoot: state.gitRoot });
+      return await applyReleaseMutation({
+        agentplaneDir: state.resolved.agentplaneDir,
+        gitRoot: state.gitRoot,
+        git,
+        notesPath: state.notesPath,
+        corePkgPath: state.corePkgPath,
+        agentplanePkgPath: state.agentplanePkgPath,
+        nextTag: state.plan.nextTag,
+        nextVersion: state.plan.nextVersion,
+      });
+    },
+    finalize: async (state, mutation) =>
+      await finalizeReleaseApply({
+        gitRoot: state.gitRoot,
+        planDir: state.planDir,
+        notesPath: state.notesPath,
+        plan: state.plan,
+        npmVersionChecked: state.npmVersionChecked,
+        releaseCommit: mutation.releaseCommit,
+        push: flags.push,
+        remote: flags.remote,
+      }),
   });
 };
 
