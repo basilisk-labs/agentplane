@@ -53,6 +53,7 @@ import {
   redmineConfigMissingEnvMessage,
   redmineIssueIdMissingMessage,
   sleep,
+  toTaskSummaries,
   toStringSafe,
   unknownTaskIdMessage,
   validateTaskId,
@@ -62,6 +63,7 @@ import {
   type TaskBackendInspectionResult,
   type TaskData,
   type TaskDocMeta,
+  type TaskSummary,
   type TaskWriteOptions,
 } from "./shared.js";
 
@@ -189,14 +191,16 @@ export class RedmineBackend implements TaskBackend {
     return await this.cache.listTasks();
   }
 
-  async listProjectionTasks(): Promise<TaskData[]> {
+  async listProjectionTasks(): Promise<TaskSummary[]> {
     if (!this.cache) {
       throw new BackendError(
         "Redmine cache is disabled; projection reads are unavailable",
         "E_BACKEND",
       );
     }
-    return await this.cache.listTasks();
+    return this.cache.listProjectionTasks
+      ? await this.cache.listProjectionTasks()
+      : toTaskSummaries(await this.cache.listTasks());
   }
 
   async exportTasksJson(outputPath: string): Promise<void> {

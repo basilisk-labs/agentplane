@@ -14,7 +14,7 @@ import {
   writeConfig,
   writeDefaultConfig,
 } from "../../cli/run-cli.test-helpers.js";
-import { loadCommandContext, loadTaskFromContext } from "./task-backend.js";
+import { listTaskSummariesMemo, loadCommandContext, loadTaskFromContext } from "./task-backend.js";
 
 async function writeLocalBackendConfig(root: string): Promise<void> {
   const configPath = path.join(root, ".agentplane", "backends", "local", "backend.json");
@@ -123,5 +123,33 @@ describe("commands/shared/task-backend CommandContext", () => {
     const task = await loadTaskFromContext({ ctx, taskId: created.id });
     expect(task.id).toBe(created.id);
     expect(task.title).toBe("Context branch fallback");
+  });
+
+  it("listTaskSummariesMemo falls back to summary projection when the backend has no explicit projection read", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeLocalBackendConfig(root);
+
+    const created = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "Projection fallback",
+      description: "Ensure summary memo strips doc-heavy fields from full backend reads",
+      owner: "TESTER",
+      priority: "med",
+      tags: ["testing"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    delete ctx.taskBackend.listProjectionTasks;
+    const summaries = await listTaskSummariesMemo(ctx);
+
+    expect(summaries).toHaveLength(1);
+    expect(summaries[0]?.id).toBe(created.id);
+    expect(summaries[0]).not.toHaveProperty("doc");
+    expect(summaries[0]).not.toHaveProperty("sections");
+    expect(summaries[0]).not.toHaveProperty("events");
   });
 });

@@ -1,8 +1,12 @@
-import { type TaskData } from "../../backends/task-backend.js";
+import { type TaskSummary } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { invalidValueMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import {
+  listTaskSummariesMemo,
+  loadCommandContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 import {
   buildDependencyState,
@@ -34,7 +38,7 @@ export async function cmdTaskSearch(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const tasks = await ctx.taskBackend.listTasks();
+    const tasks = await listTaskSummariesMemo(ctx);
     handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
     const depState = buildDependencyState(tasks);
     let filtered = tasks;
@@ -53,7 +57,7 @@ export async function cmdTaskSearch(opts: {
         return tags.some((tag) => wanted.has(tag));
       });
     }
-    let matches: TaskData[] = [];
+    let matches: TaskSummary[] = [];
     if (opts.regex) {
       let pattern: RegExp;
       try {

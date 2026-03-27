@@ -37,11 +37,13 @@ import {
   resolveDocUpdatedByFromFrontmatter,
   resolveDocUpdatedByFromTask,
   taskRecordToData,
+  toTaskSummaries,
   validateTaskId,
   writeTasksExportFromTasks,
   BackendError,
   type TaskBackend,
   type TaskData,
+  type TaskSummary,
   type TaskWriteOptions,
 } from "./shared.js";
 
@@ -249,8 +251,8 @@ export class LocalBackend implements TaskBackend {
     return tasks;
   }
 
-  async listProjectionTasks(): Promise<TaskData[]> {
-    return await this.listTasks();
+  async listProjectionTasks(): Promise<TaskSummary[]> {
+    return toTaskSummaries(await this.listTasks());
   }
 
   getLastListWarnings(): string[] {

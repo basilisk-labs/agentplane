@@ -54,6 +54,8 @@ export type TaskData = {
   id_source?: string;
 };
 
+export type TaskSummary = Omit<TaskData, "doc" | "sections" | "events">;
+
 export type TaskDocMeta = Pick<
   TaskData,
   "doc" | "doc_version" | "doc_updated_at" | "doc_updated_by"
@@ -113,22 +115,49 @@ export type TaskBackendInspectionResult = {
   configuredFieldNameDrift: TaskBackendFieldNameDrift[];
 };
 
-export type TaskBackend = {
+export type TaskBackendBase = {
   id: string;
   capabilities: TaskBackendCapabilities;
+};
+
+export type TaskBackendQueryPort = {
   listTasks(): Promise<TaskData[]>;
-  listProjectionTasks?(): Promise<TaskData[]>;
-  getLastListWarnings?(): string[];
   getTask(taskId: string): Promise<TaskData | null>;
   getTasks?(taskIds: string[]): Promise<(TaskData | null)[]>;
+};
+
+export type TaskBackendProjectionPort = {
+  listProjectionTasks?(): Promise<TaskSummary[]>;
+  getLastListWarnings?(): string[];
+};
+
+export type TaskBackendMutationPort = {
   writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void>;
   writeTasks?(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void>;
   normalizeTasks?(): Promise<{ scanned: number; changed: number }>;
+};
+
+export type TaskBackendSyncPort = {
   refreshProjection?(opts: TaskProjectionRefreshOptions): Promise<void>;
   migrateCanonicalState?(): Promise<TaskCanonicalStateMigrationResult>;
+  sync?(opts: {
+    direction: "push" | "pull";
+    conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
+    quiet: boolean;
+    confirm: boolean;
+  }): Promise<void>;
+};
+
+export type TaskBackendInspectionPort = {
   inspectConfiguration?(): Promise<TaskBackendInspectionResult>;
+};
+
+export type TaskBackendExportPort = {
   exportProjectionSnapshot?(outputPath: string): Promise<void>;
   exportTasksJson?(outputPath: string): Promise<void>;
+};
+
+export type TaskBackendDocPort = {
   getTaskDoc?(taskId: string): Promise<string>;
   setTaskDoc?(
     taskId: string,
@@ -137,11 +166,18 @@ export type TaskBackend = {
     opts?: TaskWriteOptions,
   ): Promise<void>;
   touchTaskDocMetadata?(taskId: string, updatedBy?: string, opts?: TaskWriteOptions): Promise<void>;
-  sync?(opts: {
-    direction: "push" | "pull";
-    conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
-    quiet: boolean;
-    confirm: boolean;
-  }): Promise<void>;
+};
+
+export type TaskBackendIdentityPort = {
   generateTaskId?(opts: { length: number; attempts: number }): Promise<string>;
 };
+
+export type TaskBackend = TaskBackendBase &
+  TaskBackendQueryPort &
+  TaskBackendProjectionPort &
+  TaskBackendMutationPort &
+  TaskBackendSyncPort &
+  TaskBackendInspectionPort &
+  TaskBackendExportPort &
+  TaskBackendDocPort &
+  TaskBackendIdentityPort;

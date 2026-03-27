@@ -1,6 +1,6 @@
 import { invalidValueForFlag, missingValueMessage, warnMessage } from "../../../cli/output.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
-import type { TaskData } from "../../../backends/task-backend.js";
+import type { TaskSummary } from "../../../backends/task-backend.js";
 import { CliError } from "../../../shared/errors.js";
 import { toStringArray } from "./tags.js";
 
@@ -119,7 +119,7 @@ export function handleTaskListWarnings(opts: {
   process.stderr.write(`${warnMessage(message)}\n`);
 }
 
-export function taskTextBlob(task: TaskData): string {
+export function taskTextBlob(task: TaskSummary): string {
   const parts: string[] = [];
   for (const key of ["id", "title", "description", "status", "priority", "owner"] as const) {
     const value = (task as Record<string, unknown>)[key];

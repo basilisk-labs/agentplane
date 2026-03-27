@@ -10,13 +10,19 @@ import {
 } from "@agentplaneorg/core";
 
 import { CliError } from "../../shared/errors.js";
-import { loadTaskBackend, taskRecordToData, type TaskData } from "../../backends/task-backend.js";
+import {
+  loadTaskBackend,
+  taskRecordToData,
+  toTaskSummary,
+  type TaskData,
+  type TaskSummary,
+} from "../../backends/task-backend.js";
 import { gitShowFile, toGitPath } from "./git-diff.js";
 import { GitContext } from "./git-context.js";
 import { gitListTaskBranches, parseTaskIdFromBranch } from "./git-worktree.js";
 
 export type CommandMemo = {
-  taskList?: Promise<TaskData[]>;
+  taskProjection?: Promise<TaskSummary[]>;
   changedPaths?: Promise<string[]>;
   headCommit?: Promise<string>;
   agentIds?: Promise<string[]>;
@@ -232,17 +238,23 @@ export async function loadBackendTask(opts: {
   };
 }
 
-export async function listTasksMemo(ctx: CommandContext): Promise<TaskData[]> {
-  ctx.memo.taskList ??= ctx.taskBackend.listTasks();
-  return await ctx.memo.taskList;
+export async function listTaskSummariesMemo(ctx: CommandContext): Promise<TaskSummary[]> {
+  ctx.memo.taskProjection ??= (async () => {
+    if (ctx.taskBackend.listProjectionTasks) {
+      return await ctx.taskBackend.listProjectionTasks();
+    }
+    const tasks = await ctx.taskBackend.listTasks();
+    return tasks.map((task) => toTaskSummary(task));
+  })();
+  return await ctx.memo.taskProjection;
 }
 
-export async function listTaskProjection(ctx: CommandContext): Promise<TaskData[] | null> {
+export async function listTaskProjection(ctx: CommandContext): Promise<TaskSummary[] | null> {
   if (ctx.taskBackend.listProjectionTasks) {
     return await ctx.taskBackend.listProjectionTasks();
   }
   if (ctx.taskBackend.capabilities.reads_from_projection_by_default) {
-    return await listTasksMemo(ctx);
+    return await listTaskSummariesMemo(ctx);
   }
   return null;
 }

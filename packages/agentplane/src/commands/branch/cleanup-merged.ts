@@ -15,7 +15,11 @@ import {
   parseTaskIdFromBranch,
 } from "../shared/git-worktree.js";
 import { isPathWithin, resolvePathFallback } from "../shared/path.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import {
+  listTaskProjection,
+  loadCommandContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 import { archivePrArtifacts } from "./internal/archive-pr.js";
 
@@ -76,7 +80,7 @@ export async function cmdCleanupMerged(opts: {
 
     const repoRoot = await resolvePathFallback(resolved.gitRoot);
 
-    const tasks = await ctx.taskBackend.listTasks();
+    const tasks = (await listTaskProjection(ctx)) ?? [];
     const tasksById = new Map(tasks.map((task) => [task.id, task]));
     const prefix = config.branch.task_prefix;
     const branches = await gitListTaskBranches(resolved.gitRoot, prefix);
