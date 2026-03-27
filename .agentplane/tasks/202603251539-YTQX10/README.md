@@ -1,10 +1,10 @@
 ---
 id: "202603251539-YTQX10"
 title: "Consolidate CI, freshness, and sync tooling into shared generators"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -15,18 +15,30 @@ tags:
   - "refactor"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-27T18:32:56.147Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: extracting shared freshness and sync harnesses for generated artifacts and local CI orchestration without changing task routing semantics or broadening the refactor surface."
+events:
+  -
+    type: "status"
+    at: "2026-03-27T18:33:06.163Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: extracting shared freshness and sync harnesses for generated artifacts and local CI orchestration without changing task routing semantics or broadening the refactor surface."
 doc_version: 3
-doc_updated_at: "2026-03-25T15:39:11.478Z"
+doc_updated_at: "2026-03-27T18:33:06.164Z"
 doc_updated_by: "CODER"
 description: "Replace duplicated CI orchestration, freshness checks, and mirror-sync scripts with declarative shared helpers so generated docs, inventories, schemas, and local CI pipelines derive from one reusable control model."
 sections:
@@ -38,15 +50,13 @@ sections:
     - In scope: Replace duplicated CI orchestration, freshness checks, and mirror-sync scripts with declarative shared helpers so generated docs, inventories, schemas, and local CI pipelines derive from one reusable control model.
     - Out of scope: unrelated refactors not required for "Consolidate CI, freshness, and sync tooling into shared generators".
   Plan: |-
-    1. Implement the change for "Consolidate CI, freshness, and sync tooling into shared generators".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+    1. Extract a shared freshness harness that generates and checks CLI/reference/bootstrap/inventory artifacts from one declarative definition instead of per-script bespoke runners.
+    2. Extract a shared sync harness for mirror/schema/agent-template style scripts, then rewire local CI selection to compose the shared freshness and sync steps rather than duplicating step lists.
+    3. Run focused freshness/sync/local-CI regressions and minimal script checks, then record any remaining workflow-specific exceptions explicitly in Findings.
   Verify Steps: |-
-    <!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-    
-    1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+    1. Run the focused freshness and sync script checks. Expected: the shared helper paths report no drift and no script loses its existing contract.
+    2. Run targeted local-CI selection or harness regressions for the touched orchestration paths. Expected: fast-path selection still chooses the correct step set without widening scope.
+    3. Run the smallest relevant builds/format/lint pass for touched script and CLI surfaces. Expected: the refactor stays task-scoped and leaves no generated artifact drift behind.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -69,17 +79,15 @@ Replace duplicated CI orchestration, freshness checks, and mirror-sync scripts w
 
 ## Plan
 
-1. Implement the change for "Consolidate CI, freshness, and sync tooling into shared generators".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Extract a shared freshness harness that generates and checks CLI/reference/bootstrap/inventory artifacts from one declarative definition instead of per-script bespoke runners.
+2. Extract a shared sync harness for mirror/schema/agent-template style scripts, then rewire local CI selection to compose the shared freshness and sync steps rather than duplicating step lists.
+3. Run focused freshness/sync/local-CI regressions and minimal script checks, then record any remaining workflow-specific exceptions explicitly in Findings.
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. Run the focused freshness and sync script checks. Expected: the shared helper paths report no drift and no script loses its existing contract.
+2. Run targeted local-CI selection or harness regressions for the touched orchestration paths. Expected: fast-path selection still chooses the correct step set without widening scope.
+3. Run the smallest relevant builds/format/lint pass for touched script and CLI surfaces. Expected: the refactor stays task-scoped and leaves no generated artifact drift behind.
 
 ## Verification
 
