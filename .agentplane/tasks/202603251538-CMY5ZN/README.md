@@ -1,10 +1,10 @@
 ---
 id: "202603251538-CMY5ZN"
 title: "Extract recipe domain into packages/recipes and narrow scenario coupling"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -15,18 +15,30 @@ tags:
   - "refactor"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-27T17:53:11.338Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: extract the pure recipe contracts and parsers into packages/recipes first, then rewire resolver/scenario consumers around that package so the domain move lands before any broader scenario or runner cleanup."
+events:
+  -
+    type: "status"
+    at: "2026-03-27T17:53:12.407Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: extract the pure recipe contracts and parsers into packages/recipes first, then rewire resolver/scenario consumers around that package so the domain move lands before any broader scenario or runner cleanup."
 doc_version: 3
-doc_updated_at: "2026-03-25T15:38:57.760Z"
+doc_updated_at: "2026-03-27T17:53:12.409Z"
 doc_updated_by: "CODER"
 description: "Move recipe schema parsing, installed-state logic, compatibility resolution, and catalog/runtime helpers into packages/recipes, then reduce scenario execution glue so delivery concerns no longer own the recipe domain directly."
 sections:
@@ -38,15 +50,13 @@ sections:
     - In scope: Move recipe schema parsing, installed-state logic, compatibility resolution, and catalog/runtime helpers into packages/recipes, then reduce scenario execution glue so delivery concerns no longer own the recipe domain directly.
     - Out of scope: unrelated refactors not required for "Extract recipe domain into packages/recipes and narrow scenario coupling".
   Plan: |-
-    1. Implement the change for "Extract recipe domain into packages/recipes and narrow scenario coupling".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+    1. Extract pure recipe contracts, manifest/scenario parsing, and normalization helpers from packages/agentplane/src/commands/recipes/impl into packages/recipes with package-level exports and tests.
+    2. Rewire recipe resolver, scenario commands, and runner-facing consumers to import the extracted domain from @agentplaneorg/recipes without changing selection or installed-recipe behavior.
+    3. Run focused recipe/scenario/runner regressions and minimal builds, then record any remaining coupling follow-up in Findings.
   Verify Steps: |-
-    <!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-    
-    1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+    1. Run package-level recipe domain coverage for manifest and scenario parsing after extraction. Expected: packages/recipes becomes the canonical source for these contracts and the targeted tests pass.
+    2. Run resolver and scenario CLI regressions against the rewired imports. Expected: recipe selection, scenario info/list, and installed recipe behavior remain unchanged.
+    3. Run the smallest relevant runner-facing regression plus builds. Expected: runner/context consumers still materialize recipe-backed scenarios correctly and both package builds pass.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -69,17 +79,15 @@ Move recipe schema parsing, installed-state logic, compatibility resolution, and
 
 ## Plan
 
-1. Implement the change for "Extract recipe domain into packages/recipes and narrow scenario coupling".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Extract pure recipe contracts, manifest/scenario parsing, and normalization helpers from packages/agentplane/src/commands/recipes/impl into packages/recipes with package-level exports and tests.
+2. Rewire recipe resolver, scenario commands, and runner-facing consumers to import the extracted domain from @agentplaneorg/recipes without changing selection or installed-recipe behavior.
+3. Run focused recipe/scenario/runner regressions and minimal builds, then record any remaining coupling follow-up in Findings.
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. Run package-level recipe domain coverage for manifest and scenario parsing after extraction. Expected: packages/recipes becomes the canonical source for these contracts and the targeted tests pass.
+2. Run resolver and scenario CLI regressions against the rewired imports. Expected: recipe selection, scenario info/list, and installed recipe behavior remain unchanged.
+3. Run the smallest relevant runner-facing regression plus builds. Expected: runner/context consumers still materialize recipe-backed scenarios correctly and both package builds pass.
 
 ## Verification
 
