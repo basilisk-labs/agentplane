@@ -22,6 +22,7 @@ import {
 import { agentsSpec, preflightSpec, quickstartSpec, roleSpec } from "../commands/core.js";
 import { ideSyncSpec } from "../commands/ide.js";
 import { initSpec } from "../commands/init.js";
+import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
 import { entry, type CommandEntry } from "./shared.js";
 
@@ -30,6 +31,7 @@ export const CORE_COMMANDS = [
     needsProject: false,
     needsConfig: false,
     needsTaskContext: false,
+    invocation: requireCanonicalCommandInvocation(["init"]),
   }),
   entry(
     upgradeSpec,
@@ -71,11 +73,13 @@ export const CORE_COMMANDS = [
     needsProject: false,
     needsConfig: false,
     needsTaskContext: false,
+    invocation: requireCanonicalCommandInvocation(["quickstart"]),
   }),
   entry(preflightSpec, () => import("../commands/core.js").then((m) => m.runPreflight), {
     needsProject: false,
     needsConfig: false,
     needsTaskContext: false,
+    invocation: requireCanonicalCommandInvocation(["preflight"]),
   }),
   entry(
     runtimeSpec,
@@ -99,6 +103,7 @@ export const CORE_COMMANDS = [
     needsProject: false,
     needsConfig: false,
     needsTaskContext: false,
+    invocation: requireCanonicalCommandInvocation(["role"]),
   }),
   entry(
     agentsSpec,
@@ -116,6 +121,7 @@ export const CORE_COMMANDS = [
       needsProject: true,
       needsConfig: true,
       needsTaskContext: false,
+      invocation: requireCanonicalCommandInvocation(["config", "show"]),
     },
   ),
   entry(

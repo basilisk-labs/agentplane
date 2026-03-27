@@ -11,23 +11,23 @@ export type BootstrapSection = {
 };
 
 export const BOOTSTRAP_PREFLIGHT_COMMANDS = [
-  "agentplane config show",
-  "agentplane quickstart",
-  "agentplane task list",
+  COMMAND_SNIPPETS.core.configShow,
+  COMMAND_SNIPPETS.core.quickstart,
+  COMMAND_SNIPPETS.core.taskList,
   "git status --short --untracked-files=no",
   "git rev-parse --abbrev-ref HEAD",
 ] as const;
 
 export const BOOTSTRAP_TASK_PREP_COMMANDS = [
   COMMAND_SNIPPETS.core.taskNew,
-  'agentplane task plan set <task-id> --text "..." --updated-by <ROLE>',
-  "agentplane task plan approve <task-id> --by ORCHESTRATOR",
+  COMMAND_SNIPPETS.core.taskPlanSet,
+  COMMAND_SNIPPETS.core.taskPlanApprove,
 ];
 
 export const BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS = [
   ...BOOTSTRAP_TASK_PREP_COMMANDS,
   COMMAND_SNIPPETS.core.startTask,
-  "agentplane task verify-show <task-id>",
+  COMMAND_SNIPPETS.core.taskVerifyShow,
   COMMAND_SNIPPETS.core.verifyTask,
   'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>',
 ] as const;

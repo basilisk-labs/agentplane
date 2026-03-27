@@ -38,6 +38,7 @@ import { taskVerifyOkSpec } from "../../../commands/task/verify-ok.command.js";
 import { taskVerifyReworkSpec } from "../../../commands/task/verify-rework.command.js";
 import { taskVerifyShowSpec } from "../../../commands/task/verify-show.command.js";
 import { taskVerifySpec } from "../../../commands/task/verify.command.js";
+import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
 import { entry, type CommandEntry } from "./shared.js";
 
@@ -47,8 +48,13 @@ export const TASK_COMMANDS = [
     needsConfig: false,
     needsTaskContext: false,
   }),
-  entry(taskListSpec, (deps) =>
-    import("../../../commands/task/list.run.js").then((m) => m.makeRunTaskListHandler(deps.getCtx)),
+  entry(
+    taskListSpec,
+    (deps) =>
+      import("../../../commands/task/list.run.js").then((m) =>
+        m.makeRunTaskListHandler(deps.getCtx),
+      ),
+    { invocation: requireCanonicalCommandInvocation(["task", "list"]) },
   ),
   entry(taskNextSpec, (deps) =>
     import("../../../commands/task/next.run.js").then((m) => m.makeRunTaskNextHandler(deps.getCtx)),
@@ -58,8 +64,13 @@ export const TASK_COMMANDS = [
       m.makeRunTaskSearchHandler(deps.getCtx),
     ),
   ),
-  entry(taskShowSpec, (deps) =>
-    import("../../../commands/task/show.run.js").then((m) => m.makeRunTaskShowHandler(deps.getCtx)),
+  entry(
+    taskShowSpec,
+    (deps) =>
+      import("../../../commands/task/show.run.js").then((m) =>
+        m.makeRunTaskShowHandler(deps.getCtx),
+      ),
+    { invocation: requireCanonicalCommandInvocation(["task", "show"]) },
   ),
   entry(taskRunShowSpec, () =>
     import("../../../commands/task/run-show.command.js").then((m) => m.runTaskRunShow),
@@ -82,10 +93,15 @@ export const TASK_COMMANDS = [
   entry(taskRunRetrySpec, () =>
     import("../../../commands/task/run-retry.command.js").then((m) => m.runTaskRunRetry),
   ),
-  entry(taskNewSpec, (deps) =>
-    import("../../../commands/task/new.command.js").then((m) =>
-      m.makeRunTaskNewHandler(deps.getCtx),
-    ),
+  entry(
+    taskNewSpec,
+    (deps) =>
+      import("../../../commands/task/new.command.js").then((m) =>
+        m.makeRunTaskNewHandler(deps.getCtx),
+      ),
+    {
+      invocation: requireCanonicalCommandInvocation(["task", "new"]),
+    },
   ),
   entry(taskDeriveSpec, (deps) =>
     import("../../../commands/task/derive.command.js").then((m) =>
@@ -97,10 +113,15 @@ export const TASK_COMMANDS = [
       m.makeRunTaskCloseDuplicateHandler(deps.getCtx),
     ),
   ),
-  entry(taskStartReadySpec, (deps) =>
-    import("../../../commands/task/start-ready.command.js").then((m) =>
-      m.makeRunTaskStartReadyHandler(deps.getCtx),
-    ),
+  entry(
+    taskStartReadySpec,
+    (deps) =>
+      import("../../../commands/task/start-ready.command.js").then((m) =>
+        m.makeRunTaskStartReadyHandler(deps.getCtx),
+      ),
+    {
+      invocation: requireCanonicalCommandInvocation(["task", "start-ready"]),
+    },
   ),
   entry(taskCloseNoopSpec, (deps) =>
     import("../../../commands/task/close-noop.command.js").then((m) =>
@@ -186,15 +207,21 @@ export const TASK_COMMANDS = [
       needsTaskContext: false,
     },
   ),
-  entry(taskPlanSetSpec, (deps) =>
-    import("../../../commands/task/plan-set.command.js").then((m) =>
-      m.makeRunTaskPlanSetHandler(deps.getCtx),
-    ),
+  entry(
+    taskPlanSetSpec,
+    (deps) =>
+      import("../../../commands/task/plan-set.command.js").then((m) =>
+        m.makeRunTaskPlanSetHandler(deps.getCtx),
+      ),
+    { invocation: requireCanonicalCommandInvocation(["task", "plan", "set"]) },
   ),
-  entry(taskPlanApproveSpec, (deps) =>
-    import("../../../commands/task/plan-approve.command.js").then((m) =>
-      m.makeRunTaskPlanApproveHandler(deps.getCtx),
-    ),
+  entry(
+    taskPlanApproveSpec,
+    (deps) =>
+      import("../../../commands/task/plan-approve.command.js").then((m) =>
+        m.makeRunTaskPlanApproveHandler(deps.getCtx),
+      ),
+    { invocation: requireCanonicalCommandInvocation(["task", "plan", "approve"]) },
   ),
   entry(taskPlanRejectSpec, (deps) =>
     import("../../../commands/task/plan-reject.command.js").then((m) =>
@@ -220,10 +247,13 @@ export const TASK_COMMANDS = [
       m.makeRunTaskVerifyReworkHandler(deps.getCtx),
     ),
   ),
-  entry(taskVerifyShowSpec, (deps) =>
-    import("../../../commands/task/verify-show.command.js").then((m) =>
-      m.makeRunTaskVerifyShowHandler(deps.getCtx),
-    ),
+  entry(
+    taskVerifyShowSpec,
+    (deps) =>
+      import("../../../commands/task/verify-show.command.js").then((m) =>
+        m.makeRunTaskVerifyShowHandler(deps.getCtx),
+      ),
+    { invocation: requireCanonicalCommandInvocation(["task", "verify-show"]) },
   ),
   entry(taskRebuildIndexSpec, (deps) =>
     import("../../../commands/task/rebuild-index.command.js").then((m) =>

@@ -14,6 +14,7 @@ import { hooksUninstallSpec } from "../../../commands/hooks/uninstall.command.js
 import { readySpec } from "../../../commands/ready.command.js";
 import { startSpec } from "../../../commands/start.spec.js";
 import { verifySpec } from "../../../commands/verify.spec.js";
+import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
 import { entry, type CommandEntry } from "./shared.js";
 
@@ -27,11 +28,19 @@ export const LIFECYCLE_COMMANDS = [
   entry(blockSpec, (deps) =>
     import("../../../commands/block.run.js").then((m) => m.makeRunBlockHandler(deps.getCtx)),
   ),
-  entry(verifySpec, (deps) =>
-    import("../../../commands/verify.run.js").then((m) => m.makeRunVerifyHandler(deps.getCtx)),
+  entry(
+    verifySpec,
+    (deps) =>
+      import("../../../commands/verify.run.js").then((m) => m.makeRunVerifyHandler(deps.getCtx)),
+    { invocation: requireCanonicalCommandInvocation(["verify"]) },
   ),
-  entry(finishSpec, (deps) =>
-    import("../../../commands/finish.run.js").then((m) => m.makeRunFinishHandler(deps.getCtx)),
+  entry(
+    finishSpec,
+    (deps) =>
+      import("../../../commands/finish.run.js").then((m) => m.makeRunFinishHandler(deps.getCtx)),
+    {
+      invocation: requireCanonicalCommandInvocation(["finish"]),
+    },
   ),
   entry(readySpec, (deps) =>
     import("../../../commands/ready.command.js").then((m) => m.makeRunReadyHandler(deps.getCtx)),
