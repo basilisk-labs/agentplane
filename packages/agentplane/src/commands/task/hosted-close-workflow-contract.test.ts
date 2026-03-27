@@ -1,0 +1,24 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
+import { describe, expect, it } from "vitest";
+
+const WORKFLOW_PATH = path.resolve(process.cwd(), ".github/workflows/task-hosted-close.yml");
+
+describe("Task hosted-close workflow contract", () => {
+  it("runs on merged pull_request_target close events and opens a follow-up closure PR", async () => {
+    const workflow = await readFile(WORKFLOW_PATH, "utf8");
+
+    expect(workflow).toContain("name: Task Hosted Close");
+    expect(workflow).toContain("pull_request_target:");
+    expect(workflow).toContain("types:");
+    expect(workflow).toContain("- closed");
+    expect(workflow).toContain("if: github.event.pull_request.merged == true");
+    expect(workflow).toContain("contents: write");
+    expect(workflow).toContain("pull-requests: write");
+    expect(workflow).toContain("node scripts/prepare-hosted-task-closure.mjs");
+    expect(workflow).toContain("task hosted-close");
+    expect(workflow).toContain("gh pr create");
+    expect(workflow).toContain("gh pr merge --auto --squash");
+  });
+});

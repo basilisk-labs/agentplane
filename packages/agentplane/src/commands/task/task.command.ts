@@ -15,6 +15,7 @@ import { taskExportSpec } from "./export.command.js";
 import { taskHandoffSpec } from "./handoff.command.js";
 import { taskHandoffRecordSpec } from "./handoff-record.command.js";
 import { taskHandoffShowSpec } from "./handoff-show.command.js";
+import { taskHostedCloseSpec } from "./hosted-close.command.js";
 import { taskLintSpec } from "./lint.command.js";
 import { taskListSpec } from "./list.spec.js";
 import { taskMigrateDocSpec } from "./migrate-doc.command.js";
@@ -47,6 +48,7 @@ const TASK_CHILD_SPECS = [
   taskHandoffSpec,
   taskHandoffRecordSpec,
   taskHandoffShowSpec,
+  taskHostedCloseSpec,
   taskLintSpec,
   taskListSpec,
   taskMigrateSpec,
@@ -105,6 +107,10 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
     {
       cmd: 'agentplane task handoff record <task-id> --from CODER --reason "Paused for handoff"',
       why: "Persist a first-class handoff snapshot.",
+    },
+    {
+      cmd: 'agentplane task hosted-close --event-json "$GITHUB_EVENT_PATH"',
+      why: "Apply deterministic task closure from a merged hosted PR event on an automation branch.",
     },
     {
       cmd: "agentplane task resume-context <task-id>",
