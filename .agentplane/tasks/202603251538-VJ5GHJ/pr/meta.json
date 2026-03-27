@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603251538-VJ5GHJ/cli-registry",
+  "created_at": "2026-03-27T10:52:08.712Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603251538-VJ5GHJ",
+  "updated_at": "2026-03-27T10:52:08.712Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
