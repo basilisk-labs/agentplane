@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603251539-1WNAZX/operator-pipeline",
+  "created_at": "2026-03-27T18:18:22.437Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603251539-1WNAZX",
+  "updated_at": "2026-03-27T18:18:22.437Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
