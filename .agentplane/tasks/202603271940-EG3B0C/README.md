@@ -1,10 +1,11 @@
 ---
 id: "202603271940-EG3B0C"
 title: "Automate branch_pr task closure after hosted merge"
-status: "DOING"
+result_summary: "Merged via PR #31."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-27T20:06:52.295Z"
   updated_by: "CODER"
   note: "Verified: bunx vitest run packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/cli/command-guide.test.ts; bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; bunx eslint packages/agentplane/src/commands/guard/impl/commands.ts packages/agentplane/src/commands/task/finish-shared.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts packages/agentplane/src/commands/task/task.command.ts packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/cli/run-cli/command-catalog/task.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts; bunx prettier --check scripts/prepare-hosted-task-closure.mjs .github/workflows/task-hosted-close.yml docs/user/branching-and-pr-artifacts.mdx packages/agentplane/src/commands/guard/impl/commands.ts packages/agentplane/src/commands/task/finish-shared.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts packages/agentplane/src/commands/task/task.command.ts packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/cli/run-cli/command-catalog/task.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts. Result: pass. Evidence: merged hosted PR events now map to deterministic hosted closure metadata, task hosted-close writes canonical DONE task artifacts on an automation branch, Task Hosted Close opens an auto-merged follow-up PR, and close commits now reset the rebuildable task index cache after reconcile so branch_pr hosted closure does not fail on a dirty tasks-index cache."
-commit: null
+commit:
+  hash: "8eda0b3cd66feebf34d82d4f6493c42c5972bc57"
+  message: "♻️ EG3B0C workflow: degrade hosted closure gracefully under org PR policy (#31)"
 comments:
   -
     author: "CODER"
     body: "Start: replace the local branch_pr close-commit tail with a hosted closure automation path that records DONE task artifacts from merged PR metadata on the server, so main no longer needs a manual finish-only commit after each hosted merge."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #31 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bunx vitest run packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/cli/command-guide.test.ts; bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; bunx eslint packages/agentplane/src/commands/guard/impl/commands.ts packages/agentplane/src/commands/task/finish-shared.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts packages/agentplane/src/commands/task/task.command.ts packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/cli/run-cli/command-catalog/task.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts; bunx prettier --check scripts/prepare-hosted-task-closure.mjs .github/workflows/task-hosted-close.yml docs/user/branching-and-pr-artifacts.mdx packages/agentplane/src/commands/guard/impl/commands.ts packages/agentplane/src/commands/task/finish-shared.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts packages/agentplane/src/commands/task/task.command.ts packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/cli/run-cli/command-catalog/task.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts. Result: pass. Evidence: merged hosted PR events now map to deterministic hosted closure metadata, task hosted-close writes canonical DONE task artifacts on an automation branch, Task Hosted Close opens an auto-merged follow-up PR, and close commits now reset the rebuildable task index cache after reconcile so branch_pr hosted closure does not fail on a dirty tasks-index cache."
+  -
+    type: "status"
+    at: "2026-03-27T20:38:38.265Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #31 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-03-27T20:06:52.297Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-27T20:38:38.272Z"
+doc_updated_by: "INTEGRATOR"
 description: "Eliminate manual local base close commits by introducing a hosted branch_pr closure path that records merged task state on the server after PR merge, so local main no longer needs to run finish --close-commit just to converge task projection."
 sections:
   Summary: |-

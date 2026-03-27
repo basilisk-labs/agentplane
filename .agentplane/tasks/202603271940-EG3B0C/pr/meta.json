@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603271940-EG3B0C/hosted-closure-automation",
   "created_at": "2026-03-27T20:08:15.402Z",
+  "head_sha": "3e509e5b18216eb3e754ac6b14a85c3530bd0c7e",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "8eda0b3cd66feebf34d82d4f6493c42c5972bc57",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-27T20:38:12Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603271940-EG3B0C",
-  "updated_at": "2026-03-27T20:32:47.358Z",
+  "updated_at": "2026-03-27T20:38:12Z",
   "verify": {
     "status": "skipped"
   }
