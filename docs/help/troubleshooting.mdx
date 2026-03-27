@@ -24,9 +24,17 @@ description: "Fix common setup and workflow issues when using Agent Plane locall
   framework checkout, the global wrapper delegated to the repo-local binary, and `dist/` is older
   than the current source tree.
 - What to do:
-- Rebuild the local packages:
+- Run the canonical framework bootstrap:
 
 ```bash
+bun run framework:dev:bootstrap
+```
+
+- Manual fallback if you need to repair steps individually:
+
+```bash
+bun install
+git submodule update --init --recursive agentplane-recipes
 bun run --filter=@agentplaneorg/core build
 bun run --filter=agentplane build
 ```
@@ -40,8 +48,8 @@ bun run --filter=agentplane build
   `agentplane role <ROLE>` warn and continue even while stale-build blocking is still active for
   stricter commands inside the framework checkout.
 - Retry the original command after the rebuild.
-- Run `agentplane runtime explain` if you need to confirm which binary handed off and which package
-  roots are active before retrying.
+- Run `node packages/agentplane/bin/agentplane.js runtime explain` to verify the repo-local runtime,
+  then `agentplane runtime explain` if you need to confirm the installed wrapper handoff path.
 - If you are outside the framework checkout, the linked binary should warn and continue instead of
   hard-failing.
 - If you intentionally need the global installed CLI inside the framework checkout, set
@@ -60,8 +68,10 @@ agentplane runtime explain
 
 - Read the reported `Mode`, `Active binary`, `Resolved agentplane`, and
   `Resolved @agentplaneorg/core` lines first.
-- If mode is `global-in-framework`, run `scripts/reinstall-global-agentplane.sh`, then verify again
-  with `agentplane runtime explain`.
+- If mode is `global-in-framework`, run `bun run framework:dev:bootstrap`, then verify the repo-local
+  runtime with `node packages/agentplane/bin/agentplane.js runtime explain`. Run
+  `scripts/reinstall-global-agentplane.sh` only if the global PATH command itself should point at
+  this checkout, then verify again with `agentplane runtime explain`.
 - If mode is `global-forced-in-framework`, unset `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1` unless you
   intentionally want the global runtime, then verify again with `agentplane runtime explain`.
 

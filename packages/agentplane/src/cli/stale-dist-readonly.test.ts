@@ -34,6 +34,10 @@ async function setupFrameworkCheckout() {
     path.join(binDir, "dist-guard.js"),
   );
   await copyFile(
+    path.join(workspaceRoot, "packages", "agentplane", "bin", "framework-dev-contract.js"),
+    path.join(binDir, "framework-dev-contract.js"),
+  );
+  await copyFile(
     path.join(workspaceRoot, "packages", "agentplane", "bin", "runtime-context.js"),
     path.join(binDir, "runtime-context.js"),
   );
@@ -119,6 +123,7 @@ describe("stale-dist read-only diagnostics", () => {
       "allowing read-only diagnostic command to run with a stale repo build",
     );
     expect(stderr).toContain("command: doctor");
+    expect(stderr).toContain("bun run framework:dev:bootstrap");
   });
 
   it(
@@ -139,6 +144,7 @@ describe("stale-dist read-only diagnostics", () => {
       expect(stdout).toContain("DIST");
       expect(stdout).toContain('"args":["runtime","explain","--json"]');
       expect(stderr).toContain("command: runtime explain --json");
+      expect(stderr).toContain("bun run framework:dev:bootstrap");
     },
   );
 
@@ -156,6 +162,7 @@ describe("stale-dist read-only diagnostics", () => {
       expect(stdout).toContain("DIST");
       expect(stdout).toContain('"args":["task","list"]');
       expect(stderr).toContain("command: task list");
+      expect(stderr).toContain("bun run framework:dev:bootstrap");
     },
   );
 
@@ -174,6 +181,7 @@ describe("stale-dist read-only diagnostics", () => {
     expect(stdout).toContain("DIST");
     expect(stdout).toContain('"args":["task","doc","show","20260307-ABC123"]');
     expect(stderr).toContain("command: task doc show 20260307-ABC123");
+    expect(stderr).toContain("bun run framework:dev:bootstrap");
   });
 
   it("still blocks strict mutating commands when watched runtime paths are dirty", async () => {
@@ -189,5 +197,6 @@ describe("stale-dist read-only diagnostics", () => {
 
     expect(failure).toBeTruthy();
     expect(String(failure?.stderr ?? "")).toContain("refusing to run a stale repo build");
+    expect(String(failure?.stderr ?? "")).toContain("bun run framework:dev:bootstrap");
   });
 });

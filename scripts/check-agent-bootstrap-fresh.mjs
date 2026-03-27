@@ -251,9 +251,10 @@ async function main() {
     assertIncludesAll(
       testingDoc,
       [
+        frameworkDev.bootstrapCommand,
         "agentplane runtime explain",
         frameworkDev.reinstallScript,
-        ...frameworkDev.rebuildCommands,
+        ...frameworkDev.manualRepairCommands,
         "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1",
       ],
       "docs/developer/testing-and-quality.mdx framework-dev parity",
@@ -262,8 +263,10 @@ async function main() {
     assertIncludesAll(
       troubleshootingDoc,
       [
-        ...frameworkDev.rebuildCommands,
-        frameworkDev.verifyCommand,
+        frameworkDev.bootstrapCommand,
+        ...frameworkDev.manualRepairCommands,
+        frameworkDev.repoLocalVerifyCommand,
+        frameworkDev.globalVerifyCommand,
         "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1",
         "Mode",
         "Active binary",

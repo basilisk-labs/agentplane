@@ -87,6 +87,7 @@
     "coverage:workflow-harness": "node scripts/check-workflow-harness-coverage.mjs",
     "workflow:wait-remote-checks": "node scripts/wait-remote-pr-checks.mjs",
     "workflow:github-protection:check": "node scripts/check-github-protection-contract.mjs",
+    "framework:dev:bootstrap": "node scripts/bootstrap-framework-dev.mjs",
     "runner:codex:approval-probe": "bun scripts/run-runner-codex-approval-probe.mjs",
     "runner:codex:smoke": "bun scripts/run-runner-codex-smoke.mjs",
     "docs:cli:check": "node scripts/check-cli-reference-fresh.mjs",

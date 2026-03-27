@@ -46,6 +46,10 @@ async function setupGlobalInstall() {
     path.join(root, "bin", "agentplane.js"),
   );
   await copyFile(
+    path.join(workspaceRoot, "packages", "agentplane", "bin", "framework-dev-contract.js"),
+    path.join(root, "bin", "framework-dev-contract.js"),
+  );
+  await copyFile(
     path.join(workspaceRoot, "packages", "agentplane", "bin", "runtime-context.js"),
     path.join(root, "bin", "runtime-context.js"),
   );

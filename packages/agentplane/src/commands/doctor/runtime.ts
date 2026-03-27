@@ -32,7 +32,7 @@ export function checkRuntimeSourceFacts(cwd: string, config?: AgentplaneConfig):
   const warning =
     report.mode === "global-in-framework"
       ? "[WARN] Framework checkout detected but the active runtime is still a global installed binary. " +
-        "Run scripts/reinstall-global-agentplane.sh to refresh the wrapper, or run the repo-local binary directly."
+        "Run bun run framework:dev:bootstrap first so the wrapper can hand off to a built repo-local runtime."
       : report.mode === "global-forced-in-framework"
         ? "[WARN] Framework checkout is forcing the global installed binary via AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1. Unset it unless that override is intentional."
         : null;

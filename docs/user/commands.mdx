@@ -25,11 +25,11 @@ The same startup model is expanded on the docs site here:
   This is a public docs-page expansion of `agentplane quickstart`, not a file that installed repositories should depend on locally.
 
 Inside the Agent Plane framework checkout, `agentplane` from `PATH` now delegates to the
-repo-local binary automatically. If that repo-local binary reports a stale build, rebuild first:
+repo-local binary automatically. For fresh clones, worktrees, or stale repo-local builds, use the
+canonical framework bootstrap:
 
 ```bash
-bun run --filter=@agentplaneorg/core build
-bun run --filter=agentplane build
+bun run framework:dev:bootstrap
 ```
 
 ## Init
@@ -89,8 +89,9 @@ Use this when you need to prove which binary is active, whether you are on
 `@agentplaneorg/core` package roots are actually being resolved at runtime.
 
 Inside the Agent Plane framework checkout, the same command now acts as the canonical
-framework-dev workflow surface: it prints rebuild steps, the reinstall helper, the follow-up
-runtime check, and the optional force-global override in one place.
+framework-dev workflow surface: it prints the canonical bootstrap command, manual fallback steps,
+the repo-local verify command, the reinstall helper, the follow-up global runtime check, and the
+optional force-global override in one place.
 
 If the repository expects a newer CLI than the active runtime, `runtime explain` and `doctor` now
 print a concrete recovery path and a follow-up `agentplane runtime explain` verification step.
