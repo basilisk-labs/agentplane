@@ -1,10 +1,10 @@
 import { resolveProject } from "@agentplaneorg/core";
+import { collectRecipeScenarioDetails } from "@agentplane/recipes";
 
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
-import { collectRecipeScenarioDetails } from "../scenario.js";
 import { formatJsonBlock } from "../format.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
 import { resolveProjectInstalledRecipeDir } from "../paths.js";

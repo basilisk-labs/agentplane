@@ -1,6 +1,20 @@
 import path from "node:path";
 
 import type { ResolvedProject } from "@agentplaneorg/core";
+import {
+  readScenarioDefinition,
+  type RecipeCompatibility,
+  type RecipeResolverCompatibility,
+  type RecipeResolverCompatibilityFailure,
+  type RecipeResolverContext,
+  type RecipeRunProfile,
+  type RecipeScenarioDescriptor,
+  type RecipeTaskTemplate,
+  type ResolveRecipeScenarioSelectionFlags,
+  type ResolvedRecipeRunProfile,
+  type ResolvedRecipeScenario,
+  type ResolvedRecipeScenarioSelection,
+} from "@agentplane/recipes";
 
 import { fileExists } from "../../../cli/fs-utils.js";
 import { getVersion } from "../../../meta/version.js";
@@ -9,21 +23,7 @@ import { compareVersions } from "../../../shared/version-compare.js";
 
 import { resolveProjectInstalledRecipeDir } from "./paths.js";
 import { readProjectInstalledRecipes } from "./project-installed-recipes.js";
-import { readScenarioDefinition } from "./scenario.js";
-import type {
-  InstalledRecipeEntry,
-  RecipeCompatibility,
-  RecipeResolverCompatibility,
-  RecipeResolverCompatibilityFailure,
-  RecipeResolverContext,
-  RecipeRunProfile,
-  RecipeScenarioDescriptor,
-  RecipeTaskTemplate,
-  ResolveRecipeScenarioSelectionFlags,
-  ResolvedRecipeRunProfile,
-  ResolvedRecipeScenario,
-  ResolvedRecipeScenarioSelection,
-} from "./types.js";
+import type { InstalledRecipeEntry } from "./types.js";
 
 const SUPPORTED_MANIFEST_API_VERSION = "1" as const;
 const SUPPORTED_SCENARIO_API_VERSION = "1" as const;
