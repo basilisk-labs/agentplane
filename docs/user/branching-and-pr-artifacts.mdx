@@ -47,9 +47,11 @@ If this repository requires remote checks before `main` moves, do both:
 - push the task branch and wait for hosted required checks with the workflow helper or raw `gh`.
 
 If a hosted GitHub PR is merged directly into `main` instead of going through local
-`agentplane integrate`, the repository now opens a deterministic follow-up closure PR
-automatically. That closure PR contains only tracked task artifacts for the merged task and
-auto-merges after the normal required checks pass.
+`agentplane integrate`, the repository now pushes a deterministic closure branch for the
+task artifacts automatically. If the organization allows GitHub Actions to create PRs, the
+workflow also opens the follow-up closure PR and enables auto-merge after the normal
+required checks pass. If the organization blocks Actions PR creation, the workflow leaves a
+manual PR link on the merged task PR instead of failing silently.
 
 ## Handoff Notes
 
@@ -86,8 +88,9 @@ Hosted merge shortcut:
 
 1. Keep `.agentplane/tasks/<task-id>/pr/*` current with `agentplane pr open` and `agentplane pr update`.
 2. Merge the hosted GitHub PR after required checks are green.
-3. Let the `Task Hosted Close` workflow open the follow-up closure PR for the task artifacts.
-4. Pull the updated `main` after the closure PR merges; no local finish-only tail commit should remain necessary.
+3. Let the `Task Hosted Close` workflow push the deterministic closure branch for the task artifacts.
+4. If the organization allows Actions PR creation, the workflow opens the follow-up closure PR automatically. Otherwise use the manual PR URL that the workflow comments onto the merged task PR.
+5. Pull the updated `main` after the closure PR merges; no local finish-only tail commit should remain necessary.
 
 When GitHub UI shows `Expected — Waiting for status to be reported` for one of the required checks even though
 PR workflow jobs already look green, audit branch protection directly:

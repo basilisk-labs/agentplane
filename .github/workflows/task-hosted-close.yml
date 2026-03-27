@@ -120,17 +120,62 @@ jobs:
           steps.prepare.outputs.actionable == 'true' &&
           steps.existing.outputs.pr_url == ''
         id: create-pr
+        env:
+          PR_TITLE: ${{ steps.prepare.outputs.pr_title }}
+          PR_BODY: ${{ steps.prepare.outputs.pr_body }}
+          MANUAL_PR_URL: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.prepare.outputs.base_ref }}...${{ steps.prepare.outputs.closure_branch }}?expand=1
         run: |
           set -euo pipefail
           if [ "${{ steps.existing.outputs.branch_exists }}" = "true" ] || [ "${{ steps.close.outputs.created_commit }}" = "true" ]; then
-            printf '%s\n' "${{ steps.prepare.outputs.pr_body }}" > .agentplane/tmp/hosted-task-close-pr.md
+            printf '%s\n' "$PR_BODY" > .agentplane/tmp/hosted-task-close-pr.md
+            set +e
             pr_url="$(gh pr create \
               --base "${{ steps.prepare.outputs.base_ref }}" \
               --head "${{ steps.prepare.outputs.closure_branch }}" \
-              --title "${{ steps.prepare.outputs.pr_title }}" \
-              --body-file .agentplane/tmp/hosted-task-close-pr.md)"
-            echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+              --title "$PR_TITLE" \
+              --body-file .agentplane/tmp/hosted-task-close-pr.md 2>.agentplane/tmp/hosted-task-close-pr.err)"
+            status=$?
+            set -e
+            if [ "$status" -eq 0 ]; then
+              echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+            elif grep -qi "not permitted to create or approve pull requests" .agentplane/tmp/hosted-task-close-pr.err; then
+              echo "manual_pr_required=true" >> "$GITHUB_OUTPUT"
+              echo "manual_pr_url=$MANUAL_PR_URL" >> "$GITHUB_OUTPUT"
+              echo "::warning::Hosted closure branch was pushed, but organization policy blocks GitHub Actions from creating the follow-up PR. Open it manually: $MANUAL_PR_URL"
+            else
+              cat .agentplane/tmp/hosted-task-close-pr.err >&2
+              exit "$status"
+            fi
           fi
+      - name: Report manual hosted closure handoff
+        if: steps.create-pr.outputs.manual_pr_required == 'true'
+        env:
+          MANUAL_PR_URL: ${{ steps.create-pr.outputs.manual_pr_url }}
+        run: |
+          set -euo pipefail
+          cat > .agentplane/tmp/hosted-task-close-comment.md <<EOF
+          Hosted closure branch is ready, but the organization currently blocks GitHub Actions from creating follow-up pull requests automatically.
+
+          Manual next step:
+          - open the closure PR: ${MANUAL_PR_URL}
+          - merge it after the normal required checks turn green
+
+          Context:
+          - task_id: ${{ steps.prepare.outputs.task_id }}
+          - source_branch: ${{ steps.prepare.outputs.source_branch }}
+          - closure_branch: ${{ steps.prepare.outputs.closure_branch }}
+          - merge_sha: ${{ steps.prepare.outputs.merge_sha }}
+          EOF
+          gh pr comment "${{ steps.prepare.outputs.pr_number }}" --body-file .agentplane/tmp/hosted-task-close-comment.md
+          {
+            echo "## Hosted closure pending manual PR"
+            echo
+            echo "Organization policy blocks GitHub Actions from creating PRs automatically."
+            echo
+            echo "- Manual PR URL: ${MANUAL_PR_URL}"
+            echo "- Task: ${{ steps.prepare.outputs.task_id }}"
+            echo "- Closure branch: ${{ steps.prepare.outputs.closure_branch }}"
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Enable auto-merge for hosted closure PR
         if: |
           steps.prepare.outputs.actionable == 'true' &&
