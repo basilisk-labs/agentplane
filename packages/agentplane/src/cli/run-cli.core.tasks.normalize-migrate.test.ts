@@ -1,14 +1,16 @@
-import { writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { readTask } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core";
 
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
   runCliSilent,
+  writeConfig,
   writeAndConfigureRoot,
 } from "./run-cli.test-helpers.js";
 
@@ -94,12 +96,15 @@ describe("runCli", () => {
       ioMigrate.restore();
     }
 
-    const migrated = await readTask({
-      cwd: root,
-      rootOverride: root,
-      taskId: "202602011330-MGR01",
-    });
-    expect(migrated?.id).toBe("202602011330-MGR01");
+    const ioShow = captureStdIO();
+    try {
+      const code = await runCli(["task", "show", "202602011330-MGR01", "--root", root]);
+      expect(code).toBe(0);
+      const migrated = JSON.parse(ioShow.stdout) as { id?: string };
+      expect(migrated.id).toBe("202602011330-MGR01");
+    } finally {
+      ioShow.restore();
+    }
   }, 15_000);
 
   it("task normalize and migrate reject unknown flags and missing source values", async () => {
@@ -122,4 +127,102 @@ describe("runCli", () => {
       }
     }
   });
+
+  it("task normalize --sync-hosted-merges reconciles stale branch_pr task state from hosted PR data", async () => {
+    const root = await writeAndConfigureRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const taskId = "202603271330-SYNC01";
+    const addCode = await runCliSilent([
+      "task",
+      "add",
+      taskId,
+      "--title",
+      "Hosted merge sync task",
+      "--description",
+      "Sync stale local branch_pr task state",
+      "--priority",
+      "med",
+      "--owner",
+      "CODER",
+      "--tag",
+      "workflow",
+      "--root",
+      root,
+    ]);
+    expect(addCode).toBe(0);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          branch: `task/${taskId}/sync-hosted`,
+          created_at: "2026-03-27T17:24:00.000Z",
+          updated_at: "2026-03-27T17:24:00.000Z",
+          last_verified_sha: null,
+          last_verified_at: null,
+          verify: { status: "skipped" },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const fakeBin = path.join(os.tmpdir(), `agentplane-gh-${Date.now()}`);
+    await mkdir(fakeBin, { recursive: true });
+    const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
+    const ghScript =
+      process.platform === "win32"
+        ? '@echo off\r\necho [{"number":23,"title":"Hosted merge sync task (#23)","mergedAt":"2026-03-27T17:40:00.000Z","baseRefName":"main","headRefName":"task/202603271330-SYNC01/sync-hosted","headRefOid":"abcdef1234567890abcdef1234567890abcdef12","mergeCommit":{"oid":"1234567890abcdef1234567890abcdef12345678"}}]\r\n'
+        : '#!/bin/sh\nprintf \'%s\n\' \'[{"number":23,"title":"Hosted merge sync task (#23)","mergedAt":"2026-03-27T17:40:00.000Z","baseRefName":"main","headRefName":"task/202603271330-SYNC01/sync-hosted","headRefOid":"abcdef1234567890abcdef1234567890abcdef12","mergeCommit":{"oid":"1234567890abcdef1234567890abcdef12345678"}}]\'\n';
+    await writeFile(ghPath, ghScript, "utf8");
+    if (process.platform !== "win32") {
+      await chmod(ghPath, 0o755);
+    }
+
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    try {
+      const code = await runCli(["task", "normalize", "--sync-hosted-merges", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      process.env.PATH = originalPath;
+    }
+
+    const ioShow = captureStdIO();
+    try {
+      const code = await runCli(["task", "show", taskId, "--root", root]);
+      expect(code).toBe(0);
+      const task = JSON.parse(ioShow.stdout) as {
+        status?: string;
+        result_summary?: string;
+        commit?: { hash?: string } | null;
+      };
+      expect(task.status).toBe("DONE");
+      expect(task.result_summary).toBe("Merged via PR #23.");
+      expect(task.commit?.hash).toBe("1234567890abcdef1234567890abcdef12345678");
+    } finally {
+      ioShow.restore();
+    }
+
+    const metaRaw = await readFile(path.join(prDir, "meta.json"), "utf8");
+    expect(metaRaw).toContain('"status": "MERGED"');
+    expect(metaRaw).toContain('"merge_commit": "1234567890abcdef1234567890abcdef12345678"');
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "list", "--status", "DONE", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(taskId);
+    } finally {
+      io.restore();
+    }
+  }, 20_000);
 });

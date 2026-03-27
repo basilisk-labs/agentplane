@@ -2,6 +2,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { syncHostedMergedTasks } from "./hosted-merge-sync.js";
 
 export async function cmdTaskNormalize(opts: {
   ctx?: CommandContext;
@@ -10,6 +11,7 @@ export async function cmdTaskNormalize(opts: {
   quiet: boolean;
   force: boolean;
   yes?: boolean;
+  syncHostedMerges?: boolean;
 }): Promise<number> {
   try {
     const ctx =
@@ -23,7 +25,7 @@ export async function cmdTaskNormalize(opts: {
         reason: "task normalize --force",
       });
     }
-    if (ctx.taskBackend.normalizeTasks) {
+    if (ctx.taskBackend.normalizeTasks && opts.syncHostedMerges !== true) {
       const result = await ctx.taskBackend.normalizeTasks();
       if (!opts.quiet) {
         process.stdout.write(
@@ -33,7 +35,13 @@ export async function cmdTaskNormalize(opts: {
       return 0;
     }
 
-    const tasks = await ctx.taskBackend.listTasks();
+    let tasks = await ctx.taskBackend.listTasks();
+    let syncedHostedMerges = 0;
+    if (opts.syncHostedMerges === true) {
+      const synced = await syncHostedMergedTasks({ ctx, tasks });
+      tasks = synced.tasks;
+      syncedHostedMerges = synced.synced;
+    }
     await (ctx.taskBackend.writeTasks
       ? ctx.taskBackend.writeTasks(tasks)
       : (async () => {
@@ -41,7 +49,11 @@ export async function cmdTaskNormalize(opts: {
         })());
     if (!opts.quiet) {
       process.stdout.write(
-        `${successMessage("normalized tasks", undefined, `count=${tasks.length}`)}\n`,
+        `${successMessage(
+          "normalized tasks",
+          undefined,
+          `count=${tasks.length}${opts.syncHostedMerges === true ? ` synced_hosted_merges=${syncedHostedMerges}` : ""}`,
+        )}\n`,
       );
     }
     return 0;
