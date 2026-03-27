@@ -4,9 +4,11 @@ import path from "node:path";
 import { invalidFieldMessage } from "../../../cli/output.js";
 import { isRecord } from "../../../shared/guards.js";
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
-import { normalizeRecipeTags } from "./normalize.js";
-import { validateRecipeManifest } from "./manifest.js";
-import type { InstalledRecipesFile } from "./types.js";
+import {
+  normalizeRecipeTags,
+  validateRecipeManifest,
+  type InstalledRecipesFile,
+} from "@agentplane/recipes";
 
 function validateInstalledRecipesFile(raw: unknown): InstalledRecipesFile {
   if (!isRecord(raw)) throw new Error(invalidFieldMessage("recipes.json", "object"));

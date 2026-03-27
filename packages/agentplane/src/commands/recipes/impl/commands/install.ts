@@ -3,6 +3,11 @@ import os from "node:os";
 import path from "node:path";
 
 import { defaultConfig, loadConfig, resolveProject } from "@agentplaneorg/core";
+import {
+  DEFAULT_RECIPES_INDEX_URL,
+  RECIPE_RUNS_DIR_NAME,
+  readRecipeManifest,
+} from "@agentplane/recipes";
 
 import { extractArchive } from "../../../../cli/archive.js";
 import { sha256File } from "../../../../cli/checksum.js";
@@ -20,9 +25,7 @@ import { resolvePathFallback } from "../../../shared/path.js";
 
 import { moveRecipeDir, validateRecipeAssets } from "../apply.js";
 import { resolveRecipeRoot } from "../archive.js";
-import { DEFAULT_RECIPES_INDEX_URL, RECIPE_RUNS_DIR_NAME } from "../constants.js";
 import { loadRecipesRemoteIndex, willFetchRemoteRecipesIndex } from "../index.js";
-import { readRecipeManifest } from "../manifest.js";
 import { normalizeRecipeTags } from "../normalize.js";
 import { writeRecipeInstallMetadata } from "../project-installed-recipes.js";
 import {
