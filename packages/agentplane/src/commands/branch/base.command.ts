@@ -1,6 +1,11 @@
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../../cli/group-command.js";
 import { usageError } from "../../cli/spec/errors.js";
-import { suggestOne } from "../../cli/spec/suggest.js";
 
 import {
   cmdBranchBaseClear,
@@ -9,7 +14,7 @@ import {
   cmdBranchBaseSet,
 } from "./index.js";
 
-type BranchBaseGroupParsed = { cmd: string[] };
+type BranchBaseGroupParsed = GroupCommandParsed;
 
 export const branchBaseSpec: CommandSpec<BranchBaseGroupParsed> = {
   id: ["branch", "base"],
@@ -23,7 +28,7 @@ export const branchBaseSpec: CommandSpec<BranchBaseGroupParsed> = {
     { cmd: "agentplane branch base clear", why: "Clear the pinned base branch." },
     { cmd: "agentplane branch base explain", why: "Show current/pinned/effective base details." },
   ],
-  parse: (raw) => ({ cmd: (raw.args.cmd ?? []) as string[] }),
+  parse: (raw) => parseGroupCommand(raw),
 };
 
 export const branchBaseGetSpec: CommandSpec<Record<string, never>> = {
@@ -96,19 +101,16 @@ export const branchBaseSetSpec: CommandSpec<BranchBaseSetParsed> = {
 };
 
 export const runBranchBase: CommandHandler<BranchBaseGroupParsed> = (_ctx, p) => {
-  const input = p.cmd.join(" ");
-  const candidates = ["get", "set", "clear", "explain"];
-  const suggestion = suggestOne(input, candidates);
-  const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-  const msg = p.cmd.length === 0 ? "Missing subcommand." : `Unknown subcommand: ${p.cmd[0]}.`;
-  return Promise.reject(
-    usageError({
-      spec: branchBaseSpec,
-      command: "branch base",
-      message: `${msg}${suffix}`,
-      context: { command: "branch base" },
-    }),
-  );
+  throwGroupCommandUsage({
+    spec: branchBaseSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(
+      ["branch", "base"],
+      [branchBaseGetSpec, branchBaseSetSpec, branchBaseClearSpec, branchBaseExplainSpec],
+    ),
+    command: "branch base",
+    contextCommand: "branch base",
+  });
 };
 
 export const runBranchBaseGet: CommandHandler<Record<string, never>> = async (ctx) => {

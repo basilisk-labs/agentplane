@@ -1,26 +1,29 @@
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
-import { usageError } from "../../cli/spec/errors.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../../cli/group-command.js";
+import { guardCleanSpec } from "./clean.command.js";
+import { guardCommitSpec } from "./commit.command.js";
+import { guardSuggestAllowSpec } from "./suggest-allow.command.js";
 
-export type GuardGroupParsed = Record<string, never>;
+const GUARD_CHILD_SPECS = [guardCommitSpec, guardCleanSpec, guardSuggestAllowSpec] as const;
 
-export const guardSpec: CommandSpec<GuardGroupParsed> = {
+export const guardSpec: CommandSpec<GroupCommandParsed> = {
   id: ["guard"],
   group: "Guard",
   summary: "Guard commands (commit checks, git hygiene, and allowlist helpers).",
   synopsis: ["agentplane guard <command> [args] [options]"],
-  validateRaw: (raw) => {
-    if (raw.extra.length > 0) {
-      throw usageError({
-        spec: guardSpec,
-        message: `Unknown subcommand: ${raw.extra[0]}`,
-      });
-    }
-    throw usageError({ spec: guardSpec, message: "Missing subcommand." });
-  },
-  parse: () => ({}),
+  args: [{ name: "cmd", required: false, variadic: true, valueHint: "<command>" }],
+  parse: (raw) => parseGroupCommand(raw),
 };
 
-export const runGuard: CommandHandler<GuardGroupParsed> = () => {
-  // Unreachable (validateRaw always throws).
-  return Promise.resolve(2);
+export const runGuard: CommandHandler<GroupCommandParsed> = (_ctx, p) => {
+  throwGroupCommandUsage({
+    spec: guardSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(["guard"], GUARD_CHILD_SPECS),
+  });
 };

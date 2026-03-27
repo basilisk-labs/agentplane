@@ -1,7 +1,11 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { COMMAND_SNIPPETS } from "../../cli/command-snippets.js";
-import { usageError } from "../../cli/spec/errors.js";
-import { suggestOne } from "../../cli/spec/suggest.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../../cli/group-command.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import {
   cmdBackendInspectParsed,
@@ -12,9 +16,7 @@ import {
   type BackendSyncParsed,
 } from "../backend.js";
 
-type BackendRootParsed = { cmd: string[] };
-
-export const backendSpec: CommandSpec<BackendRootParsed> = {
+export const backendSpec: CommandSpec<GroupCommandParsed> = {
   id: ["backend"],
   group: "Backend",
   summary: "Backend-related operations.",
@@ -22,7 +24,7 @@ export const backendSpec: CommandSpec<BackendRootParsed> = {
     "This is a command group. Use a subcommand such as `agentplane backend sync ...`, `agentplane backend inspect ...`, or `agentplane backend migrate-canonical-state ...`.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [{ cmd: COMMAND_SNIPPETS.backendSync.pullLocal, why: "Sync the backend." }],
-  parse: (raw) => ({ cmd: (raw.args.cmd ?? []) as string[] }),
+  parse: (raw) => parseGroupCommand(raw),
 };
 
 export const backendSyncSpec: CommandSpec<BackendSyncParsed> = {
@@ -110,15 +112,16 @@ export const backendInspectSpec: CommandSpec<BackendInspectParsed> = {
   }),
 };
 
-function runBackendRootGroup(_ctx: CommandCtx, p: BackendRootParsed): Promise<number> {
-  const input = p.cmd.join(" ");
-  const suggestion = suggestOne(input, ["sync", "inspect", "migrate-canonical-state"]);
-  const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-  const msg = p.cmd.length === 0 ? "Missing subcommand." : `Unknown subcommand: ${p.cmd[0]}.`;
-  throw usageError({
-    spec: backendSyncSpec,
-    message: `${msg}${suffix}`,
-    context: { command: "backend sync" },
+function runBackendRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
+  throwGroupCommandUsage({
+    spec: backendSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(
+      ["backend"],
+      [backendSyncSpec, backendInspectSpec, backendMigrateCanonicalStateSpec],
+    ),
+    command: "backend",
+    contextCommand: "backend",
   });
 }
 

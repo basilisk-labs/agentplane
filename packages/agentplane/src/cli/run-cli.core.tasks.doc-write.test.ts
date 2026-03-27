@@ -16,8 +16,8 @@ import {
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
   stubTaskBackend,
+  writeAndConfigureRoot,
 } from "./run-cli.test-helpers.js";
-import { writeAndConfigureRoot } from "./run-cli.core.tasks.test-helpers.js";
 
 installRunCliIntegrationHarness();
 

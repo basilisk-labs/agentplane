@@ -1,43 +1,41 @@
 import type { CommandHandler, CommandSpec, CommandCtx } from "../../cli/spec/spec.js";
-import { usageError } from "../../cli/spec/errors.js";
-import { suggestOne } from "../../cli/spec/suggest.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../../cli/group-command.js";
+import { scenarioExecuteSpec } from "./execute.command.js";
+import { scenarioInfoSpec } from "./info.command.js";
+import { scenarioListSpec } from "./list.command.js";
+import { scenarioRunSpec } from "./run.command.js";
 
-type ScenarioParsed = Record<string, never>;
+const SCENARIO_CHILD_SPECS = [
+  scenarioListSpec,
+  scenarioInfoSpec,
+  scenarioRunSpec,
+  scenarioExecuteSpec,
+] as const;
 
-const SCENARIO_SUBCOMMANDS = ["list", "info", "run", "execute"] as const;
-
-export const scenarioSpec: CommandSpec<ScenarioParsed> = {
+export const scenarioSpec: CommandSpec<GroupCommandParsed> = {
   id: ["scenario"],
   group: "Scenario",
   summary: "Recipe scenario commands.",
   synopsis: ["agentplane scenario <subcommand> [options]"],
   args: [{ name: "subcommand", required: false, variadic: true, valueHint: "<subcommand>" }],
-  parse: () => ({}),
-  validateRaw: (raw) => {
-    const rest = Array.isArray(raw.args.subcommand) ? raw.args.subcommand : [];
-    const sub = rest[0];
-    if (!sub) {
-      throw usageError({
-        spec: scenarioSpec,
-        command: "scenario",
-        message: "Missing scenario subcommand.",
-      });
-    }
-    const suggestion = suggestOne(String(sub), [...SCENARIO_SUBCOMMANDS]);
-    const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-    throw usageError({
-      spec: scenarioSpec,
-      command: "scenario",
-      message: `Unknown scenario subcommand: ${String(sub)}.${suffix}`,
-    });
-  },
+  parse: (raw) => parseGroupCommand(raw, "subcommand"),
 };
 
-export const runScenario: CommandHandler<ScenarioParsed> = (_ctx: CommandCtx): Promise<number> => {
-  // Should be unreachable because validateRaw always throws.
-  throw usageError({
+export const runScenario: CommandHandler<GroupCommandParsed> = (
+  _ctx: CommandCtx,
+  p,
+): Promise<number> => {
+  throwGroupCommandUsage({
     spec: scenarioSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(["scenario"], SCENARIO_CHILD_SPECS),
     command: "scenario",
-    message: "Missing scenario subcommand.",
+    missingMessage: "Missing scenario subcommand.",
+    unknownMessage: (subcommand) => `Unknown scenario subcommand: ${subcommand}.`,
   });
 };

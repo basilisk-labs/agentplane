@@ -1,42 +1,42 @@
 import type { CommandCtx, CommandHandler, CommandSpec } from "../cli/spec/spec.js";
-import { usageError } from "../cli/spec/errors.js";
-import { suggestOne } from "../cli/spec/suggest.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../cli/group-command.js";
+import { workflowBuildSpec } from "./workflow-build.command.js";
+import {
+  workflowDebugSpec,
+  workflowLandSpec,
+  workflowSyncSpec,
+} from "./workflow-playbook.command.js";
+import { workflowRestoreSpec } from "./workflow-restore.command.js";
 
-type WorkflowParsed = Record<string, never>;
+const WORKFLOW_CHILD_SPECS = [
+  workflowBuildSpec,
+  workflowRestoreSpec,
+  workflowDebugSpec,
+  workflowSyncSpec,
+  workflowLandSpec,
+] as const;
 
-const WORKFLOW_SUBCOMMANDS = ["build", "restore", "debug", "sync", "land"] as const;
-
-export const workflowSpec: CommandSpec<WorkflowParsed> = {
+export const workflowSpec: CommandSpec<GroupCommandParsed> = {
   id: ["workflow"],
   group: "Workflow",
   summary: "Workflow contract commands.",
   synopsis: ["agentplane workflow <subcommand> [options]"],
   args: [{ name: "subcommand", required: false, variadic: true, valueHint: "<subcommand>" }],
-  parse: () => ({}),
-  validateRaw: (raw) => {
-    const rest = Array.isArray(raw.args.subcommand) ? raw.args.subcommand : [];
-    const sub = rest[0];
-    if (!sub) {
-      throw usageError({
-        spec: workflowSpec,
-        command: "workflow",
-        message: "Missing workflow subcommand.",
-      });
-    }
-    const suggestion = suggestOne(String(sub), [...WORKFLOW_SUBCOMMANDS]);
-    const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-    throw usageError({
-      spec: workflowSpec,
-      command: "workflow",
-      message: `Unknown workflow subcommand: ${String(sub)}.${suffix}`,
-    });
-  },
+  parse: (raw) => parseGroupCommand(raw, "subcommand"),
 };
 
-export const runWorkflow: CommandHandler<WorkflowParsed> = (_ctx: CommandCtx): Promise<number> => {
-  throw usageError({
+export const runWorkflow: CommandHandler<GroupCommandParsed> = (_ctx: CommandCtx, p) => {
+  throwGroupCommandUsage({
     spec: workflowSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(["workflow"], WORKFLOW_CHILD_SPECS),
     command: "workflow",
-    message: "Missing workflow subcommand.",
+    missingMessage: "Missing workflow subcommand.",
+    unknownMessage: (subcommand) => `Unknown workflow subcommand: ${subcommand}.`,
   });
 };

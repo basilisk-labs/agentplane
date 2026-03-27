@@ -232,6 +232,54 @@ export async function writeDefaultConfig(root: string): Promise<void> {
   await writeFile(configPath, JSON.stringify(defaultConfig(), null, 2), "utf8");
 }
 
+export async function writeAndConfigureRoot(): Promise<string> {
+  const root = await mkGitRepoRoot();
+  await writeDefaultConfig(root);
+  return root;
+}
+
+export async function approveTaskPlan(root: string, taskId: string): Promise<void> {
+  await runCliSilent([
+    "task",
+    "plan",
+    "set",
+    taskId,
+    "--text",
+    "1) Do the work\n2) Verify the work",
+    "--updated-by",
+    "ORCHESTRATOR",
+    "--root",
+    root,
+  ]);
+  await runCliSilent([
+    "task",
+    "plan",
+    "approve",
+    taskId,
+    "--by",
+    "USER",
+    "--note",
+    "OK",
+    "--root",
+    root,
+  ]);
+}
+
+export async function recordVerificationOk(root: string, taskId: string): Promise<void> {
+  await runCliSilent([
+    "verify",
+    taskId,
+    "--ok",
+    "--by",
+    "REVIEWER",
+    "--note",
+    "Ok to integrate",
+    "--quiet",
+    "--root",
+    root,
+  ]);
+}
+
 export async function writeConfig(
   root: string,
   config: ReturnType<typeof defaultConfig>,

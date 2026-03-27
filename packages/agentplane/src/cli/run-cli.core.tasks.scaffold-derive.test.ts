@@ -3,8 +3,11 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
-import { captureStdIO, installRunCliIntegrationHarness } from "./run-cli.test-helpers.js";
-import { writeAndConfigureRoot } from "./run-cli.core.tasks.test-helpers.js";
+import {
+  captureStdIO,
+  installRunCliIntegrationHarness,
+  writeAndConfigureRoot,
+} from "./run-cli.test-helpers.js";
 
 installRunCliIntegrationHarness();
 
@@ -25,6 +28,8 @@ describe("runCli", () => {
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const readme = await readFile(readmePath, "utf8");
     expect(readme).toContain("doc_version: 3");
+    expect(readme).toContain('title: "(untitled task)"');
+    expect(readme).toContain('owner: "UNKNOWN"');
     expect(readme).toContain("## Verify Steps");
     expect(readme).toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
     expect(readme).toContain("1. <Action>. Expected: <observable result>.");

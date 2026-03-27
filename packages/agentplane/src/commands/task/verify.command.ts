@@ -1,9 +1,13 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
-import { usageError } from "../../cli/spec/errors.js";
+import { directSubcommandNames, throwGroupCommandUsage } from "../../cli/group-command.js";
+import { taskVerifyOkSpec } from "./verify-ok.command.js";
+import { taskVerifyReworkSpec } from "./verify-rework.command.js";
 
 export type TaskVerifyParsed = {
   subcommand?: string;
 };
+
+const TASK_VERIFY_CHILD_SPECS = [taskVerifyOkSpec, taskVerifyReworkSpec] as const;
 
 export const taskVerifySpec: CommandSpec<TaskVerifyParsed> = {
   id: ["task", "verify"],
@@ -20,8 +24,9 @@ export const taskVerifySpec: CommandSpec<TaskVerifyParsed> = {
 };
 
 export function runTaskVerify(_ctx: CommandCtx, p: TaskVerifyParsed): Promise<number> {
-  if (!p.subcommand) {
-    throw usageError({ spec: taskVerifySpec, message: "Missing subcommand." });
-  }
-  throw usageError({ spec: taskVerifySpec, message: `Unknown subcommand: ${p.subcommand}` });
+  throwGroupCommandUsage({
+    spec: taskVerifySpec,
+    cmd: p.subcommand ? [p.subcommand] : [],
+    subcommands: directSubcommandNames(["task", "verify"], TASK_VERIFY_CHILD_SPECS),
+  });
 }

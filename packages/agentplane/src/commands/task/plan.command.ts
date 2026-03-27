@@ -1,10 +1,16 @@
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
-import { usageError } from "../../cli/spec/errors.js";
-import { suggestOne } from "../../cli/spec/suggest.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../../cli/group-command.js";
+import { taskPlanApproveSpec } from "./plan-approve.command.js";
+import { taskPlanRejectSpec } from "./plan-reject.command.js";
+import { taskPlanSetSpec } from "./plan-set.command.js";
 
-type TaskPlanGroupParsed = { cmd: string[] };
-
-const TASK_PLAN_SUBCOMMANDS = ["set", "approve", "reject"] as const;
+const TASK_PLAN_CHILD_SPECS = [taskPlanSetSpec, taskPlanApproveSpec, taskPlanRejectSpec] as const;
+type TaskPlanGroupParsed = GroupCommandParsed;
 
 export const taskPlanSpec: CommandSpec<TaskPlanGroupParsed> = {
   id: ["task", "plan"],
@@ -26,18 +32,14 @@ export const taskPlanSpec: CommandSpec<TaskPlanGroupParsed> = {
       why: "Reject the current task plan with a note.",
     },
   ],
-  parse: (raw) => ({ cmd: (raw.args.cmd ?? []) as string[] }),
+  parse: (raw) => parseGroupCommand(raw),
 };
 
-export const runTaskPlan: CommandHandler<TaskPlanGroupParsed> = (_ctx: CommandCtx, p) => {
-  const input = p.cmd.join(" ");
-  const suggestion = suggestOne(input, [...TASK_PLAN_SUBCOMMANDS]);
-  const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-  const message = p.cmd.length === 0 ? "Missing subcommand." : `Unknown subcommand: ${p.cmd[0]}.`;
-  throw usageError({
+export const runTaskPlan: CommandHandler<GroupCommandParsed> = (_ctx: CommandCtx, p) => {
+  throwGroupCommandUsage({
     spec: taskPlanSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(["task", "plan"], TASK_PLAN_CHILD_SPECS),
     command: "task plan",
-    message: `${message}${suffix}`,
-    context: { command: "task plan" },
   });
 };

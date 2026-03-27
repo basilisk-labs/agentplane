@@ -1,36 +1,64 @@
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
-import { usageError } from "../../cli/spec/errors.js";
-import { suggestOne } from "../../cli/spec/suggest.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../../cli/group-command.js";
+import { taskAddSpec } from "./add.command.js";
+import { taskCloseDuplicateSpec } from "./close-duplicate.command.js";
+import { taskCloseNoopSpec } from "./close-noop.command.js";
+import { taskCommentSpec } from "./comment.command.js";
+import { taskDeriveSpec } from "./derive.command.js";
+import { taskDocSpec } from "./doc.command.js";
+import { taskExportSpec } from "./export.command.js";
+import { taskLintSpec } from "./lint.command.js";
+import { taskListSpec } from "./list.spec.js";
+import { taskMigrateDocSpec } from "./migrate-doc.command.js";
+import { taskMigrateSpec } from "./migrate.command.js";
+import { taskNewSpec } from "./new.spec.js";
+import { taskNextSpec } from "./next.spec.js";
+import { taskNormalizeSpec } from "./normalize.command.js";
+import { taskPlanSpec } from "./plan.command.js";
+import { taskRebuildIndexSpec } from "./rebuild-index.command.js";
+import { taskRunSpec } from "./run.spec.js";
+import { taskScrubSpec } from "./scrub.command.js";
+import { taskSearchSpec } from "./search.spec.js";
+import { taskSetStatusSpec } from "./set-status.command.js";
+import { taskShowSpec } from "./show.spec.js";
+import { taskStartReadySpec } from "./start-ready.command.js";
+import { taskUpdateSpec } from "./update.command.js";
+import { taskVerifySpec } from "./verify.command.js";
+import { taskVerifyShowSpec } from "./verify-show.command.js";
 
-type TaskGroupParsed = { cmd: string[] };
-
-const TASK_SUBCOMMANDS = [
-  "add",
-  "close-duplicate",
-  "close-noop",
-  "comment",
-  "derive",
-  "doc",
-  "export",
-  "lint",
-  "list",
-  "migrate",
-  "migrate-doc",
-  "new",
-  "next",
-  "normalize",
-  "plan",
-  "rebuild-index",
-  "run",
-  "scrub",
-  "search",
-  "set-status",
-  "show",
-  "start-ready",
-  "update",
-  "verify",
-  "verify-show",
+const TASK_CHILD_SPECS = [
+  taskAddSpec,
+  taskCloseDuplicateSpec,
+  taskCloseNoopSpec,
+  taskCommentSpec,
+  taskDeriveSpec,
+  taskDocSpec,
+  taskExportSpec,
+  taskLintSpec,
+  taskListSpec,
+  taskMigrateSpec,
+  taskMigrateDocSpec,
+  taskNewSpec,
+  taskNextSpec,
+  taskNormalizeSpec,
+  taskPlanSpec,
+  taskRebuildIndexSpec,
+  taskRunSpec,
+  taskScrubSpec,
+  taskSearchSpec,
+  taskSetStatusSpec,
+  taskShowSpec,
+  taskStartReadySpec,
+  taskUpdateSpec,
+  taskVerifySpec,
+  taskVerifyShowSpec,
 ] as const;
+type TaskGroupParsed = GroupCommandParsed;
 
 export const taskSpec: CommandSpec<TaskGroupParsed> = {
   id: ["task"],
@@ -65,18 +93,14 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
       why: "Run an existing task through the shared runner flow.",
     },
   ],
-  parse: (raw) => ({ cmd: (raw.args.cmd ?? []) as string[] }),
+  parse: (raw) => parseGroupCommand(raw),
 };
 
-export const runTask: CommandHandler<TaskGroupParsed> = (_ctx: CommandCtx, p) => {
-  const input = p.cmd.join(" ");
-  const suggestion = suggestOne(input, [...TASK_SUBCOMMANDS]);
-  const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-  const message = p.cmd.length === 0 ? "Missing subcommand." : `Unknown subcommand: ${p.cmd[0]}.`;
-  throw usageError({
+export const runTask: CommandHandler<GroupCommandParsed> = (_ctx: CommandCtx, p) => {
+  throwGroupCommandUsage({
     spec: taskSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(["task"], TASK_CHILD_SPECS),
     command: "task",
-    message: `${message}${suffix}`,
-    context: { command: "task" },
   });
 };
