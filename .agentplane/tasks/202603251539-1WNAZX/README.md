@@ -4,7 +4,7 @@ title: "Consolidate upgrade and release into one operator pipeline"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -20,10 +20,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-27T18:17:54.146Z"
+  updated_by: "CODER"
+  note: "Introduced a shared operator pipeline shell for release apply and upgrade, rewired both flows through the common init/preflight/materialize/execute/finalize shape without collapsing their domain-specific commit/tag/managed-file semantics, and verified the seam with focused release/upgrade regressions plus build, lint, and format checks."
 commit: null
 comments:
   -
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: extract the shared operator-run shell first, then rewire release and upgrade around that seam without collapsing their command-specific guards or prompts."
+  -
+    type: "verify"
+    at: "2026-03-27T18:17:54.146Z"
+    author: "CODER"
+    state: "ok"
+    note: "Introduced a shared operator pipeline shell for release apply and upgrade, rewired both flows through the common init/preflight/materialize/execute/finalize shape without collapsing their domain-specific commit/tag/managed-file semantics, and verified the seam with focused release/upgrade regressions plus build, lint, and format checks."
 doc_version: 3
-doc_updated_at: "2026-03-27T18:10:41.861Z"
+doc_updated_at: "2026-03-27T18:17:54.150Z"
 doc_updated_by: "CODER"
 description: "Refactor upgrade and release flows onto a shared operator pipeline for source acquisition, reconcile, verification, and post-apply side effects, so both surfaces reuse one execution model instead of parallel bespoke orchestration stacks."
 sections:
@@ -59,6 +65,14 @@ sections:
     3. Run the smallest relevant builds. Expected: agentplane and any touched package compile cleanly, and any remaining upgrade-vs-release asymmetry is explicit in Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-27T18:17:54.146Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Introduced a shared operator pipeline shell for release apply and upgrade, rewired both flows through the common init/preflight/materialize/execute/finalize shape without collapsing their domain-specific commit/tag/managed-file semantics, and verified the seam with focused release/upgrade regressions plus build, lint, and format checks.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-27T18:10:41.861Z, excerpt_hash=sha256:2fe576f9389a6a9e84654f4e251bf3b3f65e2261fcf5923646fde67f6b9e1592
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -92,6 +106,14 @@ Refactor upgrade and release flows onto a shared operator pipeline for source ac
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-27T18:17:54.146Z — VERIFY — ok
+
+By: CODER
+
+Note: Introduced a shared operator pipeline shell for release apply and upgrade, rewired both flows through the common init/preflight/materialize/execute/finalize shape without collapsing their domain-specific commit/tag/managed-file semantics, and verified the seam with focused release/upgrade regressions plus build, lint, and format checks.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-27T18:10:41.861Z, excerpt_hash=sha256:2fe576f9389a6a9e84654f4e251bf3b3f65e2261fcf5923646fde67f6b9e1592
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
