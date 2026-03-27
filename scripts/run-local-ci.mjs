@@ -40,6 +40,40 @@ function runCommand(cmd, args, env = baseEnv) {
   run(cmd, args, env);
 }
 
+function createBaselineStepEntries({ includeBuild }) {
+  return [
+    ["Format (check)", () => runCommand("bun", ["run", "format:check"])],
+    ["Schemas (check)", () => runCommand("bun", ["run", "schemas:check"])],
+    ["Agent templates (check)", () => runCommand("bun", ["run", "agents:check"])],
+    ["Policy routing (check)", () => runCommand("bun", ["run", "policy:routing:check"])],
+    ["Release parity (check)", () => runCommand("bun", ["run", "release:parity"])],
+    ...(includeBuild
+      ? [
+          [
+            "Build",
+            () => {
+              runCommand("bun", ["run", "--filter=@agentplaneorg/core", "build"]);
+              runCommand("bun", ["run", "--filter=agentplane", "build"]);
+              runCommand("bun", ["run", "build"]);
+            },
+          ],
+        ]
+      : []),
+    ["CLI docs freshness (check)", () => runCliDocsFreshnessStep()],
+    ["Recipes inventory freshness (check)", () => runCommand("bun", ["run", "docs:recipes:check"])],
+    [
+      "Agent onboarding scenario (check)",
+      () => runCommand("bun", ["run", "docs:onboarding:check"]),
+    ],
+  ];
+}
+
+function runStepEntries(stepEntries) {
+  for (const [label, fn] of stepEntries) {
+    runStep(label, fn);
+  }
+}
+
 const modeFlagIndex = process.argv.indexOf("--mode");
 const inlineModeArg = process.argv.find((arg) => arg.startsWith("--mode="));
 const mode =
@@ -53,22 +87,7 @@ if (mode !== "fast" && mode !== "full") {
 }
 
 const fastSteps = [
-  ["Format (check)", () => run("bun", ["run", "format:check"])],
-  ["Schemas (check)", () => run("bun", ["run", "schemas:check"])],
-  ["Agent templates (check)", () => run("bun", ["run", "agents:check"])],
-  ["Policy routing (check)", () => run("bun", ["run", "policy:routing:check"])],
-  ["Release parity (check)", () => run("bun", ["run", "release:parity"])],
-  [
-    "Build",
-    () => {
-      run("bun", ["run", "--filter=@agentplaneorg/core", "build"]);
-      run("bun", ["run", "--filter=agentplane", "build"]);
-      run("bun", ["run", "build"]);
-    },
-  ],
-  ["CLI docs freshness (check)", () => runCliDocsFreshnessStep()],
-  ["Recipes inventory freshness (check)", () => run("bun", ["run", "docs:recipes:check"])],
-  ["Agent onboarding scenario (check)", () => run("bun", ["run", "docs:onboarding:check"])],
+  ...createBaselineStepEntries({ includeBuild: true }),
   ["Lint (core)", () => run("bun", ["run", "lint:core"])],
   ["Unit tests (fast)", () => run("bun", ["run", "test:fast"], testEnv)],
   ["CLI E2E (critical)", () => run("bun", ["run", "test:critical"], testEnv)],
@@ -114,38 +133,11 @@ function runCliDocsFreshnessStep() {
 }
 
 function runDocsOnlyFastPath() {
-  runStep("Format (check)", () => runCommand("bun", ["run", "format:check"]));
-  runStep("Schemas (check)", () => runCommand("bun", ["run", "schemas:check"]));
-  runStep("Agent templates (check)", () => runCommand("bun", ["run", "agents:check"]));
-  runStep("Policy routing (check)", () => runCommand("bun", ["run", "policy:routing:check"]));
-  runStep("Release parity (check)", () => runCommand("bun", ["run", "release:parity"]));
-  runStep("CLI docs freshness (check)", () => runCliDocsFreshnessStep());
-  runStep("Recipes inventory freshness (check)", () =>
-    runCommand("bun", ["run", "docs:recipes:check"]),
-  );
-  runStep("Agent onboarding scenario (check)", () =>
-    runCommand("bun", ["run", "docs:onboarding:check"]),
-  );
+  runStepEntries(createBaselineStepEntries({ includeBuild: false }));
 }
 
 function runTargetedFastPath(plan) {
-  runStep("Format (check)", () => runCommand("bun", ["run", "format:check"]));
-  runStep("Schemas (check)", () => runCommand("bun", ["run", "schemas:check"]));
-  runStep("Agent templates (check)", () => runCommand("bun", ["run", "agents:check"]));
-  runStep("Policy routing (check)", () => runCommand("bun", ["run", "policy:routing:check"]));
-  runStep("Release parity (check)", () => runCommand("bun", ["run", "release:parity"]));
-  runStep("Build", () => {
-    runCommand("bun", ["run", "--filter=@agentplaneorg/core", "build"]);
-    runCommand("bun", ["run", "--filter=agentplane", "build"]);
-    runCommand("bun", ["run", "build"]);
-  });
-  runStep("CLI docs freshness (check)", () => runCliDocsFreshnessStep());
-  runStep("Recipes inventory freshness (check)", () =>
-    runCommand("bun", ["run", "docs:recipes:check"]),
-  );
-  runStep("Agent onboarding scenario (check)", () =>
-    runCommand("bun", ["run", "docs:onboarding:check"]),
-  );
+  runStepEntries(createBaselineStepEntries({ includeBuild: true }));
   if (plan.bucket === "workflow") {
     const scriptLintTargets = plan.lintTargets.filter(
       (target) => !target.startsWith(".github/workflows/") && !target.endsWith(".yml"),
@@ -191,12 +183,8 @@ if (mode === "fast" && fastPlan.kind === "docs-only") {
 } else if (mode === "fast" && fastPlan.kind === "targeted") {
   runTargetedFastPath(fastPlan);
 } else {
-  for (const [label, fn] of fastSteps) {
-    runStep(label, fn);
-  }
+  runStepEntries(fastSteps);
 }
 if (mode === "full") {
-  for (const [label, fn] of fullOnlySteps) {
-    runStep(label, fn);
-  }
+  runStepEntries(fullOnlySteps);
 }
