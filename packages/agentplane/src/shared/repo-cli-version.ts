@@ -1,5 +1,11 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core";
 
+import {
+  FRAMEWORK_DEV_BOOTSTRAP_COMMAND,
+  FRAMEWORK_DEV_GLOBAL_VERIFY_COMMAND,
+  FRAMEWORK_DEV_REINSTALL_SCRIPT,
+  FRAMEWORK_DEV_REPO_LOCAL_VERIFY_COMMAND,
+} from "../../bin/framework-dev-contract.js";
 import type { RuntimeSourceInfo } from "./runtime-source.js";
 import { compareVersions } from "./version-compare.js";
 
@@ -27,7 +33,7 @@ export function getRepoExpectedCliVersion(config: AgentplaneConfig): string | nu
 function buildRecovery(runtime: RuntimeSourceInfo, expectedVersion: string): string {
   switch (runtime.mode) {
     case "global-installed": {
-      return `Run: npm i -g agentplane@${expectedVersion}. Then verify: agentplane runtime explain`;
+      return `Run: npm i -g agentplane@${expectedVersion}. Then verify: ${FRAMEWORK_DEV_GLOBAL_VERIFY_COMMAND}`;
     }
     case "global-in-framework":
     case "global-forced-in-framework": {
@@ -36,9 +42,10 @@ function buildRecovery(runtime: RuntimeSourceInfo, expectedVersion: string): str
           ? "Unset AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 if forced global mode is not intentional. "
           : "";
       return (
-        `${prefix}Run: scripts/reinstall-global-agentplane.sh. ` +
-        "Fallback: node packages/agentplane/bin/agentplane.js runtime explain. " +
-        "Then verify: agentplane runtime explain"
+        `${prefix}Run: ${FRAMEWORK_DEV_BOOTSTRAP_COMMAND}. ` +
+        `If the global PATH command should resolve this checkout, then run: ${FRAMEWORK_DEV_REINSTALL_SCRIPT}. ` +
+        `Repo-local verify: ${FRAMEWORK_DEV_REPO_LOCAL_VERIFY_COMMAND}. ` +
+        `Then verify: ${FRAMEWORK_DEV_GLOBAL_VERIFY_COMMAND}`
       );
     }
     case "repo-local":
@@ -46,7 +53,7 @@ function buildRecovery(runtime: RuntimeSourceInfo, expectedVersion: string): str
       return (
         `Sync this framework checkout to agentplane ${expectedVersion} or lower ` +
         "framework.cli.expected_version if the repository intentionally targets an older CLI. " +
-        "Then verify: agentplane runtime explain"
+        `Then verify: ${FRAMEWORK_DEV_REPO_LOCAL_VERIFY_COMMAND}`
       );
     }
   }

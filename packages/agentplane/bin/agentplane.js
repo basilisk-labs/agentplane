@@ -4,6 +4,10 @@ import path from "node:path";
 import { stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { distExists, isPackageBuildFresh } from "./dist-guard.js";
+import {
+  FRAMEWORK_DEV_BOOTSTRAP_COMMAND,
+  FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS,
+} from "./framework-dev-contract.js";
 import { getWatchedRuntimePathsForPackage } from "./runtime-watch.js";
 import { classifyStaleDistPolicy } from "./stale-dist-policy.js";
 import { isPathInside, resolveFrameworkBinaryContext } from "./runtime-context.js";
@@ -128,8 +132,9 @@ async function assertDistUpToDate() {
     process.stderr.write(
       "error: agentplane dist is missing for this repo checkout.\n" +
         "Fix:\n" +
-        "  bun run --filter=@agentplaneorg/core build\n" +
-        "  bun run --filter=agentplane build\n",
+        `  ${FRAMEWORK_DEV_BOOTSTRAP_COMMAND}\n` +
+        "Manual fallback:\n" +
+        FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS.map((command) => `  ${command}\n`).join(""),
     );
     process.exitCode = 2;
     return false;
@@ -188,8 +193,7 @@ async function assertDistUpToDate() {
           `command: ${commandText || "<unknown>"}\n` +
           `detected: ${staleReasons.join(", ")}\n` +
           "rebuild recommended:\n" +
-          "  bun run --filter=@agentplaneorg/core build\n" +
-          "  bun run --filter=agentplane build\n",
+          `  ${FRAMEWORK_DEV_BOOTSTRAP_COMMAND}\n`,
       );
       return true;
     }
@@ -197,8 +201,9 @@ async function assertDistUpToDate() {
     process.stderr.write(
       "error: refusing to run a stale repo build (manifest/git quick-check failed).\n" +
         "Fix:\n" +
-        "  bun run --filter=@agentplaneorg/core build\n" +
-        "  bun run --filter=agentplane build\n" +
+        `  ${FRAMEWORK_DEV_BOOTSTRAP_COMMAND}\n` +
+        "Manual fallback:\n" +
+        FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS.map((command) => `  ${command}\n`).join("") +
         `Detected: ${staleReasons.join(", ")}\n` +
         "Override (not recommended): set AGENTPLANE_DEV_ALLOW_STALE_DIST=1\n",
     );

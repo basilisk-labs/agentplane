@@ -18,10 +18,17 @@ bun run test:fast
 ```
 
 Inside this framework checkout, `agentplane` from `PATH` now delegates automatically to the
-repo-local binary. The repo-local entrypoint still executes from `dist/`, so rebuild after source
-changes:
+repo-local binary. The canonical repair/bootstrap path for fresh clones and worktrees is:
 
 ```bash
+bun run framework:dev:bootstrap
+```
+
+Manual fallback when you need to repair the prerequisites step by step:
+
+```bash
+bun install
+git submodule update --init --recursive agentplane-recipes
 bun run --filter=@agentplaneorg/core build
 bun run --filter=agentplane build
 ```
@@ -36,8 +43,8 @@ agentplane runtime explain
 ```
 
 Inside the framework checkout, this output is now the canonical framework-dev workflow surface:
-it prints the active runtime facts together with the rebuild commands, the global reinstall helper,
-the runtime re-check step, and the explicit force-global override path.
+it prints the active runtime facts together with the bootstrap command, manual fallback steps, the
+repo-local verify step, the global reinstall helper, and the explicit force-global override path.
 
 If watched runtime paths are dirty and the repo-local build would otherwise be considered stale,
 read-only inspection commands still warn and continue:
@@ -53,7 +60,7 @@ agentplane quickstart
 agentplane role CODER
 ```
 
-After you rebuild the local packages, strict commands should be unblocked again as soon as the
+After you run the framework bootstrap, strict commands should be unblocked again as soon as the
 recorded watched-runtime snapshot in `dist/.build-manifest.json` matches the current source tree,
 even before those runtime file changes are committed.
 

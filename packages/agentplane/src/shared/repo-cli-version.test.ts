@@ -88,10 +88,9 @@ describe("repo-cli-version", () => {
       }),
     );
     expect(expectation.state).toBe("older_than_expected");
-    expect(expectation.recovery).toContain("Run: scripts/reinstall-global-agentplane.sh");
-    expect(expectation.recovery).toContain(
-      "Fallback: node packages/agentplane/bin/agentplane.js runtime explain",
-    );
+    expect(expectation.recovery).toContain("Run: bun run framework:dev:bootstrap");
+    expect(expectation.recovery).toContain("scripts/reinstall-global-agentplane.sh");
+    expect(expectation.recovery).toContain("Repo-local verify:");
     expect(expectation.recovery).toContain("Then verify: agentplane runtime explain");
   });
 });

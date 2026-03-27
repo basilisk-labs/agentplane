@@ -35,7 +35,8 @@
           "tools_used": ["dokploy"],
           "run_profile": {
             "mode": "apply",
-            "sandbox": "workspace-write"
+            "sandbox": "workspace-write",
+            "expected_exit_contract": "deployment_status"
           }
         },
         {
@@ -52,7 +53,8 @@
           "tools_used": ["dokploy"],
           "run_profile": {
             "mode": "analysis",
-            "sandbox": "workspace-write"
+            "sandbox": "workspace-write",
+            "expected_exit_contract": "projects"
           }
         }
       ]
@@ -79,7 +81,8 @@
           "tools_used": ["viewer-server"],
           "run_profile": {
             "mode": "analysis",
-            "sandbox": "workspace-write"
+            "sandbox": "workspace-write",
+            "expected_exit_contract": "viewer_url"
           }
         }
       ]

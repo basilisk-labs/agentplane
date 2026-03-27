@@ -8,6 +8,14 @@ import {
   type RepoCliVersionExpectation,
 } from "../shared/repo-cli-version.js";
 import {
+  FRAMEWORK_DEV_BOOTSTRAP_COMMAND,
+  FRAMEWORK_DEV_FORCE_GLOBAL_EXAMPLE,
+  FRAMEWORK_DEV_GLOBAL_VERIFY_COMMAND,
+  FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS,
+  FRAMEWORK_DEV_REINSTALL_SCRIPT,
+  FRAMEWORK_DEV_REPO_LOCAL_VERIFY_COMMAND,
+} from "../../bin/framework-dev-contract.js";
+import {
   describeRuntimeMode,
   resolveRuntimeSourceInfo,
   type RuntimeSourceInfo,
@@ -15,9 +23,11 @@ import {
 
 export type FrameworkDevWorkflow = {
   available: boolean;
-  rebuildCommands: string[];
+  bootstrapCommand: string;
+  manualRepairCommands: string[];
+  repoLocalVerifyCommand: string;
   reinstallScript: string;
-  verifyCommand: string;
+  globalVerifyCommand: string;
   forceGlobalExample: string;
   recommendation: string | null;
 };
@@ -68,40 +78,36 @@ function renderPath(value: string | null): string {
 
 export function buildFrameworkDevWorkflow(report: RuntimeSourceInfo): FrameworkDevWorkflow {
   const available = report.framework.inFrameworkCheckout;
-  const reinstallScript = "scripts/reinstall-global-agentplane.sh";
-  const rebuildCommands = [
-    "bun run --filter=@agentplaneorg/core build",
-    "bun run --filter=agentplane build",
-  ];
-  const verifyCommand = "agentplane runtime explain";
-  const forceGlobalExample = "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>";
-
   if (!available) {
     return {
       available,
-      rebuildCommands,
-      reinstallScript,
-      verifyCommand,
-      forceGlobalExample,
+      bootstrapCommand: FRAMEWORK_DEV_BOOTSTRAP_COMMAND,
+      manualRepairCommands: [...FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS],
+      repoLocalVerifyCommand: FRAMEWORK_DEV_REPO_LOCAL_VERIFY_COMMAND,
+      reinstallScript: FRAMEWORK_DEV_REINSTALL_SCRIPT,
+      globalVerifyCommand: FRAMEWORK_DEV_GLOBAL_VERIFY_COMMAND,
+      forceGlobalExample: FRAMEWORK_DEV_FORCE_GLOBAL_EXAMPLE,
       recommendation: null,
     };
   }
 
   const recommendation =
     report.mode === "repo-local" || report.mode === "repo-local-handoff"
-      ? "Rebuild local packages after source changes; use the reinstall helper only when you need the global PATH command updated from this checkout."
+      ? "Run the framework bootstrap after fresh clones or dependency drift; use the reinstall helper only when the global PATH command itself should resolve this checkout."
       : report.mode === "global-in-framework"
-        ? "Reinstall or update the global agentplane CLI from this checkout so the wrapper can hand off to the repo-local binary."
+        ? "Bootstrap the framework checkout first so the installed wrapper can hand off cleanly to the repo-local runtime."
         : report.mode === "global-forced-in-framework"
           ? "Unset AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 unless you intentionally need the global installed CLI inside the framework checkout."
-          : "Use runtime explain after rebuild/reinstall to confirm which binary and package roots are active.";
+          : "Use the framework bootstrap command first, then verify the repo-local runtime and global wrapper explicitly.";
 
   return {
     available,
-    rebuildCommands,
-    reinstallScript,
-    verifyCommand,
-    forceGlobalExample,
+    bootstrapCommand: FRAMEWORK_DEV_BOOTSTRAP_COMMAND,
+    manualRepairCommands: [...FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS],
+    repoLocalVerifyCommand: FRAMEWORK_DEV_REPO_LOCAL_VERIFY_COMMAND,
+    reinstallScript: FRAMEWORK_DEV_REINSTALL_SCRIPT,
+    globalVerifyCommand: FRAMEWORK_DEV_GLOBAL_VERIFY_COMMAND,
+    forceGlobalExample: FRAMEWORK_DEV_FORCE_GLOBAL_EXAMPLE,
     recommendation,
   };
 }
@@ -152,13 +158,17 @@ export function renderRuntimeExplainText(
     lines.push(
       "",
       "Framework dev workflow:",
-      "1. Rebuild local packages after source changes:",
-      ...frameworkDev.rebuildCommands.map((command) => `   - ${command}`),
-      "2. If the global PATH install should resolve this checkout:",
+      "1. Canonical bootstrap:",
+      `   - ${frameworkDev.bootstrapCommand}`,
+      "2. Manual fallback:",
+      ...frameworkDev.manualRepairCommands.map((command) => `   - ${command}`),
+      "3. Verify the repo-local runtime directly:",
+      `   - ${frameworkDev.repoLocalVerifyCommand}`,
+      "4. If the global PATH install should resolve this checkout:",
       `   - ${frameworkDev.reinstallScript}`,
-      "3. Re-verify the active runtime:",
-      `   - ${frameworkDev.verifyCommand}`,
-      "4. Optional: force the global installed CLI inside this checkout:",
+      "5. Re-verify the global wrapper:",
+      `   - ${frameworkDev.globalVerifyCommand}`,
+      "6. Optional: force the global installed CLI inside this checkout:",
       `   - ${frameworkDev.forceGlobalExample}`,
     );
     if (frameworkDev.recommendation) {

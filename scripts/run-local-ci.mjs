@@ -97,10 +97,7 @@ function runCliDocsFreshnessStep() {
     process.stdout.write("Skipping CLI docs freshness check for this changed-file bucket.\n");
     return;
   }
-  runCommand("bun", ["run", "docs:cli:check"], {
-    ...process.env,
-    AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
-  });
+  runCommand("bun", ["run", "docs:cli:check"]);
 }
 
 function runDocsOnlyFastPath() {

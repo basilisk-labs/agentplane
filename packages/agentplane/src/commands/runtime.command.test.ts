@@ -63,9 +63,11 @@ describe("runtime.command", () => {
         core: { version: string | null; packageRoot: string | null };
         frameworkDev: {
           available: boolean;
-          rebuildCommands: string[];
+          bootstrapCommand: string;
+          manualRepairCommands: string[];
+          repoLocalVerifyCommand: string;
           reinstallScript: string;
-          verifyCommand: string;
+          globalVerifyCommand: string;
           forceGlobalExample: string;
           recommendation: string | null;
         };
@@ -83,8 +85,13 @@ describe("runtime.command", () => {
       expect(payload.agentplane.packageRoot).toContain("packages/agentplane");
       expect(payload.core).toHaveProperty("packageRoot");
       expect(payload.frameworkDev.available).toBe(true);
+      expect(payload.frameworkDev.bootstrapCommand).toBe("bun run framework:dev:bootstrap");
+      expect(payload.frameworkDev.manualRepairCommands).toContain("bun install");
       expect(payload.frameworkDev.reinstallScript).toBe("scripts/reinstall-global-agentplane.sh");
-      expect(payload.frameworkDev.verifyCommand).toBe("agentplane runtime explain");
+      expect(payload.frameworkDev.repoLocalVerifyCommand).toBe(
+        "node packages/agentplane/bin/agentplane.js runtime explain",
+      );
+      expect(payload.frameworkDev.globalVerifyCommand).toBe("agentplane runtime explain");
       expect(payload.frameworkDev.forceGlobalExample).toContain(
         "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1",
       );
@@ -120,6 +127,8 @@ describe("runtime.command", () => {
       expect(io.stdout).toContain(`Repository expected agentplane CLI: ${repoExpectedCliVersion}`);
       expect(io.stdout).toContain("Repository CLI status:");
       expect(io.stdout).toContain("Framework dev workflow:");
+      expect(io.stdout).toContain("bun run framework:dev:bootstrap");
+      expect(io.stdout).toContain("node packages/agentplane/bin/agentplane.js runtime explain");
       expect(io.stdout).toContain("scripts/reinstall-global-agentplane.sh");
       expect(io.stdout).toContain("AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>");
     } finally {
@@ -178,6 +187,7 @@ describe("runtime.command", () => {
     expect(text).toContain("Resolved agentplane:");
     expect(text).toContain(`Repository expected agentplane CLI: ${repoExpectedCliVersion}`);
     expect(text).toContain("Framework dev workflow:");
+    expect(text).toContain("bun run framework:dev:bootstrap");
     expect(text).toContain("scripts/reinstall-global-agentplane.sh");
   });
 
