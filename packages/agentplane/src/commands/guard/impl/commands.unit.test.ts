@@ -46,6 +46,7 @@ function mkCtx() {
       stage: vi.fn().mockResolvedValue(),
       commit: vi.fn().mockResolvedValue(),
       headHashSubject: vi.fn().mockResolvedValue({ hash: "abcdef123456", subject: "subject" }),
+      invalidateStatus: vi.fn(),
     },
   };
 }
@@ -290,7 +291,11 @@ describe("guard/impl/commands", () => {
       }),
     ).rejects.toMatchObject<CliError>({ code: "E_GIT" });
     expect(mocks.loadTaskFromContext).not.toHaveBeenCalled();
-    expect(mocks.execFileAsync).not.toHaveBeenCalled();
+    expect(mocks.execFileAsync).not.toHaveBeenCalledWith(
+      "git",
+      ["restore", "--staged", "--", "."],
+      expect.anything(),
+    );
   });
 
   it("cmdCommit close --check-only reports the unstage suffix when it would clear the index", async () => {
