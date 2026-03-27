@@ -1,51 +1,44 @@
 import type { CommandHandler, CommandSpec, CommandCtx } from "../../cli/spec/spec.js";
-import { usageError } from "../../cli/spec/errors.js";
-import { suggestOne } from "../../cli/spec/suggest.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../../cli/group-command.js";
+import { recipesCacheSpec } from "./cache.command.js";
+import { recipesExplainSpec } from "./explain.command.js";
+import { recipesInfoSpec } from "./info.command.js";
+import { recipesInstallSpec } from "./install.spec.js";
+import { recipesListSpec } from "./list.command.js";
+import { recipesListRemoteSpec } from "./list-remote.command.js";
+import { recipesRemoveSpec } from "./remove.command.js";
 
-type RecipesParsed = Record<string, never>;
-
-const RECIPES_SUBCOMMANDS = [
-  "list",
-  "list-remote",
-  "info",
-  "explain",
-  "install",
-  "remove",
-  "cache",
+const RECIPES_CHILD_SPECS = [
+  recipesListSpec,
+  recipesListRemoteSpec,
+  recipesInfoSpec,
+  recipesExplainSpec,
+  recipesInstallSpec,
+  recipesRemoveSpec,
+  recipesCacheSpec,
 ] as const;
 
-export const recipesSpec: CommandSpec<RecipesParsed> = {
+export const recipesSpec: CommandSpec<GroupCommandParsed> = {
   id: ["recipes"],
   group: "Recipes",
   summary: "Recipe management commands.",
   synopsis: ["agentplane recipes <subcommand> [options]"],
   args: [{ name: "subcommand", required: false, variadic: true, valueHint: "<subcommand>" }],
-  parse: () => ({}),
-  validateRaw: (raw) => {
-    const rest = Array.isArray(raw.args.subcommand) ? raw.args.subcommand : [];
-    const sub = rest[0];
-    if (!sub) {
-      throw usageError({
-        spec: recipesSpec,
-        command: "recipes",
-        message: "Missing recipes subcommand.",
-      });
-    }
-    const suggestion = suggestOne(String(sub), [...RECIPES_SUBCOMMANDS]);
-    const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-    throw usageError({
-      spec: recipesSpec,
-      command: "recipes",
-      message: `Unknown recipes subcommand: ${String(sub)}.${suffix}`,
-    });
-  },
+  parse: (raw) => parseGroupCommand(raw, "subcommand"),
 };
 
-export const runRecipes: CommandHandler<RecipesParsed> = (_ctx: CommandCtx): Promise<number> => {
-  // Should be unreachable because validateRaw always throws.
-  throw usageError({
+export const runRecipes: CommandHandler<GroupCommandParsed> = (_ctx: CommandCtx, p) => {
+  throwGroupCommandUsage({
     spec: recipesSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(["recipes"], RECIPES_CHILD_SPECS),
     command: "recipes",
-    message: "Missing recipes subcommand.",
+    missingMessage: "Missing recipes subcommand.",
+    unknownMessage: (subcommand) => `Unknown recipes subcommand: ${subcommand}.`,
   });
 };

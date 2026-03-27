@@ -1,9 +1,13 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
-import { usageError } from "../../cli/spec/errors.js";
+import { directSubcommandNames, throwGroupCommandUsage } from "../../cli/group-command.js";
+import { taskDocSetSpec } from "./doc-set.command.js";
+import { taskDocShowSpec } from "./doc-show.command.js";
 
 export type TaskDocParsed = {
   subcommand?: string;
 };
+
+const TASK_DOC_CHILD_SPECS = [taskDocShowSpec, taskDocSetSpec] as const;
 
 export const taskDocSpec: CommandSpec<TaskDocParsed> = {
   id: ["task", "doc"],
@@ -23,8 +27,9 @@ export const taskDocSpec: CommandSpec<TaskDocParsed> = {
 };
 
 export function runTaskDoc(_ctx: CommandCtx, p: TaskDocParsed): Promise<number> {
-  if (!p.subcommand) {
-    throw usageError({ spec: taskDocSpec, message: "Missing subcommand." });
-  }
-  throw usageError({ spec: taskDocSpec, message: `Unknown subcommand: ${p.subcommand}` });
+  throwGroupCommandUsage({
+    spec: taskDocSpec,
+    cmd: p.subcommand ? [p.subcommand] : [],
+    subcommands: directSubcommandNames(["task", "doc"], TASK_DOC_CHILD_SPECS),
+  });
 }

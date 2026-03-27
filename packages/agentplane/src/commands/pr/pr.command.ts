@@ -1,11 +1,16 @@
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../../cli/group-command.js";
 import { usageError } from "../../cli/spec/errors.js";
-import { suggestOne } from "../../cli/spec/suggest.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { cmdPrCheck, cmdPrNote, cmdPrOpen, cmdPrUpdate } from "./index.js";
 
-type PrGroupParsed = { cmd: string[] };
+type PrGroupParsed = GroupCommandParsed;
 
 export const prSpec: CommandSpec<PrGroupParsed> = {
   id: ["pr"],
@@ -22,7 +27,7 @@ export const prSpec: CommandSpec<PrGroupParsed> = {
       why: "Append a handoff note.",
     },
   ],
-  parse: (raw) => ({ cmd: (raw.args.cmd ?? []) as string[] }),
+  parse: (raw) => parseGroupCommand(raw),
 };
 
 export type PrOpenParsed = { taskId: string; author: string; branch: string | null };
@@ -129,23 +134,18 @@ export const prNoteSpec: CommandSpec<PrNoteParsed> = {
   }),
 };
 
-function runPrRootGroup(_ctx: CommandCtx, p: PrGroupParsed): Promise<number> {
-  const input = p.cmd.join(" ");
-  const candidates = ["open", "update", "check", "note"];
-  const suggestion = suggestOne(input, candidates);
-  const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-  const msg = p.cmd.length === 0 ? "Missing subcommand." : `Unknown subcommand: ${p.cmd[0]}.`;
-  throw usageError({
+function runPrRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
+  throwGroupCommandUsage({
     spec: prSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(["pr"], [prOpenSpec, prUpdateSpec, prCheckSpec, prNoteSpec]),
     command: "pr",
-    message: `${msg}${suffix}`,
-    context: { command: "pr" },
   });
 }
 
 export function makeRunPrHandler(
   _getCtx: (cmd: string) => Promise<CommandContext>,
-): CommandHandler<PrGroupParsed> {
+): CommandHandler<GroupCommandParsed> {
   return runPrRootGroup;
 }
 

@@ -33,6 +33,7 @@ import {
   loadAgentsTemplate,
 } from "../agents/agents-template.js";
 import {
+  approveTaskPlan,
   captureStdIO,
   cleanGitEnv,
   commitAll,
@@ -50,8 +51,8 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
+  recordVerificationOk,
 } from "./run-cli.test-helpers.js";
-import { approveTaskPlan, recordVerificationOk } from "./run-cli.core.pr-flow.test-helpers.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 

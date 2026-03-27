@@ -1,45 +1,30 @@
 import type { CommandHandler, CommandSpec, CommandCtx } from "../../cli/spec/spec.js";
-import { usageError } from "../../cli/spec/errors.js";
-import { suggestOne } from "../../cli/spec/suggest.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../../cli/group-command.js";
+import { recipesCachePruneSpec } from "./cache-prune.command.js";
 
-type RecipesCacheParsed = Record<string, never>;
+const RECIPES_CACHE_CHILD_SPECS = [recipesCachePruneSpec] as const;
 
-const RECIPES_CACHE_SUBCOMMANDS = ["prune"] as const;
-
-export const recipesCacheSpec: CommandSpec<RecipesCacheParsed> = {
+export const recipesCacheSpec: CommandSpec<GroupCommandParsed> = {
   id: ["recipes", "cache"],
   group: "Recipes",
   summary: "Manage recipes cache.",
   synopsis: ["agentplane recipes cache <subcommand> [options]"],
   args: [{ name: "subcommand", required: false, variadic: true, valueHint: "<subcommand>" }],
-  parse: () => ({}),
-  validateRaw: (raw) => {
-    const rest = Array.isArray(raw.args.subcommand) ? raw.args.subcommand : [];
-    const sub = rest[0];
-    if (!sub) {
-      throw usageError({
-        spec: recipesCacheSpec,
-        command: "recipes cache",
-        message: "Missing recipes cache subcommand.",
-      });
-    }
-    const suggestion = suggestOne(String(sub), [...RECIPES_CACHE_SUBCOMMANDS]);
-    const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-    throw usageError({
-      spec: recipesCacheSpec,
-      command: "recipes cache",
-      message: `Unknown recipes cache subcommand: ${String(sub)}.${suffix}`,
-    });
-  },
+  parse: (raw) => parseGroupCommand(raw, "subcommand"),
 };
 
-export const runRecipesCache: CommandHandler<RecipesCacheParsed> = (
-  _ctx: CommandCtx,
-): Promise<number> => {
-  // Should be unreachable because validateRaw always throws.
-  throw usageError({
+export const runRecipesCache: CommandHandler<GroupCommandParsed> = (_ctx: CommandCtx, p) => {
+  throwGroupCommandUsage({
     spec: recipesCacheSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(["recipes", "cache"], RECIPES_CACHE_CHILD_SPECS),
     command: "recipes cache",
-    message: "Missing recipes cache subcommand.",
+    missingMessage: "Missing recipes cache subcommand.",
+    unknownMessage: (subcommand) => `Unknown recipes cache subcommand: ${subcommand}.`,
   });
 };

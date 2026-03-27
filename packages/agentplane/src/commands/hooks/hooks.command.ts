@@ -1,23 +1,29 @@
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
-import { usageError } from "../../cli/spec/errors.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../../cli/group-command.js";
+import { hooksInstallSpec } from "./install.command.js";
+import { hooksRunSpec } from "./run.command.js";
+import { hooksUninstallSpec } from "./uninstall.command.js";
 
-export type HooksGroupParsed = Record<string, never>;
+const HOOKS_CHILD_SPECS = [hooksInstallSpec, hooksRunSpec, hooksUninstallSpec] as const;
 
-export const hooksSpec: CommandSpec<HooksGroupParsed> = {
+export const hooksSpec: CommandSpec<GroupCommandParsed> = {
   id: ["hooks"],
   group: "Hooks",
   summary: "Manage and run git hooks installed by agentplane.",
   synopsis: ["agentplane hooks <command> [args] [options]"],
-  validateRaw: (raw) => {
-    if (raw.extra.length > 0) {
-      throw usageError({ spec: hooksSpec, message: `Unknown subcommand: ${raw.extra[0]}` });
-    }
-    throw usageError({ spec: hooksSpec, message: "Missing subcommand." });
-  },
-  parse: () => ({}),
+  args: [{ name: "cmd", required: false, variadic: true, valueHint: "<command>" }],
+  parse: (raw) => parseGroupCommand(raw),
 };
 
-export const runHooks: CommandHandler<HooksGroupParsed> = () => {
-  // Unreachable (validateRaw always throws).
-  return Promise.resolve(2);
+export const runHooks: CommandHandler<GroupCommandParsed> = (_ctx, p) => {
+  throwGroupCommandUsage({
+    spec: hooksSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(["hooks"], HOOKS_CHILD_SPECS),
+  });
 };

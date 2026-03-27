@@ -1,8 +1,12 @@
 import { loadConfig, resolveProject } from "@agentplaneorg/core";
 
 import type { CommandHandler, CommandSpec } from "../cli/spec/spec.js";
-import { usageError } from "../cli/spec/errors.js";
-import { suggestOne } from "../cli/spec/suggest.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../cli/group-command.js";
 import {
   evaluateRepoCliVersionExpectation,
   type RepoCliVersionExpectation,
@@ -37,17 +41,16 @@ export type RuntimeExplainPayload = RuntimeSourceInfo & {
   repoCliExpectation: RepoCliVersionExpectation;
 };
 
-export type RuntimeGroupParsed = { cmd: string[] };
 export type RuntimeExplainParsed = { json: boolean };
 
-export const runtimeSpec: CommandSpec<RuntimeGroupParsed> = {
+export const runtimeSpec: CommandSpec<GroupCommandParsed> = {
   id: ["runtime"],
   group: "Diagnostics",
   summary: "Inspect which agentplane runtime/binary/package sources are active.",
   synopsis: ["agentplane runtime <explain> [options]"],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [{ cmd: "agentplane runtime explain", why: "Show active runtime details." }],
-  parse: (raw) => ({ cmd: (raw.args.cmd ?? []) as string[] }),
+  parse: (raw) => parseGroupCommand(raw),
 };
 
 export const runtimeExplainSpec: CommandSpec<RuntimeExplainParsed> = {
@@ -201,19 +204,14 @@ async function resolveRepoCliExpectation(opts: {
   }
 }
 
-export const runRuntime: CommandHandler<RuntimeGroupParsed> = (_ctx, p) => {
-  const input = p.cmd.join(" ");
-  const suggestion = suggestOne(input, ["explain"]);
-  const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-  const msg = p.cmd.length === 0 ? "Missing subcommand." : `Unknown subcommand: ${p.cmd[0]}.`;
-  return Promise.reject(
-    usageError({
-      spec: runtimeSpec,
-      command: "runtime",
-      message: `${msg}${suffix}`,
-      context: { command: "runtime" },
-    }),
-  );
+export const runRuntime: CommandHandler<GroupCommandParsed> = (_ctx, p) => {
+  throwGroupCommandUsage({
+    spec: runtimeSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(["runtime"], [runtimeExplainSpec]),
+    command: "runtime",
+    contextCommand: "runtime",
+  });
 };
 
 export const runRuntimeExplain: CommandHandler<RuntimeExplainParsed> = (ctx, p) => {

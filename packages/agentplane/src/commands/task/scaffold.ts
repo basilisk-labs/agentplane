@@ -17,6 +17,9 @@ import { nowIso } from "./shared.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { defaultTaskDocV3, TASK_DOC_VERSION_V3 } from "./doc-template.js";
 
+const DEFAULT_SCAFFOLD_TITLE = "(untitled task)";
+const DEFAULT_SCAFFOLD_OWNER = "UNKNOWN";
+
 export async function cmdTaskScaffold(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -76,11 +79,11 @@ export async function cmdTaskScaffold(opts: {
       task ??
       ({
         id: opts.taskId,
-        title: opts.title ?? "",
+        title: opts.title ?? DEFAULT_SCAFFOLD_TITLE,
         description: "",
         status: "TODO",
         priority: "med",
-        owner: "",
+        owner: DEFAULT_SCAFFOLD_OWNER,
         depends_on: [],
         tags: [],
         verify: [],

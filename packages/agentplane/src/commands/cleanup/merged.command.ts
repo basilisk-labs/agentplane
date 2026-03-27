@@ -1,11 +1,16 @@
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
+import {
+  directSubcommandNames,
+  parseGroupCommand,
+  throwGroupCommandUsage,
+  type GroupCommandParsed,
+} from "../../cli/group-command.js";
 import { usageError } from "../../cli/spec/errors.js";
-import { suggestOne } from "../../cli/spec/suggest.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { cmdCleanupMerged } from "../branch/index.js";
 
-type CleanupGroupParsed = { cmd: string[] };
+type CleanupGroupParsed = GroupCommandParsed;
 
 export const cleanupSpec: CommandSpec<CleanupGroupParsed> = {
   id: ["cleanup"],
@@ -16,7 +21,7 @@ export const cleanupSpec: CommandSpec<CleanupGroupParsed> = {
   examples: [
     { cmd: "agentplane cleanup merged --yes", why: "Delete merged task branches/worktrees." },
   ],
-  parse: (raw) => ({ cmd: (raw.args.cmd ?? []) as string[] }),
+  parse: (raw) => parseGroupCommand(raw),
 };
 
 export type CleanupMergedParsed = {
@@ -63,19 +68,13 @@ export const cleanupMergedSpec: CommandSpec<CleanupMergedParsed> = {
 };
 
 export const runCleanup: CommandHandler<CleanupGroupParsed> = (_ctx, p) => {
-  const input = p.cmd.join(" ");
-  const candidates = ["merged"];
-  const suggestion = suggestOne(input, candidates);
-  const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-  const msg = p.cmd.length === 0 ? "Missing subcommand." : `Unknown subcommand: ${p.cmd[0]}.`;
-  return Promise.reject(
-    usageError({
-      spec: cleanupSpec,
-      command: "cleanup",
-      message: `${msg}${suffix}`,
-      context: { command: "cleanup" },
-    }),
-  );
+  throwGroupCommandUsage({
+    spec: cleanupSpec,
+    cmd: p.cmd,
+    subcommands: directSubcommandNames(["cleanup"], [cleanupMergedSpec]),
+    command: "cleanup",
+    contextCommand: "cleanup",
+  });
 };
 
 export function makeRunCleanupMergedHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
