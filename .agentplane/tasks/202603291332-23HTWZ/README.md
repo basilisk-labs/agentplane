@@ -4,7 +4,7 @@ title: "Reconcile local close-tail task projections into hosted main"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -37,7 +37,7 @@ events:
     to: "DOING"
     note: "Start: reconcile only the three task README close updates currently stranded on local main into a clean hosted branch from origin/main, so hosted main and local task projection converge again without carrying a local-only tail."
 doc_version: 3
-doc_updated_at: "2026-03-29T13:35:04.750Z"
+doc_updated_at: "2026-03-29T13:36:39.940Z"
 doc_updated_by: "CODER"
 description: "Promote the three local close-tail task README updates on main into a normal hosted PR so local main no longer stays ahead of origin/main solely because of task-state commits."
 sections:
@@ -53,9 +53,9 @@ sections:
     2. Run required checks and capture verification evidence.
     3. Finalize task findings and finish with traceable commit metadata.
   Verify Steps: |-
-    1.  in the task worktree. Expected: only , , , and the active task’s own artifacts appear.
-    2. . Expected: local task README and PR packet are internally consistent and the branch is publishable.
-    3. Hosted PR merges into , then 0	3 on the base checkout returns  after syncing. Expected: no local-only close-tail remains for these three tasks.
+    1. Run git diff --name-only origin/main..HEAD in the task worktree. Expected: only .agentplane/tasks/202603271853-R98CCP/README.md, .agentplane/tasks/202603280326-N2JYDX/README.md, .agentplane/tasks/202603280331-Z3NTCT/README.md, and the active task artifacts for 202603291332-23HTWZ appear.
+    2. Run agentplane pr check 202603291332-23HTWZ. Expected: local task README and PR packet are internally consistent and the branch is publishable.
+    3. After hosted merge, run git rev-list --left-right --count origin/main...main on the base checkout. Expected: 0 0 after syncing, so these three task closures no longer exist only in local history.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -84,9 +84,9 @@ Promote the three local close-tail task README updates on main into a normal hos
 
 ## Verify Steps
 
-1.  in the task worktree. Expected: only , , , and the active task’s own artifacts appear.
-2. . Expected: local task README and PR packet are internally consistent and the branch is publishable.
-3. Hosted PR merges into , then 0	3 on the base checkout returns  after syncing. Expected: no local-only close-tail remains for these three tasks.
+1. Run git diff --name-only origin/main..HEAD in the task worktree. Expected: only .agentplane/tasks/202603271853-R98CCP/README.md, .agentplane/tasks/202603280326-N2JYDX/README.md, .agentplane/tasks/202603280331-Z3NTCT/README.md, and the active task artifacts for 202603291332-23HTWZ appear.
+2. Run agentplane pr check 202603291332-23HTWZ. Expected: local task README and PR packet are internally consistent and the branch is publishable.
+3. After hosted merge, run git rev-list --left-right --count origin/main...main on the base checkout. Expected: 0 0 after syncing, so these three task closures no longer exist only in local history.
 
 ## Verification
 
