@@ -4,7 +4,7 @@ title: "Reconcile local close-tail task projections into hosted main"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-29T13:37:31.398Z"
+  updated_by: "CODER"
+  note: "Command: git diff --name-only origin/main..HEAD; Result: pass; Evidence: only the three reconciled task README paths plus the active task packet are present, with no product code files. Scope: .agentplane/tasks/202603271853-R98CCP, .agentplane/tasks/202603280326-N2JYDX, .agentplane/tasks/202603280331-Z3NTCT, and the active task artifacts. Command: agentplane pr check 202603291332-23HTWZ; Result: pass; Evidence: local task README and PR packet are internally consistent and publishable. Scope: .agentplane/tasks/202603291332-23HTWZ/pr and active README. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime rebuilt successfully in the clean worktree so branch_pr lifecycle commands execute against the local framework binary. Scope: worktree bootstrap for this hosted reconcile task."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reconcile only the three task README close updates currently stranded on local main into a clean hosted branch from origin/main, so hosted main and local task projection converge again without carrying a local-only tail."
+  -
+    type: "verify"
+    at: "2026-03-29T13:37:31.398Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: git diff --name-only origin/main..HEAD; Result: pass; Evidence: only the three reconciled task README paths plus the active task packet are present, with no product code files. Scope: .agentplane/tasks/202603271853-R98CCP, .agentplane/tasks/202603280326-N2JYDX, .agentplane/tasks/202603280331-Z3NTCT, and the active task artifacts. Command: agentplane pr check 202603291332-23HTWZ; Result: pass; Evidence: local task README and PR packet are internally consistent and publishable. Scope: .agentplane/tasks/202603291332-23HTWZ/pr and active README. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime rebuilt successfully in the clean worktree so branch_pr lifecycle commands execute against the local framework binary. Scope: worktree bootstrap for this hosted reconcile task."
 doc_version: 3
-doc_updated_at: "2026-03-29T13:36:39.940Z"
+doc_updated_at: "2026-03-29T13:37:31.401Z"
 doc_updated_by: "CODER"
 description: "Promote the three local close-tail task README updates on main into a normal hosted PR so local main no longer stays ahead of origin/main solely because of task-state commits."
 sections:
@@ -58,6 +64,14 @@ sections:
     3. After hosted merge, run git rev-list --left-right --count origin/main...main on the base checkout. Expected: 0 0 after syncing, so these three task closures no longer exist only in local history.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-29T13:37:31.398Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: git diff --name-only origin/main..HEAD; Result: pass; Evidence: only the three reconciled task README paths plus the active task packet are present, with no product code files. Scope: .agentplane/tasks/202603271853-R98CCP, .agentplane/tasks/202603280326-N2JYDX, .agentplane/tasks/202603280331-Z3NTCT, and the active task artifacts. Command: agentplane pr check 202603291332-23HTWZ; Result: pass; Evidence: local task README and PR packet are internally consistent and publishable. Scope: .agentplane/tasks/202603291332-23HTWZ/pr and active README. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime rebuilt successfully in the clean worktree so branch_pr lifecycle commands execute against the local framework binary. Scope: worktree bootstrap for this hosted reconcile task.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-29T13:36:39.940Z, excerpt_hash=sha256:c8420966f955e1477e765da9c64baadbe278fc164c6b32b58e4ee16b0c0be6be
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -91,6 +105,14 @@ Promote the three local close-tail task README updates on main into a normal hos
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-29T13:37:31.398Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: git diff --name-only origin/main..HEAD; Result: pass; Evidence: only the three reconciled task README paths plus the active task packet are present, with no product code files. Scope: .agentplane/tasks/202603271853-R98CCP, .agentplane/tasks/202603280326-N2JYDX, .agentplane/tasks/202603280331-Z3NTCT, and the active task artifacts. Command: agentplane pr check 202603291332-23HTWZ; Result: pass; Evidence: local task README and PR packet are internally consistent and publishable. Scope: .agentplane/tasks/202603291332-23HTWZ/pr and active README. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime rebuilt successfully in the clean worktree so branch_pr lifecycle commands execute against the local framework binary. Scope: worktree bootstrap for this hosted reconcile task.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-29T13:36:39.940Z, excerpt_hash=sha256:c8420966f955e1477e765da9c64baadbe278fc164c6b32b58e4ee16b0c0be6be
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
