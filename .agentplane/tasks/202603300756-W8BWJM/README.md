@@ -1,10 +1,11 @@
 ---
 id: "202603300756-W8BWJM"
 title: "Create REFACTOR.md epic and atomic task map"
-status: "DOING"
+result_summary: "Added REFACTOR.md as the live refactor backlog with epics and atomic tasks."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-30T08:04:02.817Z"
   updated_by: "DOCS"
   note: "Verified: REFACTOR.md now captures the next optimization backlog as epics plus atomic tasks with dependencies, acceptance criteria, guardrails, and rollout order; routing check passed, and doctor failure was confirmed as a pre-existing WORKFLOW.md/config mismatch unrelated to this docs-only change."
-commit: null
+commit:
+  hash: "b6e240e46ef875636c7e8b17fffe42e8da7eb6ab"
+  message: "📝 docs: add refactor backlog plan (202603300756-W8BWJM)"
 comments:
   -
     author: "DOCS"
     body: "Start: draft the root REFACTOR.md backlog with epics, atomic tasks, sequencing, and acceptance criteria from the current optimization analysis."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: REFACTOR.md now stores the forward refactor backlog as epics plus atomic tasks with dependencies, guardrails, execution order, and explicit acceptance criteria; routing validation passed, and the only doctor failure remains the pre-existing WORKFLOW.md/config mode mismatch outside this task scope."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: REFACTOR.md now captures the next optimization backlog as epics plus atomic tasks with dependencies, acceptance criteria, guardrails, and rollout order; routing check passed, and doctor failure was confirmed as a pre-existing WORKFLOW.md/config mismatch unrelated to this docs-only change."
+  -
+    type: "status"
+    at: "2026-03-30T08:12:48.686Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: REFACTOR.md now stores the forward refactor backlog as epics plus atomic tasks with dependencies, guardrails, execution order, and explicit acceptance criteria; routing validation passed, and the only doctor failure remains the pre-existing WORKFLOW.md/config mode mismatch outside this task scope."
 doc_version: 3
-doc_updated_at: "2026-03-30T08:05:46.673Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-03-30T08:12:48.686Z"
+doc_updated_by: "INTEGRATOR"
 description: "Capture the next optimization/refactor backlog in a dedicated REFACTOR.md file with epics, atomic tasks, sequencing, and acceptance criteria based on the current codebase analysis."
 sections:
   Summary: |-
