@@ -1,10 +1,11 @@
 ---
 id: "202603301856-HVS36K"
 title: "Define the canonical command-graph data model"
-status: "DOING"
+result_summary: "integrate: squash task/202603301856-HVS36K/define-command-graph-model"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-30T19:32:39.264Z"
   updated_by: "CODER"
   note: "OK: bunx vitest run packages/agentplane/src/cli/spec/registry.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts plus prettier --check and eslint on the touched graph files passed; the CLI now has one shared command-graph model for longest-prefix match, exact lookup, and direct-child lookup across catalog and registry."
-commit: null
+commit:
+  hash: "9c3ebc11f29574acfd7093103bda2a44a9b4036f"
+  message: "🧩 HVS36K integrate: squash task/202603301856-HVS36K/define-command-graph-model"
 comments:
   -
     author: "CODER"
     body: "Start: introducing one shared command-graph model that can answer longest-prefix match, exact lookup, and direct-child lookup for the CLI catalog/registry, with focused unit coverage and no broader routing changes yet."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-HVS36K/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: bunx vitest run packages/agentplane/src/cli/spec/registry.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts plus prettier --check and eslint on the touched graph files passed; the CLI now has one shared command-graph model for longest-prefix match, exact lookup, and direct-child lookup across catalog and registry."
+  -
+    type: "status"
+    at: "2026-03-30T19:33:35.441Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-HVS36K/pr."
 doc_version: 3
-doc_updated_at: "2026-03-30T19:32:39.266Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-30T19:33:35.444Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 1 / R1.1 from REFACTOR.md. one internal structure can answer longest-prefix match, command lookup, and direct-child lookup from the same source of truth."
 sections:
   Summary: |-
