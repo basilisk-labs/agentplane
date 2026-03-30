@@ -3,8 +3,17 @@
 This file is the live working backlog for the next optimization/refactor wave.
 
 - Historical architecture analysis and the completed refactor program live in `docs/developer/framework-refactor-program.mdx`.
+- The historical framework refactor program is already complete on `main`; this file tracks the follow-on optimization wave, not that completed program.
 - This file is intentionally execution-oriented: epics, atomic tasks, dependencies, acceptance criteria, and rollout order.
 - Goal: reduce duplicated code and unnecessary layers while improving common CLI cold-path latency without changing shipped behavior.
+
+## Status Snapshot
+
+Current backlog status on `main`:
+
+- `Epic C` is complete on `main` via `5NMDDW`, `WKK8C5`, `J106PF`, and `ZESZG8`.
+- `Epic 0` through `Epic 6` remain pending unless a later task explicitly marks individual items complete here.
+- `agentplane task list` showing no open tasks does not mean this backlog is done; it only means the next optimization wave has not yet been fully instantiated as executable tasks.
 
 ## Current Baseline
 
@@ -37,6 +46,8 @@ The following are not part of this backlog unless a later follow-up task explici
 
 ## Epic C: Corrective Runtime And Workflow Gaps
 
+Status: complete on `main`
+
 ### Goal
 
 Close the concrete execution-time defects discovered while using the current `branch_pr` workflow and framework worktrees so the refactor wave starts from a truthful and runnable baseline.
@@ -54,19 +65,19 @@ These items are not speculative cleanup. They were observed during real task exe
 
 ### Atomic Tasks
 
-- [ ] `C1` Align generated workflow artifacts with `workflow_mode=branch_pr`.
+- [x] `C1` Align generated workflow artifacts with `workflow_mode=branch_pr`.
       Owner: `CODER`
       Depends on: none
       Touchpoints: workflow artifact generation/publication/validation path, `.agentplane/WORKFLOW.md`, targeted doctor/workflow tests
       Done when: `agentplane doctor` no longer reports `WORKFLOW.md=direct, config=branch_pr` for the current repository state.
 
-- [ ] `C2` Make framework task worktrees runnable without manual runtime surprises.
+- [x] `C2` Make framework task worktrees runnable without manual runtime surprises.
       Owner: `CODER`
       Depends on: none
       Touchpoints: repo-local handoff logic, framework runtime diagnostics, task-worktree usability path, targeted runtime/handoff tests
       Done when: supported task-worktree flows either run without `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1` or fail with explicit, correct, bootstrap-aware guidance rather than opaque missing-dist/tooling errors.
 
-- [ ] `C3` Reproduce and classify the branch_pr base-checkout PR-artifact edge-case.
+- [x] `C3` Reproduce and classify the branch_pr base-checkout PR-artifact edge-case.
       Owner: `CODER`
       Depends on: none
       Touchpoints: `task new`, `work start`, PR artifact materialization, base/task-checkout state transitions
@@ -77,6 +88,7 @@ These items are not speculative cleanup. They were observed during real task exe
 - Repository-wide workflow health no longer reports the current mode mismatch.
 - Framework task worktrees have a supported, intelligible runtime path.
 - The PR-artifact edge-case is either fixed or explicitly downgraded from “suspected bug” to a documented unsupported/operator path.
+- Current status on `main`: accepted. `J106PF` classified the edge-case, and `ZESZG8` separately fixed `pr check` local-artifact precedence.
 
 ## Epic 0: Safety Net And Measurement
 
@@ -383,6 +395,7 @@ This is secondary work: it is less important than routing/query/projection clean
 Run the backlog in this order unless a later measured result changes the priority:
 
 1. `Epic C` first. Do not build the next refactor wave on top of a knowingly mismatched workflow artifact or opaque framework-worktree runtime path.
+   Current status: done on `main`.
 2. `Epic 0` next. Do not start structural cleanup without the safety net.
 3. `Epic 1` next. The command graph is the highest-leverage duplication point.
 4. `Epic 2` and `Epic 3` next. These are the best candidates for meaningful task-command speedups.
