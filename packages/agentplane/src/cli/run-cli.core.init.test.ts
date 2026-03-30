@@ -101,6 +101,30 @@ describe("runCli", () => {
     }
   });
 
+  it("mode set syncs workflow artifacts when agent scaffolding exists", async () => {
+    const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "agents", "ORCHESTRATOR.json"), "{}\n", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["mode", "set", "branch_pr", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("branch_pr");
+    } finally {
+      io.restore();
+    }
+
+    const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
+    const lastKnownGoodText = await readFile(
+      path.join(root, ".agentplane", "workflows", "last-known-good.md"),
+      "utf8",
+    );
+    expect(workflowText).toContain('mode: "branch_pr"');
+    expect(workflowText).toContain("Workflow mode: branch_pr");
+    expect(lastKnownGoodText).toContain('mode: "branch_pr"');
+  });
+
   it("mode set rejects invalid values", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

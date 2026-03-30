@@ -1,9 +1,11 @@
+import fs from "node:fs/promises";
 import path from "node:path";
 
-import { buildExecutionProfile, saveConfig, setByDottedKey } from "@agentplaneorg/core";
+import { buildExecutionProfile, loadConfig, saveConfig, setByDottedKey } from "@agentplaneorg/core";
 
 import { usageError } from "../../spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
+import { ensureWorkflowArtifacts } from "../../../shared/workflow-artifacts.js";
 import type { RunDeps } from "../command-catalog.js";
 import { wrapCommand } from "./wrap-command.js";
 
@@ -31,6 +33,39 @@ async function cmdConfigShow(opts: {
 
 export function makeRunConfigShowHandler(deps: RunDeps): CommandHandler<ConfigShowParsed> {
   return (ctx) => cmdConfigShow({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, deps });
+}
+
+function shouldRefreshWorkflowArtifactsForKey(key: string): boolean {
+  const normalized = key.trim();
+  return normalized === "workflow_mode" || normalized.startsWith("agents.approvals.");
+}
+
+async function syncWorkflowArtifactsFromSavedConfig(opts: {
+  gitRoot: string;
+  agentplaneDir: string;
+}): Promise<boolean> {
+  try {
+    const agentEntries = await fs.readdir(path.join(opts.agentplaneDir, "agents"), {
+      withFileTypes: true,
+    });
+    if (!agentEntries.some((entry) => entry.isFile() && entry.name.endsWith(".json"))) {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+
+  const refreshed = await loadConfig(opts.agentplaneDir);
+  await ensureWorkflowArtifacts({
+    gitRoot: opts.gitRoot,
+    workflowMode: refreshed.config.workflow_mode,
+    approvals: {
+      requirePlanApproval: refreshed.config.agents?.approvals?.require_plan ?? true,
+      requireVerifyApproval: refreshed.config.agents?.approvals?.require_verify ?? true,
+      requireNetworkApproval: refreshed.config.agents?.approvals?.require_network ?? true,
+    },
+  });
+  return true;
 }
 
 type ConfigSetParsed = { key: string; value: string };
@@ -72,6 +107,12 @@ async function cmdConfigSet(opts: {
       const raw = { ...loaded.raw };
       setByDottedKey(raw, opts.key, opts.value);
       await saveConfig(resolved.agentplaneDir, raw);
+      if (shouldRefreshWorkflowArtifactsForKey(opts.key)) {
+        await syncWorkflowArtifactsFromSavedConfig({
+          gitRoot: resolved.gitRoot,
+          agentplaneDir: resolved.agentplaneDir,
+        });
+      }
       process.stdout.write(
         `${path.relative(resolved.gitRoot, path.join(resolved.agentplaneDir, "config.json"))}\n`,
       );
@@ -155,6 +196,10 @@ async function cmdModeSet(opts: {
       const raw = { ...loaded.raw };
       setByDottedKey(raw, "workflow_mode", opts.mode);
       await saveConfig(resolved.agentplaneDir, raw);
+      await syncWorkflowArtifactsFromSavedConfig({
+        gitRoot: resolved.gitRoot,
+        agentplaneDir: resolved.agentplaneDir,
+      });
       process.stdout.write(`${opts.mode}\n`);
       return 0;
     },
@@ -264,6 +309,10 @@ async function cmdProfileSet(opts: {
       setByDottedKey(raw, "execution", JSON.stringify(execution));
 
       await saveConfig(resolved.agentplaneDir, raw);
+      await syncWorkflowArtifactsFromSavedConfig({
+        gitRoot: resolved.gitRoot,
+        agentplaneDir: resolved.agentplaneDir,
+      });
       process.stdout.write(`${opts.profile}\n`);
       return 0;
     },
