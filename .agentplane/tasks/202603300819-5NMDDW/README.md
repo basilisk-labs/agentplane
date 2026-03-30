@@ -1,10 +1,11 @@
 ---
 id: "202603300819-5NMDDW"
 title: "Align workflow artifact output with branch_pr config"
-status: "DOING"
+result_summary: "Merged via PR #35."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-30T08:44:43.355Z"
   updated_by: "CODER"
   note: "OK: bunx vitest run packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/commands/doctor.fast.test.ts --hookTimeout 60000 --testTimeout 60000; AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane doctor"
-commit: null
+commit:
+  hash: "f25e68dc65d83103bed33c3c989e8961853645f8"
+  message: "🔧 workflow: sync artifacts after config changes (#35)"
 comments:
   -
     author: "CODER"
     body: "Start: trace the workflow artifact generation and validation path, align the published WORKFLOW.md with branch_pr config, and lock the fix with targeted doctor/workflow tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #35 merged as f25e68dc65d83103bed33c3c989e8961853645f8; targeted vitest and doctor evidence already recorded on the task. Manual close branch backfills missing pr/meta.json after hosted-close failed on main."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: bunx vitest run packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/commands/doctor.fast.test.ts --hookTimeout 60000 --testTimeout 60000; AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane doctor"
+  -
+    type: "status"
+    at: "2026-03-30T16:10:09.427Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #35 merged as f25e68dc65d83103bed33c3c989e8961853645f8; targeted vitest and doctor evidence already recorded on the task. Manual close branch backfills missing pr/meta.json after hosted-close failed on main."
 doc_version: 3
-doc_updated_at: "2026-03-30T08:44:43.383Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-30T16:10:09.428Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the current repo-wide workflow artifact mismatch so agentplane doctor no longer reports WORKFLOW.md=direct while .agentplane/config.json is branch_pr, and update the generation/validation path plus targeted tests accordingly."
 sections:
   Summary: |-
