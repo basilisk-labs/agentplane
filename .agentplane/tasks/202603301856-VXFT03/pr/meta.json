@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603301856-VXFT03/lock-task-query-tests",
+  "created_at": "2026-03-30T19:09:14.007Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603301856-VXFT03",
+  "updated_at": "2026-03-30T19:10:26.520Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
