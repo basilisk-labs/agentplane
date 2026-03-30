@@ -1,10 +1,11 @@
 ---
 id: "202603300819-J106PF"
 title: "Reproduce and classify branch_pr base PR-artifact edge-case"
-status: "DOING"
+result_summary: "Merged via PR #37."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-30T11:50:50.171Z"
   updated_by: "CODER"
   note: "OK: agentplane help pr open --compact; rg --files .agentplane/tasks/202603300819-J106PF before and after work start; AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane pr open 202603300819-J106PF --author CODER; AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane pr update 202603300819-J106PF; reproduced pr check branch ambiguity with multiple local task branches and recorded the classification in Findings."
-commit: null
+commit:
+  hash: "603baf6c73d7504a91808454b01179d2af71b7d1"
+  message: "🔍 workflow: classify pr artifact edge-case (#37)"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the branch_pr base-checkout PR artifact edge-case on a clean task path, trace the creation/update flow across task/work/pr commands, and classify whether the observed missing artifact state is a product bug, a workflow gap, or expected unsupported behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #37 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: agentplane help pr open --compact; rg --files .agentplane/tasks/202603300819-J106PF before and after work start; AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane pr open 202603300819-J106PF --author CODER; AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane pr update 202603300819-J106PF; reproduced pr check branch ambiguity with multiple local task branches and recorded the classification in Findings."
+  -
+    type: "status"
+    at: "2026-03-30T15:28:30.954Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #37 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-03-30T11:50:50.179Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-30T15:28:30.960Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reproduce the scenario where a task created before work start appears to leave missing PR artifacts on the base checkout, then classify whether the issue is a product bug, an unsupported workflow path, or operator error before any functional fix lands."
 sections:
   Summary: |-
