@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603300819-1BKNXM/refactor-corrective-backlog",
   "created_at": "2026-03-30T15:19:42.310Z",
+  "head_sha": "340a935eaa98bcbe778fff6920396175f03b3dea",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "f8899a9f82ab74ad5dd28a0e521284978ff55ef2",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-30T15:29:43Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603300819-1BKNXM",
-  "updated_at": "2026-03-30T15:19:55.684Z",
+  "updated_at": "2026-03-30T15:29:43Z",
   "verify": {
     "status": "skipped"
   }
