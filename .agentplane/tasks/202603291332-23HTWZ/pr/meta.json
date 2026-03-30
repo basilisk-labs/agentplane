@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603291332-23HTWZ/hosted-close-tail-reconcile",
   "created_at": "2026-03-29T13:36:24.652Z",
+  "head_sha": "ecc034a5cb765df0f55fa31cae8f9a597bb44180",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "0ab19cf598565cf6549ec690a2482fd30e43b0e5",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-29T13:47:41Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603291332-23HTWZ",
-  "updated_at": "2026-03-29T13:38:13.073Z",
+  "updated_at": "2026-03-29T13:47:41Z",
   "verify": {
     "status": "skipped"
   }
