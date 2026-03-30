@@ -1,10 +1,11 @@
 ---
 id: "202603301856-VXFT03"
 title: "Lock task listing/query behavior with golden tests"
-status: "DOING"
+result_summary: "integrate: squash task/202603301856-VXFT03/lock-task-query-tests"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-30T19:05:50.804Z"
   updated_by: "CODER"
   note: "OK: final rerun passed after formatting — bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --testNamePattern \"task (next|search|list)\"; exact-output task query contracts are locked and production query code remains unchanged."
-commit: null
+commit:
+  hash: "8121e0a61a0507f89c794c3e1b2fe3b766715e30"
+  message: "🧩 VXFT03 integrate: squash task/202603301856-VXFT03/lock-task-query-tests"
 comments:
   -
     author: "CODER"
     body: "Start: locking current task list, task search, and task next query behavior with focused CLI/query tests only; no refactor of production task-query logic in this task."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-VXFT03/pr."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: final rerun passed after formatting — bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --testNamePattern \"task (next|search|list)\"; exact-output task query contracts are locked and production query code remains unchanged."
+  -
+    type: "status"
+    at: "2026-03-30T19:11:12.347Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-VXFT03/pr."
 doc_version: 3
-doc_updated_at: "2026-03-30T19:05:50.807Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-30T19:11:12.350Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 0 / R0.2 from REFACTOR.md. `task list`, `task search`, and `task next` cover filtering, sorting, `quiet`, `limit`, and readiness output."
 sections:
   Summary: |-
