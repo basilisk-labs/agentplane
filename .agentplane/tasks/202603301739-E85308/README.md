@@ -4,7 +4,7 @@ title: "Make recipes inventory freshness checks work in branch_pr task worktrees
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-30T17:47:58.349Z"
+  updated_by: "CODER"
+  note: "OK: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts passed with 3/3 tests; node scripts/check-recipes-inventory-fresh.mjs succeeded in the branch_pr task worktree without a local agentplane-recipes checkout; git push origin task/202603301739-E85308/worktree-safe-recipes-check passed the full pre-push gate including docs:recipes:check, local fast CI, and critical CLI suites."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement worktree-safe recipes inventory freshness checks and regression coverage so unrelated branch_pr pushes stop failing on docs:recipes:check."
+  -
+    type: "verify"
+    at: "2026-03-30T17:47:58.349Z"
+    author: "CODER"
+    state: "ok"
+    note: "OK: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts passed with 3/3 tests; node scripts/check-recipes-inventory-fresh.mjs succeeded in the branch_pr task worktree without a local agentplane-recipes checkout; git push origin task/202603301739-E85308/worktree-safe-recipes-check passed the full pre-push gate including docs:recipes:check, local fast CI, and critical CLI suites."
 doc_version: 3
-doc_updated_at: "2026-03-30T17:41:21.018Z"
+doc_updated_at: "2026-03-30T17:47:58.351Z"
 doc_updated_by: "CODER"
 description: "Pre-push in branch_pr task worktrees currently fails on docs:recipes:check because scripts/generate-recipes-inventory.mjs resolves agentplane-recipes strictly from process.cwd(), while the submodule is materialized only in the common base checkout. Add a worktree-safe source-root resolution and a focused regression test so unrelated CLI/code PRs can push without weakening the check."
 sections:
@@ -56,9 +62,17 @@ sections:
   Verify Steps: |-
     1. Run the focused regression test for recipes inventory path resolution. Expected: it passes and proves fallback to the common repo root when the task worktree lacks agentplane-recipes.
     2. Run `node scripts/check-recipes-inventory-fresh.mjs` from the task worktree after the fix. Expected: it succeeds without requiring agentplane-recipes to exist inside that worktree.
-    3. Re-run `git push origin task/202603301721-9ZMFDY/lock-help-routing-contracts` from the blocked task worktree. Expected: pre-push no longer fails on recipes inventory freshness.
+    3. Run `git push origin task/202603301739-E85308/worktree-safe-recipes-check` from the fixed task worktree. Expected: the standard pre-push gate succeeds end-to-end and no longer fails on recipes inventory freshness.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-30T17:47:58.349Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: OK: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts passed with 3/3 tests; node scripts/check-recipes-inventory-fresh.mjs succeeded in the branch_pr task worktree without a local agentplane-recipes checkout; git push origin task/202603301739-E85308/worktree-safe-recipes-check passed the full pre-push gate including docs:recipes:check, local fast CI, and critical CLI suites.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-30T17:47:44.701Z, excerpt_hash=sha256:fd89060170fe47b20babac0224d3b2e35dd983df5eb2c11c3e84538b79445386
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -88,11 +102,19 @@ Pre-push in branch_pr task worktrees currently fails on docs:recipes:check becau
 
 1. Run the focused regression test for recipes inventory path resolution. Expected: it passes and proves fallback to the common repo root when the task worktree lacks agentplane-recipes.
 2. Run `node scripts/check-recipes-inventory-fresh.mjs` from the task worktree after the fix. Expected: it succeeds without requiring agentplane-recipes to exist inside that worktree.
-3. Re-run `git push origin task/202603301721-9ZMFDY/lock-help-routing-contracts` from the blocked task worktree. Expected: pre-push no longer fails on recipes inventory freshness.
+3. Run `git push origin task/202603301739-E85308/worktree-safe-recipes-check` from the fixed task worktree. Expected: the standard pre-push gate succeeds end-to-end and no longer fails on recipes inventory freshness.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-30T17:47:58.349Z — VERIFY — ok
+
+By: CODER
+
+Note: OK: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts passed with 3/3 tests; node scripts/check-recipes-inventory-fresh.mjs succeeded in the branch_pr task worktree without a local agentplane-recipes checkout; git push origin task/202603301739-E85308/worktree-safe-recipes-check passed the full pre-push gate including docs:recipes:check, local fast CI, and critical CLI suites.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-30T17:47:44.701Z, excerpt_hash=sha256:fd89060170fe47b20babac0224d3b2e35dd983df5eb2c11c3e84538b79445386
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
