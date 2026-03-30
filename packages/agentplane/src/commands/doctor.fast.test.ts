@@ -145,6 +145,36 @@ describe("doctor.fast", () => {
     expect(rc).toBe(0);
   });
 
+  it("doctor --fix realigns a stale direct workflow artifact with branch_pr config", async () => {
+    const ws = await mkWorkspace();
+    await writeFile(
+      path.join(ws.root, ".agentplane", "config.json"),
+      '{\n  "version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+      "utf8",
+    );
+
+    const rcBefore = await runDoctor(
+      { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+      { fix: false, dev: false },
+    );
+    expect(rcBefore).toBe(1);
+
+    const rcAfter = await runDoctor(
+      { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+      { fix: true, dev: false },
+    );
+    expect(rcAfter).toBe(0);
+
+    const workflowText = await readFile(path.join(ws.root, ".agentplane", "WORKFLOW.md"), "utf8");
+    const lastKnownGoodText = await readFile(
+      path.join(ws.root, ".agentplane", "workflows", "last-known-good.md"),
+      "utf8",
+    );
+    expect(workflowText).toContain('mode: "branch_pr"');
+    expect(workflowText).toContain("Workflow mode: {{ workflow.mode }}");
+    expect(lastKnownGoodText).toContain('mode: "branch_pr"');
+  });
+
   it("fails when both policy gateway files are missing", async () => {
     const ws = await mkWorkspace();
     await rm(path.join(ws.root, "AGENTS.md"), { force: true });

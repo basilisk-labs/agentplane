@@ -776,11 +776,13 @@ describe("runCli", () => {
     }
   });
 
-  it("config set writes .agentplane/config.json", async () => {
+  it("config set syncs workflow artifacts when workflow_mode changes", async () => {
     const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "agents", "ORCHESTRATOR.json"), "{}\n", "utf8");
     const io = captureStdIO();
     try {
-      const code = await runCli(["config", "set", "workflow_mode", "direct", "--root", root]);
+      const code = await runCli(["config", "set", "workflow_mode", "branch_pr", "--root", root]);
       expect(code).toBe(0);
     } finally {
       io.restore();
@@ -788,6 +790,13 @@ describe("runCli", () => {
 
     const configPath = path.join(root, ".agentplane", "config.json");
     const text = await readFile(configPath, "utf8");
-    expect(text).toContain('"workflow_mode": "direct"');
+    expect(text).toContain('"workflow_mode": "branch_pr"');
+    const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
+    const lastKnownGoodText = await readFile(
+      path.join(root, ".agentplane", "workflows", "last-known-good.md"),
+      "utf8",
+    );
+    expect(workflowText).toContain('mode: "branch_pr"');
+    expect(lastKnownGoodText).toContain('mode: "branch_pr"');
   });
 });

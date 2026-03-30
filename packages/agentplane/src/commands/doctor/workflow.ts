@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { loadConfig } from "@agentplaneorg/core";
 
 import {
   emitWorkflowEvent,
@@ -37,7 +38,15 @@ export async function safeFixWorkflow(
     }
   }
 
-  const fixed = safeAutofixWorkflowText(current);
+  const loaded = await loadConfig(path.join(repoRoot, ".agentplane"));
+  const fixed = safeAutofixWorkflowText(current, {
+    mode: loaded.config.workflow_mode,
+    approvals: {
+      require_plan: loaded.config.agents?.approvals?.require_plan ?? true,
+      require_verify: loaded.config.agents?.approvals?.require_verify ?? true,
+      require_network: loaded.config.agents?.approvals?.require_network ?? true,
+    },
+  });
   if (fixed.diagnostics.some((d) => d.code === "WF_FIX_SKIPPED_UNSAFE")) {
     const details = fixed.diagnostics.map((d) => `${d.path}`).join(", ");
     return {

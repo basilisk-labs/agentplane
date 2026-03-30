@@ -7,6 +7,15 @@ type WorkflowFixResult = {
   diagnostics: WorkflowDiagnostic[];
 };
 
+type ExpectedWorkflowPolicy = {
+  mode: "direct" | "branch_pr";
+  approvals: {
+    require_plan: boolean;
+    require_verify: boolean;
+    require_network: boolean;
+  };
+};
+
 const DEFAULT_FRONT_MATTER: WorkflowFrontMatter = {
   version: 1,
   mode: "direct",
@@ -89,7 +98,10 @@ function withDefaults(raw: Record<string, unknown>): Record<string, unknown> {
   return out;
 }
 
-export function safeAutofixWorkflowText(text: string): WorkflowFixResult {
+export function safeAutofixWorkflowText(
+  text: string,
+  expectedPolicy?: ExpectedWorkflowPolicy,
+): WorkflowFixResult {
   const parsed = parseWorkflowMarkdown(text);
   const diagnostics: WorkflowDiagnostic[] = [];
   const unknownKeyDiagnostics = Object.keys(parsed.document.frontMatterRaw)
@@ -119,6 +131,14 @@ export function safeAutofixWorkflowText(text: string): WorkflowFixResult {
   }
 
   const nextFrontMatter = withDefaults(parsed.document.frontMatterRaw);
+  if (expectedPolicy) {
+    nextFrontMatter.mode = expectedPolicy.mode;
+    nextFrontMatter.approvals = {
+      require_plan: expectedPolicy.approvals.require_plan,
+      require_verify: expectedPolicy.approvals.require_verify,
+      require_network: expectedPolicy.approvals.require_network,
+    };
+  }
   const sections = {
     ...parsed.document.sections,
     "Prompt Template": parsed.document.sections["Prompt Template"] ?? "",
