@@ -1,0 +1,4 @@
+ .agentplane/tasks/202603301721-9ZMFDY/README.md    | 124 +++++++++++++++++++++
+ .../run-cli.core.help-snap.test.ts.snap            |   1 +
+ .../src/cli/run-cli.core.help-contract.test.ts     |  61 ++++++++++
+ 3 files changed, 186 insertions(+)
