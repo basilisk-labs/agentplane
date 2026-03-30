@@ -1,10 +1,11 @@
 ---
 id: "202603301721-ZSPS2K"
 title: "Sync REFACTOR.md with completed corrective wave and remaining optimization scope"
-status: "DOING"
+result_summary: "Merged via PR #48."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,7 +24,9 @@ verification:
   updated_at: "2026-03-30T17:24:31.474Z"
   updated_by: "DOCS"
   note: "OK: node .agentplane/policy/check-routing.mjs; REFACTOR.md now marks Epic C complete on main and keeps Epic 0-6 explicitly pending."
-commit: null
+commit:
+  hash: "56f98b61743ac17516fa1377befcb08625c99025"
+  message: "docs: sync refactor backlog status after corrective wave (#48)"
 comments:
   -
     author: "DOCS"
@@ -31,6 +34,9 @@ comments:
   -
     author: "DOCS"
     body: "Start: updating REFACTOR.md so the corrective wave and remaining optimization backlog match the repository state on main."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #48 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -58,9 +64,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "OK: node .agentplane/policy/check-routing.mjs; REFACTOR.md now marks Epic C complete on main and keeps Epic 0-6 explicitly pending."
+  -
+    type: "status"
+    at: "2026-03-30T17:59:30.700Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #48 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-03-30T17:24:31.477Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-03-30T17:59:30.707Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update REFACTOR.md so it reflects the already completed corrective Epic C, clarifies that the historical framework refactor program is done, and shows that the main optimization backlog still remains ahead. Do not change executable code in this task."
 sections:
   Summary: |-

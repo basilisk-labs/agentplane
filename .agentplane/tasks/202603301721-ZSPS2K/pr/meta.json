@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301721-ZSPS2K/sync-refactor-backlog",
   "created_at": "2026-03-30T17:25:23.602Z",
+  "head_sha": "8f3848d9f319f8a5bc5cb62754ee2da44d3cc94b",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "56f98b61743ac17516fa1377befcb08625c99025",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-30T17:59:05Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301721-ZSPS2K",
-  "updated_at": "2026-03-30T17:26:13.490Z",
+  "updated_at": "2026-03-30T17:59:05Z",
   "verify": {
     "status": "skipped"
   }
