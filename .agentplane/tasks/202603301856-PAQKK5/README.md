@@ -1,10 +1,10 @@
 ---
 id: "202603301856-PAQKK5"
 title: "Add a lightweight CLI cold-path benchmark harness"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -16,21 +16,37 @@ tags:
   - "cli"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-30T19:21:09.857Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved as the final Epic 0 safety-net task; scope stays limited to adding a repeatable cold-path benchmark harness, package entrypoint, and focused script contract coverage without altering production command behavior."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-30T19:25:19.744Z"
+  updated_by: "CODER"
+  note: "OK: node scripts/measure-cli-cold-path.mjs --help, bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts, prettier --check, eslint, and a direct one-run invocation of the harness all passed; the repository now has a repeatable cold-path benchmark entrypoint for quickstart, task list, and preflight --mode quick without production CLI changes."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: adding a repeatable CLI cold-path benchmark harness for quickstart, task list, and preflight --mode quick, plus a focused contract test, without changing production CLI behavior."
+events:
+  -
+    type: "status"
+    at: "2026-03-30T19:21:50.258Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: adding a repeatable CLI cold-path benchmark harness for quickstart, task list, and preflight --mode quick, plus a focused contract test, without changing production CLI behavior."
+  -
+    type: "verify"
+    at: "2026-03-30T19:25:19.744Z"
+    author: "CODER"
+    state: "ok"
+    note: "OK: node scripts/measure-cli-cold-path.mjs --help, bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts, prettier --check, eslint, and a direct one-run invocation of the harness all passed; the repository now has a repeatable cold-path benchmark entrypoint for quickstart, task list, and preflight --mode quick without production CLI changes."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:56:56.099Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-30T19:25:19.750Z"
+doc_updated_by: "CODER"
 description: "Implement Epic 0 / R0.4 from REFACTOR.md. the repository has one repeatable command or script that measures at least `quickstart`, `task list`, and `preflight --mode quick`."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: the repository has one repeatable command or script that measures at least `quickstart`, `task list`, and `preflight --mode quick`.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-30T19:25:19.744Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: OK: node scripts/measure-cli-cold-path.mjs --help, bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts, prettier --check, eslint, and a direct one-run invocation of the harness all passed; the repository now has a repeatable cold-path benchmark entrypoint for quickstart, task list, and preflight --mode quick without production CLI changes.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-30T19:21:50.259Z, excerpt_hash=sha256:f66b01b28606a3cbb7936185321574b27601fa200790d274f189cbaf52c089c1
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +107,14 @@ Implement Epic 0 / R0.4 from REFACTOR.md. the repository has one repeatable comm
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-30T19:25:19.744Z — VERIFY — ok
+
+By: CODER
+
+Note: OK: node scripts/measure-cli-cold-path.mjs --help, bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts, prettier --check, eslint, and a direct one-run invocation of the harness all passed; the repository now has a repeatable cold-path benchmark entrypoint for quickstart, task list, and preflight --mode quick without production CLI changes.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-30T19:21:50.259Z, excerpt_hash=sha256:f66b01b28606a3cbb7936185321574b27601fa200790d274f189cbaf52c089c1
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
