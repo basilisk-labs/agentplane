@@ -486,6 +486,116 @@ describe("runCli", () => {
     }
   });
 
+  it("pr check prefers local PR artifacts when multiple task branches match", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR check local artifact preference",
+        "--description",
+        "Local PR artifacts should beat ambiguous branch fallback",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/pr-check-primary`,
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["branch", `task/${taskId}/pr-check-secondary`], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "check", taskId, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ pr check");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr check still reports multiple task branches when fallback is required", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR check ambiguous fallback",
+        "--description",
+        "Fallback should stay strict when multiple task branches match",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await execFileAsync("git", ["branch", `task/${taskId}/pr-check-primary`], { cwd: root });
+    await execFileAsync("git", ["branch", `task/${taskId}/pr-check-secondary`], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "check", taskId, "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Multiple task branches match");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("pr open requires --author", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

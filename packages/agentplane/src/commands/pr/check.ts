@@ -39,21 +39,30 @@ async function resolveArtifactBranch(opts: {
 }
 
 async function readPrArtifactWithOptionalBranch(opts: {
+  ctx: CommandContext;
   resolved: { gitRoot: string };
   prDir: string;
   fileName: string;
-  branch: string | null;
+  taskId: string;
+  branchCache: { value?: string | null };
 }): Promise<string | null> {
   const localPath = path.join(opts.prDir, opts.fileName);
   if (await fileExists(localPath)) {
     return await readFile(localPath, "utf8");
   }
-  if (!opts.branch) return null;
+  if (opts.branchCache.value === undefined) {
+    opts.branchCache.value = await resolveArtifactBranch({
+      ctx: opts.ctx,
+      resolved: opts.resolved,
+      taskId: opts.taskId,
+    });
+  }
+  if (!opts.branchCache.value) return null;
   return await readPrArtifact({
     resolved: opts.resolved,
     prDir: opts.prDir,
     fileName: opts.fileName,
-    branch: opts.branch,
+    branch: opts.branchCache.value,
   });
 }
 
@@ -90,14 +99,16 @@ export async function cmdPrCheck(opts: {
     const relDiffstatPath = path.relative(resolved.gitRoot, diffstatPath);
     const relVerifyLogPath = path.relative(resolved.gitRoot, verifyLogPath);
     const relReviewPath = path.relative(resolved.gitRoot, reviewPath);
-    const branch = await resolveArtifactBranch({ ctx, resolved, taskId: task.id });
+    const branchCache: { value?: string | null } = {};
 
     let meta: PrMeta | null = null;
     const metaText = await readPrArtifactWithOptionalBranch({
+      ctx,
       resolved,
       prDir,
       fileName: "meta.json",
-      branch,
+      taskId: task.id,
+      branchCache,
     });
     if (metaText) {
       try {
@@ -111,30 +122,36 @@ export async function cmdPrCheck(opts: {
     }
 
     const diffstatText = await readPrArtifactWithOptionalBranch({
+      ctx,
       resolved,
       prDir,
       fileName: "diffstat.txt",
-      branch,
+      taskId: task.id,
+      branchCache,
     });
     if (diffstatText === null) {
       errors.push(`Missing ${relDiffstatPath}`);
     }
 
     const verifyLogText = await readPrArtifactWithOptionalBranch({
+      ctx,
       resolved,
       prDir,
       fileName: "verify.log",
-      branch,
+      taskId: task.id,
+      branchCache,
     });
     if (verifyLogText === null) {
       errors.push(`Missing ${relVerifyLogPath}`);
     }
 
     const reviewText = await readPrArtifactWithOptionalBranch({
+      ctx,
       resolved,
       prDir,
       fileName: "review.md",
-      branch,
+      taskId: task.id,
+      branchCache,
     });
     if (reviewText) {
       validateReviewContents(reviewText, errors);
