@@ -1,0 +1,10 @@
+ .agentplane/WORKFLOW.md                            |   4 +-
+ .agentplane/tasks/202603300819-5NMDDW/README.md    | 123 +++++++++++++++++++++
+ .agentplane/workflows/last-known-good.md           |   4 +-
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |  24 ++++
+ packages/agentplane/src/cli/run-cli.core.test.ts   |  15 ++-
+ .../agentplane/src/cli/run-cli/commands/config.ts  |  51 ++++++++-
+ .../agentplane/src/commands/doctor.fast.test.ts    |  30 +++++
+ .../agentplane/src/commands/doctor/workflow.ts     |  11 +-
+ packages/agentplane/src/workflow-runtime/fix.ts    |  22 +++-
+ 9 files changed, 274 insertions(+), 10 deletions(-)
