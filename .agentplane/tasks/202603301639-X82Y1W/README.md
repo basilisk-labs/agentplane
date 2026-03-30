@@ -1,10 +1,11 @@
 ---
 id: "202603301639-X82Y1W"
 title: "Resolve remaining legacy PRs #5 and #7 on current main"
-status: "DOING"
+result_summary: "Merged via PR #46."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-30T16:42:03.461Z"
   updated_by: "CODER"
   note: "OK: bunx vitest run packages/agentplane/src/cli/prompts.test.ts; bunx vitest run packages/agentplane/src/shared/agent-emoji.unit.test.ts packages/core/src/config/config.test.ts"
-commit: null
+commit:
+  hash: "6b0a364df3f9b3a5634f18a6d5d49a5148f45d8f"
+  message: "Resolve legacy PRs #5 and #7 on current main (#46)"
 comments:
   -
     author: "CODER"
     body: "Start: applying current-main equivalents of legacy PR #5 and #7, then superseding the legacy hosted PRs after integration."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: GitHub PR #46 merged after green hosted checks; closing the task on top of origin/main so local and hosted task projections match."
 events:
   -
     type: "verify"
@@ -42,9 +48,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: applying current-main equivalents of legacy PR #5 and #7, then superseding the legacy hosted PRs after integration."
+  -
+    type: "status"
+    at: "2026-03-30T17:04:44.116Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: GitHub PR #46 merged after green hosted checks; closing the task on top of origin/main so local and hosted task projections match."
 doc_version: 3
-doc_updated_at: "2026-03-30T16:46:28.960Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-30T17:04:44.116Z"
+doc_updated_by: "INTEGRATOR"
 description: "Apply the still-valid promptYesNo bugfix from legacy PR #5 and the low-risk documentation clarifications from legacy PR #7 onto current main through a fresh branch_pr task, then close the old hosted PRs as superseded once the new task PR lands."
 sections:
   Summary: |-
