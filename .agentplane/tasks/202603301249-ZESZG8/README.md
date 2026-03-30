@@ -1,10 +1,11 @@
 ---
 id: "202603301249-ZESZG8"
 title: "Make pr check prefer local artifacts before branch fallback"
-status: "DOING"
+result_summary: "Merged via PR #38."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-30T14:50:35.738Z"
   updated_by: "CODER"
   note: "OK: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t 'pr check passes when artifacts exist|pr check falls back to PR artifacts committed on the task branch|pr check prefers local PR artifacts when multiple task branches match|pr check still reports multiple task branches when fallback is required' --hookTimeout 60000 --testTimeout 60000; local pr-check logic now prefers active-worktree artifacts and preserves multiple-branch validation only for true fallback cases."
-commit: null
+commit:
+  hash: "34f24de63d22febfdf0c0436b61f510a1964e6ea"
+  message: "🔧 ZESZG8 workflow: prefer local PR artifacts in pr check (#38)"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the confirmed pr check ambiguity in a clean task worktree, change artifact resolution so local pr files win over branch fallback, and lock the fix with targeted PR-flow tests before reopening the command in the same reproduced state."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #38 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t 'pr check passes when artifacts exist|pr check falls back to PR artifacts committed on the task branch|pr check prefers local PR artifacts when multiple task branches match|pr check still reports multiple task branches when fallback is required' --hookTimeout 60000 --testTimeout 60000; local pr-check logic now prefers active-worktree artifacts and preserves multiple-branch validation only for true fallback cases."
+  -
+    type: "status"
+    at: "2026-03-30T15:29:38.449Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #38 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-03-30T14:50:35.749Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-30T15:29:38.454Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix branch_pr PR checking so  reads local  artifacts first and only falls back to task-branch discovery when local artifacts are absent, avoiding false  failures in active worktrees."
 sections:
   Summary: |-
