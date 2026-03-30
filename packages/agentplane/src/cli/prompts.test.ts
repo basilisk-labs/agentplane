@@ -62,6 +62,14 @@ describe("cli/prompts", () => {
     await expect(promptYesNo("Continue", true)).resolves.toBe(false);
   });
 
+  it("promptYesNo falls back to default for invalid input", async () => {
+    mocks.state.nextAnswer = "definitely";
+    await expect(promptYesNo("Continue", true)).resolves.toBe(true);
+
+    mocks.state.nextAnswer = "definitely";
+    await expect(promptYesNo("Continue", false)).resolves.toBe(false);
+  });
+
   it("promptInput trims input", async () => {
     mocks.state.nextAnswer = "  hello ";
 
