@@ -42,6 +42,27 @@ afterEach(() => {
 });
 
 describe("cli2 help contract", () => {
+  it("top-level --help matches help output", async () => {
+    const helpIo = captureStdIO();
+    let helpStdout = "";
+    try {
+      const code = await runCli(["help"]);
+      expect(code).toBe(0);
+      helpStdout = helpIo.stdout;
+    } finally {
+      helpIo.restore();
+    }
+
+    const flagIo = captureStdIO();
+    try {
+      const code = await runCli(["--help"]);
+      expect(code).toBe(0);
+      expect(flagIo.stdout).toBe(helpStdout);
+    } finally {
+      flagIo.restore();
+    }
+  });
+
   it("help --json returns a stable, internally consistent registry", async () => {
     const io = captureStdIO();
     try {
@@ -86,5 +107,45 @@ describe("cli2 help contract", () => {
     const runIdsWithoutHelp = runIds.filter((id) => id !== "help");
     expect(runIdsWithoutHelp).toEqual(commandCatalogIdsSorted());
     expect(runIds).toContain("help");
+  });
+
+  it("task --help routes to task namespace help", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "--help"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("task - Task lifecycle and task-store commands.");
+      expect(io.stdout).toContain("agentplane task <subcommand> [args] [options]");
+      expect(io.stdout).toContain("agentplane task plan set <task-id> --text");
+      expect(io.stdout).not.toContain("Unknown command: task");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task plan --help routes to task plan namespace help", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "plan", "--help"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("task plan - Task plan commands (set/approve/reject).");
+      expect(io.stdout).toContain("agentplane task plan <set|approve|reject> [args] [options]");
+      expect(io.stdout).toContain("agentplane task plan set <task-id> --text");
+      expect(io.stdout).not.toContain("Unknown command: task plan");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("unknown commands surface close-match suggestions", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["taks"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Unknown command: taks. Did you mean: task?");
+      expect(io.stderr).toContain("agentplane help help --compact");
+    } finally {
+      io.restore();
+    }
   });
 });
