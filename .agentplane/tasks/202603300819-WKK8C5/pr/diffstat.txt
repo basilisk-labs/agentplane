@@ -1,0 +1,6 @@
+ .agentplane/tasks/202603300819-WKK8C5/README.md    | 145 +++++++++++++++++++++
+ packages/agentplane/bin/agentplane.js              |   8 +-
+ .../src/cli/pre-commit-hook-script.test.ts         |  60 +++++++++
+ .../agentplane/src/cli/repo-local-handoff.test.ts  |  51 +++++++-
+ scripts/run-pre-commit-hook.mjs                    |  46 ++++++-
+ 5 files changed, 305 insertions(+), 5 deletions(-)
