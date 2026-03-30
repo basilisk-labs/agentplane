@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301808-WRE297/hosted-close-deus-identity",
   "created_at": "2026-03-30T18:16:50.642Z",
+  "head_sha": "89bc490250c54920ec6ada2f0607312617389015",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "acd0c2b45a43fa357b9e6a99af52e1aeb56a3b11",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-30T18:30:39Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301808-WRE297",
-  "updated_at": "2026-03-30T18:18:40.742Z",
+  "updated_at": "2026-03-30T18:30:39Z",
   "verify": {
     "status": "skipped"
   }
