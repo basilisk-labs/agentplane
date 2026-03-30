@@ -1,10 +1,11 @@
 ---
 id: "202603301854-9VPTCG"
 title: "Instantiate remaining REFACTOR backlog as executable tasks"
-status: "DOING"
+result_summary: "integrate: squash task/202603301854-9VPTCG/instantiate-refactor-tasks"
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-30T18:58:21.462Z"
   updated_by: "PLANNER"
   note: "OK: reconciled REFACTOR.md with completed R0.1 via 9ZMFDY; generated 29 executable tasks for the 29 remaining open REFACTOR checkboxes; node backlog-audit script, git status --short, and git diff --check confirm correct task cardinality with backlog/task-artifact-only changes."
-commit: null
+commit:
+  hash: "399ab99237111716e6c7d252934c6130c368c7dd"
+  message: "🧩 9VPTCG integrate: squash task/202603301854-9VPTCG/instantiate-refactor-tasks"
 comments:
   -
     author: "PLANNER"
     body: "Start: normalizing REFACTOR.md against completed task artifacts and creating one executable task per still-open refactor checkbox with explicit dependency edges and verification contracts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301854-9VPTCG/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "OK: reconciled REFACTOR.md with completed R0.1 via 9ZMFDY; generated 29 executable tasks for the 29 remaining open REFACTOR checkboxes; node backlog-audit script, git status --short, and git diff --check confirm correct task cardinality with backlog/task-artifact-only changes."
+  -
+    type: "status"
+    at: "2026-03-30T19:00:40.356Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301854-9VPTCG/pr."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:58:21.468Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-30T19:00:40.358Z"
+doc_updated_by: "INTEGRATOR"
 description: "Normalize REFACTOR.md against the already completed R0.1 help-routing task and create executable atomic tasks for every still-open refactor checkbox in the current optimization wave."
 sections:
   Summary: |-
