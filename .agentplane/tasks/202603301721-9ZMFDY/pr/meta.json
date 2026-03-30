@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603301721-9ZMFDY/lock-help-routing-contracts",
+  "created_at": "2026-03-30T17:33:58.469Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603301721-9ZMFDY",
+  "updated_at": "2026-03-30T17:57:13.455Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
