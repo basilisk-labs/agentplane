@@ -1,10 +1,10 @@
 ---
 id: "202603301639-X82Y1W"
 title: "Resolve remaining legacy PRs #5 and #7 on current main"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,7 +24,10 @@ verification:
   updated_by: "CODER"
   note: "OK: bunx vitest run packages/agentplane/src/cli/prompts.test.ts; bunx vitest run packages/agentplane/src/shared/agent-emoji.unit.test.ts packages/core/src/config/config.test.ts"
 commit: null
-comments: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: applying current-main equivalents of legacy PR #5 and #7, then superseding the legacy hosted PRs after integration."
 events:
   -
     type: "verify"
@@ -32,8 +35,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: bunx vitest run packages/agentplane/src/cli/prompts.test.ts; bunx vitest run packages/agentplane/src/shared/agent-emoji.unit.test.ts packages/core/src/config/config.test.ts"
+  -
+    type: "status"
+    at: "2026-03-30T16:46:28.959Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: applying current-main equivalents of legacy PR #5 and #7, then superseding the legacy hosted PRs after integration."
 doc_version: 3
-doc_updated_at: "2026-03-30T16:42:03.462Z"
+doc_updated_at: "2026-03-30T16:46:28.960Z"
 doc_updated_by: "CODER"
 description: "Apply the still-valid promptYesNo bugfix from legacy PR #5 and the low-risk documentation clarifications from legacy PR #7 onto current main through a fresh branch_pr task, then close the old hosted PRs as superseded once the new task PR lands."
 sections:

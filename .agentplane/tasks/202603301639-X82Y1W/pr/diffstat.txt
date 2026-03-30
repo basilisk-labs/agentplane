@@ -1,0 +1,7 @@
+ .agentplane/tasks/202603301639-X82Y1W/README.md | 113 ++++++++++++++++++++++++
+ packages/agentplane/src/cli/prompts.test.ts     |   8 ++
+ packages/agentplane/src/cli/prompts.ts          |   4 +-
+ packages/agentplane/src/shared/agent-emoji.ts   |   1 +
+ packages/agentplane/src/shared/guards.ts        |   1 +
+ packages/core/src/tasks/task-id.ts              |   1 +
+ 6 files changed, 127 insertions(+), 1 deletion(-)
