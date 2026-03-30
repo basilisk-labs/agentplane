@@ -1,3 +1,4 @@
+import { CommandGraph } from "../spec/registry.js";
 import type { CommandId } from "../spec/spec.js";
 import type { CommandEntry } from "./command-catalog/shared.js";
 
@@ -17,33 +18,27 @@ export const COMMANDS = [
 
 export type CatalogMatch = { entry: (typeof COMMANDS)[number]; consumed: number };
 
-export function matchCommandCatalog(tokens: readonly string[]): CatalogMatch | null {
-  let best: CatalogMatch | null = null;
-  for (const entry of COMMANDS) {
-    const id = entry.spec.id;
-    if (tokens.length < id.length) continue;
-    let ok = true;
-    for (const [i, seg] of id.entries()) {
-      if (tokens[i] !== seg) {
-        ok = false;
-        break;
-      }
-    }
-    if (!ok) continue;
-    if (!best || id.length > best.consumed) {
-      best = { entry, consumed: id.length };
-    }
+function buildCatalogGraph(entries: readonly CommandEntry[]): CommandGraph<CommandEntry> {
+  const graph = new CommandGraph<CommandEntry>((entry) => entry.spec.id);
+  for (const entry of entries) {
+    graph.add(entry);
   }
-  return best;
+  return graph;
+}
+
+const CATALOG_GRAPH = buildCatalogGraph(COMMANDS);
+
+export function matchCommandCatalog(tokens: readonly string[]): CatalogMatch | null {
+  const match = CATALOG_GRAPH.match(tokens);
+  return match ? { entry: match.value, consumed: match.consumed } : null;
 }
 
 export function findCommandEntry(id: CommandId): CommandEntry | null {
-  return (
-    COMMANDS.find(
-      (entry) =>
-        entry.spec.id.length === id.length && entry.spec.id.every((seg, i) => seg === id[i]),
-    ) ?? null
-  );
+  return CATALOG_GRAPH.lookup(id);
+}
+
+export function getDirectChildCommandEntries(parentId: CommandId = []): readonly CommandEntry[] {
+  return CATALOG_GRAPH.directChildren(parentId);
 }
 
 export function getCommandInvocation(id: CommandId): string {
