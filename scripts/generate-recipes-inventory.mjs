@@ -1,11 +1,11 @@
+import { execFileSync, spawn } from "node:child_process";
+import fs from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { spawn } from "node:child_process";
+import process from "node:process";
+import { fileURLToPath } from "node:url";
 
 const ROOT = process.cwd();
-const INDEX_PATH = path.join(ROOT, "agentplane-recipes", "index.json");
-const RECIPES_ROOT = path.join(ROOT, "agentplane-recipes", "recipes");
-const OUTPUT_PATH = path.join(ROOT, "docs", "recipes-inventory.json");
 const SUPPORTED_RUN_PROFILE_FIELDS = [
   "mode",
   "sandbox",
@@ -26,6 +26,52 @@ const RUNTIME_CONTRACT = {
     "scenario execute materializes a task from the scenario task_template and runs it through the shared runner contract.",
   ],
 };
+
+function gitRevParse(cwd, args) {
+  return execFileSync("git", ["rev-parse", ...args], {
+    cwd,
+    encoding: "utf8",
+  }).trim();
+}
+
+export function resolveCommonRepoRoot(cwd = ROOT, resolveGit = gitRevParse) {
+  const repoRoot = path.resolve(resolveGit(cwd, ["--show-toplevel"]));
+  const commonDirRaw = resolveGit(cwd, ["--git-common-dir"]);
+  const commonDir = path.resolve(
+    path.isAbsolute(commonDirRaw) ? commonDirRaw : path.join(repoRoot, commonDirRaw),
+  );
+  return path.basename(commonDir) === ".git" ? path.dirname(commonDir) : repoRoot;
+}
+
+export function resolveRecipesSourceRoot(cwd = ROOT, options = {}) {
+  const worktreeRoot = path.resolve(cwd);
+  const localIndexPath = path.join(worktreeRoot, "agentplane-recipes", "index.json");
+  if (fs.existsSync(localIndexPath)) {
+    return worktreeRoot;
+  }
+
+  const commonRepoRoot = resolveCommonRepoRoot(worktreeRoot, options.resolveGit ?? gitRevParse);
+  const commonIndexPath = path.join(commonRepoRoot, "agentplane-recipes", "index.json");
+  if (fs.existsSync(commonIndexPath)) {
+    return commonRepoRoot;
+  }
+
+  throw new Error(
+    "agentplane-recipes/index.json not found in the current worktree or the common repo root. Fix: git submodule update --init --recursive agentplane-recipes",
+  );
+}
+
+export function resolveInventoryPaths(cwd = ROOT, options = {}) {
+  const worktreeRoot = path.resolve(cwd);
+  const sourceRoot = resolveRecipesSourceRoot(worktreeRoot, options);
+  return {
+    worktreeRoot,
+    sourceRoot,
+    indexPath: path.join(sourceRoot, "agentplane-recipes", "index.json"),
+    recipesRoot: path.join(sourceRoot, "agentplane-recipes", "recipes"),
+    outputPath: path.join(worktreeRoot, "docs", "recipes-inventory.json"),
+  };
+}
 
 function normalizeStringList(value) {
   if (!Array.isArray(value)) return [];
@@ -64,8 +110,9 @@ async function readJson(filePath) {
   return JSON.parse(await readFile(filePath, "utf8"));
 }
 
-async function buildInventory() {
-  const index = await readJson(INDEX_PATH);
+async function buildInventory(cwd = ROOT, options = {}) {
+  const { indexPath, recipesRoot, worktreeRoot } = resolveInventoryPaths(cwd, options);
+  const index = await readJson(indexPath);
   const indexRecipes = Array.isArray(index.recipes) ? index.recipes : [];
   const recipes = [];
 
@@ -74,11 +121,11 @@ async function buildInventory() {
   )) {
     const recipeId = String(entry.id ?? "").trim();
     if (!recipeId) continue;
-    const manifestPath = path.join(RECIPES_ROOT, recipeId, "manifest.json");
+    const manifestPath = path.join(recipesRoot, recipeId, "manifest.json");
     const manifest = await readJson(manifestPath);
     if (manifest.id !== recipeId) {
       throw new Error(
-        `recipes inventory source mismatch: index id ${JSON.stringify(recipeId)} does not match manifest id ${JSON.stringify(manifest.id)} at ${path.relative(ROOT, manifestPath)}`,
+        `recipes inventory source mismatch: index id ${JSON.stringify(recipeId)} does not match manifest id ${JSON.stringify(manifest.id)} at ${path.relative(worktreeRoot, manifestPath)}`,
       );
     }
 
@@ -113,17 +160,23 @@ async function buildInventory() {
   };
 }
 
-async function main() {
+async function main(cwd = ROOT) {
+  const { outputPath: defaultOutputPath } = resolveInventoryPaths(cwd);
   const outputPath = process.argv.includes("--out")
-    ? path.resolve(ROOT, process.argv[process.argv.indexOf("--out") + 1] ?? "")
-    : OUTPUT_PATH;
-  const payload = await buildInventory();
+    ? path.resolve(cwd, process.argv[process.argv.indexOf("--out") + 1] ?? "")
+    : defaultOutputPath;
+  const payload = await buildInventory(cwd);
   await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
   await runBunx(["prettier", "--write", outputPath]);
-  process.stdout.write(`generated ${path.relative(ROOT, outputPath)}\n`);
+  process.stdout.write(`generated ${path.relative(cwd, outputPath)}\n`);
 }
 
-main().catch((error) => {
-  process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
-  process.exitCode = 1;
-});
+const isDirectRun =
+  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+
+if (isDirectRun) {
+  main().catch((error) => {
+    process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
+    process.exitCode = 1;
+  });
+}
