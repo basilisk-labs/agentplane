@@ -1,5 +1,6 @@
 import { randomInt } from "node:crypto";
 
+// Crockford base32 omits lookalikes I, L, O and skips U.
 export const TASK_ID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 
 export function timestampIdPrefix(date: Date): string {

@@ -32,6 +32,7 @@ function fallbackEmojiForAgentId(agentId: string): string {
   return FALLBACK_EMOJIS[idx] ?? "🧩";
 }
 
+// Prefer an explicit agent-level commit_emoji before falling back to deterministic defaults.
 export async function resolveCommitEmojiForAgent(opts: {
   agentsDirAbs: string;
   agentId: string;
