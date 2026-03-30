@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { distExists, isPackageBuildFresh } from "./dist-guard.js";
 import {
   FRAMEWORK_DEV_BOOTSTRAP_COMMAND,
+  FRAMEWORK_DEV_FORCE_GLOBAL_EXAMPLE,
   FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS,
 } from "./framework-dev-contract.js";
 import { getWatchedRuntimePathsForPackage } from "./runtime-watch.js";
@@ -130,11 +131,14 @@ async function assertDistUpToDate() {
   const allowStale = (process.env.AGENTPLANE_DEV_ALLOW_STALE_DIST ?? "").trim() === "1";
   if (!(await distExists(agentplaneRoot))) {
     process.stderr.write(
-      "error: agentplane dist is missing for this repo checkout.\n" +
+      "error: agentplane dist is missing for this framework checkout.\n" +
+        "This worktree is not bootstrapped yet.\n" +
         "Fix:\n" +
         `  ${FRAMEWORK_DEV_BOOTSTRAP_COMMAND}\n` +
         "Manual fallback:\n" +
-        FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS.map((command) => `  ${command}\n`).join(""),
+        FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS.map((command) => `  ${command}\n`).join("") +
+        "Supported global override when you intentionally want the installed binary:\n" +
+        `  ${FRAMEWORK_DEV_FORCE_GLOBAL_EXAMPLE}\n`,
     );
     process.exitCode = 2;
     return false;

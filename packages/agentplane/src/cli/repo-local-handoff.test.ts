@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { chmod, copyFile, mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { chmod, copyFile, mkdtemp, mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -112,6 +112,32 @@ async function setupFrameworkCheckout() {
   };
 }
 
+async function setupFrameworkCheckoutWithoutDist() {
+  const repoRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-framework-checkout-"));
+  tempRoots.push(repoRoot);
+  const binDir = path.join(repoRoot, "packages", "agentplane", "bin");
+  const srcDir = path.join(repoRoot, "packages", "agentplane", "src", "nested");
+  await mkdir(binDir, { recursive: true });
+  await mkdir(srcDir, { recursive: true });
+  for (const entry of await readdir(path.join(workspaceRoot, "packages", "agentplane", "bin"))) {
+    if (!entry.endsWith(".js")) continue;
+    await copyFile(
+      path.join(workspaceRoot, "packages", "agentplane", "bin", entry),
+      path.join(binDir, entry),
+    );
+  }
+  await writeFile(
+    path.join(repoRoot, "packages", "agentplane", "src", "cli.ts"),
+    "export const cli = true;\n",
+    "utf8",
+  );
+
+  return {
+    repoRoot,
+    nestedCwd: srcDir,
+  };
+}
+
 afterEach(async () => {
   while (tempRoots.length > 0) {
     const root = tempRoots.pop();
@@ -205,5 +231,28 @@ describe("repo-local handoff wrapper", () => {
 
     const local = parsePayload(stdout, "LOCAL");
     expect(local.args).toEqual(["help", "help", "--compact"]);
+  });
+
+  it("reports bootstrap guidance when repo-local dist is missing", async () => {
+    const globalInstall = await setupGlobalInstall();
+    const framework = await setupFrameworkCheckoutWithoutDist();
+
+    try {
+      await execFileAsync(process.execPath, [globalInstall.binPath, "help"], {
+        cwd: framework.nestedCwd,
+        encoding: "utf8",
+        env: buildChildEnv(),
+      });
+      throw new Error("expected command to fail");
+    } catch (error) {
+      const err = error as { stderr?: string; stdout?: string };
+      expect(err.stderr ?? "").toContain("agentplane dist is missing for this framework checkout");
+      expect(err.stderr ?? "").toContain("This worktree is not bootstrapped yet.");
+      expect(err.stderr ?? "").toContain("bun run framework:dev:bootstrap");
+      expect(err.stderr ?? "").toContain(
+        "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>",
+      );
+      expect(err.stdout ?? "").toBe("");
+    }
   });
 });
