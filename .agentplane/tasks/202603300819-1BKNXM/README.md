@@ -1,10 +1,11 @@
 ---
 id: "202603300819-1BKNXM"
 title: "Update REFACTOR.md with corrective runtime and workflow tasks"
-status: "DOING"
+result_summary: "Merged via PR #39."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-30T08:50:08.169Z"
   updated_by: "DOCS"
   note: "OK: node .agentplane/policy/check-routing.mjs; REFACTOR.md now records confirmed runtime/workflow gaps in Epic C and classifies the PR-artifact issue as a hypothesis pending reproduction."
-commit: null
+commit:
+  hash: "f8899a9f82ab74ad5dd28a0e521284978ff55ef2"
+  message: "📝 1BKNXM docs: add corrective runtime backlog (#39)"
 comments:
   -
     author: "DOCS"
     body: "Start: update REFACTOR.md with corrective tasks for the observed workflow mismatch, framework worktree runtime friction, and the branch_pr PR-artifact repro/classification path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #39 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "OK: node .agentplane/policy/check-routing.mjs; REFACTOR.md now records confirmed runtime/workflow gaps in Epic C and classifies the PR-artifact issue as a hypothesis pending reproduction."
+  -
+    type: "status"
+    at: "2026-03-30T15:30:10.715Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #39 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-03-30T08:50:08.172Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-03-30T15:30:10.720Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend the root refactor backlog with the concrete runtime/workflow defects discovered during execution: WORKFLOW.md mode drift, framework worktree bootstrap/global fallback friction, and a clearly marked hypothesis task for the base-checkout PR-artifact edge-case."
 sections:
   Summary: |-
