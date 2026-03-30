@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603301249-ZESZG8/pr-check-local-artifact-precedence",
+  "created_at": "2026-03-30T14:52:59.154Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603301249-ZESZG8",
+  "updated_at": "2026-03-30T14:53:06.604Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

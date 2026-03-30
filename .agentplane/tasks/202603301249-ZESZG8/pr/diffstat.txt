@@ -1,0 +1,4 @@
+ .agentplane/tasks/202603301249-ZESZG8/README.md    | 119 +++++++++++++++++++++
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 110 +++++++++++++++++++
+ packages/agentplane/src/commands/pr/check.ts       |  33 ++++--
+ 3 files changed, 254 insertions(+), 8 deletions(-)
