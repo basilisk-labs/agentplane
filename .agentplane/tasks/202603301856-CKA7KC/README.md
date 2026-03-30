@@ -1,10 +1,11 @@
 ---
 id: "202603301856-CKA7KC"
 title: "Lock JSON output behavior with contract tests"
-status: "DOING"
+result_summary: "integrate: squash task/202603301856-CKA7KC/lock-json-output-tests"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-30T19:18:27.862Z"
   updated_by: "CODER"
   note: "OK: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts --testNamePattern \"json|agent_json_v1|output json|runWithOutputMode\" plus prettier --check and eslint on the same file passed; JSON error payloads, agent_json_v1 success envelopes, and wrapped stdout/stderr are now locked without production CLI output changes."
-commit: null
+commit:
+  hash: "0cd3b77a22989b9c24ea42ee961b070bbe660ff2"
+  message: "🧩 CKA7KC integrate: squash task/202603301856-CKA7KC/lock-json-output-tests"
 comments:
   -
     author: "CODER"
     body: "Start: locking --json-errors and --output json contracts in run-cli tests, including the agent_json_v1 envelope and wrapped stdout/stderr behavior, without changing production CLI output code."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-CKA7KC/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts --testNamePattern \"json|agent_json_v1|output json|runWithOutputMode\" plus prettier --check and eslint on the same file passed; JSON error payloads, agent_json_v1 success envelopes, and wrapped stdout/stderr are now locked without production CLI output changes."
+  -
+    type: "status"
+    at: "2026-03-30T19:19:59.488Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-CKA7KC/pr."
 doc_version: 3
-doc_updated_at: "2026-03-30T19:18:27.864Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-30T19:19:59.491Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 0 / R0.3 from REFACTOR.md. `--output json` and `--json-errors` behavior are asserted, including wrapped stdout/stderr and `agent_json_v1`."
 sections:
   Summary: |-
