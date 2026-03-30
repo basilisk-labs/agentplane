@@ -80,11 +80,23 @@ describe("cli help contract", () => {
       const code = await runCli(["help", "--json"]);
       expect(code).toBe(0);
       const list = JSON.parse(io.stdout) as HelpJson[];
+      const ids = list.map((spec) => keyId(spec.id));
 
       // Unique command ids.
-      const ids = list.map((s) => keyId(s.id));
       const unique = new Set(ids);
       expect(unique.size).toBe(ids.length);
+      expect(ids).toEqual(
+        expect.arrayContaining([
+          "help",
+          "task",
+          "task list",
+          "task search",
+          "task next",
+          "task plan",
+          "task doc",
+          "work start",
+        ]),
+      );
 
       // Unique option names/shorts within a command.
       for (const spec of list) {

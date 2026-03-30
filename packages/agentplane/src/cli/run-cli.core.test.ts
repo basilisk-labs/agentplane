@@ -69,6 +69,30 @@ describe("runCli", () => {
     }
   });
 
+  it("renders the same task help for help task and task --help", async () => {
+    const helpIo = captureStdIO();
+    let helpText = "";
+    try {
+      const code = await runCli(["help", "task"]);
+      expect(code).toBe(0);
+      helpText = helpIo.stdout;
+    } finally {
+      helpIo.restore();
+    }
+
+    const taskIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "--help"]);
+      expect(code).toBe(0);
+      expect(taskIo.stdout.trim()).toBe(helpText.trim());
+      expect(taskIo.stdout).toContain("task - Task lifecycle and task-store commands.");
+      expect(taskIo.stdout).toContain("agentplane task <subcommand> [args] [options]");
+      expect(taskIo.stdout).toContain("agentplane task plan set <task-id> --text");
+    } finally {
+      taskIo.restore();
+    }
+  });
+
   it("prints command help when --help is trailing after positional args/options", async () => {
     const cases: { argv: string[]; usage: string }[] = [
       { argv: ["sync", "redmine", "--help"], usage: "agentplane sync [<id>] [options]" },
@@ -91,6 +115,33 @@ describe("runCli", () => {
       } finally {
         io.restore();
       }
+    }
+  });
+
+  it("wraps trailing help in an agent_json_v1 envelope when --output json is set", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["--output", "json", "task", "--help"]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        mode?: string;
+        command?: string;
+        ok?: boolean;
+        exit_code?: number;
+        stdout?: string;
+        stderr?: string;
+        data?: unknown;
+      };
+      expect(payload.mode).toBe("agent_json_v1");
+      expect(payload.command).toBe("help");
+      expect(payload.ok).toBe(true);
+      expect(payload.exit_code).toBe(0);
+      expect(payload.stdout).toContain("task - Task lifecycle and task-store commands.");
+      expect(payload.stdout).toContain("Usage:");
+      expect(payload.stderr).toBe("");
+      expect(payload.data).toBeUndefined();
+    } finally {
+      io.restore();
     }
   });
 
