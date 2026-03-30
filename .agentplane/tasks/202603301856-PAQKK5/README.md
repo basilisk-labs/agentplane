@@ -1,10 +1,11 @@
 ---
 id: "202603301856-PAQKK5"
 title: "Add a lightweight CLI cold-path benchmark harness"
-status: "DOING"
+result_summary: "integrate: squash task/202603301856-PAQKK5/add-cli-cold-benchmark"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-30T19:25:19.744Z"
   updated_by: "CODER"
   note: "OK: node scripts/measure-cli-cold-path.mjs --help, bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts, prettier --check, eslint, and a direct one-run invocation of the harness all passed; the repository now has a repeatable cold-path benchmark entrypoint for quickstart, task list, and preflight --mode quick without production CLI changes."
-commit: null
+commit:
+  hash: "f915f064df7cf7d67174853d6cca8b8072c6ce27"
+  message: "🧩 PAQKK5 integrate: squash task/202603301856-PAQKK5/add-cli-cold-benchmark"
 comments:
   -
     author: "CODER"
     body: "Start: adding a repeatable CLI cold-path benchmark harness for quickstart, task list, and preflight --mode quick, plus a focused contract test, without changing production CLI behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-PAQKK5/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: node scripts/measure-cli-cold-path.mjs --help, bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts, prettier --check, eslint, and a direct one-run invocation of the harness all passed; the repository now has a repeatable cold-path benchmark entrypoint for quickstart, task list, and preflight --mode quick without production CLI changes."
+  -
+    type: "status"
+    at: "2026-03-30T19:26:55.113Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-PAQKK5/pr."
 doc_version: 3
-doc_updated_at: "2026-03-30T19:25:19.750Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-30T19:26:55.116Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 0 / R0.4 from REFACTOR.md. the repository has one repeatable command or script that measures at least `quickstart`, `task list`, and `preflight --mode quick`."
 sections:
   Summary: |-
