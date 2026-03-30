@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301739-E85308/worktree-safe-recipes-check",
   "created_at": "2026-03-30T17:48:10.372Z",
+  "head_sha": "a8ee71fbb6710a5c30780497c8465189568953f2",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "93e8350b6fea4fe59927ab704346de6ff5008106",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-30T17:53:22Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301739-E85308",
-  "updated_at": "2026-03-30T17:50:52.297Z",
+  "updated_at": "2026-03-30T17:53:22Z",
   "verify": {
     "status": "skipped"
   }

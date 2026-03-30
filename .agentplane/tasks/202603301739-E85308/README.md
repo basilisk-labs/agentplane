@@ -1,10 +1,11 @@
 ---
 id: "202603301739-E85308"
 title: "Make recipes inventory freshness checks work in branch_pr task worktrees"
-status: "DOING"
+result_summary: "Merged via PR #49."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-30T17:47:58.349Z"
   updated_by: "CODER"
   note: "OK: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts passed with 3/3 tests; node scripts/check-recipes-inventory-fresh.mjs succeeded in the branch_pr task worktree without a local agentplane-recipes checkout; git push origin task/202603301739-E85308/worktree-safe-recipes-check passed the full pre-push gate including docs:recipes:check, local fast CI, and critical CLI suites."
-commit: null
+commit:
+  hash: "93e8350b6fea4fe59927ab704346de6ff5008106"
+  message: "fix(workflow): make recipes inventory checks branch_pr-worktree safe (#49)"
 comments:
   -
     author: "CODER"
     body: "Start: implement worktree-safe recipes inventory freshness checks and regression coverage so unrelated branch_pr pushes stop failing on docs:recipes:check."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #49 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts passed with 3/3 tests; node scripts/check-recipes-inventory-fresh.mjs succeeded in the branch_pr task worktree without a local agentplane-recipes checkout; git push origin task/202603301739-E85308/worktree-safe-recipes-check passed the full pre-push gate including docs:recipes:check, local fast CI, and critical CLI suites."
+  -
+    type: "status"
+    at: "2026-03-30T17:53:46.505Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #49 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-03-30T17:47:58.351Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-30T17:53:46.511Z"
+doc_updated_by: "INTEGRATOR"
 description: "Pre-push in branch_pr task worktrees currently fails on docs:recipes:check because scripts/generate-recipes-inventory.mjs resolves agentplane-recipes strictly from process.cwd(), while the submodule is materialized only in the common base checkout. Add a worktree-safe source-root resolution and a focused regression test so unrelated CLI/code PRs can push without weakening the check."
 sections:
   Summary: |-
