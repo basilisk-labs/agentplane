@@ -1,10 +1,11 @@
 ---
 id: "202603301721-9ZMFDY"
 title: "Lock current help-routing behavior with CLI contract tests"
-status: "DOING"
+result_summary: "Merged via PR #50."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-30T17:32:07.030Z"
   updated_by: "CODER"
   note: "OK: bunx vitest run packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; added focused help-routing contract coverage for --help, task --help, task plan --help, and unknown-command suggestion flows."
-commit: null
+commit:
+  hash: "c3713b4cadc9cc9319197443fb15b038c9c47941"
+  message: "test(cli): lock help-routing contract behavior (#50)"
 comments:
   -
     author: "CODER"
     body: "Start: locking current help, --help, help <cmd>, and unknown-command suggestion behavior with targeted CLI contract tests only; no router refactor in this task."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #50 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: bunx vitest run packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; added focused help-routing contract coverage for --help, task --help, task plan --help, and unknown-command suggestion flows."
+  -
+    type: "status"
+    at: "2026-03-30T17:59:48.290Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #50 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-03-30T17:32:07.032Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-30T17:59:48.296Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 0 / R0.1 by adding behavior-locking tests for help routing, including help, --help, help <cmd>, and unknown-command suggestion flows, so later routing refactors can remove duplication without changing behavior."
 sections:
   Summary: |-

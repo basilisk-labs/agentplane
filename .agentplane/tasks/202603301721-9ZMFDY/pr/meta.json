@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301721-9ZMFDY/lock-help-routing-contracts",
   "created_at": "2026-03-30T17:33:58.469Z",
+  "head_sha": "abc4a8212b965775324e5211b893cff8f4f98bf7",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "c3713b4cadc9cc9319197443fb15b038c9c47941",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-30T17:59:23Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301721-9ZMFDY",
-  "updated_at": "2026-03-30T17:57:13.455Z",
+  "updated_at": "2026-03-30T17:59:23Z",
   "verify": {
     "status": "skipped"
   }
