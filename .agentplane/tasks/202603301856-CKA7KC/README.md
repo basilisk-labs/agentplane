@@ -1,10 +1,10 @@
 ---
 id: "202603301856-CKA7KC"
 title: "Lock JSON output behavior with contract tests"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -16,21 +16,37 @@ tags:
   - "cli"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-30T19:13:12.437Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved as the second Epic 0 safety-net task; scope stays limited to JSON output contract coverage in run-cli tests and avoids production CLI output changes."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-30T19:18:27.862Z"
+  updated_by: "CODER"
+  note: "OK: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts --testNamePattern \"json|agent_json_v1|output json|runWithOutputMode\" plus prettier --check and eslint on the same file passed; JSON error payloads, agent_json_v1 success envelopes, and wrapped stdout/stderr are now locked without production CLI output changes."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: locking --json-errors and --output json contracts in run-cli tests, including the agent_json_v1 envelope and wrapped stdout/stderr behavior, without changing production CLI output code."
+events:
+  -
+    type: "status"
+    at: "2026-03-30T19:17:03.745Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: locking --json-errors and --output json contracts in run-cli tests, including the agent_json_v1 envelope and wrapped stdout/stderr behavior, without changing production CLI output code."
+  -
+    type: "verify"
+    at: "2026-03-30T19:18:27.862Z"
+    author: "CODER"
+    state: "ok"
+    note: "OK: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts --testNamePattern \"json|agent_json_v1|output json|runWithOutputMode\" plus prettier --check and eslint on the same file passed; JSON error payloads, agent_json_v1 success envelopes, and wrapped stdout/stderr are now locked without production CLI output changes."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:56:55.385Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-30T19:18:27.864Z"
+doc_updated_by: "CODER"
 description: "Implement Epic 0 / R0.3 from REFACTOR.md. `--output json` and `--json-errors` behavior are asserted, including wrapped stdout/stderr and `agent_json_v1`."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: `--output json` and `--json-errors` behavior are asserted, including wrapped stdout/stderr and `agent_json_v1`.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-30T19:18:27.862Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: OK: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts --testNamePattern "json|agent_json_v1|output json|runWithOutputMode" plus prettier --check and eslint on the same file passed; JSON error payloads, agent_json_v1 success envelopes, and wrapped stdout/stderr are now locked without production CLI output changes.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-30T19:17:03.746Z, excerpt_hash=sha256:7f9f620af3274be9f119d895e4c63a6593d14edb2c9a782c6119ece08c3f7f37
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +107,14 @@ Implement Epic 0 / R0.3 from REFACTOR.md. `--output json` and `--json-errors` be
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-30T19:18:27.862Z — VERIFY — ok
+
+By: CODER
+
+Note: OK: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts --testNamePattern "json|agent_json_v1|output json|runWithOutputMode" plus prettier --check and eslint on the same file passed; JSON error payloads, agent_json_v1 success envelopes, and wrapped stdout/stderr are now locked without production CLI output changes.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-30T19:17:03.746Z, excerpt_hash=sha256:7f9f620af3274be9f119d895e4c63a6593d14edb2c9a782c6119ece08c3f7f37
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
