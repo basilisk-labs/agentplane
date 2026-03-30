@@ -1,10 +1,11 @@
 ---
 id: "202603300819-WKK8C5"
 title: "Make framework task worktrees runnable without manual runtime surprises"
-status: "DOING"
+result_summary: "Merged via PR #36."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-30T08:44:42.941Z"
   updated_by: "CODER"
   note: "OK: bunx vitest run packages/agentplane/src/cli/repo-local-handoff.test.ts packages/agentplane/src/cli/pre-commit-hook-script.test.ts --hookTimeout 60000 --testTimeout 60000"
-commit: null
+commit:
+  hash: "365fa16df391fec0a839de451507bf465cda59b2"
+  message: "🔧 runtime: clarify framework worktree bootstrap guidance (#36)"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the framework task-worktree runtime/bootstrap failures, then implement a supported fallback or diagnostic path so task lifecycle commands and related hooks do not fail opaquely."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #36 merged as 365fa16df391fec0a839de451507bf465cda59b2; targeted repo-local handoff and pre-commit script evidence already recorded on the task. Manual close branch backfills missing pr/meta.json after hosted-close failed on main."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: bunx vitest run packages/agentplane/src/cli/repo-local-handoff.test.ts packages/agentplane/src/cli/pre-commit-hook-script.test.ts --hookTimeout 60000 --testTimeout 60000"
+  -
+    type: "status"
+    at: "2026-03-30T16:14:16.257Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #36 merged as 365fa16df391fec0a839de451507bf465cda59b2; targeted repo-local handoff and pre-commit script evidence already recorded on the task. Manual close branch backfills missing pr/meta.json after hosted-close failed on main."
 doc_version: 3
-doc_updated_at: "2026-03-30T08:44:42.993Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-30T16:14:16.258Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove or reduce the need for AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 and bootstrap guesswork in framework task worktrees by fixing repo-local handoff behavior, diagnostics, or fallback paths so task lifecycle and commit hooks fail less opaquely."
 sections:
   Summary: |-
