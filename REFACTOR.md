@@ -12,7 +12,8 @@ This file is the live working backlog for the next optimization/refactor wave.
 Current backlog status on `main`:
 
 - `Epic C` is complete on `main` via `5NMDDW`, `WKK8C5`, `J106PF`, and `ZESZG8`.
-- `Epic 0` through `Epic 6` remain pending unless a later task explicitly marks individual items complete here.
+- `R0.1` is complete on `main` via `9ZMFDY`.
+- `Epic 0` through `Epic 6` otherwise remain pending unless a later task explicitly marks individual items complete here.
 - `agentplane task list` showing no open tasks does not mean this backlog is done; it only means the next optimization wave has not yet been fully instantiated as executable tasks.
 
 ## Current Baseline
@@ -102,7 +103,7 @@ We can change router/query/bootstrap internals while keeping existing help, rout
 
 ### Atomic Tasks
 
-- [ ] `R0.1` Lock current help-routing behavior with golden tests.
+- [x] `R0.1` Lock current help-routing behavior with golden tests.
       Owner: `CODER`
       Depends on: none
       Touchpoints: `packages/agentplane/src/cli/run-cli*.test.ts`
