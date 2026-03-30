@@ -1,0 +1,4 @@
+ .agentplane/tasks/202603301739-E85308/README.md    | 103 +++++++++++++++++++++
+ .../cli/generate-recipes-inventory-script.test.ts  |  77 +++++++++++++++
+ scripts/generate-recipes-inventory.mjs             |  87 +++++++++++++----
+ 3 files changed, 250 insertions(+), 17 deletions(-)
