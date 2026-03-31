@@ -1,10 +1,11 @@
 ---
 id: "202603311331-CMRND8"
 title: "N3.2 Move `task start`, `task block`, and `task set-status` onto the executor"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-CMRND8/move-status-commands-onto-executor"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T16:20:58.599Z"
   updated_by: "CODER"
   note: "Moved task start, block, and set-status onto applyTaskMutation plus the shared transition executor so handlers keep only command-specific validation and commit plumbing; verified with focused command/shared unit slices, local-vs-remote parity tests, lint, and agentplane build."
-commit: null
+commit:
+  hash: "9355468a4fa62b9b386421e65940a59f15a56047"
+  message: "📝 CMRND8 task: finalize PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: move task start, block, and set-status onto the shared transition executor so those handlers keep only command-specific validation, comment shaping, and commit plumbing while transition orchestration lives in one place."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-CMRND8/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Moved task start, block, and set-status onto applyTaskMutation plus the shared transition executor so handlers keep only command-specific validation and commit plumbing; verified with focused command/shared unit slices, local-vs-remote parity tests, lint, and agentplane build."
+  -
+    type: "status"
+    at: "2026-03-31T16:22:04.860Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-CMRND8/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T16:20:58.601Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T16:22:04.862Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N3.2 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: those handlers become thin command-specific wrappers around the shared transition contract. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-

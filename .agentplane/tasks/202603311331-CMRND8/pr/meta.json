@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311331-CMRND8/move-status-commands-onto-executor",
   "created_at": "2026-03-31T16:21:18.817Z",
+  "head_sha": "7d6f38e6144935a18ff3cc66fb103ae924d6d96d",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "9355468a4fa62b9b386421e65940a59f15a56047",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T16:22:04.836Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311331-CMRND8",
-  "updated_at": "2026-03-31T16:21:32.289Z",
+  "updated_at": "2026-03-31T16:22:04.836Z",
   "verify": {
     "status": "skipped"
   }
