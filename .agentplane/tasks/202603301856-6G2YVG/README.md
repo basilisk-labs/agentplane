@@ -1,10 +1,11 @@
 ---
 id: "202603301856-6G2YVG"
 title: "Extend the task index schema to store the exact summary projection needed by read-heavy commands"
-status: "DOING"
+result_summary: "integrate: squash task/202603301856-6G2YVG/extend-task-index-summary-projection"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T09:21:51.148Z"
   updated_by: "CODER"
   note: "Focused vitest slice passed for task-index projection coverage and local-backend cache behavior; agentplane build and eslint passed on touched backend files."
-commit: null
+commit:
+  hash: "9e398d54a090da6ca3977a720cddf81ffac8d483"
+  message: "🧩 6G2YVG integrate: squash task/202603301856-6G2YVG/extend-task-index-summary-projection"
 comments:
   -
     author: "CODER"
     body: "Start: extend the task index cache to persist the exact TaskSummary projection needed by read-heavy task queries."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-6G2YVG/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused vitest slice passed for task-index projection coverage and local-backend cache behavior; agentplane build and eslint passed on touched backend files."
+  -
+    type: "status"
+    at: "2026-03-31T09:26:22.976Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-6G2YVG/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T09:21:51.152Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T09:26:22.980Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 2 / R2.1 from REFACTOR.md. the cache stores enough summary data to satisfy `task list/search/next` without reconstructing full task records."
 sections:
   Summary: |-

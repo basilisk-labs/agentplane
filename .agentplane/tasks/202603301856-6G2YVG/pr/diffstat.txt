@@ -1,5 +1,9 @@
  .agentplane/tasks/202603301856-6G2YVG/README.md    | 60 +++++++++++----
+ .../tasks/202603301856-6G2YVG/pr/diffstat.txt      |  5 ++
+ .agentplane/tasks/202603301856-6G2YVG/pr/meta.json | 12 +++
+ .agentplane/tasks/202603301856-6G2YVG/pr/review.md | 33 +++++++++
+ .../tasks/202603301856-6G2YVG/pr/verify.log        |  0
  .../src/backends/task-backend.local.test.ts        | 27 +++++--
  .../agentplane/src/backends/task-index.test.ts     | 85 ++++++++++++++++++++++
  packages/agentplane/src/backends/task-index.ts     | 21 +++---
- 4 files changed, 162 insertions(+), 31 deletions(-)
+ 8 files changed, 212 insertions(+), 31 deletions(-)
