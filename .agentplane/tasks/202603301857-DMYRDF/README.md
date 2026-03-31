@@ -1,10 +1,10 @@
 ---
 id: "202603301857-DMYRDF"
 title: "Collapse low-value wrappers with tests still green"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -15,21 +15,37 @@ tags:
   - "cli"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T12:11:30.529Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T12:15:15.109Z"
+  updated_by: "CODER"
+  note: "Focused verification passed for wrapper collapse and import cleanup."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: remove runtime-dead alias wrappers from the audited shortlist and retarget remaining test-only imports without changing live command dispatch."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T12:12:22.912Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: remove runtime-dead alias wrappers from the audited shortlist and retarget remaining test-only imports without changing live command dispatch."
+  -
+    type: "verify"
+    at: "2026-03-31T12:15:15.109Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused verification passed for wrapper collapse and import cleanup."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:57:12.762Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T12:15:15.112Z"
+doc_updated_by: "CODER"
 description: "Implement Epic 5 / R5.4 from REFACTOR.md. purely pass-through files are removed or merged, and module boundaries that remain have a documented reason."
 sections:
   Summary: |-
@@ -49,6 +65,36 @@ sections:
     3. Re-run the focused checks after final edits. Expected: purely pass-through files are removed or merged, and module boundaries that remain have a documented reason.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T12:15:15.109Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused verification passed for wrapper collapse and import cleanup.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T12:12:22.914Z, excerpt_hash=sha256:23f5a48990576bd57fc8177deac197554da16baf6ff04410aac4c9519ed90ffb
+    
+    Details:
+    
+    Command: bunx eslint packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.fast.test.ts packages/agentplane/src/commands/recipes.test-helpers.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+    Result: pass
+    Evidence: exited 0 with no diagnostics.
+    Scope: touched tests and helper imports.
+    
+    Command: bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.fast.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/recipes.cache.test.ts packages/agentplane/src/commands/recipes.catalog-install.test.ts packages/agentplane/src/commands/recipes.list.test.ts packages/agentplane/src/commands/recipes.scenario.test.ts
+    Result: pass
+    Evidence: 7 files passed, 89 tests passed.
+    Scope: doctor, verify hooks, and recipes flows that depended on removed wrappers.
+    
+    Command: bun run --filter=agentplane build
+    Result: pass
+    Evidence: agentplane build exited 0.
+    Scope: full package build and import graph after deleting pass-through modules.
+    
+    Command: git diff --stat
+    Result: pass
+    Evidence: scope stayed limited to 10 deleted wrapper modules, 4 import retargets, and task documentation.
+    Scope: final diff review for DMYRDF.
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +128,36 @@ Implement Epic 5 / R5.4 from REFACTOR.md. purely pass-through files are removed 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T12:15:15.109Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused verification passed for wrapper collapse and import cleanup.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T12:12:22.914Z, excerpt_hash=sha256:23f5a48990576bd57fc8177deac197554da16baf6ff04410aac4c9519ed90ffb
+
+Details:
+
+Command: bunx eslint packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.fast.test.ts packages/agentplane/src/commands/recipes.test-helpers.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+Result: pass
+Evidence: exited 0 with no diagnostics.
+Scope: touched tests and helper imports.
+
+Command: bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.fast.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/recipes.cache.test.ts packages/agentplane/src/commands/recipes.catalog-install.test.ts packages/agentplane/src/commands/recipes.list.test.ts packages/agentplane/src/commands/recipes.scenario.test.ts
+Result: pass
+Evidence: 7 files passed, 89 tests passed.
+Scope: doctor, verify hooks, and recipes flows that depended on removed wrappers.
+
+Command: bun run --filter=agentplane build
+Result: pass
+Evidence: agentplane build exited 0.
+Scope: full package build and import graph after deleting pass-through modules.
+
+Command: git diff --stat
+Result: pass
+Evidence: scope stayed limited to 10 deleted wrapper modules, 4 import retargets, and task documentation.
+Scope: final diff review for DMYRDF.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

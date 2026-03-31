@@ -21,7 +21,7 @@ import { CliError } from "../shared/errors.js";
 import { recipesCachePruneSpec } from "./recipes/cache-prune.command.js";
 import { recipesExplainSpec } from "./recipes/explain.command.js";
 import { recipesInfoSpec } from "./recipes/info.command.js";
-import { recipesInstallSpec } from "./recipes/install.command.js";
+import { recipesInstallSpec } from "./recipes/install.spec.js";
 import { recipesListRemoteSpec } from "./recipes/list-remote.command.js";
 import { recipesListSpec } from "./recipes/list.command.js";
 import { recipesRemoveSpec } from "./recipes/remove.command.js";

@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603301857-DMYRDF/collapse-runtime-dead-wrappers",
+  "created_at": "2026-03-31T12:16:06.629Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603301857-DMYRDF",
+  "updated_at": "2026-03-31T12:16:14.580Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -7,7 +7,7 @@ import { promisify } from "node:util";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { runDoctor } from "./doctor.command.js";
+import { runDoctor } from "./doctor.run.js";
 
 type TestWorkspace = {
   root: string;
