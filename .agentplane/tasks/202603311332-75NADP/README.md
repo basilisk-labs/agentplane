@@ -1,10 +1,10 @@
 ---
 id: "202603311332-75NADP"
 title: "N4.5 Lock doc-path parity with tests"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -19,21 +19,37 @@ tags:
   - "task-doc"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T18:29:38.552Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T18:36:04.537Z"
+  updated_by: "CODER"
+  note: "Command: bunx eslint packages/agentplane/src/backends/task-backend/local-backend.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts; Result: pass; Evidence: 0 lint errors on the narrowed doc-parity diff; Scope: local-backend canonical doc reads plus backend/task-store/command parity locks. Command: bunx vitest run packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts; Result: pass; Evidence: 6 files, 89 tests passed; Scope: doc set/show/plan/verify parity and canonical doc regeneration. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0; Scope: compile safety for the local-backend doc read change."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: lock doc-path parity with focused tests across local and non-local doc mutation flows, delete representational mismatches instead of preserving them, and keep the diff centered on command/backend/test contracts."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T18:30:11.583Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: lock doc-path parity with focused tests across local and non-local doc mutation flows, delete representational mismatches instead of preserving them, and keep the diff centered on command/backend/test contracts."
+  -
+    type: "verify"
+    at: "2026-03-31T18:36:04.537Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx eslint packages/agentplane/src/backends/task-backend/local-backend.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts; Result: pass; Evidence: 0 lint errors on the narrowed doc-parity diff; Scope: local-backend canonical doc reads plus backend/task-store/command parity locks. Command: bunx vitest run packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts; Result: pass; Evidence: 6 files, 89 tests passed; Scope: doc set/show/plan/verify parity and canonical doc regeneration. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0; Scope: compile safety for the local-backend doc read change."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:32:36.075Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T18:36:04.541Z"
+doc_updated_by: "CODER"
 description: "Implement N4.5 from REFACTOR.md. Remove the current duplication between core task-doc primitives, the local task store, and backend doc mutation paths.. Acceptance: doc set/show/plan/verify flows prove parity across local and non-local paths. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -53,6 +69,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: doc set/show/plan/verify flows prove parity across local and non-local paths.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T18:36:04.537Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bunx eslint packages/agentplane/src/backends/task-backend/local-backend.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts; Result: pass; Evidence: 0 lint errors on the narrowed doc-parity diff; Scope: local-backend canonical doc reads plus backend/task-store/command parity locks. Command: bunx vitest run packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts; Result: pass; Evidence: 6 files, 89 tests passed; Scope: doc set/show/plan/verify parity and canonical doc regeneration. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0; Scope: compile safety for the local-backend doc read change.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T18:30:11.605Z, excerpt_hash=sha256:bf2c587abeecdb4f7f932bb18392ffa6471c7167da516ccfbe95f0c7486d5b87
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +110,14 @@ Implement N4.5 from REFACTOR.md. Remove the current duplication between core tas
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T18:36:04.537Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx eslint packages/agentplane/src/backends/task-backend/local-backend.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts; Result: pass; Evidence: 0 lint errors on the narrowed doc-parity diff; Scope: local-backend canonical doc reads plus backend/task-store/command parity locks. Command: bunx vitest run packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts; Result: pass; Evidence: 6 files, 89 tests passed; Scope: doc set/show/plan/verify parity and canonical doc regeneration. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0; Scope: compile safety for the local-backend doc read change.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T18:30:11.605Z, excerpt_hash=sha256:bf2c587abeecdb4f7f932bb18392ffa6471c7167da516ccfbe95f0c7486d5b87
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

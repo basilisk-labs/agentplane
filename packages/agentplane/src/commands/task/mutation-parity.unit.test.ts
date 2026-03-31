@@ -401,6 +401,79 @@ async function runSetStatusScenario(mode: BackendMode) {
   return { ...output, task: currentTask, writeTask, update: store.update };
 }
 
+async function runPlanSetScenario(mode: BackendMode) {
+  vi.resetModules();
+  const baseDoc = [
+    "## Summary",
+    "x",
+    "",
+    "## Plan",
+    "Old plan",
+    "",
+    "## Verify Steps",
+    "Run current checks",
+    "",
+    "## Verification",
+    "<!-- BEGIN VERIFICATION RESULTS -->",
+    "<!-- END VERIFICATION RESULTS -->",
+    "",
+    "## Findings",
+    "n/a",
+  ].join("\n");
+  let currentTask = mkTask({
+    doc: mode === "local" ? baseDoc : "",
+    doc_updated_at: "2026-02-08T00:00:00.000Z",
+    plan_approval: {
+      state: "approved",
+      updated_at: "2026-02-08T00:00:00.000Z",
+      updated_by: "PLANNER",
+      note: "Approved",
+    },
+  });
+  const writeTask = vi.fn((task: TaskData) => {
+    currentTask = cloneTask(task);
+    return Promise.resolve();
+  });
+  const store = {
+    update: vi.fn(async (_taskId: string, updater: (current: TaskData) => unknown) => {
+      currentTask = cloneTask((await updater(cloneTask(currentTask))) as TaskData);
+      return { changed: true, task: cloneTask(currentTask) };
+    }),
+  };
+  const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
+  const backend = createBackend({
+    writeTask,
+    getTaskDoc: vi.fn(() => Promise.resolve(baseDoc)),
+  });
+  const ctx = mkCtx(backend);
+
+  vi.doMock("../shared/task-backend.js", () => ({
+    loadCommandContext: vi.fn(),
+    loadTaskFromContext,
+  }));
+  vi.doMock("../shared/task-store.js", async () => {
+    const actual = await vi.importActual("../shared/task-store.js");
+    return {
+      ...actual,
+      backendIsLocalFileBackend: () => mode === "local",
+      getTaskStore: () => store,
+    };
+  });
+
+  const mod = await import("./plan.js");
+  const output = await captureOutput(() =>
+    mod.cmdTaskPlanSet({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      text: "New plan text",
+      updatedBy: "CODER",
+    }),
+  );
+
+  return { ...output, task: currentTask, writeTask, update: store.update };
+}
+
 async function runVerifyRecordScenario(mode: BackendMode) {
   vi.resetModules();
   const baseDoc = [
@@ -553,6 +626,71 @@ async function runDocSetScenario(mode: BackendMode) {
   };
 }
 
+async function runDocShowScenario(mode: BackendMode) {
+  vi.resetModules();
+  const canonicalDoc = renderTaskDocFromSections(
+    taskDocToSectionMap(
+      [
+        "## Summary",
+        "canonical summary",
+        "",
+        "## Plan",
+        "canonical plan",
+        "",
+        "## Verify Steps",
+        "Run current checks",
+        "",
+        "## Verification",
+        "<!-- BEGIN VERIFICATION RESULTS -->",
+        "<!-- END VERIFICATION RESULTS -->",
+        "",
+        "## Findings",
+        "n/a",
+      ].join("\n"),
+    ),
+  );
+  const getTaskDoc = vi.fn(() => Promise.resolve(canonicalDoc));
+  const store = {
+    get: vi.fn(() =>
+      cloneTask(
+        mkTask({
+          doc: "## Summary\n\nstale body\n",
+          sections: taskDocToSectionMap(canonicalDoc),
+        }),
+      ),
+    ),
+  };
+  const backend = createBackend({
+    getTaskDoc,
+  });
+  const ctx = mkCtx(backend);
+
+  vi.doMock("../shared/task-store.js", async () => {
+    const actual = await vi.importActual("../shared/task-store.js");
+    return {
+      ...actual,
+      backendIsLocalFileBackend: () => mode === "local",
+      getTaskStore: () => store,
+    };
+  });
+
+  const mod = await import("./doc.js");
+  const output = await captureOutput(() =>
+    mod.cmdTaskDocShow({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      quiet: false,
+    }),
+  );
+
+  return {
+    ...output,
+    get: store.get,
+    getTaskDoc,
+  };
+}
+
 describe("task mutation parity across local and backend paths", () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -622,6 +760,21 @@ describe("task mutation parity across local and backend paths", () => {
     expect(remote.writeTask).toHaveBeenCalledTimes(1);
   });
 
+  it("keeps task plan set behavior aligned", async () => {
+    const local = await runPlanSetScenario("local");
+    const remote = await runPlanSetScenario("remote");
+
+    expect(local.result).toBe(0);
+    expect(remote.result).toBe(0);
+    expect(projectTaskMutation(local.task)).toEqual(projectTaskMutation(remote.task));
+    expect(local.task.plan_approval?.state).toBe("pending");
+    expect(remote.task.plan_approval?.state).toBe("pending");
+    expect(local.stdout).toBe(remote.stdout);
+    expect(local.stderr).toBe(remote.stderr);
+    expect(local.update).toHaveBeenCalledTimes(1);
+    expect(remote.writeTask).toHaveBeenCalledTimes(1);
+  });
+
   it("keeps task verify ok behavior aligned", async () => {
     const local = await runVerifyRecordScenario("local");
     const remote = await runVerifyRecordScenario("remote");
@@ -633,6 +786,21 @@ describe("task mutation parity across local and backend paths", () => {
     expect(local.stderr).toBe(remote.stderr);
     expect(local.update).toHaveBeenCalledTimes(1);
     expect(remote.writeTask).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps task doc show behavior aligned", async () => {
+    const local = await runDocShowScenario("local");
+    const remote = await runDocShowScenario("remote");
+
+    expect(local.result).toBe(0);
+    expect(remote.result).toBe(0);
+    expect(local.stdout).toBe(remote.stdout);
+    expect(local.stderr).toBe(remote.stderr);
+    expect(local.stdout).toContain("canonical summary");
+    expect(local.stdout).toContain("canonical plan");
+    expect(local.stdout).not.toContain("stale body");
+    expect(local.get).toHaveBeenCalledTimes(1);
+    expect(remote.getTaskDoc).toHaveBeenCalledTimes(1);
   });
 
   it("keeps task doc set behavior aligned", async () => {

@@ -436,6 +436,48 @@ describe("LocalBackend", () => {
     expect(repaired).not.toContain("stale body");
   });
 
+  it("reads canonical doc from frontmatter sections when the README body is stale", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const taskId = "202601300010-CANON";
+    await mkdir(path.join(tempDir, taskId), { recursive: true });
+    await writeFile(
+      path.join(tempDir, taskId, "README.md"),
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "Title",
+          description: "Desc",
+          status: "TODO",
+          priority: "med",
+          owner: "tester",
+          revision: 1,
+          depends_on: [],
+          tags: ["tag"],
+          verify: [],
+          plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-01-30T00:00:00Z",
+          doc_updated_by: "tester",
+          sections: {
+            Summary: "Canonical summary",
+            Plan: "Canonical plan",
+            Findings: "",
+          },
+        },
+        "## Summary\n\nstale body\n",
+      ),
+      "utf8",
+    );
+
+    const doc = await backend.getTaskDoc(taskId);
+
+    expect(doc).toContain("Canonical summary");
+    expect(doc).toContain("Canonical plan");
+    expect(doc).not.toContain("stale body");
+  });
+
   it("repairs projection drift through normalizeTasks", async () => {
     const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
     const taskId = "202601300011-ABCD";

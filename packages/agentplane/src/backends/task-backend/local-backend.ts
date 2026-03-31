@@ -354,7 +354,7 @@ export class LocalBackend implements TaskBackend {
     const readme = taskReadmePath(this.root, taskId);
     const text = await readFile(readme, "utf8");
     const parsed = parseTaskReadme(text);
-    validateTaskReadmeFrontmatter(
+    const frontmatter = validateTaskReadmeFrontmatter(
       withTaskReadmeFrontmatterDefaults({
         ...parsed.frontmatter,
         id:
@@ -363,7 +363,14 @@ export class LocalBackend implements TaskBackend {
             : taskId,
       }),
     );
-    return extractTaskDoc(parsed.body);
+    return (
+      taskRecordToData({
+        id: taskId,
+        frontmatter: frontmatter as unknown as TaskRecord["frontmatter"],
+        body: parsed.body,
+        readmePath: readme,
+      }).doc ?? ""
+    );
   }
 
   async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
