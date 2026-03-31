@@ -1,10 +1,11 @@
 ---
 id: "202603311331-NERBXG"
 title: "N3.3 Move `finish`, `finish-shared`, `close-shared`, and `verify-record` onto the executor"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-NERBXG/move-finish-close-verify-onto-executor"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T16:29:14.764Z"
   updated_by: "CODER"
   note: "Moved terminal lifecycle writes onto shared transition executors: finish/close now reuse the shared DONE transition executor and verify-record uses a shared verification executor; verified with focused finish/verify/close/shared unit suites, local-vs-remote parity, lint, and agentplane build."
-commit: null
+commit:
+  hash: "2a99410becf5c190076ce78831b11f30c7c77e72"
+  message: "📝 NERBXG task: finalize PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: move finish, finish-shared, close-shared, and verify-record onto the shared transition executor so terminal lifecycle transitions stop carrying their own duplicated status and transition orchestration before comment-commit convergence lands."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-NERBXG/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Moved terminal lifecycle writes onto shared transition executors: finish/close now reuse the shared DONE transition executor and verify-record uses a shared verification executor; verified with focused finish/verify/close/shared unit suites, local-vs-remote parity, lint, and agentplane build."
+  -
+    type: "status"
+    at: "2026-03-31T16:30:20.312Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-NERBXG/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T16:29:14.766Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T16:30:20.314Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N3.3 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: terminal lifecycle transitions no longer duplicate the same orchestration in separate modules. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
