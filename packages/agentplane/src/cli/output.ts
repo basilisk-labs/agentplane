@@ -20,6 +20,14 @@ export type CliEmitter = {
   line: (text: string, stream?: CliEmitterStream) => void;
   lines: (lines: Iterable<string>, stream?: CliEmitterStream) => void;
   json: (value: unknown, stream?: CliEmitterStream) => void;
+  jsonSection: (
+    label: string,
+    value: unknown,
+    options?: {
+      indent?: string;
+      stream?: CliEmitterStream;
+    },
+  ) => void;
   report: (entries: Iterable<CliReportEntry>, options?: CliReportOptions) => void;
   info: (message: string, stream?: CliEmitterStream) => void;
   warn: (message: string, stream?: CliEmitterStream) => void;
@@ -110,27 +118,30 @@ export function workflowModeMessage(actual: string | undefined, expected: string
   return `Invalid workflow_mode: ${actual ?? "unknown"} (expected ${expected})`;
 }
 
-export function renderPrettyJson(value: unknown): string {
+function renderPrettyJson(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
-export function renderTextLine(text: string): string {
+function renderTextLine(text: string): string {
   return ensureTrailingNewline(text);
 }
 
-export function renderTextLines(lines: Iterable<string>): string {
+function renderTextLines(lines: Iterable<string>): string {
   return Array.from(lines, renderTextLine).join("");
 }
 
-export function renderReportBlock(
-  entries: Iterable<CliReportEntry>,
-  options?: CliReportOptions,
-): string {
+function renderReportBlock(entries: Iterable<CliReportEntry>, options?: CliReportOptions): string {
   const lines = options?.header ? [options.header] : [];
   for (const entry of entries) {
     lines.push(renderReportLine(entry));
   }
   return renderTextLines(lines);
+}
+
+function renderJsonSectionBlock(label: string, value: unknown, indent: string): string | null {
+  const payload = renderPrettyJson(value);
+  if (!payload) return null;
+  return renderTextLines([`${label}:`, ...payload.split("\n").map((line) => `${indent}${line}`)]);
 }
 
 export function createCliEmitter(streams?: {
@@ -152,6 +163,19 @@ export function createCliEmitter(streams?: {
     line(renderPrettyJson(value), stream);
   };
 
+  const jsonSection = (
+    label: string,
+    value: unknown,
+    options?: {
+      indent?: string;
+      stream?: CliEmitterStream;
+    },
+  ): void => {
+    const block = renderJsonSectionBlock(label, value, options?.indent ?? "  ");
+    if (!block) return;
+    writeChunk(resolveWriter(stdout, stderr, options?.stream ?? "stdout"), block);
+  };
+
   const report = (entries: Iterable<CliReportEntry>, options?: CliReportOptions): void => {
     writeChunk(
       resolveWriter(stdout, stderr, options?.stream ?? "stdout"),
@@ -163,6 +187,7 @@ export function createCliEmitter(streams?: {
     line,
     lines,
     json,
+    jsonSection,
     report,
     info: (message: string, stream: CliEmitterStream = "stdout") => {
       line(infoMessage(message), stream);

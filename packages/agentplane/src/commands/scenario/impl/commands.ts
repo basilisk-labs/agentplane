@@ -9,7 +9,6 @@ import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { fileExists } from "../../../cli/fs-utils.js";
 import { createCliEmitter, emptyStateMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
-import { formatJsonBlock } from "../../recipes/impl/format.js";
 import {
   listResolvedRecipeScenarios,
   readProjectInstalledRecipes,
@@ -29,12 +28,6 @@ type RecipeToolInvocation = {
 };
 
 type ScenarioCliSelection = Awaited<ReturnType<typeof resolveRecipeScenarioSelection>>;
-
-function printJsonSection(label: string, value: unknown): void {
-  const payload = formatJsonBlock(value, "  ");
-  if (!payload) return;
-  output.lines([`${label}:`, ...payload.split("\n")]);
-}
 
 function buildScenarioNotFoundError(recipeId: string, scenarioId: string): CliError {
   return new CliError({
@@ -275,17 +268,17 @@ export async function cmdScenarioInfoParsed(opts: {
     if (selection.scenario_description) {
       output.line(`Description: ${selection.scenario_description}`);
     }
-    printJsonSection("Use when", selection.use_when);
+    output.jsonSection("Use when", selection.use_when);
     if (selection.avoid_when.length > 0) {
-      printJsonSection("Avoid when", selection.avoid_when);
+      output.jsonSection("Avoid when", selection.avoid_when);
     }
-    printJsonSection("Run profile", selection.run_profile);
-    printJsonSection("Task template", selection.task_template);
+    output.jsonSection("Run profile", selection.run_profile);
+    output.jsonSection("Task template", selection.task_template);
     output.line(`Scenario file: ${path.relative(project.gitRoot, selection.scenario_file)}`);
     if (selection.compatibility.ok) {
       output.line("Compatibility: satisfied");
     } else {
-      printJsonSection("Compatibility failures", selection.compatibility.failures);
+      output.jsonSection("Compatibility failures", selection.compatibility.failures);
     }
     return 0;
   } catch (err) {
@@ -374,9 +367,9 @@ export async function cmdScenarioRunParsed(opts: {
     );
     output.line(`Goal: ${scenarioDefinition.goal}`);
     output.line(`Scenario file: ${path.relative(project.gitRoot, selection.scenario_file)}`);
-    printJsonSection("Run profile", selection.run_profile);
-    printJsonSection("Selection reasons", selection.selection_reasons);
-    printJsonSection("Validation", [
+    output.jsonSection("Run profile", selection.run_profile);
+    output.jsonSection("Selection reasons", selection.selection_reasons);
+    output.jsonSection("Validation", [
       `scenario definition ok: ${path.relative(project.gitRoot, selection.scenario_file)}`,
       ...validationChecks,
     ]);

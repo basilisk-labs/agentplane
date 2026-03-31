@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603311331-C3JHD2/delete-obsolete-render-helpers",
+  "created_at": "2026-03-31T17:19:44.723Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603311331-C3JHD2",
+  "updated_at": "2026-03-31T17:20:03.231Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

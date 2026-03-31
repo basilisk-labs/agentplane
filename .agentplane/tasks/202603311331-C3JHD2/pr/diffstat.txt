@@ -1,0 +1,10 @@
+ .agentplane/tasks/202603311331-C3JHD2/README.md    | 58 +++++++++++++++++-----
+ .../tasks/202603311331-C3JHD2/pr/diffstat.txt      |  0
+ .agentplane/tasks/202603311331-C3JHD2/pr/meta.json | 12 +++++
+ .agentplane/tasks/202603311331-C3JHD2/pr/review.md | 22 ++++++++
+ .../tasks/202603311331-C3JHD2/pr/verify.log        |  0
+ docs/developer/cli-contract.mdx                    | 21 ++++++--
+ packages/agentplane/src/cli/output.test.ts         | 32 +++---------
+ packages/agentplane/src/cli/output.ts              | 39 ++++++++++++---
+ .../src/commands/scenario/impl/commands.ts         | 23 +++------
+ 9 files changed, 144 insertions(+), 63 deletions(-)
