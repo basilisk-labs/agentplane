@@ -37,7 +37,6 @@ import {
   resolveDocUpdatedByFromFrontmatter,
   resolveDocUpdatedByFromTask,
   taskRecordToData,
-  toTaskSummaries,
   validateTaskId,
   writeTasksExportFromTasks,
   BackendError,
@@ -118,8 +117,13 @@ export class LocalBackend implements TaskBackend {
     });
   }
 
-  async listTasks(): Promise<TaskData[]> {
-    const tasks: TaskData[] = [];
+  private async listTasksInternal(mode: "full"): Promise<TaskData[]>;
+  private async listTasksInternal(mode: "projection"): Promise<TaskSummary[]>;
+  private async listTasksInternal(
+    mode: "full" | "projection",
+  ): Promise<TaskData[] | TaskSummary[]> {
+    const projectionOnly = mode === "projection";
+    const tasks: (TaskData | TaskSummary)[] = [];
     const warnings: string[] = [];
     const entries = await readdir(this.root, { withFileTypes: true }).catch(() => []);
     const indexPath = resolveTaskIndexPath(this.root);
@@ -143,10 +147,8 @@ export class LocalBackend implements TaskBackend {
       .toSorted();
 
     type ListTaskResult = {
-      task: TaskData;
-      index: TaskIndexEntry | null;
-      mtimeMs: number;
-      readme: string;
+      output: TaskData | TaskSummary;
+      index: TaskIndexEntry;
     };
 
     const results = await mapLimit<string, ListTaskResult | null>(dirs, 32, async (dirName) => {
@@ -161,10 +163,12 @@ export class LocalBackend implements TaskBackend {
       if (!stats.isFile()) return null;
 
       const cached = cachedEntryByPath.get(readme);
-      if (cached?.mtimeMs === stats.mtimeMs) {
-        return { task: cached.task, index: cached, mtimeMs: stats.mtimeMs, readme };
+      if (projectionOnly && cached?.mtimeMs === stats.mtimeMs) {
+        return { output: cached.task, index: cached };
       }
-      indexDirty = true;
+      if (cached?.mtimeMs !== stats.mtimeMs) {
+        indexDirty = true;
+      }
 
       let text = "";
       try {
@@ -205,22 +209,25 @@ export class LocalBackend implements TaskBackend {
         body: parsed.body,
         readmePath: readme,
       });
-      return { task, index: null, mtimeMs: stats.mtimeMs, readme };
+      const entry = buildTaskIndexEntry(task, readme, stats.mtimeMs);
+      return {
+        output: projectionOnly ? entry.task : task,
+        index: entry,
+      };
     });
 
     for (const res of results) {
       if (!res) continue;
-      const taskId = res.task.id.trim();
+      const taskId = res.index.task.id.trim();
       if (taskId) {
         validateTaskId(taskId);
         if (seen.has(taskId)) throw new Error(`Duplicate task id in local backend: ${taskId}`);
         seen.add(taskId);
       }
-      tasks.push(res.task);
+      tasks.push(res.output);
       if (taskId) {
-        const entry = res.index ?? buildTaskIndexEntry(res.task, res.readme, res.mtimeMs);
-        nextById[taskId] = entry;
-        nextByPath[entry.readmePath] = taskId;
+        nextById[taskId] = res.index;
+        nextByPath[res.index.readmePath] = taskId;
       }
     }
 
@@ -251,8 +258,12 @@ export class LocalBackend implements TaskBackend {
     return tasks;
   }
 
+  async listTasks(): Promise<TaskData[]> {
+    return await this.listTasksInternal("full");
+  }
+
   async listProjectionTasks(): Promise<TaskSummary[]> {
-    return toTaskSummaries(await this.listTasks());
+    return await this.listTasksInternal("projection");
   }
 
   getLastListWarnings(): string[] {

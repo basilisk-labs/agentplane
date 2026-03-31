@@ -1,0 +1,4 @@
+ .agentplane/tasks/202603301857-CD83AZ/README.md    | 60 ++++++++++++----
+ .../src/backends/task-backend.local.test.ts        | 79 +++++++++++++++++++++-
+ .../src/backends/task-backend/local-backend.ts     | 45 +++++++-----
+ 3 files changed, 152 insertions(+), 32 deletions(-)

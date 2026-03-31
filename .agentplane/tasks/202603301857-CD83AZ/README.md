@@ -1,10 +1,10 @@
 ---
 id: "202603301857-CD83AZ"
 title: "Implement a real local-backend `listProjectionTasks()` fast path"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -15,21 +15,37 @@ tags:
   - "backend"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-31T09:32:22.254Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approve R2.2 local-backend projection fast path using task index cache with safe README fallback on misses or invalidation."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T09:37:17.897Z"
+  updated_by: "CODER"
+  note: "Focused vitest slice passed for local projection fast path and full-read separation; agentplane build and eslint passed on touched backend files."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: split projection and full-read paths in LocalBackend so summary reads use the task index and full reads stay canonical."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T09:34:32.035Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split projection and full-read paths in LocalBackend so summary reads use the task index and full reads stay canonical."
+  -
+    type: "verify"
+    at: "2026-03-31T09:37:17.897Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused vitest slice passed for local projection fast path and full-read separation; agentplane build and eslint passed on touched backend files."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:57:01.147Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T09:37:17.900Z"
+doc_updated_by: "CODER"
 description: "Implement Epic 2 / R2.2 from REFACTOR.md. summary reads hit the task index on cache hit and only parse README files on cache miss or invalidation."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: summary reads hit the task index on cache hit and only parse README files on cache miss or invalidation.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T09:37:17.897Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused vitest slice passed for local projection fast path and full-read separation; agentplane build and eslint passed on touched backend files.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T09:34:32.037Z, excerpt_hash=sha256:8ceee98a60cd20893014f757f2bb0c0e4f9c0e9b9f67d7b5dd5b31d998091dd3
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +106,14 @@ Implement Epic 2 / R2.2 from REFACTOR.md. summary reads hit the task index on ca
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T09:37:17.897Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused vitest slice passed for local projection fast path and full-read separation; agentplane build and eslint passed on touched backend files.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T09:34:32.037Z, excerpt_hash=sha256:8ceee98a60cd20893014f757f2bb0c0e4f9c0e9b9f67d7b5dd5b31d998091dd3
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
