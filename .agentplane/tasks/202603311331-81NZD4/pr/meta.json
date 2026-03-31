@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311331-81NZD4/remaining-nonlifecycle-mutators",
   "created_at": "2026-03-31T16:03:47.496Z",
+  "head_sha": "d38f958ede356f585d19dbf69deaf5701fedc704",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "08f4a1333849466fa4bb76a92d2d9a894552a831",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T16:05:54.340Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311331-81NZD4",
-  "updated_at": "2026-03-31T16:04:37.492Z",
+  "updated_at": "2026-03-31T16:05:54.340Z",
   "verify": {
     "status": "skipped"
   }
