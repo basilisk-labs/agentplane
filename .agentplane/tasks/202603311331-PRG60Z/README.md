@@ -1,10 +1,11 @@
 ---
 id: "202603311331-PRG60Z"
 title: "N1.3 Move task run/handoff/reclaim/show output onto the shared emitters"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-PRG60Z/migrate-task-run-handoff-emitters"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-31T14:32:56.435Z"
   updated_by: "CODER"
   note: "Focused verify passed in worktree: bunx vitest run packages/agentplane/src/cli/output.test.ts packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --testNamePattern 'renders reusable line, JSON, and report blocks|creates an emitter that routes text, JSON, warnings, and reports|task reclaim records a deterministic handoff for a task without runner state|task handoff record/show/resume-context reuse the latest failed runner state|task run show, trace, and tail inspect the latest persisted run without manual file reads|task run cancel marks an existing prepared execute-mode run as cancelled|task run resume executes an existing prepared run in place|task run retry creates a fresh run from a failed run snapshot'. Diff stayed within targeted commands plus focused CLI contract test. task verify-show reported watched_runtime_snapshot drift; verify evidence recorded via AGENTPLANE_DEV_ALLOW_STALE_DIST=1 to avoid unrelated bootstrap output changes."
-commit: null
+commit:
+  hash: "16e9c99a68f580dbfcf3766ca25bbc3fa3298fa0"
+  message: "📝 PRG60Z task: add PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: move task run/handoff/reclaim/show command families onto the shared emitter primitives so status reports and JSON paths stop duplicating line-by-line output logic."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-PRG60Z/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused verify passed in worktree: bunx vitest run packages/agentplane/src/cli/output.test.ts packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --testNamePattern 'renders reusable line, JSON, and report blocks|creates an emitter that routes text, JSON, warnings, and reports|task reclaim records a deterministic handoff for a task without runner state|task handoff record/show/resume-context reuse the latest failed runner state|task run show, trace, and tail inspect the latest persisted run without manual file reads|task run cancel marks an existing prepared execute-mode run as cancelled|task run resume executes an existing prepared run in place|task run retry creates a fresh run from a failed run snapshot'. Diff stayed within targeted commands plus focused CLI contract test. task verify-show reported watched_runtime_snapshot drift; verify evidence recorded via AGENTPLANE_DEV_ALLOW_STALE_DIST=1 to avoid unrelated bootstrap output changes."
+  -
+    type: "status"
+    at: "2026-03-31T14:38:03.460Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-PRG60Z/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T14:32:56.442Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T14:38:03.463Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N1.3 from REFACTOR.md. Replace the current scattered output/render patterns with one small shared emission layer for user-facing command output.. Acceptance: key/value status blocks no longer hand-roll line-by-line writes in each command. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
