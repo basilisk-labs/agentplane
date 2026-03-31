@@ -1,10 +1,11 @@
 ---
 id: "202603301857-DMYRDF"
 title: "Collapse low-value wrappers with tests still green"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-DMYRDF/collapse-runtime-dead-wrappers"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T12:15:15.109Z"
   updated_by: "CODER"
   note: "Focused verification passed for wrapper collapse and import cleanup."
-commit: null
+commit:
+  hash: "3c68f3eccf9eca1fdace338f6a92f266a8f9ea0f"
+  message: "🧩 DMYRDF integrate: squash task/202603301857-DMYRDF/collapse-runtime-dead-wrappers"
 comments:
   -
     author: "CODER"
     body: "Start: remove runtime-dead alias wrappers from the audited shortlist and retarget remaining test-only imports without changing live command dispatch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-DMYRDF/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused verification passed for wrapper collapse and import cleanup."
+  -
+    type: "status"
+    at: "2026-03-31T12:17:14.903Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-DMYRDF/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T12:15:15.112Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T12:17:14.909Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 5 / R5.4 from REFACTOR.md. purely pass-through files are removed or merged, and module boundaries that remain have a documented reason."
 sections:
   Summary: |-

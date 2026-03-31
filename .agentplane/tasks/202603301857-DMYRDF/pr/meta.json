@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301857-DMYRDF/collapse-runtime-dead-wrappers",
   "created_at": "2026-03-31T12:16:06.629Z",
+  "head_sha": "549b4c5676cc6109b54a3b91af6696f9ed2c825a",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "3c68f3eccf9eca1fdace338f6a92f266a8f9ea0f",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T12:17:14.854Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301857-DMYRDF",
-  "updated_at": "2026-03-31T12:16:14.580Z",
+  "updated_at": "2026-03-31T12:17:14.854Z",
   "verify": {
     "status": "skipped"
   }
