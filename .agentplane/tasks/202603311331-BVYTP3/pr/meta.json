@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603311331-BVYTP3/mutable-task-bridge",
+  "created_at": "2026-03-31T15:15:29.565Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603311331-BVYTP3",
+  "updated_at": "2026-03-31T15:15:35.780Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

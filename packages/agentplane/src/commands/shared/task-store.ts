@@ -97,7 +97,7 @@ export type TaskStoreIntent =
       version?: 2 | 3;
     };
 
-type TaskStoreIntentResult = TaskStoreIntent | readonly TaskStoreIntent[] | null | undefined;
+export type TaskStoreIntentResult = TaskStoreIntent | readonly TaskStoreIntent[] | null | undefined;
 
 export type TaskStoreMutationOptions = {
   expectedRevision?: number;
@@ -412,16 +412,24 @@ export async function mutateTaskStore(
   );
 }
 
-function applyTaskStoreIntents(entry: CachedTask, intents: TaskStoreIntent[]): TaskData {
-  if (intents.length === 0) return { ...entry.task };
+export function applyTaskStoreIntentsToTask(
+  task: TaskData,
+  intents: TaskStoreIntentResult,
+  opts: {
+    currentDocVersion?: 2 | 3;
+    docUpdatedAt?: string;
+  } = {},
+): TaskData {
+  const normalizedIntents = normalizeTaskStoreIntents(intents);
+  if (normalizedIntents.length === 0) return { ...task };
 
-  const current = entry.task;
+  const current = task;
   const next: TaskData = { ...current };
   let touchDoc = false;
   let docMetaUpdatedBy: string | undefined;
   let docMetaVersion: 2 | 3 | undefined;
 
-  for (const intent of intents) {
+  for (const intent of normalizedIntents) {
     switch (intent.kind) {
       case "set-task-fields": {
         Object.assign(next, intent.task);
@@ -483,16 +491,22 @@ function applyTaskStoreIntents(entry: CachedTask, intents: TaskStoreIntent[]): T
   }
 
   if (touchDoc) {
-    const currentDocVersion = normalizeTaskDocVersion(entry.parsed.frontmatter.doc_version);
+    const currentDocVersion = normalizeTaskDocVersion(opts.currentDocVersion ?? task.doc_version);
     next.doc_version = normalizeTaskDocVersion(
       docMetaVersion ?? next.doc_version,
       currentDocVersion,
     );
-    next.doc_updated_at = new Date().toISOString();
+    next.doc_updated_at = opts.docUpdatedAt ?? new Date().toISOString();
     next.doc_updated_by = docMetaUpdatedBy ?? resolveDocUpdatedBy(next);
   }
 
   return next;
+}
+
+function applyTaskStoreIntents(entry: CachedTask, intents: TaskStoreIntent[]): TaskData {
+  return applyTaskStoreIntentsToTask(entry.task, intents, {
+    currentDocVersion: normalizeTaskDocVersion(entry.parsed.frontmatter.doc_version),
+  });
 }
 
 async function readTaskReadmeCached(opts: {

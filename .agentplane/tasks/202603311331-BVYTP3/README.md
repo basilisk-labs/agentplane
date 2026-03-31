@@ -1,10 +1,10 @@
 ---
 id: "202603311331-BVYTP3"
 title: "N2.2 Introduce a shared mutable-task bridge"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -20,16 +20,32 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T15:14:53.135Z"
+  updated_by: "CODER"
+  note: "Introduced a shared single-task mutation bridge plus public intent-to-task application seam; verified with bunx eslint packages/agentplane/src/commands/shared/task-backend.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/shared/task-store.ts and bunx vitest run packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/shared/task-store.test.ts."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: introduce one shared mutable-task bridge so task mutators stop branching on local store vs backend reads/writes for single-task updates."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T15:01:55.873Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: introduce one shared mutable-task bridge so task mutators stop branching on local store vs backend reads/writes for single-task updates."
+  -
+    type: "verify"
+    at: "2026-03-31T15:14:53.135Z"
+    author: "CODER"
+    state: "ok"
+    note: "Introduced a shared single-task mutation bridge plus public intent-to-task application seam; verified with bunx eslint packages/agentplane/src/commands/shared/task-backend.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/shared/task-store.ts and bunx vitest run packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/shared/task-store.test.ts."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:31:21.172Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T15:14:53.137Z"
+doc_updated_by: "CODER"
 description: "Implement N2.2 from REFACTOR.md. Hide local-store vs backend branching behind shared mutation helpers and remove repeated bulk-write fallback logic.. Acceptance: one helper can load and persist a task mutation without each command branching on backend type. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: one helper can load and persist a task mutation without each command branching on backend type.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T15:14:53.135Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Introduced a shared single-task mutation bridge plus public intent-to-task application seam; verified with bunx eslint packages/agentplane/src/commands/shared/task-backend.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/shared/task-store.ts and bunx vitest run packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/shared/task-store.test.ts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T15:01:55.874Z, excerpt_hash=sha256:a71fc081568a315a01b83c4d68bdb087494fe272154da5ce2e35c704224e13f0
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +106,14 @@ Implement N2.2 from REFACTOR.md. Hide local-store vs backend branching behind sh
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T15:14:53.135Z — VERIFY — ok
+
+By: CODER
+
+Note: Introduced a shared single-task mutation bridge plus public intent-to-task application seam; verified with bunx eslint packages/agentplane/src/commands/shared/task-backend.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/shared/task-store.ts and bunx vitest run packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/shared/task-store.test.ts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T15:01:55.874Z, excerpt_hash=sha256:a71fc081568a315a01b83c4d68bdb087494fe272154da5ce2e35c704224e13f0
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

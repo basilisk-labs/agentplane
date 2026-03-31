@@ -1,0 +1,5 @@
+ .agentplane/tasks/202603311331-BVYTP3/README.md    |  52 ++++-
+ .../src/commands/shared/task-mutation.test.ts      | 238 +++++++++++++++++++++
+ .../src/commands/shared/task-mutation.ts           |  64 ++++++
+ .../agentplane/src/commands/shared/task-store.ts   |  28 ++-
+ 4 files changed, 365 insertions(+), 17 deletions(-)
