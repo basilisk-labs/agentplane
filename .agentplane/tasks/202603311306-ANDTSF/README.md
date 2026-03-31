@@ -1,10 +1,11 @@
 ---
 id: "202603311306-ANDTSF"
 title: "Refresh REFACTOR.md from a fresh code map and refactor wave"
-status: "DOING"
+result_summary: "integrate: squash task/202603311306-ANDTSF/refresh-refactor-backlog"
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-03-31T13:19:23.145Z"
   updated_by: "PLANNER"
   note: "Verified REFACTOR.md refresh with current code-map evidence; checks passed: node .agentplane/policy/check-routing.mjs and agentplane doctor."
-commit: null
+commit:
+  hash: "1eb13af158ad5e6e845c88f7b39c1cda222a8392"
+  message: "🧩 ANDTSF integrate: squash task/202603311306-ANDTSF/refresh-refactor-backlog"
 comments:
   -
     author: "PLANNER"
     body: "Start: refresh REFACTOR.md with a new code map, duplication analysis, and executable refactor wave."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311306-ANDTSF/pr."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Verified REFACTOR.md refresh with current code-map evidence; checks passed: node .agentplane/policy/check-routing.mjs and agentplane doctor."
+  -
+    type: "status"
+    at: "2026-03-31T13:22:55.236Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311306-ANDTSF/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:19:23.152Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T13:22:55.238Z"
+doc_updated_by: "INTEGRATOR"
 description: "Docs-only: replace the stale completed REFACTOR backlog with a new codebase map, duplication analysis, and executable next-wave refactor plan."
 sections:
   Summary: |-

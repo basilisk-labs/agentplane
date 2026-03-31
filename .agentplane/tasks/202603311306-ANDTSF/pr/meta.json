@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311306-ANDTSF/refresh-refactor-backlog",
   "created_at": "2026-03-31T13:20:35.485Z",
+  "head_sha": "34161c69c62e37ab32912df0e0cb1df752829284",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "1eb13af158ad5e6e845c88f7b39c1cda222a8392",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T13:22:55.215Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311306-ANDTSF",
-  "updated_at": "2026-03-31T13:20:45.678Z",
+  "updated_at": "2026-03-31T13:22:55.215Z",
   "verify": {
     "status": "skipped"
   }
