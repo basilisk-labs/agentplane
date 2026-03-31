@@ -1,10 +1,11 @@
 ---
 id: "202603300819-XDDCB4"
 title: "Lock current CLI read-surface behavior with contract tests"
-status: "DOING"
+result_summary: "Merged via PR #57."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-31T10:00:06.727Z"
   updated_by: "CODER"
   note: "Re-verified after rebasing onto local refactor wave; targeted vitest contracts passed."
-commit: null
+commit:
+  hash: "5f6132e403123586dae87f3b1abbc4680885c647"
+  message: "CLI contracts: lock help and task query behavior (#57)"
 comments:
   -
     author: "CODER"
     body: "Start: add behavior-locking tests for help routing, task list/search/next output, and agent_json_v1 output so the next CLI refactor wave can proceed under a stable contract."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #57 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Re-verified after rebasing onto local refactor wave; targeted vitest contracts passed."
+  -
+    type: "status"
+    at: "2026-03-31T10:16:50.847Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #57 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-03-31T10:00:06.732Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T10:16:50.855Z"
+doc_updated_by: "INTEGRATOR"
 description: "Start Epic 0 by adding behavior-locking tests for help routing, task list/search/next output, and JSON output contracts so the next CLI refactor wave can remove duplicate infrastructure safely."
 sections:
   Summary: |-
