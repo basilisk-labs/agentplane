@@ -1,0 +1,3 @@
+ .agentplane/tasks/202603311331-Y8QMNA/README.md    |  58 +-
+ .../src/commands/task/mutation-parity.unit.test.ts | 717 +++++++++++++++++++++
+ 2 files changed, 762 insertions(+), 13 deletions(-)

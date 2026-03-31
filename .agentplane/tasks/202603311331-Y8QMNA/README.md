@@ -1,10 +1,10 @@
 ---
 id: "202603311331-Y8QMNA"
 title: "N0.2 Add local-backend vs non-local-backend parity tests for task mutation commands"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -15,21 +15,37 @@ tags:
   - "tests"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T14:11:09.940Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T14:26:17.880Z"
+  updated_by: "CODER"
+  note: "Added parity suite for task comment/block/start/set-status/verify/doc set across local-file and non-local backends; verified with bunx eslint packages/agentplane/src/commands/task/mutation-parity.unit.test.ts and bunx vitest run packages/agentplane/src/commands/task/mutation-parity.unit.test.ts."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: lock parity contracts for representative task mutation commands across local-file and non-local backends before the bridge work in N2 deletes backend-specific branching."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T14:11:50.262Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: lock parity contracts for representative task mutation commands across local-file and non-local backends before the bridge work in N2 deletes backend-specific branching."
+  -
+    type: "verify"
+    at: "2026-03-31T14:26:17.880Z"
+    author: "CODER"
+    state: "ok"
+    note: "Added parity suite for task comment/block/start/set-status/verify/doc set across local-file and non-local backends; verified with bunx eslint packages/agentplane/src/commands/task/mutation-parity.unit.test.ts and bunx vitest run packages/agentplane/src/commands/task/mutation-parity.unit.test.ts."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:31:12.912Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T14:26:17.884Z"
+doc_updated_by: "CODER"
 description: "Implement N0.2 from REFACTOR.md. Lock the behavior that the next refactor wave is most likely to disturb: output formatting, local-vs-remote task mutation parity, and task-doc mutation semantics.. Acceptance: the same high-level mutation contract is asserted against both storage paths. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: the same high-level mutation contract is asserted against both storage paths.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T14:26:17.880Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Added parity suite for task comment/block/start/set-status/verify/doc set across local-file and non-local backends; verified with bunx eslint packages/agentplane/src/commands/task/mutation-parity.unit.test.ts and bunx vitest run packages/agentplane/src/commands/task/mutation-parity.unit.test.ts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T14:11:50.263Z, excerpt_hash=sha256:00df574ca41aea42077a2be7176511432f9a97c07f13086e4a02919f404bef09
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +106,14 @@ Implement N0.2 from REFACTOR.md. Lock the behavior that the next refactor wave i
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T14:26:17.880Z — VERIFY — ok
+
+By: CODER
+
+Note: Added parity suite for task comment/block/start/set-status/verify/doc set across local-file and non-local backends; verified with bunx eslint packages/agentplane/src/commands/task/mutation-parity.unit.test.ts and bunx vitest run packages/agentplane/src/commands/task/mutation-parity.unit.test.ts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T14:11:50.263Z, excerpt_hash=sha256:00df574ca41aea42077a2be7176511432f9a97c07f13086e4a02919f404bef09
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
