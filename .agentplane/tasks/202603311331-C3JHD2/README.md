@@ -1,10 +1,11 @@
 ---
 id: "202603311331-C3JHD2"
 title: "N1.5 Delete obsolete ad-hoc render helpers and document the output conventions"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-C3JHD2/delete-obsolete-render-helpers"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-03-31T17:19:11.166Z"
   updated_by: "CODER"
   note: "Emitter cleanup verified with focused eslint, output/scenario vitest suites, package build, and diff scope audit; the shared output contract is now documented around the emitter API and the obsolete scenario-local JSON section helper is gone."
-commit: null
+commit:
+  hash: "946f7996f1053035f6e7bcf0271bc8beb10ad071"
+  message: "📝 C3JHD2 task: finalize PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: delete the remaining ad-hoc render helpers, keep the shared emitter contract as the only user-facing output path, and document the surviving conventions where future command work can follow one model."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-C3JHD2/pr."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Emitter cleanup verified with focused eslint, output/scenario vitest suites, package build, and diff scope audit; the shared output contract is now documented around the emitter API and the obsolete scenario-local JSON section helper is gone."
+  -
+    type: "status"
+    at: "2026-03-31T17:20:41.274Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-C3JHD2/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T17:19:11.170Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T17:20:41.280Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N1.5 from REFACTOR.md. Replace the current scattered output/render patterns with one small shared emission layer for user-facing command output.. Acceptance: duplicate render helpers are removed and the new output conventions are documented. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
