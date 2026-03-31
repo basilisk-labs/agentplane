@@ -1,10 +1,10 @@
  .agentplane/tasks/202603311332-75NADP/README.md    |  58 +++++--
- .../tasks/202603311332-75NADP/pr/diffstat.txt      |   0
+ .../tasks/202603311332-75NADP/pr/diffstat.txt      |  10 ++
  .agentplane/tasks/202603311332-75NADP/pr/meta.json |  12 ++
- .agentplane/tasks/202603311332-75NADP/pr/review.md |  22 +++
+ .agentplane/tasks/202603311332-75NADP/pr/review.md |  38 +++++
  .../tasks/202603311332-75NADP/pr/verify.log        |   0
  .../src/backends/task-backend.local.test.ts        |  42 ++++++
  .../src/backends/task-backend/local-backend.ts     |  11 +-
  .../src/commands/shared/task-store.test.ts         |  45 ++++++
  .../src/commands/task/mutation-parity.unit.test.ts | 168 +++++++++++++++++++++
- 9 files changed, 343 insertions(+), 15 deletions(-)
+ 9 files changed, 369 insertions(+), 15 deletions(-)

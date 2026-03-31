@@ -1,10 +1,11 @@
 ---
 id: "202603311332-75NADP"
 title: "N4.5 Lock doc-path parity with tests"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-75NADP/doc-path-parity-tests"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-03-31T18:36:04.537Z"
   updated_by: "CODER"
   note: "Command: bunx eslint packages/agentplane/src/backends/task-backend/local-backend.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts; Result: pass; Evidence: 0 lint errors on the narrowed doc-parity diff; Scope: local-backend canonical doc reads plus backend/task-store/command parity locks. Command: bunx vitest run packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts; Result: pass; Evidence: 6 files, 89 tests passed; Scope: doc set/show/plan/verify parity and canonical doc regeneration. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0; Scope: compile safety for the local-backend doc read change."
-commit: null
+commit:
+  hash: "40bc3e30112f471afd172c5f583433984601fc62"
+  message: "🧾 75NADP task: finalize PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: lock doc-path parity with focused tests across local and non-local doc mutation flows, delete representational mismatches instead of preserving them, and keep the diff centered on command/backend/test contracts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-75NADP/pr."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx eslint packages/agentplane/src/backends/task-backend/local-backend.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts; Result: pass; Evidence: 0 lint errors on the narrowed doc-parity diff; Scope: local-backend canonical doc reads plus backend/task-store/command parity locks. Command: bunx vitest run packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts; Result: pass; Evidence: 6 files, 89 tests passed; Scope: doc set/show/plan/verify parity and canonical doc regeneration. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0; Scope: compile safety for the local-backend doc read change."
+  -
+    type: "status"
+    at: "2026-03-31T18:38:19.895Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-75NADP/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T18:36:04.541Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T18:38:19.900Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N4.5 from REFACTOR.md. Remove the current duplication between core task-doc primitives, the local task store, and backend doc mutation paths.. Acceptance: doc set/show/plan/verify flows prove parity across local and non-local paths. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
