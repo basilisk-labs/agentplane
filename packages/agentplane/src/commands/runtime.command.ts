@@ -1,5 +1,6 @@
 import { loadConfig, resolveProject } from "@agentplaneorg/core";
 
+import { createCliEmitter } from "../cli/output.js";
 import type { CommandHandler, CommandSpec } from "../cli/spec/spec.js";
 import {
   loadDirectSubcommandNames,
@@ -24,6 +25,8 @@ import {
   resolveRuntimeSourceInfo,
   type RuntimeSourceInfo,
 } from "../shared/runtime-source.js";
+
+const output = createCliEmitter();
 
 export type FrameworkDevWorkflow = {
   available: boolean;
@@ -226,10 +229,10 @@ export const runRuntimeExplain: CommandHandler<RuntimeExplainParsed> = (ctx, p) 
   }).then((repoCliExpectation) => {
     const payload = { ...buildRuntimeExplainPayload(report), repoCliExpectation };
     if (p.json) {
-      process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+      output.json(payload);
       return 0;
     }
-    process.stdout.write(`${renderRuntimeExplainText(report, repoCliExpectation)}\n`);
+    output.line(renderRuntimeExplainText(report, repoCliExpectation));
     return 0;
   });
 };

@@ -3,11 +3,14 @@ import path from "node:path";
 
 import { buildExecutionProfile, loadConfig, saveConfig, setByDottedKey } from "@agentplaneorg/core";
 
+import { createCliEmitter } from "../../output.js";
 import { usageError } from "../../spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { ensureWorkflowArtifacts } from "../../../shared/workflow-artifacts.js";
 import type { RunDeps } from "../command-catalog.js";
 import { wrapCommand } from "./wrap-command.js";
+
+const output = createCliEmitter();
 
 type ConfigShowParsed = Record<string, never>;
 
@@ -26,7 +29,7 @@ async function cmdConfigShow(opts: {
 }): Promise<number> {
   return wrapCommand({ command: "config show", rootOverride: opts.rootOverride }, async () => {
     const loaded = await opts.deps.getLoadedConfig("config show");
-    process.stdout.write(`${JSON.stringify(loaded.raw, null, 2)}\n`);
+    output.json(loaded.raw);
     return 0;
   });
 }
@@ -113,8 +116,8 @@ async function cmdConfigSet(opts: {
           agentplaneDir: resolved.agentplaneDir,
         });
       }
-      process.stdout.write(
-        `${path.relative(resolved.gitRoot, path.join(resolved.agentplaneDir, "config.json"))}\n`,
+      output.line(
+        path.relative(resolved.gitRoot, path.join(resolved.agentplaneDir, "config.json")),
       );
       return 0;
     },
@@ -149,7 +152,7 @@ async function cmdModeGet(opts: {
 }): Promise<number> {
   return wrapCommand({ command: "mode get", rootOverride: opts.rootOverride }, async () => {
     const loaded = await opts.deps.getLoadedConfig("mode get");
-    process.stdout.write(`${loaded.config.workflow_mode}\n`);
+    output.line(loaded.config.workflow_mode);
     return 0;
   });
 }
@@ -200,7 +203,7 @@ async function cmdModeSet(opts: {
         gitRoot: resolved.gitRoot,
         agentplaneDir: resolved.agentplaneDir,
       });
-      process.stdout.write(`${opts.mode}\n`);
+      output.line(opts.mode);
       return 0;
     },
   );
@@ -313,7 +316,7 @@ async function cmdProfileSet(opts: {
         gitRoot: resolved.gitRoot,
         agentplaneDir: resolved.agentplaneDir,
       });
-      process.stdout.write(`${opts.profile}\n`);
+      output.line(opts.profile);
       return 0;
     },
   );

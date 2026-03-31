@@ -1,10 +1,10 @@
 ---
 id: "202603311331-VPRQXR"
 title: "N1.2 Move CLI core/config/help/runtime-report paths onto the shared emitters"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -16,21 +16,37 @@ tags:
   - "cli"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T13:59:07.225Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T14:07:22.538Z"
+  updated_by: "CODER"
+  note: "Focused eslint and runtime/core CLI suites passed; quickstart, preflight, role, agents, help, config, and runtime explain now route repeated JSON/text/report output through the shared emitter primitives without changing payload shapes."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: move core/config/help/runtime-report command families onto the shared emitter primitives so the highest-volume CLI modules stop hand-rolling repeated JSON and report-line output."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T14:00:13.492Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: move core/config/help/runtime-report command families onto the shared emitter primitives so the highest-volume CLI modules stop hand-rolling repeated JSON and report-line output."
+  -
+    type: "verify"
+    at: "2026-03-31T14:07:22.538Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused eslint and runtime/core CLI suites passed; quickstart, preflight, role, agents, help, config, and runtime explain now route repeated JSON/text/report output through the shared emitter primitives without changing payload shapes."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:31:16.576Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T14:07:22.540Z"
+doc_updated_by: "CODER"
 description: "Implement N1.2 from REFACTOR.md. Replace the current scattered output/render patterns with one small shared emission layer for user-facing command output.. Acceptance: those modules stop manually formatting repeated JSON/text output blocks. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: those modules stop manually formatting repeated JSON/text output blocks.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T14:07:22.538Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused eslint and runtime/core CLI suites passed; quickstart, preflight, role, agents, help, config, and runtime explain now route repeated JSON/text/report output through the shared emitter primitives without changing payload shapes.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T14:00:13.493Z, excerpt_hash=sha256:85fb5267de0b76431775a7d23c657b129a9514b079f40c4b9f2acefefca6765d
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +107,14 @@ Implement N1.2 from REFACTOR.md. Replace the current scattered output/render pat
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T14:07:22.538Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused eslint and runtime/core CLI suites passed; quickstart, preflight, role, agents, help, config, and runtime explain now route repeated JSON/text/report output through the shared emitter primitives without changing payload shapes.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T14:00:13.493Z, excerpt_hash=sha256:85fb5267de0b76431775a7d23c657b129a9514b079f40c4b9f2acefefca6765d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -7,6 +7,7 @@ import { loadTaskBackend } from "../../../backends/task-backend.js";
 import { GitContext } from "../../../commands/shared/git-context.js";
 import { gitCurrentBranch } from "../../../commands/shared/git-ops.js";
 import { fileExists } from "../../fs-utils.js";
+import { createCliEmitter } from "../../output.js";
 import { CliError } from "../../../shared/errors.js";
 import { dedupeStrings } from "../../../shared/strings.js";
 import { usageError } from "../../spec/errors.js";
@@ -26,6 +27,8 @@ import {
 import type { RunDeps } from "../command-catalog.js";
 import { toStringList } from "../../spec/parse-utils.js";
 import { wrapCommand } from "./wrap-command.js";
+
+const output = createCliEmitter();
 
 type QuickstartParsed = { json: boolean };
 
@@ -64,10 +67,10 @@ async function cmdQuickstart(opts: {
         },
         lines,
       };
-      process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+      output.json(payload);
       return 0;
     }
-    process.stdout.write(`${text}\n`);
+    output.line(text);
     return 0;
   });
 }
@@ -373,36 +376,39 @@ async function cmdPreflight(opts: {
       mode: opts.mode,
     });
     if (opts.json) {
-      process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+      output.json(report);
       return 0;
     }
-    process.stdout.write("Preflight Summary\n");
-    process.stdout.write(`- mode: ${report.mode}\n`);
-    process.stdout.write(`- project detected: ${report.project_detected ? "yes" : "no"}\n`);
-    process.stdout.write(`- config loaded: ${probeYesNo(report.config_loaded)}\n`);
-    process.stdout.write(`- quickstart loaded: ${probeYesNo(report.quickstart_loaded)}\n`);
-    process.stdout.write(`- workflow loaded: ${probeYesNo(report.workflow_loaded)}\n`);
-    process.stdout.write(`- task list loaded: ${probeYesNo(report.task_list_loaded)}\n`);
-    process.stdout.write(
-      `- working tree clean (tracked-only): ${probeValueOrUnknown(report.working_tree_clean_tracked)}\n`,
-    );
-    process.stdout.write(`- current git branch: ${probeValueOrUnknown(report.current_branch)}\n`);
-    process.stdout.write(`- workflow_mode: ${report.workflow_mode}\n`);
-    process.stdout.write(`- harness engeneering health: ${report.harness_health.status}\n`);
+    const lines = [
+      "Preflight Summary",
+      `- mode: ${report.mode}`,
+      `- project detected: ${report.project_detected ? "yes" : "no"}`,
+      `- config loaded: ${probeYesNo(report.config_loaded)}`,
+      `- quickstart loaded: ${probeYesNo(report.quickstart_loaded)}`,
+      `- workflow loaded: ${probeYesNo(report.workflow_loaded)}`,
+      `- task list loaded: ${probeYesNo(report.task_list_loaded)}`,
+      `- working tree clean (tracked-only): ${probeValueOrUnknown(report.working_tree_clean_tracked)}`,
+      `- current git branch: ${probeValueOrUnknown(report.current_branch)}`,
+      `- workflow_mode: ${report.workflow_mode}`,
+      `- harness engeneering health: ${report.harness_health.status}`,
+    ];
     if (report.harness_health.reasons.length > 0) {
-      process.stdout.write(`  - reasons: ${report.harness_health.reasons.join(", ")}\n`);
+      lines.push(`  - reasons: ${report.harness_health.reasons.join(", ")}`);
     }
-    process.stdout.write("- approval gates:\n");
-    process.stdout.write(`  - require_plan: ${String(report.approvals.require_plan)}\n`);
-    process.stdout.write(`  - require_verify: ${String(report.approvals.require_verify)}\n`);
-    process.stdout.write(`  - require_network: ${String(report.approvals.require_network)}\n`);
-    process.stdout.write("- outside-repo: not needed\n");
+    lines.push(
+      "- approval gates:",
+      `  - require_plan: ${String(report.approvals.require_plan)}`,
+      `  - require_verify: ${String(report.approvals.require_verify)}`,
+      `  - require_network: ${String(report.approvals.require_network)}`,
+      "- outside-repo: not needed",
+    );
     if (report.next_actions.length > 0) {
-      process.stdout.write("Next actions:\n");
+      lines.push("Next actions:");
       for (const action of report.next_actions) {
-        process.stdout.write(`- ${action.command}: ${action.reason}\n`);
+        lines.push(`- ${action.command}: ${action.reason}`);
       }
     }
+    output.lines(lines);
     return 0;
   });
 }
@@ -615,10 +621,10 @@ async function cmdRole(opts: {
             profile: agentProfile.profile,
           };
         }
-        process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+        output.json(payload);
         return 0;
       }
-      process.stdout.write(`${guide}\n`);
+      output.line(guide);
       return 0;
     }
 
@@ -640,26 +646,20 @@ async function cmdRole(opts: {
       });
     }
     if (opts.json) {
-      process.stdout.write(
-        `${JSON.stringify(
-          {
-            role: normalizedRole,
-            guide: block
-              .split("\n")
-              .map((line) => line.trim())
-              .filter((line) => line.length > 0),
-            agent_profile: {
-              filename: agentProfile.filename,
-              profile: agentProfile.profile,
-            },
-          },
-          null,
-          2,
-        )}\n`,
-      );
+      output.json({
+        role: normalizedRole,
+        guide: block
+          .split("\n")
+          .map((line) => line.trim())
+          .filter((line) => line.length > 0),
+        agent_profile: {
+          filename: agentProfile.filename,
+          profile: agentProfile.profile,
+        },
+      });
       return 0;
     }
-    process.stdout.write(`${block}\n`);
+    output.line(block);
     return 0;
   });
 }
@@ -677,6 +677,32 @@ export const agentsSpec: CommandSpec<AgentsParsed> = {
   examples: [{ cmd: "agentplane agents", why: "Print available agent ids and roles." }],
   parse: () => ({}),
 };
+
+function formatAgentsTableLines(
+  rows: { canonicalId: string; role: string; filename: string; rawId: string }[],
+  showRawIdColumn: boolean,
+): string[] {
+  const widthId = Math.max(...rows.map((row) => row.canonicalId.length), "ID".length);
+  const widthFile = Math.max(...rows.map((row) => row.filename.length), "FILE".length);
+  if (showRawIdColumn) {
+    const widthRawId = Math.max(...rows.map((row) => row.rawId.length), "RAW_ID".length);
+    return [
+      `${"ID".padEnd(widthId)}  ${"FILE".padEnd(widthFile)}  ${"RAW_ID".padEnd(widthRawId)}  ROLE`,
+      `${"-".repeat(widthId)}  ${"-".repeat(widthFile)}  ${"-".repeat(widthRawId)}  ----`,
+      ...rows.map(
+        (row) =>
+          `${row.canonicalId.padEnd(widthId)}  ${row.filename.padEnd(widthFile)}  ${row.rawId.padEnd(widthRawId)}  ${row.role}`,
+      ),
+    ];
+  }
+  return [
+    `${"ID".padEnd(widthId)}  ${"FILE".padEnd(widthFile)}  ROLE`,
+    `${"-".repeat(widthId)}  ${"-".repeat(widthFile)}  ----`,
+    ...rows.map(
+      (row) => `${row.canonicalId.padEnd(widthId)}  ${row.filename.padEnd(widthFile)}  ${row.role}`,
+    ),
+  ];
+}
 
 export function makeRunAgentsHandler(deps: RunDeps): CommandHandler<AgentsParsed> {
   return async (ctx) =>
@@ -723,31 +749,7 @@ export function makeRunAgentsHandler(deps: RunDeps): CommandHandler<AgentsParsed
         rows.push({ canonicalId, role, filename: entry, rawId: normalizedRawId });
       }
 
-      const showRawIdColumn = mismatches.length > 0;
-      const widthId = Math.max(...rows.map((row) => row.canonicalId.length), "ID".length);
-      const widthFile = Math.max(...rows.map((row) => row.filename.length), "FILE".length);
-      if (showRawIdColumn) {
-        const widthRawId = Math.max(...rows.map((row) => row.rawId.length), "RAW_ID".length);
-        process.stdout.write(
-          `${"ID".padEnd(widthId)}  ${"FILE".padEnd(widthFile)}  ${"RAW_ID".padEnd(widthRawId)}  ROLE\n`,
-        );
-        process.stdout.write(
-          `${"-".repeat(widthId)}  ${"-".repeat(widthFile)}  ${"-".repeat(widthRawId)}  ----\n`,
-        );
-        for (const row of rows) {
-          process.stdout.write(
-            `${row.canonicalId.padEnd(widthId)}  ${row.filename.padEnd(widthFile)}  ${row.rawId.padEnd(widthRawId)}  ${row.role}\n`,
-          );
-        }
-      } else {
-        process.stdout.write(`${"ID".padEnd(widthId)}  ${"FILE".padEnd(widthFile)}  ROLE\n`);
-        process.stdout.write(`${"-".repeat(widthId)}  ${"-".repeat(widthFile)}  ----\n`);
-        for (const row of rows) {
-          process.stdout.write(
-            `${row.canonicalId.padEnd(widthId)}  ${row.filename.padEnd(widthFile)}  ${row.role}\n`,
-          );
-        }
-      }
+      output.lines(formatAgentsTableLines(rows, mismatches.length > 0));
 
       if (duplicates.length > 0) {
         throw new CliError({
