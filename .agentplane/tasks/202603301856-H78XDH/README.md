@@ -1,10 +1,11 @@
 ---
 id: "202603301856-H78XDH"
 title: "Make fast help consume the same graph without special routing drift"
-status: "DOING"
+result_summary: "integrate: squash task/202603301856-H78XDH/fast-help-uses-runtime-graph"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T08:39:51.220Z"
   updated_by: "CODER"
   note: "Fast help now routes through the runtime help registry; focused help/CLI suites stayed green and explicit help commands remain stable with trailing --help."
-commit: null
+commit:
+  hash: "2fa748925a041db881f57d6c4e4a4eb3bac73f66"
+  message: "🧩 H78XDH integrate: squash task/202603301856-H78XDH/fast-help-uses-runtime-graph"
 comments:
   -
     author: "CODER"
     body: "Start: route fast help through the runtime help registry so --help and help stop depending on a parallel command match definition."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-H78XDH/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fast help now routes through the runtime help registry; focused help/CLI suites stayed green and explicit help commands remain stable with trailing --help."
+  -
+    type: "status"
+    at: "2026-03-31T08:41:42.853Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-H78XDH/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T08:39:51.224Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T08:41:42.857Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 1 / R1.3 from REFACTOR.md. `help` and `--help` still avoid unnecessary project resolution but no longer depend on a parallel routing definition."
 sections:
   Summary: |-
