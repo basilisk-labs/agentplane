@@ -1,0 +1,10 @@
+ .agentplane/tasks/202603311331-81NZD4/README.md    |  44 +++-
+ .../tasks/202603311331-81NZD4/pr/diffstat.txt      |  10 +
+ .agentplane/tasks/202603311331-81NZD4/pr/meta.json |  12 ++
+ .agentplane/tasks/202603311331-81NZD4/pr/review.md |  38 ++++
+ .../tasks/202603311331-81NZD4/pr/verify.log        |   0
+ .../src/commands/shared/task-mutation.ts           |  11 +
+ packages/agentplane/src/commands/task/doc.ts       | 151 +++++++-------
+ packages/agentplane/src/commands/task/plan.ts      | 229 +++++++++++----------
+ .../agentplane/src/commands/task/verify-record.ts  | 131 ++++++------
+ 9 files changed, 368 insertions(+), 258 deletions(-)

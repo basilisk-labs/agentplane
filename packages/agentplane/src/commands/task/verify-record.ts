@@ -13,7 +13,7 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import { withTaskMutationStorage } from "../shared/task-mutation.js";
 
 import {
   buildTaskVerificationTransition,
@@ -112,23 +112,65 @@ async function recordVerificationResult(opts: {
     });
   }
 
-  const useStore = backendIsLocalFileBackend(ctx);
-  const store = useStore ? getTaskStore(ctx) : null;
-  const task = useStore ? null : await loadTaskFromContext({ ctx, taskId: opts.taskId });
   const at = nowIso();
-  if (useStore) {
-    await store!.mutate(opts.taskId, (current) => {
-      const existingDoc = String(current.doc ?? "");
-      const baseDoc = ensureDocSections(existingDoc, config.tasks.doc.required_sections);
+  await withTaskMutationStorage({
+    ctx,
+    local: async (store) => {
+      await store.mutate(opts.taskId, (current) => {
+        const existingDoc = String(current.doc ?? "");
+        const baseDoc = ensureDocSections(existingDoc, config.tasks.doc.required_sections);
+        const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
+        const verifySteps = extractDocSection(baseDoc, "Verify Steps");
+        const verifyStepsHash = verifySteps
+          ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
+          : null;
+        const docVersion = normalizeTaskDocVersion(current.doc_version);
+        const verifyStepsRef = [
+          `doc_version=${String(docVersion)}`,
+          `doc_updated_at=${String(current.doc_updated_at ?? "missing")}`,
+          `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
+        ].join(", ");
+        const entry = renderVerificationEntry({
+          at,
+          state: opts.state,
+          by: opts.by,
+          note: opts.note,
+          details: opts.details ?? null,
+          verifyStepsRef,
+        });
+        const nextVerification = appendBetweenMarkers(verificationSection, entry, docVersion);
+        const nextDoc = ensureDocSections(
+          setMarkdownSection(baseDoc, "Verification", nextVerification),
+          config.tasks.doc.required_sections,
+        );
+
+        return buildTaskVerificationTransition({
+          task: current,
+          at,
+          by: opts.by,
+          note: opts.note,
+          state: opts.state,
+          verificationSection: nextVerification,
+          nextDoc,
+          requiredSections: config.tasks.doc.required_sections,
+        }).intents;
+      });
+    },
+    remote: async () => {
+      const remoteTask = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+      const existingDoc =
+        (typeof remoteTask.doc === "string" ? remoteTask.doc : "") ||
+        (await backend.getTaskDoc!(remoteTask.id));
+      const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
       const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
       const verifySteps = extractDocSection(baseDoc, "Verify Steps");
       const verifyStepsHash = verifySteps
         ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
         : null;
-      const docVersion = normalizeTaskDocVersion(current.doc_version);
+      const docVersion = normalizeTaskDocVersion(remoteTask.doc_version);
       const verifyStepsRef = [
         `doc_version=${String(docVersion)}`,
-        `doc_updated_at=${String(current.doc_updated_at ?? "missing")}`,
+        `doc_updated_at=${String(remoteTask.doc_updated_at ?? "missing")}`,
         `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
       ].join(", ");
       const entry = renderVerificationEntry({
@@ -145,61 +187,20 @@ async function recordVerificationResult(opts: {
         config.tasks.doc.required_sections,
       );
 
-      return buildTaskVerificationTransition({
-        task: current,
-        at,
-        by: opts.by,
-        note: opts.note,
-        state: opts.state,
-        verificationSection: nextVerification,
-        nextDoc,
-        requiredSections: config.tasks.doc.required_sections,
-      }).intents;
-    });
-  } else {
-    const remoteTask = task!;
-    const existingDoc =
-      (typeof remoteTask.doc === "string" ? remoteTask.doc : "") ||
-      (await backend.getTaskDoc(remoteTask.id));
-    const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
-    const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
-    const verifySteps = extractDocSection(baseDoc, "Verify Steps");
-    const verifyStepsHash = verifySteps
-      ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
-      : null;
-    const docVersion = normalizeTaskDocVersion(remoteTask.doc_version);
-    const verifyStepsRef = [
-      `doc_version=${String(docVersion)}`,
-      `doc_updated_at=${String(remoteTask.doc_updated_at ?? "missing")}`,
-      `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
-    ].join(", ");
-    const entry = renderVerificationEntry({
-      at,
-      state: opts.state,
-      by: opts.by,
-      note: opts.note,
-      details: opts.details ?? null,
-      verifyStepsRef,
-    });
-    const nextVerification = appendBetweenMarkers(verificationSection, entry, docVersion);
-    const nextDoc = ensureDocSections(
-      setMarkdownSection(baseDoc, "Verification", nextVerification),
-      config.tasks.doc.required_sections,
-    );
-
-    await backend.writeTask(
-      buildTaskVerificationTransition({
-        task: remoteTask,
-        at,
-        by: opts.by,
-        note: opts.note,
-        state: opts.state,
-        verificationSection: nextVerification,
-        nextDoc,
-        requiredSections: config.tasks.doc.required_sections,
-      }).nextTask,
-    );
-  }
+      await backend.writeTask(
+        buildTaskVerificationTransition({
+          task: remoteTask,
+          at,
+          by: opts.by,
+          note: opts.note,
+          state: opts.state,
+          verificationSection: nextVerification,
+          nextDoc,
+          requiredSections: config.tasks.doc.required_sections,
+        }).nextTask,
+      );
+    },
+  });
 
   if (!opts.quiet) {
     const readmePath = path.join(

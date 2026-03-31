@@ -18,6 +18,17 @@ export type TaskCollectionMutationPlan<TResult> = {
   result: TResult;
 };
 
+export async function withTaskMutationStorage<TResult>(opts: {
+  ctx: CommandContext;
+  local: (store: ReturnType<typeof getTaskStore>) => Promise<TResult> | TResult;
+  remote: (backend: CommandContext["taskBackend"]) => Promise<TResult> | TResult;
+}): Promise<TResult> {
+  if (backendIsLocalFileBackend(opts.ctx)) {
+    return await opts.local(getTaskStore(opts.ctx));
+  }
+  return await opts.remote(opts.ctx.taskBackend);
+}
+
 export async function applyTaskMutation(opts: {
   ctx: CommandContext;
   taskId: string;

@@ -20,7 +20,7 @@ import {
 } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import { withTaskMutationStorage } from "../shared/task-mutation.js";
 
 import { decodeEscapedTaskTextNewlines } from "./shared.js";
 
@@ -124,8 +124,6 @@ export async function cmdTaskDocSet(opts: {
         message: backendNotSupportedMessage("task docs"),
       });
     }
-    const useStore = backendIsLocalFileBackend(ctx);
-    const store = useStore ? getTaskStore(ctx) : null;
     const allowed = config.tasks.doc.sections;
     if (!opts.fullDoc && !opts.section) {
       throw new CliError({
@@ -163,13 +161,65 @@ export async function cmdTaskDocSet(opts: {
         ? "full-doc"
         : "section";
     let changed = false;
-    if (useStore) {
-      let expectedCurrentDoc: string | undefined;
-      let expectedCurrentSectionText: string | null | undefined;
-      const result = await store!.patch(opts.taskId, (current) => {
-        const currentDocRaw = String(current.doc ?? "");
+    await withTaskMutationStorage({
+      ctx,
+      local: async (store) => {
+        let expectedCurrentDoc: string | undefined;
+        let expectedCurrentSectionText: string | null | undefined;
+        const result = await store.patch(opts.taskId, (current) => {
+          const currentDocRaw = String(current.doc ?? "");
+          const nextDoc = buildUpdatedTaskDoc({
+            baseDocRaw: currentDocRaw,
+            section: opts.section,
+            text,
+            requestMode,
+            requiredSections: config.tasks.doc.required_sections,
+            headingKeys,
+            targetKey,
+          });
+          const docChanged = normalizeTaskDoc(currentDocRaw) !== normalizeTaskDoc(nextDoc);
+          const shouldWrite = docChanged || updatedBy !== undefined;
+          if (!shouldWrite) return null;
+          if (!docChanged) {
+            return {
+              docMeta: {
+                touch: true,
+                ...(updatedBy ? { updatedBy } : {}),
+              },
+            };
+          }
+          if (requestMode === "full-doc") {
+            expectedCurrentDoc ??= currentDocRaw;
+            return {
+              doc: {
+                kind: "replace-doc",
+                doc: nextDoc,
+                expectedCurrentDoc,
+              },
+              ...(updatedBy ? { docMeta: { updatedBy } } : {}),
+            };
+          }
+          expectedCurrentSectionText ??= extractSectionTextForPatch(
+            currentDocRaw,
+            opts.section ?? "",
+          );
+          return {
+            doc: {
+              kind: "set-section",
+              section: opts.section ?? "",
+              text: extractSectionTextForPatch(nextDoc, opts.section ?? "") ?? "",
+              requiredSections: config.tasks.doc.required_sections,
+              expectedCurrentText: expectedCurrentSectionText,
+            },
+            ...(updatedBy ? { docMeta: { updatedBy } } : {}),
+          };
+        });
+        changed = result.changed;
+      },
+      remote: async (remoteBackend) => {
+        const baseDocRaw = (await remoteBackend.getTaskDoc!(opts.taskId)) ?? "";
         const nextDoc = buildUpdatedTaskDoc({
-          baseDocRaw: currentDocRaw,
+          baseDocRaw,
           section: opts.section,
           text,
           requestMode,
@@ -177,62 +227,14 @@ export async function cmdTaskDocSet(opts: {
           headingKeys,
           targetKey,
         });
-        const docChanged = normalizeTaskDoc(currentDocRaw) !== normalizeTaskDoc(nextDoc);
+        const docChanged = normalizeTaskDoc(baseDocRaw) !== normalizeTaskDoc(nextDoc);
         const shouldWrite = docChanged || updatedBy !== undefined;
-        if (!shouldWrite) return null;
-        if (!docChanged) {
-          return {
-            docMeta: {
-              touch: true,
-              ...(updatedBy ? { updatedBy } : {}),
-            },
-          };
+        if (shouldWrite) {
+          await remoteBackend.setTaskDoc!(opts.taskId, nextDoc, updatedBy);
         }
-        if (requestMode === "full-doc") {
-          expectedCurrentDoc ??= currentDocRaw;
-          return {
-            doc: {
-              kind: "replace-doc",
-              doc: nextDoc,
-              expectedCurrentDoc,
-            },
-            ...(updatedBy ? { docMeta: { updatedBy } } : {}),
-          };
-        }
-        expectedCurrentSectionText ??= extractSectionTextForPatch(
-          currentDocRaw,
-          opts.section ?? "",
-        );
-        return {
-          doc: {
-            kind: "set-section",
-            section: opts.section ?? "",
-            text: extractSectionTextForPatch(nextDoc, opts.section ?? "") ?? "",
-            requiredSections: config.tasks.doc.required_sections,
-            expectedCurrentText: expectedCurrentSectionText,
-          },
-          ...(updatedBy ? { docMeta: { updatedBy } } : {}),
-        };
-      });
-      changed = result.changed;
-    } else {
-      const baseDocRaw = (await backend.getTaskDoc(opts.taskId)) ?? "";
-      const nextDoc = buildUpdatedTaskDoc({
-        baseDocRaw,
-        section: opts.section,
-        text,
-        requestMode,
-        requiredSections: config.tasks.doc.required_sections,
-        headingKeys,
-        targetKey,
-      });
-      const docChanged = normalizeTaskDoc(baseDocRaw) !== normalizeTaskDoc(nextDoc);
-      const shouldWrite = docChanged || updatedBy !== undefined;
-      if (shouldWrite) {
-        await backend.setTaskDoc(opts.taskId, nextDoc, updatedBy);
-      }
-      changed = shouldWrite;
-    }
+        changed = shouldWrite;
+      },
+    });
     const outcome: TaskDocSetOutcome = changed
       ? requestMode === "full-doc"
         ? "full-doc-updated"
@@ -272,19 +274,18 @@ export async function cmdTaskDocShow(opts: {
         message: backendNotSupportedMessage("task docs"),
       });
     }
-    const useStore = backendIsLocalFileBackend(ctx);
-    const storeTask = useStore ? await getTaskStore(ctx).get(opts.taskId) : null;
-    const doc = useStore
-      ? storeTask?.sections && Object.keys(storeTask.sections).length > 0
-        ? renderTaskDocFromSections(storeTask.sections)
-        : String(storeTask?.doc ?? "")
-      : ((await backend.getTaskDoc(opts.taskId)) ?? "");
+    const doc = await withTaskMutationStorage({
+      ctx,
+      local: async (store) => {
+        const storeTask = await store.get(opts.taskId);
+        return storeTask?.sections && Object.keys(storeTask.sections).length > 0
+          ? renderTaskDocFromSections(storeTask.sections)
+          : String(storeTask?.doc ?? "");
+      },
+      remote: async (remoteBackend) => (await remoteBackend.getTaskDoc!(opts.taskId)) ?? "",
+    });
     const canonicalSections = new Map<string, { title: string; lines: string[] }>();
-    for (const [title, text] of Object.entries(
-      useStore && storeTask?.sections && Object.keys(storeTask.sections).length > 0
-        ? storeTask.sections
-        : taskDocToSectionMap(doc),
-    )) {
+    for (const [title, text] of Object.entries(taskDocToSectionMap(doc))) {
       canonicalSections.set(normalizeDocSectionName(title), {
         title,
         lines: String(text ?? "").split("\n"),

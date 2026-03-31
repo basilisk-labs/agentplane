@@ -4,7 +4,7 @@ title: "N2.5 Move remaining non-lifecycle task mutators onto the bridge"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -16,21 +16,27 @@ tags:
   - "backend"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T15:53:42.528Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T16:03:27.499Z"
+  updated_by: "CODER"
+  note: "Moved plan/doc/verify mutators onto the shared storage bridge so local task-store and backend paths converge on one mutation seam; verified with targeted lint, task command unit suites, parity tests, and agentplane build."
 commit: null
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-03-31T16:03:27.499Z"
+    author: "CODER"
+    state: "ok"
+    note: "Moved plan/doc/verify mutators onto the shared storage bridge so local task-store and backend paths converge on one mutation seam; verified with targeted lint, task command unit suites, parity tests, and agentplane build."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:31:23.950Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T16:03:27.501Z"
+doc_updated_by: "CODER"
 description: "Implement N2.5 from REFACTOR.md. Hide local-store vs backend branching behind shared mutation helpers and remove repeated bulk-write fallback logic.. Acceptance: backend-type branching no longer appears in these command handlers. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -50,6 +56,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: backend-type branching no longer appears in these command handlers.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T16:03:27.499Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Moved plan/doc/verify mutators onto the shared storage bridge so local task-store and backend paths converge on one mutation seam; verified with targeted lint, task command unit suites, parity tests, and agentplane build.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T13:31:23.950Z, excerpt_hash=sha256:c297b15cce195f6e111f98b46dd8af954ae02a5adc41e85346dc9646fdfe3ad0
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +97,14 @@ Implement N2.5 from REFACTOR.md. Hide local-store vs backend branching behind sh
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T16:03:27.499Z — VERIFY — ok
+
+By: CODER
+
+Note: Moved plan/doc/verify mutators onto the shared storage bridge so local task-store and backend paths converge on one mutation seam; verified with targeted lint, task command unit suites, parity tests, and agentplane build.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T13:31:23.950Z, excerpt_hash=sha256:c297b15cce195f6e111f98b46dd8af954ae02a5adc41e85346dc9646fdfe3ad0
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
