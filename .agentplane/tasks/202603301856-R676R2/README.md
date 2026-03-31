@@ -1,10 +1,11 @@
 ---
 id: "202603301856-R676R2"
 title: "Preserve lazy handler loading while removing duplicated registry bootstrap work"
-status: "DOING"
+result_summary: "integrate: squash task/202603301856-R676R2/share-runtime-registry-bootstrap"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-31T08:54:40.111Z"
   updated_by: "CODER"
   note: "Fast help now renders from a lightweight spec view (COMMANDS + helpSpec) instead of bootstrapping the runtime registry; focused help/contracts stayed green and --help still skipped .env loading."
-commit: null
+commit:
+  hash: "ea28aebb530892fb2c4e7e8170a27dfbedd853c9"
+  message: "🧩 R676R2 integrate: squash task/202603301856-R676R2/share-runtime-registry-bootstrap"
 comments:
   -
     author: "CODER"
     body: "Start: share one runtime registry bootstrap per invocation while keeping handler loads lazy and help free of project/config resolution."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-R676R2/pr."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fast help now renders from a lightweight spec view (COMMANDS + helpSpec) instead of bootstrapping the runtime registry; focused help/contracts stayed green and --help still skipped .env loading."
+  -
+    type: "status"
+    at: "2026-03-31T08:56:49.683Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-R676R2/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T08:54:40.116Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T08:56:49.688Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 1 / R1.4 from REFACTOR.md. handlers are still loaded lazily, but help/dispatch do not pay avoidable registry setup costs twice."
 sections:
   Summary: |-

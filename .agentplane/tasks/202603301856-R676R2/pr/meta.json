@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301856-R676R2/share-runtime-registry-bootstrap",
   "created_at": "2026-03-31T08:49:15.563Z",
+  "head_sha": "00847672118c7f0c7a6ec732205acb76c2d8085c",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "ea28aebb530892fb2c4e7e8170a27dfbedd853c9",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T08:56:49.642Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301856-R676R2",
-  "updated_at": "2026-03-31T08:54:53.549Z",
+  "updated_at": "2026-03-31T08:56:49.642Z",
   "verify": {
     "status": "skipped"
   }

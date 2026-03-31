@@ -1,9 +1,9 @@
- .agentplane/tasks/202603301856-R676R2/README.md    |  60 ++++--
- .../tasks/202603301856-R676R2/pr/diffstat.txt      |   4 +
+ .agentplane/tasks/202603301856-R676R2/README.md    |  82 +++++++--
+ .../tasks/202603301856-R676R2/pr/diffstat.txt      |   9 +
  .agentplane/tasks/202603301856-R676R2/pr/meta.json |  12 ++
- .agentplane/tasks/202603301856-R676R2/pr/review.md |  32 ++++
+ .agentplane/tasks/202603301856-R676R2/pr/review.md |  37 ++++
  .../tasks/202603301856-R676R2/pr/verify.log        |   0
  packages/agentplane/src/cli/run-cli.core.test.ts   |  19 ++
  packages/agentplane/src/cli/run-cli.ts             | 202 +++++++++++----------
  packages/agentplane/src/cli/spec/help.ts           |   8 +-
- 8 files changed, 222 insertions(+), 115 deletions(-)
+ 8 files changed, 254 insertions(+), 115 deletions(-)
