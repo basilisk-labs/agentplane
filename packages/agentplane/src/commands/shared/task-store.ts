@@ -258,6 +258,26 @@ function throwTaskRevisionConflict(opts: {
   });
 }
 
+function applyDocMutationsToState(
+  docState: TaskDocState,
+  mutations: Parameters<typeof applyTaskDocMutations>[1],
+  opts: {
+    docUpdatedAt?: string;
+  },
+): TaskDocState {
+  const applied = applyTaskDocMutations(docState, mutations, {
+    now: opts.docUpdatedAt,
+  });
+  return {
+    ...docState,
+    doc: applied.doc,
+    sections: applied.sections,
+    doc_version: applied.doc_version,
+    doc_updated_at: applied.doc_updated_at,
+    doc_updated_by: applied.doc_updated_by,
+  };
+}
+
 function normalizeTaskStoreIntents(intents: TaskStoreIntentResult): TaskStoreIntent[] {
   if (!intents) return [];
   if (Array.isArray(intents)) {
@@ -443,21 +463,9 @@ export function applyTaskStoreIntentsToTask(
             throwTaskDocConflict({ taskId: current.id });
           }
         }
-        const applied = applyTaskDocMutations(
-          docState,
-          [{ kind: "replace-doc", doc: intent.doc }],
-          {
-            now: opts.docUpdatedAt,
-          },
-        );
-        docState = {
-          ...docState,
-          doc: applied.doc,
-          sections: applied.sections,
-          doc_version: applied.doc_version,
-          doc_updated_at: applied.doc_updated_at,
-          doc_updated_by: applied.doc_updated_by,
-        };
+        docState = applyDocMutationsToState(docState, [{ kind: "replace-doc", doc: intent.doc }], {
+          docUpdatedAt: opts.docUpdatedAt,
+        });
         touchDoc = true;
         break;
       }
@@ -470,7 +478,7 @@ export function applyTaskStoreIntentsToTask(
             throwTaskSectionConflict({ taskId: current.id, section: intent.section });
           }
         }
-        const applied = applyTaskDocMutations(
+        docState = applyDocMutationsToState(
           docState,
           [
             {
@@ -480,21 +488,13 @@ export function applyTaskStoreIntentsToTask(
               requiredSections: intent.requiredSections,
             },
           ],
-          { now: opts.docUpdatedAt },
+          { docUpdatedAt: opts.docUpdatedAt },
         );
-        docState = {
-          ...docState,
-          doc: applied.doc,
-          sections: applied.sections,
-          doc_version: applied.doc_version,
-          doc_updated_at: applied.doc_updated_at,
-          doc_updated_by: applied.doc_updated_by,
-        };
         touchDoc = true;
         break;
       }
       case "touch-doc-meta": {
-        const applied = applyTaskDocMutations(
+        docState = applyDocMutationsToState(
           docState,
           [
             {
@@ -503,16 +503,8 @@ export function applyTaskStoreIntentsToTask(
               version: intent.version,
             },
           ],
-          { now: opts.docUpdatedAt },
+          { docUpdatedAt: opts.docUpdatedAt },
         );
-        docState = {
-          ...docState,
-          doc: applied.doc,
-          sections: applied.sections,
-          doc_version: applied.doc_version,
-          doc_updated_at: applied.doc_updated_at,
-          doc_updated_by: applied.doc_updated_by,
-        };
         touchDoc = true;
         break;
       }

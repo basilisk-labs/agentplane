@@ -1,10 +1,10 @@
 ---
 id: "202603311332-95GHP9"
 title: "N4.2 Reuse shared doc mutation primitives inside the local backend and task store"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -16,21 +16,37 @@ tags:
   - "task-doc"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T17:39:18.082Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T17:48:25.610Z"
+  updated_by: "CODER"
+  note: "Shared doc mutation primitives now drive local backend doc writes and task-store doc state updates; verified with focused eslint, local-backend/task-store vitest suites, redmine backend regression suite, package build, and diff scope audit against local-backend plus task-store seam changes."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: move local backend and shared task-store doc writes onto the new core mutation primitives, delete overlapping patch logic, and keep behavior fixed while reducing one more cross-layer seam."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T17:39:53.623Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: move local backend and shared task-store doc writes onto the new core mutation primitives, delete overlapping patch logic, and keep behavior fixed while reducing one more cross-layer seam."
+  -
+    type: "verify"
+    at: "2026-03-31T17:48:25.610Z"
+    author: "CODER"
+    state: "ok"
+    note: "Shared doc mutation primitives now drive local backend doc writes and task-store doc state updates; verified with focused eslint, local-backend/task-store vitest suites, redmine backend regression suite, package build, and diff scope audit against local-backend plus task-store seam changes."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:32:33.312Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T17:48:25.614Z"
+doc_updated_by: "CODER"
 description: "Implement N4.2 from REFACTOR.md. Remove the current duplication between core task-doc primitives, the local task store, and backend doc mutation paths.. Acceptance: those modules stop carrying their own overlapping doc patch application logic. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: those modules stop carrying their own overlapping doc patch application logic.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T17:48:25.610Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Shared doc mutation primitives now drive local backend doc writes and task-store doc state updates; verified with focused eslint, local-backend/task-store vitest suites, redmine backend regression suite, package build, and diff scope audit against local-backend plus task-store seam changes.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T17:39:53.641Z, excerpt_hash=sha256:4fcc38cb90f0fea392cd66dde87b0e7863c580318d829b11f5ca0da156f598dd
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +107,14 @@ Implement N4.2 from REFACTOR.md. Remove the current duplication between core tas
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T17:48:25.610Z — VERIFY — ok
+
+By: CODER
+
+Note: Shared doc mutation primitives now drive local backend doc writes and task-store doc state updates; verified with focused eslint, local-backend/task-store vitest suites, redmine backend regression suite, package build, and diff scope audit against local-backend plus task-store seam changes.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T17:39:53.641Z, excerpt_hash=sha256:4fcc38cb90f0fea392cd66dde87b0e7863c580318d829b11f5ca0da156f598dd
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

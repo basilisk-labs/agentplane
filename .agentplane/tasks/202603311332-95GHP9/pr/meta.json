@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603311332-95GHP9/reuse-doc-mutation-primitives",
+  "created_at": "2026-03-31T17:48:53.344Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603311332-95GHP9",
+  "updated_at": "2026-03-31T17:49:07.004Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

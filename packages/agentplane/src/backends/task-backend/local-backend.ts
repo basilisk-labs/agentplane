@@ -2,6 +2,7 @@ import { mkdir, readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 import {
+  applyTaskDocMutations,
   docChanged,
   parseTaskReadme,
   renderTaskReadme,
@@ -9,6 +10,7 @@ import {
   taskReadmePath,
   validateTaskReadmeFrontmatter,
   withTaskReadmeFrontmatterDefaults,
+  type TaskDocMutationState,
   type TaskRecord,
 } from "@agentplaneorg/core";
 
@@ -70,6 +72,45 @@ function assertExpectedRevision(opts: {
       `(expected revision ${expected}, current revision ${opts.currentRevision})`,
     "E_BACKEND",
   );
+}
+
+function toTaskDocMutationComments(comments: unknown): TaskDocMutationState["comments"] {
+  if (!Array.isArray(comments)) return null;
+  const normalized = comments.flatMap((entry) => {
+    if (!isRecord(entry)) return [];
+    return [
+      {
+        author: typeof entry.author === "string" ? entry.author : undefined,
+      },
+    ];
+  });
+  return normalized.length > 0 ? normalized : null;
+}
+
+function taskDocStateFromFrontmatter(
+  frontmatter: Record<string, unknown>,
+  body: string,
+): TaskDocMutationState {
+  return {
+    doc: extractTaskDoc(body),
+    doc_version: frontmatter.doc_version,
+    doc_updated_by: frontmatter.doc_updated_by,
+    owner: frontmatter.owner,
+    comments: toTaskDocMutationComments(frontmatter.comments),
+  };
+}
+
+function taskDocStateFromTask(
+  task: Pick<TaskData, "comments" | "doc_updated_by" | "doc_version" | "owner">,
+  doc: string,
+): TaskDocMutationState {
+  return {
+    doc,
+    doc_version: task.doc_version,
+    doc_updated_by: task.doc_updated_by,
+    owner: task.owner,
+    comments: toTaskDocMutationComments(task.comments),
+  };
 }
 
 export class LocalBackend implements TaskBackend {
@@ -391,8 +432,9 @@ export class LocalBackend implements TaskBackend {
     }
 
     const existingDocVersion = normalizeDocVersion(existingFrontmatter.doc_version);
+    const requestedDocVersion = normalizeDocVersion(payload.doc_version, existingDocVersion);
     const effectiveDoc = task.doc === undefined ? null : String(task.doc ?? "");
-    const nextSections =
+    let nextSections =
       effectiveDoc === null
         ? task.sections && Object.keys(task.sections).length > 0
           ? task.sections
@@ -400,21 +442,44 @@ export class LocalBackend implements TaskBackend {
             ? taskDocToSectionMap(existingDoc)
             : undefined
         : taskDocToSectionMap(effectiveDoc);
-    if (nextSections && Object.keys(nextSections).length > 0) {
-      payload.sections = nextSections;
-    }
 
     if (task.doc !== undefined) {
       const docText = String(task.doc ?? "");
       body = mergeTaskDoc(body, docText);
-      if (docChanged(existingDoc, docText)) {
-        payload.doc_version = normalizeDocVersion(task.doc_version, existingDocVersion);
-        payload.doc_updated_at = nowIso();
-        payload.doc_updated_by = resolveDocUpdatedByFromTask(task, this.updatedBy);
+      if (docChanged(existingDoc, docText) || !payload.doc_updated_at) {
+        const applied = applyTaskDocMutations(
+          taskDocStateFromTask(
+            {
+              comments: task.comments,
+              doc_updated_by:
+                typeof payload.doc_updated_by === "string" ? payload.doc_updated_by : undefined,
+              doc_version: requestedDocVersion,
+              owner: task.owner,
+            },
+            existingDoc,
+          ),
+          [
+            { kind: "replace-doc", doc: docText },
+            {
+              kind: "touch-doc-meta",
+              updatedBy: resolveDocUpdatedByFromTask(task, this.updatedBy),
+              version: requestedDocVersion,
+            },
+          ],
+          { now: nowIso() },
+        );
+        payload.doc_version = applied.doc_version;
+        payload.doc_updated_at = applied.doc_updated_at;
+        payload.doc_updated_by = applied.doc_updated_by;
+        nextSections = applied.sections;
       }
     }
 
-    payload.doc_version = normalizeDocVersion(payload.doc_version, existingDocVersion);
+    if (nextSections && Object.keys(nextSections).length > 0) {
+      payload.sections = nextSections;
+    }
+
+    payload.doc_version = normalizeDocVersion(payload.doc_version, requestedDocVersion);
     if (payload.doc_updated_at === undefined || payload.doc_updated_at === "") {
       payload.doc_updated_at = nowIso();
     }
@@ -443,7 +508,7 @@ export class LocalBackend implements TaskBackend {
       currentRevision: storedRevisionFromFrontmatter(parsed.frontmatter, 1),
     });
     const docText = String(doc ?? "");
-    const body = mergeTaskDoc(parsed.body, docText);
+    let body = mergeTaskDoc(parsed.body, docText);
     const frontmatter = {
       ...parsed.frontmatter,
       id:
@@ -453,15 +518,26 @@ export class LocalBackend implements TaskBackend {
     } as Record<string, unknown>;
     const currentDocVersion = normalizeDocVersion(frontmatter.doc_version);
     if (docChanged(extractTaskDoc(parsed.body), docText) || !frontmatter.doc_updated_at) {
-      frontmatter.doc_version = currentDocVersion;
-      frontmatter.doc_updated_at = nowIso();
-      frontmatter.doc_updated_by = resolveDocUpdatedByFromFrontmatter(
-        frontmatter,
-        updatedBy,
-        this.updatedBy,
+      const applied = applyTaskDocMutations(
+        taskDocStateFromFrontmatter(frontmatter, parsed.body),
+        [
+          { kind: "replace-doc", doc: docText },
+          {
+            kind: "touch-doc-meta",
+            updatedBy: resolveDocUpdatedByFromFrontmatter(frontmatter, updatedBy, this.updatedBy),
+            version: currentDocVersion,
+          },
+        ],
+        { now: nowIso() },
       );
+      body = mergeTaskDoc(parsed.body, applied.doc);
+      frontmatter.doc_version = applied.doc_version;
+      frontmatter.doc_updated_at = applied.doc_updated_at;
+      frontmatter.doc_updated_by = applied.doc_updated_by;
+      frontmatter.sections = applied.sections;
+    } else {
+      frontmatter.sections = taskDocToSectionMap(docText);
     }
-    frontmatter.sections = taskDocToSectionMap(docText);
     frontmatter.doc_version = normalizeDocVersion(frontmatter.doc_version, currentDocVersion);
     validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(frontmatter));
     const next = renderTaskReadme(frontmatter, body);
@@ -488,17 +564,24 @@ export class LocalBackend implements TaskBackend {
           ? parsed.frontmatter.id
           : taskId,
     } as Record<string, unknown>;
-    frontmatter.doc_version = normalizeDocVersion(frontmatter.doc_version);
-    frontmatter.doc_updated_at = nowIso();
-    frontmatter.doc_updated_by = resolveDocUpdatedByFromFrontmatter(
-      frontmatter,
-      updatedBy,
-      this.updatedBy,
+    const applied = applyTaskDocMutations(
+      taskDocStateFromFrontmatter(frontmatter, parsed.body),
+      [
+        {
+          kind: "touch-doc-meta",
+          updatedBy: resolveDocUpdatedByFromFrontmatter(frontmatter, updatedBy, this.updatedBy),
+          version: normalizeDocVersion(frontmatter.doc_version),
+        },
+      ],
+      { now: nowIso() },
     );
+    frontmatter.doc_version = applied.doc_version;
+    frontmatter.doc_updated_at = applied.doc_updated_at;
+    frontmatter.doc_updated_by = applied.doc_updated_by;
     frontmatter.sections =
       isRecord(frontmatter.sections) && Object.keys(frontmatter.sections).length > 0
         ? frontmatter.sections
-        : taskDocToSectionMap(extractTaskDoc(parsed.body));
+        : applied.sections;
     validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(frontmatter));
     const next = renderTaskReadme(frontmatter, parsed.body || "");
     await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
