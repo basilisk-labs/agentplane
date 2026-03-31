@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311331-Z22BB6/move-remaining-report-families-onto-emitters",
   "created_at": "2026-03-31T17:10:22.395Z",
+  "head_sha": "289fb2fb7c363debcd3ba4e215c57d47173ee502",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "54f6c92c83870faa832d59a1bca575e1a6e342d5",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T17:12:58.444Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311331-Z22BB6",
-  "updated_at": "2026-03-31T17:10:55.762Z",
+  "updated_at": "2026-03-31T17:12:58.444Z",
   "verify": {
     "status": "skipped"
   }

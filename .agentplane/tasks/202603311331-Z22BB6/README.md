@@ -1,10 +1,11 @@
 ---
 id: "202603311331-Z22BB6"
 title: "N1.4 Move remaining report-style command families onto the shared emitters"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-Z22BB6/move-remaining-report-families-onto-emitters"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-31T17:08:37.317Z"
   updated_by: "CODER"
   note: "Emitter migration verified with focused eslint, 14-file vitest slice, package build, diff scope audit, and framework bootstrap refresh; remaining report-style command families now use shared CLI emitters without ad-hoc stdout/stderr writes."
-commit: null
+commit:
+  hash: "54f6c92c83870faa832d59a1bca575e1a6e342d5"
+  message: "📝 Z22BB6 task: finalize PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: move the remaining report-style command families onto the shared CLI emitters and delete local ad-hoc rendering where the contract already exists."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-Z22BB6/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Emitter migration verified with focused eslint, 14-file vitest slice, package build, diff scope audit, and framework bootstrap refresh; remaining report-style command families now use shared CLI emitters without ad-hoc stdout/stderr writes."
+  -
+    type: "status"
+    at: "2026-03-31T17:12:58.490Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-Z22BB6/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T17:08:37.321Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T17:12:58.495Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N1.4 from REFACTOR.md. Replace the current scattered output/render patterns with one small shared emission layer for user-facing command output.. Acceptance: these commands share the same text/json rendering conventions instead of repeating them locally. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
