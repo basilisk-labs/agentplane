@@ -4,7 +4,7 @@ title: "N3.4 Converge comment-commit integration around the shared executor"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -21,16 +21,22 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T16:41:00.452Z"
+  updated_by: "CODER"
+  note: "Focused lifecycle comment-commit suites passed: eslint, build, task unit suites, run-cli lifecycle and block-finish contracts."
 commit: null
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-03-31T16:41:00.452Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused lifecycle comment-commit suites passed: eslint, build, task unit suites, run-cli lifecycle and block-finish contracts."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:31:27.631Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T16:41:00.454Z"
+doc_updated_by: "CODER"
 description: "Implement N3.4 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: comment-commit policy is wired once and reused by all transition commands that need it. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -50,6 +56,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: comment-commit policy is wired once and reused by all transition commands that need it.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T16:41:00.452Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused lifecycle comment-commit suites passed: eslint, build, task unit suites, run-cli lifecycle and block-finish contracts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T13:31:27.631Z, excerpt_hash=sha256:1a4af0ecbaa985f9b853c9e7bac493f209f50e08eb27a7e8f858bf36a2859145
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +97,14 @@ Implement N3.4 from REFACTOR.md. Collapse the repeated orchestration around task
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T16:41:00.452Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused lifecycle comment-commit suites passed: eslint, build, task unit suites, run-cli lifecycle and block-finish contracts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T13:31:27.631Z, excerpt_hash=sha256:1a4af0ecbaa985f9b853c9e7bac493f209f50e08eb27a7e8f858bf36a2859145
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

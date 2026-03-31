@@ -1,9 +1,7 @@
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
-import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
-import { commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import {
   loadCommandContext,
@@ -18,9 +16,11 @@ import {
   executeTaskStatusTransitionRequest,
   normalizeTaskStatus,
   nowIso,
+  prepareTaskTransitionComment,
   readCommitInfo,
   readDeferredTaskTransitionWarnings,
   resolvePrimaryTag,
+  runTaskTransitionCommentCommit,
   toStringArray,
 } from "./shared.js";
 
@@ -75,12 +75,15 @@ export async function cmdTaskSetStatus(opts: {
     }
     const resolved = ctx.resolvedProject;
 
-    let commentBody: string | undefined;
-    if (opts.author && opts.body) {
-      commentBody = opts.commitFromComment
-        ? formatCommentBodyForCommit(opts.body, config)
-        : opts.body;
-    }
+    const preparedComment =
+      opts.author && opts.body
+        ? prepareTaskTransitionComment({
+            body: opts.body,
+            enabled: opts.commitFromComment,
+            config,
+          })
+        : null;
+    const commentBody = preparedComment?.commentBody;
 
     const at = nowIso();
     const commitInfo = opts.commit ? await readCommitInfo(resolved.gitRoot, opts.commit) : null;
@@ -148,7 +151,7 @@ export async function cmdTaskSetStatus(opts: {
           message: "--body is required when using --commit-from-comment",
         });
       }
-      await commitFromComment({
+      await runTaskTransitionCommentCommit({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
@@ -158,14 +161,13 @@ export async function cmdTaskSetStatus(opts: {
         statusFrom: currentStatusForCommit,
         statusTo: nextStatus,
         commentBody: opts.body,
-        formattedComment: formatCommentBodyForCommit(opts.body, config),
+        formattedComment: preparedComment?.formattedComment ?? null,
         emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus(nextStatus),
         allow: opts.commitAllow,
         autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
         allowTasks: opts.commitAllowTasks,
         requireClean: opts.commitRequireClean,
         quiet: opts.quiet,
-        config,
       });
     }
 

@@ -1,15 +1,11 @@
 import { mapBackendError } from "../../cli/error-map.js";
-import { infoMessage, successMessage } from "../../cli/output.js";
-import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
+import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import type { TaskData } from "../../backends/task-backend.js";
 
-import { commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
-
-import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 
 import {
   emitTransitionWarnings,
@@ -21,10 +17,12 @@ import {
   isVerifyStepsFilled,
   normalizeTaskDocVersion,
   nowIso,
+  prepareTaskTransitionComment,
   readDeferredTaskTransitionWarnings,
   requiresVerifyStepsByPrimary,
   requireStructuredComment,
   resolvePrimaryTag,
+  runTaskTransitionCommentCommit,
   taskObservationSectionName,
   toStringArray,
 } from "./shared.js";
@@ -104,11 +102,12 @@ export async function cmdStart(opts: {
 
     const { prefix, min_chars: minChars } = ctx.config.tasks.comments.start;
     requireStructuredComment(opts.body, prefix, minChars);
-
-    const formattedComment = opts.commitFromComment
-      ? formatCommentBodyForCommit(opts.body, ctx.config)
-      : null;
-    const commentBody = formattedComment ?? opts.body;
+    const preparedComment = prepareTaskTransitionComment({
+      body: opts.body,
+      enabled: opts.commitFromComment,
+      config: ctx.config,
+    });
+    const commentBody = preparedComment.commentBody ?? opts.body;
 
     const at = nowIso();
     let currentStatusForCommit = "TODO";
@@ -160,38 +159,25 @@ export async function cmdStart(opts: {
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {
-      if (!opts.quiet) {
-        process.stdout.write(
-          `${infoMessage("task marked DOING; creating commit from start comment")}\n`,
-        );
-      }
-      const mode = ctx.config.workflow_mode;
-      let executorAgent = opts.author;
-      if (mode === "direct") {
-        const lock = await readDirectWorkLock(ctx.resolvedProject.agentplaneDir);
-        const lockAgent = lock?.task_id === opts.taskId ? (lock.agent?.trim() ?? "") : "";
-        if (lockAgent) executorAgent = lockAgent;
-      }
-
-      commitInfo = await commitFromComment({
+      commitInfo = await runTaskTransitionCommentCommit({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
         primaryTag: primaryTagForCommit,
-        executorAgent,
         author: opts.author,
         statusFrom: currentStatusForCommit,
         statusTo: "DOING",
         commentBody: opts.body,
-        formattedComment,
+        formattedComment: preparedComment.formattedComment,
         emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("DOING"),
         allow: opts.commitAllow,
         autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
         allowTasks: opts.commitAllowTasks,
         requireClean: opts.commitRequireClean,
         quiet: opts.quiet,
-        config: ctx.config,
+        progressMessage: "task marked DOING; creating commit from start comment",
+        resolveExecutorAgent: true,
       });
     }
 
