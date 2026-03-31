@@ -37,6 +37,7 @@ import {
   captureStdIO,
   cleanGitEnv,
   commitAll,
+  expectAgentJsonEnvelope,
   configureGitUser,
   createUpgradeBundle,
   getAgentplaneHome,
@@ -47,6 +48,7 @@ import {
   mkGitRepoRootWithBranch,
   mkTempDir,
   pathExists,
+  parseAgentJsonEnvelope,
   stageGitignoreIfPresent,
   stubTaskBackend,
   writeConfig,
@@ -56,39 +58,6 @@ import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
-
-type AgentJsonEnvelope = {
-  schema_version?: number;
-  mode?: string;
-  command?: string;
-  ok?: boolean;
-  exit_code?: number;
-  stdout?: string;
-  stderr?: string;
-  data?: unknown;
-};
-
-function expectAgentJsonEnvelopeShape(
-  payload: AgentJsonEnvelope,
-  opts: {
-    command: string;
-    ok: boolean;
-    exitCode: number;
-    hasData: boolean;
-  },
-): void {
-  expect(payload.schema_version).toBe(1);
-  expect(payload.mode).toBe("agent_json_v1");
-  expect(payload.command).toBe(opts.command);
-  expect(payload.ok).toBe(opts.ok);
-  expect(payload.exit_code).toBe(opts.exitCode);
-  expect(Object.keys(payload)).toEqual(
-    opts.hasData
-      ? ["schema_version", "mode", "command", "ok", "exit_code", "stdout", "stderr", "data"]
-      : ["schema_version", "mode", "command", "ok", "exit_code", "stdout", "stderr"],
-  );
-  expect(Object.hasOwn(payload, "data")).toBe(opts.hasData);
-}
 
 describe("runCli", () => {
   it("prints help on --help", async () => {
@@ -156,16 +125,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["--output", "json", "task", "--help"]);
       expect(code).toBe(0);
-      const payload = JSON.parse(io.stdout) as {
-        mode?: string;
-        command?: string;
-        ok?: boolean;
-        exit_code?: number;
-        stdout?: string;
-        stderr?: string;
-        data?: unknown;
-      };
-      expectAgentJsonEnvelopeShape(payload, {
+      const payload = parseAgentJsonEnvelope(io.stdout);
+      expectAgentJsonEnvelope(payload, {
         command: "help",
         ok: true,
         exitCode: 0,
@@ -777,8 +738,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["--output", "json", "config", "show", "--root", root]);
       expect(code).toBe(0);
-      const payload = JSON.parse(io.stdout) as AgentJsonEnvelope;
-      expectAgentJsonEnvelopeShape(payload, {
+      const payload = parseAgentJsonEnvelope(io.stdout);
+      expectAgentJsonEnvelope(payload, {
         command: "config show",
         ok: true,
         exitCode: 0,
@@ -810,8 +771,8 @@ describe("runCli", () => {
         },
       });
       expect(code).toBe(7);
-      const payload = JSON.parse(io.stdout) as AgentJsonEnvelope;
-      expectAgentJsonEnvelopeShape(payload, {
+      const payload = parseAgentJsonEnvelope(io.stdout);
+      expectAgentJsonEnvelope(payload, {
         command: "demo command",
         ok: false,
         exitCode: 7,

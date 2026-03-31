@@ -42,6 +42,7 @@ import {
   commitAll,
   configureGitUser,
   createUpgradeBundle,
+  expectAgentJsonEnvelope,
   getAgentplaneHome,
   gitBranchExists,
   installRunCliIntegrationHarness,
@@ -49,7 +50,9 @@ import {
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
   mkTempDir,
+  parseAgentJsonEnvelope,
   pathExists,
+  splitOutputLines,
   stageGitignoreIfPresent,
   stubTaskBackend,
   writeConfig,
@@ -69,58 +72,6 @@ installRunCliIntegrationHarness();
 const CYRILLIC_RE = /[\u0400-\u04FF]/u;
 const RUSSIAN_TRACE_LINE = "Привет из raw trace";
 const RUSSIAN_LAST_MESSAGE = "Привет из сообщения Codex";
-
-function splitLines(text: string): string[] {
-  return text
-    .trim()
-    .split(/\r?\n/)
-    .map((line) => line.trimEnd())
-    .filter(Boolean);
-}
-
-function parseJsonEnvelope(stdout: string): {
-  schema_version?: number;
-  mode?: string;
-  command?: string;
-  ok?: boolean;
-  exit_code?: number;
-  stdout?: string;
-  stderr?: string;
-  data?: unknown;
-} {
-  return JSON.parse(stdout) as {
-    schema_version?: number;
-    mode?: string;
-    command?: string;
-    ok?: boolean;
-    exit_code?: number;
-    stdout?: string;
-    stderr?: string;
-    data?: unknown;
-  };
-}
-
-function expectAgentJsonTextEnvelope(
-  payload: ReturnType<typeof parseJsonEnvelope>,
-  command: string,
-  exitCode: number,
-): void {
-  expect(payload.schema_version).toBe(1);
-  expect(payload.mode).toBe("agent_json_v1");
-  expect(payload.command).toBe(command);
-  expect(payload.ok).toBe(exitCode === 0);
-  expect(payload.exit_code).toBe(exitCode);
-  expect(Object.keys(payload)).toEqual([
-    "schema_version",
-    "mode",
-    "command",
-    "ok",
-    "exit_code",
-    "stdout",
-    "stderr",
-  ]);
-  expect(Object.hasOwn(payload, "data")).toBe(false);
-}
 
 type RunShowPayload = {
   task_id: string;
@@ -2619,7 +2570,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "next", "--root", root]);
       expect(code).toBe(0);
-      const lines = splitLines(io.stdout);
+      const lines = splitOutputLines(io.stdout);
       expect(lines).toHaveLength(2);
       expect(lines[0]).toContain(taskA);
       expect(lines[0]).not.toContain(taskB);
@@ -2714,7 +2665,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "next", "--limit", "1", "--quiet", "--root", root]);
       expect(code).toBe(0);
-      const lines = splitLines(io.stdout);
+      const lines = splitOutputLines(io.stdout);
       expect(lines).toHaveLength(1);
       expect(lines[0]).toEqual(expect.stringContaining("[TODO]"));
       const matchedIds = taskIds.filter((id) => lines[0]?.includes(id));
@@ -2828,7 +2779,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "search", "searchable", "--root", root]);
       expect(code).toBe(0);
-      const lines = splitLines(io.stdout);
+      const lines = splitOutputLines(io.stdout);
       expect(lines).toHaveLength(1);
       expect(lines[0]).toContain(taskId);
       expect(lines[0]).toContain("Searchable task");
@@ -2931,7 +2882,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      const lines = splitLines(io.stdout);
+      const lines = splitOutputLines(io.stdout);
       expect(lines).toHaveLength(1);
       expect(lines[0]).toContain("Regex task");
     } finally {
@@ -3091,6 +3042,7 @@ describe("runCli", () => {
 
   it("task verify-show prints Verify Steps", async () => {
     const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
     let taskId = "";
     {
       const io = captureStdIO();
@@ -3355,7 +3307,7 @@ describe("runCli", () => {
     try {
       const code2 = await runCli(["task", "list", "--root", root]);
       expect(code2).toBe(0);
-      const lines = splitLines(io2.stdout);
+      const lines = splitOutputLines(io2.stdout);
       expect(lines).toHaveLength(3);
       expect(lines[0] ?? "").toContain("[TODO]");
       expect(lines[1] ?? "").toContain("[TODO]");
@@ -3479,7 +3431,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      const lines = splitLines(io.stdout);
+      const lines = splitOutputLines(io.stdout);
       expect(lines).toHaveLength(1);
       expect(lines[0]).toContain(taskId);
       expect(lines[0]).toContain("Filter task");
@@ -3520,8 +3472,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["--output", "json", "task", "list", "--root", root]);
       expect(code).toBe(0);
-      const payload = parseJsonEnvelope(listIo.stdout);
-      expectAgentJsonTextEnvelope(payload, "task list", 0);
+      const payload = parseAgentJsonEnvelope(listIo.stdout);
+      expectAgentJsonEnvelope(payload, { command: "task list", ok: true, exitCode: 0 });
       expect(payload.stdout).toContain("Total: 2 (TODO=2)");
       expect(payload.stdout).toContain(taskIds[0] ?? "");
       expect(payload.stdout).toContain(taskIds[1] ?? "");
@@ -3534,8 +3486,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["--output", "json", "task", "search", "json", "--root", root]);
       expect(code).toBe(0);
-      const payload = parseJsonEnvelope(searchIo.stdout);
-      expectAgentJsonTextEnvelope(payload, "task search", 0);
+      const payload = parseAgentJsonEnvelope(searchIo.stdout);
+      expectAgentJsonEnvelope(payload, { command: "task search", ok: true, exitCode: 0 });
       expect(payload.stdout).toContain("Json list one");
       expect(payload.stdout).toContain("Json list two");
       expect(payload.stderr).toBe("");
@@ -3556,8 +3508,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      const payload = parseJsonEnvelope(nextIo.stdout);
-      expectAgentJsonTextEnvelope(payload, "task next", 0);
+      const payload = parseAgentJsonEnvelope(nextIo.stdout);
+      expectAgentJsonEnvelope(payload, { command: "task next", ok: true, exitCode: 0 });
       expect(payload.stdout).toContain("Ready: 1 / 2");
       expect(payload.stderr).toBe("");
     } finally {

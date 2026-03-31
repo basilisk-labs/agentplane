@@ -17,6 +17,7 @@ import {
 import {
   extractDocSection,
   normalizeTaskDocVersion,
+  resolveWritableDocSections,
   taskObservationSectionName,
 } from "../commands/task/shared.js";
 import { CliError } from "../shared/errors.js";
@@ -354,12 +355,14 @@ export async function persistRunnerOutcomeToTask(opts: {
         projection,
         previous: current.runner ?? null,
       });
-      const baseDoc = ensureDocSections(
-        String(current.doc ?? ""),
-        opts.ctx.config.tasks.doc.required_sections,
-      );
       const docVersion = normalizeTaskDocVersion(current.doc_version);
       const observationSection = taskObservationSectionName(docVersion);
+      const writableSections = resolveWritableDocSections({
+        allowedSections: opts.ctx.config.tasks.doc.sections,
+        requiredSections: opts.ctx.config.tasks.doc.required_sections,
+        targetSection: observationSection,
+      });
+      const baseDoc = ensureDocSections(String(current.doc ?? ""), writableSections);
       const currentObservation = extractDocSection(baseDoc, observationSection);
       const nextObservation = replaceRunnerOutcomeSection(
         currentObservation,
@@ -374,7 +377,7 @@ export async function persistRunnerOutcomeToTask(opts: {
         setTaskSectionIntent({
           section: observationSection,
           text: nextObservation,
-          requiredSections: opts.ctx.config.tasks.doc.required_sections,
+          requiredSections: writableSections,
         }),
         touchTaskDocMetaIntent({
           updatedBy: resolveRunnerUpdatedBy(current),
@@ -394,10 +397,12 @@ export async function persistRunnerOutcomeToTask(opts: {
     projection,
     previous: task.runner ?? null,
   });
-  const baseDoc = ensureDocSections(
-    String(task.doc ?? ""),
-    opts.ctx.config.tasks.doc.required_sections,
-  );
+  const writableSections = resolveWritableDocSections({
+    allowedSections: opts.ctx.config.tasks.doc.sections,
+    requiredSections: opts.ctx.config.tasks.doc.required_sections,
+    targetSection: taskObservationSectionName(normalizeTaskDocVersion(task.doc_version)),
+  });
+  const baseDoc = ensureDocSections(String(task.doc ?? ""), writableSections);
   const docVersion = normalizeTaskDocVersion(task.doc_version);
   const observationSection = taskObservationSectionName(docVersion);
   const currentObservation = extractDocSection(baseDoc, observationSection);
@@ -411,7 +416,7 @@ export async function persistRunnerOutcomeToTask(opts: {
   );
   const nextDoc = ensureDocSections(
     setMarkdownSection(baseDoc, observationSection, nextObservation),
-    opts.ctx.config.tasks.doc.required_sections,
+    writableSections,
   );
   await backend.writeTask({
     ...task,

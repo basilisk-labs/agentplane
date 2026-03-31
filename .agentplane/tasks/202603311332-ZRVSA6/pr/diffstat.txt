@@ -1,0 +1,15 @@
+ .agentplane/tasks/202603311332-ZRVSA6/README.md    | 58 ++++++++++++----
+ .../tasks/202603311332-ZRVSA6/pr/diffstat.txt      | 11 +++
+ .agentplane/tasks/202603311332-ZRVSA6/pr/meta.json | 12 ++++
+ .agentplane/tasks/202603311332-ZRVSA6/pr/review.md | 39 +++++++++++
+ .../tasks/202603311332-ZRVSA6/pr/verify.log        |  0
+ .../src/cli/run-cli.core.tasks.query.test.ts       | 80 +++++-----------------
+ packages/agentplane/src/cli/run-cli.core.test.ts   | 55 +++------------
+ .../agentplane/src/cli/run-cli.test-helpers.ts     | 47 ++++++++++++-
+ packages/agentplane/src/commands/task/doc.ts       | 22 ++++--
+ .../agentplane/src/commands/task/doc.unit.test.ts  | 57 +++++++++++++++
+ packages/agentplane/src/commands/task/shared.ts    |  1 +
+ .../src/commands/task/shared.unit.test.ts          | 19 +++++
+ .../agentplane/src/commands/task/shared/docs.ts    | 21 +++++-
+ packages/agentplane/src/runner/task-state.ts       | 25 ++++---
+ 14 files changed, 304 insertions(+), 143 deletions(-)

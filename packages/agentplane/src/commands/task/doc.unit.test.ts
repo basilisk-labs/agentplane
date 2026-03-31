@@ -49,6 +49,17 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
   });
 }
 
+function mkCtxWithOptionalVerifySteps(overrides?: Partial<CommandContext>): CommandContext {
+  return makeTaskCommandContext({
+    taskBackend: makeTaskBackendDouble(),
+    overrides,
+    configureConfig: (config) => {
+      config.tasks.doc.sections = ["Summary", "Scope", "Plan", "Verify Steps", "Verification"];
+      config.tasks.doc.required_sections = ["Summary", "Scope", "Plan", "Verification"];
+    },
+  });
+}
+
 describe("task doc commands (unit)", () => {
   beforeEach(() => {
     mocks.loadCommandContext.mockReset();
@@ -164,6 +175,52 @@ describe("task doc commands (unit)", () => {
     expect(rc).toBe(0);
     expect(currentTask.doc).toContain("Line one\nLine two");
     expect(currentTask.doc).not.toContain(String.raw`Line one\nLine two`);
+  });
+
+  it("cmdTaskDocSet updates optional doc sections allowed by config", async () => {
+    let currentTask = mkTask({
+      doc: [
+        "## Summary",
+        "Old summary",
+        "",
+        "## Scope",
+        "Current scope",
+        "",
+        "## Plan",
+        "Current plan",
+        "",
+        "## Verification",
+        "",
+      ].join("\n"),
+    });
+    const store = {
+      update: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await updater(currentTask);
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    const ctx = mkCtxWithOptionalVerifySteps();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdTaskDocSet } = await import("./doc.js");
+    const rc = await cmdTaskDocSet({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      section: "Verify Steps",
+      text: "1. Run focused checks.\n2. Expect exit code 0.",
+      fullDoc: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(currentTask.doc).toContain("## Verify Steps");
+    expect(currentTask.doc).toContain("1. Run focused checks.");
+    expect(currentTask.doc).toContain("## Verification");
   });
 
   it("cmdTaskDocSet carries expectedCurrentText for backend writes", async () => {

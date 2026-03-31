@@ -14,6 +14,7 @@ export {
   isDocSectionFilled,
   ensureAgentFilledRequiredDocSections,
   normalizeVerificationSectionLayout,
+  resolveWritableDocSections,
 } from "./shared/docs.js";
 export {
   normalizeDependsOnInput,

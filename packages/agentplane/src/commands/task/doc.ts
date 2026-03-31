@@ -27,7 +27,7 @@ import {
   touchTaskDocMetaIntent,
 } from "../shared/task-store.js";
 
-import { decodeEscapedTaskTextNewlines } from "./shared.js";
+import { decodeEscapedTaskTextNewlines, resolveWritableDocSections } from "./shared.js";
 
 type TaskDocSetOutcome = "section-updated" | "full-doc-updated" | "no-change";
 
@@ -42,13 +42,13 @@ function buildUpdatedTaskDoc(opts: {
   section?: string;
   text: string;
   requestMode: "full-doc" | "section";
-  requiredSections: string[];
+  sectionOrder: string[];
   headingKeys: Set<string>;
   targetKey: string;
 }): string {
-  const baseDoc = ensureDocSections(opts.baseDocRaw, opts.requiredSections);
+  const baseDoc = ensureDocSections(opts.baseDocRaw, opts.sectionOrder);
   if (opts.requestMode === "full-doc") {
-    return ensureDocSections(opts.text, opts.requiredSections);
+    return ensureDocSections(opts.text, opts.sectionOrder);
   }
 
   let nextText = opts.text;
@@ -65,7 +65,7 @@ function buildUpdatedTaskDoc(opts: {
 
   return ensureDocSections(
     setMarkdownSection(baseDoc, opts.section ?? "", nextText),
-    opts.requiredSections,
+    opts.sectionOrder,
   );
 }
 
@@ -165,6 +165,14 @@ export async function cmdTaskDocSet(opts: {
       : headingKeys.size > 0 && (headingKeys.size > 1 || !headingKeys.has(targetKey))
         ? "full-doc"
         : "section";
+    const sectionOrder =
+      requestMode === "full-doc"
+        ? [...config.tasks.doc.required_sections]
+        : resolveWritableDocSections({
+            allowedSections: allowed,
+            requiredSections: config.tasks.doc.required_sections,
+            targetSection: opts.section ?? "",
+          });
     let changed = false;
     const result = await applyTaskMutation({
       ctx,
@@ -179,7 +187,7 @@ export async function cmdTaskDocSet(opts: {
           section: opts.section,
           text,
           requestMode,
-          requiredSections: config.tasks.doc.required_sections,
+          sectionOrder,
           headingKeys,
           targetKey,
         });
@@ -214,7 +222,7 @@ export async function cmdTaskDocSet(opts: {
             setTaskSectionIntent({
               section: opts.section ?? "",
               text: extractSectionTextForPatch(nextDoc, opts.section ?? "") ?? "",
-              requiredSections: config.tasks.doc.required_sections,
+              requiredSections: sectionOrder,
               expectedCurrentText: expectedCurrentSectionText,
             }),
             ...(updatedBy ? [touchTaskDocMetaIntent({ updatedBy })] : []),
