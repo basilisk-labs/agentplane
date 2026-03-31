@@ -1,4 +1,8 @@
  .agentplane/tasks/202603301856-7SPP8K/README.md    | 60 +++++++++++++++++-----
+ .../tasks/202603301856-7SPP8K/pr/diffstat.txt      | 11 ++++
+ .agentplane/tasks/202603301856-7SPP8K/pr/meta.json | 12 +++++
+ .agentplane/tasks/202603301856-7SPP8K/pr/review.md | 39 ++++++++++++++
+ .../tasks/202603301856-7SPP8K/pr/verify.log        |  0
  docs/developer/framework-refactor-program.mdx      |  2 +-
  docs/user/cli-reference.generated.mdx              |  4 +-
  docs/user/commands.mdx                             |  2 +-
@@ -8,4 +12,4 @@
  packages/agentplane/src/cli/run-cli.ts             | 14 ++---
  packages/agentplane/src/cli/spec/help.ts           |  2 +-
  .../agentplane/src/commands/docs/cli.command.ts    |  4 +-
- 10 files changed, 79 insertions(+), 58 deletions(-)
+ 14 files changed, 141 insertions(+), 58 deletions(-)

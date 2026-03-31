@@ -1,10 +1,11 @@
 ---
 id: "202603301856-7SPP8K"
 title: "Delete obsolete routing helpers and update tests/docs"
-status: "DOING"
+result_summary: "integrate: squash task/202603301856-7SPP8K/delete-obsolete-routing-helpers"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T09:10:07.902Z"
   updated_by: "CODER"
   note: "Focused vitest slice passed for help/docs contract cleanup; eslint passed on touched TS files; generated CLI reference and top-level help snapshot refreshed."
-commit: null
+commit:
+  hash: "61c1a5df8b7ab069c8fd157b6689e0303e924784"
+  message: "🧩 7SPP8K integrate: squash task/202603301856-7SPP8K/delete-obsolete-routing-helpers"
 comments:
   -
     author: "CODER"
     body: "Start: remove stale split-era routing references from help/docs/tests without changing public command behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-7SPP8K/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused vitest slice passed for help/docs contract cleanup; eslint passed on touched TS files; generated CLI reference and top-level help snapshot refreshed."
+  -
+    type: "status"
+    at: "2026-03-31T09:14:32.276Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-7SPP8K/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T09:10:07.907Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T09:14:32.281Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 1 / R1.5 from REFACTOR.md. old duplicated matcher paths are removed and the safety-net tests still pass unchanged."
 sections:
   Summary: |-

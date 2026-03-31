@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301856-7SPP8K/delete-obsolete-routing-helpers",
   "created_at": "2026-03-31T09:12:10.458Z",
+  "head_sha": "30bab77e13d21086d5318a9f600dfdf0f4e61746",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "61c1a5df8b7ab069c8fd157b6689e0303e924784",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T09:14:32.233Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301856-7SPP8K",
-  "updated_at": "2026-03-31T09:12:51.475Z",
+  "updated_at": "2026-03-31T09:14:32.233Z",
   "verify": {
     "status": "skipped"
   }
