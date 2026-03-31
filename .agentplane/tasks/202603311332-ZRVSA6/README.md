@@ -1,10 +1,11 @@
 ---
 id: "202603311332-ZRVSA6"
 title: "N6.2 Extract shared output-capture and report-assertion helpers for CLI contract suites"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-ZRVSA6/shared-cli-output-helpers"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-31T19:07:44.518Z"
   updated_by: "CODER"
   note: "Shared CLI output helpers are extracted; optional doc sections now write correctly for doc and runner flows; verified with eslint, build, shared/doc unit tests, and CLI contract suites for core/doc-write/tasks.query."
-commit: null
+commit:
+  hash: "bf3508e1dacfc931c3838dbf4a08c63b1907d21e"
+  message: "📝 ZRVSA6 task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: extract shared CLI output-capture and report-assertion helpers from the existing contract suites, keep the helper surface narrow, and delete duplicated parsing/assertion plumbing instead of inventing a test framework."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-ZRVSA6/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Shared CLI output helpers are extracted; optional doc sections now write correctly for doc and runner flows; verified with eslint, build, shared/doc unit tests, and CLI contract suites for core/doc-write/tasks.query."
+  -
+    type: "status"
+    at: "2026-03-31T19:09:52.589Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-ZRVSA6/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T19:07:44.522Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T19:09:52.594Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N6.2 from REFACTOR.md. Reduce repeated fixture setup and assertion plumbing in the largest test suites after the new production seams are stable.. Acceptance: output-heavy suites stop re-implementing the same capture/assertion plumbing. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
