@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603311332-WJM993/split-core-cli-commands",
+  "created_at": "2026-03-31T19:48:44.846Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603311332-WJM993",
+  "updated_at": "2026-03-31T19:48:49.889Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

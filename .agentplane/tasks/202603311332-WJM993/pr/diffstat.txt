@@ -1,0 +1,9 @@
+ .agentplane/tasks/202603311332-WJM993/README.md    |  58 +-
+ .../src/cli/run-cli/command-catalog/core.ts        |  27 +-
+ .../agentplane/src/cli/run-cli/commands/core.ts    | 777 +--------------------
+ .../cli/run-cli/commands/core/agent-profiles.ts    | 127 ++++
+ .../src/cli/run-cli/commands/core/agents.ts        | 121 ++++
+ .../src/cli/run-cli/commands/core/preflight.ts     | 352 ++++++++++
+ .../src/cli/run-cli/commands/core/quickstart.ts    |  55 ++
+ .../src/cli/run-cli/commands/core/role.ts          | 152 ++++
+ 8 files changed, 873 insertions(+), 796 deletions(-)

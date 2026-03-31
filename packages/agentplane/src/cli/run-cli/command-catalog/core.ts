@@ -19,7 +19,10 @@ import {
   modeSetSpec,
   profileSetSpec,
 } from "../commands/config.js";
-import { agentsSpec, preflightSpec, quickstartSpec, roleSpec } from "../commands/core.js";
+import { agentsSpec } from "../commands/core/agents.js";
+import { preflightSpec } from "../commands/core/preflight.js";
+import { quickstartSpec } from "../commands/core/quickstart.js";
+import { roleSpec } from "../commands/core/role.js";
 import { ideSyncSpec } from "../commands/ide.js";
 import { initSpec } from "../commands/init.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
@@ -69,13 +72,17 @@ export const CORE_COMMANDS = [
       needsTaskContext: false,
     },
   ),
-  entry(quickstartSpec, () => import("../commands/core.js").then((m) => m.runQuickstart), {
-    needsProject: false,
-    needsLoadedConfig: false,
-    needsTaskContext: false,
-    invocation: requireCanonicalCommandInvocation(["quickstart"]),
-  }),
-  entry(preflightSpec, () => import("../commands/core.js").then((m) => m.runPreflight), {
+  entry(
+    quickstartSpec,
+    () => import("../commands/core/quickstart.js").then((m) => m.runQuickstart),
+    {
+      needsProject: false,
+      needsLoadedConfig: false,
+      needsTaskContext: false,
+      invocation: requireCanonicalCommandInvocation(["quickstart"]),
+    },
+  ),
+  entry(preflightSpec, () => import("../commands/core/preflight.js").then((m) => m.runPreflight), {
     needsProject: false,
     needsLoadedConfig: false,
     needsTaskContext: false,
@@ -99,7 +106,7 @@ export const CORE_COMMANDS = [
       needsTaskContext: false,
     },
   ),
-  entry(roleSpec, () => import("../commands/core.js").then((m) => m.runRole), {
+  entry(roleSpec, () => import("../commands/core/role.js").then((m) => m.runRole), {
     needsProject: false,
     needsLoadedConfig: false,
     needsTaskContext: false,
@@ -107,7 +114,7 @@ export const CORE_COMMANDS = [
   }),
   entry(
     agentsSpec,
-    (deps) => import("../commands/core.js").then((m) => m.makeRunAgentsHandler(deps)),
+    (deps) => import("../commands/core/agents.js").then((m) => m.makeRunAgentsHandler(deps)),
     {
       needsProject: true,
       needsLoadedConfig: false,
