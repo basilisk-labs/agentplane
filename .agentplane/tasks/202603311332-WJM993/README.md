@@ -1,10 +1,11 @@
 ---
 id: "202603311332-WJM993"
 title: "N5.1 Split `cli/run-cli/commands/core.ts` by subcommand/report concern"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-WJM993/split-core-cli-commands"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T19:47:17.997Z"
   updated_by: "CODER"
   note: "Split cli/run-cli/commands/core.ts into thin barrel plus quickstart, preflight, role, agents, and agent-profile modules; command catalog now lazy-loads the extracted handlers directly. eslint, core unit, boot, readiness, help-contract, and framework bootstrap all passed."
-commit: null
+commit:
+  hash: "fe0c0d70844884805602a6126965dd39a4ebb82a"
+  message: "📝 WJM993 task: add PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: split cli/run-cli/commands/core.ts into thin orchestration plus extracted quickstart, preflight, role, and agents modules while preserving lazy registry wiring and current CLI contracts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-WJM993/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Split cli/run-cli/commands/core.ts into thin barrel plus quickstart, preflight, role, agents, and agent-profile modules; command catalog now lazy-loads the extracted handlers directly. eslint, core unit, boot, readiness, help-contract, and framework bootstrap all passed."
+  -
+    type: "status"
+    at: "2026-03-31T19:50:06.393Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-WJM993/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T19:47:18.001Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T19:50:06.398Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N5.1 from REFACTOR.md. Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.. Acceptance: core CLI command routing no longer shares one file with unrelated report renderers and helpers. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-

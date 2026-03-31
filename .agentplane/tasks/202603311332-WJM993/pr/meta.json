@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311332-WJM993/split-core-cli-commands",
   "created_at": "2026-03-31T19:48:44.846Z",
+  "head_sha": "eb0e9f7d3886ee3a06c3da1b783db1b5dacd6564",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "fe0c0d70844884805602a6126965dd39a4ebb82a",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T19:50:06.352Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311332-WJM993",
-  "updated_at": "2026-03-31T19:48:49.889Z",
+  "updated_at": "2026-03-31T19:50:06.352Z",
   "verify": {
     "status": "skipped"
   }
