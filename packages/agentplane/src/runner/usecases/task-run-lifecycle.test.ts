@@ -1,4 +1,4 @@
-import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
@@ -21,6 +21,7 @@ import {
   retryTaskRunnerExecution,
 } from "./task-run-lifecycle.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
+import { writeRunnerExecutable } from "../test-helpers.js";
 
 installRunCliIntegrationHarness();
 const originalPath = process.env.PATH;
@@ -85,10 +86,7 @@ async function configureCustomRunner(root: string, scriptLines: string[]): Promi
   await writeConfig(root, config);
 
   const fakeBinDir = path.join(root, "bin");
-  const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
-  await mkdir(fakeBinDir, { recursive: true });
-  await writeFile(fakeRunnerPath, scriptLines.join("\n"), "utf8");
-  await chmod(fakeRunnerPath, 0o755);
+  await writeRunnerExecutable(root, "custom-runner", scriptLines);
   process.env.PATH = `${fakeBinDir}${path.delimiter}${process.env.PATH ?? ""}`;
 }
 

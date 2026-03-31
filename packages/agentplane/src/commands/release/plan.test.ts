@@ -1,41 +1,25 @@
 import { execFile } from "node:child_process";
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helpers.js";
+import { commitAll, mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helpers.js";
+import { seedReleaseWorkspace } from "../release.test-helpers.js";
 import { runReleasePlan, releasePlanSpec } from "./plan.command.js";
 
 const execFileAsync = promisify(execFile);
 const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 
-async function commitAll(root: string, message: string): Promise<void> {
-  await execFileAsync("git", ["add", "-A"], { cwd: root });
-  await execFileAsync("git", ["commit", "-m", message], { cwd: root });
-}
-
 describeWhenNotHook("release plan", () => {
   it("writes a release plan dir with changes list and next patch version", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-
-    await mkdir(path.join(root, "packages", "core"), { recursive: true });
-    await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
-    await writeFile(
-      path.join(root, "packages", "core", "package.json"),
-      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify(
-        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
-        null,
-        2,
-      ) + "\n",
-      "utf8",
-    );
+    await seedReleaseWorkspace(root, {
+      coreVersion: "0.2.6",
+      cliVersion: "0.2.6",
+      dependencyVersion: "0.2.6",
+    });
     await commitAll(root, "seed");
     await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 

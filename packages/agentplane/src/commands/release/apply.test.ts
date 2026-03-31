@@ -4,7 +4,8 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helpers.js";
+import { commitAll, mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helpers.js";
+import { seedReleaseWorkspace, writeReleaseNotes } from "../release.test-helpers.js";
 import { runReleasePlan } from "./plan.command.js";
 import { pushReleaseRefs, runReleaseApply } from "./apply.command.js";
 
@@ -25,11 +26,6 @@ async function withDryRunReleaseMode<T>(work: () => Promise<T>): Promise<T> {
       process.env.AGENTPLANE_RELEASE_DRY_RUN = ORIGINAL_DRY_RUN;
     }
   }
-}
-
-async function commitAll(root: string, message: string): Promise<void> {
-  await execFileAsync("git", ["add", "-A"], { cwd: root });
-  await execFileAsync("git", ["commit", "-m", message], { cwd: root });
 }
 
 async function listRuns(root: string): Promise<string[]> {
@@ -78,25 +74,11 @@ describeWhenNotHook("release apply", () => {
   it("bumps versions, commits, and tags using the latest plan", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-
-    await mkdir(path.join(root, "packages", "core"), { recursive: true });
-    await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
-    await mkdir(path.join(root, "docs", "releases"), { recursive: true });
-
-    await writeFile(
-      path.join(root, "packages", "core", "package.json"),
-      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify(
-        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
-        null,
-        2,
-      ) + "\n",
-      "utf8",
-    );
+    await seedReleaseWorkspace(root, {
+      coreVersion: "0.2.6",
+      cliVersion: "0.2.6",
+      dependencyVersion: "0.2.6",
+    });
     await commitAll(root, "seed");
     await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
@@ -124,10 +106,10 @@ describeWhenNotHook("release apply", () => {
     const nextTag = String(versionJson.nextTag ?? "");
     expect(nextTag).toBe("v0.2.7");
 
-    await writeFile(
-      path.join(root, "docs", "releases", `${nextTag}.md`),
+    await writeReleaseNotes(
+      root,
+      nextTag.replace(/^v/u, ""),
       ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
-      "utf8",
     );
 
     const rcApply = await withDryRunReleaseMode(async () =>
