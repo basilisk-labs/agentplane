@@ -1,0 +1,4 @@
+ .agentplane/tasks/202603301857-F0343K/README.md  |  58 +++++++---
+ packages/agentplane/src/cli/run-cli.core.test.ts |  36 ++++++
+ packages/agentplane/src/cli/run-cli/globals.ts   | 141 ++++++++++++++---------
+ 3 files changed, 170 insertions(+), 65 deletions(-)

@@ -799,6 +799,42 @@ describe("runCli", () => {
     }
   });
 
+  it("runWithOutputMode keeps stdout/stderr pass-through behavior outside the structured collector", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runWithOutputMode({
+        mode: "json",
+        command: "passthrough demo",
+        run: () => {
+          process.stdout.write("inside stdout\n");
+          process.stderr.write("inside stderr\n");
+          return Promise.resolve(0);
+        },
+      });
+      expect(code).toBe(0);
+
+      process.stdout.write("outside stdout\n");
+      process.stderr.write("outside stderr\n");
+
+      const outsideStdout = "outside stdout\n";
+      const outsideStdoutIndex = io.stdout.indexOf(outsideStdout);
+      const hasOutsideStdout = outsideStdoutIndex !== -1;
+      const payloadText = hasOutsideStdout
+        ? io.stdout.slice(0, outsideStdoutIndex).trimEnd()
+        : io.stdout;
+      const payload = JSON.parse(payloadText) as {
+        stdout?: string;
+        stderr?: string;
+      };
+      expect(payload.stdout).toBe("inside stdout");
+      expect(payload.stderr).toBe("inside stderr");
+      expect(io.stdout.slice(outsideStdoutIndex)).toBe(outsideStdout);
+      expect(io.stderr).toBe("outside stderr\n");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("uses AGENTPLANE_OUTPUT=json as global output mode", async () => {
     const original = process.env.AGENTPLANE_OUTPUT;
     process.env.AGENTPLANE_OUTPUT = "json";

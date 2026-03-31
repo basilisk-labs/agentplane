@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603301857-F0343K/structured-output-collector",
+  "created_at": "2026-03-31T12:52:25.696Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603301857-F0343K",
+  "updated_at": "2026-03-31T12:52:33.782Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -1,3 +1,5 @@
+import { AsyncLocalStorage } from "node:async_hooks";
+
 import { CliError } from "../../shared/errors.js";
 
 export type ParsedArgs = {
@@ -164,6 +166,72 @@ function chunkToString(chunk: unknown, encoding?: BufferEncoding): string {
   return String(chunk);
 }
 
+type StructuredOutputStore = {
+  stdout: string[];
+  stderr: string[];
+};
+
+const structuredOutputStore = new AsyncLocalStorage<StructuredOutputStore>();
+
+let passthroughStdoutWrite = process.stdout.write.bind(process.stdout);
+let passthroughStderrWrite = process.stderr.write.bind(process.stderr);
+
+function appendStructuredChunk(
+  channel: keyof StructuredOutputStore,
+  chunk: unknown,
+  rest: readonly unknown[],
+): boolean {
+  const store = structuredOutputStore.getStore();
+  if (!store) return false;
+
+  const encoding = typeof rest[0] === "string" ? (rest[0] as BufferEncoding) : undefined;
+  store[channel].push(chunkToString(chunk, encoding));
+  const callback = rest.find((item) => typeof item === "function") as
+    | ((error?: Error | null) => void)
+    | undefined;
+  callback?.(null);
+  return true;
+}
+
+const structuredStdoutWrite = ((chunk: unknown, ...rest: unknown[]) => {
+  if (appendStructuredChunk("stdout", chunk, rest)) return true;
+  return passthroughStdoutWrite(chunk as never, ...(rest as []));
+}) as typeof process.stdout.write;
+
+const structuredStderrWrite = ((chunk: unknown, ...rest: unknown[]) => {
+  if (appendStructuredChunk("stderr", chunk, rest)) return true;
+  return passthroughStderrWrite(chunk as never, ...(rest as []));
+}) as typeof process.stderr.write;
+
+function ensureStructuredOutputProxyInstalled(): void {
+  if (process.stdout.write !== structuredStdoutWrite) {
+    passthroughStdoutWrite = process.stdout.write.bind(process.stdout);
+    process.stdout.write = structuredStdoutWrite;
+  }
+  if (process.stderr.write !== structuredStderrWrite) {
+    passthroughStderrWrite = process.stderr.write.bind(process.stderr);
+    process.stderr.write = structuredStderrWrite;
+  }
+}
+
+async function collectStructuredOutput(run: () => Promise<number>): Promise<{
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+}> {
+  ensureStructuredOutputProxyInstalled();
+
+  return await structuredOutputStore.run({ stdout: [], stderr: [] }, async () => {
+    const exitCode = await run();
+    const store = structuredOutputStore.getStore();
+    return {
+      exitCode,
+      stdout: store?.stdout.join("").trim() ?? "",
+      stderr: store?.stderr.join("").trim() ?? "",
+    };
+  });
+}
+
 export async function runWithOutputMode(opts: {
   mode: CliOutputMode;
   command: string;
@@ -171,58 +239,27 @@ export async function runWithOutputMode(opts: {
 }): Promise<number> {
   if (opts.mode === "text") return await opts.run();
 
-  const stdoutWrite = process.stdout.write.bind(process.stdout);
-  const stderrWrite = process.stderr.write.bind(process.stderr);
-  let stdout = "";
-  let stderr = "";
-
-  process.stdout.write = ((chunk: unknown, ...rest: unknown[]) => {
-    const encoding = typeof rest[0] === "string" ? (rest[0] as BufferEncoding) : undefined;
-    stdout += chunkToString(chunk, encoding);
-    const callback = rest.find((item) => typeof item === "function") as
-      | ((error?: Error | null) => void)
-      | undefined;
-    callback?.(null);
-    return true;
-  }) as typeof process.stdout.write;
-
-  process.stderr.write = ((chunk: unknown, ...rest: unknown[]) => {
-    const encoding = typeof rest[0] === "string" ? (rest[0] as BufferEncoding) : undefined;
-    stderr += chunkToString(chunk, encoding);
-    const callback = rest.find((item) => typeof item === "function") as
-      | ((error?: Error | null) => void)
-      | undefined;
-    callback?.(null);
-    return true;
-  }) as typeof process.stderr.write;
-
-  try {
-    const exitCode = await opts.run();
-    let parsed: unknown;
-    const trimmedStdout = stdout.trim();
-    if (trimmedStdout.length > 0) {
-      try {
-        parsed = JSON.parse(trimmedStdout) as unknown;
-      } catch {
-        parsed = undefined;
-      }
+  const { exitCode, stdout, stderr } = await collectStructuredOutput(opts.run);
+  let parsed: unknown;
+  if (stdout.length > 0) {
+    try {
+      parsed = JSON.parse(stdout) as unknown;
+    } catch {
+      parsed = undefined;
     }
-    const payload: Record<string, unknown> = {
-      schema_version: 1,
-      mode: "agent_json_v1",
-      command: opts.command,
-      ok: exitCode === 0,
-      exit_code: exitCode,
-      stdout: trimmedStdout,
-      stderr: stderr.trim(),
-    };
-    if (parsed !== undefined) {
-      payload.data = parsed;
-    }
-    stdoutWrite(`${JSON.stringify(payload, null, 2)}\n`);
-    return exitCode;
-  } finally {
-    process.stdout.write = stdoutWrite;
-    process.stderr.write = stderrWrite;
   }
+  const payload: Record<string, unknown> = {
+    schema_version: 1,
+    mode: "agent_json_v1",
+    command: opts.command,
+    ok: exitCode === 0,
+    exit_code: exitCode,
+    stdout,
+    stderr,
+  };
+  if (parsed !== undefined) {
+    payload.data = parsed;
+  }
+  passthroughStdoutWrite(`${JSON.stringify(payload, null, 2)}\n`);
+  return exitCode;
 }
