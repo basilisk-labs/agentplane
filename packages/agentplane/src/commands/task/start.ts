@@ -1,34 +1,29 @@
 import { mapBackendError } from "../../cli/error-map.js";
-import { infoMessage, successMessage, warnMessage } from "../../cli/output.js";
+import { infoMessage, successMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 import type { TaskData } from "../../backends/task-backend.js";
 
 import { commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
-import {
-  loadCommandContext,
-  loadTaskFromContext,
-  type CommandContext,
-} from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore, mutateTaskStore } from "../shared/task-store.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { applyTaskMutation } from "../shared/task-mutation.js";
 
 import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 
 import {
-  buildTaskStatusTransition,
+  emitTransitionWarnings,
   ensurePlanApprovedIfRequired,
-  ensureCommentCommitAllowed,
-  ensureStatusTransitionAllowed,
+  executeTaskStatusTransitionRequest,
   extractTaskObservationSection,
   defaultCommitEmojiForStatus,
   extractDocSection,
   isVerifyStepsFilled,
   normalizeTaskDocVersion,
   nowIso,
+  readDeferredTaskTransitionWarnings,
   requiresVerifyStepsByPrimary,
   requireStructuredComment,
-  resolveTaskDependencyState,
   resolvePrimaryTag,
   taskObservationSectionName,
   toStringArray,
@@ -110,96 +105,58 @@ export async function cmdStart(opts: {
     const { prefix, min_chars: minChars } = ctx.config.tasks.comments.start;
     requireStructuredComment(opts.body, prefix, minChars);
 
-    const useStore = backendIsLocalFileBackend(ctx);
-    const store = useStore ? getTaskStore(ctx) : null;
-    const task = useStore
-      ? await store!.get(opts.taskId)
-      : await loadTaskFromContext({ ctx, taskId: opts.taskId });
-    if (!useStore) {
-      assertStartDocRequirements(task, ctx.config);
-      ensurePlanApprovedIfRequired(task, ctx.config);
-    }
-
-    const currentStatus = String(task.status || "TODO").toUpperCase();
-    if (!useStore) {
-      ensureStatusTransitionAllowed({
-        currentStatus,
-        nextStatus: "DOING",
-        force: opts.force,
-      });
-    }
-    ensureCommentCommitAllowed({
-      enabled: opts.commitFromComment,
-      config: ctx.config,
-      action: "start",
-      confirmed: opts.confirmStatusCommit,
-      quiet: opts.quiet,
-      statusFrom: currentStatus,
-      statusTo: "DOING",
-    });
-
-    if (!opts.force) {
-      const dep = await resolveTaskDependencyState(task, ctx.taskBackend);
-      if (dep.missing.length > 0 || dep.incomplete.length > 0) {
-        if (!opts.quiet) {
-          if (dep.missing.length > 0) {
-            process.stderr.write(`${warnMessage(`missing deps: ${dep.missing.join(", ")}`)}\n`);
-          }
-          if (dep.incomplete.length > 0) {
-            process.stderr.write(
-              `${warnMessage(`incomplete deps: ${dep.incomplete.join(", ")}`)}\n`,
-            );
-          }
-        }
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: `Task is not ready: ${task.id} (use --force to override)`,
-        });
-      }
-    }
-
     const formattedComment = opts.commitFromComment
       ? formatCommentBodyForCommit(opts.body, ctx.config)
       : null;
     const commentBody = formattedComment ?? opts.body;
 
     const at = nowIso();
-    let currentStatusForCommit = currentStatus;
-    let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
-    await (useStore
-      ? mutateTaskStore(store!, opts.taskId, (current) => {
+    let currentStatusForCommit = "TODO";
+    let primaryTagForCommit = "meta";
+    let deferredWarnings: string[] = [];
+    try {
+      await applyTaskMutation({
+        ctx,
+        taskId: opts.taskId,
+        build: async (current) => {
           assertStartDocRequirements(current, ctx.config);
           ensurePlanApprovedIfRequired(current, ctx.config);
-          const currentStatus = String(current.status || "TODO").toUpperCase();
-          currentStatusForCommit = currentStatus;
-          primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
-          ensureStatusTransitionAllowed({
-            currentStatus,
-            nextStatus: "DOING",
-            force: opts.force,
-          });
-          return buildTaskStatusTransition({
+          const execution = await executeTaskStatusTransitionRequest({
             task: current,
+            backend: ctx.taskBackend,
+            config: ctx.config,
             at,
             toStatus: "DOING",
             eventAuthor: opts.author,
             updatedBy: opts.author,
             note: commentBody,
             comment: { author: opts.author, body: commentBody },
-          }).intents;
-        })
-      : ctx.taskBackend.writeTask(
-          buildTaskStatusTransition({
-            task,
-            at,
-            toStatus: "DOING",
-            eventAuthor: opts.author,
-            updatedBy: opts.author,
-            note: commentBody,
-            comment: { author: opts.author, body: commentBody },
-          }).nextTask,
-        ));
+            force: opts.force,
+            dependencyPolicy: { kind: "require-ready" },
+            commentCommitPolicy: {
+              enabled: opts.commitFromComment,
+              action: "start",
+              confirmed: opts.confirmStatusCommit,
+              quiet: opts.quiet,
+            },
+          });
+          currentStatusForCommit = execution.currentStatus;
+          primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
+          deferredWarnings = execution.deferredWarnings;
+          return { intents: execution.intents };
+        },
+      });
+    } catch (err) {
+      emitTransitionWarnings(
+        readDeferredTaskTransitionWarnings(err).length > 0
+          ? readDeferredTaskTransitionWarnings(err)
+          : deferredWarnings,
+        opts.quiet,
+      );
+      throw err;
+    }
+
+    emitTransitionWarnings(deferredWarnings, opts.quiet);
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {

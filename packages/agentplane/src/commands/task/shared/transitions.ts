@@ -103,6 +103,13 @@ export function ensureCommentCommitAllowed(opts: {
   }
 }
 
+export function emitTransitionWarnings(warnings: readonly string[], quiet: boolean): void {
+  if (quiet) return;
+  for (const warning of new Set(warnings.filter((item) => item.trim().length > 0))) {
+    process.stderr.write(`${warnMessage(warning)}\n`);
+  }
+}
+
 export function resolveCommentCommitWarning(opts: {
   enabled: boolean;
   config: AgentplaneConfig;

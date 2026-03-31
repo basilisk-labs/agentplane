@@ -1,0 +1,16 @@
+ .agentplane/tasks/202603311331-CMRND8/README.md    |  52 +++++--
+ .../tasks/202603311331-CMRND8/pr/diffstat.txt      |   0
+ .agentplane/tasks/202603311331-CMRND8/pr/meta.json |  12 ++
+ .agentplane/tasks/202603311331-CMRND8/pr/review.md |  22 +++
+ .../tasks/202603311331-CMRND8/pr/verify.log        |   0
+ packages/agentplane/src/commands/task/block.ts     | 118 +++++----------
+ .../src/commands/task/block.unit.test.ts           |  74 ++-------
+ .../src/commands/task/mutation-parity.unit.test.ts |  60 +++-----
+ .../agentplane/src/commands/task/set-status.ts     | 165 ++++++---------------
+ .../src/commands/task/set-status.unit.test.ts      |  93 +++---------
+ packages/agentplane/src/commands/task/shared.ts    |   2 +
+ .../src/commands/task/shared/transitions.ts        |   7 +
+ .../task/shared/workflow-transition-service.ts     |  11 ++
+ packages/agentplane/src/commands/task/start.ts     | 129 ++++++----------
+ .../src/commands/task/start.unit.test.ts           |  69 +--------
+ 15 files changed, 284 insertions(+), 530 deletions(-)

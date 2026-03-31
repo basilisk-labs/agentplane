@@ -1,5 +1,5 @@
 import { mapBackendError } from "../../cli/error-map.js";
-import { successMessage, warnMessage } from "../../cli/output.js";
+import { successMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
@@ -7,23 +7,19 @@ import { commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import {
   loadCommandContext,
-  loadTaskFromContext,
   resolveDocUpdatedBy,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore, mutateTaskStore } from "../shared/task-store.js";
+import { applyTaskMutation } from "../shared/task-mutation.js";
 
 import {
-  buildTaskStatusTransition,
-  dependencyWarningMessages,
   defaultCommitEmojiForStatus,
-  ensureCommentCommitAllowed,
-  resolveCommentCommitWarning,
-  ensureStatusTransitionAllowed,
+  emitTransitionWarnings,
+  executeTaskStatusTransitionRequest,
   normalizeTaskStatus,
   nowIso,
   readCommitInfo,
-  resolveTaskDependencyState,
+  readDeferredTaskTransitionWarnings,
   resolvePrimaryTag,
   toStringArray,
 } from "./shared.js";
@@ -78,50 +74,6 @@ export async function cmdTaskSetStatus(opts: {
       });
     }
     const resolved = ctx.resolvedProject;
-    const useStore = backendIsLocalFileBackend(ctx);
-    const store = useStore ? getTaskStore(ctx) : null;
-    const task = useStore
-      ? await store!.get(opts.taskId)
-      : await loadTaskFromContext({ ctx, taskId: opts.taskId });
-    const currentStatus = String(task.status || "TODO").toUpperCase();
-    if (!useStore) {
-      ensureStatusTransitionAllowed({
-        currentStatus,
-        nextStatus,
-        force: opts.force,
-      });
-
-      if (!opts.force && (nextStatus === "DOING" || nextStatus === "DONE")) {
-        const dep = await resolveTaskDependencyState(task, ctx.taskBackend);
-        if (dep.missing.length > 0 || dep.incomplete.length > 0) {
-          if (!opts.quiet) {
-            if (dep.missing.length > 0) {
-              process.stderr.write(`${warnMessage(`missing deps: ${dep.missing.join(", ")}`)}\n`);
-            }
-            if (dep.incomplete.length > 0) {
-              process.stderr.write(
-                `${warnMessage(`incomplete deps: ${dep.incomplete.join(", ")}`)}\n`,
-              );
-            }
-          }
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: `Task is not ready: ${task.id} (use --force to override)`,
-          });
-        }
-      }
-
-      ensureCommentCommitAllowed({
-        enabled: opts.commitFromComment,
-        config,
-        action: "task set-status",
-        confirmed: opts.confirmStatusCommit,
-        quiet: opts.quiet,
-        statusFrom: currentStatus,
-        statusTo: nextStatus,
-      });
-    }
 
     let commentBody: string | undefined;
     if (opts.author && opts.body) {
@@ -131,87 +83,60 @@ export async function cmdTaskSetStatus(opts: {
     }
 
     const at = nowIso();
-    const eventAuthor = resolveDocUpdatedBy(task, opts.author);
     const commitInfo = opts.commit ? await readCommitInfo(resolved.gitRoot, opts.commit) : null;
     const nextCommit = opts.commit
       ? { hash: commitInfo!.hash, message: commitInfo!.message }
       : undefined;
-    let currentStatusForCommit = currentStatus;
-    let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
+    let currentStatusForCommit = "TODO";
+    let primaryTagForCommit = "meta";
     let deferredWarnings: string[] = [];
     try {
-      await (useStore
-        ? mutateTaskStore(store!, opts.taskId, async (current) => {
-            deferredWarnings = [];
-            const currentStatus = String(current.status || "TODO").toUpperCase();
-            currentStatusForCommit = currentStatus;
-            primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
-            ensureStatusTransitionAllowed({
-              currentStatus,
-              nextStatus,
-              force: opts.force,
-            });
-            if (!opts.force && (nextStatus === "DOING" || nextStatus === "DONE")) {
-              const dep = await resolveTaskDependencyState(current, ctx.taskBackend);
-              deferredWarnings = [...deferredWarnings, ...dependencyWarningMessages(dep)];
-              if (dep.missing.length > 0 || dep.incomplete.length > 0) {
-                throw new CliError({
-                  exitCode: 2,
-                  code: "E_USAGE",
-                  message: `Task is not ready: ${current.id} (use --force to override)`,
-                });
-              }
-            }
-            const commitWarning = resolveCommentCommitWarning({
+      await applyTaskMutation({
+        ctx,
+        taskId: opts.taskId,
+        build: async (current) => {
+          const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
+          const execution = await executeTaskStatusTransitionRequest({
+            task: current,
+            backend: ctx.taskBackend,
+            config,
+            at,
+            toStatus: nextStatus,
+            eventAuthor: currentEventAuthor,
+            updatedBy: currentEventAuthor,
+            note: commentBody,
+            comment:
+              commentBody && opts.author ? { author: opts.author, body: commentBody } : undefined,
+            commit: nextCommit,
+            force: opts.force,
+            dependencyPolicy:
+              nextStatus === "DOING" || nextStatus === "DONE"
+                ? { kind: "require-ready" }
+                : { kind: "none" },
+            commentCommitPolicy: {
               enabled: opts.commitFromComment,
-              config,
               action: "task set-status",
               confirmed: opts.confirmStatusCommit,
               quiet: opts.quiet,
-              statusFrom: currentStatus,
-              statusTo: nextStatus,
-            });
-            if (commitWarning) deferredWarnings.push(commitWarning);
-            const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
-            return buildTaskStatusTransition({
-              task: current,
-              at,
-              toStatus: nextStatus,
-              eventAuthor: currentEventAuthor,
-              updatedBy: currentEventAuthor,
-              note: commentBody,
-              comment:
-                commentBody && opts.author ? { author: opts.author, body: commentBody } : undefined,
-              commit: nextCommit,
-            }).intents;
-          })
-        : ctx.taskBackend.writeTask(
-            buildTaskStatusTransition({
-              task,
-              at,
-              toStatus: nextStatus,
-              eventAuthor,
-              updatedBy: eventAuthor,
-              note: commentBody,
-              comment:
-                commentBody && opts.author ? { author: opts.author, body: commentBody } : undefined,
-              commit: nextCommit,
-            }).nextTask,
-          ));
+            },
+          });
+          currentStatusForCommit = execution.currentStatus;
+          primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
+          deferredWarnings = execution.deferredWarnings;
+          return { intents: execution.intents };
+        },
+      });
     } catch (err) {
-      if (err instanceof CliError && !opts.quiet) {
-        for (const warning of new Set(deferredWarnings)) {
-          process.stderr.write(`${warnMessage(warning)}\n`);
-        }
-      }
+      emitTransitionWarnings(
+        readDeferredTaskTransitionWarnings(err).length > 0
+          ? readDeferredTaskTransitionWarnings(err)
+          : deferredWarnings,
+        opts.quiet,
+      );
       throw err;
     }
 
-    if (!opts.quiet) {
-      for (const warning of new Set(deferredWarnings)) {
-        process.stderr.write(`${warnMessage(warning)}\n`);
-      }
-    }
+    emitTransitionWarnings(deferredWarnings, opts.quiet);
 
     // tasks.json is export-only; generated via `agentplane task export`.
 

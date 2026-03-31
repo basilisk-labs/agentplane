@@ -236,17 +236,11 @@ async function runBlockScenario(mode: BackendMode) {
     return Promise.resolve();
   });
   const store = {
-    get: vi.fn(() => Promise.resolve(cloneTask(currentTask))),
-  };
-  const mutateTaskStore = vi.fn(
-    async (_store: unknown, _taskId: string, builder: (current: TaskData) => unknown) => {
-      currentTask = applyStorePatch(
-        currentTask,
-        taskStorePatchFromIntents(await builder(cloneTask(currentTask))),
-      );
+    update: vi.fn(async (_taskId: string, builder: (current: TaskData) => Promise<TaskData>) => {
+      currentTask = await builder(cloneTask(currentTask));
       return { changed: true, task: cloneTask(currentTask) };
-    },
-  );
+    }),
+  };
   const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
   const backend = createBackend({ writeTask });
   const ctx = mkCtx(backend);
@@ -264,7 +258,6 @@ async function runBlockScenario(mode: BackendMode) {
       ...actual,
       backendIsLocalFileBackend: () => mode === "local",
       getTaskStore: () => store,
-      mutateTaskStore,
     };
   });
 
@@ -287,7 +280,7 @@ async function runBlockScenario(mode: BackendMode) {
     }),
   );
 
-  return { ...output, task: currentTask, writeTask, get: store.get, mutateTaskStore };
+  return { ...output, task: currentTask, writeTask, update: store.update };
 }
 
 async function runStartScenario(mode: BackendMode) {
@@ -317,17 +310,11 @@ async function runStartScenario(mode: BackendMode) {
     return Promise.resolve();
   });
   const store = {
-    get: vi.fn(() => Promise.resolve(cloneTask(currentTask))),
-  };
-  const mutateTaskStore = vi.fn(
-    async (_store: unknown, _taskId: string, builder: (current: TaskData) => unknown) => {
-      currentTask = applyStorePatch(
-        currentTask,
-        taskStorePatchFromIntents(await builder(cloneTask(currentTask))),
-      );
+    update: vi.fn(async (_taskId: string, builder: (current: TaskData) => Promise<TaskData>) => {
+      currentTask = await builder(cloneTask(currentTask));
       return { changed: true, task: cloneTask(currentTask) };
-    },
-  );
+    }),
+  };
   const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
   const backend = createBackend({ writeTask });
   const ctx = mkCtx(backend);
@@ -345,7 +332,6 @@ async function runStartScenario(mode: BackendMode) {
       ...actual,
       backendIsLocalFileBackend: () => mode === "local",
       getTaskStore: () => store,
-      mutateTaskStore,
     };
   });
   vi.doMock("./shared.js", async () => {
@@ -375,7 +361,7 @@ async function runStartScenario(mode: BackendMode) {
     }),
   );
 
-  return { ...output, task: currentTask, writeTask, get: store.get, mutateTaskStore };
+  return { ...output, task: currentTask, writeTask, update: store.update };
 }
 
 async function runSetStatusScenario(mode: BackendMode) {
@@ -390,17 +376,11 @@ async function runSetStatusScenario(mode: BackendMode) {
     return Promise.resolve();
   });
   const store = {
-    get: vi.fn(() => Promise.resolve(cloneTask(currentTask))),
-  };
-  const mutateTaskStore = vi.fn(
-    async (_store: unknown, _taskId: string, builder: (current: TaskData) => unknown) => {
-      currentTask = applyStorePatch(
-        currentTask,
-        taskStorePatchFromIntents(await builder(cloneTask(currentTask))),
-      );
+    update: vi.fn(async (_taskId: string, builder: (current: TaskData) => Promise<TaskData>) => {
+      currentTask = await builder(cloneTask(currentTask));
       return { changed: true, task: cloneTask(currentTask) };
-    },
-  );
+    }),
+  };
   const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
   const backend = createBackend({ writeTask });
   const ctx = mkCtx(backend);
@@ -420,7 +400,6 @@ async function runSetStatusScenario(mode: BackendMode) {
       ...actual,
       backendIsLocalFileBackend: () => mode === "local",
       getTaskStore: () => store,
-      mutateTaskStore,
     };
   });
   vi.doMock("./shared.js", async () => {
@@ -452,7 +431,7 @@ async function runSetStatusScenario(mode: BackendMode) {
     }),
   );
 
-  return { ...output, task: currentTask, writeTask, get: store.get, mutateTaskStore };
+  return { ...output, task: currentTask, writeTask, update: store.update };
 }
 
 async function runVerifyRecordScenario(mode: BackendMode) {
@@ -649,8 +628,7 @@ describe("task mutation parity across local and backend paths", () => {
     expect(projectTaskMutation(local.task)).toEqual(projectTaskMutation(remote.task));
     expect(local.stdout).toBe(remote.stdout);
     expect(local.stderr).toBe(remote.stderr);
-    expect(local.get).toHaveBeenCalledTimes(1);
-    expect(local.mutateTaskStore).toHaveBeenCalledTimes(1);
+    expect(local.update).toHaveBeenCalledTimes(1);
     expect(remote.writeTask).toHaveBeenCalledTimes(1);
   });
 
@@ -663,8 +641,7 @@ describe("task mutation parity across local and backend paths", () => {
     expect(projectTaskMutation(local.task)).toEqual(projectTaskMutation(remote.task));
     expect(local.stdout).toBe(remote.stdout);
     expect(local.stderr).toBe(remote.stderr);
-    expect(local.get).toHaveBeenCalledTimes(1);
-    expect(local.mutateTaskStore).toHaveBeenCalledTimes(1);
+    expect(local.update).toHaveBeenCalledTimes(1);
     expect(remote.writeTask).toHaveBeenCalledTimes(1);
   });
 
@@ -677,8 +654,7 @@ describe("task mutation parity across local and backend paths", () => {
     expect(projectTaskMutation(local.task)).toEqual(projectTaskMutation(remote.task));
     expect(local.stdout).toBe(remote.stdout);
     expect(local.stderr).toBe(remote.stderr);
-    expect(local.get).toHaveBeenCalledTimes(1);
-    expect(local.mutateTaskStore).toHaveBeenCalledTimes(1);
+    expect(local.update).toHaveBeenCalledTimes(1);
     expect(remote.writeTask).toHaveBeenCalledTimes(1);
   });
 

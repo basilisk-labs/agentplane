@@ -2,9 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
 
-import type { TaskBackend, TaskData, TaskEvent } from "../../backends/task-backend.js";
+import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import type { TaskStorePatch } from "../shared/task-store.js";
 
 const mockLoadTaskFromContext =
   vi.fn<(opts: { ctx: CommandContext; taskId: string }) => Promise<TaskData>>();
@@ -83,44 +82,6 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
   return { ...ctx, ...overrides };
 }
 
-function normalizeComments(task: TaskData): NonNullable<TaskData["comments"]> {
-  return Array.isArray(task.comments)
-    ? task.comments.filter(
-        (item): item is NonNullable<TaskData["comments"]>[number] =>
-          !!item && typeof item.author === "string" && typeof item.body === "string",
-      )
-    : [];
-}
-
-function normalizeEvents(task: TaskData): TaskEvent[] {
-  return Array.isArray(task.events)
-    ? task.events.filter(
-        (item): item is TaskEvent =>
-          !!item &&
-          typeof item.type === "string" &&
-          typeof item.at === "string" &&
-          typeof item.author === "string",
-      )
-    : [];
-}
-
-function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
-  if (!patch) return current;
-  const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
-  if (patch.appendComments && patch.appendComments.length > 0) {
-    next.comments = [...normalizeComments(current), ...patch.appendComments];
-  }
-  if (patch.appendEvents && patch.appendEvents.length > 0) {
-    next.events = [...normalizeEvents(current), ...patch.appendEvents];
-  }
-  if (patch.docMeta?.touch === true) {
-    next.doc_updated_at = new Date().toISOString();
-    next.doc_updated_by = patch.docMeta.updatedBy ?? next.doc_updated_by;
-    next.doc_version = patch.docMeta.version ?? next.doc_version;
-  }
-  return next;
-}
-
 describe("task start command (unit)", () => {
   beforeEach(() => {
     mockLoadTaskFromContext.mockReset();
@@ -130,24 +91,8 @@ describe("task start command (unit)", () => {
     mockBackendIsLocalFileBackend.mockReturnValue(false);
   });
 
-  it("cmdStart uses the current local README state instead of a stale initial snapshot", async () => {
+  it("cmdStart evaluates README requirements from the current local task state", async () => {
     const ctx = mkCtx();
-    const staleTask = mkTask({
-      tags: ["code"],
-      doc: [
-        "## Summary",
-        "x",
-        "",
-        "## Plan",
-        "do stuff",
-        "",
-        "## Verify Steps",
-        "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
-        "",
-        "## Notes",
-        "n/a",
-      ].join("\n"),
-    });
     let currentTask = mkTask({
       tags: ["code"],
       doc: [
@@ -165,12 +110,11 @@ describe("task start command (unit)", () => {
       ].join("\n"),
     });
     const store = {
-      get: vi.fn().mockResolvedValue(staleTask),
-      patch: vi
+      update: vi
         .fn()
         .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await builder(currentTask);
             return { changed: true, task: currentTask };
           },
         ),
@@ -196,8 +140,7 @@ describe("task start command (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(store.get).toHaveBeenCalledTimes(1);
-    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(store.update).toHaveBeenCalledTimes(1);
     expect(currentTask.status).toBe("DOING");
     expect(currentTask.comments).toEqual([
       {

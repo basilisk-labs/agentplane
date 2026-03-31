@@ -74,6 +74,17 @@ export type TaskStatusTransitionExecution = TaskTransitionWrite & {
   deferredWarnings: string[];
 };
 
+export function readDeferredTaskTransitionWarnings(error: unknown): string[] {
+  if (!(error instanceof CliError)) return [];
+  const warnings = error.context?.deferred_warnings;
+  if (!Array.isArray(warnings)) return [];
+  return [
+    ...new Set(
+      warnings.filter((item): item is string => typeof item === "string" && item.length > 0),
+    ),
+  ];
+}
+
 function normalizeComments(task: TaskData): TaskComment[] {
   return Array.isArray(task.comments)
     ? task.comments.filter(
