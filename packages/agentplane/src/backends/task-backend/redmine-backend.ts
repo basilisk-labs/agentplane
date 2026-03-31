@@ -1,5 +1,3 @@
-import { canonicalizeJson, taskDocToSectionMap } from "@agentplaneorg/core";
-
 import { isRecord } from "../../shared/guards.js";
 
 import type { LocalBackend } from "./local-backend.js";
@@ -29,35 +27,45 @@ import {
   listTasksRemote as listTasksRemoteImpl,
 } from "./redmine/remote.js";
 import {
-  detectConfiguredFieldNameDrift,
-  inferVisibleCanonicalStateFieldId,
-  inspectVisibleCustomFields,
-} from "./redmine/inspect.js";
+  getRedmineTask,
+  getRedmineTaskDoc,
+  getRedmineTasks,
+  listRedmineProjectionTasks,
+  listRedmineTasks,
+  normalizeRedmineTasks,
+  exportRedmineProjectionSnapshot,
+  exportRedmineTasksJson,
+  setRedmineTaskDoc,
+  touchRedmineTaskDocMetadata,
+} from "./redmine/backend-cache-doc.js";
 import {
-  buildRedmineCanonicalStateWithOptions,
-  parseRedmineCanonicalState,
-} from "./redmine/state.js";
+  diffRedmineTasks,
+  inspectRedmineConfiguration,
+  redmineTasksDiffer,
+} from "./redmine/backend-report.js";
+import {
+  generateRedmineTaskId,
+  handleRedmineConflict,
+  inferRedmineStatusIdForTaskStatus,
+  loadRedmineInferredStatusByTaskStatus,
+  migrateRedmineCanonicalState,
+  selectRedmineInferredStatus,
+  syncPullRedmine,
+  syncPushRedmine,
+  syncRedmine,
+  writeRedmineTask,
+  writeRedmineTasks,
+} from "./redmine/backend-sync.js";
 import { readRedmineEnv } from "./redmine/env.js";
 import {
   BackendError,
   DEFAULT_DOC_UPDATED_BY,
   DOC_VERSION,
-  RedmineUnavailable,
-  ensureDocMetadata,
   firstNonEmptyString,
-  generateTaskId,
-  mapLimit,
-  missingTaskIdMessage,
   normalizeDocVersion,
   nowIso,
   redmineConfigMissingEnvMessage,
-  redmineIssueIdMissingMessage,
-  sleep,
-  toTaskSummaries,
   toStringSafe,
-  unknownTaskIdMessage,
-  validateTaskId,
-  writeTasksExportFromTasks,
   type TaskCanonicalStateMigrationResult,
   type TaskBackend,
   type TaskBackendInspectionResult,
@@ -162,62 +170,131 @@ export class RedmineBackend implements TaskBackend {
     }
   }
 
+  private cacheDocContext() {
+    return {
+      cache: this.cache,
+      customFields: this.customFields,
+      ownerAgent: this.ownerAgent,
+      batchSize: this.batchSize,
+      findIssueByTaskId: async (taskId: string) => await this.findIssueByTaskId(taskId),
+      issueToTask: (issue: Record<string, unknown>, taskIdOverride?: string) =>
+        this.issueToTask(issue, taskIdOverride),
+      customFieldValue: (issue: Record<string, unknown>, fieldId: unknown) =>
+        this.customFieldValue(issue, fieldId),
+      appendCustomField: (fields: Record<string, unknown>[], key: string, value: unknown) =>
+        this.appendCustomField(fields, key, value),
+      requestJson: async (
+        method: string,
+        reqPath: string,
+        payload?: Record<string, unknown>,
+        params?: Record<string, unknown>,
+      ) => await this.requestJson(method, reqPath, payload, params),
+      assertExpectedRevisionSupported: (taskId: string, opts?: TaskWriteOptions) =>
+        this.assertExpectedRevisionSupported(taskId, opts),
+      assertExpectedRevision: (
+        taskId: string,
+        expectedRevision: number | undefined,
+        currentRevision: number,
+      ) => this.assertExpectedRevision(taskId, expectedRevision, currentRevision),
+      cacheTask: async (task: TaskData, dirty: boolean) => await this.cacheTask(task, dirty),
+    };
+  }
+
+  private reportContext() {
+    return {
+      projectId: this.projectId,
+      customFields: this.customFields,
+      requestJson: async (
+        method: string,
+        reqPath: string,
+        payload?: Record<string, unknown>,
+        params?: Record<string, unknown>,
+      ) => await this.requestJson(method, reqPath, payload, params),
+    };
+  }
+
+  private syncContext() {
+    return {
+      cache: this.cache,
+      customFields: this.customFields,
+      ownerAgent: this.ownerAgent,
+      projectId: this.projectId,
+      batchSize: this.batchSize,
+      batchPauseMs: this.batchPauseMs,
+      statusMap: this.statusMap,
+      issueCache: this.issueCache,
+      inferredStatusByTaskStatus: this.inferredStatusByTaskStatus,
+      setInferredStatusByTaskStatus: (next: Map<string, number> | null) => {
+        this.inferredStatusByTaskStatus = next;
+      },
+      listTasksRemote: async () => await this.listTasksRemote(),
+      writeTask: async (task: TaskData, opts?: TaskWriteOptions) =>
+        await this.writeTask(task, opts),
+      writeTasks: async (tasks: TaskData[], opts?: TaskWriteOptions) =>
+        await this.writeTasks(tasks, opts),
+      findIssueByTaskId: async (taskId: string) => await this.findIssueByTaskId(taskId),
+      issueToTask: (issue: Record<string, unknown>, taskIdOverride?: string) =>
+        this.issueToTask(issue, taskIdOverride),
+      taskToIssuePayload: (task: TaskData, existingIssue?: Record<string, unknown>) =>
+        this.taskToIssuePayload(task, existingIssue),
+      appendCustomField: (fields: Record<string, unknown>[], key: string, value: unknown) =>
+        this.appendCustomField(fields, key, value),
+      customFieldValue: (issue: Record<string, unknown>, fieldId: unknown) =>
+        this.customFieldValue(issue, fieldId),
+      maybeParseJson: (value: unknown) => this.maybeParseJson(value),
+      normalizeComments: (value: unknown) => this.normalizeComments(value),
+      appendCommentNotes: async (
+        issueId: string,
+        existingComments: TaskComment[],
+        desiredComments: TaskComment[],
+      ) => await this.appendCommentNotes(issueId, existingComments, desiredComments),
+      cacheTask: async (task: TaskData, dirty: boolean) => await this.cacheTask(task, dirty),
+      assertExpectedRevisionSupported: (taskId: string, opts?: TaskWriteOptions) =>
+        this.assertExpectedRevisionSupported(taskId, opts),
+      assertExpectedRevision: (
+        taskId: string,
+        expectedRevision: number | undefined,
+        currentRevision: number,
+      ) => this.assertExpectedRevision(taskId, expectedRevision, currentRevision),
+      ensureDocMetadata: (task: TaskDocMeta) => this.ensureDocMetadata(task),
+      diffTasks: (localTask: TaskData, remoteTask: TaskData) =>
+        this.diffTasks(localTask, remoteTask),
+      tasksDiffer: (localTask: TaskData, remoteTask: TaskData) =>
+        this.tasksDiffer(localTask, remoteTask),
+      taskIdFieldId: () => this.taskIdFieldId(),
+      setIssueCustomFieldValue: (
+        issue: Record<string, unknown>,
+        fieldId: unknown,
+        value: unknown,
+      ) => this.setIssueCustomFieldValue(issue, fieldId, value),
+      requestJson: async (
+        method: string,
+        reqPath: string,
+        payload?: Record<string, unknown>,
+        params?: Record<string, unknown>,
+        opts?: { attempts?: number; backoff?: number },
+      ) => await this.requestJson(method, reqPath, payload, params, opts),
+    };
+  }
+
   async generateTaskId(opts: { length: number; attempts: number }): Promise<string> {
-    const length = opts.length;
-    const attempts = opts.attempts;
-    let existingIds = new Set<string>();
-    try {
-      const tasks = await this.listTasksRemote();
-      existingIds = new Set(tasks.map((task) => toStringSafe(task.id)).filter(Boolean));
-    } catch (err) {
-      if (!(err instanceof RedmineUnavailable)) throw err;
-      if (!this.cache) throw err;
-      const cached = await this.cache.listTasks();
-      existingIds = new Set(cached.map((task) => toStringSafe(task.id)).filter(Boolean));
-    }
-    return await generateTaskId({
-      length,
-      attempts,
-      isAvailable: (taskId) => !existingIds.has(taskId),
-    });
+    return await generateRedmineTaskId(this.syncContext(), opts);
   }
 
   async listTasks(): Promise<TaskData[]> {
-    if (!this.cache) {
-      throw new BackendError(
-        "Redmine cache is disabled; projection reads are unavailable",
-        "E_BACKEND",
-      );
-    }
-    return await this.cache.listTasks();
+    return await listRedmineTasks(this.cacheDocContext());
   }
 
   async listProjectionTasks(): Promise<TaskSummary[]> {
-    if (!this.cache) {
-      throw new BackendError(
-        "Redmine cache is disabled; projection reads are unavailable",
-        "E_BACKEND",
-      );
-    }
-    return this.cache.listProjectionTasks
-      ? await this.cache.listProjectionTasks()
-      : toTaskSummaries(await this.cache.listTasks());
+    return await listRedmineProjectionTasks(this.cacheDocContext());
   }
 
   async exportTasksJson(outputPath: string): Promise<void> {
-    const tasks = await this.listTasks();
-    await writeTasksExportFromTasks({ outputPath, tasks });
+    await exportRedmineTasksJson(this.cacheDocContext(), outputPath);
   }
 
   async exportProjectionSnapshot(outputPath: string): Promise<void> {
-    if (!this.cache) {
-      throw new BackendError(
-        "Redmine cache is disabled; projection snapshot export is unavailable",
-        "E_BACKEND",
-      );
-    }
-    const tasks = await this.cache.listTasks();
-    await writeTasksExportFromTasks({ outputPath, tasks });
+    await exportRedmineProjectionSnapshot(this.cacheDocContext(), outputPath);
   }
 
   async refreshProjection(opts: {
@@ -232,155 +309,27 @@ export class RedmineBackend implements TaskBackend {
   }
 
   async normalizeTasks(): Promise<{ scanned: number; changed: number }> {
-    // Remote backends should avoid expensive downloads; best-effort normalize the local cache if present.
-    if (this.cache?.normalizeTasks) return await this.cache.normalizeTasks();
-    return { scanned: 0, changed: 0 };
+    return await normalizeRedmineTasks(this.cacheDocContext());
   }
 
   async migrateCanonicalState(): Promise<TaskCanonicalStateMigrationResult> {
-    if (!this.customFields.canonical_state) {
-      throw new BackendError(
-        redmineConfigMissingEnvMessage("AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE"),
-        "E_BACKEND",
-      );
-    }
-
-    const tasks = await this.listTasksRemote();
-    const result: TaskCanonicalStateMigrationResult = {
-      scanned: tasks.length,
-      migrated: [],
-      skippedStructured: [],
-      skippedNoDoc: [],
-      failed: [],
-    };
-
-    for (const [index, task] of tasks.entries()) {
-      const taskId = toStringSafe(task.id).trim();
-      if (!taskId) continue;
-      const issue = this.issueCache.get(taskId);
-      if (!issue) {
-        result.failed.push({
-          taskId,
-          reason: "Redmine issue payload was not cached during remote list refresh",
-        });
-        continue;
-      }
-
-      const currentState = parseRedmineCanonicalState(
-        this.customFieldValue(issue, this.customFields.canonical_state),
-      );
-      if (currentState) {
-        result.skippedStructured.push(taskId);
-        continue;
-      }
-
-      const sections =
-        task.sections && Object.keys(task.sections).length > 0
-          ? task.sections
-          : task.doc
-            ? taskDocToSectionMap(task.doc)
-            : undefined;
-      if (!sections || Object.keys(sections).length === 0) {
-        result.skippedNoDoc.push(taskId);
-        continue;
-      }
-
-      const issueIdText = toStringSafe(issue.id);
-      if (!issueIdText) {
-        result.failed.push({ taskId, reason: redmineIssueIdMissingMessage() });
-        continue;
-      }
-
-      const currentRevision = 0;
-      const nextRevision = Math.max(task.revision ?? 0, currentRevision, 1);
-      const nextCanonicalState = buildRedmineCanonicalStateWithOptions(
-        {
-          ...task,
-          sections,
-          revision: nextRevision,
-        },
-        { base: currentState, revision: nextRevision },
-      );
-      if (!nextCanonicalState) {
-        result.skippedNoDoc.push(taskId);
-        continue;
-      }
-
-      const customFields: Record<string, unknown>[] = [];
-      this.appendCustomField(customFields, "canonical_state", nextCanonicalState);
-      try {
-        await this.requestJson("PUT", `issues/${issueIdText}.json`, {
-          issue: { custom_fields: customFields },
-        });
-        this.setIssueCustomFieldValue(issue, this.customFields.canonical_state, nextCanonicalState);
-        this.issueCache.set(taskId, issue);
-        await this.cacheTask(
-          {
-            ...task,
-            sections,
-            revision: nextRevision,
-            dirty: false,
-          },
-          false,
-        );
-        result.migrated.push(taskId);
-      } catch (err) {
-        const reason =
-          err instanceof Error ? err.message : "Unknown Redmine canonical_state migration failure";
-        result.failed.push({ taskId, reason });
-      }
-
-      if (this.batchPauseMs > 0 && this.batchSize > 0 && (index + 1) % this.batchSize === 0) {
-        await sleep(this.batchPauseMs);
-      }
-    }
-
-    return result;
+    return await migrateRedmineCanonicalState(this.syncContext());
   }
 
   async inspectConfiguration(): Promise<TaskBackendInspectionResult> {
-    const visibleCustomFields = await inspectVisibleCustomFields({
-      projectId: this.projectId,
-      requestJson: async (method, reqPath, payload, params) =>
-        await this.requestJson(method, reqPath, payload, params),
-    });
-    const visibleCanonicalStateFieldId = inferVisibleCanonicalStateFieldId(visibleCustomFields);
-    return {
-      backendId: this.id,
-      visibleCustomFields,
-      canonicalState: {
-        configuredFieldId:
-          typeof this.customFields.canonical_state === "number"
-            ? this.customFields.canonical_state
-            : null,
-        visibleFieldId: visibleCanonicalStateFieldId,
-      },
-      configuredFieldNameDrift: detectConfiguredFieldNameDrift({
-        configuredFields: this.customFields,
-        visibleFields: visibleCustomFields,
-      }),
-    };
+    return await inspectRedmineConfiguration(this.reportContext());
   }
 
   async getTask(taskId: string): Promise<TaskData | null> {
-    if (!this.cache) {
-      throw new BackendError(
-        "Redmine cache is disabled; projection reads are unavailable",
-        "E_BACKEND",
-      );
-    }
-    return (await this.cache.getTask(taskId)) ?? null;
+    return await getRedmineTask(this.cacheDocContext(), taskId);
   }
 
   async getTasks(taskIds: string[]): Promise<(TaskData | null)[]> {
-    // Use limited parallelism to avoid hammering the Redmine API.
-    return await mapLimit(taskIds, this.batchSize, async (taskId) => await this.getTask(taskId));
+    return await getRedmineTasks(this.cacheDocContext(), taskIds);
   }
 
   async getTaskDoc(taskId: string): Promise<string> {
-    const task = await this.getTask(taskId);
-    if (!task) throw new Error(unknownTaskIdMessage(taskId));
-    return toStringSafe(task.doc);
+    return await getRedmineTaskDoc(this.cacheDocContext(), taskId);
   }
 
   async setTaskDoc(
@@ -389,87 +338,7 @@ export class RedmineBackend implements TaskBackend {
     updatedBy?: string,
     opts?: TaskWriteOptions,
   ): Promise<void> {
-    if (!this.customFields.doc) {
-      throw new BackendError(
-        redmineConfigMissingEnvMessage("AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC"),
-        "E_BACKEND",
-      );
-    }
-    try {
-      const issue = await this.findIssueByTaskId(taskId);
-      if (!issue) throw new Error(unknownTaskIdMessage(taskId));
-      const issueIdText = toStringSafe(issue.id);
-      if (!issueIdText) throw new Error(redmineIssueIdMissingMessage());
-      const cachedTask = this.issueToTask(issue, taskId);
-      const currentState = parseRedmineCanonicalState(
-        this.customFieldValue(issue, this.customFields.canonical_state),
-      );
-      this.assertExpectedRevisionSupported(taskId, opts);
-      this.assertExpectedRevision(taskId, opts?.expectedRevision, currentState?.revision ?? 1);
-      const taskDoc: TaskDocMeta = {
-        doc: String(doc ?? ""),
-        doc_version: cachedTask?.doc_version,
-      };
-      ensureDocMetadata(taskDoc, updatedBy);
-      const nextSections = taskDocToSectionMap(String(taskDoc.doc ?? ""));
-      const nextRevision = Math.max(cachedTask?.revision ?? 0, currentState?.revision ?? 0, 0) + 1;
-      const customFields: Record<string, unknown>[] = [];
-      this.appendCustomField(customFields, "doc", taskDoc.doc);
-      const nextCanonicalState = buildRedmineCanonicalStateWithOptions(
-        {
-          id: taskId,
-          title: cachedTask?.title ?? "",
-          description: cachedTask?.description ?? "",
-          status: cachedTask?.status ?? "TODO",
-          priority: cachedTask?.priority ?? "med",
-          owner: cachedTask?.owner ?? this.ownerAgent,
-          depends_on: cachedTask?.depends_on ?? [],
-          tags: cachedTask?.tags ?? [],
-          verify: cachedTask?.verify ?? [],
-          doc: taskDoc.doc,
-          sections: nextSections,
-          revision: nextRevision,
-          plan_approval: cachedTask?.plan_approval,
-          verification: cachedTask?.verification,
-          events: cachedTask?.events,
-        },
-        { base: currentState, revision: nextRevision },
-      );
-      if (nextCanonicalState) {
-        this.appendCustomField(customFields, "canonical_state", nextCanonicalState);
-      }
-      this.appendCustomField(customFields, "doc_version", taskDoc.doc_version);
-      this.appendCustomField(customFields, "doc_updated_at", taskDoc.doc_updated_at);
-      this.appendCustomField(customFields, "doc_updated_by", taskDoc.doc_updated_by);
-      await this.requestJson("PUT", `issues/${issueIdText}.json`, {
-        issue: { custom_fields: customFields },
-      });
-      if (cachedTask) {
-        cachedTask.doc = taskDoc.doc;
-        cachedTask.sections = nextSections;
-        cachedTask.revision = nextRevision;
-        cachedTask.doc_version = taskDoc.doc_version;
-        cachedTask.doc_updated_at = taskDoc.doc_updated_at;
-        cachedTask.doc_updated_by = taskDoc.doc_updated_by;
-        await this.cacheTask(cachedTask, false);
-      }
-    } catch (err) {
-      if (err instanceof RedmineUnavailable) {
-        if (!this.cache) throw err;
-        const cached = await this.cache.getTask(taskId);
-        if (!cached) throw new Error(unknownTaskIdMessage(taskId));
-        this.assertExpectedRevisionSupported(taskId, opts);
-        this.assertExpectedRevision(taskId, opts?.expectedRevision, cached.revision ?? 1);
-        cached.doc = String(doc ?? "");
-        cached.sections = taskDocToSectionMap(cached.doc);
-        cached.revision = Math.max(cached.revision ?? 0, 0) + 1;
-        ensureDocMetadata(cached, updatedBy);
-        cached.dirty = true;
-        await this.cache.writeTask(cached, opts);
-        return;
-      }
-      throw err;
-    }
+    await setRedmineTaskDoc(this.cacheDocContext(), taskId, doc, updatedBy, opts);
   }
 
   async touchTaskDocMetadata(
@@ -477,155 +346,15 @@ export class RedmineBackend implements TaskBackend {
     updatedBy?: string,
     opts?: TaskWriteOptions,
   ): Promise<void> {
-    try {
-      const issue = await this.findIssueByTaskId(taskId);
-      if (!issue) throw new Error(unknownTaskIdMessage(taskId));
-      const issueIdText = toStringSafe(issue.id);
-      if (!issueIdText) throw new Error(redmineIssueIdMissingMessage());
-      const docValue = this.customFieldValue(issue, this.customFields.doc);
-      const cachedTask = this.issueToTask(issue, taskId);
-      const currentState = parseRedmineCanonicalState(
-        this.customFieldValue(issue, this.customFields.canonical_state),
-      );
-      this.assertExpectedRevisionSupported(taskId, opts);
-      this.assertExpectedRevision(taskId, opts?.expectedRevision, currentState?.revision ?? 1);
-      const taskDoc: TaskDocMeta = {
-        doc: docValue ?? "",
-        doc_version: cachedTask?.doc_version,
-      };
-      ensureDocMetadata(taskDoc, updatedBy);
-      const customFields: Record<string, unknown>[] = [];
-      this.appendCustomField(customFields, "doc_version", taskDoc.doc_version);
-      this.appendCustomField(customFields, "doc_updated_at", taskDoc.doc_updated_at);
-      this.appendCustomField(customFields, "doc_updated_by", taskDoc.doc_updated_by);
-      if (customFields.length > 0) {
-        await this.requestJson("PUT", `issues/${issueIdText}.json`, {
-          issue: { custom_fields: customFields },
-        });
-        if (cachedTask) {
-          cachedTask.doc_version = taskDoc.doc_version;
-          cachedTask.doc_updated_at = taskDoc.doc_updated_at;
-          cachedTask.doc_updated_by = taskDoc.doc_updated_by;
-          await this.cacheTask(cachedTask, false);
-        }
-      }
-    } catch (err) {
-      if (err instanceof RedmineUnavailable) {
-        if (!this.cache) throw err;
-        const cached = await this.cache.getTask(taskId);
-        if (!cached) throw new Error(unknownTaskIdMessage(taskId));
-        this.assertExpectedRevisionSupported(taskId, opts);
-        this.assertExpectedRevision(taskId, opts?.expectedRevision, cached.revision ?? 1);
-        ensureDocMetadata(cached, updatedBy);
-        cached.dirty = true;
-        await this.cache.writeTask(cached, opts);
-        return;
-      }
-      throw err;
-    }
+    await touchRedmineTaskDocMetadata(this.cacheDocContext(), taskId, updatedBy, opts);
   }
 
   async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
-    const taskId = toStringSafe(task.id).trim();
-    if (!taskId) throw new Error(missingTaskIdMessage());
-    validateTaskId(taskId);
-
-    try {
-      this.ensureDocMetadata(task);
-      let issue = await this.findIssueByTaskId(taskId);
-      let issueId = issue?.id;
-      let issueIdText = issueId ? toStringSafe(issueId) : "";
-      let existingIssue = issue ?? null;
-      if (issueIdText && !existingIssue) {
-        const payload = await this.requestJson("GET", `issues/${issueIdText}.json`);
-        existingIssue = this.issueFromPayload(payload);
-      }
-      const currentState =
-        existingIssue && this.customFields.canonical_state
-          ? parseRedmineCanonicalState(
-              this.customFieldValue(existingIssue, this.customFields.canonical_state),
-            )
-          : null;
-      this.assertExpectedRevisionSupported(taskId, opts);
-      this.assertExpectedRevision(taskId, opts?.expectedRevision, currentState?.revision ?? 0);
-      const nextRevision = issueIdText
-        ? Math.max(task.revision ?? 0, currentState?.revision ?? 0, 0) + 1
-        : Math.max(task.revision ?? 0, currentState?.revision ?? 0, 1);
-      const taskForWrite: TaskData = {
-        ...task,
-        revision: nextRevision,
-        sections:
-          task.sections && Object.keys(task.sections).length > 0
-            ? task.sections
-            : task.doc
-              ? taskDocToSectionMap(task.doc)
-              : undefined,
-      };
-      const payload = this.taskToIssuePayload(taskForWrite, existingIssue ?? undefined);
-      if (payload.status_id === undefined) {
-        const inferredStatusId = await this.inferStatusIdForTaskStatus(taskForWrite.status);
-        if (inferredStatusId !== null) payload.status_id = inferredStatusId;
-      }
-      if (issueIdText) {
-        await this.requestJson("PUT", `issues/${issueIdText}.json`, { issue: payload });
-      } else {
-        const createPayload = { ...payload, project_id: this.projectId };
-        const created = await this.requestJson("POST", "issues.json", { issue: createPayload });
-        const createdIssue = this.issueFromPayload(created);
-        issueId = createdIssue?.id;
-        issueIdText = issueId ? toStringSafe(issueId) : "";
-        if (issueIdText) {
-          const updatePayload = { ...payload };
-          delete updatePayload.project_id;
-          await this.requestJson("PUT", `issues/${issueIdText}.json`, { issue: updatePayload });
-          const refreshed = await this.requestJson("GET", `issues/${issueIdText}.json`);
-          existingIssue = this.issueFromPayload(refreshed);
-        }
-      }
-      if (issueIdText) {
-        const existingComments =
-          existingIssue && this.customFields.comments
-            ? this.normalizeComments(
-                this.maybeParseJson(
-                  this.customFieldValue(existingIssue, this.customFields.comments),
-                ),
-              )
-            : [];
-        const desiredComments = this.normalizeComments(taskForWrite.comments);
-        await this.appendCommentNotes(issueIdText, existingComments, desiredComments);
-      }
-      taskForWrite.dirty = false;
-      await this.cacheTask(taskForWrite, false);
-      this.issueCache.clear();
-    } catch (err) {
-      if (err instanceof RedmineUnavailable) {
-        if (!this.cache) throw err;
-        this.assertExpectedRevisionSupported(taskId, opts);
-        const taskForCache: TaskData = {
-          ...task,
-          revision: Math.max(task.revision ?? 0, 1),
-          sections:
-            task.sections && Object.keys(task.sections).length > 0
-              ? task.sections
-              : task.doc
-                ? taskDocToSectionMap(task.doc)
-                : undefined,
-          dirty: true,
-        };
-        await this.cache.writeTask(taskForCache, opts);
-        return;
-      }
-      throw err;
-    }
+    await writeRedmineTask(this.syncContext(), task, opts);
   }
 
   async writeTasks(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void> {
-    for (const [index, task] of tasks.entries()) {
-      await this.writeTask(task, opts);
-      if (this.batchPauseMs > 0 && this.batchSize > 0 && (index + 1) % this.batchSize === 0) {
-        await sleep(this.batchPauseMs);
-      }
-    }
+    await writeRedmineTasks(this.syncContext(), tasks, opts);
   }
 
   async sync(opts: {
@@ -634,15 +363,7 @@ export class RedmineBackend implements TaskBackend {
     quiet: boolean;
     confirm: boolean;
   }): Promise<void> {
-    if (opts.direction === "push") {
-      await this.syncPush(opts.quiet, opts.confirm);
-      return;
-    }
-    if (opts.direction === "pull") {
-      await this.syncPull(opts.conflict, opts.quiet);
-      return;
-    }
-    throw new BackendError("Invalid sync direction (expected push|pull)", "E_BACKEND");
+    await syncRedmine(this.syncContext(), opts);
   }
 
   private ensureDocMetadata(task: TaskDocMeta): void {
@@ -653,59 +374,14 @@ export class RedmineBackend implements TaskBackend {
   }
 
   private async syncPush(quiet: boolean, confirm: boolean): Promise<void> {
-    if (!this.cache) {
-      throw new BackendError("Redmine cache is disabled; sync push is unavailable", "E_BACKEND");
-    }
-    const tasks = await this.cache.listTasks();
-    const dirty = tasks.filter((task) => task.dirty);
-    if (dirty.length === 0) {
-      if (!quiet) process.stdout.write("ℹ️ no local task changes to push\n");
-      return;
-    }
-    if (!confirm) {
-      for (const task of dirty) {
-        process.stdout.write(`- pending push: ${task.id}\n`);
-      }
-      throw new BackendError("Refusing to push without --yes (preview above)", "E_BACKEND");
-    }
-    await this.writeTasks(dirty);
-    if (!quiet) process.stdout.write(`✅ pushed ${dirty.length} task(s) (dirty)\n`);
+    await syncPushRedmine(this.syncContext(), quiet, confirm);
   }
 
   private async syncPull(
     conflict: "diff" | "prefer-local" | "prefer-remote" | "fail",
     quiet: boolean,
   ): Promise<void> {
-    if (!this.cache) {
-      throw new BackendError("Redmine cache is disabled; sync pull is unavailable", "E_BACKEND");
-    }
-    const remoteTasks = await this.listTasksRemote();
-    const remoteById = new Map<string, TaskData>();
-    for (const task of remoteTasks) {
-      const taskId = toStringSafe(task.id);
-      if (taskId) remoteById.set(taskId, task);
-    }
-    const localTasks = await this.cache.listTasks();
-    const localById = new Map<string, TaskData>();
-    for (const task of localTasks) {
-      const taskId = toStringSafe(task.id);
-      if (taskId) localById.set(taskId, task);
-    }
-
-    for (const [taskId, remoteTask] of remoteById.entries()) {
-      const localTask = localById.get(taskId);
-      if (localTask?.dirty) {
-        if (this.tasksDiffer(localTask, remoteTask)) {
-          await this.handleConflict(taskId, localTask, remoteTask, conflict);
-          continue;
-        }
-        localTask.dirty = false;
-        await this.cacheTask(localTask, false);
-        continue;
-      }
-      await this.cacheTask(remoteTask, false);
-    }
-    if (!quiet) process.stdout.write(`✅ pulled ${remoteById.size} task(s) (remote)\n`);
+    await syncPullRedmine(this.syncContext(), conflict, quiet);
   }
 
   private async handleConflict(
@@ -714,41 +390,15 @@ export class RedmineBackend implements TaskBackend {
     remoteTask: TaskData,
     conflict: "diff" | "prefer-local" | "prefer-remote" | "fail",
   ): Promise<void> {
-    if (conflict === "prefer-local") {
-      await this.writeTask(localTask);
-      return;
-    }
-    if (conflict === "prefer-remote") {
-      await this.cacheTask(remoteTask, false);
-      return;
-    }
-    if (conflict === "diff") {
-      const diff = this.diffTasks(localTask, remoteTask);
-      process.stdout.write(`${diff}\n`);
-      throw new BackendError(`Conflict detected for ${taskId}`, "E_BACKEND");
-    }
-    throw new BackendError(`Conflict detected for ${taskId}`, "E_BACKEND");
+    await handleRedmineConflict(this.syncContext(), taskId, localTask, remoteTask, conflict);
   }
 
   private diffTasks(localTask: TaskData, remoteTask: TaskData): string {
-    const localText = JSON.stringify(canonicalizeJson(localTask), null, 2).split("\n");
-    const remoteText = JSON.stringify(canonicalizeJson(remoteTask), null, 2).split("\n");
-    const diff = ["--- remote", "+++ local"];
-    const max = Math.max(localText.length, remoteText.length);
-    for (let i = 0; i < max; i++) {
-      const l = localText[i];
-      const r = remoteText[i];
-      if (l === r) continue;
-      if (r !== undefined) diff.push(`- ${r}`);
-      if (l !== undefined) diff.push(`+ ${l}`);
-    }
-    return diff.join("\n");
+    return diffRedmineTasks(localTask, remoteTask);
   }
 
   private tasksDiffer(localTask: TaskData, remoteTask: TaskData): boolean {
-    const localText = JSON.stringify(canonicalizeJson(localTask));
-    const remoteText = JSON.stringify(canonicalizeJson(remoteTask));
-    return localText !== remoteText;
+    return redmineTasksDiffer(localTask, remoteTask);
   }
 
   private async cacheTask(task: TaskData, dirty: boolean): Promise<void> {
@@ -816,91 +466,18 @@ export class RedmineBackend implements TaskBackend {
   }
 
   private async inferStatusIdForTaskStatus(statusRaw: unknown): Promise<number | null> {
-    const status = toStringSafe(statusRaw).trim().toUpperCase();
-    if (!status) return null;
-
-    const explicit = this.statusMap?.[status];
-    if (typeof explicit === "number" && Number.isFinite(explicit)) return explicit;
-
-    const inferred = await this.loadInferredStatusByTaskStatus();
-    return inferred.get(status) ?? null;
+    return await inferRedmineStatusIdForTaskStatus(this.syncContext(), statusRaw);
   }
 
   private async loadInferredStatusByTaskStatus(): Promise<Map<string, number>> {
-    if (this.inferredStatusByTaskStatus) return this.inferredStatusByTaskStatus;
-    const map = new Map<string, number>();
-    this.inferredStatusByTaskStatus = map;
-
-    try {
-      const payload = await this.requestJson("GET", "issue_statuses.json");
-      const statuses = Array.isArray(payload.issue_statuses) ? payload.issue_statuses : [];
-      const parsed: {
-        id: number;
-        name: string;
-        isClosed: boolean;
-        isDefault: boolean;
-      }[] = [];
-
-      for (const item of statuses) {
-        if (!isRecord(item)) continue;
-        const id = typeof item.id === "number" ? item.id : null;
-        if (!id || !Number.isFinite(id)) continue;
-        parsed.push({
-          id,
-          name: toStringSafe(item.name).trim().toLowerCase(),
-          isClosed: item.is_closed === true,
-          isDefault: item.is_default === true,
-        });
-      }
-
-      const done = this.selectInferredStatus(parsed, "DONE");
-      const doing = this.selectInferredStatus(parsed, "DOING");
-      const todo = this.selectInferredStatus(parsed, "TODO");
-      if (done !== null) map.set("DONE", done);
-      if (doing !== null) map.set("DOING", doing);
-      if (todo !== null) map.set("TODO", todo);
-    } catch {
-      // Best effort: keep previous behavior when status discovery is unavailable.
-    }
-
-    return map;
+    return await loadRedmineInferredStatusByTaskStatus(this.syncContext());
   }
 
   private selectInferredStatus(
     statuses: { id: number; name: string; isClosed: boolean; isDefault: boolean }[],
     target: "TODO" | "DOING" | "DONE",
   ): number | null {
-    if (statuses.length === 0) return null;
-    if (target === "DOING") {
-      const byId = statuses.find((item) => item.id === 2);
-      if (byId) return byId.id;
-      const byName = statuses.find(
-        (item) => item.name.includes("progress") || item.name.includes("doing"),
-      );
-      if (byName) return byName.id;
-      return null;
-    }
-    if (target === "DONE") {
-      const closed = statuses.find((item) => item.isClosed);
-      if (closed) return closed.id;
-      const byId = statuses.find((item) => item.id === 5 || item.id === 3 || item.id === 6);
-      if (byId) return byId.id;
-      const byName = statuses.find(
-        (item) =>
-          item.name.includes("done") ||
-          item.name.includes("closed") ||
-          item.name.includes("resolved") ||
-          item.name.includes("complete"),
-      );
-      if (byName) return byName.id;
-      return null;
-    }
-
-    const byDefault = statuses.find((item) => item.isDefault);
-    if (byDefault) return byDefault.id;
-    const byId = statuses.find((item) => item.id === 1);
-    if (byId) return byId.id;
-    return statuses[0]?.id ?? null;
+    return selectRedmineInferredStatus(statuses, target);
   }
 
   private async findIssueByTaskId(taskId: string): Promise<Record<string, unknown> | null> {
