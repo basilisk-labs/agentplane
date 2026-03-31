@@ -4,10 +4,41 @@ import path from "node:path";
 import { renderTaskReadme } from "@agentplaneorg/core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { LocalBackend, type TaskData } from "./task-backend.js";
+import { LocalBackend, toTaskSummary, type TaskData, type TaskSummary } from "./task-backend.js";
 import { installTaskBackendTestHarness, makeTempDir } from "./task-backend.test-helpers.js";
 
 installTaskBackendTestHarness();
+
+type QuerySummaryView = Pick<
+  TaskSummary,
+  | "id"
+  | "title"
+  | "description"
+  | "status"
+  | "priority"
+  | "owner"
+  | "depends_on"
+  | "tags"
+  | "verify"
+  | "comments"
+  | "commit"
+>;
+
+function pickQuerySummary(task: TaskSummary): QuerySummaryView {
+  return {
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    status: task.status,
+    priority: task.priority,
+    owner: task.owner,
+    depends_on: task.depends_on,
+    tags: task.tags,
+    verify: task.verify,
+    comments: task.comments,
+    commit: task.commit,
+  };
+}
 
 describe("LocalBackend", () => {
   let tempDir = "";
@@ -177,6 +208,48 @@ describe("LocalBackend", () => {
     expect(fullTasks[0]?.id).toBe(task.id);
     expect(fullTasks[0]?.doc).toContain("## Summary");
     expect(fullTasks[0]?.doc).toContain("Full body");
+  });
+
+  it("keeps query-visible summary fields consistent with canonical full reads", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const firstTask: TaskData = {
+      id: "202601300012-ABCD",
+      title: "Projection query fixture",
+      description: "Searchable summary body",
+      status: "DOING",
+      priority: "high",
+      owner: "CODER",
+      depends_on: ["202601300013-ABCD"],
+      tags: ["backend", "projection"],
+      verify: ["bunx vitest run task-query"],
+      comments: [{ author: "DOCS", body: "comment text remains searchable" }],
+      commit: { hash: "abc1234", message: "Implement projection fast path" },
+      doc: "## Summary\n\nProjection query body",
+    };
+    const secondTask: TaskData = {
+      id: "202601300013-ABCD",
+      title: "Dependency fixture",
+      description: "Dependency task",
+      status: "DONE",
+      priority: "low",
+      owner: "TESTER",
+      depends_on: [],
+      tags: ["backend"],
+      verify: [],
+      comments: [{ author: "TESTER", body: "dependency note" }],
+      commit: { hash: "def5678", message: "Finish dependency" },
+      doc: "## Summary\n\nDependency body",
+    };
+    await backend.writeTask(firstTask);
+    await backend.writeTask(secondTask);
+
+    await backend.listProjectionTasks();
+    const projection = await backend.listProjectionTasks();
+    const fullTasks = await backend.listTasks();
+
+    expect(projection.map((task) => pickQuerySummary(task))).toEqual(
+      fullTasks.map((task) => pickQuerySummary(toTaskSummary(task))),
+    );
   });
 
   it("writes a task index cache for local tasks", async () => {

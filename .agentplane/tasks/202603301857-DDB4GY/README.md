@@ -1,10 +1,10 @@
 ---
 id: "202603301857-DDB4GY"
 title: "Add projection/full-read consistency tests"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -15,21 +15,37 @@ tags:
   - "backend"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T09:43:08.098Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T09:49:13.518Z"
+  updated_by: "CODER"
+  note: "Focused backend vitest slice passed for projection/full-read consistency invariants; eslint passed on the touched local backend test file."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: harden local backend tests so projection summaries and full task reads stay aligned for the fields consumed by task list/search/next."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T09:44:18.137Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: harden local backend tests so projection summaries and full task reads stay aligned for the fields consumed by task list/search/next."
+  -
+    type: "verify"
+    at: "2026-03-31T09:49:13.518Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused backend vitest slice passed for projection/full-read consistency invariants; eslint passed on the touched local backend test file."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:57:01.868Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T09:49:13.532Z"
+doc_updated_by: "CODER"
 description: "Implement Epic 2 / R2.3 from REFACTOR.md. tests prove the summary projection stays consistent with full task reads for fields used by task list/search/next."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: tests prove the summary projection stays consistent with full task reads for fields used by task list/search/next.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T09:49:13.518Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused backend vitest slice passed for projection/full-read consistency invariants; eslint passed on the touched local backend test file.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T09:44:18.139Z, excerpt_hash=sha256:8386065eb0e9a526b7aebfaa80affe5f930651ea323311251dead3566847f9d1
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +106,14 @@ Implement Epic 2 / R2.3 from REFACTOR.md. tests prove the summary projection sta
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T09:49:13.518Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused backend vitest slice passed for projection/full-read consistency invariants; eslint passed on the touched local backend test file.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T09:44:18.139Z, excerpt_hash=sha256:8386065eb0e9a526b7aebfaa80affe5f930651ea323311251dead3566847f9d1
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
