@@ -7,8 +7,8 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
 import { backendIsLocalFileBackend, getTaskStore, mutateTaskStore } from "../shared/task-store.js";
 
 import {
-  buildTaskStatusTransition,
   ensureAgentFilledRequiredDocSections,
+  executeTaskStatusTransitionRequest,
   ensureVerificationSatisfiedIfRequired,
   nowIso,
   resolvePrimaryTag,
@@ -174,7 +174,7 @@ export async function writeFinishedTasks(opts: {
 
   for (const { taskId, task } of opts.loadedTasks) {
     const at = nowIso();
-    const applyTransition = (currentTask: TaskData) => {
+    const applyTransition = async (currentTask: TaskData) => {
       assertTaskCanFinish({
         task: currentTask,
         config: opts.ctx.config,
@@ -184,8 +184,10 @@ export async function writeFinishedTasks(opts: {
         resultSummary: opts.resultSummary,
         force: opts.force,
       });
-      return buildTaskStatusTransition({
+      return await executeTaskStatusTransitionRequest({
         task: currentTask,
+        backend: opts.ctx.taskBackend,
+        config: opts.ctx.config,
         at,
         toStatus: "DONE",
         eventAuthor: opts.author,
@@ -202,12 +204,20 @@ export async function writeFinishedTasks(opts: {
           ...(taskId === opts.metaTaskId && opts.riskLevel ? { risk_level: opts.riskLevel } : {}),
           ...(taskId === opts.metaTaskId && opts.breaking ? { breaking: true } : {}),
         },
+        force: true,
+        dependencyPolicy: { kind: "none" },
       });
     };
 
-    await (useStore
-      ? mutateTaskStore(store!, taskId, (currentTask) => applyTransition(currentTask).intents)
-      : opts.ctx.taskBackend.writeTask(applyTransition(task).nextTask));
+    if (useStore) {
+      await mutateTaskStore(store!, taskId, async (currentTask) => {
+        const execution = await applyTransition(currentTask);
+        return execution.intents;
+      });
+    } else {
+      const execution = await applyTransition(task);
+      await opts.ctx.taskBackend.writeTask(execution.nextTask);
+    }
   }
 }
 

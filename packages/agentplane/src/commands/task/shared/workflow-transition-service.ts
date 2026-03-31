@@ -1,4 +1,6 @@
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import { createHash } from "node:crypto";
+
+import { ensureDocSections, setMarkdownSection, type AgentplaneConfig } from "@agentplaneorg/core";
 
 import type { TaskBackend, TaskData } from "../../../backends/task-backend.js";
 import { CliError } from "../../../shared/errors.js";
@@ -16,7 +18,14 @@ import {
   resolveTaskDependencyState,
   type DependencyState,
 } from "./dependencies.js";
-import { appendTaskEvent, normalizeTaskDocVersion } from "../shared.js";
+import {
+  appendTaskEvent,
+  extractDocSection,
+  normalizeTaskDocVersion,
+  normalizeVerificationSectionLayout,
+  VERIFICATION_RESULTS_BEGIN,
+  VERIFICATION_RESULTS_END,
+} from "../shared.js";
 import { ensureStatusTransitionAllowed, resolveCommentCommitWarning } from "./transitions.js";
 
 type TaskComment = NonNullable<TaskData["comments"]>[number];
@@ -42,6 +51,22 @@ type BuildTaskVerificationTransitionOptions = {
   verificationSection: string;
   nextDoc: string;
   requiredSections: string[];
+};
+
+export type ExecuteTaskVerificationTransitionRequest = {
+  task: TaskData;
+  at: string;
+  by: string;
+  note: string;
+  state: "ok" | "needs_rework";
+  details?: string | null;
+  doc: string;
+  requiredSections: string[];
+};
+
+export type TaskVerificationTransitionExecution = TaskTransitionWrite & {
+  verificationSection: string;
+  nextDoc: string;
 };
 
 export type TaskTransitionWrite = {
@@ -92,6 +117,62 @@ function normalizeComments(task: TaskData): TaskComment[] {
           !!item && typeof item.author === "string" && typeof item.body === "string",
       )
     : [];
+}
+
+function appendVerificationEntryBetweenMarkers(
+  sectionText: string,
+  entryText: string,
+  version: 2 | 3,
+): string {
+  const ensured = normalizeVerificationSectionLayout(sectionText, version);
+  const beginIdx = ensured.indexOf(VERIFICATION_RESULTS_BEGIN);
+  const endIdx = ensured.indexOf(VERIFICATION_RESULTS_END);
+  if (beginIdx === -1 || endIdx === -1 || endIdx <= beginIdx) {
+    throw new Error("Verification results markers are malformed");
+  }
+
+  const beforeEnd = ensured.slice(0, endIdx).trimEnd();
+  const afterEnd = ensured.slice(endIdx).trimStart();
+  const entry = entryText.trimEnd();
+
+  const parts: string[] = [
+    beforeEnd,
+    ...(beforeEnd.endsWith(VERIFICATION_RESULTS_BEGIN) ? [] : [""]),
+    entry,
+    "",
+    afterEnd,
+  ];
+  return parts.join("\n").trimEnd();
+}
+
+function renderVerificationEntry(opts: {
+  at: string;
+  state: "ok" | "needs_rework";
+  by: string;
+  note: string;
+  details?: string | null;
+  verifyStepsRef?: string | null;
+}): string {
+  const lines = [
+    `### ${opts.at} — VERIFY — ${opts.state}`,
+    "",
+    `By: ${opts.by}`,
+    "",
+    `Note: ${opts.note}`,
+  ];
+  const verifyStepsRef = (opts.verifyStepsRef ?? "").trim();
+  if (verifyStepsRef) {
+    lines.push("", `VerifyStepsRef: ${verifyStepsRef}`);
+  }
+  const details = (opts.details ?? "").trim();
+  if (details) {
+    lines.push("", "Details:", "", details);
+  }
+  return `${lines.join("\n").trimEnd()}\n`;
+}
+
+function sha256Hex(text: string): string {
+  return createHash("sha256").update(text, "utf8").digest("hex");
 }
 
 function buildStatusTaskPatch(opts: BuildTaskStatusTransitionOptions): TaskStoreTaskPatch {
@@ -236,4 +317,54 @@ export function buildTaskVerificationTransition(
   };
 
   return { currentStatus, intents, nextTask };
+}
+
+export function executeTaskVerificationTransitionRequest(
+  opts: ExecuteTaskVerificationTransitionRequest,
+): TaskVerificationTransitionExecution {
+  const baseDoc = ensureDocSections(opts.doc, opts.requiredSections);
+  const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
+  const verifySteps = extractDocSection(baseDoc, "Verify Steps");
+  const verifyStepsHash = verifySteps
+    ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
+    : null;
+  const docVersion = normalizeTaskDocVersion(opts.task.doc_version);
+  const verifyStepsRef = [
+    `doc_version=${String(docVersion)}`,
+    `doc_updated_at=${String(opts.task.doc_updated_at ?? "missing")}`,
+    `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
+  ].join(", ");
+  const entry = renderVerificationEntry({
+    at: opts.at,
+    state: opts.state,
+    by: opts.by,
+    note: opts.note,
+    details: opts.details ?? null,
+    verifyStepsRef,
+  });
+  const nextVerification = appendVerificationEntryBetweenMarkers(
+    verificationSection,
+    entry,
+    docVersion,
+  );
+  const nextDoc = ensureDocSections(
+    setMarkdownSection(baseDoc, "Verification", nextVerification),
+    opts.requiredSections,
+  );
+  const transition = buildTaskVerificationTransition({
+    task: opts.task,
+    at: opts.at,
+    by: opts.by,
+    note: opts.note,
+    state: opts.state,
+    verificationSection: nextVerification,
+    nextDoc,
+    requiredSections: opts.requiredSections,
+  });
+
+  return {
+    ...transition,
+    verificationSection: nextVerification,
+    nextDoc,
+  };
 }

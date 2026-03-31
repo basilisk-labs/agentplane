@@ -1,8 +1,5 @@
-import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-
-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, successMessage } from "../../cli/output.js";
@@ -16,14 +13,9 @@ import {
 import { withTaskMutationStorage } from "../shared/task-mutation.js";
 
 import {
-  buildTaskVerificationTransition,
   decodeEscapedTaskTextNewlines,
-  extractDocSection,
-  normalizeTaskDocVersion,
-  normalizeVerificationSectionLayout,
+  executeTaskVerificationTransitionRequest,
   nowIso,
-  VERIFICATION_RESULTS_BEGIN,
-  VERIFICATION_RESULTS_END,
 } from "./shared.js";
 
 type VerifyState = "ok" | "needs_rework";
@@ -33,58 +25,6 @@ type ResolvedVerifyRecordInput = {
   note: string;
   details: string | null;
 };
-
-function appendBetweenMarkers(sectionText: string, entryText: string, version: 2 | 3): string {
-  const ensured = normalizeVerificationSectionLayout(sectionText, version);
-  const beginIdx = ensured.indexOf(VERIFICATION_RESULTS_BEGIN);
-  const endIdx = ensured.indexOf(VERIFICATION_RESULTS_END);
-  if (beginIdx === -1 || endIdx === -1 || endIdx <= beginIdx) {
-    throw new Error("Verification results markers are malformed");
-  }
-
-  const beforeEnd = ensured.slice(0, endIdx).trimEnd();
-  const afterEnd = ensured.slice(endIdx).trimStart();
-  const entry = entryText.trimEnd();
-
-  const parts: string[] = [
-    beforeEnd,
-    ...(beforeEnd.endsWith(VERIFICATION_RESULTS_BEGIN) ? [] : [""]),
-    entry,
-    "",
-    afterEnd,
-  ];
-  return parts.join("\n").trimEnd();
-}
-
-function renderVerificationEntry(opts: {
-  at: string;
-  state: VerifyState;
-  by: string;
-  note: string;
-  details?: string | null;
-  verifyStepsRef?: string | null;
-}): string {
-  const lines = [
-    `### ${opts.at} — VERIFY — ${opts.state}`,
-    "",
-    `By: ${opts.by}`,
-    "",
-    `Note: ${opts.note}`,
-  ];
-  const verifyStepsRef = (opts.verifyStepsRef ?? "").trim();
-  if (verifyStepsRef) {
-    lines.push("", `VerifyStepsRef: ${verifyStepsRef}`);
-  }
-  const details = (opts.details ?? "").trim();
-  if (details) {
-    lines.push("", "Details:", "", details);
-  }
-  return `${lines.join("\n").trimEnd()}\n`;
-}
-
-function sha256Hex(text: string): string {
-  return createHash("sha256").update(text, "utf8").digest("hex");
-}
 
 async function recordVerificationResult(opts: {
   ctx?: CommandContext;
@@ -117,88 +57,35 @@ async function recordVerificationResult(opts: {
     ctx,
     local: async (store) => {
       await store.mutate(opts.taskId, (current) => {
-        const existingDoc = String(current.doc ?? "");
-        const baseDoc = ensureDocSections(existingDoc, config.tasks.doc.required_sections);
-        const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
-        const verifySteps = extractDocSection(baseDoc, "Verify Steps");
-        const verifyStepsHash = verifySteps
-          ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
-          : null;
-        const docVersion = normalizeTaskDocVersion(current.doc_version);
-        const verifyStepsRef = [
-          `doc_version=${String(docVersion)}`,
-          `doc_updated_at=${String(current.doc_updated_at ?? "missing")}`,
-          `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
-        ].join(", ");
-        const entry = renderVerificationEntry({
-          at,
-          state: opts.state,
-          by: opts.by,
-          note: opts.note,
-          details: opts.details ?? null,
-          verifyStepsRef,
-        });
-        const nextVerification = appendBetweenMarkers(verificationSection, entry, docVersion);
-        const nextDoc = ensureDocSections(
-          setMarkdownSection(baseDoc, "Verification", nextVerification),
-          config.tasks.doc.required_sections,
-        );
-
-        return buildTaskVerificationTransition({
+        const execution = executeTaskVerificationTransitionRequest({
           task: current,
           at,
           by: opts.by,
           note: opts.note,
           state: opts.state,
-          verificationSection: nextVerification,
-          nextDoc,
+          details: opts.details ?? null,
+          doc: String(current.doc ?? ""),
           requiredSections: config.tasks.doc.required_sections,
-        }).intents;
+        });
+        return execution.intents;
       });
     },
     remote: async () => {
       const remoteTask = await loadTaskFromContext({ ctx, taskId: opts.taskId });
-      const existingDoc =
-        (typeof remoteTask.doc === "string" ? remoteTask.doc : "") ||
-        (await backend.getTaskDoc!(remoteTask.id));
-      const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
-      const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
-      const verifySteps = extractDocSection(baseDoc, "Verify Steps");
-      const verifyStepsHash = verifySteps
-        ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
-        : null;
-      const docVersion = normalizeTaskDocVersion(remoteTask.doc_version);
-      const verifyStepsRef = [
-        `doc_version=${String(docVersion)}`,
-        `doc_updated_at=${String(remoteTask.doc_updated_at ?? "missing")}`,
-        `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
-      ].join(", ");
-      const entry = renderVerificationEntry({
+      const execution = executeTaskVerificationTransitionRequest({
+        task: remoteTask,
         at,
-        state: opts.state,
         by: opts.by,
         note: opts.note,
+        state: opts.state,
         details: opts.details ?? null,
-        verifyStepsRef,
+        doc:
+          (typeof remoteTask.doc === "string" ? remoteTask.doc : "") ||
+          (await backend.getTaskDoc!(remoteTask.id)),
+        requiredSections: config.tasks.doc.required_sections,
       });
-      const nextVerification = appendBetweenMarkers(verificationSection, entry, docVersion);
-      const nextDoc = ensureDocSections(
-        setMarkdownSection(baseDoc, "Verification", nextVerification),
-        config.tasks.doc.required_sections,
-      );
 
-      await backend.writeTask(
-        buildTaskVerificationTransition({
-          task: remoteTask,
-          at,
-          by: opts.by,
-          note: opts.note,
-          state: opts.state,
-          verificationSection: nextVerification,
-          nextDoc,
-          requiredSections: config.tasks.doc.required_sections,
-        }).nextTask,
-      );
+      await backend.writeTask(execution.nextTask);
     },
   });
 

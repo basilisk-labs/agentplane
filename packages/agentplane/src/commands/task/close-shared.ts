@@ -1,7 +1,7 @@
 import { CliError } from "../../shared/errors.js";
 import { type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
-import { buildTaskStatusTransition, nowIso, requireStructuredComment } from "./shared.js";
+import { executeTaskStatusTransitionRequest, nowIso, requireStructuredComment } from "./shared.js";
 
 export async function recordVerifiedNoopClosure(opts: {
   ctx: CommandContext;
@@ -20,7 +20,7 @@ export async function recordVerifiedNoopClosure(opts: {
   await applyTaskMutation({
     ctx: opts.ctx,
     taskId: opts.taskId,
-    build: (task) => {
+    build: async (task) => {
       if (!opts.force && String(task.status || "TODO").toUpperCase() === "DONE") {
         throw new CliError({
           exitCode: 2,
@@ -28,8 +28,10 @@ export async function recordVerifiedNoopClosure(opts: {
           message: `Task is already DONE: ${opts.taskId} (use --force to override)`,
         });
       }
-      return buildTaskStatusTransition({
+      const execution = await executeTaskStatusTransitionRequest({
         task,
+        backend: opts.ctx.taskBackend,
+        config: opts.ctx.config,
         at,
         toStatus: "DONE",
         eventAuthor: opts.author,
@@ -41,7 +43,10 @@ export async function recordVerifiedNoopClosure(opts: {
           risk_level: "low",
           breaking: false,
         },
+        force: true,
+        dependencyPolicy: { kind: "none" },
       });
+      return { intents: execution.intents, nextTask: execution.nextTask };
     },
   });
 

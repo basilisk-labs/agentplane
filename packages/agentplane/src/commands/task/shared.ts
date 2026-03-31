@@ -58,12 +58,15 @@ export {
   buildTaskStatusTransition,
   executeTaskStatusTransitionRequest,
   buildTaskVerificationTransition,
+  executeTaskVerificationTransitionRequest,
   readDeferredTaskTransitionWarnings,
   type TaskTransitionWrite,
   type TaskStatusTransitionDependencyPolicy,
   type TaskStatusTransitionCommentCommitPolicy,
   type ExecuteTaskStatusTransitionRequest,
   type TaskStatusTransitionExecution,
+  type ExecuteTaskVerificationTransitionRequest,
+  type TaskVerificationTransitionExecution,
 } from "./shared/workflow-transition-service.js";
 export {
   type TaskListFilters,

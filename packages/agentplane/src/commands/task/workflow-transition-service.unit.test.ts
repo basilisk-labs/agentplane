@@ -7,6 +7,7 @@ import {
   buildTaskStatusTransition,
   executeTaskStatusTransitionRequest,
   buildTaskVerificationTransition,
+  executeTaskVerificationTransitionRequest,
 } from "./shared/workflow-transition-service.js";
 
 function mkTask(overrides: Partial<TaskData> = {}): TaskData {
@@ -227,5 +228,44 @@ describe("workflow transition service", () => {
       code: "E_USAGE",
       message: "Refusing status transition TODO -> DONE (use --force to override)",
     });
+  });
+
+  it("executeTaskVerificationTransitionRequest builds one canonical verification transition", () => {
+    const execution = executeTaskVerificationTransitionRequest({
+      task: mkTask({
+        status: "DONE",
+        commit: { hash: "abc1234", message: "old" },
+        doc_updated_at: "2026-03-27T00:00:00.000Z",
+      }),
+      at: "2026-03-27T02:00:00.000Z",
+      by: "REVIEWER",
+      note: "Fix the parser edge case.",
+      state: "needs_rework",
+      details: "Run focused parser tests",
+      doc: [
+        "## Summary",
+        "x",
+        "",
+        "## Verify Steps",
+        "1. do the thing",
+        "",
+        "## Verification",
+        "<!-- BEGIN VERIFICATION RESULTS -->",
+        "<!-- END VERIFICATION RESULTS -->",
+      ].join("\n"),
+      requiredSections: ["Summary", "Verify Steps", "Verification"],
+    });
+
+    expect(execution.verificationSection).toContain("VERIFY — needs_rework");
+    expect(execution.verificationSection).toContain("Details:");
+    expect(execution.nextDoc).toContain("VerifyStepsRef:");
+    expect(execution.nextTask.status).toBe("DOING");
+    expect(execution.nextTask.commit).toBeNull();
+    expect(execution.intents.map((intent) => intent.kind)).toEqual([
+      "set-task-fields",
+      "set-section",
+      "append-events",
+      "touch-doc-meta",
+    ]);
   });
 });
