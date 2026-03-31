@@ -1,0 +1,5 @@
+ .agentplane/tasks/202603301856-6G2YVG/README.md    | 60 +++++++++++----
+ .../src/backends/task-backend.local.test.ts        | 27 +++++--
+ .../agentplane/src/backends/task-index.test.ts     | 85 ++++++++++++++++++++++
+ packages/agentplane/src/backends/task-index.ts     | 21 +++---
+ 4 files changed, 162 insertions(+), 31 deletions(-)

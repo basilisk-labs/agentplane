@@ -3,14 +3,14 @@ import path from "node:path";
 
 import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
 
-import type { TaskData } from "./task-backend.js";
+import type { TaskData, TaskSummary } from "./task-backend.js";
 
 export const TASK_INDEX_SCHEMA_VERSION = 2;
 const TASK_INDEX_FILENAME = "tasks-index.v2.json";
 const LEGACY_TASK_INDEX_FILENAME = "tasks-index.v1.json";
 
 export type TaskIndexEntry = {
-  task: TaskData;
+  task: TaskSummary;
   readmePath: string;
   mtimeMs: number;
 };
@@ -64,6 +64,7 @@ function isTaskIndexEntry(value: unknown): value is TaskIndexEntry {
   if (!Array.isArray(task.depends_on)) return false;
   if (!Array.isArray(task.tags)) return false;
   if (!Array.isArray(task.verify)) return false;
+  if (!Array.isArray(task.comments)) return false;
   return true;
 }
 
@@ -138,13 +139,15 @@ export function buildTaskIndexEntry(
   readmePath: string,
   mtimeMs: number,
 ): TaskIndexEntry {
-  const compactTask: TaskData = {
-    ...task,
-    // Keep the index payload lean for list/search/next paths.
-    doc: undefined,
-    sections: undefined,
-    comments: undefined,
-    events: undefined,
+  const { doc, sections, events, ...summary } = task;
+  void doc;
+  void sections;
+  void events;
+
+  // Keep the exact TaskSummary projection in the cache; read-heavy queries still need comments.
+  const compactTask: TaskSummary = {
+    ...summary,
+    comments: Array.isArray(task.comments) ? task.comments : [],
   };
   return {
     task: compactTask,

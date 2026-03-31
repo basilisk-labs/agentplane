@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603301856-6G2YVG/extend-task-index-summary-projection",
+  "created_at": "2026-03-31T09:25:04.871Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603301856-6G2YVG",
+  "updated_at": "2026-03-31T09:25:10.723Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

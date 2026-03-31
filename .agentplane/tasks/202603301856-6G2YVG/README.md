@@ -1,10 +1,10 @@
 ---
 id: "202603301856-6G2YVG"
 title: "Extend the task index schema to store the exact summary projection needed by read-heavy commands"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -15,21 +15,37 @@ tags:
   - "backend"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-31T09:18:17.779Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approve R2.1 minimal task-index schema change so cache stores the exact TaskSummary projection required by read-heavy task queries."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T09:21:51.148Z"
+  updated_by: "CODER"
+  note: "Focused vitest slice passed for task-index projection coverage and local-backend cache behavior; agentplane build and eslint passed on touched backend files."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: extend the task index cache to persist the exact TaskSummary projection needed by read-heavy task queries."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T09:19:13.559Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: extend the task index cache to persist the exact TaskSummary projection needed by read-heavy task queries."
+  -
+    type: "verify"
+    at: "2026-03-31T09:21:51.148Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused vitest slice passed for task-index projection coverage and local-backend cache behavior; agentplane build and eslint passed on touched backend files."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:57:00.410Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T09:21:51.152Z"
+doc_updated_by: "CODER"
 description: "Implement Epic 2 / R2.1 from REFACTOR.md. the cache stores enough summary data to satisfy `task list/search/next` without reconstructing full task records."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: the cache stores enough summary data to satisfy `task list/search/next` without reconstructing full task records.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T09:21:51.148Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused vitest slice passed for task-index projection coverage and local-backend cache behavior; agentplane build and eslint passed on touched backend files.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T09:19:13.561Z, excerpt_hash=sha256:ab121a69f0775c483ae369e4f239606bc6b65e31feb7a0aa8aa54b4438a37e33
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +106,14 @@ Implement Epic 2 / R2.1 from REFACTOR.md. the cache stores enough summary data t
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T09:21:51.148Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused vitest slice passed for task-index projection coverage and local-backend cache behavior; agentplane build and eslint passed on touched backend files.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T09:19:13.561Z, excerpt_hash=sha256:ab121a69f0775c483ae369e4f239606bc6b65e31feb7a0aa8aa54b4438a37e33
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

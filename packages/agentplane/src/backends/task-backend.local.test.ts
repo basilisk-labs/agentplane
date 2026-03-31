@@ -90,14 +90,16 @@ describe("LocalBackend", () => {
     };
     await backend.writeTask(task);
 
-    const projection = await backend.listProjectionTasks();
+    const firstProjection = await backend.listProjectionTasks();
+    const cachedProjection = await backend.listProjectionTasks();
 
-    expect(projection).toHaveLength(1);
-    expect(projection[0]?.id).toBe(task.id);
-    expect(projection[0]?.comments).toEqual(task.comments);
-    expect(projection[0]).not.toHaveProperty("doc");
-    expect(projection[0]).not.toHaveProperty("sections");
-    expect(projection[0]).not.toHaveProperty("events");
+    expect(firstProjection).toHaveLength(1);
+    expect(cachedProjection).toHaveLength(1);
+    expect(cachedProjection[0]?.id).toBe(task.id);
+    expect(cachedProjection[0]?.comments).toEqual(task.comments);
+    expect(cachedProjection[0]).not.toHaveProperty("doc");
+    expect(cachedProjection[0]).not.toHaveProperty("sections");
+    expect(cachedProjection[0]).not.toHaveProperty("events");
   });
 
   it("writes a task index cache for local tasks", async () => {
@@ -112,6 +114,11 @@ describe("LocalBackend", () => {
       depends_on: [],
       tags: [],
       verify: [],
+      comments: [{ author: "DOCS", body: "keep cache searchability" }],
+      events: [
+        { type: "status", at: new Date().toISOString(), author: "DOCS", from: "TODO", to: "DOING" },
+      ],
+      doc: "## Summary\n\nCache body",
     };
     await backend.writeTask(task);
     await backend.listTasks();
@@ -124,6 +131,10 @@ describe("LocalBackend", () => {
     expect(parsed.schema_version).toBe(2);
     expect(Object.keys(parsed.byId)).toHaveLength(1);
     expect(parsed.byId[task.id]?.task.id).toBe(task.id);
+    expect(parsed.byId[task.id]?.task.comments).toEqual(task.comments);
+    expect(parsed.byId[task.id]?.task).not.toHaveProperty("doc");
+    expect(parsed.byId[task.id]?.task).not.toHaveProperty("sections");
+    expect(parsed.byId[task.id]?.task).not.toHaveProperty("events");
     expect(Object.values(parsed.byPath)).toContain(task.id);
   });
 
