@@ -4,18 +4,24 @@ import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
 
 import type { TaskBackend, TaskData, TaskEvent } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import type { TaskStoreIntent } from "../shared/task-store.js";
+import type { TaskMutationPlan } from "../shared/task-mutation.js";
 
-const mockLoadTaskFromContext =
-  vi.fn<(opts: { ctx: CommandContext; taskId: string }) => Promise<TaskData>>();
 const mockLoadCommandContext =
   vi.fn<(opts: { cwd: string; rootOverride?: string | null }) => Promise<CommandContext>>();
-const mockBackendIsLocalFileBackend = vi.fn<(ctx: CommandContext) => boolean>();
-const mockGetTaskStore = vi.fn();
+const mockApplyTaskMutation =
+  vi.fn<
+    (opts: {
+      ctx: CommandContext;
+      taskId: string;
+      build: (current: TaskData) => TaskMutationPlan | Promise<TaskMutationPlan>;
+    }) => Promise<{ changed: boolean; task: TaskData; mode: "local-store" | "backend" }>
+  >();
 
 vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mockLoadCommandContext,
-  loadTaskFromContext: mockLoadTaskFromContext,
+}));
+vi.mock("../shared/task-mutation.js", () => ({
+  applyTaskMutation: mockApplyTaskMutation,
 }));
 vi.mock("../shared/task-store.js", () => ({
   appendTaskCommentIntent: (comment: { author: string; body: string }) => ({
@@ -26,8 +32,6 @@ vi.mock("../shared/task-store.js", () => ({
     kind: "append-events",
     events: [event],
   }),
-  backendIsLocalFileBackend: mockBackendIsLocalFileBackend,
-  getTaskStore: mockGetTaskStore,
   touchTaskDocMetaIntent: (opts: { updatedBy?: string; version?: 2 | 3 }) => ({
     kind: "touch-doc-meta",
     ...opts,
@@ -63,55 +67,10 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
   return { ...ctx, ...overrides };
 }
 
-function applyStoreIntents(current: TaskData, intents: readonly TaskStoreIntent[]): TaskData {
-  const next: TaskData = { ...current };
-  let touchDoc = false;
-  let updatedBy: string | undefined;
-  let version: 2 | 3 | undefined;
-
-  for (const intent of intents) {
-    switch (intent.kind) {
-      case "append-comments": {
-        next.comments = [
-          ...(Array.isArray(next.comments) ? next.comments : []),
-          ...intent.comments,
-        ];
-        break;
-      }
-      case "append-events": {
-        next.events = [...(Array.isArray(next.events) ? next.events : []), ...intent.events];
-        break;
-      }
-      case "touch-doc-meta": {
-        touchDoc = true;
-        updatedBy = intent.updatedBy ?? updatedBy;
-        version = intent.version ?? version;
-        break;
-      }
-      case "set-task-fields":
-      case "replace-doc":
-      case "set-section": {
-        break;
-      }
-    }
-  }
-
-  if (touchDoc) {
-    next.doc_updated_at = new Date().toISOString();
-    next.doc_updated_by = updatedBy ?? next.doc_updated_by;
-    next.doc_version = version ?? next.doc_version;
-  }
-
-  return next;
-}
-
 describe("task comment command (unit)", () => {
   beforeEach(() => {
-    mockLoadTaskFromContext.mockReset();
     mockLoadCommandContext.mockReset();
-    mockBackendIsLocalFileBackend.mockReset();
-    mockGetTaskStore.mockReset();
-    mockBackendIsLocalFileBackend.mockReturnValue(false);
+    mockApplyTaskMutation.mockReset();
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-03-13T16:00:00.000Z"));
   });
@@ -120,8 +79,8 @@ describe("task comment command (unit)", () => {
     vi.useRealTimers();
   });
 
-  it("uses TaskStore intents for the local backend path", async () => {
-    let currentTask: TaskData = {
+  it("builds one shared mutation plan and delegates persistence to applyTaskMutation", async () => {
+    const currentTask: TaskData = {
       id: "T-1",
       title: "Title",
       description: "Desc",
@@ -136,22 +95,15 @@ describe("task comment command (unit)", () => {
       doc_version: 3,
       doc_updated_by: "CODER",
     };
-    const store = {
-      mutate: vi
-        .fn()
-        .mockImplementation(
-          async (
-            _taskId: string,
-            builder: (current: TaskData) => Promise<readonly TaskStoreIntent[]>,
-          ) => {
-            currentTask = applyStoreIntents(currentTask, await builder(currentTask));
-            return { changed: true, task: currentTask };
-          },
-        ),
-    };
     const ctx = mkCtx();
-    mockBackendIsLocalFileBackend.mockReturnValue(true);
-    mockGetTaskStore.mockReturnValue(store);
+    mockApplyTaskMutation.mockImplementation(async ({ build }) => {
+      const plan = await build(currentTask);
+      return {
+        changed: true,
+        task: plan.nextTask ?? currentTask,
+        mode: "local-store",
+      };
+    });
 
     const { cmdTaskComment } = await import("./comment.js");
     const rc = await cmdTaskComment({
@@ -163,18 +115,47 @@ describe("task comment command (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(store.mutate).toHaveBeenCalledTimes(1);
-    expect(mockLoadTaskFromContext).not.toHaveBeenCalled();
-    expect(currentTask.comments).toEqual([{ author: "CODER", body: "Comment body" }]);
-    expect(currentTask.events).toEqual([
+    expect(mockApplyTaskMutation).toHaveBeenCalledTimes(1);
+    const call = mockApplyTaskMutation.mock.calls[0];
+    expect(call).toBeDefined();
+    if (!call) throw new Error("expected applyTaskMutation call");
+    const plan = await call[0].build(currentTask);
+    expect(plan.intents).toEqual([
       {
-        type: "comment",
-        at: "2026-03-13T16:00:00.000Z",
-        author: "CODER",
-        body: "Comment body",
+        kind: "append-comments",
+        comments: [{ author: "CODER", body: "Comment body" }],
+      },
+      {
+        kind: "append-events",
+        events: [
+          {
+            type: "comment",
+            at: "2026-03-13T16:00:00.000Z",
+            author: "CODER",
+            body: "Comment body",
+          },
+        ],
+      },
+      {
+        kind: "touch-doc-meta",
+        updatedBy: "CODER",
+        version: 3,
       },
     ]);
-    expect(currentTask.doc_updated_by).toBe("CODER");
-    expect(currentTask.doc_version).toBe(3);
+    expect(plan.nextTask).toEqual(
+      expect.objectContaining({
+        comments: [{ author: "CODER", body: "Comment body" }],
+        events: [
+          {
+            type: "comment",
+            at: "2026-03-13T16:00:00.000Z",
+            author: "CODER",
+            body: "Comment body",
+          },
+        ],
+        doc_updated_by: "CODER",
+        doc_version: 3,
+      }),
+    );
   });
 });

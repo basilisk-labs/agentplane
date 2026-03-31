@@ -1,7 +1,6 @@
 import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { recordVerifiedNoopClosure } from "./close-shared.js";
 
@@ -28,32 +27,12 @@ export async function cmdTaskCloseNoop(opts: {
         reason: "task close-noop --force",
       });
     }
-    const useStore = backendIsLocalFileBackend(ctx);
-    const store = useStore ? getTaskStore(ctx) : null;
-    const task = useStore
-      ? await store!.get(opts.taskId)
-      : await ctx.taskBackend.getTask(opts.taskId);
-    if (!task) {
-      throw new CliError({
-        exitCode: 4,
-        code: "E_IO",
-        message: `Task not found: ${opts.taskId}`,
-      });
-    }
-    if (!opts.force && String(task.status || "TODO").toUpperCase() === "DONE") {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Task is already DONE: ${opts.taskId} (use --force to override)`,
-      });
-    }
     const normalizedNote = opts.note?.trim();
     const baseBody =
       "Verified: no implementation changes were required; closure is recorded as no-op bookkeeping.";
     const body = normalizedNote ? `${baseBody}\n\nNote: ${normalizedNote}` : baseBody;
     await recordVerifiedNoopClosure({
       ctx,
-      task,
       taskId: opts.taskId,
       author: opts.author,
       body,

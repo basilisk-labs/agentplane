@@ -2,29 +2,21 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
 
-import type { TaskBackend, TaskData, TaskEvent } from "../../backends/task-backend.js";
+import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import type { TaskStoreIntent } from "../shared/task-store.js";
+import type { TaskMutationPlan } from "../shared/task-mutation.js";
 
-const mockBackendIsLocalFileBackend = vi.fn<(ctx: CommandContext) => boolean>();
-const mockGetTaskStore = vi.fn();
+const mockApplyTaskMutation =
+  vi.fn<
+    (opts: {
+      ctx: CommandContext;
+      taskId: string;
+      build: (current: TaskData) => TaskMutationPlan | Promise<TaskMutationPlan>;
+    }) => Promise<{ changed: boolean; task: TaskData; mode: "local-store" | "backend" }>
+  >();
 
-vi.mock("../shared/task-store.js", () => ({
-  appendTaskCommentIntent: (comment: { author: string; body: string }) => ({
-    kind: "append-comments",
-    comments: [comment],
-  }),
-  appendTaskEventIntent: (event: TaskEvent) => ({
-    kind: "append-events",
-    events: [event],
-  }),
-  backendIsLocalFileBackend: mockBackendIsLocalFileBackend,
-  getTaskStore: mockGetTaskStore,
-  setTaskFieldsIntent: (task: Partial<TaskData>) => ({ kind: "set-task-fields", task }),
-  touchTaskDocMetaIntent: (opts: { updatedBy?: string; version?: 2 | 3 }) => ({
-    kind: "touch-doc-meta",
-    ...opts,
-  }),
+vi.mock("../shared/task-mutation.js", () => ({
+  applyTaskMutation: mockApplyTaskMutation,
 }));
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
@@ -56,56 +48,9 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
   return { ...ctx, ...overrides };
 }
 
-function applyStoreIntents(current: TaskData, intents: readonly TaskStoreIntent[]): TaskData {
-  const next: TaskData = { ...current };
-  let touchDoc = false;
-  let updatedBy: string | undefined;
-  let version: 2 | 3 | undefined;
-
-  for (const intent of intents) {
-    switch (intent.kind) {
-      case "set-task-fields": {
-        Object.assign(next, intent.task);
-        break;
-      }
-      case "append-comments": {
-        next.comments = [
-          ...(Array.isArray(next.comments) ? next.comments : []),
-          ...intent.comments,
-        ];
-        break;
-      }
-      case "append-events": {
-        next.events = [...(Array.isArray(next.events) ? next.events : []), ...intent.events];
-        break;
-      }
-      case "touch-doc-meta": {
-        touchDoc = true;
-        updatedBy = intent.updatedBy ?? updatedBy;
-        version = intent.version ?? version;
-        break;
-      }
-      case "replace-doc":
-      case "set-section": {
-        break;
-      }
-    }
-  }
-
-  if (touchDoc) {
-    next.doc_updated_at = new Date().toISOString();
-    next.doc_updated_by = updatedBy ?? next.doc_updated_by;
-    next.doc_version = version ?? next.doc_version;
-  }
-
-  return next;
-}
-
 describe("task close-shared helper (unit)", () => {
   beforeEach(() => {
-    mockBackendIsLocalFileBackend.mockReset();
-    mockGetTaskStore.mockReset();
-    mockBackendIsLocalFileBackend.mockReturnValue(false);
+    mockApplyTaskMutation.mockReset();
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-03-13T16:10:00.000Z"));
   });
@@ -114,8 +59,8 @@ describe("task close-shared helper (unit)", () => {
     vi.useRealTimers();
   });
 
-  it("uses TaskStore intents for verified local closures", async () => {
-    let currentTask: TaskData = {
+  it("builds one shared transition plan and delegates persistence to applyTaskMutation", async () => {
+    const currentTask: TaskData = {
       id: "T-1",
       title: "Title",
       description: "Desc",
@@ -130,27 +75,19 @@ describe("task close-shared helper (unit)", () => {
       doc_version: 3,
       doc_updated_by: "CODER",
     };
-    const store = {
-      mutate: vi
-        .fn()
-        .mockImplementation(
-          async (
-            _taskId: string,
-            builder: (current: TaskData) => Promise<readonly TaskStoreIntent[]>,
-          ) => {
-            currentTask = applyStoreIntents(currentTask, await builder(currentTask));
-            return { changed: true, task: currentTask };
-          },
-        ),
-    };
     const ctx = mkCtx();
-    mockBackendIsLocalFileBackend.mockReturnValue(true);
-    mockGetTaskStore.mockReturnValue(store);
+    mockApplyTaskMutation.mockImplementation(async ({ build }) => {
+      const plan = await build(currentTask);
+      return {
+        changed: true,
+        task: plan.nextTask ?? currentTask,
+        mode: "local-store",
+      };
+    });
 
     const { recordVerifiedNoopClosure } = await import("./close-shared.js");
     await recordVerifiedNoopClosure({
       ctx,
-      task: currentTask,
       taskId: "T-1",
       author: "CODER",
       body: "Verified: this closure note is long enough to satisfy the verified comment policy.",
@@ -160,26 +97,37 @@ describe("task close-shared helper (unit)", () => {
       force: false,
     });
 
-    expect(store.mutate).toHaveBeenCalledTimes(1);
-    expect(currentTask.status).toBe("DONE");
-    expect(currentTask.result_summary).toBe("No-op verified");
-    expect(currentTask.comments).toEqual([
-      {
-        author: "CODER",
-        body: "Verified: this closure note is long enough to satisfy the verified comment policy.",
-      },
-    ]);
-    expect(currentTask.events).toEqual([
-      {
-        type: "status",
-        at: "2026-03-13T16:10:00.000Z",
-        author: "CODER",
-        from: "DOING",
-        to: "DONE",
-        note: "Verified: this closure note is long enough to satisfy the verified comment policy.",
-      },
-    ]);
-    expect(currentTask.doc_updated_by).toBe("CODER");
-    expect(currentTask.doc_version).toBe(3);
+    expect(mockApplyTaskMutation).toHaveBeenCalledTimes(1);
+    const call = mockApplyTaskMutation.mock.calls[0];
+    expect(call).toBeDefined();
+    if (!call) throw new Error("expected applyTaskMutation call");
+    const plan = await call[0].build(currentTask);
+    expect(plan.intents).toBeDefined();
+    expect(plan.nextTask).toEqual(
+      expect.objectContaining({
+        status: "DONE",
+        result_summary: "No-op verified",
+        risk_level: "low",
+        breaking: false,
+        comments: [
+          {
+            author: "CODER",
+            body: "Verified: this closure note is long enough to satisfy the verified comment policy.",
+          },
+        ],
+        events: [
+          {
+            type: "status",
+            at: "2026-03-13T16:10:00.000Z",
+            author: "CODER",
+            from: "DOING",
+            to: "DONE",
+            note: "Verified: this closure note is long enough to satisfy the verified comment policy.",
+          },
+        ],
+        doc_updated_by: "CODER",
+        doc_version: 3,
+      }),
+    );
   });
 });

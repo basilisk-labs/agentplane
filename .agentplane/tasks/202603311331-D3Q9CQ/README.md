@@ -1,10 +1,10 @@
 ---
 id: "202603311331-D3Q9CQ"
 title: "N2.3 Move low-risk task mutators onto the bridge"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -15,21 +15,37 @@ tags:
   - "backend"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T15:17:23.977Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T15:25:00.442Z"
+  updated_by: "CODER"
+  note: "Moved low-risk mutators onto the shared task-mutation bridge: task comment and verified no-op close paths now build one shared mutation plan, and close-noop/close-duplicate no longer branch on local store preloads; verified with bunx eslint packages/agentplane/src/commands/task/comment.ts packages/agentplane/src/commands/task/close-shared.ts packages/agentplane/src/commands/task/close-noop.ts packages/agentplane/src/commands/task/close-duplicate.ts packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts and bunx vitest run packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts plus bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts --testNamePattern \"task close-noop closes bookkeeping tasks in one command\"."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: move low-risk single-task mutators onto the shared mutation bridge so simple commands stop branching on local store versus backend writes."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T15:20:06.422Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: move low-risk single-task mutators onto the shared mutation bridge so simple commands stop branching on local store versus backend writes."
+  -
+    type: "verify"
+    at: "2026-03-31T15:25:00.442Z"
+    author: "CODER"
+    state: "ok"
+    note: "Moved low-risk mutators onto the shared task-mutation bridge: task comment and verified no-op close paths now build one shared mutation plan, and close-noop/close-duplicate no longer branch on local store preloads; verified with bunx eslint packages/agentplane/src/commands/task/comment.ts packages/agentplane/src/commands/task/close-shared.ts packages/agentplane/src/commands/task/close-noop.ts packages/agentplane/src/commands/task/close-duplicate.ts packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts and bunx vitest run packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts plus bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts --testNamePattern \"task close-noop closes bookkeeping tasks in one command\"."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:31:22.094Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T15:25:00.443Z"
+doc_updated_by: "CODER"
 description: "Implement N2.3 from REFACTOR.md. Hide local-store vs backend branching behind shared mutation helpers and remove repeated bulk-write fallback logic.. Acceptance: these commands become thin wrappers around the shared mutation helper. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: these commands become thin wrappers around the shared mutation helper.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T15:25:00.442Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Moved low-risk mutators onto the shared task-mutation bridge: task comment and verified no-op close paths now build one shared mutation plan, and close-noop/close-duplicate no longer branch on local store preloads; verified with bunx eslint packages/agentplane/src/commands/task/comment.ts packages/agentplane/src/commands/task/close-shared.ts packages/agentplane/src/commands/task/close-noop.ts packages/agentplane/src/commands/task/close-duplicate.ts packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts and bunx vitest run packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts plus bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts --testNamePattern "task close-noop closes bookkeeping tasks in one command".
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T15:20:06.423Z, excerpt_hash=sha256:8c107d1405eccc961d04bc028ca69a98b37dc0a810647b26285c84a29ca5fb2a
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +106,14 @@ Implement N2.3 from REFACTOR.md. Hide local-store vs backend branching behind sh
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T15:25:00.442Z — VERIFY — ok
+
+By: CODER
+
+Note: Moved low-risk mutators onto the shared task-mutation bridge: task comment and verified no-op close paths now build one shared mutation plan, and close-noop/close-duplicate no longer branch on local store preloads; verified with bunx eslint packages/agentplane/src/commands/task/comment.ts packages/agentplane/src/commands/task/close-shared.ts packages/agentplane/src/commands/task/close-noop.ts packages/agentplane/src/commands/task/close-duplicate.ts packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts and bunx vitest run packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts plus bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts --testNamePattern "task close-noop closes bookkeeping tasks in one command".
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T15:20:06.423Z, excerpt_hash=sha256:8c107d1405eccc961d04bc028ca69a98b37dc0a810647b26285c84a29ca5fb2a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

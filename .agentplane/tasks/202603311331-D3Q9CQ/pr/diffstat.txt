@@ -1,0 +1,9 @@
+ .agentplane/tasks/202603311331-D3Q9CQ/README.md    |  58 +++++--
+ .../src/commands/task/close-duplicate.ts           |   8 -
+ .../agentplane/src/commands/task/close-noop.ts     |  21 ---
+ .../agentplane/src/commands/task/close-shared.ts   |  81 ++++------
+ .../src/commands/task/close-shared.unit.test.ts    | 166 +++++++--------------
+ packages/agentplane/src/commands/task/comment.ts   | 103 +++++++------
+ .../src/commands/task/comment.unit.test.ts         | 143 ++++++++----------
+ .../src/commands/task/mutation-parity.unit.test.ts |  11 +-
+ 8 files changed, 254 insertions(+), 337 deletions(-)

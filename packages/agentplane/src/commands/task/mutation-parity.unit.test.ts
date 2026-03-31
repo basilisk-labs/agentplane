@@ -192,11 +192,8 @@ async function runCommentScenario(mode: BackendMode) {
     return Promise.resolve();
   });
   const store = {
-    mutate: vi.fn(async (_taskId: string, builder: (current: TaskData) => unknown) => {
-      currentTask = applyStorePatch(
-        currentTask,
-        taskStorePatchFromIntents(await builder(cloneTask(currentTask))),
-      );
+    update: vi.fn(async (_taskId: string, updater: (current: TaskData) => unknown) => {
+      currentTask = cloneTask((await updater(cloneTask(currentTask))) as TaskData);
       return { changed: true, task: cloneTask(currentTask) };
     }),
   };
@@ -228,7 +225,7 @@ async function runCommentScenario(mode: BackendMode) {
     }),
   );
 
-  return { ...output, task: currentTask, writeTask, mutate: store.mutate };
+  return { ...output, task: currentTask, writeTask, update: store.update };
 }
 
 async function runBlockScenario(mode: BackendMode) {
@@ -639,7 +636,7 @@ describe("task mutation parity across local and backend paths", () => {
     expect(projectTaskMutation(local.task)).toEqual(projectTaskMutation(remote.task));
     expect(local.stdout).toBe(remote.stdout);
     expect(local.stderr).toBe(remote.stderr);
-    expect(local.mutate).toHaveBeenCalledTimes(1);
+    expect(local.update).toHaveBeenCalledTimes(1);
     expect(remote.writeTask).toHaveBeenCalledTimes(1);
   });
 
