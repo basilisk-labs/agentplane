@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311331-2VHKVQ/bulk-task-mutators",
   "created_at": "2026-03-31T15:30:17.101Z",
+  "head_sha": "5592db1d757fdd18208c473ec8984cfce0a5adb8",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "69162a582569fa689a6a4a1d21e474f644092d40",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T15:30:57.096Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311331-2VHKVQ",
-  "updated_at": "2026-03-31T15:30:24.129Z",
+  "updated_at": "2026-03-31T15:30:57.096Z",
   "verify": {
     "status": "skipped"
   }
