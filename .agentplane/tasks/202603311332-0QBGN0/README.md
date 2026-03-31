@@ -1,10 +1,11 @@
 ---
 id: "202603311332-0QBGN0"
 title: "N5.4 Split `commands/upgrade.ts` by planning, apply, report, and lock concerns"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-0QBGN0/split-upgrade-command"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-31T20:41:55.577Z"
   updated_by: "CODER"
   note: "Split commands/upgrade.ts into policy/materialize/plan modules and kept upgrade CLI contracts green via focused lint, vitest, and framework bootstrap."
-commit: null
+commit:
+  hash: "ffb6b8be3fa24114610f7818de2ddbb59b6d0494"
+  message: "📝 0QBGN0 task: add pr artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: split commands/upgrade.ts into policy, materialize, and planning modules while preserving lock lifecycle, managed-file policy, agent/auto mode sequencing, and public cmdUpgradeParsed entrypoints."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-0QBGN0/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Split commands/upgrade.ts into policy/materialize/plan modules and kept upgrade CLI contracts green via focused lint, vitest, and framework bootstrap."
+  -
+    type: "status"
+    at: "2026-03-31T20:44:12.542Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-0QBGN0/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T20:41:55.580Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T20:44:12.547Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N5.4 from REFACTOR.md. Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.. Acceptance: upgrade flow orchestration is easier to test without loading the whole module. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
