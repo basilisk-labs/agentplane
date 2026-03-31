@@ -1,10 +1,11 @@
 ---
 id: "202603301857-3KGV43"
 title: "Introduce a lightweight read-only usecase context"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-3KGV43/readonly-usecase-context"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T10:23:36.995Z"
   updated_by: "CODER"
   note: "Read-only usecase context unit tests and task list query contract passed after removing full context allocation from taskListUsecase."
-commit: null
+commit:
+  hash: "175b4f0d48798619cadd2f7aaab535c6048bbd8e"
+  message: "🧩 3KGV43 integrate: squash task/202603301857-3KGV43/readonly-usecase-context"
 comments:
   -
     author: "CODER"
     body: "Start: split read-only usecase context from the full adapter/policy bundle so task list no longer allocates unused execution scaffolding."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-3KGV43/pr."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Read-only usecase context unit tests and task list query contract passed after removing full context allocation from taskListUsecase."
+  -
+    type: "status"
+    at: "2026-03-31T10:27:46.243Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-3KGV43/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T10:23:37.000Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T10:27:46.247Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 4 / R4.3 from REFACTOR.md. read-only commands no longer allocate adapters or extra policy wrappers unless they actually use them."
 sections:
   Summary: |-
