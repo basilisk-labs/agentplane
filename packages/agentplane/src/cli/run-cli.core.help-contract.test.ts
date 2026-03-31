@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
 import { captureStdIO, silenceStdIO } from "./run-cli.test-helpers.js";
-import { buildRegistry } from "./run-cli/registry.run.js";
 import { COMMANDS } from "./run-cli/command-catalog.js";
+import { helpSpec } from "./spec/help.js";
 
 type HelpJson = {
   id: string[];
@@ -14,21 +14,11 @@ function keyId(id: string[]): string {
   return id.join(" ");
 }
 
-function registryCommandIdsSorted(registry: {
-  list(): readonly { spec: { id: string[] } }[];
-}): string[] {
-  const ids = new Set(registry.list().map((e) => e.spec.id.join(" ")));
-  return [...ids].toSorted();
+function expectedHelpIdsSorted(): string[] {
+  return [
+    ...new Set([helpSpec.id.join(" "), ...COMMANDS.map((e) => e.spec.id.join(" "))]),
+  ].toSorted();
 }
-
-function commandCatalogIdsSorted(): string[] {
-  return [...new Set(COMMANDS.map((e) => e.spec.id.join(" ")))].toSorted();
-}
-
-const rejectDuringRegistryConstruction =
-  (name: string) =>
-  (_cmd: string): Promise<never> =>
-    Promise.reject(new Error(`${name} should not be called during registry construction`));
 
 let restoreStdIO: (() => void) | null = null;
 
@@ -41,7 +31,7 @@ afterEach(() => {
   restoreStdIO = null;
 });
 
-describe("cli2 help contract", () => {
+describe("cli help contract", () => {
   it("top-level --help matches help output", async () => {
     const helpIo = captureStdIO();
     let helpStdout = "";
@@ -60,6 +50,27 @@ describe("cli2 help contract", () => {
       expect(flagIo.stdout).toBe(helpStdout);
     } finally {
       flagIo.restore();
+    }
+  });
+
+  it("explicit help commands stay stable when trailing --help is also present", async () => {
+    const helpIo = captureStdIO();
+    let helpStdout = "";
+    try {
+      const code = await runCli(["help", "task"]);
+      expect(code).toBe(0);
+      helpStdout = helpIo.stdout;
+    } finally {
+      helpIo.restore();
+    }
+
+    const aliasIo = captureStdIO();
+    try {
+      const code = await runCli(["help", "task", "--help"]);
+      expect(code).toBe(0);
+      expect(aliasIo.stdout).toBe(helpStdout);
+    } finally {
+      aliasIo.restore();
     }
   });
 
@@ -95,18 +106,17 @@ describe("cli2 help contract", () => {
     }
   });
 
-  it("run registry covers the command catalog id set", () => {
-    const runRegistry = buildRegistry({
-      getCtx: rejectDuringRegistryConstruction("getCtx"),
-      getResolvedProject: rejectDuringRegistryConstruction("getResolvedProject"),
-      getLoadedConfig: rejectDuringRegistryConstruction("getLoadedConfig"),
-    });
-
-    // buildRegistry registers helpSpec in addition to COMMANDS.
-    const runIds = registryCommandIdsSorted(runRegistry);
-    const runIdsWithoutHelp = runIds.filter((id) => id !== "help");
-    expect(runIdsWithoutHelp).toEqual(commandCatalogIdsSorted());
-    expect(runIds).toContain("help");
+  it("help --json covers the canonical command catalog id set", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help", "--json"]);
+      expect(code).toBe(0);
+      const list = JSON.parse(io.stdout) as HelpJson[];
+      const ids = [...new Set(list.map((spec) => keyId(spec.id)))].toSorted();
+      expect(ids).toEqual(expectedHelpIdsSorted());
+    } finally {
+      io.restore();
+    }
   });
 
   it("task --help routes to task namespace help", async () => {

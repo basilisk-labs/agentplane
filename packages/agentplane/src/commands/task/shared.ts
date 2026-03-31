@@ -62,5 +62,7 @@ export {
   type TaskListFilters,
   parseTaskListFilters,
   handleTaskListWarnings,
+  queryTaskProjection,
+  type QueryTaskProjectionResult,
   taskTextBlob,
 } from "./shared/listing.js";

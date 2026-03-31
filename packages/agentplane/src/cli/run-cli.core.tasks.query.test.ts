@@ -90,6 +90,14 @@ async function waitForRunnerState(opts: {
   throw new Error(`Timed out waiting for runner state in ${runsRoot}`);
 }
 
+async function seedTaskQueryFixture(root: string, tasks: taskBackend.TaskData[]): Promise<void> {
+  await writeDefaultConfig(root);
+  const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+  for (const task of tasks) {
+    await ctx.taskBackend.writeTask(task);
+  }
+}
+
 describe("runCli", () => {
   it("task rebuild-index recreates the cache from tracked task artifacts when the cache file is missing", async () => {
     const root = await mkGitRepoRoot();
@@ -2291,6 +2299,60 @@ describe("runCli", () => {
     }
   });
 
+  it("task next exact readiness output stays stable", async () => {
+    const root = await mkGitRepoRoot();
+    const readyTaskId = "202603010100-AAAAAA";
+    const blockedTaskId = "202603010101-BBBBBB";
+    await seedTaskQueryFixture(root, [
+      {
+        id: blockedTaskId,
+        title: "Beta blocked",
+        description: "Depends on alpha",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [readyTaskId],
+        tags: ["docs"],
+        verify: [],
+      },
+      {
+        id: readyTaskId,
+        title: "Alpha ready",
+        description: "Ready now",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["docs"],
+        verify: [],
+      },
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "next",
+        "--status",
+        "TODO",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toBe(
+        `${readyTaskId} [TODO] Alpha ready (owner=CODER, prio=med, deps=none, tags=docs)\n` +
+          "Ready: 1 / 2\n",
+      );
+      expect(io.stderr).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("task next supports limit and quiet flags", async () => {
     const root = await mkGitRepoRoot();
     {
@@ -2425,6 +2487,62 @@ describe("runCli", () => {
       const code = await runCli(["task", "search", "Searchable", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain(taskId);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task search exact filtered limit output stays stable", async () => {
+    const root = await mkGitRepoRoot();
+    const firstTaskId = "202603010200-AAAAAA";
+    const secondTaskId = "202603010201-BBBBBB";
+    await seedTaskQueryFixture(root, [
+      {
+        id: secondTaskId,
+        title: "Searchable beta",
+        description: "Second searchable task",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["docs"],
+        verify: [],
+      },
+      {
+        id: firstTaskId,
+        title: "Searchable alpha",
+        description: "First searchable task",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["docs"],
+        verify: [],
+      },
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "search",
+        "Searchable",
+        "--limit",
+        "1",
+        "--status",
+        "TODO",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toBe(
+        `${firstTaskId} [TODO] Searchable alpha (owner=CODER, prio=med, deps=none, tags=docs)\n`,
+      );
+      expect(io.stderr).toBe("");
     } finally {
       io.restore();
     }
@@ -2889,6 +3007,61 @@ describe("runCli", () => {
       expect(io2.stdout).toContain("My task");
     } finally {
       io2.restore();
+    }
+  });
+
+  it("task list exact filtered quiet output stays stable", async () => {
+    const root = await mkGitRepoRoot();
+    const firstTaskId = "202603010300-AAAAAA";
+    const secondTaskId = "202603010301-BBBBBB";
+    await seedTaskQueryFixture(root, [
+      {
+        id: secondTaskId,
+        title: "Beta blocked",
+        description: "Waits on alpha",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [firstTaskId],
+        tags: ["docs"],
+        verify: [],
+      },
+      {
+        id: firstTaskId,
+        title: "Alpha ready",
+        description: "Ready task",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["docs"],
+        verify: [],
+      },
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "list",
+        "--status",
+        "TODO",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toBe(
+        `${firstTaskId} [TODO] Alpha ready (owner=CODER, prio=med, deps=none, tags=docs)\n` +
+          `${secondTaskId} [TODO] Beta blocked (owner=CODER, prio=med, deps=wait:${firstTaskId}, tags=docs)\n`,
+      );
+      expect(io.stderr).toBe("");
+    } finally {
+      io.restore();
     }
   });
 

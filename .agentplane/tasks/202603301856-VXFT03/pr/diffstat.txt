@@ -1,0 +1,7 @@
+ .agentplane/tasks/202603301856-VXFT03/README.md    |  98 +++++++++---
+ .../tasks/202603301856-VXFT03/pr/diffstat.txt      |   7 +
+ .agentplane/tasks/202603301856-VXFT03/pr/meta.json |  12 ++
+ .agentplane/tasks/202603301856-VXFT03/pr/review.md |  35 +++++
+ .../tasks/202603301856-VXFT03/pr/verify.log        |   0
+ .../src/cli/run-cli.core.tasks.query.test.ts       | 173 +++++++++++++++++++++
+ 6 files changed, 303 insertions(+), 22 deletions(-)

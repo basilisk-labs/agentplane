@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603301856-D7EHN2/normal-dispatch-uses-canonical-graph",
+  "created_at": "2026-03-31T08:31:29.765Z",
+  "head_sha": "f3b4690dfb5bde5bd5ba60f8d75ada55d3c804f2",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "474e7b52c57ce79d69fdcde6e739304782e6aa93",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T08:33:17.745Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603301856-D7EHN2",
+  "updated_at": "2026-03-31T08:33:17.745Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

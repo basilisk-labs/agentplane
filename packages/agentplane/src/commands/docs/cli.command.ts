@@ -14,7 +14,7 @@ export type DocsCliParsed = {
 export const docsCliSpec: CommandSpec<DocsCliParsed> = {
   id: ["docs", "cli"],
   group: "Docs",
-  summary: "Generate an MDX CLI reference from the current cli2 registry/spec.",
+  summary: "Generate an MDX CLI reference from the current command spec catalog.",
   options: [
     {
       kind: "string",
@@ -43,7 +43,7 @@ export function makeRunDocsCliHandler(getHelpJson: () => readonly HelpJson[]) {
       throw usageError({
         spec: docsCliSpec,
         command: "docs cli",
-        message: `Failed to read cli2 registry/spec for docs generation: ${err instanceof Error ? err.message : String(err)}`,
+        message: `Failed to read command specs for docs generation: ${err instanceof Error ? err.message : String(err)}`,
       });
     }
 

@@ -1,0 +1,8 @@
+ .agentplane/tasks/202603301857-CD83AZ/README.md    | 60 ++++++++++++----
+ .../tasks/202603301857-CD83AZ/pr/diffstat.txt      |  4 ++
+ .agentplane/tasks/202603301857-CD83AZ/pr/meta.json | 12 ++++
+ .agentplane/tasks/202603301857-CD83AZ/pr/review.md | 32 +++++++++
+ .../tasks/202603301857-CD83AZ/pr/verify.log        |  0
+ .../src/backends/task-backend.local.test.ts        | 79 +++++++++++++++++++++-
+ .../src/backends/task-backend/local-backend.ts     | 45 +++++++-----
+ 7 files changed, 200 insertions(+), 32 deletions(-)

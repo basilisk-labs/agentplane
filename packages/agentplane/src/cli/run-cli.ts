@@ -13,10 +13,10 @@ import { resolveContext } from "../usecases/context/resolve-context.js";
 import { getVersion } from "../meta/version.js";
 import { getApprovalRequirements } from "../commands/shared/approval-requirements.js";
 import { parseCommandArgv } from "./spec/parse.js";
-import { helpSpec } from "./spec/help.js";
+import { helpSpec, makeHelpHandler } from "./spec/help.js";
 import { usageError } from "./spec/errors.js";
 import { suggestOne } from "./spec/suggest.js";
-import { matchCommandCatalog } from "./run-cli/command-catalog.js";
+import { COMMANDS, matchCommandCatalog } from "./run-cli/command-catalog.js";
 import {
   prescanJsonErrors,
   parseGlobalArgs,
@@ -57,6 +57,16 @@ export async function runCli(argv: string[]): Promise<number> {
     const { globals, rest } = parseGlobalArgs(argv);
     const outputMode = resolveOutputMode(globals.outputMode);
     jsonErrors = globals.jsonErrors || outputMode === "json";
+    const cwd = process.cwd();
+    let matched: ReturnType<typeof matchCommandCatalog> | null = null;
+    let maybeResolvedProjectPromise: Promise<CliResolvedProject | null> | null = null;
+    const getMaybeResolvedProject = async (): Promise<CliResolvedProject | null> => {
+      maybeResolvedProjectPromise ??=
+        matched?.entry.needsProject === false
+          ? Promise.resolve(null)
+          : maybeResolveProject({ cwd, rootOverride: globals.root });
+      return await maybeResolvedProjectPromise;
+    };
 
     if (globals.version) {
       return await runWithOutputMode({
@@ -69,92 +79,28 @@ export async function runCli(argv: string[]): Promise<number> {
       });
     }
 
-    const runCli2HelpFast = async (helpArgv: string[]): Promise<number> => {
-      const { buildRegistry } = await import("./run-cli/registry.run.js");
-      const reject =
-        (name: string) =>
-        (_cmd: string): Promise<never> =>
-          Promise.reject(new Error(`${name} should not be called for help`));
-      const registry = buildRegistry({
-        getCtx: reject("getCtx"),
-        getResolvedProject: reject("getResolvedProject"),
-        getLoadedConfig: reject("getLoadedConfig"),
-      });
-
-      const match = registry.match(helpArgv);
-      if (!match) {
-        throw new CliError({
-          exitCode: exitCodeForError("E_USAGE"),
-          code: "E_USAGE",
-          message: "Unknown command: help",
-        });
-      }
-      const tail = helpArgv.slice(match.consumed);
-      const parsed = parseCommandArgv(match.spec, tail).parsed;
-      return await runWithOutputMode({
-        mode: outputMode,
-        command: match.spec.id.join(" "),
-        run: async () => {
-          return await match.handler({ cwd: process.cwd(), rootOverride: globals.root }, parsed);
-        },
-      });
+    const helpRegistryEntries = [
+      { spec: helpSpec },
+      ...COMMANDS.map((entry) => ({ spec: entry.spec })),
+    ];
+    const helpRegistry = {
+      list: () => helpRegistryEntries,
+      match: (tokens: readonly string[]) => {
+        if (tokens[0] === "help") {
+          return { spec: helpSpec, consumed: 1 };
+        }
+        const match = matchCommandCatalog(tokens);
+        return match ? { spec: match.entry.spec, consumed: match.consumed } : null;
+      },
     };
+    const runHelp = makeHelpHandler(helpRegistry);
 
-    // `--help` is treated as an alias for `help` and supports per-command help:
-    // - agentplane --help
-    // - agentplane <cmd...> --help [--compact|--json]
-    if (globals.help) {
-      const matchedHelp = matchCommandCatalog(rest);
-      if (matchedHelp) {
-        const rawHelpTail = rest.slice(matchedHelp.consumed);
-        const commandFlags = new Set<string>();
-        for (const opt of matchedHelp.entry.spec.options ?? []) {
-          const optRecord = opt as Record<string, unknown>;
-          const long = typeof optRecord.name === "string" ? optRecord.name.trim() : "";
-          if (long) commandFlags.add(`--${long}`);
-          const short = typeof optRecord.alias === "string" ? optRecord.alias.trim() : "";
-          if (short) commandFlags.add(`-${short}`);
-        }
-        const invalidHelpTail = rawHelpTail.filter(
-          (token) =>
-            token.startsWith("-") && !HELP_TAIL_OPTIONS.has(token) && !commandFlags.has(token),
-        );
-        if (invalidHelpTail.length > 0) {
-          throw usageError({
-            spec: helpSpec,
-            command: "help",
-            message: `Unsupported flag(s) after --help: ${invalidHelpTail.join(", ")}.`,
-          });
-        }
-        const helpTail = rawHelpTail.filter(
-          (token) => token.startsWith("-") && HELP_TAIL_OPTIONS.has(token),
-        );
-        return await runCli2HelpFast(["help", ...matchedHelp.entry.spec.id, ...helpTail]);
-      }
-      return await runCli2HelpFast(["help", ...rest]);
-    }
-    if (rest.length === 0) {
-      return await runCli2HelpFast(["help"]);
-    }
-
-    // cli2: `agentplane help ...` should be fast and not require project resolution.
-    if (rest[0] === "help") {
-      return await runCli2HelpFast(rest);
-    }
-
-    const matched = matchCommandCatalog(rest);
-
-    const cwd = process.cwd();
-    const resolved =
-      matched?.entry.needsProject === false
-        ? null
-        : await maybeResolveProject({ cwd, rootOverride: globals.root });
-
-    let projectPromise: Promise<ResolvedProject> | null = resolved
-      ? Promise.resolve(resolved)
-      : null;
+    let projectPromise: Promise<ResolvedProject> | null = null;
     const getResolvedProject = async (commandForErrorContext: string): Promise<ResolvedProject> => {
-      projectPromise ??= resolveProject({ cwd, rootOverride: globals.root ?? null });
+      projectPromise ??= (async () => {
+        const resolved = await getMaybeResolvedProject();
+        return resolved ?? (await resolveProject({ cwd, rootOverride: globals.root ?? null }));
+      })();
       try {
         return await projectPromise;
       } catch (err) {
@@ -175,30 +121,6 @@ export async function runCli(argv: string[]): Promise<number> {
         throw mapCoreError(err, { command: commandForErrorContext, root: globals.root ?? null });
       }
     };
-
-    // `require_network=true` means "no network without explicit approval".
-    // Update-check is an optional network call, so it must be gated after config load.
-    let skipUpdateCheckForPolicy = true;
-    if (resolved && matched?.entry.needsConfig !== false) {
-      try {
-        const loaded = await getLoadedConfig("update-check");
-        const requireNetwork = getApprovalRequirements({
-          config: loaded.config,
-          action: "network_access",
-        }).required;
-        const explicitlyApproved = globals.allowNetwork;
-        skipUpdateCheckForPolicy = requireNetwork && !explicitlyApproved;
-      } catch {
-        // Conservative: if we can't load config, we can't prove network is allowed.
-        skipUpdateCheckForPolicy = true;
-      }
-    }
-    await maybeWarnOnUpdate({
-      currentVersion: getVersion(),
-      skip:
-        globals.noUpdateCheck || skipUpdateCheckForPolicy || matched?.entry.needsConfig === false,
-      jsonErrors,
-    });
 
     let ctxPromise: Promise<CommandContext> | null = null;
     const getCtx = async (commandForErrorContext: string): Promise<CommandContext> => {
@@ -229,22 +151,126 @@ export async function runCli(argv: string[]): Promise<number> {
       return await getCtx(commandForErrorContext);
     };
 
-    // cli2 command routing (single router).
-    const { buildRegistry } = await import("./run-cli/registry.run.js");
-    const registry = buildRegistry({
-      getCtx: getCtxOrThrow,
-      getResolvedProject,
-      getLoadedConfig,
-    });
+    const buildRuntimeRegistry = async () => {
+      const { buildRegistry } = await import("./run-cli/registry.run.js");
+      return buildRegistry({
+        getCtx: getCtxOrThrow,
+        getResolvedProject,
+        getLoadedConfig,
+      });
+    };
+    let runtimeRegistryPromise: ReturnType<typeof buildRuntimeRegistry> | null = null;
+    const getRuntimeRegistry = async () => {
+      runtimeRegistryPromise ??= buildRuntimeRegistry();
+      return await runtimeRegistryPromise;
+    };
 
-    const match = registry.match(rest);
-    if (match) {
-      const tail = rest.slice(match.consumed);
-      const parsed = parseCommandArgv(match.spec, tail).parsed;
+    const runFastHelp = async (helpArgv: string[]): Promise<number> => {
+      if (helpArgv[0] !== "help") {
+        throw new CliError({
+          exitCode: exitCodeForError("E_INTERNAL"),
+          code: "E_INTERNAL",
+          message: "Internal error: fast help must be invoked through helpSpec",
+        });
+      }
+      const parsed = parseCommandArgv(helpSpec, helpArgv.slice(1)).parsed;
       return await runWithOutputMode({
         mode: outputMode,
-        command: match.spec.id.join(" "),
-        run: async () => await match.handler({ cwd, rootOverride: globals.root }, parsed),
+        command: helpSpec.id.join(" "),
+        run: async () => await runHelp({ cwd, rootOverride: globals.root }, parsed),
+      });
+    };
+
+    // `--help` is treated as an alias for `help` and supports per-command help:
+    // - agentplane --help
+    // - agentplane <cmd...> --help [--compact|--json]
+    if (globals.help) {
+      if (rest[0] === "help") {
+        return await runFastHelp(rest);
+      }
+
+      const matchedHelp = helpRegistry.match(rest);
+      if (matchedHelp) {
+        const rawHelpTail = rest.slice(matchedHelp.consumed);
+        const commandFlags = new Set<string>();
+        for (const opt of matchedHelp.spec.options ?? []) {
+          const optRecord = opt as Record<string, unknown>;
+          const long = typeof optRecord.name === "string" ? optRecord.name.trim() : "";
+          if (long) commandFlags.add(`--${long}`);
+          const short = typeof optRecord.alias === "string" ? optRecord.alias.trim() : "";
+          if (short) commandFlags.add(`-${short}`);
+        }
+        const invalidHelpTail = rawHelpTail.filter(
+          (token) =>
+            token.startsWith("-") && !HELP_TAIL_OPTIONS.has(token) && !commandFlags.has(token),
+        );
+        if (invalidHelpTail.length > 0) {
+          throw usageError({
+            spec: helpSpec,
+            command: "help",
+            message: `Unsupported flag(s) after --help: ${invalidHelpTail.join(", ")}.`,
+          });
+        }
+        const helpTail = rawHelpTail.filter(
+          (token) => token.startsWith("-") && HELP_TAIL_OPTIONS.has(token),
+        );
+        return await runFastHelp(["help", ...matchedHelp.spec.id, ...helpTail]);
+      }
+      return await runFastHelp(["help", ...rest]);
+    }
+    if (rest.length === 0) {
+      return await runFastHelp(["help"]);
+    }
+
+    // `agentplane help ...` stays on the fast path and does not require project resolution.
+    if (rest[0] === "help") {
+      return await runFastHelp(rest);
+    }
+
+    matched = matchCommandCatalog(rest);
+    const resolved = await getMaybeResolvedProject();
+
+    // `require_network=true` means "no network without explicit approval".
+    // Update-check is an optional network call, so it must be gated after config load.
+    let skipUpdateCheckForPolicy = true;
+    if (resolved && matched?.entry.needsConfig !== false) {
+      try {
+        const loaded = await getLoadedConfig("update-check");
+        const requireNetwork = getApprovalRequirements({
+          config: loaded.config,
+          action: "network_access",
+        }).required;
+        const explicitlyApproved = globals.allowNetwork;
+        skipUpdateCheckForPolicy = requireNetwork && !explicitlyApproved;
+      } catch {
+        // Conservative: if we can't load config, we can't prove network is allowed.
+        skipUpdateCheckForPolicy = true;
+      }
+    }
+    await maybeWarnOnUpdate({
+      currentVersion: getVersion(),
+      skip:
+        globals.noUpdateCheck || skipUpdateCheckForPolicy || matched?.entry.needsConfig === false,
+      jsonErrors,
+    });
+
+    const registry = await getRuntimeRegistry();
+
+    if (matched) {
+      const runtimeEntry = registry.lookup(matched.entry.spec.id);
+      if (!runtimeEntry) {
+        throw new CliError({
+          exitCode: exitCodeForError("E_INTERNAL"),
+          code: "E_INTERNAL",
+          message: `Internal error: runtime registry missing command: ${matched.entry.spec.id.join(" ")}`,
+        });
+      }
+      const tail = rest.slice(matched.consumed);
+      const parsed = parseCommandArgv(runtimeEntry.spec, tail).parsed;
+      return await runWithOutputMode({
+        mode: outputMode,
+        command: runtimeEntry.spec.id.join(" "),
+        run: async () => await runtimeEntry.handler({ cwd, rootOverride: globals.root }, parsed),
       });
     }
 

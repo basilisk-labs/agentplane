@@ -1,0 +1,8 @@
+ .agentplane/tasks/202603301856-H78XDH/README.md    | 60 +++++++++++++++++-----
+ .../tasks/202603301856-H78XDH/pr/diffstat.txt      |  4 ++
+ .agentplane/tasks/202603301856-H78XDH/pr/meta.json | 12 +++++
+ .agentplane/tasks/202603301856-H78XDH/pr/review.md | 32 ++++++++++++
+ .../tasks/202603301856-H78XDH/pr/verify.log        |  0
+ .../src/cli/run-cli.core.help-contract.test.ts     | 21 ++++++++
+ packages/agentplane/src/cli/run-cli.ts             | 39 +++++++++-----
+ 7 files changed, 142 insertions(+), 26 deletions(-)

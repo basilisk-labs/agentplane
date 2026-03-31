@@ -1,0 +1,12 @@
+ .agentplane/tasks/202603301857-32E1F0/README.md    | 58 +++++++++++----
+ .../tasks/202603301857-32E1F0/pr/diffstat.txt      |  8 ++
+ .agentplane/tasks/202603301857-32E1F0/pr/meta.json | 12 +++
+ .agentplane/tasks/202603301857-32E1F0/pr/review.md | 36 +++++++++
+ .../tasks/202603301857-32E1F0/pr/verify.log        |  0
+ packages/agentplane/src/commands/task/list.ts      | 29 ++------
+ packages/agentplane/src/commands/task/next.ts      | 40 ++--------
+ packages/agentplane/src/commands/task/search.ts    | 50 +++++--------
+ packages/agentplane/src/commands/task/shared.ts    |  2 +
+ .../src/commands/task/shared.unit.test.ts          | 53 +++++++++++++
+ .../agentplane/src/commands/task/shared/listing.ts | 86 ++++++++++++++++++++++
+ 11 files changed, 274 insertions(+), 100 deletions(-)

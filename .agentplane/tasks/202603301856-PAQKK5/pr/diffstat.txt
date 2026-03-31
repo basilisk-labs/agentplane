@@ -1,0 +1,9 @@
+ .agentplane/tasks/202603301856-PAQKK5/README.md    |  60 ++++--
+ .../tasks/202603301856-PAQKK5/pr/diffstat.txt      |   9 +
+ .agentplane/tasks/202603301856-PAQKK5/pr/meta.json |  12 ++
+ .agentplane/tasks/202603301856-PAQKK5/pr/review.md |  37 ++++
+ .../tasks/202603301856-PAQKK5/pr/verify.log        |   0
+ package.json                                       |   1 +
+ .../src/cli/measure-cli-cold-path-script.test.ts   |  93 +++++++++
+ scripts/measure-cli-cold-path.mjs                  | 223 +++++++++++++++++++++
+ 8 files changed, 421 insertions(+), 14 deletions(-)

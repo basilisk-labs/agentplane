@@ -25,6 +25,7 @@ import {
 } from "@agentplaneorg/core";
 
 import { runCli } from "./run-cli.js";
+import { runWithOutputMode } from "./run-cli/globals.js";
 import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
 import {
   filterAgentsByWorkflow,
@@ -144,6 +145,25 @@ describe("runCli", () => {
       const code = await runCli(["pr", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage:");
+      expect(process.env[marker]).toBeUndefined();
+    } finally {
+      delete process.env[marker];
+      io.restore();
+    }
+  });
+
+  it("does not load .env for fast help paths that only need registry metadata", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const marker = "AGENTPLANE_TEST_SKIP_DOTENV_FOR_HELP";
+    delete process.env[marker];
+    await writeFile(path.join(root, ".env"), `${marker}=from-dotenv\n`, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "--help", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("agentplane task <subcommand> [args] [options]");
       expect(process.env[marker]).toBeUndefined();
     } finally {
       delete process.env[marker];
@@ -490,12 +510,29 @@ describe("runCli", () => {
     try {
       const code = await runCli(["--json-errors", "config", "set"]);
       expect(code).toBe(2);
-      expect(io.stdout).toContain('"error"');
-      expect(io.stdout).toContain('"code"');
-      expect(io.stdout).toContain('"next_action"');
-      expect(io.stdout).toContain("agentplane help config set --compact");
-      expect(io.stdout).toContain('"reason_decode"');
-      expect(io.stdout).toContain('"code": "usage_help"');
+      expect(JSON.parse(io.stdout)).toEqual({
+        error: {
+          code: "E_USAGE",
+          message:
+            "Missing required argument: key\n\nUsage:\n  agentplane config set <key> <value>",
+          context: {
+            command: "config set",
+          },
+          hint: "See `agentplane help config set --compact` for usage.",
+          next_action: {
+            command: "agentplane help config set --compact",
+            reason: "inspect required arguments and flags",
+            reasonCode: "usage_help",
+          },
+          reason_decode: {
+            code: "usage_help",
+            category: "usage",
+            summary: "command invocation is incomplete or invalid",
+            action: "open command help and fix required args/flags",
+          },
+        },
+      });
+      expect(io.stderr).toBe("");
     } finally {
       io.restore();
     }
@@ -603,18 +640,56 @@ describe("runCli", () => {
       const code = await runCli(["--output", "json", "config", "show", "--root", root]);
       expect(code).toBe(0);
       const payload = JSON.parse(io.stdout) as {
+        schema_version?: number;
         mode?: string;
         command?: string;
         ok?: boolean;
         exit_code?: number;
-        data?: { workflow_mode?: string };
+        stdout?: string;
+        stderr?: string;
+        data?: Record<string, unknown>;
       };
+      expect(payload.schema_version).toBe(1);
       expect(payload.mode).toBe("agent_json_v1");
       expect(payload.command).toBe("config show");
       expect(payload.ok).toBe(true);
       expect(payload.exit_code).toBe(0);
+      expect(payload.stderr).toBe("");
       expect(typeof payload.data?.workflow_mode).toBe("string");
-      expect(io.stderr.trim()).toBe("");
+      expect(payload.stdout).toBe(JSON.stringify(payload.data, null, 2));
+      expect(JSON.parse(payload.stdout ?? "")).toEqual(payload.data);
+      expect(io.stderr).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("runWithOutputMode captures raw stdout/stderr inside the agent_json_v1 envelope", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runWithOutputMode({
+        mode: "json",
+        command: "demo command",
+        run: () => {
+          process.stdout.write('{"hello":"world"}\n');
+          process.stderr.write("warn line\n");
+          return Promise.resolve(7);
+        },
+      });
+      expect(code).toBe(7);
+      expect(JSON.parse(io.stdout)).toEqual({
+        schema_version: 1,
+        mode: "agent_json_v1",
+        command: "demo command",
+        ok: false,
+        exit_code: 7,
+        stdout: '{"hello":"world"}',
+        stderr: "warn line",
+        data: {
+          hello: "world",
+        },
+      });
+      expect(io.stderr).toBe("");
     } finally {
       io.restore();
     }
@@ -650,10 +725,30 @@ describe("runCli", () => {
     try {
       const code = await runCli(["--output", "json", "config", "set"]);
       expect(code).toBe(2);
-      expect(io.stdout).toContain('"error"');
-      expect(io.stdout).toContain('"code": "E_USAGE"');
-      expect(io.stdout).toContain("Missing required argument");
-      expect(io.stderr.trim()).toBe("");
+      expect(JSON.parse(io.stdout)).toEqual({
+        error: {
+          code: "E_USAGE",
+          message:
+            "Missing required argument: key\n\nUsage:\n  agentplane config set <key> <value>",
+          context: {
+            command: "config set",
+          },
+          hint: "See `agentplane help config set --compact` for usage.",
+          next_action: {
+            command: "agentplane help config set --compact",
+            reason: "inspect required arguments and flags",
+            reasonCode: "usage_help",
+          },
+          reason_decode: {
+            code: "usage_help",
+            category: "usage",
+            summary: "command invocation is incomplete or invalid",
+            action: "open command help and fix required args/flags",
+          },
+        },
+      });
+      expect(io.stdout).not.toContain('"mode": "agent_json_v1"');
+      expect(io.stderr).toBe("");
     } finally {
       io.restore();
     }

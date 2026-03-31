@@ -2,6 +2,8 @@ import { invalidValueForFlag, missingValueMessage, warnMessage } from "../../../
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import type { TaskSummary } from "../../../backends/task-backend.js";
 import { CliError } from "../../../shared/errors.js";
+import { dedupeStrings } from "../../../shared/strings.js";
+import { buildDependencyState, type DependencyState } from "./dependencies.js";
 import { toStringArray } from "./tags.js";
 
 export type TaskListFilters = {
@@ -117,6 +119,90 @@ export function handleTaskListWarnings(opts: {
     });
   }
   process.stderr.write(`${warnMessage(message)}\n`);
+}
+
+function filterTaskProjectionByStatus(
+  tasks: TaskSummary[],
+  filters: TaskListFilters,
+  defaultStatuses?: string[],
+): TaskSummary[] {
+  const statuses =
+    filters.status.length > 0
+      ? filters.status
+      : (defaultStatuses ?? []).filter((status) => status.trim().length > 0);
+  if (statuses.length === 0) {
+    return tasks;
+  }
+  const wanted = new Set(statuses.map((status) => status.trim().toUpperCase()));
+  return tasks.filter((task) => wanted.has(String(task.status || "TODO").toUpperCase()));
+}
+
+function filterTaskProjectionByOwner(
+  tasks: TaskSummary[],
+  filters: TaskListFilters,
+): TaskSummary[] {
+  if (filters.owner.length === 0) {
+    return tasks;
+  }
+  const wanted = new Set(filters.owner.map((owner) => owner.trim().toUpperCase()));
+  return tasks.filter((task) => wanted.has(String(task.owner || "").toUpperCase()));
+}
+
+function filterTaskProjectionByTag(tasks: TaskSummary[], filters: TaskListFilters): TaskSummary[] {
+  if (filters.tag.length === 0) {
+    return tasks;
+  }
+  const wanted = new Set(filters.tag.map((tag) => tag.trim()).filter(Boolean));
+  return tasks.filter((task) => {
+    const tags = dedupeStrings(toStringArray(task.tags));
+    return tags.some((tag) => wanted.has(tag));
+  });
+}
+
+function applyProjectionLimit<T>(items: T[], limit?: number): T[] {
+  return limit !== undefined && limit >= 0 ? items.slice(0, limit) : items;
+}
+
+function sortTaskProjection(tasks: TaskSummary[]): TaskSummary[] {
+  return tasks.toSorted((a, b) => a.id.localeCompare(b.id));
+}
+
+export type QueryTaskProjectionResult = {
+  depState: Map<string, DependencyState>;
+  filtered: TaskSummary[];
+  items: TaskSummary[];
+};
+
+export function queryTaskProjection(opts: {
+  tasks: TaskSummary[];
+  filters: TaskListFilters;
+  defaultStatuses?: string[];
+  match?: (task: TaskSummary) => boolean;
+  readyOnly?: boolean;
+  limitOrder?: "before-sort" | "after-sort";
+}): QueryTaskProjectionResult {
+  const depState = buildDependencyState(opts.tasks);
+  let filtered = filterTaskProjectionByStatus(opts.tasks, opts.filters, opts.defaultStatuses);
+  filtered = filterTaskProjectionByOwner(filtered, opts.filters);
+  filtered = filterTaskProjectionByTag(filtered, opts.filters);
+  if (opts.match) {
+    filtered = filtered.filter((task) => opts.match?.(task) ?? false);
+  }
+
+  let queried = filtered;
+  if (opts.readyOnly) {
+    queried = queried.filter((task) => {
+      const dep = depState.get(task.id);
+      return !dep || (dep.missing.length === 0 && dep.incomplete.length === 0);
+    });
+  }
+
+  const limitOrder = opts.limitOrder ?? "after-sort";
+  const items =
+    limitOrder === "before-sort"
+      ? sortTaskProjection(applyProjectionLimit(queried, opts.filters.limit))
+      : applyProjectionLimit(sortTaskProjection(queried), opts.filters.limit);
+  return { depState, filtered, items };
 }
 
 export function taskTextBlob(task: TaskSummary): string {

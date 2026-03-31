@@ -116,7 +116,7 @@ Facts:
 - CLI entry is centralized in `run-cli.ts`, which handles global flags, help fast-paths, project/config bootstrapping, and runtime dispatch.
 - The command catalog is statically assembled from multiple arrays with per-command bootstrap metadata (`needsProject`, `needsConfig`, `needsTaskContext`).
 - The parser/help/spec layer itself is relatively cohesive.
-- Documentation generation already reads command registry/spec directly instead of shelling out through help text.
+- Documentation generation already reads CLI command specs directly instead of shelling out through help text.
 
 Weak seams:
 

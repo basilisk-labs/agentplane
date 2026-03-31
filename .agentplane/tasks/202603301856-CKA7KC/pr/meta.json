@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603301856-CKA7KC/lock-json-output-tests",
+  "created_at": "2026-03-30T19:18:45.892Z",
+  "head_sha": "93447e7c2d0d21293323d6605d53fcf36dd59cb3",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "0cd3b77a22989b9c24ea42ee961b070bbe660ff2",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-30T19:19:59.468Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603301856-CKA7KC",
+  "updated_at": "2026-03-30T19:19:59.468Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

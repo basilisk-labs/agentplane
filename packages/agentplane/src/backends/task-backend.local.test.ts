@@ -4,10 +4,41 @@ import path from "node:path";
 import { renderTaskReadme } from "@agentplaneorg/core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { LocalBackend, type TaskData } from "./task-backend.js";
+import { LocalBackend, toTaskSummary, type TaskData, type TaskSummary } from "./task-backend.js";
 import { installTaskBackendTestHarness, makeTempDir } from "./task-backend.test-helpers.js";
 
 installTaskBackendTestHarness();
+
+type QuerySummaryView = Pick<
+  TaskSummary,
+  | "id"
+  | "title"
+  | "description"
+  | "status"
+  | "priority"
+  | "owner"
+  | "depends_on"
+  | "tags"
+  | "verify"
+  | "comments"
+  | "commit"
+>;
+
+function pickQuerySummary(task: TaskSummary): QuerySummaryView {
+  return {
+    id: task.id,
+    title: task.title,
+    description: task.description,
+    status: task.status,
+    priority: task.priority,
+    owner: task.owner,
+    depends_on: task.depends_on,
+    tags: task.tags,
+    verify: task.verify,
+    comments: task.comments,
+    commit: task.commit,
+  };
+}
 
 describe("LocalBackend", () => {
   let tempDir = "";
@@ -70,7 +101,7 @@ describe("LocalBackend", () => {
     expect(projectionRaw.tasks).toHaveLength(1);
   });
 
-  it("lists projection tasks without doc-heavy fields", async () => {
+  it("uses cached projection entries when the README mtime is unchanged", async () => {
     const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
     const task: TaskData = {
       id: "202601300006-ABCD",
@@ -90,14 +121,135 @@ describe("LocalBackend", () => {
     };
     await backend.writeTask(task);
 
+    const firstProjection = await backend.listProjectionTasks();
+    const readmePath = path.join(tempDir, task.id, "README.md");
+    const indexPath = path.join(tempDir, ".cache", "tasks-index.v2.json");
+
+    await writeFile(readmePath, "---\nbroken\n", "utf8");
+    const brokenStat = await stat(readmePath);
+    const cachedIndex = JSON.parse(await readFile(indexPath, "utf8")) as {
+      schema_version: number;
+      byId: Record<string, { task: TaskData; readmePath: string; mtimeMs: number }>;
+      byPath: Record<string, string>;
+    };
+    cachedIndex.byId[task.id] = {
+      ...cachedIndex.byId[task.id],
+      mtimeMs: brokenStat.mtimeMs,
+    };
+    await writeFile(indexPath, JSON.stringify(cachedIndex, null, 2), "utf8");
+
+    const cachedProjection = await backend.listProjectionTasks();
+
+    expect(firstProjection).toHaveLength(1);
+    expect(cachedProjection).toHaveLength(1);
+    expect(cachedProjection[0]?.id).toBe(task.id);
+    expect(cachedProjection[0]?.comments).toEqual(task.comments);
+    expect(cachedProjection[0]).not.toHaveProperty("doc");
+    expect(cachedProjection[0]).not.toHaveProperty("sections");
+    expect(cachedProjection[0]).not.toHaveProperty("events");
+  });
+
+  it("reparses projection entries after README invalidation", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202601300007-ABCD",
+      title: "Projection",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: ["tag"],
+      verify: [],
+      comments: [{ author: "DOCS", body: "before update" }],
+      doc: "## Summary\n\nProjection body",
+    };
+    await backend.writeTask(task);
+    await backend.listProjectionTasks();
+
+    const updatedTask: TaskData = {
+      ...task,
+      title: "Projection updated",
+      comments: [
+        { author: "DOCS", body: "before update" },
+        { author: "CODER", body: "after invalidation" },
+      ],
+    };
+    await backend.writeTask(updatedTask);
+
     const projection = await backend.listProjectionTasks();
 
     expect(projection).toHaveLength(1);
-    expect(projection[0]?.id).toBe(task.id);
-    expect(projection[0]?.comments).toEqual(task.comments);
-    expect(projection[0]).not.toHaveProperty("doc");
-    expect(projection[0]).not.toHaveProperty("sections");
-    expect(projection[0]).not.toHaveProperty("events");
+    expect(projection[0]?.title).toBe("Projection updated");
+    expect(projection[0]?.comments).toEqual(updatedTask.comments);
+  });
+
+  it("keeps full task reads canonical after warming the projection cache", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202601300008-ABCD",
+      title: "Full read",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: ["tag"],
+      verify: [],
+      comments: [{ author: "DOCS", body: "keep comment searchability" }],
+      doc: "## Summary\n\nFull body",
+    };
+    await backend.writeTask(task);
+    await backend.listProjectionTasks();
+
+    const fullTasks = await backend.listTasks();
+
+    expect(fullTasks).toHaveLength(1);
+    expect(fullTasks[0]?.id).toBe(task.id);
+    expect(fullTasks[0]?.doc).toContain("## Summary");
+    expect(fullTasks[0]?.doc).toContain("Full body");
+  });
+
+  it("keeps query-visible summary fields consistent with canonical full reads", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const firstTask: TaskData = {
+      id: "202601300012-ABCD",
+      title: "Projection query fixture",
+      description: "Searchable summary body",
+      status: "DOING",
+      priority: "high",
+      owner: "CODER",
+      depends_on: ["202601300013-ABCD"],
+      tags: ["backend", "projection"],
+      verify: ["bunx vitest run task-query"],
+      comments: [{ author: "DOCS", body: "comment text remains searchable" }],
+      commit: { hash: "abc1234", message: "Implement projection fast path" },
+      doc: "## Summary\n\nProjection query body",
+    };
+    const secondTask: TaskData = {
+      id: "202601300013-ABCD",
+      title: "Dependency fixture",
+      description: "Dependency task",
+      status: "DONE",
+      priority: "low",
+      owner: "TESTER",
+      depends_on: [],
+      tags: ["backend"],
+      verify: [],
+      comments: [{ author: "TESTER", body: "dependency note" }],
+      commit: { hash: "def5678", message: "Finish dependency" },
+      doc: "## Summary\n\nDependency body",
+    };
+    await backend.writeTask(firstTask);
+    await backend.writeTask(secondTask);
+
+    await backend.listProjectionTasks();
+    const projection = await backend.listProjectionTasks();
+    const fullTasks = await backend.listTasks();
+
+    expect(projection.map((task) => pickQuerySummary(task))).toEqual(
+      fullTasks.map((task) => pickQuerySummary(toTaskSummary(task))),
+    );
   });
 
   it("writes a task index cache for local tasks", async () => {
@@ -112,6 +264,11 @@ describe("LocalBackend", () => {
       depends_on: [],
       tags: [],
       verify: [],
+      comments: [{ author: "DOCS", body: "keep cache searchability" }],
+      events: [
+        { type: "status", at: new Date().toISOString(), author: "DOCS", from: "TODO", to: "DOING" },
+      ],
+      doc: "## Summary\n\nCache body",
     };
     await backend.writeTask(task);
     await backend.listTasks();
@@ -124,6 +281,10 @@ describe("LocalBackend", () => {
     expect(parsed.schema_version).toBe(2);
     expect(Object.keys(parsed.byId)).toHaveLength(1);
     expect(parsed.byId[task.id]?.task.id).toBe(task.id);
+    expect(parsed.byId[task.id]?.task.comments).toEqual(task.comments);
+    expect(parsed.byId[task.id]?.task).not.toHaveProperty("doc");
+    expect(parsed.byId[task.id]?.task).not.toHaveProperty("sections");
+    expect(parsed.byId[task.id]?.task).not.toHaveProperty("events");
     expect(Object.values(parsed.byPath)).toContain(task.id);
   });
 

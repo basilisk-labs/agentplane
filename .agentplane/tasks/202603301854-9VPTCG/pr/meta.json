@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603301854-9VPTCG/instantiate-refactor-tasks",
+  "created_at": "2026-03-30T18:59:19.532Z",
+  "head_sha": "e776d97f788baa80e13d5bcc4ff311e64b677d76",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "399ab99237111716e6c7d252934c6130c368c7dd",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-30T19:00:40.334Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603301854-9VPTCG",
+  "updated_at": "2026-03-30T19:00:40.334Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
