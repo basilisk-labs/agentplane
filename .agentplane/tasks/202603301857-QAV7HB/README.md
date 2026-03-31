@@ -1,10 +1,11 @@
 ---
 id: "202603301857-QAV7HB"
 title: "Merge global-flag prescan and parse into one result model"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-QAV7HB/merge-global-parse-result-model"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T12:41:10.359Z"
   updated_by: "CODER"
   note: "Unified global parse result preserved json-error behavior without argv prescan."
-commit: null
+commit:
+  hash: "741188f106b6b2b6666a15587c380480670da94e"
+  message: "🧩 QAV7HB integrate: squash task/202603301857-QAV7HB/merge-global-parse-result-model"
 comments:
   -
     author: "CODER"
     body: "Start: replace the separate global prescan with a single parse result that carries early JSON error mode through parse failures without re-walking argv."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-QAV7HB/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Unified global parse result preserved json-error behavior without argv prescan."
+  -
+    type: "status"
+    at: "2026-03-31T12:42:16.961Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-QAV7HB/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T12:41:10.361Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T12:42:16.963Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 6 / R6.1 from REFACTOR.md. the CLI does not walk the same argv slice twice just to preserve `--json-errors` behavior."
 sections:
   Summary: |-

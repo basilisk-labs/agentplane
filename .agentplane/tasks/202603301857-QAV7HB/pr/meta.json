@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301857-QAV7HB/merge-global-parse-result-model",
   "created_at": "2026-03-31T12:41:25.207Z",
+  "head_sha": "02f68d8be8caf936e48d992621f337c2441b2b41",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "741188f106b6b2b6666a15587c380480670da94e",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T12:42:16.940Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301857-QAV7HB",
-  "updated_at": "2026-03-31T12:41:31.196Z",
+  "updated_at": "2026-03-31T12:42:16.940Z",
   "verify": {
     "status": "skipped"
   }
