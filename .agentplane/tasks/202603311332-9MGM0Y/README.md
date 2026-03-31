@@ -1,10 +1,11 @@
 ---
 id: "202603311332-9MGM0Y"
 title: "N5.3 Split `backends/task-backend/redmine-backend.ts` by sync, cache/doc, and reporting concerns"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-9MGM0Y/split-redmine-backend"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T20:20:06.338Z"
   updated_by: "CODER"
   note: "Command: bunx eslint packages/agentplane/src/backends/task-backend/redmine-backend.ts packages/agentplane/src/backends/task-backend/redmine/backend-report.ts packages/agentplane/src/backends/task-backend/redmine/backend-cache-doc.ts packages/agentplane/src/backends/task-backend/redmine/backend-sync.ts packages/agentplane/src/backends/task-backend.redmine.test.ts packages/agentplane/src/backends/task-backend.load.test.ts; Result: pass; Evidence: eslint clean after split. Scope: redmine backend facade plus extracted sync/cache-doc/report modules. Command: bunx vitest run packages/agentplane/src/backends/task-backend.redmine.test.ts packages/agentplane/src/backends/task-backend.load.test.ts; Result: pass; Evidence: 2 files, 54 tests passed. Scope: redmine cache-only reads, offline fallback, monkey-patched wrapper seams, and backend load contract. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: core+agentplane build ok, repo-local runtime ready. Scope: compile/runtime freshness for verify and commit."
-commit: null
+commit:
+  hash: "f537332d6100a27fcad15774b2c68216825af373"
+  message: "📝 9MGM0Y task: update pr artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: split backends/task-backend/redmine-backend.ts into cache/doc, sync/mutation, and reporting modules while preserving the class facade, cache-only projection reads, offline fallback semantics, and private wrapper seams used by tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-9MGM0Y/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx eslint packages/agentplane/src/backends/task-backend/redmine-backend.ts packages/agentplane/src/backends/task-backend/redmine/backend-report.ts packages/agentplane/src/backends/task-backend/redmine/backend-cache-doc.ts packages/agentplane/src/backends/task-backend/redmine/backend-sync.ts packages/agentplane/src/backends/task-backend.redmine.test.ts packages/agentplane/src/backends/task-backend.load.test.ts; Result: pass; Evidence: eslint clean after split. Scope: redmine backend facade plus extracted sync/cache-doc/report modules. Command: bunx vitest run packages/agentplane/src/backends/task-backend.redmine.test.ts packages/agentplane/src/backends/task-backend.load.test.ts; Result: pass; Evidence: 2 files, 54 tests passed. Scope: redmine cache-only reads, offline fallback, monkey-patched wrapper seams, and backend load contract. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: core+agentplane build ok, repo-local runtime ready. Scope: compile/runtime freshness for verify and commit."
+  -
+    type: "status"
+    at: "2026-03-31T20:21:12.465Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-9MGM0Y/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T20:20:06.342Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T20:21:12.471Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N5.3 from REFACTOR.md. Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.. Acceptance: Redmine-specific sync/report code stops living in one monolithic file. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-

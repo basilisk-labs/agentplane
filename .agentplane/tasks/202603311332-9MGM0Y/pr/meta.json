@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311332-9MGM0Y/split-redmine-backend",
   "created_at": "2026-03-31T20:20:29.058Z",
+  "head_sha": "6cb63469f686371260b3f4a11b125a397ee13874",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "f537332d6100a27fcad15774b2c68216825af373",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T20:21:12.425Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311332-9MGM0Y",
-  "updated_at": "2026-03-31T20:20:29.657Z",
+  "updated_at": "2026-03-31T20:21:12.425Z",
   "verify": {
     "status": "skipped"
   }
