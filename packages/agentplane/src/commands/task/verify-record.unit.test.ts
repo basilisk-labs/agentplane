@@ -637,6 +637,83 @@ describe("task verify record (unit)", () => {
     ).rejects.toMatchObject({ code: "E_VALIDATION" });
   });
 
+  it("cmdTaskVerifyOk uses mergeable Verification section intents on the local store", async () => {
+    let capturedIntents: readonly TaskStoreIntent[] = [];
+    let currentTask = mkTask({
+      status: "DONE",
+      doc_version: 3,
+      doc_updated_at: "2026-02-07T00:00:00.000Z",
+      doc: [
+        "## Summary",
+        "Concurrent summary",
+        "",
+        "## Verify Steps",
+        "Concurrent verify steps",
+        "",
+        "## Verification",
+        "<!-- BEGIN VERIFICATION RESULTS -->",
+        "",
+        "### 2026-02-08T00:00:00.000Z — VERIFY — ok",
+        "",
+        "By: OTHER",
+        "",
+        "Note: prior",
+        "",
+        "<!-- END VERIFICATION RESULTS -->",
+        "",
+      ].join("\n"),
+    });
+    const store = {
+      mutate: vi
+        .fn()
+        .mockImplementation(
+          async (
+            _taskId: string,
+            builder: (current: TaskData) => Promise<readonly TaskStoreIntent[]>,
+          ) => {
+            capturedIntents = await builder(currentTask);
+            currentTask = applyStoreIntents(currentTask, capturedIntents);
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    const ctx = mkCtx();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdTaskVerifyOk } = await import("./verify-record.js");
+    const rc = await cmdTaskVerifyOk({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      by: "TESTER",
+      note: "ok",
+      quiet: true,
+    });
+
+    const verificationIntent = capturedIntents.find(
+      (
+        intent,
+      ): intent is TaskStoreIntent & {
+        kind: "set-section";
+        section: string;
+        text: string;
+        requiredSections: string[];
+        expectedCurrentText?: string | null;
+      } => intent.kind === "set-section",
+    );
+
+    expect(rc).toBe(0);
+    expect(verificationIntent).toMatchObject({
+      kind: "set-section",
+      section: "Verification",
+    });
+    expect(verificationIntent?.expectedCurrentText).toBeUndefined();
+    expect(currentTask.doc).toContain("### 2026-02-08T00:00:00.000Z — VERIFY — ok");
+    expect(currentTask.doc).toContain("Note: prior");
+    expect(currentTask.doc).toContain("### 2026-02-09T00:00:00.000Z — VERIFY — ok");
+    expect(currentTask.doc).toContain("VerifyStepsRef: doc_version=3");
+  });
   it("cmdTaskVerifyOk preserves fresher README content when store update sees newer task data", async () => {
     const staleTask = mkTask({
       status: "DONE",

@@ -1,10 +1,10 @@
 ---
 id: "202603311331-QDTKY4"
 title: "N0.3 Add task README/doc mutation concurrency tests"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -15,21 +15,43 @@ tags:
   - "tests"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T14:49:04.333Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T14:50:58.026Z"
+  updated_by: "CODER"
+  note: "Expanded doc-concurrency safety net with command-level full-doc/section conflict coverage plus intent-path local-store tests; verified with bunx eslint packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts and bunx vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: lock README section/full-doc conflict semantics before the shared doc mutation contract in N4 rewires local backend and task-store patching."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T14:49:04.904Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: lock README section/full-doc conflict semantics before the shared doc mutation contract in N4 rewires local backend and task-store patching."
+  -
+    type: "verify"
+    at: "2026-03-31T14:49:11.011Z"
+    author: "CODER"
+    state: "ok"
+    note: "Added command-level and intent-path concurrency tests for section and full-doc conflicts; verified with bunx eslint packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts and bunx vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts."
+  -
+    type: "verify"
+    at: "2026-03-31T14:50:58.026Z"
+    author: "CODER"
+    state: "ok"
+    note: "Expanded doc-concurrency safety net with command-level full-doc/section conflict coverage plus intent-path local-store tests; verified with bunx eslint packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts and bunx vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:31:13.829Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T14:50:58.029Z"
+doc_updated_by: "CODER"
 description: "Implement N0.3 from REFACTOR.md. Lock the behavior that the next refactor wave is most likely to disturb: output formatting, local-vs-remote task mutation parity, and task-doc mutation semantics.. Acceptance: doc conflicts and section conflicts are behavior-locked before `N4` starts deleting code. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -49,6 +71,22 @@ sections:
     3. Re-run the focused checks after final edits. Expected: doc conflicts and section conflicts are behavior-locked before `N4` starts deleting code.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T14:49:11.011Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Added command-level and intent-path concurrency tests for section and full-doc conflicts; verified with bunx eslint packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts and bunx vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T14:49:04.905Z, excerpt_hash=sha256:1696398b7dba31bc74a9f522f847254893e2fbbdeab3ab3dc0be0bde74b39887
+    
+    ### 2026-03-31T14:50:58.026Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Expanded doc-concurrency safety net with command-level full-doc/section conflict coverage plus intent-path local-store tests; verified with bunx eslint packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts and bunx vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T14:49:11.013Z, excerpt_hash=sha256:1696398b7dba31bc74a9f522f847254893e2fbbdeab3ab3dc0be0bde74b39887
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +120,22 @@ Implement N0.3 from REFACTOR.md. Lock the behavior that the next refactor wave i
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T14:49:11.011Z — VERIFY — ok
+
+By: CODER
+
+Note: Added command-level and intent-path concurrency tests for section and full-doc conflicts; verified with bunx eslint packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts and bunx vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T14:49:04.905Z, excerpt_hash=sha256:1696398b7dba31bc74a9f522f847254893e2fbbdeab3ab3dc0be0bde74b39887
+
+### 2026-03-31T14:50:58.026Z — VERIFY — ok
+
+By: CODER
+
+Note: Expanded doc-concurrency safety net with command-level full-doc/section conflict coverage plus intent-path local-store tests; verified with bunx eslint packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts and bunx vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T14:49:11.013Z, excerpt_hash=sha256:1696398b7dba31bc74a9f522f847254893e2fbbdeab3ab3dc0be0bde74b39887
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

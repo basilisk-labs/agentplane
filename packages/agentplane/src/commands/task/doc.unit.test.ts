@@ -222,6 +222,106 @@ describe("task doc commands (unit)", () => {
     expect(currentTask.doc).not.toContain(String.raw`Line one\nLine two`);
   });
 
+  it("cmdTaskDocSet carries expectedCurrentText for store-backed section writes", async () => {
+    const originalDoc = [
+      "## Summary",
+      "Current summary",
+      "",
+      "## Plan",
+      "Current plan",
+      "",
+      "## Verify Steps",
+      "Run checks",
+      "",
+      "## Findings",
+      "",
+    ].join("\n");
+    let currentTask = mkTask({ doc: originalDoc });
+    let observedPatch: TaskStorePatch | null | undefined;
+    const store = {
+      patch: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            observedPatch = await builder(currentTask);
+            currentTask = applyStorePatch(currentTask, observedPatch);
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    const ctx = mkCtx();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdTaskDocSet } = await import("./doc.js");
+    const rc = await cmdTaskDocSet({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      section: "Summary",
+      text: "Replacement summary",
+      fullDoc: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(observedPatch?.doc).toMatchObject({
+      kind: "set-section",
+      section: "Summary",
+      expectedCurrentText: "Current summary",
+    });
+    expect(observedPatch?.doc?.kind === "set-section" ? observedPatch.doc.text : "").toContain(
+      "Replacement summary",
+    );
+  });
+
+  it("cmdTaskDocSet carries expectedCurrentDoc for store-backed full-doc replacements", async () => {
+    const originalDoc = [
+      "## Summary",
+      "Current summary",
+      "",
+      "## Plan",
+      "Current plan",
+      "",
+      "## Verify Steps",
+      "Run checks",
+      "",
+      "## Findings",
+      "",
+    ].join("\n");
+    let currentTask = mkTask({ doc: originalDoc });
+    let observedPatch: TaskStorePatch | null | undefined;
+    const store = {
+      patch: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            observedPatch = await builder(currentTask);
+            currentTask = applyStorePatch(currentTask, observedPatch);
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    const ctx = mkCtx();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdTaskDocSet } = await import("./doc.js");
+    const rc = await cmdTaskDocSet({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      section: "Summary",
+      text: ["## Summary", "Replacement summary", "", "## Plan", "Replacement plan"].join("\n"),
+      fullDoc: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(observedPatch?.doc).toMatchObject({
+      kind: "replace-doc",
+      expectedCurrentDoc: originalDoc,
+    });
+  });
+
   it("cmdTaskDocShow prefers canonical sections over stale task.doc on the local backend", async () => {
     const writes: string[] = [];
     const stdoutSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
@@ -287,6 +387,36 @@ describe("task doc commands (unit)", () => {
     ).rejects.toMatchObject({
       code: "E_VALIDATION",
       context: { reason_code: "task_readme_section_conflict", section: "Summary" },
+    });
+  });
+
+  it("cmdTaskDocSet surfaces semantic full-doc conflicts from the task store", async () => {
+    const ctx = mkCtx();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue({
+      patch: vi.fn().mockRejectedValue(
+        new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: "Task README changed concurrently: T-1",
+          context: { reason_code: "task_readme_conflict" },
+        }),
+      ),
+    });
+
+    const { cmdTaskDocSet } = await import("./doc.js");
+    await expect(
+      cmdTaskDocSet({
+        ctx,
+        cwd: "/repo",
+        taskId: "T-1",
+        section: "Summary",
+        text: ["## Summary", "Replacement summary", "", "## Plan", "Replacement plan"].join("\n"),
+        fullDoc: false,
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_readme_conflict" },
     });
   });
 });
