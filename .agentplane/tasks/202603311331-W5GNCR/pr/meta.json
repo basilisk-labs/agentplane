@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311331-W5GNCR/shared-cli-emitters",
   "created_at": "2026-03-31T13:56:46.911Z",
+  "head_sha": "c7e6c2f5926654aa8b83f4a86aba7f4fa4e9ff88",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "7b97f123034670141903f1270c5bd7f7cb554607",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T13:58:26.144Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311331-W5GNCR",
-  "updated_at": "2026-03-31T13:57:27.493Z",
+  "updated_at": "2026-03-31T13:58:26.144Z",
   "verify": {
     "status": "skipped"
   }

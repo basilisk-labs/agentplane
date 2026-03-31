@@ -1,8 +1,8 @@
  .agentplane/tasks/202603311331-W5GNCR/README.md    |  58 +++++++---
- .../tasks/202603311331-W5GNCR/pr/diffstat.txt      |   4 +
+ .../tasks/202603311331-W5GNCR/pr/diffstat.txt      |   8 ++
  .agentplane/tasks/202603311331-W5GNCR/pr/meta.json |  12 ++
- .agentplane/tasks/202603311331-W5GNCR/pr/review.md |  32 ++++++
+ .agentplane/tasks/202603311331-W5GNCR/pr/review.md |  36 ++++++
  .../tasks/202603311331-W5GNCR/pr/verify.log        |   0
  packages/agentplane/src/cli/output.test.ts         |  71 ++++++++++++
  packages/agentplane/src/cli/output.ts              | 121 +++++++++++++++++++++
- 7 files changed, 285 insertions(+), 13 deletions(-)
+ 7 files changed, 293 insertions(+), 13 deletions(-)
