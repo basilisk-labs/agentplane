@@ -63,6 +63,9 @@ export type TaskDocMeta = Pick<
 
 export type TaskWriteOptions = {
   expectedRevision?: number;
+  expectedCurrentDoc?: string | null;
+  expectedCurrentText?: string | null;
+  expectedSection?: string;
 };
 
 export type TaskBackendProjectionReadMode = "native" | "fallback";

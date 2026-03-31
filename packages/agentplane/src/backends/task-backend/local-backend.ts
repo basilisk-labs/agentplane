@@ -15,6 +15,10 @@ import {
 } from "@agentplaneorg/core";
 
 import { isRecord } from "../../shared/guards.js";
+import {
+  assertExpectedTaskDoc,
+  assertExpectedTaskSection,
+} from "../../shared/task-doc-conflicts.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 import {
   buildTaskIndexEntry,
@@ -508,6 +512,24 @@ export class LocalBackend implements TaskBackend {
       currentRevision: storedRevisionFromFrontmatter(parsed.frontmatter, 1),
     });
     const docText = String(doc ?? "");
+    const currentDoc = extractTaskDoc(parsed.body);
+    if (opts?.expectedCurrentDoc !== undefined) {
+      assertExpectedTaskDoc({ taskId, currentDoc, expectedDoc: opts.expectedCurrentDoc });
+    }
+    if (opts?.expectedCurrentText !== undefined) {
+      if (!opts.expectedSection) {
+        throw new BackendError(
+          "expectedSection is required when expectedCurrentText is set",
+          "E_BACKEND",
+        );
+      }
+      assertExpectedTaskSection({
+        taskId,
+        currentDoc,
+        section: opts.expectedSection,
+        expectedText: opts.expectedCurrentText,
+      });
+    }
     let body = mergeTaskDoc(parsed.body, docText);
     const frontmatter = {
       ...parsed.frontmatter,
@@ -517,7 +539,7 @@ export class LocalBackend implements TaskBackend {
           : taskId,
     } as Record<string, unknown>;
     const currentDocVersion = normalizeDocVersion(frontmatter.doc_version);
-    if (docChanged(extractTaskDoc(parsed.body), docText) || !frontmatter.doc_updated_at) {
+    if (docChanged(currentDoc, docText) || !frontmatter.doc_updated_at) {
       const applied = applyTaskDocMutations(
         taskDocStateFromFrontmatter(frontmatter, parsed.body),
         [

@@ -21,6 +21,10 @@ import {
 } from "../../backends/task-backend.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  assertExpectedTaskDoc,
+  assertExpectedTaskSection,
+} from "../../shared/task-doc-conflicts.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { resolveDocUpdatedBy, taskDataToFrontmatter, type CommandContext } from "./task-backend.js";
 
@@ -174,12 +178,6 @@ function readStoredTaskRevision(value: unknown): number | null {
   return Number.isInteger(value) && Number(value) > 0 ? Number(value) : null;
 }
 
-function normalizeDocComparison(text: string | null | undefined): string {
-  return String(text ?? "")
-    .replaceAll("\r\n", "\n")
-    .trim();
-}
-
 function normalizeComments(task: TaskData): TaskComment[] {
   return Array.isArray(task.comments)
     ? task.comments.filter(
@@ -207,35 +205,6 @@ function isConcurrentReadmeChangeError(err: unknown): err is CliError {
     err.code === "E_IO" &&
     err.message.startsWith("Task README changed concurrently:")
   );
-}
-
-function throwTaskSectionConflict(opts: { taskId: string; section: string }): never {
-  throw new CliError({
-    exitCode: exitCodeForError("E_VALIDATION"),
-    code: "E_VALIDATION",
-    message:
-      `Task README section changed concurrently: ${opts.taskId} ## ${opts.section} ` +
-      "(re-read the task and re-apply your change)",
-    context: {
-      task_id: opts.taskId,
-      section: opts.section,
-      reason_code: "task_readme_section_conflict",
-    },
-  });
-}
-
-function throwTaskDocConflict(opts: { taskId: string }): never {
-  throw new CliError({
-    exitCode: exitCodeForError("E_VALIDATION"),
-    code: "E_VALIDATION",
-    message:
-      `Task README changed concurrently: ${opts.taskId} ` +
-      "(re-read the task and re-apply your change)",
-    context: {
-      task_id: opts.taskId,
-      reason_code: "task_readme_conflict",
-    },
-  });
 }
 
 function throwTaskRevisionConflict(opts: {
@@ -457,11 +426,11 @@ export function applyTaskStoreIntentsToTask(
       }
       case "replace-doc": {
         if (intent.expectedCurrentDoc !== undefined) {
-          const currentDoc = normalizeDocComparison(docState.doc);
-          const expectedDoc = normalizeDocComparison(intent.expectedCurrentDoc);
-          if (currentDoc !== expectedDoc) {
-            throwTaskDocConflict({ taskId: current.id });
-          }
+          assertExpectedTaskDoc({
+            taskId: current.id,
+            currentDoc: docState.doc,
+            expectedDoc: intent.expectedCurrentDoc,
+          });
         }
         docState = applyDocMutationsToState(docState, [{ kind: "replace-doc", doc: intent.doc }], {
           docUpdatedAt: opts.docUpdatedAt,
@@ -471,12 +440,12 @@ export function applyTaskStoreIntentsToTask(
       }
       case "set-section": {
         if (intent.expectedCurrentText !== undefined) {
-          const currentSections = taskDocToSectionMap(docState.doc);
-          const currentSection = normalizeDocComparison(currentSections[intent.section] ?? null);
-          const expectedSection = normalizeDocComparison(intent.expectedCurrentText);
-          if (currentSection !== expectedSection) {
-            throwTaskSectionConflict({ taskId: current.id, section: intent.section });
-          }
+          assertExpectedTaskSection({
+            taskId: current.id,
+            currentDoc: docState.doc,
+            section: intent.section,
+            expectedText: intent.expectedCurrentText,
+          });
         }
         docState = applyDocMutationsToState(
           docState,

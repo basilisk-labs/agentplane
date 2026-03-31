@@ -1,0 +1,7 @@
+ .agentplane/tasks/202603311332-V2JXFM/README.md    | 58 ++++++++++++++----
+ .../src/backends/task-backend.local.test.ts        | 69 ++++++++++++++++++++++
+ .../src/backends/task-backend/local-backend.ts     | 24 +++++++-
+ .../src/backends/task-backend/shared/types.ts      |  3 +
+ .../agentplane/src/commands/shared/task-store.ts   | 61 +++++--------------
+ .../agentplane/src/shared/task-doc-conflicts.ts    | 54 +++++++++++++++++
+ 6 files changed, 209 insertions(+), 60 deletions(-)

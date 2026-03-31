@@ -719,6 +719,75 @@ describe("LocalBackend", () => {
     ).rejects.toThrow(/Task revision changed concurrently/u);
   });
 
+  it("rejects setTaskDoc when the expected current doc no longer matches", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const taskId = "202601300022-ABCD";
+    await backend.writeTask({
+      id: taskId,
+      title: "Task",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      revision: 3,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      doc: ["## Summary", "", "Current", "", "## Plan", "", "Plan", ""].join("\n"),
+    });
+
+    await expect(
+      backend.setTaskDoc(
+        taskId,
+        ["## Summary", "", "Updated", "", "## Plan", "", "Plan", ""].join("\n"),
+        "tester",
+        {
+          expectedCurrentDoc: ["## Summary", "", "Stale", "", "## Plan", "", "Plan", ""].join("\n"),
+        },
+      ),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_readme_conflict", task_id: taskId },
+    });
+  });
+
+  it("rejects setTaskDoc when the expected current section text no longer matches", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const taskId = "202601300023-ABCD";
+    await backend.writeTask({
+      id: taskId,
+      title: "Task",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      revision: 3,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      doc: ["## Summary", "", "Current", "", "## Plan", "", "Plan", ""].join("\n"),
+    });
+
+    await expect(
+      backend.setTaskDoc(
+        taskId,
+        ["## Summary", "", "Updated", "", "## Plan", "", "Plan", ""].join("\n"),
+        "tester",
+        {
+          expectedCurrentText: "Stale",
+          expectedSection: "Summary",
+        },
+      ),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        reason_code: "task_readme_section_conflict",
+        task_id: taskId,
+        section: "Summary",
+      },
+    });
+  });
+
   it("generates task ids and enforces minimum length", async () => {
     const backend = new LocalBackend({ dir: tempDir });
     await expect(backend.generateTaskId({ length: 3, attempts: 1 })).rejects.toThrow(
