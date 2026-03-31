@@ -1,4 +1,8 @@
  .agentplane/tasks/202603301857-161TFE/README.md    | 101 ++++++++++++++++++---
+ .../tasks/202603301857-161TFE/pr/diffstat.txt      |  22 +++++
+ .agentplane/tasks/202603301857-161TFE/pr/meta.json |  12 +++
+ .agentplane/tasks/202603301857-161TFE/pr/review.md |  50 ++++++++++
+ .../tasks/202603301857-161TFE/pr/verify.log        |   0
  packages/agentplane/src/cli/group-command.test.ts  |   9 ++
  packages/agentplane/src/cli/group-command.ts       |   6 ++
  .../src/cli/run-cli.core.group-root-usage.test.ts  |  72 +++++++++++++++
@@ -19,4 +23,4 @@
  .../agentplane/src/commands/task/task.command.ts   |  71 +--------------
  .../agentplane/src/commands/task/verify.command.ts |  10 +-
  .../agentplane/src/commands/workflow.command.ts    |  21 +----
- 21 files changed, 225 insertions(+), 214 deletions(-)
+ 25 files changed, 309 insertions(+), 214 deletions(-)
