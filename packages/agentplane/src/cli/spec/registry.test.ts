@@ -54,5 +54,8 @@ describe("CommandRegistry", () => {
     expect(
       registry.directChildren(["task", "plan"]).map((entry) => entry.spec.id.join(" ")),
     ).toEqual(["task plan set"]);
+    expect(registry.directChildSegments(["task"])).toEqual(["new", "plan"]);
+    expect(registry.directChildSegments(["task", "plan"])).toEqual(["set"]);
+    expect(registry.directChildSegments(["missing"])).toEqual([]);
   });
 });

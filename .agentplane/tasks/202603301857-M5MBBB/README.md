@@ -1,10 +1,10 @@
 ---
 id: "202603301857-M5MBBB"
 title: "Derive direct subcommand names from the canonical command graph"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -15,21 +15,37 @@ tags:
   - "cli"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T10:13:07.601Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T10:17:17.010Z"
+  updated_by: "CODER"
+  note: "Focused group-command and command-graph tests plus eslint passed after moving direct child-name derivation onto command ids and canonical graph helpers."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: derive reusable direct-child-name lookup from canonical command ids and graph helpers without migrating all group command entry modules yet."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T10:13:54.682Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: derive reusable direct-child-name lookup from canonical command ids and graph helpers without migrating all group command entry modules yet."
+  -
+    type: "verify"
+    at: "2026-03-31T10:17:17.010Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused group-command and command-graph tests plus eslint passed after moving direct child-name derivation onto command ids and canonical graph helpers."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:57:10.579Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T10:17:17.014Z"
+doc_updated_by: "CODER"
 description: "Implement Epic 5 / R5.1 from REFACTOR.md. child command discovery is computed from command ids instead of manually listed arrays."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: child command discovery is computed from command ids instead of manually listed arrays.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T10:17:17.010Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused group-command and command-graph tests plus eslint passed after moving direct child-name derivation onto command ids and canonical graph helpers.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T10:13:54.684Z, excerpt_hash=sha256:19c14f311d406bf385b831c42ca2a7fe965625eeee50d83aece5196bbb8c420c
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +106,14 @@ Implement Epic 5 / R5.1 from REFACTOR.md. child command discovery is computed fr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T10:17:17.010Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused group-command and command-graph tests plus eslint passed after moving direct child-name derivation onto command ids and canonical graph helpers.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T10:13:54.684Z, excerpt_hash=sha256:19c14f311d406bf385b831c42ca2a7fe965625eeee50d83aece5196bbb8c420c
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

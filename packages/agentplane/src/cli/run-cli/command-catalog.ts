@@ -41,6 +41,10 @@ export function getDirectChildCommandEntries(parentId: CommandId = []): readonly
   return CATALOG_GRAPH.directChildren(parentId);
 }
 
+export function getDirectChildCommandNames(parentId: CommandId = []): readonly string[] {
+  return CATALOG_GRAPH.directChildSegments(parentId);
+}
+
 export function getCommandInvocation(id: CommandId): string {
   const entry = findCommandEntry(id);
   if (!entry) {

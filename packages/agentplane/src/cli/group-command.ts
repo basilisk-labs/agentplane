@@ -17,11 +17,21 @@ export function directSubcommandNames(
   prefix: CommandId,
   specs: readonly CommandSpec<unknown>[],
 ): string[] {
+  return directSubcommandNamesFromIds(
+    prefix,
+    specs.map((spec) => spec.id),
+  );
+}
+
+export function directSubcommandNamesFromIds(
+  prefix: CommandId,
+  ids: readonly CommandId[],
+): string[] {
   const names = new Set<string>();
-  for (const spec of specs) {
-    if (spec.id.length <= prefix.length) continue;
-    if (!prefix.every((segment, index) => spec.id[index] === segment)) continue;
-    const next = spec.id[prefix.length];
+  for (const id of ids) {
+    if (id.length <= prefix.length) continue;
+    if (!prefix.every((segment, index) => id[index] === segment)) continue;
+    const next = id[prefix.length];
     if (typeof next === "string" && next.length > 0) names.add(next);
   }
   return [...names].toSorted((left, right) => left.localeCompare(right));

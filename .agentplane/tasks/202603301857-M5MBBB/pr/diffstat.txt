@@ -1,0 +1,8 @@
+ .agentplane/tasks/202603301857-M5MBBB/README.md    | 58 +++++++++++++++++-----
+ packages/agentplane/src/cli/group-command.test.ts  | 14 +++++-
+ packages/agentplane/src/cli/group-command.ts       | 18 +++++--
+ .../src/cli/run-cli/command-catalog.test.ts        |  6 +++
+ .../agentplane/src/cli/run-cli/command-catalog.ts  |  4 ++
+ packages/agentplane/src/cli/spec/registry.test.ts  |  3 ++
+ packages/agentplane/src/cli/spec/registry.ts       | 10 ++++
+ 7 files changed, 94 insertions(+), 19 deletions(-)
