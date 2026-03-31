@@ -55,8 +55,13 @@ export {
 } from "./shared/transitions.js";
 export {
   buildTaskStatusTransition,
+  executeTaskStatusTransitionRequest,
   buildTaskVerificationTransition,
   type TaskTransitionWrite,
+  type TaskStatusTransitionDependencyPolicy,
+  type TaskStatusTransitionCommentCommitPolicy,
+  type ExecuteTaskStatusTransitionRequest,
+  type TaskStatusTransitionExecution,
 } from "./shared/workflow-transition-service.js";
 export {
   type TaskListFilters,

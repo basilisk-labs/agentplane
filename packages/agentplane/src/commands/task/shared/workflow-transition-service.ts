@@ -1,4 +1,7 @@
-import type { TaskData } from "../../../backends/task-backend.js";
+import type { AgentplaneConfig } from "@agentplaneorg/core";
+
+import type { TaskBackend, TaskData } from "../../../backends/task-backend.js";
+import { CliError } from "../../../shared/errors.js";
 import {
   appendTaskCommentIntent,
   appendTaskEventIntent,
@@ -8,7 +11,13 @@ import {
   type TaskStoreIntent,
   type TaskStoreTaskPatch,
 } from "../../shared/task-store.js";
+import {
+  dependencyWarningMessages,
+  resolveTaskDependencyState,
+  type DependencyState,
+} from "./dependencies.js";
 import { appendTaskEvent, normalizeTaskDocVersion } from "../shared.js";
+import { ensureStatusTransitionAllowed, resolveCommentCommitWarning } from "./transitions.js";
 
 type TaskComment = NonNullable<TaskData["comments"]>[number];
 
@@ -39,6 +48,30 @@ export type TaskTransitionWrite = {
   currentStatus: string;
   intents: TaskStoreIntent[];
   nextTask: TaskData;
+};
+
+export type TaskStatusTransitionDependencyPolicy =
+  | { kind: "none" }
+  | { kind: "require-ready"; failureMessage?: string };
+
+export type TaskStatusTransitionCommentCommitPolicy = {
+  enabled: boolean;
+  action: string;
+  confirmed: boolean;
+  quiet: boolean;
+};
+
+export type ExecuteTaskStatusTransitionRequest = BuildTaskStatusTransitionOptions & {
+  backend: Pick<TaskBackend, "getTask" | "getTasks">;
+  config: AgentplaneConfig;
+  force: boolean;
+  dependencyPolicy?: TaskStatusTransitionDependencyPolicy;
+  commentCommitPolicy?: TaskStatusTransitionCommentCommitPolicy;
+};
+
+export type TaskStatusTransitionExecution = TaskTransitionWrite & {
+  dependencyState: DependencyState | null;
+  deferredWarnings: string[];
 };
 
 function normalizeComments(task: TaskData): TaskComment[] {
@@ -95,6 +128,58 @@ export function buildTaskStatusTransition(
   };
 
   return { currentStatus, intents, nextTask };
+}
+
+export async function executeTaskStatusTransitionRequest(
+  opts: ExecuteTaskStatusTransitionRequest,
+): Promise<TaskStatusTransitionExecution> {
+  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  ensureStatusTransitionAllowed({
+    currentStatus,
+    nextStatus: opts.toStatus,
+    force: opts.force,
+  });
+
+  let dependencyState: DependencyState | null = null;
+  const deferredWarnings: string[] = [];
+  const dependencyPolicy = opts.dependencyPolicy ?? { kind: "none" };
+  if (dependencyPolicy.kind === "require-ready" && !opts.force) {
+    dependencyState = await resolveTaskDependencyState(opts.task, opts.backend);
+    deferredWarnings.push(...dependencyWarningMessages(dependencyState));
+    if (dependencyState.missing.length > 0 || dependencyState.incomplete.length > 0) {
+      const warnings = [...new Set(deferredWarnings)];
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          dependencyPolicy.failureMessage ??
+          `Task is not ready: ${opts.task.id} (use --force to override)`,
+        context: {
+          reason_code: "task_transition_dependencies_not_ready",
+          deferred_warnings: warnings,
+        },
+      });
+    }
+  }
+
+  if (opts.commentCommitPolicy) {
+    const warning = resolveCommentCommitWarning({
+      enabled: opts.commentCommitPolicy.enabled,
+      config: opts.config,
+      action: opts.commentCommitPolicy.action,
+      confirmed: opts.commentCommitPolicy.confirmed,
+      quiet: opts.commentCommitPolicy.quiet,
+      statusFrom: currentStatus,
+      statusTo: opts.toStatus,
+    });
+    if (warning) deferredWarnings.push(warning);
+  }
+
+  return {
+    ...buildTaskStatusTransition(opts),
+    dependencyState,
+    deferredWarnings: [...new Set(deferredWarnings)],
+  };
 }
 
 export function buildTaskVerificationTransition(

@@ -1,10 +1,10 @@
 ---
 id: "202603311331-EBQZAP"
 title: "N3.1 Define the shared transition request/executor contract"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -21,16 +21,32 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T16:11:33.052Z"
+  updated_by: "CODER"
+  note: "Added a shared status-transition executor contract in commands/task/shared so status validation, dependency readiness, deferred warnings, and canonical transition application are owned in one place; verified with focused shared-layer lint, workflow-transition-service/shared unit suites, and agentplane build."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: define a shared transition executor under commands/task/shared so status validation, dependency checks, deferred warnings, and transition application stop being reassembled per command before the command-level migrations land."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T16:07:23.942Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: define a shared transition executor under commands/task/shared so status validation, dependency checks, deferred warnings, and transition application stop being reassembled per command before the command-level migrations land."
+  -
+    type: "verify"
+    at: "2026-03-31T16:11:33.052Z"
+    author: "CODER"
+    state: "ok"
+    note: "Added a shared status-transition executor contract in commands/task/shared so status validation, dependency readiness, deferred warnings, and canonical transition application are owned in one place; verified with focused shared-layer lint, workflow-transition-service/shared unit suites, and agentplane build."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:31:24.867Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T16:11:33.059Z"
+doc_updated_by: "CODER"
 description: "Implement N3.1 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: one shared executor owns status validation, dependency checks, deferred warnings, and transition application. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: one shared executor owns status validation, dependency checks, deferred warnings, and transition application.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T16:11:33.052Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Added a shared status-transition executor contract in commands/task/shared so status validation, dependency readiness, deferred warnings, and canonical transition application are owned in one place; verified with focused shared-layer lint, workflow-transition-service/shared unit suites, and agentplane build.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T16:07:23.943Z, excerpt_hash=sha256:7376f7d7247deaf120ddc8c60977de5e64f9b8298900074ec3b005f791183c67
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +107,14 @@ Implement N3.1 from REFACTOR.md. Collapse the repeated orchestration around task
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T16:11:33.052Z — VERIFY — ok
+
+By: CODER
+
+Note: Added a shared status-transition executor contract in commands/task/shared so status validation, dependency readiness, deferred warnings, and canonical transition application are owned in one place; verified with focused shared-layer lint, workflow-transition-service/shared unit suites, and agentplane build.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T16:07:23.943Z, excerpt_hash=sha256:7376f7d7247deaf120ddc8c60977de5e64f9b8298900074ec3b005f791183c67
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
