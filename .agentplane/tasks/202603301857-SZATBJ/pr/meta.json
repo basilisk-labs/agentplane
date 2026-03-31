@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301857-SZATBJ/audit-cli-wrappers",
   "created_at": "2026-03-31T12:07:18.939Z",
+  "head_sha": "eb0a482f5847ac9ffd49146c868208046733a121",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "b6dfd0b009986403b4ab422de5fe54facac1f0e1",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T12:08:05.611Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301857-SZATBJ",
-  "updated_at": "2026-03-31T12:07:19.567Z",
+  "updated_at": "2026-03-31T12:08:05.611Z",
   "verify": {
     "status": "skipped"
   }

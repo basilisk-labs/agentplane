@@ -1,10 +1,11 @@
 ---
 id: "202603301857-SZATBJ"
 title: "Audit thin `*.command.ts` and `*.run.ts` wrappers"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-SZATBJ/audit-cli-wrappers"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
     Command: sed -n '1,140p' packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts && sed -n '1,140p' packages/agentplane/src/cli/run-cli/command-catalog/task.ts; Result: pass; Evidence: runtime catalog imports .spec/.run modules or direct command handlers, bypassing alias files like start.command.ts, finish.command.ts, task/list.command.ts, and task/search.command.ts. Scope: prove which wrappers are runtime-dead versus still on the live path.
     Command: rg -n "doctor\.command|recipes/install\.command|verify\.command" packages/agentplane/src -g '*test.ts' -g '*helpers.ts' -S; Result: pass; Evidence: remaining deep imports are test/helper-only in doctor.command.test.ts, doctor.fast.test.ts, recipes.test-helpers.ts, and workflow.verify-hooks.test.ts. Scope: record hidden dependencies that R5.4 must rewrite when collapsing low-value wrappers.
     Command: git diff --stat; Result: pass; Evidence: README-only diff for the audit artifact. Scope: confirm this task stays a classification artifact and does not widen into implementation work.
-commit: null
+commit:
+  hash: "b6dfd0b009986403b4ab422de5fe54facac1f0e1"
+  message: "🧩 SZATBJ integrate: squash task/202603301857-SZATBJ/audit-cli-wrappers"
 comments:
   -
     author: "CODER"
     body: "Start: classify remaining thin *.command.ts and *.run.ts files into meaningful CLI boundaries versus removable indirection, and record the audit artifact that R5.4 will consume."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-SZATBJ/pr."
 events:
   -
     type: "status"
@@ -57,9 +63,16 @@ events:
       Command: sed -n '1,140p' packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts && sed -n '1,140p' packages/agentplane/src/cli/run-cli/command-catalog/task.ts; Result: pass; Evidence: runtime catalog imports .spec/.run modules or direct command handlers, bypassing alias files like start.command.ts, finish.command.ts, task/list.command.ts, and task/search.command.ts. Scope: prove which wrappers are runtime-dead versus still on the live path.
       Command: rg -n "doctor\.command|recipes/install\.command|verify\.command" packages/agentplane/src -g '*test.ts' -g '*helpers.ts' -S; Result: pass; Evidence: remaining deep imports are test/helper-only in doctor.command.test.ts, doctor.fast.test.ts, recipes.test-helpers.ts, and workflow.verify-hooks.test.ts. Scope: record hidden dependencies that R5.4 must rewrite when collapsing low-value wrappers.
       Command: git diff --stat; Result: pass; Evidence: README-only diff for the audit artifact. Scope: confirm this task stays a classification artifact and does not widen into implementation work.
+  -
+    type: "status"
+    at: "2026-03-31T12:08:05.648Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-SZATBJ/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T12:06:47.633Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T12:08:05.653Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 5 / R5.3 from REFACTOR.md. every wrapper file is classified as either meaningful boundary or removable indirection."
 sections:
   Summary: |-
