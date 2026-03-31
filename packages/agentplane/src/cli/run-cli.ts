@@ -17,12 +17,7 @@ import { helpSpec, makeHelpHandler } from "./spec/help.js";
 import { usageError } from "./spec/errors.js";
 import { suggestOne } from "./spec/suggest.js";
 import { COMMANDS, matchCommandCatalog } from "./run-cli/command-catalog.js";
-import {
-  prescanJsonErrors,
-  parseGlobalArgs,
-  resolveOutputMode,
-  runWithOutputMode,
-} from "./run-cli/globals.js";
+import { parseGlobalArgs, resolveOutputMode, runWithOutputMode } from "./run-cli/globals.js";
 import { writeError } from "./run-cli/error-guidance.js";
 import { maybeWarnOnUpdate } from "./run-cli/update-warning.js";
 const HELP_TAIL_OPTIONS = new Set(["--compact", "--json"]);
@@ -52,9 +47,15 @@ async function maybeResolveProject(opts: {
 }
 
 export async function runCli(argv: string[]): Promise<number> {
-  let jsonErrors = prescanJsonErrors(argv);
+  let jsonErrors = false;
   try {
-    const { globals, rest } = parseGlobalArgs(argv);
+    const parsedGlobals = parseGlobalArgs(argv);
+    jsonErrors = parsedGlobals.jsonErrorMode;
+    if (parsedGlobals.error) {
+      throw parsedGlobals.error;
+    }
+
+    const { globals, rest } = parsedGlobals;
     const outputMode = resolveOutputMode(globals.outputMode);
     jsonErrors = globals.jsonErrors || outputMode === "json";
     const cwd = process.cwd();

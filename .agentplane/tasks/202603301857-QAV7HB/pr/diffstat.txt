@@ -1,0 +1,4 @@
+ .agentplane/tasks/202603301857-QAV7HB/README.md | 102 +++++++++++++++++++++---
+ packages/agentplane/src/cli/run-cli.ts          |  17 ++--
+ packages/agentplane/src/cli/run-cli/globals.ts  |  69 +++++++---------
+ 3 files changed, 126 insertions(+), 62 deletions(-)

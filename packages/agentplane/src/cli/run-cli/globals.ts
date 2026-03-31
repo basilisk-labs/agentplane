@@ -43,31 +43,22 @@ const GLOBAL_FLAG_FORMS = new Map<string, GlobalFlagDef>(
 export type CliOutputMode = "text" | "json";
 const OUTPUT_MODE_ENV = "AGENTPLANE_OUTPUT";
 
-export function prescanJsonErrors(argv: readonly string[]): boolean {
-  // If parseGlobalArgs throws (e.g. missing --root value), we still want to honor
-  // `--json-errors` in the "scoped global" zone (before the command id).
-  let hasRest = false;
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-    if (!arg) continue;
+export type ParsedGlobalArgsResult = {
+  globals: ParsedArgs;
+  rest: string[];
+  jsonErrorMode: boolean;
+  error?: CliError;
+};
 
-    const def = GLOBAL_FLAG_FORMS.get(arg);
-    if (!def) {
-      // First non-global token is treated as the start of the command id.
-      hasRest = true;
-      break;
-    }
-
-    if (def.key === "jsonErrors" && !hasRest) return true;
-    if (def.takesValue) {
-      // Skip the value if present; do not throw on missing value here.
-      i++;
-    }
-  }
-  return false;
+function makeGlobalUsageError(message: string): CliError {
+  return new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message,
+  });
 }
 
-export function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] } {
+export function parseGlobalArgs(argv: string[]): ParsedGlobalArgsResult {
   let help = false;
   let version = false;
   let noUpdateCheck = false;
@@ -77,6 +68,13 @@ export function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: st
   let outputMode: "text" | "json" | undefined;
 
   const rest: string[] = [];
+  const result = (error?: CliError): ParsedGlobalArgsResult => ({
+    globals: { help, version, noUpdateCheck, root, jsonErrors, allowNetwork, outputMode },
+    rest,
+    jsonErrorMode: jsonErrors || outputMode === "json",
+    ...(error ? { error } : {}),
+  });
+
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (!arg) continue;
@@ -116,11 +114,9 @@ export function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: st
       case "root": {
         const next = argv[i + 1];
         if (!next) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: "Missing value after --root (expected repository path)",
-          });
+          return result(
+            makeGlobalUsageError("Missing value after --root (expected repository path)"),
+          );
         }
         root = next;
         i++;
@@ -129,19 +125,13 @@ export function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: st
       case "outputMode": {
         const next = argv[i + 1];
         if (!next) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: "Missing value after --output (expected text|json)",
-          });
+          return result(makeGlobalUsageError("Missing value after --output (expected text|json)"));
         }
         const normalized = next.trim().toLowerCase();
         if (normalized !== "text" && normalized !== "json") {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: `Invalid value for --output: ${next} (expected text|json)`,
-          });
+          return result(
+            makeGlobalUsageError(`Invalid value for --output: ${next} (expected text|json)`),
+          );
         }
         outputMode = normalized;
         i++;
@@ -153,10 +143,7 @@ export function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: st
       }
     }
   }
-  return {
-    globals: { help, version, noUpdateCheck, root, jsonErrors, allowNetwork, outputMode },
-    rest,
-  };
+  return result();
 }
 
 export function resolveOutputMode(modeFromFlag: "text" | "json" | undefined): CliOutputMode {
