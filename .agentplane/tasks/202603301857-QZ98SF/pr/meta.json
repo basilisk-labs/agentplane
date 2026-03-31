@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301857-QZ98SF/backend-projection-contract",
   "created_at": "2026-03-31T11:52:30.765Z",
+  "head_sha": "b3a121d88434a4dfbd71adb3678d6243e0522363",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "e83cbbbcbfce0d897f68faf3a60b4bd6802bef1f",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T11:53:44.611Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301857-QZ98SF",
-  "updated_at": "2026-03-31T11:52:35.363Z",
+  "updated_at": "2026-03-31T11:53:44.611Z",
   "verify": {
     "status": "skipped"
   }

@@ -1,4 +1,8 @@
  .agentplane/tasks/202603301857-QZ98SF/README.md    | 58 +++++++++++++++++-----
+ .../tasks/202603301857-QZ98SF/pr/diffstat.txt      | 17 +++++++
+ .agentplane/tasks/202603301857-QZ98SF/pr/meta.json | 12 +++++
+ .agentplane/tasks/202603301857-QZ98SF/pr/review.md | 45 +++++++++++++++++
+ .../tasks/202603301857-QZ98SF/pr/verify.log        |  0
  .../task-backend/task-backend-adapter.test.ts      | 58 ++++++++++++++++++++++
  .../adapters/task-backend/task-backend-adapter.ts  | 17 ++++++-
  .../src/backends/task-backend.load.test.ts         |  2 +
@@ -14,4 +18,4 @@
  .../src/commands/task/export.unit.test.ts          |  2 +
  .../src/commands/task/finish.unit.test.ts          |  4 ++
  packages/agentplane/src/ports/task-backend-port.ts | 12 ++++-
- 16 files changed, 175 insertions(+), 18 deletions(-)
+ 20 files changed, 249 insertions(+), 18 deletions(-)
