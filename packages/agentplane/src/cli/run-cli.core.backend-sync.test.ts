@@ -72,7 +72,8 @@ describe("runCli", () => {
       const code = await runCli(["backend", "nope", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage:");
-      expect(io.stderr).toContain("agentplane backend sync");
+      expect(io.stderr).toContain("agentplane backend [<cmd> ...]");
+      expect(io.stderr).toContain("agentplane help backend --compact");
     } finally {
       io.restore();
     }

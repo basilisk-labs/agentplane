@@ -2,7 +2,7 @@ import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { mapBackendError } from "../../cli/error-map.js";
-import { infoMessage } from "../../cli/output.js";
+import { createCliEmitter } from "../../cli/output.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { executeTaskRunnerExecution } from "../../runner/usecases/task-run.js";
 import { materializeRecipeScenarioTask } from "../../runner/usecases/scenario-materialize-task.js";
@@ -12,6 +12,7 @@ import { cmdTaskStartReady } from "../task/start-ready.js";
 import { CliError } from "../../shared/errors.js";
 
 export type ScenarioExecuteParsed = { recipeId: string; scenarioId: string };
+const output = createCliEmitter();
 
 export const scenarioExecuteSpec: CommandSpec<ScenarioExecuteParsed> = {
   id: ["scenario", "execute"],
@@ -101,20 +102,18 @@ export const runScenarioExecute: CommandHandler<ScenarioExecuteParsed> = async (
       },
     });
 
-    process.stdout.write(
-      `${infoMessage(`scenario executed: ${parsed.recipeId}:${parsed.scenarioId}`)}\n`,
-    );
-    process.stdout.write(`task_id: ${materialized.task_id}\n`);
-    process.stdout.write(`run_id: ${executed.invocation.run_id}\n`);
-    process.stdout.write(`state: ${executed.bundle.execution.artifact_paths.state_path}\n`);
-    process.stdout.write(`events: ${executed.bundle.execution.artifact_paths.events_path}\n`);
-    process.stdout.write(`status: ${executed.result.status}\n`);
-    process.stdout.write(`runner_exit_code: ${executed.result.exit_code ?? "null"}\n`);
+    output.info(`scenario executed: ${parsed.recipeId}:${parsed.scenarioId}`);
+    output.line(`task_id: ${materialized.task_id}`);
+    output.line(`run_id: ${executed.invocation.run_id}`);
+    output.line(`state: ${executed.bundle.execution.artifact_paths.state_path}`);
+    output.line(`events: ${executed.bundle.execution.artifact_paths.events_path}`);
+    output.line(`status: ${executed.result.status}`);
+    output.line(`runner_exit_code: ${executed.result.exit_code ?? "null"}`);
     if (executed.result.stdout_summary) {
-      process.stdout.write(`stdout: ${executed.result.stdout_summary}\n`);
+      output.line(`stdout: ${executed.result.stdout_summary}`);
     }
     if (executed.result.stderr_summary) {
-      process.stderr.write(`stderr: ${executed.result.stderr_summary}\n`);
+      output.line(`stderr: ${executed.result.stderr_summary}`, "stderr");
     }
     return executed.result.status === "success"
       ? 0

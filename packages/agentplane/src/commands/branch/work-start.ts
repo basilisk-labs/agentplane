@@ -7,7 +7,7 @@ import { LocalBackend } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
-import { successMessage } from "../../cli/output.js";
+import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { gitAheadBehind } from "../shared/git-diff.js";
@@ -156,6 +156,7 @@ export async function cmdWorkStart(opts: {
   worktree: boolean;
 }): Promise<number> {
   try {
+    const output = createCliEmitter();
     validateWorkAgent(opts.agent);
     validateWorkSlug(opts.slug);
 
@@ -213,9 +214,7 @@ export async function cmdWorkStart(opts: {
         started_at: new Date().toISOString(),
       });
 
-      process.stdout.write(
-        `${successMessage("work start", opts.taskId, `mode=direct branch=${currentBranch}`)}\n`,
-      );
+      output.success("work start", opts.taskId, `mode=direct branch=${currentBranch}`);
       return 0;
     }
 
@@ -294,12 +293,10 @@ export async function cmdWorkStart(opts: {
       }
     }
 
-    process.stdout.write(
-      `${successMessage(
-        "work start",
-        branchName,
-        opts.worktree ? `worktree=${path.relative(resolved.gitRoot, worktreePath)}` : "",
-      )}\n`,
+    output.success(
+      "work start",
+      branchName,
+      opts.worktree ? `worktree=${path.relative(resolved.gitRoot, worktreePath)}` : "",
     );
     return 0;
   } catch (err) {

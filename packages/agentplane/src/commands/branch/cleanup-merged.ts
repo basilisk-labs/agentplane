@@ -3,7 +3,7 @@ import path from "node:path";
 import { resolveBaseBranch } from "@agentplaneorg/core";
 
 import { mapBackendError } from "../../cli/error-map.js";
-import { successMessage, unknownEntityMessage, workflowModeMessage } from "../../cli/output.js";
+import { createCliEmitter, unknownEntityMessage, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { ensureGitClean } from "../guard/index.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
@@ -22,6 +22,7 @@ import {
 } from "../shared/task-backend.js";
 
 import { archivePrArtifacts } from "./internal/archive-pr.js";
+const output = createCliEmitter();
 
 export async function cmdCleanupMerged(opts: {
   ctx?: CommandContext;
@@ -104,21 +105,19 @@ export async function cmdCleanupMerged(opts: {
 
     if (!opts.quiet) {
       const archiveLabel = opts.archive ? " archive=on" : "";
-      process.stdout.write(`cleanup merged (base=${baseBranch}${archiveLabel})\n`);
+      output.line(`cleanup merged (base=${baseBranch}${archiveLabel})`);
       if (sortedCandidates.length === 0) {
-        process.stdout.write("no candidates\n");
+        output.line("no candidates");
         return 0;
       }
       for (const item of sortedCandidates) {
-        process.stdout.write(
-          `- ${item.taskId}: branch=${item.branch} worktree=${item.worktreePath ?? "-"}\n`,
-        );
+        output.line(`- ${item.taskId}: branch=${item.branch} worktree=${item.worktreePath ?? "-"}`);
       }
     }
 
     if (!opts.yes) {
       if (!opts.quiet) {
-        process.stdout.write("Re-run with --yes to delete these branches/worktrees.\n");
+        output.line("Re-run with --yes to delete these branches/worktrees.");
       }
       return 0;
     }
@@ -160,9 +159,7 @@ export async function cmdCleanupMerged(opts: {
     }
 
     if (!opts.quiet) {
-      process.stdout.write(
-        `${successMessage("cleanup merged", undefined, `deleted=${candidates.length}`)}\n`,
-      );
+      output.success("cleanup merged", undefined, `deleted=${candidates.length}`);
     }
     return 0;
   } catch (err) {

@@ -2,11 +2,12 @@ import { loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/co
 
 import { mapCoreError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
-import { unknownEntityMessage } from "../../cli/output.js";
+import { createCliEmitter, unknownEntityMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { gitAheadBehind } from "../shared/git-diff.js";
 import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
 import { findWorktreeForBranch, parseTaskIdFromBranch } from "../shared/git-worktree.js";
+const output = createCliEmitter();
 
 export async function cmdBranchStatus(opts: {
   cwd: string;
@@ -60,11 +61,11 @@ export async function cmdBranchStatus(opts: {
     const worktree = await findWorktreeForBranch(resolved.gitRoot, branch);
     const { ahead, behind } = await gitAheadBehind(resolved.gitRoot, base, branch);
 
-    process.stdout.write(
-      `branch=${branch} base=${base} ahead=${ahead} behind=${behind} task_id=${taskId ?? "-"}\n`,
+    output.line(
+      `branch=${branch} base=${base} ahead=${ahead} behind=${behind} task_id=${taskId ?? "-"}`,
     );
     if (worktree) {
-      process.stdout.write(`worktree=${worktree}\n`);
+      output.line(`worktree=${worktree}`);
     }
     return 0;
   } catch (err) {

@@ -6,7 +6,7 @@ import { atomicWriteFile } from "@agentplaneorg/core";
 import { mapCoreError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists } from "../../cli/fs-utils.js";
-import { successMessage, workflowModeMessage } from "../../cli/output.js";
+import { createCliEmitter, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
@@ -22,6 +22,7 @@ export async function cmdPrNote(opts: {
   body: string;
 }): Promise<number> {
   try {
+    const output = createCliEmitter();
     const author = opts.author.trim();
     const body = opts.body.trim();
     if (!author) {
@@ -64,7 +65,7 @@ export async function cmdPrNote(opts: {
     const updated = appendHandoffNote(review, `${author}: ${body}`);
     await atomicWriteFile(reviewPath, updated, "utf8");
 
-    process.stdout.write(`${successMessage("pr note", opts.taskId)}\n`);
+    output.success("pr note", opts.taskId);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

@@ -1,7 +1,8 @@
 import { extractLastVerifiedSha, runShellCommand } from "../../shared/pr-meta.js";
-import { successMessage } from "../../../cli/output.js";
+import { createCliEmitter } from "../../../cli/output.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
+const output = createCliEmitter();
 
 function normalizeVerifyCommands(rawVerify: unknown): string[] {
   return Array.isArray(rawVerify)
@@ -50,7 +51,7 @@ export async function runVerifyCommands(opts: {
   const verifyEntries: { header: string; content: string }[] = [];
   for (const command of opts.commands) {
     if (!opts.quiet) {
-      process.stdout.write(`$ ${command}\n`);
+      output.line(`$ ${command}`);
     }
     const timestamp = new Date().toISOString();
     const result = await runShellCommand(command, opts.worktreePath);
@@ -75,7 +76,7 @@ export async function runVerifyCommands(opts: {
     });
   }
   if (!opts.quiet) {
-    process.stdout.write(`${successMessage("verify passed", opts.taskId)}\n`);
+    output.success("verify passed", opts.taskId);
   }
   return verifyEntries;
 }

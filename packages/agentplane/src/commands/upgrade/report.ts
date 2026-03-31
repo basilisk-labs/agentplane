@@ -1,7 +1,9 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { createCliEmitter } from "../../cli/output.js";
 import type { FrameworkManifest, UpgradeReviewRecord } from "./types.js";
+const output = createCliEmitter();
 
 export function printUpgradeDryRun(opts: {
   additions: string[];
@@ -9,13 +11,13 @@ export function printUpgradeDryRun(opts: {
   skipped: string[];
   merged: string[];
 }): void {
-  process.stdout.write(
-    `Upgrade dry-run: ${opts.additions.length} add, ${opts.updates.length} update, ${opts.skipped.length} unchanged\n`,
+  output.line(
+    `Upgrade dry-run: ${opts.additions.length} add, ${opts.updates.length} update, ${opts.skipped.length} unchanged`,
   );
-  for (const rel of opts.additions) process.stdout.write(`ADD ${rel}\n`);
-  for (const rel of opts.updates) process.stdout.write(`UPDATE ${rel}\n`);
-  for (const rel of opts.skipped) process.stdout.write(`SKIP ${rel}\n`);
-  for (const rel of opts.merged) process.stdout.write(`MERGE ${rel}\n`);
+  for (const rel of opts.additions) output.line(`ADD ${rel}`);
+  for (const rel of opts.updates) output.line(`UPDATE ${rel}`);
+  for (const rel of opts.skipped) output.line(`SKIP ${rel}`);
+  for (const rel of opts.merged) output.line(`MERGE ${rel}`);
 }
 
 export async function writeUpgradeAgentReview(opts: {

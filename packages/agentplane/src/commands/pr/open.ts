@@ -6,7 +6,7 @@ import { atomicWriteFile } from "@agentplaneorg/core";
 import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists } from "../../cli/fs-utils.js";
-import { successMessage, workflowModeMessage } from "../../cli/output.js";
+import { createCliEmitter, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
@@ -33,6 +33,7 @@ export async function cmdPrOpen(opts: {
   branch?: string;
 }): Promise<number> {
   try {
+    const output = createCliEmitter();
     const author = opts.author.trim();
     if (!author) {
       throw new CliError({
@@ -95,7 +96,7 @@ export async function cmdPrOpen(opts: {
       await atomicWriteFile(reviewPath, review, "utf8");
     }
 
-    process.stdout.write(`${successMessage("pr open", path.relative(resolved.gitRoot, prDir))}\n`);
+    output.success("pr open", path.relative(resolved.gitRoot, prDir));
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

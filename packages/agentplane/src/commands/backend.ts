@@ -1,8 +1,9 @@
-import { backendNotSupportedMessage, successMessage, warnMessage } from "../cli/output.js";
+import { backendNotSupportedMessage, createCliEmitter } from "../cli/output.js";
 import { mapBackendError } from "../cli/error-map.js";
 import { CliError } from "../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "./shared/task-backend.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
+const output = createCliEmitter();
 
 export type BackendSyncParsed = {
   backendId: string;
@@ -168,18 +169,16 @@ export async function cmdBackendMigrateCanonicalStateParsed(opts: {
     }
     const result = await backend.migrateCanonicalState();
     if (!opts.flags.quiet) {
-      process.stdout.write(
-        `${successMessage(
-          "backend migrate-canonical-state",
-          undefined,
-          `scanned=${result.scanned} migrated=${result.migrated.length} skipped-structured=${result.skippedStructured.length} skipped-no-doc=${result.skippedNoDoc.length} failed=${result.failed.length}`,
-        )}\n`,
+      output.success(
+        "backend migrate-canonical-state",
+        undefined,
+        `scanned=${result.scanned} migrated=${result.migrated.length} skipped-structured=${result.skippedStructured.length} skipped-no-doc=${result.skippedNoDoc.length} failed=${result.failed.length}`,
       );
     }
     if (result.failed.length > 0) {
       for (const failure of result.failed.slice(0, 20)) {
-        process.stderr.write(
-          `${warnMessage(`backend migrate-canonical-state failed for ${failure.taskId}: ${failure.reason}`)}\n`,
+        output.warn(
+          `backend migrate-canonical-state failed for ${failure.taskId}: ${failure.reason}`,
         );
       }
       return 1;
@@ -240,24 +239,22 @@ export async function cmdBackendInspectParsed(opts: {
           ? "missing"
           : `visible-unconfigured:${result.canonicalState.visibleFieldId}`
         : `configured:${result.canonicalState.configuredFieldId}`;
-    process.stdout.write(
-      `${successMessage(
-        "backend inspect",
-        undefined,
-        `visible-fields=${result.visibleCustomFields.length} canonical-state=${canonicalStateSummary} drift=${result.configuredFieldNameDrift.length}`,
-      )}\n`,
+    output.success(
+      "backend inspect",
+      undefined,
+      `visible-fields=${result.visibleCustomFields.length} canonical-state=${canonicalStateSummary} drift=${result.configuredFieldNameDrift.length}`,
     );
-    process.stdout.write(
-      `canonical_state configured=${result.canonicalState.configuredFieldId ?? "unset"} visible=${result.canonicalState.visibleFieldId ?? "absent"}\n`,
+    output.line(
+      `canonical_state configured=${result.canonicalState.configuredFieldId ?? "unset"} visible=${result.canonicalState.visibleFieldId ?? "absent"}`,
     );
     for (const drift of result.configuredFieldNameDrift) {
-      process.stdout.write(
-        `drift key=${drift.key} configured-id=${drift.configuredId} visible-name=${JSON.stringify(drift.visibleName)}\n`,
+      output.line(
+        `drift key=${drift.key} configured-id=${drift.configuredId} visible-name=${JSON.stringify(drift.visibleName)}`,
       );
     }
     for (const field of result.visibleCustomFields) {
-      process.stdout.write(
-        `field id=${field.id} name=${JSON.stringify(field.name)} non-empty=${field.nonEmptyCount}\n`,
+      output.line(
+        `field id=${field.id} name=${JSON.stringify(field.name)} non-empty=${field.nonEmptyCount}`,
       );
     }
     return 0;

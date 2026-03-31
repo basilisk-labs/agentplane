@@ -3,7 +3,7 @@ import path from "node:path";
 import { loadConfig, resolveProject } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../cli/error-map.js";
-import { successMessage, unknownEntityMessage } from "../../cli/output.js";
+import { createCliEmitter, unknownEntityMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
@@ -21,6 +21,7 @@ export async function cmdBranchRemove(opts: {
 }): Promise<number> {
   const branch = (opts.branch ?? "").trim();
   const worktree = (opts.worktree ?? "").trim();
+  const output = createCliEmitter();
   if (!branch && !worktree) {
     throw new CliError({
       exitCode: 2,
@@ -61,7 +62,7 @@ export async function cmdBranchRemove(opts: {
         { cwd: resolved.gitRoot, env: gitEnv() },
       );
       if (!opts.quiet) {
-        process.stdout.write(`${successMessage("removed worktree", worktreePath)}\n`);
+        output.success("removed worktree", worktreePath);
       }
     }
 
@@ -78,7 +79,7 @@ export async function cmdBranchRemove(opts: {
         env: gitEnv(),
       });
       if (!opts.quiet) {
-        process.stdout.write(`${successMessage("removed branch", branch)}\n`);
+        output.success("removed branch", branch);
       }
     }
     return 0;

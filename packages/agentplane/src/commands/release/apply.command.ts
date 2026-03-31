@@ -2,6 +2,7 @@ import path from "node:path";
 
 import { loadConfig, resolveProject } from "@agentplaneorg/core";
 
+import { createCliEmitter } from "../../cli/output.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
@@ -34,6 +35,7 @@ import {
 } from "./apply.preflight.js";
 import { pushReleaseRefs, writeReleaseApplyReport } from "./apply.reporting.js";
 import type { ReleaseApplyParsed, ReleaseApplyReport, ReleaseVersionPlan } from "./apply.types.js";
+const output = createCliEmitter();
 
 async function resolveReleasePlanInputs(opts: { gitRoot: string; planOverride?: string }): Promise<{
   planDir: string;
@@ -191,7 +193,7 @@ async function applyReleaseMutation(opts: {
 
   const staged = await opts.git.statusStagedPaths();
   if (staged.length === 0) {
-    process.stdout.write("No changes to commit.\n");
+    output.line("No changes to commit.");
     return { releaseCommit };
   }
 
@@ -220,14 +222,12 @@ async function finalizeReleaseApply(opts: {
     env: gitEnv(),
   });
 
-  process.stdout.write(`Release tag created: ${opts.plan.nextTag}\n`);
+  output.line(`Release tag created: ${opts.plan.nextTag}`);
   if (opts.push) {
     await pushReleaseRefs(opts.gitRoot, opts.remote, opts.plan.nextTag);
-    process.stdout.write(`Pushed: ${opts.remote} HEAD + ${opts.plan.nextTag}\n`);
+    output.line(`Pushed: ${opts.remote} HEAD + ${opts.plan.nextTag}`);
   } else {
-    process.stdout.write(
-      `Next: git push <remote> HEAD && git push <remote> ${opts.plan.nextTag}\n`,
-    );
+    output.line(`Next: git push <remote> HEAD && git push <remote> ${opts.plan.nextTag}`);
   }
 
   const reportPath = await writeReleaseApplyReport(opts.gitRoot, {
@@ -248,7 +248,7 @@ async function finalizeReleaseApply(opts: {
     commit: opts.releaseCommit,
     push: { requested: opts.push, remote: opts.remote, performed: opts.push },
   } satisfies ReleaseApplyReport);
-  process.stdout.write(`Release report: ${path.relative(opts.gitRoot, reportPath)}\n`);
+  output.line(`Release report: ${path.relative(opts.gitRoot, reportPath)}`);
   return 0;
 }
 

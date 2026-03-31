@@ -1,10 +1,10 @@
 ---
 id: "202603311331-Z22BB6"
 title: "N1.4 Move remaining report-style command families onto the shared emitters"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -16,21 +16,37 @@ tags:
   - "cli"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T16:54:28.891Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T17:08:37.317Z"
+  updated_by: "CODER"
+  note: "Emitter migration verified with focused eslint, 14-file vitest slice, package build, diff scope audit, and framework bootstrap refresh; remaining report-style command families now use shared CLI emitters without ad-hoc stdout/stderr writes."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: move the remaining report-style command families onto the shared CLI emitters and delete local ad-hoc rendering where the contract already exists."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T16:55:20.260Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: move the remaining report-style command families onto the shared CLI emitters and delete local ad-hoc rendering where the contract already exists."
+  -
+    type: "verify"
+    at: "2026-03-31T17:08:37.317Z"
+    author: "CODER"
+    state: "ok"
+    note: "Emitter migration verified with focused eslint, 14-file vitest slice, package build, diff scope audit, and framework bootstrap refresh; remaining report-style command families now use shared CLI emitters without ad-hoc stdout/stderr writes."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:31:18.418Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T17:08:37.321Z"
+doc_updated_by: "CODER"
 description: "Implement N1.4 from REFACTOR.md. Replace the current scattered output/render patterns with one small shared emission layer for user-facing command output.. Acceptance: these commands share the same text/json rendering conventions instead of repeating them locally. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: these commands share the same text/json rendering conventions instead of repeating them locally.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T17:08:37.317Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Emitter migration verified with focused eslint, 14-file vitest slice, package build, diff scope audit, and framework bootstrap refresh; remaining report-style command families now use shared CLI emitters without ad-hoc stdout/stderr writes.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T16:55:20.276Z, excerpt_hash=sha256:9da9095b26b26c17a0c01ff8ddf1eed86982fb8aac2b637a908311e9c768f776
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +107,14 @@ Implement N1.4 from REFACTOR.md. Replace the current scattered output/render pat
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T17:08:37.317Z — VERIFY — ok
+
+By: CODER
+
+Note: Emitter migration verified with focused eslint, 14-file vitest slice, package build, diff scope audit, and framework bootstrap refresh; remaining report-style command families now use shared CLI emitters without ad-hoc stdout/stderr writes.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T16:55:20.276Z, excerpt_hash=sha256:9da9095b26b26c17a0c01ff8ddf1eed86982fb8aac2b637a908311e9c768f776
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
