@@ -8,20 +8,15 @@ import {
   resolveDocUpdatedBy,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { applyTaskMutation } from "../shared/task-mutation.js";
 
 import {
+  applyTaskStatusTransitionCommand,
   defaultCommitEmojiForStatus,
-  emitTransitionWarnings,
-  executeTaskStatusTransitionRequest,
   normalizeTaskStatus,
   nowIso,
   prepareTaskTransitionComment,
   readCommitInfo,
-  readDeferredTaskTransitionWarnings,
-  resolvePrimaryTag,
   runTaskTransitionCommentCommit,
-  toStringArray,
 } from "./shared.js";
 
 export async function cmdTaskSetStatus(opts: {
@@ -90,56 +85,35 @@ export async function cmdTaskSetStatus(opts: {
     const nextCommit = opts.commit
       ? { hash: commitInfo!.hash, message: commitInfo!.message }
       : undefined;
-    let currentStatusForCommit = "TODO";
-    let primaryTagForCommit = "meta";
-    let deferredWarnings: string[] = [];
-    try {
-      await applyTaskMutation({
-        ctx,
-        taskId: opts.taskId,
-        build: async (current) => {
-          const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
-          const execution = await executeTaskStatusTransitionRequest({
-            task: current,
-            backend: ctx.taskBackend,
-            config,
-            at,
-            toStatus: nextStatus,
-            eventAuthor: currentEventAuthor,
-            updatedBy: currentEventAuthor,
-            note: commentBody,
-            comment:
-              commentBody && opts.author ? { author: opts.author, body: commentBody } : undefined,
-            commit: nextCommit,
-            force: opts.force,
-            dependencyPolicy:
-              nextStatus === "DOING" || nextStatus === "DONE"
-                ? { kind: "require-ready" }
-                : { kind: "none" },
-            commentCommitPolicy: {
-              enabled: opts.commitFromComment,
-              action: "task set-status",
-              confirmed: opts.confirmStatusCommit,
-              quiet: opts.quiet,
-            },
-          });
-          currentStatusForCommit = execution.currentStatus;
-          primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
-          deferredWarnings = execution.deferredWarnings;
-          return { intents: execution.intents };
-        },
-      });
-    } catch (err) {
-      emitTransitionWarnings(
-        readDeferredTaskTransitionWarnings(err).length > 0
-          ? readDeferredTaskTransitionWarnings(err)
-          : deferredWarnings,
-        opts.quiet,
-      );
-      throw err;
-    }
-
-    emitTransitionWarnings(deferredWarnings, opts.quiet);
+    const transition = await applyTaskStatusTransitionCommand({
+      ctx,
+      taskId: opts.taskId,
+      quiet: opts.quiet,
+      build: (current) => {
+        const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
+        return {
+          at,
+          toStatus: nextStatus,
+          eventAuthor: currentEventAuthor,
+          updatedBy: currentEventAuthor,
+          note: commentBody,
+          comment:
+            commentBody && opts.author ? { author: opts.author, body: commentBody } : undefined,
+          commit: nextCommit,
+          force: opts.force,
+          dependencyPolicy:
+            nextStatus === "DOING" || nextStatus === "DONE"
+              ? { kind: "require-ready" }
+              : { kind: "none" },
+          commentCommitPolicy: {
+            enabled: opts.commitFromComment,
+            action: "task set-status",
+            confirmed: opts.confirmStatusCommit,
+            quiet: opts.quiet,
+          },
+        };
+      },
+    });
 
     // tasks.json is export-only; generated via `agentplane task export`.
 
@@ -156,9 +130,9 @@ export async function cmdTaskSetStatus(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
-        primaryTag: primaryTagForCommit,
+        primaryTag: transition.primaryTag,
         author: opts.author,
-        statusFrom: currentStatusForCommit,
+        statusFrom: transition.execution.currentStatus,
         statusTo: nextStatus,
         commentBody: opts.body,
         formattedComment: preparedComment?.formattedComment ?? null,

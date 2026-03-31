@@ -5,12 +5,10 @@ import type { TaskData } from "../../backends/task-backend.js";
 
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { applyTaskMutation } from "../shared/task-mutation.js";
 
 import {
-  emitTransitionWarnings,
+  applyTaskStatusTransitionCommand,
   ensurePlanApprovedIfRequired,
-  executeTaskStatusTransitionRequest,
   extractTaskObservationSection,
   defaultCommitEmojiForStatus,
   extractDocSection,
@@ -18,10 +16,8 @@ import {
   normalizeTaskDocVersion,
   nowIso,
   prepareTaskTransitionComment,
-  readDeferredTaskTransitionWarnings,
   requiresVerifyStepsByPrimary,
   requireStructuredComment,
-  resolvePrimaryTag,
   runTaskTransitionCommentCommit,
   taskObservationSectionName,
   toStringArray,
@@ -110,52 +106,31 @@ export async function cmdStart(opts: {
     const commentBody = preparedComment.commentBody ?? opts.body;
 
     const at = nowIso();
-    let currentStatusForCommit = "TODO";
-    let primaryTagForCommit = "meta";
-    let deferredWarnings: string[] = [];
-    try {
-      await applyTaskMutation({
-        ctx,
-        taskId: opts.taskId,
-        build: async (current) => {
-          assertStartDocRequirements(current, ctx.config);
-          ensurePlanApprovedIfRequired(current, ctx.config);
-          const execution = await executeTaskStatusTransitionRequest({
-            task: current,
-            backend: ctx.taskBackend,
-            config: ctx.config,
-            at,
-            toStatus: "DOING",
-            eventAuthor: opts.author,
-            updatedBy: opts.author,
-            note: commentBody,
-            comment: { author: opts.author, body: commentBody },
-            force: opts.force,
-            dependencyPolicy: { kind: "require-ready" },
-            commentCommitPolicy: {
-              enabled: opts.commitFromComment,
-              action: "start",
-              confirmed: opts.confirmStatusCommit,
-              quiet: opts.quiet,
-            },
-          });
-          currentStatusForCommit = execution.currentStatus;
-          primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
-          deferredWarnings = execution.deferredWarnings;
-          return { intents: execution.intents };
-        },
-      });
-    } catch (err) {
-      emitTransitionWarnings(
-        readDeferredTaskTransitionWarnings(err).length > 0
-          ? readDeferredTaskTransitionWarnings(err)
-          : deferredWarnings,
-        opts.quiet,
-      );
-      throw err;
-    }
-
-    emitTransitionWarnings(deferredWarnings, opts.quiet);
+    const transition = await applyTaskStatusTransitionCommand({
+      ctx,
+      taskId: opts.taskId,
+      quiet: opts.quiet,
+      build: (current) => {
+        assertStartDocRequirements(current, ctx.config);
+        ensurePlanApprovedIfRequired(current, ctx.config);
+        return {
+          at,
+          toStatus: "DOING",
+          eventAuthor: opts.author,
+          updatedBy: opts.author,
+          note: commentBody,
+          comment: { author: opts.author, body: commentBody },
+          force: opts.force,
+          dependencyPolicy: { kind: "require-ready" },
+          commentCommitPolicy: {
+            enabled: opts.commitFromComment,
+            action: "start",
+            confirmed: opts.confirmStatusCommit,
+            quiet: opts.quiet,
+          },
+        };
+      },
+    });
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {
@@ -164,9 +139,9 @@ export async function cmdStart(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
-        primaryTag: primaryTagForCommit,
+        primaryTag: transition.primaryTag,
         author: opts.author,
-        statusFrom: currentStatusForCommit,
+        statusFrom: transition.execution.currentStatus,
         statusTo: "DOING",
         commentBody: opts.body,
         formattedComment: preparedComment.formattedComment,

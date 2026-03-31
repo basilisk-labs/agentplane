@@ -71,6 +71,7 @@ export {
   type ExecuteTaskVerificationTransitionRequest,
   type TaskVerificationTransitionExecution,
 } from "./shared/workflow-transition-service.js";
+export { applyTaskStatusTransitionCommand } from "./shared/transition-command.js";
 export {
   type TaskListFilters,
   parseTaskListFilters,

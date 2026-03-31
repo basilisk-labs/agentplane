@@ -4,19 +4,14 @@ import { CliError } from "../../shared/errors.js";
 
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { applyTaskMutation } from "../shared/task-mutation.js";
 
 import {
+  applyTaskStatusTransitionCommand,
   defaultCommitEmojiForStatus,
-  emitTransitionWarnings,
-  executeTaskStatusTransitionRequest,
   nowIso,
   prepareTaskTransitionComment,
-  readDeferredTaskTransitionWarnings,
   requireStructuredComment,
-  resolvePrimaryTag,
   runTaskTransitionCommentCommit,
-  toStringArray,
 } from "./shared.js";
 
 export async function cmdBlock(opts: {
@@ -61,50 +56,27 @@ export async function cmdBlock(opts: {
     const commentBody = preparedComment.commentBody ?? opts.body;
 
     const at = nowIso();
-    let currentStatusForCommit = "TODO";
-    let primaryTagForCommit = "meta";
-    let deferredWarnings: string[] = [];
-    try {
-      await applyTaskMutation({
-        ctx,
-        taskId: opts.taskId,
-        build: async (current) => {
-          const execution = await executeTaskStatusTransitionRequest({
-            task: current,
-            backend: ctx.taskBackend,
-            config: ctx.config,
-            at,
-            toStatus: "BLOCKED",
-            eventAuthor: opts.author,
-            updatedBy: opts.author,
-            note: commentBody,
-            comment: { author: opts.author, body: commentBody },
-            force: opts.force,
-            dependencyPolicy: { kind: "none" },
-            commentCommitPolicy: {
-              enabled: opts.commitFromComment,
-              action: "block",
-              confirmed: opts.confirmStatusCommit,
-              quiet: opts.quiet,
-            },
-          });
-          currentStatusForCommit = execution.currentStatus;
-          primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
-          deferredWarnings = execution.deferredWarnings;
-          return { intents: execution.intents };
+    const transition = await applyTaskStatusTransitionCommand({
+      ctx,
+      taskId: opts.taskId,
+      quiet: opts.quiet,
+      build: () => ({
+        at,
+        toStatus: "BLOCKED",
+        eventAuthor: opts.author,
+        updatedBy: opts.author,
+        note: commentBody,
+        comment: { author: opts.author, body: commentBody },
+        force: opts.force,
+        dependencyPolicy: { kind: "none" },
+        commentCommitPolicy: {
+          enabled: opts.commitFromComment,
+          action: "block",
+          confirmed: opts.confirmStatusCommit,
+          quiet: opts.quiet,
         },
-      });
-    } catch (err) {
-      emitTransitionWarnings(
-        readDeferredTaskTransitionWarnings(err).length > 0
-          ? readDeferredTaskTransitionWarnings(err)
-          : deferredWarnings,
-        opts.quiet,
-      );
-      throw err;
-    }
-
-    emitTransitionWarnings(deferredWarnings, opts.quiet);
+      }),
+    });
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {
@@ -113,9 +85,9 @@ export async function cmdBlock(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
-        primaryTag: primaryTagForCommit,
+        primaryTag: transition.primaryTag,
         author: opts.author,
-        statusFrom: currentStatusForCommit,
+        statusFrom: transition.execution.currentStatus,
         statusTo: "BLOCKED",
         commentBody: opts.body,
         formattedComment: preparedComment.formattedComment,

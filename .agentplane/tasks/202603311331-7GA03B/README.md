@@ -1,10 +1,10 @@
 ---
 id: "202603311331-7GA03B"
 title: "N3.5 Delete obsolete transition branches and rerun lifecycle contract suites unchanged"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -17,21 +17,37 @@ tags:
   - "workflow"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T16:45:59.527Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T16:51:45.576Z"
+  updated_by: "CODER"
+  note: "Shared transition command helper now owns applyTaskMutation/executor/warning plumbing for start, block, and task set-status. Focused eslint, build, task unit suites, lifecycle CLI contracts, and block-finish contracts passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: remove remaining duplicated lifecycle transition plumbing now that the shared executor owns status/comment commit flows."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T16:46:44.414Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: remove remaining duplicated lifecycle transition plumbing now that the shared executor owns status/comment commit flows."
+  -
+    type: "verify"
+    at: "2026-03-31T16:51:45.576Z"
+    author: "CODER"
+    state: "ok"
+    note: "Shared transition command helper now owns applyTaskMutation/executor/warning plumbing for start, block, and task set-status. Focused eslint, build, task unit suites, lifecycle CLI contracts, and block-finish contracts passed."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:31:28.553Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T16:51:45.578Z"
+doc_updated_by: "CODER"
 description: "Implement N3.5 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: old duplicated transition logic is removed and the safety net still passes. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -51,6 +67,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: old duplicated transition logic is removed and the safety net still passes.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T16:51:45.576Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Shared transition command helper now owns applyTaskMutation/executor/warning plumbing for start, block, and task set-status. Focused eslint, build, task unit suites, lifecycle CLI contracts, and block-finish contracts passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T16:46:44.428Z, excerpt_hash=sha256:729fc45c028cbd774f4c4f2718f536daea9ad940c4c5b3a938c08c3dc4d27756
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -84,6 +108,14 @@ Implement N3.5 from REFACTOR.md. Collapse the repeated orchestration around task
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T16:51:45.576Z — VERIFY — ok
+
+By: CODER
+
+Note: Shared transition command helper now owns applyTaskMutation/executor/warning plumbing for start, block, and task set-status. Focused eslint, build, task unit suites, lifecycle CLI contracts, and block-finish contracts passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T16:46:44.428Z, excerpt_hash=sha256:729fc45c028cbd774f4c4f2718f536daea9ad940c4c5b3a938c08c3dc4d27756
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
