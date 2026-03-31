@@ -65,6 +65,34 @@ const CYRILLIC_RE = /[\u0400-\u04FF]/u;
 const RUSSIAN_TRACE_LINE = "Привет из raw trace";
 const RUSSIAN_LAST_MESSAGE = "Привет из сообщения Codex";
 
+function splitLines(text: string): string[] {
+  return text
+    .trim()
+    .split(/\r?\n/)
+    .map((line) => line.trimEnd())
+    .filter(Boolean);
+}
+
+function parseJsonEnvelope(stdout: string): {
+  mode?: string;
+  command?: string;
+  ok?: boolean;
+  exit_code?: number;
+  stdout?: string;
+  stderr?: string;
+  data?: unknown;
+} {
+  return JSON.parse(stdout) as {
+    mode?: string;
+    command?: string;
+    ok?: boolean;
+    exit_code?: number;
+    stdout?: string;
+    stderr?: string;
+    data?: unknown;
+  };
+}
+
 async function waitForRunnerState(opts: {
   root: string;
   taskId: string;
@@ -2292,8 +2320,11 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "next", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain(taskA);
-      expect(io.stdout).not.toContain(taskB);
+      const lines = splitLines(io.stdout);
+      expect(lines).toHaveLength(2);
+      expect(lines[0]).toContain(taskA);
+      expect(lines[0]).not.toContain(taskB);
+      expect(lines[1]).toBe("Ready: 1 / 2");
     } finally {
       io.restore();
     }
@@ -2355,14 +2386,15 @@ describe("runCli", () => {
 
   it("task next supports limit and quiet flags", async () => {
     const root = await mkGitRepoRoot();
-    {
+    const taskIds: string[] = [];
+    for (const title of ["Ready task one", "Ready task two"]) {
       const io = captureStdIO();
       try {
         const code = await runCli([
           "task",
           "new",
           "--title",
-          "Ready task",
+          title,
           "--description",
           "Limit test",
           "--owner",
@@ -2373,6 +2405,7 @@ describe("runCli", () => {
           root,
         ]);
         expect(code).toBe(0);
+        taskIds.push(io.stdout.trim());
       } finally {
         io.restore();
       }
@@ -2382,6 +2415,12 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "next", "--limit", "1", "--quiet", "--root", root]);
       expect(code).toBe(0);
+      const lines = splitLines(io.stdout);
+      expect(lines).toHaveLength(1);
+      expect(lines[0]).toEqual(expect.stringContaining("[TODO]"));
+      const matchedIds = taskIds.filter((id) => lines[0]?.includes(id));
+      expect(matchedIds).toHaveLength(1);
+      expect(io.stdout).not.toContain("Ready:");
     } finally {
       io.restore();
     }
@@ -2389,6 +2428,7 @@ describe("runCli", () => {
 
   it("task next applies status, owner, and tag filters", async () => {
     const root = await mkGitRepoRoot();
+    let taskId = "";
     {
       const io = captureStdIO();
       try {
@@ -2407,6 +2447,7 @@ describe("runCli", () => {
           root,
         ]);
         expect(code).toBe(0);
+        taskId = io.stdout.trim();
       } finally {
         io.restore();
       }
@@ -2418,15 +2459,17 @@ describe("runCli", () => {
         "task",
         "next",
         "--status",
-        "TODO",
+        "todo",
         "--owner",
-        "CODER",
+        "coder",
         "--tag",
         "docs",
         "--root",
         root,
       ]);
       expect(code).toBe(0);
+      expect(io.stdout).toContain(taskId);
+      expect(io.stdout).toContain("Ready: 1 / 1");
     } finally {
       io.restore();
     }
@@ -2484,9 +2527,12 @@ describe("runCli", () => {
     }
     const io = captureStdIO();
     try {
-      const code = await runCli(["task", "search", "Searchable", "--root", root]);
+      const code = await runCli(["task", "search", "searchable", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain(taskId);
+      const lines = splitLines(io.stdout);
+      expect(lines).toHaveLength(1);
+      expect(lines[0]).toContain(taskId);
+      expect(lines[0]).toContain("Searchable task");
     } finally {
       io.restore();
     }
@@ -2586,6 +2632,9 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
+      const lines = splitLines(io.stdout);
+      expect(lines).toHaveLength(1);
+      expect(lines[0]).toContain("Regex task");
     } finally {
       io.restore();
     }
@@ -2593,6 +2642,7 @@ describe("runCli", () => {
 
   it("task search applies status, owner, and tag filters", async () => {
     const root = await mkGitRepoRoot();
+    let taskId = "";
     {
       const io = captureStdIO();
       try {
@@ -2611,6 +2661,7 @@ describe("runCli", () => {
           root,
         ]);
         expect(code).toBe(0);
+        taskId = io.stdout.trim();
       } finally {
         io.restore();
       }
@@ -2623,15 +2674,17 @@ describe("runCli", () => {
         "search",
         "Filtered",
         "--status",
-        "TODO",
+        "todo",
         "--owner",
-        "CODER",
+        "coder",
         "--tag",
         "docs",
         "--root",
         root,
       ]);
       expect(code).toBe(0);
+      expect(io.stdout).toContain(taskId);
+      expect(io.stdout).toContain("Filtered search");
     } finally {
       io.restore();
     }
@@ -2974,37 +3027,44 @@ describe("runCli", () => {
 
   it("task list prints tasks", async () => {
     const root = await mkGitRepoRoot();
-
-    const io1 = captureStdIO();
-    let id = "";
-    try {
-      const code1 = await runCli([
-        "task",
-        "new",
-        "--title",
-        "My task",
-        "--description",
-        "Why it matters",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code1).toBe(0);
-      id = io1.stdout.trim();
-    } finally {
-      io1.restore();
+    const ids: string[] = [];
+    for (const title of ["Alpha task", "Beta task"]) {
+      const io1 = captureStdIO();
+      try {
+        const code1 = await runCli([
+          "task",
+          "new",
+          "--title",
+          title,
+          "--description",
+          "Why it matters",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code1).toBe(0);
+        ids.push(io1.stdout.trim());
+      } finally {
+        io1.restore();
+      }
     }
 
     const io2 = captureStdIO();
     try {
       const code2 = await runCli(["task", "list", "--root", root]);
       expect(code2).toBe(0);
-      expect(io2.stdout).toContain(id);
-      expect(io2.stdout).toContain("[TODO]");
-      expect(io2.stdout).toContain("My task");
+      const lines = splitLines(io2.stdout);
+      expect(lines).toHaveLength(3);
+      expect(lines[0] ?? "").toContain("[TODO]");
+      expect(lines[1] ?? "").toContain("[TODO]");
+      expect(lines[2]).toBe("Total: 2 (TODO=2)");
+      expect(io2.stdout).toContain(ids[0] ?? "");
+      expect(io2.stdout).toContain(ids[1] ?? "");
+      expect(io2.stdout).toContain("Alpha task");
+      expect(io2.stdout).toContain("Beta task");
     } finally {
       io2.restore();
     }
@@ -3079,6 +3139,7 @@ describe("runCli", () => {
 
   it("task list supports filters and quiet mode", async () => {
     const root = await mkGitRepoRoot();
+    let taskId = "";
     {
       const io = captureStdIO();
       try {
@@ -3097,6 +3158,7 @@ describe("runCli", () => {
           root,
         ]);
         expect(code).toBe(0);
+        taskId = io.stdout.trim();
       } finally {
         io.restore();
       }
@@ -3108,9 +3170,9 @@ describe("runCli", () => {
         "task",
         "list",
         "--status",
-        "TODO",
+        "todo",
         "--owner",
-        "CODER",
+        "coder",
         "--tag",
         "docs",
         "--quiet",
@@ -3118,8 +3180,101 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
+      const lines = splitLines(io.stdout);
+      expect(lines).toHaveLength(1);
+      expect(lines[0]).toContain(taskId);
+      expect(lines[0]).toContain("Filter task");
+      expect(io.stdout).not.toContain("Total:");
     } finally {
       io.restore();
+    }
+  });
+
+  it("task list, search, and next wrap text output in agent_json_v1 envelopes when --output json is set", async () => {
+    const root = await mkGitRepoRoot();
+    const taskIds: string[] = [];
+    for (const title of ["Json list one", "Json list two"]) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          title,
+          "--description",
+          "Json output contract",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskIds.push(io.stdout.trim());
+      } finally {
+        io.restore();
+      }
+    }
+
+    const listIo = captureStdIO();
+    try {
+      const code = await runCli(["--output", "json", "task", "list", "--root", root]);
+      expect(code).toBe(0);
+      const payload = parseJsonEnvelope(listIo.stdout);
+      expect(payload.mode).toBe("agent_json_v1");
+      expect(payload.command).toBe("task list");
+      expect(payload.ok).toBe(true);
+      expect(payload.exit_code).toBe(0);
+      expect(payload.stdout).toContain("Total: 2 (TODO=2)");
+      expect(payload.stdout).toContain(taskIds[0] ?? "");
+      expect(payload.stdout).toContain(taskIds[1] ?? "");
+      expect(payload.stderr).toBe("");
+      expect(payload.data).toBeUndefined();
+    } finally {
+      listIo.restore();
+    }
+
+    const searchIo = captureStdIO();
+    try {
+      const code = await runCli(["--output", "json", "task", "search", "json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = parseJsonEnvelope(searchIo.stdout);
+      expect(payload.mode).toBe("agent_json_v1");
+      expect(payload.command).toBe("task search");
+      expect(payload.ok).toBe(true);
+      expect(payload.exit_code).toBe(0);
+      expect(payload.stdout).toContain("Json list one");
+      expect(payload.stdout).toContain("Json list two");
+      expect(payload.stderr).toBe("");
+      expect(payload.data).toBeUndefined();
+    } finally {
+      searchIo.restore();
+    }
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "--output",
+        "json",
+        "task",
+        "next",
+        "--limit",
+        "1",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = parseJsonEnvelope(nextIo.stdout);
+      expect(payload.mode).toBe("agent_json_v1");
+      expect(payload.command).toBe("task next");
+      expect(payload.ok).toBe(true);
+      expect(payload.exit_code).toBe(0);
+      expect(payload.stdout).toContain("Ready: 1 / 2");
+      expect(payload.stderr).toBe("");
+      expect(payload.data).toBeUndefined();
+    } finally {
+      nextIo.restore();
     }
   });
 
