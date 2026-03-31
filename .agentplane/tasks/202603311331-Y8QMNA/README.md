@@ -1,10 +1,11 @@
 ---
 id: "202603311331-Y8QMNA"
 title: "N0.2 Add local-backend vs non-local-backend parity tests for task mutation commands"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-Y8QMNA/backend-mutation-parity-tests"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T14:26:17.880Z"
   updated_by: "CODER"
   note: "Added parity suite for task comment/block/start/set-status/verify/doc set across local-file and non-local backends; verified with bunx eslint packages/agentplane/src/commands/task/mutation-parity.unit.test.ts and bunx vitest run packages/agentplane/src/commands/task/mutation-parity.unit.test.ts."
-commit: null
+commit:
+  hash: "dd2973b54d1894c55c08de1e2c7ef791ecbf2628"
+  message: "📝 Y8QMNA task: add PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: lock parity contracts for representative task mutation commands across local-file and non-local backends before the bridge work in N2 deletes backend-specific branching."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-Y8QMNA/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added parity suite for task comment/block/start/set-status/verify/doc set across local-file and non-local backends; verified with bunx eslint packages/agentplane/src/commands/task/mutation-parity.unit.test.ts and bunx vitest run packages/agentplane/src/commands/task/mutation-parity.unit.test.ts."
+  -
+    type: "status"
+    at: "2026-03-31T14:29:44.830Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-Y8QMNA/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T14:26:17.884Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T14:29:44.832Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N0.2 from REFACTOR.md. Lock the behavior that the next refactor wave is most likely to disturb: output formatting, local-vs-remote task mutation parity, and task-doc mutation semantics.. Acceptance: the same high-level mutation contract is asserted against both storage paths. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-

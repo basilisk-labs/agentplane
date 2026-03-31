@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311331-Y8QMNA/backend-mutation-parity-tests",
   "created_at": "2026-03-31T14:28:17.185Z",
+  "head_sha": "b1c6391b3c885ebd246dba445a8f280fa270275d",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "dd2973b54d1894c55c08de1e2c7ef791ecbf2628",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T14:29:44.809Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311331-Y8QMNA",
-  "updated_at": "2026-03-31T14:28:36.892Z",
+  "updated_at": "2026-03-31T14:29:44.809Z",
   "verify": {
     "status": "skipped"
   }
