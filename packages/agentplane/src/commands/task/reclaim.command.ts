@@ -1,6 +1,7 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
-import { infoMessage } from "../../cli/output.js";
+import { createCliEmitter, infoMessage } from "../../cli/output.js";
+import type { CliReportEntry } from "../../cli/output.js";
 
 import { buildRecordedTaskHandoff, buildTaskResumeContext } from "./handoff.shared.js";
 import { resolveTaskHandoffPaths, writeTaskHandoff } from "../shared/task-handoff.js";
@@ -64,6 +65,8 @@ export const taskReclaimSpec: CommandSpec<TaskReclaimParsed> = {
   }),
 };
 
+const emitter = createCliEmitter();
+
 export const runTaskReclaim = async (ctx: CommandCtx, parsed: TaskReclaimParsed) => {
   const resume = await buildTaskResumeContext({
     cwd: ctx.cwd,
@@ -96,15 +99,19 @@ export const runTaskReclaim = async (ctx: CommandCtx, parsed: TaskReclaimParsed)
   });
   await writeTaskHandoff({ paths, handoff: built.handoff });
   if (parsed.json) {
-    process.stdout.write(`${JSON.stringify(built.handoff, null, 2)}\n`);
+    emitter.json(built.handoff);
     return 0;
   }
-  process.stdout.write(`${infoMessage(`task reclaimed: ${parsed.taskId}`)}\n`);
-  process.stdout.write(`author: ${parsed.author}\n`);
-  process.stdout.write(`runner_next_action: ${built.handoff.runner?.next_action ?? "none"}\n`);
+  const entries: CliReportEntry[] = [
+    { label: "author", value: parsed.author },
+    { label: "runner_next_action", value: built.handoff.runner?.next_action ?? "none" },
+  ];
   if (built.handoff.runner?.next_command) {
-    process.stdout.write(`runner_next_command: ${built.handoff.runner.next_command}\n`);
+    entries.push({ label: "runner_next_command", value: built.handoff.runner.next_command });
   }
-  process.stdout.write(`latest: ${paths.latest_path}\n`);
+  entries.push({ label: "latest", value: paths.latest_path });
+  emitter.report(entries, {
+    header: infoMessage(`task reclaimed: ${parsed.taskId}`),
+  });
   return 0;
 };

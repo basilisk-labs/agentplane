@@ -2,7 +2,8 @@ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { mapBackendError } from "../../cli/error-map.js";
-import { infoMessage } from "../../cli/output.js";
+import { createCliEmitter, infoMessage } from "../../cli/output.js";
+import type { CliReportEntry } from "../../cli/output.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { resumeTaskRunnerExecution } from "../../runner/usecases/task-run-lifecycle.js";
@@ -11,6 +12,8 @@ import type { TaskRunResumeParsed } from "./run-resume.spec.js";
 
 export { taskRunResumeSpec } from "./run-resume.spec.js";
 export type { TaskRunResumeParsed } from "./run-resume.spec.js";
+
+const emitter = createCliEmitter();
 
 export const runTaskRunResume: CommandHandler<TaskRunResumeParsed> = async (
   ctx: CommandCtx,
@@ -28,19 +31,25 @@ export const runTaskRunResume: CommandHandler<TaskRunResumeParsed> = async (
       task_id: parsed.taskId,
       run_id: parsed.runId,
     });
-    process.stdout.write(`${infoMessage(`task run resumed: ${parsed.taskId}`)}\n`);
-    process.stdout.write(`run_id: ${parsed.runId}\n`);
-    process.stdout.write(`previous_status: ${resumed.previous_status}\n`);
-    process.stdout.write(`adapter: ${resumed.invocation.adapter_id}\n`);
-    process.stdout.write(`state: ${resumed.invocation.state_path}\n`);
-    process.stdout.write(`events: ${resumed.invocation.events_path}\n`);
-    process.stdout.write(`status: ${resumed.result.status}\n`);
-    process.stdout.write(`runner_exit_code: ${resumed.result.exit_code ?? "null"}\n`);
+    const entries: CliReportEntry[] = [
+      { label: "run_id", value: parsed.runId },
+      { label: "previous_status", value: resumed.previous_status },
+      { label: "adapter", value: resumed.invocation.adapter_id },
+      { label: "state", value: resumed.invocation.state_path },
+      { label: "events", value: resumed.invocation.events_path },
+      { label: "status", value: resumed.result.status },
+      { label: "runner_exit_code", value: resumed.result.exit_code ?? "null" },
+    ];
     if (resumed.result.stdout_summary) {
-      process.stdout.write(`stdout: ${resumed.result.stdout_summary}\n`);
+      entries.push({ label: "stdout", value: resumed.result.stdout_summary });
     }
+    emitter.report(entries, {
+      header: infoMessage(`task run resumed: ${parsed.taskId}`),
+    });
     if (resumed.result.stderr_summary) {
-      process.stderr.write(`stderr: ${resumed.result.stderr_summary}\n`);
+      emitter.report([{ label: "stderr", value: resumed.result.stderr_summary }], {
+        stream: "stderr",
+      });
     }
     return resumed.result.status === "success"
       ? 0

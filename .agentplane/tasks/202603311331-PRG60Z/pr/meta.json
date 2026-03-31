@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603311331-PRG60Z/migrate-task-run-handoff-emitters",
+  "created_at": "2026-03-31T14:37:17.039Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603311331-PRG60Z",
+  "updated_at": "2026-03-31T14:37:22.389Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

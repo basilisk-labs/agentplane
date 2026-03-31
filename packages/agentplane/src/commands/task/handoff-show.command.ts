@@ -1,5 +1,6 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
-import { infoMessage } from "../../cli/output.js";
+import { createCliEmitter, infoMessage } from "../../cli/output.js";
+import type { CliReportEntry } from "../../cli/output.js";
 
 import { loadCommandContext } from "../shared/task-backend.js";
 import { readTaskHandoffLatestRequired, resolveTaskHandoffPaths } from "../shared/task-handoff.js";
@@ -28,6 +29,8 @@ export const taskHandoffShowSpec: CommandSpec<TaskHandoffShowParsed> = {
   }),
 };
 
+const emitter = createCliEmitter();
+
 export const runTaskHandoffShow = async (ctx: CommandCtx, parsed: TaskHandoffShowParsed) => {
   const commandCtx = await loadCommandContext({
     cwd: ctx.cwd,
@@ -43,37 +46,43 @@ export const runTaskHandoffShow = async (ctx: CommandCtx, parsed: TaskHandoffSho
     paths,
   });
   if (parsed.json) {
-    process.stdout.write(`${JSON.stringify(handoff, null, 2)}\n`);
+    emitter.json(handoff);
     return 0;
   }
-  process.stdout.write(`${infoMessage(`task handoff show: ${parsed.taskId}`)}\n`);
-  process.stdout.write(`from: ${handoff.from_role}\n`);
-  process.stdout.write(`to: ${handoff.to_role ?? "unassigned"}\n`);
-  process.stdout.write(`created_at: ${handoff.created_at}\n`);
-  process.stdout.write(`reason: ${handoff.reason}\n`);
-  if (handoff.branch) process.stdout.write(`branch: ${handoff.branch}\n`);
-  if (handoff.base_branch) process.stdout.write(`base_branch: ${handoff.base_branch}\n`);
-  if (handoff.head_sha) process.stdout.write(`head_sha: ${handoff.head_sha}\n`);
-  if (handoff.pr_branch) process.stdout.write(`pr_branch: ${handoff.pr_branch}\n`);
+  const entries: CliReportEntry[] = [
+    { label: "from", value: handoff.from_role },
+    { label: "to", value: handoff.to_role ?? "unassigned" },
+    { label: "created_at", value: handoff.created_at },
+    { label: "reason", value: handoff.reason },
+  ];
+  if (handoff.branch) entries.push({ label: "branch", value: handoff.branch });
+  if (handoff.base_branch) entries.push({ label: "base_branch", value: handoff.base_branch });
+  if (handoff.head_sha) entries.push({ label: "head_sha", value: handoff.head_sha });
+  if (handoff.pr_branch) entries.push({ label: "pr_branch", value: handoff.pr_branch });
   if (handoff.runner?.run_id) {
-    process.stdout.write(`run_id: ${handoff.runner.run_id}\n`);
-    process.stdout.write(`runner_status: ${handoff.runner.status ?? "unknown"}\n`);
-    process.stdout.write(`runner_next_action: ${handoff.runner.next_action ?? "none"}\n`);
+    entries.push(
+      { label: "run_id", value: handoff.runner.run_id },
+      { label: "runner_status", value: handoff.runner.status ?? "unknown" },
+      { label: "runner_next_action", value: handoff.runner.next_action ?? "none" },
+    );
     if (handoff.runner.next_command) {
-      process.stdout.write(`runner_next_command: ${handoff.runner.next_command}\n`);
+      entries.push({ label: "runner_next_command", value: handoff.runner.next_command });
     }
   }
   for (const action of handoff.next_actions ?? []) {
-    process.stdout.write(`next_action: ${action}\n`);
+    entries.push({ label: "next_action", value: action });
   }
   for (const risk of handoff.risks ?? []) {
-    process.stdout.write(`risk: ${risk}\n`);
+    entries.push({ label: "risk", value: risk });
   }
   for (const question of handoff.open_questions ?? []) {
-    process.stdout.write(`open_question: ${question}\n`);
+    entries.push({ label: "open_question", value: question });
   }
   for (const evidence of handoff.evidence_paths ?? []) {
-    process.stdout.write(`evidence_path: ${evidence}\n`);
+    entries.push({ label: "evidence_path", value: evidence });
   }
+  emitter.report(entries, {
+    header: infoMessage(`task handoff show: ${parsed.taskId}`),
+  });
   return 0;
 };

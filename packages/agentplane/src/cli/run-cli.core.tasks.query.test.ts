@@ -310,6 +310,79 @@ function renderExpectedRunShowText(taskId: string, payload: RunShowPayload): str
   return `${lines.join("\n")}\n`;
 }
 
+function renderExpectedRunCancelText(opts: {
+  taskId: string;
+  runId: string;
+  previousStatus: string;
+  statePath: string;
+  eventsPath: string;
+  status: string;
+  note?: string;
+}): string {
+  const lines = [
+    infoMessage(`task run cancelled: ${opts.taskId}`),
+    `run_id: ${opts.runId}`,
+    `previous_status: ${opts.previousStatus}`,
+    `state: ${opts.statePath}`,
+    `events: ${opts.eventsPath}`,
+    `status: ${opts.status}`,
+  ];
+  if (opts.note) lines.push(`note: ${opts.note}`);
+  return `${lines.join("\n")}\n`;
+}
+
+function renderExpectedRunResumeText(opts: {
+  taskId: string;
+  runId: string;
+  previousStatus: string;
+  adapter: string;
+  statePath: string;
+  eventsPath: string;
+  status: string;
+  runnerExitCode: number | "null";
+  stdoutSummary?: string;
+}): string {
+  const lines = [
+    infoMessage(`task run resumed: ${opts.taskId}`),
+    `run_id: ${opts.runId}`,
+    `previous_status: ${opts.previousStatus}`,
+    `adapter: ${opts.adapter}`,
+    `state: ${opts.statePath}`,
+    `events: ${opts.eventsPath}`,
+    `status: ${opts.status}`,
+    `runner_exit_code: ${opts.runnerExitCode}`,
+  ];
+  if (opts.stdoutSummary) lines.push(`stdout: ${opts.stdoutSummary}`);
+  return `${lines.join("\n")}\n`;
+}
+
+function renderExpectedRunRetryText(opts: {
+  taskId: string;
+  sourceRunId: string;
+  previousStatus: string;
+  runId: string;
+  adapter: string;
+  statePath: string;
+  eventsPath: string;
+  status: string;
+  runnerExitCode: number | "null";
+  stdoutSummary?: string;
+}): string {
+  const lines = [
+    infoMessage(`task run retried: ${opts.taskId}`),
+    `source_run_id: ${opts.sourceRunId}`,
+    `previous_status: ${opts.previousStatus}`,
+    `run_id: ${opts.runId}`,
+    `adapter: ${opts.adapter}`,
+    `state: ${opts.statePath}`,
+    `events: ${opts.eventsPath}`,
+    `status: ${opts.status}`,
+    `runner_exit_code: ${opts.runnerExitCode}`,
+  ];
+  if (opts.stdoutSummary) lines.push(`stdout: ${opts.stdoutSummary}`);
+  return `${lines.join("\n")}\n`;
+}
+
 async function waitForRunnerState(opts: {
   root: string;
   taskId: string;
@@ -1879,9 +1952,16 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain(`task run cancelled: ${taskId}`);
-      expect(io.stdout).toContain("previous_status: prepared");
-      expect(io.stdout).toContain("status: cancelled");
+      expect(io.stdout).toBe(
+        renderExpectedRunCancelText({
+          taskId,
+          runId: prepared.invocation.run_id,
+          previousStatus: "prepared",
+          statePath: prepared.invocation.state_path,
+          eventsPath: prepared.invocation.events_path,
+          status: "cancelled",
+        }),
+      );
 
       const state = JSON.parse(await readFile(prepared.invocation.state_path, "utf8")) as {
         status: string;
@@ -2085,10 +2165,19 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain(`task run resumed: ${taskId}`);
-      expect(io.stdout).toContain("previous_status: prepared");
-      expect(io.stdout).toContain("status: success");
-      expect(io.stdout).toContain("stdout: Raw execution trace was captured in agent-trace.jsonl.");
+      expect(io.stdout).toBe(
+        renderExpectedRunResumeText({
+          taskId,
+          runId: prepared.invocation.run_id,
+          previousStatus: "prepared",
+          adapter: prepared.invocation.adapter_id,
+          statePath: prepared.invocation.state_path,
+          eventsPath: prepared.invocation.events_path,
+          status: "success",
+          runnerExitCode: 0,
+          stdoutSummary: "Raw execution trace was captured in agent-trace.jsonl.",
+        }),
+      );
 
       const state = JSON.parse(await readFile(prepared.invocation.state_path, "utf8")) as {
         status: string;
@@ -2209,11 +2298,6 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain(`task run retried: ${taskId}`);
-      expect(io.stdout).toContain("source_run_id: run-retry-source-cli");
-      expect(io.stdout).toContain("previous_status: failed");
-      expect(io.stdout).toContain("status: success");
-      expect(io.stdout).toContain("stdout: Raw execution trace was captured in agent-trace.jsonl.");
 
       const newRunId = /^run_id: (.+)$/m.exec(io.stdout)?.[1] ?? "";
       expect(newRunId).toBeTruthy();
@@ -2226,6 +2310,29 @@ describe("runCli", () => {
         "runs",
         newRunId,
         "run-state.json",
+      );
+      const newEventsPath = path.join(
+        root,
+        ".agentplane",
+        "tasks",
+        taskId,
+        "runs",
+        newRunId,
+        "events.jsonl",
+      );
+      expect(io.stdout).toBe(
+        renderExpectedRunRetryText({
+          taskId,
+          sourceRunId: prepared.invocation.run_id,
+          previousStatus: "failed",
+          runId: newRunId,
+          adapter: "custom",
+          statePath: newStatePath,
+          eventsPath: newEventsPath,
+          status: "success",
+          runnerExitCode: 0,
+          stdoutSummary: "Raw execution trace was captured in agent-trace.jsonl.",
+        }),
       );
       const state = JSON.parse(await readFile(newStatePath, "utf8")) as {
         status: string;

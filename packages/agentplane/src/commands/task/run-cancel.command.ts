@@ -1,7 +1,8 @@
 import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 
 import { mapBackendError } from "../../cli/error-map.js";
-import { infoMessage } from "../../cli/output.js";
+import { createCliEmitter, infoMessage } from "../../cli/output.js";
+import type { CliReportEntry } from "../../cli/output.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { cancelTaskRunnerExecution } from "../../runner/usecases/task-run-lifecycle.js";
@@ -10,6 +11,8 @@ import type { TaskRunCancelParsed } from "./run-cancel.spec.js";
 
 export { taskRunCancelSpec } from "./run-cancel.spec.js";
 export type { TaskRunCancelParsed } from "./run-cancel.spec.js";
+
+const emitter = createCliEmitter();
 
 export const runTaskRunCancel: CommandHandler<TaskRunCancelParsed> = async (
   ctx: CommandCtx,
@@ -27,15 +30,19 @@ export const runTaskRunCancel: CommandHandler<TaskRunCancelParsed> = async (
       task_id: parsed.taskId,
       run_id: parsed.runId,
     });
-    process.stdout.write(`${infoMessage(`task run cancelled: ${parsed.taskId}`)}\n`);
-    process.stdout.write(`run_id: ${parsed.runId}\n`);
-    process.stdout.write(`previous_status: ${cancelled.previous_status}\n`);
-    process.stdout.write(`state: ${cancelled.invocation.state_path}\n`);
-    process.stdout.write(`events: ${cancelled.invocation.events_path}\n`);
-    process.stdout.write(`status: ${cancelled.state.status}\n`);
+    const entries: CliReportEntry[] = [
+      { label: "run_id", value: parsed.runId },
+      { label: "previous_status", value: cancelled.previous_status },
+      { label: "state", value: cancelled.invocation.state_path },
+      { label: "events", value: cancelled.invocation.events_path },
+      { label: "status", value: cancelled.state.status },
+    ];
     if (!cancelled.changed) {
-      process.stdout.write("note: run was already cancelled\n");
+      entries.push({ label: "note", value: "run was already cancelled" });
     }
+    emitter.report(entries, {
+      header: infoMessage(`task run cancelled: ${parsed.taskId}`),
+    });
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
