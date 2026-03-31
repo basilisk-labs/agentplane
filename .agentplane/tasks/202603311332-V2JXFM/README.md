@@ -1,10 +1,11 @@
 ---
 id: "202603311332-V2JXFM"
 title: "N4.3 Unify doc concurrency and conflict semantics"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-V2JXFM/unify-doc-conflict-semantics"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-03-31T17:58:13.492Z"
   updated_by: "CODER"
   note: "Unified local backend and task-store doc conflict semantics around shared full-doc/section guards; verified with eslint, focused vitest, and agentplane build."
-commit: null
+commit:
+  hash: "6b9b0a19fd986a8d42e764cd0fae2b07821a6fc4"
+  message: "📝 V2JXFM task: add PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: unify full-doc and section conflict semantics across local backend and task-store doc writes, keep error mapping stable where already user-facing, and delete divergent checks instead of adding another layer."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-V2JXFM/pr."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Unified local backend and task-store doc conflict semantics around shared full-doc/section guards; verified with eslint, focused vitest, and agentplane build."
+  -
+    type: "status"
+    at: "2026-03-31T18:00:57.291Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-V2JXFM/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T17:58:13.496Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T18:00:57.296Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N4.3 from REFACTOR.md. Remove the current duplication between core task-doc primitives, the local task store, and backend doc mutation paths.. Acceptance: section conflicts and full-doc conflicts behave the same way across supported storage paths. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
