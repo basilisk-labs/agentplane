@@ -1,0 +1,6 @@
+ .agentplane/tasks/202603301857-3KGV43/README.md    | 80 ++++++++++++++++++----
+ .../src/usecases/context/resolve-context.ts        |  8 ++-
+ .../usecases/context/resolve-context.unit.test.ts  | 49 +++++++++++++
+ .../src/usecases/task/task-list-usecase.ts         | 10 +--
+ .../usecases/task/task-list-usecase.unit.test.ts   | 48 +++++++++++++
+ 5 files changed, 173 insertions(+), 22 deletions(-)

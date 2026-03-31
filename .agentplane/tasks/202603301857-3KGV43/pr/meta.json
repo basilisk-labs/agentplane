@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603301857-3KGV43/readonly-usecase-context",
+  "created_at": "2026-03-31T10:25:03.280Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603301857-3KGV43",
+  "updated_at": "2026-03-31T10:25:03.824Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

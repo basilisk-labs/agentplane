@@ -10,6 +10,8 @@ export type UsecaseContext = {
   policy: PolicyEngine;
 };
 
+export type ReadOnlyUsecaseContext = Pick<UsecaseContext, "command">;
+
 export async function resolveContext(opts: {
   cwd: string;
   rootOverride?: string | null;
@@ -24,9 +26,13 @@ export async function resolveContext(opts: {
   });
 }
 
+export function makeReadOnlyUsecaseContext(command: CommandContext): ReadOnlyUsecaseContext {
+  return { command };
+}
+
 export function makeUsecaseContext(command: CommandContext): UsecaseContext {
   return {
-    command,
+    ...makeReadOnlyUsecaseContext(command),
     adapters: buildAdapters(command),
     policy: new PolicyEngine(),
   };
