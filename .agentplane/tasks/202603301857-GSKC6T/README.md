@@ -1,10 +1,11 @@
 ---
 id: "202603301857-GSKC6T"
 title: "Re-lock JSON compatibility and document any intentional invariants"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-GSKC6T/relock-json-contract"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T12:57:55.331Z"
   updated_by: "CODER"
   note: "Command: bunx eslint packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 0 lint errors after exact envelope-shape assertions were added; Scope: JSON contract tests. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 84 tests passed, including exact key-order and optional-data assertions for agent_json_v1 across help, config show, and task list/search/next; Scope: CLI JSON compatibility surface. Command: inspect docs/developer/cli-contract.mdx diff; Result: pass; Evidence: docs now describe agent_json_v1 success-envelope keys, optional data, and the --output json failure-path invariant; Scope: developer-facing contract documentation."
-commit: null
+commit:
+  hash: "306fd05935b7a2f1079bc13f395841779db6de40"
+  message: "🧩 GSKC6T integrate: squash task/202603301857-GSKC6T/relock-json-contract"
 comments:
   -
     author: "CODER"
     body: "Start: re-lock the stable agent_json_v1 success envelope in tests and developer docs without widening the JSON surface beyond the current contract."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-GSKC6T/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx eslint packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 0 lint errors after exact envelope-shape assertions were added; Scope: JSON contract tests. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 84 tests passed, including exact key-order and optional-data assertions for agent_json_v1 across help, config show, and task list/search/next; Scope: CLI JSON compatibility surface. Command: inspect docs/developer/cli-contract.mdx diff; Result: pass; Evidence: docs now describe agent_json_v1 success-envelope keys, optional data, and the --output json failure-path invariant; Scope: developer-facing contract documentation."
+  -
+    type: "status"
+    at: "2026-03-31T12:59:22.368Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-GSKC6T/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T12:57:55.333Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T12:59:22.371Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 6 / R6.3 from REFACTOR.md. `agent_json_v1` compatibility is explicitly tested and documented as a stable contract."
 sections:
   Summary: |-

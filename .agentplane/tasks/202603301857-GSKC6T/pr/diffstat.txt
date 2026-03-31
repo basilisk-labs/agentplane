@@ -1,5 +1,9 @@
  .agentplane/tasks/202603301857-GSKC6T/README.md    | 58 ++++++++++++----
+ .../tasks/202603301857-GSKC6T/pr/diffstat.txt      |  5 ++
+ .agentplane/tasks/202603301857-GSKC6T/pr/meta.json | 12 ++++
+ .agentplane/tasks/202603301857-GSKC6T/pr/review.md | 33 +++++++++
+ .../tasks/202603301857-GSKC6T/pr/verify.log        |  0
  docs/developer/cli-contract.mdx                    | 46 ++++++++++---
  .../src/cli/run-cli.core.tasks.query.test.ts       | 42 ++++++++----
  packages/agentplane/src/cli/run-cli.core.test.ts   | 79 ++++++++++++++++------
- 4 files changed, 167 insertions(+), 58 deletions(-)
+ 8 files changed, 217 insertions(+), 58 deletions(-)
