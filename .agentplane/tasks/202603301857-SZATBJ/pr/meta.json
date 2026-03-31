@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603301857-SZATBJ/audit-cli-wrappers",
+  "created_at": "2026-03-31T12:07:18.939Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603301857-SZATBJ",
+  "updated_at": "2026-03-31T12:07:19.567Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
