@@ -1,7 +1,11 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  type CommandContext,
+  writeTasksOrFallback,
+} from "../shared/task-backend.js";
 import { dedupeStrings, normalizeTaskStatus, nowIso } from "./shared.js";
 import { defaultTaskDocV3, TASK_DOC_VERSION_V3 } from "./doc-template.js";
 
@@ -64,13 +68,7 @@ export async function cmdTaskAdd(opts: {
       id_source: "explicit",
       doc: defaultTaskDocV3({ title: opts.title, description: opts.description }),
     }));
-    if (ctx.taskBackend.writeTasks) {
-      await ctx.taskBackend.writeTasks(tasks);
-    } else {
-      for (const task of tasks) {
-        await ctx.taskBackend.writeTask(task);
-      }
-    }
+    await writeTasksOrFallback(ctx.taskBackend, tasks);
     for (const task of tasks) {
       process.stdout.write(`${task.id}\n`);
     }

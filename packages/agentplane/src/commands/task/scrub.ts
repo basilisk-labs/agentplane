@@ -1,7 +1,11 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { infoMessage, successMessage } from "../../cli/output.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  type CommandContext,
+  writeTasksOrFallback,
+} from "../shared/task-backend.js";
 
 function scrubValue(value: unknown, find: string, replace: string): unknown {
   if (typeof value === "string") return value.replaceAll(find, replace);
@@ -56,13 +60,7 @@ export async function cmdTaskScrub(opts: {
       }
       return 0;
     }
-    if (ctx.taskBackend.writeTasks) {
-      await ctx.taskBackend.writeTasks(updated);
-    } else {
-      for (const task of updated) {
-        await ctx.taskBackend.writeTask(task);
-      }
-    }
+    await writeTasksOrFallback(ctx.taskBackend, updated);
     if (!opts.quiet) {
       process.stdout.write(
         `${successMessage("updated tasks", undefined, `count=${changedIds.size}`)}` + "\n",

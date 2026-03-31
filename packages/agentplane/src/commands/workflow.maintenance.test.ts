@@ -158,6 +158,56 @@ describe("commands/workflow", () => {
     }
   });
 
+  it("task scrub falls back to writeTask when writeTasks is missing", async () => {
+    const root = await makeRepo();
+    const tasks: TaskData[] = [
+      {
+        id: "TASK-3B",
+        title: "foo",
+        description: "foo",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["foo"],
+        verify: [],
+        comments: [],
+        doc_version: 2,
+        doc_updated_at: "2026-02-05T00:00:00Z",
+        doc_updated_by: "CODER",
+      },
+    ];
+    const writeTask = vi.fn();
+    const backend = baseTaskBackend({
+      listTasks: vi.fn().mockResolvedValue(tasks),
+      writeTask: writeTask.mockImplementation(() => Promise.resolve()),
+    });
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
+      backendId: "local",
+      backend,
+      resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await cmdTaskScrub({
+        cwd: root,
+        find: "foo",
+        replace: "bar",
+        dryRun: false,
+        quiet: true,
+      });
+      expect(code).toBe(0);
+      expect(writeTask).toHaveBeenCalledTimes(1);
+      expect(io.stdout).toBe("");
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
   it("task normalize handles writeTask", async () => {
     const root = await makeRepo();
     const tasks: TaskData[] = [

@@ -1,7 +1,11 @@
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  type CommandContext,
+  writeTasksOrFallback,
+} from "../shared/task-backend.js";
 import { syncHostedMergedTasks } from "./hosted-merge-sync.js";
 
 export async function cmdTaskNormalize(opts: {
@@ -42,11 +46,7 @@ export async function cmdTaskNormalize(opts: {
       tasks = synced.tasks;
       syncedHostedMerges = synced.synced;
     }
-    await (ctx.taskBackend.writeTasks
-      ? ctx.taskBackend.writeTasks(tasks)
-      : (async () => {
-          for (const task of tasks) await ctx.taskBackend.writeTask(task);
-        })());
+    await writeTasksOrFallback(ctx.taskBackend, tasks);
     if (!opts.quiet) {
       process.stdout.write(
         `${successMessage(

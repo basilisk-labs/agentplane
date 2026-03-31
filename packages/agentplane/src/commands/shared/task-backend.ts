@@ -13,6 +13,7 @@ import { CliError } from "../../shared/errors.js";
 import {
   loadTaskBackend,
   taskRecordToData,
+  type TaskBackend,
   toTaskSummary,
   type TaskData,
   type TaskSummary,
@@ -230,6 +231,20 @@ export async function loadBackendTask(opts: {
     config: ctx.config,
     task,
   };
+}
+
+export async function writeTasksOrFallback(
+  backend: Pick<TaskBackend, "writeTask" | "writeTasks">,
+  tasks: readonly TaskData[],
+): Promise<void> {
+  if (tasks.length === 0) return;
+  if (backend.writeTasks) {
+    await backend.writeTasks([...tasks]);
+    return;
+  }
+  for (const task of tasks) {
+    await backend.writeTask(task);
+  }
 }
 
 export async function listTaskSummariesMemo(ctx: CommandContext): Promise<TaskSummary[]> {
