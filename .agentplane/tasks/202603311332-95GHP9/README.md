@@ -1,10 +1,11 @@
 ---
 id: "202603311332-95GHP9"
 title: "N4.2 Reuse shared doc mutation primitives inside the local backend and task store"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-95GHP9/reuse-doc-mutation-primitives"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-31T17:48:25.610Z"
   updated_by: "CODER"
   note: "Shared doc mutation primitives now drive local backend doc writes and task-store doc state updates; verified with focused eslint, local-backend/task-store vitest suites, redmine backend regression suite, package build, and diff scope audit against local-backend plus task-store seam changes."
-commit: null
+commit:
+  hash: "1c5a9480fca234d269b21580511ec1a2214bb283"
+  message: "📝 95GHP9 task: finalize PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: move local backend and shared task-store doc writes onto the new core mutation primitives, delete overlapping patch logic, and keep behavior fixed while reducing one more cross-layer seam."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-95GHP9/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Shared doc mutation primitives now drive local backend doc writes and task-store doc state updates; verified with focused eslint, local-backend/task-store vitest suites, redmine backend regression suite, package build, and diff scope audit against local-backend plus task-store seam changes."
+  -
+    type: "status"
+    at: "2026-03-31T17:49:53.340Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-95GHP9/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T17:48:25.614Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T17:49:53.345Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N4.2 from REFACTOR.md. Remove the current duplication between core task-doc primitives, the local task store, and backend doc mutation paths.. Acceptance: those modules stop carrying their own overlapping doc patch application logic. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
