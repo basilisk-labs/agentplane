@@ -1,4 +1,3 @@
-import { type TaskSummary } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { invalidValueMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
@@ -9,12 +8,10 @@ import {
 } from "../shared/task-backend.js";
 
 import {
-  buildDependencyState,
-  dedupeStrings,
   formatTaskLine,
   handleTaskListWarnings,
+  queryTaskProjection,
   taskTextBlob,
-  toStringArray,
   type TaskListFilters,
 } from "./shared.js";
 
@@ -40,24 +37,6 @@ export async function cmdTaskSearch(opts: {
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const tasks = await listTaskSummariesMemo(ctx);
     handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
-    const depState = buildDependencyState(tasks);
-    let filtered = tasks;
-    if (opts.filters.status.length > 0) {
-      const wanted = new Set(opts.filters.status.map((s) => s.trim().toUpperCase()));
-      filtered = filtered.filter((task) => wanted.has(String(task.status || "TODO").toUpperCase()));
-    }
-    if (opts.filters.owner.length > 0) {
-      const wanted = new Set(opts.filters.owner.map((o) => o.trim().toUpperCase()));
-      filtered = filtered.filter((task) => wanted.has(String(task.owner || "").toUpperCase()));
-    }
-    if (opts.filters.tag.length > 0) {
-      const wanted = new Set(opts.filters.tag.map((t) => t.trim()).filter(Boolean));
-      filtered = filtered.filter((task) => {
-        const tags = dedupeStrings(toStringArray(task.tags));
-        return tags.some((tag) => wanted.has(tag));
-      });
-    }
-    let matches: TaskSummary[] = [];
     if (opts.regex) {
       let pattern: RegExp;
       try {
@@ -70,16 +49,25 @@ export async function cmdTaskSearch(opts: {
           message: invalidValueMessage("regex", message, "valid pattern"),
         });
       }
-      matches = filtered.filter((task) => pattern.test(taskTextBlob(task)));
-    } else {
-      const needle = query.toLowerCase();
-      matches = filtered.filter((task) => taskTextBlob(task).toLowerCase().includes(needle));
+      const { depState, items } = queryTaskProjection({
+        tasks,
+        filters: opts.filters,
+        match: (task) => pattern.test(taskTextBlob(task)),
+        limitOrder: "before-sort",
+      });
+      for (const task of items) {
+        process.stdout.write(`${formatTaskLine(task, depState.get(task.id))}\n`);
+      }
+      return 0;
     }
-    if (opts.filters.limit !== undefined && opts.filters.limit >= 0) {
-      matches = matches.slice(0, opts.filters.limit);
-    }
-    const sorted = matches.toSorted((a, b) => a.id.localeCompare(b.id));
-    for (const task of sorted) {
+    const needle = query.toLowerCase();
+    const { depState, items } = queryTaskProjection({
+      tasks,
+      filters: opts.filters,
+      match: (task) => taskTextBlob(task).toLowerCase().includes(needle),
+      limitOrder: "before-sort",
+    });
+    for (const task of items) {
       process.stdout.write(`${formatTaskLine(task, depState.get(task.id))}\n`);
     }
     return 0;

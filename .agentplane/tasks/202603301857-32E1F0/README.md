@@ -1,10 +1,10 @@
 ---
 id: "202603301857-32E1F0"
 title: "Introduce one shared `queryTaskProjection()` pipeline"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -16,21 +16,37 @@ tags:
   - "cli"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T09:55:43.030Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T10:03:07.880Z"
+  updated_by: "CODER"
+  note: "Shared helper/unit tests, workflow command tests, and CLI exact-output query contracts all passed after moving list/search/next onto one projection query pipeline."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: unify status/owner/tag filtering, sorting, limit, and dependency-state preparation behind one shared task projection query path for list/search/next."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T09:56:33.421Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: unify status/owner/tag filtering, sorting, limit, and dependency-state preparation behind one shared task projection query path for list/search/next."
+  -
+    type: "verify"
+    at: "2026-03-31T10:03:07.880Z"
+    author: "CODER"
+    state: "ok"
+    note: "Shared helper/unit tests, workflow command tests, and CLI exact-output query contracts all passed after moving list/search/next onto one projection query pipeline."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:57:04.036Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T10:03:07.888Z"
+doc_updated_by: "CODER"
 description: "Implement Epic 3 / R3.1 from REFACTOR.md. status/owner/tag filtering, sorting, `limit`, and dependency-state preparation live in one shared path."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: status/owner/tag filtering, sorting, `limit`, and dependency-state preparation live in one shared path.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T10:03:07.880Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Shared helper/unit tests, workflow command tests, and CLI exact-output query contracts all passed after moving list/search/next onto one projection query pipeline.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T09:56:33.423Z, excerpt_hash=sha256:c13790524416089fe0aa3380ad8c6e8760eeeaae9789f4c87cfc2935c845a26a
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +107,14 @@ Implement Epic 3 / R3.1 from REFACTOR.md. status/owner/tag filtering, sorting, `
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T10:03:07.880Z — VERIFY — ok
+
+By: CODER
+
+Note: Shared helper/unit tests, workflow command tests, and CLI exact-output query contracts all passed after moving list/search/next onto one projection query pipeline.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T09:56:33.423Z, excerpt_hash=sha256:c13790524416089fe0aa3380ad8c6e8760eeeaae9789f4c87cfc2935c845a26a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -26,6 +26,7 @@ import {
   normalizeDependsOnInput,
   normalizeTaskStatus,
   parseTaskListFilters,
+  queryTaskProjection,
   resolvePrimaryTag,
   requireStructuredComment,
   requiresVerify,
@@ -280,6 +281,58 @@ describe("task shared helpers", () => {
     const b = mkTask({ id: "B", status: "DONE" });
     const state = buildDependencyState([a, b]);
     expect(state.get("A")).toEqual({ dependsOn: ["B", "C"], missing: ["C"], incomplete: [] });
+  });
+
+  it("queryTaskProjection shares status/owner/tag filtering and keeps dependency state from full tasks", () => {
+    const todo = mkTask({
+      id: "A",
+      owner: "CODER",
+      tags: ["docs"],
+      depends_on: ["B"],
+    });
+    const doneDep = mkTask({
+      id: "B",
+      status: "DONE",
+      owner: "DOCS",
+      tags: ["backend"],
+    });
+    const doing = mkTask({
+      id: "C",
+      status: "DOING",
+      owner: "CODER",
+      tags: ["docs"],
+    });
+
+    const result = queryTaskProjection({
+      tasks: [todo, doneDep, doing],
+      filters: { status: ["TODO"], owner: ["CODER"], tag: ["docs"], quiet: true },
+    });
+
+    expect(result.items.map((task) => task.id)).toEqual(["A"]);
+    expect(result.filtered.map((task) => task.id)).toEqual(["A"]);
+    expect(result.depState.get("A")).toEqual({ dependsOn: ["B"], missing: [], incomplete: [] });
+  });
+
+  it("queryTaskProjection preserves command-specific limit stages and ready-only filtering", () => {
+    const b = mkTask({ id: "B" });
+    const a = mkTask({ id: "A" });
+    const blocked = mkTask({ id: "C", depends_on: ["Z"] });
+
+    const searchLike = queryTaskProjection({
+      tasks: [b, a],
+      filters: { status: [], owner: [], tag: [], limit: 1, quiet: true },
+      limitOrder: "before-sort",
+    });
+    expect(searchLike.items.map((task) => task.id)).toEqual(["B"]);
+
+    const nextLike = queryTaskProjection({
+      tasks: [b, a, blocked],
+      filters: { status: [], owner: [], tag: [], limit: 1, quiet: true },
+      defaultStatuses: ["TODO"],
+      readyOnly: true,
+    });
+    expect(nextLike.filtered.map((task) => task.id)).toEqual(["B", "A", "C"]);
+    expect(nextLike.items.map((task) => task.id)).toEqual(["A"]);
   });
 
   it("ensureTaskDependsOnGraphIsAcyclic rejects self dependency and dependency cycles", async () => {
