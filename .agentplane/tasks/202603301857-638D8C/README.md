@@ -1,10 +1,10 @@
 ---
 id: "202603301857-638D8C"
 title: "Remove temporary back-compat aliases after caller migration"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -15,21 +15,43 @@ tags:
   - "cli"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T10:29:50.088Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T11:05:38.434Z"
+  updated_by: "CODER"
+  note: "Refreshed R4.4 verification on current main baseline: focused eslint slice passed and focused vitest slice passed (61 tests) after removing CommandContext back-compat aliases from task-backend helpers and aligning affected fixtures."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: remove CommandContext alias fields now that callers have migrated to resolvedProject/taskBackend and keep test fixtures aligned with the narrower type."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T10:30:12.859Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: remove CommandContext alias fields now that callers have migrated to resolvedProject/taskBackend and keep test fixtures aligned with the narrower type."
+  -
+    type: "verify"
+    at: "2026-03-31T10:33:19.985Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: TMPDIR=/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202603301857-638D8C-drop-command-context-aliases/.tmp bunx eslint packages/agentplane/src/commands/shared/task-backend.ts packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/commands/task/export.unit.test.ts packages/agentplane/src/commands/task/warn-owner.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts; Result: pass; Evidence: no lint errors. Scope: CommandContext alias removal and affected tests. Command: TMPDIR=/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202603301857-638D8C-drop-command-context-aliases/.tmp bunx vitest run packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/commands/task/export.unit.test.ts packages/agentplane/src/commands/task/warn-owner.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-store.test.ts; Result: pass; Evidence: 61 tests passed. Scope: shared backend/store helpers plus affected task helper fixtures remained stable after dropping CommandContext aliases."
+  -
+    type: "verify"
+    at: "2026-03-31T11:05:38.434Z"
+    author: "CODER"
+    state: "ok"
+    note: "Refreshed R4.4 verification on current main baseline: focused eslint slice passed and focused vitest slice passed (61 tests) after removing CommandContext back-compat aliases from task-backend helpers and aligning affected fixtures."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:57:09.851Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T11:05:38.439Z"
+doc_updated_by: "CODER"
 description: "Implement Epic 4 / R4.4 from REFACTOR.md. the command context no longer carries duplicate naming solely for transitional compatibility."
 sections:
   Summary: |-
@@ -49,6 +71,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: the command context no longer carries duplicate naming solely for transitional compatibility.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T10:33:19.985Z — VERIFY — ok
+    By: CODER
+    Note: Command: TMPDIR=/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202603301857-638D8C-drop-command-context-aliases/.tmp bunx eslint packages/agentplane/src/commands/shared/task-backend.ts packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/commands/task/export.unit.test.ts packages/agentplane/src/commands/task/warn-owner.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts; Result: pass; Evidence: no lint errors. Scope: CommandContext alias removal and affected tests. Command: TMPDIR=/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202603301857-638D8C-drop-command-context-aliases/.tmp bunx vitest run packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/commands/task/export.unit.test.ts packages/agentplane/src/commands/task/warn-owner.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-store.test.ts; Result: pass; Evidence: 61 tests passed. Scope: shared backend/store helpers plus affected task helper fixtures remained stable after dropping CommandContext aliases.
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T10:30:12.861Z, excerpt_hash=sha256:068a45fb7caddddc20128e66128b976edcd3330087ce5ebb97b33994e989d49b
+    ### 2026-03-31T11:05:38.434Z — VERIFY — ok
+    By: CODER
+    Note: Refreshed R4.4 verification on current main baseline: focused eslint slice passed and focused vitest slice passed (61 tests) after removing CommandContext back-compat aliases from task-backend helpers and aligning affected fixtures.
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T10:33:19.989Z, excerpt_hash=sha256:068a45fb7caddddc20128e66128b976edcd3330087ce5ebb97b33994e989d49b
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +112,22 @@ Implement Epic 4 / R4.4 from REFACTOR.md. the command context no longer carries 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T10:33:19.985Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: TMPDIR=/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202603301857-638D8C-drop-command-context-aliases/.tmp bunx eslint packages/agentplane/src/commands/shared/task-backend.ts packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/commands/task/export.unit.test.ts packages/agentplane/src/commands/task/warn-owner.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts; Result: pass; Evidence: no lint errors. Scope: CommandContext alias removal and affected tests. Command: TMPDIR=/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202603301857-638D8C-drop-command-context-aliases/.tmp bunx vitest run packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/commands/task/export.unit.test.ts packages/agentplane/src/commands/task/warn-owner.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-store.test.ts; Result: pass; Evidence: 61 tests passed. Scope: shared backend/store helpers plus affected task helper fixtures remained stable after dropping CommandContext aliases.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T10:30:12.861Z, excerpt_hash=sha256:068a45fb7caddddc20128e66128b976edcd3330087ce5ebb97b33994e989d49b
+
+### 2026-03-31T11:05:38.434Z — VERIFY — ok
+
+By: CODER
+
+Note: Refreshed R4.4 verification on current main baseline: focused eslint slice passed and focused vitest slice passed (61 tests) after removing CommandContext back-compat aliases from task-backend helpers and aligning affected fixtures.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T10:33:19.989Z, excerpt_hash=sha256:068a45fb7caddddc20128e66128b976edcd3330087ce5ebb97b33994e989d49b
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

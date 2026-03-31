@@ -15,8 +15,6 @@ function mkCtx(taskBackend: Partial<TaskBackend>): CommandContext {
     backendConfigPath: path.join("/repo", ".agentplane", "backends", "mock", "backend.json"),
     git: {} as CommandContext["git"],
     memo: {},
-    resolved: { gitRoot: "/repo" } as CommandContext["resolved"],
-    backend: taskBackend as CommandContext["backend"],
   };
 }
 

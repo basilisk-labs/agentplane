@@ -25,8 +25,6 @@ function mkCtx(): CommandContext {
     backendConfigPath: ".agentplane/backends/local/backend.json",
     git: {} as CommandContext["git"],
     memo: {},
-    resolved: { gitRoot: "/repo" } as CommandContext["resolved"],
-    backend: {} as CommandContext["backend"],
   };
 }
 

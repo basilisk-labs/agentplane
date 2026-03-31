@@ -37,10 +37,6 @@ export type CommandContext = {
   git: GitContext;
 
   memo: CommandMemo;
-
-  // Back-compat aliases while refactors are in flight.
-  resolved: CommandContext["resolvedProject"];
-  backend: CommandContext["taskBackend"];
 };
 
 function normalizeDocUpdatedBy(value?: string): string {
@@ -126,8 +122,6 @@ export async function loadCommandContext(opts: {
     backendConfigPath,
     git: new GitContext({ gitRoot: resolved.gitRoot }),
     memo: {},
-    resolved,
-    backend,
   };
 }
 

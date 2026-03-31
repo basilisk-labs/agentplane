@@ -1233,7 +1233,7 @@ describe("task finish (unit)", () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "branch_pr";
     ctx.taskBackend.capabilities.writes_task_readmes = false;
-    ctx.backend.capabilities.writes_task_readmes = false;
+    ctx.taskBackend.capabilities.writes_task_readmes = false;
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
 
@@ -1365,7 +1365,7 @@ describe("task finish (unit)", () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "branch_pr";
     ctx.taskBackend.capabilities.writes_task_readmes = false;
-    ctx.backend.capabilities.writes_task_readmes = false;
+    ctx.taskBackend.capabilities.writes_task_readmes = false;
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
 
