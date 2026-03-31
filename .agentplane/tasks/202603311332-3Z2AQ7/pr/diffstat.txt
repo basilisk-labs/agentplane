@@ -1,0 +1,7 @@
+ .agentplane/tasks/202603311332-3Z2AQ7/README.md    |  58 +-
+ .../src/backends/task-backend/local-backend-doc.ts | 154 +++++
+ .../backends/task-backend/local-backend-read.ts    | 241 +++++++
+ .../backends/task-backend/local-backend-state.ts   |  76 +++
+ .../backends/task-backend/local-backend-write.ts   | 358 +++++++++++
+ .../src/backends/task-backend/local-backend.ts     | 692 ++-------------------
+ 6 files changed, 909 insertions(+), 670 deletions(-)

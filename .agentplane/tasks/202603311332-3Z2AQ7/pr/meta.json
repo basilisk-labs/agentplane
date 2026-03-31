@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603311332-3Z2AQ7/split-local-backend",
+  "created_at": "2026-03-31T20:03:34.006Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603311332-3Z2AQ7",
+  "updated_at": "2026-03-31T20:03:39.100Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
