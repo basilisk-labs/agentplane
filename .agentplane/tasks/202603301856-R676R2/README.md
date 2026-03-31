@@ -1,10 +1,10 @@
 ---
 id: "202603301856-R676R2"
 title: "Preserve lazy handler loading while removing duplicated registry bootstrap work"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -16,21 +16,43 @@ tags:
   - "cli"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-31T08:45:13.411Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved after R1.3: share one per-invocation runtime registry while keeping handler loads lazy and help project-free."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T08:54:40.111Z"
+  updated_by: "CODER"
+  note: "Fast help now renders from a lightweight spec view (COMMANDS + helpSpec) instead of bootstrapping the runtime registry; focused help/contracts stayed green and --help still skipped .env loading."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: share one runtime registry bootstrap per invocation while keeping handler loads lazy and help free of project/config resolution."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T08:46:05.748Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: share one runtime registry bootstrap per invocation while keeping handler loads lazy and help free of project/config resolution."
+  -
+    type: "verify"
+    at: "2026-03-31T08:49:05.829Z"
+    author: "CODER"
+    state: "ok"
+    note: "runCli now shares one runtime registry bootstrap per invocation; focused CLI/help suites passed and fast help still avoided .env loading on --help."
+  -
+    type: "verify"
+    at: "2026-03-31T08:54:40.111Z"
+    author: "CODER"
+    state: "ok"
+    note: "Fast help now renders from a lightweight spec view (COMMANDS + helpSpec) instead of bootstrapping the runtime registry; focused help/contracts stayed green and --help still skipped .env loading."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:56:58.971Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T08:54:40.116Z"
+doc_updated_by: "CODER"
 description: "Implement Epic 1 / R1.4 from REFACTOR.md. handlers are still loaded lazily, but help/dispatch do not pay avoidable registry setup costs twice."
 sections:
   Summary: |-
@@ -50,6 +72,22 @@ sections:
     3. Re-run the focused checks after final edits. Expected: handlers are still loaded lazily, but help/dispatch do not pay avoidable registry setup costs twice.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T08:49:05.829Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: runCli now shares one runtime registry bootstrap per invocation; focused CLI/help suites passed and fast help still avoided .env loading on --help.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T08:46:05.751Z, excerpt_hash=sha256:79377157fb6cf7713493821bd66e7aca030312e8c1ec1538ced28a38d22fbeb0
+    
+    ### 2026-03-31T08:54:40.111Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Fast help now renders from a lightweight spec view (COMMANDS + helpSpec) instead of bootstrapping the runtime registry; focused help/contracts stayed green and --help still skipped .env loading.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T08:49:05.833Z, excerpt_hash=sha256:79377157fb6cf7713493821bd66e7aca030312e8c1ec1538ced28a38d22fbeb0
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +121,22 @@ Implement Epic 1 / R1.4 from REFACTOR.md. handlers are still loaded lazily, but 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T08:49:05.829Z — VERIFY — ok
+
+By: CODER
+
+Note: runCli now shares one runtime registry bootstrap per invocation; focused CLI/help suites passed and fast help still avoided .env loading on --help.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T08:46:05.751Z, excerpt_hash=sha256:79377157fb6cf7713493821bd66e7aca030312e8c1ec1538ced28a38d22fbeb0
+
+### 2026-03-31T08:54:40.111Z — VERIFY — ok
+
+By: CODER
+
+Note: Fast help now renders from a lightweight spec view (COMMANDS + helpSpec) instead of bootstrapping the runtime registry; focused help/contracts stayed green and --help still skipped .env loading.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T08:49:05.833Z, excerpt_hash=sha256:79377157fb6cf7713493821bd66e7aca030312e8c1ec1538ced28a38d22fbeb0
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

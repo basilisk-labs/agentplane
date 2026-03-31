@@ -6,12 +6,16 @@ import {
 } from "./help-render.js";
 import { suggestOne } from "./suggest.js";
 import { usageError } from "./errors.js";
-import type { CommandRegistry } from "./registry.js";
 
 export type HelpParsed = {
   cmd: string[];
   compact: boolean;
   json: boolean;
+};
+
+export type HelpRegistryView = {
+  list(): readonly { spec: CommandSpec }[];
+  match(tokens: readonly string[]): { spec: CommandSpec; consumed: number } | null;
 };
 
 export const helpSpec: CommandSpec<HelpParsed> = {
@@ -40,7 +44,7 @@ export const helpSpec: CommandSpec<HelpParsed> = {
   },
 };
 
-export function makeHelpHandler(registry: CommandRegistry): CommandHandler<HelpParsed> {
+export function makeHelpHandler(registry: HelpRegistryView): CommandHandler<HelpParsed> {
   return (_ctx, p) => {
     const specs = registry.list().map((e) => e.spec);
 

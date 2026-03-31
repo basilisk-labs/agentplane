@@ -152,6 +152,25 @@ describe("runCli", () => {
     }
   });
 
+  it("does not load .env for fast help paths that only need registry metadata", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const marker = "AGENTPLANE_TEST_SKIP_DOTENV_FOR_HELP";
+    delete process.env[marker];
+    await writeFile(path.join(root, ".env"), `${marker}=from-dotenv\n`, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "--help", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("agentplane task <subcommand> [args] [options]");
+      expect(process.env[marker]).toBeUndefined();
+    } finally {
+      delete process.env[marker];
+      io.restore();
+    }
+  });
+
   it("prints update notice when npm has a newer version", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
