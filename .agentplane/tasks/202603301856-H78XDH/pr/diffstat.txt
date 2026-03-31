@@ -1,0 +1,4 @@
+ .agentplane/tasks/202603301856-H78XDH/README.md    | 30 +++++++++++------
+ .../src/cli/run-cli.core.help-contract.test.ts     | 21 ++++++++++++
+ packages/agentplane/src/cli/run-cli.ts             | 39 +++++++++++++++-------
+ 3 files changed, 68 insertions(+), 22 deletions(-)

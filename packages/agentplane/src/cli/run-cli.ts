@@ -27,6 +27,11 @@ import { writeError } from "./run-cli/error-guidance.js";
 import { maybeWarnOnUpdate } from "./run-cli/update-warning.js";
 const HELP_TAIL_OPTIONS = new Set(["--compact", "--json"]);
 
+const rejectHelpDependency =
+  (name: string) =>
+  (_cmd: string): Promise<never> =>
+    Promise.reject(new Error(`${name} should not be called for help`));
+
 type CliResolvedProject = Awaited<ReturnType<typeof resolveProject>>;
 
 async function maybeResolveProject(opts: {
@@ -69,17 +74,22 @@ export async function runCli(argv: string[]): Promise<number> {
       });
     }
 
-    const runCli2HelpFast = async (helpArgv: string[]): Promise<number> => {
+    const buildFastHelpRegistry = async () => {
       const { buildRegistry } = await import("./run-cli/registry.run.js");
-      const reject =
-        (name: string) =>
-        (_cmd: string): Promise<never> =>
-          Promise.reject(new Error(`${name} should not be called for help`));
-      const registry = buildRegistry({
-        getCtx: reject("getCtx"),
-        getResolvedProject: reject("getResolvedProject"),
-        getLoadedConfig: reject("getLoadedConfig"),
+      return buildRegistry({
+        getCtx: rejectHelpDependency("getCtx"),
+        getResolvedProject: rejectHelpDependency("getResolvedProject"),
+        getLoadedConfig: rejectHelpDependency("getLoadedConfig"),
       });
+    };
+    let fastHelpRegistryPromise: ReturnType<typeof buildFastHelpRegistry> | null = null;
+    const getFastHelpRegistry = async () => {
+      fastHelpRegistryPromise ??= buildFastHelpRegistry();
+      return await fastHelpRegistryPromise;
+    };
+
+    const runCli2HelpFast = async (helpArgv: string[]): Promise<number> => {
+      const registry = await getFastHelpRegistry();
 
       const match = registry.match(helpArgv);
       if (!match) {
@@ -104,11 +114,16 @@ export async function runCli(argv: string[]): Promise<number> {
     // - agentplane --help
     // - agentplane <cmd...> --help [--compact|--json]
     if (globals.help) {
-      const matchedHelp = matchCommandCatalog(rest);
+      if (rest[0] === "help") {
+        return await runCli2HelpFast(rest);
+      }
+
+      const fastHelpRegistry = await getFastHelpRegistry();
+      const matchedHelp = fastHelpRegistry.match(rest);
       if (matchedHelp) {
         const rawHelpTail = rest.slice(matchedHelp.consumed);
         const commandFlags = new Set<string>();
-        for (const opt of matchedHelp.entry.spec.options ?? []) {
+        for (const opt of matchedHelp.spec.options ?? []) {
           const optRecord = opt as Record<string, unknown>;
           const long = typeof optRecord.name === "string" ? optRecord.name.trim() : "";
           if (long) commandFlags.add(`--${long}`);
@@ -129,7 +144,7 @@ export async function runCli(argv: string[]): Promise<number> {
         const helpTail = rawHelpTail.filter(
           (token) => token.startsWith("-") && HELP_TAIL_OPTIONS.has(token),
         );
-        return await runCli2HelpFast(["help", ...matchedHelp.entry.spec.id, ...helpTail]);
+        return await runCli2HelpFast(["help", ...matchedHelp.spec.id, ...helpTail]);
       }
       return await runCli2HelpFast(["help", ...rest]);
     }

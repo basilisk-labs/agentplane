@@ -63,6 +63,27 @@ describe("cli2 help contract", () => {
     }
   });
 
+  it("explicit help commands stay stable when trailing --help is also present", async () => {
+    const helpIo = captureStdIO();
+    let helpStdout = "";
+    try {
+      const code = await runCli(["help", "task"]);
+      expect(code).toBe(0);
+      helpStdout = helpIo.stdout;
+    } finally {
+      helpIo.restore();
+    }
+
+    const aliasIo = captureStdIO();
+    try {
+      const code = await runCli(["help", "task", "--help"]);
+      expect(code).toBe(0);
+      expect(aliasIo.stdout).toBe(helpStdout);
+    } finally {
+      aliasIo.restore();
+    }
+  });
+
   it("help --json returns a stable, internally consistent registry", async () => {
     const io = captureStdIO();
     try {
