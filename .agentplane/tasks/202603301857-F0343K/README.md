@@ -1,10 +1,11 @@
 ---
 id: "202603301857-F0343K"
 title: "Replace process-wide stdout/stderr monkey-patching with a structured output collector"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-F0343K/structured-output-collector"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T12:52:08.296Z"
   updated_by: "CODER"
   note: "Command: bunx eslint packages/agentplane/src/cli/run-cli/globals.ts packages/agentplane/src/cli/run-cli.core.test.ts; Result: pass; Evidence: 0 lint errors after the collector refactor and contract-test update; Scope: globals.ts and JSON contract test. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 84 tests passed covering runWithOutputMode and JSON task-query envelopes; Scope: CLI JSON/output contracts. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0 after the structured collector change; Scope: package buildability for the touched production path."
-commit: null
+commit:
+  hash: "06878577c70463eaaf038db1ac9ec155e1027c49"
+  message: "🧩 F0343K integrate: squash task/202603301857-F0343K/structured-output-collector"
 comments:
   -
     author: "CODER"
     body: "Start: replace process-wide stdout/stderr monkey-patching with a task-scoped structured collector while preserving current JSON output contracts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-F0343K/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx eslint packages/agentplane/src/cli/run-cli/globals.ts packages/agentplane/src/cli/run-cli.core.test.ts; Result: pass; Evidence: 0 lint errors after the collector refactor and contract-test update; Scope: globals.ts and JSON contract test. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 84 tests passed covering runWithOutputMode and JSON task-query envelopes; Scope: CLI JSON/output contracts. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0 after the structured collector change; Scope: package buildability for the touched production path."
+  -
+    type: "status"
+    at: "2026-03-31T12:54:03.464Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-F0343K/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T12:52:08.297Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T12:54:03.466Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 6 / R6.2 from REFACTOR.md. JSON mode no longer relies on global write interception, while preserving current output semantics."
 sections:
   Summary: |-
