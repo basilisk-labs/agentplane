@@ -1,10 +1,11 @@
 ---
 id: "202603311331-838REB"
 title: "N2.1 Introduce a shared bulk-write helper"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-838REB/shared-bulk-write-helper"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T14:56:35.613Z"
   updated_by: "CODER"
   note: "Introduced shared bulk-write helper and moved task add/normalize/scrub onto it; verified with bunx eslint packages/agentplane/src/commands/shared/task-backend.ts packages/agentplane/src/commands/task/add.ts packages/agentplane/src/commands/task/normalize.ts packages/agentplane/src/commands/task/scrub.ts packages/agentplane/src/commands/workflow.maintenance.test.ts packages/agentplane/src/commands/workflow.test.ts and bunx vitest run packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/workflow.maintenance.test.ts --testNamePattern 'task add writes tasks via writeTask when writeTasks is missing|task scrub writes updates and respects quiet mode|task scrub falls back to writeTask when writeTasks is missing|task normalize handles writeTask|task normalize prefers backend normalizeTasks output when available'."
-commit: null
+commit:
+  hash: "6697ff836a616142d8d7a057a95d60b6683c9876"
+  message: "📝 838REB task: add PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: extract one shared bulk-write helper for task backends so add/normalize/scrub stop duplicating writeTasks vs sequential writeTask fallback orchestration."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-838REB/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Introduced shared bulk-write helper and moved task add/normalize/scrub onto it; verified with bunx eslint packages/agentplane/src/commands/shared/task-backend.ts packages/agentplane/src/commands/task/add.ts packages/agentplane/src/commands/task/normalize.ts packages/agentplane/src/commands/task/scrub.ts packages/agentplane/src/commands/workflow.maintenance.test.ts packages/agentplane/src/commands/workflow.test.ts and bunx vitest run packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/workflow.maintenance.test.ts --testNamePattern 'task add writes tasks via writeTask when writeTasks is missing|task scrub writes updates and respects quiet mode|task scrub falls back to writeTask when writeTasks is missing|task normalize handles writeTask|task normalize prefers backend normalizeTasks output when available'."
+  -
+    type: "status"
+    at: "2026-03-31T15:00:01.163Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-838REB/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T14:56:35.615Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T15:00:01.165Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N2.1 from REFACTOR.md. Hide local-store vs backend branching behind shared mutation helpers and remove repeated bulk-write fallback logic.. Acceptance: those commands stop open-coding `writeTasks(...)` vs sequential `writeTask(...)`. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-

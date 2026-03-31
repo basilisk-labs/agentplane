@@ -1,7 +1,11 @@
  .agentplane/tasks/202603311331-838REB/README.md    | 58 +++++++++++++++++-----
+ .../tasks/202603311331-838REB/pr/diffstat.txt      |  7 +++
+ .agentplane/tasks/202603311331-838REB/pr/meta.json | 12 +++++
+ .agentplane/tasks/202603311331-838REB/pr/review.md | 35 +++++++++++++
+ .../tasks/202603311331-838REB/pr/verify.log        |  0
  .../agentplane/src/commands/shared/task-backend.ts | 15 ++++++
  packages/agentplane/src/commands/task/add.ts       | 14 +++---
  packages/agentplane/src/commands/task/normalize.ts | 12 ++---
  packages/agentplane/src/commands/task/scrub.ts     | 14 +++---
  .../src/commands/workflow.maintenance.test.ts      | 50 +++++++++++++++++++
- 6 files changed, 128 insertions(+), 35 deletions(-)
+ 10 files changed, 182 insertions(+), 35 deletions(-)
