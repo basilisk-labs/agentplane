@@ -1,10 +1,11 @@
 ---
 id: "202603301857-XC7RHS"
 title: "Split pre-dispatch metadata needs from full loaded config"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-XC7RHS/split-dispatch-metadata-boundary"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T12:31:12.489Z"
   updated_by: "CODER"
   note: "Dispatch metadata split verified for config boundary classification."
-commit: null
+commit:
+  hash: "d398efd79910b62e85f0c97ee944fcade1d82af2"
+  message: "🧩 XC7RHS integrate: squash task/202603301857-XC7RHS/split-dispatch-metadata-boundary"
 comments:
   -
     author: "CODER"
     body: "Start: split dispatch metadata from loaded-config needs so CLI bootstrap can classify config-free commands before any full config boundary is crossed."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-XC7RHS/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Dispatch metadata split verified for config boundary classification."
+  -
+    type: "status"
+    at: "2026-03-31T12:32:44.044Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-XC7RHS/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T12:31:12.491Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T12:32:44.046Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 4 / R4.1 from REFACTOR.md. command dispatch can decide what it needs before forcing full config load on unrelated paths."
 sections:
   Summary: |-
