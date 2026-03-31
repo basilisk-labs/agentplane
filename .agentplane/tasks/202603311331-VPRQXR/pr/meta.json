@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311331-VPRQXR/migrate-core-config-runtime-emitters",
   "created_at": "2026-03-31T14:08:19.821Z",
+  "head_sha": "13bc658de1bddeedaa38e9961143e2f234a6e607",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "ea447a10cb3b0e4510f9f43818ac4286f2fac951",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T14:10:18.769Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311331-VPRQXR",
-  "updated_at": "2026-03-31T14:09:03.016Z",
+  "updated_at": "2026-03-31T14:10:18.769Z",
   "verify": {
     "status": "skipped"
   }

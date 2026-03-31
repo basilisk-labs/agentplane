@@ -1,10 +1,10 @@
  .agentplane/tasks/202603311331-VPRQXR/README.md    |  58 +++++++--
- .../tasks/202603311331-VPRQXR/pr/diffstat.txt      |   6 +
+ .../tasks/202603311331-VPRQXR/pr/diffstat.txt      |  10 ++
  .agentplane/tasks/202603311331-VPRQXR/pr/meta.json |  12 ++
- .agentplane/tasks/202603311331-VPRQXR/pr/review.md |  34 +++++
+ .agentplane/tasks/202603311331-VPRQXR/pr/review.md |  38 ++++++
  .../tasks/202603311331-VPRQXR/pr/verify.log        |   0
  .../agentplane/src/cli/run-cli/commands/config.ts  |  15 ++-
  .../agentplane/src/cli/run-cli/commands/core.ts    | 140 +++++++++++----------
  packages/agentplane/src/cli/spec/help.ts           |  11 +-
  .../agentplane/src/commands/runtime.command.ts     |   7 +-
- 9 files changed, 189 insertions(+), 94 deletions(-)
+ 9 files changed, 197 insertions(+), 94 deletions(-)

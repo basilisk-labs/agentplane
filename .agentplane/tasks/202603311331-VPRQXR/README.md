@@ -1,10 +1,11 @@
 ---
 id: "202603311331-VPRQXR"
 title: "N1.2 Move CLI core/config/help/runtime-report paths onto the shared emitters"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-VPRQXR/migrate-core-config-runtime-emitters"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-31T14:07:22.538Z"
   updated_by: "CODER"
   note: "Focused eslint and runtime/core CLI suites passed; quickstart, preflight, role, agents, help, config, and runtime explain now route repeated JSON/text/report output through the shared emitter primitives without changing payload shapes."
-commit: null
+commit:
+  hash: "ea447a10cb3b0e4510f9f43818ac4286f2fac951"
+  message: "🧩 VPRQXR integrate: squash task/202603311331-VPRQXR/migrate-core-config-runtime-emitters"
 comments:
   -
     author: "CODER"
     body: "Start: move core/config/help/runtime-report command families onto the shared emitter primitives so the highest-volume CLI modules stop hand-rolling repeated JSON and report-line output."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-VPRQXR/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused eslint and runtime/core CLI suites passed; quickstart, preflight, role, agents, help, config, and runtime explain now route repeated JSON/text/report output through the shared emitter primitives without changing payload shapes."
+  -
+    type: "status"
+    at: "2026-03-31T14:10:18.789Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-VPRQXR/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T14:07:22.540Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T14:10:18.791Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N1.2 from REFACTOR.md. Replace the current scattered output/render patterns with one small shared emission layer for user-facing command output.. Acceptance: those modules stop manually formatting repeated JSON/text output blocks. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
