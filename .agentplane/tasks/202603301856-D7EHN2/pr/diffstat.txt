@@ -1,0 +1,5 @@
+ .agentplane/tasks/202603301856-D7EHN2/README.md   | 30 +++++++++++++++--------
+ packages/agentplane/src/cli/run-cli.ts            | 19 +++++++++-----
+ packages/agentplane/src/cli/spec/registry.test.ts |  4 +--
+ packages/agentplane/src/cli/spec/registry.ts      |  2 +-
+ 4 files changed, 36 insertions(+), 19 deletions(-)

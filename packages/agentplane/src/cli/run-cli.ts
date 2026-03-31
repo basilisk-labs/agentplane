@@ -237,14 +237,21 @@ export async function runCli(argv: string[]): Promise<number> {
       getLoadedConfig,
     });
 
-    const match = registry.match(rest);
-    if (match) {
-      const tail = rest.slice(match.consumed);
-      const parsed = parseCommandArgv(match.spec, tail).parsed;
+    if (matched) {
+      const runtimeEntry = registry.lookup(matched.entry.spec.id);
+      if (!runtimeEntry) {
+        throw new CliError({
+          exitCode: exitCodeForError("E_INTERNAL"),
+          code: "E_INTERNAL",
+          message: `Internal error: runtime registry missing command: ${matched.entry.spec.id.join(" ")}`,
+        });
+      }
+      const tail = rest.slice(matched.consumed);
+      const parsed = parseCommandArgv(runtimeEntry.spec, tail).parsed;
       return await runWithOutputMode({
         mode: outputMode,
-        command: match.spec.id.join(" "),
-        run: async () => await match.handler({ cwd, rootOverride: globals.root }, parsed),
+        command: runtimeEntry.spec.id.join(" "),
+        run: async () => await runtimeEntry.handler({ cwd, rootOverride: globals.root }, parsed),
       });
     }
 

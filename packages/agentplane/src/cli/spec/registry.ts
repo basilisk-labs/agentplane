@@ -129,7 +129,7 @@ export class CommandRegistry {
       : null;
   }
 
-  find(id: CommandId): { spec: CommandSpec; handler: CommandHandler } | null {
+  lookup(id: CommandId): { spec: CommandSpec; handler: CommandHandler } | null {
     return this.graph.lookup(id);
   }
 

@@ -39,8 +39,8 @@ describe("CommandRegistry", () => {
     registry.register(taskPlanSpec, noopHandler);
     registry.register(taskPlanSetSpec, noopHandler);
 
-    expect(registry.find(["task", "plan"])?.spec.id).toEqual(["task", "plan"]);
-    expect(registry.find(["missing"])).toBeNull();
+    expect(registry.lookup(["task", "plan"])?.spec.id).toEqual(["task", "plan"]);
+    expect(registry.lookup(["missing"])).toBeNull();
     expect(registry.match(["task", "plan", "set", "TASK-1"])?.spec.id).toEqual([
       "task",
       "plan",

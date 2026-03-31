@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603301856-D7EHN2/normal-dispatch-uses-canonical-graph",
+  "created_at": "2026-03-31T08:31:29.765Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603301856-D7EHN2",
+  "updated_at": "2026-03-31T08:31:36.666Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
