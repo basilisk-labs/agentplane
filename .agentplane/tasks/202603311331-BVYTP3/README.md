@@ -1,10 +1,11 @@
 ---
 id: "202603311331-BVYTP3"
 title: "N2.2 Introduce a shared mutable-task bridge"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-BVYTP3/mutable-task-bridge"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T15:14:53.135Z"
   updated_by: "CODER"
   note: "Introduced a shared single-task mutation bridge plus public intent-to-task application seam; verified with bunx eslint packages/agentplane/src/commands/shared/task-backend.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/shared/task-store.ts and bunx vitest run packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/shared/task-store.test.ts."
-commit: null
+commit:
+  hash: "13eaf50a33cdd05e59af7efcc5dc072f012f9218"
+  message: "📝 BVYTP3 task: add PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: introduce one shared mutable-task bridge so task mutators stop branching on local store vs backend reads/writes for single-task updates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-BVYTP3/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Introduced a shared single-task mutation bridge plus public intent-to-task application seam; verified with bunx eslint packages/agentplane/src/commands/shared/task-backend.ts packages/agentplane/src/commands/shared/task-mutation.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/shared/task-store.ts and bunx vitest run packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/shared/task-store.test.ts."
+  -
+    type: "status"
+    at: "2026-03-31T15:16:27.736Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-BVYTP3/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T15:14:53.137Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T15:16:27.739Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N2.2 from REFACTOR.md. Hide local-store vs backend branching behind shared mutation helpers and remove repeated bulk-write fallback logic.. Acceptance: one helper can load and persist a task mutation without each command branching on backend type. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-

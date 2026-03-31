@@ -1,5 +1,9 @@
  .agentplane/tasks/202603311331-BVYTP3/README.md    |  52 ++++-
+ .../tasks/202603311331-BVYTP3/pr/diffstat.txt      |   5 +
+ .agentplane/tasks/202603311331-BVYTP3/pr/meta.json |  12 ++
+ .agentplane/tasks/202603311331-BVYTP3/pr/review.md |  33 +++
+ .../tasks/202603311331-BVYTP3/pr/verify.log        |   0
  .../src/commands/shared/task-mutation.test.ts      | 238 +++++++++++++++++++++
  .../src/commands/shared/task-mutation.ts           |  64 ++++++
  .../agentplane/src/commands/shared/task-store.ts   |  28 ++-
- 4 files changed, 365 insertions(+), 17 deletions(-)
+ 8 files changed, 415 insertions(+), 17 deletions(-)
