@@ -1,10 +1,11 @@
 ---
 id: "202603301857-DDB4GY"
 title: "Add projection/full-read consistency tests"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-DDB4GY/projection-full-read-consistency"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T09:49:13.518Z"
   updated_by: "CODER"
   note: "Focused backend vitest slice passed for projection/full-read consistency invariants; eslint passed on the touched local backend test file."
-commit: null
+commit:
+  hash: "9ed4ee72334d77d27ce9498802c1c253b664ffae"
+  message: "🧩 DDB4GY integrate: squash task/202603301857-DDB4GY/projection-full-read-consistency"
 comments:
   -
     author: "CODER"
     body: "Start: harden local backend tests so projection summaries and full task reads stay aligned for the fields consumed by task list/search/next."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-DDB4GY/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused backend vitest slice passed for projection/full-read consistency invariants; eslint passed on the touched local backend test file."
+  -
+    type: "status"
+    at: "2026-03-31T09:50:10.966Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-DDB4GY/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T09:49:13.532Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T09:50:10.972Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 2 / R2.3 from REFACTOR.md. tests prove the summary projection stays consistent with full task reads for fields used by task list/search/next."
 sections:
   Summary: |-

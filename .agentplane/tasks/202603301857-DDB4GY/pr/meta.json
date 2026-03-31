@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301857-DDB4GY/projection-full-read-consistency",
   "created_at": "2026-03-31T09:49:33.091Z",
+  "head_sha": "bc7b1bf511caf7f68ec8e73479497e229307c5ca",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "9ed4ee72334d77d27ce9498802c1c253b664ffae",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T09:50:10.924Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301857-DDB4GY",
-  "updated_at": "2026-03-31T09:49:33.419Z",
+  "updated_at": "2026-03-31T09:50:10.924Z",
   "verify": {
     "status": "skipped"
   }
