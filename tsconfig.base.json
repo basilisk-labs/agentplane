@@ -3,6 +3,13 @@
     "target": "ES2022",
     "lib": ["ES2023"],
     "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@agentplaneorg/core": ["packages/core/src/index.ts"],
+      "@agentplaneorg/core/*": ["packages/core/src/*"],
+      "@agentplane/recipes": ["packages/recipes/src/index.ts"],
+      "@agentplane/recipes/*": ["packages/recipes/src/*"]
+    },
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "strict": true,

@@ -2,12 +2,13 @@ import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 import {
+  applyTaskDocMutations,
   docChanged,
   extractTaskDoc,
   mergeTaskDoc,
+  normalizeTaskDocVersion,
   parseTaskReadme,
   renderTaskReadme,
-  renderTaskDocFromSections,
   taskDocToSectionMap,
   type ParsedTaskReadme,
 } from "@agentplaneorg/core";
@@ -32,6 +33,15 @@ type CachedTask = {
 };
 
 type TaskComment = NonNullable<TaskData["comments"]>[number];
+type TaskDocState = {
+  comments: TaskData["comments"] | null;
+  doc: string;
+  doc_updated_at?: string;
+  doc_updated_by?: string;
+  doc_version: 2 | 3;
+  owner: string;
+  sections?: TaskData["sections"] | null;
+};
 
 export type TaskStoreTaskPatch = Partial<
   Omit<
@@ -156,10 +166,6 @@ function taskReadmePath(ctx: CommandContext, taskId: string): string {
   return path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.workflow_dir, taskId, "README.md");
 }
 
-function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 3): 2 | 3 {
-  return value === 3 ? 3 : value === 2 ? 2 : fallback;
-}
-
 function normalizeTaskRevision(value: unknown, fallback = 1): number {
   return Number.isInteger(value) && Number(value) > 0 ? Number(value) : fallback;
 }
@@ -250,37 +256,6 @@ function throwTaskRevisionConflict(opts: {
       reason_code: "task_revision_conflict",
     },
   });
-}
-
-function applyTaskDocPatch(opts: {
-  taskId: string;
-  currentDocRaw: string;
-  patch: TaskStoreDocPatch;
-}): string {
-  if (opts.patch.kind === "replace-doc") {
-    if (opts.patch.expectedCurrentDoc !== undefined) {
-      const currentDoc = normalizeDocComparison(opts.currentDocRaw);
-      const expectedDoc = normalizeDocComparison(opts.patch.expectedCurrentDoc);
-      if (currentDoc !== expectedDoc) {
-        throwTaskDocConflict({ taskId: opts.taskId });
-      }
-    }
-    return renderTaskDocFromSections(taskDocToSectionMap(opts.patch.doc));
-  }
-
-  const sections = taskDocToSectionMap(opts.currentDocRaw);
-  for (const requiredSection of opts.patch.requiredSections) {
-    if (!(requiredSection in sections)) sections[requiredSection] = "";
-  }
-  if (opts.patch.expectedCurrentText !== undefined) {
-    const currentSection = normalizeDocComparison(sections[opts.patch.section] ?? null);
-    const expectedSection = normalizeDocComparison(opts.patch.expectedCurrentText);
-    if (currentSection !== expectedSection) {
-      throwTaskSectionConflict({ taskId: opts.taskId, section: opts.patch.section });
-    }
-  }
-  sections[opts.patch.section] = opts.patch.text.replaceAll("\r\n", "\n").trimEnd();
-  return renderTaskDocFromSections(sections);
 }
 
 function normalizeTaskStoreIntents(intents: TaskStoreIntentResult): TaskStoreIntent[] {
@@ -425,19 +400,32 @@ export function applyTaskStoreIntentsToTask(
 
   const current = task;
   const next: TaskData = { ...current };
+  let docState: TaskDocState = {
+    comments: next.comments ?? null,
+    doc: String(next.doc ?? ""),
+    doc_updated_by: next.doc_updated_by,
+    doc_version: normalizeTaskDocVersion(opts.currentDocVersion ?? task.doc_version),
+    owner: next.owner,
+    sections: next.sections ?? null,
+  };
   let touchDoc = false;
-  let docMetaUpdatedBy: string | undefined;
-  let docMetaVersion: 2 | 3 | undefined;
 
   for (const intent of normalizedIntents) {
     switch (intent.kind) {
       case "set-task-fields": {
         Object.assign(next, intent.task);
+        docState = {
+          ...docState,
+          doc_updated_by: next.doc_updated_by,
+          doc_version: normalizeTaskDocVersion(next.doc_version ?? docState.doc_version),
+          owner: next.owner,
+        };
         break;
       }
       case "append-comments": {
         if (intent.comments.length > 0) {
           next.comments = [...normalizeComments(next), ...intent.comments];
+          docState = { ...docState, comments: next.comments };
         }
         break;
       }
@@ -448,56 +436,95 @@ export function applyTaskStoreIntentsToTask(
         break;
       }
       case "replace-doc": {
-        next.doc = applyTaskDocPatch({
-          taskId: current.id,
-          currentDocRaw: String(next.doc ?? ""),
-          patch: {
-            kind: "replace-doc",
-            doc: intent.doc,
-            expectedCurrentDoc: intent.expectedCurrentDoc,
+        if (intent.expectedCurrentDoc !== undefined) {
+          const currentDoc = normalizeDocComparison(docState.doc);
+          const expectedDoc = normalizeDocComparison(intent.expectedCurrentDoc);
+          if (currentDoc !== expectedDoc) {
+            throwTaskDocConflict({ taskId: current.id });
+          }
+        }
+        const applied = applyTaskDocMutations(
+          docState,
+          [{ kind: "replace-doc", doc: intent.doc }],
+          {
+            now: opts.docUpdatedAt,
           },
-        });
-        next.sections = taskDocToSectionMap(String(next.doc ?? ""));
+        );
+        docState = {
+          ...docState,
+          doc: applied.doc,
+          sections: applied.sections,
+          doc_version: applied.doc_version,
+          doc_updated_at: applied.doc_updated_at,
+          doc_updated_by: applied.doc_updated_by,
+        };
         touchDoc = true;
         break;
       }
       case "set-section": {
-        next.doc = applyTaskDocPatch({
-          taskId: current.id,
-          currentDocRaw: String(next.doc ?? ""),
-          patch: {
-            kind: "set-section",
-            section: intent.section,
-            text: intent.text,
-            requiredSections: intent.requiredSections,
-            expectedCurrentText: intent.expectedCurrentText,
-          },
-        });
-        next.sections = taskDocToSectionMap(String(next.doc ?? ""));
+        if (intent.expectedCurrentText !== undefined) {
+          const currentSections = taskDocToSectionMap(docState.doc);
+          const currentSection = normalizeDocComparison(currentSections[intent.section] ?? null);
+          const expectedSection = normalizeDocComparison(intent.expectedCurrentText);
+          if (currentSection !== expectedSection) {
+            throwTaskSectionConflict({ taskId: current.id, section: intent.section });
+          }
+        }
+        const applied = applyTaskDocMutations(
+          docState,
+          [
+            {
+              kind: "set-section",
+              section: intent.section,
+              text: intent.text,
+              requiredSections: intent.requiredSections,
+            },
+          ],
+          { now: opts.docUpdatedAt },
+        );
+        docState = {
+          ...docState,
+          doc: applied.doc,
+          sections: applied.sections,
+          doc_version: applied.doc_version,
+          doc_updated_at: applied.doc_updated_at,
+          doc_updated_by: applied.doc_updated_by,
+        };
         touchDoc = true;
         break;
       }
       case "touch-doc-meta": {
+        const applied = applyTaskDocMutations(
+          docState,
+          [
+            {
+              kind: "touch-doc-meta",
+              updatedBy: intent.updatedBy,
+              version: intent.version,
+            },
+          ],
+          { now: opts.docUpdatedAt },
+        );
+        docState = {
+          ...docState,
+          doc: applied.doc,
+          sections: applied.sections,
+          doc_version: applied.doc_version,
+          doc_updated_at: applied.doc_updated_at,
+          doc_updated_by: applied.doc_updated_by,
+        };
         touchDoc = true;
-        if (intent.updatedBy !== undefined) {
-          docMetaUpdatedBy = intent.updatedBy;
-        }
-        if (intent.version !== undefined) {
-          docMetaVersion = intent.version;
-        }
         break;
       }
     }
   }
 
   if (touchDoc) {
-    const currentDocVersion = normalizeTaskDocVersion(opts.currentDocVersion ?? task.doc_version);
-    next.doc_version = normalizeTaskDocVersion(
-      docMetaVersion ?? next.doc_version,
-      currentDocVersion,
-    );
-    next.doc_updated_at = opts.docUpdatedAt ?? new Date().toISOString();
-    next.doc_updated_by = docMetaUpdatedBy ?? resolveDocUpdatedBy(next);
+    next.doc = docState.doc;
+    next.sections = docState.sections ?? taskDocToSectionMap(docState.doc);
+    next.doc_version = docState.doc_version;
+    next.doc_updated_at = docState.doc_updated_at;
+    next.doc_updated_by = docState.doc_updated_by;
   }
 
   return next;

@@ -1,10 +1,10 @@
 ---
 id: "202603311332-ACCPE4"
 title: "N4.1 Define the shared doc mutation contract"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -16,21 +16,43 @@ tags:
   - "task-doc"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T17:21:30.646Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T17:36:44.911Z"
+  updated_by: "CODER"
+  note: "Shared doc mutation contract verified with focused eslint, core/shared task-store vitest suites, package builds, bootstrap, diff scope audit, and an explicit no-dist lint check; doc replacement, section replacement, and doc-meta touch now share one pure core mutation model, and workspace path resolution no longer depends on stale core dist during integrate."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: define one pure shared doc mutation contract in core, keep the first diff limited to contract extraction plus the earliest safe adopters, and avoid pulling local-backend orchestration into this task before the seam is proven."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T17:22:14.998Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: define one pure shared doc mutation contract in core, keep the first diff limited to contract extraction plus the earliest safe adopters, and avoid pulling local-backend orchestration into this task before the seam is proven."
+  -
+    type: "verify"
+    at: "2026-03-31T17:31:10.504Z"
+    author: "CODER"
+    state: "ok"
+    note: "Shared doc mutation contract verified with focused eslint, core/shared task-store vitest suites, package builds, bootstrap, and diff scope audit; doc replacement, section replacement, and doc-meta touch now flow through one pure core mutation model."
+  -
+    type: "verify"
+    at: "2026-03-31T17:36:44.911Z"
+    author: "CODER"
+    state: "ok"
+    note: "Shared doc mutation contract verified with focused eslint, core/shared task-store vitest suites, package builds, bootstrap, diff scope audit, and an explicit no-dist lint check; doc replacement, section replacement, and doc-meta touch now share one pure core mutation model, and workspace path resolution no longer depends on stale core dist during integrate."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:32:32.400Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T17:36:44.916Z"
+doc_updated_by: "CODER"
 description: "Implement N4.1 from REFACTOR.md. Remove the current duplication between core task-doc primitives, the local task store, and backend doc mutation paths.. Acceptance: section replacement, full-doc replacement, and doc-meta touch share one explicit mutation model. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -50,6 +72,22 @@ sections:
     3. Re-run the focused checks after final edits. Expected: section replacement, full-doc replacement, and doc-meta touch share one explicit mutation model.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T17:31:10.504Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Shared doc mutation contract verified with focused eslint, core/shared task-store vitest suites, package builds, bootstrap, and diff scope audit; doc replacement, section replacement, and doc-meta touch now flow through one pure core mutation model.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T17:22:15.016Z, excerpt_hash=sha256:1ef843bb44d461acaaf30cb52e8bb78325709f3ac199792b0ee5e194707392da
+    
+    ### 2026-03-31T17:36:44.911Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Shared doc mutation contract verified with focused eslint, core/shared task-store vitest suites, package builds, bootstrap, diff scope audit, and an explicit no-dist lint check; doc replacement, section replacement, and doc-meta touch now share one pure core mutation model, and workspace path resolution no longer depends on stale core dist during integrate.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T17:31:10.534Z, excerpt_hash=sha256:1ef843bb44d461acaaf30cb52e8bb78325709f3ac199792b0ee5e194707392da
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +121,22 @@ Implement N4.1 from REFACTOR.md. Remove the current duplication between core tas
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T17:31:10.504Z — VERIFY — ok
+
+By: CODER
+
+Note: Shared doc mutation contract verified with focused eslint, core/shared task-store vitest suites, package builds, bootstrap, and diff scope audit; doc replacement, section replacement, and doc-meta touch now flow through one pure core mutation model.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T17:22:15.016Z, excerpt_hash=sha256:1ef843bb44d461acaaf30cb52e8bb78325709f3ac199792b0ee5e194707392da
+
+### 2026-03-31T17:36:44.911Z — VERIFY — ok
+
+By: CODER
+
+Note: Shared doc mutation contract verified with focused eslint, core/shared task-store vitest suites, package builds, bootstrap, diff scope audit, and an explicit no-dist lint check; doc replacement, section replacement, and doc-meta touch now share one pure core mutation model, and workspace path resolution no longer depends on stale core dist during integrate.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T17:31:10.534Z, excerpt_hash=sha256:1ef843bb44d461acaaf30cb52e8bb78325709f3ac199792b0ee5e194707392da
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

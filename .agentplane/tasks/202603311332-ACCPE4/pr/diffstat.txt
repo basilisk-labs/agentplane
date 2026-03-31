@@ -1,0 +1,13 @@
+ .agentplane/tasks/202603311332-ACCPE4/README.md    |  80 ++++++++--
+ .../tasks/202603311332-ACCPE4/pr/diffstat.txt      |  12 ++
+ .agentplane/tasks/202603311332-ACCPE4/pr/meta.json |  12 ++
+ .agentplane/tasks/202603311332-ACCPE4/pr/review.md |  40 +++++
+ .../tasks/202603311332-ACCPE4/pr/verify.log        |   0
+ .../agentplane/src/commands/shared/task-backend.ts |  16 +-
+ .../agentplane/src/commands/shared/task-store.ts   | 171 ++++++++++++---------
+ packages/core/src/index.ts                         |   9 ++
+ packages/core/src/tasks/task-doc-mutation.test.ts  | 124 +++++++++++++++
+ packages/core/src/tasks/task-doc-mutation.ts       | 152 ++++++++++++++++++
+ packages/core/src/tasks/task-store.ts              |  91 ++++-------
+ tsconfig.base.json                                 |   7 +
+ 12 files changed, 565 insertions(+), 149 deletions(-)

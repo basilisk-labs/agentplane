@@ -1,5 +1,6 @@
 import path from "node:path";
 import {
+  resolveTaskDocUpdatedBy,
   parseTaskReadme,
   taskDocToSectionMap,
   validateTaskReadmeFrontmatter,
@@ -48,13 +49,16 @@ function normalizeDocUpdatedBy(value?: string): string {
 }
 
 export function resolveDocUpdatedBy(task: TaskData, author?: string): string {
-  const fromAuthor = normalizeDocUpdatedBy(author);
-  if (fromAuthor) return fromAuthor;
-  const fromTask = normalizeDocUpdatedBy(
-    typeof task.doc_updated_by === "string" ? task.doc_updated_by : undefined,
+  return normalizeDocUpdatedBy(
+    resolveTaskDocUpdatedBy(
+      {
+        comments: task.comments ?? null,
+        doc_updated_by: task.doc_updated_by,
+        owner: task.owner,
+      },
+      author,
+    ),
   );
-  if (fromTask) return fromTask;
-  return normalizeDocUpdatedBy(typeof task.owner === "string" ? task.owner : undefined);
 }
 
 export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {

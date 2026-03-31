@@ -78,6 +78,15 @@ export {
 } from "./tasks/task-doc-contract.js";
 
 export {
+  applyTaskDocMutations,
+  resolveTaskDocUpdatedBy,
+  type TaskDocMutation,
+  type TaskDocMutationComment,
+  type TaskDocMutationResult,
+  type TaskDocMutationState,
+} from "./tasks/task-doc-mutation.js";
+
+export {
   docChanged,
   ensureDocSections,
   extractTaskDoc,
