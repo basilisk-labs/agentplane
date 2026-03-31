@@ -1,4 +1,8 @@
  .agentplane/tasks/202603311332-EFWRER/README.md    | 58 +++++++++++++++++-----
+ .../tasks/202603311332-EFWRER/pr/diffstat.txt      | 10 ++++
+ .agentplane/tasks/202603311332-EFWRER/pr/meta.json | 12 +++++
+ .agentplane/tasks/202603311332-EFWRER/pr/review.md | 38 ++++++++++++++
+ .../tasks/202603311332-EFWRER/pr/verify.log        |  0
  .../src/backends/task-backend.load.test.ts         | 10 ++--
  .../src/backends/task-backend.local.test.ts        | 10 ++--
  .../src/backends/task-backend.redmine.test.ts      | 31 +++++++++---
@@ -7,4 +11,4 @@
  .../agentplane/src/runner/adapters/codex.test.ts   | 54 ++++++++++----------
  .../agentplane/src/runner/adapters/custom.test.ts  | 46 +++++++++--------
  .../src/runner/usecases/task-run-lifecycle.test.ts | 16 +++---
- 9 files changed, 149 insertions(+), 134 deletions(-)
+ 13 files changed, 209 insertions(+), 134 deletions(-)

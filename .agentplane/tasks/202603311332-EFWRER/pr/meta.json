@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311332-EFWRER/delete-bespoke-helpers",
   "created_at": "2026-03-31T19:39:35.710Z",
+  "head_sha": "d2f0f22944253bdc50a01b9378e640874e7955e8",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "264735a956b29f595d0050316cdabd11827d768a",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T19:40:36.840Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311332-EFWRER",
-  "updated_at": "2026-03-31T19:39:39.647Z",
+  "updated_at": "2026-03-31T19:40:36.840Z",
   "verify": {
     "status": "skipped"
   }

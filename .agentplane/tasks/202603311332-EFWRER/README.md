@@ -1,10 +1,11 @@
 ---
 id: "202603311332-EFWRER"
 title: "N6.4 Delete obsolete bespoke helpers after migration"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-EFWRER/delete-bespoke-helpers"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-03-31T19:39:20.588Z"
   updated_by: "CODER"
   note: "Deleted obsolete backends/task-backend.test-helpers.ts, moved backend suites onto shared mkTempDir/silenceStdIO helpers, and removed remaining runner wrapper-builders; eslint plus focused backend/runner vitest passed (130 tests)."
-commit: null
+commit:
+  hash: "264735a956b29f595d0050316cdabd11827d768a"
+  message: "📝 EFWRER task: add PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: delete obsolete bespoke test helpers now that shared backend, CLI, scenario, release, and runner helpers have landed; keep all relevant suites green."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-EFWRER/pr."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Deleted obsolete backends/task-backend.test-helpers.ts, moved backend suites onto shared mkTempDir/silenceStdIO helpers, and removed remaining runner wrapper-builders; eslint plus focused backend/runner vitest passed (130 tests)."
+  -
+    type: "status"
+    at: "2026-03-31T19:40:36.881Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-EFWRER/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T19:39:20.592Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T19:40:36.886Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N6.4 from REFACTOR.md. Reduce repeated fixture setup and assertion plumbing in the largest test suites after the new production seams are stable.. Acceptance: the new shared testkit replaces the superseded helpers cleanly. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
