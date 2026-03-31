@@ -1,7 +1,7 @@
  .agentplane/tasks/202603311332-5K9CNK/README.md    |  58 ++++++--
- .../tasks/202603311332-5K9CNK/pr/diffstat.txt      |   0
+ .../tasks/202603311332-5K9CNK/pr/diffstat.txt      |  18 +++
  .agentplane/tasks/202603311332-5K9CNK/pr/meta.json |  12 ++
- .agentplane/tasks/202603311332-5K9CNK/pr/review.md |  22 +++
+ .agentplane/tasks/202603311332-5K9CNK/pr/review.md |  46 +++++++
  .../tasks/202603311332-5K9CNK/pr/verify.log        |   0
  .../src/commands/shared/task-mutation.ts           |  27 +++-
  packages/agentplane/src/commands/task/derive.ts    |  21 ++-
@@ -15,4 +15,4 @@
  .../src/commands/task/verify-record.unit.test.ts   | 152 +++++----------------
  .../runner/usecases/scenario-materialize-task.ts   |  21 ++-
  packages/agentplane/src/shared/task-doc-state.ts   |  31 +++++
- 17 files changed, 420 insertions(+), 506 deletions(-)
+ 17 files changed, 462 insertions(+), 506 deletions(-)

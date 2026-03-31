@@ -1,10 +1,11 @@
 ---
 id: "202603311332-5K9CNK"
 title: "N4.4 Move command handlers and task materialization callers onto the shared doc path"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-5K9CNK/shared-doc-path-callers"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-03-31T18:25:30.412Z"
   updated_by: "CODER"
   note: "Moved task doc/plan/verify flows onto applyTaskMutation plus shared doc-state materializers for new/derive/scenario paths; verified with eslint, focused vitest slice (doc/plan/verify/parity/scenario/migrate-doc), and agentplane build."
-commit: null
+commit:
+  hash: "4debd69c9b62dbbee3e5767ea633e0ba4fdee267"
+  message: "🧾 5K9CNK task: finalize PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: move task doc command callers and task materialization paths onto the shared doc mutation/write path, keep conflict/revision behavior unified, and delete now-redundant branching instead of layering more adapters."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-5K9CNK/pr."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Moved task doc/plan/verify flows onto applyTaskMutation plus shared doc-state materializers for new/derive/scenario paths; verified with eslint, focused vitest slice (doc/plan/verify/parity/scenario/migrate-doc), and agentplane build."
+  -
+    type: "status"
+    at: "2026-03-31T18:28:35.901Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-5K9CNK/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T18:25:30.416Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T18:28:35.905Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N4.4 from REFACTOR.md. Remove the current duplication between core task-doc primitives, the local task store, and backend doc mutation paths.. Acceptance: these callers no longer rebuild doc mutation logic locally. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
