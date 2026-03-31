@@ -1,4 +1,8 @@
  .agentplane/tasks/202603311331-Q9B3R2/README.md    |  58 ++++-
+ .../tasks/202603311331-Q9B3R2/pr/diffstat.txt      |   4 +
+ .agentplane/tasks/202603311331-Q9B3R2/pr/meta.json |  12 +
+ .agentplane/tasks/202603311331-Q9B3R2/pr/review.md |  32 +++
+ .../tasks/202603311331-Q9B3R2/pr/verify.log        |   0
  .../src/cli/hotspot-report-script.test.ts          | 197 +++++++++++++++
  scripts/hotspot-report.mjs                         | 275 +++++++++++++++++++++
- 3 files changed, 517 insertions(+), 13 deletions(-)
+ 7 files changed, 565 insertions(+), 13 deletions(-)

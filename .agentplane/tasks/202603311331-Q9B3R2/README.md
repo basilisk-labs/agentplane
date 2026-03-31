@@ -1,10 +1,11 @@
 ---
 id: "202603311331-Q9B3R2"
 title: "N0.4 Add one lightweight hotspot report script"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-Q9B3R2/hotspot-report-script"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T14:31:12.281Z"
   updated_by: "CODER"
   note: "Added hotspot-report script and fixture test; verified with node scripts/hotspot-report.mjs, bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts, and bunx eslint scripts/hotspot-report.mjs packages/agentplane/src/cli/hotspot-report-script.test.ts."
-commit: null
+commit:
+  hash: "e0cb44665aaa09e29f94b580a546ffb67dcf759f"
+  message: "📝 Q9B3R2 task: add PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: add one repeatable hotspot report script that counts direct stdio writes, backend-type branches, and oversized runtime modules so refactor progress can be measured without hand auditing the tree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-Q9B3R2/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added hotspot-report script and fixture test; verified with node scripts/hotspot-report.mjs, bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts, and bunx eslint scripts/hotspot-report.mjs packages/agentplane/src/cli/hotspot-report-script.test.ts."
+  -
+    type: "status"
+    at: "2026-03-31T14:33:41.136Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-Q9B3R2/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T14:31:12.284Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T14:33:41.139Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N0.4 from REFACTOR.md. Lock the behavior that the next refactor wave is most likely to disturb: output formatting, local-vs-remote task mutation parity, and task-doc mutation semantics.. Acceptance: one repeatable script reports current counts for direct stdio writes, backend-type branches, and oversized runtime modules. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
