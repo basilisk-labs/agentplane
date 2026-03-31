@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301857-CD83AZ/local-backend-projection-fast-path",
   "created_at": "2026-03-31T09:38:47.500Z",
+  "head_sha": "ecdd02b58ffea87691d955ebaaf7193f02db7c9d",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "86e20b17a4ed7d8ef564164d8c80d715ee25ac1b",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T09:41:49.896Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301857-CD83AZ",
-  "updated_at": "2026-03-31T09:40:26.444Z",
+  "updated_at": "2026-03-31T09:41:49.896Z",
   "verify": {
     "status": "skipped"
   }

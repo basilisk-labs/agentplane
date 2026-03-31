@@ -1,10 +1,11 @@
 ---
 id: "202603301857-CD83AZ"
 title: "Implement a real local-backend `listProjectionTasks()` fast path"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-CD83AZ/local-backend-projection-fast-path"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T09:37:17.897Z"
   updated_by: "CODER"
   note: "Focused vitest slice passed for local projection fast path and full-read separation; agentplane build and eslint passed on touched backend files."
-commit: null
+commit:
+  hash: "86e20b17a4ed7d8ef564164d8c80d715ee25ac1b"
+  message: "🧩 CD83AZ integrate: squash task/202603301857-CD83AZ/local-backend-projection-fast-path"
 comments:
   -
     author: "CODER"
     body: "Start: split projection and full-read paths in LocalBackend so summary reads use the task index and full reads stay canonical."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-CD83AZ/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused vitest slice passed for local projection fast path and full-read separation; agentplane build and eslint passed on touched backend files."
+  -
+    type: "status"
+    at: "2026-03-31T09:41:49.936Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-CD83AZ/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T09:37:17.900Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T09:41:49.941Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 2 / R2.2 from REFACTOR.md. summary reads hit the task index on cache hit and only parse README files on cache miss or invalidation."
 sections:
   Summary: |-
