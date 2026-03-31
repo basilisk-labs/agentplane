@@ -1,10 +1,11 @@
 ---
 id: "202603301857-32E1F0"
 title: "Introduce one shared `queryTaskProjection()` pipeline"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-32E1F0/shared-task-projection-query"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-31T10:03:07.880Z"
   updated_by: "CODER"
   note: "Shared helper/unit tests, workflow command tests, and CLI exact-output query contracts all passed after moving list/search/next onto one projection query pipeline."
-commit: null
+commit:
+  hash: "4da2e8abb6da9fe20f74ada564ceeebd4dbe2f61"
+  message: "🧩 32E1F0 integrate: squash task/202603301857-32E1F0/shared-task-projection-query"
 comments:
   -
     author: "CODER"
     body: "Start: unify status/owner/tag filtering, sorting, limit, and dependency-state preparation behind one shared task projection query path for list/search/next."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-32E1F0/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Shared helper/unit tests, workflow command tests, and CLI exact-output query contracts all passed after moving list/search/next onto one projection query pipeline."
+  -
+    type: "status"
+    at: "2026-03-31T10:04:48.102Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-32E1F0/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T10:03:07.888Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T10:04:48.108Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 3 / R3.1 from REFACTOR.md. status/owner/tag filtering, sorting, `limit`, and dependency-state preparation live in one shared path."
 sections:
   Summary: |-

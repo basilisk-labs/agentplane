@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301857-32E1F0/shared-task-projection-query",
   "created_at": "2026-03-31T10:03:43.158Z",
+  "head_sha": "90488502e06233bedeccbd7334ca47d872a0ab78",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "4da2e8abb6da9fe20f74ada564ceeebd4dbe2f61",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T10:04:48.048Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301857-32E1F0",
-  "updated_at": "2026-03-31T10:03:57.936Z",
+  "updated_at": "2026-03-31T10:04:48.048Z",
   "verify": {
     "status": "skipped"
   }
