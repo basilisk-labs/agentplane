@@ -5,12 +5,8 @@ import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
-import {
-  loadCommandContext,
-  loadTaskFromContext,
-  type CommandContext,
-} from "../shared/task-backend.js";
-import { withTaskMutationStorage } from "../shared/task-mutation.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { applyTaskMutation } from "../shared/task-mutation.js";
 
 import {
   decodeEscapedTaskTextNewlines,
@@ -53,39 +49,23 @@ async function recordVerificationResult(opts: {
   }
 
   const at = nowIso();
-  await withTaskMutationStorage({
+  await applyTaskMutation({
     ctx,
-    local: async (store) => {
-      await store.mutate(opts.taskId, (current) => {
-        const execution = executeTaskVerificationTransitionRequest({
-          task: current,
-          at,
-          by: opts.by,
-          note: opts.note,
-          state: opts.state,
-          details: opts.details ?? null,
-          doc: String(current.doc ?? ""),
-          requiredSections: config.tasks.doc.required_sections,
-        });
-        return execution.intents;
-      });
-    },
-    remote: async () => {
-      const remoteTask = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+    taskId: opts.taskId,
+    build: async (current) => {
       const execution = executeTaskVerificationTransitionRequest({
-        task: remoteTask,
+        task: current,
         at,
         by: opts.by,
         note: opts.note,
         state: opts.state,
         details: opts.details ?? null,
         doc:
-          (typeof remoteTask.doc === "string" ? remoteTask.doc : "") ||
-          (await backend.getTaskDoc!(remoteTask.id)),
+          (typeof current.doc === "string" ? current.doc : "") ||
+          (await backend.getTaskDoc!(current.id)),
         requiredSections: config.tasks.doc.required_sections,
       });
-
-      await backend.writeTask(execution.nextTask);
+      return { intents: execution.intents };
     },
   });
 

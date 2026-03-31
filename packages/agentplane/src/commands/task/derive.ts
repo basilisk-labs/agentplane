@@ -1,8 +1,9 @@
-import { setMarkdownSection, taskDocToSectionMap } from "@agentplaneorg/core";
+import { setMarkdownSection } from "@agentplaneorg/core";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { unknownEntityMessage, warnMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { buildTaskDocState } from "../../shared/task-doc-state.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import {
   buildDefaultVerifyStepsSection,
@@ -114,7 +115,13 @@ export async function cmdTaskDerive(opts: {
       );
     }
 
-    const at = nowIso();
+    const docState = buildTaskDocState({
+      doc,
+      owner: opts.owner,
+      updatedBy: opts.owner,
+      version: TASK_DOC_VERSION_V3,
+      updatedAt: nowIso(),
+    });
     await ctx.taskBackend.writeTask({
       id: taskId,
       title: opts.title,
@@ -126,11 +133,11 @@ export async function cmdTaskDerive(opts: {
       depends_on: [opts.spikeId],
       verify: opts.verify,
       comments: [],
-      doc,
-      sections: taskDocToSectionMap(doc),
-      doc_version: TASK_DOC_VERSION_V3,
-      doc_updated_at: at,
-      doc_updated_by: opts.owner,
+      doc: docState.doc,
+      sections: docState.sections,
+      doc_version: docState.doc_version,
+      doc_updated_at: docState.doc_updated_at,
+      doc_updated_by: docState.doc_updated_by,
       id_source: "generated",
     });
 

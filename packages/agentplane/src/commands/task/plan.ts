@@ -12,7 +12,12 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { withTaskMutationStorage } from "../shared/task-mutation.js";
+import { applyTaskMutation, withTaskMutationStorage } from "../shared/task-mutation.js";
+import {
+  setTaskFieldsIntent,
+  setTaskSectionIntent,
+  touchTaskDocMetaIntent,
+} from "../shared/task-store.js";
 
 import {
   decodeEscapedTaskTextNewlines,
@@ -207,86 +212,65 @@ export async function cmdTaskPlanSet(opts: {
       opts.taskId,
       "README.md",
     );
-    await withTaskMutationStorage({
+    await applyTaskMutation({
       ctx,
-      local: async (store) => {
-        await store.get(opts.taskId);
-        let expectedCurrentPlan: string | undefined;
-        await store.patch(opts.taskId, (current) => {
-          const { currentPlan, nextPlan, planChanged, docChanged } = buildPlanDocUpdate({
-            currentDocRaw: String(current.doc ?? ""),
-            text,
-            requiredSections: config.tasks.doc.required_sections,
-          });
-          if (!planChanged && !docChanged && !updatedBy) return null;
-          if (!docChanged) {
-            return {
+      taskId: opts.taskId,
+      build: async (current) => {
+        const currentDocRaw =
+          (typeof current.doc === "string" ? current.doc : "") ||
+          (await backend.getTaskDoc(current.id));
+        const { currentPlan, nextPlan, planChanged, docChanged } = buildPlanDocUpdate({
+          currentDocRaw,
+          text,
+          requiredSections: config.tasks.doc.required_sections,
+        });
+        if (!planChanged && !docChanged && !updatedBy) return null;
+        if (!docChanged) {
+          return {
+            intents: [
               ...(planChanged
-                ? {
-                    task: {
+                ? [
+                    setTaskFieldsIntent({
                       plan_approval: {
                         state: "pending",
                         updated_at: null,
                         updated_by: null,
                         note: null,
                       },
-                    },
-                  }
-                : {}),
-              ...(updatedBy ? { docMeta: { touch: true, updatedBy } } : {}),
-            };
-          }
-          expectedCurrentPlan ??= currentPlan;
-          return {
-            doc: {
-              kind: "set-section",
+                    }),
+                  ]
+                : []),
+              ...(updatedBy ? [touchTaskDocMetaIntent({ updatedBy })] : []),
+            ],
+          };
+        }
+        return {
+          intents: [
+            setTaskSectionIntent({
               section: "Plan",
               text: nextPlan,
               requiredSections: config.tasks.doc.required_sections,
-              expectedCurrentText: expectedCurrentPlan,
-            },
+              expectedCurrentText: currentPlan,
+            }),
             ...(planChanged
-              ? {
-                  task: {
+              ? [
+                  setTaskFieldsIntent({
                     plan_approval: {
                       state: "pending",
                       updated_at: null,
                       updated_by: null,
                       note: null,
                     },
-                  },
-                }
-              : {}),
-            ...(updatedBy ? { docMeta: { updatedBy } } : {}),
-          };
-        });
-      },
-      remote: async () => {
-        const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
-        const existingDoc =
-          (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
-        const { planChanged, docChanged, nextDoc } = buildPlanDocUpdate({
-          currentDocRaw: existingDoc,
-          text,
-          requiredSections: config.tasks.doc.required_sections,
-        });
-        if (!planChanged && !docChanged && !updatedBy) return;
-        const nextTask: TaskData = {
-          ...task,
-          doc: nextDoc,
-          ...(planChanged
-            ? {
-                plan_approval: {
-                  state: "pending",
-                  updated_at: null,
-                  updated_by: null,
-                  note: null,
-                },
-              }
-            : {}),
-          ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
+                  }),
+                ]
+              : []),
+            ...(updatedBy ? [touchTaskDocMetaIntent({ updatedBy })] : []),
+          ],
+          writeOptions: {
+            expectedCurrentText: currentPlan,
+            expectedSection: "Plan",
+          },
         };
-        await backend.writeTask(nextTask);
       },
     });
 

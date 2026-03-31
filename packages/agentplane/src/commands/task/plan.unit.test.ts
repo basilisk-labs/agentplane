@@ -23,10 +23,18 @@ vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mockLoadCommandContext,
   loadTaskFromContext: mockLoadTaskFromContext,
 }));
-vi.mock("../shared/task-store.js", () => ({
-  backendIsLocalFileBackend: mockBackendIsLocalFileBackend,
-  getTaskStore: mockGetTaskStore,
-}));
+vi.mock("../shared/task-store.js", async (importOriginal) => {
+  const actualUnknown: unknown = await importOriginal();
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    backendIsLocalFileBackend: mockBackendIsLocalFileBackend,
+    getTaskStore: mockGetTaskStore,
+  };
+});
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
   return {
@@ -432,12 +440,11 @@ describe("task plan commands (unit)", () => {
       ].join("\n"),
     });
     const store = {
-      get: vi.fn().mockResolvedValue(currentTask),
-      patch: vi
+      update: vi
         .fn()
         .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await updater(currentTask);
             return { changed: true, task: currentTask };
           },
         ),
@@ -466,21 +473,6 @@ describe("task plan commands (unit)", () => {
       return true;
     });
 
-    const staleTask = mkTask({
-      doc: [
-        "## Summary",
-        "Stale summary",
-        "",
-        "## Plan",
-        "Old plan",
-        "",
-        "## Verify Steps",
-        "Old verify steps",
-        "",
-        "## Notes",
-        "Stale notes",
-      ].join("\n"),
-    });
     let currentTask = mkTask({
       doc: [
         "## Summary",
@@ -497,12 +489,11 @@ describe("task plan commands (unit)", () => {
       ].join("\n"),
     });
     const store = {
-      get: vi.fn().mockResolvedValue(staleTask),
-      patch: vi
+      update: vi
         .fn()
         .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await updater(currentTask);
             return { changed: true, task: currentTask };
           },
         ),
@@ -521,8 +512,7 @@ describe("task plan commands (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(store.get).toHaveBeenCalledTimes(1);
-    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(store.update).toHaveBeenCalledTimes(1);
     expect(currentTask.plan_approval?.state).toBe("pending");
     expect(currentTask.doc_updated_by).toBe("ME");
     expect(currentTask.doc).toMatch(/## Summary\s+Concurrent summary/);
@@ -535,24 +525,8 @@ describe("task plan commands (unit)", () => {
   });
 
   it("cmdTaskPlanSet surfaces semantic plan conflicts from the task store", async () => {
-    const currentTask = mkTask({
-      doc: [
-        "## Summary",
-        "Summary",
-        "",
-        "## Plan",
-        "Old plan",
-        "",
-        "## Verify Steps",
-        "Run checks",
-        "",
-        "## Notes",
-        "n/a",
-      ].join("\n"),
-    });
     const store = {
-      get: vi.fn().mockResolvedValue(currentTask),
-      patch: vi.fn().mockRejectedValue(
+      update: vi.fn().mockRejectedValue(
         new CliError({
           exitCode: 3,
           code: "E_VALIDATION",

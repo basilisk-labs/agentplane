@@ -9,7 +9,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { TaskBackend, TaskData, TaskEvent } from "../../backends/task-backend.js";
 import { GitContext } from "../shared/git-context.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { taskStorePatchFromIntents, type TaskStorePatch } from "../shared/task-store.js";
 
 type BackendMode = "local" | "remote";
 
@@ -98,41 +97,9 @@ function normalizeEvents(task: TaskData): TaskEvent[] {
     : [];
 }
 
-function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
-  if (!patch) return cloneTask(current);
-
-  const next: TaskData = patch.task ? { ...cloneTask(current), ...patch.task } : cloneTask(current);
-
-  if (patch.appendComments && patch.appendComments.length > 0) {
-    next.comments = [...normalizeComments(current), ...patch.appendComments];
-  }
-  if (patch.appendEvents && patch.appendEvents.length > 0) {
-    next.events = [...normalizeEvents(current), ...patch.appendEvents];
-  }
-  if (patch.doc) {
-    if (patch.doc.kind === "replace-doc") {
-      next.doc = renderTaskDocFromSections(taskDocToSectionMap(patch.doc.doc));
-    } else {
-      const sections = taskDocToSectionMap(String(current.doc ?? ""));
-      for (const section of patch.doc.requiredSections) {
-        if (!(section in sections)) sections[section] = "";
-      }
-      sections[patch.doc.section] = patch.doc.text.replaceAll("\r\n", "\n").trimEnd();
-      next.doc = renderTaskDocFromSections(sections);
-    }
-    next.sections = taskDocToSectionMap(String(next.doc ?? ""));
-  }
-  if (patch.doc || patch.docMeta?.touch === true) {
-    next.doc_version = patch.docMeta?.version ?? next.doc_version;
-    next.doc_updated_at = new Date().toISOString();
-    next.doc_updated_by = patch.docMeta?.updatedBy ?? next.doc_updated_by;
-  }
-
-  return next;
-}
-
 function normalizeTaskDocForComparison(doc: unknown): string | undefined {
   if (typeof doc !== "string") return undefined;
+  if (doc.trim().length === 0) return undefined;
   return renderTaskDocFromSections(taskDocToSectionMap(doc));
 }
 
@@ -463,11 +430,8 @@ async function runVerifyRecordScenario(mode: BackendMode) {
     return Promise.resolve();
   });
   const store = {
-    mutate: vi.fn(async (_taskId: string, builder: (current: TaskData) => unknown) => {
-      currentTask = applyStorePatch(
-        currentTask,
-        taskStorePatchFromIntents(await builder(cloneTask(currentTask))),
-      );
+    update: vi.fn(async (_taskId: string, updater: (current: TaskData) => unknown) => {
+      currentTask = cloneTask((await updater(cloneTask(currentTask))) as TaskData);
       return { changed: true, task: cloneTask(currentTask) };
     }),
   };
@@ -507,7 +471,7 @@ async function runVerifyRecordScenario(mode: BackendMode) {
     }),
   );
 
-  return { ...output, task: currentTask, writeTask, mutate: store.mutate };
+  return { ...output, task: currentTask, writeTask, update: store.update };
 }
 
 async function runDocSetScenario(mode: BackendMode) {
@@ -535,27 +499,27 @@ async function runDocSetScenario(mode: BackendMode) {
   });
   let remoteDoc = baseDoc;
   let remoteUpdatedBy: string | undefined;
-  const setTaskDoc = vi.fn((_taskId: string, nextDoc: string, updatedBy?: string) => {
-    remoteDoc = nextDoc;
-    remoteUpdatedBy = updatedBy;
+  const writeTask = vi.fn((task: TaskData) => {
+    remoteDoc = String(task.doc ?? "");
+    remoteUpdatedBy = task.doc_updated_by;
     return Promise.resolve();
   });
   const store = {
-    patch: vi.fn(
-      async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch | null>) => {
-        currentTask = applyStorePatch(currentTask, await builder(cloneTask(currentTask)));
-        return { changed: true, task: cloneTask(currentTask) };
-      },
-    ),
+    update: vi.fn(async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+      currentTask = await updater(cloneTask(currentTask));
+      return { changed: true, task: cloneTask(currentTask) };
+    }),
   };
   const backend = createBackend({
     getTaskDoc: vi.fn(() => Promise.resolve(baseDoc)),
-    setTaskDoc,
+    writeTask,
   });
   const ctx = mkCtx(backend);
+  const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
 
   vi.doMock("../shared/task-backend.js", () => ({
     loadCommandContext: vi.fn(),
+    loadTaskFromContext,
   }));
   vi.doMock("../shared/task-store.js", async () => {
     const actual = await vi.importActual("../shared/task-store.js");
@@ -584,8 +548,8 @@ async function runDocSetScenario(mode: BackendMode) {
     task: currentTask,
     remoteDoc,
     remoteUpdatedBy,
-    patch: store.patch,
-    setTaskDoc,
+    update: store.update,
+    writeTask,
   };
 }
 
@@ -667,7 +631,7 @@ describe("task mutation parity across local and backend paths", () => {
     expect(projectTaskMutation(local.task)).toEqual(projectTaskMutation(remote.task));
     expect(local.stdout).toBe(remote.stdout);
     expect(local.stderr).toBe(remote.stderr);
-    expect(local.mutate).toHaveBeenCalledTimes(1);
+    expect(local.update).toHaveBeenCalledTimes(1);
     expect(remote.writeTask).toHaveBeenCalledTimes(1);
   });
 
@@ -684,7 +648,7 @@ describe("task mutation parity across local and backend paths", () => {
     expect(remote.remoteUpdatedBy).toBe("CODER");
     expect(local.stdout).toBe(remote.stdout);
     expect(local.stderr).toBe(remote.stderr);
-    expect(local.patch).toHaveBeenCalledTimes(1);
-    expect(remote.setTaskDoc).toHaveBeenCalledTimes(1);
+    expect(local.update).toHaveBeenCalledTimes(1);
+    expect(remote.writeTask).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,9 +1,10 @@
-import { setMarkdownSection, taskDocToSectionMap } from "@agentplaneorg/core";
+import { setMarkdownSection } from "@agentplaneorg/core";
 
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, warnMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { buildTaskDocState } from "../../shared/task-doc-state.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import {
   ensureTaskDependsOnGraphIsAcyclic,
@@ -97,6 +98,13 @@ export async function runTaskNewParsed(opts: {
       });
     }
     const taskId = await ctx.taskBackend.generateTaskId({ length: suffixLength, attempts: 1000 });
+    const docState = buildTaskDocState({
+      doc: defaultTaskDocV3({ title: p.title, description: p.description }),
+      owner: p.owner,
+      updatedBy: p.owner,
+      version: TASK_DOC_VERSION_V3,
+      updatedAt: nowIso(),
+    });
     const task: TaskData = {
       id: taskId,
       title: p.title,
@@ -110,11 +118,11 @@ export async function runTaskNewParsed(opts: {
       depends_on: p.dependsOn,
       verify: p.verify,
       comments: [],
-      doc_version: TASK_DOC_VERSION_V3,
-      doc_updated_at: nowIso(),
-      doc_updated_by: p.owner,
+      doc_version: docState.doc_version,
+      doc_updated_at: docState.doc_updated_at,
+      doc_updated_by: docState.doc_updated_by,
       id_source: "generated",
-      doc: defaultTaskDocV3({ title: p.title, description: p.description }),
+      doc: docState.doc,
     };
 
     const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
@@ -158,7 +166,18 @@ export async function runTaskNewParsed(opts: {
       );
     }
 
-    task.sections = taskDocToSectionMap(task.doc ?? "");
+    const normalizedDoc = buildTaskDocState({
+      doc: task.doc ?? "",
+      owner: p.owner,
+      updatedBy: task.doc_updated_by,
+      version: TASK_DOC_VERSION_V3,
+      updatedAt: task.doc_updated_at,
+    });
+    task.doc = normalizedDoc.doc;
+    task.sections = normalizedDoc.sections;
+    task.doc_version = normalizedDoc.doc_version;
+    task.doc_updated_at = normalizedDoc.doc_updated_at;
+    task.doc_updated_by = normalizedDoc.doc_updated_by;
 
     await ctx.taskBackend.writeTask(task);
     process.stdout.write(`${taskId}\n`);

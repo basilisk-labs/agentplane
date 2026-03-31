@@ -11,6 +11,7 @@ export type TaskMutationPlan = {
   intents?: TaskStoreIntentResult;
   nextTask?: TaskData;
   forceWrite?: boolean;
+  writeOptions?: TaskWriteOptions;
 };
 
 export type TaskCollectionMutationPlan<TResult> = {
@@ -58,24 +59,38 @@ export async function applyTaskMutation(opts: {
   }
 
   const current = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
-  const plan = await opts.build({ ...current });
+  let materializedCurrent = current;
+  if (opts.ctx.taskBackend.getTaskDoc) {
+    const currentDoc =
+      typeof current.doc === "string" && current.doc.length > 0
+        ? current.doc
+        : ((await opts.ctx.taskBackend.getTaskDoc(opts.taskId)) ?? "");
+    if (currentDoc !== current.doc) {
+      materializedCurrent = { ...current, doc: currentDoc };
+    }
+  }
+
+  const plan = await opts.build({ ...materializedCurrent });
   if (!plan) return { changed: false, task: current, mode: "backend" };
 
   const nextTask =
     plan.nextTask ??
-    (plan.intents === undefined ? undefined : applyTaskStoreIntentsToTask(current, plan.intents));
+    (plan.intents === undefined
+      ? undefined
+      : applyTaskStoreIntentsToTask(materializedCurrent, plan.intents));
   if (nextTask === undefined) {
     return { changed: false, task: current, mode: "backend" };
   }
 
-  const changed = JSON.stringify(current) !== JSON.stringify(nextTask);
+  const changed = JSON.stringify(materializedCurrent) !== JSON.stringify(nextTask);
   if (!changed && plan.forceWrite !== true) {
     return { changed: false, task: nextTask, mode: "backend" };
   }
 
-  await opts.ctx.taskBackend.writeTask(nextTask, {
-    expectedRevision: opts.writeOptions?.expectedRevision,
-  });
+  const mergedWriteOptions: TaskWriteOptions = {};
+  if (opts.writeOptions) Object.assign(mergedWriteOptions, opts.writeOptions);
+  if (plan.writeOptions) Object.assign(mergedWriteOptions, plan.writeOptions);
+  await opts.ctx.taskBackend.writeTask(nextTask, mergedWriteOptions);
   return { changed, task: nextTask, mode: "backend" };
 }
 
