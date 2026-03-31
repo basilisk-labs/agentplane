@@ -229,11 +229,14 @@ export async function runCli(argv: string[]): Promise<number> {
 
     matched = matchCommandCatalog(rest);
     const resolved = await getMaybeResolvedProject();
+    const matchedDispatch = matched?.entry.dispatch ?? null;
+    const commandNeedsLoadedConfig = matchedDispatch?.loadedConfig === true;
 
     // `require_network=true` means "no network without explicit approval".
-    // Update-check is an optional network call, so it must be gated after config load.
+    // Update-check is optional and should only cross the loaded-config boundary
+    // when the matched command will cross it anyway.
     let skipUpdateCheckForPolicy = true;
-    if (resolved && matched?.entry.dispatch.loadedConfig !== false) {
+    if (resolved && commandNeedsLoadedConfig && !globals.noUpdateCheck) {
       try {
         const loaded = await getLoadedConfig("update-check");
         const requireNetwork = getApprovalRequirements({
@@ -249,10 +252,7 @@ export async function runCli(argv: string[]): Promise<number> {
     }
     await maybeWarnOnUpdate({
       currentVersion: getVersion(),
-      skip:
-        globals.noUpdateCheck ||
-        skipUpdateCheckForPolicy ||
-        matched?.entry.dispatch.loadedConfig === false,
+      skip: globals.noUpdateCheck || skipUpdateCheckForPolicy || !commandNeedsLoadedConfig,
       jsonErrors,
     });
 

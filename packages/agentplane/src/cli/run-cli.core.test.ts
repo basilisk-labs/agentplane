@@ -639,6 +639,25 @@ describe("runCli", () => {
     }
   });
 
+  it("does not load .env for unknown commands before usage guidance", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const marker = "AGENTPLANE_TEST_SKIP_DOTENV_FOR_UNKNOWN";
+    delete process.env[marker];
+    await writeFile(path.join(root, ".env"), `${marker}=from-dotenv\n`, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Unknown command: nope");
+      expect(process.env[marker]).toBeUndefined();
+    } finally {
+      delete process.env[marker];
+      io.restore();
+    }
+  });
+
   it("renders task namespace help instead of treating task as an unknown command", async () => {
     const io = captureStdIO();
     try {

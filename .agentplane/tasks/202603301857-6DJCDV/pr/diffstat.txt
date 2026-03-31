@@ -1,0 +1,4 @@
+ .agentplane/tasks/202603301857-6DJCDV/README.md  | 102 ++++++++++++++++++++---
+ packages/agentplane/src/cli/run-cli.core.test.ts |  19 +++++
+ packages/agentplane/src/cli/run-cli.ts           |  12 +--
+ 3 files changed, 114 insertions(+), 19 deletions(-)
