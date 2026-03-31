@@ -1,10 +1,11 @@
 ---
 id: "202603311331-WTQE65"
 title: "N0.1 Lock representative text and JSON output for current hotspot commands"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-WTQE65/output-contract-safety-net"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T13:47:28.667Z"
   updated_by: "CODER"
   note: "Focused vitest and eslint slices passed; exact-output contracts now lock JSON pretty-print and plain-text layouts for runtime/config, task run show, handoff show, reclaim, and resume-context surfaces targeted by N1."
-commit: null
+commit:
+  hash: "5493cb86bd059fc2e7bcb8b0d78cb969e2a1428a"
+  message: "🧩 WTQE65 integrate: squash task/202603311331-WTQE65/output-contract-safety-net"
 comments:
   -
     author: "CODER"
     body: "Start: lock representative plain-text and JSON output contracts across the highest-value output-heavy command families so later emitter consolidation can delete formatting code without losing functional coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-WTQE65/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused vitest and eslint slices passed; exact-output contracts now lock JSON pretty-print and plain-text layouts for runtime/config, task run show, handoff show, reclaim, and resume-context surfaces targeted by N1."
+  -
+    type: "status"
+    at: "2026-03-31T13:50:39.909Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-WTQE65/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:47:28.668Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T13:50:39.911Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N0.1 from REFACTOR.md. Lock the behavior that the next refactor wave is most likely to disturb: output formatting, local-vs-remote task mutation parity, and task-doc mutation semantics.. Acceptance: exact-output tests cover both plain-text and JSON shapes for the command families targeted by `N1`. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
