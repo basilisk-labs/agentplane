@@ -1,0 +1,10 @@
+ .agentplane/tasks/202603311332-QS4K75/README.md    |  58 ++-
+ .../tasks/202603311332-QS4K75/pr/diffstat.txt      |   7 +
+ .agentplane/tasks/202603311332-QS4K75/pr/meta.json |  12 +
+ .agentplane/tasks/202603311332-QS4K75/pr/review.md |  35 ++
+ .../tasks/202603311332-QS4K75/pr/verify.log        |   0
+ .../runner/usecases/task-run-lifecycle-cancel.ts   | 193 +++++++
+ .../runner/usecases/task-run-lifecycle-replay.ts   | 156 ++++++
+ .../runner/usecases/task-run-lifecycle-shared.ts   | 244 +++++++++
+ .../src/runner/usecases/task-run-lifecycle.ts      | 576 +--------------------
+ 9 files changed, 702 insertions(+), 579 deletions(-)

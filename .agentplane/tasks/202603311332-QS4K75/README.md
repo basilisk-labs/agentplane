@@ -1,10 +1,10 @@
 ---
 id: "202603311332-QS4K75"
 title: "N5.5 Split `runner/usecases/task-run-lifecycle.ts` by state transition and artifact/report concern"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -15,21 +15,37 @@ tags:
   - "runner"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T20:45:12.446Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T20:51:53.848Z"
+  updated_by: "CODER"
+  note: "Split runner/usecases/task-run-lifecycle.ts into shared/cancel/replay modules while preserving lifecycle contracts; eslint plus task-run-lifecycle and run-cli task query suites stayed green."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: split runner/usecases/task-run-lifecycle.ts into shared, cancel, and replay modules while preserving lifecycle event ordering, execute-mode gating, and public import surface."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T20:46:34.115Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split runner/usecases/task-run-lifecycle.ts into shared, cancel, and replay modules while preserving lifecycle event ordering, execute-mode gating, and public import surface."
+  -
+    type: "verify"
+    at: "2026-03-31T20:51:53.848Z"
+    author: "CODER"
+    state: "ok"
+    note: "Split runner/usecases/task-run-lifecycle.ts into shared/cancel/replay modules while preserving lifecycle contracts; eslint plus task-run-lifecycle and run-cli task query suites stayed green."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:32:40.691Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T20:51:53.852Z"
+doc_updated_by: "CODER"
 description: "Implement N5.5 from REFACTOR.md. Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.. Acceptance: runner lifecycle orchestration uses smaller units aligned to preparation, execution, and finalization phases. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: runner lifecycle orchestration uses smaller units aligned to preparation, execution, and finalization phases.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T20:51:53.848Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Split runner/usecases/task-run-lifecycle.ts into shared/cancel/replay modules while preserving lifecycle contracts; eslint plus task-run-lifecycle and run-cli task query suites stayed green.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T20:46:34.132Z, excerpt_hash=sha256:a54c398271e291f3863fd0b1559b73ad5695d0381fd943386743c915e79fa07c
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +106,14 @@ Implement N5.5 from REFACTOR.md. Use the seams created by `N1` through `N4` to s
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T20:51:53.848Z — VERIFY — ok
+
+By: CODER
+
+Note: Split runner/usecases/task-run-lifecycle.ts into shared/cancel/replay modules while preserving lifecycle contracts; eslint plus task-run-lifecycle and run-cli task query suites stayed green.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T20:46:34.132Z, excerpt_hash=sha256:a54c398271e291f3863fd0b1559b73ad5695d0381fd943386743c915e79fa07c
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

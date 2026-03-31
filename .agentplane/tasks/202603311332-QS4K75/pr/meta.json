@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603311332-QS4K75/split-task-run-lifecycle",
+  "created_at": "2026-03-31T20:52:02.943Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603311332-QS4K75",
+  "updated_at": "2026-03-31T20:53:03.454Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
