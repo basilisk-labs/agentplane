@@ -4,6 +4,7 @@ import {
   throwGroupCommandUsage,
   directSubcommandNames,
   directSubcommandNamesFromIds,
+  loadDirectSubcommandNames,
 } from "./group-command.js";
 import type { CommandId, CommandSpec } from "./spec/spec.js";
 
@@ -32,6 +33,14 @@ describe("group-command helper", () => {
 
   it("derives direct subcommands from command ids without leaking grandchildren", () => {
     expect(directSubcommandNamesFromIds(["demo"], childIds)).toEqual(["alpha", "beta"]);
+  });
+
+  it("loads direct subcommands from the canonical command graph lazily", async () => {
+    await expect(loadDirectSubcommandNames(["task", "plan"])).resolves.toEqual([
+      "approve",
+      "reject",
+      "set",
+    ]);
   });
 
   it("renders usage errors with suggestions for unknown subcommands", () => {

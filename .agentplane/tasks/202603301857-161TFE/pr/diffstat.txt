@@ -1,0 +1,22 @@
+ .agentplane/tasks/202603301857-161TFE/README.md    | 101 ++++++++++++++++++---
+ packages/agentplane/src/cli/group-command.test.ts  |   9 ++
+ packages/agentplane/src/cli/group-command.ts       |   6 ++
+ .../src/cli/run-cli.core.group-root-usage.test.ts  |  72 +++++++++++++++
+ .../src/commands/backend/sync.command.ts           |   9 +-
+ .../agentplane/src/commands/branch/base.command.ts |   9 +-
+ .../src/commands/cleanup/merged.command.ts         |   6 +-
+ .../agentplane/src/commands/guard/guard.command.ts |  11 +--
+ .../agentplane/src/commands/hooks/hooks.command.ts |  11 +--
+ packages/agentplane/src/commands/pr/pr.command.ts  |   6 +-
+ .../src/commands/recipes/cache.command.ts          |   9 +-
+ .../src/commands/recipes/recipes.command.ts        |  23 +----
+ .../src/commands/release/release.command.ts        |  10 +-
+ .../agentplane/src/commands/runtime.command.ts     |   6 +-
+ .../src/commands/scenario/scenario.command.ts      |  17 +---
+ .../agentplane/src/commands/task/doc.command.ts    |  10 +-
+ .../src/commands/task/handoff.command.ts           |  11 +--
+ .../agentplane/src/commands/task/plan.command.ts   |  11 +--
+ .../agentplane/src/commands/task/task.command.ts   |  71 +--------------
+ .../agentplane/src/commands/task/verify.command.ts |  10 +-
+ .../agentplane/src/commands/workflow.command.ts    |  21 +----
+ 21 files changed, 225 insertions(+), 214 deletions(-)

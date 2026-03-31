@@ -1,15 +1,10 @@
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import {
-  directSubcommandNames,
+  loadDirectSubcommandNames,
   parseGroupCommand,
   throwGroupCommandUsage,
   type GroupCommandParsed,
 } from "../../cli/group-command.js";
-import { hooksInstallSpec } from "./install.command.js";
-import { hooksRunSpec } from "./run.command.js";
-import { hooksUninstallSpec } from "./uninstall.command.js";
-
-const HOOKS_CHILD_SPECS = [hooksInstallSpec, hooksRunSpec, hooksUninstallSpec] as const;
 
 export const hooksSpec: CommandSpec<GroupCommandParsed> = {
   id: ["hooks"],
@@ -20,10 +15,10 @@ export const hooksSpec: CommandSpec<GroupCommandParsed> = {
   parse: (raw) => parseGroupCommand(raw),
 };
 
-export const runHooks: CommandHandler<GroupCommandParsed> = (_ctx, p) => {
+export const runHooks: CommandHandler<GroupCommandParsed> = async (_ctx, p) => {
   throwGroupCommandUsage({
     spec: hooksSpec,
     cmd: p.cmd,
-    subcommands: directSubcommandNames(["hooks"], HOOKS_CHILD_SPECS),
+    subcommands: await loadDirectSubcommandNames(["hooks"]),
   });
 };

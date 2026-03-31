@@ -1,7 +1,7 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { COMMAND_SNIPPETS } from "../../cli/command-snippets.js";
 import {
-  directSubcommandNames,
+  loadDirectSubcommandNames,
   parseGroupCommand,
   throwGroupCommandUsage,
   type GroupCommandParsed,
@@ -112,14 +112,11 @@ export const backendInspectSpec: CommandSpec<BackendInspectParsed> = {
   }),
 };
 
-function runBackendRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
+async function runBackendRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   throwGroupCommandUsage({
     spec: backendSpec,
     cmd: p.cmd,
-    subcommands: directSubcommandNames(
-      ["backend"],
-      [backendSyncSpec, backendInspectSpec, backendMigrateCanonicalStateSpec],
-    ),
+    subcommands: await loadDirectSubcommandNames(["backend"]),
     command: "backend",
     contextCommand: "backend",
   });

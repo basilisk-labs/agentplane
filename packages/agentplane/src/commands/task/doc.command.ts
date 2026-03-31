@@ -1,13 +1,9 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
-import { directSubcommandNames, throwGroupCommandUsage } from "../../cli/group-command.js";
-import { taskDocSetSpec } from "./doc-set.command.js";
-import { taskDocShowSpec } from "./doc-show.command.js";
+import { loadDirectSubcommandNames, throwGroupCommandUsage } from "../../cli/group-command.js";
 
 export type TaskDocParsed = {
   subcommand?: string;
 };
-
-const TASK_DOC_CHILD_SPECS = [taskDocShowSpec, taskDocSetSpec] as const;
 
 export const taskDocSpec: CommandSpec<TaskDocParsed> = {
   id: ["task", "doc"],
@@ -26,10 +22,10 @@ export const taskDocSpec: CommandSpec<TaskDocParsed> = {
   },
 };
 
-export function runTaskDoc(_ctx: CommandCtx, p: TaskDocParsed): Promise<number> {
+export async function runTaskDoc(_ctx: CommandCtx, p: TaskDocParsed): Promise<number> {
   throwGroupCommandUsage({
     spec: taskDocSpec,
     cmd: p.subcommand ? [p.subcommand] : [],
-    subcommands: directSubcommandNames(["task", "doc"], TASK_DOC_CHILD_SPECS),
+    subcommands: await loadDirectSubcommandNames(["task", "doc"]),
   });
 }

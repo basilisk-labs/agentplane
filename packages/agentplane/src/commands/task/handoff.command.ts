@@ -1,14 +1,9 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
-import { directSubcommandNames, throwGroupCommandUsage } from "../../cli/group-command.js";
-
-import { taskHandoffRecordSpec } from "./handoff-record.command.js";
-import { taskHandoffShowSpec } from "./handoff-show.command.js";
+import { loadDirectSubcommandNames, throwGroupCommandUsage } from "../../cli/group-command.js";
 
 export type TaskHandoffParsed = {
   subcommand?: string;
 };
-
-const TASK_HANDOFF_CHILD_SPECS = [taskHandoffRecordSpec, taskHandoffShowSpec] as const;
 
 export const taskHandoffSpec: CommandSpec<TaskHandoffParsed> = {
   id: ["task", "handoff"],
@@ -24,10 +19,10 @@ export const taskHandoffSpec: CommandSpec<TaskHandoffParsed> = {
   }),
 };
 
-export function runTaskHandoff(_ctx: CommandCtx, p: TaskHandoffParsed): Promise<number> {
+export async function runTaskHandoff(_ctx: CommandCtx, p: TaskHandoffParsed): Promise<number> {
   throwGroupCommandUsage({
     spec: taskHandoffSpec,
     cmd: p.subcommand ? [p.subcommand] : [],
-    subcommands: directSubcommandNames(["task", "handoff"], TASK_HANDOFF_CHILD_SPECS),
+    subcommands: await loadDirectSubcommandNames(["task", "handoff"]),
   });
 }

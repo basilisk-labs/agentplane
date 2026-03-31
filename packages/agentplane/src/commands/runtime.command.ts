@@ -2,7 +2,7 @@ import { loadConfig, resolveProject } from "@agentplaneorg/core";
 
 import type { CommandHandler, CommandSpec } from "../cli/spec/spec.js";
 import {
-  directSubcommandNames,
+  loadDirectSubcommandNames,
   parseGroupCommand,
   throwGroupCommandUsage,
   type GroupCommandParsed,
@@ -204,11 +204,11 @@ async function resolveRepoCliExpectation(opts: {
   }
 }
 
-export const runRuntime: CommandHandler<GroupCommandParsed> = (_ctx, p) => {
+export const runRuntime: CommandHandler<GroupCommandParsed> = async (_ctx, p) => {
   throwGroupCommandUsage({
     spec: runtimeSpec,
     cmd: p.cmd,
-    subcommands: directSubcommandNames(["runtime"], [runtimeExplainSpec]),
+    subcommands: await loadDirectSubcommandNames(["runtime"]),
     command: "runtime",
     contextCommand: "runtime",
   });

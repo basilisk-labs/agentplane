@@ -1,6 +1,6 @@
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import {
-  directSubcommandNames,
+  loadDirectSubcommandNames,
   parseGroupCommand,
   throwGroupCommandUsage,
   type GroupCommandParsed,
@@ -100,14 +100,11 @@ export const branchBaseSetSpec: CommandSpec<BranchBaseSetParsed> = {
   }),
 };
 
-export const runBranchBase: CommandHandler<BranchBaseGroupParsed> = (_ctx, p) => {
+export const runBranchBase: CommandHandler<BranchBaseGroupParsed> = async (_ctx, p) => {
   throwGroupCommandUsage({
     spec: branchBaseSpec,
     cmd: p.cmd,
-    subcommands: directSubcommandNames(
-      ["branch", "base"],
-      [branchBaseGetSpec, branchBaseSetSpec, branchBaseClearSpec, branchBaseExplainSpec],
-    ),
+    subcommands: await loadDirectSubcommandNames(["branch", "base"]),
     command: "branch base",
     contextCommand: "branch base",
   });

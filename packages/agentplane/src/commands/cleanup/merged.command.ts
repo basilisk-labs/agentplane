@@ -1,6 +1,6 @@
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import {
-  directSubcommandNames,
+  loadDirectSubcommandNames,
   parseGroupCommand,
   throwGroupCommandUsage,
   type GroupCommandParsed,
@@ -67,11 +67,11 @@ export const cleanupMergedSpec: CommandSpec<CleanupMergedParsed> = {
   }),
 };
 
-export const runCleanup: CommandHandler<CleanupGroupParsed> = (_ctx, p) => {
+export const runCleanup: CommandHandler<CleanupGroupParsed> = async (_ctx, p) => {
   throwGroupCommandUsage({
     spec: cleanupSpec,
     cmd: p.cmd,
-    subcommands: directSubcommandNames(["cleanup"], [cleanupMergedSpec]),
+    subcommands: await loadDirectSubcommandNames(["cleanup"]),
     command: "cleanup",
     contextCommand: "cleanup",
   });

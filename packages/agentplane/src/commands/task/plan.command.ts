@@ -1,15 +1,10 @@
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import {
-  directSubcommandNames,
+  loadDirectSubcommandNames,
   parseGroupCommand,
   throwGroupCommandUsage,
   type GroupCommandParsed,
 } from "../../cli/group-command.js";
-import { taskPlanApproveSpec } from "./plan-approve.command.js";
-import { taskPlanRejectSpec } from "./plan-reject.command.js";
-import { taskPlanSetSpec } from "./plan-set.command.js";
-
-const TASK_PLAN_CHILD_SPECS = [taskPlanSetSpec, taskPlanApproveSpec, taskPlanRejectSpec] as const;
 type TaskPlanGroupParsed = GroupCommandParsed;
 
 export const taskPlanSpec: CommandSpec<TaskPlanGroupParsed> = {
@@ -35,11 +30,11 @@ export const taskPlanSpec: CommandSpec<TaskPlanGroupParsed> = {
   parse: (raw) => parseGroupCommand(raw),
 };
 
-export const runTaskPlan: CommandHandler<GroupCommandParsed> = (_ctx: CommandCtx, p) => {
+export const runTaskPlan: CommandHandler<GroupCommandParsed> = async (_ctx: CommandCtx, p) => {
   throwGroupCommandUsage({
     spec: taskPlanSpec,
     cmd: p.cmd,
-    subcommands: directSubcommandNames(["task", "plan"], TASK_PLAN_CHILD_SPECS),
+    subcommands: await loadDirectSubcommandNames(["task", "plan"]),
     command: "task plan",
   });
 };
