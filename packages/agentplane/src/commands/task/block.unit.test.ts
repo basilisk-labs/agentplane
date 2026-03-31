@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
-
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import { makeTaskCommandContext, makeTaskFixture } from "../task.test-helpers.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const mocks = vi.hoisted(() => ({
@@ -34,52 +33,24 @@ vi.mock("../shared/task-store.js", async (importOriginal) => {
 });
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "DOING",
-    priority: "normal",
-    owner: "CODER",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    comments: [],
-    events: [],
-    ...overrides,
-  };
+  return makeTaskFixture({ status: "DOING", ...overrides });
 }
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
-  const config = defaultConfig();
-  config.paths.workflow_dir = ".agentplane/tasks";
-  config.status_commit_policy = "off";
-  config.tasks.comments.blocked = { prefix: "Blocked:", min_chars: 20 };
-
-  const resolved = {
-    gitRoot: "/repo",
-    agentplaneDir: "/repo/.agentplane",
-  } as unknown as ResolvedProject;
-
   const backend: TaskBackend = {
     id: "mock",
     listTasks: () => Promise.resolve([]),
     getTask: () => Promise.resolve(null),
     writeTask: () => Promise.resolve(),
   };
-
-  const ctx: CommandContext = {
-    resolvedProject: resolved,
-    config,
+  return makeTaskCommandContext({
     taskBackend: backend,
-    backendId: "mock",
-    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: { gitRoot: "/repo" } as never,
-    memo: {},
-    resolved,
-    backend,
-  };
-  return { ...ctx, ...overrides };
+    overrides,
+    configureConfig: (config) => {
+      config.status_commit_policy = "off";
+      config.tasks.comments.blocked = { prefix: "Blocked:", min_chars: 20 };
+    },
+  });
 }
 
 describe("task block command (unit)", () => {

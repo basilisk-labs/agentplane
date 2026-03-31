@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
-
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import { makeTaskCommandContext, makeTaskFixture } from "../task.test-helpers.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const mockLoadTaskFromContext =
@@ -30,36 +29,10 @@ vi.mock("../shared/task-store.js", async (importOriginal) => {
 });
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "TODO",
-    priority: "normal",
-    owner: "CODER",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    comments: [],
-    events: [],
-    ...overrides,
-  };
+  return makeTaskFixture(overrides);
 }
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
-  const config = defaultConfig();
-  config.paths.workflow_dir = ".agentplane/tasks";
-  config.agents.approvals.require_plan = false;
-  config.tasks.doc.required_sections = ["Summary", "Plan", "Verify Steps", "Notes"];
-  config.tasks.verify.required_tags = ["code", "backend", "frontend"];
-  config.tasks.verify.spike_tag = "spike";
-  config.tasks.verify.enforce_on_start_when_no_plan = true;
-
-  const resolved = {
-    gitRoot: "/repo",
-    agentplaneDir: "/repo/.agentplane",
-  } as unknown as ResolvedProject;
-
   const backend: TaskBackend = {
     id: "mock",
     listTasks: () => Promise.resolve([]),
@@ -67,19 +40,17 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     writeTask: () => Promise.resolve(),
     getTaskDoc: () => Promise.resolve(""),
   };
-
-  const ctx: CommandContext = {
-    resolvedProject: resolved,
-    config,
+  return makeTaskCommandContext({
     taskBackend: backend,
-    backendId: "mock",
-    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: { gitRoot: "/repo" } as never,
-    memo: {},
-    resolved,
-    backend,
-  };
-  return { ...ctx, ...overrides };
+    overrides,
+    configureConfig: (config) => {
+      config.agents.approvals.require_plan = false;
+      config.tasks.doc.required_sections = ["Summary", "Plan", "Verify Steps", "Notes"];
+      config.tasks.verify.required_tags = ["code", "backend", "frontend"];
+      config.tasks.verify.spike_tag = "spike";
+      config.tasks.verify.enforce_on_start_when_no_plan = true;
+    },
+  });
 }
 
 describe("task start command (unit)", () => {

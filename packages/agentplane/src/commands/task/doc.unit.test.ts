@@ -1,10 +1,13 @@
-import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  makeTaskBackendDouble,
+  makeTaskCommandContext,
+  makeTaskFixture,
+} from "../task.test-helpers.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { GitContext } from "../shared/git-context.js";
 
 const mocks = vi.hoisted(() => ({
   loadCommandContext: vi.fn(),
@@ -32,52 +35,18 @@ vi.mock("../shared/task-store.js", async (importOriginal) => {
 });
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "TODO",
-    priority: "normal",
-    owner: "me",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    ...overrides,
-  };
+  return makeTaskFixture({ owner: "me", ...overrides });
 }
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
-  const config = defaultConfig();
-  config.paths.workflow_dir = ".agentplane/tasks";
-  config.tasks.doc.sections = ["Summary", "Plan", "Verify Steps", "Findings"];
-  config.tasks.doc.required_sections = ["Summary", "Plan", "Verify Steps", "Findings"];
-
-  const resolved = {
-    gitRoot: "/repo",
-    agentplaneDir: "/repo/.agentplane",
-  } as unknown as ResolvedProject;
-
-  const backend: TaskBackend = {
-    id: "mock",
-    listTasks: () => Promise.resolve([]),
-    getTask: () => Promise.resolve(null),
-    getTaskDoc: () => Promise.resolve(""),
-    setTaskDoc: () => Promise.resolve(),
-    writeTask: () => Promise.resolve(),
-  };
-
-  const ctx: CommandContext = {
-    resolvedProject: resolved,
-    config,
-    taskBackend: backend,
-    backendId: "mock",
-    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: new GitContext({ gitRoot: "/repo" }),
-    memo: {},
-    resolved,
-    backend,
-  };
-  return { ...ctx, ...overrides };
+  return makeTaskCommandContext({
+    taskBackend: makeTaskBackendDouble(),
+    overrides,
+    configureConfig: (config) => {
+      config.tasks.doc.sections = ["Summary", "Plan", "Verify Steps", "Findings"];
+      config.tasks.doc.required_sections = ["Summary", "Plan", "Verify Steps", "Findings"];
+    },
+  });
 }
 
 describe("task doc commands (unit)", () => {

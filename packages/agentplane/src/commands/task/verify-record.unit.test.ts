@@ -1,11 +1,14 @@
-import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  makeTaskBackendDouble,
+  makeTaskCommandContext,
+  makeTaskFixture,
+} from "../task.test-helpers.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { GitContext } from "../shared/git-context.js";
 
 const mocks = vi.hoisted(() => ({
   readFile: vi.fn<(p: string, enc: string) => Promise<string>>(),
@@ -57,51 +60,18 @@ vi.mock("../shared/task-store.js", async (importOriginal) => {
 });
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "DONE",
-    priority: "normal",
-    owner: "me",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    ...overrides,
-  };
+  return makeTaskFixture({ status: "DONE", owner: "me", ...overrides });
 }
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
-  const config = defaultConfig();
-  config.paths.workflow_dir = ".agentplane/tasks";
-  // Ensure the doc always includes Verification + Verify Steps for extraction/updates.
-  config.tasks.doc.required_sections = ["Summary", "Verify Steps", "Verification"];
-
-  const resolved = {
-    gitRoot: "/repo",
-    agentplaneDir: "/repo/.agentplane",
-  } as unknown as ResolvedProject;
-
-  const backend: TaskBackend = {
-    id: "mock",
-    listTasks: () => Promise.resolve([]),
-    getTask: () => Promise.resolve(null),
-    writeTask: () => Promise.resolve(),
-    getTaskDoc: () => Promise.resolve(""),
-  };
-
-  const ctx: CommandContext = {
-    resolvedProject: resolved,
-    config,
-    taskBackend: backend,
-    backendId: "mock",
-    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: new GitContext({ gitRoot: "/repo" }),
-    memo: {},
-    resolved,
-    backend,
-  };
-  return { ...ctx, ...overrides };
+  return makeTaskCommandContext({
+    taskBackend: makeTaskBackendDouble(),
+    overrides,
+    configureConfig: (config) => {
+      // Ensure the doc always includes Verification + Verify Steps for extraction/updates.
+      config.tasks.doc.required_sections = ["Summary", "Verify Steps", "Verification"];
+    },
+  });
 }
 
 describe("task verify record (unit)", () => {

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import { makeTaskFixture } from "../task.test-helpers.js";
 import {
   buildTaskStatusTransition,
   executeTaskStatusTransitionRequest,
@@ -11,18 +12,7 @@ import {
 } from "./shared/workflow-transition-service.js";
 
 function mkTask(overrides: Partial<TaskData> = {}): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "TODO",
-    priority: "normal",
-    owner: "CODER",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    comments: [],
-    events: [],
+  return makeTaskFixture({
     doc: [
       "## Summary",
       "x",
@@ -34,11 +24,9 @@ function mkTask(overrides: Partial<TaskData> = {}): TaskData {
       "<!-- BEGIN VERIFICATION RESULTS -->",
       "<!-- END VERIFICATION RESULTS -->",
     ].join("\n"),
-    doc_version: 3,
     doc_updated_at: "2026-03-27T00:00:00.000Z",
-    doc_updated_by: "CODER",
     ...overrides,
-  };
+  });
 }
 
 describe("workflow transition service", () => {

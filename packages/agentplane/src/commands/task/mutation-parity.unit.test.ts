@@ -1,13 +1,12 @@
-import {
-  defaultConfig,
-  renderTaskDocFromSections,
-  taskDocToSectionMap,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import { defaultConfig, renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData, TaskEvent } from "../../backends/task-backend.js";
-import { GitContext } from "../shared/git-context.js";
+import {
+  makeTaskBackendDouble,
+  makeTaskCommandContext,
+  makeTaskFixture,
+} from "../task.test-helpers.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 type BackendMode = "local" | "remote";
@@ -17,22 +16,7 @@ function cloneTask(task: TaskData): TaskData {
 }
 
 function mkTask(overrides: Partial<TaskData> = {}): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "TODO",
-    priority: "normal",
-    owner: "CODER",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    comments: [],
-    events: [],
-    doc_version: 3,
-    doc_updated_by: "CODER",
-    ...overrides,
-  };
+  return makeTaskFixture(overrides);
 }
 
 function mkConfig() {
@@ -57,23 +41,11 @@ function mkConfig() {
 }
 
 function mkCtx(backend: TaskBackend, overrides: Partial<CommandContext> = {}): CommandContext {
-  const resolved = {
-    gitRoot: "/repo",
-    agentplaneDir: "/repo/.agentplane",
-  } as unknown as ResolvedProject;
-
-  const ctx: CommandContext = {
-    resolvedProject: resolved,
-    config: mkConfig(),
+  return makeTaskCommandContext({
     taskBackend: backend,
-    backendId: "mock",
-    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: new GitContext({ gitRoot: "/repo" }),
-    memo: {},
-    resolved,
-    backend,
-  };
-  return { ...ctx, ...overrides };
+    overrides,
+    configureConfig: (config) => Object.assign(config, mkConfig()),
+  });
 }
 
 function normalizeComments(task: TaskData): NonNullable<TaskData["comments"]> {
@@ -140,15 +112,7 @@ function projectTaskMutation(task: TaskData) {
 }
 
 function createBackend(overrides: Partial<TaskBackend> = {}): TaskBackend {
-  return {
-    id: "mock",
-    listTasks: () => Promise.resolve([]),
-    getTask: () => Promise.resolve(null),
-    writeTask: () => Promise.resolve(),
-    getTaskDoc: () => Promise.resolve(""),
-    setTaskDoc: () => Promise.resolve(),
-    ...overrides,
-  };
+  return makeTaskBackendDouble(overrides);
 }
 
 async function runCommentScenario(mode: BackendMode) {

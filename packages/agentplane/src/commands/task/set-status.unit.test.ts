@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
-
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import { makeTaskCommandContext, makeTaskFixture } from "../task.test-helpers.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const mocks = vi.hoisted(() => ({
@@ -52,51 +51,23 @@ vi.mock("./shared.js", async (importOriginal) => {
 });
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "TODO",
-    priority: "normal",
-    owner: "CODER",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    comments: [],
-    events: [],
-    ...overrides,
-  };
+  return makeTaskFixture(overrides);
 }
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
-  const config = defaultConfig();
-  config.paths.workflow_dir = ".agentplane/tasks";
-  config.status_commit_policy = "off";
-
-  const resolved = {
-    gitRoot: "/repo",
-    agentplaneDir: "/repo/.agentplane",
-  } as unknown as ResolvedProject;
-
   const backend: TaskBackend = {
     id: "mock",
     listTasks: () => Promise.resolve([]),
     getTask: () => Promise.resolve(null),
     writeTask: () => Promise.resolve(),
   };
-
-  const ctx: CommandContext = {
-    resolvedProject: resolved,
-    config,
+  return makeTaskCommandContext({
     taskBackend: backend,
-    backendId: "mock",
-    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: { gitRoot: "/repo" } as never,
-    memo: {},
-    resolved,
-    backend,
-  };
-  return { ...ctx, ...overrides };
+    overrides,
+    configureConfig: (config) => {
+      config.status_commit_policy = "off";
+    },
+  });
 }
 
 describe("task set-status command (unit)", () => {

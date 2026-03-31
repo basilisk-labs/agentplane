@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
-
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import { makeTaskCommandContext } from "../task.test-helpers.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskMutationPlan } from "../shared/task-mutation.js";
 
@@ -20,32 +19,16 @@ vi.mock("../shared/task-mutation.js", () => ({
 }));
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
-  const config = defaultConfig();
-  config.paths.workflow_dir = ".agentplane/tasks";
-  const resolved = {
-    gitRoot: "/repo",
-    agentplaneDir: "/repo/.agentplane",
-  } as unknown as ResolvedProject;
-
   const backend: TaskBackend = {
     id: "mock",
     listTasks: () => Promise.resolve([]),
     getTask: () => Promise.resolve(null),
     writeTask: () => Promise.resolve(),
   };
-
-  const ctx: CommandContext = {
-    resolvedProject: resolved,
-    config,
+  return makeTaskCommandContext({
     taskBackend: backend,
-    backendId: "mock",
-    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: { gitRoot: "/repo" } as never,
-    memo: {},
-    resolved,
-    backend,
-  };
-  return { ...ctx, ...overrides };
+    overrides,
+  });
 }
 
 describe("task close-shared helper (unit)", () => {

@@ -1,7 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
-import { GitContext } from "./git-context.js";
+import {
+  makeTaskBackendDouble,
+  makeTaskCommandContext,
+  makeTaskFixture,
+} from "../task.test-helpers.js";
 import type { CommandContext } from "./task-backend.js";
 
 function cloneTask(task: TaskData): TaskData {
@@ -9,27 +13,11 @@ function cloneTask(task: TaskData): TaskData {
 }
 
 function mkTask(overrides: Partial<TaskData> = {}): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "TODO",
-    priority: "normal",
-    owner: "CODER",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    comments: [],
-    events: [],
-    doc_version: 3,
-    doc_updated_by: "CODER",
-    ...overrides,
-  };
+  return makeTaskFixture(overrides);
 }
 
 function mkBackend(overrides: Partial<TaskBackend> = {}): TaskBackend {
-  return {
-    id: "mock",
+  return makeTaskBackendDouble({
     capabilities: {
       canonical_source: "local",
       projection: "canonical",
@@ -43,25 +31,19 @@ function mkBackend(overrides: Partial<TaskBackend> = {}): TaskBackend {
       supports_push_sync: false,
       supports_snapshot_export: false,
     },
-    listTasks: () => Promise.resolve([]),
-    getTask: () => Promise.resolve(null),
-    writeTask: () => Promise.resolve(),
     ...overrides,
-  };
+  });
 }
 
 function mkCtx(taskBackend: TaskBackend): CommandContext {
-  return {
-    resolvedProject: { gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" } as never,
-    config: {
-      paths: { workflow_dir: ".agentplane/tasks" },
-    } as never,
+  return makeTaskCommandContext({
     taskBackend,
-    backendId: taskBackend.id,
-    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: new GitContext({ gitRoot: "/repo" }),
-    memo: {},
-  };
+    overrides: {
+      config: {
+        paths: { workflow_dir: ".agentplane/tasks" },
+      } as never,
+    },
+  });
 }
 
 describe("applyTaskMutation", () => {

@@ -1,15 +1,14 @@
-import {
-  defaultConfig,
-  ensureDocSections,
-  setMarkdownSection,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  makeTaskBackendDouble,
+  makeTaskCommandContext,
+  makeTaskFixture,
+} from "../task.test-helpers.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { GitContext } from "../shared/git-context.js";
 import type { TaskStorePatch } from "../shared/task-store.js";
 
 const mockLoadTaskFromContext =
@@ -37,53 +36,20 @@ vi.mock("../shared/task-store.js", async (importOriginal) => {
 });
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "TODO",
-    priority: "normal",
-    owner: "me",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    ...overrides,
-  };
+  return makeTaskFixture({ owner: "me", ...overrides });
 }
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
-  const config = defaultConfig();
-  config.paths.workflow_dir = ".agentplane/tasks";
-  config.tasks.doc.required_sections = ["Summary", "Plan", "Verify Steps", "Notes"];
-  config.tasks.verify.required_tags = ["code", "backend", "frontend"];
-  config.tasks.verify.spike_tag = "spike";
-  config.tasks.verify.enforce_on_plan_approve = true;
-
-  const resolved = {
-    gitRoot: "/repo",
-    agentplaneDir: "/repo/.agentplane",
-  } as unknown as ResolvedProject;
-
-  const backend: TaskBackend = {
-    id: "mock",
-    listTasks: () => Promise.resolve([]),
-    getTask: () => Promise.resolve(null),
-    writeTask: () => Promise.resolve(),
-    getTaskDoc: () => Promise.resolve(""),
-  };
-
-  const ctx: CommandContext = {
-    resolvedProject: resolved,
-    config,
-    taskBackend: backend,
-    backendId: "mock",
-    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: new GitContext({ gitRoot: "/repo" }),
-    memo: {},
-    resolved,
-    backend,
-  };
-  return { ...ctx, ...overrides };
+  return makeTaskCommandContext({
+    taskBackend: makeTaskBackendDouble(),
+    overrides,
+    configureConfig: (config) => {
+      config.tasks.doc.required_sections = ["Summary", "Plan", "Verify Steps", "Notes"];
+      config.tasks.verify.required_tags = ["code", "backend", "frontend"];
+      config.tasks.verify.spike_tag = "spike";
+      config.tasks.verify.enforce_on_plan_approve = true;
+    },
+  });
 }
 
 function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
