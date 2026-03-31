@@ -27,6 +27,7 @@ import {
 } from "@agentplaneorg/core";
 
 import { runCli } from "./run-cli.js";
+import { infoMessage } from "./output.js";
 import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
 import {
   filterAgentsByWorkflow,
@@ -55,6 +56,10 @@ import {
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
 import { evolveRunnerRunState, writeRunnerRunState } from "../runner/artifacts.js";
+import {
+  formatRunnerCapabilitySummaryLines,
+  formatRunnerPolicyFieldSummaryLines,
+} from "../runner/policy-display.js";
 import { prepareTaskRunnerExecution } from "../runner/usecases/task-run.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
@@ -115,6 +120,194 @@ function expectAgentJsonTextEnvelope(
     "stderr",
   ]);
   expect(Object.hasOwn(payload, "data")).toBe(false);
+}
+
+type RunShowPayload = {
+  task_id: string;
+  run_id: string;
+  selection: string;
+  paths: {
+    bundle_path: string;
+    result_path: string;
+    state_path: string;
+    events_path: string;
+    trace_path: string;
+    stderr_path: string;
+  };
+  bundle: {
+    execution: {
+      adapter_capabilities?: {
+        adapter_id: string;
+        fields: Record<
+          string,
+          {
+            level: string;
+            channel: string;
+            supported_values?: string[];
+            note?: string;
+          }
+        >;
+      } | null;
+    };
+  };
+  state: {
+    status: string;
+    adapter_id: string;
+    mode: string;
+    target: {
+      kind: string;
+      task_id?: string;
+      recipe_id?: string;
+      scenario_id?: string;
+    };
+    created_at: string;
+    updated_at: string;
+    prepared_metadata?: {
+      adapter_capabilities?: {
+        adapter_id: string;
+        fields: Record<
+          string,
+          {
+            level: string;
+            channel: string;
+            supported_values?: string[];
+            note?: string;
+          }
+        >;
+      } | null;
+    };
+    policy_decision?: {
+      requested?: Record<string, unknown>;
+      effective?: Record<string, unknown>;
+      fields: Record<
+        string,
+        {
+          status: string;
+          capability_level: string;
+          channel: string;
+          requested?: unknown;
+          effective?: unknown;
+          supported_values?: string[];
+          note?: string;
+        }
+      >;
+      refusal_reason?: unknown;
+    };
+    result?: {
+      summary?: string;
+      stdout_summary?: string;
+      stderr_summary?: string;
+      timeout_reason?: string;
+      metrics?: {
+        duration_ms?: number;
+        stdout_bytes?: number;
+        stderr_bytes?: number;
+        output_last_message_bytes?: number | null;
+      };
+      artifacts?: {
+        path: string;
+        label?: string;
+      }[];
+    };
+  };
+  events_count: number;
+  last_event?: { type?: string } | null;
+};
+
+function formatRunShowTarget(target: RunShowPayload["state"]["target"]): string {
+  if (target.kind === "task") return `task ${target.task_id ?? "<unknown>"}`;
+  return (
+    `recipe ${target.recipe_id ?? "<unknown>"}:${target.scenario_id ?? "<unknown>"}` +
+    (target.task_id ? ` -> task ${target.task_id}` : "")
+  );
+}
+
+function formatRunShowArtifacts(
+  artifacts: RunShowPayload["state"]["result"] extends infer TResult
+    ? TResult extends { artifacts?: infer TArtifacts }
+      ? TArtifacts
+      : never
+    : never,
+): string | null {
+  if (!artifacts?.length) return null;
+  return artifacts
+    .map((artifact) => (artifact.label ? `${artifact.label}=${artifact.path}` : artifact.path))
+    .join(", ");
+}
+
+function formatRunShowMetrics(
+  metrics: RunShowPayload["state"]["result"] extends infer TResult
+    ? TResult extends { metrics?: infer TMetrics }
+      ? TMetrics
+      : never
+    : never,
+): string | null {
+  if (!metrics) return null;
+  const parts: string[] = [];
+  if (typeof metrics.duration_ms === "number") parts.push(`duration_ms=${metrics.duration_ms}`);
+  if (typeof metrics.stdout_bytes === "number") parts.push(`stdout_bytes=${metrics.stdout_bytes}`);
+  if (typeof metrics.stderr_bytes === "number") parts.push(`stderr_bytes=${metrics.stderr_bytes}`);
+  if (
+    metrics.output_last_message_bytes === null ||
+    typeof metrics.output_last_message_bytes === "number"
+  ) {
+    parts.push(`output_last_message_bytes=${metrics.output_last_message_bytes ?? "null"}`);
+  }
+  return parts.length > 0 ? parts.join(", ") : null;
+}
+
+function renderExpectedRunShowText(taskId: string, payload: RunShowPayload): string {
+  const capabilities =
+    payload.bundle.execution.adapter_capabilities ??
+    payload.state.prepared_metadata?.adapter_capabilities ??
+    null;
+  const lines = [
+    infoMessage(`task run show: ${taskId}`),
+    `selection: ${payload.selection}`,
+    `run_id: ${payload.run_id}`,
+    `status: ${payload.state.status}`,
+    `adapter: ${payload.state.adapter_id}`,
+    `mode: ${payload.state.mode}`,
+    `target: ${formatRunShowTarget(payload.state.target)}`,
+    `created_at: ${payload.state.created_at}`,
+    `updated_at: ${payload.state.updated_at}`,
+    `bundle: ${payload.paths.bundle_path}`,
+    `result: ${payload.paths.result_path}`,
+    `state: ${payload.paths.state_path}`,
+    `events: ${payload.paths.events_path}`,
+    `trace: ${payload.paths.trace_path}`,
+    `stderr: ${payload.paths.stderr_path}`,
+    `events_count: ${payload.events_count}`,
+  ];
+  if (payload.last_event) {
+    lines.push(`last_event: ${payload.last_event.type ?? "unknown"}`);
+  }
+  lines.push(
+    `capabilities: ${JSON.stringify(capabilities)}`,
+    ...formatRunnerCapabilitySummaryLines(capabilities ?? undefined),
+    `policy_requested: ${JSON.stringify(payload.state.policy_decision?.requested ?? {})}`,
+    `policy_effective: ${JSON.stringify(payload.state.policy_decision?.effective ?? {})}`,
+    `policy_fields: ${JSON.stringify(payload.state.policy_decision?.fields ?? {})}`,
+    `policy_refusal: ${JSON.stringify(payload.state.policy_decision?.refusal_reason ?? null)}`,
+    ...formatRunnerPolicyFieldSummaryLines(payload.state.policy_decision),
+  );
+  if (payload.state.result?.summary) {
+    lines.push(`summary: ${payload.state.result.summary}`);
+  }
+  if (payload.state.result?.stdout_summary) {
+    lines.push(`stdout_summary: ${payload.state.result.stdout_summary}`);
+  }
+  if (payload.state.result?.stderr_summary) {
+    lines.push(`stderr_summary: ${payload.state.result.stderr_summary}`);
+  }
+  if (payload.state.result?.timeout_reason) {
+    lines.push(`timeout_reason: ${payload.state.result.timeout_reason}`);
+  }
+  const metrics = formatRunShowMetrics(payload.state.result?.metrics);
+  if (metrics) lines.push(`metrics: ${metrics}`);
+  const artifacts = formatRunShowArtifacts(payload.state.result?.artifacts);
+  if (artifacts) lines.push(`artifacts: ${artifacts}`);
+  return `${lines.join("\n")}\n`;
 }
 
 async function waitForRunnerState(opts: {
@@ -748,53 +941,13 @@ describe("runCli", () => {
       const runEntries = await readdir(runsRoot);
       const runId = runEntries.toSorted()[0] ?? "";
       expect(runId).toBeTruthy();
-
-      {
-        const io = captureStdIO();
-        try {
-          const code = await runCli(["task", "run", "show", taskId, "--root", root]);
-          expect(code).toBe(0);
-          expect(io.stdout).toContain(`task run show: ${taskId}`);
-          expect(io.stdout).toContain("selection: latest");
-          expect(io.stdout).toContain(`run_id: ${runId}`);
-          expect(io.stdout).toContain("status: success");
-          expect(io.stdout).toContain("adapter: custom");
-          expect(io.stdout).toContain("events_count:");
-          expect(io.stdout).toContain('capabilities: {"adapter_id":"custom"');
-          expect(io.stdout).toContain(
-            'capability[sandbox]: level=advisory channel=env note=Configured via runner.custom.enforcement.mode="none" (platform="auto").',
-          );
-          expect(io.stdout).toContain("policy_requested: {}");
-          expect(io.stdout).toContain("policy_effective: {}");
-          expect(io.stdout).toContain(
-            'policy_field[sandbox]: status=not_requested capability=advisory channel=env note=Configured via runner.custom.enforcement.mode="none" (platform="auto").',
-          );
-          expect(io.stdout).toContain("summary: Custom runner execution completed successfully.");
-          expect(io.stdout).toContain("trace:");
-        } finally {
-          io.restore();
-        }
-      }
-
+      let jsonPayload: RunShowPayload | null = null;
       {
         const io = captureStdIO();
         try {
           const code = await runCli(["task", "run", "show", taskId, "--json", "--root", root]);
           expect(code).toBe(0);
-          const payload = JSON.parse(io.stdout) as {
-            task_id: string;
-            run_id: string;
-            selection: string;
-            paths: { trace_path: string };
-            state: {
-              status: string;
-              adapter_id: string;
-              policy_decision?: { requested?: Record<string, unknown> };
-              result?: { summary?: string };
-            };
-            events_count: number;
-            last_event?: { type?: string } | null;
-          };
+          const payload = JSON.parse(io.stdout) as RunShowPayload;
           expect(payload.task_id).toBe(taskId);
           expect(payload.run_id).toBe(runId);
           expect(payload.selection).toBe("latest");
@@ -809,6 +962,21 @@ describe("runCli", () => {
           expect(payload.paths.trace_path).toContain(
             path.join(taskId, "runs", runId, "agent-trace.jsonl"),
           );
+          expect(io.stdout).toBe(`${JSON.stringify(payload, null, 2)}\n`);
+          jsonPayload = payload;
+        } finally {
+          io.restore();
+        }
+      }
+
+      {
+        const io = captureStdIO();
+        try {
+          const code = await runCli(["task", "run", "show", taskId, "--root", root]);
+          expect(code).toBe(0);
+          expect(jsonPayload).toBeTruthy();
+          if (!jsonPayload) throw new Error("Expected JSON payload before plain-text run show");
+          expect(io.stdout).toBe(renderExpectedRunShowText(taskId, jsonPayload));
         } finally {
           io.restore();
         }

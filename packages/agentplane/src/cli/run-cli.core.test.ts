@@ -790,6 +790,7 @@ describe("runCli", () => {
       );
       expect(payload.stdout).toBe(JSON.stringify(payload.data, null, 2));
       expect(JSON.parse(payload.stdout ?? "")).toEqual(payload.data);
+      expect(io.stdout).toBe(`${JSON.stringify(payload, null, 2)}\n`);
       expect(io.stderr).toBe("");
     } finally {
       io.restore();
@@ -1011,7 +1012,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["config", "show", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain('"schema_version": 1');
+      expect(io.stdout).toBe(`${JSON.stringify(defaultConfig(), null, 2)}\n`);
     } finally {
       io.restore();
     }
