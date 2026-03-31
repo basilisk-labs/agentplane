@@ -1,10 +1,11 @@
 ---
 id: "202603311332-QS4K75"
 title: "N5.5 Split `runner/usecases/task-run-lifecycle.ts` by state transition and artifact/report concern"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-QS4K75/split-task-run-lifecycle"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T20:51:53.848Z"
   updated_by: "CODER"
   note: "Split runner/usecases/task-run-lifecycle.ts into shared/cancel/replay modules while preserving lifecycle contracts; eslint plus task-run-lifecycle and run-cli task query suites stayed green."
-commit: null
+commit:
+  hash: "6d870f3579278b7bc04f0ad4a6e2dce8cc2d7302"
+  message: "📝 QS4K75 task: refresh pr artifacts after helpers"
 comments:
   -
     author: "CODER"
     body: "Start: split runner/usecases/task-run-lifecycle.ts into shared, cancel, and replay modules while preserving lifecycle event ordering, execute-mode gating, and public import surface."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-QS4K75/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Split runner/usecases/task-run-lifecycle.ts into shared/cancel/replay modules while preserving lifecycle contracts; eslint plus task-run-lifecycle and run-cli task query suites stayed green."
+  -
+    type: "status"
+    at: "2026-03-31T20:53:37.306Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-QS4K75/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T20:51:53.852Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T20:53:37.311Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N5.5 from REFACTOR.md. Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.. Acceptance: runner lifecycle orchestration uses smaller units aligned to preparation, execution, and finalization phases. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
