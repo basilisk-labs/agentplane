@@ -1,10 +1,11 @@
 ---
 id: "202603301857-M5MBBB"
 title: "Derive direct subcommand names from the canonical command graph"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-M5MBBB/derived-child-names-from-command-graph"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T10:17:17.010Z"
   updated_by: "CODER"
   note: "Focused group-command and command-graph tests plus eslint passed after moving direct child-name derivation onto command ids and canonical graph helpers."
-commit: null
+commit:
+  hash: "ab3390d555f6786a82f828db475a9085a0c6d27d"
+  message: "🧩 M5MBBB integrate: squash task/202603301857-M5MBBB/derived-child-names-from-command-graph"
 comments:
   -
     author: "CODER"
     body: "Start: derive reusable direct-child-name lookup from canonical command ids and graph helpers without migrating all group command entry modules yet."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-M5MBBB/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused group-command and command-graph tests plus eslint passed after moving direct child-name derivation onto command ids and canonical graph helpers."
+  -
+    type: "status"
+    at: "2026-03-31T10:19:25.423Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-M5MBBB/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T10:17:17.014Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T10:19:25.428Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 5 / R5.1 from REFACTOR.md. child command discovery is computed from command ids instead of manually listed arrays."
 sections:
   Summary: |-

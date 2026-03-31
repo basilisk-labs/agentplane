@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603301857-M5MBBB/derived-child-names-from-command-graph",
   "created_at": "2026-03-31T10:18:05.338Z",
+  "head_sha": "f299e65904ced89c5e7dccfd30537d10923ec021",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "ab3390d555f6786a82f828db475a9085a0c6d27d",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T10:19:25.379Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301857-M5MBBB",
-  "updated_at": "2026-03-31T10:18:10.521Z",
+  "updated_at": "2026-03-31T10:19:25.379Z",
   "verify": {
     "status": "skipped"
   }
