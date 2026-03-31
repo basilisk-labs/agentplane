@@ -1,10 +1,11 @@
 ---
 id: "202603311332-ACCPE4"
 title: "N4.1 Define the shared doc mutation contract"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-ACCPE4/shared-doc-mutation-contract"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-31T17:36:44.911Z"
   updated_by: "CODER"
   note: "Shared doc mutation contract verified with focused eslint, core/shared task-store vitest suites, package builds, bootstrap, diff scope audit, and an explicit no-dist lint check; doc replacement, section replacement, and doc-meta touch now share one pure core mutation model, and workspace path resolution no longer depends on stale core dist during integrate."
-commit: null
+commit:
+  hash: "b7bd27ad1036ca617e75fa3e791ae543fe32b172"
+  message: "📝 ACCPE4 task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: define one pure shared doc mutation contract in core, keep the first diff limited to contract extraction plus the earliest safe adopters, and avoid pulling local-backend orchestration into this task before the seam is proven."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-ACCPE4/pr."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Shared doc mutation contract verified with focused eslint, core/shared task-store vitest suites, package builds, bootstrap, diff scope audit, and an explicit no-dist lint check; doc replacement, section replacement, and doc-meta touch now share one pure core mutation model, and workspace path resolution no longer depends on stale core dist during integrate."
+  -
+    type: "status"
+    at: "2026-03-31T17:37:46.630Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-ACCPE4/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T17:36:44.916Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T17:37:46.635Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N4.1 from REFACTOR.md. Remove the current duplication between core task-doc primitives, the local task store, and backend doc mutation paths.. Acceptance: section replacement, full-doc replacement, and doc-meta touch share one explicit mutation model. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-

@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311332-ACCPE4/shared-doc-mutation-contract",
   "created_at": "2026-03-31T17:31:47.096Z",
+  "head_sha": "0ded9c0781ffeaa0b8038aef84a4be796b103a5d",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "b7bd27ad1036ca617e75fa3e791ae543fe32b172",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T17:37:46.588Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311332-ACCPE4",
-  "updated_at": "2026-03-31T17:37:10.008Z",
+  "updated_at": "2026-03-31T17:37:46.588Z",
   "verify": {
     "status": "skipped"
   }
