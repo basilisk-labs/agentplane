@@ -11,28 +11,37 @@ export type RunDeps = {
   getHelpJsonForDocs: () => readonly HelpJson[];
 };
 
+export type DispatchNeeds = {
+  project: boolean;
+  loadedConfig: boolean;
+  taskContext: boolean;
+};
+
 export type CommandEntry = {
   spec: CommandSpec<unknown>;
   load: (deps: RunDeps) => Promise<CommandHandler<unknown>>;
-  needsProject: boolean;
-  needsConfig: boolean;
-  needsTaskContext: boolean;
+  dispatch: DispatchNeeds;
   invocation?: string;
 };
 
 export function entry<TParsed>(
   spec: CommandSpec<TParsed>,
   load: (deps: RunDeps) => Promise<CommandHandler<TParsed>>,
-  meta?: Partial<
-    Pick<CommandEntry, "needsProject" | "needsConfig" | "needsTaskContext" | "invocation">
-  >,
+  meta?: Partial<{
+    needsProject: boolean;
+    needsLoadedConfig: boolean;
+    needsTaskContext: boolean;
+    invocation: string;
+  }>,
 ): CommandEntry {
   return {
     spec: spec as CommandSpec<unknown>,
     load: (deps) => load(deps) as Promise<CommandHandler<unknown>>,
-    needsProject: meta?.needsProject ?? true,
-    needsConfig: meta?.needsConfig ?? meta?.needsProject ?? true,
-    needsTaskContext: meta?.needsTaskContext ?? true,
+    dispatch: {
+      project: meta?.needsProject ?? true,
+      loadedConfig: meta?.needsLoadedConfig ?? meta?.needsProject ?? true,
+      taskContext: meta?.needsTaskContext ?? true,
+    },
     invocation: meta?.invocation,
   };
 }

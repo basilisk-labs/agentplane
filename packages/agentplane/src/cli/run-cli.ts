@@ -62,7 +62,7 @@ export async function runCli(argv: string[]): Promise<number> {
     let maybeResolvedProjectPromise: Promise<CliResolvedProject | null> | null = null;
     const getMaybeResolvedProject = async (): Promise<CliResolvedProject | null> => {
       maybeResolvedProjectPromise ??=
-        matched?.entry.needsProject === false
+        matched?.entry.dispatch.project === false
           ? Promise.resolve(null)
           : maybeResolveProject({ cwd, rootOverride: globals.root });
       return await maybeResolvedProjectPromise;
@@ -141,7 +141,7 @@ export async function runCli(argv: string[]): Promise<number> {
       }
     };
     const getCtxOrThrow = async (commandForErrorContext: string): Promise<CommandContext> => {
-      if (matched?.entry.needsTaskContext === false) {
+      if (matched?.entry.dispatch.taskContext === false) {
         throw new CliError({
           exitCode: exitCodeForError("E_INTERNAL"),
           code: "E_INTERNAL",
@@ -233,7 +233,7 @@ export async function runCli(argv: string[]): Promise<number> {
     // `require_network=true` means "no network without explicit approval".
     // Update-check is an optional network call, so it must be gated after config load.
     let skipUpdateCheckForPolicy = true;
-    if (resolved && matched?.entry.needsConfig !== false) {
+    if (resolved && matched?.entry.dispatch.loadedConfig !== false) {
       try {
         const loaded = await getLoadedConfig("update-check");
         const requireNetwork = getApprovalRequirements({
@@ -250,7 +250,9 @@ export async function runCli(argv: string[]): Promise<number> {
     await maybeWarnOnUpdate({
       currentVersion: getVersion(),
       skip:
-        globals.noUpdateCheck || skipUpdateCheckForPolicy || matched?.entry.needsConfig === false,
+        globals.noUpdateCheck ||
+        skipUpdateCheckForPolicy ||
+        matched?.entry.dispatch.loadedConfig === false,
       jsonErrors,
     });
 

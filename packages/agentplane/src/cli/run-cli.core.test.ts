@@ -222,6 +222,40 @@ describe("runCli", () => {
     }
   });
 
+  it("does not load .env for ide sync when dispatch only needs project metadata", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, "AGENTS.md"), "# Agents\n\nRules go here.\n", "utf8");
+    await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "agents", "CODER.json"),
+      JSON.stringify(
+        {
+          id: "CODER",
+          role: "Implement approved task scope with the smallest coherent diff.",
+          description: "Task-scoped implementation role.",
+        },
+        null,
+        2,
+      ) + "\n",
+      "utf8",
+    );
+    const marker = "AGENTPLANE_TEST_SKIP_DOTENV_FOR_IDE_SYNC";
+    delete process.env[marker];
+    await writeFile(path.join(root, ".env"), `${marker}=from-dotenv\n`, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["ide", "sync", "--ide", "cursor", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(".cursor/rules/agentplane.mdc");
+      expect(process.env[marker]).toBeUndefined();
+    } finally {
+      delete process.env[marker];
+      io.restore();
+    }
+  });
+
   it("prints update notice when npm has a newer version", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

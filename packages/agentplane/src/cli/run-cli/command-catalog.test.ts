@@ -44,4 +44,22 @@ describe("command catalog graph", () => {
     expect(getDirectChildCommandNames(["task", "plan"])).toEqual(["approve", "reject", "set"]);
     expect(getDirectChildCommandNames(["missing", "command"])).toEqual([]);
   });
+
+  it("keeps dispatch metadata separate from handler loading", () => {
+    expect(findCommandEntry(["ide", "sync"])?.dispatch).toEqual({
+      project: true,
+      loadedConfig: false,
+      taskContext: false,
+    });
+    expect(findCommandEntry(["config", "show"])?.dispatch).toEqual({
+      project: true,
+      loadedConfig: true,
+      taskContext: false,
+    });
+    expect(findCommandEntry(["task"])?.dispatch).toEqual({
+      project: false,
+      loadedConfig: false,
+      taskContext: false,
+    });
+  });
 });

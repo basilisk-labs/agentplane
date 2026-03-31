@@ -51,7 +51,7 @@ export const PROJECT_COMMANDS = [
     () => import("../../../commands/recipes/recipes.command.js").then((m) => m.runRecipes),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -60,7 +60,7 @@ export const PROJECT_COMMANDS = [
     () => import("../../../commands/recipes/cache.command.js").then((m) => m.runRecipesCache),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -90,7 +90,7 @@ export const PROJECT_COMMANDS = [
     () => import("../../../commands/scenario/scenario.command.js").then((m) => m.runScenario),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -111,7 +111,7 @@ export const PROJECT_COMMANDS = [
     () => import("../../../commands/branch/base.command.js").then((m) => m.runBranchBase),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -141,7 +141,7 @@ export const PROJECT_COMMANDS = [
       ),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -169,7 +169,7 @@ export const PROJECT_COMMANDS = [
       import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrHandler(deps.getCtx)),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
