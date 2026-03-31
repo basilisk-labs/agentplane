@@ -1,0 +1,5 @@
+ .agentplane/tasks/202603301857-GSKC6T/README.md    | 58 ++++++++++++----
+ docs/developer/cli-contract.mdx                    | 46 ++++++++++---
+ .../src/cli/run-cli.core.tasks.query.test.ts       | 42 ++++++++----
+ packages/agentplane/src/cli/run-cli.core.test.ts   | 79 ++++++++++++++++------
+ 4 files changed, 167 insertions(+), 58 deletions(-)

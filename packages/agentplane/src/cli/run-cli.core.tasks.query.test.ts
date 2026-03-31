@@ -74,6 +74,7 @@ function splitLines(text: string): string[] {
 }
 
 function parseJsonEnvelope(stdout: string): {
+  schema_version?: number;
   mode?: string;
   command?: string;
   ok?: boolean;
@@ -83,6 +84,7 @@ function parseJsonEnvelope(stdout: string): {
   data?: unknown;
 } {
   return JSON.parse(stdout) as {
+    schema_version?: number;
     mode?: string;
     command?: string;
     ok?: boolean;
@@ -91,6 +93,28 @@ function parseJsonEnvelope(stdout: string): {
     stderr?: string;
     data?: unknown;
   };
+}
+
+function expectAgentJsonTextEnvelope(
+  payload: ReturnType<typeof parseJsonEnvelope>,
+  command: string,
+  exitCode: number,
+): void {
+  expect(payload.schema_version).toBe(1);
+  expect(payload.mode).toBe("agent_json_v1");
+  expect(payload.command).toBe(command);
+  expect(payload.ok).toBe(exitCode === 0);
+  expect(payload.exit_code).toBe(exitCode);
+  expect(Object.keys(payload)).toEqual([
+    "schema_version",
+    "mode",
+    "command",
+    "ok",
+    "exit_code",
+    "stdout",
+    "stderr",
+  ]);
+  expect(Object.hasOwn(payload, "data")).toBe(false);
 }
 
 async function waitForRunnerState(opts: {
@@ -3222,15 +3246,11 @@ describe("runCli", () => {
       const code = await runCli(["--output", "json", "task", "list", "--root", root]);
       expect(code).toBe(0);
       const payload = parseJsonEnvelope(listIo.stdout);
-      expect(payload.mode).toBe("agent_json_v1");
-      expect(payload.command).toBe("task list");
-      expect(payload.ok).toBe(true);
-      expect(payload.exit_code).toBe(0);
+      expectAgentJsonTextEnvelope(payload, "task list", 0);
       expect(payload.stdout).toContain("Total: 2 (TODO=2)");
       expect(payload.stdout).toContain(taskIds[0] ?? "");
       expect(payload.stdout).toContain(taskIds[1] ?? "");
       expect(payload.stderr).toBe("");
-      expect(payload.data).toBeUndefined();
     } finally {
       listIo.restore();
     }
@@ -3240,14 +3260,10 @@ describe("runCli", () => {
       const code = await runCli(["--output", "json", "task", "search", "json", "--root", root]);
       expect(code).toBe(0);
       const payload = parseJsonEnvelope(searchIo.stdout);
-      expect(payload.mode).toBe("agent_json_v1");
-      expect(payload.command).toBe("task search");
-      expect(payload.ok).toBe(true);
-      expect(payload.exit_code).toBe(0);
+      expectAgentJsonTextEnvelope(payload, "task search", 0);
       expect(payload.stdout).toContain("Json list one");
       expect(payload.stdout).toContain("Json list two");
       expect(payload.stderr).toBe("");
-      expect(payload.data).toBeUndefined();
     } finally {
       searchIo.restore();
     }
@@ -3266,13 +3282,9 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       const payload = parseJsonEnvelope(nextIo.stdout);
-      expect(payload.mode).toBe("agent_json_v1");
-      expect(payload.command).toBe("task next");
-      expect(payload.ok).toBe(true);
-      expect(payload.exit_code).toBe(0);
+      expectAgentJsonTextEnvelope(payload, "task next", 0);
       expect(payload.stdout).toContain("Ready: 1 / 2");
       expect(payload.stderr).toBe("");
-      expect(payload.data).toBeUndefined();
     } finally {
       nextIo.restore();
     }

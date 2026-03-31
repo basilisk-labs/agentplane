@@ -1,11 +1,11 @@
 ---
 title: "CLI contract"
-description: "Stable command parsing, exit codes, and JSON error behavior for the current CLI."
+description: "Stable command parsing, exit codes, JSON success envelopes, and JSON error behavior for the current CLI."
 ---
 
-This document describes the stable CLI contract for `agentplane` command parsing and error behavior.
+This document describes the stable CLI contract for `agentplane` command parsing, success output, and error behavior.
 
-Scope: global flags, parsing rules, exit codes, and JSON error output.
+Scope: global flags, parsing rules, exit codes, JSON success envelopes, and JSON error output.
 
 ## 1) Invocation model
 
@@ -68,31 +68,61 @@ Rules:
 - `context` is optional and must not include secrets.
 - No additional keys are emitted; the schema is exact.
 
-## 4) Command registry and loading
+## 4) `--output json` success envelope (`agent_json_v1`)
+
+When `--output json` is provided and a command succeeds, the CLI emits one stable envelope to stdout:
+
+```json
+{
+  "schema_version": 1,
+  "mode": "agent_json_v1",
+  "command": "config show",
+  "ok": true,
+  "exit_code": 0,
+  "stdout": "{\n  \"workflow_mode\": \"branch_pr\"\n}",
+  "stderr": "",
+  "data": {
+    "workflow_mode": "branch_pr"
+  }
+}
+```
+
+Rules:
+
+- The exact top-level key order is stable: `schema_version`, `mode`, `command`, `ok`, `exit_code`, `stdout`, `stderr`, then optional `data`.
+- `schema_version` is currently `1`; `mode` is currently `agent_json_v1`.
+- `command` is the canonical command id selected by the dispatcher, for example `help`, `config show`, or `task list`.
+- `stdout` and `stderr` preserve the trimmed text output produced by the command.
+- `data` is included only when `stdout` is itself valid JSON; when present, it must equal `JSON.parse(stdout)`.
+- Text commands such as `task list`, `task search`, and `task next` therefore omit `data` and keep only the text in `stdout`.
+- `--output json` also enables the same machine-readable failure path as `--json-errors`; the `agent_json_v1` envelope is the success contract, not the error contract.
+
+## 5) Command registry and loading
 
 Command definitions are registered in `packages/agentplane/src/cli/run-cli/command-catalog.ts`.
 The catalog keeps command specs lightweight and loads command runtime handlers lazily.
 
 This split keeps `agentplane help` fast and reduces accidental startup cost from heavy imports.
 
-## 5) Help and startup surfaces
+## 6) Help and startup surfaces
 
 - `agentplane quickstart` and `agentplane role <ROLE>` are generated from `packages/agentplane/src/cli/command-guide.ts`.
 - The docs-site bootstrap page is generated from `packages/agentplane/src/cli/bootstrap-guide.ts` into `docs/user/agent-bootstrap.generated.mdx`.
 - Installed runtime surfaces must stay self-contained and must not require repo-only docs files to exist locally.
 - `agentplane role <ROLE>` renders one unified surface:
   - installed `.agentplane/agents/<ROLE>.json` role/profile content when available
-  - plus built-in CLI/runtime supplements for that role
+- plus built-in CLI/runtime supplements for that role
 - For unknown role requests, CLI prints known built-in roles and discovered project role ids.
 
-## 6) Contract boundaries
+## 7) Contract boundaries
 
 - `agentplane help --compact` is a human output convenience, not a machine schema.
 - `agentplane help --json` is machine-readable help output.
 - `--json-errors` is for failed command output only.
+- `--output json` preserves text output inside `stdout`; consumers must not assume `data` exists for text commands.
 - Command descriptions and examples may change, but option names, required flags, error shapes, and exit code mapping are treated as stable contract surface.
 
-## 7) Source references
+## 8) Source references
 
 - Parser and global flags:
   - `packages/agentplane/src/cli/run-cli.ts`

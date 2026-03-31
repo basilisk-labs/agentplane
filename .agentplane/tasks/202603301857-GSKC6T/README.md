@@ -1,10 +1,10 @@
 ---
 id: "202603301857-GSKC6T"
 title: "Re-lock JSON compatibility and document any intentional invariants"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -15,21 +15,37 @@ tags:
   - "cli"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T12:54:53.981Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T12:57:55.331Z"
+  updated_by: "CODER"
+  note: "Command: bunx eslint packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 0 lint errors after exact envelope-shape assertions were added; Scope: JSON contract tests. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 84 tests passed, including exact key-order and optional-data assertions for agent_json_v1 across help, config show, and task list/search/next; Scope: CLI JSON compatibility surface. Command: inspect docs/developer/cli-contract.mdx diff; Result: pass; Evidence: docs now describe agent_json_v1 success-envelope keys, optional data, and the --output json failure-path invariant; Scope: developer-facing contract documentation."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: re-lock the stable agent_json_v1 success envelope in tests and developer docs without widening the JSON surface beyond the current contract."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T12:55:29.806Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: re-lock the stable agent_json_v1 success envelope in tests and developer docs without widening the JSON surface beyond the current contract."
+  -
+    type: "verify"
+    at: "2026-03-31T12:57:55.331Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx eslint packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 0 lint errors after exact envelope-shape assertions were added; Scope: JSON contract tests. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 84 tests passed, including exact key-order and optional-data assertions for agent_json_v1 across help, config show, and task list/search/next; Scope: CLI JSON compatibility surface. Command: inspect docs/developer/cli-contract.mdx diff; Result: pass; Evidence: docs now describe agent_json_v1 success-envelope keys, optional data, and the --output json failure-path invariant; Scope: developer-facing contract documentation."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:57:14.958Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T12:57:55.333Z"
+doc_updated_by: "CODER"
 description: "Implement Epic 6 / R6.3 from REFACTOR.md. `agent_json_v1` compatibility is explicitly tested and documented as a stable contract."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: `agent_json_v1` compatibility is explicitly tested and documented as a stable contract.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T12:57:55.331Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bunx eslint packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 0 lint errors after exact envelope-shape assertions were added; Scope: JSON contract tests. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 84 tests passed, including exact key-order and optional-data assertions for agent_json_v1 across help, config show, and task list/search/next; Scope: CLI JSON compatibility surface. Command: inspect docs/developer/cli-contract.mdx diff; Result: pass; Evidence: docs now describe agent_json_v1 success-envelope keys, optional data, and the --output json failure-path invariant; Scope: developer-facing contract documentation.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T12:55:29.807Z, excerpt_hash=sha256:65c50d5e1d20f727a235b23ed000b5ea206c191b341a32c92680024fee59abee
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +106,14 @@ Implement Epic 6 / R6.3 from REFACTOR.md. `agent_json_v1` compatibility is expli
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T12:57:55.331Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx eslint packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 0 lint errors after exact envelope-shape assertions were added; Scope: JSON contract tests. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts; Result: pass; Evidence: 84 tests passed, including exact key-order and optional-data assertions for agent_json_v1 across help, config show, and task list/search/next; Scope: CLI JSON compatibility surface. Command: inspect docs/developer/cli-contract.mdx diff; Result: pass; Evidence: docs now describe agent_json_v1 success-envelope keys, optional data, and the --output json failure-path invariant; Scope: developer-facing contract documentation.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T12:55:29.807Z, excerpt_hash=sha256:65c50d5e1d20f727a235b23ed000b5ea206c191b341a32c92680024fee59abee
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

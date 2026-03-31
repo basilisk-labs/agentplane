@@ -57,6 +57,39 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
+type AgentJsonEnvelope = {
+  schema_version?: number;
+  mode?: string;
+  command?: string;
+  ok?: boolean;
+  exit_code?: number;
+  stdout?: string;
+  stderr?: string;
+  data?: unknown;
+};
+
+function expectAgentJsonEnvelopeShape(
+  payload: AgentJsonEnvelope,
+  opts: {
+    command: string;
+    ok: boolean;
+    exitCode: number;
+    hasData: boolean;
+  },
+): void {
+  expect(payload.schema_version).toBe(1);
+  expect(payload.mode).toBe("agent_json_v1");
+  expect(payload.command).toBe(opts.command);
+  expect(payload.ok).toBe(opts.ok);
+  expect(payload.exit_code).toBe(opts.exitCode);
+  expect(Object.keys(payload)).toEqual(
+    opts.hasData
+      ? ["schema_version", "mode", "command", "ok", "exit_code", "stdout", "stderr", "data"]
+      : ["schema_version", "mode", "command", "ok", "exit_code", "stdout", "stderr"],
+  );
+  expect(Object.hasOwn(payload, "data")).toBe(opts.hasData);
+}
+
 describe("runCli", () => {
   it("prints help on --help", async () => {
     const io = captureStdIO();
@@ -132,14 +165,15 @@ describe("runCli", () => {
         stderr?: string;
         data?: unknown;
       };
-      expect(payload.mode).toBe("agent_json_v1");
-      expect(payload.command).toBe("help");
-      expect(payload.ok).toBe(true);
-      expect(payload.exit_code).toBe(0);
+      expectAgentJsonEnvelopeShape(payload, {
+        command: "help",
+        ok: true,
+        exitCode: 0,
+        hasData: false,
+      });
       expect(payload.stdout).toContain("task - Task lifecycle and task-store commands.");
       expect(payload.stdout).toContain("Usage:");
       expect(payload.stderr).toBe("");
-      expect(payload.data).toBeUndefined();
     } finally {
       io.restore();
     }
@@ -743,23 +777,17 @@ describe("runCli", () => {
     try {
       const code = await runCli(["--output", "json", "config", "show", "--root", root]);
       expect(code).toBe(0);
-      const payload = JSON.parse(io.stdout) as {
-        schema_version?: number;
-        mode?: string;
-        command?: string;
-        ok?: boolean;
-        exit_code?: number;
-        stdout?: string;
-        stderr?: string;
-        data?: Record<string, unknown>;
-      };
-      expect(payload.schema_version).toBe(1);
-      expect(payload.mode).toBe("agent_json_v1");
-      expect(payload.command).toBe("config show");
-      expect(payload.ok).toBe(true);
-      expect(payload.exit_code).toBe(0);
+      const payload = JSON.parse(io.stdout) as AgentJsonEnvelope;
+      expectAgentJsonEnvelopeShape(payload, {
+        command: "config show",
+        ok: true,
+        exitCode: 0,
+        hasData: true,
+      });
       expect(payload.stderr).toBe("");
-      expect(typeof payload.data?.workflow_mode).toBe("string");
+      expect(typeof (payload.data as { workflow_mode?: unknown } | undefined)?.workflow_mode).toBe(
+        "string",
+      );
       expect(payload.stdout).toBe(JSON.stringify(payload.data, null, 2));
       expect(JSON.parse(payload.stdout ?? "")).toEqual(payload.data);
       expect(io.stderr).toBe("");
@@ -781,7 +809,14 @@ describe("runCli", () => {
         },
       });
       expect(code).toBe(7);
-      expect(JSON.parse(io.stdout)).toEqual({
+      const payload = JSON.parse(io.stdout) as AgentJsonEnvelope;
+      expectAgentJsonEnvelopeShape(payload, {
+        command: "demo command",
+        ok: false,
+        exitCode: 7,
+        hasData: true,
+      });
+      expect(payload).toEqual({
         schema_version: 1,
         mode: "agent_json_v1",
         command: "demo command",
