@@ -1,10 +1,10 @@
 ---
 id: "202603311332-0QBGN0"
 title: "N5.4 Split `commands/upgrade.ts` by planning, apply, report, and lock concerns"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -16,21 +16,37 @@ tags:
   - "upgrade"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T20:21:36.574Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T20:41:55.577Z"
+  updated_by: "CODER"
+  note: "Split commands/upgrade.ts into policy/materialize/plan modules and kept upgrade CLI contracts green via focused lint, vitest, and framework bootstrap."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: split commands/upgrade.ts into policy, materialize, and planning modules while preserving lock lifecycle, managed-file policy, agent/auto mode sequencing, and public cmdUpgradeParsed entrypoints."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T20:23:19.619Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split commands/upgrade.ts into policy, materialize, and planning modules while preserving lock lifecycle, managed-file policy, agent/auto mode sequencing, and public cmdUpgradeParsed entrypoints."
+  -
+    type: "verify"
+    at: "2026-03-31T20:41:55.577Z"
+    author: "CODER"
+    state: "ok"
+    note: "Split commands/upgrade.ts into policy/materialize/plan modules and kept upgrade CLI contracts green via focused lint, vitest, and framework bootstrap."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:32:39.773Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T20:41:55.580Z"
+doc_updated_by: "CODER"
 description: "Implement N5.4 from REFACTOR.md. Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.. Acceptance: upgrade flow orchestration is easier to test without loading the whole module. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: upgrade flow orchestration is easier to test without loading the whole module.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T20:41:55.577Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Split commands/upgrade.ts into policy/materialize/plan modules and kept upgrade CLI contracts green via focused lint, vitest, and framework bootstrap.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T20:23:19.639Z, excerpt_hash=sha256:e8978efaeeb679ccb085274001f4fd9b2c9b9a0e274c061bbc6ae2352ce64a30
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +107,14 @@ Implement N5.4 from REFACTOR.md. Use the seams created by `N1` through `N4` to s
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T20:41:55.577Z — VERIFY — ok
+
+By: CODER
+
+Note: Split commands/upgrade.ts into policy/materialize/plan modules and kept upgrade CLI contracts green via focused lint, vitest, and framework bootstrap.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T20:23:19.639Z, excerpt_hash=sha256:e8978efaeeb679ccb085274001f4fd9b2c9b9a0e274c061bbc6ae2352ce64a30
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

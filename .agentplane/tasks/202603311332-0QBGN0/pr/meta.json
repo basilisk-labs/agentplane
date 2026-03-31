@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603311332-0QBGN0/split-upgrade-command",
+  "created_at": "2026-03-31T20:43:02.782Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603311332-0QBGN0",
+  "updated_at": "2026-03-31T20:43:02.782Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
