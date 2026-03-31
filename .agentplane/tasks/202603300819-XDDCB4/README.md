@@ -4,7 +4,7 @@ title: "Lock current CLI read-surface behavior with contract tests"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-03-30T18:53:02.989Z"
+  updated_at: "2026-03-31T10:00:06.727Z"
   updated_by: "CODER"
-  note: "OK: rebased the branch on current main and reran the task’s intended CLI contract slice; bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts -t 'renders the same task help|wraps trailing help' passed; bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts -t 'task next|task search|task list' passed; bunx vitest run packages/agentplane/src/cli/run-cli.core.help-contract.test.ts passed."
+  note: "Re-verified after rebasing onto local refactor wave; targeted vitest contracts passed."
 commit: null
 comments:
   -
@@ -48,8 +48,20 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: rebased the branch on current main and reran the task’s intended CLI contract slice; bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts -t 'renders the same task help|wraps trailing help' passed; bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts -t 'task next|task search|task list' passed; bunx vitest run packages/agentplane/src/cli/run-cli.core.help-contract.test.ts passed."
+  -
+    type: "verify"
+    at: "2026-03-31T09:59:55.581Z"
+    author: "CODER"
+    state: "ok"
+    note: "Re-verified after rebase onto local main; targeted Vitest contracts passed."
+  -
+    type: "verify"
+    at: "2026-03-31T10:00:06.727Z"
+    author: "CODER"
+    state: "ok"
+    note: "Re-verified after rebasing onto local refactor wave; targeted vitest contracts passed."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:53:02.991Z"
+doc_updated_at: "2026-03-31T10:00:06.732Z"
 doc_updated_by: "CODER"
 description: "Start Epic 0 by adding behavior-locking tests for help routing, task list/search/next output, and JSON output contracts so the next CLI refactor wave can remove duplicate infrastructure safely."
 sections:
@@ -85,6 +97,22 @@ sections:
     Note: OK: rebased the branch on current main and reran the task’s intended CLI contract slice; bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts -t 'renders the same task help|wraps trailing help' passed; bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts -t 'task next|task search|task list' passed; bunx vitest run packages/agentplane/src/cli/run-cli.core.help-contract.test.ts passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-30T08:44:45.026Z, excerpt_hash=sha256:25ce9cf558224ffe8e2594d2b97d07c4cab4883e61e0fc0c1984399dd002df02
+    
+    ### 2026-03-31T09:59:55.581Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Re-verified after rebase onto local main; targeted Vitest contracts passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-30T18:53:02.991Z, excerpt_hash=sha256:25ce9cf558224ffe8e2594d2b97d07c4cab4883e61e0fc0c1984399dd002df02
+    
+    ### 2026-03-31T10:00:06.727Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Re-verified after rebasing onto local refactor wave; targeted vitest contracts passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T09:59:55.585Z, excerpt_hash=sha256:25ce9cf558224ffe8e2594d2b97d07c4cab4883e61e0fc0c1984399dd002df02
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -134,6 +162,22 @@ By: CODER
 Note: OK: rebased the branch on current main and reran the task’s intended CLI contract slice; bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts -t 'renders the same task help|wraps trailing help' passed; bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts -t 'task next|task search|task list' passed; bunx vitest run packages/agentplane/src/cli/run-cli.core.help-contract.test.ts passed.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-30T08:44:45.026Z, excerpt_hash=sha256:25ce9cf558224ffe8e2594d2b97d07c4cab4883e61e0fc0c1984399dd002df02
+
+### 2026-03-31T09:59:55.581Z — VERIFY — ok
+
+By: CODER
+
+Note: Re-verified after rebase onto local main; targeted Vitest contracts passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-30T18:53:02.991Z, excerpt_hash=sha256:25ce9cf558224ffe8e2594d2b97d07c4cab4883e61e0fc0c1984399dd002df02
+
+### 2026-03-31T10:00:06.727Z — VERIFY — ok
+
+By: CODER
+
+Note: Re-verified after rebasing onto local refactor wave; targeted vitest contracts passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T09:59:55.585Z, excerpt_hash=sha256:25ce9cf558224ffe8e2594d2b97d07c4cab4883e61e0fc0c1984399dd002df02
 
 <!-- END VERIFICATION RESULTS -->
 
