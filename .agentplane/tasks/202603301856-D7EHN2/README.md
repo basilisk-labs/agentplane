@@ -1,10 +1,11 @@
 ---
 id: "202603301856-D7EHN2"
 title: "Make the normal command dispatcher consume the canonical graph"
-status: "DOING"
+result_summary: "integrate: squash task/202603301856-D7EHN2/normal-dispatch-uses-canonical-graph"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T08:31:23.773Z"
   updated_by: "CODER"
   note: "Focused CLI routing suite passed after replacing runtime longest-prefix rematch with exact registry lookup from the canonical command match."
-commit: null
+commit:
+  hash: "474e7b52c57ce79d69fdcde6e739304782e6aa93"
+  message: "🧩 D7EHN2 integrate: squash task/202603301856-D7EHN2/normal-dispatch-uses-canonical-graph"
 comments:
   -
     author: "CODER"
     body: "Start: remove the second runtime longest-prefix match by reusing the canonical command match for dispatch metadata and exact handler lookup."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-D7EHN2/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused CLI routing suite passed after replacing runtime longest-prefix rematch with exact registry lookup from the canonical command match."
+  -
+    type: "status"
+    at: "2026-03-31T08:33:17.785Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301856-D7EHN2/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T08:31:23.778Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T08:33:17.790Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 1 / R1.2 from REFACTOR.md. runtime dispatch no longer performs two independent longest-prefix match implementations."
 sections:
   Summary: |-

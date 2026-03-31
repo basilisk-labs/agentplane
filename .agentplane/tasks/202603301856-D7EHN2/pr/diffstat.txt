@@ -1,5 +1,9 @@
- .agentplane/tasks/202603301856-D7EHN2/README.md   | 30 +++++++++++++++--------
- packages/agentplane/src/cli/run-cli.ts            | 19 +++++++++-----
- packages/agentplane/src/cli/spec/registry.test.ts |  4 +--
- packages/agentplane/src/cli/spec/registry.ts      |  2 +-
- 4 files changed, 36 insertions(+), 19 deletions(-)
+ .agentplane/tasks/202603301856-D7EHN2/README.md    | 60 +++++++++++++++++-----
+ .../tasks/202603301856-D7EHN2/pr/diffstat.txt      |  5 ++
+ .agentplane/tasks/202603301856-D7EHN2/pr/meta.json | 12 +++++
+ .agentplane/tasks/202603301856-D7EHN2/pr/review.md | 33 ++++++++++++
+ .../tasks/202603301856-D7EHN2/pr/verify.log        |  0
+ packages/agentplane/src/cli/run-cli.ts             | 19 ++++---
+ packages/agentplane/src/cli/spec/registry.test.ts  |  4 +-
+ packages/agentplane/src/cli/spec/registry.ts       |  2 +-
+ 8 files changed, 112 insertions(+), 23 deletions(-)
