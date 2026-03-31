@@ -1,11 +1,8 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { infoMessage, successMessage } from "../../cli/output.js";
-import {
-  loadCommandContext,
-  type CommandContext,
-  writeTasksOrFallback,
-} from "../shared/task-backend.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { applyTaskCollectionMutation } from "../shared/task-mutation.js";
 
 function scrubValue(value: unknown, find: string, replace: string): unknown {
   if (typeof value === "string") return value.replaceAll(find, replace);
@@ -34,21 +31,24 @@ export async function cmdTaskScrub(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const tasks = await ctx.taskBackend.listTasks();
-    const updated: TaskData[] = [];
-    const changedIds = new Set<string>();
-    for (const task of tasks) {
-      const before = JSON.stringify(task);
-      const scrubbed = scrubValue(task, opts.find, opts.replace);
-      if (scrubbed && typeof scrubbed === "object") {
-        const next = scrubbed as TaskData;
-        updated.push(next);
-        const after = JSON.stringify(next);
-        if (before !== after) changedIds.add(next.id);
-      } else {
-        updated.push(task);
+    const buildScrubbedTasks = (tasks: TaskData[]) => {
+      const updated: TaskData[] = [];
+      const changedIds = new Set<string>();
+      for (const task of tasks) {
+        const before = JSON.stringify(task);
+        const scrubbed = scrubValue(task, opts.find, opts.replace);
+        if (scrubbed && typeof scrubbed === "object") {
+          const next = scrubbed as TaskData;
+          updated.push(next);
+          const after = JSON.stringify(next);
+          if (before !== after) changedIds.add(next.id);
+        } else {
+          updated.push(task);
+        }
       }
-    }
+      return { updated, changedIds };
+    };
+    const { changedIds, updated } = buildScrubbedTasks(await ctx.taskBackend.listTasks());
     if (opts.dryRun) {
       if (!opts.quiet) {
         process.stdout.write(
@@ -60,7 +60,13 @@ export async function cmdTaskScrub(opts: {
       }
       return 0;
     }
-    await writeTasksOrFallback(ctx.taskBackend, updated);
+    await applyTaskCollectionMutation({
+      ctx,
+      build: () => ({
+        result: changedIds,
+        tasksToWrite: updated,
+      }),
+    });
     if (!opts.quiet) {
       process.stdout.write(
         `${successMessage("updated tasks", undefined, `count=${changedIds.size}`)}` + "\n",

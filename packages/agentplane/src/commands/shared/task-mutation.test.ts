@@ -236,3 +236,56 @@ describe("applyTaskMutation", () => {
     expect(writeTask).not.toHaveBeenCalled();
   });
 });
+
+describe("applyTaskCollectionMutation", () => {
+  afterEach(() => {
+    vi.resetModules();
+    vi.restoreAllMocks();
+  });
+
+  it("loads current tasks and writes the returned bulk task set", async () => {
+    const currentTasks = [mkTask({ id: "T-1" }), mkTask({ id: "T-2" })];
+    const listTasks = vi.fn(() => Promise.resolve(currentTasks.map((task) => cloneTask(task))));
+    const writeTasks = vi.fn(() => Promise.resolve());
+    const ctx = mkCtx(mkBackend({ listTasks, writeTasks }));
+
+    const { applyTaskCollectionMutation } = await import("./task-mutation.js");
+    const result = await applyTaskCollectionMutation({
+      ctx,
+      build: (tasks) => {
+        const [firstTask, secondTask] = tasks;
+        if (!firstTask || !secondTask) throw new Error("expected two tasks");
+        return {
+          result: tasks.map((task) => task.id).join(","),
+          tasksToWrite: [firstTask, { ...secondTask, status: "DONE" }],
+        };
+      },
+    });
+
+    expect(result.result).toBe("T-1,T-2");
+    expect(result.tasksToWrite).toHaveLength(2);
+    expect(listTasks).toHaveBeenCalledTimes(1);
+    expect(writeTasks).toHaveBeenCalledTimes(1);
+    expect(writeTasks).toHaveBeenCalledWith(result.tasksToWrite);
+  });
+
+  it("skips bulk writes when the builder returns no tasks to write", async () => {
+    const listTasks = vi.fn(() => Promise.resolve([mkTask({ id: "T-1" })]));
+    const writeTask = vi.fn(() => Promise.resolve());
+    const writeTasks = vi.fn(() => Promise.resolve());
+    const ctx = mkCtx(mkBackend({ listTasks, writeTask, writeTasks }));
+
+    const { applyTaskCollectionMutation } = await import("./task-mutation.js");
+    const result = await applyTaskCollectionMutation({
+      ctx,
+      build: () => ({
+        result: "noop",
+      }),
+    });
+
+    expect(result.result).toBe("noop");
+    expect(result.tasksToWrite).toEqual([]);
+    expect(writeTasks).not.toHaveBeenCalled();
+    expect(writeTask).not.toHaveBeenCalled();
+  });
+});

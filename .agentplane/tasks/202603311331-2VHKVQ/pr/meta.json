@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603311331-2VHKVQ/bulk-task-mutators",
+  "created_at": "2026-03-31T15:30:17.101Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603311331-2VHKVQ",
+  "updated_at": "2026-03-31T15:30:24.129Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -1,5 +1,5 @@
 import type { TaskData, TaskWriteOptions } from "../../backends/task-backend.js";
-import { loadTaskFromContext, type CommandContext } from "./task-backend.js";
+import { loadTaskFromContext, writeTasksOrFallback, type CommandContext } from "./task-backend.js";
 import {
   applyTaskStoreIntentsToTask,
   backendIsLocalFileBackend,
@@ -11,6 +11,11 @@ export type TaskMutationPlan = {
   intents?: TaskStoreIntentResult;
   nextTask?: TaskData;
   forceWrite?: boolean;
+};
+
+export type TaskCollectionMutationPlan<TResult> = {
+  tasksToWrite?: readonly TaskData[];
+  result: TResult;
 };
 
 export async function applyTaskMutation(opts: {
@@ -61,4 +66,19 @@ export async function applyTaskMutation(opts: {
     expectedRevision: opts.writeOptions?.expectedRevision,
   });
   return { changed, task: nextTask, mode: "backend" };
+}
+
+export async function applyTaskCollectionMutation<TResult>(opts: {
+  ctx: CommandContext;
+  build: (
+    current: TaskData[],
+  ) => Promise<TaskCollectionMutationPlan<TResult>> | TaskCollectionMutationPlan<TResult>;
+}): Promise<{ result: TResult; tasksToWrite: TaskData[] }> {
+  const current = await opts.ctx.taskBackend.listTasks();
+  const plan = await opts.build(current.map((task) => ({ ...task })));
+  const tasksToWrite = [...(plan.tasksToWrite ?? [])];
+  if (tasksToWrite.length > 0) {
+    await writeTasksOrFallback(opts.ctx.taskBackend, tasksToWrite);
+  }
+  return { result: plan.result, tasksToWrite };
 }

@@ -1,0 +1,7 @@
+ .agentplane/tasks/202603311331-2VHKVQ/README.md    | 58 +++++++++++----
+ .../src/commands/shared/task-mutation.test.ts      | 53 ++++++++++++++
+ .../src/commands/shared/task-mutation.ts           | 22 +++++-
+ packages/agentplane/src/commands/task/add.ts       | 84 +++++++++++-----------
+ packages/agentplane/src/commands/task/normalize.ts | 32 +++++----
+ packages/agentplane/src/commands/task/scrub.ts     | 46 ++++++------
+ 6 files changed, 208 insertions(+), 87 deletions(-)

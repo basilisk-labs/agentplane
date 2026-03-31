@@ -1,11 +1,8 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
-import {
-  loadCommandContext,
-  type CommandContext,
-  writeTasksOrFallback,
-} from "../shared/task-backend.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { applyTaskCollectionMutation } from "../shared/task-mutation.js";
 import { dedupeStrings, normalizeTaskStatus, nowIso } from "./shared.js";
 import { defaultTaskDocV3, TASK_DOC_VERSION_V3 } from "./doc-template.js";
 
@@ -30,46 +27,53 @@ export async function cmdTaskAdd(opts: {
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const status = normalizeTaskStatus(opts.status);
-    const existing = await ctx.taskBackend.listTasks();
-    const existingIds = new Set(existing.map((task) => task.id));
-    for (const taskId of opts.taskIds) {
-      if (existingIds.has(taskId)) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: `Task already exists: ${taskId}`,
-        });
-      }
-    }
-
     const tags = dedupeStrings(opts.tags);
     const dependsOn = dedupeStrings(opts.dependsOn);
     const verify = dedupeStrings(opts.verify);
     const docUpdatedBy = (opts.commentAuthor ?? "").trim() || opts.owner;
 
-    const tasks: TaskData[] = opts.taskIds.map((taskId) => ({
-      id: taskId,
-      title: opts.title,
-      description: opts.description,
-      status,
-      priority: opts.priority,
-      owner: opts.owner,
-      origin: { system: "manual" },
-      tags,
-      depends_on: dependsOn,
-      verify,
-      comments:
-        opts.commentAuthor && opts.commentBody
-          ? [{ author: opts.commentAuthor, body: opts.commentBody }]
-          : [],
-      doc_version: TASK_DOC_VERSION_V3,
-      doc_updated_at: nowIso(),
-      doc_updated_by: docUpdatedBy,
-      id_source: "explicit",
-      doc: defaultTaskDocV3({ title: opts.title, description: opts.description }),
-    }));
-    await writeTasksOrFallback(ctx.taskBackend, tasks);
-    for (const task of tasks) {
+    const { tasksToWrite } = await applyTaskCollectionMutation({
+      ctx,
+      build: (existing) => {
+        const existingIds = new Set(existing.map((task) => task.id));
+        for (const taskId of opts.taskIds) {
+          if (existingIds.has(taskId)) {
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: `Task already exists: ${taskId}`,
+            });
+          }
+        }
+
+        const tasksToWrite: TaskData[] = opts.taskIds.map((taskId) => ({
+          id: taskId,
+          title: opts.title,
+          description: opts.description,
+          status,
+          priority: opts.priority,
+          owner: opts.owner,
+          origin: { system: "manual" },
+          tags,
+          depends_on: dependsOn,
+          verify,
+          comments:
+            opts.commentAuthor && opts.commentBody
+              ? [{ author: opts.commentAuthor, body: opts.commentBody }]
+              : [],
+          doc_version: TASK_DOC_VERSION_V3,
+          doc_updated_at: nowIso(),
+          doc_updated_by: docUpdatedBy,
+          id_source: "explicit",
+          doc: defaultTaskDocV3({ title: opts.title, description: opts.description }),
+        }));
+        return {
+          result: null,
+          tasksToWrite,
+        };
+      },
+    });
+    for (const task of tasksToWrite) {
       process.stdout.write(`${task.id}\n`);
     }
     return 0;
