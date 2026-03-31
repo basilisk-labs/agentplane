@@ -1,10 +1,11 @@
 ---
 id: "202603311332-3Z2AQ7"
 title: "N5.2 Split `backends/task-backend/local-backend.ts` by read, doc, and write concerns"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-3Z2AQ7/split-local-backend"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-31T20:01:50.063Z"
   updated_by: "CODER"
   note: "Command: bunx eslint packages/agentplane/src/backends/task-backend/local-backend.ts packages/agentplane/src/backends/task-backend/local-backend-state.ts packages/agentplane/src/backends/task-backend/local-backend-read.ts packages/agentplane/src/backends/task-backend/local-backend-doc.ts packages/agentplane/src/backends/task-backend/local-backend-write.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/backends/task-backend.load.test.ts; Result: pass; Evidence: eslint clean. Scope: local backend split. Command: bunx vitest run packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/backends/task-backend.load.test.ts; Result: pass; Evidence: 3 files, 57 tests passed. Scope: local backend read/index/doc/write behavior. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: core+agentplane build ok, repo-local runtime ready. Scope: repo-local runtime freshness for verify/commit."
-commit: null
+commit:
+  hash: "9c575c1d3472485aa42f2f9ca8cec876048ca8f2"
+  message: "📝 3Z2AQ7 task: update pr artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: split backends/task-backend/local-backend.ts by read/doc/write concern while preserving strict-vs-lenient read behavior, index cache semantics, and doc mutation contracts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-3Z2AQ7/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx eslint packages/agentplane/src/backends/task-backend/local-backend.ts packages/agentplane/src/backends/task-backend/local-backend-state.ts packages/agentplane/src/backends/task-backend/local-backend-read.ts packages/agentplane/src/backends/task-backend/local-backend-doc.ts packages/agentplane/src/backends/task-backend/local-backend-write.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/backends/task-backend.load.test.ts; Result: pass; Evidence: eslint clean. Scope: local backend split. Command: bunx vitest run packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/backends/task-backend.load.test.ts; Result: pass; Evidence: 3 files, 57 tests passed. Scope: local backend read/index/doc/write behavior. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: core+agentplane build ok, repo-local runtime ready. Scope: repo-local runtime freshness for verify/commit."
+  -
+    type: "status"
+    at: "2026-03-31T20:04:37.850Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-3Z2AQ7/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T20:01:50.067Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T20:04:37.855Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N5.2 from REFACTOR.md. Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.. Acceptance: local backend read/index/doc/write responsibilities are separated behind small internal modules. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-

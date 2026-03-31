@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311332-3Z2AQ7/split-local-backend",
   "created_at": "2026-03-31T20:03:34.006Z",
+  "head_sha": "9178329db31c62c58703855bfc8f217aafd30b6b",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "9c575c1d3472485aa42f2f9ca8cec876048ca8f2",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T20:04:37.810Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311332-3Z2AQ7",
-  "updated_at": "2026-03-31T20:03:39.100Z",
+  "updated_at": "2026-03-31T20:04:37.810Z",
   "verify": {
     "status": "skipped"
   }
