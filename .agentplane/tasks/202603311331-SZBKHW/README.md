@@ -1,0 +1,93 @@
+---
+id: "202603311331-SZBKHW"
+title: "N3.4 Converge comment-commit integration around the shared executor"
+status: "TODO"
+priority: "high"
+owner: "CODER"
+revision: 3
+origin:
+  system: "manual"
+depends_on:
+  - "202603311331-CMRND8"
+  - "202603311331-NERBXG"
+tags:
+  - "code"
+  - "refactor"
+  - "workflow"
+verify: []
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit: null
+comments: []
+events: []
+doc_version: 3
+doc_updated_at: "2026-03-31T13:31:27.631Z"
+doc_updated_by: "PLANNER"
+description: "Implement N3.4 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: comment-commit policy is wired once and reused by all transition commands that need it. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
+sections:
+  Summary: |-
+    N3.4 Converge comment-commit integration around the shared executor
+    
+    Implement N3.4 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: comment-commit policy is wired once and reused by all transition commands that need it. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead.
+  Scope: |-
+    - In scope: Implement N3.4 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: comment-commit policy is wired once and reused by all transition commands that need it. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead.
+    - Out of scope: unrelated refactors not required for "N3.4 Converge comment-commit integration around the shared executor".
+  Plan: |-
+    1. Audit status-commit warnings, commit metadata preparation, structured comment handling and isolate the narrowest change set that satisfies N3.4.
+    2. Implement converge comment-commit integration around the shared executor with an optimization-first bias, deleting duplicated paths where possible instead of layering new wrappers.
+    3. Run focused verification, record the evidence in the task README, and keep any intentional compatibility breaks explicit.
+  Verify Steps: |-
+    1. Run a focused verification slice covering status-commit warnings, commit metadata preparation, structured comment handling. Expected: the behavior targeted by N3.4 is observable and stable after the refactor.
+    2. Inspect the final diff for 202603311331-SZBKHW. Expected: scope stays anchored to status-commit warnings, commit metadata preparation, structured comment handling plus incidental tests/docs required by the task.
+    3. Re-run the focused checks after final edits. Expected: comment-commit policy is wired once and reused by all transition commands that need it.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+id_source: "generated"
+---
+## Summary
+
+N3.4 Converge comment-commit integration around the shared executor
+
+Implement N3.4 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: comment-commit policy is wired once and reused by all transition commands that need it. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead.
+
+## Scope
+
+- In scope: Implement N3.4 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: comment-commit policy is wired once and reused by all transition commands that need it. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead.
+- Out of scope: unrelated refactors not required for "N3.4 Converge comment-commit integration around the shared executor".
+
+## Plan
+
+1. Audit status-commit warnings, commit metadata preparation, structured comment handling and isolate the narrowest change set that satisfies N3.4.
+2. Implement converge comment-commit integration around the shared executor with an optimization-first bias, deleting duplicated paths where possible instead of layering new wrappers.
+3. Run focused verification, record the evidence in the task README, and keep any intentional compatibility breaks explicit.
+
+## Verify Steps
+
+1. Run a focused verification slice covering status-commit warnings, commit metadata preparation, structured comment handling. Expected: the behavior targeted by N3.4 is observable and stable after the refactor.
+2. Inspect the final diff for 202603311331-SZBKHW. Expected: scope stays anchored to status-commit warnings, commit metadata preparation, structured comment handling plus incidental tests/docs required by the task.
+3. Re-run the focused checks after final edits. Expected: comment-commit policy is wired once and reused by all transition commands that need it.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings

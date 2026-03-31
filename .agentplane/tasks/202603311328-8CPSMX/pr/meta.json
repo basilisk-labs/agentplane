@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603311328-8CPSMX/instantiate-refactor-wave",
+  "created_at": "2026-03-31T13:34:29.777Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603311328-8CPSMX",
+  "updated_at": "2026-03-31T13:34:34.748Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
