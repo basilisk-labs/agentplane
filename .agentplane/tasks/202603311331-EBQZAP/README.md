@@ -1,10 +1,11 @@
 ---
 id: "202603311331-EBQZAP"
 title: "N3.1 Define the shared transition request/executor contract"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-EBQZAP/shared-transition-executor"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-31T16:11:33.052Z"
   updated_by: "CODER"
   note: "Added a shared status-transition executor contract in commands/task/shared so status validation, dependency readiness, deferred warnings, and canonical transition application are owned in one place; verified with focused shared-layer lint, workflow-transition-service/shared unit suites, and agentplane build."
-commit: null
+commit:
+  hash: "2d76077f72d7ecf2920796a7de4f8edea5a44ca9"
+  message: "📝 EBQZAP task: finalize PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: define a shared transition executor under commands/task/shared so status validation, dependency checks, deferred warnings, and transition application stop being reassembled per command before the command-level migrations land."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-EBQZAP/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added a shared status-transition executor contract in commands/task/shared so status validation, dependency readiness, deferred warnings, and canonical transition application are owned in one place; verified with focused shared-layer lint, workflow-transition-service/shared unit suites, and agentplane build."
+  -
+    type: "status"
+    at: "2026-03-31T16:12:52.819Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-EBQZAP/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T16:11:33.059Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T16:12:52.822Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N3.1 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: one shared executor owns status validation, dependency checks, deferred warnings, and transition application. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-

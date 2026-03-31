@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311331-EBQZAP/shared-transition-executor",
   "created_at": "2026-03-31T16:11:58.016Z",
+  "head_sha": "be00ca6bd03c9f7bdddac4531808e042bd56e41a",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "2d76077f72d7ecf2920796a7de4f8edea5a44ca9",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T16:12:52.796Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311331-EBQZAP",
-  "updated_at": "2026-03-31T16:12:15.824Z",
+  "updated_at": "2026-03-31T16:12:52.796Z",
   "verify": {
     "status": "skipped"
   }
