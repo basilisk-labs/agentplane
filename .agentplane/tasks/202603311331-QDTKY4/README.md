@@ -1,10 +1,11 @@
 ---
 id: "202603311331-QDTKY4"
 title: "N0.3 Add task README/doc mutation concurrency tests"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-QDTKY4/task-doc-concurrency-tests"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T14:50:58.026Z"
   updated_by: "CODER"
   note: "Expanded doc-concurrency safety net with command-level full-doc/section conflict coverage plus intent-path local-store tests; verified with bunx eslint packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts and bunx vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts."
-commit: null
+commit:
+  hash: "827968153e367336e35efb8543e70ae5c866b206"
+  message: "📝 QDTKY4 task: add PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: lock README section/full-doc conflict semantics before the shared doc mutation contract in N4 rewires local backend and task-store patching."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-QDTKY4/pr."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Expanded doc-concurrency safety net with command-level full-doc/section conflict coverage plus intent-path local-store tests; verified with bunx eslint packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts and bunx vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts."
+  -
+    type: "status"
+    at: "2026-03-31T14:53:09.253Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-QDTKY4/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T14:50:58.029Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T14:53:09.255Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N0.3 from REFACTOR.md. Lock the behavior that the next refactor wave is most likely to disturb: output formatting, local-vs-remote task mutation parity, and task-doc mutation semantics.. Acceptance: doc conflicts and section conflicts are behavior-locked before `N4` starts deleting code. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-

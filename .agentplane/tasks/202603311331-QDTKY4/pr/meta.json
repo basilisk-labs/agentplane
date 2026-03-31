@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311331-QDTKY4/task-doc-concurrency-tests",
   "created_at": "2026-03-31T14:52:16.737Z",
+  "head_sha": "5cb60f389c4b27d9d90cf980fb87be1c073e1350",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "827968153e367336e35efb8543e70ae5c866b206",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T14:53:09.231Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311331-QDTKY4",
-  "updated_at": "2026-03-31T14:52:26.696Z",
+  "updated_at": "2026-03-31T14:53:09.231Z",
   "verify": {
     "status": "skipped"
   }
