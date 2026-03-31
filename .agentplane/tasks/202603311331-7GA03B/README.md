@@ -1,10 +1,11 @@
 ---
 id: "202603311331-7GA03B"
 title: "N3.5 Delete obsolete transition branches and rerun lifecycle contract suites unchanged"
-status: "DOING"
+result_summary: "integrate: squash task/202603311331-7GA03B/prune-transition-branches"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-03-31T16:51:45.576Z"
   updated_by: "CODER"
   note: "Shared transition command helper now owns applyTaskMutation/executor/warning plumbing for start, block, and task set-status. Focused eslint, build, task unit suites, lifecycle CLI contracts, and block-finish contracts passed."
-commit: null
+commit:
+  hash: "e086c7f6d8891658353e937e0aa0cce30916d654"
+  message: "🧩 7GA03B integrate: squash task/202603311331-7GA03B/prune-transition-branches"
 comments:
   -
     author: "CODER"
     body: "Start: remove remaining duplicated lifecycle transition plumbing now that the shared executor owns status/comment commit flows."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-7GA03B/pr."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Shared transition command helper now owns applyTaskMutation/executor/warning plumbing for start, block, and task set-status. Focused eslint, build, task unit suites, lifecycle CLI contracts, and block-finish contracts passed."
+  -
+    type: "status"
+    at: "2026-03-31T16:53:22.901Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-7GA03B/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T16:51:45.578Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T16:53:22.904Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N3.5 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: old duplicated transition logic is removed and the safety net still passes. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
