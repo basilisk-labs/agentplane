@@ -1,10 +1,11 @@
 ---
 id: "202603311332-AR77BP"
 title: "N6.1 Extract reusable backend/task builders for command and workflow tests"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-AR77BP/shared-test-builders"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-03-31T18:48:19.308Z"
   updated_by: "CODER"
   note: "Command: bunx eslint packages/agentplane/src/commands/task.test-helpers.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts; Result: pass; Evidence: 0 lint errors after centralizing command/workflow task fixtures; Scope: shared testkit plus migrated command/workflow unit suites. Command: bunx vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/backends/task-backend.local.test.ts; Result: pass; Evidence: 12 files, 91 tests passed; Scope: workflow tests, task command unit tests, backend canary. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0; Scope: compile safety for the new shared testkit module and migrated imports."
-commit: null
+commit:
+  hash: "a5c42bddb4215370afda19452f3d674e4c42eb17"
+  message: "🧾 AR77BP task: finalize PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: extract one shared testkit for repeated backend/task builders across workflow and task command suites, keep the API minimal, and replace duplicated builders rather than wrapping them one more level."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-AR77BP/pr."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx eslint packages/agentplane/src/commands/task.test-helpers.ts packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts; Result: pass; Evidence: 0 lint errors after centralizing command/workflow task fixtures; Scope: shared testkit plus migrated command/workflow unit suites. Command: bunx vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/backends/task-backend.local.test.ts; Result: pass; Evidence: 12 files, 91 tests passed; Scope: workflow tests, task command unit tests, backend canary. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0; Scope: compile safety for the new shared testkit module and migrated imports."
+  -
+    type: "status"
+    at: "2026-03-31T18:50:07.197Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-AR77BP/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T18:48:19.312Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T18:50:07.202Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N6.1 from REFACTOR.md. Reduce repeated fixture setup and assertion plumbing in the largest test suites after the new production seams are stable.. Acceptance: repeated local `TaskBackend` stubs and task fixture builders move into one shared testkit. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
