@@ -1,10 +1,11 @@
 ---
 id: "202603301857-6DJCDV"
 title: "Move update-check policy gating behind the real config boundary"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-6DJCDV/move-update-check-behind-config-boundary"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-03-31T12:36:02.819Z"
   updated_by: "CODER"
   note: "Update-check gating now stays behind the actual config boundary."
-commit: null
+commit:
+  hash: "e665d82c2fcc0935dfee93ee724d14f5a2d3d23b"
+  message: "🧩 6DJCDV integrate: squash task/202603301857-6DJCDV/move-update-check-behind-config-boundary"
 comments:
   -
     author: "CODER"
     body: "Start: keep update-check policy behind the actual loaded-config boundary so unknown or config-free commands do not load config or .env just for optional warning logic."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-6DJCDV/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Update-check gating now stays behind the actual config boundary."
+  -
+    type: "status"
+    at: "2026-03-31T12:37:15.040Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-6DJCDV/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T12:36:02.821Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T12:37:15.042Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 4 / R4.2 from REFACTOR.md. update-check still respects `require_network`, but commands that do not otherwise need config do not load it just for the warning path."
 sections:
   Summary: |-
