@@ -1,10 +1,11 @@
 ---
 id: "202603311332-4ZRYZ6"
 title: "N6.3 Prune repeated scenario/release/runner fixtures where the new shared helpers fit"
-status: "DOING"
+result_summary: "integrate: squash task/202603311332-4ZRYZ6/prune-shared-fixtures"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-03-31T19:30:33.888Z"
   updated_by: "CODER"
   note: "Shared fixture helpers now cover scenario install setup, release workspace seeding, and runner executable stubs; eslint, focused vitest, and agentplane build passed in worktree."
-commit: null
+commit:
+  hash: "60b49a3ca2d628837c8282d7f5c0b16c4701d4d6"
+  message: "📝 4ZRYZ6 task: add PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: audit scenario, release, and runner suites; extract the shared fixture/assertion pieces that now fit the N6 helper layer; keep only domain-specific setup local to each suite."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-4ZRYZ6/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Shared fixture helpers now cover scenario install setup, release workspace seeding, and runner executable stubs; eslint, focused vitest, and agentplane build passed in worktree."
+  -
+    type: "status"
+    at: "2026-03-31T19:32:07.424Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-4ZRYZ6/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T19:30:33.892Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T19:32:07.428Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N6.3 from REFACTOR.md. Reduce repeated fixture setup and assertion plumbing in the largest test suites after the new production seams are stable.. Acceptance: only domain-specific setup remains local to each suite. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-

@@ -1,4 +1,8 @@
  .agentplane/tasks/202603311332-4ZRYZ6/README.md    |  58 ++++-
+ .../tasks/202603311332-4ZRYZ6/pr/diffstat.txt      |  16 ++
+ .agentplane/tasks/202603311332-4ZRYZ6/pr/meta.json |  12 +
+ .agentplane/tasks/202603311332-4ZRYZ6/pr/review.md |  44 ++++
+ .../tasks/202603311332-4ZRYZ6/pr/verify.log        |   0
  .../agentplane/src/cli/run-cli.scenario.test.ts    | 220 ++++++----------
  .../src/commands/recipes.test-helpers.ts           |  48 +++-
  .../src/commands/release.test-helpers.ts           |  69 +++++
@@ -13,4 +17,4 @@
  packages/agentplane/src/runner/test-helpers.ts     | 131 ++++++++++
  .../src/runner/usecases/task-run-lifecycle.test.ts |   8 +-
  packages/agentplane/src/test-helpers/fs.ts         |  14 ++
- 15 files changed, 549 insertions(+), 859 deletions(-)
+ 19 files changed, 621 insertions(+), 859 deletions(-)
