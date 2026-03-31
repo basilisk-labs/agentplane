@@ -84,6 +84,7 @@ export class RedmineBackend implements TaskBackend {
   capabilities: TaskBackend["capabilities"] = {
     canonical_source: "remote",
     projection: "cache",
+    projection_read_mode: "native",
     reads_from_projection_by_default: true,
     writes_task_readmes: true,
     supports_task_revisions: false,

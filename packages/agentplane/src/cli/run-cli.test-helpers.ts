@@ -185,6 +185,7 @@ export function stubTaskBackend(overrides: Partial<TaskBackend> = {}): TaskBacke
     capabilities: {
       canonical_source: "local",
       projection: "canonical",
+      projection_read_mode: "fallback",
       reads_from_projection_by_default: false,
       writes_task_readmes: true,
       supports_task_revisions: true,

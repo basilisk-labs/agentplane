@@ -65,9 +65,12 @@ export type TaskWriteOptions = {
   expectedRevision?: number;
 };
 
+export type TaskBackendProjectionReadMode = "native" | "fallback";
+
 export type TaskBackendCapabilities = {
   canonical_source: "local" | "remote";
   projection: "canonical" | "cache";
+  projection_read_mode: TaskBackendProjectionReadMode;
   reads_from_projection_by_default: boolean;
   writes_task_readmes?: boolean;
   supports_task_revisions: boolean;

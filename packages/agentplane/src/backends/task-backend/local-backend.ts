@@ -77,6 +77,7 @@ export class LocalBackend implements TaskBackend {
   capabilities = {
     canonical_source: "local",
     projection: "canonical",
+    projection_read_mode: "native",
     reads_from_projection_by_default: true,
     writes_task_readmes: true,
     supports_task_revisions: true,

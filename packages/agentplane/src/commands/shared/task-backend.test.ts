@@ -143,6 +143,10 @@ describe("commands/shared/task-backend CommandContext", () => {
     });
 
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    ctx.taskBackend.capabilities = {
+      ...ctx.taskBackend.capabilities,
+      projection_read_mode: "fallback",
+    };
     delete ctx.taskBackend.listProjectionTasks;
     const summaries = await listTaskSummariesMemo(ctx);
 
@@ -151,5 +155,19 @@ describe("commands/shared/task-backend CommandContext", () => {
     expect(summaries[0]).not.toHaveProperty("doc");
     expect(summaries[0]).not.toHaveProperty("sections");
     expect(summaries[0]).not.toHaveProperty("events");
+  });
+
+  it("fails fast when a backend advertises native projection reads without implementing them", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeLocalBackendConfig(root);
+
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    ctx.taskBackend.listProjectionTasks = undefined;
+
+    await expect(listTaskSummariesMemo(ctx)).rejects.toMatchObject({
+      exitCode: 1,
+      code: "E_INTERNAL",
+    });
   });
 });

@@ -14,6 +14,7 @@ export type {
   TaskBackendInspectionPort,
   TaskBackendMutationPort,
   TaskBackendProjectionPort,
+  TaskBackendProjectionReadMode,
   TaskBackendQueryPort,
   TaskBackendSyncPort,
   TaskBackendVisibleField,

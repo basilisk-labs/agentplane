@@ -58,6 +58,7 @@ describe("loadTaskBackend", () => {
     const result = await loadTaskBackend({ cwd: tempDir });
     expect(result.backendId).toBe("local");
     expect(result.backend).toBeInstanceOf(LocalBackend);
+    expect(result.backend.capabilities.projection_read_mode).toBe("native");
     expect(result.backend.capabilities.supports_task_revisions).toBe(true);
     expect(result.backend.capabilities.supports_revision_guarded_writes).toBe(true);
   });
@@ -90,6 +91,7 @@ describe("loadTaskBackend", () => {
     const result = await loadTaskBackend({ cwd: tempDir });
     expect(result.backendId).toBe("redmine");
     expect(result.backend).toBeInstanceOf(RedmineBackend);
+    expect(result.backend.capabilities.projection_read_mode).toBe("native");
     expect(result.backend.capabilities.supports_task_revisions).toBe(false);
     expect(result.backend.capabilities.supports_revision_guarded_writes).toBe(false);
     expect(process.env.AGENTPLANE_REDMINE_API_KEY).toBe("preserve");

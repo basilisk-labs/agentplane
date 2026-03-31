@@ -234,7 +234,14 @@ export async function loadBackendTask(opts: {
 
 export async function listTaskSummariesMemo(ctx: CommandContext): Promise<TaskSummary[]> {
   ctx.memo.taskProjection ??= (async () => {
-    if (ctx.taskBackend.listProjectionTasks) {
+    if (ctx.taskBackend.capabilities.projection_read_mode === "native") {
+      if (!ctx.taskBackend.listProjectionTasks) {
+        throw new CliError({
+          exitCode: 1,
+          code: "E_INTERNAL",
+          message: `Backend ${ctx.taskBackend.id} advertises native projection reads but does not implement listProjectionTasks()`,
+        });
+      }
       return await ctx.taskBackend.listProjectionTasks();
     }
     const tasks = await ctx.taskBackend.listTasks();
@@ -244,8 +251,8 @@ export async function listTaskSummariesMemo(ctx: CommandContext): Promise<TaskSu
 }
 
 export async function listTaskProjection(ctx: CommandContext): Promise<TaskSummary[] | null> {
-  if (ctx.taskBackend.listProjectionTasks) {
-    return await ctx.taskBackend.listProjectionTasks();
+  if (ctx.taskBackend.capabilities.projection_read_mode === "native") {
+    return await listTaskSummariesMemo(ctx);
   }
   if (ctx.taskBackend.capabilities.reads_from_projection_by_default) {
     return await listTaskSummariesMemo(ctx);
