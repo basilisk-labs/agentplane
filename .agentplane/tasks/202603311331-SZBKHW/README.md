@@ -1,10 +1,11 @@
 ---
 id: "202603311331-SZBKHW"
 title: "N3.4 Converge comment-commit integration around the shared executor"
-status: "TODO"
+result_summary: "integrate: squash task/202603311331-SZBKHW/converge-comment-commit-integration"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -25,8 +26,13 @@ verification:
   updated_at: "2026-03-31T16:41:00.452Z"
   updated_by: "CODER"
   note: "Focused lifecycle comment-commit suites passed: eslint, build, task unit suites, run-cli lifecycle and block-finish contracts."
-commit: null
-comments: []
+commit:
+  hash: "7f127bc2f4387dbea60f84dcef342d1657529ec9"
+  message: "🧩 SZBKHW integrate: squash task/202603311331-SZBKHW/converge-comment-commit-integration"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-SZBKHW/pr."
 events:
   -
     type: "verify"
@@ -34,9 +40,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused lifecycle comment-commit suites passed: eslint, build, task unit suites, run-cli lifecycle and block-finish contracts."
+  -
+    type: "status"
+    at: "2026-03-31T16:44:18.372Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311331-SZBKHW/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T16:41:00.454Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T16:44:18.374Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement N3.4 from REFACTOR.md. Collapse the repeated orchestration around task status transitions into one shared transition executor.. Acceptance: comment-commit policy is wired once and reused by all transition commands that need it. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-

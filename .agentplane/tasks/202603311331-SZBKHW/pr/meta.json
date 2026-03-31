@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202603311331-SZBKHW/converge-comment-commit-integration",
   "created_at": "2026-03-31T16:42:14.188Z",
+  "head_sha": "2c57157741ddff9b509d9e05df1d532bd3cb9a1b",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "7f127bc2f4387dbea60f84dcef342d1657529ec9",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T16:44:18.341Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603311331-SZBKHW",
-  "updated_at": "2026-03-31T16:43:33.673Z",
+  "updated_at": "2026-03-31T16:44:18.341Z",
   "verify": {
     "status": "skipped"
   }
