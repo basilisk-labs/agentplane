@@ -1,3 +1,53 @@
+export type CliOutputWriter = {
+  write: (chunk: string) => unknown;
+};
+
+export type CliEmitterStream = "stdout" | "stderr";
+
+export type CliReportEntry =
+  | string
+  | {
+      label: string;
+      value?: string | number | boolean | null;
+    };
+
+export type CliReportOptions = {
+  header?: string;
+  stream?: CliEmitterStream;
+};
+
+export type CliEmitter = {
+  line: (text: string, stream?: CliEmitterStream) => void;
+  lines: (lines: Iterable<string>, stream?: CliEmitterStream) => void;
+  json: (value: unknown, stream?: CliEmitterStream) => void;
+  report: (entries: Iterable<CliReportEntry>, options?: CliReportOptions) => void;
+  info: (message: string, stream?: CliEmitterStream) => void;
+  warn: (message: string, stream?: CliEmitterStream) => void;
+  success: (action: string, target?: string, details?: string, stream?: CliEmitterStream) => void;
+};
+
+function ensureTrailingNewline(text: string): string {
+  return text.endsWith("\n") ? text : `${text}\n`;
+}
+
+function renderReportLine(entry: CliReportEntry): string {
+  if (typeof entry === "string") return entry;
+  if (entry.value === undefined || entry.value === null) return `${entry.label}:`;
+  return `${entry.label}: ${String(entry.value)}`;
+}
+
+function resolveWriter(
+  stdout: CliOutputWriter,
+  stderr: CliOutputWriter,
+  stream: CliEmitterStream,
+): CliOutputWriter {
+  return stream === "stderr" ? stderr : stdout;
+}
+
+function writeChunk(writer: CliOutputWriter, text: string): void {
+  writer.write(text);
+}
+
 export function successMessage(action: string, target?: string, details?: string): string {
   const base = target ? `${action} ${target}` : action;
   const suffix = details ? ` (${details})` : "";
@@ -58,4 +108,75 @@ export function missingFileMessage(filename: string, rootHint?: string): string 
 
 export function workflowModeMessage(actual: string | undefined, expected: string): string {
   return `Invalid workflow_mode: ${actual ?? "unknown"} (expected ${expected})`;
+}
+
+export function renderPrettyJson(value: unknown): string {
+  return JSON.stringify(value, null, 2);
+}
+
+export function renderTextLine(text: string): string {
+  return ensureTrailingNewline(text);
+}
+
+export function renderTextLines(lines: Iterable<string>): string {
+  return Array.from(lines, renderTextLine).join("");
+}
+
+export function renderReportBlock(
+  entries: Iterable<CliReportEntry>,
+  options?: CliReportOptions,
+): string {
+  const lines = options?.header ? [options.header] : [];
+  for (const entry of entries) {
+    lines.push(renderReportLine(entry));
+  }
+  return renderTextLines(lines);
+}
+
+export function createCliEmitter(streams?: {
+  stdout?: CliOutputWriter;
+  stderr?: CliOutputWriter;
+}): CliEmitter {
+  const stdout = streams?.stdout ?? process.stdout;
+  const stderr = streams?.stderr ?? process.stderr;
+
+  const line = (text: string, stream: CliEmitterStream = "stdout"): void => {
+    writeChunk(resolveWriter(stdout, stderr, stream), renderTextLine(text));
+  };
+
+  const lines = (values: Iterable<string>, stream: CliEmitterStream = "stdout"): void => {
+    writeChunk(resolveWriter(stdout, stderr, stream), renderTextLines(values));
+  };
+
+  const json = (value: unknown, stream: CliEmitterStream = "stdout"): void => {
+    line(renderPrettyJson(value), stream);
+  };
+
+  const report = (entries: Iterable<CliReportEntry>, options?: CliReportOptions): void => {
+    writeChunk(
+      resolveWriter(stdout, stderr, options?.stream ?? "stdout"),
+      renderReportBlock(entries, options),
+    );
+  };
+
+  return {
+    line,
+    lines,
+    json,
+    report,
+    info: (message: string, stream: CliEmitterStream = "stdout") => {
+      line(infoMessage(message), stream);
+    },
+    warn: (message: string, stream: CliEmitterStream = "stderr") => {
+      line(warnMessage(message), stream);
+    },
+    success: (
+      action: string,
+      target?: string,
+      details?: string,
+      stream: CliEmitterStream = "stdout",
+    ) => {
+      line(successMessage(action, target, details), stream);
+    },
+  };
 }
