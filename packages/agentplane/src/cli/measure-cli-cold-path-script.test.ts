@@ -38,10 +38,12 @@ describe("measure-cli-cold-path script", () => {
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("measure-cli-cold-path.mjs");
     expect(result.stdout).toContain("agentplane quickstart");
+    expect(result.stdout).toContain("agentplane task search task");
+    expect(result.stdout).toContain("agentplane task next");
     expect(result.stdout).toContain("agentplane preflight --mode quick");
   });
 
-  it("measures quickstart, task list, and preflight quick in one payload", async () => {
+  it("measures quickstart, task list/search/next, and preflight quick in one payload", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
@@ -52,6 +54,8 @@ describe("measure-cli-cold-path script", () => {
     const payload = JSON.parse(result.stdout) as {
       mode?: string;
       root?: string;
+      cli_path?: string;
+      cli_repo_root?: string;
       runs?: number;
       warmups?: number;
       commands?: {
@@ -69,11 +73,20 @@ describe("measure-cli-cold-path script", () => {
 
     expect(payload.mode).toBe("cli_cold_path_v1");
     expect(payload.root).toBe(root);
+    expect(payload.cli_path).toBe(
+      SCRIPT_PATH.replace(
+        "scripts/measure-cli-cold-path.mjs",
+        "packages/agentplane/bin/agentplane.js",
+      ),
+    );
+    expect(payload.cli_repo_root).toBe(process.cwd());
     expect(payload.runs).toBe(1);
     expect(payload.warmups).toBe(0);
     expect(payload.commands?.map((command) => command.id)).toEqual([
       "quickstart",
       "task_list",
+      "task_search",
+      "task_next",
       "preflight_quick",
     ]);
 

@@ -1,0 +1,4 @@
+ .agentplane/tasks/202603301857-7XE45D/README.md    | 58 +++++++++++++++++-----
+ .../src/cli/measure-cli-cold-path-script.test.ts   | 15 +++++-
+ scripts/measure-cli-cold-path.mjs                  | 41 ++++++++++++---
+ 3 files changed, 92 insertions(+), 22 deletions(-)

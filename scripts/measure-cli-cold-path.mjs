@@ -14,7 +14,7 @@ const MAX_BUFFER_BYTES = 10 * 1024 * 1024;
 const scriptPath = fileURLToPath(import.meta.url);
 const scriptsDir = path.dirname(scriptPath);
 const repoRoot = path.resolve(scriptsDir, "..");
-const cliPath = path.join(repoRoot, "packages", "agentplane", "bin", "agentplane.js");
+const defaultCliPath = path.join(repoRoot, "packages", "agentplane", "bin", "agentplane.js");
 
 const COMMANDS = [
   {
@@ -24,6 +24,14 @@ const COMMANDS = [
   {
     id: "task_list",
     argv: (root) => ["task", "list", "--root", root],
+  },
+  {
+    id: "task_search",
+    argv: (root) => ["task", "search", "task", "--root", root],
+  },
+  {
+    id: "task_next",
+    argv: (root) => ["task", "next", "--root", root],
   },
   {
     id: "preflight_quick",
@@ -39,10 +47,13 @@ function printHelp() {
       "Measure repeatable CLI cold-path timings for:",
       "  - agentplane quickstart",
       "  - agentplane task list",
+      "  - agentplane task search task",
+      "  - agentplane task next",
       "  - agentplane preflight --mode quick",
       "",
       "Options:",
       "  --root <path>     Repository root to benchmark. Defaults to the current repo root.",
+      "  --cli <path>      CLI entrypoint to execute. Defaults to this checkout's agentplane bin.",
       `  --runs <n>        Timed runs per command. Default: ${DEFAULT_RUNS}.`,
       `  --warmups <n>     Untimed warmup runs per command. Default: ${DEFAULT_WARMUPS}.`,
       "  --help            Show this help text.",
@@ -64,6 +75,7 @@ function parsePositiveInt(flag, raw) {
 
 function parseArgs(argv) {
   let root = repoRoot;
+  let cliPath = defaultCliPath;
   let runs = DEFAULT_RUNS;
   let warmups = DEFAULT_WARMUPS;
 
@@ -78,6 +90,13 @@ function parseArgs(argv) {
         const next = argv[i + 1];
         if (!next) throw new Error("Missing value after --root");
         root = path.resolve(next);
+        i++;
+        break;
+      }
+      case "--cli": {
+        const next = argv[i + 1];
+        if (!next) throw new Error("Missing value after --cli");
+        cliPath = path.resolve(next);
         i++;
         break;
       }
@@ -108,6 +127,7 @@ function parseArgs(argv) {
   return {
     help: false,
     root,
+    cliPath,
     runs,
     warmups,
   };
@@ -117,11 +137,15 @@ function roundMs(value) {
   return Number(value.toFixed(3));
 }
 
-async function runCommand(argv) {
+function cliRepoRootFromPath(cliPath) {
+  return path.resolve(path.dirname(cliPath), "..", "..", "..");
+}
+
+async function runCommand(cliPath, argv) {
   const startedAt = performance.now();
   try {
     const result = await execFileAsync(process.execPath, [cliPath, ...argv], {
-      cwd: repoRoot,
+      cwd: cliRepoRootFromPath(cliPath),
       env: {
         ...process.env,
         AGENTPLANE_NO_UPDATE_CHECK: "1",
@@ -156,13 +180,13 @@ function summarizeDurations(durations) {
 async function measureOne(spec, opts) {
   const argv = spec.argv(opts.root);
   for (let i = 0; i < opts.warmups; i++) {
-    await runCommand(argv);
+    await runCommand(opts.cliPath, argv);
   }
 
   const durations = [];
   let lastResult = null;
   for (let i = 0; i < opts.runs; i++) {
-    lastResult = await runCommand(argv);
+    lastResult = await runCommand(opts.cliPath, argv);
     durations.push(lastResult.durationMs);
   }
 
@@ -189,8 +213,8 @@ async function main() {
     return 0;
   }
 
-  if (!existsSync(cliPath)) {
-    throw new Error(`CLI entrypoint is missing: ${cliPath}`);
+  if (!existsSync(parsed.cliPath)) {
+    throw new Error(`CLI entrypoint is missing: ${parsed.cliPath}`);
   }
 
   const commands = [];
@@ -202,7 +226,8 @@ async function main() {
     schema_version: 1,
     mode: "cli_cold_path_v1",
     root: parsed.root,
-    cli_path: cliPath,
+    cli_path: parsed.cliPath,
+    cli_repo_root: cliRepoRootFromPath(parsed.cliPath),
     runs: parsed.runs,
     warmups: parsed.warmups,
     measured_at: new Date().toISOString(),
