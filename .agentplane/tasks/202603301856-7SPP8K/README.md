@@ -1,10 +1,10 @@
 ---
 id: "202603301856-7SPP8K"
 title: "Delete obsolete routing helpers and update tests/docs"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -15,21 +15,37 @@ tags:
   - "cli"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-31T09:00:53.222Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approve R1.5 cleanup of obsolete routing helpers and stale split-era docs/tests after R1.2-R1.4 landing."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T09:10:07.902Z"
+  updated_by: "CODER"
+  note: "Focused vitest slice passed for help/docs contract cleanup; eslint passed on touched TS files; generated CLI reference and top-level help snapshot refreshed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: remove stale split-era routing references from help/docs/tests without changing public command behavior."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T09:02:10.942Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: remove stale split-era routing references from help/docs/tests without changing public command behavior."
+  -
+    type: "verify"
+    at: "2026-03-31T09:10:07.902Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused vitest slice passed for help/docs contract cleanup; eslint passed on touched TS files; generated CLI reference and top-level help snapshot refreshed."
 doc_version: 3
-doc_updated_at: "2026-03-30T18:56:59.691Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T09:10:07.907Z"
+doc_updated_by: "CODER"
 description: "Implement Epic 1 / R1.5 from REFACTOR.md. old duplicated matcher paths are removed and the safety-net tests still pass unchanged."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: old duplicated matcher paths are removed and the safety-net tests still pass unchanged.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T09:10:07.902Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused vitest slice passed for help/docs contract cleanup; eslint passed on touched TS files; generated CLI reference and top-level help snapshot refreshed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T09:02:10.944Z, excerpt_hash=sha256:4fa33ec9442bca313f2f444521e296f0313f7c3e402e347030a0c1ecf89ba236
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +106,14 @@ Implement Epic 1 / R1.5 from REFACTOR.md. old duplicated matcher paths are remov
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T09:10:07.902Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused vitest slice passed for help/docs contract cleanup; eslint passed on touched TS files; generated CLI reference and top-level help snapshot refreshed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T09:02:10.944Z, excerpt_hash=sha256:4fa33ec9442bca313f2f444521e296f0313f7c3e402e347030a0c1ecf89ba236
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

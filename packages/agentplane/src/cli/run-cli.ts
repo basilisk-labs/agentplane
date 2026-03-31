@@ -165,7 +165,7 @@ export async function runCli(argv: string[]): Promise<number> {
       return await runtimeRegistryPromise;
     };
 
-    const runCli2HelpFast = async (helpArgv: string[]): Promise<number> => {
+    const runFastHelp = async (helpArgv: string[]): Promise<number> => {
       if (helpArgv[0] !== "help") {
         throw new CliError({
           exitCode: exitCodeForError("E_INTERNAL"),
@@ -186,7 +186,7 @@ export async function runCli(argv: string[]): Promise<number> {
     // - agentplane <cmd...> --help [--compact|--json]
     if (globals.help) {
       if (rest[0] === "help") {
-        return await runCli2HelpFast(rest);
+        return await runFastHelp(rest);
       }
 
       const matchedHelp = helpRegistry.match(rest);
@@ -214,17 +214,17 @@ export async function runCli(argv: string[]): Promise<number> {
         const helpTail = rawHelpTail.filter(
           (token) => token.startsWith("-") && HELP_TAIL_OPTIONS.has(token),
         );
-        return await runCli2HelpFast(["help", ...matchedHelp.spec.id, ...helpTail]);
+        return await runFastHelp(["help", ...matchedHelp.spec.id, ...helpTail]);
       }
-      return await runCli2HelpFast(["help", ...rest]);
+      return await runFastHelp(["help", ...rest]);
     }
     if (rest.length === 0) {
-      return await runCli2HelpFast(["help"]);
+      return await runFastHelp(["help"]);
     }
 
-    // cli2: `agentplane help ...` should be fast and not require project resolution.
+    // `agentplane help ...` stays on the fast path and does not require project resolution.
     if (rest[0] === "help") {
-      return await runCli2HelpFast(rest);
+      return await runFastHelp(rest);
     }
 
     matched = matchCommandCatalog(rest);

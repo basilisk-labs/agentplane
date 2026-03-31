@@ -30,7 +30,7 @@ export const helpSpec: CommandSpec<HelpParsed> = {
     { kind: "boolean", name: "json", description: "Emit JSON help (success output)." },
   ],
   examples: [
-    { cmd: "agentplane help", why: "List commands available in cli2 registry." },
+    { cmd: "agentplane help", why: "List commands available in the CLI command catalog." },
     { cmd: "agentplane help task new --compact", why: "Show compact help for a command." },
     { cmd: "agentplane help task new --json", why: "Show JSON help for a command." },
   ],

@@ -39,7 +39,7 @@ afterEach(() => {
 });
 
 describe("runCli docs cli", () => {
-  it("writes an MDX file derived from cli2 help --json", async () => {
+  it("writes an MDX file derived from the spec-backed help JSON shape", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
