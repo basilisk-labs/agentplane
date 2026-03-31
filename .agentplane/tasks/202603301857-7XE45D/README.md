@@ -1,10 +1,11 @@
 ---
 id: "202603301857-7XE45D"
 title: "Re-measure read-heavy CLI commands on a large task set"
-status: "DOING"
+result_summary: "integrate: squash task/202603301857-7XE45D/benchmark-read-heavy-cli"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-03-31T12:01:08.711Z"
   updated_by: "CODER"
   note: "Command: TMPDIR=/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202603301857-7XE45D-benchmark-read-heavy-cli/.tmp bunx eslint scripts/measure-cli-cold-path.mjs packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts; Result: pass; Evidence: no lint errors. Scope: cold-path benchmark harness and its contract test. Command: TMPDIR=/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202603301857-7XE45D-benchmark-read-heavy-cli/.tmp bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts; Result: pass; Evidence: 2 tests passed. Scope: benchmark harness help/output contract including task list/search/next and --cli override metadata. Command: node scripts/measure-cli-cold-path.mjs --root /Users/densmirnov/Github/agentplane --runs 5 --warmups 1 > .tmp/benchmarks/after.json && node scripts/measure-cli-cold-path.mjs --cli /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202603301857-7XE45D-benchmark-read-heavy-cli/.benchmarks/before-84c99413/packages/agentplane/bin/agentplane.js --root /Users/densmirnov/Github/agentplane --runs 5 --warmups 1 > .tmp/benchmarks/before.json; Result: pass; Evidence: task_list 491.105 -> 469.379 ms (-4.4%), task_search 496.097 -> 475.996 ms (-4.1%), task_next 495.405 -> 467.648 ms (-5.6%). Scope: before/after timings for read-heavy CLI commands on the same 1488-task benchmark root using baseline commit 84c99413 and current main-based CLI."
-commit: null
+commit:
+  hash: "d4e3ff87b5be2b1ebe8da78394017bccbb746c27"
+  message: "🧩 7XE45D integrate: squash task/202603301857-7XE45D/benchmark-read-heavy-cli"
 comments:
   -
     author: "CODER"
     body: "Start: extend the cold-path benchmark harness to cover task list/search/next with one script version, then capture before/after timings against the same large task root using a pre-fastpath baseline checkout and current main."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-7XE45D/pr."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: TMPDIR=/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202603301857-7XE45D-benchmark-read-heavy-cli/.tmp bunx eslint scripts/measure-cli-cold-path.mjs packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts; Result: pass; Evidence: no lint errors. Scope: cold-path benchmark harness and its contract test. Command: TMPDIR=/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202603301857-7XE45D-benchmark-read-heavy-cli/.tmp bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts; Result: pass; Evidence: 2 tests passed. Scope: benchmark harness help/output contract including task list/search/next and --cli override metadata. Command: node scripts/measure-cli-cold-path.mjs --root /Users/densmirnov/Github/agentplane --runs 5 --warmups 1 > .tmp/benchmarks/after.json && node scripts/measure-cli-cold-path.mjs --cli /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202603301857-7XE45D-benchmark-read-heavy-cli/.benchmarks/before-84c99413/packages/agentplane/bin/agentplane.js --root /Users/densmirnov/Github/agentplane --runs 5 --warmups 1 > .tmp/benchmarks/before.json; Result: pass; Evidence: task_list 491.105 -> 469.379 ms (-4.4%), task_search 496.097 -> 475.996 ms (-4.1%), task_next 495.405 -> 467.648 ms (-5.6%). Scope: before/after timings for read-heavy CLI commands on the same 1488-task benchmark root using baseline commit 84c99413 and current main-based CLI."
+  -
+    type: "status"
+    at: "2026-03-31T12:02:38.472Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603301857-7XE45D/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T12:01:08.715Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-31T12:02:38.481Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement Epic 2 / R2.5 from REFACTOR.md. we have before/after numbers for `task list`, `task search`, and `task next`."
 sections:
   Summary: |-

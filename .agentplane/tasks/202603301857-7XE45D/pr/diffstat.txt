@@ -1,4 +1,8 @@
  .agentplane/tasks/202603301857-7XE45D/README.md    | 58 +++++++++++++++++-----
+ .../tasks/202603301857-7XE45D/pr/diffstat.txt      |  4 ++
+ .agentplane/tasks/202603301857-7XE45D/pr/meta.json | 12 +++++
+ .agentplane/tasks/202603301857-7XE45D/pr/review.md | 32 ++++++++++++
+ .../tasks/202603301857-7XE45D/pr/verify.log        |  0
  .../src/cli/measure-cli-cold-path-script.test.ts   | 15 +++++-
  scripts/measure-cli-cold-path.mjs                  | 41 ++++++++++++---
- 3 files changed, 92 insertions(+), 22 deletions(-)
+ 7 files changed, 140 insertions(+), 22 deletions(-)
