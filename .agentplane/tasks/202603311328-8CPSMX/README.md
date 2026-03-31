@@ -1,10 +1,11 @@
 ---
 id: "202603311328-8CPSMX"
 title: "Instantiate the new REFACTOR wave as executable tasks and start the critical path"
-status: "DOING"
+result_summary: "integrate: squash task/202603311328-8CPSMX/instantiate-refactor-wave"
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-31T13:34:00.398Z"
   updated_by: "PLANNER"
   note: "Command: agentplane task list | rg '\\[(TODO|DOING|BLOCKED)\\]'; Result: pass; Evidence: 34 open tasks visible, including the planning task plus 33 N0-N6 execution tasks; Scope: backlog instantiation and dependency graph presence. Command: sed -n '1,160p' .agentplane/tasks/202603311331-WTQE65/README.md && sed -n '1,160p' .agentplane/tasks/202603311332-ACCPE4/README.md; Result: pass; Evidence: representative early and late wave tasks contain concrete Plan and Verify Steps sections instead of placeholders; Scope: task README contract quality across the new graph. Command: review REFACTOR.md against created titles and dependencies; Result: pass; Evidence: every pending N0-N6 item was instantiated exactly once with explicit depends_on links reflecting the intended rollout order; Scope: graph completeness and ordering."
-commit: null
+commit:
+  hash: "682c0a1e79d5b194bc54421d56946355094de810"
+  message: "🧩 8CPSMX integrate: squash task/202603311328-8CPSMX/instantiate-refactor-wave"
 comments:
   -
     author: "PLANNER"
     body: "Start: instantiate every pending N0-N6 item from REFACTOR.md as an executable task graph with concrete plans and verification contracts, then launch the first critical-path coding task."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311328-8CPSMX/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Command: agentplane task list | rg '\\[(TODO|DOING|BLOCKED)\\]'; Result: pass; Evidence: 34 open tasks visible, including the planning task plus 33 N0-N6 execution tasks; Scope: backlog instantiation and dependency graph presence. Command: sed -n '1,160p' .agentplane/tasks/202603311331-WTQE65/README.md && sed -n '1,160p' .agentplane/tasks/202603311332-ACCPE4/README.md; Result: pass; Evidence: representative early and late wave tasks contain concrete Plan and Verify Steps sections instead of placeholders; Scope: task README contract quality across the new graph. Command: review REFACTOR.md against created titles and dependencies; Result: pass; Evidence: every pending N0-N6 item was instantiated exactly once with explicit depends_on links reflecting the intended rollout order; Scope: graph completeness and ordering."
+  -
+    type: "status"
+    at: "2026-03-31T13:35:15.941Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311328-8CPSMX/pr."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:34:00.405Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T13:35:15.943Z"
+doc_updated_by: "INTEGRATOR"
 description: "Planning task: expand the N0-N6 backlog from REFACTOR.md into executable agentplane tasks with explicit dependencies, current acceptance contracts, and start the first critical-path implementation task under the updated optimization-first directive."
 sections:
   Summary: |-
