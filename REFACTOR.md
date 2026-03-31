@@ -1,425 +1,417 @@
 # Refactor Backlog
 
-This file is the live working backlog for the next optimization/refactor wave.
+This file is the live backlog for the next refactor wave after the completed framework program.
 
-- Historical architecture analysis and the completed refactor program live in `docs/developer/framework-refactor-program.mdx`.
-- The historical framework refactor program is already complete on `main`; this file tracks the follow-on optimization wave, not that completed program.
-- This file is intentionally execution-oriented: epics, atomic tasks, dependencies, acceptance criteria, and rollout order.
-- Goal: reduce duplicated code and unnecessary layers while improving common CLI cold-path latency without changing shipped behavior.
+- Historical architecture analysis and the completed earlier wave live in `docs/developer/framework-refactor-program.mdx`.
+- This file was rebuilt from the current `main` codebase on `2026-03-31`; the old stale completion checklist was intentionally removed.
+- Every item below is pending unless a later task explicitly checks it off here.
+- Goal: delete repeated orchestration, converge task mutation paths, and shrink current hotspots without changing shipped behavior.
 
-## Status Snapshot
+## Scope
 
-Current backlog status on `main`:
-
-- `Epic C` is complete on `main` via `5NMDDW`, `WKK8C5`, `J106PF`, and `ZESZG8`.
-- `R0.1` is complete on `main` via `9ZMFDY`.
-- `Epic 0` through `Epic 6` otherwise remain pending unless a later task explicitly marks individual items complete here.
-- `agentplane task list` showing no open tasks does not mean this backlog is done; it only means the next optimization wave has not yet been fully instantiated as executable tasks.
-
-## Current Baseline
-
-Known baseline from the current repository state:
-
-- `agentplane quickstart` is already sub-second on a normal local checkout.
-- `agentplane task list` is already sub-second on a normal local checkout.
-- `agentplane preflight --mode quick` is already sub-second on a normal local checkout.
-- The biggest remaining waste is structural: duplicated routing/bootstrap work, repeated task query logic, projection reads that still traverse full task loads, and manual command topology bookkeeping.
+- In scope: current code map, confirmed duplication findings, safe consolidation targets, and an executable next-wave backlog.
+- Out of scope: public CLI redesign, workflow-policy redesign, package splits done only for aesthetics, and speculative abstractions without measured simplification.
 
 ## Guardrails
 
-Every task in this backlog must preserve these constraints unless a later task explicitly changes the contract:
+1. Keep command ids, help semantics, exit codes, workflow behavior, and `agent_json_v1` stable unless a later task explicitly versions them.
+2. Land behavior-locking tests before collapsing duplicated execution paths.
+3. Prefer deleting branches and adapters over adding one more abstraction layer.
+4. Keep local-file backend and non-local backend semantics aligned; every convergence task must prove parity.
+5. Track simplification with observable signals: repeated call sites removed, hotspot modules split, or behavior preserved by existing contract suites.
 
-1. Keep command ids, help routing, exit codes, and workflow/policy semantics stable.
-2. Keep `agent_json_v1` output shape stable unless an explicit versioned migration is planned.
-3. Land behavior-locking tests before collapsing shared infrastructure.
-4. Prefer deleting duplicated paths over adding another abstraction layer.
-5. Keep each executable task atomic: one narrow change set, one clear verification story.
+## Repository Code Map
 
-## Out Of Scope
+### CLI And Command Surface
 
-The following are not part of this backlog unless a later follow-up task explicitly adds them:
+- `packages/agentplane/src/cli`
+  Role: entrypoint routing, fast help, global flags, output/error framing, bootstrap/runtime commands.
+  Current size: `140` files, `138` TypeScript files, `81` tests.
+- `packages/agentplane/src/commands`
+  Role: end-user command handlers grouped by domain (`task`, `pr`, `branch`, `guard`, `release`, `scenario`, `recipes`, `doctor`, `upgrade`).
+  Current size: `320` files, `320` TypeScript files, `75` tests.
+- Main entrypoints:
+  - `packages/agentplane/src/cli/run-cli.ts`
+  - `packages/agentplane/src/cli/run-cli/registry.run.ts`
+  - `packages/agentplane/src/cli/run-cli/commands/core.ts`
+  - `packages/agentplane/src/cli/run-cli/commands/init.ts`
 
-- Public CLI redesign.
-- New workflow modes or policy model changes.
-- Runner architecture changes unrelated to CLI/task-query hot paths.
-- Package splits done for aesthetics only.
-- Release/upgrade refactors without measured duplication or latency benefit.
+### Task Storage And Backend Layer
 
-## Epic C: Corrective Runtime And Workflow Gaps
+- `packages/agentplane/src/backends`
+  Role: local file backend, Redmine backend, task index, shared backend record conversion.
+  Current size: `34` files, `34` TypeScript files, `7` tests.
+- `packages/agentplane/src/commands/shared`
+  Role: backend loading, local task-store bridge, approval helpers, shared task backend context.
+- `packages/core/src/tasks`
+  Role: canonical task README schema, parsing, rendering, doc-section contracts, task-store primitives.
+  Current size: `32` files, `32` TypeScript files.
+- Key modules:
+  - `packages/agentplane/src/backends/task-backend/local-backend.ts`
+  - `packages/agentplane/src/backends/task-backend/redmine-backend.ts`
+  - `packages/agentplane/src/commands/shared/task-store.ts`
+  - `packages/core/src/tasks/task-store.ts`
+  - `packages/core/src/tasks/task-readme.ts`
 
-Status: complete on `main`
+### Runner And Workflow Execution
+
+- `packages/agentplane/src/runner`
+  Role: task-run lifecycle, adapters, artifact/state emission, task-context shaping.
+  Current size: `45` files, `45` TypeScript files, `16` tests.
+- `packages/agentplane/src/workflow-runtime`
+  Role: runtime templating, markdown helpers, observability plumbing.
+  Current size: `16` files, `16` TypeScript files, `5` tests.
+- Key modules:
+  - `packages/agentplane/src/runner/usecases/task-run.ts`
+  - `packages/agentplane/src/runner/usecases/task-run-lifecycle.ts`
+  - `packages/agentplane/src/runner/adapters/custom.ts`
+  - `packages/agentplane/src/runner/context/task-context.ts`
+
+### Shared Infrastructure
+
+- `packages/agentplane/src/shared`
+  Role: formatting, error helpers, atomic writes, string utilities, repo-safe helpers.
+- `packages/agentplane/src/policy`
+  Role: policy diagnostics and validation helpers.
+- `scripts/`
+  Role: benchmark, bootstrap, maintenance, release and framework support scripts.
+
+## Current Hotspots
+
+### Largest Runtime Modules
+
+- `packages/agentplane/src/backends/task-backend/redmine-backend.ts`: `1023` lines
+- `packages/agentplane/src/commands/upgrade.ts`: `867` lines
+- `packages/agentplane/src/cli/run-cli/commands/core.ts`: `772` lines
+- `packages/agentplane/src/cli/run-cli/commands/init.ts`: `757` lines
+- `packages/agentplane/src/commands/shared/task-store.ts`: `753` lines
+- `packages/agentplane/src/backends/task-backend/local-backend.ts`: `636` lines
+- `packages/agentplane/src/runner/adapters/custom.ts`: `614` lines
+- `packages/agentplane/src/runner/usecases/task-run-lifecycle.ts`: `567` lines
+
+### Largest Behavior-Locking Suites
+
+- `packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts`: `3314` lines
+- `packages/agentplane/src/backends/task-backend.redmine.test.ts`: `2242` lines
+- `packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts`: `1608` lines
+- `packages/agentplane/src/commands/task/finish.unit.test.ts`: `1570` lines
+- `packages/agentplane/src/cli/run-cli.core.tasks.test.ts`: `1287` lines
+- `packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts`: `1252` lines
+- `packages/agentplane/src/cli/run-cli.core.init.test.ts`: `1236` lines
+
+These large suites are useful safety nets, but they also indicate repeated fixture setup and output assertions that should be consolidated only after the new production seams exist.
+
+## Confirmed Findings
+
+### Facts
+
+- Non-test runtime code currently contains `406` `process.stdout.write(...)` call sites, `45` `process.stderr.write(...)` call sites, and `47` pretty `JSON.stringify(..., null, 2)` call sites.
+- `backendIsLocalFileBackend(...)` appears `15` times in runtime code; commands still branch explicitly on backend type in multiple task mutations.
+- `writeTasks(...)` appears `7` times in runtime code, with repeated `writeTasks` vs sequential `writeTask` fallback logic in `task/add.ts`, `task/normalize.ts`, and `task/scrub.ts`.
+- Status-transition primitives already exist, but orchestration still spans multiple handlers:
+  - `packages/agentplane/src/commands/task/block.ts`
+  - `packages/agentplane/src/commands/task/start.ts`
+  - `packages/agentplane/src/commands/task/set-status.ts`
+  - `packages/agentplane/src/commands/task/finish.ts`
+  - `packages/agentplane/src/commands/task/finish-shared.ts`
+  - `packages/agentplane/src/commands/task/close-shared.ts`
+  - `packages/agentplane/src/commands/task/verify-record.ts`
+- Task README and doc mutation logic is duplicated across three layers:
+  - `packages/core/src/tasks/task-store.ts`
+  - `packages/agentplane/src/commands/shared/task-store.ts`
+  - backend implementations such as `packages/agentplane/src/backends/task-backend/local-backend.ts`
+
+### Inferences
+
+- Output/render consolidation is the lowest-risk deletion target. The duplication is mostly mechanical, and the CLI already has broad contract coverage.
+- Local-store vs generic-backend branching is the highest-value architectural cleanup. It leaks backend type knowledge into command handlers and repeats the same orchestration in many mutations.
+- Task doc/README mutation should be its own epic. It crosses `packages/core`, backend implementations, command handlers, and runner/task materialization.
+
+### Hypotheses To Validate During Execution
+
+- Splitting the largest modules will reduce maintenance cost, but the payoff differs by module. `redmine-backend.ts`, `upgrade.ts`, and `task-run-lifecycle.ts` need a first-pass decomposition audit before deeper extraction.
+- Some JSON/file-writing duplication inside runner artifact persistence is intentional and should stay out of the user-facing CLI emitter cleanup.
+
+## Safe Consolidation Targets
+
+### Low Risk
+
+- A shared CLI output layer for:
+  - JSON emission
+  - plain-text line emission
+  - key/value report blocks
+  - warning/success/error framing
+- A single `writeTasksOrFallback(...)` helper for bulk backend writes.
+- Shared test helpers for backend stubs and stdout/stderr capture.
+
+### Medium Risk
+
+- A `withMutableTask(...)` or `applyTaskMutation(...)` bridge that hides local-store vs backend branching from command handlers.
+- A single transition executor for status changes, dependency checks, deferred warnings, and comment-commit policy.
+- A single doc mutation contract that both `packages/core` and `agentplane` local-task flows use.
+
+### Higher Risk
+
+- Deep decomposition of `redmine-backend.ts`, `upgrade.ts`, and `task-run-lifecycle.ts`; these should follow safety-net expansion and seam extraction, not lead it.
+
+## Rollout Order
+
+1. `N0` Extend the safety net around the new hotspot set.
+2. `N1` Collapse user-facing output/render duplication.
+3. `N2` Converge repeated task mutation plumbing.
+4. `N3` Consolidate lifecycle transition orchestration.
+5. `N4` Converge task README/doc mutation paths.
+6. `N5` Split current oversized modules at the new seams.
+7. `N6` Deduplicate testkit and fixtures after production seams stabilize.
+
+## Epic N0: Safety Net For The New Wave
 
 ### Goal
 
-Close the concrete execution-time defects discovered while using the current `branch_pr` workflow and framework worktrees so the refactor wave starts from a truthful and runnable baseline.
+Lock the behavior that the next refactor wave is most likely to disturb: output formatting, local-vs-remote task mutation parity, and task-doc mutation semantics.
+
+### Atomic Tasks
+
+- [ ] `N0.1` Lock representative text and JSON output for current hotspot commands.
+      Touchpoints: `cli/run-cli`, `task run *`, handoff/reclaim/show, runtime/config/help report paths
+      Done when: exact-output tests cover both plain-text and JSON shapes for the command families targeted by `N1`.
+
+- [ ] `N0.2` Add local-backend vs non-local-backend parity tests for task mutation commands.
+      Touchpoints: `task comment`, `task block`, `task start`, `task set-status`, `task verify-record`, `task doc set`
+      Done when: the same high-level mutation contract is asserted against both storage paths.
+
+- [ ] `N0.3` Add task README/doc mutation concurrency tests.
+      Touchpoints: section updates, full-doc replacement, expected-current conflict handling
+      Done when: doc conflicts and section conflicts are behavior-locked before `N4` starts deleting code.
+
+- [ ] `N0.4` Add one lightweight hotspot report script.
+      Touchpoints: `scripts/` or existing diagnostics harness
+      Done when: one repeatable script reports current counts for direct stdio writes, backend-type branches, and oversized runtime modules.
+
+### Epic Acceptance
+
+- The next wave has targeted contract coverage for the code it intends to collapse.
+- Progress on duplication can be measured by one repeatable static report.
+
+## Epic N1: Output And Render Consolidation
+
+### Goal
+
+Replace the current scattered output/render patterns with one small shared emission layer for user-facing command output.
 
 ### Why This Exists
 
-These items are not speculative cleanup. They were observed during real task execution and currently distort validation, workflow health, or developer ergonomics.
-
-### Confirmed Findings Behind This Epic
-
-- `agentplane doctor` currently reports `WF_POLICY_MISMATCH ... WORKFLOW.md=direct, config=branch_pr` on the base checkout.
-- Framework task worktrees currently require `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1` in some lifecycle flows when repo-local `dist` is absent.
-- Default hook/tooling paths in a fresh framework worktree can fail opaquely because local runtime/tooling assumptions are stricter than the actual out-of-the-box state.
-- The “missing PR artifacts on base checkout after task creation before work start” scenario is not yet classified; treat it as a hypothesis until reproduced from a clean sequence.
+Direct stdout/stderr writes are spread across hundreds of call sites, with repeated JSON emission, report blocks, and warning formatting.
 
 ### Atomic Tasks
 
-- [x] `C1` Align generated workflow artifacts with `workflow_mode=branch_pr`.
-      Owner: `CODER`
-      Depends on: none
-      Touchpoints: workflow artifact generation/publication/validation path, `.agentplane/WORKFLOW.md`, targeted doctor/workflow tests
-      Done when: `agentplane doctor` no longer reports `WORKFLOW.md=direct, config=branch_pr` for the current repository state.
+- [ ] `N1.1` Define shared CLI emitter primitives.
+      Touchpoints: `packages/agentplane/src/cli/output.ts` or adjacent shared output modules
+      Done when: one small API covers text lines, pretty JSON, warnings, and common report blocks.
 
-- [x] `C2` Make framework task worktrees runnable without manual runtime surprises.
-      Owner: `CODER`
-      Depends on: none
-      Touchpoints: repo-local handoff logic, framework runtime diagnostics, task-worktree usability path, targeted runtime/handoff tests
-      Done when: supported task-worktree flows either run without `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1` or fail with explicit, correct, bootstrap-aware guidance rather than opaque missing-dist/tooling errors.
+- [ ] `N1.2` Move CLI core/config/help/runtime-report paths onto the shared emitters.
+      Touchpoints: `cli/run-cli/commands/core.ts`, `cli/run-cli/commands/config.ts`, `cli/spec/help.ts`, `commands/runtime.command.ts`
+      Done when: those modules stop manually formatting repeated JSON/text output blocks.
 
-- [x] `C3` Reproduce and classify the branch_pr base-checkout PR-artifact edge-case.
-      Owner: `CODER`
-      Depends on: none
-      Touchpoints: `task new`, `work start`, PR artifact materialization, base/task-checkout state transitions
-      Done when: the scenario is reproduced from a clean sequence and classified as product bug, unsupported path, or operator error; no functional fix lands before that classification.
+- [ ] `N1.3` Move task run/handoff/reclaim/show output onto the shared emitters.
+      Touchpoints: `commands/task/run-*.command.ts`, `handoff-*.command.ts`, `reclaim.command.ts`
+      Done when: key/value status blocks no longer hand-roll line-by-line writes in each command.
 
-### Epic Acceptance
+- [ ] `N1.4` Move remaining report-style command families onto the shared emitters.
+      Touchpoints: `commands/pr/*`, `commands/branch/*`, `commands/backend.ts`, `commands/scenario/impl/commands.ts`, selected release/report modules
+      Done when: these commands share the same text/json rendering conventions instead of repeating them locally.
 
-- Repository-wide workflow health no longer reports the current mode mismatch.
-- Framework task worktrees have a supported, intelligible runtime path.
-- The PR-artifact edge-case is either fixed or explicitly downgraded from “suspected bug” to a documented unsupported/operator path.
-- Current status on `main`: accepted. `J106PF` classified the edge-case, and `ZESZG8` separately fixed `pr check` local-artifact precedence.
-
-## Epic 0: Safety Net And Measurement
-
-### Goal
-
-Create a stable safety net so the refactor can remove code aggressively without losing CLI behavior.
-
-### Success Signal
-
-We can change router/query/bootstrap internals while keeping existing help, routing, task listing, and JSON output behavior locked by tests.
-
-### Atomic Tasks
-
-- [x] `R0.1` Lock current help-routing behavior with golden tests.
-      Owner: `CODER`
-      Depends on: none
-      Touchpoints: `packages/agentplane/src/cli/run-cli*.test.ts`
-      Done when: `help`, `--help`, `help <cmd>`, and unknown-command suggestion flows are covered by stable snapshots or exact assertions.
-
-- [ ] `R0.2` Lock task listing/query behavior with golden tests.
-      Owner: `CODER`
-      Depends on: `R0.1`
-      Touchpoints: `packages/agentplane/src/commands/task/*.test.ts`
-      Done when: `task list`, `task search`, and `task next` cover filtering, sorting, `quiet`, `limit`, and readiness output.
-
-- [ ] `R0.3` Lock JSON output behavior with contract tests.
-      Owner: `CODER`
-      Depends on: `R0.1`
-      Touchpoints: `packages/agentplane/src/cli/run-cli*.test.ts`
-      Done when: `--output json` and `--json-errors` behavior are asserted, including wrapped stdout/stderr and `agent_json_v1`.
-
-- [ ] `R0.4` Add a lightweight CLI cold-path benchmark harness.
-      Owner: `CODER`
-      Depends on: none
-      Touchpoints: `scripts/`, `package.json`, or existing benchmark/test harness locations
-      Done when: the repository has one repeatable command or script that measures at least `quickstart`, `task list`, and `preflight --mode quick`.
+- [ ] `N1.5` Delete obsolete ad-hoc render helpers and document the output conventions.
+      Touchpoints: affected CLI modules and developer docs
+      Done when: duplicate render helpers are removed and the new output conventions are documented.
 
 ### Epic Acceptance
 
-- Baseline behavior is locked before deeper structural work starts.
-- Performance claims can be compared against one repeatable measurement path.
+- User-facing output flows rely on one shared emitter layer.
+- The targeted command families no longer duplicate pretty JSON or report-line framing logic.
 
-## Epic 1: Unify CLI Command Graph
+## Epic N2: Task Mutation Bridge
 
 ### Goal
 
-Replace the current split between catalog matching, registry matching, and help-specific bootstrap paths with one canonical command graph.
+Hide local-store vs backend branching behind shared mutation helpers and remove repeated bulk-write fallback logic.
 
 ### Why This Exists
 
-Current routing work is duplicated: command matching happens before registry build and again after registry build, while help has its own fast path semantics.
+Task command handlers still know too much about backend shape. They branch on `backendIsLocalFileBackend(...)`, choose between `mutateTaskStore(...)` and `writeTask(...)`, and often repeat the same load-then-write flow.
 
 ### Atomic Tasks
 
-- [ ] `R1.1` Define the canonical command-graph data model.
-      Owner: `CODER`
-      Depends on: `R0.1`
-      Touchpoints: `packages/agentplane/src/cli/run-cli/command-catalog.ts`, related command metadata
-      Done when: one internal structure can answer longest-prefix match, command lookup, and direct-child lookup from the same source of truth.
+- [ ] `N2.1` Introduce a shared bulk-write helper.
+      Touchpoints: task backend helpers used by `task/add.ts`, `task/normalize.ts`, `task/scrub.ts`
+      Done when: those commands stop open-coding `writeTasks(...)` vs sequential `writeTask(...)`.
 
-- [ ] `R1.2` Make the normal command dispatcher consume the canonical graph.
-      Owner: `CODER`
-      Depends on: `R1.1`
-      Touchpoints: `packages/agentplane/src/cli/run-cli.ts`, `packages/agentplane/src/cli/spec/registry.ts`
-      Done when: runtime dispatch no longer performs two independent longest-prefix match implementations.
+- [ ] `N2.2` Introduce a shared mutable-task bridge.
+      Touchpoints: `commands/shared/task-backend.ts`, `commands/shared/task-store.ts`, task mutation commands
+      Done when: one helper can load and persist a task mutation without each command branching on backend type.
 
-- [ ] `R1.3` Make fast help consume the same graph without special routing drift.
-      Owner: `CODER`
-      Depends on: `R1.1`
-      Touchpoints: `packages/agentplane/src/cli/run-cli.ts`, help handler plumbing
-      Done when: `help` and `--help` still avoid unnecessary project resolution but no longer depend on a parallel routing definition.
+- [ ] `N2.3` Move low-risk task mutators onto the bridge.
+      Touchpoints: `task/comment.ts`, `task/close-noop.ts`, and other simple patch-style commands
+      Done when: these commands become thin wrappers around the shared mutation helper.
 
-- [ ] `R1.4` Preserve lazy handler loading while removing duplicated registry bootstrap work.
-      Owner: `CODER`
-      Depends on: `R1.2`, `R1.3`
-      Touchpoints: `packages/agentplane/src/cli/run-cli/registry.run.ts`
-      Done when: handlers are still loaded lazily, but help/dispatch do not pay avoidable registry setup costs twice.
+- [ ] `N2.4` Move bulk task mutators onto the bridge.
+      Touchpoints: `task/add.ts`, `task/normalize.ts`, `task/scrub.ts`
+      Done when: bulk task writes use one shared path and keep their current behavior.
 
-- [ ] `R1.5` Delete obsolete routing helpers and update tests/docs.
-      Owner: `CODER`
-      Depends on: `R1.4`
-      Touchpoints: affected CLI modules and any developer docs that still describe the old split
-      Done when: old duplicated matcher paths are removed and the safety-net tests still pass unchanged.
+- [ ] `N2.5` Move remaining non-lifecycle task mutators onto the bridge.
+      Touchpoints: `task/doc.ts`, `task/plan.ts`, `task/verify-record.ts`, and similar field/doc mutators that do not own lifecycle orchestration
+      Done when: backend-type branching no longer appears in these command handlers.
 
 ### Epic Acceptance
 
-- One canonical command topology exists.
-- Help, dispatch, and child-command discovery all derive from the same structure.
-- No behavior regressions appear in the Epic 0 safety net.
+- Task mutation handlers stop branching directly on backend type for simple mutations.
+- Bulk write fallback logic exists in one place.
 
-## Epic 2: True Projection-First Task Reads
+## Epic N3: Lifecycle Transition Convergence
 
 ### Goal
 
-Make task-summary reads actually fast by separating projection reads from full task entity reads.
+Collapse the repeated orchestration around task status transitions into one shared transition executor.
 
 ### Why This Exists
 
-The code already exposes projection-style interfaces, but the local backend still reaches `listTasks()` and trims later instead of reading a real summary-only fast path.
+Shared primitives exist, but the command handlers still repeat transition validation, dependency gating, warning collection, comment formatting, and commit-from-comment preparation.
 
 ### Atomic Tasks
 
-- [ ] `R2.1` Extend the task index schema to store the exact summary projection needed by read-heavy commands.
-      Owner: `CODER`
-      Depends on: `R0.2`
-      Touchpoints: task index schema and index reader/writer modules
-      Done when: the cache stores enough summary data to satisfy `task list/search/next` without reconstructing full task records.
+- [ ] `N3.1` Define the shared transition request/executor contract.
+      Touchpoints: `commands/task/shared/*`
+      Done when: one shared executor owns status validation, dependency checks, deferred warnings, and transition application.
 
-- [ ] `R2.2` Implement a real local-backend `listProjectionTasks()` fast path.
-      Owner: `CODER`
-      Depends on: `R2.1`
-      Touchpoints: `packages/agentplane/src/backends/task-backend/local-backend.ts`
-      Done when: summary reads hit the task index on cache hit and only parse README files on cache miss or invalidation.
+- [ ] `N3.2` Move `task start`, `task block`, and `task set-status` onto the executor.
+      Touchpoints: `task/start.ts`, `task/block.ts`, `task/set-status.ts`
+      Done when: those handlers become thin command-specific wrappers around the shared transition contract.
 
-- [ ] `R2.3` Add projection/full-read consistency tests.
-      Owner: `CODER`
-      Depends on: `R2.2`
-      Touchpoints: backend tests for local task storage
-      Done when: tests prove the summary projection stays consistent with full task reads for fields used by task list/search/next.
+- [ ] `N3.3` Move `finish`, `finish-shared`, `close-shared`, and `verify-record` onto the executor.
+      Touchpoints: `task/finish.ts`, `task/finish-shared.ts`, `task/close-shared.ts`, `task/verify-record.ts`
+      Done when: terminal lifecycle transitions no longer duplicate the same orchestration in separate modules.
 
-- [ ] `R2.4` Audit non-local backends against the same summary/full-read split.
-      Owner: `CODER`
-      Depends on: `R2.1`
-      Touchpoints: backend contracts and external backend adapters
-      Done when: each backend explicitly documents whether it has a native projection path or a fallback path, with no ambiguity in the interface.
+- [ ] `N3.4` Converge comment-commit integration around the shared executor.
+      Touchpoints: status-commit warnings, commit metadata preparation, structured comment handling
+      Done when: comment-commit policy is wired once and reused by all transition commands that need it.
 
-- [ ] `R2.5` Re-measure read-heavy CLI commands on a large task set.
-      Owner: `CODER`
-      Depends on: `R2.2`, `R2.3`
-      Touchpoints: benchmark harness from `R0.4`
-      Done when: we have before/after numbers for `task list`, `task search`, and `task next`.
+- [ ] `N3.5` Delete obsolete transition branches and rerun lifecycle contract suites unchanged.
+      Touchpoints: affected task command modules and lifecycle CLI tests
+      Done when: old duplicated transition logic is removed and the safety net still passes.
 
 ### Epic Acceptance
 
-- Read-heavy task commands can use a genuine summary fast path.
-- Full task parsing is no longer on the default hot path for summary-only commands.
+- Status-transition commands share one execution model.
+- Transition-specific differences stay local, but policy/dependency orchestration no longer does.
 
-## Epic 3: Shared Task Query Pipeline
+## Epic N4: Task README And Doc Pipeline Convergence
 
 ### Goal
 
-Remove duplicated filtering, sorting, and dependency-state logic from task query commands.
+Remove the current duplication between core task-doc primitives, the local task store, and backend doc mutation paths.
 
 ### Why This Exists
 
-`task list`, `task search`, and `task next` all repeat nearly the same filtering pipeline, then add only a thin command-specific output layer.
+README parsing/rendering, section mutation, optimistic concurrency checks, and section-map regeneration are currently implemented in overlapping layers.
 
 ### Atomic Tasks
 
-- [ ] `R3.1` Introduce one shared `queryTaskProjection()` pipeline.
-      Owner: `CODER`
-      Depends on: `R0.2`, `R2.2`
-      Touchpoints: task command shared helpers
-      Done when: status/owner/tag filtering, sorting, `limit`, and dependency-state preparation live in one shared path.
+- [ ] `N4.1` Define the shared doc mutation contract.
+      Touchpoints: `packages/core/src/tasks/*`, `packages/agentplane/src/commands/shared/task-store.ts`
+      Done when: section replacement, full-doc replacement, and doc-meta touch share one explicit mutation model.
 
-- [ ] `R3.2` Move `task list` to the shared pipeline.
-      Owner: `CODER`
-      Depends on: `R3.1`
-      Touchpoints: `packages/agentplane/src/commands/task/list.ts`
-      Done when: `task list` becomes a thin formatter over shared query results.
+- [ ] `N4.2` Reuse shared doc mutation primitives inside the local backend and task store.
+      Touchpoints: `backends/task-backend/local-backend.ts`, `commands/shared/task-store.ts`
+      Done when: those modules stop carrying their own overlapping doc patch application logic.
 
-- [ ] `R3.3` Move `task search` to the shared pipeline.
-      Owner: `CODER`
-      Depends on: `R3.1`
-      Touchpoints: `packages/agentplane/src/commands/task/search.ts`
-      Done when: search-specific matching is the only command-local part left in the module.
+- [ ] `N4.3` Unify doc concurrency and conflict semantics.
+      Touchpoints: core task store, local backend, command error mapping
+      Done when: section conflicts and full-doc conflicts behave the same way across supported storage paths.
 
-- [ ] `R3.4` Move `task next` to the shared pipeline.
-      Owner: `CODER`
-      Depends on: `R3.1`
-      Touchpoints: `packages/agentplane/src/commands/task/next.ts`
-      Done when: ready-task selection is layered on top of the shared query result instead of repeating the full filter stack.
+- [ ] `N4.4` Move command handlers and task materialization callers onto the shared doc path.
+      Touchpoints: `task/doc.ts`, `task/plan.ts`, `task/migrate-doc.ts`, `task/verify-record.ts`, runner/task materialization helpers
+      Done when: these callers no longer rebuild doc mutation logic locally.
 
-- [ ] `R3.5` Delete dead helper fragments and re-lock output behavior.
-      Owner: `CODER`
-      Depends on: `R3.2`, `R3.3`, `R3.4`
-      Touchpoints: task command shared modules and tests
-      Done when: duplicated filter snippets are deleted and the Epic 0 task-query tests remain green.
+- [ ] `N4.5` Lock doc-path parity with tests.
+      Touchpoints: command tests, backend tests, core task-store tests
+      Done when: doc set/show/plan/verify flows prove parity across local and non-local paths.
 
 ### Epic Acceptance
 
-- Task query logic exists once.
-- Command-specific modules mostly format or add one domain-specific rule.
+- README/doc mutation semantics come from one shared contract.
+- Local-backend and core task-store doc logic stop diverging independently.
 
-## Epic 4: Context And Config Load Minimization
+## Epic N5: Oversized Module Decomposition
 
 ### Goal
 
-Stop paying full config/context setup cost on paths that do not actually need it.
+Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.
 
 ### Why This Exists
 
-The CLI currently loads config earlier than necessary for update-check policy gating, and some read-only usecases allocate adapters/policy wrappers they never consume.
+Several modules are now large enough that they mix unrelated responsibilities even where duplication is already reduced.
 
 ### Atomic Tasks
 
-- [ ] `R4.1` Split pre-dispatch metadata needs from full loaded config.
-      Owner: `CODER`
-      Depends on: `R1.2`
-      Touchpoints: CLI bootstrap and config-loading boundary
-      Done when: command dispatch can decide what it needs before forcing full config load on unrelated paths.
+- [ ] `N5.1` Split `cli/run-cli/commands/core.ts` by subcommand/report concern.
+      Done when: core CLI command routing no longer shares one file with unrelated report renderers and helpers.
 
-- [ ] `R4.2` Move update-check policy gating behind the real config boundary.
-      Owner: `CODER`
-      Depends on: `R4.1`
-      Touchpoints: `packages/agentplane/src/cli/run-cli.ts`
-      Done when: update-check still respects `require_network`, but commands that do not otherwise need config do not load it just for the warning path.
+- [ ] `N5.2` Split `backends/task-backend/local-backend.ts` by read, doc, and write concerns.
+      Done when: local backend read/index/doc/write responsibilities are separated behind small internal modules.
 
-- [ ] `R4.3` Introduce a lightweight read-only usecase context.
-      Owner: `CODER`
-      Depends on: `R0.2`
-      Touchpoints: `packages/agentplane/src/usecases/context/resolve-context.ts`, usecase callers
-      Done when: read-only commands no longer allocate adapters or extra policy wrappers unless they actually use them.
+- [ ] `N5.3` Split `backends/task-backend/redmine-backend.ts` by sync, cache/doc, and reporting concerns.
+      Done when: Redmine-specific sync/report code stops living in one monolithic file.
 
-- [ ] `R4.4` Remove temporary back-compat aliases after caller migration.
-      Owner: `CODER`
-      Depends on: `R4.3`
-      Touchpoints: `packages/agentplane/src/commands/shared/task-backend.ts`
-      Done when: the command context no longer carries duplicate naming solely for transitional compatibility.
+- [ ] `N5.4` Split `commands/upgrade.ts` by planning, apply, report, and lock concerns.
+      Done when: upgrade flow orchestration is easier to test without loading the whole module.
+
+- [ ] `N5.5` Split `runner/usecases/task-run-lifecycle.ts` by state transition and artifact/report concern.
+      Done when: runner lifecycle orchestration uses smaller units aligned to preparation, execution, and finalization phases.
 
 ### Epic Acceptance
 
-- Common CLI paths do less setup work before real execution begins.
-- Read-only command stacks are materially simpler than mutation stacks.
+- The largest runtime files are decomposed at real responsibility boundaries created by earlier epics.
+- The split does not add new behavior layers that merely rename existing code.
 
-## Epic 5: Remove Manual Command Topology Boilerplate
+## Epic N6: Testkit And Fixture Deduplication
 
 ### Goal
 
-Eliminate manually maintained child-command arrays and other low-value command topology duplication.
+Reduce repeated fixture setup and assertion plumbing in the largest test suites after the new production seams are stable.
 
 ### Why This Exists
 
-Group commands still enumerate their child specs by hand, which creates drift risk and keeps command topology logic spread across multiple files.
+The current safety net is valuable, but it pays for that coverage with large local builders, repeated backend stubs, and repeated stdout/stderr capture patterns.
 
 ### Atomic Tasks
 
-- [ ] `R5.1` Derive direct subcommand names from the canonical command graph.
-      Owner: `CODER`
-      Depends on: `R1.1`
-      Touchpoints: group command helpers and command graph helpers
-      Done when: child command discovery is computed from command ids instead of manually listed arrays.
+- [ ] `N6.1` Extract reusable backend/task builders for command and workflow tests.
+      Touchpoints: workflow tests, task command unit tests, backend tests
+      Done when: repeated local `TaskBackend` stubs and task fixture builders move into one shared testkit.
 
-- [ ] `R5.2` Migrate `task`, `guard`, `workflow`, `hooks`, and other group commands to derived child discovery.
-      Owner: `CODER`
-      Depends on: `R5.1`
-      Touchpoints: group command entry modules
-      Done when: group command modules no longer maintain explicit child-spec lists unless a command intentionally hides or reorders children.
+- [ ] `N6.2` Extract shared output-capture and report-assertion helpers for CLI contract suites.
+      Touchpoints: `cli/run-cli*.test.ts` helpers
+      Done when: output-heavy suites stop re-implementing the same capture/assertion plumbing.
 
-- [ ] `R5.3` Audit thin `*.command.ts` and `*.run.ts` wrappers.
-      Owner: `CODER`
-      Depends on: `R5.2`
-      Touchpoints: command/module tree
-      Done when: every wrapper file is classified as either meaningful boundary or removable indirection.
+- [ ] `N6.3` Prune repeated scenario/release/runner fixtures where the new shared helpers fit.
+      Touchpoints: scenario, release, and runner test helpers
+      Done when: only domain-specific setup remains local to each suite.
 
-- [ ] `R5.4` Collapse low-value wrappers with tests still green.
-      Owner: `CODER`
-      Depends on: `R5.3`
-      Touchpoints: wrapper modules selected by the audit
-      Done when: purely pass-through files are removed or merged, and module boundaries that remain have a documented reason.
+- [ ] `N6.4` Delete obsolete bespoke helpers after migration.
+      Touchpoints: old test-only helper modules and local duplicate builders
+      Done when: the new shared testkit replaces the superseded helpers cleanly.
 
 ### Epic Acceptance
 
-- Group command topology is not maintained by hand in multiple places.
-- Wrapper count drops without making command ownership harder to understand.
+- The largest suites keep their coverage but lose repeated fixture plumbing.
+- Test helpers become easier to reuse across command, backend, and runner coverage.
 
-## Epic 6: Globals And Output Cleanup
+## Recommended Execution Bias
 
-### Goal
+Start with `N0`, `N1`, and `N2`.
 
-Simplify global-flag parsing and JSON output wrapping after the bigger routing/query changes are stable.
-
-### Why This Exists
-
-This is secondary work: it is less important than routing/query/projection cleanup, but it still contains low-value duplication and brittle process-wide output interception.
-
-### Atomic Tasks
-
-- [ ] `R6.1` Merge global-flag prescan and parse into one result model.
-      Owner: `CODER`
-      Depends on: `R1.3`
-      Touchpoints: `packages/agentplane/src/cli/run-cli/globals.ts`
-      Done when: the CLI does not walk the same argv slice twice just to preserve `--json-errors` behavior.
-
-- [ ] `R6.2` Replace process-wide stdout/stderr monkey-patching with a structured output collector.
-      Owner: `CODER`
-      Depends on: `R0.3`
-      Touchpoints: `packages/agentplane/src/cli/run-cli/globals.ts` and command output contracts
-      Done when: JSON mode no longer relies on global write interception, while preserving current output semantics.
-
-- [ ] `R6.3` Re-lock JSON compatibility and document any intentional invariants.
-      Owner: `CODER`
-      Depends on: `R6.2`
-      Touchpoints: tests and developer docs
-      Done when: `agent_json_v1` compatibility is explicitly tested and documented as a stable contract.
-
-### Epic Acceptance
-
-- Global CLI bootstrap code is simpler and less brittle.
-- JSON output remains compatible with existing consumers.
-
-## Recommended Execution Order
-
-Run the backlog in this order unless a later measured result changes the priority:
-
-1. `Epic C` first. Do not build the next refactor wave on top of a knowingly mismatched workflow artifact or opaque framework-worktree runtime path.
-   Current status: done on `main`.
-2. `Epic 0` next. Do not start structural cleanup without the safety net.
-3. `Epic 1` next. The command graph is the highest-leverage duplication point.
-4. `Epic 2` and `Epic 3` next. These are the best candidates for meaningful task-command speedups.
-5. `Epic 4` after routing/query cleanup. It trims startup work and removes leftover context bloat.
-6. `Epic 5` after the canonical graph exists. Otherwise the boilerplate cleanup will drift again.
-7. `Epic 6` last. It is valuable, but it should not distract from the higher-leverage hot paths.
-
-## Task Sizing Rule
-
-When turning items from this file into executable `agentplane` tasks:
-
-- Prefer one executable task per atomic checkbox.
-- Split again if a checkbox grows beyond one narrow subsystem or roughly 3 to 5 touched files.
-- Keep docs-only follow-ups separate from code changes unless they are inseparable.
-- Do not batch unrelated cleanup under one “misc refactor” task.
-
-## Exit Criteria For This Backlog
-
-This backlog can be considered complete when all of the following are true:
-
-1. Common CLI paths no longer duplicate router/bootstrap work.
-2. Task summary reads use a genuine projection path.
-3. Task query commands share one filter/sort/dependency pipeline.
-4. Manual command topology bookkeeping is mostly gone.
-5. Global/output handling is simpler without breaking `agent_json_v1`.
-6. Before/after measurements show a real reduction in overhead on the targeted CLI paths.
+- `N0` reduces refactor risk and provides measurable progress.
+- `N1` is the safest high-volume code deletion target.
+- `N2` creates the architectural seam needed before `N3` and `N4`.
+- `N5` should not start until at least one earlier seam-producing epic is complete.
+- `N6` should trail production refactors; otherwise it will optimize the wrong test seams.
