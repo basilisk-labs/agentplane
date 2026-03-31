@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603311331-Q9B3R2/hotspot-report-script",
+  "created_at": "2026-03-31T14:32:49.462Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603311331-Q9B3R2",
+  "updated_at": "2026-03-31T14:32:59.171Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
