@@ -10,13 +10,12 @@ import {
   loadTaskBackend,
   type TaskData,
 } from "./task-backend.js";
-import { installTaskBackendTestHarness, makeTempDir } from "./task-backend.test-helpers.js";
-
-installTaskBackendTestHarness();
+import { mkTempDir, silenceStdIO } from "../cli/run-cli.test-helpers.js";
 
 describe("loadTaskBackend", () => {
   let tempDir = "";
   let originalEnv: NodeJS.ProcessEnv = {};
+  let restoreStdIO: (() => void) | null = null;
   const redmineEnvKeys = [
     "AGENTPLANE_REDMINE_URL",
     "AGENTPLANE_REDMINE_API_KEY",
@@ -39,7 +38,8 @@ describe("loadTaskBackend", () => {
   ] as const;
 
   beforeEach(async () => {
-    tempDir = await makeTempDir();
+    restoreStdIO = silenceStdIO();
+    tempDir = await mkTempDir();
     originalEnv = { ...process.env };
     for (const key of redmineEnvKeys) {
       delete process.env[key];
@@ -48,6 +48,8 @@ describe("loadTaskBackend", () => {
   });
 
   afterEach(async () => {
+    restoreStdIO?.();
+    restoreStdIO = null;
     process.env = originalEnv;
     if (tempDir) {
       await rm(tempDir, { recursive: true, force: true });

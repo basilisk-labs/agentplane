@@ -18,29 +18,27 @@ const CYRILLIC_RE = /[\u0400-\u04FF]/u;
 const RUSSIAN_TRACE_LINE = "Привет из raw trace";
 const RUSSIAN_LAST_MESSAGE = "Привет из сообщения Codex";
 
-function makeBundle() {
-  return makeRunnerContextBundle({
-    adapterId: "codex",
-    taskId: "202603231410-ABC123",
-    runId: "run-123",
-    title: "Adapter test",
-    description: "Adapter test task",
-    status: "TODO",
-    basePrompts: [
-      {
-        id: "base.policy_gateway",
-        role: "policy",
-        content: "do not inline this policy text into argv",
-        priority: 200,
-      },
-    ],
-  });
-}
+const codexBundleDefaults = {
+  adapterId: "codex",
+  taskId: "202603231410-ABC123",
+  runId: "run-123",
+  title: "Adapter test",
+  description: "Adapter test task",
+  status: "TODO",
+  basePrompts: [
+    {
+      id: "base.policy_gateway",
+      role: "policy",
+      content: "do not inline this policy text into argv",
+      priority: 200,
+    },
+  ],
+};
 
 describe("CodexRunnerAdapter", () => {
   it("describes codex capabilities for recipe run_profile fields", () => {
     const adapter = createRunnerAdapter(defaultConfig());
-    const capabilities = adapter.describeCapabilities(makeBundle());
+    const capabilities = adapter.describeCapabilities(makeRunnerContextBundle(codexBundleDefaults));
 
     expect(capabilities).toMatchObject({
       adapter_id: "codex",
@@ -56,7 +54,7 @@ describe("CodexRunnerAdapter", () => {
 
   it("returns normalized invocation metadata from bundle path and config-selected adapter", async () => {
     const adapter = createRunnerAdapter(defaultConfig());
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(codexBundleDefaults);
 
     const invocation = await adapter.prepare(bundle);
 
@@ -110,7 +108,7 @@ describe("CodexRunnerAdapter", () => {
 
   it("maps recipe run_profile sandbox into codex argv and exports the remaining fields via env", async () => {
     const adapter = createRunnerAdapter(defaultConfig());
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.target = {
       kind: "recipe_scenario",
       recipe_id: "viewer",
@@ -151,7 +149,7 @@ describe("CodexRunnerAdapter", () => {
 
   it("fails closed when recipe run_profile sandbox is unsupported", () => {
     const adapter = createRunnerAdapter(defaultConfig());
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.recipe = {
       recipe_id: "viewer",
       scenario_id: "RECIPE_SCENARIO",
@@ -182,7 +180,7 @@ describe("CodexRunnerAdapter", () => {
 
   it("fails closed when recipe writes_artifacts_to prefixes are invalid", () => {
     const adapter = createRunnerAdapter(defaultConfig());
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.recipe = {
       recipe_id: "viewer",
       scenario_id: "RECIPE_SCENARIO",
@@ -215,7 +213,7 @@ describe("CodexRunnerAdapter", () => {
     const adapter = createRunnerAdapter(defaultConfig());
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-success-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
     setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-123"));
@@ -332,7 +330,7 @@ describe("CodexRunnerAdapter", () => {
     const adapter = createRunnerAdapter(defaultConfig());
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-missing-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
     setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-missing"));
@@ -411,7 +409,7 @@ describe("CodexRunnerAdapter", () => {
     const adapter = createRunnerAdapter(defaultConfig());
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-fail-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
     setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-123"));
@@ -496,7 +494,7 @@ describe("CodexRunnerAdapter", () => {
     const adapter = createRunnerAdapter(defaultConfig());
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-invalid-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
     setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-invalid"));
@@ -570,7 +568,7 @@ describe("CodexRunnerAdapter", () => {
     const adapter = createRunnerAdapter(defaultConfig());
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-codex-adapter-scope-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(codexBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
     bundle.recipe = {

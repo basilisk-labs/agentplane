@@ -1,10 +1,10 @@
 ---
 id: "202603311332-EFWRER"
 title: "N6.4 Delete obsolete bespoke helpers after migration"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -17,21 +17,37 @@ tags:
   - "tests"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-31T19:33:44.142Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-31T19:39:20.588Z"
+  updated_by: "CODER"
+  note: "Deleted obsolete backends/task-backend.test-helpers.ts, moved backend suites onto shared mkTempDir/silenceStdIO helpers, and removed remaining runner wrapper-builders; eslint plus focused backend/runner vitest passed (130 tests)."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: delete obsolete bespoke test helpers now that shared backend, CLI, scenario, release, and runner helpers have landed; keep all relevant suites green."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T19:34:19.142Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: delete obsolete bespoke test helpers now that shared backend, CLI, scenario, release, and runner helpers have landed; keep all relevant suites green."
+  -
+    type: "verify"
+    at: "2026-03-31T19:39:20.588Z"
+    author: "CODER"
+    state: "ok"
+    note: "Deleted obsolete backends/task-backend.test-helpers.ts, moved backend suites onto shared mkTempDir/silenceStdIO helpers, and removed remaining runner wrapper-builders; eslint plus focused backend/runner vitest passed (130 tests)."
 doc_version: 3
-doc_updated_at: "2026-03-31T13:32:44.354Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-31T19:39:20.592Z"
+doc_updated_by: "CODER"
 description: "Implement N6.4 from REFACTOR.md. Reduce repeated fixture setup and assertion plumbing in the largest test suites after the new production seams are stable.. Acceptance: the new shared testkit replaces the superseded helpers cleanly. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
 sections:
   Summary: |-
@@ -51,6 +67,14 @@ sections:
     3. Re-run the focused checks after final edits. Expected: the new shared testkit replaces the superseded helpers cleanly.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T19:39:20.588Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Deleted obsolete backends/task-backend.test-helpers.ts, moved backend suites onto shared mkTempDir/silenceStdIO helpers, and removed remaining runner wrapper-builders; eslint plus focused backend/runner vitest passed (130 tests).
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T19:34:19.164Z, excerpt_hash=sha256:355660da8105c15e9ffa0989afcb867bfdbd3a955621b80c8b8fb0ad2fe0d282
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -84,6 +108,14 @@ Implement N6.4 from REFACTOR.md. Reduce repeated fixture setup and assertion plu
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T19:39:20.588Z — VERIFY — ok
+
+By: CODER
+
+Note: Deleted obsolete backends/task-backend.test-helpers.ts, moved backend suites onto shared mkTempDir/silenceStdIO helpers, and removed remaining runner wrapper-builders; eslint plus focused backend/runner vitest passed (130 tests).
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T19:34:19.164Z, excerpt_hash=sha256:355660da8105c15e9ffa0989afcb867bfdbd3a955621b80c8b8fb0ad2fe0d282
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

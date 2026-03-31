@@ -30,16 +30,14 @@ function currentCodexSandboxPlatform(): "macos" | "linux" | "windows" {
   }
 }
 
-function makeBundle() {
-  return makeRunnerContextBundle({
-    adapterId: "custom",
-    taskId: "202603231410-XYZ789",
-    runId: "run-789",
-    title: "Custom adapter test",
-    description: "Custom adapter test task",
-    status: "DOING",
-  });
-}
+const customBundleDefaults = {
+  adapterId: "custom",
+  taskId: "202603231410-XYZ789",
+  runId: "run-789",
+  title: "Custom adapter test",
+  description: "Custom adapter test task",
+  status: "DOING",
+};
 
 describe("CustomRunnerAdapter", () => {
   it("describes custom-runner capabilities as advisory env propagation", () => {
@@ -49,7 +47,9 @@ describe("CustomRunnerAdapter", () => {
       command: ["custom-runner", "--bundle-from-env"],
     };
     const adapter = createRunnerAdapter(raw);
-    const capabilities = adapter.describeCapabilities(makeBundle());
+    const capabilities = adapter.describeCapabilities(
+      makeRunnerContextBundle(customBundleDefaults),
+    );
 
     expect(capabilities).toMatchObject({
       adapter_id: "custom",
@@ -77,7 +77,9 @@ describe("CustomRunnerAdapter", () => {
       },
     };
     const adapter = createRunnerAdapter(raw);
-    const capabilities = adapter.describeCapabilities(makeBundle());
+    const capabilities = adapter.describeCapabilities(
+      makeRunnerContextBundle(customBundleDefaults),
+    );
 
     expect(capabilities).toMatchObject({
       adapter_id: "custom",
@@ -104,7 +106,7 @@ describe("CustomRunnerAdapter", () => {
       },
     };
     const adapter = createRunnerAdapter(raw);
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
 
     const invocation = await adapter.prepare(bundle);
 
@@ -155,7 +157,7 @@ describe("CustomRunnerAdapter", () => {
       },
     };
     const adapter = createRunnerAdapter(raw);
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.target = {
       kind: "recipe_scenario",
       recipe_id: "viewer",
@@ -198,7 +200,7 @@ describe("CustomRunnerAdapter", () => {
       },
     };
     const adapter = createRunnerAdapter(raw);
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.target = {
       kind: "recipe_scenario",
       recipe_id: "viewer",
@@ -241,7 +243,7 @@ describe("CustomRunnerAdapter", () => {
       },
     };
     const adapter = createRunnerAdapter(raw);
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.target = {
       kind: "recipe_scenario",
       recipe_id: "viewer",
@@ -268,7 +270,7 @@ describe("CustomRunnerAdapter", () => {
       command: ["custom-runner", "--bundle-from-env"],
     };
     const adapter = createRunnerAdapter(raw);
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.target = {
       kind: "recipe_scenario",
       recipe_id: "viewer",
@@ -291,7 +293,7 @@ describe("CustomRunnerAdapter", () => {
     raw.runner.default_adapter = "custom";
     const adapter = createRunnerAdapter(raw);
 
-    expect(() => adapter.prepare(makeBundle())).toThrow(
+    expect(() => adapter.prepare(makeRunnerContextBundle(customBundleDefaults))).toThrow(
       "Custom runner adapter requires config.runner.custom.command",
     );
   });
@@ -308,7 +310,7 @@ describe("CustomRunnerAdapter", () => {
     const adapter = createRunnerAdapter(raw);
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-success-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
     setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-789"));
@@ -394,7 +396,7 @@ describe("CustomRunnerAdapter", () => {
     const adapter = createRunnerAdapter(raw);
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-invalid-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
     setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-invalid"));
@@ -484,7 +486,7 @@ describe("CustomRunnerAdapter", () => {
     const adapter = createRunnerAdapter(raw);
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-source-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
     setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-source"));
@@ -574,7 +576,7 @@ describe("CustomRunnerAdapter", () => {
     const adapter = createRunnerAdapter(raw);
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-scope-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
     setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-scope"));

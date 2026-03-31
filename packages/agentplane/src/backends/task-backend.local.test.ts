@@ -5,9 +5,7 @@ import { renderTaskReadme } from "@agentplaneorg/core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { LocalBackend, toTaskSummary, type TaskData, type TaskSummary } from "./task-backend.js";
-import { installTaskBackendTestHarness, makeTempDir } from "./task-backend.test-helpers.js";
-
-installTaskBackendTestHarness();
+import { mkTempDir, silenceStdIO } from "../cli/run-cli.test-helpers.js";
 
 type QuerySummaryView = Pick<
   TaskSummary,
@@ -42,12 +40,16 @@ function pickQuerySummary(task: TaskSummary): QuerySummaryView {
 
 describe("LocalBackend", () => {
   let tempDir = "";
+  let restoreStdIO: (() => void) | null = null;
 
   beforeEach(async () => {
-    tempDir = await makeTempDir();
+    restoreStdIO = silenceStdIO();
+    tempDir = await mkTempDir();
   });
 
   afterEach(async () => {
+    restoreStdIO?.();
+    restoreStdIO = null;
     if (tempDir) {
       await rm(tempDir, { recursive: true, force: true });
     }

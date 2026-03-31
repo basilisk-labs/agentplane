@@ -1,0 +1,12 @@
+{
+  "branch": "task/202603311332-EFWRER/delete-bespoke-helpers",
+  "created_at": "2026-03-31T19:39:35.710Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202603311332-EFWRER",
+  "updated_at": "2026-03-31T19:39:39.647Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

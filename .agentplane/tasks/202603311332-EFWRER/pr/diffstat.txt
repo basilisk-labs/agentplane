@@ -1,0 +1,10 @@
+ .agentplane/tasks/202603311332-EFWRER/README.md    | 58 +++++++++++++++++-----
+ .../src/backends/task-backend.load.test.ts         | 10 ++--
+ .../src/backends/task-backend.local.test.ts        | 10 ++--
+ .../src/backends/task-backend.redmine.test.ts      | 31 +++++++++---
+ .../src/backends/task-backend.test-helpers.ts      | 41 ---------------
+ .../agentplane/src/backends/task-backend.test.ts   | 17 +++++--
+ .../agentplane/src/runner/adapters/codex.test.ts   | 54 ++++++++++----------
+ .../agentplane/src/runner/adapters/custom.test.ts  | 46 +++++++++--------
+ .../src/runner/usecases/task-run-lifecycle.test.ts | 16 +++---
+ 9 files changed, 149 insertions(+), 134 deletions(-)

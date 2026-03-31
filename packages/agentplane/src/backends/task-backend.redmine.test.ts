@@ -10,20 +10,33 @@ import {
   RedmineUnavailable,
   type TaskData,
 } from "./task-backend.js";
-import {
-  installTaskBackendTestHarness,
-  makeIssue,
-  makeTempDir,
-} from "./task-backend.test-helpers.js";
+import { mkTempDir, silenceStdIO } from "../cli/run-cli.test-helpers.js";
 
-installTaskBackendTestHarness();
+function makeIssue(priorityName?: string): Record<string, unknown> {
+  return {
+    id: 1,
+    subject: "Subject",
+    description: "Desc",
+    status: { id: 1 },
+    priority: priorityName ? { name: priorityName } : undefined,
+    custom_fields: [
+      { id: 2, value: '["echo ok"]' },
+      { id: 3, value: '{"hash":"h","message":"m"}' },
+      { id: 4, value: "note" },
+      { id: 5, value: "2" },
+    ],
+    updated_on: "2026-01-30T00:00:00Z",
+  };
+}
 
 describe("RedmineBackend (mocked)", () => {
   let tempDir = "";
   let originalEnv: NodeJS.ProcessEnv = {};
+  let restoreStdIO: (() => void) | null = null;
 
   beforeEach(async () => {
-    tempDir = await makeTempDir();
+    restoreStdIO = silenceStdIO();
+    tempDir = await mkTempDir();
     originalEnv = { ...process.env };
     delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID;
     delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE;
@@ -44,6 +57,8 @@ describe("RedmineBackend (mocked)", () => {
   });
 
   afterEach(async () => {
+    restoreStdIO?.();
+    restoreStdIO = null;
     process.env = originalEnv;
     if (tempDir) {
       await rm(tempDir, { recursive: true, force: true });
