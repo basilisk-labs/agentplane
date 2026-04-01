@@ -89,6 +89,12 @@ export class CommandGraph<T> {
     );
   }
 
+  directChildSegments(parentId: CommandId = []): readonly string[] {
+    const parent = this.resolveNode(parentId);
+    if (!parent) return [];
+    return [...parent.children.keys()].toSorted((left, right) => left.localeCompare(right));
+  }
+
   private resolveNode(id: CommandId): CommandGraphNode<T> | null {
     let node = this.root;
     for (const segment of id) {
@@ -137,6 +143,10 @@ export class CommandRegistry {
     parentId: CommandId = [],
   ): readonly { spec: CommandSpec; handler: CommandHandler }[] {
     return this.graph.directChildren(parentId);
+  }
+
+  directChildSegments(parentId: CommandId = []): readonly string[] {
+    return this.graph.directChildSegments(parentId);
   }
 }
 

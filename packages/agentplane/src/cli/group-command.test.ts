@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { throwGroupCommandUsage, directSubcommandNames } from "./group-command.js";
-import type { CommandSpec } from "./spec/spec.js";
+import {
+  throwGroupCommandUsage,
+  directSubcommandNames,
+  directSubcommandNamesFromIds,
+} from "./group-command.js";
+import type { CommandId, CommandSpec } from "./spec/spec.js";
 
 const rootSpec: CommandSpec<{ cmd: string[] }> = {
   id: ["demo"],
@@ -19,9 +23,15 @@ const childSpecs: readonly CommandSpec<unknown>[] = [
   { id: ["demo"], group: "Test", summary: "root" },
 ] as const;
 
+const childIds: readonly CommandId[] = childSpecs.map((spec) => spec.id);
+
 describe("group-command helper", () => {
   it("derives direct subcommands uniquely and in sorted order", () => {
     expect(directSubcommandNames(["demo"], childSpecs)).toEqual(["alpha", "beta"]);
+  });
+
+  it("derives direct subcommands from command ids without leaking grandchildren", () => {
+    expect(directSubcommandNamesFromIds(["demo"], childIds)).toEqual(["alpha", "beta"]);
   });
 
   it("renders usage errors with suggestions for unknown subcommands", () => {

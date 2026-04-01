@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   findCommandEntry,
   getDirectChildCommandEntries,
+  getDirectChildCommandNames,
   matchCommandCatalog,
 } from "./command-catalog.js";
 
@@ -37,5 +38,10 @@ describe("command catalog graph", () => {
     );
     expect(taskPlanChildren).not.toContain("task new");
     expect(getDirectChildCommandEntries(["missing", "command"])).toEqual([]);
+  });
+
+  it("derives direct child names from the canonical graph", () => {
+    expect(getDirectChildCommandNames(["task", "plan"])).toEqual(["approve", "reject", "set"]);
+    expect(getDirectChildCommandNames(["missing", "command"])).toEqual([]);
   });
 });

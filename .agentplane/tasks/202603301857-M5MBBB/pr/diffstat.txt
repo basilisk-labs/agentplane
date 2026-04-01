@@ -1,0 +1,12 @@
+ .agentplane/tasks/202603301857-M5MBBB/README.md    | 58 +++++++++++++++++-----
+ .../tasks/202603301857-M5MBBB/pr/diffstat.txt      |  8 +++
+ .agentplane/tasks/202603301857-M5MBBB/pr/meta.json | 12 +++++
+ .agentplane/tasks/202603301857-M5MBBB/pr/review.md | 36 ++++++++++++++
+ .../tasks/202603301857-M5MBBB/pr/verify.log        |  0
+ packages/agentplane/src/cli/group-command.test.ts  | 14 +++++-
+ packages/agentplane/src/cli/group-command.ts       | 18 +++++--
+ .../src/cli/run-cli/command-catalog.test.ts        |  6 +++
+ .../agentplane/src/cli/run-cli/command-catalog.ts  |  4 ++
+ packages/agentplane/src/cli/spec/registry.test.ts  |  3 ++
+ packages/agentplane/src/cli/spec/registry.ts       | 10 ++++
+ 11 files changed, 150 insertions(+), 19 deletions(-)
