@@ -267,32 +267,35 @@ describe("local release E2E script", () => {
     expect(result.stderr).toContain("Exact checkout required");
   });
 
-  it("fails explicitly when GitHub auth is missing", LOCAL_RELEASE_E2E_TIMEOUT_MS, async () => {
-    const { root, binDir } = await initWorkspace();
+  it(
+    "fails explicitly when GitHub auth is missing",
+    async () => {
+      const { root, binDir } = await initWorkspace();
 
-    const result = await runScript(root, ["--skip-prepublish"], {
-      PATH: `${binDir}:${process.env.PATH ?? ""}`,
-    }).then(
-      () => ({ ok: true as const, stderr: "" }),
-      (error: unknown) => {
-        const stderr =
-          typeof error === "object" &&
-          error !== null &&
-          "stderr" in error &&
-          typeof (error as { stderr?: unknown }).stderr === "string"
-            ? (error as { stderr: string }).stderr
-            : "";
-        return { ok: false as const, stderr };
-      },
-    );
+      const result = await runScript(root, ["--skip-prepublish"], {
+        PATH: `${binDir}:${process.env.PATH ?? ""}`,
+      }).then(
+        () => ({ ok: true as const, stderr: "" }),
+        (error: unknown) => {
+          const stderr =
+            typeof error === "object" &&
+            error !== null &&
+            "stderr" in error &&
+            typeof (error as { stderr?: unknown }).stderr === "string"
+              ? (error as { stderr: string }).stderr
+              : "";
+          return { ok: false as const, stderr };
+        },
+      );
 
-    expect(result.ok).toBe(false);
-    expect(result.stderr).toContain("Missing required GITHUB_TOKEN");
-  });
+      expect(result.ok).toBe(false);
+      expect(result.stderr).toContain("Missing required GITHUB_TOKEN");
+    },
+    LOCAL_RELEASE_E2E_TIMEOUT_MS,
+  );
 
   it(
     "fails when the downloaded artifact manifest does not match the exact release sha",
-    LOCAL_RELEASE_E2E_TIMEOUT_MS,
     async () => {
       const { root, sha, binDir } = await initWorkspace();
 
@@ -344,5 +347,6 @@ describe("local release E2E script", () => {
         },
       );
     },
+    LOCAL_RELEASE_E2E_TIMEOUT_MS,
   );
 });
