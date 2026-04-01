@@ -253,7 +253,7 @@ export async function writeTasksOrFallback(
 
 export async function listTaskSummariesMemo(ctx: CommandContext): Promise<TaskSummary[]> {
   ctx.memo.taskProjection ??= (async () => {
-    if (ctx.taskBackend.capabilities.projection_read_mode === "native") {
+    if (ctx.taskBackend.capabilities?.projection_read_mode === "native") {
       if (!ctx.taskBackend.listProjectionTasks) {
         throw new CliError({
           exitCode: 1,
@@ -270,10 +270,10 @@ export async function listTaskSummariesMemo(ctx: CommandContext): Promise<TaskSu
 }
 
 export async function listTaskProjection(ctx: CommandContext): Promise<TaskSummary[] | null> {
-  if (ctx.taskBackend.capabilities.projection_read_mode === "native") {
+  if (ctx.taskBackend.capabilities?.projection_read_mode === "native") {
     return await listTaskSummariesMemo(ctx);
   }
-  if (ctx.taskBackend.capabilities.reads_from_projection_by_default) {
+  if (ctx.taskBackend.capabilities?.reads_from_projection_by_default) {
     return await listTaskSummariesMemo(ctx);
   }
   return null;

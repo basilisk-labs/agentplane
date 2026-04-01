@@ -73,7 +73,9 @@ export async function materializeUpgradeSource(opts: {
   if (!hasBundle && !useRemote) {
     bundleLayout = "local_assets";
     bundleRoot = fileURLToPath(opts.assetsDirUrl);
-    manifestPath = fileURLToPath(new URL("../../assets/framework.manifest.json", import.meta.url));
+    manifestPath = fileURLToPath(
+      new URL("../../../assets/framework.manifest.json", import.meta.url),
+    );
   } else {
     let bundlePath = "";
     let checksumPath = "";
