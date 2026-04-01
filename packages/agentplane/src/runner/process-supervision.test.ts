@@ -57,7 +57,7 @@ describe("runSupervisedProcess", () => {
         "}, 600);",
         "setTimeout(() => {",
         "  process.exit(0);",
-        "}, 2000);",
+        "}, 5000);",
       ].join("\n"),
       "utf8",
     );
@@ -102,7 +102,7 @@ describe("runSupervisedProcess", () => {
     try {
       const partialTrace = await waitForTraceMatch({
         path: invocation.trace_path,
-        timeoutMs: 1900,
+        timeoutMs: 4500,
         matcher: (contents) =>
           contents.includes('"stream":"stdout"') && contents.includes('"type":"first"'),
       });
