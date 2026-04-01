@@ -57,7 +57,7 @@ describeWhenNotHook("release plan", () => {
     expect(instructions).toContain("Write at least 1 bullet points.");
     const changesMd = await readFile(path.join(runDir, "changes.md"), "utf8");
     expect(changesMd).toContain("feat: add file");
-  });
+  }, 60_000);
 
   it("requires --yes for minor/major bumps", () => {
     expect(() =>

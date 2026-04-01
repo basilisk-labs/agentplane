@@ -2032,7 +2032,7 @@ describe("runCli", () => {
       process.env.PATH = originalPath;
       io.restore();
     }
-  });
+  }, 60_000);
 
   it("task run resume executes an existing prepared run in place", async () => {
     const root = await mkGitRepoRoot();

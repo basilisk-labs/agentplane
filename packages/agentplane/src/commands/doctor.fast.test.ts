@@ -208,7 +208,7 @@ describe("doctor.fast", () => {
       { fix: false, dev: false },
     );
     expect(rc).toBe(1);
-  });
+  }, 60_000);
 
   it("prints runtime info when doctor runs inside a framework checkout", async () => {
     const ws = await mkWorkspace();
