@@ -1,11 +1,17 @@
 {
+  "base": "main",
   "branch": "task/202604011009-9194GE/remove-refactor-md",
   "created_at": "2026-04-01T10:11:13.930Z",
+  "head_sha": "0c7193902861dcbce305dcd68b338429ea7e8336",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "4002f4ff2232255bc32d0b95fc361829658aa096",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-01T10:11:43.667Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604011009-9194GE",
-  "updated_at": "2026-04-01T10:11:13.930Z",
+  "updated_at": "2026-04-01T10:11:43.667Z",
   "verify": {
     "status": "skipped"
   }

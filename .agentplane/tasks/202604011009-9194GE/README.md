@@ -1,10 +1,11 @@
 ---
 id: "202604011009-9194GE"
 title: "Remove stale REFACTOR.md after completed refactor wave"
-status: "DOING"
+result_summary: "integrate: squash task/202604011009-9194GE/remove-refactor-md"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-01T10:11:00.307Z"
   updated_by: "CODER"
   note: "Deleted stale REFACTOR.md after confirming no live docs or tooling still reference it via focused repository search."
-commit: null
+commit:
+  hash: "4002f4ff2232255bc32d0b95fc361829658aa096"
+  message: "📝 9194GE task: add pr artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: remove the stale REFACTOR.md backlog file after the completed refactor wave and verify no live docs/tooling still reference it."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604011009-9194GE/pr."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Deleted stale REFACTOR.md after confirming no live docs or tooling still reference it via focused repository search."
+  -
+    type: "status"
+    at: "2026-04-01T10:11:43.706Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604011009-9194GE/pr."
 doc_version: 3
-doc_updated_at: "2026-04-01T10:11:00.312Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-01T10:11:43.712Z"
+doc_updated_by: "INTEGRATOR"
 description: "Delete the obsolete REFACTOR.md backlog file now that every recorded refactor task is DONE, and keep repository references clean."
 sections:
   Summary: |-
