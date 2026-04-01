@@ -1,0 +1,13 @@
+ .agentplane/tasks/202603311332-WJM993/README.md    |  58 +-
+ .../tasks/202603311332-WJM993/pr/diffstat.txt      |   9 +
+ .agentplane/tasks/202603311332-WJM993/pr/meta.json |  12 +
+ .agentplane/tasks/202603311332-WJM993/pr/review.md |  37 +
+ .../tasks/202603311332-WJM993/pr/verify.log        |   0
+ .../src/cli/run-cli/command-catalog/core.ts        |  27 +-
+ .../agentplane/src/cli/run-cli/commands/core.ts    | 777 +--------------------
+ .../cli/run-cli/commands/core/agent-profiles.ts    | 127 ++++
+ .../src/cli/run-cli/commands/core/agents.ts        | 121 ++++
+ .../src/cli/run-cli/commands/core/preflight.ts     | 352 ++++++++++
+ .../src/cli/run-cli/commands/core/quickstart.ts    |  55 ++
+ .../src/cli/run-cli/commands/core/role.ts          | 152 ++++
+ 12 files changed, 931 insertions(+), 796 deletions(-)

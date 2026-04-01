@@ -1,15 +1,14 @@
-import {
-  defaultConfig,
-  ensureDocSections,
-  setMarkdownSection,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  makeTaskBackendDouble,
+  makeTaskCommandContext,
+  makeTaskFixture,
+} from "../task.test-helpers.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { GitContext } from "../shared/git-context.js";
 import type { TaskStorePatch } from "../shared/task-store.js";
 
 const mockLoadTaskFromContext =
@@ -23,59 +22,34 @@ vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mockLoadCommandContext,
   loadTaskFromContext: mockLoadTaskFromContext,
 }));
-vi.mock("../shared/task-store.js", () => ({
-  backendIsLocalFileBackend: mockBackendIsLocalFileBackend,
-  getTaskStore: mockGetTaskStore,
-}));
+vi.mock("../shared/task-store.js", async (importOriginal) => {
+  const actualUnknown: unknown = await importOriginal();
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    backendIsLocalFileBackend: mockBackendIsLocalFileBackend,
+    getTaskStore: mockGetTaskStore,
+  };
+});
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "TODO",
-    priority: "normal",
-    owner: "me",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    ...overrides,
-  };
+  return makeTaskFixture({ owner: "me", ...overrides });
 }
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
-  const config = defaultConfig();
-  config.paths.workflow_dir = ".agentplane/tasks";
-  config.tasks.doc.required_sections = ["Summary", "Plan", "Verify Steps", "Notes"];
-  config.tasks.verify.required_tags = ["code", "backend", "frontend"];
-  config.tasks.verify.spike_tag = "spike";
-  config.tasks.verify.enforce_on_plan_approve = true;
-
-  const resolved = {
-    gitRoot: "/repo",
-    agentplaneDir: "/repo/.agentplane",
-  } as unknown as ResolvedProject;
-
-  const backend: TaskBackend = {
-    id: "mock",
-    listTasks: () => Promise.resolve([]),
-    getTask: () => Promise.resolve(null),
-    writeTask: () => Promise.resolve(),
-    getTaskDoc: () => Promise.resolve(""),
-  };
-
-  const ctx: CommandContext = {
-    resolvedProject: resolved,
-    config,
-    taskBackend: backend,
-    backendId: "mock",
-    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: new GitContext({ gitRoot: "/repo" }),
-    memo: {},
-    resolved,
-    backend,
-  };
-  return { ...ctx, ...overrides };
+  return makeTaskCommandContext({
+    taskBackend: makeTaskBackendDouble(),
+    overrides,
+    configureConfig: (config) => {
+      config.tasks.doc.required_sections = ["Summary", "Plan", "Verify Steps", "Notes"];
+      config.tasks.verify.required_tags = ["code", "backend", "frontend"];
+      config.tasks.verify.spike_tag = "spike";
+      config.tasks.verify.enforce_on_plan_approve = true;
+    },
+  });
 }
 
 function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
@@ -432,12 +406,11 @@ describe("task plan commands (unit)", () => {
       ].join("\n"),
     });
     const store = {
-      get: vi.fn().mockResolvedValue(currentTask),
-      patch: vi
+      update: vi
         .fn()
         .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await updater(currentTask);
             return { changed: true, task: currentTask };
           },
         ),
@@ -466,21 +439,6 @@ describe("task plan commands (unit)", () => {
       return true;
     });
 
-    const staleTask = mkTask({
-      doc: [
-        "## Summary",
-        "Stale summary",
-        "",
-        "## Plan",
-        "Old plan",
-        "",
-        "## Verify Steps",
-        "Old verify steps",
-        "",
-        "## Notes",
-        "Stale notes",
-      ].join("\n"),
-    });
     let currentTask = mkTask({
       doc: [
         "## Summary",
@@ -497,12 +455,11 @@ describe("task plan commands (unit)", () => {
       ].join("\n"),
     });
     const store = {
-      get: vi.fn().mockResolvedValue(staleTask),
-      patch: vi
+      update: vi
         .fn()
         .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await updater(currentTask);
             return { changed: true, task: currentTask };
           },
         ),
@@ -521,8 +478,7 @@ describe("task plan commands (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(store.get).toHaveBeenCalledTimes(1);
-    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(store.update).toHaveBeenCalledTimes(1);
     expect(currentTask.plan_approval?.state).toBe("pending");
     expect(currentTask.doc_updated_by).toBe("ME");
     expect(currentTask.doc).toMatch(/## Summary\s+Concurrent summary/);
@@ -535,24 +491,8 @@ describe("task plan commands (unit)", () => {
   });
 
   it("cmdTaskPlanSet surfaces semantic plan conflicts from the task store", async () => {
-    const currentTask = mkTask({
-      doc: [
-        "## Summary",
-        "Summary",
-        "",
-        "## Plan",
-        "Old plan",
-        "",
-        "## Verify Steps",
-        "Run checks",
-        "",
-        "## Notes",
-        "n/a",
-      ].join("\n"),
-    });
     const store = {
-      get: vi.fn().mockResolvedValue(currentTask),
-      patch: vi.fn().mockRejectedValue(
+      update: vi.fn().mockRejectedValue(
         new CliError({
           exitCode: 3,
           code: "E_VALIDATION",

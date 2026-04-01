@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603301857-6DJCDV/move-update-check-behind-config-boundary",
+  "created_at": "2026-03-31T12:36:27.788Z",
+  "head_sha": "46cad3237e67cb357481b69097020ea08dffc140",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "e665d82c2fcc0935dfee93ee724d14f5a2d3d23b",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T12:37:15.020Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603301857-6DJCDV",
+  "updated_at": "2026-03-31T12:37:15.020Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

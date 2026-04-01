@@ -16,12 +16,17 @@ import {
 import { cmdScenarioInfoParsed, cmdScenarioListParsed, cmdScenarioRunParsed } from "./scenario.js";
 import { exitCodeForError } from "../cli/exit-codes.js";
 import { parseCommandArgv } from "../cli/spec/parse.js";
-import { captureStdIO, createRecipeArchive } from "../cli/run-cli.test-helpers.js";
+import {
+  captureStdIO,
+  createRecipeArchive,
+  mkGitRepoRoot,
+  writeDefaultConfig,
+} from "../cli/run-cli.test-helpers.js";
 import { CliError } from "../shared/errors.js";
 import { recipesCachePruneSpec } from "./recipes/cache-prune.command.js";
 import { recipesExplainSpec } from "./recipes/explain.command.js";
 import { recipesInfoSpec } from "./recipes/info.command.js";
-import { recipesInstallSpec } from "./recipes/install.command.js";
+import { recipesInstallSpec } from "./recipes/install.spec.js";
 import { recipesListRemoteSpec } from "./recipes/list-remote.command.js";
 import { recipesListSpec } from "./recipes/list.command.js";
 import { recipesRemoveSpec } from "./recipes/remove.command.js";
@@ -321,6 +326,47 @@ export async function installRecipe(opts: {
   } finally {
     io.restore();
   }
+}
+
+export async function installRecipeFixture(opts: { projectDir: string; tags?: string[] }): Promise<{
+  archivePath: string;
+  manifest: Record<string, unknown>;
+  manifestId: string;
+}> {
+  const fixture = await createRecipeArchive({ tags: opts.tags });
+  await installRecipe({ projectDir: opts.projectDir, archivePath: fixture.archivePath });
+  return {
+    archivePath: fixture.archivePath,
+    manifest: fixture.manifest,
+    manifestId: String(fixture.manifest.id),
+  };
+}
+
+export async function createInstalledRecipeProject(
+  opts: {
+    tags?: string[];
+  } = {},
+): Promise<{
+  projectDir: string;
+  archivePath: string;
+  manifest: Record<string, unknown>;
+  manifestId: string;
+}> {
+  const projectDir = await mkGitRepoRoot();
+  await writeDefaultConfig(projectDir);
+  const fixture = await installRecipeFixture({ projectDir, tags: opts.tags });
+  return {
+    projectDir,
+    ...fixture,
+  };
+}
+
+export function resolveInstalledScenarioPath(
+  projectDir: string,
+  recipeId: string,
+  scenarioFile = path.join("scenarios", "recipe-scenario.json"),
+): string {
+  return path.join(projectDir, ".agentplane", "recipes", recipeId, scenarioFile);
 }
 
 export async function runRecipesTest(opts: {

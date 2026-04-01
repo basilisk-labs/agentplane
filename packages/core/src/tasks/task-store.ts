@@ -10,7 +10,7 @@ import {
 } from "./task-artifact-schema.js";
 import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
 import { updateTaskReadmeAtomic } from "./task-readme-io.js";
-import { ensureDocSections, setMarkdownSection, taskDocToSectionMap } from "./task-doc.js";
+import { taskDocToSectionMap } from "./task-doc.js";
 import {
   buildDefaultTaskDoc,
   DEFAULT_TASK_DOC_VERSION,
@@ -19,6 +19,7 @@ import {
   type TaskDocSections,
   type TaskDocVersion,
 } from "./task-doc-contract.js";
+import { applyTaskDocMutations } from "./task-doc-mutation.js";
 import { generateTaskId } from "./task-id.js";
 
 export { validateTaskDocMetadata } from "./task-doc-contract.js";
@@ -183,48 +184,6 @@ export function taskReadmePath(tasksDir: string, taskId: string): string {
   return path.join(tasksDir, taskId, "README.md");
 }
 
-function getLastCommentAuthor(frontmatter: Record<string, unknown>): string | null {
-  const comments = frontmatter.comments;
-  if (!Array.isArray(comments)) return null;
-  const entries: unknown[] = comments;
-  for (let i = entries.length - 1; i >= 0; i -= 1) {
-    const entry = entries[i];
-    if (!isRecord(entry)) continue;
-    const author = entry.author;
-    if (typeof author === "string") {
-      const trimmed = author.trim();
-      if (trimmed) return trimmed;
-    }
-  }
-  return null;
-}
-
-function resolveDocUpdatedBy(
-  frontmatter: Record<string, unknown>,
-  updatedBy?: string | null,
-): string {
-  if (updatedBy != null) {
-    const explicit = updatedBy.trim();
-    if (explicit.length === 0) {
-      throw new Error("doc_updated_by must be a non-empty string");
-    }
-    return explicit;
-  }
-  const lastAuthor = getLastCommentAuthor(frontmatter);
-  if (lastAuthor) return lastAuthor;
-  const existing = frontmatter.doc_updated_by;
-  if (typeof existing === "string") {
-    const trimmed = existing.trim();
-    if (trimmed && trimmed.toLowerCase() !== "agentplane") return trimmed;
-  }
-  const owner = frontmatter.owner;
-  if (typeof owner === "string") {
-    const trimmed = owner.trim();
-    if (trimmed) return trimmed;
-  }
-  return "agentplane";
-}
-
 export async function createTask(opts: {
   cwd: string;
   rootOverride?: string | null;
@@ -306,25 +265,41 @@ export async function setTaskDocSection(opts: {
   await updateTaskReadmeAtomic(readmePath, (parsed) => {
     const docVersion = normalizeTaskDocVersion(parsed.frontmatter.doc_version);
     const requiredSections = [...getTaskDocContract(docVersion).sections];
-    if (!requiredSections.includes(opts.section)) {
-      throw new Error(`Unknown doc section: ${opts.section}`);
-    }
-
-    const updatedBy = resolveDocUpdatedBy(parsed.frontmatter, opts.updatedBy);
+    const mutation = applyTaskDocMutations(
+      {
+        doc: parsed.body,
+        doc_version: docVersion,
+        doc_updated_by: parsed.frontmatter.doc_updated_by,
+        owner: parsed.frontmatter.owner,
+        comments: Array.isArray(parsed.frontmatter.comments)
+          ? parsed.frontmatter.comments
+              .filter((comment) => isRecord(comment))
+              .map((comment) => ({ author: comment.author as string | undefined }))
+          : null,
+      },
+      [
+        {
+          kind: "set-section",
+          section: opts.section,
+          text: opts.text,
+          requiredSections,
+        },
+        {
+          kind: "touch-doc-meta",
+          updatedBy: opts.updatedBy ?? undefined,
+        },
+      ],
+      { now: nowIso() },
+    );
     const nextFrontmatter: Record<string, unknown> = {
       ...parsed.frontmatter,
-      doc_version: docVersion,
-      doc_updated_at: nowIso(),
-      doc_updated_by: updatedBy,
+      doc_version: mutation.doc_version,
+      doc_updated_at: mutation.doc_updated_at,
+      doc_updated_by: mutation.doc_updated_by,
+      sections: mutation.sections,
     };
-    const baseDoc = ensureDocSections(parsed.body, requiredSections);
-    const nextBody = ensureDocSections(
-      setMarkdownSection(baseDoc, opts.section, opts.text),
-      requiredSections,
-    );
-    nextFrontmatter.sections = taskDocToSectionMap(nextBody);
     validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(nextFrontmatter));
-    return { frontmatter: nextFrontmatter, body: nextBody };
+    return { frontmatter: nextFrontmatter, body: mutation.doc };
   });
   return { readmePath };
 }

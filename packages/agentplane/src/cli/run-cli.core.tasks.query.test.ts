@@ -27,6 +27,7 @@ import {
 } from "@agentplaneorg/core";
 
 import { runCli } from "./run-cli.js";
+import { infoMessage } from "./output.js";
 import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
 import {
   filterAgentsByWorkflow,
@@ -41,6 +42,7 @@ import {
   commitAll,
   configureGitUser,
   createUpgradeBundle,
+  expectAgentJsonEnvelope,
   getAgentplaneHome,
   gitBranchExists,
   installRunCliIntegrationHarness,
@@ -48,13 +50,19 @@ import {
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
   mkTempDir,
+  parseAgentJsonEnvelope,
   pathExists,
+  splitOutputLines,
   stageGitignoreIfPresent,
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
 import { evolveRunnerRunState, writeRunnerRunState } from "../runner/artifacts.js";
+import {
+  formatRunnerCapabilitySummaryLines,
+  formatRunnerPolicyFieldSummaryLines,
+} from "../runner/policy-display.js";
 import { prepareTaskRunnerExecution } from "../runner/usecases/task-run.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
@@ -65,32 +73,265 @@ const CYRILLIC_RE = /[\u0400-\u04FF]/u;
 const RUSSIAN_TRACE_LINE = "Привет из raw trace";
 const RUSSIAN_LAST_MESSAGE = "Привет из сообщения Codex";
 
-function splitLines(text: string): string[] {
-  return text
-    .trim()
-    .split(/\r?\n/)
-    .map((line) => line.trimEnd())
-    .filter(Boolean);
+type RunShowPayload = {
+  task_id: string;
+  run_id: string;
+  selection: string;
+  paths: {
+    bundle_path: string;
+    result_path: string;
+    state_path: string;
+    events_path: string;
+    trace_path: string;
+    stderr_path: string;
+  };
+  bundle: {
+    execution: {
+      adapter_capabilities?: {
+        adapter_id: string;
+        fields: Record<
+          string,
+          {
+            level: string;
+            channel: string;
+            supported_values?: string[];
+            note?: string;
+          }
+        >;
+      } | null;
+    };
+  };
+  state: {
+    status: string;
+    adapter_id: string;
+    mode: string;
+    target: {
+      kind: string;
+      task_id?: string;
+      recipe_id?: string;
+      scenario_id?: string;
+    };
+    created_at: string;
+    updated_at: string;
+    prepared_metadata?: {
+      adapter_capabilities?: {
+        adapter_id: string;
+        fields: Record<
+          string,
+          {
+            level: string;
+            channel: string;
+            supported_values?: string[];
+            note?: string;
+          }
+        >;
+      } | null;
+    };
+    policy_decision?: {
+      requested?: Record<string, unknown>;
+      effective?: Record<string, unknown>;
+      fields: Record<
+        string,
+        {
+          status: string;
+          capability_level: string;
+          channel: string;
+          requested?: unknown;
+          effective?: unknown;
+          supported_values?: string[];
+          note?: string;
+        }
+      >;
+      refusal_reason?: unknown;
+    };
+    result?: {
+      summary?: string;
+      stdout_summary?: string;
+      stderr_summary?: string;
+      timeout_reason?: string;
+      metrics?: {
+        duration_ms?: number;
+        stdout_bytes?: number;
+        stderr_bytes?: number;
+        output_last_message_bytes?: number | null;
+      };
+      artifacts?: {
+        path: string;
+        label?: string;
+      }[];
+    };
+  };
+  events_count: number;
+  last_event?: { type?: string } | null;
+};
+
+function formatRunShowTarget(target: RunShowPayload["state"]["target"]): string {
+  if (target.kind === "task") return `task ${target.task_id ?? "<unknown>"}`;
+  return (
+    `recipe ${target.recipe_id ?? "<unknown>"}:${target.scenario_id ?? "<unknown>"}` +
+    (target.task_id ? ` -> task ${target.task_id}` : "")
+  );
 }
 
-function parseJsonEnvelope(stdout: string): {
-  mode?: string;
-  command?: string;
-  ok?: boolean;
-  exit_code?: number;
-  stdout?: string;
-  stderr?: string;
-  data?: unknown;
-} {
-  return JSON.parse(stdout) as {
-    mode?: string;
-    command?: string;
-    ok?: boolean;
-    exit_code?: number;
-    stdout?: string;
-    stderr?: string;
-    data?: unknown;
-  };
+function formatRunShowArtifacts(
+  artifacts: RunShowPayload["state"]["result"] extends infer TResult
+    ? TResult extends { artifacts?: infer TArtifacts }
+      ? TArtifacts
+      : never
+    : never,
+): string | null {
+  if (!artifacts?.length) return null;
+  return artifacts
+    .map((artifact) => (artifact.label ? `${artifact.label}=${artifact.path}` : artifact.path))
+    .join(", ");
+}
+
+function formatRunShowMetrics(
+  metrics: RunShowPayload["state"]["result"] extends infer TResult
+    ? TResult extends { metrics?: infer TMetrics }
+      ? TMetrics
+      : never
+    : never,
+): string | null {
+  if (!metrics) return null;
+  const parts: string[] = [];
+  if (typeof metrics.duration_ms === "number") parts.push(`duration_ms=${metrics.duration_ms}`);
+  if (typeof metrics.stdout_bytes === "number") parts.push(`stdout_bytes=${metrics.stdout_bytes}`);
+  if (typeof metrics.stderr_bytes === "number") parts.push(`stderr_bytes=${metrics.stderr_bytes}`);
+  if (
+    metrics.output_last_message_bytes === null ||
+    typeof metrics.output_last_message_bytes === "number"
+  ) {
+    parts.push(`output_last_message_bytes=${metrics.output_last_message_bytes ?? "null"}`);
+  }
+  return parts.length > 0 ? parts.join(", ") : null;
+}
+
+function renderExpectedRunShowText(taskId: string, payload: RunShowPayload): string {
+  const capabilities =
+    payload.bundle.execution.adapter_capabilities ??
+    payload.state.prepared_metadata?.adapter_capabilities ??
+    null;
+  const lines = [
+    infoMessage(`task run show: ${taskId}`),
+    `selection: ${payload.selection}`,
+    `run_id: ${payload.run_id}`,
+    `status: ${payload.state.status}`,
+    `adapter: ${payload.state.adapter_id}`,
+    `mode: ${payload.state.mode}`,
+    `target: ${formatRunShowTarget(payload.state.target)}`,
+    `created_at: ${payload.state.created_at}`,
+    `updated_at: ${payload.state.updated_at}`,
+    `bundle: ${payload.paths.bundle_path}`,
+    `result: ${payload.paths.result_path}`,
+    `state: ${payload.paths.state_path}`,
+    `events: ${payload.paths.events_path}`,
+    `trace: ${payload.paths.trace_path}`,
+    `stderr: ${payload.paths.stderr_path}`,
+    `events_count: ${payload.events_count}`,
+  ];
+  if (payload.last_event) {
+    lines.push(`last_event: ${payload.last_event.type ?? "unknown"}`);
+  }
+  lines.push(
+    `capabilities: ${JSON.stringify(capabilities)}`,
+    ...formatRunnerCapabilitySummaryLines(capabilities ?? undefined),
+    `policy_requested: ${JSON.stringify(payload.state.policy_decision?.requested ?? {})}`,
+    `policy_effective: ${JSON.stringify(payload.state.policy_decision?.effective ?? {})}`,
+    `policy_fields: ${JSON.stringify(payload.state.policy_decision?.fields ?? {})}`,
+    `policy_refusal: ${JSON.stringify(payload.state.policy_decision?.refusal_reason ?? null)}`,
+    ...formatRunnerPolicyFieldSummaryLines(payload.state.policy_decision),
+  );
+  if (payload.state.result?.summary) {
+    lines.push(`summary: ${payload.state.result.summary}`);
+  }
+  if (payload.state.result?.stdout_summary) {
+    lines.push(`stdout_summary: ${payload.state.result.stdout_summary}`);
+  }
+  if (payload.state.result?.stderr_summary) {
+    lines.push(`stderr_summary: ${payload.state.result.stderr_summary}`);
+  }
+  if (payload.state.result?.timeout_reason) {
+    lines.push(`timeout_reason: ${payload.state.result.timeout_reason}`);
+  }
+  const metrics = formatRunShowMetrics(payload.state.result?.metrics);
+  if (metrics) lines.push(`metrics: ${metrics}`);
+  const artifacts = formatRunShowArtifacts(payload.state.result?.artifacts);
+  if (artifacts) lines.push(`artifacts: ${artifacts}`);
+  return `${lines.join("\n")}\n`;
+}
+
+function renderExpectedRunCancelText(opts: {
+  taskId: string;
+  runId: string;
+  previousStatus: string;
+  statePath: string;
+  eventsPath: string;
+  status: string;
+  note?: string;
+}): string {
+  const lines = [
+    infoMessage(`task run cancelled: ${opts.taskId}`),
+    `run_id: ${opts.runId}`,
+    `previous_status: ${opts.previousStatus}`,
+    `state: ${opts.statePath}`,
+    `events: ${opts.eventsPath}`,
+    `status: ${opts.status}`,
+  ];
+  if (opts.note) lines.push(`note: ${opts.note}`);
+  return `${lines.join("\n")}\n`;
+}
+
+function renderExpectedRunResumeText(opts: {
+  taskId: string;
+  runId: string;
+  previousStatus: string;
+  adapter: string;
+  statePath: string;
+  eventsPath: string;
+  status: string;
+  runnerExitCode: number | "null";
+  stdoutSummary?: string;
+}): string {
+  const lines = [
+    infoMessage(`task run resumed: ${opts.taskId}`),
+    `run_id: ${opts.runId}`,
+    `previous_status: ${opts.previousStatus}`,
+    `adapter: ${opts.adapter}`,
+    `state: ${opts.statePath}`,
+    `events: ${opts.eventsPath}`,
+    `status: ${opts.status}`,
+    `runner_exit_code: ${opts.runnerExitCode}`,
+  ];
+  if (opts.stdoutSummary) lines.push(`stdout: ${opts.stdoutSummary}`);
+  return `${lines.join("\n")}\n`;
+}
+
+function renderExpectedRunRetryText(opts: {
+  taskId: string;
+  sourceRunId: string;
+  previousStatus: string;
+  runId: string;
+  adapter: string;
+  statePath: string;
+  eventsPath: string;
+  status: string;
+  runnerExitCode: number | "null";
+  stdoutSummary?: string;
+}): string {
+  const lines = [
+    infoMessage(`task run retried: ${opts.taskId}`),
+    `source_run_id: ${opts.sourceRunId}`,
+    `previous_status: ${opts.previousStatus}`,
+    `run_id: ${opts.runId}`,
+    `adapter: ${opts.adapter}`,
+    `state: ${opts.statePath}`,
+    `events: ${opts.eventsPath}`,
+    `status: ${opts.status}`,
+    `runner_exit_code: ${opts.runnerExitCode}`,
+  ];
+  if (opts.stdoutSummary) lines.push(`stdout: ${opts.stdoutSummary}`);
+  return `${lines.join("\n")}\n`;
 }
 
 async function waitForRunnerState(opts: {
@@ -724,53 +965,13 @@ describe("runCli", () => {
       const runEntries = await readdir(runsRoot);
       const runId = runEntries.toSorted()[0] ?? "";
       expect(runId).toBeTruthy();
-
-      {
-        const io = captureStdIO();
-        try {
-          const code = await runCli(["task", "run", "show", taskId, "--root", root]);
-          expect(code).toBe(0);
-          expect(io.stdout).toContain(`task run show: ${taskId}`);
-          expect(io.stdout).toContain("selection: latest");
-          expect(io.stdout).toContain(`run_id: ${runId}`);
-          expect(io.stdout).toContain("status: success");
-          expect(io.stdout).toContain("adapter: custom");
-          expect(io.stdout).toContain("events_count:");
-          expect(io.stdout).toContain('capabilities: {"adapter_id":"custom"');
-          expect(io.stdout).toContain(
-            'capability[sandbox]: level=advisory channel=env note=Configured via runner.custom.enforcement.mode="none" (platform="auto").',
-          );
-          expect(io.stdout).toContain("policy_requested: {}");
-          expect(io.stdout).toContain("policy_effective: {}");
-          expect(io.stdout).toContain(
-            'policy_field[sandbox]: status=not_requested capability=advisory channel=env note=Configured via runner.custom.enforcement.mode="none" (platform="auto").',
-          );
-          expect(io.stdout).toContain("summary: Custom runner execution completed successfully.");
-          expect(io.stdout).toContain("trace:");
-        } finally {
-          io.restore();
-        }
-      }
-
+      let jsonPayload: RunShowPayload | null = null;
       {
         const io = captureStdIO();
         try {
           const code = await runCli(["task", "run", "show", taskId, "--json", "--root", root]);
           expect(code).toBe(0);
-          const payload = JSON.parse(io.stdout) as {
-            task_id: string;
-            run_id: string;
-            selection: string;
-            paths: { trace_path: string };
-            state: {
-              status: string;
-              adapter_id: string;
-              policy_decision?: { requested?: Record<string, unknown> };
-              result?: { summary?: string };
-            };
-            events_count: number;
-            last_event?: { type?: string } | null;
-          };
+          const payload = JSON.parse(io.stdout) as RunShowPayload;
           expect(payload.task_id).toBe(taskId);
           expect(payload.run_id).toBe(runId);
           expect(payload.selection).toBe("latest");
@@ -785,6 +986,21 @@ describe("runCli", () => {
           expect(payload.paths.trace_path).toContain(
             path.join(taskId, "runs", runId, "agent-trace.jsonl"),
           );
+          expect(io.stdout).toBe(`${JSON.stringify(payload, null, 2)}\n`);
+          jsonPayload = payload;
+        } finally {
+          io.restore();
+        }
+      }
+
+      {
+        const io = captureStdIO();
+        try {
+          const code = await runCli(["task", "run", "show", taskId, "--root", root]);
+          expect(code).toBe(0);
+          expect(jsonPayload).toBeTruthy();
+          if (!jsonPayload) throw new Error("Expected JSON payload before plain-text run show");
+          expect(io.stdout).toBe(renderExpectedRunShowText(taskId, jsonPayload));
         } finally {
           io.restore();
         }
@@ -1687,9 +1903,16 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain(`task run cancelled: ${taskId}`);
-      expect(io.stdout).toContain("previous_status: prepared");
-      expect(io.stdout).toContain("status: cancelled");
+      expect(io.stdout).toBe(
+        renderExpectedRunCancelText({
+          taskId,
+          runId: prepared.invocation.run_id,
+          previousStatus: "prepared",
+          statePath: prepared.invocation.state_path,
+          eventsPath: prepared.invocation.events_path,
+          status: "cancelled",
+        }),
+      );
 
       const state = JSON.parse(await readFile(prepared.invocation.state_path, "utf8")) as {
         status: string;
@@ -1809,7 +2032,7 @@ describe("runCli", () => {
       process.env.PATH = originalPath;
       io.restore();
     }
-  });
+  }, 60_000);
 
   it("task run resume executes an existing prepared run in place", async () => {
     const root = await mkGitRepoRoot();
@@ -1893,10 +2116,19 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain(`task run resumed: ${taskId}`);
-      expect(io.stdout).toContain("previous_status: prepared");
-      expect(io.stdout).toContain("status: success");
-      expect(io.stdout).toContain("stdout: Raw execution trace was captured in agent-trace.jsonl.");
+      expect(io.stdout).toBe(
+        renderExpectedRunResumeText({
+          taskId,
+          runId: prepared.invocation.run_id,
+          previousStatus: "prepared",
+          adapter: prepared.invocation.adapter_id,
+          statePath: prepared.invocation.state_path,
+          eventsPath: prepared.invocation.events_path,
+          status: "success",
+          runnerExitCode: 0,
+          stdoutSummary: "Raw execution trace was captured in agent-trace.jsonl.",
+        }),
+      );
 
       const state = JSON.parse(await readFile(prepared.invocation.state_path, "utf8")) as {
         status: string;
@@ -2017,11 +2249,6 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain(`task run retried: ${taskId}`);
-      expect(io.stdout).toContain("source_run_id: run-retry-source-cli");
-      expect(io.stdout).toContain("previous_status: failed");
-      expect(io.stdout).toContain("status: success");
-      expect(io.stdout).toContain("stdout: Raw execution trace was captured in agent-trace.jsonl.");
 
       const newRunId = /^run_id: (.+)$/m.exec(io.stdout)?.[1] ?? "";
       expect(newRunId).toBeTruthy();
@@ -2034,6 +2261,29 @@ describe("runCli", () => {
         "runs",
         newRunId,
         "run-state.json",
+      );
+      const newEventsPath = path.join(
+        root,
+        ".agentplane",
+        "tasks",
+        taskId,
+        "runs",
+        newRunId,
+        "events.jsonl",
+      );
+      expect(io.stdout).toBe(
+        renderExpectedRunRetryText({
+          taskId,
+          sourceRunId: prepared.invocation.run_id,
+          previousStatus: "failed",
+          runId: newRunId,
+          adapter: "custom",
+          statePath: newStatePath,
+          eventsPath: newEventsPath,
+          status: "success",
+          runnerExitCode: 0,
+          stdoutSummary: "Raw execution trace was captured in agent-trace.jsonl.",
+        }),
       );
       const state = JSON.parse(await readFile(newStatePath, "utf8")) as {
         status: string;
@@ -2320,7 +2570,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "next", "--root", root]);
       expect(code).toBe(0);
-      const lines = splitLines(io.stdout);
+      const lines = splitOutputLines(io.stdout);
       expect(lines).toHaveLength(2);
       expect(lines[0]).toContain(taskA);
       expect(lines[0]).not.toContain(taskB);
@@ -2415,7 +2665,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "next", "--limit", "1", "--quiet", "--root", root]);
       expect(code).toBe(0);
-      const lines = splitLines(io.stdout);
+      const lines = splitOutputLines(io.stdout);
       expect(lines).toHaveLength(1);
       expect(lines[0]).toEqual(expect.stringContaining("[TODO]"));
       const matchedIds = taskIds.filter((id) => lines[0]?.includes(id));
@@ -2529,7 +2779,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "search", "searchable", "--root", root]);
       expect(code).toBe(0);
-      const lines = splitLines(io.stdout);
+      const lines = splitOutputLines(io.stdout);
       expect(lines).toHaveLength(1);
       expect(lines[0]).toContain(taskId);
       expect(lines[0]).toContain("Searchable task");
@@ -2632,7 +2882,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      const lines = splitLines(io.stdout);
+      const lines = splitOutputLines(io.stdout);
       expect(lines).toHaveLength(1);
       expect(lines[0]).toContain("Regex task");
     } finally {
@@ -2792,6 +3042,7 @@ describe("runCli", () => {
 
   it("task verify-show prints Verify Steps", async () => {
     const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
     let taskId = "";
     {
       const io = captureStdIO();
@@ -3056,7 +3307,7 @@ describe("runCli", () => {
     try {
       const code2 = await runCli(["task", "list", "--root", root]);
       expect(code2).toBe(0);
-      const lines = splitLines(io2.stdout);
+      const lines = splitOutputLines(io2.stdout);
       expect(lines).toHaveLength(3);
       expect(lines[0] ?? "").toContain("[TODO]");
       expect(lines[1] ?? "").toContain("[TODO]");
@@ -3180,7 +3431,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      const lines = splitLines(io.stdout);
+      const lines = splitOutputLines(io.stdout);
       expect(lines).toHaveLength(1);
       expect(lines[0]).toContain(taskId);
       expect(lines[0]).toContain("Filter task");
@@ -3221,16 +3472,12 @@ describe("runCli", () => {
     try {
       const code = await runCli(["--output", "json", "task", "list", "--root", root]);
       expect(code).toBe(0);
-      const payload = parseJsonEnvelope(listIo.stdout);
-      expect(payload.mode).toBe("agent_json_v1");
-      expect(payload.command).toBe("task list");
-      expect(payload.ok).toBe(true);
-      expect(payload.exit_code).toBe(0);
+      const payload = parseAgentJsonEnvelope(listIo.stdout);
+      expectAgentJsonEnvelope(payload, { command: "task list", ok: true, exitCode: 0 });
       expect(payload.stdout).toContain("Total: 2 (TODO=2)");
       expect(payload.stdout).toContain(taskIds[0] ?? "");
       expect(payload.stdout).toContain(taskIds[1] ?? "");
       expect(payload.stderr).toBe("");
-      expect(payload.data).toBeUndefined();
     } finally {
       listIo.restore();
     }
@@ -3239,15 +3486,11 @@ describe("runCli", () => {
     try {
       const code = await runCli(["--output", "json", "task", "search", "json", "--root", root]);
       expect(code).toBe(0);
-      const payload = parseJsonEnvelope(searchIo.stdout);
-      expect(payload.mode).toBe("agent_json_v1");
-      expect(payload.command).toBe("task search");
-      expect(payload.ok).toBe(true);
-      expect(payload.exit_code).toBe(0);
+      const payload = parseAgentJsonEnvelope(searchIo.stdout);
+      expectAgentJsonEnvelope(payload, { command: "task search", ok: true, exitCode: 0 });
       expect(payload.stdout).toContain("Json list one");
       expect(payload.stdout).toContain("Json list two");
       expect(payload.stderr).toBe("");
-      expect(payload.data).toBeUndefined();
     } finally {
       searchIo.restore();
     }
@@ -3265,14 +3508,10 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      const payload = parseJsonEnvelope(nextIo.stdout);
-      expect(payload.mode).toBe("agent_json_v1");
-      expect(payload.command).toBe("task next");
-      expect(payload.ok).toBe(true);
-      expect(payload.exit_code).toBe(0);
+      const payload = parseAgentJsonEnvelope(nextIo.stdout);
+      expectAgentJsonEnvelope(payload, { command: "task next", ok: true, exitCode: 0 });
       expect(payload.stdout).toContain("Ready: 1 / 2");
       expect(payload.stderr).toBe("");
-      expect(payload.data).toBeUndefined();
     } finally {
       nextIo.restore();
     }

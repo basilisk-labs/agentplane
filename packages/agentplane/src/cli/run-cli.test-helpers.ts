@@ -6,7 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { gzipSync } from "node:zlib";
-import { afterAll, afterEach, beforeAll, beforeEach, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core";
 
@@ -159,6 +159,51 @@ export function captureStdIO() {
   };
 }
 
+export type AgentJsonEnvelope = {
+  schema_version?: number;
+  mode?: string;
+  command?: string;
+  ok?: boolean;
+  exit_code?: number;
+  stdout?: string;
+  stderr?: string;
+  data?: unknown;
+};
+
+export function splitOutputLines(text: string): string[] {
+  return text
+    .trim()
+    .split(/\r?\n/)
+    .map((line) => line.trimEnd())
+    .filter(Boolean);
+}
+
+export function parseAgentJsonEnvelope(stdout: string): AgentJsonEnvelope {
+  return JSON.parse(stdout) as AgentJsonEnvelope;
+}
+
+export function expectAgentJsonEnvelope(
+  payload: AgentJsonEnvelope,
+  opts: {
+    command: string;
+    ok: boolean;
+    exitCode: number;
+    hasData?: boolean;
+  },
+): void {
+  expect(payload.schema_version).toBe(1);
+  expect(payload.mode).toBe("agent_json_v1");
+  expect(payload.command).toBe(opts.command);
+  expect(payload.ok).toBe(opts.ok);
+  expect(payload.exit_code).toBe(opts.exitCode);
+  expect(Object.keys(payload)).toEqual(
+    opts.hasData
+      ? ["schema_version", "mode", "command", "ok", "exit_code", "stdout", "stderr", "data"]
+      : ["schema_version", "mode", "command", "ok", "exit_code", "stdout", "stderr"],
+  );
+  expect(Object.hasOwn(payload, "data")).toBe(opts.hasData ?? false);
+}
+
 export function silenceStdIO(): () => void {
   if (stdioSilenceDepth === 0) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -185,6 +230,7 @@ export function stubTaskBackend(overrides: Partial<TaskBackend> = {}): TaskBacke
     capabilities: {
       canonical_source: "local",
       projection: "canonical",
+      projection_read_mode: "fallback",
       reads_from_projection_by_default: false,
       writes_task_readmes: true,
       supports_task_revisions: true,

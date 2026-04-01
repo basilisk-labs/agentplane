@@ -7,9 +7,8 @@ import { resolveProject, type ResolvedProject } from "@agentplaneorg/core";
 import { mapCoreError } from "../../../cli/error-map.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { fileExists } from "../../../cli/fs-utils.js";
-import { emptyStateMessage } from "../../../cli/output.js";
+import { createCliEmitter, emptyStateMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
-import { formatJsonBlock } from "../../recipes/impl/format.js";
 import {
   listResolvedRecipeScenarios,
   readProjectInstalledRecipes,
@@ -19,6 +18,7 @@ import {
 } from "../../recipes.js";
 
 const execFileAsync = promisify(execFile);
+const output = createCliEmitter();
 
 type RecipeToolRuntime = "node" | "bash";
 
@@ -28,12 +28,6 @@ type RecipeToolInvocation = {
 };
 
 type ScenarioCliSelection = Awaited<ReturnType<typeof resolveRecipeScenarioSelection>>;
-
-function printJsonSection(label: string, value: unknown): void {
-  const payload = formatJsonBlock(value, "  ");
-  if (!payload) return;
-  process.stdout.write(`${label}:\n${payload}\n`);
-}
 
 function buildScenarioNotFoundError(recipeId: string, scenarioId: string): CliError {
   return new CliError({
@@ -231,17 +225,15 @@ export async function cmdScenarioListParsed(opts: {
     });
 
     if (entries.length === 0) {
-      process.stdout.write(
-        `${emptyStateMessage("scenarios", "Install a recipe to add scenarios.")}\n`,
-      );
+      output.line(emptyStateMessage("scenarios", "Install a recipe to add scenarios."));
       return 0;
     }
 
     for (const entry of entries) {
       const compatibilityLabel = entry.compatibility.ok ? "compatible" : "incompatible";
-      process.stdout.write(
+      output.line(
         `${entry.recipe_id}:${entry.scenario_id} - ${entry.scenario_summary} ` +
-          `[mode=${entry.run_profile.mode}] [${compatibilityLabel}]\n`,
+          `[mode=${entry.run_profile.mode}] [${compatibilityLabel}]`,
       );
     }
     return 0;
@@ -268,27 +260,25 @@ export async function cmdScenarioInfoParsed(opts: {
       scenarioId: opts.scenarioId,
     });
 
-    process.stdout.write(`Scenario: ${selection.recipe_id}:${selection.scenario_id}\n`);
-    process.stdout.write(
-      `Recipe: ${selection.recipe_name} (${selection.recipe_id}@${selection.recipe_version})\n`,
+    output.line(`Scenario: ${selection.recipe_id}:${selection.scenario_id}`);
+    output.line(
+      `Recipe: ${selection.recipe_name} (${selection.recipe_id}@${selection.recipe_version})`,
     );
-    process.stdout.write(`Summary: ${selection.scenario_summary}\n`);
+    output.line(`Summary: ${selection.scenario_summary}`);
     if (selection.scenario_description) {
-      process.stdout.write(`Description: ${selection.scenario_description}\n`);
+      output.line(`Description: ${selection.scenario_description}`);
     }
-    printJsonSection("Use when", selection.use_when);
+    output.jsonSection("Use when", selection.use_when);
     if (selection.avoid_when.length > 0) {
-      printJsonSection("Avoid when", selection.avoid_when);
+      output.jsonSection("Avoid when", selection.avoid_when);
     }
-    printJsonSection("Run profile", selection.run_profile);
-    printJsonSection("Task template", selection.task_template);
-    process.stdout.write(
-      `Scenario file: ${path.relative(project.gitRoot, selection.scenario_file)}\n`,
-    );
+    output.jsonSection("Run profile", selection.run_profile);
+    output.jsonSection("Task template", selection.task_template);
+    output.line(`Scenario file: ${path.relative(project.gitRoot, selection.scenario_file)}`);
     if (selection.compatibility.ok) {
-      process.stdout.write("Compatibility: satisfied\n");
+      output.line("Compatibility: satisfied");
     } else {
-      printJsonSection("Compatibility failures", selection.compatibility.failures);
+      output.jsonSection("Compatibility failures", selection.compatibility.failures);
     }
     return 0;
   } catch (err) {
@@ -371,24 +361,22 @@ export async function cmdScenarioRunParsed(opts: {
     const scenarioDefinition = await readValidatedScenarioDefinition({ selection });
     const validationChecks = await validateScenarioRecipeFiles({ entry, selection });
 
-    process.stdout.write(`Prepared run plan: ${selection.recipe_id}:${selection.scenario_id}\n`);
-    process.stdout.write(
-      `Recipe: ${selection.recipe_name} (${selection.recipe_id}@${selection.recipe_version})\n`,
+    output.line(`Prepared run plan: ${selection.recipe_id}:${selection.scenario_id}`);
+    output.line(
+      `Recipe: ${selection.recipe_name} (${selection.recipe_id}@${selection.recipe_version})`,
     );
-    process.stdout.write(`Goal: ${scenarioDefinition.goal}\n`);
-    process.stdout.write(
-      `Scenario file: ${path.relative(project.gitRoot, selection.scenario_file)}\n`,
-    );
-    printJsonSection("Run profile", selection.run_profile);
-    printJsonSection("Selection reasons", selection.selection_reasons);
-    printJsonSection("Validation", [
+    output.line(`Goal: ${scenarioDefinition.goal}`);
+    output.line(`Scenario file: ${path.relative(project.gitRoot, selection.scenario_file)}`);
+    output.jsonSection("Run profile", selection.run_profile);
+    output.jsonSection("Selection reasons", selection.selection_reasons);
+    output.jsonSection("Validation", [
       `scenario definition ok: ${path.relative(project.gitRoot, selection.scenario_file)}`,
       ...validationChecks,
     ]);
-    process.stdout.write("Status: preview only; no task created and no runner executed.\n");
-    process.stdout.write(
+    output.line("Status: preview only; no task created and no runner executed.");
+    output.line(
       `Next: use \`agentplane scenario execute ${selection.recipe_id}:${selection.scenario_id}\` ` +
-        "to materialize and run this scenario.\n",
+        "to materialize and run this scenario.",
     );
     return 0;
   } catch (err) {

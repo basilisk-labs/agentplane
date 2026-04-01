@@ -3,10 +3,14 @@ import { promisify } from "node:util";
 
 import type { AgentplaneConfig } from "@agentplaneorg/core";
 
-import { warnMessage } from "../../../cli/output.js";
+import { infoMessage, warnMessage } from "../../../cli/output.js";
+import { formatCommentBodyForCommit } from "../../../shared/comment-format.js";
+import { readDirectWorkLock } from "../../../shared/direct-work-lock.js";
 import { CliError } from "../../../shared/errors.js";
 import { parseGitLogHashSubject } from "../../../shared/git-log.js";
 import type { TaskData, TaskEvent } from "../../../backends/task-backend.js";
+import { commitFromComment } from "../../guard/index.js";
+import type { CommandContext } from "../../shared/task-backend.js";
 import { requiresVerificationByPrimary, toStringArray } from "./tags.js";
 
 const execFileAsync = promisify(execFile);
@@ -103,6 +107,13 @@ export function ensureCommentCommitAllowed(opts: {
   }
 }
 
+export function emitTransitionWarnings(warnings: readonly string[], quiet: boolean): void {
+  if (quiet) return;
+  for (const warning of new Set(warnings.filter((item) => item.trim().length > 0))) {
+    process.stderr.write(`${warnMessage(warning)}\n`);
+  }
+}
+
 export function resolveCommentCommitWarning(opts: {
   enabled: boolean;
   config: AgentplaneConfig;
@@ -148,6 +159,90 @@ export function requireStructuredComment(body: string, prefix: string, minChars:
       message: `Comment body must be at least ${minChars} characters`,
     });
   }
+}
+
+export function prepareTaskTransitionComment(opts: {
+  body?: string;
+  enabled: boolean;
+  config: AgentplaneConfig;
+}): {
+  formattedComment: string | null;
+  commentBody: string | undefined;
+} {
+  if (typeof opts.body !== "string") {
+    return { formattedComment: null, commentBody: undefined };
+  }
+  const formattedComment = opts.enabled ? formatCommentBodyForCommit(opts.body, opts.config) : null;
+  return {
+    formattedComment,
+    commentBody: formattedComment ?? opts.body,
+  };
+}
+
+export async function resolveTaskTransitionExecutorAgent(opts: {
+  ctx: Pick<CommandContext, "config" | "resolvedProject">;
+  taskId: string;
+  author?: string;
+}): Promise<string | undefined> {
+  const author = opts.author?.trim() ?? "";
+  if (opts.ctx.config.workflow_mode !== "direct") {
+    return author || undefined;
+  }
+  const lock = await readDirectWorkLock(opts.ctx.resolvedProject.agentplaneDir);
+  const lockAgent = lock?.task_id === opts.taskId ? (lock.agent?.trim() ?? "") : "";
+  return lockAgent || author || undefined;
+}
+
+export async function runTaskTransitionCommentCommit(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  primaryTag: string;
+  author?: string;
+  statusFrom?: string;
+  statusTo?: string;
+  commentBody: string;
+  formattedComment: string | null;
+  emoji: string;
+  allow: string[];
+  autoAllow: boolean;
+  allowTasks: boolean;
+  requireClean: boolean;
+  quiet: boolean;
+  progressMessage?: string;
+  resolveExecutorAgent?: boolean;
+}): Promise<{ hash: string; message: string; staged: string[] }> {
+  if (opts.progressMessage && !opts.quiet) {
+    process.stdout.write(`${infoMessage(opts.progressMessage)}\n`);
+  }
+  const executorAgent = opts.resolveExecutorAgent
+    ? await resolveTaskTransitionExecutorAgent({
+        ctx: opts.ctx,
+        taskId: opts.taskId,
+        author: opts.author,
+      })
+    : undefined;
+  return await commitFromComment({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    taskId: opts.taskId,
+    primaryTag: opts.primaryTag,
+    executorAgent,
+    author: opts.author,
+    statusFrom: opts.statusFrom,
+    statusTo: opts.statusTo,
+    commentBody: opts.commentBody,
+    formattedComment: opts.formattedComment,
+    emoji: opts.emoji,
+    allow: opts.allow,
+    autoAllow: opts.autoAllow,
+    allowTasks: opts.allowTasks,
+    requireClean: opts.requireClean,
+    quiet: opts.quiet,
+    config: opts.ctx.config,
+  });
 }
 
 export async function readHeadCommit(cwd: string): Promise<{ hash: string; message: string }> {

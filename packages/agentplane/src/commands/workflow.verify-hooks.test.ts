@@ -23,7 +23,7 @@ import {
   writeDefaultConfig,
 } from "../cli/run-cli.test-helpers.js";
 import { loadCommandContext } from "./shared/task-backend.js";
-import { verifySpec } from "./verify.command.js";
+import { verifySpec } from "./verify.spec.js";
 import { cmdVerifyParsed } from "./task/verify-record.js";
 
 const execFileAsync = promisify(execFile);

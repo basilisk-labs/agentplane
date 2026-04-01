@@ -5,9 +5,7 @@ import { renderTaskReadme } from "@agentplaneorg/core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { LocalBackend, toTaskSummary, type TaskData, type TaskSummary } from "./task-backend.js";
-import { installTaskBackendTestHarness, makeTempDir } from "./task-backend.test-helpers.js";
-
-installTaskBackendTestHarness();
+import { mkTempDir, silenceStdIO } from "../cli/run-cli.test-helpers.js";
 
 type QuerySummaryView = Pick<
   TaskSummary,
@@ -42,12 +40,16 @@ function pickQuerySummary(task: TaskSummary): QuerySummaryView {
 
 describe("LocalBackend", () => {
   let tempDir = "";
+  let restoreStdIO: (() => void) | null = null;
 
   beforeEach(async () => {
-    tempDir = await makeTempDir();
+    restoreStdIO = silenceStdIO();
+    tempDir = await mkTempDir();
   });
 
   afterEach(async () => {
+    restoreStdIO?.();
+    restoreStdIO = null;
     if (tempDir) {
       await rm(tempDir, { recursive: true, force: true });
     }
@@ -436,6 +438,48 @@ describe("LocalBackend", () => {
     expect(repaired).not.toContain("stale body");
   });
 
+  it("reads canonical doc from frontmatter sections when the README body is stale", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const taskId = "202601300010-CANON";
+    await mkdir(path.join(tempDir, taskId), { recursive: true });
+    await writeFile(
+      path.join(tempDir, taskId, "README.md"),
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "Title",
+          description: "Desc",
+          status: "TODO",
+          priority: "med",
+          owner: "tester",
+          revision: 1,
+          depends_on: [],
+          tags: ["tag"],
+          verify: [],
+          plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-01-30T00:00:00Z",
+          doc_updated_by: "tester",
+          sections: {
+            Summary: "Canonical summary",
+            Plan: "Canonical plan",
+            Findings: "",
+          },
+        },
+        "## Summary\n\nstale body\n",
+      ),
+      "utf8",
+    );
+
+    const doc = await backend.getTaskDoc(taskId);
+
+    expect(doc).toContain("Canonical summary");
+    expect(doc).toContain("Canonical plan");
+    expect(doc).not.toContain("stale body");
+  });
+
   it("repairs projection drift through normalizeTasks", async () => {
     const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
     const taskId = "202601300011-ABCD";
@@ -717,6 +761,75 @@ describe("LocalBackend", () => {
     await expect(
       backend.setTaskDoc(taskId, "## Summary\n\nUpdated", "tester", { expectedRevision: 2 }),
     ).rejects.toThrow(/Task revision changed concurrently/u);
+  });
+
+  it("rejects setTaskDoc when the expected current doc no longer matches", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const taskId = "202601300022-ABCD";
+    await backend.writeTask({
+      id: taskId,
+      title: "Task",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      revision: 3,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      doc: ["## Summary", "", "Current", "", "## Plan", "", "Plan", ""].join("\n"),
+    });
+
+    await expect(
+      backend.setTaskDoc(
+        taskId,
+        ["## Summary", "", "Updated", "", "## Plan", "", "Plan", ""].join("\n"),
+        "tester",
+        {
+          expectedCurrentDoc: ["## Summary", "", "Stale", "", "## Plan", "", "Plan", ""].join("\n"),
+        },
+      ),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_readme_conflict", task_id: taskId },
+    });
+  });
+
+  it("rejects setTaskDoc when the expected current section text no longer matches", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const taskId = "202601300023-ABCD";
+    await backend.writeTask({
+      id: taskId,
+      title: "Task",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      revision: 3,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      doc: ["## Summary", "", "Current", "", "## Plan", "", "Plan", ""].join("\n"),
+    });
+
+    await expect(
+      backend.setTaskDoc(
+        taskId,
+        ["## Summary", "", "Updated", "", "## Plan", "", "Plan", ""].join("\n"),
+        "tester",
+        {
+          expectedCurrentText: "Stale",
+          expectedSection: "Summary",
+        },
+      ),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        reason_code: "task_readme_section_conflict",
+        task_id: taskId,
+        section: "Summary",
+      },
+    });
   });
 
   it("generates task ids and enforces minimum length", async () => {

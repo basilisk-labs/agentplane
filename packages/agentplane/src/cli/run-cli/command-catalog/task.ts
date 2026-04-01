@@ -51,7 +51,7 @@ import { entry, type CommandEntry } from "./shared.js";
 export const TASK_COMMANDS = [
   entry(taskSpec, () => import("../../../commands/task/task.command.js").then((m) => m.runTask), {
     needsProject: false,
-    needsConfig: false,
+    needsLoadedConfig: false,
     needsTaskContext: false,
   }),
   entry(
@@ -59,7 +59,7 @@ export const TASK_COMMANDS = [
     () => import("../../../commands/task/handoff.command.js").then((m) => m.runTaskHandoff),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -179,7 +179,7 @@ export const TASK_COMMANDS = [
     () => import("../../../commands/task/doc.command.js").then((m) => m.runTaskDoc),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -229,7 +229,7 @@ export const TASK_COMMANDS = [
     () => import("../../../commands/task/plan.command.js").then((m) => m.runTaskPlan),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -259,7 +259,7 @@ export const TASK_COMMANDS = [
     () => import("../../../commands/task/verify.command.js").then((m) => m.runTaskVerify),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),

@@ -2,6 +2,7 @@ import {
   extractTaskDoc as extractTaskDocCore,
   mergeTaskDoc as mergeTaskDocCore,
   normalizeTaskDocVersion as normalizeTaskDocVersionCore,
+  resolveTaskDocUpdatedBy,
 } from "@agentplaneorg/core";
 
 import { isRecord } from "../../../shared/guards.js";
@@ -29,19 +30,13 @@ function normalizeUpdatedBy(value: unknown): string {
   return trimmed;
 }
 
-function lastCommentAuthor(comments: unknown): string | null {
+function toTaskDocMutationComments(comments: unknown): { author?: string }[] | null {
   if (!Array.isArray(comments)) return null;
   const entries: unknown[] = comments;
-  for (let i = entries.length - 1; i >= 0; i -= 1) {
-    const entry = entries[i];
-    if (!isRecord(entry)) continue;
-    const author = entry.author;
-    if (typeof author === "string") {
-      const trimmed = author.trim();
-      if (trimmed) return trimmed;
-    }
-  }
-  return null;
+  return entries.flatMap((entry) => {
+    if (!isRecord(entry)) return [];
+    return [{ author: typeof entry.author === "string" ? entry.author : undefined }];
+  });
 }
 
 export function resolveDocUpdatedByFromFrontmatter(
@@ -49,29 +44,32 @@ export function resolveDocUpdatedByFromFrontmatter(
   updatedBy: string | undefined,
   fallback: string,
 ): string {
-  if (updatedBy !== undefined) {
-    const explicit = normalizeUpdatedBy(updatedBy);
-    if (explicit) return explicit;
-  }
-  const author = lastCommentAuthor(frontmatter.comments);
-  if (author) return author;
-  const existing = normalizeUpdatedBy(frontmatter.doc_updated_by);
-  if (existing) return existing;
-  const owner = normalizeUpdatedBy(frontmatter.owner);
-  if (owner) return owner;
+  const explicit = updatedBy === undefined ? undefined : normalizeUpdatedBy(updatedBy);
+  const resolved = resolveTaskDocUpdatedBy(
+    {
+      comments: toTaskDocMutationComments(frontmatter.comments),
+      doc_updated_by: frontmatter.doc_updated_by,
+      owner: frontmatter.owner,
+    },
+    explicit ?? null,
+  );
+  if (resolved.toLowerCase() !== DEFAULT_DOC_UPDATED_BY.toLowerCase()) return resolved;
   const fallbackValue = normalizeUpdatedBy(fallback);
-  return fallbackValue || fallback;
+  return fallbackValue.length > 0 ? fallbackValue : fallback;
 }
 
 export function resolveDocUpdatedByFromTask(task: TaskData, fallback: string): string {
-  const author = lastCommentAuthor(task.comments);
-  if (author) return author;
-  const existing = normalizeUpdatedBy(task.doc_updated_by);
-  if (existing) return existing;
-  const owner = normalizeUpdatedBy(task.owner);
-  if (owner) return owner;
+  const resolved = resolveTaskDocUpdatedBy(
+    {
+      comments: toTaskDocMutationComments(task.comments),
+      doc_updated_by: task.doc_updated_by,
+      owner: task.owner,
+    },
+    null,
+  );
+  if (resolved.toLowerCase() !== DEFAULT_DOC_UPDATED_BY.toLowerCase()) return resolved;
   const fallbackValue = normalizeUpdatedBy(fallback);
-  return fallbackValue || fallback;
+  return fallbackValue.length > 0 ? fallbackValue : fallback;
 }
 
 export function normalizeDocVersion(value: unknown, fallback: 2 | 3 = DOC_VERSION): 2 | 3 {

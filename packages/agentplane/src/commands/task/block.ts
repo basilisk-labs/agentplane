@@ -1,29 +1,17 @@
 import { mapBackendError } from "../../cli/error-map.js";
-import { successMessage, warnMessage } from "../../cli/output.js";
-import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
+import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 
-import { commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
-import {
-  loadCommandContext,
-  loadTaskFromContext,
-  type CommandContext,
-} from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore, mutateTaskStore } from "../shared/task-store.js";
-
-import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import {
-  buildTaskStatusTransition,
+  applyTaskStatusTransitionCommand,
   defaultCommitEmojiForStatus,
-  ensureCommentCommitAllowed,
-  resolveCommentCommitWarning,
-  ensureStatusTransitionAllowed,
   nowIso,
+  prepareTaskTransitionComment,
   requireStructuredComment,
-  resolvePrimaryTag,
-  toStringArray,
+  runTaskTransitionCommentCommit,
 } from "./shared.js";
 
 export async function cmdBlock(opts: {
@@ -60,118 +48,56 @@ export async function cmdBlock(opts: {
 
     const { prefix, min_chars: minChars } = ctx.config.tasks.comments.blocked;
     requireStructuredComment(opts.body, prefix, minChars);
-
-    const useStore = backendIsLocalFileBackend(ctx);
-    const store = useStore ? getTaskStore(ctx) : null;
-    const task = useStore
-      ? await store!.get(opts.taskId)
-      : await loadTaskFromContext({ ctx, taskId: opts.taskId });
-
-    const currentStatus = String(task.status || "TODO").toUpperCase();
-    if (!useStore) {
-      ensureStatusTransitionAllowed({
-        currentStatus,
-        nextStatus: "BLOCKED",
-        force: opts.force,
-      });
-      ensureCommentCommitAllowed({
-        enabled: opts.commitFromComment,
-        config: ctx.config,
-        action: "block",
-        confirmed: opts.confirmStatusCommit,
-        quiet: opts.quiet,
-        statusFrom: currentStatus,
-        statusTo: "BLOCKED",
-      });
-    }
-
-    const formattedComment = opts.commitFromComment
-      ? formatCommentBodyForCommit(opts.body, ctx.config)
-      : null;
-    const commentBody = formattedComment ?? opts.body;
+    const preparedComment = prepareTaskTransitionComment({
+      body: opts.body,
+      enabled: opts.commitFromComment,
+      config: ctx.config,
+    });
+    const commentBody = preparedComment.commentBody ?? opts.body;
 
     const at = nowIso();
-    let currentStatusForCommit = currentStatus;
-    let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
-    let deferredWarnings: string[] = [];
-    await (useStore
-      ? mutateTaskStore(store!, opts.taskId, (current) => {
-          deferredWarnings = [];
-          const currentStatus = String(current.status || "TODO").toUpperCase();
-          currentStatusForCommit = currentStatus;
-          primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
-          ensureStatusTransitionAllowed({
-            currentStatus,
-            nextStatus: "BLOCKED",
-            force: opts.force,
-          });
-          const commitWarning = resolveCommentCommitWarning({
-            enabled: opts.commitFromComment,
-            config: ctx.config,
-            action: "block",
-            confirmed: opts.confirmStatusCommit,
-            quiet: opts.quiet,
-            statusFrom: currentStatus,
-            statusTo: "BLOCKED",
-          });
-          if (commitWarning) deferredWarnings.push(commitWarning);
-          return buildTaskStatusTransition({
-            task: current,
-            at,
-            toStatus: "BLOCKED",
-            eventAuthor: opts.author,
-            updatedBy: opts.author,
-            note: commentBody,
-            comment: { author: opts.author, body: commentBody },
-          }).intents;
-        })
-      : ctx.taskBackend.writeTask(
-          buildTaskStatusTransition({
-            task,
-            at,
-            toStatus: "BLOCKED",
-            eventAuthor: opts.author,
-            updatedBy: opts.author,
-            note: commentBody,
-            comment: { author: opts.author, body: commentBody },
-          }).nextTask,
-        ));
-
-    if (!opts.quiet) {
-      for (const warning of new Set(deferredWarnings)) {
-        process.stderr.write(`${warnMessage(warning)}\n`);
-      }
-    }
+    const transition = await applyTaskStatusTransitionCommand({
+      ctx,
+      taskId: opts.taskId,
+      quiet: opts.quiet,
+      build: () => ({
+        at,
+        toStatus: "BLOCKED",
+        eventAuthor: opts.author,
+        updatedBy: opts.author,
+        note: commentBody,
+        comment: { author: opts.author, body: commentBody },
+        force: opts.force,
+        dependencyPolicy: { kind: "none" },
+        commentCommitPolicy: {
+          enabled: opts.commitFromComment,
+          action: "block",
+          confirmed: opts.confirmStatusCommit,
+          quiet: opts.quiet,
+        },
+      }),
+    });
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {
-      const mode = ctx.config.workflow_mode;
-      let executorAgent = opts.author;
-      if (mode === "direct") {
-        const lock = await readDirectWorkLock(ctx.resolvedProject.agentplaneDir);
-        const lockAgent = lock?.task_id === opts.taskId ? (lock.agent?.trim() ?? "") : "";
-        if (lockAgent) executorAgent = lockAgent;
-      }
-
-      commitInfo = await commitFromComment({
+      commitInfo = await runTaskTransitionCommentCommit({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
-        primaryTag: primaryTagForCommit,
-        executorAgent,
+        primaryTag: transition.primaryTag,
         author: opts.author,
-        statusFrom: currentStatusForCommit,
+        statusFrom: transition.execution.currentStatus,
         statusTo: "BLOCKED",
         commentBody: opts.body,
-        formattedComment,
+        formattedComment: preparedComment.formattedComment,
         emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("BLOCKED"),
         allow: opts.commitAllow,
         autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
         allowTasks: opts.commitAllowTasks,
         requireClean: opts.commitRequireClean,
         quiet: opts.quiet,
-        config: ctx.config,
+        resolveExecutorAgent: true,
       });
     }
 

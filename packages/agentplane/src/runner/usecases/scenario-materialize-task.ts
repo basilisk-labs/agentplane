@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { setMarkdownSection, taskDocToSectionMap } from "@agentplaneorg/core";
+import { setMarkdownSection } from "@agentplaneorg/core";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
@@ -9,6 +9,7 @@ import {
   buildDefaultVerifyStepsSection,
   defaultTaskDocV3,
 } from "../../commands/task/doc-template.js";
+import { buildTaskDocState } from "../../shared/task-doc-state.js";
 import { dedupeStrings } from "../../shared/strings.js";
 import { createRunnerRunId } from "../run-id.js";
 import type { RunnerRecipeContext } from "../types.js";
@@ -113,8 +114,14 @@ export function buildMaterializedRecipeTask(opts: {
   created_at?: string;
 }): TaskData {
   const created_at = opts.created_at ?? nowIso();
-  const doc = seedRecipeTaskDoc(opts.envelope);
   const taskTemplate = opts.envelope.scenario.task_template;
+  const docState = buildTaskDocState({
+    doc: seedRecipeTaskDoc(opts.envelope),
+    owner: taskTemplate.owner,
+    updatedBy: taskTemplate.owner,
+    version: TASK_DOC_VERSION_V3,
+    updatedAt: created_at,
+  });
   return {
     id: opts.task_id,
     title: taskTemplate.title,
@@ -135,12 +142,12 @@ export function buildMaterializedRecipeTask(opts: {
     verify: dedupeStrings(taskTemplate.verify ?? []),
     comments: [],
     events: [],
-    doc_version: TASK_DOC_VERSION_V3,
-    doc_updated_at: created_at,
-    doc_updated_by: taskTemplate.owner,
+    doc_version: docState.doc_version,
+    doc_updated_at: docState.doc_updated_at,
+    doc_updated_by: docState.doc_updated_by,
     id_source: "generated",
-    doc,
-    sections: taskDocToSectionMap(doc),
+    doc: docState.doc,
+    sections: docState.sections,
   };
 }
 

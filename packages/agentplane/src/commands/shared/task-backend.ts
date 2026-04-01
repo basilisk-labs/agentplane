@@ -1,5 +1,6 @@
 import path from "node:path";
 import {
+  resolveTaskDocUpdatedBy,
   parseTaskReadme,
   taskDocToSectionMap,
   validateTaskReadmeFrontmatter,
@@ -13,6 +14,7 @@ import { CliError } from "../../shared/errors.js";
 import {
   loadTaskBackend,
   taskRecordToData,
+  type TaskBackend,
   toTaskSummary,
   type TaskData,
   type TaskSummary,
@@ -37,10 +39,6 @@ export type CommandContext = {
   git: GitContext;
 
   memo: CommandMemo;
-
-  // Back-compat aliases while refactors are in flight.
-  resolved: CommandContext["resolvedProject"];
-  backend: CommandContext["taskBackend"];
 };
 
 function normalizeDocUpdatedBy(value?: string): string {
@@ -51,13 +49,16 @@ function normalizeDocUpdatedBy(value?: string): string {
 }
 
 export function resolveDocUpdatedBy(task: TaskData, author?: string): string {
-  const fromAuthor = normalizeDocUpdatedBy(author);
-  if (fromAuthor) return fromAuthor;
-  const fromTask = normalizeDocUpdatedBy(
-    typeof task.doc_updated_by === "string" ? task.doc_updated_by : undefined,
+  return normalizeDocUpdatedBy(
+    resolveTaskDocUpdatedBy(
+      {
+        comments: task.comments ?? null,
+        doc_updated_by: task.doc_updated_by,
+        owner: task.owner,
+      },
+      author,
+    ),
   );
-  if (fromTask) return fromTask;
-  return normalizeDocUpdatedBy(typeof task.owner === "string" ? task.owner : undefined);
 }
 
 export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
@@ -126,8 +127,6 @@ export async function loadCommandContext(opts: {
     backendConfigPath,
     git: new GitContext({ gitRoot: resolved.gitRoot }),
     memo: {},
-    resolved,
-    backend,
   };
 }
 
@@ -238,9 +237,30 @@ export async function loadBackendTask(opts: {
   };
 }
 
+export async function writeTasksOrFallback(
+  backend: Pick<TaskBackend, "writeTask" | "writeTasks">,
+  tasks: readonly TaskData[],
+): Promise<void> {
+  if (tasks.length === 0) return;
+  if (backend.writeTasks) {
+    await backend.writeTasks([...tasks]);
+    return;
+  }
+  for (const task of tasks) {
+    await backend.writeTask(task);
+  }
+}
+
 export async function listTaskSummariesMemo(ctx: CommandContext): Promise<TaskSummary[]> {
   ctx.memo.taskProjection ??= (async () => {
-    if (ctx.taskBackend.listProjectionTasks) {
+    if (ctx.taskBackend.capabilities?.projection_read_mode === "native") {
+      if (!ctx.taskBackend.listProjectionTasks) {
+        throw new CliError({
+          exitCode: 1,
+          code: "E_INTERNAL",
+          message: `Backend ${ctx.taskBackend.id} advertises native projection reads but does not implement listProjectionTasks()`,
+        });
+      }
       return await ctx.taskBackend.listProjectionTasks();
     }
     const tasks = await ctx.taskBackend.listTasks();
@@ -250,10 +270,10 @@ export async function listTaskSummariesMemo(ctx: CommandContext): Promise<TaskSu
 }
 
 export async function listTaskProjection(ctx: CommandContext): Promise<TaskSummary[] | null> {
-  if (ctx.taskBackend.listProjectionTasks) {
-    return await ctx.taskBackend.listProjectionTasks();
+  if (ctx.taskBackend.capabilities?.projection_read_mode === "native") {
+    return await listTaskSummariesMemo(ctx);
   }
-  if (ctx.taskBackend.capabilities.reads_from_projection_by_default) {
+  if (ctx.taskBackend.capabilities?.reads_from_projection_by_default) {
     return await listTaskSummariesMemo(ctx);
   }
   return null;

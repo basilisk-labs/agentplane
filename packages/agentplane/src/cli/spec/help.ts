@@ -1,4 +1,5 @@
 import type { CommandHandler, CommandSpec } from "./spec.js";
+import { createCliEmitter } from "../output.js";
 import {
   renderCommandHelpJson,
   renderCommandHelpText,
@@ -6,6 +7,8 @@ import {
 } from "./help-render.js";
 import { suggestOne } from "./suggest.js";
 import { usageError } from "./errors.js";
+
+const output = createCliEmitter();
 
 export type HelpParsed = {
   cmd: string[];
@@ -51,9 +54,9 @@ export function makeHelpHandler(registry: HelpRegistryView): CommandHandler<Help
     if (p.cmd.length === 0) {
       if (p.json) {
         const out = specs.map((s) => renderCommandHelpJson(s));
-        process.stdout.write(`${JSON.stringify(out, null, 2)}\n`);
+        output.json(out);
       } else {
-        process.stdout.write(`${renderRegistryHelpText(specs)}\n`);
+        output.line(renderRegistryHelpText(specs));
       }
       return Promise.resolve(0);
     }
@@ -72,7 +75,7 @@ export function makeHelpHandler(registry: HelpRegistryView): CommandHandler<Help
     }
 
     if (p.json) {
-      process.stdout.write(`${JSON.stringify(renderCommandHelpJson(match.spec), null, 2)}\n`);
+      output.json(renderCommandHelpJson(match.spec));
       return Promise.resolve(0);
     }
 
@@ -80,7 +83,7 @@ export function makeHelpHandler(registry: HelpRegistryView): CommandHandler<Help
       compact: p.compact,
       includeHeader: true,
     });
-    process.stdout.write(`${text}\n`);
+    output.line(text);
     return Promise.resolve(0);
   };
 }

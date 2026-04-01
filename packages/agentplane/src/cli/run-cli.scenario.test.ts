@@ -1,17 +1,21 @@
-import { chmod, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { defaultConfig, readTask } from "@agentplaneorg/core";
+import {
+  createInstalledRecipeProject,
+  installRecipeFixture,
+  resolveInstalledScenarioPath,
+} from "../commands/recipes.test-helpers.js";
+import { writeExecutableFile } from "../test-helpers/fs.js";
 
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
-  createRecipeArchive,
   mkGitRepoRoot,
   pathExists,
   registerAgentplaneHome,
-  runCliSilent,
   silenceStdIO,
   writeConfig,
   writeDefaultConfig,
@@ -31,12 +35,7 @@ afterEach(() => {
 
 describe("runCli scenario", () => {
   it("scenario list and info use resolver-backed manifest descriptors", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const { archivePath, manifest } = await createRecipeArchive();
-    const manifestId = String(manifest.id);
-
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+    const { projectDir: root, manifestId } = await createInstalledRecipeProject();
 
     const ioList = captureStdIO();
     try {
@@ -70,21 +69,8 @@ describe("runCli scenario", () => {
   });
 
   it("scenario run validates scenario definition files", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const { archivePath, manifest } = await createRecipeArchive();
-    const manifestId = String(manifest.id);
-
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
-
-    const scenarioPath = path.join(
-      root,
-      ".agentplane",
-      "recipes",
-      manifestId,
-      "scenarios",
-      "recipe-scenario.json",
-    );
+    const { projectDir: root, manifestId } = await createInstalledRecipeProject();
+    const scenarioPath = resolveInstalledScenarioPath(root, manifestId);
     const scenario = JSON.parse(await readFile(scenarioPath, "utf8")) as Record<string, unknown>;
     delete scenario.goal;
     await writeFile(scenarioPath, JSON.stringify(scenario, null, 2), "utf8");
@@ -106,21 +92,8 @@ describe("runCli scenario", () => {
   });
 
   it("scenario info rejects invalid task_template definitions with a precise error", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const { archivePath, manifest } = await createRecipeArchive();
-    const manifestId = String(manifest.id);
-
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
-
-    const scenarioPath = path.join(
-      root,
-      ".agentplane",
-      "recipes",
-      manifestId,
-      "scenarios",
-      "recipe-scenario.json",
-    );
+    const { projectDir: root, manifestId } = await createInstalledRecipeProject();
+    const scenarioPath = resolveInstalledScenarioPath(root, manifestId);
     const scenario = JSON.parse(await readFile(scenarioPath, "utf8")) as Record<string, unknown>;
     scenario.task_template = {
       title: "Broken template",
@@ -146,12 +119,7 @@ describe("runCli scenario", () => {
   });
 
   it("scenario run prints a prepared run plan without executing tools", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const { archivePath, manifest } = await createRecipeArchive();
-    const manifestId = String(manifest.id);
-
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+    const { projectDir: root, manifestId } = await createInstalledRecipeProject();
 
     const io = captureStdIO();
     try {
@@ -181,44 +149,33 @@ describe("runCli scenario", () => {
   });
 
   it("scenario execute materializes a task and runs the shared runner with recipe context", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const { archivePath, manifest } = await createRecipeArchive();
-    const manifestId = String(manifest.id);
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+    const { projectDir: root, manifestId } = await createInstalledRecipeProject();
 
     const fakeBinDir = path.join(root, "bin");
-    const fakeCodexPath = path.join(fakeBinDir, "codex");
-    await mkdir(fakeBinDir, { recursive: true });
-    await writeFile(
-      fakeCodexPath,
-      [
-        "#!/bin/sh",
-        'out=""',
-        'while [ "$#" -gt 0 ]; do',
-        '  case "$1" in',
-        "    exec|--json|-|danger-full-access|never)",
-        "      shift",
-        "      ;;",
-        "    --output-last-message|-C|-s|-a)",
-        '      if [ "$1" = "--output-last-message" ]; then out="$2"; fi',
-        "      shift 2",
-        "      ;;",
-        "    *)",
-        "      shift",
-        "      ;;",
-        "  esac",
-        "done",
-        "cat >/dev/null",
-        String.raw`printf '{"type":"session.started"}\n'`,
-        String.raw`printf '{"schema_version":1,"status":"success","summary":"scenario execute success","capabilities_used":["codex.exec"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
-        String.raw`printf 'scenario execute final message\n' > "$out"`,
-        String.raw`printf 'scenario execute stdout\n'`,
-        "exit 0",
-      ].join("\n"),
-      "utf8",
-    );
-    await chmod(fakeCodexPath, 0o755);
+    await writeExecutableFile(root, path.join("bin", "codex"), [
+      "#!/bin/sh",
+      'out=""',
+      'while [ "$#" -gt 0 ]; do',
+      '  case "$1" in',
+      "    exec|--json|-|danger-full-access|never)",
+      "      shift",
+      "      ;;",
+      "    --output-last-message|-C|-s|-a)",
+      '      if [ "$1" = "--output-last-message" ]; then out="$2"; fi',
+      "      shift 2",
+      "      ;;",
+      "    *)",
+      "      shift",
+      "      ;;",
+      "  esac",
+      "done",
+      "cat >/dev/null",
+      String.raw`printf '{"type":"session.started"}\n'`,
+      String.raw`printf '{"schema_version":1,"status":"success","summary":"scenario execute success","capabilities_used":["codex.exec"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+      String.raw`printf 'scenario execute final message\n' > "$out"`,
+      String.raw`printf 'scenario execute stdout\n'`,
+      "exit 0",
+    ]);
 
     const io = captureStdIO();
     const originalPath = process.env.PATH;
@@ -312,38 +269,29 @@ describe("runCli scenario", () => {
       command: ["custom-runner"],
     };
     await writeConfig(root, config);
-    const { archivePath, manifest } = await createRecipeArchive();
-    const manifestId = String(manifest.id);
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+    const { manifestId } = await installRecipeFixture({ projectDir: root });
 
     const fakeBinDir = path.join(root, "bin");
-    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
-    await mkdir(fakeBinDir, { recursive: true });
-    await writeFile(
-      fakeRunnerPath,
-      [
-        "#!/bin/sh",
-        "node <<'NODE'",
-        'const fs = require("node:fs");',
-        "const out = {",
-        "  recipe_id: process.env.AGENTPLANE_RECIPE_ID ?? null,",
-        "  scenario_id: process.env.AGENTPLANE_SCENARIO_ID ?? null,",
-        "  sandbox: process.env.AGENTPLANE_RECIPE_SANDBOX ?? null,",
-        '  writes_artifacts_to: JSON.parse(process.env.AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO ?? "[]"),',
-        '  run_profile: JSON.parse(process.env.AGENTPLANE_RECIPE_RUN_PROFILE ?? "{}"),',
-        "};",
-        "fs.writeFileSync(",
-        '  process.env.AGENTPLANE_RUNNER_RUN_DIR + "/recipe-env.json",',
-        "  JSON.stringify(out, null, 2),",
-        ");",
-        "NODE",
-        String.raw`printf '{"schema_version":1,"summary":"custom scenario ok","capabilities_used":["custom.recipe"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
-        "cat >/dev/null",
-        "exit 0",
-      ].join("\n"),
-      "utf8",
-    );
-    await chmod(fakeRunnerPath, 0o755);
+    await writeExecutableFile(root, path.join("bin", "custom-runner"), [
+      "#!/bin/sh",
+      "node <<'NODE'",
+      'const fs = require("node:fs");',
+      "const out = {",
+      "  recipe_id: process.env.AGENTPLANE_RECIPE_ID ?? null,",
+      "  scenario_id: process.env.AGENTPLANE_SCENARIO_ID ?? null,",
+      "  sandbox: process.env.AGENTPLANE_RECIPE_SANDBOX ?? null,",
+      '  writes_artifacts_to: JSON.parse(process.env.AGENTPLANE_RECIPE_WRITES_ARTIFACTS_TO ?? "[]"),',
+      '  run_profile: JSON.parse(process.env.AGENTPLANE_RECIPE_RUN_PROFILE ?? "{}"),',
+      "};",
+      "fs.writeFileSync(",
+      '  process.env.AGENTPLANE_RUNNER_RUN_DIR + "/recipe-env.json",',
+      "  JSON.stringify(out, null, 2),",
+      ");",
+      "NODE",
+      String.raw`printf '{"schema_version":1,"summary":"custom scenario ok","capabilities_used":["custom.recipe"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+      "cat >/dev/null",
+      "exit 0",
+    ]);
 
     const io = captureStdIO();
     const originalPath = process.env.PATH;
@@ -395,11 +343,7 @@ describe("runCli scenario", () => {
   });
 
   it("scenario execute fails before spawn when adapter capabilities cannot enforce declared policy", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const { archivePath, manifest } = await createRecipeArchive();
-    const manifestId = String(manifest.id);
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+    const { projectDir: root, manifestId } = await createInstalledRecipeProject();
 
     const manifestPath = path.join(root, ".agentplane", "recipes", manifestId, "manifest.json");
     const manifestData = JSON.parse(await readFile(manifestPath, "utf8")) as {
@@ -476,9 +420,7 @@ describe("runCli scenario", () => {
       command: ["custom-runner"],
     };
     await writeConfig(root, config);
-    const { archivePath, manifest } = await createRecipeArchive();
-    const manifestId = String(manifest.id);
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+    const { manifestId } = await installRecipeFixture({ projectDir: root });
 
     const manifestPath = path.join(root, ".agentplane", "recipes", manifestId, "manifest.json");
     const manifestData = JSON.parse(await readFile(manifestPath, "utf8")) as {
@@ -534,24 +476,15 @@ describe("runCli scenario", () => {
       command: ["custom-runner"],
     };
     await writeConfig(root, config);
-    const { archivePath, manifest } = await createRecipeArchive();
-    const manifestId = String(manifest.id);
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+    const { manifestId } = await installRecipeFixture({ projectDir: root });
 
     const fakeBinDir = path.join(root, "bin");
-    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
-    await mkdir(fakeBinDir, { recursive: true });
-    await writeFile(
-      fakeRunnerPath,
-      [
-        "#!/bin/sh",
-        String.raw`printf '{"schema_version":1,"summary":"bad artifact scope","artifacts":[{"path":"reports/../tmp/out.txt","label":"report"}],"evidence":{"evidence_paths":["/tmp/out.log"]}}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
-        "cat >/dev/null",
-        "exit 0",
-      ].join("\n"),
-      "utf8",
-    );
-    await chmod(fakeRunnerPath, 0o755);
+    await writeExecutableFile(root, path.join("bin", "custom-runner"), [
+      "#!/bin/sh",
+      String.raw`printf '{"schema_version":1,"summary":"bad artifact scope","artifacts":[{"path":"reports/../tmp/out.txt","label":"report"}],"evidence":{"evidence_paths":["/tmp/out.log"]}}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+      "cat >/dev/null",
+      "exit 0",
+    ]);
 
     const io = captureStdIO();
     const originalPath = process.env.PATH;
@@ -594,21 +527,8 @@ describe("runCli scenario", () => {
   });
 
   it("scenario run rejects missing scenario definition files", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const { archivePath, manifest } = await createRecipeArchive();
-    const manifestId = String(manifest.id);
-
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
-
-    const scenarioPath = path.join(
-      root,
-      ".agentplane",
-      "recipes",
-      manifestId,
-      "scenarios",
-      "recipe-scenario.json",
-    );
+    const { projectDir: root, manifestId } = await createInstalledRecipeProject();
+    const scenarioPath = resolveInstalledScenarioPath(root, manifestId);
     await rm(scenarioPath, { force: true });
 
     const io = captureStdIO();

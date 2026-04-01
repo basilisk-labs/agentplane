@@ -1,0 +1,11 @@
+ .agentplane/tasks/202603311331-7GA03B/README.md    | 58 ++++++++++----
+ .../tasks/202603311331-7GA03B/pr/diffstat.txt      | 11 +++
+ .agentplane/tasks/202603311331-7GA03B/pr/meta.json | 12 +++
+ .agentplane/tasks/202603311331-7GA03B/pr/review.md | 39 ++++++++++
+ .../tasks/202603311331-7GA03B/pr/verify.log        |  0
+ packages/agentplane/src/commands/task/block.ts     | 74 ++++++------------
+ .../agentplane/src/commands/task/set-status.ts     | 90 ++++++++--------------
+ packages/agentplane/src/commands/task/shared.ts    |  1 +
+ .../src/commands/task/shared/transition-command.ts | 69 +++++++++++++++++
+ packages/agentplane/src/commands/task/start.ts     | 81 +++++++------------
+ 10 files changed, 260 insertions(+), 175 deletions(-)

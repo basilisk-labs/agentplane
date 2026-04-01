@@ -1,15 +1,10 @@
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import {
-  directSubcommandNames,
+  loadDirectSubcommandNames,
   parseGroupCommand,
   throwGroupCommandUsage,
   type GroupCommandParsed,
 } from "../../cli/group-command.js";
-import { guardCleanSpec } from "./clean.command.js";
-import { guardCommitSpec } from "./commit.command.js";
-import { guardSuggestAllowSpec } from "./suggest-allow.command.js";
-
-const GUARD_CHILD_SPECS = [guardCommitSpec, guardCleanSpec, guardSuggestAllowSpec] as const;
 
 export const guardSpec: CommandSpec<GroupCommandParsed> = {
   id: ["guard"],
@@ -20,10 +15,10 @@ export const guardSpec: CommandSpec<GroupCommandParsed> = {
   parse: (raw) => parseGroupCommand(raw),
 };
 
-export const runGuard: CommandHandler<GroupCommandParsed> = (_ctx, p) => {
+export const runGuard: CommandHandler<GroupCommandParsed> = async (_ctx, p) => {
   throwGroupCommandUsage({
     spec: guardSpec,
     cmd: p.cmd,
-    subcommands: directSubcommandNames(["guard"], GUARD_CHILD_SPECS),
+    subcommands: await loadDirectSubcommandNames(["guard"]),
   });
 };

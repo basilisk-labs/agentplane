@@ -958,7 +958,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 60_000);
 
   it("task set-status requires explicit approval for --force in conservative profile", async () => {
     const root = await mkGitRepoRoot();

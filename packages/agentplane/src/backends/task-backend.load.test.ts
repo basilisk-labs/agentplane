@@ -10,13 +10,12 @@ import {
   loadTaskBackend,
   type TaskData,
 } from "./task-backend.js";
-import { installTaskBackendTestHarness, makeTempDir } from "./task-backend.test-helpers.js";
-
-installTaskBackendTestHarness();
+import { mkTempDir, silenceStdIO } from "../cli/run-cli.test-helpers.js";
 
 describe("loadTaskBackend", () => {
   let tempDir = "";
   let originalEnv: NodeJS.ProcessEnv = {};
+  let restoreStdIO: (() => void) | null = null;
   const redmineEnvKeys = [
     "AGENTPLANE_REDMINE_URL",
     "AGENTPLANE_REDMINE_API_KEY",
@@ -39,7 +38,8 @@ describe("loadTaskBackend", () => {
   ] as const;
 
   beforeEach(async () => {
-    tempDir = await makeTempDir();
+    restoreStdIO = silenceStdIO();
+    tempDir = await mkTempDir();
     originalEnv = { ...process.env };
     for (const key of redmineEnvKeys) {
       delete process.env[key];
@@ -48,6 +48,8 @@ describe("loadTaskBackend", () => {
   });
 
   afterEach(async () => {
+    restoreStdIO?.();
+    restoreStdIO = null;
     process.env = originalEnv;
     if (tempDir) {
       await rm(tempDir, { recursive: true, force: true });
@@ -58,6 +60,7 @@ describe("loadTaskBackend", () => {
     const result = await loadTaskBackend({ cwd: tempDir });
     expect(result.backendId).toBe("local");
     expect(result.backend).toBeInstanceOf(LocalBackend);
+    expect(result.backend.capabilities.projection_read_mode).toBe("native");
     expect(result.backend.capabilities.supports_task_revisions).toBe(true);
     expect(result.backend.capabilities.supports_revision_guarded_writes).toBe(true);
   });
@@ -90,6 +93,7 @@ describe("loadTaskBackend", () => {
     const result = await loadTaskBackend({ cwd: tempDir });
     expect(result.backendId).toBe("redmine");
     expect(result.backend).toBeInstanceOf(RedmineBackend);
+    expect(result.backend.capabilities.projection_read_mode).toBe("native");
     expect(result.backend.capabilities.supports_task_revisions).toBe(false);
     expect(result.backend.capabilities.supports_revision_guarded_writes).toBe(false);
     expect(process.env.AGENTPLANE_REDMINE_API_KEY).toBe("preserve");

@@ -1,6 +1,6 @@
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import {
-  directSubcommandNames,
+  loadDirectSubcommandNames,
   parseGroupCommand,
   throwGroupCommandUsage,
   type GroupCommandParsed,
@@ -134,11 +134,11 @@ export const prNoteSpec: CommandSpec<PrNoteParsed> = {
   }),
 };
 
-function runPrRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
+async function runPrRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   throwGroupCommandUsage({
     spec: prSpec,
     cmd: p.cmd,
-    subcommands: directSubcommandNames(["pr"], [prOpenSpec, prUpdateSpec, prCheckSpec, prNoteSpec]),
+    subcommands: await loadDirectSubcommandNames(["pr"]),
     command: "pr",
   });
 }

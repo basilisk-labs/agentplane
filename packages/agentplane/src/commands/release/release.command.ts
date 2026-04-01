@@ -1,14 +1,10 @@
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import {
-  directSubcommandNames,
+  loadDirectSubcommandNames,
   parseGroupCommand,
   throwGroupCommandUsage,
   type GroupCommandParsed,
 } from "../../cli/group-command.js";
-import { releaseApplySpec } from "./apply.command.js";
-import { releasePlanSpec } from "./plan.command.js";
-
-const RELEASE_CHILD_SPECS = [releaseApplySpec, releasePlanSpec] as const;
 
 export const releaseSpec: CommandSpec<GroupCommandParsed> = {
   id: ["release"],
@@ -19,10 +15,10 @@ export const releaseSpec: CommandSpec<GroupCommandParsed> = {
   parse: (raw) => parseGroupCommand(raw),
 };
 
-export const runRelease: CommandHandler<GroupCommandParsed> = (_ctx, p) => {
+export const runRelease: CommandHandler<GroupCommandParsed> = async (_ctx, p) => {
   throwGroupCommandUsage({
     spec: releaseSpec,
     cmd: p.cmd,
-    subcommands: directSubcommandNames(["release"], RELEASE_CHILD_SPECS),
+    subcommands: await loadDirectSubcommandNames(["release"]),
   });
 };

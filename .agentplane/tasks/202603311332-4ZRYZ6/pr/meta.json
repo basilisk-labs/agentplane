@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603311332-4ZRYZ6/prune-shared-fixtures",
+  "created_at": "2026-03-31T19:30:53.761Z",
+  "head_sha": "9a9892f8182db735ec4f13e0e8cb507150ce0c78",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "60b49a3ca2d628837c8282d7f5c0b16c4701d4d6",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T19:32:07.379Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603311332-4ZRYZ6",
+  "updated_at": "2026-03-31T19:32:07.379Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

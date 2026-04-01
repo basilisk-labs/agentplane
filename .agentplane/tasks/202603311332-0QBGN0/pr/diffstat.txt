@@ -1,0 +1,10 @@
+ .agentplane/tasks/202603311332-0QBGN0/README.md    |  58 +-
+ .../tasks/202603311332-0QBGN0/pr/diffstat.txt      |   0
+ .agentplane/tasks/202603311332-0QBGN0/pr/meta.json |  12 +
+ .agentplane/tasks/202603311332-0QBGN0/pr/review.md |  22 +
+ .../tasks/202603311332-0QBGN0/pr/verify.log        |   0
+ packages/agentplane/src/commands/upgrade.ts        | 645 ++-------------------
+ .../agentplane/src/commands/upgrade/materialize.ts | 215 +++++++
+ packages/agentplane/src/commands/upgrade/plan.ts   | 261 +++++++++
+ packages/agentplane/src/commands/upgrade/policy.ts | 203 +++++++
+ 9 files changed, 808 insertions(+), 608 deletions(-)

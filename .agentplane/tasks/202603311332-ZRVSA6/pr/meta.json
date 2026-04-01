@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603311332-ZRVSA6/shared-cli-output-helpers",
+  "created_at": "2026-03-31T19:08:11.988Z",
+  "head_sha": "7c3bbfcd7a3d46fafea981b6dc14a1c80fab9544",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "bf3508e1dacfc931c3838dbf4a08c63b1907d21e",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T19:09:52.546Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603311332-ZRVSA6",
+  "updated_at": "2026-03-31T19:09:52.546Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -37,6 +37,7 @@ import {
   captureStdIO,
   cleanGitEnv,
   commitAll,
+  expectAgentJsonEnvelope,
   configureGitUser,
   createUpgradeBundle,
   getAgentplaneHome,
@@ -47,6 +48,7 @@ import {
   mkGitRepoRootWithBranch,
   mkTempDir,
   pathExists,
+  parseAgentJsonEnvelope,
   stageGitignoreIfPresent,
   stubTaskBackend,
   writeConfig,
@@ -123,23 +125,16 @@ describe("runCli", () => {
     try {
       const code = await runCli(["--output", "json", "task", "--help"]);
       expect(code).toBe(0);
-      const payload = JSON.parse(io.stdout) as {
-        mode?: string;
-        command?: string;
-        ok?: boolean;
-        exit_code?: number;
-        stdout?: string;
-        stderr?: string;
-        data?: unknown;
-      };
-      expect(payload.mode).toBe("agent_json_v1");
-      expect(payload.command).toBe("help");
-      expect(payload.ok).toBe(true);
-      expect(payload.exit_code).toBe(0);
+      const payload = parseAgentJsonEnvelope(io.stdout);
+      expectAgentJsonEnvelope(payload, {
+        command: "help",
+        ok: true,
+        exitCode: 0,
+        hasData: false,
+      });
       expect(payload.stdout).toContain("task - Task lifecycle and task-store commands.");
       expect(payload.stdout).toContain("Usage:");
       expect(payload.stderr).toBe("");
-      expect(payload.data).toBeUndefined();
     } finally {
       io.restore();
     }
@@ -215,6 +210,40 @@ describe("runCli", () => {
       const code = await runCli(["task", "--help", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("agentplane task <subcommand> [args] [options]");
+      expect(process.env[marker]).toBeUndefined();
+    } finally {
+      delete process.env[marker];
+      io.restore();
+    }
+  });
+
+  it("does not load .env for ide sync when dispatch only needs project metadata", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, "AGENTS.md"), "# Agents\n\nRules go here.\n", "utf8");
+    await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "agents", "CODER.json"),
+      JSON.stringify(
+        {
+          id: "CODER",
+          role: "Implement approved task scope with the smallest coherent diff.",
+          description: "Task-scoped implementation role.",
+        },
+        null,
+        2,
+      ) + "\n",
+      "utf8",
+    );
+    const marker = "AGENTPLANE_TEST_SKIP_DOTENV_FOR_IDE_SYNC";
+    delete process.env[marker];
+    await writeFile(path.join(root, ".env"), `${marker}=from-dotenv\n`, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["ide", "sync", "--ide", "cursor", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(".cursor/rules/agentplane.mdc");
       expect(process.env[marker]).toBeUndefined();
     } finally {
       delete process.env[marker];
@@ -605,6 +634,25 @@ describe("runCli", () => {
     }
   });
 
+  it("does not load .env for unknown commands before usage guidance", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const marker = "AGENTPLANE_TEST_SKIP_DOTENV_FOR_UNKNOWN";
+    delete process.env[marker];
+    await writeFile(path.join(root, ".env"), `${marker}=from-dotenv\n`, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Unknown command: nope");
+      expect(process.env[marker]).toBeUndefined();
+    } finally {
+      delete process.env[marker];
+      io.restore();
+    }
+  });
+
   it("renders task namespace help instead of treating task as an unknown command", async () => {
     const io = captureStdIO();
     try {
@@ -690,25 +738,20 @@ describe("runCli", () => {
     try {
       const code = await runCli(["--output", "json", "config", "show", "--root", root]);
       expect(code).toBe(0);
-      const payload = JSON.parse(io.stdout) as {
-        schema_version?: number;
-        mode?: string;
-        command?: string;
-        ok?: boolean;
-        exit_code?: number;
-        stdout?: string;
-        stderr?: string;
-        data?: Record<string, unknown>;
-      };
-      expect(payload.schema_version).toBe(1);
-      expect(payload.mode).toBe("agent_json_v1");
-      expect(payload.command).toBe("config show");
-      expect(payload.ok).toBe(true);
-      expect(payload.exit_code).toBe(0);
+      const payload = parseAgentJsonEnvelope(io.stdout);
+      expectAgentJsonEnvelope(payload, {
+        command: "config show",
+        ok: true,
+        exitCode: 0,
+        hasData: true,
+      });
       expect(payload.stderr).toBe("");
-      expect(typeof payload.data?.workflow_mode).toBe("string");
+      expect(typeof (payload.data as { workflow_mode?: unknown } | undefined)?.workflow_mode).toBe(
+        "string",
+      );
       expect(payload.stdout).toBe(JSON.stringify(payload.data, null, 2));
       expect(JSON.parse(payload.stdout ?? "")).toEqual(payload.data);
+      expect(io.stdout).toBe(`${JSON.stringify(payload, null, 2)}\n`);
       expect(io.stderr).toBe("");
     } finally {
       io.restore();
@@ -728,7 +771,14 @@ describe("runCli", () => {
         },
       });
       expect(code).toBe(7);
-      expect(JSON.parse(io.stdout)).toEqual({
+      const payload = parseAgentJsonEnvelope(io.stdout);
+      expectAgentJsonEnvelope(payload, {
+        command: "demo command",
+        ok: false,
+        exitCode: 7,
+        hasData: true,
+      });
+      expect(payload).toEqual({
         schema_version: 1,
         mode: "agent_json_v1",
         command: "demo command",
@@ -741,6 +791,42 @@ describe("runCli", () => {
         },
       });
       expect(io.stderr).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("runWithOutputMode keeps stdout/stderr pass-through behavior outside the structured collector", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runWithOutputMode({
+        mode: "json",
+        command: "passthrough demo",
+        run: () => {
+          process.stdout.write("inside stdout\n");
+          process.stderr.write("inside stderr\n");
+          return Promise.resolve(0);
+        },
+      });
+      expect(code).toBe(0);
+
+      process.stdout.write("outside stdout\n");
+      process.stderr.write("outside stderr\n");
+
+      const outsideStdout = "outside stdout\n";
+      const outsideStdoutIndex = io.stdout.indexOf(outsideStdout);
+      const hasOutsideStdout = outsideStdoutIndex !== -1;
+      const payloadText = hasOutsideStdout
+        ? io.stdout.slice(0, outsideStdoutIndex).trimEnd()
+        : io.stdout;
+      const payload = JSON.parse(payloadText) as {
+        stdout?: string;
+        stderr?: string;
+      };
+      expect(payload.stdout).toBe("inside stdout");
+      expect(payload.stderr).toBe("inside stderr");
+      expect(io.stdout.slice(outsideStdoutIndex)).toBe(outsideStdout);
+      expect(io.stderr).toBe("outside stderr\n");
     } finally {
       io.restore();
     }
@@ -887,7 +973,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["config", "show", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain('"schema_version": 1');
+      expect(io.stdout).toBe(`${JSON.stringify(defaultConfig(), null, 2)}\n`);
     } finally {
       io.restore();
     }

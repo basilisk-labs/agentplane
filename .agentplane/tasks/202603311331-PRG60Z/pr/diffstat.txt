@@ -1,0 +1,14 @@
+ .agentplane/tasks/202603311331-PRG60Z/README.md    |  58 +++++++--
+ .../tasks/202603311331-PRG60Z/pr/diffstat.txt      |  10 ++
+ .agentplane/tasks/202603311331-PRG60Z/pr/meta.json |  12 ++
+ .agentplane/tasks/202603311331-PRG60Z/pr/review.md |  38 ++++++
+ .../tasks/202603311331-PRG60Z/pr/verify.log        |   0
+ .../src/cli/run-cli.core.tasks.query.test.ts       | 131 +++++++++++++++++++--
+ .../src/commands/task/handoff-record.command.ts    |  29 +++--
+ .../src/commands/task/handoff-show.command.ts      |  47 +++++---
+ .../src/commands/task/reclaim.command.ts           |  21 ++--
+ .../src/commands/task/run-cancel.command.ts        |  23 ++--
+ .../src/commands/task/run-resume.command.ts        |  31 +++--
+ .../src/commands/task/run-retry.command.ts         |  33 ++++--
+ .../src/commands/task/run-show.command.ts          |  95 ++++++++-------
+ 13 files changed, 393 insertions(+), 135 deletions(-)

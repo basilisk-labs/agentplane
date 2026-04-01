@@ -28,6 +28,7 @@ import {
   parseTaskListFilters,
   queryTaskProjection,
   resolvePrimaryTag,
+  resolveWritableDocSections,
   requireStructuredComment,
   requiresVerify,
   taskObservationSectionName,
@@ -82,6 +83,24 @@ describe("task shared helpers", () => {
     expect(taskObservationSectionName(3)).toBe("Findings");
     expect(extractTaskObservationSection(doc, 3)).toBe("new");
     expect(extractTaskObservationSection(doc, 2)).toBe("old");
+  });
+
+  it("resolves writable doc sections for optional and legacy targets", () => {
+    const config = mkConfig();
+    expect(
+      resolveWritableDocSections({
+        allowedSections: config.tasks.doc.sections,
+        requiredSections: config.tasks.doc.required_sections,
+        targetSection: "Verify Steps",
+      }),
+    ).toEqual(["Summary", "Scope", "Plan", "Verify Steps", "Verification", "Rollback Plan"]);
+    expect(
+      resolveWritableDocSections({
+        allowedSections: config.tasks.doc.sections,
+        requiredSections: config.tasks.doc.required_sections,
+        targetSection: "Notes",
+      }),
+    ).toEqual(["Summary", "Scope", "Plan", "Verification", "Rollback Plan", "Notes"]);
   });
 
   it("normalizes verification layout by doc version", () => {

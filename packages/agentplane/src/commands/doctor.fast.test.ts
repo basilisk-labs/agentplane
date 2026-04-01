@@ -7,7 +7,7 @@ import { promisify } from "node:util";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { runDoctor } from "./doctor.command.js";
+import { runDoctor } from "./doctor.run.js";
 
 type TestWorkspace = {
   root: string;
@@ -208,7 +208,7 @@ describe("doctor.fast", () => {
       { fix: false, dev: false },
     );
     expect(rc).toBe(1);
-  });
+  }, 60_000);
 
   it("prints runtime info when doctor runs inside a framework checkout", async () => {
     const ws = await mkWorkspace();

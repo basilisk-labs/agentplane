@@ -2,7 +2,7 @@ import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
 import { type TaskRecord } from "@agentplaneorg/core";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
   buildTasksExportSnapshotFromTasks,
@@ -12,9 +12,18 @@ import {
   writeTasksExportFromTasks,
   type TaskData,
 } from "./task-backend.js";
-import { installTaskBackendTestHarness, makeTempDir } from "./task-backend.test-helpers.js";
+import { mkTempDir, silenceStdIO } from "../cli/run-cli.test-helpers.js";
 
-installTaskBackendTestHarness();
+let restoreStdIO: (() => void) | null = null;
+
+beforeEach(() => {
+  restoreStdIO = silenceStdIO();
+});
+
+afterEach(() => {
+  restoreStdIO?.();
+  restoreStdIO = null;
+});
 
 describe("task-backend helpers", () => {
   it("extractTaskDoc returns the doc section and excludes auto summary", () => {
@@ -379,7 +388,7 @@ describe("task-backend helpers", () => {
   });
 
   it("writeTasksExportFromTasks writes a stable snapshot", async () => {
-    const outDir = await makeTempDir();
+    const outDir = await mkTempDir();
     const outPath = path.join(outDir, "tasks.json");
     await writeTasksExportFromTasks({
       outputPath: outPath,

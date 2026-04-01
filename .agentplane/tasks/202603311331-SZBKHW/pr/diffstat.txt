@@ -1,0 +1,12 @@
+ .agentplane/tasks/202603311331-SZBKHW/README.md    | 38 +++++++--
+ .../tasks/202603311331-SZBKHW/pr/diffstat.txt      | 12 +++
+ .agentplane/tasks/202603311331-SZBKHW/pr/meta.json | 12 +++
+ .agentplane/tasks/202603311331-SZBKHW/pr/review.md | 40 ++++++++++
+ .../tasks/202603311331-SZBKHW/pr/verify.log        |  0
+ packages/agentplane/src/commands/task/block.ts     | 32 +++-----
+ packages/agentplane/src/commands/task/finish.ts    | 47 +++++------
+ .../agentplane/src/commands/task/set-status.ts     | 24 +++---
+ packages/agentplane/src/commands/task/shared.ts    |  3 +
+ .../src/commands/task/shared/transitions.ts        | 90 +++++++++++++++++++++-
+ packages/agentplane/src/commands/task/start.ts     | 40 ++++------
+ 11 files changed, 241 insertions(+), 97 deletions(-)

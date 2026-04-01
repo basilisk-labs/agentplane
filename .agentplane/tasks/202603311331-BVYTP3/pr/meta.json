@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603311331-BVYTP3/mutable-task-bridge",
+  "created_at": "2026-03-31T15:15:29.565Z",
+  "head_sha": "33314a70592a5a3065eea5b836b7dc5dbc44b506",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "13eaf50a33cdd05e59af7efcc5dc072f012f9218",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T15:16:27.715Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603311331-BVYTP3",
+  "updated_at": "2026-03-31T15:16:27.715Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -1,4 +1,4 @@
-import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -6,7 +6,11 @@ import { defaultConfig } from "@agentplaneorg/core";
 import { describe, expect, it } from "vitest";
 
 import { writePreparedRunnerArtifacts } from "../artifacts.js";
-import type { RunnerContextBundle } from "../types.js";
+import {
+  makeRunnerContextBundle,
+  setRunnerBundleRunDir,
+  writeRunnerExecutable,
+} from "../test-helpers.js";
 import { createRunnerAdapter } from "./index.js";
 
 function currentCodexSandboxPlatform(): "macos" | "linux" | "windows" {
@@ -26,66 +30,14 @@ function currentCodexSandboxPlatform(): "macos" | "linux" | "windows" {
   }
 }
 
-function makeBundle(): RunnerContextBundle {
-  return {
-    schema_version: 1,
-    runner_api_version: "1",
-    target: { kind: "task", task_id: "202603231410-XYZ789" },
-    base_prompts: [],
-    repository: {
-      git_root: "/repo",
-      workflow_dir: ".agentplane/tasks",
-      backend_id: "local",
-      backend_config_path: "/repo/.agentplane/backends/local/backend.json",
-      branch: "main",
-      head_commit: null,
-    },
-    task: {
-      task_id: "202603231410-XYZ789",
-      data: {
-        id: "202603231410-XYZ789",
-        title: "Custom adapter test",
-        description: "Custom adapter test task",
-        status: "DOING",
-        priority: "med",
-        owner: "CODER",
-        depends_on: [],
-        tags: ["code"],
-        verify: [],
-      },
-      frontmatter: { id: "202603231410-XYZ789", title: "Custom adapter test" },
-      doc: "## Summary\n",
-      sections: { Summary: "" },
-      comments: [],
-      events: [],
-    },
-    execution: {
-      adapter_id: "custom",
-      mode: "dry_run",
-      run_id: "run-789",
-      timeout_policy: {
-        wall_clock_ms: 900_000,
-        idle_ms: 180_000,
-        terminate_grace_ms: 1500,
-      },
-      trace_policy: {
-        mode: "raw",
-        max_tail_bytes: 65_536,
-        capture_stderr: true,
-      },
-      artifact_paths: {
-        run_dir: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789",
-        bundle_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/bundle.json",
-        bootstrap_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/bootstrap.md",
-        state_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/run-state.json",
-        events_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/events.jsonl",
-        result_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/result.json",
-        trace_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/agent-trace.jsonl",
-        stderr_path: "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/stderr.log",
-      },
-    },
-  };
-}
+const customBundleDefaults = {
+  adapterId: "custom",
+  taskId: "202603231410-XYZ789",
+  runId: "run-789",
+  title: "Custom adapter test",
+  description: "Custom adapter test task",
+  status: "DOING",
+};
 
 describe("CustomRunnerAdapter", () => {
   it("describes custom-runner capabilities as advisory env propagation", () => {
@@ -95,7 +47,9 @@ describe("CustomRunnerAdapter", () => {
       command: ["custom-runner", "--bundle-from-env"],
     };
     const adapter = createRunnerAdapter(raw);
-    const capabilities = adapter.describeCapabilities(makeBundle());
+    const capabilities = adapter.describeCapabilities(
+      makeRunnerContextBundle(customBundleDefaults),
+    );
 
     expect(capabilities).toMatchObject({
       adapter_id: "custom",
@@ -123,7 +77,9 @@ describe("CustomRunnerAdapter", () => {
       },
     };
     const adapter = createRunnerAdapter(raw);
-    const capabilities = adapter.describeCapabilities(makeBundle());
+    const capabilities = adapter.describeCapabilities(
+      makeRunnerContextBundle(customBundleDefaults),
+    );
 
     expect(capabilities).toMatchObject({
       adapter_id: "custom",
@@ -150,7 +106,7 @@ describe("CustomRunnerAdapter", () => {
       },
     };
     const adapter = createRunnerAdapter(raw);
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
 
     const invocation = await adapter.prepare(bundle);
 
@@ -201,7 +157,7 @@ describe("CustomRunnerAdapter", () => {
       },
     };
     const adapter = createRunnerAdapter(raw);
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.target = {
       kind: "recipe_scenario",
       recipe_id: "viewer",
@@ -244,7 +200,7 @@ describe("CustomRunnerAdapter", () => {
       },
     };
     const adapter = createRunnerAdapter(raw);
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.target = {
       kind: "recipe_scenario",
       recipe_id: "viewer",
@@ -287,7 +243,7 @@ describe("CustomRunnerAdapter", () => {
       },
     };
     const adapter = createRunnerAdapter(raw);
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.target = {
       kind: "recipe_scenario",
       recipe_id: "viewer",
@@ -314,7 +270,7 @@ describe("CustomRunnerAdapter", () => {
       command: ["custom-runner", "--bundle-from-env"],
     };
     const adapter = createRunnerAdapter(raw);
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.target = {
       kind: "recipe_scenario",
       recipe_id: "viewer",
@@ -337,7 +293,7 @@ describe("CustomRunnerAdapter", () => {
     raw.runner.default_adapter = "custom";
     const adapter = createRunnerAdapter(raw);
 
-    expect(() => adapter.prepare(makeBundle())).toThrow(
+    expect(() => adapter.prepare(makeRunnerContextBundle(customBundleDefaults))).toThrow(
       "Custom runner adapter requires config.runner.custom.command",
     );
   });
@@ -354,47 +310,16 @@ describe("CustomRunnerAdapter", () => {
     const adapter = createRunnerAdapter(raw);
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-success-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
-    bundle.execution.artifact_paths.run_dir = path.join(tempDir, "runs", "run-789");
-    bundle.execution.artifact_paths.bundle_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "bundle.json",
-    );
-    bundle.execution.artifact_paths.bootstrap_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "bootstrap.md",
-    );
-    bundle.execution.artifact_paths.state_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "run-state.json",
-    );
-    bundle.execution.artifact_paths.events_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "events.jsonl",
-    );
-    bundle.execution.artifact_paths.result_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "result.json",
-    );
-    bundle.execution.artifact_paths.trace_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "agent-trace.jsonl",
-    );
-    bundle.execution.artifact_paths.stderr_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "stderr.log",
-    );
-
-    await mkdir(fakeBinDir, { recursive: true });
-    await writeFile(
-      fakeRunnerPath,
-      ["#!/bin/sh", "cat >/dev/null", String.raw`printf "custom runner ok\n"`, "exit 0"].join("\n"),
-      "utf8",
-    );
-    await chmod(fakeRunnerPath, 0o755);
+    setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-789"));
+    await writeRunnerExecutable(tempDir, "custom-runner", [
+      "#!/bin/sh",
+      "cat >/dev/null",
+      String.raw`printf "custom runner ok\n"`,
+      "exit 0",
+    ]);
 
     const invocation = await adapter.prepare(bundle);
     invocation.env.PATH = `${fakeBinDir}:${process.env.PATH ?? ""}`;
@@ -471,43 +396,11 @@ describe("CustomRunnerAdapter", () => {
     const adapter = createRunnerAdapter(raw);
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-invalid-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
-    bundle.execution.artifact_paths.run_dir = path.join(tempDir, "runs", "run-invalid");
-    bundle.execution.artifact_paths.bundle_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "bundle.json",
-    );
-    bundle.execution.artifact_paths.bootstrap_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "bootstrap.md",
-    );
-    bundle.execution.artifact_paths.state_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "run-state.json",
-    );
-    bundle.execution.artifact_paths.events_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "events.jsonl",
-    );
-    bundle.execution.artifact_paths.result_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "result.json",
-    );
-    bundle.execution.artifact_paths.trace_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "agent-trace.jsonl",
-    );
-    bundle.execution.artifact_paths.stderr_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "stderr.log",
-    );
-
-    await mkdir(fakeBinDir, { recursive: true });
-    await writeFile(
-      fakeRunnerPath,
+    setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-invalid"));
+    await writeRunnerExecutable(tempDir, "custom-runner", [
       [
         "#!/bin/sh",
         String.raw`printf '{"schema_version":1,"artifacts":[{"path":"reports/out.txt","label":"Bad Label"}],"capabilities_used":["custom report"]}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
@@ -515,9 +408,7 @@ describe("CustomRunnerAdapter", () => {
         String.raw`printf "custom runner wrote invalid manifest\n"`,
         "exit 0",
       ].join("\n"),
-      "utf8",
-    );
-    await chmod(fakeRunnerPath, 0o755);
+    ]);
 
     const invocation = await adapter.prepare(bundle);
     invocation.env.PATH = `${fakeBinDir}:${process.env.PATH ?? ""}`;
@@ -595,52 +486,18 @@ describe("CustomRunnerAdapter", () => {
     const adapter = createRunnerAdapter(raw);
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-source-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
-    bundle.execution.artifact_paths.run_dir = path.join(tempDir, "runs", "run-source");
-    bundle.execution.artifact_paths.bundle_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "bundle.json",
-    );
-    bundle.execution.artifact_paths.bootstrap_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "bootstrap.md",
-    );
-    bundle.execution.artifact_paths.state_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "run-state.json",
-    );
-    bundle.execution.artifact_paths.events_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "events.jsonl",
-    );
-    bundle.execution.artifact_paths.result_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "result.json",
-    );
-    bundle.execution.artifact_paths.trace_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "agent-trace.jsonl",
-    );
-    bundle.execution.artifact_paths.stderr_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "stderr.log",
-    );
-
-    await mkdir(fakeBinDir, { recursive: true });
-    await writeFile(
-      fakeRunnerPath,
+    setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-source"));
+    await writeRunnerExecutable(tempDir, "custom-runner", [
       [
         "#!/bin/sh",
         String.raw`printf '{"schema_version":1,"summary":"Привет из custom manifest","artifacts":[{"path":"reports/out.txt","label":"report"}],"findings":["русский finding"],"verification_hints":["русский hint"],"capabilities_used":["custom.report"],"evidence":{"evidence_paths":["reports/out.txt","logs/out.log"],"changed_paths":["src/runner/task-state.ts","src/runner/result-manifest.ts"],"files_changed_count":2,"tests_run":["bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts"],"verification_candidates":["inspect reports/out.txt","inspect logs/out.log"]}}\n' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "cat >/dev/null",
         "exit 0",
       ].join("\n"),
-      "utf8",
-    );
-    await chmod(fakeRunnerPath, 0o755);
+    ]);
 
     const invocation = await adapter.prepare(bundle);
     invocation.env.PATH = `${fakeBinDir}:${process.env.PATH ?? ""}`;
@@ -719,39 +576,10 @@ describe("CustomRunnerAdapter", () => {
     const adapter = createRunnerAdapter(raw);
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-custom-adapter-scope-"));
     const fakeBinDir = path.join(tempDir, "bin");
-    const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
-    const bundle = makeBundle();
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
     bundle.execution.mode = "execute";
-    bundle.execution.artifact_paths.run_dir = path.join(tempDir, "runs", "run-scope");
-    bundle.execution.artifact_paths.bundle_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "bundle.json",
-    );
-    bundle.execution.artifact_paths.bootstrap_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "bootstrap.md",
-    );
-    bundle.execution.artifact_paths.state_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "run-state.json",
-    );
-    bundle.execution.artifact_paths.events_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "events.jsonl",
-    );
-    bundle.execution.artifact_paths.result_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "result.json",
-    );
-    bundle.execution.artifact_paths.trace_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "agent-trace.jsonl",
-    );
-    bundle.execution.artifact_paths.stderr_path = path.join(
-      bundle.execution.artifact_paths.run_dir,
-      "stderr.log",
-    );
+    setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-scope"));
     bundle.recipe = {
       recipe_id: "viewer",
       scenario_id: "RECIPE_SCENARIO",
@@ -760,18 +588,14 @@ describe("CustomRunnerAdapter", () => {
       },
     };
 
-    await mkdir(fakeBinDir, { recursive: true });
-    await writeFile(
-      fakeRunnerPath,
+    await writeRunnerExecutable(tempDir, "custom-runner", [
       [
         "#!/bin/sh",
         String.raw`printf '{"schema_version":1,"summary":"custom scope fail","artifacts":[{"path":"reports/../tmp/out.txt","label":"report"}],"evidence":{"evidence_paths":["reports/ok.txt","/tmp/out.log"]}}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
         "cat >/dev/null",
         "exit 0",
       ].join("\n"),
-      "utf8",
-    );
-    await chmod(fakeRunnerPath, 0o755);
+    ]);
 
     const invocation = await adapter.prepare(bundle);
     invocation.env.PATH = `${fakeBinDir}:${process.env.PATH ?? ""}`;

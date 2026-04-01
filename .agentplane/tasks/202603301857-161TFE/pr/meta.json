@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603301857-161TFE/migrate-group-commands-to-derived-discovery",
+  "created_at": "2026-03-31T11:00:52.336Z",
+  "head_sha": "d883ea1af1ff297d0d69b6718634c7490c381927",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "32ed48b0461cb643a4e147ac96c8a9a18a6046c7",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T11:02:30.149Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603301857-161TFE",
+  "updated_at": "2026-03-31T11:02:30.149Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

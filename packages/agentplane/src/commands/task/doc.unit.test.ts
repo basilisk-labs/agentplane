@@ -1,114 +1,69 @@
-import {
-  defaultConfig,
-  ensureDocSections,
-  setMarkdownSection,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  makeTaskBackendDouble,
+  makeTaskCommandContext,
+  makeTaskFixture,
+} from "../task.test-helpers.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { GitContext } from "../shared/git-context.js";
-import type { TaskStorePatch } from "../shared/task-store.js";
 
 const mocks = vi.hoisted(() => ({
   loadCommandContext: vi.fn(),
+  loadTaskFromContext:
+    vi.fn<(opts: { ctx: CommandContext; taskId: string }) => Promise<TaskData>>(),
   backendIsLocalFileBackend: vi.fn<(ctx: CommandContext) => boolean>(),
   getTaskStore: vi.fn(),
 }));
 
 vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
+  loadTaskFromContext: mocks.loadTaskFromContext,
 }));
-vi.mock("../shared/task-store.js", () => ({
-  backendIsLocalFileBackend: mocks.backendIsLocalFileBackend,
-  getTaskStore: mocks.getTaskStore,
-}));
+vi.mock("../shared/task-store.js", async (importOriginal) => {
+  const actualUnknown: unknown = await importOriginal();
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    backendIsLocalFileBackend: mocks.backendIsLocalFileBackend,
+    getTaskStore: mocks.getTaskStore,
+  };
+});
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "TODO",
-    priority: "normal",
-    owner: "me",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    ...overrides,
-  };
+  return makeTaskFixture({ owner: "me", ...overrides });
 }
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
-  const config = defaultConfig();
-  config.paths.workflow_dir = ".agentplane/tasks";
-  config.tasks.doc.sections = ["Summary", "Plan", "Verify Steps", "Findings"];
-  config.tasks.doc.required_sections = ["Summary", "Plan", "Verify Steps", "Findings"];
-
-  const resolved = {
-    gitRoot: "/repo",
-    agentplaneDir: "/repo/.agentplane",
-  } as unknown as ResolvedProject;
-
-  const backend: TaskBackend = {
-    id: "mock",
-    listTasks: () => Promise.resolve([]),
-    getTask: () => Promise.resolve(null),
-    getTaskDoc: () => Promise.resolve(""),
-    setTaskDoc: () => Promise.resolve(),
-    writeTask: () => Promise.resolve(),
-  };
-
-  const ctx: CommandContext = {
-    resolvedProject: resolved,
-    config,
-    taskBackend: backend,
-    backendId: "mock",
-    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: new GitContext({ gitRoot: "/repo" }),
-    memo: {},
-    resolved,
-    backend,
-  };
-  return { ...ctx, ...overrides };
+  return makeTaskCommandContext({
+    taskBackend: makeTaskBackendDouble(),
+    overrides,
+    configureConfig: (config) => {
+      config.tasks.doc.sections = ["Summary", "Plan", "Verify Steps", "Findings"];
+      config.tasks.doc.required_sections = ["Summary", "Plan", "Verify Steps", "Findings"];
+    },
+  });
 }
 
-function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
-  if (!patch) return current;
-  const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
-  if (patch.appendComments && patch.appendComments.length > 0) {
-    next.comments = [
-      ...(Array.isArray(current.comments) ? current.comments : []),
-      ...patch.appendComments,
-    ];
-  }
-  if (patch.appendEvents && patch.appendEvents.length > 0) {
-    next.events = [...(Array.isArray(current.events) ? current.events : []), ...patch.appendEvents];
-  }
-  if (patch.doc) {
-    if (patch.doc.kind === "replace-doc") {
-      next.doc = patch.doc.doc;
-    } else {
-      const baseDoc = ensureDocSections(String(current.doc ?? ""), patch.doc.requiredSections);
-      next.doc = ensureDocSections(
-        setMarkdownSection(baseDoc, patch.doc.section, patch.doc.text),
-        patch.doc.requiredSections,
-      );
-    }
-  }
-  if (patch.doc || patch.docMeta?.touch === true) {
-    next.doc_version = patch.docMeta?.version ?? next.doc_version;
-    next.doc_updated_at = new Date().toISOString();
-    next.doc_updated_by = patch.docMeta?.updatedBy ?? next.doc_updated_by;
-  }
-  return next;
+function mkCtxWithOptionalVerifySteps(overrides?: Partial<CommandContext>): CommandContext {
+  return makeTaskCommandContext({
+    taskBackend: makeTaskBackendDouble(),
+    overrides,
+    configureConfig: (config) => {
+      config.tasks.doc.sections = ["Summary", "Scope", "Plan", "Verify Steps", "Verification"];
+      config.tasks.doc.required_sections = ["Summary", "Scope", "Plan", "Verification"];
+    },
+  });
 }
 
 describe("task doc commands (unit)", () => {
   beforeEach(() => {
     mocks.loadCommandContext.mockReset();
+    mocks.loadTaskFromContext.mockReset();
     mocks.backendIsLocalFileBackend.mockReset();
     mocks.getTaskStore.mockReset();
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
@@ -141,11 +96,11 @@ describe("task doc commands (unit)", () => {
       ].join("\n"),
     });
     const store = {
-      patch: vi
+      update: vi
         .fn()
         .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await updater(currentTask);
             return { changed: true, task: currentTask };
           },
         ),
@@ -165,7 +120,7 @@ describe("task doc commands (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(store.update).toHaveBeenCalledTimes(1);
     expect(currentTask.doc).toContain("Replacement summary");
     expect(currentTask.doc).toContain("Concurrent plan survives");
     expect(currentTask.doc).toContain("Run current checks");
@@ -194,11 +149,11 @@ describe("task doc commands (unit)", () => {
       ].join("\n"),
     });
     const store = {
-      patch: vi
+      update: vi
         .fn()
         .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await updater(currentTask);
             return { changed: true, task: currentTask };
           },
         ),
@@ -220,6 +175,142 @@ describe("task doc commands (unit)", () => {
     expect(rc).toBe(0);
     expect(currentTask.doc).toContain("Line one\nLine two");
     expect(currentTask.doc).not.toContain(String.raw`Line one\nLine two`);
+  });
+
+  it("cmdTaskDocSet updates optional doc sections allowed by config", async () => {
+    let currentTask = mkTask({
+      doc: [
+        "## Summary",
+        "Old summary",
+        "",
+        "## Scope",
+        "Current scope",
+        "",
+        "## Plan",
+        "Current plan",
+        "",
+        "## Verification",
+        "",
+      ].join("\n"),
+    });
+    const store = {
+      update: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await updater(currentTask);
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    const ctx = mkCtxWithOptionalVerifySteps();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdTaskDocSet } = await import("./doc.js");
+    const rc = await cmdTaskDocSet({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      section: "Verify Steps",
+      text: "1. Run focused checks.\n2. Expect exit code 0.",
+      fullDoc: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(currentTask.doc).toContain("## Verify Steps");
+    expect(currentTask.doc).toContain("1. Run focused checks.");
+    expect(currentTask.doc).toContain("## Verification");
+  });
+
+  it("cmdTaskDocSet carries expectedCurrentText for backend writes", async () => {
+    const originalDoc = [
+      "## Summary",
+      "Current summary",
+      "",
+      "## Plan",
+      "Current plan",
+      "",
+      "## Verify Steps",
+      "Run checks",
+      "",
+      "## Findings",
+      "",
+    ].join("\n");
+    const writeTask = vi.fn<(task: TaskData, opts?: Record<string, unknown>) => Promise<void>>(() =>
+      Promise.resolve(),
+    );
+    const backend: TaskBackend = {
+      id: "mock",
+      listTasks: () => Promise.resolve([]),
+      getTask: () => Promise.resolve(null),
+      getTaskDoc: () => Promise.resolve(""),
+      writeTask,
+    };
+    const ctx = mkCtx({ taskBackend: backend, backend });
+    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ doc: originalDoc }));
+
+    const { cmdTaskDocSet } = await import("./doc.js");
+    const rc = await cmdTaskDocSet({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      section: "Summary",
+      text: "Replacement summary",
+      fullDoc: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(writeTask).toHaveBeenCalledTimes(1);
+    expect(writeTask.mock.calls[0]?.[1]).toMatchObject({
+      expectedCurrentText: "Current summary",
+      expectedSection: "Summary",
+    });
+    expect(writeTask.mock.calls[0]?.[0]?.doc).toContain("Replacement summary");
+  });
+
+  it("cmdTaskDocSet carries expectedCurrentDoc for backend full-doc replacements", async () => {
+    const originalDoc = [
+      "## Summary",
+      "Current summary",
+      "",
+      "## Plan",
+      "Current plan",
+      "",
+      "## Verify Steps",
+      "Run checks",
+      "",
+      "## Findings",
+      "",
+    ].join("\n");
+    const writeTask = vi.fn<(task: TaskData, opts?: Record<string, unknown>) => Promise<void>>(() =>
+      Promise.resolve(),
+    );
+    const backend: TaskBackend = {
+      id: "mock",
+      listTasks: () => Promise.resolve([]),
+      getTask: () => Promise.resolve(null),
+      getTaskDoc: () => Promise.resolve(""),
+      writeTask,
+    };
+    const ctx = mkCtx({ taskBackend: backend, backend });
+    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ doc: originalDoc }));
+
+    const { cmdTaskDocSet } = await import("./doc.js");
+    const rc = await cmdTaskDocSet({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      section: "Summary",
+      text: ["## Summary", "Replacement summary", "", "## Plan", "Replacement plan"].join("\n"),
+      fullDoc: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(writeTask).toHaveBeenCalledTimes(1);
+    expect(writeTask.mock.calls[0]?.[1]).toMatchObject({
+      expectedCurrentDoc: originalDoc,
+    });
   });
 
   it("cmdTaskDocShow prefers canonical sections over stale task.doc on the local backend", async () => {
@@ -264,7 +355,7 @@ describe("task doc commands (unit)", () => {
     const ctx = mkCtx();
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue({
-      patch: vi.fn().mockRejectedValue(
+      update: vi.fn().mockRejectedValue(
         new CliError({
           exitCode: 3,
           code: "E_VALIDATION",
@@ -287,6 +378,36 @@ describe("task doc commands (unit)", () => {
     ).rejects.toMatchObject({
       code: "E_VALIDATION",
       context: { reason_code: "task_readme_section_conflict", section: "Summary" },
+    });
+  });
+
+  it("cmdTaskDocSet surfaces semantic full-doc conflicts from the task store", async () => {
+    const ctx = mkCtx();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue({
+      update: vi.fn().mockRejectedValue(
+        new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: "Task README changed concurrently: T-1",
+          context: { reason_code: "task_readme_conflict" },
+        }),
+      ),
+    });
+
+    const { cmdTaskDocSet } = await import("./doc.js");
+    await expect(
+      cmdTaskDocSet({
+        ctx,
+        cwd: "/repo",
+        taskId: "T-1",
+        section: "Summary",
+        text: ["## Summary", "Replacement summary", "", "## Plan", "Replacement plan"].join("\n"),
+        fullDoc: false,
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_readme_conflict" },
     });
   });
 });

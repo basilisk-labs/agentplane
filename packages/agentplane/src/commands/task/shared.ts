@@ -14,6 +14,7 @@ export {
   isDocSectionFilled,
   ensureAgentFilledRequiredDocSections,
   normalizeVerificationSectionLayout,
+  resolveWritableDocSections,
 } from "./shared/docs.js";
 export {
   normalizeDependsOnInput,
@@ -44,8 +45,12 @@ export {
   isTransitionAllowed,
   ensureStatusTransitionAllowed,
   ensureCommentCommitAllowed,
+  emitTransitionWarnings,
   resolveCommentCommitWarning,
   requireStructuredComment,
+  prepareTaskTransitionComment,
+  resolveTaskTransitionExecutorAgent,
+  runTaskTransitionCommentCommit,
   enforceStatusCommitPolicy,
   resolveStatusCommitPolicyWarning,
   isMajorStatusCommitTransition,
@@ -55,9 +60,19 @@ export {
 } from "./shared/transitions.js";
 export {
   buildTaskStatusTransition,
+  executeTaskStatusTransitionRequest,
   buildTaskVerificationTransition,
+  executeTaskVerificationTransitionRequest,
+  readDeferredTaskTransitionWarnings,
   type TaskTransitionWrite,
+  type TaskStatusTransitionDependencyPolicy,
+  type TaskStatusTransitionCommentCommitPolicy,
+  type ExecuteTaskStatusTransitionRequest,
+  type TaskStatusTransitionExecution,
+  type ExecuteTaskVerificationTransitionRequest,
+  type TaskVerificationTransitionExecution,
 } from "./shared/workflow-transition-service.js";
+export { applyTaskStatusTransitionCommand } from "./shared/transition-command.js";
 export {
   type TaskListFilters,
   parseTaskListFilters,

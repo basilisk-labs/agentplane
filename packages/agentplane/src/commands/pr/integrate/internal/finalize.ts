@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 
 import type { TaskData } from "../../../../backends/task-backend.js";
 import { fileExists } from "../../../../cli/fs-utils.js";
-import { successMessage } from "../../../../cli/output.js";
+import { createCliEmitter } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 import {
   writeJsonStableIfChanged,
@@ -50,6 +50,7 @@ export async function finalizeIntegrate(opts: {
 
   quiet: boolean;
 }): Promise<void> {
+  const output = createCliEmitter();
   if (!(await fileExists(opts.prDir))) {
     throw new CliError({
       exitCode: 3,
@@ -121,8 +122,6 @@ export async function finalizeIntegrate(opts: {
   });
 
   if (!opts.quiet) {
-    process.stdout.write(
-      `${successMessage("integrate", opts.taskId, `merge=${opts.mergeHash.slice(0, 12)}`)}\n`,
-    );
+    output.success("integrate", opts.taskId, `merge=${opts.mergeHash.slice(0, 12)}`);
   }
 }

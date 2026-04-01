@@ -1,0 +1,10 @@
+ .agentplane/tasks/202603301857-3KGV43/README.md    | 80 ++++++++++++++++++----
+ .../tasks/202603301857-3KGV43/pr/diffstat.txt      |  6 ++
+ .agentplane/tasks/202603301857-3KGV43/pr/meta.json | 12 ++++
+ .agentplane/tasks/202603301857-3KGV43/pr/review.md | 34 +++++++++
+ .../tasks/202603301857-3KGV43/pr/verify.log        |  0
+ .../src/usecases/context/resolve-context.ts        |  8 ++-
+ .../usecases/context/resolve-context.unit.test.ts  | 49 +++++++++++++
+ .../src/usecases/task/task-list-usecase.ts         | 10 +--
+ .../usecases/task/task-list-usecase.unit.test.ts   | 48 +++++++++++++
+ 9 files changed, 225 insertions(+), 22 deletions(-)

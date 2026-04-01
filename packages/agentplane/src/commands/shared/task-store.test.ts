@@ -17,6 +17,7 @@ import type { CommandContext } from "./task-backend.js";
 import {
   appendTaskCommentIntent,
   appendTaskEventIntent,
+  replaceTaskDocIntent,
   setTaskSectionIntent,
   setTaskFieldsIntent,
   TaskStore,
@@ -530,6 +531,51 @@ describe("commands/shared/TaskStore", () => {
     expect(final).not.toContain("stale body");
   });
 
+  it("reads canonical doc from frontmatter sections when the README body is stale", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-CANON";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "before",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
+          revision: 1,
+          depends_on: [],
+          tags: [],
+          verify: [],
+          plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-02-07T00:00:00Z",
+          doc_updated_by: "CODER",
+          description: "",
+          sections: {
+            Summary: "canonical summary",
+            Plan: "canonical plan",
+            Findings: "",
+          },
+        },
+        "## Summary\n\nstale body\n",
+      ),
+      "utf8",
+    );
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+    const task = await store.get(taskId);
+
+    expect(task.doc).toContain("canonical summary");
+    expect(task.doc).toContain("canonical plan");
+    expect(task.doc).not.toContain("stale body");
+  });
+
   it("rejects concurrent writes to the same README section via semantic patch preconditions", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
     const taskId = "202602070000-CONF";
@@ -684,6 +730,166 @@ describe("commands/shared/TaskStore", () => {
           },
           docMeta: { touch: true, updatedBy: "CODER", version: 3 },
         };
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_readme_conflict" },
+    });
+    expect(didInterfere).toBe(true);
+  });
+
+  it("rejects concurrent section mutations via intent-based mutate preconditions", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-MUTS";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    const initial = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Task",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-02-07T00:00:00Z",
+        doc_updated_by: "CODER",
+        description: "",
+      },
+      ["## Summary", "before", "", "## Plan", "plan", ""].join("\n"),
+    );
+    await writeFile(readmePath, `${initial}\n`, "utf8");
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+
+    let didInterfere = false;
+    let expectedSummary: string | null | undefined;
+    await expect(
+      store.mutate(taskId, async (current) => {
+        expectedSummary ??= /## Summary\s+before/u.test(String(current.doc ?? ""))
+          ? "before"
+          : null;
+        if (!didInterfere) {
+          didInterfere = true;
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          await writeFile(
+            readmePath,
+            `${renderTaskReadme(
+              {
+                id: taskId,
+                title: "Task",
+                status: "TODO",
+                priority: "med",
+                owner: "CODER",
+                depends_on: [],
+                tags: [],
+                verify: [],
+                plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+                verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+                comments: [],
+                doc_version: 3,
+                doc_updated_at: "2026-02-07T00:00:00Z",
+                doc_updated_by: "CODER",
+                description: "",
+              },
+              ["## Summary", "other writer", "", "## Plan", "plan", ""].join("\n"),
+            )}\n`,
+            "utf8",
+          );
+        }
+        return [
+          setTaskSectionIntent({
+            section: "Summary",
+            text: "my update",
+            requiredSections: ["Summary", "Plan"],
+            expectedCurrentText: expectedSummary,
+          }),
+          touchTaskDocMetaIntent({ updatedBy: "CODER", version: 3 }),
+        ];
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_readme_section_conflict", section: "Summary" },
+    });
+    expect(didInterfere).toBe(true);
+  });
+
+  it("rejects concurrent full-doc mutations via intent-based mutate preconditions", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-MUTF";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    const initial = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Task",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-02-07T00:00:00Z",
+        doc_updated_by: "CODER",
+        description: "",
+      },
+      ["## Summary", "before", "", "## Plan", "plan", ""].join("\n"),
+    );
+    await writeFile(readmePath, `${initial}\n`, "utf8");
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+
+    let didInterfere = false;
+    let expectedDoc: string | undefined;
+    await expect(
+      store.mutate(taskId, async (current) => {
+        expectedDoc ??= String(current.doc ?? "");
+        if (!didInterfere) {
+          didInterfere = true;
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          await writeFile(
+            readmePath,
+            `${renderTaskReadme(
+              {
+                id: taskId,
+                title: "Task",
+                status: "TODO",
+                priority: "med",
+                owner: "CODER",
+                depends_on: [],
+                tags: [],
+                verify: [],
+                plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+                verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+                comments: [],
+                doc_version: 3,
+                doc_updated_at: "2026-02-07T00:00:00Z",
+                doc_updated_by: "CODER",
+                description: "",
+              },
+              ["## Summary", "other writer", "", "## Plan", "plan", ""].join("\n"),
+            )}\n`,
+            "utf8",
+          );
+        }
+        return [
+          replaceTaskDocIntent({
+            doc: ["## Summary", "my replacement", "", "## Plan", "plan", ""].join("\n"),
+            expectedCurrentDoc: expectedDoc,
+          }),
+          touchTaskDocMetaIntent({ updatedBy: "CODER", version: 3 }),
+        ];
       }),
     ).rejects.toMatchObject({
       code: "E_VALIDATION",

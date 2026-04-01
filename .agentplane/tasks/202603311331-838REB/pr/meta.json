@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603311331-838REB/shared-bulk-write-helper",
+  "created_at": "2026-03-31T14:56:59.422Z",
+  "head_sha": "6004878d9c9f34786ce151ac2a1e130b14e9f836",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "6697ff836a616142d8d7a057a95d60b6683c9876",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T15:00:01.143Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603311331-838REB",
+  "updated_at": "2026-03-31T15:00:01.143Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

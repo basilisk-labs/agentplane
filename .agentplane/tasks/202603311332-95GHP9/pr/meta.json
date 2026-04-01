@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603311332-95GHP9/reuse-doc-mutation-primitives",
+  "created_at": "2026-03-31T17:48:53.344Z",
+  "head_sha": "c9f332547eb10718b2149b526fc7819d2255fc73",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "1c5a9480fca234d269b21580511ec1a2214bb283",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T17:49:53.298Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603311332-95GHP9",
+  "updated_at": "2026-03-31T17:49:53.298Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

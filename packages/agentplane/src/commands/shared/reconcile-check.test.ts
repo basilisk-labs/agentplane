@@ -27,8 +27,6 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
       statusChangedPaths: vi.fn().mockResolvedValue([]),
     } as unknown as CommandContext["git"],
     memo: {},
-    resolved,
-    backend: backend as unknown as CommandContext["backend"],
   };
   return { ...ctx, ...overrides };
 }

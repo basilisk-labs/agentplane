@@ -1,19 +1,59 @@
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
 
-import {
-  loadCommandContext,
-  loadTaskFromContext,
-  type CommandContext,
-} from "../shared/task-backend.js";
+import { type TaskData } from "../../backends/task-backend.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { applyTaskMutation, type TaskMutationPlan } from "../shared/task-mutation.js";
 import {
   appendTaskCommentIntent,
   appendTaskEventIntent,
-  backendIsLocalFileBackend,
-  getTaskStore,
   touchTaskDocMetaIntent,
 } from "../shared/task-store.js";
 import { appendTaskEvent, normalizeTaskDocVersion, nowIso } from "./shared.js";
+
+function buildCommentMutation(opts: {
+  task: TaskData;
+  at: string;
+  author: string;
+  body: string;
+}): TaskMutationPlan {
+  return {
+    intents: [
+      appendTaskCommentIntent({ author: opts.author, body: opts.body }),
+      appendTaskEventIntent({
+        type: "comment",
+        at: opts.at,
+        author: opts.author,
+        body: opts.body,
+      }),
+      touchTaskDocMetaIntent({
+        updatedBy: opts.author,
+        version: normalizeTaskDocVersion(opts.task.doc_version),
+      }),
+    ],
+    nextTask: {
+      ...opts.task,
+      comments: [
+        ...(Array.isArray(opts.task.comments)
+          ? opts.task.comments.filter(
+              (item): item is { author: string; body: string } =>
+                !!item && typeof item.author === "string" && typeof item.body === "string",
+            )
+          : []),
+        { author: opts.author, body: opts.body },
+      ],
+      events: appendTaskEvent(opts.task, {
+        type: "comment",
+        at: opts.at,
+        author: opts.author,
+        body: opts.body,
+      }),
+      doc_version: normalizeTaskDocVersion(opts.task.doc_version),
+      doc_updated_at: opts.at,
+      doc_updated_by: opts.author,
+    },
+  };
+}
 
 export async function cmdTaskComment(opts: {
   ctx?: CommandContext;
@@ -27,45 +67,18 @@ export async function cmdTaskComment(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const useStore = backendIsLocalFileBackend(ctx);
-    const store = useStore ? getTaskStore(ctx) : null;
-    const task = useStore ? null : await loadTaskFromContext({ ctx, taskId: opts.taskId });
     const at = nowIso();
-    await (useStore
-      ? store!.mutate(opts.taskId, (current) => [
-          appendTaskCommentIntent({ author: opts.author, body: opts.body }),
-          appendTaskEventIntent({
-            type: "comment",
-            at,
-            author: opts.author,
-            body: opts.body,
-          }),
-          touchTaskDocMetaIntent({
-            updatedBy: opts.author,
-            version: normalizeTaskDocVersion(current.doc_version),
-          }),
-        ])
-      : ctx.taskBackend.writeTask({
-          ...task!,
-          comments: [
-            ...(Array.isArray(task!.comments)
-              ? task!.comments.filter(
-                  (item): item is { author: string; body: string } =>
-                    !!item && typeof item.author === "string" && typeof item.body === "string",
-                )
-              : []),
-            { author: opts.author, body: opts.body },
-          ],
-          events: appendTaskEvent(task!, {
-            type: "comment",
-            at,
-            author: opts.author,
-            body: opts.body,
-          }),
-          doc_version: normalizeTaskDocVersion(task!.doc_version),
-          doc_updated_at: at,
-          doc_updated_by: opts.author,
-        }));
+    await applyTaskMutation({
+      ctx,
+      taskId: opts.taskId,
+      build: (task) =>
+        buildCommentMutation({
+          task,
+          at,
+          author: opts.author,
+          body: opts.body,
+        }),
+    });
     process.stdout.write(`${successMessage("commented", opts.taskId)}\n`);
     return 0;
   } catch (err) {

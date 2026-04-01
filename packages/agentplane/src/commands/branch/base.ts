@@ -8,8 +8,10 @@ import {
 } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../cli/error-map.js";
+import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
+const output = createCliEmitter();
 
 export async function cmdBranchBaseGet(opts: {
   cwd: string;
@@ -27,7 +29,7 @@ export async function cmdBranchBaseGet(opts: {
         message: "Base branch is not pinned (use `agentplane branch base set`).",
       });
     }
-    process.stdout.write(`${pinned}\n`);
+    output.line(pinned);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -63,7 +65,7 @@ export async function cmdBranchBaseSet(opts: {
       rootOverride: opts.rootOverride ?? null,
       value: nextValue,
     });
-    process.stdout.write(`${value}\n`);
+    output.line(value);
     return 0;
   } catch (err) {
     throw mapCoreError(err, { command: "branch base set", root: opts.rootOverride ?? null });
@@ -79,7 +81,7 @@ export async function cmdBranchBaseClear(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    process.stdout.write(`${cleared ? "cleared" : "no-op"}\n`);
+    output.line(cleared ? "cleared" : "no-op");
     return 0;
   } catch (err) {
     throw mapCoreError(err, { command: "branch base clear", root: opts.rootOverride ?? null });
@@ -122,12 +124,14 @@ export async function cmdBranchBaseExplain(opts: {
       warnings.push(`Effective base branch not found: ${effective}`);
     }
 
-    process.stdout.write(`current_branch=${current ?? "-"}\n`);
-    process.stdout.write(`pinned_base=${pinned ?? "-"}\n`);
-    process.stdout.write(`effective_base=${effective ?? "-"}\n`);
+    output.lines([
+      `current_branch=${current ?? "-"}`,
+      `pinned_base=${pinned ?? "-"}`,
+      `effective_base=${effective ?? "-"}`,
+    ]);
     if (warnings.length > 0) {
       for (const warning of warnings) {
-        process.stdout.write(`warning=${warning}\n`);
+        output.line(`warning=${warning}`);
       }
     }
     return 0;

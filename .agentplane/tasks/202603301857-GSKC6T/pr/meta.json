@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603301857-GSKC6T/relock-json-contract",
+  "created_at": "2026-03-31T12:58:18.711Z",
+  "head_sha": "1c99a2209f4cf8421881eb642ff199c25ed68ede",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "306fd05935b7a2f1079bc13f395841779db6de40",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T12:59:22.346Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603301857-GSKC6T",
+  "updated_at": "2026-03-31T12:59:22.346Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

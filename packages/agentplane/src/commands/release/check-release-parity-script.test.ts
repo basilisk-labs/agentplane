@@ -1,51 +1,33 @@
-import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
 import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
 
+import { initReleaseWorkspace } from "../release.test-helpers.js";
+
 const execFileAsync = promisify(execFile);
 
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/check-release-parity.mjs");
 
-async function writePackageJson(root: string, relDir: string, data: Record<string, unknown>) {
-  const dir = path.join(root, relDir);
-  await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, "package.json"), `${JSON.stringify(data, null, 2)}\n`, "utf8");
-}
-
 describe("check-release-parity script", () => {
   it("passes when package versions and core dependency are aligned", async () => {
-    const root = await mkdtemp(path.join(tmpdir(), "agentplane-release-parity-"));
-    await writePackageJson(root, "packages/core", {
-      name: "@agentplaneorg/core",
-      version: "2.3.4",
-    });
-    await writePackageJson(root, "packages/agentplane", {
-      name: "agentplane",
-      version: "2.3.4",
-      dependencies: {
-        "@agentplaneorg/core": "2.3.4",
-      },
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-parity-",
+      coreVersion: "2.3.4",
+      cliVersion: "2.3.4",
+      dependencyVersion: "2.3.4",
     });
 
     await expect(execFileAsync("node", [SCRIPT_PATH], { cwd: root })).resolves.toBeDefined();
   });
 
   it("fails when core dependency version drifts from workspace version", async () => {
-    const root = await mkdtemp(path.join(tmpdir(), "agentplane-release-parity-"));
-    await writePackageJson(root, "packages/core", {
-      name: "@agentplaneorg/core",
-      version: "2.3.4",
-    });
-    await writePackageJson(root, "packages/agentplane", {
-      name: "agentplane",
-      version: "2.3.4",
-      dependencies: {
-        "@agentplaneorg/core": "2.3.3",
-      },
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-parity-",
+      coreVersion: "2.3.4",
+      cliVersion: "2.3.4",
+      dependencyVersion: "2.3.3",
     });
 
     const result = await execFileAsync("node", [SCRIPT_PATH], { cwd: root }).then(

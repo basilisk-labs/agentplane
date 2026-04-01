@@ -53,7 +53,7 @@ export const LIFECYCLE_COMMANDS = [
       ),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -62,7 +62,7 @@ export const LIFECYCLE_COMMANDS = [
     () => import("../../../commands/hooks/hooks.command.js").then((m) => m.runHooks),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -80,7 +80,7 @@ export const LIFECYCLE_COMMANDS = [
     () => import("../../../commands/cleanup/merged.command.js").then((m) => m.runCleanup),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -94,7 +94,7 @@ export const LIFECYCLE_COMMANDS = [
     () => import("../../../commands/guard/guard.command.js").then((m) => m.runGuard),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),

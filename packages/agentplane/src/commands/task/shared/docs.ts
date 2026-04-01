@@ -1,4 +1,4 @@
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import { normalizeDocSectionName, type AgentplaneConfig } from "@agentplaneorg/core";
 
 import { CliError } from "../../../shared/errors.js";
 import { dedupeStrings } from "../../../shared/strings.js";
@@ -109,6 +109,25 @@ export function extractTaskObservationSection(doc: string, version: TaskDocVersi
   const primary = taskObservationSectionName(version);
   const fallback = primary === "Findings" ? "Notes" : "Findings";
   return extractDocSection(doc, primary) ?? extractDocSection(doc, fallback);
+}
+
+export function resolveWritableDocSections(opts: {
+  allowedSections: readonly string[];
+  requiredSections: readonly string[];
+  targetSection: string;
+}): string[] {
+  const required = new Set(
+    opts.requiredSections.map((section) => normalizeDocSectionName(section)),
+  );
+  const target = normalizeDocSectionName(opts.targetSection);
+  const ordered = opts.allowedSections.filter((section) => {
+    const key = normalizeDocSectionName(section);
+    return required.has(key) || key === target;
+  });
+  if (target && !ordered.some((section) => normalizeDocSectionName(section) === target)) {
+    ordered.push(opts.targetSection);
+  }
+  return ordered;
 }
 
 const DOC_PLACEHOLDER_RE = /<!--\s*TODO\b/i;

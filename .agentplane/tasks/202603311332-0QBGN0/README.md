@@ -1,0 +1,138 @@
+---
+id: "202603311332-0QBGN0"
+title: "N5.4 Split `commands/upgrade.ts` by planning, apply, report, and lock concerns"
+result_summary: "integrate: squash task/202603311332-0QBGN0/split-upgrade-command"
+status: "DONE"
+priority: "med"
+owner: "CODER"
+revision: 7
+origin:
+  system: "manual"
+depends_on:
+  - "202603311331-C3JHD2"
+  - "202603311331-81NZD4"
+tags:
+  - "code"
+  - "refactor"
+  - "upgrade"
+verify: []
+plan_approval:
+  state: "approved"
+  updated_at: "2026-03-31T20:21:36.574Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "ok"
+  updated_at: "2026-03-31T20:41:55.577Z"
+  updated_by: "CODER"
+  note: "Split commands/upgrade.ts into policy/materialize/plan modules and kept upgrade CLI contracts green via focused lint, vitest, and framework bootstrap."
+commit:
+  hash: "ffb6b8be3fa24114610f7818de2ddbb59b6d0494"
+  message: "📝 0QBGN0 task: add pr artifacts"
+comments:
+  -
+    author: "CODER"
+    body: "Start: split commands/upgrade.ts into policy, materialize, and planning modules while preserving lock lifecycle, managed-file policy, agent/auto mode sequencing, and public cmdUpgradeParsed entrypoints."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-0QBGN0/pr."
+events:
+  -
+    type: "status"
+    at: "2026-03-31T20:23:19.619Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split commands/upgrade.ts into policy, materialize, and planning modules while preserving lock lifecycle, managed-file policy, agent/auto mode sequencing, and public cmdUpgradeParsed entrypoints."
+  -
+    type: "verify"
+    at: "2026-03-31T20:41:55.577Z"
+    author: "CODER"
+    state: "ok"
+    note: "Split commands/upgrade.ts into policy/materialize/plan modules and kept upgrade CLI contracts green via focused lint, vitest, and framework bootstrap."
+  -
+    type: "status"
+    at: "2026-03-31T20:44:12.542Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202603311332-0QBGN0/pr."
+doc_version: 3
+doc_updated_at: "2026-03-31T20:44:12.547Z"
+doc_updated_by: "INTEGRATOR"
+description: "Implement N5.4 from REFACTOR.md. Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.. Acceptance: upgrade flow orchestration is easier to test without loading the whole module. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead."
+sections:
+  Summary: |-
+    N5.4 Split `commands/upgrade.ts` by planning, apply, report, and lock concerns
+    
+    Implement N5.4 from REFACTOR.md. Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.. Acceptance: upgrade flow orchestration is easier to test without loading the whole module. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead.
+  Scope: |-
+    - In scope: Implement N5.4 from REFACTOR.md. Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.. Acceptance: upgrade flow orchestration is easier to test without loading the whole module. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead.
+    - Out of scope: unrelated refactors not required for "N5.4 Split `commands/upgrade.ts` by planning, apply, report, and lock concerns".
+  Plan: |-
+    1. Audit the scoped modules named by this refactor item and isolate the narrowest change set that satisfies N5.4.
+    2. Implement split `commands/upgrade.ts` by planning, apply, report, and lock concerns with an optimization-first bias, deleting duplicated paths where possible instead of layering new wrappers.
+    3. Run focused verification, record the evidence in the task README, and keep any intentional compatibility breaks explicit.
+  Verify Steps: |-
+    1. Run a focused verification slice covering the scoped modules named by this refactor item. Expected: the behavior targeted by N5.4 is observable and stable after the refactor.
+    2. Inspect the final diff for 202603311332-0QBGN0. Expected: scope stays anchored to the scoped modules named by this refactor item plus incidental tests/docs required by the task.
+    3. Re-run the focused checks after final edits. Expected: upgrade flow orchestration is easier to test without loading the whole module.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-03-31T20:41:55.577Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Split commands/upgrade.ts into policy/materialize/plan modules and kept upgrade CLI contracts green via focused lint, vitest, and framework bootstrap.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T20:23:19.639Z, excerpt_hash=sha256:e8978efaeeb679ccb085274001f4fd9b2c9b9a0e274c061bbc6ae2352ce64a30
+    
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+id_source: "generated"
+---
+## Summary
+
+N5.4 Split `commands/upgrade.ts` by planning, apply, report, and lock concerns
+
+Implement N5.4 from REFACTOR.md. Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.. Acceptance: upgrade flow orchestration is easier to test without loading the whole module. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead.
+
+## Scope
+
+- In scope: Implement N5.4 from REFACTOR.md. Use the seams created by `N1` through `N4` to split the current oversized runtime modules into narrower units.. Acceptance: upgrade flow orchestration is easier to test without loading the whole module. Under the current optimization-first directive, simplify aggressively, keep the command family working, and allow non-essential compatibility changes when they materially reduce duplication or overhead.
+- Out of scope: unrelated refactors not required for "N5.4 Split `commands/upgrade.ts` by planning, apply, report, and lock concerns".
+
+## Plan
+
+1. Audit the scoped modules named by this refactor item and isolate the narrowest change set that satisfies N5.4.
+2. Implement split `commands/upgrade.ts` by planning, apply, report, and lock concerns with an optimization-first bias, deleting duplicated paths where possible instead of layering new wrappers.
+3. Run focused verification, record the evidence in the task README, and keep any intentional compatibility breaks explicit.
+
+## Verify Steps
+
+1. Run a focused verification slice covering the scoped modules named by this refactor item. Expected: the behavior targeted by N5.4 is observable and stable after the refactor.
+2. Inspect the final diff for 202603311332-0QBGN0. Expected: scope stays anchored to the scoped modules named by this refactor item plus incidental tests/docs required by the task.
+3. Re-run the focused checks after final edits. Expected: upgrade flow orchestration is easier to test without loading the whole module.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-03-31T20:41:55.577Z — VERIFY — ok
+
+By: CODER
+
+Note: Split commands/upgrade.ts into policy/materialize/plan modules and kept upgrade CLI contracts green via focused lint, vitest, and framework bootstrap.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-31T20:23:19.639Z, excerpt_hash=sha256:e8978efaeeb679ccb085274001f4fd9b2c9b9a0e274c061bbc6ae2352ce64a30
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings

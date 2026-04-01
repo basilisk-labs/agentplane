@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603311332-AR77BP/shared-test-builders",
+  "created_at": "2026-03-31T18:49:08.407Z",
+  "head_sha": "4fa9971bfb9edc495be7e11085cdc03f0b792903",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "a5c42bddb4215370afda19452f3d674e4c42eb17",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T18:50:07.155Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603311332-AR77BP",
+  "updated_at": "2026-03-31T18:50:07.155Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

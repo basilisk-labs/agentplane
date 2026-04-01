@@ -12,7 +12,12 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import { applyTaskMutation, withTaskMutationStorage } from "../shared/task-mutation.js";
+import {
+  setTaskFieldsIntent,
+  setTaskSectionIntent,
+  touchTaskDocMetaIntent,
+} from "../shared/task-store.js";
 
 import {
   decodeEscapedTaskTextNewlines,
@@ -32,27 +37,18 @@ type PlanBackend = CommandContext["taskBackend"] & {
   writeTask: NonNullable<CommandContext["taskBackend"]["writeTask"]>;
 };
 
-async function loadPlanTask(opts: {
+async function loadPlanBackend(opts: {
   ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
-  taskId: string;
 }): Promise<{
   ctx: CommandContext;
   backend: PlanBackend;
-  task: TaskData;
-  useStore: boolean;
-  store: ReturnType<typeof getTaskStore> | null;
 }> {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
   const backend = ctx.taskBackend;
-  const useStore = backendIsLocalFileBackend(ctx);
-  const store = useStore ? getTaskStore(ctx) : null;
-  const task = useStore
-    ? await store!.get(opts.taskId)
-    : await loadTaskFromContext({ ctx, taskId: opts.taskId });
   if (!backend.getTaskDoc || !backend.writeTask) {
     throw new CliError({
       exitCode: 2,
@@ -60,7 +56,7 @@ async function loadPlanTask(opts: {
       message: backendNotSupportedMessage("task docs"),
     });
   }
-  return { ctx, backend: backend as PlanBackend, task, useStore, store };
+  return { ctx, backend: backend as PlanBackend };
 }
 
 function normalizeForComparison(text: string): string {
@@ -167,11 +163,10 @@ export async function cmdTaskPlanSet(opts: {
   updatedBy?: string;
 }): Promise<number> {
   try {
-    const { ctx, backend, task, useStore, store } = await loadPlanTask({
+    const { ctx, backend } = await loadPlanBackend({
       ctx: opts.ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
-      taskId: opts.taskId,
     });
     const config = ctx.config;
     const resolved = ctx.resolvedProject;
@@ -211,79 +206,73 @@ export async function cmdTaskPlanSet(opts: {
       }
     }
 
-    const readmePath = path.join(resolved.gitRoot, config.paths.workflow_dir, task.id, "README.md");
-    if (useStore) {
-      let expectedCurrentPlan: string | undefined;
-      await store!.patch(opts.taskId, (current) => {
+    const readmePath = path.join(
+      resolved.gitRoot,
+      config.paths.workflow_dir,
+      opts.taskId,
+      "README.md",
+    );
+    await applyTaskMutation({
+      ctx,
+      taskId: opts.taskId,
+      build: async (current) => {
+        const currentDocRaw =
+          (typeof current.doc === "string" ? current.doc : "") ||
+          (await backend.getTaskDoc(current.id));
         const { currentPlan, nextPlan, planChanged, docChanged } = buildPlanDocUpdate({
-          currentDocRaw: String(current.doc ?? ""),
+          currentDocRaw,
           text,
           requiredSections: config.tasks.doc.required_sections,
         });
         if (!planChanged && !docChanged && !updatedBy) return null;
         if (!docChanged) {
           return {
+            intents: [
+              ...(planChanged
+                ? [
+                    setTaskFieldsIntent({
+                      plan_approval: {
+                        state: "pending",
+                        updated_at: null,
+                        updated_by: null,
+                        note: null,
+                      },
+                    }),
+                  ]
+                : []),
+              ...(updatedBy ? [touchTaskDocMetaIntent({ updatedBy })] : []),
+            ],
+          };
+        }
+        return {
+          intents: [
+            setTaskSectionIntent({
+              section: "Plan",
+              text: nextPlan,
+              requiredSections: config.tasks.doc.required_sections,
+              expectedCurrentText: currentPlan,
+            }),
             ...(planChanged
-              ? {
-                  task: {
+              ? [
+                  setTaskFieldsIntent({
                     plan_approval: {
                       state: "pending",
                       updated_at: null,
                       updated_by: null,
                       note: null,
                     },
-                  },
-                }
-              : {}),
-            ...(updatedBy ? { docMeta: { touch: true, updatedBy } } : {}),
-          };
-        }
-        expectedCurrentPlan ??= currentPlan;
-        return {
-          doc: {
-            kind: "set-section",
-            section: "Plan",
-            text: nextPlan,
-            requiredSections: config.tasks.doc.required_sections,
-            expectedCurrentText: expectedCurrentPlan,
+                  }),
+                ]
+              : []),
+            ...(updatedBy ? [touchTaskDocMetaIntent({ updatedBy })] : []),
+          ],
+          writeOptions: {
+            expectedCurrentText: currentPlan,
+            expectedSection: "Plan",
           },
-          ...(planChanged
-            ? {
-                task: {
-                  plan_approval: {
-                    state: "pending",
-                    updated_at: null,
-                    updated_by: null,
-                    note: null,
-                  },
-                },
-              }
-            : {}),
-          ...(updatedBy ? { docMeta: { updatedBy } } : {}),
         };
-      });
-    } else {
-      const existingDoc =
-        (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
-      const { planChanged, docChanged, nextDoc } = buildPlanDocUpdate({
-        currentDocRaw: existingDoc,
-        text,
-        requiredSections: config.tasks.doc.required_sections,
-      });
-      if (!planChanged && !docChanged && !updatedBy) {
-        process.stdout.write(`${readmePath}\n`);
-        return 0;
-      }
-      const nextTask: TaskData = {
-        ...task,
-        doc: nextDoc,
-        ...(planChanged
-          ? { plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null } }
-          : {}),
-        ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
-      };
-      await backend.writeTask(nextTask);
-    }
+      },
+    });
 
     process.stdout.write(`${readmePath}\n`);
     return 0;
@@ -302,11 +291,10 @@ export async function cmdTaskPlanApprove(opts: {
   note?: string;
 }): Promise<number> {
   try {
-    const { ctx, backend, task, useStore, store } = await loadPlanTask({
+    const { ctx, backend } = await loadPlanBackend({
       ctx: opts.ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
-      taskId: opts.taskId,
     });
     const config = ctx.config;
 
@@ -321,8 +309,11 @@ export async function cmdTaskPlanApprove(opts: {
     const note = typeof opts.note === "string" ? opts.note.trim() : "";
 
     const approvedAt = nowIso();
-    await (useStore
-      ? store!.patch(opts.taskId, (current) => {
+    await withTaskMutationStorage({
+      ctx,
+      local: async (store) => {
+        await store.get(opts.taskId);
+        await store.patch(opts.taskId, (current) => {
           const currentDoc = ensureDocSections(
             String(current.doc ?? ""),
             config.tasks.doc.required_sections,
@@ -338,22 +329,25 @@ export async function cmdTaskPlanApprove(opts: {
               },
             },
           };
-        })
-      : (async () => {
-          const existingDoc =
-            (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
-          const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
-          assertPlanCanBeApproved({ task, config, doc: baseDoc });
-          await backend.writeTask({
-            ...task,
-            plan_approval: {
-              state: "approved" as PlanApprovalState,
-              updated_at: approvedAt,
-              updated_by: by,
-              note: note || null,
-            },
-          });
-        })());
+        });
+      },
+      remote: async () => {
+        const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+        const existingDoc =
+          (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
+        const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
+        assertPlanCanBeApproved({ task, config, doc: baseDoc });
+        await backend.writeTask({
+          ...task,
+          plan_approval: {
+            state: "approved" as PlanApprovalState,
+            updated_at: approvedAt,
+            updated_by: by,
+            note: note || null,
+          },
+        });
+      },
+    });
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -370,11 +364,10 @@ export async function cmdTaskPlanReject(opts: {
   note: string;
 }): Promise<number> {
   try {
-    const { ctx, backend, task, useStore, store } = await loadPlanTask({
+    const { ctx, backend } = await loadPlanBackend({
       ctx: opts.ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
-      taskId: opts.taskId,
     });
     const config = ctx.config;
 
@@ -396,8 +389,11 @@ export async function cmdTaskPlanReject(opts: {
     }
 
     const rejectedAt = nowIso();
-    await (useStore
-      ? store!.patch(opts.taskId, (current) => {
+    await withTaskMutationStorage({
+      ctx,
+      local: async (store) => {
+        await store.get(opts.taskId);
+        await store.patch(opts.taskId, (current) => {
           const currentDoc = ensureDocSections(
             String(current.doc ?? ""),
             config.tasks.doc.required_sections,
@@ -413,22 +409,25 @@ export async function cmdTaskPlanReject(opts: {
               },
             },
           };
-        })
-      : (async () => {
-          const existingDoc =
-            (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
-          const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
-          assertPlanSectionPresent(task.id, baseDoc, "reject");
-          await backend.writeTask({
-            ...task,
-            plan_approval: {
-              state: "rejected" as PlanApprovalState,
-              updated_at: rejectedAt,
-              updated_by: by,
-              note: note || null,
-            },
-          });
-        })());
+        });
+      },
+      remote: async () => {
+        const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+        const existingDoc =
+          (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
+        const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
+        assertPlanSectionPresent(task.id, baseDoc, "reject");
+        await backend.writeTask({
+          ...task,
+          plan_approval: {
+            state: "rejected" as PlanApprovalState,
+            updated_at: rejectedAt,
+            updated_by: by,
+            note: note || null,
+          },
+        });
+      },
+    });
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

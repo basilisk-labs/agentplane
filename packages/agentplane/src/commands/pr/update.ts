@@ -5,7 +5,7 @@ import { resolveBaseBranch } from "@agentplaneorg/core";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
-import { successMessage, workflowModeMessage } from "../../cli/output.js";
+import { createCliEmitter, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
@@ -31,6 +31,7 @@ export async function cmdPrUpdate(opts: {
   taskId: string;
 }): Promise<number> {
   try {
+    const output = createCliEmitter();
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
@@ -110,9 +111,7 @@ export async function cmdPrUpdate(opts: {
     const nextMeta: PrMeta = buildUpdatedPrMeta({ meta, branch, at: nowIso() });
     await writeJsonStableIfChanged(metaPath, nextMeta);
 
-    process.stdout.write(
-      `${successMessage("pr update", path.relative(resolved.gitRoot, prDir))}\n`,
-    );
+    output.success("pr update", path.relative(resolved.gitRoot, prDir));
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

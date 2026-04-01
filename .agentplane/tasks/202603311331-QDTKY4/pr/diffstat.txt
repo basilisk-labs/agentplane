@@ -1,0 +1,9 @@
+ .agentplane/tasks/202603311331-QDTKY4/README.md    |  80 ++++++++--
+ .../tasks/202603311331-QDTKY4/pr/diffstat.txt      |   5 +
+ .agentplane/tasks/202603311331-QDTKY4/pr/meta.json |  12 ++
+ .agentplane/tasks/202603311331-QDTKY4/pr/review.md |  33 +++++
+ .../tasks/202603311331-QDTKY4/pr/verify.log        |   0
+ .../src/commands/shared/task-store.test.ts         | 161 +++++++++++++++++++++
+ .../agentplane/src/commands/task/doc.unit.test.ts  | 130 +++++++++++++++++
+ .../src/commands/task/verify-record.unit.test.ts   |  77 ++++++++++
+ 8 files changed, 485 insertions(+), 13 deletions(-)

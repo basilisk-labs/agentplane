@@ -4,7 +4,7 @@ import path from "node:path";
 import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists } from "../../cli/fs-utils.js";
-import { successMessage, workflowModeMessage } from "../../cli/output.js";
+import { createCliEmitter, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
 import { gitListTaskBranches, parseTaskIdFromBranch } from "../shared/git-worktree.js";
@@ -73,6 +73,7 @@ export async function cmdPrCheck(opts: {
   taskId: string;
 }): Promise<number> {
   try {
+    const output = createCliEmitter();
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
@@ -176,7 +177,7 @@ export async function cmdPrCheck(opts: {
       });
     }
 
-    process.stdout.write(`${successMessage("pr check", path.relative(resolved.gitRoot, prDir))}\n`);
+    output.success("pr check", path.relative(resolved.gitRoot, prDir));
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

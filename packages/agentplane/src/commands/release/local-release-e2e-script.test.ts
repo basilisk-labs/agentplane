@@ -7,18 +7,14 @@ import { promisify } from "node:util";
 
 import { afterEach, describe, expect, it } from "vitest";
 
+import { seedReleaseWorkspace } from "../release.test-helpers.js";
+import { writeExecutableFile } from "../../test-helpers/fs.js";
+
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/run-local-release-e2e.mjs");
 const LOCAL_RELEASE_E2E_TIMEOUT_MS = 60_000;
 
 const roots: string[] = [];
-
-async function writeExecutable(root: string, relativePath: string, content: string) {
-  const target = path.join(root, relativePath);
-  await mkdir(path.dirname(target), { recursive: true });
-  await writeFile(target, `${content}\n`, { encoding: "utf8", mode: 0o755 });
-  return target;
-}
 
 async function initWorkspace() {
   const root = await mkdtemp(path.join(tmpdir(), "agentplane-local-release-e2e-"));
@@ -28,25 +24,12 @@ async function initWorkspace() {
   await execFileAsync("git", ["config", "user.name", "Release E2E Test"], { cwd: root });
   await execFileAsync("git", ["config", "user.email", "release-e2e@example.com"], { cwd: root });
 
-  await mkdir(path.join(root, "packages", "core"), { recursive: true });
-  await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
-  await mkdir(path.join(root, "docs", "releases"), { recursive: true });
-
-  await writeFile(
-    path.join(root, "packages", "core", "package.json"),
-    JSON.stringify({ name: "@agentplaneorg/core", version: "1.2.3" }, null, 2) + "\n",
-    "utf8",
-  );
-  await writeFile(
-    path.join(root, "packages", "agentplane", "package.json"),
-    JSON.stringify(
-      { name: "agentplane", version: "1.2.3", dependencies: { "@agentplaneorg/core": "1.2.3" } },
-      null,
-      2,
-    ) + "\n",
-    "utf8",
-  );
-  await writeFile(path.join(root, "docs", "releases", "v1.2.3.md"), "# Notes\n", "utf8");
+  await seedReleaseWorkspace(root, {
+    coreVersion: "1.2.3",
+    cliVersion: "1.2.3",
+    dependencyVersion: "1.2.3",
+    writeNotes: true,
+  });
   await writeFile(path.join(root, "tracked.txt"), "seed\n", "utf8");
 
   await execFileAsync("git", ["add", "-A"], { cwd: root });
@@ -58,55 +41,50 @@ async function initWorkspace() {
   const binDir = path.join(root, "bin");
   await mkdir(binDir, { recursive: true });
 
-  await writeExecutable(
-    root,
-    "bin/npm",
-    ["#!/usr/bin/env bash", "set -euo pipefail", "echo 'npm error code E404' >&2", "exit 1"].join(
-      "\n",
-    ),
-  );
+  await writeExecutableFile(root, "bin/npm", [
+    "#!/usr/bin/env bash",
+    "set -euo pipefail",
+    "echo 'npm error code E404' >&2",
+    "exit 1",
+  ]);
 
-  await writeExecutable(
-    root,
-    "bin/gh",
-    [
-      "#!/usr/bin/env bash",
-      "set -euo pipefail",
-      'if [[ "$1" != "--version" && -z "${GH_TOKEN:-${GITHUB_TOKEN:-}}" ]]; then',
-      "  echo 'missing token' >&2",
-      "  exit 1",
-      "fi",
-      'if [[ "$1" == "--version" ]]; then',
-      "  echo 'gh version test'",
-      "  exit 0",
-      "fi",
-      'if [[ "$1" != "run" || "$2" != "download" ]]; then',
-      "  echo 'unexpected gh invocation' >&2",
-      "  exit 1",
-      "fi",
-      "dest=''",
-      "for ((i=1; i<=$#; i++)); do",
-      '  if [[ "${!i}" == "--dir" ]]; then',
-      "    next=$((i+1))",
-      '    dest="${!next}"',
-      "  fi",
-      "done",
-      'if [[ -z "$dest" ]]; then',
-      "  echo 'missing --dir' >&2",
-      "  exit 1",
-      "fi",
-      'mkdir -p "$dest"',
-      'cat > "$dest/release-ready.json" <<EOF',
-      "{",
-      '  "ready": true,',
-      '  "reasonCode": "ready",',
-      '  "sha": "${AGENTPLANE_TEST_GH_SHA}",',
-      '  "version": "${AGENTPLANE_TEST_GH_VERSION:-1.2.3}",',
-      '  "tag": "${AGENTPLANE_TEST_GH_TAG:-v1.2.3}"',
-      "}",
-      "EOF",
-    ].join("\n"),
-  );
+  await writeExecutableFile(root, "bin/gh", [
+    "#!/usr/bin/env bash",
+    "set -euo pipefail",
+    'if [[ "$1" != "--version" && -z "${GH_TOKEN:-${GITHUB_TOKEN:-}}" ]]; then',
+    "  echo 'missing token' >&2",
+    "  exit 1",
+    "fi",
+    'if [[ "$1" == "--version" ]]; then',
+    "  echo 'gh version test'",
+    "  exit 0",
+    "fi",
+    'if [[ "$1" != "run" || "$2" != "download" ]]; then',
+    "  echo 'unexpected gh invocation' >&2",
+    "  exit 1",
+    "fi",
+    "dest=''",
+    "for ((i=1; i<=$#; i++)); do",
+    '  if [[ "${!i}" == "--dir" ]]; then',
+    "    next=$((i+1))",
+    '    dest="${!next}"',
+    "  fi",
+    "done",
+    'if [[ -z "$dest" ]]; then',
+    "  echo 'missing --dir' >&2",
+    "  exit 1",
+    "fi",
+    'mkdir -p "$dest"',
+    'cat > "$dest/release-ready.json" <<EOF',
+    "{",
+    '  "ready": true,',
+    '  "reasonCode": "ready",',
+    '  "sha": "${AGENTPLANE_TEST_GH_SHA}",',
+    '  "version": "${AGENTPLANE_TEST_GH_VERSION:-1.2.3}",',
+    '  "tag": "${AGENTPLANE_TEST_GH_TAG:-v1.2.3}"',
+    "}",
+    "EOF",
+  ]);
 
   return { root, sha, binDir };
 }
@@ -289,32 +267,35 @@ describe("local release E2E script", () => {
     expect(result.stderr).toContain("Exact checkout required");
   });
 
-  it("fails explicitly when GitHub auth is missing", LOCAL_RELEASE_E2E_TIMEOUT_MS, async () => {
-    const { root, binDir } = await initWorkspace();
+  it(
+    "fails explicitly when GitHub auth is missing",
+    async () => {
+      const { root, binDir } = await initWorkspace();
 
-    const result = await runScript(root, ["--skip-prepublish"], {
-      PATH: `${binDir}:${process.env.PATH ?? ""}`,
-    }).then(
-      () => ({ ok: true as const, stderr: "" }),
-      (error: unknown) => {
-        const stderr =
-          typeof error === "object" &&
-          error !== null &&
-          "stderr" in error &&
-          typeof (error as { stderr?: unknown }).stderr === "string"
-            ? (error as { stderr: string }).stderr
-            : "";
-        return { ok: false as const, stderr };
-      },
-    );
+      const result = await runScript(root, ["--skip-prepublish"], {
+        PATH: `${binDir}:${process.env.PATH ?? ""}`,
+      }).then(
+        () => ({ ok: true as const, stderr: "" }),
+        (error: unknown) => {
+          const stderr =
+            typeof error === "object" &&
+            error !== null &&
+            "stderr" in error &&
+            typeof (error as { stderr?: unknown }).stderr === "string"
+              ? (error as { stderr: string }).stderr
+              : "";
+          return { ok: false as const, stderr };
+        },
+      );
 
-    expect(result.ok).toBe(false);
-    expect(result.stderr).toContain("Missing required GITHUB_TOKEN");
-  });
+      expect(result.ok).toBe(false);
+      expect(result.stderr).toContain("Missing required GITHUB_TOKEN");
+    },
+    LOCAL_RELEASE_E2E_TIMEOUT_MS,
+  );
 
   it(
     "fails when the downloaded artifact manifest does not match the exact release sha",
-    LOCAL_RELEASE_E2E_TIMEOUT_MS,
     async () => {
       const { root, sha, binDir } = await initWorkspace();
 
@@ -366,5 +347,6 @@ describe("local release E2E script", () => {
         },
       );
     },
+    LOCAL_RELEASE_E2E_TIMEOUT_MS,
   );
 });

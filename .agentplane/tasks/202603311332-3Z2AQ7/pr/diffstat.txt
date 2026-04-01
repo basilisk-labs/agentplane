@@ -1,0 +1,11 @@
+ .agentplane/tasks/202603311332-3Z2AQ7/README.md    |  58 +-
+ .../tasks/202603311332-3Z2AQ7/pr/diffstat.txt      |   7 +
+ .agentplane/tasks/202603311332-3Z2AQ7/pr/meta.json |  12 +
+ .agentplane/tasks/202603311332-3Z2AQ7/pr/review.md |  35 ++
+ .../tasks/202603311332-3Z2AQ7/pr/verify.log        |   0
+ .../src/backends/task-backend/local-backend-doc.ts | 154 +++++
+ .../backends/task-backend/local-backend-read.ts    | 241 +++++++
+ .../backends/task-backend/local-backend-state.ts   |  76 +++
+ .../backends/task-backend/local-backend-write.ts   | 358 +++++++++++
+ .../src/backends/task-backend/local-backend.ts     | 692 ++-------------------
+ 10 files changed, 963 insertions(+), 670 deletions(-)

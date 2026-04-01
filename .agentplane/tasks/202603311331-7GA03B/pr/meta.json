@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603311331-7GA03B/prune-transition-branches",
+  "created_at": "2026-03-31T16:52:06.746Z",
+  "head_sha": "07f92e61041e132c34f1554077f01ff9e124f559",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "e086c7f6d8891658353e937e0aa0cce30916d654",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T16:53:22.873Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603311331-7GA03B",
+  "updated_at": "2026-03-31T16:53:22.873Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

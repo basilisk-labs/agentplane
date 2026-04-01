@@ -1,0 +1,18 @@
+ .agentplane/tasks/202603311332-AR77BP/README.md    | 58 +++++++++++----
+ .../tasks/202603311332-AR77BP/pr/diffstat.txt      | 18 +++++
+ .agentplane/tasks/202603311332-AR77BP/pr/meta.json | 12 ++++
+ .agentplane/tasks/202603311332-AR77BP/pr/review.md | 46 ++++++++++++
+ .../tasks/202603311332-AR77BP/pr/verify.log        |  0
+ .../src/commands/shared/task-mutation.test.ts      | 48 ++++---------
+ .../agentplane/src/commands/task.test-helpers.ts   | 84 ++++++++++++++++++++++
+ .../src/commands/task/block.unit.test.ts           | 47 +++---------
+ .../src/commands/task/close-shared.unit.test.ts    | 25 ++-----
+ .../src/commands/task/comment.unit.test.ts         | 25 ++-----
+ .../agentplane/src/commands/task/doc.unit.test.ts  | 59 ++++-----------
+ .../src/commands/task/mutation-parity.unit.test.ts | 60 ++++------------
+ .../agentplane/src/commands/task/plan.unit.test.ts | 68 +++++-------------
+ .../src/commands/task/set-status.unit.test.ts      | 45 +++---------
+ .../src/commands/task/start.unit.test.ts           | 53 ++++----------
+ .../src/commands/task/verify-record.unit.test.ts   | 58 ++++-----------
+ .../task/workflow-transition-service.unit.test.ts  | 18 +----
+ 17 files changed, 317 insertions(+), 407 deletions(-)

@@ -1,0 +1,14 @@
+ .agentplane/tasks/202603301857-XC7RHS/README.md    | 102 ++++++++++++++++++---
+ .../tasks/202603301857-XC7RHS/pr/diffstat.txt      |  10 ++
+ .agentplane/tasks/202603301857-XC7RHS/pr/meta.json |  12 +++
+ .agentplane/tasks/202603301857-XC7RHS/pr/review.md |  38 ++++++++
+ .../tasks/202603301857-XC7RHS/pr/verify.log        |   0
+ packages/agentplane/src/cli/run-cli.core.test.ts   |  34 +++++++
+ packages/agentplane/src/cli/run-cli.ts             |  10 +-
+ .../src/cli/run-cli/command-catalog.test.ts        |  18 ++++
+ .../src/cli/run-cli/command-catalog/core.ts        |  48 +++++-----
+ .../src/cli/run-cli/command-catalog/lifecycle.ts   |   8 +-
+ .../src/cli/run-cli/command-catalog/project.ts     |  12 +--
+ .../src/cli/run-cli/command-catalog/shared.ts      |  27 ++++--
+ .../src/cli/run-cli/command-catalog/task.ts        |  10 +-
+ 13 files changed, 264 insertions(+), 65 deletions(-)

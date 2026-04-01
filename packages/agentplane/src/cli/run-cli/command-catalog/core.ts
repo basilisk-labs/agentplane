@@ -19,7 +19,10 @@ import {
   modeSetSpec,
   profileSetSpec,
 } from "../commands/config.js";
-import { agentsSpec, preflightSpec, quickstartSpec, roleSpec } from "../commands/core.js";
+import { agentsSpec } from "../commands/core/agents.js";
+import { preflightSpec } from "../commands/core/preflight.js";
+import { quickstartSpec } from "../commands/core/quickstart.js";
+import { roleSpec } from "../commands/core/role.js";
 import { ideSyncSpec } from "../commands/ide.js";
 import { initSpec } from "../commands/init.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
@@ -29,7 +32,7 @@ import { entry, type CommandEntry } from "./shared.js";
 export const CORE_COMMANDS = [
   entry(initSpec, () => import("../commands/init.js").then((m) => m.runInit), {
     needsProject: false,
-    needsConfig: false,
+    needsLoadedConfig: false,
     needsTaskContext: false,
     invocation: requireCanonicalCommandInvocation(["init"]),
   }),
@@ -38,7 +41,7 @@ export const CORE_COMMANDS = [
     () => import("../../../commands/upgrade.command.js").then((m) => m.runUpgrade),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -47,7 +50,7 @@ export const CORE_COMMANDS = [
     () => import("../../../commands/release/release.command.js").then((m) => m.runRelease),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -56,7 +59,7 @@ export const CORE_COMMANDS = [
     () => import("../../../commands/release/plan.command.js").then((m) => m.runReleasePlan),
     {
       needsProject: true,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -65,19 +68,23 @@ export const CORE_COMMANDS = [
     () => import("../../../commands/release/apply.command.js").then((m) => m.runReleaseApply),
     {
       needsProject: true,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
-  entry(quickstartSpec, () => import("../commands/core.js").then((m) => m.runQuickstart), {
+  entry(
+    quickstartSpec,
+    () => import("../commands/core/quickstart.js").then((m) => m.runQuickstart),
+    {
+      needsProject: false,
+      needsLoadedConfig: false,
+      needsTaskContext: false,
+      invocation: requireCanonicalCommandInvocation(["quickstart"]),
+    },
+  ),
+  entry(preflightSpec, () => import("../commands/core/preflight.js").then((m) => m.runPreflight), {
     needsProject: false,
-    needsConfig: false,
-    needsTaskContext: false,
-    invocation: requireCanonicalCommandInvocation(["quickstart"]),
-  }),
-  entry(preflightSpec, () => import("../commands/core.js").then((m) => m.runPreflight), {
-    needsProject: false,
-    needsConfig: false,
+    needsLoadedConfig: false,
     needsTaskContext: false,
     invocation: requireCanonicalCommandInvocation(["preflight"]),
   }),
@@ -86,7 +93,7 @@ export const CORE_COMMANDS = [
     () => import("../../../commands/runtime.command.js").then((m) => m.runRuntime),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -95,22 +102,22 @@ export const CORE_COMMANDS = [
     () => import("../../../commands/runtime.command.js").then((m) => m.runRuntimeExplain),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
-  entry(roleSpec, () => import("../commands/core.js").then((m) => m.runRole), {
+  entry(roleSpec, () => import("../commands/core/role.js").then((m) => m.runRole), {
     needsProject: false,
-    needsConfig: false,
+    needsLoadedConfig: false,
     needsTaskContext: false,
     invocation: requireCanonicalCommandInvocation(["role"]),
   }),
   entry(
     agentsSpec,
-    (deps) => import("../commands/core.js").then((m) => m.makeRunAgentsHandler(deps)),
+    (deps) => import("../commands/core/agents.js").then((m) => m.makeRunAgentsHandler(deps)),
     {
       needsProject: true,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -119,7 +126,7 @@ export const CORE_COMMANDS = [
     (deps) => import("../commands/config.js").then((m) => m.makeRunConfigShowHandler(deps)),
     {
       needsProject: true,
-      needsConfig: true,
+      needsLoadedConfig: true,
       needsTaskContext: false,
       invocation: requireCanonicalCommandInvocation(["config", "show"]),
     },
@@ -129,7 +136,7 @@ export const CORE_COMMANDS = [
     (deps) => import("../commands/config.js").then((m) => m.makeRunConfigSetHandler(deps)),
     {
       needsProject: true,
-      needsConfig: true,
+      needsLoadedConfig: true,
       needsTaskContext: false,
     },
   ),
@@ -138,7 +145,7 @@ export const CORE_COMMANDS = [
     (deps) => import("../commands/config.js").then((m) => m.makeRunModeGetHandler(deps)),
     {
       needsProject: true,
-      needsConfig: true,
+      needsLoadedConfig: true,
       needsTaskContext: false,
     },
   ),
@@ -147,7 +154,7 @@ export const CORE_COMMANDS = [
     (deps) => import("../commands/config.js").then((m) => m.makeRunModeSetHandler(deps)),
     {
       needsProject: true,
-      needsConfig: true,
+      needsLoadedConfig: true,
       needsTaskContext: false,
     },
   ),
@@ -156,7 +163,7 @@ export const CORE_COMMANDS = [
     (deps) => import("../commands/config.js").then((m) => m.makeRunProfileSetHandler(deps)),
     {
       needsProject: true,
-      needsConfig: true,
+      needsLoadedConfig: true,
       needsTaskContext: false,
     },
   ),
@@ -165,13 +172,13 @@ export const CORE_COMMANDS = [
     (deps) => import("../commands/ide.js").then((m) => m.makeRunIdeSyncHandler(deps)),
     {
       needsProject: true,
-      needsConfig: true,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
   entry(doctorSpec, () => import("../../../commands/doctor.run.js").then((m) => m.runDoctor), {
     needsProject: true,
-    needsConfig: false,
+    needsLoadedConfig: false,
     needsTaskContext: false,
   }),
   entry(
@@ -179,7 +186,7 @@ export const CORE_COMMANDS = [
     () => import("../../../commands/workflow.command.js").then((m) => m.runWorkflow),
     {
       needsProject: false,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -188,7 +195,7 @@ export const CORE_COMMANDS = [
     () => import("../../../commands/workflow-build.command.js").then((m) => m.runWorkflowBuild),
     {
       needsProject: true,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -197,7 +204,7 @@ export const CORE_COMMANDS = [
     () => import("../../../commands/workflow-restore.command.js").then((m) => m.runWorkflowRestore),
     {
       needsProject: true,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -206,7 +213,7 @@ export const CORE_COMMANDS = [
     () => import("../../../commands/workflow-playbook.command.js").then((m) => m.runWorkflowDebug),
     {
       needsProject: true,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -215,7 +222,7 @@ export const CORE_COMMANDS = [
     () => import("../../../commands/workflow-playbook.command.js").then((m) => m.runWorkflowSync),
     {
       needsProject: true,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),
@@ -224,7 +231,7 @@ export const CORE_COMMANDS = [
     () => import("../../../commands/workflow-playbook.command.js").then((m) => m.runWorkflowLand),
     {
       needsProject: true,
-      needsConfig: false,
+      needsLoadedConfig: false,
       needsTaskContext: false,
     },
   ),

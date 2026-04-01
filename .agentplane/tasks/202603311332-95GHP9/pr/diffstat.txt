@@ -1,0 +1,9 @@
+ .agentplane/tasks/202603311332-95GHP9/README.md    |  58 +++++++--
+ .../tasks/202603311332-95GHP9/pr/diffstat.txt      |   9 ++
+ .agentplane/tasks/202603311332-95GHP9/pr/meta.json |  12 ++
+ .agentplane/tasks/202603311332-95GHP9/pr/review.md |  37 ++++++
+ .../tasks/202603311332-95GHP9/pr/verify.log        |   0
+ .../src/backends/task-backend/local-backend.ts     | 131 +++++++++++++++++----
+ .../src/backends/task-backend/shared/doc.ts        |  56 +++++----
+ .../agentplane/src/commands/shared/task-store.ts   |  62 +++++-----
+ 8 files changed, 264 insertions(+), 101 deletions(-)

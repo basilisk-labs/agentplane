@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import { mapBackendError } from "../../../cli/error-map.js";
-import { successMessage } from "../../../cli/output.js";
+import { createCliEmitter } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
 
 import { cleanupIntegratedBranch } from "./internal/cleanup.js";
@@ -29,6 +29,7 @@ export async function cmdIntegrate(opts: {
 }): Promise<number> {
   let tempWorktreePath: string | null = null;
   let createdTempWorktree = false;
+  const output = createCliEmitter();
 
   try {
     const prepared = await prepareIntegrate({
@@ -63,12 +64,10 @@ export async function cmdIntegrate(opts: {
 
     if (opts.dryRun) {
       if (!opts.quiet) {
-        process.stdout.write(
-          `${successMessage(
-            "integrate dry-run",
-            task.id,
-            `base=${base} branch=${branch} verify=${shouldRunVerify ? "yes" : "no"}`,
-          )}\n`,
+        output.success(
+          "integrate dry-run",
+          task.id,
+          `base=${base} branch=${branch} verify=${shouldRunVerify ? "yes" : "no"}`,
         );
       }
       return 0;

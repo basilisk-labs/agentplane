@@ -2,6 +2,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { applyTaskCollectionMutation } from "../shared/task-mutation.js";
 import { syncHostedMergedTasks } from "./hosted-merge-sync.js";
 
 export async function cmdTaskNormalize(opts: {
@@ -35,24 +36,29 @@ export async function cmdTaskNormalize(opts: {
       return 0;
     }
 
-    let tasks = await ctx.taskBackend.listTasks();
     let syncedHostedMerges = 0;
-    if (opts.syncHostedMerges === true) {
-      const synced = await syncHostedMergedTasks({ ctx, tasks });
-      tasks = synced.tasks;
-      syncedHostedMerges = synced.synced;
-    }
-    await (ctx.taskBackend.writeTasks
-      ? ctx.taskBackend.writeTasks(tasks)
-      : (async () => {
-          for (const task of tasks) await ctx.taskBackend.writeTask(task);
-        })());
+    const { result, tasksToWrite } = await applyTaskCollectionMutation({
+      ctx,
+      build: async (tasks) => {
+        let nextTasks = tasks;
+        if (opts.syncHostedMerges === true) {
+          const synced = await syncHostedMergedTasks({ ctx, tasks });
+          nextTasks = synced.tasks;
+          syncedHostedMerges = synced.synced;
+        }
+        return {
+          result: null,
+          tasksToWrite: nextTasks,
+        };
+      },
+    });
+    void result;
     if (!opts.quiet) {
       process.stdout.write(
         `${successMessage(
           "normalized tasks",
           undefined,
-          `count=${tasks.length}${opts.syncHostedMerges === true ? ` synced_hosted_merges=${syncedHostedMerges}` : ""}`,
+          `count=${tasksToWrite.length}${opts.syncHostedMerges === true ? ` synced_hosted_merges=${syncedHostedMerges}` : ""}`,
         )}\n`,
       );
     }

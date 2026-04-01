@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603301857-F0343K/structured-output-collector",
+  "created_at": "2026-03-31T12:52:25.696Z",
+  "head_sha": "9be52e3e921bd8fc6cee595ffcb9928c586d8559",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "06878577c70463eaaf038db1ac9ec155e1027c49",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T12:54:03.444Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603301857-F0343K",
+  "updated_at": "2026-03-31T12:54:03.444Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

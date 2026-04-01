@@ -97,6 +97,7 @@ describe("runtime.command", () => {
       );
       expect(payload.repoCliExpectation.expectedVersion).toBe(repoExpectedCliVersion);
       expect(payload.repoCliExpectation.state).toBe("satisfied");
+      expect(io.stdout).toBe(`${JSON.stringify(payload, null, 2)}\n`);
     } finally {
       io.restore();
     }

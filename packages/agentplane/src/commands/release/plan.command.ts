@@ -2,11 +2,13 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { resolveProject } from "@agentplaneorg/core";
+import { createCliEmitter } from "../../cli/output.js";
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
+const output = createCliEmitter();
 
 type BumpKind = "patch" | "minor" | "major";
 
@@ -296,11 +298,11 @@ export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, fla
     "utf8",
   );
 
-  process.stdout.write(`Release plan written: ${path.relative(gitRoot, baseDir)}\n`);
-  process.stdout.write(`Next tag: ${nextTag}\n`);
-  process.stdout.write(
-    `Hint: Create a DOCS task to write docs/releases/${nextTag}.md based on this plan.\n`,
-  );
+  output.lines([
+    `Release plan written: ${path.relative(gitRoot, baseDir)}`,
+    `Next tag: ${nextTag}`,
+    `Hint: Create a DOCS task to write docs/releases/${nextTag}.md based on this plan.`,
+  ]);
 
   return 0;
 };

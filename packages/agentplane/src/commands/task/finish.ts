@@ -1,17 +1,13 @@
 import { mapBackendError } from "../../cli/error-map.js";
 import { infoMessage, invalidValueMessage, successMessage } from "../../cli/output.js";
-import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
-
-import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 import {
   createTaskCloseCommit,
   existingCommitInfo,
@@ -24,8 +20,10 @@ import {
 import {
   defaultCommitEmojiForStatus,
   enforceStatusCommitPolicy,
+  prepareTaskTransitionComment,
   readCommitInfo,
   requireStructuredComment,
+  runTaskTransitionCommentCommit,
 } from "./shared.js";
 
 async function clearDirectWorkLockIfMatches(opts: {
@@ -246,26 +244,20 @@ export async function cmdFinish(opts: {
       });
     }
 
-    let executorAgent: string | null = null;
-    if (opts.commitFromComment || statusCommitRequested) {
-      const mode = ctx.config.workflow_mode;
-      executorAgent = opts.author;
-      if (mode === "direct") {
-        const lock = await readDirectWorkLock(ctx.resolvedProject.agentplaneDir);
-        const lockAgent = lock?.task_id === primaryTaskId ? (lock.agent?.trim() ?? "") : "";
-        if (lockAgent) executorAgent = lockAgent;
-      }
-    }
-
     const gitRoot = ctx.resolvedProject.gitRoot;
     let taskCommitInfo: ResolvedCommitInfo | null = opts.commit
       ? await readCommitInfo(gitRoot, opts.commit)
       : null;
+    const preparedComment =
+      opts.commitFromComment || statusCommitRequested
+        ? prepareTaskTransitionComment({
+            body: opts.body,
+            enabled: true,
+            config: ctx.config,
+          })
+        : null;
 
     if (opts.commitFromComment) {
-      if (!opts.quiet) {
-        process.stdout.write(`${infoMessage("creating commit from verification comment")}\n`);
-      }
       if (typeof opts.commitEmoji === "string" && opts.commitEmoji.trim() !== "✅") {
         throw new CliError({
           exitCode: 2,
@@ -277,32 +269,29 @@ export async function cmdFinish(opts: {
           ),
         });
       }
-      taskCommitInfo = await commitFromComment({
+      taskCommitInfo = await runTaskTransitionCommentCommit({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: primaryTaskId,
         primaryTag: primaryTag ?? "meta",
-        executorAgent: executorAgent ?? undefined,
         author: opts.author,
         statusFrom: primaryStatusFrom ?? undefined,
         statusTo: "DONE",
         commentBody: opts.body,
-        formattedComment: formatCommentBodyForCommit(opts.body, ctx.config),
+        formattedComment: preparedComment?.formattedComment ?? null,
         emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("DONE"),
         allow: opts.commitAllow,
         autoAllow: false,
         allowTasks: opts.commitAllowTasks,
         requireClean: opts.commitRequireClean,
         quiet: opts.quiet,
-        config: ctx.config,
+        progressMessage: "creating commit from verification comment",
+        resolveExecutorAgent: true,
       });
     }
 
     if (statusCommitRequested) {
-      if (!opts.quiet) {
-        process.stdout.write(`${infoMessage("creating status commit")}\n`);
-      }
       if (typeof opts.statusCommitEmoji === "string" && opts.statusCommitEmoji.trim() !== "✅") {
         throw new CliError({
           exitCode: 2,
@@ -314,25 +303,25 @@ export async function cmdFinish(opts: {
           ),
         });
       }
-      await commitFromComment({
+      await runTaskTransitionCommentCommit({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: primaryTaskId,
         primaryTag: primaryTag ?? "meta",
-        executorAgent: executorAgent ?? undefined,
         author: opts.author,
         statusFrom: primaryStatusFrom ?? undefined,
         statusTo: "DONE",
         commentBody: opts.body,
-        formattedComment: formatCommentBodyForCommit(opts.body, ctx.config),
+        formattedComment: preparedComment?.formattedComment ?? null,
         emoji: opts.statusCommitEmoji ?? defaultCommitEmojiForStatus("DONE"),
         allow: opts.statusCommitAllow,
         autoAllow: false,
         allowTasks: true,
         requireClean: opts.statusCommitRequireClean,
         quiet: opts.quiet,
-        config: ctx.config,
+        progressMessage: "creating status commit",
+        resolveExecutorAgent: true,
       });
     }
 

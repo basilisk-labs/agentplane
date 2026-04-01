@@ -15,8 +15,6 @@ function mkCtx(taskBackend: Partial<TaskBackend>): CommandContext {
     backendConfigPath: path.join("/repo", ".agentplane", "backends", "mock", "backend.json"),
     git: {} as CommandContext["git"],
     memo: {},
-    resolved: { gitRoot: "/repo" } as CommandContext["resolved"],
-    backend: taskBackend as CommandContext["backend"],
   };
 }
 
@@ -29,6 +27,7 @@ describe("cmdTaskExport", () => {
       capabilities: {
         canonical_source: "remote",
         projection: "cache",
+        projection_read_mode: "native",
         reads_from_projection_by_default: true,
         supports_task_revisions: false,
         supports_revision_guarded_writes: false,
@@ -58,6 +57,7 @@ describe("cmdTaskExport", () => {
       capabilities: {
         canonical_source: "local",
         projection: "canonical",
+        projection_read_mode: "native",
         reads_from_projection_by_default: true,
         supports_task_revisions: true,
         supports_revision_guarded_writes: true,

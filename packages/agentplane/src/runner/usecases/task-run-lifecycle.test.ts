@@ -1,4 +1,4 @@
-import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
@@ -21,6 +21,7 @@ import {
   retryTaskRunnerExecution,
 } from "./task-run-lifecycle.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
+import { writeRunnerExecutable } from "../test-helpers.js";
 
 installRunCliIntegrationHarness();
 const originalPath = process.env.PATH;
@@ -28,10 +29,6 @@ const originalPath = process.env.PATH;
 afterEach(() => {
   process.env.PATH = originalPath;
 });
-
-async function makeTaskRoot(): Promise<string> {
-  return await mkGitRepoRoot();
-}
 
 async function createDoingTask(root: string, title: string): Promise<string> {
   let taskId = "";
@@ -85,10 +82,7 @@ async function configureCustomRunner(root: string, scriptLines: string[]): Promi
   await writeConfig(root, config);
 
   const fakeBinDir = path.join(root, "bin");
-  const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
-  await mkdir(fakeBinDir, { recursive: true });
-  await writeFile(fakeRunnerPath, scriptLines.join("\n"), "utf8");
-  await chmod(fakeRunnerPath, 0o755);
+  await writeRunnerExecutable(root, "custom-runner", scriptLines);
   process.env.PATH = `${fakeBinDir}${path.delimiter}${process.env.PATH ?? ""}`;
 }
 
@@ -108,7 +102,7 @@ async function waitForState(
 
 describe("task-run lifecycle usecases", () => {
   it("cancel marks a prepared execute-mode run as cancelled and appends an event", async () => {
-    const root = await makeTaskRoot();
+    const root = await mkGitRepoRoot();
     await configureCustomRunner(root, ["#!/bin/sh", "cat >/dev/null", "exit 0"]);
     const taskId = await createDoingTask(root, "Cancel run");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -148,7 +142,7 @@ describe("task-run lifecycle usecases", () => {
   });
 
   it("cancel terminates a running execute-mode run via persisted supervision metadata", async () => {
-    const root = await makeTaskRoot();
+    const root = await mkGitRepoRoot();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       "trap 'exit 0' TERM",
@@ -211,7 +205,7 @@ describe("task-run lifecycle usecases", () => {
   });
 
   it("cancel keeps cancel_signal and exit_signal semantics distinct during TERM cancellation", async () => {
-    const root = await makeTaskRoot();
+    const root = await mkGitRepoRoot();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       "trap 'exit 0' TERM",
@@ -272,7 +266,7 @@ describe("task-run lifecycle usecases", () => {
   });
 
   it("cancel refuses when the live process identity no longer matches persisted supervision metadata", async () => {
-    const root = await makeTaskRoot();
+    const root = await mkGitRepoRoot();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       "trap 'exit 0' TERM",
@@ -353,7 +347,7 @@ describe("task-run lifecycle usecases", () => {
   });
 
   it("resume re-executes an existing prepared execute-mode run in place", async () => {
-    const root = await makeTaskRoot();
+    const root = await mkGitRepoRoot();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       String.raw`printf "resumed runner %s\n" "$AGENTPLANE_RUNNER_RUN_DIR"`,
@@ -401,7 +395,7 @@ describe("task-run lifecycle usecases", () => {
   });
 
   it("retry creates a new run from a failed execute-mode run snapshot", async () => {
-    const root = await makeTaskRoot();
+    const root = await mkGitRepoRoot();
     await configureCustomRunner(root, [
       "#!/bin/sh",
       String.raw`printf "retried runner %s\n" "$AGENTPLANE_RUNNER_RUN_DIR"`,

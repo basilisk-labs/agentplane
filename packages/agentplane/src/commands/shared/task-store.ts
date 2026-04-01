@@ -2,12 +2,13 @@ import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 import {
+  applyTaskDocMutations,
   docChanged,
   extractTaskDoc,
   mergeTaskDoc,
+  normalizeTaskDocVersion,
   parseTaskReadme,
   renderTaskReadme,
-  renderTaskDocFromSections,
   taskDocToSectionMap,
   type ParsedTaskReadme,
 } from "@agentplaneorg/core";
@@ -20,6 +21,10 @@ import {
 } from "../../backends/task-backend.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  assertExpectedTaskDoc,
+  assertExpectedTaskSection,
+} from "../../shared/task-doc-conflicts.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { resolveDocUpdatedBy, taskDataToFrontmatter, type CommandContext } from "./task-backend.js";
 
@@ -32,6 +37,15 @@ type CachedTask = {
 };
 
 type TaskComment = NonNullable<TaskData["comments"]>[number];
+type TaskDocState = {
+  comments: TaskData["comments"] | null;
+  doc: string;
+  doc_updated_at?: string;
+  doc_updated_by?: string;
+  doc_version: 2 | 3;
+  owner: string;
+  sections?: TaskData["sections"] | null;
+};
 
 export type TaskStoreTaskPatch = Partial<
   Omit<
@@ -97,7 +111,7 @@ export type TaskStoreIntent =
       version?: 2 | 3;
     };
 
-type TaskStoreIntentResult = TaskStoreIntent | readonly TaskStoreIntent[] | null | undefined;
+export type TaskStoreIntentResult = TaskStoreIntent | readonly TaskStoreIntent[] | null | undefined;
 
 export type TaskStoreMutationOptions = {
   expectedRevision?: number;
@@ -156,22 +170,12 @@ function taskReadmePath(ctx: CommandContext, taskId: string): string {
   return path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.workflow_dir, taskId, "README.md");
 }
 
-function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 3): 2 | 3 {
-  return value === 3 ? 3 : value === 2 ? 2 : fallback;
-}
-
 function normalizeTaskRevision(value: unknown, fallback = 1): number {
   return Number.isInteger(value) && Number(value) > 0 ? Number(value) : fallback;
 }
 
 function readStoredTaskRevision(value: unknown): number | null {
   return Number.isInteger(value) && Number(value) > 0 ? Number(value) : null;
-}
-
-function normalizeDocComparison(text: string | null | undefined): string {
-  return String(text ?? "")
-    .replaceAll("\r\n", "\n")
-    .trim();
 }
 
 function normalizeComments(task: TaskData): TaskComment[] {
@@ -203,35 +207,6 @@ function isConcurrentReadmeChangeError(err: unknown): err is CliError {
   );
 }
 
-function throwTaskSectionConflict(opts: { taskId: string; section: string }): never {
-  throw new CliError({
-    exitCode: exitCodeForError("E_VALIDATION"),
-    code: "E_VALIDATION",
-    message:
-      `Task README section changed concurrently: ${opts.taskId} ## ${opts.section} ` +
-      "(re-read the task and re-apply your change)",
-    context: {
-      task_id: opts.taskId,
-      section: opts.section,
-      reason_code: "task_readme_section_conflict",
-    },
-  });
-}
-
-function throwTaskDocConflict(opts: { taskId: string }): never {
-  throw new CliError({
-    exitCode: exitCodeForError("E_VALIDATION"),
-    code: "E_VALIDATION",
-    message:
-      `Task README changed concurrently: ${opts.taskId} ` +
-      "(re-read the task and re-apply your change)",
-    context: {
-      task_id: opts.taskId,
-      reason_code: "task_readme_conflict",
-    },
-  });
-}
-
 function throwTaskRevisionConflict(opts: {
   taskId: string;
   expectedRevision: number;
@@ -252,35 +227,24 @@ function throwTaskRevisionConflict(opts: {
   });
 }
 
-function applyTaskDocPatch(opts: {
-  taskId: string;
-  currentDocRaw: string;
-  patch: TaskStoreDocPatch;
-}): string {
-  if (opts.patch.kind === "replace-doc") {
-    if (opts.patch.expectedCurrentDoc !== undefined) {
-      const currentDoc = normalizeDocComparison(opts.currentDocRaw);
-      const expectedDoc = normalizeDocComparison(opts.patch.expectedCurrentDoc);
-      if (currentDoc !== expectedDoc) {
-        throwTaskDocConflict({ taskId: opts.taskId });
-      }
-    }
-    return renderTaskDocFromSections(taskDocToSectionMap(opts.patch.doc));
-  }
-
-  const sections = taskDocToSectionMap(opts.currentDocRaw);
-  for (const requiredSection of opts.patch.requiredSections) {
-    if (!(requiredSection in sections)) sections[requiredSection] = "";
-  }
-  if (opts.patch.expectedCurrentText !== undefined) {
-    const currentSection = normalizeDocComparison(sections[opts.patch.section] ?? null);
-    const expectedSection = normalizeDocComparison(opts.patch.expectedCurrentText);
-    if (currentSection !== expectedSection) {
-      throwTaskSectionConflict({ taskId: opts.taskId, section: opts.patch.section });
-    }
-  }
-  sections[opts.patch.section] = opts.patch.text.replaceAll("\r\n", "\n").trimEnd();
-  return renderTaskDocFromSections(sections);
+function applyDocMutationsToState(
+  docState: TaskDocState,
+  mutations: Parameters<typeof applyTaskDocMutations>[1],
+  opts: {
+    docUpdatedAt?: string;
+  },
+): TaskDocState {
+  const applied = applyTaskDocMutations(docState, mutations, {
+    now: opts.docUpdatedAt,
+  });
+  return {
+    ...docState,
+    doc: applied.doc,
+    sections: applied.sections,
+    doc_version: applied.doc_version,
+    doc_updated_at: applied.doc_updated_at,
+    doc_updated_by: applied.doc_updated_by,
+  };
 }
 
 function normalizeTaskStoreIntents(intents: TaskStoreIntentResult): TaskStoreIntent[] {
@@ -412,24 +376,45 @@ export async function mutateTaskStore(
   );
 }
 
-function applyTaskStoreIntents(entry: CachedTask, intents: TaskStoreIntent[]): TaskData {
-  if (intents.length === 0) return { ...entry.task };
+export function applyTaskStoreIntentsToTask(
+  task: TaskData,
+  intents: TaskStoreIntentResult,
+  opts: {
+    currentDocVersion?: 2 | 3;
+    docUpdatedAt?: string;
+  } = {},
+): TaskData {
+  const normalizedIntents = normalizeTaskStoreIntents(intents);
+  if (normalizedIntents.length === 0) return { ...task };
 
-  const current = entry.task;
+  const current = task;
   const next: TaskData = { ...current };
+  let docState: TaskDocState = {
+    comments: next.comments ?? null,
+    doc: String(next.doc ?? ""),
+    doc_updated_by: next.doc_updated_by,
+    doc_version: normalizeTaskDocVersion(opts.currentDocVersion ?? task.doc_version),
+    owner: next.owner,
+    sections: next.sections ?? null,
+  };
   let touchDoc = false;
-  let docMetaUpdatedBy: string | undefined;
-  let docMetaVersion: 2 | 3 | undefined;
 
-  for (const intent of intents) {
+  for (const intent of normalizedIntents) {
     switch (intent.kind) {
       case "set-task-fields": {
         Object.assign(next, intent.task);
+        docState = {
+          ...docState,
+          doc_updated_by: next.doc_updated_by,
+          doc_version: normalizeTaskDocVersion(next.doc_version ?? docState.doc_version),
+          owner: next.owner,
+        };
         break;
       }
       case "append-comments": {
         if (intent.comments.length > 0) {
           next.comments = [...normalizeComments(next), ...intent.comments];
+          docState = { ...docState, comments: next.comments };
         }
         break;
       }
@@ -440,59 +425,76 @@ function applyTaskStoreIntents(entry: CachedTask, intents: TaskStoreIntent[]): T
         break;
       }
       case "replace-doc": {
-        next.doc = applyTaskDocPatch({
-          taskId: current.id,
-          currentDocRaw: String(next.doc ?? ""),
-          patch: {
-            kind: "replace-doc",
-            doc: intent.doc,
-            expectedCurrentDoc: intent.expectedCurrentDoc,
-          },
+        if (intent.expectedCurrentDoc !== undefined) {
+          assertExpectedTaskDoc({
+            taskId: current.id,
+            currentDoc: docState.doc,
+            expectedDoc: intent.expectedCurrentDoc,
+          });
+        }
+        docState = applyDocMutationsToState(docState, [{ kind: "replace-doc", doc: intent.doc }], {
+          docUpdatedAt: opts.docUpdatedAt,
         });
-        next.sections = taskDocToSectionMap(String(next.doc ?? ""));
         touchDoc = true;
         break;
       }
       case "set-section": {
-        next.doc = applyTaskDocPatch({
-          taskId: current.id,
-          currentDocRaw: String(next.doc ?? ""),
-          patch: {
-            kind: "set-section",
+        if (intent.expectedCurrentText !== undefined) {
+          assertExpectedTaskSection({
+            taskId: current.id,
+            currentDoc: docState.doc,
             section: intent.section,
-            text: intent.text,
-            requiredSections: intent.requiredSections,
-            expectedCurrentText: intent.expectedCurrentText,
-          },
-        });
-        next.sections = taskDocToSectionMap(String(next.doc ?? ""));
+            expectedText: intent.expectedCurrentText,
+          });
+        }
+        docState = applyDocMutationsToState(
+          docState,
+          [
+            {
+              kind: "set-section",
+              section: intent.section,
+              text: intent.text,
+              requiredSections: intent.requiredSections,
+            },
+          ],
+          { docUpdatedAt: opts.docUpdatedAt },
+        );
         touchDoc = true;
         break;
       }
       case "touch-doc-meta": {
+        docState = applyDocMutationsToState(
+          docState,
+          [
+            {
+              kind: "touch-doc-meta",
+              updatedBy: intent.updatedBy,
+              version: intent.version,
+            },
+          ],
+          { docUpdatedAt: opts.docUpdatedAt },
+        );
         touchDoc = true;
-        if (intent.updatedBy !== undefined) {
-          docMetaUpdatedBy = intent.updatedBy;
-        }
-        if (intent.version !== undefined) {
-          docMetaVersion = intent.version;
-        }
         break;
       }
     }
   }
 
   if (touchDoc) {
-    const currentDocVersion = normalizeTaskDocVersion(entry.parsed.frontmatter.doc_version);
-    next.doc_version = normalizeTaskDocVersion(
-      docMetaVersion ?? next.doc_version,
-      currentDocVersion,
-    );
-    next.doc_updated_at = new Date().toISOString();
-    next.doc_updated_by = docMetaUpdatedBy ?? resolveDocUpdatedBy(next);
+    next.doc = docState.doc;
+    next.sections = docState.sections ?? taskDocToSectionMap(docState.doc);
+    next.doc_version = docState.doc_version;
+    next.doc_updated_at = docState.doc_updated_at;
+    next.doc_updated_by = docState.doc_updated_by;
   }
 
   return next;
+}
+
+function applyTaskStoreIntents(entry: CachedTask, intents: TaskStoreIntent[]): TaskData {
+  return applyTaskStoreIntentsToTask(entry.task, intents, {
+    currentDocVersion: normalizeTaskDocVersion(entry.parsed.frontmatter.doc_version),
+  });
 }
 
 async function readTaskReadmeCached(opts: {

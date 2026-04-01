@@ -1,17 +1,14 @@
-import {
-  defaultConfig,
-  ensureDocSections,
-  setMarkdownSection,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  makeTaskBackendDouble,
+  makeTaskCommandContext,
+  makeTaskFixture,
+} from "../task.test-helpers.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { GitContext } from "../shared/git-context.js";
-import type { TaskStoreIntent } from "../shared/task-store.js";
 
 const mocks = vi.hoisted(() => ({
   readFile: vi.fn<(p: string, enc: string) => Promise<string>>(),
@@ -39,118 +36,42 @@ vi.mock("../shared/task-backend.js", () => ({
 vi.mock("../shared/reconcile-check.js", () => ({
   ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
 }));
-vi.mock("../shared/task-store.js", () => ({
-  appendTaskEventIntent: (event: Record<string, unknown>) => ({
-    kind: "append-events",
-    events: [event],
-  }),
-  backendIsLocalFileBackend: mocks.backendIsLocalFileBackend,
-  getTaskStore: mocks.getTaskStore,
-  setTaskFieldsIntent: (task: Record<string, unknown>) => ({ kind: "set-task-fields", task }),
-  setTaskSectionIntent: (opts: Record<string, unknown>) => ({ kind: "set-section", ...opts }),
-  touchTaskDocMetaIntent: (opts: Record<string, unknown>) => ({
-    kind: "touch-doc-meta",
-    ...opts,
-  }),
-}));
+vi.mock("../shared/task-store.js", async (importOriginal) => {
+  const actualUnknown: unknown = await importOriginal();
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    appendTaskEventIntent: (event: Record<string, unknown>) => ({
+      kind: "append-events",
+      events: [event],
+    }),
+    backendIsLocalFileBackend: mocks.backendIsLocalFileBackend,
+    getTaskStore: mocks.getTaskStore,
+    setTaskFieldsIntent: (task: Record<string, unknown>) => ({ kind: "set-task-fields", task }),
+    setTaskSectionIntent: (opts: Record<string, unknown>) => ({ kind: "set-section", ...opts }),
+    touchTaskDocMetaIntent: (opts: Record<string, unknown>) => ({
+      kind: "touch-doc-meta",
+      ...opts,
+    }),
+  };
+});
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "DONE",
-    priority: "normal",
-    owner: "me",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    ...overrides,
-  };
+  return makeTaskFixture({ status: "DONE", owner: "me", ...overrides });
 }
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
-  const config = defaultConfig();
-  config.paths.workflow_dir = ".agentplane/tasks";
-  // Ensure the doc always includes Verification + Verify Steps for extraction/updates.
-  config.tasks.doc.required_sections = ["Summary", "Verify Steps", "Verification"];
-
-  const resolved = {
-    gitRoot: "/repo",
-    agentplaneDir: "/repo/.agentplane",
-  } as unknown as ResolvedProject;
-
-  const backend: TaskBackend = {
-    id: "mock",
-    listTasks: () => Promise.resolve([]),
-    getTask: () => Promise.resolve(null),
-    writeTask: () => Promise.resolve(),
-    getTaskDoc: () => Promise.resolve(""),
-  };
-
-  const ctx: CommandContext = {
-    resolvedProject: resolved,
-    config,
-    taskBackend: backend,
-    backendId: "mock",
-    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: new GitContext({ gitRoot: "/repo" }),
-    memo: {},
-    resolved,
-    backend,
-  };
-  return { ...ctx, ...overrides };
-}
-
-function applyStoreIntents(current: TaskData, intents: readonly TaskStoreIntent[]): TaskData {
-  const next: TaskData = { ...current };
-  let touchDoc = false;
-  let updatedBy: string | undefined;
-  let version: 2 | 3 | undefined;
-
-  for (const intent of intents) {
-    switch (intent.kind) {
-      case "set-task-fields": {
-        Object.assign(next, intent.task);
-        break;
-      }
-      case "append-events": {
-        next.events = [...(Array.isArray(next.events) ? next.events : []), ...intent.events];
-        break;
-      }
-      case "replace-doc": {
-        next.doc = intent.doc;
-        touchDoc = true;
-        break;
-      }
-      case "set-section": {
-        const baseDoc = ensureDocSections(String(next.doc ?? ""), intent.requiredSections);
-        next.doc = ensureDocSections(
-          setMarkdownSection(baseDoc, intent.section, intent.text),
-          intent.requiredSections,
-        );
-        touchDoc = true;
-        break;
-      }
-      case "touch-doc-meta": {
-        touchDoc = true;
-        updatedBy = intent.updatedBy ?? updatedBy;
-        version = intent.version ?? version;
-        break;
-      }
-      case "append-comments": {
-        break;
-      }
-    }
-  }
-
-  if (touchDoc) {
-    next.doc_version = version ?? next.doc_version;
-    next.doc_updated_at = new Date().toISOString();
-    next.doc_updated_by = updatedBy ?? next.doc_updated_by;
-  }
-
-  return next;
+  return makeTaskCommandContext({
+    taskBackend: makeTaskBackendDouble(),
+    overrides,
+    configureConfig: (config) => {
+      // Ensure the doc always includes Verification + Verify Steps for extraction/updates.
+      config.tasks.doc.required_sections = ["Summary", "Verify Steps", "Verification"];
+    },
+  });
 }
 
 describe("task verify record (unit)", () => {
@@ -637,22 +558,7 @@ describe("task verify record (unit)", () => {
     ).rejects.toMatchObject({ code: "E_VALIDATION" });
   });
 
-  it("cmdTaskVerifyOk preserves fresher README content when store update sees newer task data", async () => {
-    const staleTask = mkTask({
-      status: "DONE",
-      doc_version: 3,
-      doc_updated_at: "2026-02-01T00:00:00.000Z",
-      doc: [
-        "## Summary",
-        "Stale summary",
-        "",
-        "## Verify Steps",
-        "Stale verify steps",
-        "",
-        "## Verification",
-        "",
-      ].join("\n"),
-    });
+  it("cmdTaskVerifyOk uses mergeable Verification section intents on the local store", async () => {
     let currentTask = mkTask({
       status: "DONE",
       doc_version: 3,
@@ -665,19 +571,24 @@ describe("task verify record (unit)", () => {
         "Concurrent verify steps",
         "",
         "## Verification",
+        "<!-- BEGIN VERIFICATION RESULTS -->",
+        "",
+        "### 2026-02-08T00:00:00.000Z — VERIFY — ok",
+        "",
+        "By: OTHER",
+        "",
+        "Note: prior",
+        "",
+        "<!-- END VERIFICATION RESULTS -->",
         "",
       ].join("\n"),
     });
     const store = {
-      get: vi.fn().mockResolvedValue(staleTask),
-      mutate: vi
+      update: vi
         .fn()
         .mockImplementation(
-          async (
-            _taskId: string,
-            builder: (current: TaskData) => Promise<readonly TaskStoreIntent[]>,
-          ) => {
-            currentTask = applyStoreIntents(currentTask, await builder(currentTask));
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await updater(currentTask);
             return { changed: true, task: currentTask };
           },
         ),
@@ -697,8 +608,54 @@ describe("task verify record (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(store.get).toHaveBeenCalledTimes(0);
-    expect(store.mutate).toHaveBeenCalledTimes(1);
+    expect(store.update).toHaveBeenCalledTimes(1);
+    expect(currentTask.doc).toContain("### 2026-02-08T00:00:00.000Z — VERIFY — ok");
+    expect(currentTask.doc).toContain("Note: prior");
+    expect(currentTask.doc).toContain("### 2026-02-09T00:00:00.000Z — VERIFY — ok");
+    expect(currentTask.doc).toContain("VerifyStepsRef: doc_version=3");
+  });
+  it("cmdTaskVerifyOk preserves fresher README content when store update sees newer task data", async () => {
+    let currentTask = mkTask({
+      status: "DONE",
+      doc_version: 3,
+      doc_updated_at: "2026-02-07T00:00:00.000Z",
+      doc: [
+        "## Summary",
+        "Concurrent summary",
+        "",
+        "## Verify Steps",
+        "Concurrent verify steps",
+        "",
+        "## Verification",
+        "",
+      ].join("\n"),
+    });
+    const store = {
+      update: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, updater: (current: TaskData) => Promise<TaskData>) => {
+            currentTask = await updater(currentTask);
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    const ctx = mkCtx();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdTaskVerifyOk } = await import("./verify-record.js");
+    const rc = await cmdTaskVerifyOk({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      by: "TESTER",
+      note: "ok",
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(store.update).toHaveBeenCalledTimes(1);
     expect(currentTask.verification?.state).toBe("ok");
     expect(currentTask.doc).toContain("## Summary\nConcurrent summary");
     expect(currentTask.doc).toContain("## Verify Steps\nConcurrent verify steps");

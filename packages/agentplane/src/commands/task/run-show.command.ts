@@ -1,7 +1,8 @@
 import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 
 import { mapBackendError } from "../../cli/error-map.js";
-import { infoMessage } from "../../cli/output.js";
+import { createCliEmitter, infoMessage } from "../../cli/output.js";
+import type { CliReportEntry } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import {
   formatRunnerCapabilitySummaryLines,
@@ -13,6 +14,8 @@ import type { TaskRunShowParsed } from "./run-show.spec.js";
 
 export { taskRunShowSpec } from "./run-show.spec.js";
 export type { TaskRunShowParsed } from "./run-show.spec.js";
+
+const emitter = createCliEmitter();
 
 function formatTarget(target: {
   kind: string;
@@ -91,72 +94,78 @@ export const runTaskRunShow: CommandHandler<TaskRunShowParsed> = async (
       run_id: parsed.runId,
     });
     if (parsed.json) {
-      process.stdout.write(`${JSON.stringify(buildRunShowJson(inspection), null, 2)}\n`);
+      emitter.json(buildRunShowJson(inspection));
       return 0;
     }
-    process.stdout.write(`${infoMessage(`task run show: ${parsed.taskId}`)}\n`);
-    process.stdout.write(`selection: ${inspection.selection}\n`);
-    process.stdout.write(`run_id: ${inspection.run_id}\n`);
-    process.stdout.write(`status: ${inspection.state.status}\n`);
-    process.stdout.write(`adapter: ${inspection.state.adapter_id}\n`);
-    process.stdout.write(`mode: ${inspection.state.mode}\n`);
-    process.stdout.write(`target: ${formatTarget(inspection.state.target)}\n`);
-    process.stdout.write(`created_at: ${inspection.state.created_at}\n`);
-    process.stdout.write(`updated_at: ${inspection.state.updated_at}\n`);
-    process.stdout.write(`bundle: ${inspection.paths.bundle_path}\n`);
-    process.stdout.write(`result: ${inspection.paths.result_path}\n`);
-    process.stdout.write(`state: ${inspection.paths.state_path}\n`);
-    process.stdout.write(`events: ${inspection.paths.events_path}\n`);
-    process.stdout.write(`trace: ${inspection.paths.trace_path}\n`);
-    process.stdout.write(`stderr: ${inspection.paths.stderr_path}\n`);
-    process.stdout.write(`events_count: ${inspection.events.length}\n`);
+    const entries: CliReportEntry[] = [
+      { label: "selection", value: inspection.selection },
+      { label: "run_id", value: inspection.run_id },
+      { label: "status", value: inspection.state.status },
+      { label: "adapter", value: inspection.state.adapter_id },
+      { label: "mode", value: inspection.state.mode },
+      { label: "target", value: formatTarget(inspection.state.target) },
+      { label: "created_at", value: inspection.state.created_at },
+      { label: "updated_at", value: inspection.state.updated_at },
+      { label: "bundle", value: inspection.paths.bundle_path },
+      { label: "result", value: inspection.paths.result_path },
+      { label: "state", value: inspection.paths.state_path },
+      { label: "events", value: inspection.paths.events_path },
+      { label: "trace", value: inspection.paths.trace_path },
+      { label: "stderr", value: inspection.paths.stderr_path },
+      { label: "events_count", value: inspection.events.length },
+    ];
     if (inspection.events.length > 0) {
       const lastEvent = inspection.events.at(-1);
-      process.stdout.write(`last_event: ${lastEvent?.type ?? "unknown"}\n`);
+      entries.push({ label: "last_event", value: lastEvent?.type ?? "unknown" });
     }
     const capabilities =
       inspection.bundle.execution.adapter_capabilities ??
       inspection.state.prepared_metadata?.adapter_capabilities ??
       null;
-    process.stdout.write(`capabilities: ${JSON.stringify(capabilities)}\n`);
-    for (const line of formatRunnerCapabilitySummaryLines(capabilities ?? undefined)) {
-      process.stdout.write(`${line}\n`);
-    }
-    process.stdout.write(
-      `policy_requested: ${JSON.stringify(inspection.state.policy_decision?.requested ?? {})}\n`,
+    entries.push(
+      { label: "capabilities", value: JSON.stringify(capabilities) },
+      ...formatRunnerCapabilitySummaryLines(capabilities ?? undefined),
+      {
+        label: "policy_requested",
+        value: JSON.stringify(inspection.state.policy_decision?.requested ?? {}),
+      },
+      {
+        label: "policy_effective",
+        value: JSON.stringify(inspection.state.policy_decision?.effective ?? {}),
+      },
+      {
+        label: "policy_fields",
+        value: JSON.stringify(inspection.state.policy_decision?.fields ?? {}),
+      },
+      {
+        label: "policy_refusal",
+        value: JSON.stringify(inspection.state.policy_decision?.refusal_reason ?? null),
+      },
+      ...formatRunnerPolicyFieldSummaryLines(inspection.state.policy_decision),
     );
-    process.stdout.write(
-      `policy_effective: ${JSON.stringify(inspection.state.policy_decision?.effective ?? {})}\n`,
-    );
-    process.stdout.write(
-      `policy_fields: ${JSON.stringify(inspection.state.policy_decision?.fields ?? {})}\n`,
-    );
-    process.stdout.write(
-      `policy_refusal: ${JSON.stringify(inspection.state.policy_decision?.refusal_reason ?? null)}\n`,
-    );
-    for (const line of formatRunnerPolicyFieldSummaryLines(inspection.state.policy_decision)) {
-      process.stdout.write(`${line}\n`);
-    }
     if (inspection.state.result?.summary) {
-      process.stdout.write(`summary: ${inspection.state.result.summary}\n`);
+      entries.push({ label: "summary", value: inspection.state.result.summary });
     }
     if (inspection.state.result?.stdout_summary) {
-      process.stdout.write(`stdout_summary: ${inspection.state.result.stdout_summary}\n`);
+      entries.push({ label: "stdout_summary", value: inspection.state.result.stdout_summary });
     }
     if (inspection.state.result?.stderr_summary) {
-      process.stdout.write(`stderr_summary: ${inspection.state.result.stderr_summary}\n`);
+      entries.push({ label: "stderr_summary", value: inspection.state.result.stderr_summary });
     }
     if (inspection.state.result?.timeout_reason) {
-      process.stdout.write(`timeout_reason: ${inspection.state.result.timeout_reason}\n`);
+      entries.push({ label: "timeout_reason", value: inspection.state.result.timeout_reason });
     }
     const metrics = formatMetrics(inspection.state.result?.metrics);
     if (metrics) {
-      process.stdout.write(`metrics: ${metrics}\n`);
+      entries.push({ label: "metrics", value: metrics });
     }
     const artifacts = formatArtifacts(inspection.state.result?.artifacts);
     if (artifacts) {
-      process.stdout.write(`artifacts: ${artifacts}\n`);
+      entries.push({ label: "artifacts", value: artifacts });
     }
+    emitter.report(entries, {
+      header: infoMessage(`task run show: ${parsed.taskId}`),
+    });
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

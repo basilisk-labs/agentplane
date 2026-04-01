@@ -1,24 +1,18 @@
 import { describe, expect, it } from "vitest";
 
-import type { TaskData } from "../../backends/task-backend.js";
+import { defaultConfig } from "@agentplaneorg/core";
+
+import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import { makeTaskFixture } from "../task.test-helpers.js";
 import {
   buildTaskStatusTransition,
+  executeTaskStatusTransitionRequest,
   buildTaskVerificationTransition,
+  executeTaskVerificationTransitionRequest,
 } from "./shared/workflow-transition-service.js";
 
 function mkTask(overrides: Partial<TaskData> = {}): TaskData {
-  return {
-    id: "T-1",
-    title: "Title",
-    description: "Desc",
-    status: "TODO",
-    priority: "normal",
-    owner: "CODER",
-    depends_on: [],
-    tags: [],
-    verify: [],
-    comments: [],
-    events: [],
+  return makeTaskFixture({
     doc: [
       "## Summary",
       "x",
@@ -30,11 +24,9 @@ function mkTask(overrides: Partial<TaskData> = {}): TaskData {
       "<!-- BEGIN VERIFICATION RESULTS -->",
       "<!-- END VERIFICATION RESULTS -->",
     ].join("\n"),
-    doc_version: 3,
     doc_updated_at: "2026-03-27T00:00:00.000Z",
-    doc_updated_by: "CODER",
     ...overrides,
-  };
+  });
 }
 
 describe("workflow transition service", () => {
@@ -132,5 +124,136 @@ describe("workflow transition service", () => {
       note: "Fix the parser edge case.",
     });
     expect(transition.nextTask.doc).toBe(nextDoc);
+  });
+
+  it("executeTaskStatusTransitionRequest centralizes status validation and deferred commit warnings", async () => {
+    const config = defaultConfig();
+    config.status_commit_policy = "warn";
+    const backend: Pick<TaskBackend, "getTask" | "getTasks"> = {
+      getTask: () => Promise.resolve(null),
+      getTasks: () => Promise.resolve([]),
+    };
+
+    const execution = await executeTaskStatusTransitionRequest({
+      task: mkTask({ status: "DOING" }),
+      backend,
+      config,
+      at: "2026-03-27T01:20:00.000Z",
+      toStatus: "BLOCKED",
+      eventAuthor: "CODER",
+      updatedBy: "CODER",
+      note: "Blocked: waiting on upstream fix.",
+      comment: { author: "CODER", body: "Blocked: waiting on upstream fix." },
+      force: false,
+      dependencyPolicy: { kind: "none" },
+      commentCommitPolicy: {
+        enabled: true,
+        action: "block",
+        confirmed: false,
+        quiet: false,
+      },
+    });
+
+    expect(execution.currentStatus).toBe("DOING");
+    expect(execution.dependencyState).toBeNull();
+    expect(execution.deferredWarnings).toEqual([
+      "block: status/comment-driven commit requested; policy=warn (pass --confirm-status-commit to acknowledge)",
+    ]);
+    expect(execution.nextTask.status).toBe("BLOCKED");
+  });
+
+  it("executeTaskStatusTransitionRequest blocks not-ready dependency transitions with shared warnings", async () => {
+    const config = defaultConfig();
+    const backend: Pick<TaskBackend, "getTask" | "getTasks"> = {
+      getTask: () => Promise.resolve(null),
+      getTasks: () => Promise.resolve([null, mkTask({ id: "DEP-2", status: "DOING" })]),
+    };
+
+    await expect(
+      executeTaskStatusTransitionRequest({
+        task: mkTask({ depends_on: ["DEP-1", "DEP-2"] }),
+        backend,
+        config,
+        at: "2026-03-27T01:30:00.000Z",
+        toStatus: "DOING",
+        eventAuthor: "CODER",
+        updatedBy: "CODER",
+        note: "Start: move forward.",
+        comment: { author: "CODER", body: "Start: move forward." },
+        force: false,
+        dependencyPolicy: { kind: "require-ready" },
+      }),
+    ).rejects.toMatchObject({
+      code: "E_USAGE",
+      message: "Task is not ready: T-1 (use --force to override)",
+      context: {
+        reason_code: "task_transition_dependencies_not_ready",
+        deferred_warnings: ["missing deps: DEP-1", "incomplete deps: DEP-2"],
+      },
+    });
+  });
+
+  it("executeTaskStatusTransitionRequest rejects invalid transitions before applying writes", async () => {
+    const config = defaultConfig();
+    const backend: Pick<TaskBackend, "getTask" | "getTasks"> = {
+      getTask: () => Promise.resolve(null),
+      getTasks: () => Promise.resolve([]),
+    };
+
+    await expect(
+      executeTaskStatusTransitionRequest({
+        task: mkTask({ status: "TODO" }),
+        backend,
+        config,
+        at: "2026-03-27T01:40:00.000Z",
+        toStatus: "DONE",
+        eventAuthor: "CODER",
+        updatedBy: "CODER",
+        force: false,
+        dependencyPolicy: { kind: "none" },
+      }),
+    ).rejects.toMatchObject({
+      code: "E_USAGE",
+      message: "Refusing status transition TODO -> DONE (use --force to override)",
+    });
+  });
+
+  it("executeTaskVerificationTransitionRequest builds one canonical verification transition", () => {
+    const execution = executeTaskVerificationTransitionRequest({
+      task: mkTask({
+        status: "DONE",
+        commit: { hash: "abc1234", message: "old" },
+        doc_updated_at: "2026-03-27T00:00:00.000Z",
+      }),
+      at: "2026-03-27T02:00:00.000Z",
+      by: "REVIEWER",
+      note: "Fix the parser edge case.",
+      state: "needs_rework",
+      details: "Run focused parser tests",
+      doc: [
+        "## Summary",
+        "x",
+        "",
+        "## Verify Steps",
+        "1. do the thing",
+        "",
+        "## Verification",
+        "<!-- BEGIN VERIFICATION RESULTS -->",
+        "<!-- END VERIFICATION RESULTS -->",
+      ].join("\n"),
+      requiredSections: ["Summary", "Verify Steps", "Verification"],
+    });
+
+    expect(execution.verificationSection).toContain("VERIFY — needs_rework");
+    expect(execution.verificationSection).toContain("Details:");
+    expect(execution.nextDoc).toContain("VerifyStepsRef:");
+    expect(execution.nextTask.status).toBe("DOING");
+    expect(execution.nextTask.commit).toBeNull();
+    expect(execution.intents.map((intent) => intent.kind)).toEqual([
+      "set-task-fields",
+      "set-section",
+      "append-events",
+      "touch-doc-meta",
+    ]);
   });
 });

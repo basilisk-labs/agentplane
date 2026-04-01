@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603311331-C3JHD2/delete-obsolete-render-helpers",
+  "created_at": "2026-03-31T17:19:44.723Z",
+  "head_sha": "a7787e66511872a76e6f6f83312a1f590202c68a",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "946f7996f1053035f6e7bcf0271bc8beb10ad071",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T17:20:41.232Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603311331-C3JHD2",
+  "updated_at": "2026-03-31T17:20:41.232Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

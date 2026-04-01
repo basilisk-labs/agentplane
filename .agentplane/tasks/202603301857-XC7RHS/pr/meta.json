@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603301857-XC7RHS/split-dispatch-metadata-boundary",
+  "created_at": "2026-03-31T12:31:40.396Z",
+  "head_sha": "2d6c509de269e56dd1d0ca89552f366491e5dfbb",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "d398efd79910b62e85f0c97ee944fcade1d82af2",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T12:32:44.023Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603301857-XC7RHS",
+  "updated_at": "2026-03-31T12:32:44.023Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

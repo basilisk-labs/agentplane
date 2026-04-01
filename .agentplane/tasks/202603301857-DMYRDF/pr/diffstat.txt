@@ -1,0 +1,20 @@
+ .agentplane/tasks/202603301857-DMYRDF/README.md    | 102 ++++++++++++++++++---
+ .../tasks/202603301857-DMYRDF/pr/diffstat.txt      |  16 ++++
+ .agentplane/tasks/202603301857-DMYRDF/pr/meta.json |  12 +++
+ .agentplane/tasks/202603301857-DMYRDF/pr/review.md |  44 +++++++++
+ .../tasks/202603301857-DMYRDF/pr/verify.log        |   0
+ packages/agentplane/src/commands/block.command.ts  |   4 -
+ .../agentplane/src/commands/doctor.command.test.ts |   2 +-
+ packages/agentplane/src/commands/doctor.command.ts |   2 -
+ .../agentplane/src/commands/doctor.fast.test.ts    |   2 +-
+ packages/agentplane/src/commands/finish.command.ts |   4 -
+ .../src/commands/recipes.test-helpers.ts           |   2 +-
+ .../src/commands/recipes/install.command.ts        |   2 -
+ packages/agentplane/src/commands/start.command.ts  |   4 -
+ .../agentplane/src/commands/task/list.command.ts   |   4 -
+ .../agentplane/src/commands/task/next.command.ts   |   4 -
+ .../agentplane/src/commands/task/search.command.ts |   4 -
+ .../agentplane/src/commands/task/show.command.ts   |   4 -
+ packages/agentplane/src/commands/verify.command.ts |   4 -
+ .../src/commands/workflow.verify-hooks.test.ts     |   2 +-
+ 19 files changed, 165 insertions(+), 53 deletions(-)

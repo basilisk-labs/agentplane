@@ -2,7 +2,6 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 import { recordVerifiedNoopClosure } from "./close-shared.js";
 
 export async function cmdTaskCloseDuplicate(opts: {
@@ -44,12 +43,6 @@ export async function cmdTaskCloseDuplicate(opts: {
     }
 
     const canonical = await loadTaskFromContext({ ctx: opts.ctx, taskId: duplicateOf });
-    const useStore = backendIsLocalFileBackend(opts.ctx);
-    const store = useStore ? getTaskStore(opts.ctx) : null;
-    const task = useStore
-      ? await store!.get(sourceId)
-      : await loadTaskFromContext({ ctx: opts.ctx, taskId: sourceId });
-
     const reason = opts.note?.trim();
     const canonicalTitle = canonical.title?.trim() ? ` (${canonical.title.trim()})` : "";
     const baseBody =
@@ -58,7 +51,6 @@ export async function cmdTaskCloseDuplicate(opts: {
     const body = reason ? `${baseBody}\n\nReason: ${reason}` : baseBody;
     await recordVerifiedNoopClosure({
       ctx: opts.ctx,
-      task,
       taskId: sourceId,
       author: opts.author,
       body,

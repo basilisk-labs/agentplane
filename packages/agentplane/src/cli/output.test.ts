@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   backendNotSupportedMessage,
+  createCliEmitter,
   emptyStateMessage,
   infoMessage,
   invalidFieldMessage,
@@ -16,6 +17,17 @@ import {
   warnMessage,
   workflowModeMessage,
 } from "./output.js";
+
+function createMemoryWriter(): { text: () => string; write: (chunk: string) => unknown } {
+  let value = "";
+  return {
+    text: () => value,
+    write: (chunk: string) => {
+      value += chunk;
+      return true;
+    },
+  };
+}
 
 describe("cli/output", () => {
   it("formats success and info messages", () => {
@@ -61,5 +73,48 @@ describe("cli/output", () => {
     expect(workflowModeMessage(undefined, "branch_pr")).toBe(
       "Invalid workflow_mode: unknown (expected branch_pr)",
     );
+  });
+
+  it("creates an emitter that routes text, JSON, JSON sections, warnings, and reports", () => {
+    const stdout = createMemoryWriter();
+    const stderr = createMemoryWriter();
+    const emitter = createCliEmitter({ stdout, stderr });
+
+    emitter.line("plain line");
+    emitter.lines(["first", "second"]);
+    emitter.json({ ok: true });
+    emitter.jsonSection("validation", [{ ok: true }]);
+    emitter.report(
+      [
+        { label: "task_id", value: "TASK-2" },
+        { label: "status", value: "ready" },
+      ],
+      { header: infoMessage("task inspect: TASK-2") },
+    );
+    emitter.success("saved", "TASK-2");
+    emitter.warn("careful");
+    emitter.info("secondary", "stderr");
+
+    expect(stdout.text()).toBe(
+      [
+        "plain line",
+        "first",
+        "second",
+        "{",
+        '  "ok": true',
+        "}",
+        "validation:",
+        "  [",
+        "    {",
+        '      "ok": true',
+        "    }",
+        "  ]",
+        "ℹ️ task inspect: TASK-2",
+        "task_id: TASK-2",
+        "status: ready",
+        "✅ saved TASK-2",
+      ].join("\n") + "\n",
+    );
+    expect(stderr.text()).toBe(["⚠️ careful", "ℹ️ secondary"].join("\n") + "\n");
   });
 });

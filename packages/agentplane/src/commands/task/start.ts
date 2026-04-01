@@ -1,35 +1,24 @@
 import { mapBackendError } from "../../cli/error-map.js";
-import { infoMessage, successMessage, warnMessage } from "../../cli/output.js";
-import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
+import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import type { TaskData } from "../../backends/task-backend.js";
 
-import { commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
-import {
-  loadCommandContext,
-  loadTaskFromContext,
-  type CommandContext,
-} from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore, mutateTaskStore } from "../shared/task-store.js";
-
-import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import {
-  buildTaskStatusTransition,
+  applyTaskStatusTransitionCommand,
   ensurePlanApprovedIfRequired,
-  ensureCommentCommitAllowed,
-  ensureStatusTransitionAllowed,
   extractTaskObservationSection,
   defaultCommitEmojiForStatus,
   extractDocSection,
   isVerifyStepsFilled,
   normalizeTaskDocVersion,
   nowIso,
+  prepareTaskTransitionComment,
   requiresVerifyStepsByPrimary,
   requireStructuredComment,
-  resolveTaskDependencyState,
-  resolvePrimaryTag,
+  runTaskTransitionCommentCommit,
   taskObservationSectionName,
   toStringArray,
 } from "./shared.js";
@@ -109,132 +98,61 @@ export async function cmdStart(opts: {
 
     const { prefix, min_chars: minChars } = ctx.config.tasks.comments.start;
     requireStructuredComment(opts.body, prefix, minChars);
-
-    const useStore = backendIsLocalFileBackend(ctx);
-    const store = useStore ? getTaskStore(ctx) : null;
-    const task = useStore
-      ? await store!.get(opts.taskId)
-      : await loadTaskFromContext({ ctx, taskId: opts.taskId });
-    if (!useStore) {
-      assertStartDocRequirements(task, ctx.config);
-      ensurePlanApprovedIfRequired(task, ctx.config);
-    }
-
-    const currentStatus = String(task.status || "TODO").toUpperCase();
-    if (!useStore) {
-      ensureStatusTransitionAllowed({
-        currentStatus,
-        nextStatus: "DOING",
-        force: opts.force,
-      });
-    }
-    ensureCommentCommitAllowed({
+    const preparedComment = prepareTaskTransitionComment({
+      body: opts.body,
       enabled: opts.commitFromComment,
       config: ctx.config,
-      action: "start",
-      confirmed: opts.confirmStatusCommit,
-      quiet: opts.quiet,
-      statusFrom: currentStatus,
-      statusTo: "DOING",
     });
-
-    if (!opts.force) {
-      const dep = await resolveTaskDependencyState(task, ctx.taskBackend);
-      if (dep.missing.length > 0 || dep.incomplete.length > 0) {
-        if (!opts.quiet) {
-          if (dep.missing.length > 0) {
-            process.stderr.write(`${warnMessage(`missing deps: ${dep.missing.join(", ")}`)}\n`);
-          }
-          if (dep.incomplete.length > 0) {
-            process.stderr.write(
-              `${warnMessage(`incomplete deps: ${dep.incomplete.join(", ")}`)}\n`,
-            );
-          }
-        }
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: `Task is not ready: ${task.id} (use --force to override)`,
-        });
-      }
-    }
-
-    const formattedComment = opts.commitFromComment
-      ? formatCommentBodyForCommit(opts.body, ctx.config)
-      : null;
-    const commentBody = formattedComment ?? opts.body;
+    const commentBody = preparedComment.commentBody ?? opts.body;
 
     const at = nowIso();
-    let currentStatusForCommit = currentStatus;
-    let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
-    await (useStore
-      ? mutateTaskStore(store!, opts.taskId, (current) => {
-          assertStartDocRequirements(current, ctx.config);
-          ensurePlanApprovedIfRequired(current, ctx.config);
-          const currentStatus = String(current.status || "TODO").toUpperCase();
-          currentStatusForCommit = currentStatus;
-          primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
-          ensureStatusTransitionAllowed({
-            currentStatus,
-            nextStatus: "DOING",
-            force: opts.force,
-          });
-          return buildTaskStatusTransition({
-            task: current,
-            at,
-            toStatus: "DOING",
-            eventAuthor: opts.author,
-            updatedBy: opts.author,
-            note: commentBody,
-            comment: { author: opts.author, body: commentBody },
-          }).intents;
-        })
-      : ctx.taskBackend.writeTask(
-          buildTaskStatusTransition({
-            task,
-            at,
-            toStatus: "DOING",
-            eventAuthor: opts.author,
-            updatedBy: opts.author,
-            note: commentBody,
-            comment: { author: opts.author, body: commentBody },
-          }).nextTask,
-        ));
+    const transition = await applyTaskStatusTransitionCommand({
+      ctx,
+      taskId: opts.taskId,
+      quiet: opts.quiet,
+      build: (current) => {
+        assertStartDocRequirements(current, ctx.config);
+        ensurePlanApprovedIfRequired(current, ctx.config);
+        return {
+          at,
+          toStatus: "DOING",
+          eventAuthor: opts.author,
+          updatedBy: opts.author,
+          note: commentBody,
+          comment: { author: opts.author, body: commentBody },
+          force: opts.force,
+          dependencyPolicy: { kind: "require-ready" },
+          commentCommitPolicy: {
+            enabled: opts.commitFromComment,
+            action: "start",
+            confirmed: opts.confirmStatusCommit,
+            quiet: opts.quiet,
+          },
+        };
+      },
+    });
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {
-      if (!opts.quiet) {
-        process.stdout.write(
-          `${infoMessage("task marked DOING; creating commit from start comment")}\n`,
-        );
-      }
-      const mode = ctx.config.workflow_mode;
-      let executorAgent = opts.author;
-      if (mode === "direct") {
-        const lock = await readDirectWorkLock(ctx.resolvedProject.agentplaneDir);
-        const lockAgent = lock?.task_id === opts.taskId ? (lock.agent?.trim() ?? "") : "";
-        if (lockAgent) executorAgent = lockAgent;
-      }
-
-      commitInfo = await commitFromComment({
+      commitInfo = await runTaskTransitionCommentCommit({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
-        primaryTag: primaryTagForCommit,
-        executorAgent,
+        primaryTag: transition.primaryTag,
         author: opts.author,
-        statusFrom: currentStatusForCommit,
+        statusFrom: transition.execution.currentStatus,
         statusTo: "DOING",
         commentBody: opts.body,
-        formattedComment,
+        formattedComment: preparedComment.formattedComment,
         emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("DOING"),
         allow: opts.commitAllow,
         autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
         allowTasks: opts.commitAllowTasks,
         requireClean: opts.commitRequireClean,
         quiet: opts.quiet,
-        config: ctx.config,
+        progressMessage: "task marked DOING; creating commit from start comment",
+        resolveExecutorAgent: true,
       });
     }
 

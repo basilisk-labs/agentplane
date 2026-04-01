@@ -1,75 +1,10 @@
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import {
-  directSubcommandNames,
+  loadDirectSubcommandNames,
   parseGroupCommand,
   throwGroupCommandUsage,
   type GroupCommandParsed,
 } from "../../cli/group-command.js";
-import { taskAddSpec } from "./add.command.js";
-import { taskCloseDuplicateSpec } from "./close-duplicate.command.js";
-import { taskCloseNoopSpec } from "./close-noop.command.js";
-import { taskCommentSpec } from "./comment.command.js";
-import { taskDeriveSpec } from "./derive.command.js";
-import { taskDocSpec } from "./doc.command.js";
-import { taskExportSpec } from "./export.command.js";
-import { taskHandoffSpec } from "./handoff.command.js";
-import { taskHandoffRecordSpec } from "./handoff-record.command.js";
-import { taskHandoffShowSpec } from "./handoff-show.command.js";
-import { taskHostedCloseSpec } from "./hosted-close.command.js";
-import { taskLintSpec } from "./lint.command.js";
-import { taskListSpec } from "./list.spec.js";
-import { taskMigrateDocSpec } from "./migrate-doc.command.js";
-import { taskMigrateSpec } from "./migrate.command.js";
-import { taskNewSpec } from "./new.spec.js";
-import { taskNextSpec } from "./next.spec.js";
-import { taskNormalizeSpec } from "./normalize.command.js";
-import { taskPlanSpec } from "./plan.command.js";
-import { taskRebuildIndexSpec } from "./rebuild-index.command.js";
-import { taskReclaimSpec } from "./reclaim.command.js";
-import { taskResumeContextSpec } from "./resume-context.command.js";
-import { taskRunSpec } from "./run.spec.js";
-import { taskScrubSpec } from "./scrub.command.js";
-import { taskSearchSpec } from "./search.spec.js";
-import { taskSetStatusSpec } from "./set-status.command.js";
-import { taskShowSpec } from "./show.spec.js";
-import { taskStartReadySpec } from "./start-ready.command.js";
-import { taskUpdateSpec } from "./update.command.js";
-import { taskVerifySpec } from "./verify.command.js";
-import { taskVerifyShowSpec } from "./verify-show.command.js";
-
-const TASK_CHILD_SPECS = [
-  taskAddSpec,
-  taskCloseDuplicateSpec,
-  taskCloseNoopSpec,
-  taskCommentSpec,
-  taskDeriveSpec,
-  taskDocSpec,
-  taskExportSpec,
-  taskHandoffSpec,
-  taskHandoffRecordSpec,
-  taskHandoffShowSpec,
-  taskHostedCloseSpec,
-  taskLintSpec,
-  taskListSpec,
-  taskMigrateSpec,
-  taskMigrateDocSpec,
-  taskNewSpec,
-  taskNextSpec,
-  taskNormalizeSpec,
-  taskPlanSpec,
-  taskRebuildIndexSpec,
-  taskReclaimSpec,
-  taskResumeContextSpec,
-  taskRunSpec,
-  taskScrubSpec,
-  taskSearchSpec,
-  taskSetStatusSpec,
-  taskShowSpec,
-  taskStartReadySpec,
-  taskUpdateSpec,
-  taskVerifySpec,
-  taskVerifyShowSpec,
-] as const;
 type TaskGroupParsed = GroupCommandParsed;
 
 export const taskSpec: CommandSpec<TaskGroupParsed> = {
@@ -120,11 +55,11 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
   parse: (raw) => parseGroupCommand(raw),
 };
 
-export const runTask: CommandHandler<GroupCommandParsed> = (_ctx: CommandCtx, p) => {
+export const runTask: CommandHandler<GroupCommandParsed> = async (_ctx: CommandCtx, p) => {
   throwGroupCommandUsage({
     spec: taskSpec,
     cmd: p.cmd,
-    subcommands: directSubcommandNames(["task"], TASK_CHILD_SPECS),
+    subcommands: await loadDirectSubcommandNames(["task"]),
     command: "task",
   });
 };

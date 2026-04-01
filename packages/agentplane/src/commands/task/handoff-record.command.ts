@@ -1,6 +1,7 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
-import { infoMessage } from "../../cli/output.js";
+import { createCliEmitter, infoMessage } from "../../cli/output.js";
+import type { CliReportEntry } from "../../cli/output.js";
 
 import { buildRecordedTaskHandoff } from "./handoff.shared.js";
 import { resolveTaskHandoffPaths, writeTaskHandoff } from "../shared/task-handoff.js";
@@ -116,6 +117,8 @@ export const taskHandoffRecordSpec: CommandSpec<TaskHandoffRecordParsed> = {
   }),
 };
 
+const emitter = createCliEmitter();
+
 export const runTaskHandoffRecord = async (ctx: CommandCtx, parsed: TaskHandoffRecordParsed) => {
   const built = await buildRecordedTaskHandoff({
     cwd: ctx.cwd,
@@ -138,18 +141,24 @@ export const runTaskHandoffRecord = async (ctx: CommandCtx, parsed: TaskHandoffR
   });
   await writeTaskHandoff({ paths, handoff: built.handoff });
   if (parsed.json) {
-    process.stdout.write(`${JSON.stringify(built.handoff, null, 2)}\n`);
+    emitter.json(built.handoff);
     return 0;
   }
-  process.stdout.write(`${infoMessage(`task handoff recorded: ${parsed.taskId}`)}\n`);
-  process.stdout.write(`from: ${built.handoff.from_role}\n`);
-  process.stdout.write(`to: ${built.handoff.to_role ?? "unassigned"}\n`);
-  process.stdout.write(`reason: ${built.handoff.reason}\n`);
+  const entries: CliReportEntry[] = [
+    { label: "from", value: built.handoff.from_role },
+    { label: "to", value: built.handoff.to_role ?? "unassigned" },
+    { label: "reason", value: built.handoff.reason },
+  ];
   if (built.handoff.runner?.run_id) {
-    process.stdout.write(`run_id: ${built.handoff.runner.run_id}\n`);
-    process.stdout.write(`runner_status: ${built.handoff.runner.status ?? "unknown"}\n`);
-    process.stdout.write(`runner_next_action: ${built.handoff.runner.next_action ?? "none"}\n`);
+    entries.push(
+      { label: "run_id", value: built.handoff.runner.run_id },
+      { label: "runner_status", value: built.handoff.runner.status ?? "unknown" },
+      { label: "runner_next_action", value: built.handoff.runner.next_action ?? "none" },
+    );
   }
-  process.stdout.write(`latest: ${paths.latest_path}\n`);
+  entries.push({ label: "latest", value: paths.latest_path });
+  emitter.report(entries, {
+    header: infoMessage(`task handoff recorded: ${parsed.taskId}`),
+  });
   return 0;
 };

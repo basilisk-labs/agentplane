@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603311331-WTQE65/output-contract-safety-net",
+  "created_at": "2026-03-31T13:48:07.315Z",
+  "head_sha": "8856b209181bd2dfc5356ae0d71d197cf5cd38a9",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "5493cb86bd059fc2e7bcb8b0d78cb969e2a1428a",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T13:50:39.888Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603311331-WTQE65",
+  "updated_at": "2026-03-31T13:50:39.888Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -1,35 +1,18 @@
-import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
 import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
 
+import { initReleaseWorkspace } from "../release.test-helpers.js";
+
 const execFileAsync = promisify(execFile);
 
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/check-release-version.mjs");
 
-async function writePackageJson(root: string, relDir: string, data: Record<string, unknown>) {
-  const dir = path.join(root, relDir);
-  await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, "package.json"), `${JSON.stringify(data, null, 2)}\n`, "utf8");
-}
-
 describe("check-release-version script", () => {
   it("passes when tag, package versions, and core dependency are aligned", async () => {
-    const root = await mkdtemp(path.join(tmpdir(), "agentplane-release-check-"));
-    await writePackageJson(root, "packages/core", {
-      name: "@agentplaneorg/core",
-      version: "1.2.3",
-    });
-    await writePackageJson(root, "packages/agentplane", {
-      name: "agentplane",
-      version: "1.2.3",
-      dependencies: {
-        "@agentplaneorg/core": "1.2.3",
-      },
-    });
+    const root = await initReleaseWorkspace({ prefix: "agentplane-release-check-" });
 
     await expect(
       execFileAsync("node", [SCRIPT_PATH, "--tag", "v1.2.3"], { cwd: root }),
@@ -37,17 +20,9 @@ describe("check-release-version script", () => {
   });
 
   it("fails when agentplane depends on a different core version", async () => {
-    const root = await mkdtemp(path.join(tmpdir(), "agentplane-release-check-"));
-    await writePackageJson(root, "packages/core", {
-      name: "@agentplaneorg/core",
-      version: "1.2.3",
-    });
-    await writePackageJson(root, "packages/agentplane", {
-      name: "agentplane",
-      version: "1.2.3",
-      dependencies: {
-        "@agentplaneorg/core": "1.2.2",
-      },
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-check-",
+      dependencyVersion: "1.2.2",
     });
 
     const result = await execFileAsync("node", [SCRIPT_PATH, "--tag", "v1.2.3"], {

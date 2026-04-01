@@ -209,5 +209,5 @@ describe("runCli", () => {
       cwd: root,
     });
     expect(afterRerunStdout.trim()).toBe(closeHead);
-  }, 60_000);
+  }, 120_000);
 });

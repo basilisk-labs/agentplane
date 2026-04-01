@@ -1,4 +1,9 @@
-import type { TaskData } from "../../../backends/task-backend.js";
+import { createHash } from "node:crypto";
+
+import { ensureDocSections, setMarkdownSection, type AgentplaneConfig } from "@agentplaneorg/core";
+
+import type { TaskBackend, TaskData } from "../../../backends/task-backend.js";
+import { CliError } from "../../../shared/errors.js";
 import {
   appendTaskCommentIntent,
   appendTaskEventIntent,
@@ -8,7 +13,20 @@ import {
   type TaskStoreIntent,
   type TaskStoreTaskPatch,
 } from "../../shared/task-store.js";
-import { appendTaskEvent, normalizeTaskDocVersion } from "../shared.js";
+import {
+  dependencyWarningMessages,
+  resolveTaskDependencyState,
+  type DependencyState,
+} from "./dependencies.js";
+import {
+  appendTaskEvent,
+  extractDocSection,
+  normalizeTaskDocVersion,
+  normalizeVerificationSectionLayout,
+  VERIFICATION_RESULTS_BEGIN,
+  VERIFICATION_RESULTS_END,
+} from "../shared.js";
+import { ensureStatusTransitionAllowed, resolveCommentCommitWarning } from "./transitions.js";
 
 type TaskComment = NonNullable<TaskData["comments"]>[number];
 
@@ -35,11 +53,62 @@ type BuildTaskVerificationTransitionOptions = {
   requiredSections: string[];
 };
 
+export type ExecuteTaskVerificationTransitionRequest = {
+  task: TaskData;
+  at: string;
+  by: string;
+  note: string;
+  state: "ok" | "needs_rework";
+  details?: string | null;
+  doc: string;
+  requiredSections: string[];
+};
+
+export type TaskVerificationTransitionExecution = TaskTransitionWrite & {
+  verificationSection: string;
+  nextDoc: string;
+};
+
 export type TaskTransitionWrite = {
   currentStatus: string;
   intents: TaskStoreIntent[];
   nextTask: TaskData;
 };
+
+export type TaskStatusTransitionDependencyPolicy =
+  | { kind: "none" }
+  | { kind: "require-ready"; failureMessage?: string };
+
+export type TaskStatusTransitionCommentCommitPolicy = {
+  enabled: boolean;
+  action: string;
+  confirmed: boolean;
+  quiet: boolean;
+};
+
+export type ExecuteTaskStatusTransitionRequest = BuildTaskStatusTransitionOptions & {
+  backend: Pick<TaskBackend, "getTask" | "getTasks">;
+  config: AgentplaneConfig;
+  force: boolean;
+  dependencyPolicy?: TaskStatusTransitionDependencyPolicy;
+  commentCommitPolicy?: TaskStatusTransitionCommentCommitPolicy;
+};
+
+export type TaskStatusTransitionExecution = TaskTransitionWrite & {
+  dependencyState: DependencyState | null;
+  deferredWarnings: string[];
+};
+
+export function readDeferredTaskTransitionWarnings(error: unknown): string[] {
+  if (!(error instanceof CliError)) return [];
+  const warnings = error.context?.deferred_warnings;
+  if (!Array.isArray(warnings)) return [];
+  return [
+    ...new Set(
+      warnings.filter((item): item is string => typeof item === "string" && item.length > 0),
+    ),
+  ];
+}
 
 function normalizeComments(task: TaskData): TaskComment[] {
   return Array.isArray(task.comments)
@@ -48,6 +117,62 @@ function normalizeComments(task: TaskData): TaskComment[] {
           !!item && typeof item.author === "string" && typeof item.body === "string",
       )
     : [];
+}
+
+function appendVerificationEntryBetweenMarkers(
+  sectionText: string,
+  entryText: string,
+  version: 2 | 3,
+): string {
+  const ensured = normalizeVerificationSectionLayout(sectionText, version);
+  const beginIdx = ensured.indexOf(VERIFICATION_RESULTS_BEGIN);
+  const endIdx = ensured.indexOf(VERIFICATION_RESULTS_END);
+  if (beginIdx === -1 || endIdx === -1 || endIdx <= beginIdx) {
+    throw new Error("Verification results markers are malformed");
+  }
+
+  const beforeEnd = ensured.slice(0, endIdx).trimEnd();
+  const afterEnd = ensured.slice(endIdx).trimStart();
+  const entry = entryText.trimEnd();
+
+  const parts: string[] = [
+    beforeEnd,
+    ...(beforeEnd.endsWith(VERIFICATION_RESULTS_BEGIN) ? [] : [""]),
+    entry,
+    "",
+    afterEnd,
+  ];
+  return parts.join("\n").trimEnd();
+}
+
+function renderVerificationEntry(opts: {
+  at: string;
+  state: "ok" | "needs_rework";
+  by: string;
+  note: string;
+  details?: string | null;
+  verifyStepsRef?: string | null;
+}): string {
+  const lines = [
+    `### ${opts.at} — VERIFY — ${opts.state}`,
+    "",
+    `By: ${opts.by}`,
+    "",
+    `Note: ${opts.note}`,
+  ];
+  const verifyStepsRef = (opts.verifyStepsRef ?? "").trim();
+  if (verifyStepsRef) {
+    lines.push("", `VerifyStepsRef: ${verifyStepsRef}`);
+  }
+  const details = (opts.details ?? "").trim();
+  if (details) {
+    lines.push("", "Details:", "", details);
+  }
+  return `${lines.join("\n").trimEnd()}\n`;
+}
+
+function sha256Hex(text: string): string {
+  return createHash("sha256").update(text, "utf8").digest("hex");
 }
 
 function buildStatusTaskPatch(opts: BuildTaskStatusTransitionOptions): TaskStoreTaskPatch {
@@ -97,6 +222,58 @@ export function buildTaskStatusTransition(
   return { currentStatus, intents, nextTask };
 }
 
+export async function executeTaskStatusTransitionRequest(
+  opts: ExecuteTaskStatusTransitionRequest,
+): Promise<TaskStatusTransitionExecution> {
+  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  ensureStatusTransitionAllowed({
+    currentStatus,
+    nextStatus: opts.toStatus,
+    force: opts.force,
+  });
+
+  let dependencyState: DependencyState | null = null;
+  const deferredWarnings: string[] = [];
+  const dependencyPolicy = opts.dependencyPolicy ?? { kind: "none" };
+  if (dependencyPolicy.kind === "require-ready" && !opts.force) {
+    dependencyState = await resolveTaskDependencyState(opts.task, opts.backend);
+    deferredWarnings.push(...dependencyWarningMessages(dependencyState));
+    if (dependencyState.missing.length > 0 || dependencyState.incomplete.length > 0) {
+      const warnings = [...new Set(deferredWarnings)];
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          dependencyPolicy.failureMessage ??
+          `Task is not ready: ${opts.task.id} (use --force to override)`,
+        context: {
+          reason_code: "task_transition_dependencies_not_ready",
+          deferred_warnings: warnings,
+        },
+      });
+    }
+  }
+
+  if (opts.commentCommitPolicy) {
+    const warning = resolveCommentCommitWarning({
+      enabled: opts.commentCommitPolicy.enabled,
+      config: opts.config,
+      action: opts.commentCommitPolicy.action,
+      confirmed: opts.commentCommitPolicy.confirmed,
+      quiet: opts.commentCommitPolicy.quiet,
+      statusFrom: currentStatus,
+      statusTo: opts.toStatus,
+    });
+    if (warning) deferredWarnings.push(warning);
+  }
+
+  return {
+    ...buildTaskStatusTransition(opts),
+    dependencyState,
+    deferredWarnings: [...new Set(deferredWarnings)],
+  };
+}
+
 export function buildTaskVerificationTransition(
   opts: BuildTaskVerificationTransitionOptions,
 ): TaskTransitionWrite {
@@ -140,4 +317,54 @@ export function buildTaskVerificationTransition(
   };
 
   return { currentStatus, intents, nextTask };
+}
+
+export function executeTaskVerificationTransitionRequest(
+  opts: ExecuteTaskVerificationTransitionRequest,
+): TaskVerificationTransitionExecution {
+  const baseDoc = ensureDocSections(opts.doc, opts.requiredSections);
+  const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
+  const verifySteps = extractDocSection(baseDoc, "Verify Steps");
+  const verifyStepsHash = verifySteps
+    ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
+    : null;
+  const docVersion = normalizeTaskDocVersion(opts.task.doc_version);
+  const verifyStepsRef = [
+    `doc_version=${String(docVersion)}`,
+    `doc_updated_at=${String(opts.task.doc_updated_at ?? "missing")}`,
+    `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
+  ].join(", ");
+  const entry = renderVerificationEntry({
+    at: opts.at,
+    state: opts.state,
+    by: opts.by,
+    note: opts.note,
+    details: opts.details ?? null,
+    verifyStepsRef,
+  });
+  const nextVerification = appendVerificationEntryBetweenMarkers(
+    verificationSection,
+    entry,
+    docVersion,
+  );
+  const nextDoc = ensureDocSections(
+    setMarkdownSection(baseDoc, "Verification", nextVerification),
+    opts.requiredSections,
+  );
+  const transition = buildTaskVerificationTransition({
+    task: opts.task,
+    at: opts.at,
+    by: opts.by,
+    note: opts.note,
+    state: opts.state,
+    verificationSection: nextVerification,
+    nextDoc,
+    requiredSections: opts.requiredSections,
+  });
+
+  return {
+    ...transition,
+    verificationSection: nextVerification,
+    nextDoc,
+  };
 }

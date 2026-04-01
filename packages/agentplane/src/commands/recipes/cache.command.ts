@@ -1,13 +1,10 @@
 import type { CommandHandler, CommandSpec, CommandCtx } from "../../cli/spec/spec.js";
 import {
-  directSubcommandNames,
+  loadDirectSubcommandNames,
   parseGroupCommand,
   throwGroupCommandUsage,
   type GroupCommandParsed,
 } from "../../cli/group-command.js";
-import { recipesCachePruneSpec } from "./cache-prune.command.js";
-
-const RECIPES_CACHE_CHILD_SPECS = [recipesCachePruneSpec] as const;
 
 export const recipesCacheSpec: CommandSpec<GroupCommandParsed> = {
   id: ["recipes", "cache"],
@@ -18,11 +15,11 @@ export const recipesCacheSpec: CommandSpec<GroupCommandParsed> = {
   parse: (raw) => parseGroupCommand(raw, "subcommand"),
 };
 
-export const runRecipesCache: CommandHandler<GroupCommandParsed> = (_ctx: CommandCtx, p) => {
+export const runRecipesCache: CommandHandler<GroupCommandParsed> = async (_ctx: CommandCtx, p) => {
   throwGroupCommandUsage({
     spec: recipesCacheSpec,
     cmd: p.cmd,
-    subcommands: directSubcommandNames(["recipes", "cache"], RECIPES_CACHE_CHILD_SPECS),
+    subcommands: await loadDirectSubcommandNames(["recipes", "cache"]),
     command: "recipes cache",
     missingMessage: "Missing recipes cache subcommand.",
     unknownMessage: (subcommand) => `Unknown recipes cache subcommand: ${subcommand}.`,

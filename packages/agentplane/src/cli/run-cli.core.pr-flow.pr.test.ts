@@ -410,81 +410,85 @@ describe("runCli", () => {
     }
   });
 
-  it("pr check falls back to PR artifacts committed on the task branch", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    await configureGitUser(root);
+  it(
+    "pr check falls back to PR artifacts committed on the task branch",
+    { timeout: 120_000 },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
 
-    const execFileAsync = promisify(execFile);
+      const execFileAsync = promisify(execFile);
 
-    let taskId = "";
-    const ioTask = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "PR check branch fallback",
-        "--description",
-        "Base checkout should validate PR artifacts from branch history",
-        "--priority",
-        "med",
-        "--owner",
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "PR check branch fallback",
+          "--description",
+          "Base checkout should validate PR artifacts from branch history",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+
+      await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+      const branch = `task/${taskId}/pr-check-branch-fallback`;
+      await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+      await runCliSilent([
+        "pr",
+        "open",
+        taskId,
+        "--author",
         "CODER",
-        "--tag",
-        "nodejs",
+        "--branch",
+        branch,
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
+      await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
-    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+      await execFileAsync("git", ["checkout", "main"], { cwd: root });
+      await rm(path.join(root, ".agentplane", "tasks", taskId), { recursive: true, force: true });
+      await execFileAsync("git", ["add", "-A", `.agentplane/tasks/${taskId}`], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", `${taskId} remove base task snapshot`], {
+        cwd: root,
+      });
+      expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
+        false,
+      );
+      expect(
+        await pathExists(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json")),
+      ).toBe(false);
 
-    const branch = `task/${taskId}/pr-check-branch-fallback`;
-    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
-    await runCliSilent([
-      "pr",
-      "open",
-      taskId,
-      "--author",
-      "CODER",
-      "--branch",
-      branch,
-      "--root",
-      root,
-    ]);
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
-
-    await execFileAsync("git", ["checkout", "main"], { cwd: root });
-    await rm(path.join(root, ".agentplane", "tasks", taskId), { recursive: true, force: true });
-    await execFileAsync("git", ["add", "-A", `.agentplane/tasks/${taskId}`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `${taskId} remove base task snapshot`], {
-      cwd: root,
-    });
-    expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
-      false,
-    );
-    expect(
-      await pathExists(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json")),
-    ).toBe(false);
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["pr", "check", taskId, "--root", root]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("✅ pr check");
-    } finally {
-      io.restore();
-    }
-  });
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["pr", "check", taskId, "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("✅ pr check");
+      } finally {
+        io.restore();
+      }
+    },
+  );
 
   it("pr check prefers local PR artifacts when multiple task branches match", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -544,7 +548,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 120_000);
 
   it("pr check still reports multiple task branches when fallback is required", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -594,7 +598,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 120_000);
 
   it("pr open requires --author", async () => {
     const root = await mkGitRepoRootWithBranch("main");

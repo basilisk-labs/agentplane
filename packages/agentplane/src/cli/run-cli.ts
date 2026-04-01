@@ -17,12 +17,7 @@ import { helpSpec, makeHelpHandler } from "./spec/help.js";
 import { usageError } from "./spec/errors.js";
 import { suggestOne } from "./spec/suggest.js";
 import { COMMANDS, matchCommandCatalog } from "./run-cli/command-catalog.js";
-import {
-  prescanJsonErrors,
-  parseGlobalArgs,
-  resolveOutputMode,
-  runWithOutputMode,
-} from "./run-cli/globals.js";
+import { parseGlobalArgs, resolveOutputMode, runWithOutputMode } from "./run-cli/globals.js";
 import { writeError } from "./run-cli/error-guidance.js";
 import { maybeWarnOnUpdate } from "./run-cli/update-warning.js";
 const HELP_TAIL_OPTIONS = new Set(["--compact", "--json"]);
@@ -52,9 +47,15 @@ async function maybeResolveProject(opts: {
 }
 
 export async function runCli(argv: string[]): Promise<number> {
-  let jsonErrors = prescanJsonErrors(argv);
+  let jsonErrors = false;
   try {
-    const { globals, rest } = parseGlobalArgs(argv);
+    const parsedGlobals = parseGlobalArgs(argv);
+    jsonErrors = parsedGlobals.jsonErrorMode;
+    if (parsedGlobals.error) {
+      throw parsedGlobals.error;
+    }
+
+    const { globals, rest } = parsedGlobals;
     const outputMode = resolveOutputMode(globals.outputMode);
     jsonErrors = globals.jsonErrors || outputMode === "json";
     const cwd = process.cwd();
@@ -62,7 +63,7 @@ export async function runCli(argv: string[]): Promise<number> {
     let maybeResolvedProjectPromise: Promise<CliResolvedProject | null> | null = null;
     const getMaybeResolvedProject = async (): Promise<CliResolvedProject | null> => {
       maybeResolvedProjectPromise ??=
-        matched?.entry.needsProject === false
+        matched?.entry.dispatch.project === false
           ? Promise.resolve(null)
           : maybeResolveProject({ cwd, rootOverride: globals.root });
       return await maybeResolvedProjectPromise;
@@ -141,7 +142,7 @@ export async function runCli(argv: string[]): Promise<number> {
       }
     };
     const getCtxOrThrow = async (commandForErrorContext: string): Promise<CommandContext> => {
-      if (matched?.entry.needsTaskContext === false) {
+      if (matched?.entry.dispatch.taskContext === false) {
         throw new CliError({
           exitCode: exitCodeForError("E_INTERNAL"),
           code: "E_INTERNAL",
@@ -229,11 +230,14 @@ export async function runCli(argv: string[]): Promise<number> {
 
     matched = matchCommandCatalog(rest);
     const resolved = await getMaybeResolvedProject();
+    const matchedDispatch = matched?.entry.dispatch ?? null;
+    const commandNeedsLoadedConfig = matchedDispatch?.loadedConfig === true;
 
     // `require_network=true` means "no network without explicit approval".
-    // Update-check is an optional network call, so it must be gated after config load.
+    // Update-check is optional and should only cross the loaded-config boundary
+    // when the matched command will cross it anyway.
     let skipUpdateCheckForPolicy = true;
-    if (resolved && matched?.entry.needsConfig !== false) {
+    if (resolved && commandNeedsLoadedConfig && !globals.noUpdateCheck) {
       try {
         const loaded = await getLoadedConfig("update-check");
         const requireNetwork = getApprovalRequirements({
@@ -249,8 +253,7 @@ export async function runCli(argv: string[]): Promise<number> {
     }
     await maybeWarnOnUpdate({
       currentVersion: getVersion(),
-      skip:
-        globals.noUpdateCheck || skipUpdateCheckForPolicy || matched?.entry.needsConfig === false,
+      skip: globals.noUpdateCheck || skipUpdateCheckForPolicy || !commandNeedsLoadedConfig,
       jsonErrors,
     });
 

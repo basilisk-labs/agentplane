@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202603311328-8CPSMX/instantiate-refactor-wave",
+  "created_at": "2026-03-31T13:34:29.777Z",
+  "head_sha": "ae31bee0ce2a157f93c2dc9675d239e750e72635",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "682c0a1e79d5b194bc54421d56946355094de810",
+  "merge_strategy": "squash",
+  "merged_at": "2026-03-31T13:35:15.919Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202603311328-8CPSMX",
+  "updated_at": "2026-03-31T13:35:15.919Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

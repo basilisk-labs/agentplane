@@ -1,0 +1,11 @@
+ .agentplane/tasks/202603301857-638D8C/README.md    | 72 ++++++++++++++++++----
+ .../tasks/202603301857-638D8C/pr/diffstat.txt      |  7 +++
+ .agentplane/tasks/202603301857-638D8C/pr/meta.json | 12 ++++
+ .agentplane/tasks/202603301857-638D8C/pr/review.md | 35 +++++++++++
+ .../tasks/202603301857-638D8C/pr/verify.log        |  0
+ .../src/commands/shared/reconcile-check.test.ts    |  2 -
+ .../agentplane/src/commands/shared/task-backend.ts |  6 --
+ .../src/commands/task/export.unit.test.ts          |  2 -
+ .../src/commands/task/finish.unit.test.ts          |  4 +-
+ .../src/commands/task/warn-owner.unit.test.ts      |  2 -
+ 10 files changed, 115 insertions(+), 27 deletions(-)
