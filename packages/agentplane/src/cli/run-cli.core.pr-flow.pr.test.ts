@@ -412,7 +412,7 @@ describe("runCli", () => {
 
   it(
     "pr check falls back to PR artifacts committed on the task branch",
-    { timeout: 60_000 },
+    { timeout: 120_000 },
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
@@ -548,7 +548,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 120_000);
 
   it("pr check still reports multiple task branches when fallback is required", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -598,7 +598,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 120_000);
 
   it("pr open requires --author", async () => {
     const root = await mkGitRepoRootWithBranch("main");

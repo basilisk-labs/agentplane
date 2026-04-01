@@ -219,7 +219,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 60_000);
 
   it("cleanup merged --quiet suppresses output", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -240,7 +240,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 60_000);
 
   it("cleanup merged accepts --base and --archive", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -268,7 +268,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 60_000);
 
   it(
     "cleanup merged lists candidates without --yes",

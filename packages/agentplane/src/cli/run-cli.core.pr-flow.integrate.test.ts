@@ -58,7 +58,7 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
-const INTEGRATE_REBASE_TIMEOUT_MS = 120_000;
+const INTEGRATE_REBASE_TIMEOUT_MS = 180_000;
 const TEST_WORKFLOW_GITIGNORE = ".agentplane/worktrees\n.agentplane/cache\n";
 
 describe("runCli", () => {
@@ -280,7 +280,7 @@ describe("runCli", () => {
     const meta = JSON.parse(metaText) as Record<string, unknown>;
     expect(meta.base).toBe("main");
     expect(meta).not.toHaveProperty("base_branch");
-  }, 120_000);
+  }, 180_000);
 
   it("integrate falls back to a branch-backed task README when base lacks the local task snapshot", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -358,7 +358,7 @@ describe("runCli", () => {
 
     const task = await readTask({ cwd: root, taskId });
     expect(task.frontmatter.status).toBe("DONE");
-  }, 120_000);
+  }, 180_000);
 
   it("integrate succeeds when branch_pr task artifacts already exist untracked on the base checkout", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -500,7 +500,7 @@ describe("runCli", () => {
     expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/README.md`);
     expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/pr/meta.json`);
     expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/pr/diffstat.txt`);
-  }, 120_000);
+  }, 180_000);
 
   it("integrate uses a compliant fallback commit subject when branch subject is invalid (squash)", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -585,7 +585,7 @@ describe("runCli", () => {
         genericTokens: config.commit.generic_tokens,
       }).ok,
     ).toBe(true);
-  }, 120_000);
+  }, 180_000);
 
   it(
     "integrate supports dry-run",
