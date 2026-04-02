@@ -4,7 +4,7 @@ title: "Fix v0.3.8 release-prepublish blockers"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-02T15:08:34.974Z"
+  updated_by: "CODER"
+  note: "Command: bun run build && bunx vitest run packages/agentplane/src/cli/stale-dist-policy.test.ts packages/agentplane/src/cli/stale-dist-readonly.test.ts packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts --reporter=verbose. Result: pass. Evidence: build passed; 3 files, 12 tests green; preflight stale-dist regression covered. Scope: release-prepublish blocker around preflight cold-path behavior."
 commit: null
 comments:
   -
@@ -34,8 +34,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reproduce the failing release gates, fix the regressions blocking v0.3.8, rerun prepublish, and only then continue with publication."
+  -
+    type: "verify"
+    at: "2026-04-02T15:08:34.974Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run build && bunx vitest run packages/agentplane/src/cli/stale-dist-policy.test.ts packages/agentplane/src/cli/stale-dist-readonly.test.ts packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts --reporter=verbose. Result: pass. Evidence: build passed; 3 files, 12 tests green; preflight stale-dist regression covered. Scope: release-prepublish blocker around preflight cold-path behavior."
 doc_version: 3
-doc_updated_at: "2026-04-01T10:37:30.515Z"
+doc_updated_at: "2026-04-02T15:08:34.978Z"
 doc_updated_by: "CODER"
 description: "Investigate and fix the failing release-prepublish tests and runtime regressions blocking the v0.3.8 patch release, then re-run release gates and publish."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. <Action>. Expected: <observable result>.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-02T15:08:34.974Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run build && bunx vitest run packages/agentplane/src/cli/stale-dist-policy.test.ts packages/agentplane/src/cli/stale-dist-readonly.test.ts packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts --reporter=verbose. Result: pass. Evidence: build passed; 3 files, 12 tests green; preflight stale-dist regression covered. Scope: release-prepublish blocker around preflight cold-path behavior.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-01T10:37:30.515Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -88,6 +102,14 @@ Investigate and fix the failing release-prepublish tests and runtime regressions
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-02T15:08:34.974Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run build && bunx vitest run packages/agentplane/src/cli/stale-dist-policy.test.ts packages/agentplane/src/cli/stale-dist-readonly.test.ts packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts --reporter=verbose. Result: pass. Evidence: build passed; 3 files, 12 tests green; preflight stale-dist regression covered. Scope: release-prepublish blocker around preflight cold-path behavior.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-01T10:37:30.515Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
