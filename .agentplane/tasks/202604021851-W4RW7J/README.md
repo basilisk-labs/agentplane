@@ -1,10 +1,11 @@
 ---
 id: "202604021851-W4RW7J"
 title: "Unify branch_pr PR artifact sync and render model"
-status: "DOING"
+result_summary: "integrate: squash task/202604021851-W4RW7J/pr-sync-core"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +33,16 @@ verification:
     Result: pass
     Evidence: 44 tests passed; the new pr update idempotence regression passed and existing integrate/PR-flow coverage stayed green.
     Scope: branch_pr PR artifact open/update and integrate regression surface.
-commit: null
+commit:
+  hash: "67788a1a22d9f0784dead6d0dc775ab13efff7a0"
+  message: "📝 W4RW7J workflow: refresh PR artifact render"
 comments:
   -
     author: "CODER"
     body: "Start: replace split branch_pr PR artifact writes with one deterministic sync/render path and keep the first implementation package tightly scoped."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604021851-W4RW7J/pr."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
       Result: pass
       Evidence: 44 tests passed; the new pr update idempotence regression passed and existing integrate/PR-flow coverage stayed green.
       Scope: branch_pr PR artifact open/update and integrate regression surface.
+  -
+    type: "status"
+    at: "2026-04-02T19:11:14.389Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604021851-W4RW7J/pr."
 doc_version: 3
-doc_updated_at: "2026-04-02T19:06:49.086Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-02T19:11:14.394Z"
+doc_updated_by: "INTEGRATOR"
 description: "Create one idempotent sync/render center for branch_pr PR artifacts so review.md, diffstat, and meta updates stop living in separate commands and can drive both local and GitHub-facing output without duplicated logic."
 sections:
   Summary: |-
