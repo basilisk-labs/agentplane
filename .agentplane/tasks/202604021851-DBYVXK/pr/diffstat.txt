@@ -1,8 +1,13 @@
- .agentplane/tasks/202604021851-DBYVXK/README.md    | 102 +++++++++++++++
+ .agentplane/tasks/202604021851-DBYVXK/README.md    | 124 ++++++++++++++++++
+ .../tasks/202604021851-DBYVXK/pr/diffstat.txt      |   8 ++
+ .agentplane/tasks/202604021851-DBYVXK/pr/meta.json |  14 ++
+ .../tasks/202604021851-DBYVXK/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604021851-DBYVXK/pr/review.md |  36 +++++
+ .../tasks/202604021851-DBYVXK/pr/verify.log        |   0
  .../src/cli/run-cli.core.pr-flow.integrate.test.ts |   5 +-
  .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 145 +++++++++++++++++++++
  .../src/commands/pr/internal/review-template.ts    |   4 +-
  .../agentplane/src/commands/pr/internal/sync.ts    | 139 ++++++++++++++++++--
  packages/agentplane/src/commands/task/start.ts     |  11 ++
  .../agentplane/src/commands/task/verify-record.ts  |  11 ++
- 7 files changed, 400 insertions(+), 17 deletions(-)
+ 12 files changed, 480 insertions(+), 17 deletions(-)

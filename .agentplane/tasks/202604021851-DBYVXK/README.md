@@ -1,10 +1,11 @@
 ---
 id: "202604021851-DBYVXK"
 title: "Auto-sync branch_pr PR artifacts on lifecycle boundaries"
-status: "DOING"
+result_summary: "integrate: squash task/202604021851-DBYVXK/pr-auto-sync"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-02T19:39:48.682Z"
   updated_by: "CODER"
   note: "Command: bun run lint:core && bunx tsc -p packages/agentplane/tsconfig.json --noEmit && bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000"
-commit: null
+commit:
+  hash: "c39b99ad86b0460cfaf2f207d23ff4e39689a825"
+  message: "📝 DBYVXK workflow: record PR artifacts and verification"
 comments:
   -
     author: "CODER"
     body: "Start: auto-sync PR artifacts from branch_pr lifecycle boundaries and leave pr open/update as compatibility wrappers."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604021851-DBYVXK/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run lint:core && bunx tsc -p packages/agentplane/tsconfig.json --noEmit && bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000"
+  -
+    type: "status"
+    at: "2026-04-02T19:40:49.291Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604021851-DBYVXK/pr."
 doc_version: 3
-doc_updated_at: "2026-04-02T19:39:48.695Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-02T19:40:49.296Z"
+doc_updated_by: "INTEGRATOR"
 description: "Wire PR artifact sync into start-ready, PR note, verify/integrate boundaries, and keep pr open/pr update only as compatibility and recovery wrappers so happy-path workflow no longer needs manual PR maintenance steps."
 sections:
   Summary: |-
