@@ -1,3 +1,7 @@
+ .../tasks/202604021557-WKSE9Q/pr/diffstat.txt      |  3 +
+ .agentplane/tasks/202604021557-WKSE9Q/pr/meta.json | 12 ++++
+ .agentplane/tasks/202604021557-WKSE9Q/pr/review.md | 31 +++++++++
+ .../tasks/202604021557-WKSE9Q/pr/verify.log        |  0
  ...d-0-3-9-preparing-0-4-fixing-installability.mdx | 79 ++++++++++++++++++++++
  website/src/pages/blog/index.tsx                   |  8 +++
- 2 files changed, 87 insertions(+)
+ 6 files changed, 133 insertions(+)
