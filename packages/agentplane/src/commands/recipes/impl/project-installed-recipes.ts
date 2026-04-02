@@ -6,17 +6,13 @@ import { invalidFieldMessage, missingFileMessage } from "../../../cli/output.js"
 import { isRecord } from "../../../shared/guards.js";
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 import {
-  normalizeRecipeTags,
-  readRecipeManifest,
-  type InstalledRecipeEntry,
-  type InstalledRecipesFile,
-  type RecipeInstallMetadata,
-} from "@agentplane/recipes";
-import {
   resolveProjectInstalledRecipeDir,
   resolveProjectRecipeInstallMetaPath,
   resolveProjectRecipesDir,
 } from "./paths.js";
+import { readRecipeManifest } from "./manifest.js";
+import { normalizeRecipeTags } from "./normalize.js";
+import type { InstalledRecipeEntry, InstalledRecipesFile, RecipeInstallMetadata } from "./types.js";
 
 function validateRecipeInstallMetadata(raw: unknown): RecipeInstallMetadata {
   if (!isRecord(raw)) throw new Error(invalidFieldMessage("recipe install metadata", "object"));

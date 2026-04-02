@@ -55,7 +55,6 @@
     "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack"
   },
   "dependencies": {
-    "@agentplane/recipes": "workspace:packages/recipes",
     "@agentplaneorg/core": "0.3.8",
     "yauzl": "^2.10.0"
   },

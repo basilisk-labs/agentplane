@@ -28,6 +28,13 @@ export async function seedReleaseWorkspace(
     coreVersion?: string;
     cliVersion?: string;
     dependencyVersion?: string;
+    extraDependencies?: Record<string, string>;
+    extraWorkspacePackages?: {
+      relDir: string;
+      name: string;
+      version?: string;
+      private?: boolean;
+    }[];
     writeNotes?: boolean;
     notesVersion?: string;
     notesBody?: string;
@@ -36,6 +43,12 @@ export async function seedReleaseWorkspace(
   const coreVersion = opts.coreVersion ?? "1.2.3";
   const cliVersion = opts.cliVersion ?? coreVersion;
   const dependencyVersion = opts.dependencyVersion ?? coreVersion;
+  const dependencies: Record<string, string> = {
+    "@agentplaneorg/core": dependencyVersion,
+  };
+  if (opts.extraDependencies) {
+    Object.assign(dependencies, opts.extraDependencies);
+  }
   await writePackageJson(root, "packages/core", {
     name: "@agentplaneorg/core",
     version: coreVersion,
@@ -43,10 +56,15 @@ export async function seedReleaseWorkspace(
   await writePackageJson(root, "packages/agentplane", {
     name: "agentplane",
     version: cliVersion,
-    dependencies: {
-      "@agentplaneorg/core": dependencyVersion,
-    },
+    dependencies,
   });
+  for (const pkg of opts.extraWorkspacePackages ?? []) {
+    await writePackageJson(root, pkg.relDir, {
+      name: pkg.name,
+      version: pkg.version ?? "0.0.0",
+      ...(pkg.private === true ? { private: true } : {}),
+    });
+  }
   if (opts.writeNotes) {
     await writeReleaseNotes(root, opts.notesVersion ?? cliVersion, opts.notesBody);
   }
@@ -58,6 +76,13 @@ export async function initReleaseWorkspace(
     coreVersion?: string;
     cliVersion?: string;
     dependencyVersion?: string;
+    extraDependencies?: Record<string, string>;
+    extraWorkspacePackages?: {
+      relDir: string;
+      name: string;
+      version?: string;
+      private?: boolean;
+    }[];
     writeNotes?: boolean;
     notesVersion?: string;
     notesBody?: string;

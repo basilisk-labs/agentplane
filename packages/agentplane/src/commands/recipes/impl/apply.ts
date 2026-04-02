@@ -7,14 +7,11 @@ import { invalidFieldMessage, missingFileMessage } from "../../../cli/output.js"
 import { CliError } from "../../../shared/errors.js";
 import { isRecord } from "../../../shared/guards.js";
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
-import {
-  readScenarioDefinition,
-  type RecipeConflictMode,
-  type RecipeManifest,
-} from "@agentplane/recipes";
 
 import { RECIPES_SCENARIOS_DIR_NAME, RECIPES_SCENARIOS_INDEX_NAME } from "./constants.js";
+import { readScenarioDefinition } from "./scenario.js";
 import { normalizeAgentId } from "./normalize.js";
+import type { RecipeConflictMode, RecipeManifest } from "./types.js";
 
 export async function moveRecipeDir(opts: { from: string; to: string }): Promise<void> {
   await mkdir(path.dirname(opts.to), { recursive: true });

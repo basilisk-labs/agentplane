@@ -23,6 +23,7 @@ const originalGitAuthorName = process.env.GIT_AUTHOR_NAME;
 const originalGitAuthorEmail = process.env.GIT_AUTHOR_EMAIL;
 const originalGitCommitterName = process.env.GIT_COMMITTER_NAME;
 const originalGitCommitterEmail = process.env.GIT_COMMITTER_EMAIL;
+const originalHookRunner = process.env.AGENTPLANE_HOOK_RUNNER;
 const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 const originalStderrWrite = process.stderr.write.bind(process.stderr);
 let stdioSilenceDepth = 0;
@@ -37,13 +38,17 @@ async function ensureGitTemplateRoot(): Promise<string> {
   if (gitTemplateRoot) return gitTemplateRoot;
   gitTemplatePromise ??= (async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-template-"));
-    await execFileAsync("git", ["init", "-q"], { cwd: root });
+    await execFileAsync("git", ["init", "-q"], { cwd: root, env: cleanGitEnv() });
     // Tests must not rely on global git config. Configure author identity locally
     // so any helper that creates commits works in CI.
     await execFileAsync("git", ["config", "user.email", "agentplane-test@example.com"], {
       cwd: root,
+      env: cleanGitEnv(),
     });
-    await execFileAsync("git", ["config", "user.name", "agentplane-test"], { cwd: root });
+    await execFileAsync("git", ["config", "user.name", "agentplane-test"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
     return root;
   })();
   gitTemplateRoot = await gitTemplatePromise;
@@ -64,6 +69,13 @@ export function registerAgentplaneHome(): void {
     agentplaneHome = await mkdtemp(path.join(os.tmpdir(), "agentplane-home-"));
     process.env.AGENTPLANE_HOME = agentplaneHome;
     process.env.AGENTPLANE_NO_UPDATE_CHECK = "1";
+    process.env.AGENTPLANE_HOOK_RUNNER ??= path.join(
+      process.cwd(),
+      "packages",
+      "agentplane",
+      "bin",
+      "agentplane.js",
+    );
     // Keep tests hermetic: never rely on global git config for commit authorship.
     process.env.GIT_AUTHOR_NAME ??= "agentplane-test";
     process.env.GIT_AUTHOR_EMAIL ??= "agentplane-test@example.com";
@@ -93,6 +105,8 @@ export function registerAgentplaneHome(): void {
     else process.env.GIT_COMMITTER_NAME = originalGitCommitterName;
     if (originalGitCommitterEmail === undefined) delete process.env.GIT_COMMITTER_EMAIL;
     else process.env.GIT_COMMITTER_EMAIL = originalGitCommitterEmail;
+    if (originalHookRunner === undefined) delete process.env.AGENTPLANE_HOOK_RUNNER;
+    else process.env.AGENTPLANE_HOOK_RUNNER = originalHookRunner;
   });
 
   afterEach(async () => {
@@ -794,13 +808,19 @@ export async function createUpgradeBundle(files: Record<string, string>): Promis
 
 export async function mkGitRepoRootWithBranch(branch: string): Promise<string> {
   const root = await mkGitRepoRoot();
-  await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+  await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
   return root;
 }
 
 export async function configureGitUser(root: string): Promise<void> {
-  await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd: root });
-  await execFileAsync("git", ["config", "user.name", "Test User"], { cwd: root });
+  await execFileAsync("git", ["config", "user.email", "test@example.com"], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
+  await execFileAsync("git", ["config", "user.name", "Test User"], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
 }
 
 export function cleanGitEnv(): NodeJS.ProcessEnv {
@@ -811,6 +831,13 @@ export function cleanGitEnv(): NodeJS.ProcessEnv {
   delete env.GIT_INDEX_FILE;
   delete env.GIT_OBJECT_DIRECTORY;
   delete env.GIT_ALTERNATE_OBJECT_DIRECTORIES;
+  env.GIT_CONFIG_GLOBAL = "/dev/null";
+  env.GIT_CONFIG_SYSTEM = "/dev/null";
+  env.GIT_TERMINAL_PROMPT = "0";
+  env.GIT_AUTHOR_NAME = env.GIT_AUTHOR_NAME ?? "Agentplane Test";
+  env.GIT_AUTHOR_EMAIL = env.GIT_AUTHOR_EMAIL ?? "agentplane-test@example.com";
+  env.GIT_COMMITTER_NAME = env.GIT_COMMITTER_NAME ?? "Agentplane Test";
+  env.GIT_COMMITTER_EMAIL = env.GIT_COMMITTER_EMAIL ?? "agentplane-test@example.com";
   return env;
 }
 
@@ -838,12 +865,15 @@ export async function gitBranchExists(root: string, branch: string): Promise<boo
 }
 
 export async function commitAll(root: string, message: string): Promise<void> {
-  await execFileAsync("git", ["add", "."], { cwd: root });
-  await execFileAsync("git", ["commit", "-m", message], { cwd: root });
+  await execFileAsync("git", ["add", "."], { cwd: root, env: cleanGitEnv() });
+  await execFileAsync("git", ["commit", "--no-verify", "-m", message], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
 }
 
 export async function stageGitignoreIfPresent(root: string): Promise<void> {
   const gitignorePath = path.join(root, ".gitignore");
   if (!(await pathExists(gitignorePath))) return;
-  await execFileAsync("git", ["add", ".gitignore"], { cwd: root });
+  await execFileAsync("git", ["add", ".gitignore"], { cwd: root, env: cleanGitEnv() });
 }
