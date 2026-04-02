@@ -23,6 +23,7 @@ const originalGitAuthorName = process.env.GIT_AUTHOR_NAME;
 const originalGitAuthorEmail = process.env.GIT_AUTHOR_EMAIL;
 const originalGitCommitterName = process.env.GIT_COMMITTER_NAME;
 const originalGitCommitterEmail = process.env.GIT_COMMITTER_EMAIL;
+const originalHookRunner = process.env.AGENTPLANE_HOOK_RUNNER;
 const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 const originalStderrWrite = process.stderr.write.bind(process.stderr);
 let stdioSilenceDepth = 0;
@@ -68,6 +69,13 @@ export function registerAgentplaneHome(): void {
     agentplaneHome = await mkdtemp(path.join(os.tmpdir(), "agentplane-home-"));
     process.env.AGENTPLANE_HOME = agentplaneHome;
     process.env.AGENTPLANE_NO_UPDATE_CHECK = "1";
+    process.env.AGENTPLANE_HOOK_RUNNER ??= path.join(
+      process.cwd(),
+      "packages",
+      "agentplane",
+      "bin",
+      "agentplane.js",
+    );
     // Keep tests hermetic: never rely on global git config for commit authorship.
     process.env.GIT_AUTHOR_NAME ??= "agentplane-test";
     process.env.GIT_AUTHOR_EMAIL ??= "agentplane-test@example.com";
@@ -97,6 +105,8 @@ export function registerAgentplaneHome(): void {
     else process.env.GIT_COMMITTER_NAME = originalGitCommitterName;
     if (originalGitCommitterEmail === undefined) delete process.env.GIT_COMMITTER_EMAIL;
     else process.env.GIT_COMMITTER_EMAIL = originalGitCommitterEmail;
+    if (originalHookRunner === undefined) delete process.env.AGENTPLANE_HOOK_RUNNER;
+    else process.env.AGENTPLANE_HOOK_RUNNER = originalHookRunner;
   });
 
   afterEach(async () => {

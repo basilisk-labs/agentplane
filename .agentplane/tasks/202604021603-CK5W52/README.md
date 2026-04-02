@@ -4,7 +4,7 @@ title: "Fix npm install failure after v0.3.8 release"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-02T16:35:48.349Z"
+  updated_at: "2026-04-02T17:16:23.393Z"
   updated_by: "CODER"
-  note: "Verified locally: reproduced published v0.3.8 manifest leak, packed and npm-installed fixed CLI successfully, ran targeted recipe/release tests, test:workflow-coverage, test:significant-coverage, and bun run release:prepublish."
+  note: "Verified locally: refreshed hook shim fallback order and test env isolation, reran hook/release-smoke/upgrade targeted vitest, packed and npm-installed the publishable tarball successfully, and passed bun run release:prepublish on the exact release tree."
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified locally: reproduced published v0.3.8 manifest leak, packed and npm-installed fixed CLI successfully, ran targeted recipe/release tests, test:workflow-coverage, test:significant-coverage, and bun run release:prepublish."
+  -
+    type: "verify"
+    at: "2026-04-02T17:16:23.393Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified locally: refreshed hook shim fallback order and test env isolation, reran hook/release-smoke/upgrade targeted vitest, packed and npm-installed the publishable tarball successfully, and passed bun run release:prepublish on the exact release tree."
 doc_version: 3
-doc_updated_at: "2026-04-02T16:35:48.363Z"
+doc_updated_at: "2026-04-02T17:16:23.411Z"
 doc_updated_by: "CODER"
 description: "Repair the published agentplane package so npm install no longer fails on a workspace dependency leak, add a release gate for publishable package manifests, and ship a patch release."
 sections:
@@ -76,6 +82,14 @@ sections:
     Note: Verified locally: reproduced published v0.3.8 manifest leak, packed and npm-installed fixed CLI successfully, ran targeted recipe/release tests, test:workflow-coverage, test:significant-coverage, and bun run release:prepublish.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-02T16:04:31.792Z, excerpt_hash=sha256:d87c9378986bbe3a7d04912f64fb2fd2d1e21f77606246529a3638419c91ed34
+    
+    ### 2026-04-02T17:16:23.393Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified locally: refreshed hook shim fallback order and test env isolation, reran hook/release-smoke/upgrade targeted vitest, packed and npm-installed the publishable tarball successfully, and passed bun run release:prepublish on the exact release tree.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-02T16:35:48.363Z, excerpt_hash=sha256:d87c9378986bbe3a7d04912f64fb2fd2d1e21f77606246529a3638419c91ed34
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -123,6 +137,14 @@ By: CODER
 Note: Verified locally: reproduced published v0.3.8 manifest leak, packed and npm-installed fixed CLI successfully, ran targeted recipe/release tests, test:workflow-coverage, test:significant-coverage, and bun run release:prepublish.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-02T16:04:31.792Z, excerpt_hash=sha256:d87c9378986bbe3a7d04912f64fb2fd2d1e21f77606246529a3638419c91ed34
+
+### 2026-04-02T17:16:23.393Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified locally: refreshed hook shim fallback order and test env isolation, reran hook/release-smoke/upgrade targeted vitest, packed and npm-installed the publishable tarball successfully, and passed bun run release:prepublish on the exact release tree.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-02T16:35:48.363Z, excerpt_hash=sha256:d87c9378986bbe3a7d04912f64fb2fd2d1e21f77606246529a3638419c91ed34
 
 <!-- END VERIFICATION RESULTS -->
 
