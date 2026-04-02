@@ -8,6 +8,8 @@ import { createCliEmitter, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
 import { gitListTaskBranches, parseTaskIdFromBranch } from "../shared/git-worktree.js";
+import { gitRevParse } from "../shared/git-ops.js";
+import { isTaskLocalOnlyAdvance } from "../shared/task-local-freshness.js";
 import {
   loadBackendTask,
   loadCommandContext,
@@ -16,6 +18,11 @@ import {
 
 import { readPrArtifact, resolvePrPaths } from "./internal/pr-paths.js";
 import { validateReviewContents } from "./internal/review-template.js";
+
+function isUnknownRevisionError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
+  return /unknown revision or path not in the working tree/i.test(message);
+}
 
 async function resolveArtifactBranch(opts: {
   ctx: CommandContext;
@@ -166,6 +173,50 @@ export async function cmdPrCheck(opts: {
       }
       if (!meta?.last_verified_sha || !meta.last_verified_at) {
         errors.push("Verify metadata missing (last_verified_sha/last_verified_at)");
+      }
+    }
+
+    const branchForFreshness =
+      branchCache.value ?? (typeof meta?.branch === "string" ? meta.branch.trim() : null);
+    if (meta && branchForFreshness) {
+      let branchHeadSha: string | null = null;
+      try {
+        branchHeadSha = await gitRevParse(resolved.gitRoot, [branchForFreshness]);
+      } catch (err) {
+        if (!isUnknownRevisionError(err)) throw err;
+      }
+      if (branchHeadSha) {
+        const reviewFresh =
+          (meta.head_sha ?? null) === branchHeadSha ||
+          (await isTaskLocalOnlyAdvance({
+            gitRoot: resolved.gitRoot,
+            workflowDir: config.paths.workflow_dir,
+            taskId: task.id,
+            fromRef: meta.head_sha ?? null,
+            toRef: branchHeadSha,
+          }));
+        if (!reviewFresh) {
+          errors.push(
+            `PR artifacts stale: head_sha=${meta.head_sha ?? "<missing>"} current_head=${branchHeadSha}`,
+          );
+        }
+        const verifyFresh =
+          !task.verify ||
+          task.verify.length === 0 ||
+          !meta.last_verified_sha ||
+          meta.last_verified_sha === branchHeadSha ||
+          (await isTaskLocalOnlyAdvance({
+            gitRoot: resolved.gitRoot,
+            workflowDir: config.paths.workflow_dir,
+            taskId: task.id,
+            fromRef: meta.last_verified_sha,
+            toRef: branchHeadSha,
+          }));
+        if (task.verify && task.verify.length > 0 && meta.last_verified_sha && !verifyFresh) {
+          errors.push(
+            `Verify state stale: last_verified_sha=${meta.last_verified_sha} current_head=${branchHeadSha}`,
+          );
+        }
       }
     }
 

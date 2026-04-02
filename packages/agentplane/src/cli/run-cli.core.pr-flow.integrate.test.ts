@@ -332,10 +332,15 @@ describe("runCli", () => {
       `${branchReadme}\n\n<!-- branch-backed task snapshot for integrate fallback -->\n`,
       "utf8",
     );
-    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
     await execFileAsync("git", ["add", branchReadmePath], { cwd: root });
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await runCliSilent(["pr", "update", taskId, "--root", root]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/pr`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} refresh pr artifacts`], {
+      cwd: root,
+    });
 
     const prMetaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
     expect(await pathExists(prMetaPath)).toBe(true);
@@ -403,11 +408,17 @@ describe("runCli", () => {
     const branch = `task/${taskId}/integrate-artifacts`;
     await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
     await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
-    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-    await execFileAsync("git", ["add", "feature.txt", `.agentplane/tasks/${taskId}`], {
+    await execFileAsync("git", ["add", "feature.txt"], {
       cwd: root,
     });
-    await execFileAsync("git", ["commit", "-m", `${taskId} add feature and task artifacts`], {
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], {
+      cwd: root,
+    });
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add task artifacts`], {
       cwd: root,
     });
 

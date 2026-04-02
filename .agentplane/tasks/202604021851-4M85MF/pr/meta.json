@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604021851-4M85MF/pr-freshness",
+  "created_at": "2026-04-02T19:42:08.024Z",
+  "head_sha": "f1afc5dad0100d5fbce9afbc65b923197ec5228c",
+  "last_verified_at": "2026-04-02T20:03:38.347Z",
+  "last_verified_sha": "f1afc5dad0100d5fbce9afbc65b923197ec5228c",
+  "schema_version": 1,
+  "task_id": "202604021851-4M85MF",
+  "updated_at": "2026-04-02T20:03:38.388Z",
+  "verify": {
+    "status": "pass"
+  }
+}

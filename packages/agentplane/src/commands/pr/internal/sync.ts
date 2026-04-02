@@ -37,6 +37,22 @@ function isUnknownRevisionError(err: unknown): boolean {
   return /unknown revision or path not in the working tree/i.test(message);
 }
 
+async function resolveBranchHeadSha(opts: {
+  gitRoot: string;
+  branch: string;
+}): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", ["rev-parse", opts.branch], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    });
+    return stdout.trim() || null;
+  } catch (err) {
+    if (!isUnknownRevisionError(err)) throw err;
+    return null;
+  }
+}
+
 type PrSyncMode = "open" | "update";
 
 type ResolvedPrSyncBranch = {
@@ -210,6 +226,13 @@ export async function syncPrArtifacts(opts: {
     const handoffNotes = await readPrHandoffNotes(notesPath);
     const now = nowIso();
     const createdAt = existingMeta?.created_at ?? now;
+    const baseBranch = await resolveBaseBranch({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      cliBaseOpt: null,
+      mode: config.workflow_mode,
+    });
+    const headSha = await resolveBranchHeadSha({ gitRoot: resolved.gitRoot, branch });
 
     if (opts.mode === "open") {
       const nextMeta: PrMeta = buildOpenedPrMeta({
@@ -217,6 +240,8 @@ export async function syncPrArtifacts(opts: {
         branch,
         at: now,
         previousMeta: existingMeta,
+        base: baseBranch,
+        headSha,
       });
       const nextReview = renderPrReviewDocument({
         existingReview,
@@ -239,12 +264,6 @@ export async function syncPrArtifacts(opts: {
       return { prDir, resolved };
     }
 
-    const baseBranch = await resolveBaseBranch({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-      cliBaseOpt: null,
-      mode: config.workflow_mode,
-    });
     if (!baseBranch) {
       throw new CliError({
         exitCode: exitCodeForError("E_USAGE"),
@@ -264,18 +283,6 @@ export async function syncPrArtifacts(opts: {
     } catch (err) {
       if (!isUnknownRevisionError(err)) throw err;
     }
-
-    let headSha: string | null = null;
-    try {
-      const { stdout: headOut } = await execFileAsync("git", ["rev-parse", branch], {
-        cwd: resolved.gitRoot,
-        env: gitEnv(),
-      });
-      headSha = headOut.trim() || null;
-    } catch (err) {
-      if (!isUnknownRevisionError(err)) throw err;
-    }
-
     const nextMeta: PrMeta = buildUpdatedPrMeta({
       meta: existingMeta!,
       branch,

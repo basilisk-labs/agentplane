@@ -25,6 +25,7 @@ import { resolvePrPaths } from "../../internal/pr-paths.js";
 import { readAndValidatePrArtifacts } from "../artifacts.js";
 import { computeVerifyState } from "../verify.js";
 import { parsePrMeta, type PrMeta } from "../../../shared/pr-meta.js";
+import { isTaskLocalOnlyAdvance } from "../../../shared/task-local-freshness.js";
 
 export type PreparedIntegrate = {
   ctx: CommandContext;
@@ -185,9 +186,36 @@ export async function prepareIntegrate(opts: {
   }
 
   const branchHeadSha = await gitRevParse(resolved.gitRoot, [branch]);
+  const reviewFresh =
+    (metaSource.head_sha ?? null) === branchHeadSha ||
+    (await isTaskLocalOnlyAdvance({
+      gitRoot: resolved.gitRoot,
+      workflowDir: loadedConfig.paths.workflow_dir,
+      taskId: task.id,
+      fromRef: metaSource.head_sha ?? null,
+      toRef: branchHeadSha,
+    }));
+  if (!reviewFresh) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `PR artifacts stale for ${task.id}: meta.head_sha=${metaSource.head_sha ?? "<missing>"} ` +
+        `current_head=${branchHeadSha} (refresh the task branch artifacts before integrate)`,
+    });
+  }
+  const verifyFresh =
+    (metaSource.last_verified_sha ?? null) === branchHeadSha ||
+    (await isTaskLocalOnlyAdvance({
+      gitRoot: resolved.gitRoot,
+      workflowDir: loadedConfig.paths.workflow_dir,
+      taskId: task.id,
+      fromRef: metaSource.last_verified_sha ?? null,
+      toRef: branchHeadSha,
+    }));
   const initialVerifyState = computeVerifyState({
     rawVerify: task.verify,
-    metaLastVerifiedSha: metaSource?.last_verified_sha ?? null,
+    metaLastVerifiedSha: verifyFresh ? branchHeadSha : (metaSource?.last_verified_sha ?? null),
     verifyLogText,
     branchHeadSha,
     runVerify: opts.runVerify,

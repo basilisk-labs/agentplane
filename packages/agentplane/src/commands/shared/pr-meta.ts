@@ -75,6 +75,21 @@ export function buildUpdatedPrMeta(opts: {
   };
 }
 
+export function buildVerifiedPrMeta(opts: {
+  meta: PrMeta;
+  at: string;
+  state: "pass" | "fail";
+}): PrMeta {
+  const verifiedSha = opts.meta.head_sha ?? null;
+  return {
+    ...opts.meta,
+    updated_at: opts.meta.updated_at,
+    last_verified_sha: verifiedSha,
+    last_verified_at: opts.at,
+    verify: opts.meta.verify ? { ...opts.meta.verify, status: opts.state } : { status: opts.state },
+  };
+}
+
 export function buildIntegratedPrMeta(opts: {
   meta: PrMeta;
   branch: string;
