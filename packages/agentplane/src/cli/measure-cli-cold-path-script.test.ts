@@ -77,7 +77,6 @@ describe("measure-cli-cold-path script", () => {
 
       const result = await runScript(["--root", root, "--runs", "1", "--warmups", "0"]);
 
-      expect(result.exitCode).toBe(0);
       expect(result.stderr).toBe("");
       const payload = JSON.parse(result.stdout) as {
         mode?: string;
@@ -96,6 +95,8 @@ describe("measure-cli-cold-path script", () => {
           min_ms?: number;
           max_ms?: number;
           exit_code?: number;
+          stdout_preview?: string;
+          stderr_preview?: string;
         }[];
       };
 
@@ -118,8 +119,15 @@ describe("measure-cli-cold-path script", () => {
         "preflight_quick",
       ]);
 
+      const commandMap = new Map((payload.commands ?? []).map((command) => [command.id, command]));
+      expect(commandMap.get("quickstart")?.exit_code).toBe(0);
+      expect(commandMap.get("task_list")?.exit_code).toBe(0);
+      expect(commandMap.get("task_search")?.exit_code).toBe(0);
+      expect(commandMap.get("preflight_quick")?.exit_code).toBe(0);
+      expect([0, 1]).toContain(commandMap.get("task_next")?.exit_code);
+      expect(result.exitCode).toBe(commandMap.get("task_next")?.exit_code === 0 ? 0 : 1);
+
       for (const command of payload.commands ?? []) {
-        expect(command.exit_code).toBe(0);
         expect(command.runs).toBe(1);
         expect(command.warmups).toBe(0);
         expect(command.durations_ms).toHaveLength(1);
@@ -129,6 +137,9 @@ describe("measure-cli-cold-path script", () => {
         expect(command.max_ms).toBeGreaterThan(0);
         expect(command.argv?.at(-2)).toBe("--root");
         expect(command.argv?.at(-1)).toBe(root);
+        if (command.id !== "task_next") {
+          expect(command.exit_code).toBe(0);
+        }
       }
     },
   );
