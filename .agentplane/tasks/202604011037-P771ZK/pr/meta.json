@@ -1,0 +1,12 @@
+{
+  "branch": "task/202604011037-P771ZK/release-prepublish-tail",
+  "created_at": "2026-04-02T15:08:33.896Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604011037-P771ZK",
+  "updated_at": "2026-04-02T15:08:33.896Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
