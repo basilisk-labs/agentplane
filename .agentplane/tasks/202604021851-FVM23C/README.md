@@ -1,10 +1,11 @@
 ---
 id: "202604021851-FVM23C"
 title: "Align GitHub PR UX with branch_pr render model"
-status: "DOING"
+result_summary: "integrate: squash task/202604021851-FVM23C/github-pr-ux"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-02T20:22:29.287Z"
   updated_by: "CODER"
   note: "GitHub PR projections, docs, and PR-flow regressions passed."
-commit: null
+commit:
+  hash: "89d779f281f04412e2f53d6a64b9cf2d30bb1d4f"
+  message: "📝 FVM23C workflow: record GitHub PR publication artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: align GitHub-facing PR title and body rendering with the local branch_pr semantic model, docs, and help."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604021851-FVM23C/pr."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "GitHub PR projections, docs, and PR-flow regressions passed."
+  -
+    type: "status"
+    at: "2026-04-02T20:24:29.707Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604021851-FVM23C/pr."
 doc_version: 3
-doc_updated_at: "2026-04-02T20:22:29.300Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-02T20:24:29.712Z"
+doc_updated_by: "INTEGRATOR"
 description: "Use the same semantic render model for local review artifacts and GitHub-facing PR title/body so repository visitors see concise, informative, low-noise change summaries with no duplicate maintenance paths; update help/docs/tests accordingly."
 sections:
   Summary: |-
