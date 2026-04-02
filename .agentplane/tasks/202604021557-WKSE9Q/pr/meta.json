@@ -1,0 +1,12 @@
+{
+  "branch": "task/202604021557-WKSE9Q/release-0-3-8-0-3-9-blog",
+  "created_at": "2026-04-02T18:26:04.348Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604021557-WKSE9Q",
+  "updated_at": "2026-04-02T18:28:50.462Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

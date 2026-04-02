@@ -1,0 +1,79 @@
+---
+slug: release-0-3-8-and-0-3-9-preparing-0-4-fixing-installability
+title: "AgentPlane 0.3.8 and 0.3.9: preparing 0.4, then fixing the release that proved why it mattered"
+description: "Why 0.3.8 spent its budget on internal cleanup for 0.4 and 0.5, how a leaked workspace dependency broke npm installs, and how 0.3.9 turned installability into a hard release gate."
+authors: [team]
+tags: [release, workflow, operations]
+---
+
+AgentPlane `0.3.8` and `0.3.9` make more sense as one release story than as two separate announcements.
+
+`0.3.8` was the preparation patch. It split oversized modules, collapsed duplicated execution paths, and pushed the CLI, task lifecycle, backends, and runner toward shared contracts that `0.4` and `0.5` will need anyway.
+
+Then the release itself exposed a hole in the publish contract. The npm artifact for `0.3.8` shipped with a `workspace:` dependency on `@agentplane/recipes`, so plain `npm install agentplane` failed with `EUNSUPPORTEDPROTOCOL` before the CLI could even start.
+
+`0.3.9` is the corrective half of that same work. It removes the leaked workspace dependency, adds a release parity guard that fails publishable manifests containing `workspace:` references, and tightens the hook-runner fallback used by release and upgrade flows.
+
+That is why this is one release story. `0.3.8` showed where the codebase was going. `0.3.9` fixed the part that proved the release process was not strict enough yet.
+
+<!-- truncate -->
+
+## `0.3.8` was mostly about clearing the codebase for what comes next
+
+There was no single marquee feature in `0.3.8`, and that was the point.
+
+Most of the patch was internal convergence work:
+
+- shared task-mutation and doc-mutation paths,
+- shared workflow-transition executors,
+- shared CLI emitters and output contracts,
+- smaller backend, upgrade, and runner modules,
+- less duplicated test scaffolding around those same seams.
+
+This kind of release is easy to undersell because the visible CLI surface barely moves. But it matters. `0.4` and `0.5` were going to land on a codebase that still had too many parallel paths for the same behavior, and that gets expensive fast once you start shipping larger features.
+
+So `0.3.8` spent its budget where it would compound: fewer duplicated branches, narrower files, clearer contracts.
+
+## The important failure in `0.3.8` was not in the code logic
+
+The code in the repository was cleaner. The shipped package was not.
+
+What escaped into npm was a publishable manifest that still referenced a private workspace package:
+
+- `@agentplane/recipes=workspace:packages/recipes`
+
+That is enough for `npm` to refuse the install entirely. No task flow was required to trigger it. No edge-case backend was involved. A fresh global install failed before users even reached `agentplane --help`.
+
+That kind of failure changes the meaning of a patch release. Once installability is broken, the rest of the improvements do not matter until the package is valid again.
+
+## `0.3.9` turns installability into part of the release contract
+
+`0.3.9` fixes the broken package, but the more important part is what changed around the fix.
+
+This patch does three concrete things:
+
+- removes the leaked workspace dependency from the published CLI package,
+- adds a release parity guard that rejects publishable manifests containing `workspace:` dependencies,
+- hardens hook-runner fallback behavior so release and upgrade smoke paths do not quietly depend on whatever global `agentplane` version happens to be on the machine.
+
+That last part matters more than it sounds. A release pipeline becomes fragile when local hooks, smoke tests, or upgrade checks accidentally borrow behavior from an unrelated globally installed binary. `0.3.9` reduces that ambiguity.
+
+## Read `0.3.8` and `0.3.9` together
+
+Taken separately, `0.3.8` looks like an internal prep patch and `0.3.9` looks like a narrow packaging fix.
+
+Taken together, they say something more useful:
+
+1. the project is actively reducing internal duplication before the `0.4` and `0.5` line,
+2. the release process is getting less forgiving about publish-time mistakes,
+3. installability is now treated as a release invariant, not as a hopeful side effect of passing tests.
+
+That is the real outcome of this patch line.
+
+## Upgrade note
+
+If you are on `0.3.7`, skip `0.3.8` and move straight to `0.3.9`.
+
+If you already tried `0.3.8` and hit the `EUNSUPPORTEDPROTOCOL` install failure, `0.3.9` is the corrective release. There is no intended workflow migration in this patch line. The user-facing point is simple: the package installs again, and the release path that produced the broken artifact is stricter than it was before.
+
+The formal source records remain the release notes at [`/docs/releases/v0.3.8`](/docs/releases/v0.3.8) and [`/docs/releases/v0.3.9`](/docs/releases/v0.3.9).
