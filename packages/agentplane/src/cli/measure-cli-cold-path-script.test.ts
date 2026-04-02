@@ -4,7 +4,8 @@ import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
 
-import { mkGitRepoRoot, writeDefaultConfig } from "./run-cli.test-helpers.js";
+import { runCli } from "./run-cli.js";
+import { captureStdIO, mkGitRepoRoot, writeDefaultConfig } from "./run-cli.test-helpers.js";
 
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts", "measure-cli-cold-path.mjs");
@@ -49,6 +50,30 @@ describe("measure-cli-cold-path script", () => {
     async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
+      {
+        const io = captureStdIO();
+        try {
+          expect(
+            await runCli([
+              "task",
+              "new",
+              "--title",
+              "Cold path benchmark task",
+              "--description",
+              "Seed one ready task so task next benchmarks the success path.",
+              "--owner",
+              "CODER",
+              "--tag",
+              "docs",
+              "--root",
+              root,
+            ]),
+          ).toBe(0);
+          expect(io.stdout.trim()).toMatch(/^\d{12}-[A-Z0-9]{6}$/);
+        } finally {
+          io.restore();
+        }
+      }
 
       const result = await runScript(["--root", root, "--runs", "1", "--warmups", "0"]);
 

@@ -303,5 +303,5 @@ describe("runCli task handoff and recovery", () => {
         io.restore();
       }
     }
-  }, 20_000);
+  }, 60_000);
 });

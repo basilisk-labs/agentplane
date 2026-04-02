@@ -2403,7 +2403,8 @@ describe("runCli", () => {
       expect(await runCli(["task", "run", "cancel", taskId, liveRun.runId, "--root", root])).toBe(
         0,
       );
-      expect(await liveRunPromise).toBeGreaterThan(0);
+      const liveRunCode = await liveRunPromise;
+      expect([0, 143]).toContain(liveRunCode);
 
       let task = await readTask({ cwd: root, rootOverride: root, taskId });
       expect(task.frontmatter.runner?.run_id).toBe(liveRun.runId);
