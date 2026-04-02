@@ -1,10 +1,11 @@
 ---
 id: "202604021851-4M85MF"
 title: "Enforce branch_pr freshness and verify invariants"
-status: "DOING"
+result_summary: "integrate: squash task/202604021851-4M85MF/pr-freshness"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-02T20:03:38.347Z"
   updated_by: "CODER"
   note: "Lint, types, and freshness regressions passed."
-commit: null
+commit:
+  hash: "21c3479ec58dfbcf72192cda1e738e0d7fd09985"
+  message: "📝 4M85MF workflow: record freshness verification"
 comments:
   -
     author: "CODER"
     body: "Start: enforce rendered-from-head freshness and verify-sha invariants for branch_pr PR artifacts and integrate."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604021851-4M85MF/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Lint, types, and freshness regressions passed."
+  -
+    type: "status"
+    at: "2026-04-02T20:04:44.417Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604021851-4M85MF/pr."
 doc_version: 3
-doc_updated_at: "2026-04-02T20:03:38.361Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-02T20:04:44.422Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make PR artifacts and verification state freshness explicit with rendered-from head linkage, stale detection, and integrate gates that reject outdated review or verify state while preserving SHA-based verify caching."
 sections:
   Summary: |-

@@ -1,8 +1,8 @@
- .agentplane/tasks/202604021851-4M85MF/README.md    | 102 +++++++++++++
- .../tasks/202604021851-4M85MF/pr/diffstat.txt      |   0
+ .agentplane/tasks/202604021851-4M85MF/README.md    | 136 ++++++++++++++++++
+ .../tasks/202604021851-4M85MF/pr/diffstat.txt      |  17 +++
  .agentplane/tasks/202604021851-4M85MF/pr/meta.json |  14 ++
  .../tasks/202604021851-4M85MF/pr/notes.jsonl       |   0
- .agentplane/tasks/202604021851-4M85MF/pr/review.md |  29 ++++
+ .agentplane/tasks/202604021851-4M85MF/pr/review.md |  45 ++++++
  .../tasks/202604021851-4M85MF/pr/verify.log        |   0
  .../src/cli/run-cli.core.pr-flow.integrate.test.ts |  17 ++-
  .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 159 ++++++++++++++++++++-
@@ -14,4 +14,4 @@
  packages/agentplane/src/commands/shared/pr-meta.ts |  15 ++
  .../src/commands/shared/task-local-freshness.ts    |  38 +++++
  .../agentplane/src/commands/task/verify-record.ts  |  22 ++-
- 16 files changed, 572 insertions(+), 24 deletions(-)
+ 16 files changed, 639 insertions(+), 24 deletions(-)

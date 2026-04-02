@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604021851-4M85MF/pr-freshness",
   "created_at": "2026-04-02T19:42:08.024Z",
-  "head_sha": "f1afc5dad0100d5fbce9afbc65b923197ec5228c",
+  "head_sha": "e94e17ae3de31c2916492b53ae72439a08e05a2b",
   "last_verified_at": "2026-04-02T20:03:38.347Z",
   "last_verified_sha": "f1afc5dad0100d5fbce9afbc65b923197ec5228c",
+  "merge_commit": "21c3479ec58dfbcf72192cda1e738e0d7fd09985",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-02T20:04:44.376Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604021851-4M85MF",
-  "updated_at": "2026-04-02T20:03:38.388Z",
+  "updated_at": "2026-04-02T20:04:44.376Z",
   "verify": {
     "status": "pass"
   }
