@@ -1,10 +1,11 @@
 ---
 id: "202604021851-2DHT5H"
 title: "Move PR human notes into append-only artifact storage"
-status: "DOING"
+result_summary: "integrate: squash task/202604021851-2DHT5H/pr-notes-store"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-02T19:21:25.499Z"
   updated_by: "CODER"
   note: "Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit && bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/pr/internal/pr-paths.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000"
-commit: null
+commit:
+  hash: "4f0bfd200dd0239089659bac8724fdbb19765fd8"
+  message: "📝 2DHT5H workflow: record PR artifacts and verification"
 comments:
   -
     author: "CODER"
     body: "Start: move PR human notes into append-only storage and render them back into review output."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604021851-2DHT5H/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit && bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/pr/internal/pr-paths.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000"
+  -
+    type: "status"
+    at: "2026-04-02T19:22:07.500Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604021851-2DHT5H/pr."
 doc_version: 3
-doc_updated_at: "2026-04-02T19:21:25.511Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-02T19:22:07.505Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace direct editing of review.md handoff notes with structured append-only PR note storage and render those notes back into the review output so generated and human-authored content stop colliding."
 sections:
   Summary: |-
