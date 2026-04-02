@@ -4,7 +4,7 @@ title: "Fix npm install failure after v0.3.8 release"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-02T16:35:48.349Z"
+  updated_by: "CODER"
+  note: "Verified locally: reproduced published v0.3.8 manifest leak, packed and npm-installed fixed CLI successfully, ran targeted recipe/release tests, test:workflow-coverage, test:significant-coverage, and bun run release:prepublish."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reproducing the broken v0.3.8 npm install path, repairing the publishable package manifest, adding a release guard for workspace/private dependency leaks, and preparing the replacement patch release."
+  -
+    type: "verify"
+    at: "2026-04-02T16:35:48.349Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified locally: reproduced published v0.3.8 manifest leak, packed and npm-installed fixed CLI successfully, ran targeted recipe/release tests, test:workflow-coverage, test:significant-coverage, and bun run release:prepublish."
 doc_version: 3
-doc_updated_at: "2026-04-02T16:04:31.792Z"
+doc_updated_at: "2026-04-02T16:35:48.363Z"
 doc_updated_by: "CODER"
 description: "Repair the published agentplane package so npm install no longer fails on a workspace dependency leak, add a release gate for publishable package manifests, and ship a patch release."
 sections:
@@ -63,6 +69,14 @@ sections:
     4. Publish v0.3.9 and query npm and GitHub. Expected: npm installable package metadata, tag, and release evidence all point to the new patch version.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-02T16:35:48.349Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified locally: reproduced published v0.3.8 manifest leak, packed and npm-installed fixed CLI successfully, ran targeted recipe/release tests, test:workflow-coverage, test:significant-coverage, and bun run release:prepublish.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-02T16:04:31.792Z, excerpt_hash=sha256:d87c9378986bbe3a7d04912f64fb2fd2d1e21f77606246529a3638419c91ed34
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -102,6 +116,14 @@ Execution plan:
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-02T16:35:48.349Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified locally: reproduced published v0.3.8 manifest leak, packed and npm-installed fixed CLI successfully, ran targeted recipe/release tests, test:workflow-coverage, test:significant-coverage, and bun run release:prepublish.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-02T16:04:31.792Z, excerpt_hash=sha256:d87c9378986bbe3a7d04912f64fb2fd2d1e21f77606246529a3638419c91ed34
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
