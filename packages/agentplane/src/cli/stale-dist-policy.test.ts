@@ -56,6 +56,12 @@ describe("stale-dist command policy", () => {
       mode: "warn_and_run",
       reason: "read_only_diagnostic",
     });
+    expect(classifyStaleDistPolicy(["node", "agentplane", "preflight", "--mode", "quick"])).toEqual(
+      {
+        mode: "warn_and_run",
+        reason: "read_only_diagnostic",
+      },
+    );
     expect(classifyStaleDistPolicy(["node", "agentplane", "--version"])).toEqual({
       mode: "warn_and_run",
       reason: "read_only_diagnostic",

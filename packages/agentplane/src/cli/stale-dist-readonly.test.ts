@@ -184,6 +184,24 @@ describe("stale-dist read-only diagnostics", () => {
     expect(stderr).toContain("bun run framework:dev:bootstrap");
   });
 
+  it("warns but runs preflight when watched runtime paths are dirty", async () => {
+    const { repoRoot, repoBin } = await setupFrameworkCheckout();
+
+    const { stdout, stderr } = await execFileAsync(
+      process.execPath,
+      [repoBin, "preflight", "--mode", "quick"],
+      {
+        cwd: repoRoot,
+        encoding: "utf8",
+      },
+    );
+
+    expect(stdout).toContain("DIST");
+    expect(stdout).toContain('"args":["preflight","--mode","quick"]');
+    expect(stderr).toContain("command: preflight --mode quick");
+    expect(stderr).toContain("bun run framework:dev:bootstrap");
+  });
+
   it("still blocks strict mutating commands when watched runtime paths are dirty", async () => {
     const { repoRoot, repoBin } = await setupFrameworkCheckout();
 

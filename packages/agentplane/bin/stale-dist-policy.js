@@ -34,6 +34,10 @@ function isReadyInspectionCommand(args) {
   return args[0] === "ready";
 }
 
+function isPreflightCommand(args) {
+  return args[0] === "preflight";
+}
+
 export function classifyStaleDistPolicy(argv = process.argv) {
   const args = normalizeArgs(argv);
   if (
@@ -43,7 +47,8 @@ export function classifyStaleDistPolicy(argv = process.argv) {
     isRoleOrQuickstartCommand(args) ||
     isConfigInspectionCommand(args) ||
     isTaskInspectionCommand(args) ||
-    isReadyInspectionCommand(args)
+    isReadyInspectionCommand(args) ||
+    isPreflightCommand(args)
   ) {
     return { mode: "warn_and_run", reason: "read_only_diagnostic" };
   }
