@@ -40,6 +40,9 @@ describe("pr/internal/pr-paths", () => {
     expect(resolved.metaPath).toBe(
       path.join("/repo", ".agentplane/tasks", "T-1", "pr", "meta.json"),
     );
+    expect(resolved.notesPath).toBe(
+      path.join("/repo", ".agentplane/tasks", "T-1", "pr", "notes.jsonl"),
+    );
   });
 
   it("resolvePrPaths falls back to resolveProject/loadConfig when ctx is absent", async () => {

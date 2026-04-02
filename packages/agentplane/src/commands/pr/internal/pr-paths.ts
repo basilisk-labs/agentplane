@@ -13,6 +13,7 @@ export type ResolvedPrPaths = {
   prDir: string;
   metaPath: string;
   diffstatPath: string;
+  notesPath: string;
   verifyLogPath: string;
   reviewPath: string;
 };
@@ -39,6 +40,7 @@ export async function resolvePrPaths(opts: {
     prDir,
     metaPath: path.join(prDir, "meta.json"),
     diffstatPath: path.join(prDir, "diffstat.txt"),
+    notesPath: path.join(prDir, "notes.jsonl"),
     verifyLogPath: path.join(prDir, "verify.log"),
     reviewPath: path.join(prDir, "review.md"),
   };

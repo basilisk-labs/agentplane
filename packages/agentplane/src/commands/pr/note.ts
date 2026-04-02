@@ -11,7 +11,12 @@ import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import { resolvePrPaths } from "./internal/pr-paths.js";
-import { appendHandoffNote } from "./internal/review-template.js";
+import {
+  appendPrHandoffNote,
+  buildPrHandoffNote,
+  readPrHandoffNotes,
+} from "./internal/note-store.js";
+import { extractAutoSummaryBlock, renderPrReviewDocument } from "./internal/review-template.js";
 
 export async function cmdPrNote(opts: {
   ctx?: CommandContext;
@@ -43,7 +48,7 @@ export async function cmdPrNote(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const { config, reviewPath, resolved } = await resolvePrPaths({ ...opts, ctx });
+    const { config, reviewPath, notesPath, resolved } = await resolvePrPaths({ ...opts, ctx });
     if (config.workflow_mode !== "branch_pr") {
       throw new CliError({
         exitCode: exitCodeForError("E_USAGE"),
@@ -62,7 +67,21 @@ export async function cmdPrNote(opts: {
     }
 
     const review = await readFile(reviewPath, "utf8");
-    const updated = appendHandoffNote(review, `${author}: ${body}`);
+    await appendPrHandoffNote({
+      notesPath,
+      note: buildPrHandoffNote({
+        createdAt: new Date().toISOString(),
+        author,
+        body,
+      }),
+    });
+    const updated = renderPrReviewDocument({
+      existingReview: review,
+      createdAt: "",
+      branch: "",
+      handoffNotes: await readPrHandoffNotes(notesPath),
+      autoSummary: extractAutoSummaryBlock(review),
+    });
     await atomicWriteFile(reviewPath, updated, "utf8");
 
     output.success("pr note", opts.taskId);

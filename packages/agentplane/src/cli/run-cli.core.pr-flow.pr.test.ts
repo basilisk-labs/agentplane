@@ -116,6 +116,7 @@ describe("runCli", () => {
     expect(meta.branch).toBe(`task/${taskId}/pr-open`);
     await readFile(path.join(prDir, "review.md"), "utf8");
     await readFile(path.join(prDir, "diffstat.txt"), "utf8");
+    expect(await readFile(path.join(prDir, "notes.jsonl"), "utf8")).toBe("");
     await readFile(path.join(prDir, "verify.log"), "utf8");
   });
 
@@ -262,7 +263,7 @@ describe("runCli", () => {
     expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(firstReview);
   });
 
-  it("pr note appends to handoff notes", async () => {
+  it("pr note appends to the note store and rerenders handoff notes", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -327,7 +328,108 @@ describe("runCli", () => {
       path.join(root, ".agentplane", "tasks", taskId, "pr", "review.md"),
       "utf8",
     );
+    const notesText = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "notes.jsonl"),
+      "utf8",
+    );
+    const [record] = notesText
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line) as { author?: string; body?: string });
+    expect(record?.author).toBe("DOCS");
+    expect(record?.body).toBe("Handoff: reviewed docs changes.");
     expect(review).toContain("DOCS: Handoff: reviewed docs changes.");
+  });
+
+  it("pr note regenerates the handoff section from append-only notes", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR note render task",
+        "--description",
+        "PR note regenerates handoff section from the note store",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/pr-note-render`,
+      "--root",
+      root,
+    ]);
+
+    const reviewPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "review.md");
+    const original = await readFile(reviewPath, "utf8");
+    await writeFile(
+      reviewPath,
+      original
+        .replace("- ", "- Keep manual summary")
+        .replace(
+          "- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.",
+          "- stale manual handoff",
+        ),
+      "utf8",
+    );
+
+    await runCliSilent([
+      "pr",
+      "note",
+      taskId,
+      "--author",
+      "REVIEWER",
+      "--body",
+      "First handoff note.",
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "pr",
+      "note",
+      taskId,
+      "--author",
+      "DOCS",
+      "--body",
+      "Second handoff note.",
+      "--root",
+      root,
+    ]);
+
+    const review = await readFile(reviewPath, "utf8");
+    const notesText = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "notes.jsonl"),
+      "utf8",
+    );
+    expect(review).toContain("- Keep manual summary");
+    expect(review).not.toContain("stale manual handoff");
+    expect(review).toContain("REVIEWER: First handoff note.");
+    expect(review).toContain("DOCS: Second handoff note.");
+    expect(notesText.trim().split("\n")).toHaveLength(2);
   });
 
   it("pr note requires branch_pr workflow", async () => {

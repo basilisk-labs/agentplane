@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604021851-2DHT5H/pr-notes-store",
+  "created_at": "2026-04-02T19:21:17.658Z",
+  "head_sha": "51c63efdca02e6eae02ee2bcc9e599d8ae6b66e4",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604021851-2DHT5H",
+  "updated_at": "2026-04-02T19:21:18.029Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -24,6 +24,7 @@ import {
 } from "../../shared/task-backend.js";
 
 import { resolvePrPaths } from "./pr-paths.js";
+import { readPrHandoffNotes } from "./note-store.js";
 import { renderPrAutoSummary, renderPrReviewDocument } from "./review-template.js";
 
 function nowIso(): string {
@@ -54,8 +55,16 @@ export async function syncPrArtifacts(opts: {
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
-    const { resolved, config, prDir, metaPath, diffstatPath, verifyLogPath, reviewPath } =
-      await resolvePrPaths({ ...opts, ctx });
+    const {
+      resolved,
+      config,
+      prDir,
+      metaPath,
+      diffstatPath,
+      notesPath,
+      verifyLogPath,
+      reviewPath,
+    } = await resolvePrPaths({ ...opts, ctx });
 
     if (config.workflow_mode !== "branch_pr") {
       throw new CliError({
@@ -94,6 +103,7 @@ export async function syncPrArtifacts(opts: {
         ? parsePrMeta(await readFile(metaPath, "utf8"), task.id)
         : null;
     const existingReview = reviewExists ? await readFile(reviewPath, "utf8") : null;
+    const handoffNotes = await readPrHandoffNotes(notesPath);
     const now = nowIso();
     const createdAt = existingMeta?.created_at ?? now;
 
@@ -109,10 +119,14 @@ export async function syncPrArtifacts(opts: {
         author: opts.author,
         createdAt,
         branch,
+        handoffNotes,
       });
       await writeJsonStableIfChanged(metaPath, nextMeta);
       if (!(await fileExists(diffstatPath))) {
         await writeTextIfChanged(diffstatPath, "");
+      }
+      if (!(await fileExists(notesPath))) {
+        await writeTextIfChanged(notesPath, "");
       }
       if (!(await fileExists(verifyLogPath))) {
         await writeTextIfChanged(verifyLogPath, "");
@@ -158,6 +172,7 @@ export async function syncPrArtifacts(opts: {
       existingReview,
       createdAt,
       branch,
+      handoffNotes,
       autoSummary: renderPrAutoSummary({
         updatedAt: nextMeta.updated_at,
         branch,
