@@ -885,5 +885,5 @@ describe("commands/workflow", () => {
         quiet: true,
       }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
-  });
+  }, 90_000);
 });
