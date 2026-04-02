@@ -1,10 +1,11 @@
 ---
 id: "202604011016-83VG7A"
 title: "Draft release notes for next patch release"
-status: "DOING"
+result_summary: "Drafted v0.3.9 release notes."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-02T17:28:47.087Z"
   updated_by: "CODER"
   note: "Verified locally: refreshed the release plan to v0.3.9, updated docs/releases/v0.3.9.md to present the patch as release-hardening groundwork for 0.4/0.5, and replaced placeholder Verify Steps with release-note-specific acceptance checks."
-commit: null
+commit:
+  hash: "bd97db939534727f6fc97ade7cffdfc6072798fc"
+  message: "📝 83VG7A task: refine v0.3.9 release notes"
 comments:
   -
     author: "CODER"
     body: "Start: generate a fresh patch release plan on main, freeze the next version/tag, and draft release notes that present this patch as preparation for the 0.4 and 0.5 release lines."
+  -
+    author: "CODER"
+    body: "Verified: release notes now target v0.3.9, explain the broken v0.3.8 install path, and frame the patch as release-hardening groundwork for 0.4/0.5."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified locally: refreshed the release plan to v0.3.9, updated docs/releases/v0.3.9.md to present the patch as release-hardening groundwork for 0.4/0.5, and replaced placeholder Verify Steps with release-note-specific acceptance checks."
+  -
+    type: "status"
+    at: "2026-04-02T17:30:51.369Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release notes now target v0.3.9, explain the broken v0.3.8 install path, and frame the patch as release-hardening groundwork for 0.4/0.5."
 doc_version: 3
-doc_updated_at: "2026-04-02T17:28:47.093Z"
+doc_updated_at: "2026-04-02T17:30:51.370Z"
 doc_updated_by: "CODER"
 description: "Generate the next patch release plan, draft docs/releases/vX.Y.Z.md, and make the notes emphasize that the main change is groundwork for the 0.4 and 0.5 release lines."
 sections:
