@@ -856,7 +856,10 @@ export async function gitBranchExists(root: string, branch: string): Promise<boo
 
 export async function commitAll(root: string, message: string): Promise<void> {
   await execFileAsync("git", ["add", "."], { cwd: root, env: cleanGitEnv() });
-  await execFileAsync("git", ["commit", "-m", message], { cwd: root, env: cleanGitEnv() });
+  await execFileAsync("git", ["commit", "--no-verify", "-m", message], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
 }
 
 export async function stageGitignoreIfPresent(root: string): Promise<void> {
