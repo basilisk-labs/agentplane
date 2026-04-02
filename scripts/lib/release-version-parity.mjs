@@ -1,10 +1,63 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 async function readPackageJson(rootDir, relPath) {
   const absPath = path.join(rootDir, relPath);
   const raw = JSON.parse(await readFile(absPath, "utf8"));
   return { absPath, raw };
+}
+
+async function readWorkspacePrivatePackageNames(rootDir) {
+  const names = new Set();
+  const packagesDir = path.join(rootDir, "packages");
+  let entries = [];
+  try {
+    entries = await readdir(packagesDir, { withFileTypes: true });
+  } catch (error) {
+    const code = error && typeof error === "object" ? error.code : undefined;
+    if (code === "ENOENT") return names;
+    throw error;
+  }
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const manifestPath = path.join(packagesDir, entry.name, "package.json");
+    try {
+      const raw = JSON.parse(await readFile(manifestPath, "utf8"));
+      const name = typeof raw.name === "string" ? raw.name.trim() : "";
+      if (raw.private === true && name) names.add(name);
+    } catch (error) {
+      const code = error && typeof error === "object" ? error.code : undefined;
+      if (code === "ENOENT") continue;
+      throw error;
+    }
+  }
+  return names;
+}
+
+function collectUnsupportedDependencyErrors(raw, privateWorkspacePackageNames) {
+  const errors = [];
+  const sections = ["dependencies", "optionalDependencies", "peerDependencies"];
+
+  for (const section of sections) {
+    const deps = raw?.[section];
+    if (!deps || typeof deps !== "object") continue;
+    for (const [name, spec] of Object.entries(deps)) {
+      const normalized = typeof spec === "string" ? spec.trim() : "";
+      if (normalized.startsWith("workspace:")) {
+        errors.push(
+          `packages/agentplane ${section} contains unsupported workspace protocol for ${name}=${normalized}.`,
+        );
+      }
+      if (privateWorkspacePackageNames.has(name)) {
+        errors.push(
+          `packages/agentplane ${section} references private workspace package ${name}; publishable packages must not depend on private workspace packages.`,
+        );
+      }
+    }
+  }
+
+  return errors;
 }
 
 function readVersion(raw, absPath) {
@@ -21,15 +74,21 @@ export async function readReleaseParityState(rootDir) {
       readPackageJson(rootDir, "packages/core/package.json"),
       readPackageJson(rootDir, "packages/agentplane/package.json"),
     ]);
+  const privateWorkspacePackageNames = await readWorkspacePrivatePackageNames(rootDir);
 
   const coreVersion = readVersion(corePkg, corePath);
   const agentplaneVersion = readVersion(agentplanePkg, agentplanePath);
   const coreDependency = agentplanePkg.dependencies?.["@agentplaneorg/core"] ?? null;
+  const publishDependencyErrors = collectUnsupportedDependencyErrors(
+    agentplanePkg,
+    privateWorkspacePackageNames,
+  );
 
   return {
     coreVersion,
     agentplaneVersion,
     coreDependency,
+    publishDependencyErrors,
   };
 }
 
@@ -66,6 +125,10 @@ export function collectReleaseParityErrors(state, opts = {}) {
         `packages/agentplane version ${state.agentplaneVersion} does not match required version ${requiredVersion}.`,
       );
     }
+  }
+
+  for (const error of state.publishDependencyErrors ?? []) {
+    errors.push(error);
   }
 
   return errors;

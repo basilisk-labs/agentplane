@@ -47,4 +47,42 @@ describe("check-release-parity script", () => {
     expect(result.ok).toBe(false);
     expect(result.stderr).toContain("@agentplaneorg/core=2.3.3");
   });
+
+  it("fails when the publishable package manifest leaks a workspace protocol dependency", async () => {
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-parity-",
+      coreVersion: "2.3.4",
+      cliVersion: "2.3.4",
+      dependencyVersion: "2.3.4",
+      extraDependencies: {
+        "@agentplane/recipes": "workspace:packages/recipes",
+      },
+      extraWorkspacePackages: [
+        {
+          relDir: "packages/recipes",
+          name: "@agentplane/recipes",
+          version: "0.0.0",
+          private: true,
+        },
+      ],
+    });
+
+    const result = await execFileAsync("node", [SCRIPT_PATH], { cwd: root }).then(
+      () => ({ ok: true as const, stderr: "" }),
+      (error: unknown) => {
+        const stderr =
+          typeof error === "object" &&
+          error !== null &&
+          "stderr" in error &&
+          typeof (error as { stderr?: unknown }).stderr === "string"
+            ? (error as { stderr: string }).stderr
+            : "";
+        return { ok: false as const, stderr };
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("unsupported workspace protocol");
+    expect(result.stderr).toContain("@agentplane/recipes=workspace:packages/recipes");
+  });
 });

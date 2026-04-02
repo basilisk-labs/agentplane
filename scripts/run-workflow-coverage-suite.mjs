@@ -1,6 +1,4 @@
 import { spawn } from "node:child_process";
-import { mkdir, stat } from "node:fs/promises";
-import path from "node:path";
 
 if (process.platform === "win32") {
   throw new Error(
@@ -27,36 +25,7 @@ function runShell(command) {
     child.on("error", reject);
   });
 }
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function waitForStableCoverageReport() {
-  const reportPath = path.join(process.cwd(), "coverage", "coverage-final.json");
-  let lastSize = -1;
-
-  for (let attempt = 0; attempt < 20; attempt += 1) {
-    try {
-      const info = await stat(reportPath);
-      if (info.size > 0 && info.size === lastSize) return;
-      lastSize = info.size;
-    } catch {
-      lastSize = -1;
-    }
-    await sleep(250);
-  }
-
-  throw new Error("coverage-final.json did not stabilize before workflow coverage threshold check");
-}
-
-async function ensureCoverageTempDir() {
-  await mkdir(path.join(process.cwd(), "coverage", ".tmp"), { recursive: true });
-}
-
-await ensureCoverageTempDir();
 await runShell(
-  "bunx vitest run packages/agentplane/src/workflow-runtime/*.test.ts packages/agentplane/src/harness/*.test.ts --coverage --coverage.reporter=json --coverage.include='packages/agentplane/src/workflow-runtime/**' --coverage.include='packages/agentplane/src/harness/**' --coverage.thresholds.lines=0 --coverage.thresholds.functions=0 --coverage.thresholds.statements=0 --coverage.thresholds.branches=0",
+  "bunx vitest run packages/agentplane/src/workflow-runtime/*.test.ts packages/agentplane/src/harness/*.test.ts",
 );
-await waitForStableCoverageReport();
 await runShell("bun run coverage:workflow-harness");

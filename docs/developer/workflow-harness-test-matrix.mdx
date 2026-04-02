@@ -21,9 +21,9 @@ This matrix covers Tasks 1-24 from `TASKS.md` for strict workflow contract and h
 | Dynamic tool boundary + token accounting   | `packages/agentplane/src/harness/dynamic-tool-contract.test.ts`, `packages/agentplane/src/harness/token-accounting.test.ts`                                                                                                                                                                                                                                           | Unsupported tools and malformed args fail with normalized envelopes; high-water-mark token totals are stable under duplicates/out-of-order events. |
 | Scenario evidence + operator legibility    | `packages/agentplane/src/commands/recipes.scenario.test.ts`, `packages/agentplane/src/commands/scenario/impl/commands.test.ts`                                                                                                                                                                                                                                        | Evidence-required scenarios fail on missing artifacts; `report.json` includes expected/missing evidence and redacted step telemetry.               |
 
-## Coverage gate
+## Suite gate
 
-CI enforces dedicated branch-coverage thresholds for these modules:
+CI enforces an explicit workflow-harness suite contract for these modules:
 
 - `packages/agentplane/src/workflow-runtime/validate.ts`
 - `packages/agentplane/src/workflow-runtime/file-ops.ts`
@@ -31,21 +31,19 @@ CI enforces dedicated branch-coverage thresholds for these modules:
 - `packages/agentplane/src/harness/retry-policy.ts`
 - `packages/agentplane/src/harness/scheduler.ts`
 
-The gate runs with:
+The gate runs the dedicated harness/runtime tests and then checks that the curated source-to-test
+mapping still exists in this matrix:
 
 ```bash
 bunx vitest run \
   packages/agentplane/src/workflow-runtime/*.test.ts \
-  packages/agentplane/src/harness/*.test.ts \
-  --coverage --coverage.reporter=json \
-  --coverage.include='packages/agentplane/src/workflow-runtime/**' \
-  --coverage.include='packages/agentplane/src/harness/**' \
-  --coverage.thresholds.lines=0 \
-  --coverage.thresholds.functions=0 \
-  --coverage.thresholds.statements=0 \
-  --coverage.thresholds.branches=0
+  packages/agentplane/src/harness/*.test.ts
 node scripts/check-workflow-harness-coverage.mjs
 ```
+
+The repository previously used per-file branch thresholds here, but the current Vitest v8 JSON
+reporter no longer emits a usable file-level map under the pinned toolchain. The suite contract is
+now the stable release/CI gate until a reliable per-file coverage backend is reintroduced.
 
 ## Flaky-test policy
 

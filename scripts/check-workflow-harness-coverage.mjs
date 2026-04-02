@@ -1,67 +1,67 @@
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 
-const THRESHOLDS = [
-  { file: "packages/agentplane/src/workflow-runtime/validate.ts", minBranchPct: 70 },
-  { file: "packages/agentplane/src/workflow-runtime/file-ops.ts", minBranchPct: 30 },
-  { file: "packages/agentplane/src/harness/state-machine.ts", minBranchPct: 60 },
-  { file: "packages/agentplane/src/harness/retry-policy.ts", minBranchPct: 90 },
-  { file: "packages/agentplane/src/harness/scheduler.ts", minBranchPct: 70 },
+const MATRIX_PATH = "docs/developer/workflow-harness-test-matrix.mdx";
+const TARGETS = [
+  {
+    source: "packages/agentplane/src/workflow-runtime/validate.ts",
+    tests: ["packages/agentplane/src/workflow-runtime/validate.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/workflow-runtime/file-ops.ts",
+    tests: ["packages/agentplane/src/workflow-runtime/file-ops.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/harness/state-machine.ts",
+    tests: ["packages/agentplane/src/harness/state-machine.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/harness/retry-policy.ts",
+    tests: ["packages/agentplane/src/harness/retry-policy.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/harness/scheduler.ts",
+    tests: ["packages/agentplane/src/harness/scheduler.test.ts"],
+  },
 ];
 
-function branchPct(entry) {
-  const branches = Object.values(entry?.b ?? {});
-  let total = 0;
-  let covered = 0;
-  for (const branchSet of branches) {
-    if (!Array.isArray(branchSet)) continue;
-    for (const hit of branchSet) {
-      total += 1;
-      if (typeof hit === "number" && hit > 0) covered += 1;
-    }
-  }
-  if (total === 0) return 100;
-  return (covered / total) * 100;
-}
-
-function findEntry(coverage, targetRelPath) {
-  const normalized = targetRelPath.replaceAll("\\", "/");
-  for (const [absPath, entry] of Object.entries(coverage)) {
-    const normAbs = absPath.replaceAll("\\", "/");
-    if (normAbs.endsWith(`/${normalized}`) || normAbs === normalized) {
-      return entry;
-    }
-  }
-  return null;
+async function assertExists(relPath) {
+  await access(path.join(process.cwd(), relPath));
 }
 
 async function main() {
-  const reportPath = path.join(process.cwd(), "coverage", "coverage-final.json");
-  const raw = await readFile(reportPath, "utf8");
-  const coverage = JSON.parse(raw);
+  const matrix = await readFile(path.join(process.cwd(), MATRIX_PATH), "utf8");
   const failures = [];
 
-  for (const threshold of THRESHOLDS) {
-    const entry = findEntry(coverage, threshold.file);
-    if (!entry) {
-      failures.push(`Missing coverage entry: ${threshold.file}`);
-      continue;
+  for (const target of TARGETS) {
+    try {
+      await assertExists(target.source);
+    } catch {
+      failures.push(`Missing workflow-harness source target: ${target.source}`);
     }
-    const pct = branchPct(entry);
-    if (pct < threshold.minBranchPct) {
-      failures.push(
-        `${threshold.file} branch=${pct.toFixed(2)}% < ${threshold.minBranchPct.toFixed(2)}%`,
-      );
-    } else {
-      process.stdout.write(
-        `OK ${threshold.file} branch=${pct.toFixed(2)}% >= ${threshold.minBranchPct.toFixed(2)}%\n`,
-      );
+    if (!matrix.includes(target.source)) {
+      failures.push(`Workflow harness matrix is missing source target: ${target.source}`);
+    }
+    for (const testFile of target.tests) {
+      try {
+        await assertExists(testFile);
+      } catch {
+        failures.push(`Missing workflow-harness test target: ${testFile}`);
+        continue;
+      }
+      if (!matrix.includes(testFile)) {
+        failures.push(`Workflow harness matrix is missing test target: ${testFile}`);
+      }
     }
   }
 
   if (failures.length > 0) {
     throw new Error(failures.join("\n"));
   }
+
+  process.stdout.write(
+    `Workflow harness suite contract OK (${TARGETS.length} source targets; matrix=${MATRIX_PATH}).\n`,
+  );
 }
 
 await main().catch((error) => {
