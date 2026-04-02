@@ -1,10 +1,11 @@
 ---
 id: "202604021603-CK5W52"
 title: "Fix npm install failure after v0.3.8 release"
-status: "DOING"
+result_summary: "integrate: squash task/202604021603-CK5W52/fix-npm-install-release"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-02T17:16:23.393Z"
   updated_by: "CODER"
   note: "Verified locally: refreshed hook shim fallback order and test env isolation, reran hook/release-smoke/upgrade targeted vitest, packed and npm-installed the publishable tarball successfully, and passed bun run release:prepublish on the exact release tree."
-commit: null
+commit:
+  hash: "d43ee23b219fc718fea4afe1b63cb5a1039b488e"
+  message: "🧪 CK5W52 task: harden hook shim fallback"
 comments:
   -
     author: "CODER"
     body: "Start: reproducing the broken v0.3.8 npm install path, repairing the publishable package manifest, adding a release guard for workspace/private dependency leaks, and preparing the replacement patch release."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604021603-CK5W52/pr."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified locally: refreshed hook shim fallback order and test env isolation, reran hook/release-smoke/upgrade targeted vitest, packed and npm-installed the publishable tarball successfully, and passed bun run release:prepublish on the exact release tree."
+  -
+    type: "status"
+    at: "2026-04-02T17:23:37.082Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604021603-CK5W52/pr."
 doc_version: 3
-doc_updated_at: "2026-04-02T17:16:23.411Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-02T17:23:37.089Z"
+doc_updated_by: "INTEGRATOR"
 description: "Repair the published agentplane package so npm install no longer fails on a workspace dependency leak, add a release gate for publishable package manifests, and ship a patch release."
 sections:
   Summary: |-
