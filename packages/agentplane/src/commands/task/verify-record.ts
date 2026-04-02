@@ -7,6 +7,7 @@ import { CliError } from "../../shared/errors.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
+import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
 
 import {
   decodeEscapedTaskTextNewlines,
@@ -68,6 +69,16 @@ async function recordVerificationResult(opts: {
       return { intents: execution.intents };
     },
   });
+
+  if (config.workflow_mode === "branch_pr") {
+    await ensurePrArtifactsSynced({
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: opts.taskId,
+      author: opts.by,
+    });
+  }
 
   if (!opts.quiet) {
     const readmePath = path.join(

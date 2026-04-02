@@ -39,13 +39,13 @@ export function renderPrReviewTemplate(opts: {
 export function renderPrAutoSummary(opts: {
   updatedAt: string;
   branch: string;
-  headSha: string;
+  headSha: string | null;
   diffstat: string;
 }): string {
   return [
     `- Updated: ${opts.updatedAt}`,
     `- Branch: ${opts.branch}`,
-    `- Head: ${opts.headSha.slice(0, 12)}`,
+    `- Head: ${opts.headSha ? opts.headSha.slice(0, 12) : "No commits yet"}`,
     "- Diffstat:",
     "```",
     opts.diffstat || "No changes detected.",

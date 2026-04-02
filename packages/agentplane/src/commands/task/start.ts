@@ -5,6 +5,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
 
 import {
   applyTaskStatusTransitionCommand,
@@ -153,6 +154,16 @@ export async function cmdStart(opts: {
         quiet: opts.quiet,
         progressMessage: "task marked DOING; creating commit from start comment",
         resolveExecutorAgent: true,
+      });
+    }
+
+    if (ctx.config.workflow_mode === "branch_pr") {
+      await ensurePrArtifactsSynced({
+        ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId: opts.taskId,
+        author: opts.author,
       });
     }
 

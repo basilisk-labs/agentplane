@@ -120,6 +120,73 @@ describe("runCli", () => {
     await readFile(path.join(prDir, "verify.log"), "utf8");
   });
 
+  it("task start-ready auto-creates PR artifacts in branch_pr mode", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Start ready PR auto init",
+        "--description",
+        "Start ready should create PR artifacts automatically",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/start-ready-auto`], {
+      cwd: root,
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: auto-create PR artifacts from the start-ready lifecycle boundary.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    const meta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
+      branch?: string;
+    };
+    expect(meta.branch).toBe(`task/${taskId}/start-ready-auto`);
+    expect(await readFile(path.join(prDir, "review.md"), "utf8")).toContain("BEGIN AUTO SUMMARY");
+    await readFile(path.join(prDir, "diffstat.txt"), "utf8");
+    await readFile(path.join(prDir, "notes.jsonl"), "utf8");
+    await readFile(path.join(prDir, "verify.log"), "utf8");
+  });
+
   it("pr update refreshes diffstat and auto summary", { timeout: 60_000 }, async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -430,6 +497,84 @@ describe("runCli", () => {
     expect(review).toContain("REVIEWER: First handoff note.");
     expect(review).toContain("DOCS: Second handoff note.");
     expect(notesText.trim().split("\n")).toHaveLength(2);
+  });
+
+  it("verify recreates PR artifacts without a manual pr open or pr update", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify PR auto sync",
+        "--description",
+        "Verify should restore PR artifacts automatically",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/verify-auto-sync`], {
+      cwd: root,
+    });
+
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: create the initial PR artifact scaffold without manual PR commands.",
+      "--root",
+      root,
+    ]);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await rm(path.join(prDir, "review.md"));
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Looks good",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    expect(await readFile(path.join(prDir, "review.md"), "utf8")).toContain("BEGIN AUTO SUMMARY");
+    const meta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
+      branch?: string;
+    };
+    expect(meta.branch).toBe(`task/${taskId}/verify-auto-sync`);
   });
 
   it("pr note requires branch_pr workflow", async () => {
