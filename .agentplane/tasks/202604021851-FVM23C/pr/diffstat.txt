@@ -1,0 +1,24 @@
+ .agentplane/tasks/202604021851-FVM23C/README.md    | 104 +++++++++++
+ .../tasks/202604021851-FVM23C/pr/diffstat.txt      |   0
+ .agentplane/tasks/202604021851-FVM23C/pr/meta.json |  14 ++
+ .../tasks/202604021851-FVM23C/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604021851-FVM23C/pr/review.md |  29 +++
+ .../tasks/202604021851-FVM23C/pr/verify.log        |   0
+ .github/PULL_REQUEST_TEMPLATE.md                   |  41 +++--
+ docs/user/branching-and-pr-artifacts.mdx           |   6 +-
+ docs/user/commands.mdx                             |   6 +-
+ docs/user/task-lifecycle.mdx                       |   2 +-
+ docs/user/workflow.mdx                             |   2 +-
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts |   2 +
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  35 +++-
+ packages/agentplane/src/commands/pr/check.ts       |  46 ++++-
+ .../agentplane/src/commands/pr/integrate/cmd.ts    |   4 +
+ .../commands/pr/integrate/internal/merge.test.ts   |  14 +-
+ .../src/commands/pr/integrate/internal/merge.ts    |  34 +++-
+ .../src/commands/pr/internal/pr-paths.test.ts      |   9 +
+ .../src/commands/pr/internal/pr-paths.ts           |   4 +
+ .../src/commands/pr/internal/review-template.ts    | 196 +++++++++++++++++----
+ .../agentplane/src/commands/pr/internal/sync.ts    |  50 ++++--
+ packages/agentplane/src/commands/pr/note.ts        |  44 ++++-
+ packages/agentplane/src/commands/pr/pr.command.ts  |  10 +-
+ 23 files changed, 569 insertions(+), 83 deletions(-)

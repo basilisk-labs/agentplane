@@ -17,7 +17,10 @@ import {
 } from "../shared/task-backend.js";
 
 import { readPrArtifact, resolvePrPaths } from "./internal/pr-paths.js";
-import { validateReviewContents } from "./internal/review-template.js";
+import {
+  validateGithubPrBodyContents,
+  validateReviewContents,
+} from "./internal/review-template.js";
 
 function isUnknownRevisionError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
@@ -90,8 +93,17 @@ export async function cmdPrCheck(opts: {
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
-    const { resolved, config, prDir, metaPath, diffstatPath, verifyLogPath, reviewPath } =
-      await resolvePrPaths({ ...opts, ctx });
+    const {
+      resolved,
+      config,
+      prDir,
+      metaPath,
+      diffstatPath,
+      verifyLogPath,
+      reviewPath,
+      githubTitlePath,
+      githubBodyPath,
+    } = await resolvePrPaths({ ...opts, ctx });
 
     if (config.workflow_mode !== "branch_pr") {
       throw new CliError({
@@ -107,6 +119,8 @@ export async function cmdPrCheck(opts: {
     const relDiffstatPath = path.relative(resolved.gitRoot, diffstatPath);
     const relVerifyLogPath = path.relative(resolved.gitRoot, verifyLogPath);
     const relReviewPath = path.relative(resolved.gitRoot, reviewPath);
+    const relGithubTitlePath = path.relative(resolved.gitRoot, githubTitlePath);
+    const relGithubBodyPath = path.relative(resolved.gitRoot, githubBodyPath);
     const branchCache: { value?: string | null } = {};
 
     let meta: PrMeta | null = null;
@@ -165,6 +179,32 @@ export async function cmdPrCheck(opts: {
       validateReviewContents(reviewText, errors);
     } else {
       errors.push(`Missing ${relReviewPath}`);
+    }
+
+    const githubTitleText = await readPrArtifactWithOptionalBranch({
+      ctx,
+      resolved,
+      prDir,
+      fileName: "github-title.txt",
+      taskId: task.id,
+      branchCache,
+    });
+    if (!githubTitleText?.trim()) {
+      errors.push(`Missing ${relGithubTitlePath}`);
+    }
+
+    const githubBodyText = await readPrArtifactWithOptionalBranch({
+      ctx,
+      resolved,
+      prDir,
+      fileName: "github-body.md",
+      taskId: task.id,
+      branchCache,
+    });
+    if (githubBodyText) {
+      validateGithubPrBodyContents(githubBodyText, errors);
+    } else {
+      errors.push(`Missing ${relGithubBodyPath}`);
     }
 
     if (task.verify && task.verify.length > 0) {

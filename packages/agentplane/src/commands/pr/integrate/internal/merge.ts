@@ -8,6 +8,7 @@ import { CliError } from "../../../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../../../shared/git.js";
 import { gitRevParse } from "../../../shared/git-ops.js";
 import type { PrMeta } from "../../../shared/pr-meta.js";
+import { buildGithubPrTitle } from "../../internal/review-template.js";
 
 import { computeVerifyState, runVerifyCommands } from "../verify.js";
 
@@ -17,6 +18,25 @@ type MovedTaskArtifact = {
 };
 
 const noopPromise = (): Promise<void> => Promise.resolve();
+
+function fallbackIntegrateSummary(opts: {
+  taskId: string;
+  taskTitle: string;
+  taskTags: string[];
+}): string {
+  const suffix = extractTaskSuffix(opts.taskId);
+  return buildGithubPrTitle({
+    id: opts.taskId,
+    title: opts.taskTitle,
+    tags: opts.taskTags,
+    description: "",
+    status: "TODO",
+    priority: "med",
+    owner: "UNKNOWN",
+    depends_on: [],
+    verify: [],
+  }).replace(new RegExp(String.raw` \(${suffix}\)$`, "u"), "");
+}
 
 async function listUntrackedTaskArtifacts(opts: {
   gitRoot: string;
@@ -118,6 +138,8 @@ export async function runSquashMerge(opts: {
   branch: string;
   headBeforeMerge: string;
   taskId: string;
+  taskTitle: string;
+  taskTags: string[];
   workflowDir: string;
   changedPaths: string[];
   genericTokens: string[];
@@ -176,7 +198,7 @@ export async function runSquashMerge(opts: {
   });
   if (!subjectPolicy.ok) {
     const suffix = extractTaskSuffix(opts.taskId);
-    subject = `🧩 ${suffix} integrate: squash ${opts.branch}`;
+    subject = `🧩 ${suffix} integrate: ${fallbackIntegrateSummary(opts)}`;
   }
 
   const env = {
@@ -208,6 +230,8 @@ export async function runMergeCommit(opts: {
   gitRoot: string;
   branch: string;
   taskId: string;
+  taskTitle: string;
+  taskTags: string[];
   workflowDir: string;
   changedPaths: string[];
 }): Promise<string> {
@@ -227,7 +251,13 @@ export async function runMergeCommit(opts: {
   try {
     await execFileAsync(
       "git",
-      ["merge", "--no-ff", opts.branch, "-m", `🔀 ${suffix} integrate: merge ${opts.branch}`],
+      [
+        "merge",
+        "--no-ff",
+        opts.branch,
+        "-m",
+        `🔀 ${suffix} integrate: ${fallbackIntegrateSummary(opts)}`,
+      ],
       { cwd: opts.gitRoot, env },
     );
   } catch (err) {

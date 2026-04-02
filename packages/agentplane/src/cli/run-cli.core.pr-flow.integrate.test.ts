@@ -588,6 +588,8 @@ describe("runCli", () => {
     expect(subjects[0]?.includes("close:")).toBe(true);
     const mergeSubject = subjects[1] ?? "";
     expect(mergeSubject.startsWith(`🧩 ${suffix} integrate:`)).toBe(true);
+    expect(mergeSubject).toContain("Integrate subject fallback");
+    expect(mergeSubject).not.toContain(branch);
     expect(
       validateCommitSubject({
         subject: mergeSubject,

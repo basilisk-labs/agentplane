@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604021851-FVM23C/github-pr-ux",
+  "created_at": "2026-04-02T20:06:12.185Z",
+  "head_sha": "37828c280a7e92ff94aa02fd6b6c267dd95f0982",
+  "last_verified_at": "2026-04-02T20:22:29.287Z",
+  "last_verified_sha": "37828c280a7e92ff94aa02fd6b6c267dd95f0982",
+  "schema_version": 1,
+  "task_id": "202604021851-FVM23C",
+  "updated_at": "2026-04-02T20:22:29.325Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -114,10 +114,14 @@ describe("runCli", () => {
     const meta = JSON.parse(metaRaw) as { task_id?: string; branch?: string };
     expect(meta.task_id).toBe(taskId);
     expect(meta.branch).toBe(`task/${taskId}/pr-open`);
-    await readFile(path.join(prDir, "review.md"), "utf8");
+    expect(await readFile(path.join(prDir, "review.md"), "utf8")).toContain("## Scope");
     await readFile(path.join(prDir, "diffstat.txt"), "utf8");
     expect(await readFile(path.join(prDir, "notes.jsonl"), "utf8")).toBe("");
     await readFile(path.join(prDir, "verify.log"), "utf8");
+    expect(await readFile(path.join(prDir, "github-title.txt"), "utf8")).toContain(
+      `(${extractTaskSuffix(taskId)})`,
+    );
+    expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toContain("## Verification");
   });
 
   it("task start-ready auto-creates PR artifacts in branch_pr mode", async () => {
@@ -185,6 +189,8 @@ describe("runCli", () => {
     await readFile(path.join(prDir, "diffstat.txt"), "utf8");
     await readFile(path.join(prDir, "notes.jsonl"), "utf8");
     await readFile(path.join(prDir, "verify.log"), "utf8");
+    await readFile(path.join(prDir, "github-title.txt"), "utf8");
+    await readFile(path.join(prDir, "github-body.md"), "utf8");
   });
 
   it("pr update refreshes diffstat and auto summary", { timeout: 60_000 }, async () => {
@@ -257,6 +263,15 @@ describe("runCli", () => {
     const review = await readFile(path.join(prDir, "review.md"), "utf8");
     expect(review).toContain("BEGIN AUTO SUMMARY");
     expect(review).toContain("change.txt");
+    const githubTitle = await readFile(path.join(prDir, "github-title.txt"), "utf8");
+    const githubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
+    expect(githubTitle.trim()).toContain(`(${extractTaskSuffix(taskId)})`);
+    expect(githubTitle).not.toContain(`task/${taskId}/pr-update`);
+    expect(githubBody).toContain("## Summary");
+    expect(githubBody).toContain("## Scope");
+    expect(githubBody).toContain("## Verification");
+    expect(githubBody).toContain("<details>");
+    expect(githubBody).toContain("change.txt");
   });
 
   it("pr update is idempotent when HEAD and diff are unchanged", { timeout: 60_000 }, async () => {
@@ -322,12 +337,16 @@ describe("runCli", () => {
     const firstMeta = await readFile(path.join(prDir, "meta.json"), "utf8");
     const firstDiffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
     const firstReview = await readFile(path.join(prDir, "review.md"), "utf8");
+    const firstGithubTitle = await readFile(path.join(prDir, "github-title.txt"), "utf8");
+    const firstGithubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
 
     await runCliSilent(["pr", "update", taskId, "--root", root]);
 
     expect(await readFile(path.join(prDir, "meta.json"), "utf8")).toBe(firstMeta);
     expect(await readFile(path.join(prDir, "diffstat.txt"), "utf8")).toBe(firstDiffstat);
     expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(firstReview);
+    expect(await readFile(path.join(prDir, "github-title.txt"), "utf8")).toBe(firstGithubTitle);
+    expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(firstGithubBody);
   });
 
   it("pr note appends to the note store and rerenders handoff notes", async () => {
@@ -406,6 +425,12 @@ describe("runCli", () => {
     expect(record?.author).toBe("DOCS");
     expect(record?.body).toBe("Handoff: reviewed docs changes.");
     expect(review).toContain("DOCS: Handoff: reviewed docs changes.");
+    expect(
+      await readFile(
+        path.join(root, ".agentplane", "tasks", taskId, "pr", "github-body.md"),
+        "utf8",
+      ),
+    ).toContain("DOCS: Handoff: reviewed docs changes.");
   });
 
   it("pr note regenerates the handoff section from append-only notes", async () => {
@@ -488,14 +513,20 @@ describe("runCli", () => {
     ]);
 
     const review = await readFile(reviewPath, "utf8");
+    const githubBody = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "github-body.md"),
+      "utf8",
+    );
     const notesText = await readFile(
       path.join(root, ".agentplane", "tasks", taskId, "pr", "notes.jsonl"),
       "utf8",
     );
-    expect(review).toContain("- Keep manual summary");
+    expect(review).not.toContain("Keep manual summary");
     expect(review).not.toContain("stale manual handoff");
     expect(review).toContain("REVIEWER: First handoff note.");
     expect(review).toContain("DOCS: Second handoff note.");
+    expect(githubBody).toContain("REVIEWER: First handoff note.");
+    expect(githubBody).toContain("DOCS: Second handoff note.");
     expect(notesText.trim().split("\n")).toHaveLength(2);
   });
 

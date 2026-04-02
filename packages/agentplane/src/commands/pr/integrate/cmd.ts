@@ -116,6 +116,8 @@ export async function cmdIntegrate(opts: {
         branch,
         headBeforeMerge,
         taskId: task.id,
+        taskTitle: task.title,
+        taskTags: task.tags,
         workflowDir: loadedConfig.paths.workflow_dir,
         changedPaths,
         genericTokens: loadedConfig.commit.generic_tokens,
@@ -125,6 +127,8 @@ export async function cmdIntegrate(opts: {
         gitRoot: resolved.gitRoot,
         branch,
         taskId: task.id,
+        taskTitle: task.title,
+        taskTags: task.tags,
         workflowDir: loadedConfig.paths.workflow_dir,
         changedPaths,
       });

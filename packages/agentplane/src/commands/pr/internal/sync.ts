@@ -26,7 +26,12 @@ import {
 
 import { resolvePrPaths } from "./pr-paths.js";
 import { readPrHandoffNotes } from "./note-store.js";
-import { renderPrAutoSummary, renderPrReviewDocument } from "./review-template.js";
+import {
+  buildGithubPrTitle,
+  renderGithubPrBody,
+  renderPrAutoSummary,
+  renderPrReviewDocument,
+} from "./review-template.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -178,6 +183,8 @@ export async function syncPrArtifacts(opts: {
       notesPath,
       verifyLogPath,
       reviewPath,
+      githubTitlePath,
+      githubBodyPath,
     } = await resolvePrPaths({ ...opts, ctx });
 
     if (config.workflow_mode !== "branch_pr") {
@@ -222,7 +229,6 @@ export async function syncPrArtifacts(opts: {
       metaExists && (await fileExists(metaPath))
         ? parsePrMeta(await readFile(metaPath, "utf8"), task.id)
         : null;
-    const existingReview = reviewExists ? await readFile(reviewPath, "utf8") : null;
     const handoffNotes = await readPrHandoffNotes(notesPath);
     const now = nowIso();
     const createdAt = existingMeta?.created_at ?? now;
@@ -243,12 +249,25 @@ export async function syncPrArtifacts(opts: {
         base: baseBranch,
         headSha,
       });
+      const nextAutoSummary = renderPrAutoSummary({
+        updatedAt: nextMeta.updated_at,
+        branch,
+        headSha,
+        diffstat: "",
+      });
       const nextReview = renderPrReviewDocument({
-        existingReview,
+        task,
         author: opts.author,
         createdAt,
         branch,
         handoffNotes,
+        autoSummary: nextAutoSummary,
+      });
+      const githubTitle = buildGithubPrTitle(task);
+      const githubBody = renderGithubPrBody({
+        task,
+        handoffNotes,
+        autoSummary: nextAutoSummary,
       });
       await writeJsonStableIfChanged(metaPath, nextMeta);
       if (!(await fileExists(diffstatPath))) {
@@ -261,6 +280,8 @@ export async function syncPrArtifacts(opts: {
         await writeTextIfChanged(verifyLogPath, "");
       }
       await writeTextIfChanged(reviewPath, nextReview);
+      await writeTextIfChanged(githubTitlePath, `${githubTitle}\n`);
+      await writeTextIfChanged(githubBodyPath, githubBody);
       return { prDir, resolved };
     }
 
@@ -290,21 +311,30 @@ export async function syncPrArtifacts(opts: {
       base: baseBranch,
       headSha,
     });
+    const nextAutoSummary = renderPrAutoSummary({
+      updatedAt: nextMeta.updated_at,
+      branch,
+      headSha,
+      diffstat,
+    });
     const nextReview = renderPrReviewDocument({
-      existingReview,
+      task,
       createdAt,
       branch,
       handoffNotes,
-      autoSummary: renderPrAutoSummary({
-        updatedAt: nextMeta.updated_at,
-        branch,
-        headSha,
-        diffstat,
-      }),
+      autoSummary: nextAutoSummary,
+    });
+    const githubTitle = buildGithubPrTitle(task);
+    const githubBody = renderGithubPrBody({
+      task,
+      handoffNotes,
+      autoSummary: nextAutoSummary,
     });
 
     await writeTextIfChanged(diffstatPath, diffstat ? `${diffstat}\n` : "");
     await writeTextIfChanged(reviewPath, nextReview);
+    await writeTextIfChanged(githubTitlePath, `${githubTitle}\n`);
+    await writeTextIfChanged(githubBodyPath, githubBody);
     await writeJsonStableIfChanged(metaPath, nextMeta);
     return { prDir, resolved };
   } catch (err) {

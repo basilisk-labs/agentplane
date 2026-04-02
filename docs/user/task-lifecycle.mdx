@@ -26,7 +26,7 @@ agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 agentplane pr update <task-id>
 git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --fill
+gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
 bun run workflow:wait-remote-checks
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
