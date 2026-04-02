@@ -30,6 +30,23 @@ export function renderPrReviewTemplate(opts: {
   ].join("\n");
 }
 
+export function renderPrAutoSummary(opts: {
+  updatedAt: string;
+  branch: string;
+  headSha: string;
+  diffstat: string;
+}): string {
+  return [
+    `- Updated: ${opts.updatedAt}`,
+    `- Branch: ${opts.branch}`,
+    `- Head: ${opts.headSha.slice(0, 12)}`,
+    "- Diffstat:",
+    "```",
+    opts.diffstat || "No changes detected.",
+    "```",
+  ].join("\n");
+}
+
 export function updateAutoSummaryBlock(text: string, summary: string): string {
   const start = "<!-- BEGIN AUTO SUMMARY -->";
   const end = "<!-- END AUTO SUMMARY -->";
@@ -41,6 +58,23 @@ export function updateAutoSummaryBlock(text: string, summary: string): string {
   const before = text.slice(0, startIdx + start.length);
   const after = text.slice(endIdx);
   return `${before}\n${summary}\n${after}`;
+}
+
+export function renderPrReviewDocument(opts: {
+  existingReview: string | null;
+  author?: string;
+  createdAt: string;
+  branch: string;
+  autoSummary?: string | null;
+}): string {
+  const baseReview =
+    opts.existingReview ??
+    renderPrReviewTemplate({
+      author: (opts.author ?? "").trim() || "UNKNOWN",
+      createdAt: opts.createdAt,
+      branch: opts.branch,
+    });
+  return opts.autoSummary ? updateAutoSummaryBlock(baseReview, opts.autoSummary) : baseReview;
 }
 
 export function appendHandoffNote(review: string, note: string): string {

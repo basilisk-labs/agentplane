@@ -191,6 +191,77 @@ describe("runCli", () => {
     expect(review).toContain("change.txt");
   });
 
+  it("pr update is idempotent when HEAD and diff are unchanged", { timeout: 60_000 }, async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR update idempotent task",
+        "--description",
+        "PR update stays byte-stable when nothing changed",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/pr-update-idempotent`,
+      "--root",
+      root,
+    ]);
+
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/pr-update-idempotent`], {
+      cwd: root,
+    });
+    await writeFile(path.join(root, "change.txt"), "change", "utf8");
+    await execFileAsync("git", ["add", "change.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "change"], { cwd: root });
+
+    await runCliSilent(["pr", "update", taskId, "--root", root]);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    const firstMeta = await readFile(path.join(prDir, "meta.json"), "utf8");
+    const firstDiffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
+    const firstReview = await readFile(path.join(prDir, "review.md"), "utf8");
+
+    await runCliSilent(["pr", "update", taskId, "--root", root]);
+
+    expect(await readFile(path.join(prDir, "meta.json"), "utf8")).toBe(firstMeta);
+    expect(await readFile(path.join(prDir, "diffstat.txt"), "utf8")).toBe(firstDiffstat);
+    expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(firstReview);
+  });
+
   it("pr note appends to handoff notes", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
