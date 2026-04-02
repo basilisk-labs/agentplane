@@ -1,0 +1,29 @@
+ .agentplane/tasks/202604021603-CK5W52/README.md    | 156 +++++++++++++++++++++
+ .../tasks/202604021603-CK5W52/pr/diffstat.txt      |  27 ++++
+ .agentplane/tasks/202604021603-CK5W52/pr/meta.json |  12 ++
+ .agentplane/tasks/202604021603-CK5W52/pr/review.md |  55 ++++++++
+ .../tasks/202604021603-CK5W52/pr/verify.log        |   0
+ bun.lock                                           |   1 -
+ docs/developer/workflow-harness-test-matrix.mdx    |  20 ++-
+ docs/releases/v0.3.9.md                            |  36 +++++
+ packages/agentplane/package.json                   |   1 -
+ .../agentplane/src/cli/run-cli.core.hooks.test.ts  |   1 +
+ .../src/cli/run-cli.test-helpers.test.ts           |  37 +++++
+ .../agentplane/src/cli/run-cli.test-helpers.ts     |  46 ++++--
+ packages/agentplane/src/commands/hooks/index.ts    |  12 +-
+ packages/agentplane/src/commands/recipes.ts        |   8 +-
+ .../agentplane/src/commands/recipes/impl/apply.ts  |   7 +-
+ .../src/commands/recipes/impl/commands/explain.ts  |   2 +-
+ .../src/commands/recipes/impl/commands/install.ts  |   7 +-
+ .../src/commands/recipes/impl/installed-recipes.ts |   9 +-
+ .../recipes/impl/project-installed-recipes.ts      |  10 +-
+ .../src/commands/recipes/impl/resolver.ts          |   6 +-
+ .../src/commands/release.test-helpers.ts           |  31 +++-
+ .../release/check-release-parity-script.test.ts    |  38 +++++
+ packages/agentplane/tsconfig.json                  |   2 +-
+ scripts/check-significant-coverage.mjs             |  74 ++++------
+ scripts/check-workflow-harness-coverage.mjs        |  96 ++++++-------
+ scripts/lib/release-version-parity.mjs             |  65 ++++++++-
+ scripts/run-significant-coverage-suite.mjs         |  35 +----
+ scripts/run-workflow-coverage-suite.mjs            |  33 +----
+ 28 files changed, 606 insertions(+), 221 deletions(-)

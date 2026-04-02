@@ -83,6 +83,7 @@ describe("runCli", () => {
     expect(commitMsg).toContain("agentplane-hook");
     expect(preCommit).toContain("agentplane-hook");
     expect(shim).toContain("agentplane-hook-shim");
+    expect(shim).toContain("AGENTPLANE_HOOK_RUNNER");
   });
 
   it("hooks install refuses to overwrite unmanaged hook", async () => {

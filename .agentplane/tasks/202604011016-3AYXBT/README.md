@@ -4,7 +4,7 @@ title: "Apply and publish next patch release"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -13,7 +13,7 @@ tags:
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-04-01T11:16:27.603Z"
+  updated_at: "2026-04-02T17:26:51.994Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
@@ -35,7 +35,7 @@ events:
     to: "DOING"
     note: "Start: apply and publish v0.3.8 after the green release-prepublish gate, then verify the exact published artifacts and release state."
 doc_version: 3
-doc_updated_at: "2026-04-01T11:16:37.138Z"
+doc_updated_at: "2026-04-02T17:27:49.321Z"
 doc_updated_by: "CODER"
 description: "Validate release readiness, run the patch release gates, apply the prepared release, push commit and tag, and verify the published release artifacts."
 sections:
@@ -46,13 +46,11 @@ sections:
   Scope: |-
     - In scope: Validate release readiness, run the patch release gates, apply the prepared release, push commit and tag, and verify the published release artifacts.
     - Out of scope: unrelated refactors not required for "Apply and publish next patch release".
-  Plan: "1. Confirm release gates are green and workspace is ready for apply. 2. Apply the prepared v0.3.8 patch release with push enabled from the exact checked commit. 3. Run post-publish verification against the exact release SHA and record artifact/registry evidence."
+  Plan: "Release plan: apply and publish v0.3.9 from main after the repaired publishable-manifest fix and green local/hosted gates, then verify npm metadata, GitHub tag/release, and the exact published install path as the replacement for broken v0.3.8."
   Verify Steps: |-
-    <!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-    
-    1. <Action>. Expected: <observable result>.
-    2. <Action>. Expected: <observable result>.
-    3. <Action>. Expected: <observable result>.
+    1. Run bun run release:prepublish on the exact release tree. Expected: the full local release gate passes without parity, docs, coverage, or smoke regressions.
+    2. Run agentplane release apply --push --yes. Expected: the version bump commit, v0.3.9 tag, and GitHub release/publish workflow are created from the checked main commit.
+    3. Query npm and GitHub after publish. Expected: agentplane@0.3.9 and @agentplaneorg/core@0.3.9 are available, the GitHub release/tag exists, and npm install uses the repaired installable manifest.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -75,15 +73,13 @@ Validate release readiness, run the patch release gates, apply the prepared rele
 
 ## Plan
 
-1. Confirm release gates are green and workspace is ready for apply. 2. Apply the prepared v0.3.8 patch release with push enabled from the exact checked commit. 3. Run post-publish verification against the exact release SHA and record artifact/registry evidence.
+Release plan: apply and publish v0.3.9 from main after the repaired publishable-manifest fix and green local/hosted gates, then verify npm metadata, GitHub tag/release, and the exact published install path as the replacement for broken v0.3.8.
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. <Action>. Expected: <observable result>.
-2. <Action>. Expected: <observable result>.
-3. <Action>. Expected: <observable result>.
+1. Run bun run release:prepublish on the exact release tree. Expected: the full local release gate passes without parity, docs, coverage, or smoke regressions.
+2. Run agentplane release apply --push --yes. Expected: the version bump commit, v0.3.9 tag, and GitHub release/publish workflow are created from the checked main commit.
+3. Query npm and GitHub after publish. Expected: agentplane@0.3.9 and @agentplaneorg/core@0.3.9 are available, the GitHub release/tag exists, and npm install uses the repaired installable manifest.
 
 ## Verification
 

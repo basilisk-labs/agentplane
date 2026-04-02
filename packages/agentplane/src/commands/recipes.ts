@@ -3,7 +3,7 @@ export {
   RECIPES_SCENARIOS_DIR_NAME,
   RECIPES_SCENARIOS_INDEX_NAME,
   RECIPE_RUNS_DIR_NAME,
-} from "@agentplane/recipes";
+} from "./recipes/impl/constants.js";
 
 export type {
   RecipeCachePruneFlags,
@@ -19,8 +19,8 @@ export type {
   ResolvedRecipeScenario,
   ResolvedRecipeScenarioSelection,
   ScenarioDefinition,
-} from "@agentplane/recipes";
-export { readRecipeManifest } from "@agentplane/recipes";
+} from "./recipes/impl/types.js";
+export { readRecipeManifest } from "./recipes/impl/manifest.js";
 
 export { readInstalledRecipesFile } from "./recipes/impl/installed-recipes.js";
 export {
@@ -43,7 +43,7 @@ export {
   normalizeScenarioToolStep,
   readScenarioDefinition,
   readScenarioIndex,
-} from "@agentplane/recipes";
+} from "./recipes/impl/scenario.js";
 
 export {
   buildRecipeResolverContext,

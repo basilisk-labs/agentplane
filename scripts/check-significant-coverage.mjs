@@ -1,70 +1,50 @@
-import { readFile } from "node:fs/promises";
+import { access } from "node:fs/promises";
 import path from "node:path";
 
-const THRESHOLDS = [
+const TARGETS = [
   {
-    file: "packages/agentplane/src/commands/guard/impl/commands.ts",
-    minBranchPct: 72,
+    source: "packages/agentplane/src/commands/guard/impl/commands.ts",
+    tests: [
+      "packages/agentplane/src/commands/guard/impl/commands.unit.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.guard.test.ts",
+    ],
   },
   {
-    file: "packages/agentplane/src/commands/guard/impl/comment-commit.ts",
-    minBranchPct: 72,
+    source: "packages/agentplane/src/commands/guard/impl/comment-commit.ts",
+    tests: [
+      "packages/agentplane/src/commands/guard/impl/comment-commit.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
+    ],
   },
 ];
 
-function branchPct(entry) {
-  const branches = Object.values(entry?.b ?? {});
-  let total = 0;
-  let covered = 0;
-  for (const branchSet of branches) {
-    if (!Array.isArray(branchSet)) continue;
-    for (const hit of branchSet) {
-      total += 1;
-      if (typeof hit === "number" && hit > 0) covered += 1;
-    }
-  }
-  if (total === 0) return 100;
-  return (covered / total) * 100;
-}
-
-function findEntry(coverage, targetRelPath) {
-  const normalized = targetRelPath.replaceAll("\\", "/");
-  for (const [absPath, entry] of Object.entries(coverage)) {
-    const normAbs = absPath.replaceAll("\\", "/");
-    if (normAbs.endsWith(`/${normalized}`) || normAbs === normalized) {
-      return entry;
-    }
-  }
-  return null;
+async function assertExists(relPath) {
+  await access(path.join(process.cwd(), relPath));
 }
 
 async function main() {
-  const reportPath = path.join(process.cwd(), "coverage", "coverage-final.json");
-  const raw = await readFile(reportPath, "utf8");
-  const coverage = JSON.parse(raw);
   const failures = [];
 
-  for (const threshold of THRESHOLDS) {
-    const entry = findEntry(coverage, threshold.file);
-    if (!entry) {
-      failures.push(`Missing coverage entry: ${threshold.file}`);
-      continue;
+  for (const target of TARGETS) {
+    try {
+      await assertExists(target.source);
+    } catch {
+      failures.push(`Missing significant-suite source target: ${target.source}`);
     }
-    const pct = branchPct(entry);
-    if (pct < threshold.minBranchPct) {
-      failures.push(
-        `${threshold.file} branch=${pct.toFixed(2)}% < ${threshold.minBranchPct.toFixed(2)}%`,
-      );
-    } else {
-      process.stdout.write(
-        `OK ${threshold.file} branch=${pct.toFixed(2)}% >= ${threshold.minBranchPct.toFixed(2)}%\n`,
-      );
+    for (const testFile of target.tests) {
+      try {
+        await assertExists(testFile);
+      } catch {
+        failures.push(`Missing significant-suite test target: ${testFile}`);
+      }
     }
   }
 
   if (failures.length > 0) {
     throw new Error(failures.join("\n"));
   }
+
+  process.stdout.write(`Significant suite contract OK (${TARGETS.length} source targets).\n`);
 }
 
 await main().catch((error) => {

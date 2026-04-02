@@ -2,7 +2,7 @@ import path from "node:path";
 
 import type { ResolvedProject } from "@agentplaneorg/core";
 import {
-  readScenarioDefinition,
+  type InstalledRecipeEntry,
   type RecipeCompatibility,
   type RecipeResolverCompatibility,
   type RecipeResolverCompatibilityFailure,
@@ -14,7 +14,7 @@ import {
   type ResolvedRecipeRunProfile,
   type ResolvedRecipeScenario,
   type ResolvedRecipeScenarioSelection,
-} from "@agentplane/recipes";
+} from "./types.js";
 
 import { fileExists } from "../../../cli/fs-utils.js";
 import { getVersion } from "../../../meta/version.js";
@@ -23,7 +23,7 @@ import { compareVersions } from "../../../shared/version-compare.js";
 
 import { resolveProjectInstalledRecipeDir } from "./paths.js";
 import { readProjectInstalledRecipes } from "./project-installed-recipes.js";
-import type { InstalledRecipeEntry } from "./types.js";
+import { readScenarioDefinition } from "./scenario.js";
 
 const SUPPORTED_MANIFEST_API_VERSION = "1" as const;
 const SUPPORTED_SCENARIO_API_VERSION = "1" as const;
