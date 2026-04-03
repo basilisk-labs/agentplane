@@ -1,10 +1,10 @@
 ---
 id: "202604030442-WMSG1C"
 title: "F-010 Introduce protocol and result foundation"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -21,16 +21,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved from framework roadmap and explicit user execution request"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-03T14:07:03.937Z"
+  updated_by: "CODER"
+  note: "Introduced versioned protocol/result envelopes, wrapped framework explain in a stable additive protocol surface, persisted it in runner bundles, and verified with typecheck plus targeted vitest for protocol/context/runner/CLI contracts."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: define the framework protocol and result foundation, expose JSON-friendly runtime envelopes, and connect them to explain-capable runner/task surfaces without binding the model to recipe-specific adapters."
+events:
+  -
+    type: "status"
+    at: "2026-04-03T13:57:34.711Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: define the framework protocol and result foundation, expose JSON-friendly runtime envelopes, and connect them to explain-capable runner/task surfaces without binding the model to recipe-specific adapters."
+  -
+    type: "verify"
+    at: "2026-04-03T14:07:03.937Z"
+    author: "CODER"
+    state: "ok"
+    note: "Introduced versioned protocol/result envelopes, wrapped framework explain in a stable additive protocol surface, persisted it in runner bundles, and verified with typecheck plus targeted vitest for protocol/context/runner/CLI contracts."
 doc_version: 3
-doc_updated_at: "2026-04-03T04:42:06.803Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-03T14:07:03.943Z"
+doc_updated_by: "CODER"
 description: "Create stable JSON-friendly result contracts on top of the explain foundation."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-03T14:07:03.937Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Introduced versioned protocol/result envelopes, wrapped framework explain in a stable additive protocol surface, persisted it in runner bundles, and verified with typecheck plus targeted vitest for protocol/context/runner/CLI contracts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-03T13:57:34.729Z, excerpt_hash=sha256:3e2178b35503297c1ff0a0a18f5878f1fa3bf48199954e646271302e0157fc6e
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +107,14 @@ Create stable JSON-friendly result contracts on top of the explain foundation.
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-03T14:07:03.937Z — VERIFY — ok
+
+By: CODER
+
+Note: Introduced versioned protocol/result envelopes, wrapped framework explain in a stable additive protocol surface, persisted it in runner bundles, and verified with typecheck plus targeted vitest for protocol/context/runner/CLI contracts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-03T13:57:34.729Z, excerpt_hash=sha256:3e2178b35503297c1ff0a0a18f5878f1fa3bf48199954e646271302e0157fc6e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

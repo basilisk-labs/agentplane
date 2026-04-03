@@ -7,6 +7,7 @@ import {
   appendFrameworkExplainBehaviorInputs,
   type ExplainBehaviorInput,
 } from "../../runtime/explain/index.js";
+import { buildFrameworkProtocolSurface } from "../../runtime/protocol/index.js";
 import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
 
 import type { RunnerAdapter } from "../adapters/shared.js";
@@ -252,6 +253,9 @@ export async function prepareTaskRunnerExecution(opts: {
     executionContext.frameworkExplain,
     collectFrameworkExplainBehaviorInputs(base_prompts),
   );
+  const framework_protocol = buildFrameworkProtocolSurface({
+    explain: framework_explain,
+  });
   const adapter: RunnerAdapter = createRunnerAdapter(executionContext.config);
   const configured_adapter_id: RunnerExecutionContract["adapter_id"] =
     adapter.id === "custom" ? "custom" : "codex";
@@ -268,6 +272,7 @@ export async function prepareTaskRunnerExecution(opts: {
     target,
     base_prompts,
     framework_explain,
+    framework_protocol,
     repository: taskEnvelope.repository,
     task: taskEnvelope.task,
     recipe: opts.recipe,

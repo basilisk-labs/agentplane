@@ -223,6 +223,25 @@ describe("runCli scenario", () => {
           };
           behavior_inputs?: { id?: string; category?: string; source?: string }[];
         };
+        framework_protocol?: {
+          explain?: {
+            schema_version?: number;
+            kind?: string;
+            status?: string;
+            compatibility?: {
+              strategy?: string;
+            };
+            data?: {
+              runtime?: {
+                task_intake?: {
+                  precedence?: {
+                    extension_layer?: string;
+                  };
+                };
+              };
+            };
+          };
+        };
         target: { kind: string; recipe_id?: string; scenario_id?: string; task_id?: string };
         recipe?: { recipe_id?: string; scenario_id?: string };
       };
@@ -277,6 +296,25 @@ describe("runCli scenario", () => {
           }),
         ]),
       );
+      expect(bundle.framework_protocol).toMatchObject({
+        explain: {
+          schema_version: 1,
+          kind: "framework.explain",
+          status: "ok",
+          compatibility: {
+            strategy: "additive",
+          },
+          data: {
+            runtime: {
+              task_intake: {
+                precedence: {
+                  extension_layer: "recipes",
+                },
+              },
+            },
+          },
+        },
+      });
 
       const task = await readTask({ cwd: root, rootOverride: root, taskId });
       expect(task.frontmatter.verification?.state).toBe("pending");

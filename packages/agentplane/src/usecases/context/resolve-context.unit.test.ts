@@ -173,6 +173,32 @@ describe("resolve-context usecase factories (unit)", () => {
         },
         behavior_inputs: [],
       },
+      frameworkProtocol: {
+        explain: {
+          schema_version: 1,
+          kind: "framework.explain",
+          status: "ok",
+          compatibility: {
+            strategy: "additive",
+            breaking_changes_require_schema_version: true,
+            additive_fields_allowed: true,
+            new_result_kinds_allowed: true,
+          },
+          data: {
+            runtime: {
+              execution_profile: {
+                profile: "balanced",
+                reasoning_effort: "medium",
+              },
+              task_intake: {
+                precedence: {
+                  extension_layer: "recipes",
+                },
+              },
+            },
+          },
+        },
+      },
       approvals: { require_plan: true, require_network: false, require_verify: true },
       policy: { policy: true },
     });
@@ -277,6 +303,22 @@ describe("resolve-context usecase factories (unit)", () => {
           },
         },
         behavior_inputs: [],
+      },
+      frameworkProtocol: {
+        explain: {
+          schema_version: 1,
+          kind: "framework.explain",
+          status: "ok",
+          data: {
+            runtime: {
+              task_intake: {
+                precedence: {
+                  extension_layer: "recipes",
+                },
+              },
+            },
+          },
+        },
       },
       approvals: { require_plan: true, require_network: false, require_verify: true },
       policy: { policy: true },

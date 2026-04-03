@@ -564,6 +564,28 @@ describe("runCli", () => {
           };
           behavior_inputs?: { id?: string; category?: string; source?: string }[];
         };
+        framework_protocol?: {
+          explain?: {
+            schema_version?: number;
+            kind?: string;
+            status?: string;
+            compatibility?: {
+              strategy?: string;
+              breaking_changes_require_schema_version?: boolean;
+              additive_fields_allowed?: boolean;
+              new_result_kinds_allowed?: boolean;
+            };
+            data?: {
+              runtime?: {
+                task_intake?: {
+                  precedence?: {
+                    extension_layer?: string;
+                  };
+                };
+              };
+            };
+          };
+        };
         execution: {
           mode: string;
           adapter_id: string;
@@ -670,6 +692,28 @@ describe("runCli", () => {
           }),
         ]),
       );
+      expect(bundle.framework_protocol).toMatchObject({
+        explain: {
+          schema_version: 1,
+          kind: "framework.explain",
+          status: "ok",
+          compatibility: {
+            strategy: "additive",
+            breaking_changes_require_schema_version: true,
+            additive_fields_allowed: true,
+            new_result_kinds_allowed: true,
+          },
+          data: {
+            runtime: {
+              task_intake: {
+                precedence: {
+                  extension_layer: "recipes",
+                },
+              },
+            },
+          },
+        },
+      });
       expect(bundle.task.task_id).toBe(taskId);
       expect(bootstrap).toContain(
         "This invocation is already inside an approved runner execution.",

@@ -10,6 +10,7 @@ import type { TaskData, TaskEvent } from "../backends/task-backend.js";
 import type { AgentplaneCapabilityRegistry } from "../runtime/capabilities/index.js";
 import type { ResolvedExecutionProfileRuntime } from "../runtime/execution-profile/index.js";
 import type { FrameworkExplainPayload } from "../runtime/explain/index.js";
+import type { FrameworkProtocolSurface } from "../runtime/protocol/index.js";
 
 export const RUNNER_BUNDLE_SCHEMA_VERSION = 1 as const;
 export const RUNNER_API_VERSION = "1" as const;
@@ -181,6 +182,7 @@ export type RunnerContextBundle = {
   target: RunnerTarget;
   base_prompts: RunnerPromptBlock[];
   framework_explain?: FrameworkExplainPayload;
+  framework_protocol?: FrameworkProtocolSurface;
   repository: RunnerRepositoryContext;
   task?: RunnerTaskContext;
   recipe?: RunnerRecipeContext;

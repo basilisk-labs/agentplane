@@ -1,0 +1,11 @@
+ .../src/cli/run-cli.core.tasks.query.test.ts       |  44 +++++
+ .../agentplane/src/cli/run-cli.scenario.test.ts    |  38 ++++
+ packages/agentplane/src/runner/types.ts            |   2 +
+ .../agentplane/src/runner/usecases/task-run.ts     |   5 +
+ packages/agentplane/src/runtime/protocol/index.ts  |  21 +++
+ .../src/runtime/protocol/resolve.test.ts           | 206 +++++++++++++++++++++
+ .../agentplane/src/runtime/protocol/resolve.ts     |  62 +++++++
+ packages/agentplane/src/runtime/protocol/types.ts  |  56 ++++++
+ .../src/usecases/context/resolve-context.ts        |  19 +-
+ .../usecases/context/resolve-context.unit.test.ts  |  42 +++++
+ 10 files changed, 489 insertions(+), 6 deletions(-)

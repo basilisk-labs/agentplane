@@ -21,6 +21,10 @@ import {
   type ResolvedHarnessContract,
 } from "../../runtime/harness/index.js";
 import {
+  buildFrameworkProtocolSurface,
+  type FrameworkProtocolSurface,
+} from "../../runtime/protocol/index.js";
+import {
   createTaskIntakeRuntime,
   type TaskIntakeRuntime,
 } from "../../runtime/task-intake/index.js";
@@ -50,6 +54,7 @@ export type ReadOnlyUsecaseContext = {
   executionProfile: ResolvedExecutionProfileRuntime;
   taskIntake: TaskIntakeRuntime;
   frameworkExplain: FrameworkExplainPayload;
+  frameworkProtocol: FrameworkProtocolSurface;
   approvals: ResolvedHarnessContract["policy"]["approvals"];
   policy: PolicyEngine;
   approvalRuntime: ApprovalRuntime;
@@ -153,6 +158,12 @@ async function buildReadOnlyUsecaseContext(
     execution_profile: executionProfile,
     capabilities,
   });
+  const frameworkExplain = buildFrameworkExplainPayload({
+    harness,
+    capabilities,
+    execution_profile: executionProfile,
+    task_intake: taskIntake,
+  });
   return {
     command,
     project: command.resolvedProject,
@@ -173,12 +184,8 @@ async function buildReadOnlyUsecaseContext(
     execution: harness.execution,
     executionProfile,
     taskIntake,
-    frameworkExplain: buildFrameworkExplainPayload({
-      harness,
-      capabilities,
-      execution_profile: executionProfile,
-      task_intake: taskIntake,
-    }),
+    frameworkExplain,
+    frameworkProtocol: buildFrameworkProtocolSurface({ explain: frameworkExplain }),
     approvals: harness.policy.approvals,
     policy,
     approvalRuntime: createApprovalRuntime({ config: command.config, policy }),
