@@ -14,8 +14,7 @@ const output = createCliEmitter();
 export const incidentsCollectSpec: CommandSpec<IncidentsCollectParsed> = {
   id: ["incidents", "collect"],
   group: "Policy",
-  summary:
-    "Promote structured external incident-candidates from a task into the incident registry.",
+  summary: "Promote reusable resolved external findings from a task into the incident registry.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
@@ -39,7 +38,7 @@ export const incidentsCollectSpec: CommandSpec<IncidentsCollectParsed> = {
     },
     {
       cmd: "agentplane incidents collect 202604031416-HEJWTM --check --json",
-      why: "Validate that incident-candidate blocks are complete before finish.",
+      why: "Validate that reusable resolved external findings are complete before finish.",
     },
   ],
   parse: (raw) => ({

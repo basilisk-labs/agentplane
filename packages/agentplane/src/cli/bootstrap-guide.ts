@@ -75,11 +75,11 @@ export const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
   {
     heading: "3. Verification and incident reuse",
     summary:
-      "Reuse historical incident advice only through targeted lookup, and validate promotable external incident candidates before `finish`.",
+      "Reuse historical incident advice only through targeted lookup, and validate promotable resolved external findings before `finish`.",
     commands: BOOTSTRAP_VERIFICATION_COMMANDS,
     notes: [
       "Use `agentplane incidents advise <task-id>` after `start-ready` when analogous scope or tags might have prior external failure modes.",
-      "Use `agentplane incidents collect <task-id> --check` before `finish` when task `Findings` contains reusable external `incident-candidate` blocks.",
+      "Use `agentplane incidents collect <task-id> --check` before `finish` when task `Findings` contains reusable external `Observation` / `Impact` / `Resolution` blocks marked with `Fixability: external` (or `IncidentExternal: true`).",
       "Keep repository-fixable defects task-local; only external or process incidents belong in `.agentplane/policy/incidents.md`.",
     ],
   },

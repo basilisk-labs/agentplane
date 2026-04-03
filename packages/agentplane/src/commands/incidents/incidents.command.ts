@@ -13,7 +13,7 @@ export const incidentsSpec: CommandSpec<GroupCommandParsed> = {
   synopsis: ["agentplane incidents <collect|advise> [args] [options]"],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<command>" }],
   notes: [
-    "Use `incidents collect` to promote structured incident-candidate findings into `.agentplane/policy/incidents.md`.",
+    "Use `incidents collect` to promote resolved reusable external findings into `.agentplane/policy/incidents.md`.",
     "Use `incidents advise` to query registry advice by task id or lightweight scope/tags.",
   ],
   parse: (raw) => parseGroupCommand(raw),

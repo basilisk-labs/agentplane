@@ -26,13 +26,14 @@ export type IncidentFindingCandidate = {
   observation: string;
   impact: string | null;
   resolution: string | null;
-  promotion: string;
+  promotion: string | null;
   incidentScope: string | null;
   incidentRule: string | null;
   incidentAdvice: string | null;
   incidentTags: string[];
   incidentMatch: string[];
   incidentExternal: boolean;
+  fixability: "external" | null;
   line: number;
   rawFields: Record<string, string>;
 };
@@ -41,6 +42,7 @@ export type IncidentPromotionTaskContext = {
   id: string;
   title: string;
   description: string;
+  scope?: string | null;
   tags: string[];
   commitHash?: string | null;
 };

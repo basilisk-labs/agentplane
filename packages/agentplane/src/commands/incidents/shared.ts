@@ -100,7 +100,7 @@ export function formatIncidentCollectionIssues(
     return `line ${issue.candidate.line}: ${scope} -> missing ${issue.missingFields.join(", ")}`;
   });
   return [
-    `${taskId}: incident-candidate entries require explicit external incident metadata before promotion.`,
+    `${taskId}: reusable external findings need explicit external marking and enough recovery detail before promotion.`,
     "Required fields:",
     ...issueLines.map((line) => `- ${line}`),
   ].join("\n");
@@ -127,6 +127,7 @@ export async function collectTaskIncidents(opts: {
       id: loaded.task.id,
       title: loaded.task.title,
       description: loaded.task.description,
+      scope: loaded.scope,
       tags: loaded.task.tags ?? [],
       commitHash: loaded.task.commit?.hash ?? null,
     },
