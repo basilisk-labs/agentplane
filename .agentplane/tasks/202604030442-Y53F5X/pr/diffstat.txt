@@ -1,19 +1,19 @@
- .agentplane/tasks/202604030442-Y53F5X/README.md    | 127 +++++++++++++++++++--
- .../tasks/202604030442-Y53F5X/pr/diffstat.txt      |  20 ++++
- .../tasks/202604030442-Y53F5X/pr/github-body.md    |  69 +++++++++++
+ .agentplane/tasks/202604030442-Y53F5X/README.md    | 149 +++++++++++++++++++--
+ .../tasks/202604030442-Y53F5X/pr/diffstat.txt      |  19 +++
+ .../tasks/202604030442-Y53F5X/pr/github-body.md    |  68 ++++++++++
  .../tasks/202604030442-Y53F5X/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604030442-Y53F5X/pr/meta.json |  14 +++
+ .agentplane/tasks/202604030442-Y53F5X/pr/meta.json |  14 ++
  .../tasks/202604030442-Y53F5X/pr/notes.jsonl       |   0
- .agentplane/tasks/202604030442-Y53F5X/pr/review.md |  76 ++++++++++++
+ .agentplane/tasks/202604030442-Y53F5X/pr/review.md |  75 +++++++++++
  .../tasks/202604030442-Y53F5X/pr/verify.log        |   0
  packages/agentplane/src/cli/run-cli.ts             |   4 +-
  .../runner/usecases/scenario-materialize-task.ts   |  18 +--
- .../src/runner/usecases/task-run-inspect.ts        |  16 +--
+ .../src/runner/usecases/task-run-inspect.ts        |  16 ++-
  .../runner/usecases/task-run-lifecycle-shared.ts   |  17 ++-
- .../agentplane/src/runner/usecases/task-run.ts     |  27 +++--
- .../src/usecases/context/resolve-context.ts        | 117 +++++++++++++++++--
- .../usecases/context/resolve-context.unit.test.ts  |  94 ++++++++++++++-
+ .../agentplane/src/runner/usecases/task-run.ts     |  27 ++--
+ .../src/usecases/context/resolve-context.ts        | 117 ++++++++++++++--
+ .../usecases/context/resolve-context.unit.test.ts  |  94 ++++++++++++-
  .../src/usecases/task/task-list-usecase.ts         |   4 +-
  .../usecases/task/task-list-usecase.unit.test.ts   |   2 +-
  .../src/usecases/task/task-new-usecase.ts          |   8 +-
- 18 files changed, 544 insertions(+), 70 deletions(-)
+ 18 files changed, 563 insertions(+), 70 deletions(-)
