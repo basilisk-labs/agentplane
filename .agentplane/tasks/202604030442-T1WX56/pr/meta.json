@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604030442-T1WX56/framework-docs-sync",
+  "created_at": "2026-04-03T14:09:35.083Z",
+  "head_sha": "e3635bcb94bc3d98d871e69b8162c3407207d5c5",
+  "last_verified_at": "2026-04-03T14:13:35.934Z",
+  "last_verified_sha": "e3635bcb94bc3d98d871e69b8162c3407207d5c5",
+  "schema_version": 1,
+  "task_id": "202604030442-T1WX56",
+  "updated_at": "2026-04-03T14:13:27.337Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -13,6 +13,19 @@ It serves three roles:
 2. A collection point for subsystem analysis findings.
 3. An ordered refactor roadmap derived from those findings.
 
+## Current foundation status
+
+The framework control-plane foundation from the F-001 through F-010 roadmap is now implemented in the runtime:
+
+1. `ResolvedHarnessContract` centralizes repo policy, workflow, task rules, protected paths, approvals, and backend restrictions.
+2. `AgentplaneExecutionContext` / `ReadOnlyUsecaseContext` give commands and runner flows one canonical runtime context.
+3. `runtime/capabilities` and `runtime/behavior` formalize capability resolution and precedence tracing.
+4. `runtime/approvals` and `runtime/execution-profile` make governance, budgets, stop conditions, handoff conditions, trace policy, and timeout policy executable.
+5. `runtime/task-intake` defines clarification, draft, and materialization contracts ahead of higher-level `task create` flows.
+6. `runtime/explain` and `runtime/protocol` provide machine-readable explain payloads plus additive protocol/result envelopes for persisted runner artifacts and future integrations.
+
+That means the remaining work is mostly downstream: documentation, incident-policy hygiene, recipe/runner expansion on top of the stable contracts, and release packaging.
+
 ## Code map
 
 ### Repository layers
@@ -40,13 +53,15 @@ It serves three roles:
    CLI shell, command registry, help/spec rendering, integration harness, and CLI-focused tests.
 3. `packages/agentplane/src/commands/`
    Operational workflows: task lifecycle, guard, branch/PR/integrate, backend, recipes, release, upgrade, docs.
-4. `packages/agentplane/src/backends/`
+4. `packages/agentplane/src/runtime/` + `packages/agentplane/src/usecases/context/`
+   Framework control plane: harness resolution, canonical execution context, capabilities, precedence, approvals, execution profiles, task intake, explain, and protocol surfaces.
+5. `packages/agentplane/src/backends/`
    Task backend loading plus local and Redmine persistence/integration layers.
-5. `packages/agentplane/src/runner/`
+6. `packages/agentplane/src/runner/`
    Shared runner flow, adapters, lifecycle, context assembly, traces, and task projection.
-6. `packages/agentplane/src/recipes/` and recipe command surfaces
+7. `packages/agentplane/src/recipes/` and recipe command surfaces
    Recipe catalog, bundled catalog, scenario selection, and recipe-facing runtime helpers.
-7. `scripts/`
+8. `scripts/`
    Delivery and maintenance control surface around the framework runtime.
 
 ### Approximate code volume by area

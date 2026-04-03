@@ -24,21 +24,39 @@ Harness engeneering counters this by shifting quality control from ad-hoc prompt
 ## Core pattern in Agent Plane
 
 1. **Constrain**
-   - Define policy and scope in `AGENTS.md` + `.agentplane/WORKFLOW.md`.
+   - Resolve repo policy, workflow mode, task contract, approvals, and backend restrictions into `ResolvedHarnessContract`.
 2. **Execute**
-   - Run explicit CLI transitions (`start`, `verify`, `finish`) and bounded command surfaces.
+   - Run explicit CLI transitions and shared usecases through one canonical execution context instead of ad hoc local helper state.
 3. **Observe**
-   - Persist structured artifacts (`README` sections, verify logs, scenario reports).
+   - Persist structured artifacts (`README` sections, verify logs, runner bundles, explain payloads, protocol results).
 4. **Recover**
    - Use deterministic fallback (`workflow restore`, last-known-good snapshots).
 5. **Integrate**
    - Merge small validated increments; avoid large delayed merges.
+
+## Shipped control-plane surfaces
+
+The framework layer is no longer just a set of conventions.
+
+- Harness contract:
+  - `runtime/harness` resolves task rules, workflow constraints, protected paths, approval requirements, and backend restrictions into one `ResolvedHarnessContract`.
+- Canonical context:
+  - `usecases/context/resolve-context.ts` builds `AgentplaneExecutionContext` so commands, recipes, and runner flows consume the same repo/task/policy/runtime inputs.
+- Precedence core:
+  - `runtime/behavior` makes `harness -> extension -> user -> builtin` explicit and traceable.
+- Capability model:
+  - `runtime/capabilities` exposes capability availability and source attribution instead of leaving capability assumptions implicit in handlers.
+- Governance runtime:
+  - `runtime/approvals` and `runtime/execution-profile` operationalize approvals, risky actions, budgets, stop conditions, handoff conditions, trace policy, and timeout policy.
+- Intake, explain, protocol:
+  - `runtime/task-intake`, `runtime/explain`, and `runtime/protocol` turn intake drafts, explain surfaces, and JSON-facing result envelopes into reusable contracts rather than runner-specific glue.
 
 ## Design rules
 
 - Prefer legibility over terse “smart” behavior.
 - Keep failures typed and actionable (`code`, `path`, `next action`).
 - Treat retries and timeouts as part of the contract, not implementation detail.
+- Treat behavior precedence and capability availability as explicit runtime data, not tribal knowledge.
 - Keep verification close to each increment.
 - Keep optional automation in recipes/scenarios, not in core state transitions.
 
