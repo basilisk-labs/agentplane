@@ -1,10 +1,11 @@
 ---
 id: "202604030442-T1WX56"
 title: "Sync framework docs with new control-plane contracts"
-status: "DOING"
+result_summary: "integrate: squash task/202604030442-T1WX56/framework-docs-sync"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-03T14:13:35.934Z"
   updated_by: "DOCS"
   note: "Synced README and developer docs with the shipped framework control-plane layer, replaced implicit-control-plane wording with explicit harness/context/runtime contracts, and verified with bun run docs:site:check."
-commit: null
+commit:
+  hash: "c5d7212ea90576742e66712a6de40caa4446bfdc"
+  message: "📝 T1WX56 task: refresh verification and pr state"
 comments:
   -
     author: "DOCS"
     body: "Start: update framework-facing docs to reflect the shipped control-plane layer, including harness, execution context, capabilities, approvals, task intake, explain hooks, and the new protocol/result foundation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-T1WX56/pr."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Synced README and developer docs with the shipped framework control-plane layer, replaced implicit-control-plane wording with explicit harness/context/runtime contracts, and verified with bun run docs:site:check."
+  -
+    type: "status"
+    at: "2026-04-03T14:14:33.204Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-T1WX56/pr."
 doc_version: 3
-doc_updated_at: "2026-04-03T14:13:35.940Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-04-03T14:14:33.207Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update user-facing and repo policy documentation so it matches the implemented framework layer."
 sections:
   Summary: |-

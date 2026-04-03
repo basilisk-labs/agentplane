@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604030442-T1WX56/framework-docs-sync",
   "created_at": "2026-04-03T14:09:35.083Z",
-  "head_sha": "e3635bcb94bc3d98d871e69b8162c3407207d5c5",
-  "last_verified_at": "2026-04-03T14:13:35.934Z",
-  "last_verified_sha": "e3635bcb94bc3d98d871e69b8162c3407207d5c5",
+  "head_sha": "73f9cd51477facdcc50507bb480c0c0c08b48f81",
+  "last_verified_at": "2026-04-03T14:14:33.186Z",
+  "last_verified_sha": "73f9cd51477facdcc50507bb480c0c0c08b48f81",
+  "merge_commit": "c5d7212ea90576742e66712a6de40caa4446bfdc",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-03T14:14:33.186Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604030442-T1WX56",
-  "updated_at": "2026-04-03T14:13:27.337Z",
+  "updated_at": "2026-04-03T14:14:33.186Z",
   "verify": {
     "status": "pass"
   }

@@ -1,0 +1,21 @@
+[2026-04-03T14:14:26.149Z] sha=73f9cd51477facdcc50507bb480c0c0c08b48f81 $ bun run docs:site:check
+generated docs/reference/generated-reference.mdx
+[INFO] [en] Creating an optimized production build...
+[webpackbar] ℹ Compiling Client
+[webpackbar] ℹ Compiling Server
+[webpackbar] ✔ Server: Compiled successfully in 1.10s
+[webpackbar] ✔ Client: Compiled successfully in 1.13s
+[SUCCESS] Generated static files in "build".
+[INFO] Use `npm run serve` command to test your build locally.
+DESIGN.md compliance check passed
+$ bun run docs:site:generate && bun run docs:site:typecheck && bun run docs:site:build && bun run docs:site:check:design
+$ node scripts/generate-website-docs.mjs
+$ bun run --cwd website typecheck
+$ tsc
+$ bun run --cwd website build
+$ docusaurus build
+[WARNING] {"moduleIdentifier":"/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202604030442-T1WX56-framework-docs-sync/node_modules/.bun/vscode-languageserver-types@3.17.5/node_modules/vscode-languageserver-types/lib/umd/main.js","moduleName":"../node_modules/.bun/vscode-languageserver-types@3.17.5/node_modules/vscode-languageserver-types/lib/umd/main.js","loc":"3:24-31","message":"Critical dependency: require function is used in a way in which dependencies cannot be statically extracted","compilerPath":"server"}
+$ node scripts/check-design-language.mjs
+
+[2026-04-03T14:14:30.649Z] ✅ verified_sha=73f9cd51477facdcc50507bb480c0c0c08b48f81
+
