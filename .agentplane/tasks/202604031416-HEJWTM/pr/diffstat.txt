@@ -5,12 +5,12 @@
  .agentplane/policy/workflow.branch_pr.md           |   2 +
  .agentplane/policy/workflow.direct.md              |   4 +-
  .agentplane/tasks/202604031416-HEJWTM/README.md    | 118 +++++
- .../tasks/202604031416-HEJWTM/pr/diffstat.txt      |  28 ++
- .../tasks/202604031416-HEJWTM/pr/github-body.md    |  77 +++
+ .../tasks/202604031416-HEJWTM/pr/diffstat.txt      |  36 ++
+ .../tasks/202604031416-HEJWTM/pr/github-body.md    |  85 ++++
  .../tasks/202604031416-HEJWTM/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604031416-HEJWTM/pr/meta.json |  14 +
  .../tasks/202604031416-HEJWTM/pr/notes.jsonl       |   0
- .agentplane/tasks/202604031416-HEJWTM/pr/review.md |  84 ++++
+ .agentplane/tasks/202604031416-HEJWTM/pr/review.md |  92 ++++
  .../tasks/202604031416-HEJWTM/pr/verify.log        |   0
  packages/agentplane/assets/AGENTS.md               |   4 +-
  packages/agentplane/assets/agents/CODER.json       |   2 +-
@@ -33,4 +33,4 @@
  .../src/runtime/incidents/resolve.test.ts          | 154 ++++++
  .../agentplane/src/runtime/incidents/resolve.ts    | 518 +++++++++++++++++++++
  packages/agentplane/src/runtime/incidents/types.ts |  80 ++++
- 35 files changed, 2093 insertions(+), 12 deletions(-)
+ 35 files changed, 2117 insertions(+), 12 deletions(-)

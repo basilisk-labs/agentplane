@@ -1,10 +1,11 @@
 ---
 id: "202604031416-HEJWTM"
 title: "Automate incidents registry and advice lookup"
-status: "DOING"
+result_summary: "integrate: squash task/202604031416-HEJWTM/incidents-registry"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-03T14:48:57.623Z"
   updated_by: "CODER"
   note: "Verified: added incidents runtime/CLI, finish auto-promotion, start-ready advice lookup, synced live + asset policy templates, and passed bunx vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts -u --hookTimeout 60000 --testTimeout 60000; bun run typecheck; bun run --filter=agentplane build; node .agentplane/policy/check-routing.mjs; pre-commit fast contour passed during source commit."
-commit: null
+commit:
+  hash: "690e76a27e3671b641065290130d27d6b9af6749"
+  message: "🧩 HEJWTM integrate: policy/workflow: Automate incidents registry and advice lookup"
 comments:
   -
     author: "CODER"
     body: "Start: implement a real incidents registry pipeline that can promote incident-candidate findings into incidents.md and surface relevant incident advice for analogous tasks before execution."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604031416-HEJWTM/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: added incidents runtime/CLI, finish auto-promotion, start-ready advice lookup, synced live + asset policy templates, and passed bunx vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts -u --hookTimeout 60000 --testTimeout 60000; bun run typecheck; bun run --filter=agentplane build; node .agentplane/policy/check-routing.mjs; pre-commit fast contour passed during source commit."
+  -
+    type: "status"
+    at: "2026-04-03T14:51:06.837Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604031416-HEJWTM/pr."
 doc_version: 3
-doc_updated_at: "2026-04-03T14:48:57.625Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-03T14:51:06.839Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make incidents.md accumulate resolved incident candidates from finished tasks and surface relevant incident advice for new tasks by tags or scope before release."
 sections:
   Summary: |-
