@@ -1,10 +1,11 @@
 ---
 id: "202604031627-DA1JVW"
 title: "Auto-promote reusable external incidents from task findings"
-status: "DOING"
+result_summary: "Merged via PR #68."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-03T16:40:24.330Z"
   updated_by: "CODER"
   note: "Verified: incidents promotion now accepts resolved external Findings marked with Fixability: external or IncidentExternal: true, first occurrences stay open but still surface through advice lookup, recurring equivalents stabilize on later entries, and the shipped policy/docs/help text matches that contract. Commands: bunx vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000; bunx vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/command-guide.test.ts -u --hookTimeout 60000 --testTimeout 60000; bun run --filter=agentplane build; bun run docs:bootstrap:generate; node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx; node .agentplane/policy/check-routing.mjs; agentplane doctor; bun run docs:bootstrap:check; bun run docs:cli:check; bun run docs:onboarding:check."
-commit: null
+commit:
+  hash: "ddf2be6312db1a75d7603980cd99e54d9c54f4a5"
+  message: "policy/workflow: Auto-promote reusable external incidents from task findings (DA1JVW) (#68)"
 comments:
   -
     author: "CODER"
     body: "Start: align incidents promotion with the intended external-incident memory model, make advice lookup useful for first and recurring analogous tasks, and keep the contract documented."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #68 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: incidents promotion now accepts resolved external Findings marked with Fixability: external or IncidentExternal: true, first occurrences stay open but still surface through advice lookup, recurring equivalents stabilize on later entries, and the shipped policy/docs/help text matches that contract. Commands: bunx vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000; bunx vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/command-guide.test.ts -u --hookTimeout 60000 --testTimeout 60000; bun run --filter=agentplane build; bun run docs:bootstrap:generate; node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx; node .agentplane/policy/check-routing.mjs; agentplane doctor; bun run docs:bootstrap:check; bun run docs:cli:check; bun run docs:onboarding:check."
+  -
+    type: "status"
+    at: "2026-04-03T16:49:15.438Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #68 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-03T16:40:24.353Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-03T16:49:15.445Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make finish/task workflows infer reusable external incident advice from resolved Findings blocks, keep incident states honest, and align advice lookup with scope/tag recurrence semantics."
 sections:
   Summary: |-
