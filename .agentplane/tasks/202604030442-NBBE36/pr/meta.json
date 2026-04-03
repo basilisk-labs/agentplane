@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604030442-NBBE36/task-intake-contracts",
+  "created_at": "2026-04-03T11:24:23.063Z",
+  "head_sha": "5cd6001cd65c263f2ed44928396444fdb9345720",
+  "last_verified_at": "2026-04-03T13:35:42.746Z",
+  "last_verified_sha": "5cd6001cd65c263f2ed44928396444fdb9345720",
+  "schema_version": 1,
+  "task_id": "202604030442-NBBE36",
+  "updated_at": "2026-04-03T13:35:42.325Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,0 +1,1 @@
+framework/intake: F-008 Introduce task intake contracts (NBBE36)

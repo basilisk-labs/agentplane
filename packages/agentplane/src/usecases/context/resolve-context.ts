@@ -16,6 +16,10 @@ import {
   resolveHarnessFromCommandContext,
   type ResolvedHarnessContract,
 } from "../../runtime/harness/index.js";
+import {
+  createTaskIntakeRuntime,
+  type TaskIntakeRuntime,
+} from "../../runtime/task-intake/index.js";
 
 export type AgentplaneRepositoryContext = {
   git_root: string;
@@ -40,6 +44,7 @@ export type ReadOnlyUsecaseContext = {
   capabilities: AgentplaneCapabilityRegistry;
   execution: ResolvedHarnessContract["execution"];
   executionProfile: ResolvedExecutionProfileRuntime;
+  taskIntake: TaskIntakeRuntime;
   approvals: ResolvedHarnessContract["policy"]["approvals"];
   policy: PolicyEngine;
   approvalRuntime: ApprovalRuntime;
@@ -122,6 +127,10 @@ async function buildReadOnlyUsecaseContext(
   const harness = await resolveHarnessFromCommandContext(command);
   const policy = new PolicyEngine();
   const executionProfile = resolveExecutionProfileRuntime(command.config);
+  const capabilities = resolveTaskBackendCapabilityRegistry({
+    backend_id: command.backendId,
+    capabilities: command.taskBackend.capabilities ?? null,
+  });
   return {
     command,
     project: command.resolvedProject,
@@ -138,12 +147,26 @@ async function buildReadOnlyUsecaseContext(
       task_backend: command.taskBackend,
     },
     harness,
-    capabilities: resolveTaskBackendCapabilityRegistry({
-      backend_id: command.backendId,
-      capabilities: command.taskBackend.capabilities ?? null,
-    }),
+    capabilities,
     execution: harness.execution,
     executionProfile,
+    taskIntake: createTaskIntakeRuntime({
+      repo: {
+        git_root: command.resolvedProject.gitRoot,
+        agentplane_dir: command.resolvedProject.agentplaneDir,
+        workflow_dir: command.config.paths.workflow_dir,
+      },
+      backend: {
+        id: command.backendId,
+        config_path: command.backendConfigPath,
+        capabilities: command.taskBackend.capabilities ?? null,
+        supports_generate_task_id: typeof command.taskBackend.generateTaskId === "function",
+        supports_bulk_write: typeof command.taskBackend.writeTasks === "function",
+      },
+      harness,
+      execution_profile: executionProfile,
+      capabilities,
+    }),
     approvals: harness.policy.approvals,
     policy,
     approvalRuntime: createApprovalRuntime({ config: command.config, policy }),

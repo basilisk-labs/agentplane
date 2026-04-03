@@ -72,8 +72,26 @@ describe("resolve-context usecase factories (unit)", () => {
       },
     });
     mocks.resolveHarnessFromCommandContext.mockResolvedValue({
+      workflow: {
+        mode: "branch_pr",
+      },
+      task: {
+        doc_sections: ["Summary", "Scope", "Plan", "Verify Steps", "Verification"],
+        required_doc_sections: ["Summary", "Scope", "Plan"],
+        verify_required_tags: ["code"],
+      },
       execution: { profile: "balanced" },
-      policy: { approvals: { require_plan: true, require_network: false, require_verify: true } },
+      policy: {
+        approvals: { require_plan: true, require_network: false, require_verify: true },
+        protected_paths: {
+          tasks: [".agentplane/tasks"],
+          policy: ["AGENTS.md"],
+          config: [".agentplane/config.json"],
+          hooks: ["lefthook.yml"],
+          ci: [".github/workflows"],
+        },
+        unsafe_actions_requiring_explicit_user_ok: ["Destructive git history operations."],
+      },
     });
   });
 
@@ -110,6 +128,14 @@ describe("resolve-context usecase factories (unit)", () => {
         task_backend: command.taskBackend,
       },
       harness: {
+        workflow: {
+          mode: "branch_pr",
+        },
+        task: {
+          doc_sections: ["Summary", "Scope", "Plan", "Verify Steps", "Verification"],
+          required_doc_sections: ["Summary", "Scope", "Plan"],
+          verify_required_tags: ["code"],
+        },
         execution: { profile: "balanced" },
         policy: {
           approvals: { require_plan: true, require_network: false, require_verify: true },
@@ -119,6 +145,17 @@ describe("resolve-context usecase factories (unit)", () => {
       executionProfile: {
         profile: "balanced",
         reasoning_effort: "medium",
+      },
+      taskIntake: {
+        backend: {
+          id: "local",
+          supports_generate_task_id: false,
+          supports_bulk_write: false,
+        },
+        precedence: {
+          behavior_order: ["harness", "extension", "user", "builtin"],
+          extension_layer: "recipes",
+        },
       },
       approvals: { require_plan: true, require_network: false, require_verify: true },
       policy: { policy: true },
@@ -202,6 +239,13 @@ describe("resolve-context usecase factories (unit)", () => {
       executionProfile: {
         profile: "balanced",
         reasoning_effort: "medium",
+      },
+      taskIntake: {
+        backend: {
+          id: "local",
+          supports_generate_task_id: false,
+          supports_bulk_write: false,
+        },
       },
       approvals: { require_plan: true, require_network: false, require_verify: true },
       policy: { policy: true },

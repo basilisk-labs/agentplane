@@ -9,6 +9,12 @@ import {
   buildDefaultVerifyStepsSection,
   defaultTaskDocV3,
 } from "../../commands/task/doc-template.js";
+import {
+  createClarificationContract,
+  createTaskGraphDraft,
+  createTaskIntakeContext,
+  materializeTaskGraphDraft,
+} from "../../runtime/task-intake/index.js";
 import { buildTaskDocState } from "../../shared/task-doc-state.js";
 import { dedupeStrings } from "../../shared/strings.js";
 import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
@@ -178,11 +184,77 @@ export async function materializeRecipeScenarioTask(opts: {
     attempts: 1000,
   });
   const run_id = opts.run_id ?? createRunnerRunId();
-  const task = buildMaterializedRecipeTask({
-    envelope,
-    task_id,
-    run_id,
+  const createdAt = nowIso();
+  const recipeLabel = `${envelope.selection.recipe_id}:${envelope.selection.scenario_id}@${envelope.selection.recipe_version}`;
+  const intakeContext = createTaskIntakeContext({
+    runtime: executionContext.taskIntake,
+    source: {
+      id: "recipe_scenario",
+      detail: `${envelope.selection.recipe_id}:${envelope.selection.scenario_id}`,
+    },
+    requested_outcome: envelope.scenario.goal,
+    requested_owner: envelope.scenario.task_template.owner,
+    requested_tags: envelope.scenario.task_template.tags ?? ["recipes"],
+    requested_verify: envelope.scenario.task_template.verify ?? [],
+    inputs: [
+      {
+        kind: "recipe_reference",
+        label: "recipe",
+        value: recipeLabel,
+        required: true,
+      },
+      ...envelope.selection.required_inputs.map((input) => ({
+        kind: "constraint" as const,
+        label: "required_input",
+        value: input,
+        required: true,
+      })),
+      ...envelope.selection.outputs.map((output) => ({
+        kind: "output" as const,
+        label: "declared_output",
+        value: output,
+      })),
+    ],
   });
+  const clarification = createClarificationContract({
+    context: intakeContext,
+  });
+  const draft = createTaskGraphDraft({
+    context: intakeContext,
+    clarification,
+    summary: envelope.scenario.goal,
+    tasks: [
+      {
+        draft_id: envelope.selection.scenario_id,
+        title: envelope.scenario.task_template.title,
+        description: envelope.scenario.task_template.description,
+        owner: envelope.scenario.task_template.owner,
+        priority: envelope.scenario.task_template.priority ?? "med",
+        origin: {
+          system: "recipe",
+          recipe_id: envelope.selection.recipe_id,
+          scenario_id: envelope.selection.scenario_id,
+          recipe_version: envelope.selection.recipe_version,
+          run_id,
+        },
+        tags: dedupeStrings(envelope.scenario.task_template.tags ?? ["recipes"]),
+        depends_on: [],
+        verify: dedupeStrings(envelope.scenario.task_template.verify ?? []),
+        doc: seedRecipeTaskDoc(envelope),
+        doc_version: TASK_DOC_VERSION_V3,
+        id_source: "generated",
+      },
+    ],
+  });
+  const materialization = await materializeTaskGraphDraft({
+    draft,
+    task_ids: {
+      [envelope.selection.scenario_id]: task_id,
+    },
+    created_at: createdAt,
+  });
+  const task = materialization.tasks[0]?.task;
+  if (!task) throw new Error("Task intake materialization unexpectedly produced no tasks.");
   await executionContext.backend.task_backend.writeTask(task);
 
   return {
