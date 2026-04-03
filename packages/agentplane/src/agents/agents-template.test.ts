@@ -27,6 +27,14 @@ describe("agents-template", () => {
     expect(`${repoText.trimEnd()}\n`).toBe(bundledText);
   });
 
+  it("bundled AGENTS.md keeps workflow guidance derived from config instead of hardcoding a mode", async () => {
+    const bundledText = await loadAgentsTemplate();
+    expect(bundledText).toContain(
+      "The guarded route is determined by `workflow_mode` in `.agentplane/config.json`;",
+    );
+    expect(bundledText).not.toContain("In this repository, `workflow_mode=branch_pr`");
+  });
+
   it("bundled agents match framework assets/agents", async () => {
     const assetsAgentsDir = path.join(process.cwd(), "packages", "agentplane", "assets", "agents");
     const entries = await readdir(assetsAgentsDir);
