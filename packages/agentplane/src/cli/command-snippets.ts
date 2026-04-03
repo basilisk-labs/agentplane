@@ -5,6 +5,8 @@ const invoke = (id: readonly string[]): string => requireCanonicalCommandInvocat
 export const COMMAND_SNIPPETS = {
   core: {
     configShow: invoke(["config", "show"]),
+    incidentsAdvise: invoke(["incidents", "advise"]),
+    incidentsCollect: invoke(["incidents", "collect"]),
     taskList: invoke(["task", "list"]),
     taskShow: invoke(["task", "show"]),
     taskNew: invoke(["task", "new"]),

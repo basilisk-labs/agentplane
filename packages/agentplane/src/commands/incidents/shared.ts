@@ -63,8 +63,9 @@ export async function loadIncidentRegistry(ctx: CommandContext): Promise<{
 export async function loadTaskIncidents(
   ctx: CommandContext,
   taskId: string,
+  taskOverride?: TaskData | null,
 ): Promise<LoadedTaskIncidents> {
-  const task = await ctx.taskBackend.getTask(taskId);
+  const task = taskOverride ?? (await ctx.taskBackend.getTask(taskId));
   if (!task) {
     throw new CliError({
       exitCode: 2,
@@ -108,6 +109,7 @@ export function formatIncidentCollectionIssues(
 export async function collectTaskIncidents(opts: {
   ctx: CommandContext;
   taskId: string;
+  task?: TaskData | null;
   write: boolean;
   now?: Date;
 }): Promise<{
@@ -118,7 +120,7 @@ export async function collectTaskIncidents(opts: {
   plan: IncidentCollectionPlan;
   wrote: boolean;
 }> {
-  const loaded = await loadTaskIncidents(opts.ctx, opts.taskId);
+  const loaded = await loadTaskIncidents(opts.ctx, opts.taskId, opts.task ?? null);
   const { registryPath, registryText, registry } = await loadIncidentRegistry(opts.ctx);
   const plan = planIncidentCollection({
     task: {
@@ -153,12 +155,13 @@ export async function collectTaskIncidents(opts: {
 export async function adviseTaskIncidents(opts: {
   ctx: CommandContext;
   taskId: string;
+  task?: TaskData | null;
   limit?: number;
 }): Promise<{
   loaded: LoadedTaskIncidents;
   matches: IncidentAdviceMatch[];
 }> {
-  const loaded = await loadTaskIncidents(opts.ctx, opts.taskId);
+  const loaded = await loadTaskIncidents(opts.ctx, opts.taskId, opts.task ?? null);
   const { registry } = await loadIncidentRegistry(opts.ctx);
   return {
     loaded,

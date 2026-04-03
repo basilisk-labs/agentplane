@@ -55,6 +55,10 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [finish](#finish)
   - [start](#start)
   - [verify](#verify)
+- Policy
+  - [incidents](#incidents)
+  - [incidents advise](#incidents-advise)
+  - [incidents collect](#incidents-collect)
 - PR
   - [integrate](#integrate)
   - [pr](#pr)
@@ -1233,6 +1237,71 @@ agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs chang
 
 - Record a needs-rework outcome with details.
 
+## Policy
+
+### incidents
+
+Promote external incident advice and resolve incident hints for analogous tasks.
+
+Usage:
+
+```text
+agentplane incidents <collect|advise> [args] [options]
+```
+
+Notes:
+
+- Use \`incidents collect\` to promote structured incident-candidate findings into \`.agentplane/policy/incidents.md\`.
+- Use \`incidents advise\` to query registry advice by task id or lightweight scope/tags.
+
+### incidents advise
+
+Resolve relevant incident advice for a task or an ad hoc scope/tag query.
+
+Usage:
+
+```text
+agentplane incidents advise [<task-id>] [options]
+```
+
+Options:
+
+- `--scope <text>`: Ad hoc scope text when querying without a task id.
+- `--title <text>`: Optional title text for ad hoc advice lookup.
+- `--description <text>`: Optional description text for ad hoc advice lookup.
+- `--tag <tag>`: Matching tag for ad hoc advice lookup; repeat as needed. (repeatable)
+- `--limit <n>`: Maximum number of advice entries to show. (default=5)
+- `--json`: Emit machine-readable advice matches. (default=false)
+
+### incidents collect
+
+Promote structured external incident-candidates from a task into the incident registry.
+
+Usage:
+
+```text
+agentplane incidents collect <task-id> [options]
+```
+
+Options:
+
+- `--check`: Validate incident promotion inputs without writing \`.agentplane/policy/incidents.md\`. (default=false)
+- `--json`: Emit machine-readable collection details. (default=false)
+
+Examples:
+
+```sh
+agentplane incidents collect 202604031416-HEJWTM
+```
+
+- Promote resolved external incident advice from task Findings into the shared registry.
+
+```sh
+agentplane incidents collect 202604031416-HEJWTM --check --json
+```
+
+- Validate that incident-candidate blocks are complete before finish.
+
 ## PR
 
 ### integrate
@@ -1264,7 +1333,7 @@ agentplane integrate 202602030608-F1Q8AB --run-verify
 
 ### pr
 
-Manage local PR artifacts for a task (branch_pr workflow).
+Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).
 
 Usage:
 
@@ -1284,7 +1353,7 @@ agentplane pr open 202602030608-F1Q8AB --author CODER
 agentplane pr update 202602030608-F1Q8AB
 ```
 
-- Refresh diffstat and summary.
+- Refresh review.md plus github-title/body projections.
 
 ```sh
 agentplane pr check 202602030608-F1Q8AB
@@ -1364,7 +1433,7 @@ agentplane pr open 202602030608-F1Q8AB --author CODER
 
 ### pr update
 
-Update PR artifacts (diffstat and auto summary).
+Update PR artifacts (review packet, diffstat, and GitHub projections).
 
 Usage:
 

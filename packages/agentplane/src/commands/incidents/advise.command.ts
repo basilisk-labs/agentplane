@@ -1,5 +1,5 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
-import { createCliEmitter, usageMessage } from "../../cli/output.js";
+import { createCliEmitter } from "../../cli/output.js";
 import { usageError } from "../../cli/spec/errors.js";
 import {
   buildIncidentAdviceQueryFromTask,
@@ -76,9 +76,7 @@ export const incidentsAdviseSpec: CommandSpec<IncidentsAdviseParsed> = {
     if (!taskId && !scope && !title && !description && tags.length === 0) {
       throw usageError({
         spec: incidentsAdviseSpec,
-        message: usageMessage(
-          "Provide either <task-id> or at least one of --scope/--title/--description/--tag.",
-        ),
+        message: "Provide either <task-id> or at least one of --scope/--title/--description/--tag.",
       });
     }
   },

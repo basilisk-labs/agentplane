@@ -223,9 +223,11 @@ export async function cmdFinish(opts: {
     }
 
     for (const taskId of opts.taskIds) {
+      const loadedTask = loadedTasks.find((candidate) => candidate.taskId === taskId) ?? null;
       await collectTaskIncidents({
         ctx,
         taskId,
+        task: loadedTask?.task ?? null,
         write: false,
       });
     }
@@ -350,9 +352,11 @@ export async function cmdFinish(opts: {
 
     let promotedIncidents = 0;
     for (const taskId of opts.taskIds) {
+      const loadedTask = loadedTasks.find((candidate) => candidate.taskId === taskId) ?? null;
       const collected = await collectTaskIncidents({
         ctx,
         taskId,
+        task: loadedTask?.task ?? null,
         write: true,
       });
       promotedIncidents += collected.plan.promotable.length;

@@ -51,7 +51,22 @@ When a repository is intentionally configured for direct mode, use one short rou
 - In `direct`, `finish` creates the deterministic close commit by default.
 - Treat `task verify-show` as the verification contract right before `verify` and `finish`.
 
-## 3. Fallbacks and recovery
+## 3. Verification and incident reuse
+
+Reuse historical incident advice only through targeted lookup, and validate promotable external incident candidates before `finish`.
+
+- `agentplane task verify-show <task-id>`
+- `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`
+- `agentplane incidents advise <task-id>`
+- `agentplane incidents collect <task-id> --check`
+- `agentplane doctor`
+- `node .agentplane/policy/check-routing.mjs`
+
+- Use `agentplane incidents advise <task-id>` after `start-ready` when analogous scope or tags might have prior external failure modes.
+- Use `agentplane incidents collect <task-id> --check` before `finish` when task `Findings` contains reusable external `incident-candidate` blocks.
+- Keep repository-fixable defects task-local; only external or process incidents belong in `.agentplane/policy/incidents.md`.
+
+## 4. Fallbacks and recovery
 
 Keep exceptional paths out of the normal route: use these only for recovery, framework upgrades, or branch_pr work.
 

@@ -131,18 +131,7 @@ async function main() {
   );
   assertEqualBlock(
     extractCodeBlock(agentsRaw, "### Verification"),
-    [
-      bootstrapModule.BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS.find((command) =>
-        command.startsWith("agentplane task verify-show "),
-      ),
-      bootstrapModule.BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS.find((command) =>
-        command.startsWith("agentplane verify "),
-      ),
-      bootstrapModule.BOOTSTRAP_RECOVERY_COMMANDS.find(
-        (command) => command === "agentplane doctor",
-      ),
-      "node .agentplane/policy/check-routing.mjs",
-    ].filter(Boolean),
+    [...bootstrapModule.BOOTSTRAP_VERIFICATION_COMMANDS],
     "AGENTS verification block",
   );
 
