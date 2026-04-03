@@ -1,10 +1,11 @@
 ---
 id: "202604030442-YD0K3G"
 title: "F-004 Introduce precedence core"
-status: "DOING"
+result_summary: "integrate: squash task/202604030442-YD0K3G/precedence-core"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-03T10:23:02.019Z"
   updated_by: "CODER"
   note: "Verified: bun run typecheck; bunx vitest run packages/agentplane/src/runtime/behavior/resolve.test.ts packages/agentplane/src/runner/context/base-prompts.test.ts --hookTimeout 60000 --testTimeout 60000; bunx vitest run packages/agentplane/src/runner/artifacts.test.ts packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts --hookTimeout 60000 --testTimeout 60000."
-commit: null
+commit:
+  hash: "5c3804c27a2e645dc852ebd05ea51d780f888785"
+  message: "📝 YD0K3G task: refresh verification and pr state"
 comments:
   -
     author: "CODER"
     body: "Start: introduce the framework precedence core so harness, recipe extensions, user rules, and builtin defaults resolve through one traced behavior model."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-YD0K3G/pr."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun run typecheck; bunx vitest run packages/agentplane/src/runtime/behavior/resolve.test.ts packages/agentplane/src/runner/context/base-prompts.test.ts --hookTimeout 60000 --testTimeout 60000; bunx vitest run packages/agentplane/src/runner/artifacts.test.ts packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts --hookTimeout 60000 --testTimeout 60000."
+  -
+    type: "status"
+    at: "2026-04-03T10:24:02.955Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-YD0K3G/pr."
 doc_version: 3
-doc_updated_at: "2026-04-03T10:23:02.026Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-03T10:24:02.957Z"
+doc_updated_by: "INTEGRATOR"
 description: "Formalize framework-level behavior precedence and traceable conflict resolution."
 sections:
   Summary: |-
