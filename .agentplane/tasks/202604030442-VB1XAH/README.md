@@ -1,10 +1,11 @@
 ---
 id: "202604030442-VB1XAH"
 title: "F-007 Operationalize execution profiles"
-status: "DOING"
+result_summary: "integrate: squash task/202604030442-VB1XAH/execution-profiles"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-03T11:21:58.372Z"
   updated_by: "CODER"
   note: "Verified: bun run typecheck; node scripts/run-pre-commit-hook.mjs; bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runtime/execution-profile/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts --hookTimeout 60000 --testTimeout 60000"
-commit: null
+commit:
+  hash: "659f6be579360d8d25c4a41b5ce649ead329c30e"
+  message: "📝 VB1XAH task: refresh verification and pr state"
 comments:
   -
     author: "CODER"
     body: "Start: operationalize execution profiles so budgets, stop conditions, handoff boundaries, approvals, and timeout/trace behavior resolve through explicit runtime contracts instead of scattered helpers."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-VB1XAH/pr."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun run typecheck; node scripts/run-pre-commit-hook.mjs; bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runtime/execution-profile/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts --hookTimeout 60000 --testTimeout 60000"
+  -
+    type: "status"
+    at: "2026-04-03T11:22:42.855Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-VB1XAH/pr."
 doc_version: 3
-doc_updated_at: "2026-04-03T11:21:58.378Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-03T11:22:42.858Z"
+doc_updated_by: "INTEGRATOR"
 description: "Turn execution profiles into executable runtime behavior for budgets, stop, handoff, timeout, and trace policies."
 sections:
   Summary: |-
