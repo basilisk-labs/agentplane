@@ -1,10 +1,11 @@
 ---
 id: "202604030423-BRRQ94"
 title: "Fix workflow mode drift between AGENTS.md and init config"
-status: "DOING"
+result_summary: "integrate: squash task/202604030423-BRRQ94/workflow-mode-sync"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-03T04:31:14.033Z"
   updated_by: "CODER"
   note: "Targeted vitest suites passed, policy routing check passed, and fresh direct init no longer hardcodes branch_pr in AGENTS.md."
-commit: null
+commit:
+  hash: "78c0fdb4b2fd5100de89e6a7e8d288a2a0f41ee2"
+  message: "✅ BRRQ94 verify: record gateway workflow guidance evidence"
 comments:
   -
     author: "CODER"
     body: "Start: align policy gateway workflow wording with generated config and workflow-mode sync paths."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604030423-BRRQ94/pr."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted vitest suites passed, policy routing check passed, and fresh direct init no longer hardcodes branch_pr in AGENTS.md."
+  -
+    type: "status"
+    at: "2026-04-03T04:32:23.935Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604030423-BRRQ94/pr."
 doc_version: 3
-doc_updated_at: "2026-04-03T04:31:14.036Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-03T04:32:23.938Z"
+doc_updated_by: "INTEGRATOR"
 description: "Eliminate fresh-install and mode-switch drift where the policy gateway implies branch_pr while .agentplane/config.json is direct. Keep one workflow source, minimize code duplication, update tests, and preserve GitHub-facing UX clarity."
 sections:
   Summary: |-
