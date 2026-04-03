@@ -1,3 +1,11 @@
+ .agentplane/tasks/202604030442-C0JQDY/README.md    |  52 ++++--
+ .../tasks/202604030442-C0JQDY/pr/diffstat.txt      |  11 ++
+ .../tasks/202604030442-C0JQDY/pr/github-body.md    |  60 +++++++
+ .../tasks/202604030442-C0JQDY/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604030442-C0JQDY/pr/meta.json |  14 ++
+ .../tasks/202604030442-C0JQDY/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604030442-C0JQDY/pr/review.md |  67 ++++++++
+ .../tasks/202604030442-C0JQDY/pr/verify.log        |   0
  .../agentplane/src/cli/run-cli/commands/config.ts  |  13 ++
  .../commands/recipes/impl/commands/cache-prune.ts  |  15 ++
  .../src/commands/recipes/impl/commands/remove.ts   |  10 +-
@@ -8,4 +16,4 @@
  .../agentplane/src/runtime/approvals/runtime.ts    | 187 +++++++++++++++++++++
  packages/agentplane/src/runtime/approvals/types.ts |  37 ++++
  .../src/usecases/context/resolve-context.ts        |   6 +-
- 10 files changed, 377 insertions(+), 131 deletions(-)
+ 18 files changed, 572 insertions(+), 141 deletions(-)

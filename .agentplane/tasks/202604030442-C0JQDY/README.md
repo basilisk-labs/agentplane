@@ -1,10 +1,11 @@
 ---
 id: "202604030442-C0JQDY"
 title: "F-006 Introduce approval runtime"
-status: "DOING"
+result_summary: "integrate: squash task/202604030442-C0JQDY/approval-runtime"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-03T10:56:17.791Z"
   updated_by: "CODER"
   note: "Introduced a first-class approval runtime, threaded it into the canonical execution context, and routed config/fs/git/network mutation paths through the shared gateway; verified with typecheck plus approval, config, recipes, release, and context test suites."
-commit: null
+commit:
+  hash: "f7266969b6d2eb859d69ab10ed6f1f8ba8c28e5f"
+  message: "📝 C0JQDY task: refresh verification and pr state"
 comments:
   -
     author: "CODER"
     body: "Start: introduce a first-class approval runtime so network, fs, git, config, and policy mutations resolve through one centralized gateway with framework-level semantics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-C0JQDY/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Introduced a first-class approval runtime, threaded it into the canonical execution context, and routed config/fs/git/network mutation paths through the shared gateway; verified with typecheck plus approval, config, recipes, release, and context test suites."
+  -
+    type: "status"
+    at: "2026-04-03T10:57:06.881Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-C0JQDY/pr."
 doc_version: 3
-doc_updated_at: "2026-04-03T10:56:17.799Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-03T10:57:06.884Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make approvals a first-class runtime gateway for network, filesystem, git, and config mutations."
 sections:
   Summary: |-
