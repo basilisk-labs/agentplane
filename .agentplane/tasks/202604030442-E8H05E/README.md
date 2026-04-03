@@ -1,10 +1,11 @@
 ---
 id: "202604030442-E8H05E"
 title: "F-009 Introduce explain hooks"
-status: "DOING"
+result_summary: "integrate: squash task/202604030442-E8H05E/explain-hooks"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -27,7 +28,9 @@ verification:
   updated_at: "2026-04-03T13:53:53.380Z"
   updated_by: "CODER"
   note: "Implemented framework explain hooks, threaded machine-readable payloads into canonical context and runner bundles, and verified with typecheck plus targeted vitest for explain/context/runner/CLI flows."
-commit: null
+commit:
+  hash: "948557935ca6b46832d7d933ab023afe8df48df0"
+  message: "📝 E8H05E task: refresh verification and pr state"
 comments:
   -
     author: "CODER"
@@ -35,6 +38,9 @@ comments:
   -
     author: "CODER"
     body: "Start: define machine-readable explain payloads for harness, policy, capabilities, and intake/runtime behavior inputs, then connect them to the canonical execution context."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-E8H05E/pr."
 events:
   -
     type: "status"
@@ -56,9 +62,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented framework explain hooks, threaded machine-readable payloads into canonical context and runner bundles, and verified with typecheck plus targeted vitest for explain/context/runner/CLI flows."
+  -
+    type: "status"
+    at: "2026-04-03T13:55:12.115Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-E8H05E/pr."
 doc_version: 3
-doc_updated_at: "2026-04-03T13:53:53.392Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-03T13:55:12.121Z"
+doc_updated_by: "INTEGRATOR"
 description: "Expose machine-readable explain output for harness, policy, capabilities, and behavior inputs."
 sections:
   Summary: |-
