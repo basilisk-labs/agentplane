@@ -1,0 +1,11 @@
+ .../agentplane/src/cli/run-cli/commands/config.ts  |  13 ++
+ .../commands/recipes/impl/commands/cache-prune.ts  |  15 ++
+ .../src/commands/recipes/impl/commands/remove.ts   |  10 +-
+ .../src/commands/release/apply.command.ts          |   8 +
+ .../src/commands/shared/approval-requirements.ts   | 133 +--------------
+ packages/agentplane/src/runtime/approvals/index.ts |  13 ++
+ .../src/runtime/approvals/runtime.test.ts          |  86 ++++++++++
+ .../agentplane/src/runtime/approvals/runtime.ts    | 187 +++++++++++++++++++++
+ packages/agentplane/src/runtime/approvals/types.ts |  37 ++++
+ .../src/usecases/context/resolve-context.ts        |   6 +-
+ 10 files changed, 377 insertions(+), 131 deletions(-)

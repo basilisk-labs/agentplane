@@ -1,120 +1,15 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core";
 
-import { promptYesNo } from "../../cli/prompts.js";
-import { PolicyEngine } from "../../policy/engine.js";
-import type {
-  PolicyActionDescriptor,
-  PolicyActionId,
-  PolicyApprovalKind,
-} from "../../policy/taxonomy.js";
-import { CliError } from "../../shared/errors.js";
+import type { PolicyActionId, PolicyApprovalKind } from "../../policy/taxonomy.js";
+import { createApprovalRuntime, type ApprovalRequirement } from "../../runtime/approvals/index.js";
 
 export type ApprovalAction = PolicyApprovalKind;
-
-export type ApprovalRequirement = {
-  action: PolicyActionDescriptor;
-  required: boolean;
-  reason: string;
-};
-
-type EffectiveApprovals = {
-  require_plan: boolean;
-  require_network: boolean;
-  require_verify: boolean;
-  require_force: boolean;
-};
-
-function resolveEffectiveApprovals(config: AgentplaneConfig): EffectiveApprovals {
-  const approvals = config.agents?.approvals as
-    | {
-        require_plan: boolean;
-        require_network: boolean;
-        require_verify: boolean;
-        require_force?: boolean;
-      }
-    | undefined;
-  const base: EffectiveApprovals = {
-    require_plan: approvals?.require_plan === true,
-    require_network: approvals?.require_network === true,
-    require_verify: approvals?.require_verify === true,
-    // Backward-compatible with older @agentplaneorg/core typings where require_force is absent.
-    require_force: approvals?.require_force === true,
-  };
-  if (config.execution.profile === "conservative") {
-    return {
-      ...base,
-      require_network: true,
-      require_force: true,
-    };
-  }
-  return base;
-}
 
 export function getApprovalRequirements(opts: {
   config: AgentplaneConfig;
   action: PolicyActionId;
 }): ApprovalRequirement {
-  const effectiveApprovals = resolveEffectiveApprovals(opts.config);
-  const decision = new PolicyEngine().evaluate({
-    action: opts.action,
-    config: opts.config,
-    taskId: "",
-    git: { stagedPaths: [] },
-  });
-  const classification = decision.action;
-
-  switch (classification.approval) {
-    case "network_access": {
-      const required = effectiveApprovals.require_network === true;
-      return {
-        action: classification,
-        required,
-        reason: "Network access requires explicit approval",
-      };
-    }
-    case "force_action": {
-      return {
-        action: classification,
-        required: effectiveApprovals.require_force === true,
-        reason: "Force action requires explicit approval",
-      };
-    }
-    case "policy_write": {
-      return {
-        action: classification,
-        required: false,
-        reason: "Policy writes require explicit approval",
-      };
-    }
-    case "config_write": {
-      return {
-        action: classification,
-        required: false,
-        reason: "Config writes require explicit approval",
-      };
-    }
-    case "dangerous_fs": {
-      return {
-        action: classification,
-        required: false,
-        reason: "Potentially dangerous file operations require approval",
-      };
-    }
-    case "git_push": {
-      return {
-        action: classification,
-        required: false,
-        reason: "Git push requires explicit approval",
-      };
-    }
-    default: {
-      return {
-        action: classification,
-        required: false,
-        reason: `${classification.summary} does not require an approval gate`,
-      };
-    }
-  }
+  return createApprovalRuntime({ config: opts.config }).resolve({ action: opts.action });
 }
 
 export async function ensureActionApproved(opts: {
@@ -124,25 +19,5 @@ export async function ensureActionApproved(opts: {
   reason: string;
   interactive?: boolean;
 }): Promise<void> {
-  const req = getApprovalRequirements({ config: opts.config, action: opts.action });
-  if (!req.required) return;
-  if (opts.yes) return;
-
-  const interactive = opts.interactive ?? Boolean(process.stdin.isTTY);
-  if (!interactive) {
-    throw new CliError({
-      exitCode: 3,
-      code: "E_VALIDATION",
-      message: `${req.reason} (pass --yes): ${opts.reason}`,
-    });
-  }
-
-  const approved = await promptYesNo(`Allow ${opts.action}? ${opts.reason}`, false);
-  if (!approved) {
-    throw new CliError({
-      exitCode: 3,
-      code: "E_VALIDATION",
-      message: `${req.reason} denied: ${opts.reason}`,
-    });
-  }
+  await createApprovalRuntime({ config: opts.config }).ensure(opts);
 }

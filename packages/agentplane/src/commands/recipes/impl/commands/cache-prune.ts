@@ -1,10 +1,13 @@
 import { readdir, rm } from "node:fs/promises";
 import path from "node:path";
 
+import { defaultConfig } from "@agentplaneorg/core";
+
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { fileExists } from "../../../../cli/fs-utils.js";
 import { infoMessage, successMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
+import { ensureActionApproved } from "../../../shared/approval-requirements.js";
 
 import { readInstalledRecipesFile, writeInstalledRecipesFile } from "../installed-recipes.js";
 import { resolveGlobalRecipesDir, resolveInstalledRecipesPath } from "../paths.js";
@@ -68,6 +71,12 @@ export async function cmdRecipeCachePruneParsed(opts: {
         );
         return 0;
       }
+      await ensureActionApproved({
+        action: "dangerous_fs",
+        config: defaultConfig(),
+        yes: false,
+        reason: `recipes cache prune --all (${cacheEntries.length} cached recipes)`,
+      });
       await rm(cacheDir, { recursive: true, force: true });
       await writeInstalledRecipesFile(resolveInstalledRecipesPath(), {
         schema_version: 1,
@@ -103,6 +112,12 @@ export async function cmdRecipeCachePruneParsed(opts: {
       return 0;
     }
 
+    await ensureActionApproved({
+      action: "dangerous_fs",
+      config: defaultConfig(),
+      yes: false,
+      reason: `recipes cache prune (${prune.length} cached recipes)`,
+    });
     const recipeDirs = new Set<string>();
     for (const entry of prune) {
       recipeDirs.add(path.dirname(entry.path));

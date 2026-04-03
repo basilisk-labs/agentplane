@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604030442-C0JQDY/approval-runtime",
+  "created_at": "2026-04-03T10:47:00.499Z",
+  "head_sha": "f8ce249848d3549de1d4100d97aeed7fc43f9c3a",
+  "last_verified_at": "2026-04-03T10:56:17.791Z",
+  "last_verified_sha": "f8ce249848d3549de1d4100d97aeed7fc43f9c3a",
+  "schema_version": 1,
+  "task_id": "202604030442-C0JQDY",
+  "updated_at": "2026-04-03T10:56:04.072Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,10 +1,10 @@
 ---
 id: "202604030442-C0JQDY"
 title: "F-006 Introduce approval runtime"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -21,16 +21,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved from framework roadmap and explicit user execution request"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-03T10:56:17.791Z"
+  updated_by: "CODER"
+  note: "Introduced a first-class approval runtime, threaded it into the canonical execution context, and routed config/fs/git/network mutation paths through the shared gateway; verified with typecheck plus approval, config, recipes, release, and context test suites."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: introduce a first-class approval runtime so network, fs, git, config, and policy mutations resolve through one centralized gateway with framework-level semantics."
+events:
+  -
+    type: "status"
+    at: "2026-04-03T10:47:00.467Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: introduce a first-class approval runtime so network, fs, git, config, and policy mutations resolve through one centralized gateway with framework-level semantics."
+  -
+    type: "verify"
+    at: "2026-04-03T10:56:17.791Z"
+    author: "CODER"
+    state: "ok"
+    note: "Introduced a first-class approval runtime, threaded it into the canonical execution context, and routed config/fs/git/network mutation paths through the shared gateway; verified with typecheck plus approval, config, recipes, release, and context test suites."
 doc_version: 3
-doc_updated_at: "2026-04-03T04:42:03.655Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-03T10:56:17.799Z"
+doc_updated_by: "CODER"
 description: "Make approvals a first-class runtime gateway for network, filesystem, git, and config mutations."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-03T10:56:17.791Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Introduced a first-class approval runtime, threaded it into the canonical execution context, and routed config/fs/git/network mutation paths through the shared gateway; verified with typecheck plus approval, config, recipes, release, and context test suites.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-03T10:47:00.477Z, excerpt_hash=sha256:3e2178b35503297c1ff0a0a18f5878f1fa3bf48199954e646271302e0157fc6e
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +107,14 @@ Make approvals a first-class runtime gateway for network, filesystem, git, and c
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-03T10:56:17.791Z — VERIFY — ok
+
+By: CODER
+
+Note: Introduced a first-class approval runtime, threaded it into the canonical execution context, and routed config/fs/git/network mutation paths through the shared gateway; verified with typecheck plus approval, config, recipes, release, and context test suites.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-03T10:47:00.477Z, excerpt_hash=sha256:3e2178b35503297c1ff0a0a18f5878f1fa3bf48199954e646271302e0157fc6e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

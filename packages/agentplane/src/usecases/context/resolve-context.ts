@@ -3,6 +3,7 @@ import type { Adapters } from "../../adapters/index.js";
 import { buildAdapters } from "../../adapters/index.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { PolicyEngine } from "../../policy/engine.js";
+import { createApprovalRuntime, type ApprovalRuntime } from "../../runtime/approvals/index.js";
 import {
   resolveTaskBackendCapabilityRegistry,
   type AgentplaneCapabilityRegistry,
@@ -36,6 +37,7 @@ export type ReadOnlyUsecaseContext = {
   execution: ResolvedHarnessContract["execution"];
   approvals: ResolvedHarnessContract["policy"]["approvals"];
   policy: PolicyEngine;
+  approvalRuntime: ApprovalRuntime;
 };
 
 export type UsecaseContext = ReadOnlyUsecaseContext & {
@@ -113,6 +115,7 @@ async function buildReadOnlyUsecaseContext(
   command: CommandContext,
 ): Promise<ReadOnlyUsecaseContext> {
   const harness = await resolveHarnessFromCommandContext(command);
+  const policy = new PolicyEngine();
   return {
     command,
     project: command.resolvedProject,
@@ -135,7 +138,8 @@ async function buildReadOnlyUsecaseContext(
     }),
     execution: harness.execution,
     approvals: harness.policy.approvals,
-    policy: new PolicyEngine(),
+    policy,
+    approvalRuntime: createApprovalRuntime({ config: command.config, policy }),
   };
 }
 

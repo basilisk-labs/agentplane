@@ -7,6 +7,7 @@ import { createCliEmitter } from "../../output.js";
 import { usageError } from "../../spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { ensureWorkflowArtifacts } from "../../../shared/workflow-artifacts.js";
+import { ensureActionApproved } from "../../../commands/shared/approval-requirements.js";
 import type { RunDeps } from "../command-catalog.js";
 import { wrapCommand } from "./wrap-command.js";
 
@@ -107,6 +108,12 @@ async function cmdConfigSet(opts: {
     async () => {
       const resolved = await opts.deps.getResolvedProject("config set");
       const loaded = await opts.deps.getLoadedConfig("config set");
+      await ensureActionApproved({
+        action: "config_write",
+        config: loaded.config,
+        yes: false,
+        reason: `config set ${opts.key}`,
+      });
       const raw = { ...loaded.raw };
       setByDottedKey(raw, opts.key, opts.value);
       await saveConfig(resolved.agentplaneDir, raw);
@@ -196,6 +203,12 @@ async function cmdModeSet(opts: {
     async () => {
       const resolved = await opts.deps.getResolvedProject("mode set");
       const loaded = await opts.deps.getLoadedConfig("mode set");
+      await ensureActionApproved({
+        action: "config_write",
+        config: loaded.config,
+        yes: false,
+        reason: `mode set ${opts.mode}`,
+      });
       const raw = { ...loaded.raw };
       setByDottedKey(raw, "workflow_mode", opts.mode);
       await saveConfig(resolved.agentplaneDir, raw);
