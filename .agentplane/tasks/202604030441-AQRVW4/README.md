@@ -1,17 +1,11 @@
 ---
 id: "202604030441-AQRVW4"
 title: "F-001 Introduce ResolvedHarnessContract"
-<<<<<<< HEAD
-status: "TODO"
+result_summary: "ResolvedHarnessContract is now part of the framework runtime and runner base-prompt wiring uses the centralized harness contract."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 3
-=======
-status: "DOING"
-priority: "high"
-owner: "CODER"
-revision: 5
->>>>>>> task/202604030441-AQRVW4/resolved-harness-contract
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -27,18 +21,6 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved from framework roadmap and explicit user execution request"
 verification:
-<<<<<<< HEAD
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
-events: []
-doc_version: 3
-doc_updated_at: "2026-04-03T04:41:59.738Z"
-doc_updated_by: "PLANNER"
-=======
   state: "ok"
   updated_at: "2026-04-03T08:42:27.857Z"
   updated_by: "CODER"
@@ -52,11 +34,16 @@ doc_updated_by: "PLANNER"
     Result: pass
     Evidence: 2 files passed, 5 tests passed; new harness resolver and runner base prompt fallback remained green.
     Scope: runtime/harness resolver coverage and first consumer integration in runner base prompts.
-commit: null
+commit:
+  hash: "6ab727805ffc6a67c364d17175fca0f6c0705d85"
+  message: "🛠 framework: add resolved harness contract"
 comments:
   -
     author: "CODER"
     body: "Start: implement the centralized ResolvedHarnessContract and migrate the first framework consumers onto the explicit harness resolver."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged ResolvedHarnessContract into main with typecheck and targeted harness tests recorded in the task artifact."
 events:
   -
     type: "status"
@@ -80,10 +67,16 @@ events:
       Result: pass
       Evidence: 2 files passed, 5 tests passed; new harness resolver and runner base prompt fallback remained green.
       Scope: runtime/harness resolver coverage and first consumer integration in runner base prompts.
+  -
+    type: "status"
+    at: "2026-04-03T08:51:31.884Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged ResolvedHarnessContract into main with typecheck and targeted harness tests recorded in the task artifact."
 doc_version: 3
-doc_updated_at: "2026-04-03T08:42:27.860Z"
-doc_updated_by: "CODER"
->>>>>>> task/202604030441-AQRVW4/resolved-harness-contract
+doc_updated_at: "2026-04-03T08:51:31.885Z"
+doc_updated_by: "INTEGRATOR"
 description: "Centralize harness sources of truth into an explicit framework contract with merge tests."
 sections:
   Summary: |-
@@ -103,8 +96,6 @@ sections:
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-<<<<<<< HEAD
-=======
     ### 2026-04-03T08:42:27.857Z — VERIFY — ok
     
     By: CODER
@@ -113,7 +104,6 @@ sections:
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-03T04:43:51.546Z, excerpt_hash=sha256:3e2178b35503297c1ff0a0a18f5878f1fa3bf48199954e646271302e0157fc6e
     
->>>>>>> task/202604030441-AQRVW4/resolved-harness-contract
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -147,8 +137,6 @@ Centralize harness sources of truth into an explicit framework contract with mer
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-<<<<<<< HEAD
-=======
 ### 2026-04-03T08:42:27.857Z — VERIFY — ok
 
 By: CODER
@@ -157,7 +145,6 @@ Note: Command: bun run typecheck\nResult: pass\nEvidence: tsc -b completed witho
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-03T04:43:51.546Z, excerpt_hash=sha256:3e2178b35503297c1ff0a0a18f5878f1fa3bf48199954e646271302e0157fc6e
 
->>>>>>> task/202604030441-AQRVW4/resolved-harness-contract
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
