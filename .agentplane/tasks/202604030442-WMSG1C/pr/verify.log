@@ -1,0 +1,5 @@
+[2026-04-03T14:07:54.618Z] sha=7a9dde08951cb21ccc050416ffe36e7225a9dca7 $ bun run typecheck
+$ tsc -b
+
+[2026-04-03T14:07:55.379Z] ✅ verified_sha=7a9dde08951cb21ccc050416ffe36e7225a9dca7
+

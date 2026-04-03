@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604030442-WMSG1C/protocol-foundation",
   "created_at": "2026-04-03T13:57:34.764Z",
-  "head_sha": "98252089174a693c83320ea7f8ea36f1e67863bc",
-  "last_verified_at": "2026-04-03T14:07:03.937Z",
-  "last_verified_sha": "98252089174a693c83320ea7f8ea36f1e67863bc",
+  "head_sha": "7a9dde08951cb21ccc050416ffe36e7225a9dca7",
+  "last_verified_at": "2026-04-03T14:08:00.489Z",
+  "last_verified_sha": "7a9dde08951cb21ccc050416ffe36e7225a9dca7",
+  "merge_commit": "a33027f4859bddffd32a308577ab68e9a037f481",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-03T14:08:00.489Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604030442-WMSG1C",
-  "updated_at": "2026-04-03T14:06:53.672Z",
+  "updated_at": "2026-04-03T14:08:00.489Z",
   "verify": {
     "status": "pass"
   }
