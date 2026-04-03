@@ -15,12 +15,16 @@ type PrGroupParsed = GroupCommandParsed;
 export const prSpec: CommandSpec<PrGroupParsed> = {
   id: ["pr"],
   group: "PR",
-  summary: "Manage local PR artifacts for a task (branch_pr workflow).",
+  summary:
+    "Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).",
   synopsis: ["agentplane pr <open|update|check|note> <task-id> [options]"],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
     { cmd: "agentplane pr open 202602030608-F1Q8AB --author CODER", why: "Create PR artifacts." },
-    { cmd: "agentplane pr update 202602030608-F1Q8AB", why: "Refresh diffstat and summary." },
+    {
+      cmd: "agentplane pr update 202602030608-F1Q8AB",
+      why: "Refresh review.md plus github-title/body projections.",
+    },
     { cmd: "agentplane pr check 202602030608-F1Q8AB", why: "Validate PR artifacts." },
     {
       cmd: 'agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "Looks good"',
@@ -71,7 +75,7 @@ export type PrUpdateParsed = { taskId: string };
 export const prUpdateSpec: CommandSpec<PrUpdateParsed> = {
   id: ["pr", "update"],
   group: "PR",
-  summary: "Update PR artifacts (diffstat and auto summary).",
+  summary: "Update PR artifacts (review packet, diffstat, and GitHub projections).",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   examples: [{ cmd: "agentplane pr update 202602030608-F1Q8AB", why: "Update artifacts." }],
   parse: (raw) => ({ taskId: String(raw.args["task-id"]) }),

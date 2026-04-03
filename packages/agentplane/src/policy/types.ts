@@ -1,6 +1,7 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core";
+import type { PolicyActionId } from "./taxonomy.js";
 
-export type PolicyAction = "guard_commit" | "commit" | "hook_pre_commit" | "hook_commit_msg";
+export type PolicyAction = PolicyActionId;
 
 export type PolicyProblemCode = "E_USAGE" | "E_GIT" | "E_INTERNAL";
 

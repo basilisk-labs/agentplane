@@ -34,7 +34,7 @@ Target `doc_version=3` tasks use:
 - `Rollback Plan`
 - `Findings`
 
-`Findings` is task-local. Policy incidents are curated separately in `.agentplane/policy/incidents.md`.
+`Findings` is task-local. Reusable external incident advice stays there first, then is promoted into `.agentplane/policy/incidents.md` through `finish` or `agentplane incidents collect <task-id>`.
 
 ## Material drift criteria
 

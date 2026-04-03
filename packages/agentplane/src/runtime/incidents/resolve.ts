@@ -1,0 +1,518 @@
+import type {
+  IncidentAdviceMatch,
+  IncidentAdviceQuery,
+  IncidentCollectionPlan,
+  IncidentFindingCandidate,
+  IncidentPromotionDraft,
+  IncidentPromotionIssue,
+  IncidentPromotionTaskContext,
+  IncidentRegistry,
+  IncidentRegistryEntry,
+  IncidentRegistryEntryState,
+} from "./types.js";
+
+const INCIDENTS_HEADER = [
+  "# Policy Incidents Log",
+  "",
+  "This is the single file for incident-derived and situational policy rules.",
+].join("\n");
+
+function normalizeLines(text: string): string[] {
+  return text.replaceAll("\r\n", "\n").split("\n");
+}
+
+function normalizeKey(key: string): string {
+  return key
+    .trim()
+    .toLowerCase()
+    .replaceAll(/[\s_-]+/g, "");
+}
+
+function normalizeSearchText(text: string): string {
+  return text
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/gi, " ")
+    .trim();
+}
+
+function tokenize(text: string): string[] {
+  const normalized = normalizeSearchText(text);
+  if (!normalized) return [];
+  return normalized
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 3);
+}
+
+function dedupeCaseInsensitive(values: readonly string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const value of values) {
+    const trimmed = String(value ?? "").trim();
+    if (!trimmed) continue;
+    const key = trimmed.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(trimmed);
+  }
+  return out;
+}
+
+function parseCsvList(value: string | null | undefined): string[] {
+  if (!value) return [];
+  return dedupeCaseInsensitive(
+    value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean),
+  );
+}
+
+function parseBoolean(value: string | null | undefined): boolean {
+  const normalized = String(value ?? "")
+    .trim()
+    .toLowerCase();
+  return normalized === "true" || normalized === "yes" || normalized === "y" || normalized === "1";
+}
+
+function parseEntryState(value: string | null | undefined): IncidentRegistryEntryState {
+  return value === "open" || value === "promoted" ? value : "stabilized";
+}
+
+function appendFieldValue(
+  record: Record<string, string>,
+  key: string,
+  value: string,
+  joiner = " ",
+): void {
+  if (!record[key]) {
+    record[key] = value.trim();
+    return;
+  }
+  record[key] = `${record[key]}${joiner}${value.trim()}`.trim();
+}
+
+function buildIncidentFingerprint(
+  entry: Pick<IncidentRegistryEntry, "sourceTask" | "scope" | "failure" | "rule">,
+): string {
+  return [
+    entry.sourceTask ?? "",
+    normalizeSearchText(entry.scope),
+    normalizeSearchText(entry.failure),
+    normalizeSearchText(entry.rule),
+  ].join("|");
+}
+
+function buildMatchTerms(opts: {
+  scope: string;
+  tags: readonly string[];
+  explicitMatch: readonly string[];
+}): string[] {
+  const scopeTokens = tokenize(opts.scope);
+  return dedupeCaseInsensitive([...opts.explicitMatch, ...opts.tags, ...scopeTokens]).slice(0, 12);
+}
+
+export function createIncidentRegistrySkeleton(): string {
+  return [
+    INCIDENTS_HEADER,
+    "",
+    "## Entry contract",
+    "",
+    "- Add entries append-only.",
+    "- Every entry MUST include: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`.",
+    "- New machine-matched entries SHOULD also include: `tags`, `match`, `advice`, `source_task`, `fixability`.",
+    "- `rule` MUST be concrete and testable (`MUST` / `MUST NOT`).",
+    "- `fixability: external` means the issue cannot be removed by changing only repository code and should instead stay as reusable operational advice.",
+    "- `state` values: `open`, `stabilized`, `promoted`.",
+    "",
+    "## Entry template",
+    "",
+    "- id: `INC-YYYYMMDD-NN`",
+    "- date: `YYYY-MM-DD`",
+    "- scope: `<affected scope>`",
+    "- tags: `<comma-separated matching tags>`",
+    "- match: `<comma-separated lookup keywords>`",
+    "- failure: `<observed failure mode>`",
+    "- advice: `<reusable recovery or prevention guidance>`",
+    "- rule: `<new or refined MUST/MUST NOT>`",
+    "- evidence: `<task ids / logs / links>`",
+    "- enforcement: `<CI|test|lint|script|manual>`",
+    "- source_task: `<task id>`",
+    "- fixability: `<external>`",
+    "- state: `<open|stabilized|promoted>`",
+    "",
+    "## Entries",
+    "",
+  ].join("\n");
+}
+
+export function parseIncidentRegistry(text: string): IncidentRegistry {
+  const lines = normalizeLines(text);
+  const entries: IncidentRegistryEntry[] = [];
+  let inEntries = false;
+  let currentFields: Record<string, string> | null = null;
+  let currentLine = 0;
+  let currentKey: string | null = null;
+
+  const flush = () => {
+    if (!currentFields) return;
+    const id = currentFields.id?.trim();
+    if (!id) {
+      currentFields = null;
+      currentKey = null;
+      currentLine = 0;
+      return;
+    }
+    const scope = currentFields.scope?.trim() ?? "";
+    const failure = currentFields.failure?.trim() ?? "";
+    const rule = currentFields.rule?.trim() ?? "";
+    const evidence = currentFields.evidence?.trim() ?? "";
+    const enforcement = currentFields.enforcement?.trim() ?? "manual";
+    entries.push({
+      id,
+      date: currentFields.date?.trim() ?? "",
+      scope,
+      failure,
+      rule,
+      evidence,
+      enforcement,
+      state: parseEntryState(currentFields.state),
+      tags: parseCsvList(currentFields.tags),
+      match: parseCsvList(currentFields.match),
+      advice: currentFields.advice?.trim() || null,
+      sourceTask: currentFields.source_task?.trim() || null,
+      fixability: currentFields.fixability?.trim().toLowerCase() === "external" ? "external" : null,
+      rawFields: { ...currentFields },
+      line: currentLine,
+    });
+    currentFields = null;
+    currentKey = null;
+    currentLine = 0;
+  };
+
+  for (const [index, line] of lines.entries()) {
+    const trimmed = line.trim();
+    if (!inEntries) {
+      if (trimmed === "## Entries") inEntries = true;
+      continue;
+    }
+    if (/^##\s+/.test(trimmed)) break;
+
+    const idMatch = /^- id:\s*(.+?)\s*$/.exec(trimmed);
+    if (idMatch) {
+      flush();
+      currentFields = { id: idMatch[1] ?? "" };
+      currentKey = "id";
+      currentLine = index + 1;
+      continue;
+    }
+
+    if (!currentFields) continue;
+
+    const fieldMatch = /^\s{2}([a-z_]+):\s*(.*?)\s*$/.exec(line);
+    if (fieldMatch) {
+      currentKey = String(fieldMatch[1] ?? "").trim();
+      currentFields[currentKey] = fieldMatch[2] ?? "";
+      continue;
+    }
+
+    if (currentKey && /^\s{4,}\S/.test(line)) {
+      appendFieldValue(currentFields, currentKey, line.trim(), "\n");
+      continue;
+    }
+
+    if (!trimmed) {
+      flush();
+    }
+  }
+
+  flush();
+  return { entries };
+}
+
+export function formatIncidentRegistryEntry(entry: IncidentRegistryEntry): string {
+  return [
+    `- id: ${entry.id}`,
+    `  date: ${entry.date}`,
+    `  scope: ${entry.scope}`,
+    ...(entry.tags.length > 0 ? [`  tags: ${entry.tags.join(", ")}`] : []),
+    ...(entry.match.length > 0 ? [`  match: ${entry.match.join(", ")}`] : []),
+    `  failure: ${entry.failure}`,
+    ...(entry.advice ? [`  advice: ${entry.advice}`] : []),
+    `  rule: ${entry.rule}`,
+    `  evidence: ${entry.evidence}`,
+    `  enforcement: ${entry.enforcement}`,
+    ...(entry.sourceTask ? [`  source_task: ${entry.sourceTask}`] : []),
+    ...(entry.fixability ? [`  fixability: ${entry.fixability}`] : []),
+    `  state: ${entry.state}`,
+  ].join("\n");
+}
+
+export function appendIncidentRegistryEntries(
+  currentText: string,
+  entries: readonly IncidentRegistryEntry[],
+): string {
+  if (entries.length === 0) return currentText;
+  const base =
+    currentText.trim().length > 0
+      ? currentText.trimEnd()
+      : createIncidentRegistrySkeleton().trimEnd();
+  const suffix = entries.map((entry) => formatIncidentRegistryEntry(entry)).join("\n\n");
+  return `${base}\n\n${suffix}\n`;
+}
+
+export function extractIncidentCandidatesFromFindings(
+  findings: string,
+): IncidentFindingCandidate[] {
+  const lines = normalizeLines(findings);
+  const candidates: IncidentFindingCandidate[] = [];
+  let currentFields: Record<string, string> | null = null;
+  let currentLine = 0;
+  let currentKey: string | null = null;
+
+  const flush = () => {
+    if (!currentFields) return;
+    const promotion = currentFields.promotion?.trim() ?? "";
+    if (promotion.toLowerCase() !== "incident-candidate") {
+      currentFields = null;
+      currentKey = null;
+      currentLine = 0;
+      return;
+    }
+    const observation = currentFields.observation?.trim() ?? "";
+    if (!observation) {
+      currentFields = null;
+      currentKey = null;
+      currentLine = 0;
+      return;
+    }
+    candidates.push({
+      observation,
+      impact: currentFields.impact?.trim() || null,
+      resolution: currentFields.resolution?.trim() || null,
+      promotion,
+      incidentScope: currentFields.incidentscope?.trim() || null,
+      incidentRule: currentFields.incidentrule?.trim() || null,
+      incidentAdvice: currentFields.incidentadvice?.trim() || null,
+      incidentTags: parseCsvList(currentFields.incidenttags),
+      incidentMatch: parseCsvList(currentFields.incidentmatch),
+      incidentExternal: parseBoolean(currentFields.incidentexternal),
+      line: currentLine,
+      rawFields: { ...currentFields },
+    });
+    currentFields = null;
+    currentKey = null;
+    currentLine = 0;
+  };
+
+  for (const [index, line] of lines.entries()) {
+    const observationMatch = /^\s*-\s+Observation:\s*(.*?)\s*$/.exec(line);
+    if (observationMatch) {
+      flush();
+      currentFields = { observation: observationMatch[1] ?? "" };
+      currentKey = "observation";
+      currentLine = index + 1;
+      continue;
+    }
+
+    if (!currentFields) continue;
+
+    if (/^\s*-\s+/.test(line)) {
+      flush();
+      const nestedObservationMatch = /^\s*-\s+Observation:\s*(.*?)\s*$/.exec(line);
+      if (nestedObservationMatch) {
+        currentFields = { observation: nestedObservationMatch[1] ?? "" };
+        currentKey = "observation";
+        currentLine = index + 1;
+      }
+      continue;
+    }
+
+    const fieldMatch = /^\s{2,}([A-Za-z][A-Za-z0-9 _-]*):\s*(.*?)\s*$/.exec(line);
+    if (fieldMatch) {
+      currentKey = normalizeKey(fieldMatch[1] ?? "");
+      currentFields[currentKey] = fieldMatch[2] ?? "";
+      continue;
+    }
+
+    if (currentKey && /^\s{2,}\S/.test(line)) {
+      appendFieldValue(currentFields, currentKey, line.trim(), "\n");
+      continue;
+    }
+
+    if (!line.trim()) {
+      continue;
+    }
+
+    if (currentKey) {
+      appendFieldValue(currentFields, currentKey, line.trim());
+    }
+  }
+
+  flush();
+  return candidates;
+}
+
+function nextIncidentId(entries: readonly IncidentRegistryEntry[], now: Date): string {
+  const dateStamp = `${now.getUTCFullYear()}${String(now.getUTCMonth() + 1).padStart(2, "0")}${String(
+    now.getUTCDate(),
+  ).padStart(2, "0")}`;
+  const prefix = `INC-${dateStamp}-`;
+  let max = 0;
+  for (const entry of entries) {
+    if (!entry.id.startsWith(prefix)) continue;
+    const num = Number.parseInt(entry.id.slice(prefix.length), 10);
+    if (Number.isInteger(num) && num > max) max = num;
+  }
+  return `${prefix}${String(max + 1).padStart(2, "0")}`;
+}
+
+function buildPromotionIssues(candidate: IncidentFindingCandidate): IncidentPromotionIssue | null {
+  const missingFields: string[] = [];
+  if (!candidate.incidentExternal) missingFields.push("IncidentExternal: true");
+  if (!candidate.incidentScope) missingFields.push("IncidentScope");
+  if (!candidate.incidentRule) missingFields.push("IncidentRule");
+  if (!candidate.incidentAdvice) missingFields.push("IncidentAdvice");
+  return missingFields.length > 0 ? { candidate, missingFields } : null;
+}
+
+function buildIncidentRegistryEntry(opts: {
+  task: IncidentPromotionTaskContext;
+  candidate: IncidentFindingCandidate;
+  now: Date;
+  existingEntries: readonly IncidentRegistryEntry[];
+}): IncidentRegistryEntry {
+  const date = opts.now.toISOString().slice(0, 10);
+  const tags = dedupeCaseInsensitive([
+    ...opts.candidate.incidentTags,
+    ...opts.task.tags.map((tag) => tag.trim()),
+  ]);
+  const match = buildMatchTerms({
+    scope: opts.candidate.incidentScope ?? opts.task.title,
+    tags,
+    explicitMatch: opts.candidate.incidentMatch,
+  });
+  return {
+    id: nextIncidentId(opts.existingEntries, opts.now),
+    date,
+    scope: opts.candidate.incidentScope ?? opts.task.title,
+    failure: opts.candidate.observation,
+    rule: opts.candidate.incidentRule ?? "",
+    evidence: `task ${opts.task.id}${opts.task.commitHash ? `; commit ${opts.task.commitHash.slice(0, 12)}` : ""}`,
+    enforcement: "manual",
+    state: "stabilized",
+    tags,
+    match,
+    advice: opts.candidate.incidentAdvice,
+    sourceTask: opts.task.id,
+    fixability: "external",
+    rawFields: {},
+    line: 0,
+  };
+}
+
+export function planIncidentCollection(opts: {
+  task: IncidentPromotionTaskContext;
+  findings: string;
+  registry: IncidentRegistry;
+  now?: Date;
+}): IncidentCollectionPlan {
+  const candidates = extractIncidentCandidatesFromFindings(opts.findings);
+  const issues: IncidentPromotionIssue[] = [];
+  const promotable: IncidentPromotionDraft[] = [];
+  const duplicates: IncidentPromotionDraft[] = [];
+  const now = opts.now ?? new Date();
+  const seenFingerprints = new Set(
+    opts.registry.entries.map((entry) => buildIncidentFingerprint(entry)),
+  );
+
+  for (const candidate of candidates) {
+    const issue = buildPromotionIssues(candidate);
+    if (issue) {
+      issues.push(issue);
+      continue;
+    }
+    const entry = buildIncidentRegistryEntry({
+      task: opts.task,
+      candidate,
+      now,
+      existingEntries: [...opts.registry.entries, ...promotable.map((item) => item.entry)],
+    });
+    const fingerprint = buildIncidentFingerprint(entry);
+    const draft: IncidentPromotionDraft = { candidate, entry, fingerprint };
+    if (seenFingerprints.has(fingerprint)) {
+      duplicates.push(draft);
+      continue;
+    }
+    seenFingerprints.add(fingerprint);
+    promotable.push(draft);
+  }
+
+  return { candidates, promotable, duplicates, issues };
+}
+
+export function buildIncidentAdviceQueryFromTask(opts: {
+  taskId: string;
+  title: string;
+  description: string;
+  scope?: string | null;
+  tags: readonly string[];
+}): IncidentAdviceQuery {
+  return {
+    taskId: opts.taskId,
+    title: opts.title,
+    description: opts.description,
+    scope: opts.scope ?? null,
+    tags: dedupeCaseInsensitive(opts.tags),
+  };
+}
+
+export function resolveIncidentAdviceMatches(opts: {
+  query: IncidentAdviceQuery;
+  registry: IncidentRegistry;
+  limit?: number;
+}): IncidentAdviceMatch[] {
+  const limit = Math.max(1, opts.limit ?? 5);
+  const tagSet = new Set(opts.query.tags.map((tag) => tag.trim().toLowerCase()).filter(Boolean));
+  const haystack = [opts.query.title, opts.query.description, opts.query.scope ?? ""].join(" ");
+  const normalizedHaystack = normalizeSearchText(haystack);
+  const queryTokens = new Set([...tokenize(haystack), ...tagSet]);
+  const matches: IncidentAdviceMatch[] = [];
+
+  for (const entry of opts.registry.entries) {
+    if (entry.state === "open") continue;
+    const matchedTags = entry.tags.filter((tag) => tagSet.has(tag.trim().toLowerCase()));
+    const matchedTerms = entry.match.filter(
+      (term) =>
+        queryTokens.has(term.trim().toLowerCase()) ||
+        normalizedHaystack.includes(normalizeSearchText(term)),
+    );
+    const normalizedScope = normalizeSearchText(entry.scope);
+    const scopeMatched = normalizedScope.length > 0 && normalizedHaystack.includes(normalizedScope);
+    const score = matchedTags.length * 5 + matchedTerms.length * 2 + (scopeMatched ? 3 : 0);
+    if (score <= 0) continue;
+    matches.push({ entry, score, matchedTags, matchedTerms, scopeMatched });
+  }
+
+  matches.sort((left, right) => {
+    if (right.score !== left.score) return right.score - left.score;
+    return right.entry.date.localeCompare(left.entry.date);
+  });
+  return matches.slice(0, limit);
+}
+
+export function renderIncidentAdvice(matches: readonly IncidentAdviceMatch[]): string {
+  if (matches.length === 0) return "No matching incident advice.";
+  return matches
+    .map((match) => {
+      const lines = [
+        `- ${match.entry.id} | scope: ${match.entry.scope}`,
+        `  failure: ${match.entry.failure}`,
+        `  advice: ${match.entry.advice ?? match.entry.rule}`,
+        `  rule: ${match.entry.rule}`,
+      ];
+      if (match.entry.evidence) lines.push(`  evidence: ${match.entry.evidence}`);
+      return lines.join("\n");
+    })
+    .join("\n");
+}

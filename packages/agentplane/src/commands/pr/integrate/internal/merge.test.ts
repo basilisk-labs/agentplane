@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   gitRevParse: vi.fn(),
   extractTaskSuffix: vi.fn(),
   validateCommitSubject: vi.fn(),
+  buildGithubPrTitle: vi.fn(),
 }));
 
 vi.mock("../../../shared/git.js", () => ({
@@ -20,6 +21,9 @@ vi.mock("@agentplaneorg/core", () => ({
   extractTaskSuffix: mocks.extractTaskSuffix,
   validateCommitSubject: mocks.validateCommitSubject,
 }));
+vi.mock("../../internal/review-template.js", () => ({
+  buildGithubPrTitle: mocks.buildGithubPrTitle,
+}));
 
 describe("pr/integrate/internal/merge", () => {
   it("runSquashMerge falls back to deterministic subject when branch head subject is invalid", async () => {
@@ -31,6 +35,7 @@ describe("pr/integrate/internal/merge", () => {
       .mockResolvedValueOnce({}); // commit
     mocks.validateCommitSubject.mockReturnValue({ ok: false, errors: ["bad"] });
     mocks.extractTaskSuffix.mockReturnValue("ABC123");
+    mocks.buildGithubPrTitle.mockReturnValue("workflow/cli: improve PR UX (ABC123)");
     mocks.gitRevParse.mockResolvedValue("deadbeefcafebabe");
 
     const hash = await runSquashMerge({
@@ -39,6 +44,8 @@ describe("pr/integrate/internal/merge", () => {
       branch: "task/T-1",
       headBeforeMerge: "before",
       taskId: "202602111653-X32XPT",
+      taskTitle: "Improve PR UX",
+      taskTags: ["workflow", "cli"],
       workflowDir: ".agentplane/tasks",
       changedPaths: [],
       genericTokens: ["wip"],
@@ -46,7 +53,7 @@ describe("pr/integrate/internal/merge", () => {
     expect(hash).toBe("deadbeefcafebabe");
     expect(mocks.execFileAsync).toHaveBeenCalledWith(
       "git",
-      ["commit", "-m", "🧩 ABC123 integrate: squash task/T-1"],
+      ["commit", "-m", "🧩 ABC123 integrate: workflow/cli: improve PR UX"],
       expect.objectContaining({ cwd: "/repo" }),
     );
   });
@@ -65,6 +72,8 @@ describe("pr/integrate/internal/merge", () => {
         branch: "task/T-2",
         headBeforeMerge: "before",
         taskId: "202602111653-X32XPT",
+        taskTitle: "Improve PR UX",
+        taskTags: ["workflow", "cli"],
         workflowDir: ".agentplane/tasks",
         changedPaths: [],
         genericTokens: ["wip"],
@@ -80,6 +89,7 @@ describe("pr/integrate/internal/merge", () => {
   it("runMergeCommit aborts merge and raises E_GIT on failure", async () => {
     const { runMergeCommit } = await import("./merge.js");
     mocks.extractTaskSuffix.mockReturnValue("ABC123");
+    mocks.buildGithubPrTitle.mockReturnValue("workflow/cli: improve PR UX (ABC123)");
     mocks.execFileAsync.mockRejectedValueOnce(new Error("merge failed")).mockResolvedValueOnce({});
 
     await expect(
@@ -87,6 +97,8 @@ describe("pr/integrate/internal/merge", () => {
         gitRoot: "/repo",
         branch: "task/T-3",
         taskId: "202602111653-X32XPT",
+        taskTitle: "Improve PR UX",
+        taskTags: ["workflow", "cli"],
         workflowDir: ".agentplane/tasks",
         changedPaths: [],
       }),

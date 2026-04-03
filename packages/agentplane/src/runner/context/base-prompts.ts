@@ -4,9 +4,17 @@ import path from "node:path";
 import { loadAgentTemplates, loadPolicyGatewayTemplate } from "../../agents/agents-template.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import {
+  resolveBehavior,
+  stripBehaviorValue,
+  type BehaviorCandidate,
+  type ResolvedBehavior,
+} from "../../runtime/behavior/index.js";
+import {
   resolvePolicyGatewayForRepo,
   type PolicyGatewayFlavor,
 } from "../../shared/policy-gateway.js";
+import type { ResolvedExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
 import type { RunnerPromptBlock, RunnerPromptRole, RunnerRecipeContext } from "../types.js";
 
 const FRAMEWORK_RUNNER_PROMPT_URL = new URL("../../../assets/RUNNER.md", import.meta.url);
@@ -14,6 +22,7 @@ const FRAMEWORK_RUNNER_PROMPT_URL = new URL("../../../assets/RUNNER.md", import.
 const BASE_PROMPT_PRIORITIES = {
   framework_runner: 100,
   policy_gateway: 200,
+  execution_profile: 250,
   owner_profile: 300,
   recipe_execution_context: 400,
   recipe_agent_profile: 500,
@@ -68,6 +77,52 @@ function readOptionalStringArray(value: unknown): string[] {
     : [];
 }
 
+type PromptSourcePayload = {
+  source: string;
+  title: string;
+  content: string;
+};
+
+type PromptSourceTraceMetadata = {
+  title: string;
+};
+
+type ResolvedPromptSource = ResolvedBehavior<PromptSourcePayload, PromptSourceTraceMetadata>;
+
+function promptCandidate(opts: {
+  layer: BehaviorCandidate<PromptSourcePayload, PromptSourceTraceMetadata>["layer"];
+  source: string;
+  value: PromptSourcePayload;
+  order?: number;
+}): BehaviorCandidate<PromptSourcePayload, PromptSourceTraceMetadata> {
+  return {
+    layer: opts.layer,
+    source: opts.source,
+    value: opts.value,
+    order: opts.order,
+    metadata: {
+      title: opts.value.title,
+    },
+  };
+}
+
+function promptBlockFromResolved(opts: {
+  id: string;
+  role: RunnerPromptRole;
+  priority: number;
+  resolved: ResolvedPromptSource;
+}): RunnerPromptBlock {
+  return {
+    id: opts.id,
+    role: opts.role,
+    title: opts.resolved.value.title,
+    source: opts.resolved.value.source,
+    priority: opts.priority,
+    content: opts.resolved.value.content,
+    resolution: stripBehaviorValue(opts.resolved),
+  };
+}
+
 async function resolveRepoAgentProfilePath(opts: {
   git_root: string;
   agents_dir: string;
@@ -83,23 +138,26 @@ async function resolveRepoAgentProfilePath(opts: {
   return path.join(agentsDir, match);
 }
 
-async function loadOwnerProfilePrompt(opts: {
+export async function resolveOwnerProfilePromptSource(opts: {
   git_root: string;
   agents_dir: string;
   owner_id: string;
-}): Promise<RunnerPromptBlock> {
+}): Promise<ResolvedPromptSource> {
+  const candidates: BehaviorCandidate<PromptSourcePayload, PromptSourceTraceMetadata>[] = [];
   const repoProfilePath = await resolveRepoAgentProfilePath(opts);
   if (repoProfilePath) {
     const source = toPromptSource(opts.git_root, repoProfilePath);
-    const content = validateJsonPrompt(source, await readFile(repoProfilePath, "utf8"));
-    return {
-      id: "base.owner_profile",
-      role: "profile",
-      title: `Owner Agent Profile (${opts.owner_id})`,
-      source,
-      priority: BASE_PROMPT_PRIORITIES.owner_profile,
-      content,
-    };
+    candidates.push(
+      promptCandidate({
+        layer: "user",
+        source,
+        value: {
+          source,
+          title: `Owner Agent Profile (${opts.owner_id})`,
+          content: validateJsonPrompt(source, await readFile(repoProfilePath, "utf8")),
+        },
+      }),
+    );
   }
 
   const bundledFileName = `${opts.owner_id}.json`;
@@ -110,57 +168,163 @@ async function loadOwnerProfilePrompt(opts: {
   if (!bundled) {
     throw new Error(`Bundled agent profile not found: ${bundledFileName}`);
   }
+  candidates.push(
+    promptCandidate({
+      layer: "builtin",
+      source: `bundled:agent-profile:${bundled.fileName}`,
+      value: {
+        source: `bundled:agent-profile:${bundled.fileName}`,
+        title: `Owner Agent Profile (${opts.owner_id})`,
+        content: validateJsonPrompt(`bundled:agent-profile:${bundled.fileName}`, bundled.contents),
+      },
+      order: 10,
+    }),
+  );
 
-  return {
+  return resolveBehavior({
+    key: `runner.owner_profile:${opts.owner_id}`,
+    candidates,
+  });
+}
+
+async function loadOwnerProfilePrompt(opts: {
+  git_root: string;
+  agents_dir: string;
+  owner_id: string;
+}): Promise<RunnerPromptBlock> {
+  const resolved = await resolveOwnerProfilePromptSource(opts);
+  return promptBlockFromResolved({
     id: "base.owner_profile",
     role: "profile",
-    title: `Owner Agent Profile (${opts.owner_id})`,
-    source: `bundled:agent-profile:${bundled.fileName}`,
     priority: BASE_PROMPT_PRIORITIES.owner_profile,
-    content: validateJsonPrompt(`bundled:agent-profile:${bundled.fileName}`, bundled.contents),
-  };
+    resolved,
+  });
 }
 
 async function loadFrameworkRunnerPrompt(): Promise<RunnerPromptBlock> {
-  return {
+  const resolved = resolveBehavior({
+    key: "runner.framework_prompt",
+    candidates: [
+      promptCandidate({
+        layer: "builtin",
+        source: "bundled:runner-prompt:RUNNER.md",
+        value: {
+          source: "bundled:runner-prompt:RUNNER.md",
+          title: "Framework Runner Prompt",
+          content: normalizeText(await readFile(FRAMEWORK_RUNNER_PROMPT_URL, "utf8")),
+        },
+      }),
+    ],
+  });
+
+  return promptBlockFromResolved({
     id: "base.framework_runner",
     role: "system",
-    title: "Framework Runner Prompt",
-    source: "bundled:runner-prompt:RUNNER.md",
     priority: BASE_PROMPT_PRIORITIES.framework_runner,
-    content: normalizeText(await readFile(FRAMEWORK_RUNNER_PROMPT_URL, "utf8")),
-  };
+    resolved,
+  });
+}
+
+export async function resolvePolicyGatewayPromptSource(opts: {
+  git_root: string;
+  fallback_flavor: PolicyGatewayFlavor;
+  harness?: ResolvedHarnessContract;
+}): Promise<ResolvedPromptSource> {
+  const gateway =
+    opts.harness?.repo.policy_gateway ??
+    (await resolvePolicyGatewayForRepo({
+      gitRoot: opts.git_root,
+      fallbackFlavor: opts.fallback_flavor,
+    }));
+  const candidates: BehaviorCandidate<PromptSourcePayload, PromptSourceTraceMetadata>[] = [];
+
+  if (await fileExists(gateway.absPath)) {
+    const source = path.relative(opts.git_root, gateway.absPath).replaceAll("\\", "/");
+    candidates.push(
+      promptCandidate({
+        layer: "harness",
+        source,
+        value: {
+          source,
+          title: `Repository Policy Gateway (${gateway.fileName})`,
+          content: normalizeText(await readFile(gateway.absPath, "utf8")),
+        },
+      }),
+    );
+  }
+
+  candidates.push(
+    promptCandidate({
+      layer: "builtin",
+      source: `bundled:policy-gateway:${gateway.fileName}`,
+      value: {
+        source: `bundled:policy-gateway:${gateway.fileName}`,
+        title: `Bundled Policy Gateway Fallback (${gateway.fileName})`,
+        content: await loadPolicyGatewayTemplate(gateway.flavor),
+      },
+      order: 10,
+    }),
+  );
+
+  return resolveBehavior({
+    key: `runner.policy_gateway:${gateway.fileName}`,
+    candidates,
+  });
 }
 
 async function loadPolicyGatewayPrompt(opts: {
   git_root: string;
   fallback_flavor: PolicyGatewayFlavor;
+  harness?: ResolvedHarnessContract;
 }): Promise<RunnerPromptBlock> {
-  const gateway = await resolvePolicyGatewayForRepo({
-    gitRoot: opts.git_root,
-    fallbackFlavor: opts.fallback_flavor,
-  });
-
-  if (await fileExists(gateway.absPath)) {
-    const source = path.relative(opts.git_root, gateway.absPath).replaceAll("\\", "/");
-    return {
-      id: "base.policy_gateway",
-      role: "policy",
-      title: `Repository Policy Gateway (${gateway.fileName})`,
-      source,
-      priority: BASE_PROMPT_PRIORITIES.policy_gateway,
-      content: normalizeText(await readFile(gateway.absPath, "utf8")),
-    };
-  }
-
-  return {
+  const resolved = await resolvePolicyGatewayPromptSource(opts);
+  return promptBlockFromResolved({
     id: "base.policy_gateway",
     role: "policy",
-    title: `Bundled Policy Gateway Fallback (${gateway.fileName})`,
-    source: `bundled:policy-gateway:${gateway.fileName}`,
     priority: BASE_PROMPT_PRIORITIES.policy_gateway,
-    content: await loadPolicyGatewayTemplate(gateway.flavor),
-  };
+    resolved,
+  });
+}
+
+function renderExecutionProfilePromptContent(runtime: ResolvedExecutionProfileRuntime): string {
+  return renderRecipePromptJson({
+    profile: runtime.profile,
+    reasoning_effort: runtime.reasoning_effort,
+    budget: runtime.budget,
+    approvals: runtime.approvals,
+    stop_conditions: runtime.stop_conditions,
+    handoff_conditions: runtime.handoff_conditions,
+    unsafe_actions_requiring_explicit_user_ok: runtime.unsafe_actions_requiring_explicit_user_ok,
+    runner: runtime.runner,
+  });
+}
+
+function loadExecutionProfilePrompt(opts: {
+  execution_profile?: ResolvedExecutionProfileRuntime;
+}): RunnerPromptBlock | null {
+  if (!opts.execution_profile) return null;
+  const source = `runtime:execution-profile:${opts.execution_profile.profile}`;
+  const resolved = resolveBehavior({
+    key: "runner.execution_profile",
+    candidates: [
+      promptCandidate({
+        layer: "harness",
+        source,
+        value: {
+          source,
+          title: `Execution Profile Runtime (${opts.execution_profile.profile})`,
+          content: renderExecutionProfilePromptContent(opts.execution_profile),
+        },
+      }),
+    ],
+  });
+
+  return promptBlockFromResolved({
+    id: "base.execution_profile",
+    role: "policy",
+    priority: BASE_PROMPT_PRIORITIES.execution_profile,
+    resolved,
+  });
 }
 
 async function loadRecipePromptJsonBlock(opts: {
@@ -174,29 +338,47 @@ async function loadRecipePromptJsonBlock(opts: {
   fallback_payload: Record<string, unknown>;
   priority: number;
 }): Promise<RunnerPromptBlock> {
+  const candidates: BehaviorCandidate<PromptSourcePayload, PromptSourceTraceMetadata>[] = [];
   const relativeFile = opts.relative_file?.trim();
   if (relativeFile) {
     const absPath = path.join(opts.recipe_dir, relativeFile);
     if (await fileExists(absPath)) {
       const source = toPromptSource(opts.git_root, absPath);
-      return {
-        id: opts.prompt_id,
-        role: opts.role,
-        title: opts.title,
-        source,
-        priority: opts.priority,
-        content: validateJsonPrompt(source, await readFile(absPath, "utf8")),
-      };
+      candidates.push(
+        promptCandidate({
+          layer: "extension",
+          source,
+          value: {
+            source,
+            title: opts.title,
+            content: validateJsonPrompt(source, await readFile(absPath, "utf8")),
+          },
+        }),
+      );
     }
   }
-  return {
+  candidates.push(
+    promptCandidate({
+      layer: "extension",
+      source: opts.fallback_source,
+      value: {
+        source: opts.fallback_source,
+        title: opts.title,
+        content: renderRecipePromptJson(opts.fallback_payload),
+      },
+      order: 10,
+    }),
+  );
+  const resolved = resolveBehavior({
+    key: opts.prompt_id,
+    candidates,
+  });
+  return promptBlockFromResolved({
     id: opts.prompt_id,
     role: opts.role,
-    title: opts.title,
-    source: opts.fallback_source,
     priority: opts.priority,
-    content: renderRecipePromptJson(opts.fallback_payload),
-  };
+    resolved,
+  });
 }
 
 async function collectRecipePromptBlocks(opts: {
@@ -300,19 +482,31 @@ export async function collectRunnerBasePrompts(opts: {
   agents_dir?: string;
   fallback_policy_gateway_flavor?: PolicyGatewayFlavor;
   recipe?: RunnerRecipeContext;
+  harness?: ResolvedHarnessContract;
+  execution_profile?: ResolvedExecutionProfileRuntime;
 }): Promise<RunnerPromptBlock[]> {
   const owner_id = normalizeOwnerId(opts.owner_id);
-  const trimmedAgentsDir = opts.agents_dir?.trim();
+  const trimmedAgentsDir = opts.agents_dir?.trim() ?? opts.harness?.workflow.paths.agents_dir;
   const agents_dir =
     trimmedAgentsDir && trimmedAgentsDir.length > 0 ? trimmedAgentsDir : ".agentplane/agents";
   const fallback_flavor = opts.fallback_policy_gateway_flavor ?? "codex";
 
+  const resolvedBasePrompts = await Promise.all([
+    loadFrameworkRunnerPrompt(),
+    loadPolicyGatewayPrompt({
+      git_root: opts.git_root,
+      fallback_flavor,
+      harness: opts.harness,
+    }),
+    Promise.resolve(loadExecutionProfilePrompt({ execution_profile: opts.execution_profile })),
+    loadOwnerProfilePrompt({ git_root: opts.git_root, agents_dir, owner_id }),
+  ]);
+  const basePrompts = resolvedBasePrompts.filter(
+    (prompt): prompt is RunnerPromptBlock => prompt !== null,
+  );
+
   const prompts = [
-    ...(await Promise.all([
-      loadFrameworkRunnerPrompt(),
-      loadPolicyGatewayPrompt({ git_root: opts.git_root, fallback_flavor }),
-      loadOwnerProfilePrompt({ git_root: opts.git_root, agents_dir, owner_id }),
-    ])),
+    ...basePrompts,
     ...(await collectRecipePromptBlocks({
       git_root: opts.git_root,
       recipe: opts.recipe ?? { recipe_id: "", scenario_id: "" },

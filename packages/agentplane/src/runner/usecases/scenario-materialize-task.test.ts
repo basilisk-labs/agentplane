@@ -42,6 +42,26 @@ describe("materializeRecipeScenarioTask", () => {
     expect(materialized.recipe_context.agents).toHaveLength(1);
     expect(materialized.recipe_context.skills).toHaveLength(1);
     expect(materialized.recipe_context.tools).toHaveLength(1);
+    expect(materialized.recipe_context.capabilities?.entries).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: `recipe.${String(manifest.id)}.scenario.RECIPE_SCENARIO`,
+          availability: "available",
+        }),
+        expect.objectContaining({
+          id: `recipe.${String(manifest.id)}.agent.RECIPE_AGENT`,
+          availability: "available",
+        }),
+        expect.objectContaining({
+          id: `recipe.${String(manifest.id)}.skill.RECIPE_SKILL`,
+          availability: "available",
+        }),
+        expect.objectContaining({
+          id: `recipe.${String(manifest.id)}.tool.RECIPE_TOOL`,
+          availability: "available",
+        }),
+      ]),
+    );
 
     const readme = await readFile(materialized.readme_path, "utf8");
     expect(readme).toContain("Recipe-backed task execution.");

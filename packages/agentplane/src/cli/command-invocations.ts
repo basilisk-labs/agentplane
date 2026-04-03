@@ -6,6 +6,8 @@ const COMMAND_INVOCATIONS = new Map<string, string>([
     "finish",
     'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --commit <git-rev>',
   ],
+  ["incidents advise", "agentplane incidents advise <task-id>"],
+  ["incidents collect", "agentplane incidents collect <task-id>"],
   ["init", "agentplane init"],
   ["preflight", "agentplane preflight"],
   ["quickstart", "agentplane quickstart"],

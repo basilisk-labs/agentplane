@@ -1,0 +1,12 @@
+ .agentplane/tasks/202604030423-BRRQ94/README.md    | 124 +++++++++++++++++++++
+ .../tasks/202604030423-BRRQ94/pr/diffstat.txt      |  12 ++
+ .../tasks/202604030423-BRRQ94/pr/github-body.md    |  61 ++++++++++
+ .../tasks/202604030423-BRRQ94/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604030423-BRRQ94/pr/meta.json |  14 +++
+ .../tasks/202604030423-BRRQ94/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604030423-BRRQ94/pr/review.md |  68 +++++++++++
+ .../tasks/202604030423-BRRQ94/pr/verify.log        |   0
+ packages/agentplane/assets/AGENTS.md               |   2 +-
+ .../agentplane/src/agents/agents-template.test.ts  |   8 ++
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |   4 +
+ 11 files changed, 293 insertions(+), 1 deletion(-)

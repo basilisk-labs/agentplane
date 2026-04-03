@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604021851-W4RW7J/pr-sync-core",
+  "created_at": "2026-04-02T19:05:43.435Z",
+  "head_sha": "86efae63bfaf268df83948e116692841f990a1f5",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "67788a1a22d9f0784dead6d0dc775ab13efff7a0",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-02T19:11:14.341Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604021851-W4RW7J",
+  "updated_at": "2026-04-02T19:11:14.341Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

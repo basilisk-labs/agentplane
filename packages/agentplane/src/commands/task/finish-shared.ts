@@ -172,7 +172,8 @@ export async function writeFinishedTasks(opts: {
   const store = useStore ? getTaskStore(opts.ctx) : null;
   const taskCount = opts.loadedTasks.length;
 
-  for (const { taskId, task } of opts.loadedTasks) {
+  for (const loaded of opts.loadedTasks) {
+    const { taskId, task } = loaded;
     const at = nowIso();
     const applyTransition = async (currentTask: TaskData) => {
       assertTaskCanFinish({
@@ -210,13 +211,15 @@ export async function writeFinishedTasks(opts: {
     };
 
     if (useStore) {
-      await mutateTaskStore(store!, taskId, async (currentTask) => {
+      const result = await mutateTaskStore(store!, taskId, async (currentTask) => {
         const execution = await applyTransition(currentTask);
         return execution.intents;
       });
+      loaded.task = result.task;
     } else {
       const execution = await applyTransition(task);
       await opts.ctx.taskBackend.writeTask(execution.nextTask);
+      loaded.task = execution.nextTask;
     }
   }
 }

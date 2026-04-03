@@ -1,0 +1,21 @@
+ .agentplane/tasks/202604030442-VB1XAH/README.md    |  52 +++++++++--
+ .../tasks/202604030442-VB1XAH/pr/diffstat.txt      |  13 +++
+ .../tasks/202604030442-VB1XAH/pr/github-body.md    |  62 +++++++++++++
+ .../tasks/202604030442-VB1XAH/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604030442-VB1XAH/pr/meta.json |  14 +++
+ .../tasks/202604030442-VB1XAH/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604030442-VB1XAH/pr/review.md |  69 ++++++++++++++
+ .../tasks/202604030442-VB1XAH/pr/verify.log        |   0
+ .../src/cli/run-cli.core.tasks.query.test.ts       |  25 +++++
+ .../agentplane/src/cli/run-cli.scenario.test.ts    |   1 +
+ .../src/runner/context/base-prompts.test.ts        |  32 +++++++
+ .../agentplane/src/runner/context/base-prompts.ts  |  68 ++++++++++++--
+ packages/agentplane/src/runner/types.ts            |   2 +
+ .../agentplane/src/runner/usecases/task-run.ts     |  17 +++-
+ .../src/runtime/execution-profile/index.ts         |   6 ++
+ .../src/runtime/execution-profile/resolve.test.ts  |  74 +++++++++++++++
+ .../src/runtime/execution-profile/resolve.ts       | 103 +++++++++++++++++++++
+ .../src/runtime/execution-profile/types.ts         |  29 ++++++
+ .../src/usecases/context/resolve-context.ts        |   7 ++
+ .../usecases/context/resolve-context.unit.test.ts  |  37 ++++++++
+ 20 files changed, 590 insertions(+), 22 deletions(-)

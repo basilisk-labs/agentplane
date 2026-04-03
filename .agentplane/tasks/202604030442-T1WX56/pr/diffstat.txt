@@ -1,0 +1,13 @@
+ .agentplane/tasks/202604030442-T1WX56/README.md    | 68 +++++++++++++++-------
+ .../tasks/202604030442-T1WX56/pr/diffstat.txt      |  5 ++
+ .../tasks/202604030442-T1WX56/pr/github-body.md    | 54 +++++++++++++++++
+ .../tasks/202604030442-T1WX56/pr/github-title.txt  |  1 +
+ .agentplane/tasks/202604030442-T1WX56/pr/meta.json | 14 +++++
+ .../tasks/202604030442-T1WX56/pr/notes.jsonl       |  0
+ .agentplane/tasks/202604030442-T1WX56/pr/review.md | 61 +++++++++++++++++++
+ .../tasks/202604030442-T1WX56/pr/verify.log        |  0
+ README.md                                          | 12 ++++
+ docs/developer/architecture.mdx                    | 55 +++++++++++++----
+ docs/developer/framework-refactor-program.mdx      | 23 ++++++--
+ docs/developer/harness-engeneering.mdx             | 24 +++++++-
+ 12 files changed, 278 insertions(+), 39 deletions(-)

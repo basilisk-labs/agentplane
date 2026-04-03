@@ -1,0 +1,1 @@
+framework/protocol: F-010 Introduce protocol and result foundation (WMSG1C)

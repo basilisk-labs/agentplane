@@ -1,5 +1,6 @@
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
 import { resolveLatestRunnerRunId, RunnerRunRepository } from "../run-repository.js";
 import { resolveTaskRunnerPaths, type TaskRunnerPaths } from "../task-run-paths.js";
 import type { RunnerContextBundle, RunnerEvent, RunnerRunState } from "../types.js";
@@ -23,10 +24,11 @@ export async function loadTaskRunnerInspection(opts: {
   task_id: string;
   run_id?: string;
 }): Promise<LoadedTaskRunnerInspection> {
-  const ctx =
+  const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const task = await ctx.taskBackend.getTask(opts.task_id);
+  const executionContext = await makeReadOnlyUsecaseContext(command);
+  const task = await executionContext.backend.task_backend.getTask(opts.task_id);
   if (!task) {
     throw new CliError({
       exitCode: 4,
@@ -39,13 +41,13 @@ export async function loadTaskRunnerInspection(opts: {
     typeof opts.run_id === "string" && opts.run_id.trim().length > 0
       ? opts.run_id
       : await resolveLatestRunnerRunId({
-          git_root: ctx.resolvedProject.gitRoot,
-          workflow_dir: ctx.config.paths.workflow_dir,
+          git_root: executionContext.repo.git_root,
+          workflow_dir: executionContext.repo.workflow_dir,
           task_id: opts.task_id,
         });
   const paths = resolveTaskRunnerPaths({
-    git_root: ctx.resolvedProject.gitRoot,
-    workflow_dir: ctx.config.paths.workflow_dir,
+    git_root: executionContext.repo.git_root,
+    workflow_dir: executionContext.repo.workflow_dir,
     task_id: opts.task_id,
     run_id: runId,
   });
@@ -62,7 +64,7 @@ export async function loadTaskRunnerInspection(opts: {
   ]);
 
   return {
-    ctx,
+    ctx: executionContext.command,
     task_id: opts.task_id,
     run_id: runId,
     selection: opts.run_id ? "explicit" : "latest",

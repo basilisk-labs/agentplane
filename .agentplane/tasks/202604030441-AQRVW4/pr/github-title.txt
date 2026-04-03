@@ -1,0 +1,1 @@
+framework/runtime: F-001 Introduce ResolvedHarnessContract (AQRVW4)

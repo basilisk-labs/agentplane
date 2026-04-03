@@ -27,27 +27,66 @@ export function buildOpenedPrMeta(opts: {
   branch: string;
   at: string;
   previousMeta: PrMeta | null;
+  base?: string | null;
+  headSha?: string | null;
 }): PrMeta {
+  const nextBase = opts.base ?? opts.previousMeta?.base;
+  const nextHeadSha = opts.headSha ?? opts.previousMeta?.head_sha;
+  const changed =
+    opts.previousMeta === null ||
+    (opts.previousMeta.branch ?? null) !== opts.branch ||
+    (opts.previousMeta.base ?? null) !== (nextBase ?? null) ||
+    (opts.previousMeta.head_sha ?? null) !== (nextHeadSha ?? null);
   return {
     schema_version: 1,
     task_id: opts.taskId,
     branch: opts.branch,
     created_at: opts.previousMeta?.created_at ?? opts.at,
-    updated_at: opts.at,
+    updated_at: changed ? opts.at : (opts.previousMeta?.updated_at ?? opts.at),
     last_verified_sha: opts.previousMeta?.last_verified_sha ?? null,
     last_verified_at: opts.previousMeta?.last_verified_at ?? null,
     verify: opts.previousMeta?.verify ?? { status: "skipped" },
-    base: opts.previousMeta?.base,
+    base: nextBase,
+    head_sha: nextHeadSha,
   };
 }
 
-export function buildUpdatedPrMeta(opts: { meta: PrMeta; branch: string; at: string }): PrMeta {
+export function buildUpdatedPrMeta(opts: {
+  meta: PrMeta;
+  branch: string;
+  at: string;
+  base?: string | null;
+  headSha?: string | null;
+}): PrMeta {
+  const nextBase = opts.base ?? opts.meta.base;
+  const nextHeadSha = opts.headSha ?? opts.meta.head_sha;
+  const changed =
+    (opts.meta.branch ?? null) !== opts.branch ||
+    (opts.meta.base ?? null) !== (nextBase ?? null) ||
+    (opts.meta.head_sha ?? null) !== (nextHeadSha ?? null);
   return {
     ...opts.meta,
     branch: opts.branch,
-    updated_at: opts.at,
+    base: nextBase,
+    head_sha: nextHeadSha,
+    updated_at: changed ? opts.at : opts.meta.updated_at,
     last_verified_sha: opts.meta.last_verified_sha ?? null,
     last_verified_at: opts.meta.last_verified_at ?? null,
+  };
+}
+
+export function buildVerifiedPrMeta(opts: {
+  meta: PrMeta;
+  at: string;
+  state: "pass" | "fail";
+}): PrMeta {
+  const verifiedSha = opts.meta.head_sha ?? null;
+  return {
+    ...opts.meta,
+    updated_at: opts.meta.updated_at,
+    last_verified_sha: verifiedSha,
+    last_verified_at: opts.at,
+    verify: opts.meta.verify ? { ...opts.meta.verify, status: opts.state } : { status: opts.state },
   };
 }
 

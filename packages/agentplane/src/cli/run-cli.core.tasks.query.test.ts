@@ -544,9 +544,66 @@ describe("runCli", () => {
       expect(await pathExists(statePath)).toBe(true);
 
       const bundle = JSON.parse(await readFile(bundlePath, "utf8")) as {
+        base_prompts?: { id?: string; title?: string; content?: string }[];
+        framework_explain?: {
+          schema_version?: number;
+          policy?: {
+            approvals?: {
+              require_plan?: boolean;
+              require_verify?: boolean;
+              require_network?: boolean;
+            };
+          };
+          runtime?: {
+            task_intake?: {
+              precedence?: {
+                behavior_order?: string[];
+                extension_layer?: string;
+              };
+            };
+          };
+          behavior_inputs?: { id?: string; category?: string; source?: string }[];
+        };
+        framework_protocol?: {
+          explain?: {
+            schema_version?: number;
+            kind?: string;
+            status?: string;
+            compatibility?: {
+              strategy?: string;
+              breaking_changes_require_schema_version?: boolean;
+              additive_fields_allowed?: boolean;
+              new_result_kinds_allowed?: boolean;
+            };
+            data?: {
+              runtime?: {
+                task_intake?: {
+                  precedence?: {
+                    extension_layer?: string;
+                  };
+                };
+              };
+            };
+          };
+        };
         execution: {
           mode: string;
           adapter_id: string;
+          approvals?: {
+            require_plan?: boolean;
+            require_verify?: boolean;
+            require_network?: boolean;
+          };
+          profile_runtime?: {
+            profile?: string;
+            reasoning_effort?: string;
+            budget?: {
+              discovery?: { used?: number; remaining?: number };
+              implementation?: { used?: number; remaining?: number };
+            };
+            stop_conditions?: string[];
+            handoff_conditions?: string[];
+          };
           trace_policy?: {
             mode?: string;
             max_tail_bytes?: number;
@@ -589,6 +646,74 @@ describe("runCli", () => {
       expect(bundle.execution.policy_decision?.requested).toEqual({});
       expect(bundle.execution.policy_decision?.effective).toEqual({});
       expect(bundle.execution.policy_decision?.refusal_reason).toBeNull();
+      expect(bundle.execution.profile_runtime).toMatchObject({
+        profile: "balanced",
+        reasoning_effort: "medium",
+        budget: {
+          discovery: { used: 1, remaining: 5 },
+          implementation: { used: 1, remaining: 9 },
+        },
+      });
+      expect(bundle.execution.profile_runtime?.stop_conditions?.length).toBeGreaterThan(0);
+      expect(bundle.execution.profile_runtime?.handoff_conditions?.length).toBeGreaterThan(0);
+      expect(bundle.base_prompts?.map((prompt) => prompt.id)).toContain("base.execution_profile");
+      expect(
+        bundle.base_prompts?.find((prompt) => prompt.id === "base.execution_profile")?.content,
+      ).toContain('"reasoning_effort": "medium"');
+      expect(bundle.framework_explain).toMatchObject({
+        schema_version: 1,
+        policy: {
+          approvals: {
+            require_plan: true,
+            require_verify: true,
+          },
+        },
+        runtime: {
+          task_intake: {
+            precedence: {
+              behavior_order: ["harness", "extension", "user", "builtin"],
+              extension_layer: "recipes",
+            },
+          },
+        },
+      });
+      expect(bundle.framework_explain?.policy?.approvals?.require_network).toBe(
+        bundle.execution.approvals?.require_network,
+      );
+      expect(bundle.framework_explain?.behavior_inputs).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: "base.policy_gateway",
+            category: "prompt",
+          }),
+          expect.objectContaining({
+            id: "base.execution_profile",
+            category: "prompt",
+          }),
+        ]),
+      );
+      expect(bundle.framework_protocol).toMatchObject({
+        explain: {
+          schema_version: 1,
+          kind: "framework.explain",
+          status: "ok",
+          compatibility: {
+            strategy: "additive",
+            breaking_changes_require_schema_version: true,
+            additive_fields_allowed: true,
+            new_result_kinds_allowed: true,
+          },
+          data: {
+            runtime: {
+              task_intake: {
+                precedence: {
+                  extension_layer: "recipes",
+                },
+              },
+            },
+          },
+        },
+      });
       expect(bundle.task.task_id).toBe(taskId);
       expect(bootstrap).toContain(
         "This invocation is already inside an approved runner execution.",

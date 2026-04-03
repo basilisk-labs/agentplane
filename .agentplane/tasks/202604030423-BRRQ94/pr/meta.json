@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604030423-BRRQ94/workflow-mode-sync",
+  "created_at": "2026-04-03T04:24:36.547Z",
+  "head_sha": "b040c63b2e4adedd95d6d84e412046671388ea01",
+  "last_verified_at": "2026-04-03T04:31:14.033Z",
+  "last_verified_sha": "a22a7358ccff5ed9439dafb15c927b8f87700374",
+  "merge_commit": "78c0fdb4b2fd5100de89e6a7e8d288a2a0f41ee2",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-03T04:32:23.915Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604030423-BRRQ94",
+  "updated_at": "2026-04-03T04:32:23.915Z",
+  "verify": {
+    "status": "pass"
+  }
+}

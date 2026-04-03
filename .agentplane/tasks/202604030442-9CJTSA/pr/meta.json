@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604030442-9CJTSA/capability-registry",
+  "created_at": "2026-04-03T09:40:12.102Z",
+  "head_sha": "58f55f427c3420f93fa70c43120735ae98d9c0f4",
+  "last_verified_at": "2026-04-03T10:02:17.611Z",
+  "last_verified_sha": "58f55f427c3420f93fa70c43120735ae98d9c0f4",
+  "merge_commit": "d645bf9500aa02541386015d21d3c788c09583f7",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-03T10:02:17.611Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604030442-9CJTSA",
+  "updated_at": "2026-04-03T10:02:17.611Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -39,7 +39,7 @@ Configured in `.agentplane/config.json`.
 Treat these as two separate layers:
 
 1. `agentplane pr open|update|check` maintains the repository-local review packet under `.agentplane/tasks/<task-id>/pr/`.
-2. `gh pr ...` is the hosted-review layer that triggers server-side required checks.
+2. `gh pr ...` is the hosted-review layer that triggers server-side required checks using the derived `github-title.txt` and `github-body.md` projections from that same local packet.
 
 If this repository requires remote checks before `main` moves, do both:
 
@@ -55,7 +55,7 @@ manual PR link on the merged task PR instead of failing silently.
 
 ## Handoff Notes
 
-- Reviewers and executors record handoff notes in `review.md`.
+- Reviewers and executors record handoff notes in `review.md`; the same note stream is projected into `github-body.md`.
 - INTEGRATOR appends notes into the task closure record.
 
 ## Commands
@@ -69,7 +69,7 @@ agentplane work start <task-id> --agent CODER --slug <slug> --worktree
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
 git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --fill
+gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
 bun run workflow:wait-remote-checks
 agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify

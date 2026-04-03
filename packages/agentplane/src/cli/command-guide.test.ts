@@ -73,7 +73,10 @@ describe("command-guide", () => {
     expect(text).toContain('title: "Agent bootstrap"');
     expect(text).toContain("## 1. Preflight");
     expect(text).toContain("## Copy-paste start block");
+    expect(text).toContain("## 3. Verification and incident reuse");
     expect(text).toContain("Use `agentplane role ORCHESTRATOR` during planning");
+    expect(text).toContain("agentplane incidents advise <task-id>");
+    expect(text).toContain("agentplane incidents collect <task-id> --check");
     expect(text).toContain("workflow:wait-remote-checks");
   });
 });

@@ -695,6 +695,10 @@ describe("runCli", () => {
     const agentsPath = path.join(root, "AGENTS.md");
     const agentsText = await readFile(agentsPath, "utf8");
     expect(agentsText).toBe(expectedAgents);
+    expect(agentsText).toContain(
+      "The guarded route is determined by `workflow_mode` in `.agentplane/config.json`;",
+    );
+    expect(agentsText).not.toContain("In this repository, `workflow_mode=branch_pr`");
 
     const agentsDir = path.join(root, ".agentplane", "agents");
     const entries = await readdir(agentsDir);

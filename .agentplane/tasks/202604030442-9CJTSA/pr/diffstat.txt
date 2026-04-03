@@ -1,0 +1,24 @@
+ .agentplane/tasks/202604030442-9CJTSA/README.md    |  52 ++++-
+ .../tasks/202604030442-9CJTSA/pr/diffstat.txt      |  16 ++
+ .../tasks/202604030442-9CJTSA/pr/github-body.md    |  65 +++++++
+ .../tasks/202604030442-9CJTSA/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604030442-9CJTSA/pr/meta.json |  14 ++
+ .../tasks/202604030442-9CJTSA/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604030442-9CJTSA/pr/review.md |  72 +++++++
+ .../tasks/202604030442-9CJTSA/pr/verify.log        |   0
+ packages/agentplane/src/runner/artifacts.test.ts   |  47 +++++
+ packages/agentplane/src/runner/artifacts.ts        |   2 +
+ .../src/runner/context/recipe-context.ts           |   5 +
+ packages/agentplane/src/runner/types.ts            |   4 +
+ .../usecases/scenario-materialize-task.test.ts     |  20 ++
+ .../agentplane/src/runner/usecases/task-run.ts     |   6 +
+ .../agentplane/src/runtime/capabilities/backend.ts | 139 +++++++++++++
+ .../agentplane/src/runtime/capabilities/index.ts   |  18 ++
+ .../agentplane/src/runtime/capabilities/recipe.ts  | 155 +++++++++++++++
+ .../src/runtime/capabilities/registry.ts           |  91 +++++++++
+ .../src/runtime/capabilities/resolve.test.ts       | 215 +++++++++++++++++++++
+ .../agentplane/src/runtime/capabilities/runner.ts  |  89 +++++++++
+ .../agentplane/src/runtime/capabilities/types.ts   |  49 +++++
+ .../src/usecases/context/resolve-context.ts        |   9 +
+ .../usecases/context/resolve-context.unit.test.ts  |  50 ++++-
+ 23 files changed, 1106 insertions(+), 13 deletions(-)

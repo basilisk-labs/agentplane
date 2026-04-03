@@ -1,0 +1,1 @@
+framework/capabilities: F-003 Introduce capability registry (9CJTSA)

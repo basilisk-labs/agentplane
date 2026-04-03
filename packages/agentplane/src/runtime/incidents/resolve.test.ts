@@ -1,0 +1,154 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  appendIncidentRegistryEntries,
+  buildIncidentAdviceQueryFromTask,
+  createIncidentRegistrySkeleton,
+  parseIncidentRegistry,
+  planIncidentCollection,
+  renderIncidentAdvice,
+  resolveIncidentAdviceMatches,
+} from "./index.js";
+
+describe("incidents runtime", () => {
+  it("parses registry entries including machine-readable fields", () => {
+    const registry = parseIncidentRegistry(
+      [
+        createIncidentRegistrySkeleton().trimEnd(),
+        "",
+        "- id: INC-20260403-01",
+        "  date: 2026-04-03",
+        "  scope: release publish workflow_dispatch",
+        "  tags: release, github-actions",
+        "  match: publish, workflow_dispatch, release-tag",
+        "  failure: publish deadlocked on exact-SHA push waits",
+        "  advice: validate the exact release ref inside the publish workflow",
+        "  rule: Release recovery MUST validate the exact ref inside the workflow.",
+        "  evidence: task 202603091222-JWN7RB",
+        "  enforcement: manual",
+        "  source_task: 202603091222-JWN7RB",
+        "  fixability: external",
+        "  state: stabilized",
+        "",
+      ].join("\n"),
+    );
+
+    expect(registry.entries).toHaveLength(1);
+    expect(registry.entries[0]?.tags).toEqual(["release", "github-actions"]);
+    expect(registry.entries[0]?.match).toEqual(["publish", "workflow_dispatch", "release-tag"]);
+    expect(registry.entries[0]?.advice).toContain("exact release ref");
+    expect(registry.entries[0]?.sourceTask).toBe("202603091222-JWN7RB");
+  });
+
+  it("plans promotion only for structured external incident candidates and dedupes existing entries", () => {
+    const registry = parseIncidentRegistry(
+      [
+        createIncidentRegistrySkeleton().trimEnd(),
+        "",
+        "- id: INC-20260403-01",
+        "  date: 2026-04-03",
+        "  scope: release publish workflow_dispatch",
+        "  tags: release, github-actions",
+        "  match: publish, workflow_dispatch, release-tag",
+        "  failure: publish deadlocked on exact-SHA push waits",
+        "  advice: validate the exact release ref inside the publish workflow",
+        "  rule: Release recovery MUST validate the exact ref inside the workflow.",
+        "  evidence: task TASK-1",
+        "  enforcement: manual",
+        "  source_task: TASK-1",
+        "  fixability: external",
+        "  state: stabilized",
+        "",
+      ].join("\n"),
+    );
+
+    const findings = [
+      "- Observation: publish deadlocked on exact-SHA push waits",
+      "  Impact: release recovery stalled.",
+      "  Resolution: validate the exact release ref inside the publish workflow.",
+      "  Promotion: incident-candidate",
+      "  IncidentScope: release publish workflow_dispatch",
+      "  IncidentTags: release, github-actions",
+      "  IncidentMatch: publish, workflow_dispatch, release-tag",
+      "  IncidentAdvice: validate the exact release ref inside the publish workflow",
+      "  IncidentRule: Release recovery MUST validate the exact ref inside the workflow.",
+      "  IncidentExternal: true",
+      "",
+      "- Observation: local test suite was slow",
+      "  Impact: local loop was slower.",
+      "  Resolution: keep it narrow.",
+      "  Promotion: incident-candidate",
+      "  IncidentScope: local performance",
+    ].join("\n");
+
+    const plan = planIncidentCollection({
+      task: {
+        id: "TASK-1",
+        title: "Fix publish gate",
+        description: "Release tag workflow repair",
+        tags: ["release"],
+      },
+      findings,
+      registry,
+      now: new Date("2026-04-03T10:00:00.000Z"),
+    });
+
+    expect(plan.candidates).toHaveLength(2);
+    expect(plan.promotable).toHaveLength(0);
+    expect(plan.duplicates).toHaveLength(1);
+    expect(plan.issues).toHaveLength(1);
+    expect(plan.issues[0]?.missingFields).toEqual([
+      "IncidentExternal: true",
+      "IncidentRule",
+      "IncidentAdvice",
+    ]);
+  });
+
+  it("appends new entries and resolves advice by tags and scope", () => {
+    const base = createIncidentRegistrySkeleton();
+    const plan = planIncidentCollection({
+      task: {
+        id: "TASK-2",
+        title: "Release recovery",
+        description: "Handle workflow_dispatch on release tags",
+        tags: ["release", "github-actions"],
+        commitHash: "1234567890abcdef",
+      },
+      findings: [
+        "- Observation: workflow_dispatch on release tags waited on exact-SHA push runs that never existed.",
+        "  Impact: release recovery stalled.",
+        "  Resolution: validate the exact release ref inside the workflow itself.",
+        "  Promotion: incident-candidate",
+        "  IncidentScope: release publish workflow_dispatch",
+        "  IncidentTags: release, github-actions",
+        "  IncidentMatch: publish, workflow_dispatch, release-tag",
+        "  IncidentAdvice: validate the exact release ref inside the publish workflow before rerunning release recovery",
+        "  IncidentRule: Release recovery MUST validate the exact ref inside the workflow.",
+        "  IncidentExternal: true",
+      ].join("\n"),
+      registry: parseIncidentRegistry(base),
+      now: new Date("2026-04-03T10:00:00.000Z"),
+    });
+
+    expect(plan.promotable).toHaveLength(1);
+    const updated = parseIncidentRegistry(
+      appendIncidentRegistryEntries(
+        base,
+        plan.promotable.map((item) => item.entry),
+      ),
+    );
+    const matches = resolveIncidentAdviceMatches({
+      query: buildIncidentAdviceQueryFromTask({
+        taskId: "TASK-3",
+        title: "Repair release publish recovery",
+        description: "workflow_dispatch on release tag is hanging",
+        tags: ["release", "github-actions"],
+      }),
+      registry: updated,
+    });
+
+    expect(matches).toHaveLength(1);
+    expect(matches[0]?.entry.sourceTask).toBe("TASK-2");
+    expect(renderIncidentAdvice(matches)).toContain("validate the exact release ref");
+  });
+});

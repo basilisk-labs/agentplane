@@ -56,13 +56,17 @@ Commands:
     finish  Mark task(s) as DONE and record a structured Verified comment.
     start  Transition a task to DOING and record a structured Start comment.
     verify  Record a verification outcome for a task (record-only; does not execute commands).
+  Policy:
+    incidents  Promote external incident advice and resolve incident hints for analogous tasks.
+    incidents advise  Resolve relevant incident advice for a task or an ad hoc scope/tag query.
+    incidents collect  Promote structured external incident-candidates from a task into the incident registry.
   PR:
     integrate  Integrate a task branch into the base branch (branch_pr workflow).
-    pr  Manage local PR artifacts for a task (branch_pr workflow).
+    pr  Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).
     pr check  Check that PR artifacts are present and valid.
     pr note  Append a handoff note into PR review.md.
     pr open  Create PR artifacts for a task.
-    pr update  Update PR artifacts (diffstat and auto summary).
+    pr update  Update PR artifacts (review packet, diffstat, and GitHub projections).
   Quality:
     doctor  Check workspace invariants for a normal agentplane installation (with optional dev source checks).
   Recipes:

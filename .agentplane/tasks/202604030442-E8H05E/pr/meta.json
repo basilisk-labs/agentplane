@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604030442-E8H05E/explain-hooks",
+  "created_at": "2026-04-03T13:40:36.755Z",
+  "head_sha": "018948eeb75aef9b16fe9873c3214fd9e9c3a637",
+  "last_verified_at": "2026-04-03T13:55:12.074Z",
+  "last_verified_sha": "018948eeb75aef9b16fe9873c3214fd9e9c3a637",
+  "merge_commit": "948557935ca6b46832d7d933ab023afe8df48df0",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-03T13:55:12.074Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604030442-E8H05E",
+  "updated_at": "2026-04-03T13:55:12.074Z",
+  "verify": {
+    "status": "pass"
+  }
+}

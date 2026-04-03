@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604021851-DBYVXK/pr-auto-sync",
+  "created_at": "2026-04-02T19:39:48.740Z",
+  "head_sha": "7c076878264395d40de8a63b97768c0d469779ea",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "c39b99ad86b0460cfaf2f207d23ff4e39689a825",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-02T19:40:49.252Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604021851-DBYVXK",
+  "updated_at": "2026-04-02T19:40:49.252Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

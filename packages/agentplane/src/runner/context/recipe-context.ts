@@ -7,6 +7,7 @@ import {
   type ResolvedRecipeScenarioSelection,
   type ScenarioDefinition,
 } from "../../commands/recipes.js";
+import { resolveRecipeCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import { CliError } from "../../shared/errors.js";
 import type { RunnerRecipeContext } from "../types.js";
 
@@ -50,6 +51,10 @@ function toRecipeContext(opts: {
     agents: agents as unknown as Record<string, unknown>[],
     skills: skills as unknown as Record<string, unknown>[],
     tools: tools as unknown as Record<string, unknown>[],
+    capabilities: resolveRecipeCapabilityRegistry({
+      entry: opts.entry,
+      selection: opts.selection,
+    }),
   };
 }
 

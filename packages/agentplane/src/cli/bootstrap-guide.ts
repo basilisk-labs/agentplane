@@ -32,6 +32,15 @@ export const BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS = [
   'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>',
 ] as const;
 
+export const BOOTSTRAP_VERIFICATION_COMMANDS = [
+  COMMAND_SNIPPETS.core.taskVerifyShow,
+  COMMAND_SNIPPETS.core.verifyTask,
+  COMMAND_SNIPPETS.core.incidentsAdvise,
+  `${COMMAND_SNIPPETS.core.incidentsCollect} --check`,
+  "agentplane doctor",
+  "node .agentplane/policy/check-routing.mjs",
+] as const;
+
 export const BOOTSTRAP_RECOVERY_COMMANDS = [
   "agentplane doctor",
   "agentplane upgrade --dry-run",
@@ -64,7 +73,18 @@ export const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
     ],
   },
   {
-    heading: "3. Fallbacks and recovery",
+    heading: "3. Verification and incident reuse",
+    summary:
+      "Reuse historical incident advice only through targeted lookup, and validate promotable external incident candidates before `finish`.",
+    commands: BOOTSTRAP_VERIFICATION_COMMANDS,
+    notes: [
+      "Use `agentplane incidents advise <task-id>` after `start-ready` when analogous scope or tags might have prior external failure modes.",
+      "Use `agentplane incidents collect <task-id> --check` before `finish` when task `Findings` contains reusable external `incident-candidate` blocks.",
+      "Keep repository-fixable defects task-local; only external or process incidents belong in `.agentplane/policy/incidents.md`.",
+    ],
+  },
+  {
+    heading: "4. Fallbacks and recovery",
     summary:
       "Keep exceptional paths out of the normal route: use these only for recovery, framework upgrades, or branch_pr work.",
     commands: BOOTSTRAP_RECOVERY_COMMANDS,

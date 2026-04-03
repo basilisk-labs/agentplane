@@ -10,6 +10,7 @@ import {
   type ResolvedProject,
 } from "@agentplaneorg/core";
 
+import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
 import { CliError } from "../../shared/errors.js";
 import {
   loadTaskBackend,
@@ -28,6 +29,7 @@ export type CommandMemo = {
   changedPaths?: Promise<string[]>;
   headCommit?: Promise<string>;
   agentIds?: Promise<string[]>;
+  harness?: Promise<ResolvedHarnessContract>;
 };
 
 export type CommandContext = {

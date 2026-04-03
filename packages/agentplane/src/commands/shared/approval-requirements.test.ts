@@ -9,21 +9,30 @@ import { ensureActionApproved, getApprovalRequirements } from "./approval-requir
 describe("approval requirements", () => {
   it("requires approval for network access when require_network=true", () => {
     const config = defaultConfig();
-    const req = getApprovalRequirements({ config, action: "network_access" });
+    const req = getApprovalRequirements({ config, action: "recipe_install" });
     expect(req.required).toBe(true);
+    expect(req.action).toMatchObject({
+      id: "recipe_install",
+      family: "recipe",
+      approval: "network_access",
+    });
   });
 
   it("does not require force approval by default", () => {
     const config = defaultConfig();
     const req = getApprovalRequirements({ config, action: "force_action" });
     expect(req.required).toBe(false);
+    expect(req.action).toMatchObject({
+      id: "force_action",
+      destructive: true,
+    });
   });
 
   it("conservative profile escalates network and force approvals", () => {
     const config = defaultConfig();
     config.execution.profile = "conservative";
     config.agents.approvals.require_network = false;
-    const networkReq = getApprovalRequirements({ config, action: "network_access" });
+    const networkReq = getApprovalRequirements({ config, action: "backend_sync" });
     const forceReq = getApprovalRequirements({ config, action: "force_action" });
     expect(networkReq.required).toBe(true);
     expect(forceReq.required).toBe(true);
@@ -33,7 +42,7 @@ describe("approval requirements", () => {
     const config = defaultConfig();
     await expect(
       ensureActionApproved({
-        action: "network_access",
+        action: "release_apply",
         config,
         yes: false,
         interactive: false,
@@ -47,7 +56,7 @@ describe("approval requirements", () => {
     const spy = vi.spyOn(prompts, "promptYesNo").mockResolvedValue(true);
     try {
       await ensureActionApproved({
-        action: "network_access",
+        action: "recipe_list_remote",
         config,
         yes: false,
         interactive: true,

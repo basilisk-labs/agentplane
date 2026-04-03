@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604030441-AQRVW4/README.md    | 142 ++++++++++++++
+ .../agentplane/src/commands/shared/task-backend.ts |   2 +
+ .../agentplane/src/runner/context/base-prompts.ts  |  21 +-
+ .../agentplane/src/runner/usecases/task-run.ts     |   5 +-
+ packages/agentplane/src/runtime/harness/index.ts   |  10 +
+ .../harness/resolve-from-command-context.ts        |  17 ++
+ .../agentplane/src/runtime/harness/resolve.test.ts | 109 +++++++++++
+ packages/agentplane/src/runtime/harness/resolve.ts | 211 +++++++++++++++++++++
+ packages/agentplane/src/runtime/harness/types.ts   |  85 +++++++++
+ packages/agentplane/src/shared/protected-paths.ts  |   8 +-
+ 10 files changed, 599 insertions(+), 11 deletions(-)

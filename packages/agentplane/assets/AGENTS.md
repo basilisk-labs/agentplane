@@ -17,7 +17,7 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 - Repository type: user project initialized with `agentplane`.
 - Gateway role: keep this file compact and deterministic; move scenario-specific details to policy modules.
 - CLI rule: use `agentplane` from `PATH`; if unavailable, stop and request installation guidance (do not invent repo-local entrypoints).
-- Startup shortcut: run `## COMMANDS -> Preflight`, then use `agentplane quickstart`; activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation. In this repository, `workflow_mode=branch_pr`, so the normal guarded route starts from `agentplane work start ... --worktree` on the base branch; treat `direct` as an explicit alternative only when intentionally selected.
+- Startup shortcut: run `## COMMANDS -> Preflight`, then use `agentplane quickstart`; activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation. The guarded route is determined by `workflow_mode` in `.agentplane/config.json`; use `agentplane quickstart` as the canonical summary of the active path before mutating. In `branch_pr`, start from `agentplane work start ... --worktree`; in `direct`, stay in the current checkout and use the task lifecycle route.
 
 ---
 
@@ -84,6 +84,8 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 ```bash
 agentplane task verify-show <task-id>
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+agentplane incidents advise <task-id>
+agentplane incidents collect <task-id> --check
 agentplane doctor
 node .agentplane/policy/check-routing.mjs
 ```
@@ -207,5 +209,5 @@ Detailed DoD rules are in `.agentplane/policy/dod.core.md`, `.agentplane/policy/
 ## CHANGE CONTROL
 
 - Follow incident-log, immutability, and policy-budget rules in `.agentplane/policy/governance.md`.
-- Record situational incident rules only in `.agentplane/policy/incidents.md`; do not load/read that file during normal startup unless the task directly touches it or recovery/incident handling requires it.
+- Record situational incident rules only in `.agentplane/policy/incidents.md`; use targeted lookup/promotion (`task start-ready`, `incidents advise`, `incidents collect`, `finish`) instead of bulk-loading it during normal startup.
 - Keep `AGENTS.md` as a gateway; move detailed procedures to canonical modules.

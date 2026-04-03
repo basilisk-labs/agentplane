@@ -1,6 +1,6 @@
 ---
 title: "Architecture"
-description: "How the CLI, backends, tasks, and recipes fit together."
+description: "How the framework control plane, CLI, backends, runner, tasks, and recipes fit together."
 ---
 
 ## What runs where
@@ -12,6 +12,35 @@ Agent Plane has three layers with different responsibilities:
 3. JSON schema/spec layer (`packages/spec/schemas`)
 
 The runtime layer owns command behavior. The core layer owns parsing and shared contracts. The spec layer is the canonical schema source, synchronized into `packages/core/schemas`.
+
+## Framework control plane
+
+The framework layer is the reusable control plane that recipes and runner-specific code now consume instead of rebuilding local helper state.
+
+- Harness resolution:
+  - `packages/agentplane/src/runtime/harness/*`
+  - Produces `ResolvedHarnessContract` from repo policy gateway, config, workflow mode, task contract, backend restrictions, and protected-path rules.
+- Canonical execution context:
+  - `packages/agentplane/src/usecases/context/resolve-context.ts`
+  - Produces `AgentplaneExecutionContext` / `ReadOnlyUsecaseContext` with repo, task backend, harness, approvals, capability registry, execution-profile runtime, task-intake runtime, explain payloads, and protocol surfaces.
+- Behavior precedence and traces:
+  - `packages/agentplane/src/runtime/behavior/*`
+  - Formal precedence is `harness -> extension -> user -> builtin`, with traceable winners and conflicts.
+- Capabilities:
+  - `packages/agentplane/src/runtime/capabilities/*`
+  - Unifies backend- and runner-facing capability projection, including unavailable/blocked semantics.
+- Governance runtime:
+  - `packages/agentplane/src/policy/*`
+  - `packages/agentplane/src/runtime/approvals/*`
+  - `packages/agentplane/src/runtime/execution-profile/*`
+  - Makes approvals, risky actions, budgets, stop/handoff conditions, trace policy, and timeout policy explicit runtime inputs.
+- Task intake:
+  - `packages/agentplane/src/runtime/task-intake/*`
+  - Defines `TaskIntakeContext`, clarification contracts, graph drafts, and materialization plans without binding them to a specific recipe or runner adapter.
+- Explain and protocol:
+  - `packages/agentplane/src/runtime/explain/*`
+  - `packages/agentplane/src/runtime/protocol/*`
+  - Produces machine-readable explain payloads plus additive, versioned protocol/result envelopes that can be persisted and extended without replacing the core model.
 
 ## CLI runtime map
 
@@ -37,12 +66,13 @@ The runtime layer owns command behavior. The core layer owns parsing and shared 
 
 ## Runtime data flow
 
-1. CLI resolves project root and reads `.agentplane/config.json`.
-2. Command parser resolves command spec and validates flags.
-3. Handler loads backend via `tasks_backend.config_path`.
-4. Command mutates task state in backend storage.
-5. Optional exports write `.agentplane/tasks.json`.
-6. Task docs live in `.agentplane/tasks/<task-id>/README.md`.
+1. CLI resolves project root, runtime mode, and `.agentplane/config.json`.
+2. `runtime/harness` resolves the repo-level contract into `ResolvedHarnessContract`.
+3. `usecases/context/resolve-context.ts` assembles the canonical execution context around that harness.
+4. Behavior, capability, approval, execution-profile, task-intake, explain, and protocol modules derive reusable runtime inputs from the canonical context.
+5. Command handlers and runner usecases consume the same context instead of rebuilding ad hoc task/repo/config helpers.
+6. Backend mutation and task projection update `.agentplane/tasks/<task-id>/README.md` and optional exported caches such as `.agentplane/tasks.json`.
+7. Shared runner flows persist run artifacts under `.agentplane/tasks/<task-id>/runs/<run-id>/`, including machine-readable framework explain/protocol payloads in the bundle.
 
 ## Task file decision
 
@@ -86,12 +116,12 @@ This loop keeps autonomy useful while preserving operator control and repository
 - When there are no managed changes, agent mode exits via fast no-op and does not create per-run artifacts.
 - Auto mode uses replace-first behavior for managed files; `.agentplane/policy/incidents.md` is append-only when local content already exists.
 
-Policy enforcement happens in command handlers and guard flows:
+Policy enforcement now resolves through the framework layer and is then consumed by command handlers, runner flows, and guard paths:
 
-- commit subject and suffix validation
-- allowlist path checks
-- approval checks (network, force and other gated actions)
-- lifecycle gates (dependencies, verification constraints, plan rules)
+- `ResolvedHarnessContract` defines workflow, task, policy, and backend restrictions.
+- `PolicyEngine` classifies actions and `ApprovalRuntime` evaluates gated behavior such as network, fs, git, config, and force mutations.
+- `ResolvedExecutionProfileRuntime` carries approval escalation, budgets, stop/handoff conditions, trace policy, and timeout policy.
+- Runner and recipe-adjacent flows receive the same resolved policy inputs through the canonical context and persisted runner bundle.
 
 ## Release flow
 
@@ -105,6 +135,7 @@ Release is split into planning and apply:
 ## Related docs
 
 - [Project layout](project-layout)
+- [Framework refactor program](framework-refactor-program)
 - [CLI contract](cli-contract)
 - [Release and publishing](release-and-publishing)
 - [Tasks and backends](../user/tasks-and-backends)

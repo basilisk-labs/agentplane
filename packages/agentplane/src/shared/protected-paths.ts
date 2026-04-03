@@ -31,15 +31,15 @@ export function taskArtifactPrefixes(opts: {
   return [...out].toSorted((a, b) => a.localeCompare(b));
 }
 
-const POLICY_PATH_PREFIXES = [
+export const POLICY_PATH_PREFIXES = [
   "AGENTS.md",
   "CLAUDE.md",
   "packages/agentplane/assets/AGENTS.md",
   ".agentplane/agents",
 ] as const;
-const CONFIG_PATH_PREFIXES = [".agentplane/config.json", ".agentplane/backends"] as const;
-const HOOK_PATH_PREFIXES = ["lefthook.yml"] as const;
-const CI_PATH_PREFIXES = [".github/workflows", ".github/actions"] as const;
+export const CONFIG_PATH_PREFIXES = [".agentplane/config.json", ".agentplane/backends"] as const;
+export const HOOK_PATH_PREFIXES = ["lefthook.yml"] as const;
+export const CI_PATH_PREFIXES = [".github/workflows", ".github/actions"] as const;
 
 export function protectedPathAllowPrefixes(opts: {
   tasksPath: string;

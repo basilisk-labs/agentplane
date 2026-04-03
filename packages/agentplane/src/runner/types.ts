@@ -5,7 +5,12 @@ import type {
 } from "@agentplaneorg/core";
 export type { RunnerTimeoutReason } from "@agentplaneorg/core";
 
+import type { BehaviorResolutionTrace } from "../runtime/behavior/index.js";
 import type { TaskData, TaskEvent } from "../backends/task-backend.js";
+import type { AgentplaneCapabilityRegistry } from "../runtime/capabilities/index.js";
+import type { ResolvedExecutionProfileRuntime } from "../runtime/execution-profile/index.js";
+import type { FrameworkExplainPayload } from "../runtime/explain/index.js";
+import type { FrameworkProtocolSurface } from "../runtime/protocol/index.js";
 
 export const RUNNER_BUNDLE_SCHEMA_VERSION = 1 as const;
 export const RUNNER_API_VERSION = "1" as const;
@@ -32,6 +37,7 @@ export type RunnerPromptBlock = {
   title?: string;
   source?: string;
   priority: number;
+  resolution?: BehaviorResolutionTrace<Record<string, unknown>>;
 };
 
 export type RunnerRepositoryContext = {
@@ -92,6 +98,7 @@ export type RunnerRecipeContext = {
   agents?: Record<string, unknown>[];
   skills?: Record<string, unknown>[];
   tools?: Record<string, unknown>[];
+  capabilities?: AgentplaneCapabilityRegistry;
 };
 
 export type RunnerArtifactPaths = {
@@ -156,9 +163,11 @@ export type RunnerExecutionContract = {
   mode: "execute" | "dry_run";
   run_id: string;
   artifact_paths: RunnerArtifactPaths;
+  profile_runtime?: ResolvedExecutionProfileRuntime;
   trace_policy: RunnerTracePolicy;
   timeout_policy: RunnerTimeoutPolicy;
   adapter_capabilities?: RunnerAdapterCapabilities;
+  adapter_capability_registry?: AgentplaneCapabilityRegistry;
   policy_decision?: RunnerPolicyDecision;
   approvals?: {
     require_plan?: boolean;
@@ -172,6 +181,8 @@ export type RunnerContextBundle = {
   runner_api_version: typeof RUNNER_API_VERSION;
   target: RunnerTarget;
   base_prompts: RunnerPromptBlock[];
+  framework_explain?: FrameworkExplainPayload;
+  framework_protocol?: FrameworkProtocolSurface;
   repository: RunnerRepositoryContext;
   task?: RunnerTaskContext;
   recipe?: RunnerRecipeContext;
@@ -318,6 +329,7 @@ export type RunnerPreparedMetadata = {
   trace_policy: RunnerTracePolicy;
   timeout_policy: RunnerTimeoutPolicy;
   adapter_capabilities?: RunnerAdapterCapabilities;
+  adapter_capability_registry?: AgentplaneCapabilityRegistry;
   policy_decision?: RunnerPolicyDecision;
   invocation: RunnerInvocationSnapshot;
 };

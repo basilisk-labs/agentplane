@@ -10,6 +10,7 @@ import { withDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { GitContext } from "../shared/git-context.js";
+import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureNetworkApproved } from "../shared/network-approval.js";
 import { runOperatorPipeline } from "../shared/operator-pipeline.js";
 import {
@@ -140,9 +141,17 @@ async function runPushPreflight(opts: {
 }): Promise<boolean> {
   const loaded = await loadConfig(opts.agentplaneDir);
   await ensureNetworkApproved({
+    action: "release_apply",
     config: loaded.config,
     yes: opts.yes,
     reason: "release apply --push validates npm version availability and pushes over network",
+    interactive: Boolean(process.stdin.isTTY),
+  });
+  await ensureActionApproved({
+    action: "git_push",
+    config: loaded.config,
+    yes: opts.yes,
+    reason: `release apply --push will push HEAD and ${opts.nextTag} to ${opts.remote}`,
     interactive: Boolean(process.stdin.isTTY),
   });
   await ensureRemoteExists(opts.gitRoot, opts.remote);

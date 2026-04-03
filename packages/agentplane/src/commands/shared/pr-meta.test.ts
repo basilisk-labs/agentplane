@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as git from "./git.js";
 import {
   buildIntegratedPrMeta,
+  buildVerifiedPrMeta,
   parsePrMeta,
   resolveShellInvocation,
   runShellCommand,
@@ -116,6 +117,32 @@ describe("pr-meta shell invocations", () => {
         merged_at: "2026-01-28T00:00:00Z",
         last_verified_sha: "deadbeef",
         last_verified_at: "2026-01-28T00:00:00Z",
+      }),
+    );
+  });
+
+  it("records head-scoped verification metadata without changing render timestamps", () => {
+    expect(
+      buildVerifiedPrMeta({
+        meta: {
+          schema_version: 1,
+          task_id: "202601010101-ABCDE",
+          branch: "task/202601010101-ABCDE/example",
+          created_at: "2026-01-27T00:00:00Z",
+          updated_at: "2026-01-27T00:00:00Z",
+          head_sha: "deadbeef",
+          verify: { status: "skipped" },
+        },
+        at: "2026-01-28T00:00:00Z",
+        state: "pass",
+      }),
+    ).toEqual(
+      expect.objectContaining({
+        updated_at: "2026-01-27T00:00:00Z",
+        head_sha: "deadbeef",
+        last_verified_sha: "deadbeef",
+        last_verified_at: "2026-01-28T00:00:00Z",
+        verify: { status: "pass" },
       }),
     );
   });

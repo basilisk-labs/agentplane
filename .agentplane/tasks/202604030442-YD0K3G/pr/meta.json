@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604030442-YD0K3G/precedence-core",
+  "created_at": "2026-04-03T10:04:50.434Z",
+  "head_sha": "e19d43c19b5253b78c91d8f763bbbaa02be16612",
+  "last_verified_at": "2026-04-03T10:24:02.932Z",
+  "last_verified_sha": "e19d43c19b5253b78c91d8f763bbbaa02be16612",
+  "merge_commit": "5c3804c27a2e645dc852ebd05ea51d780f888785",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-03T10:24:02.932Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604030442-YD0K3G",
+  "updated_at": "2026-04-03T10:24:02.932Z",
+  "verify": {
+    "status": "pass"
+  }
+}

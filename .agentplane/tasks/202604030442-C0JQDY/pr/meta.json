@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604030442-C0JQDY/approval-runtime",
+  "created_at": "2026-04-03T10:47:00.499Z",
+  "head_sha": "135b95a0d13d7fdbd867e13fd08e2cf3c4d74f09",
+  "last_verified_at": "2026-04-03T10:57:06.857Z",
+  "last_verified_sha": "135b95a0d13d7fdbd867e13fd08e2cf3c4d74f09",
+  "merge_commit": "f7266969b6d2eb859d69ab10ed6f1f8ba8c28e5f",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-03T10:57:06.857Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604030442-C0JQDY",
+  "updated_at": "2026-04-03T10:57:06.857Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -23,6 +23,7 @@ import {
   renderTaskReadme,
   type ResolvedProject,
 } from "@agentplaneorg/core";
+import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 
 import { runCli } from "./run-cli.js";
 import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
@@ -800,6 +801,86 @@ describe("runCli", () => {
     expect(task.frontmatter.status).toBe("DOING");
   });
 
+  it("task start-ready prints matching incident advice for analogous tasks", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      [
+        createIncidentRegistrySkeleton().trimEnd(),
+        "",
+        "- id: INC-20260403-01",
+        "  date: 2026-04-03",
+        "  scope: docs website dependency drift",
+        "  tags: docs, website",
+        "  match: docs, website, dependency",
+        "  failure: docs check failed because a website dependency drifted outside the repo change scope",
+        "  advice: re-run the targeted docs site check first and confirm the failure is unrelated before widening task scope",
+        "  rule: Docs-only tasks MUST confirm unrelated website drift before widening scope.",
+        "  evidence: task 202603091054-V2X1QB",
+        "  enforcement: manual",
+        "  source_task: 202603091054-V2X1QB",
+        "  fixability: external",
+        "  state: stabilized",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Refresh docs website copy",
+          "--description",
+          "Update docs and keep website checks narrow",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--tag",
+          "website",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    const ioStart = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: update docs website copy while keeping unrelated drift out of scope.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(ioStart.stdout).toContain("incident advice for analogous tasks");
+      expect(ioStart.stdout).toContain("INC-20260403-01");
+      expect(ioStart.stdout).toContain("re-run the targeted docs site check first");
+    } finally {
+      ioStart.restore();
+    }
+  });
+
   it("task start-ready fails early when dependencies are not ready", async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();
@@ -1029,6 +1110,166 @@ describe("runCli", () => {
         io.restore();
       }
     }
+  });
+
+  it("finish promotes structured external incident candidates into the incident registry", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+    await commitAll(root, "test: seed incident registry");
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Handle external release outage",
+          "--description",
+          "Document external release recovery advice",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "release",
+          "--tag",
+          "github-actions",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    for (const [section, text] of [
+      ["Verify Steps", "1. Run the targeted release workflow checks."],
+      [
+        "Findings",
+        [
+          "- Observation: workflow_dispatch on release tags can still hang while waiting on exact-SHA push runs that never existed.",
+          "  Impact: manual release recovery stalls even after the repository fix is known.",
+          "  Resolution: validate the exact release ref inside the workflow before rerunning recovery.",
+          "  Promotion: incident-candidate",
+          "  IncidentScope: release publish workflow_dispatch",
+          "  IncidentTags: release, github-actions",
+          "  IncidentMatch: publish, workflow_dispatch, release-tag",
+          "  IncidentAdvice: validate the exact release ref inside the workflow before rerunning release recovery",
+          "  IncidentRule: Release recovery MUST validate the exact ref inside the workflow before rerunning manual publish recovery.",
+          "  IncidentExternal: true",
+        ].join("\n"),
+      ],
+    ] as const) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "doc",
+          "set",
+          taskId,
+          "--section",
+          section,
+          "--text",
+          text,
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "start-ready",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: capture external release recovery advice and ship the task changes.",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "verify",
+          taskId,
+          "--ok",
+          "--by",
+          "CODER",
+          "--note",
+          "Verified: targeted release workflow checks passed.",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const execFileAsync = promisify(execFile);
+    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      env: cleanGitEnv(process.env),
+    });
+    const commitHash = stdout.trim();
+
+    const ioFinish = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Verified: release recovery advice is captured and the task is complete.",
+        "--result",
+        "Captured reusable external release recovery advice.",
+        "--commit",
+        commitHash,
+        "--no-close-commit",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(ioFinish.stdout).toContain("incident registry updated");
+    } finally {
+      ioFinish.restore();
+    }
+
+    const incidents = await readFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      "utf8",
+    );
+    expect(incidents).toContain(`source_task: ${taskId}`);
+    expect(incidents).toContain("fixability: external");
+    expect(incidents).toContain("Release recovery MUST validate the exact ref inside the workflow");
   });
 
   it("task update supports replace flags", async () => {

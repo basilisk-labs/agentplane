@@ -1,0 +1,17 @@
+ .agentplane/tasks/202604030442-NBBE36/README.md    |  52 ++-
+ .../tasks/202604030442-NBBE36/pr/diffstat.txt      |   9 +
+ .../tasks/202604030442-NBBE36/pr/github-body.md    |  58 +++
+ .../tasks/202604030442-NBBE36/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604030442-NBBE36/pr/meta.json |  14 +
+ .../tasks/202604030442-NBBE36/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604030442-NBBE36/pr/review.md |  65 ++++
+ .../tasks/202604030442-NBBE36/pr/verify.log        |   0
+ packages/agentplane/src/commands/task/new.ts       | 106 ++++--
+ .../runner/usecases/scenario-materialize-task.ts   |  80 ++++-
+ .../agentplane/src/runtime/task-intake/index.ts    |  23 ++
+ .../src/runtime/task-intake/resolve.test.ts        | 237 ++++++++++++
+ .../agentplane/src/runtime/task-intake/resolve.ts  | 400 +++++++++++++++++++++
+ .../agentplane/src/runtime/task-intake/types.ts    | 141 ++++++++
+ .../src/usecases/context/resolve-context.ts        |  31 +-
+ .../usecases/context/resolve-context.unit.test.ts  |  46 ++-
+ 16 files changed, 1213 insertions(+), 50 deletions(-)

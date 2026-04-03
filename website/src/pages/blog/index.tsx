@@ -4,6 +4,14 @@ import styles from "./index.module.css";
 
 const releaseLineEntries = [
   {
+    href: "/blog/release-0-3-8-and-0-3-9-preparing-0-4-fixing-installability",
+    title:
+      "AgentPlane 0.3.8 and 0.3.9: preparing 0.4, then fixing the release that proved why it mattered",
+    excerpt:
+      "Why 0.3.8 spent its effort on internal cleanup for 0.4 and 0.5, why the shipped npm package still broke on install, and how 0.3.9 turned installability into a hard release gate.",
+    meta: "Release journal • 5 min read",
+  },
+  {
     href: "/blog/release-0-3-5-readme-v3-docs-shell-and-backend-projection",
     title:
       "AgentPlane 0.3.5: README v3 settles in, docs shell tightens up, backends go projection-first",

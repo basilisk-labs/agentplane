@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
   readAndValidatePrArtifacts: vi.fn(),
   computeVerifyState: vi.fn(),
   parsePrMeta: vi.fn(),
+  isTaskLocalOnlyAdvance: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core", () => ({
@@ -53,6 +54,9 @@ vi.mock("../artifacts.js", () => ({
 }));
 vi.mock("../verify.js", () => ({ computeVerifyState: mocks.computeVerifyState }));
 vi.mock("../../../shared/pr-meta.js", () => ({ parsePrMeta: mocks.parsePrMeta }));
+vi.mock("../../../shared/task-local-freshness.js", () => ({
+  isTaskLocalOnlyAdvance: mocks.isTaskLocalOnlyAdvance,
+}));
 
 function mkCtx(workflowMode: "direct" | "branch_pr" = "branch_pr") {
   return {
@@ -89,6 +93,7 @@ function seedCommon(): void {
     alreadyVerifiedSha: null,
     shouldRunVerify: false,
   });
+  mocks.isTaskLocalOnlyAdvance.mockResolvedValue(false);
 }
 
 describe("pr/integrate/internal/prepare", () => {
@@ -158,5 +163,49 @@ describe("pr/integrate/internal/prepare", () => {
     ).rejects.toMatchObject<CliError>({
       code: "E_GIT",
     });
+  });
+
+  it("rejects stale PR metadata when head_sha no longer matches the branch head", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: "stalebeef",
+      last_verified_sha: null,
+    });
+    mocks.gitRevParse.mockResolvedValue("deadbeef");
+    const promise = prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false });
+    await expect(promise).rejects.toMatchObject<CliError>({
+      code: "E_VALIDATION",
+    });
+    await expect(promise).rejects.toThrow(/meta\.head_sha=stalebeef/u);
+  });
+
+  it("accepts task-local-only advance between rendered sha and branch head", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: "oldbeef",
+      last_verified_sha: "oldbeef",
+    });
+    mocks.gitRevParse.mockResolvedValue("deadbeef");
+    mocks.isTaskLocalOnlyAdvance.mockResolvedValue(true);
+
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).resolves.toMatchObject({
+      branchHeadSha: "deadbeef",
+      shouldRunVerify: false,
+      alreadyVerifiedSha: null,
+    });
+    expect(mocks.computeVerifyState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        metaLastVerifiedSha: "deadbeef",
+        branchHeadSha: "deadbeef",
+      }),
+    );
   });
 });

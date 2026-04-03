@@ -1,7 +1,9 @@
 import { mapBackendError } from "../../cli/error-map.js";
-import { successMessage } from "../../cli/output.js";
+import { infoMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { renderIncidentAdvice } from "../../runtime/incidents/index.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { adviseTaskIncidents } from "../incidents/shared.js";
 
 import { cmdStart } from "./start.js";
 
@@ -39,6 +41,15 @@ export async function cmdTaskStartReady(opts: {
     });
     if (!opts.quiet) {
       process.stdout.write(`${successMessage("ready", opts.taskId)}\n`);
+      const advice = await adviseTaskIncidents({
+        ctx,
+        taskId: opts.taskId,
+        limit: 3,
+      });
+      if (advice.matches.length > 0) {
+        process.stdout.write(`${infoMessage("incident advice for analogous tasks")}\n`);
+        process.stdout.write(`${renderIncidentAdvice(advice.matches)}\n`);
+      }
     }
     return result;
   } catch (err) {

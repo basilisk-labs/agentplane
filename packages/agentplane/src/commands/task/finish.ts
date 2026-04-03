@@ -8,6 +8,7 @@ import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import { collectTaskIncidents } from "../incidents/shared.js";
 import {
   createTaskCloseCommit,
   existingCommitInfo,
@@ -221,6 +222,16 @@ export async function cmdFinish(opts: {
       }
     }
 
+    for (const taskId of opts.taskIds) {
+      const loadedTask = loadedTasks.find((candidate) => candidate.taskId === taskId) ?? null;
+      await collectTaskIncidents({
+        ctx,
+        taskId,
+        task: loadedTask?.task ?? null,
+        write: false,
+      });
+    }
+
     const tasksMissingCommit = loadedTasks
       .filter(({ task }) => !existingCommitInfo(task))
       .map(({ taskId }) => taskId);
@@ -339,6 +350,18 @@ export async function cmdFinish(opts: {
       taskCommitInfo,
     });
 
+    let promotedIncidents = 0;
+    for (const taskId of opts.taskIds) {
+      const loadedTask = loadedTasks.find((candidate) => candidate.taskId === taskId) ?? null;
+      const collected = await collectTaskIncidents({
+        ctx,
+        taskId,
+        task: loadedTask?.task ?? null,
+        write: true,
+      });
+      promotedIncidents += collected.plan.promotable.length;
+    }
+
     // tasks.json is export-only; generated via `agentplane task export`.
 
     if (shouldCloseCommit && primaryTaskId) {
@@ -366,6 +389,11 @@ export async function cmdFinish(opts: {
     }
 
     if (!opts.quiet) {
+      if (promotedIncidents > 0) {
+        process.stdout.write(
+          `${infoMessage(`incident registry updated (${promotedIncidents} promoted)`)}\n`,
+        );
+      }
       process.stdout.write(`${successMessage("finished")}\n`);
     }
     return 0;

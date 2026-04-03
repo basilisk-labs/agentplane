@@ -1,0 +1,1 @@
+workflow: Fix workflow mode drift between AGENTS.md and init config (BRRQ94)

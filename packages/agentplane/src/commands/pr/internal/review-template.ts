@@ -1,67 +1,263 @@
-export function renderPrReviewTemplate(opts: {
-  author: string;
-  createdAt: string;
+import { extractTaskSuffix } from "@agentplaneorg/core";
+
+import type { TaskData } from "../../../backends/task-backend.js";
+import type { PrHandoffNote } from "./note-store.js";
+
+const AUTO_SUMMARY_START = "<!-- BEGIN AUTO SUMMARY -->";
+const AUTO_SUMMARY_END = "<!-- END AUTO SUMMARY -->";
+const SUMMARY_SECTION = "## Summary";
+const SCOPE_SECTION = "## Scope";
+const VERIFICATION_SECTION = "## Verification";
+const RISKS_SECTION = "## Risks";
+const HANDOFF_NOTES_MARKER = "## Handoff Notes";
+
+function sectionText(task: TaskData, name: string, fallback: string): string {
+  const value = typeof task.sections?.[name] === "string" ? task.sections[name].trim() : "";
+  return value || fallback;
+}
+
+function normalizeOneLine(value: string, maxChars: number): string {
+  const trimmed = value.trim().replaceAll(/\s+/g, " ");
+  if (!trimmed) return "";
+  return trimmed.length > maxChars ? `${trimmed.slice(0, Math.max(1, maxChars - 3))}...` : trimmed;
+}
+
+function informativeTags(task: TaskData): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const rawTag of Array.isArray(task.tags) ? task.tags : []) {
+    const tag = rawTag.trim().toLowerCase();
+    if (!tag || tag === "code" || seen.has(tag)) continue;
+    seen.add(tag);
+    out.push(tag);
+  }
+  return out;
+}
+
+function renderVerificationSummary(task: TaskData): string {
+  const state = task.verification?.state ?? "pending";
+  const note = typeof task.verification?.note === "string" ? task.verification.note.trim() : "";
+  const commands = Array.isArray(task.verify)
+    ? task.verify.filter(
+        (value): value is string => typeof value === "string" && value.trim().length > 0,
+      )
+    : [];
+  const plan = sectionText(
+    task,
+    "Verify Steps",
+    commands.length > 0
+      ? commands.map((command) => `- ${command.trim()}`).join("\n")
+      : "- Not recorded.",
+  );
+  const statusLine =
+    state === "ok"
+      ? note || "Recorded as passed."
+      : state === "needs_rework"
+        ? note || "Recorded as needs rework."
+        : note || "Not recorded yet.";
+  return [
+    "### Plan",
+    "",
+    plan,
+    "",
+    "### Current Status",
+    "",
+    `- State: ${state}`,
+    `- Note: ${statusLine}`,
+  ].join("\n");
+}
+
+function renderRiskSummary(task: TaskData): string {
+  const riskLevel = typeof task.risk_level === "string" ? task.risk_level : "not recorded";
+  const rollbackPlan = sectionText(
+    task,
+    "Rollback Plan",
+    "- Revert task-related commit(s) if rollback is required.",
+  );
+  return [
+    `- Risk level: ${riskLevel}`,
+    `- Breaking change: ${task.breaking === true ? "yes" : "no"}`,
+    "",
+    "### Rollback",
+    "",
+    rollbackPlan,
+  ].join("\n");
+}
+
+function renderSharedPrSections(opts: { task: TaskData; handoffNotes: PrHandoffNote[] }): string[] {
+  return [
+    SUMMARY_SECTION,
+    "",
+    sectionText(opts.task, "Summary", opts.task.title.trim() || "- Not recorded."),
+    "",
+    SCOPE_SECTION,
+    "",
+    sectionText(opts.task, "Scope", "- Not recorded."),
+    "",
+    VERIFICATION_SECTION,
+    "",
+    renderVerificationSummary(opts.task),
+    "",
+    RISKS_SECTION,
+    "",
+    renderRiskSummary(opts.task),
+    "",
+    HANDOFF_NOTES_MARKER,
+    "",
+    ...renderPrHandoffNotes(opts.handoffNotes),
+    "",
+  ];
+}
+
+export function buildGithubPrTitle(task: TaskData): string {
+  const suffix = extractTaskSuffix(task.id);
+  const scope = informativeTags(task).slice(0, 2).join("/");
+  const title = normalizeOneLine(task.title, scope ? 72 : 84);
+  return scope ? `${scope}: ${title} (${suffix})` : `${title} (${suffix})`;
+}
+
+export function renderPrAutoSummary(opts: {
+  updatedAt: string;
   branch: string;
+  headSha: string | null;
+  diffstat: string;
 }): string {
   return [
-    "# PR Review",
+    "<details>",
+    "<summary>Raw evidence</summary>",
     "",
-    `Opened by ${opts.author} on ${opts.createdAt}`,
-    `Branch: ${opts.branch}`,
+    `- Updated: ${opts.updatedAt}`,
+    `- Branch: ${opts.branch}`,
+    `- Head: ${opts.headSha ? opts.headSha.slice(0, 12) : "No commits yet"}`,
     "",
-    "## Summary",
+    "```text",
+    opts.diffstat || "No changes detected.",
+    "```",
     "",
-    "- ",
-    "",
-    "## Checklist",
-    "",
-    "- [ ] Tests added/updated",
-    "- [ ] Lint/format passes",
-    "- [ ] Verify passed",
-    "- [ ] Docs updated (if needed)",
-    "",
-    "## Handoff Notes",
-    "",
-    "<!-- Add review notes here. -->",
-    "",
-    "<!-- BEGIN AUTO SUMMARY -->",
-    "<!-- END AUTO SUMMARY -->",
-    "",
+    "</details>",
   ].join("\n");
 }
 
 export function updateAutoSummaryBlock(text: string, summary: string): string {
-  const start = "<!-- BEGIN AUTO SUMMARY -->";
-  const end = "<!-- END AUTO SUMMARY -->";
-  const startIdx = text.indexOf(start);
-  const endIdx = text.indexOf(end);
+  const startIdx = text.indexOf(AUTO_SUMMARY_START);
+  const endIdx = text.indexOf(AUTO_SUMMARY_END);
   if (startIdx === -1 || endIdx === -1 || endIdx < startIdx) {
-    return `${text.trimEnd()}\n\n${start}\n${summary}\n${end}\n`;
+    return `${text.trimEnd()}\n\n${AUTO_SUMMARY_START}\n${summary}\n${AUTO_SUMMARY_END}\n`;
   }
-  const before = text.slice(0, startIdx + start.length);
+  const before = text.slice(0, startIdx + AUTO_SUMMARY_START.length);
   const after = text.slice(endIdx);
   return `${before}\n${summary}\n${after}`;
 }
 
-export function appendHandoffNote(review: string, note: string): string {
-  const marker = "## Handoff Notes";
-  const idx = review.indexOf(marker);
-  if (idx === -1) return `${review.trimEnd()}\n\n${marker}\n\n- ${note}\n`;
-  const head = review.slice(0, idx + marker.length);
-  const tail = review.slice(idx + marker.length);
-  const trimmedTail = tail.startsWith("\n") ? tail.slice(1) : tail;
-  return `${head}\n\n- ${note}\n${trimmedTail}`;
+export function extractAutoSummaryBlock(text: string): string | null {
+  const startIdx = text.indexOf(AUTO_SUMMARY_START);
+  const endIdx = text.indexOf(AUTO_SUMMARY_END);
+  if (startIdx === -1 || endIdx === -1 || endIdx < startIdx) return null;
+  return text.slice(startIdx + AUTO_SUMMARY_START.length, endIdx).trim();
+}
+
+function formatNoteTimestamp(value: string): string {
+  return value.replace(/\.\d{3}Z$/, "Z");
+}
+
+export function renderPrHandoffNotes(notes: PrHandoffNote[]): string[] {
+  if (notes.length === 0) {
+    return ["- No handoff notes recorded yet. Use `agentplane pr note ...` to append one."];
+  }
+  return notes.map(
+    (note) => `- ${formatNoteTimestamp(note.created_at)} ${note.author}: ${note.body}`,
+  );
+}
+
+export function updateHandoffNotesBlock(text: string, notes: PrHandoffNote[]): string {
+  const markerIdx = text.indexOf(HANDOFF_NOTES_MARKER);
+  const nextIdx =
+    markerIdx === -1
+      ? text.indexOf(AUTO_SUMMARY_START)
+      : text.indexOf(AUTO_SUMMARY_START, markerIdx);
+  const renderedNotes = renderPrHandoffNotes(notes).join("\n");
+  if (markerIdx === -1) {
+    if (nextIdx === -1) {
+      return `${text.trimEnd()}\n\n${HANDOFF_NOTES_MARKER}\n\n${renderedNotes}\n`;
+    }
+    return `${text.slice(0, nextIdx).trimEnd()}\n\n${HANDOFF_NOTES_MARKER}\n\n${renderedNotes}\n\n${text.slice(nextIdx)}`;
+  }
+  const before = text.slice(0, markerIdx + HANDOFF_NOTES_MARKER.length);
+  const after = nextIdx === -1 ? "" : text.slice(nextIdx);
+  return `${before}\n\n${renderedNotes}\n\n${after}`.trimEnd() + "\n";
+}
+
+export function renderPrReviewDocument(opts: {
+  task: TaskData;
+  author?: string;
+  createdAt: string;
+  branch: string;
+  handoffNotes?: PrHandoffNote[];
+  autoSummary: string;
+}): string {
+  return [
+    "# PR Review",
+    "",
+    `Created: ${opts.createdAt || "UNKNOWN"}`,
+    `Branch: ${opts.branch || "UNKNOWN"}`,
+    "",
+    ...renderSharedPrSections({
+      task: opts.task,
+      handoffNotes: opts.handoffNotes ?? [],
+    }),
+    AUTO_SUMMARY_START,
+    opts.autoSummary,
+    AUTO_SUMMARY_END,
+    "",
+  ].join("\n");
+}
+
+export function renderGithubPrBody(opts: {
+  task: TaskData;
+  handoffNotes?: PrHandoffNote[];
+  autoSummary: string;
+}): string {
+  return [
+    ...renderSharedPrSections({
+      task: opts.task,
+      handoffNotes: opts.handoffNotes ?? [],
+    }),
+    opts.autoSummary,
+    "",
+  ].join("\n");
 }
 
 export function validateReviewContents(review: string, errors: string[]): void {
-  const requiredSections = ["## Summary", "## Checklist", "## Handoff Notes"];
+  const requiredSections = [
+    SUMMARY_SECTION,
+    SCOPE_SECTION,
+    VERIFICATION_SECTION,
+    RISKS_SECTION,
+    HANDOFF_NOTES_MARKER,
+  ];
   for (const section of requiredSections) {
     if (!review.includes(section)) errors.push(`Missing section: ${section}`);
   }
-  if (!review.includes("<!-- BEGIN AUTO SUMMARY -->")) {
+  if (!review.includes(AUTO_SUMMARY_START)) {
     errors.push("Missing auto summary start marker");
   }
-  if (!review.includes("<!-- END AUTO SUMMARY -->")) {
+  if (!review.includes(AUTO_SUMMARY_END)) {
     errors.push("Missing auto summary end marker");
+  }
+}
+
+export function validateGithubPrBodyContents(body: string, errors: string[]): void {
+  const requiredSections = [
+    SUMMARY_SECTION,
+    SCOPE_SECTION,
+    VERIFICATION_SECTION,
+    RISKS_SECTION,
+    HANDOFF_NOTES_MARKER,
+  ];
+  for (const section of requiredSections) {
+    if (!body.includes(section)) errors.push(`Missing section: ${section}`);
+  }
+  if (!body.includes("<details>")) {
+    errors.push("Missing raw evidence details block");
   }
 }

@@ -40,6 +40,15 @@ describe("pr/internal/pr-paths", () => {
     expect(resolved.metaPath).toBe(
       path.join("/repo", ".agentplane/tasks", "T-1", "pr", "meta.json"),
     );
+    expect(resolved.notesPath).toBe(
+      path.join("/repo", ".agentplane/tasks", "T-1", "pr", "notes.jsonl"),
+    );
+    expect(resolved.githubTitlePath).toBe(
+      path.join("/repo", ".agentplane/tasks", "T-1", "pr", "github-title.txt"),
+    );
+    expect(resolved.githubBodyPath).toBe(
+      path.join("/repo", ".agentplane/tasks", "T-1", "pr", "github-body.md"),
+    );
   });
 
   it("resolvePrPaths falls back to resolveProject/loadConfig when ctx is absent", async () => {
@@ -59,6 +68,9 @@ describe("pr/internal/pr-paths", () => {
     expect(mocks.loadConfig).toHaveBeenCalledTimes(1);
     expect(resolved.reviewPath).toBe(
       path.join("/tmp/repo", ".agentplane/tasks", "T-2", "pr", "review.md"),
+    );
+    expect(resolved.githubBodyPath).toBe(
+      path.join("/tmp/repo", ".agentplane/tasks", "T-2", "pr", "github-body.md"),
     );
   });
 

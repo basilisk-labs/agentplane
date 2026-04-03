@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604030442-VB1XAH/execution-profiles",
+  "created_at": "2026-04-03T10:58:29.469Z",
+  "head_sha": "092bc91a422e8055f718496394a01c024518a86c",
+  "last_verified_at": "2026-04-03T11:22:42.830Z",
+  "last_verified_sha": "092bc91a422e8055f718496394a01c024518a86c",
+  "merge_commit": "659f6be579360d8d25c4a41b5ce649ead329c30e",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-03T11:22:42.830Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604030442-VB1XAH",
+  "updated_at": "2026-04-03T11:22:42.830Z",
+  "verify": {
+    "status": "pass"
+  }
+}

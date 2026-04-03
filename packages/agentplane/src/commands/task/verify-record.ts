@@ -4,9 +4,13 @@ import path from "node:path";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
+import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
+import { resolvePrPaths } from "../pr/internal/pr-paths.js";
+import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 
 import {
   decodeEscapedTaskTextNewlines,
@@ -68,6 +72,33 @@ async function recordVerificationResult(opts: {
       return { intents: execution.intents };
     },
   });
+
+  if (config.workflow_mode === "branch_pr") {
+    const syncResult = await ensurePrArtifactsSynced({
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: opts.taskId,
+      author: opts.by,
+    });
+    if (syncResult) {
+      const { metaPath } = await resolvePrPaths({
+        ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId: opts.taskId,
+      });
+      const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
+      await writeJsonStableIfChanged(
+        metaPath,
+        buildVerifiedPrMeta({
+          meta,
+          at,
+          state: opts.state === "ok" ? "pass" : "fail",
+        }),
+      );
+    }
+  }
 
   if (!opts.quiet) {
     const readmePath = path.join(

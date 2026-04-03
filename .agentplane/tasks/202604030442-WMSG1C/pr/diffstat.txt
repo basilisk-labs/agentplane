@@ -1,0 +1,19 @@
+ .agentplane/tasks/202604030442-WMSG1C/README.md    |  52 +++++-
+ .../tasks/202604030442-WMSG1C/pr/diffstat.txt      |  11 ++
+ .../tasks/202604030442-WMSG1C/pr/github-body.md    |  60 ++++++
+ .../tasks/202604030442-WMSG1C/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604030442-WMSG1C/pr/meta.json |  14 ++
+ .../tasks/202604030442-WMSG1C/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604030442-WMSG1C/pr/review.md |  67 +++++++
+ .../tasks/202604030442-WMSG1C/pr/verify.log        |   0
+ .../src/cli/run-cli.core.tasks.query.test.ts       |  44 +++++
+ .../agentplane/src/cli/run-cli.scenario.test.ts    |  38 ++++
+ packages/agentplane/src/runner/types.ts            |   2 +
+ .../agentplane/src/runner/usecases/task-run.ts     |   5 +
+ packages/agentplane/src/runtime/protocol/index.ts  |  21 +++
+ .../src/runtime/protocol/resolve.test.ts           | 206 +++++++++++++++++++++
+ .../agentplane/src/runtime/protocol/resolve.ts     |  62 +++++++
+ packages/agentplane/src/runtime/protocol/types.ts  |  56 ++++++
+ .../src/usecases/context/resolve-context.ts        |  19 +-
+ .../usecases/context/resolve-context.unit.test.ts  |  42 +++++
+ 18 files changed, 684 insertions(+), 16 deletions(-)

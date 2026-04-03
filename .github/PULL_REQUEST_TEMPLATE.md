@@ -1,10 +1,6 @@
 ## Summary
 
-Describe what changed and why.
-
-## Related issue
-
-Link issue(s): `Closes #...`
+Describe the outcome and why it matters.
 
 ## Scope
 
@@ -13,15 +9,36 @@ Link issue(s): `Closes #...`
 
 ## Verification
 
-List commands/checks you ran and their outcomes.
+### Plan
+
+List verify steps or commands.
+
+### Current Status
+
+- State:
+- Note:
 
 ## Risks
 
-List potential regressions, breaking changes, or migration notes.
+- Risk level:
+- Breaking change:
 
-## Checklist
+### Rollback
 
-- [ ] I followed `CONTRIBUTING.md`
-- [ ] I added/updated tests where relevant
-- [ ] I updated docs where behavior changed
-- [ ] I considered backward compatibility
+Describe rollback or migration notes.
+
+## Handoff Notes
+
+List reviewer or executor notes that matter for merge.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Branch:
+- Head:
+
+```text
+Diffstat / raw evidence
+```
+
+</details>

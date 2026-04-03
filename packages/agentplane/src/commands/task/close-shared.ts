@@ -20,6 +20,7 @@ export async function recordVerifiedNoopClosure(opts: {
   await applyTaskMutation({
     ctx: opts.ctx,
     taskId: opts.taskId,
+    policyAction: "task_finish",
     build: async (task) => {
       if (!opts.force && String(task.status || "TODO").toUpperCase() === "DONE") {
         throw new CliError({

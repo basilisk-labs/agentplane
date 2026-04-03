@@ -50,6 +50,17 @@ AGENTS.md or CLAUDE.md   Policy gateway for the repository
 
 These files matter because they make agent work inspectable. A reviewer can see what policy governs the repo, what task is active, what was verified, and how the task was closed.
 
+## Framework control plane
+
+Inside the CLI, AgentPlane now resolves one explicit framework control plane before recipe-specific or runner-specific behavior runs:
+
+- a resolved harness contract for repo policy, workflow, task rules, and backend restrictions
+- one canonical execution context carrying capabilities, approvals, execution profile runtime, task intake, and trace-ready behavior state
+- traced behavior precedence: `harness -> extension -> user -> builtin`
+- machine-readable explain and protocol surfaces that persist the resolved framework inputs into shared runner artifacts
+
+If you are extending the framework instead of only using the CLI, start with [Architecture](docs/developer/architecture.mdx) and [Harness Engineering](docs/developer/harness-engeneering.mdx).
+
 ## 2-minute quickstart
 
 Install the CLI:
@@ -154,6 +165,7 @@ Start here:
 Developer and release docs:
 
 - [Architecture](docs/developer/architecture.mdx)
+- [Framework refactor program](docs/developer/framework-refactor-program.mdx)
 - [CLI contract](docs/developer/cli-contract.mdx)
 - [Release and publishing](docs/developer/release-and-publishing.mdx)
 - [Release notes](docs/releases/)

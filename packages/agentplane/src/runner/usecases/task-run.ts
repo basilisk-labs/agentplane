@@ -1,6 +1,14 @@
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import { resolveRunnerAdapterCapabilityRegistry } from "../../runtime/capabilities/index.js";
+import { consumeExecutionProfileBudget } from "../../runtime/execution-profile/index.js";
+import {
+  appendFrameworkExplainBehaviorInputs,
+  type ExplainBehaviorInput,
+} from "../../runtime/explain/index.js";
+import { buildFrameworkProtocolSurface } from "../../runtime/protocol/index.js";
+import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
 
 import type { RunnerAdapter } from "../adapters/shared.js";
 import { evolveRunnerRunState } from "../artifacts.js";
@@ -13,7 +21,6 @@ import { createRunnerRunId } from "../run-id.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { RunnerRunRepository } from "../run-repository.js";
 import { resolveTaskRunnerPaths } from "../task-run-paths.js";
-import { resolveRunnerTimeoutPolicy, resolveRunnerTracePolicy } from "../config.js";
 import { normalizeRecipeArtifactPrefixes } from "../result-manifest-policy.js";
 import {
   RUNNER_API_VERSION,
@@ -51,6 +58,23 @@ class RunnerPreparationCliError extends CliError {
     this.bundle = opts.bundle;
     this.state = opts.state;
   }
+}
+
+function collectFrameworkExplainBehaviorInputs(
+  prompts: RunnerContextBundle["base_prompts"],
+): ExplainBehaviorInput[] {
+  return prompts.flatMap((prompt) =>
+    prompt.resolution
+      ? [
+          {
+            id: prompt.id,
+            category: "prompt" as const,
+            ...(prompt.source ? { source: prompt.source } : {}),
+            resolution: prompt.resolution,
+          },
+        ]
+      : [],
+  );
 }
 
 function isEnforcedCapabilityLevel(level: string | undefined): boolean {
@@ -196,23 +220,43 @@ export async function prepareTaskRunnerExecution(opts: {
   recipe?: RunnerRecipeContext;
   target?: RunnerTarget;
 }): Promise<PreparedTaskRunnerExecution> {
-  const ctx =
+  const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  const executionContext = await makeReadOnlyUsecaseContext(command);
+  const target = opts.target ?? { kind: "task", task_id: opts.task_id };
+  void executionContext.policy.evaluate({
+    action: target.kind === "recipe_scenario" ? "scenario_execute" : "task_run",
+    config: executionContext.config,
+    taskId: opts.task_id,
+    git: { stagedPaths: [] },
+  });
+  let executionProfile = consumeExecutionProfileBudget({
+    runtime: executionContext.executionProfile,
+    phase: "discovery",
+  });
   const taskEnvelope = await assembleRunnerTaskContext({
-    ctx,
+    ctx: executionContext.command,
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
     task_id: opts.task_id,
   });
-
   const base_prompts = await collectRunnerBasePrompts({
-    git_root: taskEnvelope.repository.git_root,
+    git_root: executionContext.repo.git_root,
     owner_id: taskEnvelope.task.data.owner,
-    agents_dir: ctx.config.paths.agents_dir,
+    agents_dir: executionContext.harness.workflow.paths.agents_dir,
     recipe: opts.recipe,
+    harness: executionContext.harness,
+    execution_profile: executionProfile,
   });
-  const adapter: RunnerAdapter = createRunnerAdapter(ctx.config);
+  const framework_explain = appendFrameworkExplainBehaviorInputs(
+    executionContext.frameworkExplain,
+    collectFrameworkExplainBehaviorInputs(base_prompts),
+  );
+  const framework_protocol = buildFrameworkProtocolSurface({
+    explain: framework_explain,
+  });
+  const adapter: RunnerAdapter = createRunnerAdapter(executionContext.config);
   const configured_adapter_id: RunnerExecutionContract["adapter_id"] =
     adapter.id === "custom" ? "custom" : "codex";
   const run_id = opts.run_id ?? createRunnerRunId();
@@ -225,8 +269,10 @@ export async function prepareTaskRunnerExecution(opts: {
   const bundle: RunnerContextBundle = {
     schema_version: RUNNER_BUNDLE_SCHEMA_VERSION,
     runner_api_version: RUNNER_API_VERSION,
-    target: opts.target ?? { kind: "task", task_id: opts.task_id },
+    target,
     base_prompts,
+    framework_explain,
+    framework_protocol,
     repository: taskEnvelope.repository,
     task: taskEnvelope.task,
     recipe: opts.recipe,
@@ -235,20 +281,31 @@ export async function prepareTaskRunnerExecution(opts: {
       mode: opts.mode,
       run_id,
       artifact_paths,
-      trace_policy: resolveRunnerTracePolicy(ctx.config),
-      timeout_policy: resolveRunnerTimeoutPolicy(ctx.config),
+      profile_runtime: executionProfile,
+      trace_policy: executionProfile.runner.trace_policy,
+      timeout_policy: executionProfile.runner.timeout_policy,
       approvals: {
-        require_plan: ctx.config.agents?.approvals.require_plan,
-        require_verify: ctx.config.agents?.approvals.require_verify,
-        require_network: ctx.config.agents?.approvals.require_network,
+        require_plan: executionContext.approvals.require_plan,
+        require_verify: executionContext.approvals.require_verify,
+        require_network: executionContext.approvals.require_network,
       },
     },
   };
+  executionProfile = consumeExecutionProfileBudget({
+    runtime: bundle.execution.profile_runtime ?? executionProfile,
+    phase: "implementation",
+  });
+  bundle.execution.profile_runtime = executionProfile;
   bundle.execution.adapter_capabilities = adapter.describeCapabilities(bundle);
   bundle.execution.policy_decision = buildRunnerPolicyDecision({
     adapter_id: bundle.execution.adapter_id,
     capabilities: bundle.execution.adapter_capabilities,
     recipe: bundle.recipe,
+  });
+  bundle.execution.adapter_capability_registry = resolveRunnerAdapterCapabilityRegistry({
+    adapter_id: bundle.execution.adapter_id,
+    capabilities: bundle.execution.adapter_capabilities,
+    requested: bundle.execution.policy_decision.requested,
   });
   assertRunnerTaskExecutable(bundle);
   try {

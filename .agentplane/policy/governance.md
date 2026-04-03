@@ -5,6 +5,9 @@
 - `.agentplane/policy/incidents.md` is the single incident registry.
 - Incident-derived and situational rules MUST be added only to `incidents.md`.
 - MUST NOT create additional incident policy files under `.agentplane/policy/`.
+- New reusable operational incidents SHOULD be promoted from task `Findings` via `agentplane finish` or `agentplane incidents collect <task-id>`.
+- Auto-promotion is reserved for explicit `incident-candidate` blocks marked `IncidentExternal: true`; repository-fixable defects stay task-local unless curated manually.
+- Normal startup MUST NOT bulk-load `incidents.md`; targeted lookup for analogous work is allowed through `task start-ready` and `agentplane incidents advise`.
 
 ## Stabilization criteria
 

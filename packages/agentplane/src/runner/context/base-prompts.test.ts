@@ -2,9 +2,15 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
+import { buildExecutionProfile, defaultConfig } from "@agentplaneorg/core";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { collectRunnerBasePrompts } from "./base-prompts.js";
+import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+import {
+  collectRunnerBasePrompts,
+  resolveOwnerProfilePromptSource,
+  resolvePolicyGatewayPromptSource,
+} from "./base-prompts.js";
 
 const tempDirs = new Set<string>();
 
@@ -21,6 +27,32 @@ afterEach(async () => {
 });
 
 describe("collectRunnerBasePrompts", () => {
+  it("exposes precedence traces for owner profile and policy gateway source selection", async () => {
+    const root = await makeTempRepo();
+    const agentsDir = path.join(root, ".runtime", "agents");
+    await mkdir(agentsDir, { recursive: true });
+    await writeFile(path.join(root, "AGENTS.md"), "# Repo Policy\n");
+    await writeFile(
+      path.join(agentsDir, "CODER.json"),
+      JSON.stringify({ id: "CODER", role: "Repo-local coder profile" }, null, 2),
+    );
+
+    const owner = await resolveOwnerProfilePromptSource({
+      git_root: root,
+      agents_dir: ".runtime/agents",
+      owner_id: "CODER",
+    });
+    const gateway = await resolvePolicyGatewayPromptSource({
+      git_root: root,
+      fallback_flavor: "codex",
+    });
+
+    expect(owner.winner.layer).toBe("user");
+    expect(owner.conflicts[0]?.layer).toBe("builtin");
+    expect(gateway.winner.layer).toBe("harness");
+    expect(gateway.conflicts[0]?.layer).toBe("builtin");
+  });
+
   it("prefers repo-local gateway and owner profile sources over bundled fallbacks", async () => {
     const root = await makeTempRepo();
     const agentsDir = path.join(root, ".runtime", "agents");
@@ -77,8 +109,12 @@ describe("collectRunnerBasePrompts", () => {
       "Treat `bundle.json` as the authoritative input contract.",
     );
     expect(prompts[0]?.content).toContain("Do not run repository startup commands");
+    expect(prompts[0]?.resolution?.winner.layer).toBe("builtin");
     expect(prompts[1]?.content).toBe("# Repo Policy\n\nFollow the workspace contract.\n");
+    expect(prompts[1]?.resolution?.winner.layer).toBe("harness");
+    expect(prompts[1]?.resolution?.conflicts[0]?.layer).toBe("builtin");
     expect(prompts[2]?.content).toContain('"role": "Repo-local coder profile"');
+    expect(prompts[2]?.resolution?.winner.layer).toBe("user");
   });
 
   it("falls back cleanly to bundled defaults when repo-local prompt files are absent", async () => {
@@ -95,8 +131,40 @@ describe("collectRunnerBasePrompts", () => {
     expect(prompts[1]?.source).toBe("bundled:policy-gateway:AGENTS.md");
     expect(prompts[1]?.title).toBe("Bundled Policy Gateway Fallback (AGENTS.md)");
     expect(prompts[1]?.content).toContain("AGENTS.md");
+    expect(prompts[1]?.resolution?.winner.layer).toBe("builtin");
     expect(prompts[2]?.source).toBe("bundled:agent-profile:CODER.json");
     expect(prompts[2]?.content).toContain('"id": "CODER"');
+    expect(prompts[2]?.resolution?.winner.layer).toBe("builtin");
+  });
+
+  it("inserts execution profile runtime constraints before the owner profile when provided", async () => {
+    const root = await makeTempRepo();
+    const config = defaultConfig();
+    config.execution = buildExecutionProfile("conservative");
+    const executionProfile = resolveExecutionProfileRuntime(config);
+
+    const prompts = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+      execution_profile: executionProfile,
+    });
+
+    expect(prompts.map((prompt) => prompt.id)).toEqual([
+      "base.framework_runner",
+      "base.policy_gateway",
+      "base.execution_profile",
+      "base.owner_profile",
+    ]);
+    expect(prompts[2]).toMatchObject({
+      role: "policy",
+      priority: 250,
+      source: "runtime:execution-profile:conservative",
+      title: "Execution Profile Runtime (conservative)",
+    });
+    expect(prompts[2]?.content).toContain('"reasoning_effort": "high"');
+    expect(prompts[2]?.content).toContain('"require_force": true');
+    expect(prompts[2]?.content).toContain('"terminate_grace_ms": 5000');
+    expect(prompts[2]?.resolution?.winner.layer).toBe("harness");
   });
 
   it("adds recipe-aware prompt blocks after framework, policy, and owner prompts", async () => {
@@ -170,7 +238,10 @@ describe("collectRunnerBasePrompts", () => {
     expect(prompts[3]?.content).toContain('"goal": "Preview installed tasks."');
     expect(prompts[4]?.source).toBe(".agentplane/recipes/viewer/agents/recipe.json");
     expect(prompts[4]?.content).toContain('"prompt": "Use recipe local policy."');
+    expect(prompts[4]?.resolution?.winner.layer).toBe("extension");
+    expect(prompts[4]?.resolution?.conflicts[0]?.source).toBe("recipe:viewer:agent:RECIPE_AGENT");
     expect(prompts[5]?.source).toBe(".agentplane/recipes/viewer/skills/analysis.json");
+    expect(prompts[5]?.resolution?.winner.layer).toBe("extension");
     expect(prompts[6]?.content).toContain('"entrypoint": "tools/run.js"');
   });
 });

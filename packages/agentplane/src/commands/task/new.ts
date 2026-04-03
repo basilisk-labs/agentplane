@@ -1,10 +1,16 @@
 import { setMarkdownSection } from "@agentplaneorg/core";
 
-import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, warnMessage } from "../../cli/output.js";
+import {
+  createClarificationContract,
+  createTaskGraphDraft,
+  createTaskIntakeContext,
+  materializeTaskGraphDraft,
+} from "../../runtime/task-intake/index.js";
 import { CliError } from "../../shared/errors.js";
 import { buildTaskDocState } from "../../shared/task-doc-state.js";
+import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import {
   ensureTaskDependsOnGraphIsAcyclic,
@@ -98,32 +104,16 @@ export async function runTaskNewParsed(opts: {
       });
     }
     const taskId = await ctx.taskBackend.generateTaskId({ length: suffixLength, attempts: 1000 });
+    const executionContext = await makeReadOnlyUsecaseContext(ctx);
+    const createdAt = nowIso();
     const docState = buildTaskDocState({
       doc: defaultTaskDocV3({ title: p.title, description: p.description }),
       owner: p.owner,
       updatedBy: p.owner,
       version: TASK_DOC_VERSION_V3,
-      updatedAt: nowIso(),
+      updatedAt: createdAt,
     });
-    const task: TaskData = {
-      id: taskId,
-      title: p.title,
-      description: p.description,
-      status: "TODO",
-      priority: p.priority,
-      owner: p.owner,
-      revision: 1,
-      origin: { system: "manual" },
-      tags: p.tags,
-      depends_on: p.dependsOn,
-      verify: p.verify,
-      comments: [],
-      doc_version: docState.doc_version,
-      doc_updated_at: docState.doc_updated_at,
-      doc_updated_by: docState.doc_updated_by,
-      id_source: "generated",
-      doc: docState.doc,
-    };
+    let taskDoc = docState.doc;
 
     const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
     const primary = resolvePrimaryTag(p.tags, ctx);
@@ -142,8 +132,8 @@ export async function runTaskNewParsed(opts: {
       dependsOn: p.dependsOn,
     });
     if (requiresVerifySteps) {
-      task.doc = setMarkdownSection(
-        task.doc ?? "",
+      taskDoc = setMarkdownSection(
+        taskDoc,
         "Verify Steps",
         buildDefaultVerifyStepsSection({
           primary: primary.primary,
@@ -167,17 +157,71 @@ export async function runTaskNewParsed(opts: {
     }
 
     const normalizedDoc = buildTaskDocState({
-      doc: task.doc ?? "",
+      doc: taskDoc,
       owner: p.owner,
-      updatedBy: task.doc_updated_by,
+      updatedBy: p.owner,
       version: TASK_DOC_VERSION_V3,
-      updatedAt: task.doc_updated_at,
+      updatedAt: createdAt,
     });
-    task.doc = normalizedDoc.doc;
-    task.sections = normalizedDoc.sections;
-    task.doc_version = normalizedDoc.doc_version;
-    task.doc_updated_at = normalizedDoc.doc_updated_at;
-    task.doc_updated_by = normalizedDoc.doc_updated_by;
+    const intakeContext = createTaskIntakeContext({
+      runtime: executionContext.taskIntake,
+      source: {
+        id: "task_new",
+        detail: "task new",
+      },
+      requested_outcome: p.title,
+      requested_owner: p.owner,
+      requested_tags: p.tags,
+      requested_verify: p.verify,
+      requested_dependencies: p.dependsOn,
+      inputs: [
+        {
+          kind: "text",
+          label: "description",
+          value: p.description,
+          required: true,
+        },
+      ],
+    });
+    const clarification = createClarificationContract({
+      context: intakeContext,
+    });
+    const draft = createTaskGraphDraft({
+      context: intakeContext,
+      clarification,
+      summary: p.title,
+      tasks: [
+        {
+          draft_id: "task_1",
+          title: p.title,
+          description: p.description,
+          owner: p.owner,
+          priority: p.priority,
+          origin: { system: "manual" },
+          tags: p.tags,
+          depends_on: p.dependsOn,
+          verify: p.verify,
+          doc: normalizedDoc.doc,
+          doc_version: normalizedDoc.doc_version,
+          id_source: "generated",
+        },
+      ],
+    });
+    const materialization = await materializeTaskGraphDraft({
+      draft,
+      task_ids: {
+        task_1: taskId,
+      },
+      created_at: createdAt,
+    });
+    const task = materialization.tasks[0]?.task;
+    if (!task) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: "Task intake materialization unexpectedly produced no tasks.",
+      });
+    }
 
     await ctx.taskBackend.writeTask(task);
     process.stdout.write(`${taskId}\n`);

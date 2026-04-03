@@ -32,7 +32,7 @@ describe("syncHostedMergedTasks", () => {
       branch: "task/202603271724-HJXDV0/reconcile",
       at: "2026-03-27T17:30:00.000Z",
     });
-    expect(updated.updated_at).toBe("2026-03-27T17:30:00.000Z");
+    expect(updated.updated_at).toBe("2026-03-27T17:24:00.000Z");
     expect(updated.status).toBeUndefined();
   });
 
