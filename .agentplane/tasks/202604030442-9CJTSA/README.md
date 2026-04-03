@@ -1,10 +1,11 @@
 ---
 id: "202604030442-9CJTSA"
 title: "F-003 Introduce capability registry"
-status: "DOING"
+result_summary: "integrate: squash task/202604030442-9CJTSA/capability-registry"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-03T10:00:07.149Z"
   updated_by: "CODER"
   note: "Verified: bun run typecheck; bunx vitest run packages/agentplane/src/runtime/capabilities/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts packages/agentplane/src/runner/artifacts.test.ts packages/agentplane/src/runner/policy-decision.test.ts --hookTimeout 60000 --testTimeout 60000; bunx vitest run packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --hookTimeout 60000 --testTimeout 60000."
-commit: null
+commit:
+  hash: "d645bf9500aa02541386015d21d3c788c09583f7"
+  message: "📝 9CJTSA task: refresh verification and pr state"
 comments:
   -
     author: "CODER"
     body: "Start: introduce the framework capability registry and attach source-aware availability semantics for commands, recipes, runner adapters, tools, skills, and agents."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-9CJTSA/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun run typecheck; bunx vitest run packages/agentplane/src/runtime/capabilities/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts packages/agentplane/src/runner/artifacts.test.ts packages/agentplane/src/runner/policy-decision.test.ts --hookTimeout 60000 --testTimeout 60000; bunx vitest run packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --hookTimeout 60000 --testTimeout 60000."
+  -
+    type: "status"
+    at: "2026-04-03T10:02:17.657Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-9CJTSA/pr."
 doc_version: 3
-doc_updated_at: "2026-04-03T10:00:07.156Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-03T10:02:17.662Z"
+doc_updated_by: "INTEGRATOR"
 description: "Define a reusable capability model and registry for commands, skills, tools, agents, and runners."
 sections:
   Summary: |-
