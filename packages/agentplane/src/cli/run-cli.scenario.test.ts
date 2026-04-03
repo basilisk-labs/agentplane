@@ -229,6 +229,7 @@ describe("runCli scenario", () => {
         expect.arrayContaining([
           "base.framework_runner",
           "base.policy_gateway",
+          "base.execution_profile",
           "base.owner_profile",
           "recipe.execution_context",
           "recipe.agent.RECIPE_AGENT",

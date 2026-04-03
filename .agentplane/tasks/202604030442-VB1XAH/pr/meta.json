@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604030442-VB1XAH/execution-profiles",
+  "created_at": "2026-04-03T10:58:29.469Z",
+  "head_sha": "8628a870ad7d70415eb29103c2486c88a156d629",
+  "last_verified_at": "2026-04-03T11:21:58.372Z",
+  "last_verified_sha": "8628a870ad7d70415eb29103c2486c88a156d629",
+  "schema_version": 1,
+  "task_id": "202604030442-VB1XAH",
+  "updated_at": "2026-04-03T11:21:57.970Z",
+  "verify": {
+    "status": "pass"
+  }
+}

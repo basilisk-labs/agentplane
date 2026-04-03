@@ -1,10 +1,10 @@
 ---
 id: "202604030442-VB1XAH"
 title: "F-007 Operationalize execution profiles"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved from framework roadmap and explicit user execution request"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-03T11:21:58.372Z"
+  updated_by: "CODER"
+  note: "Verified: bun run typecheck; node scripts/run-pre-commit-hook.mjs; bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runtime/execution-profile/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts --hookTimeout 60000 --testTimeout 60000"
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: operationalize execution profiles so budgets, stop conditions, handoff boundaries, approvals, and timeout/trace behavior resolve through explicit runtime contracts instead of scattered helpers."
+events:
+  -
+    type: "status"
+    at: "2026-04-03T10:58:29.434Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: operationalize execution profiles so budgets, stop conditions, handoff boundaries, approvals, and timeout/trace behavior resolve through explicit runtime contracts instead of scattered helpers."
+  -
+    type: "verify"
+    at: "2026-04-03T11:21:58.372Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bun run typecheck; node scripts/run-pre-commit-hook.mjs; bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runtime/execution-profile/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts --hookTimeout 60000 --testTimeout 60000"
 doc_version: 3
-doc_updated_at: "2026-04-03T04:42:04.442Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-03T11:21:58.378Z"
+doc_updated_by: "CODER"
 description: "Turn execution profiles into executable runtime behavior for budgets, stop, handoff, timeout, and trace policies."
 sections:
   Summary: |-
@@ -51,6 +67,14 @@ sections:
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-03T11:21:58.372Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: bun run typecheck; node scripts/run-pre-commit-hook.mjs; bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runtime/execution-profile/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts --hookTimeout 60000 --testTimeout 60000
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-03T10:58:29.446Z, excerpt_hash=sha256:3e2178b35503297c1ff0a0a18f5878f1fa3bf48199954e646271302e0157fc6e
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -84,6 +108,14 @@ Turn execution profiles into executable runtime behavior for budgets, stop, hand
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-03T11:21:58.372Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bun run typecheck; node scripts/run-pre-commit-hook.mjs; bunx vitest run packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runtime/execution-profile/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts --hookTimeout 60000 --testTimeout 60000
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-03T10:58:29.446Z, excerpt_hash=sha256:3e2178b35503297c1ff0a0a18f5878f1fa3bf48199954e646271302e0157fc6e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

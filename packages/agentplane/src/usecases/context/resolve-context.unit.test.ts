@@ -5,6 +5,7 @@ import type { CommandContext } from "../../commands/shared/task-backend.js";
 const mocks = vi.hoisted(() => ({
   buildAdapters: vi.fn(),
   PolicyEngine: vi.fn(),
+  resolveExecutionProfileRuntime: vi.fn(),
   resolveHarnessFromCommandContext: vi.fn(),
 }));
 
@@ -14,6 +15,10 @@ vi.mock("../../adapters/index.js", () => ({
 
 vi.mock("../../policy/engine.js", () => ({
   PolicyEngine: mocks.PolicyEngine,
+}));
+
+vi.mock("../../runtime/execution-profile/index.js", () => ({
+  resolveExecutionProfileRuntime: mocks.resolveExecutionProfileRuntime,
 }));
 
 vi.mock("../../runtime/harness/index.js", () => ({
@@ -43,6 +48,28 @@ describe("resolve-context usecase factories (unit)", () => {
     mocks.buildAdapters.mockReturnValue({ adapters: true });
     mocks.PolicyEngine.mockImplementation(function PolicyEngine() {
       return { policy: true };
+    });
+    mocks.resolveExecutionProfileRuntime.mockReturnValue({
+      profile: "balanced",
+      reasoning_effort: "medium",
+      budget: {
+        discovery: { limit: 6, used: 0, remaining: 6, exhausted: false },
+        implementation: { limit: 10, used: 0, remaining: 10, exhausted: false },
+        verification: { limit: 6, used: 0, remaining: 6, exhausted: false },
+      },
+      stop_conditions: ["stop"],
+      handoff_conditions: ["handoff"],
+      unsafe_actions_requiring_explicit_user_ok: ["unsafe"],
+      approvals: {
+        require_plan: true,
+        require_network: false,
+        require_verify: true,
+        require_force: false,
+      },
+      runner: {
+        trace_policy: { mode: "raw", max_tail_bytes: 1, capture_stderr: true },
+        timeout_policy: { wall_clock_ms: 1, idle_ms: 1, terminate_grace_ms: 1 },
+      },
     });
     mocks.resolveHarnessFromCommandContext.mockResolvedValue({
       execution: { profile: "balanced" },
@@ -89,6 +116,10 @@ describe("resolve-context usecase factories (unit)", () => {
         },
       },
       execution: { profile: "balanced" },
+      executionProfile: {
+        profile: "balanced",
+        reasoning_effort: "medium",
+      },
       approvals: { require_plan: true, require_network: false, require_verify: true },
       policy: { policy: true },
     });
@@ -113,6 +144,7 @@ describe("resolve-context usecase factories (unit)", () => {
     );
     expect(mocks.buildAdapters).not.toHaveBeenCalled();
     expect(mocks.PolicyEngine).toHaveBeenCalledTimes(1);
+    expect(mocks.resolveExecutionProfileRuntime).toHaveBeenCalledWith(command.config);
     expect(mocks.resolveHarnessFromCommandContext).toHaveBeenCalledWith(command);
   });
 
@@ -136,6 +168,7 @@ describe("resolve-context usecase factories (unit)", () => {
 
     expect(second).toBe(first);
     expect(mocks.PolicyEngine).toHaveBeenCalledTimes(1);
+    expect(mocks.resolveExecutionProfileRuntime).toHaveBeenCalledWith(command.config);
     expect(mocks.resolveHarnessFromCommandContext).toHaveBeenCalledTimes(1);
   });
 
@@ -166,6 +199,10 @@ describe("resolve-context usecase factories (unit)", () => {
         ],
       },
       execution: { profile: "balanced" },
+      executionProfile: {
+        profile: "balanced",
+        reasoning_effort: "medium",
+      },
       approvals: { require_plan: true, require_network: false, require_verify: true },
       policy: { policy: true },
     });

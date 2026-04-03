@@ -544,9 +544,20 @@ describe("runCli", () => {
       expect(await pathExists(statePath)).toBe(true);
 
       const bundle = JSON.parse(await readFile(bundlePath, "utf8")) as {
+        base_prompts?: { id?: string; title?: string; content?: string }[];
         execution: {
           mode: string;
           adapter_id: string;
+          profile_runtime?: {
+            profile?: string;
+            reasoning_effort?: string;
+            budget?: {
+              discovery?: { used?: number; remaining?: number };
+              implementation?: { used?: number; remaining?: number };
+            };
+            stop_conditions?: string[];
+            handoff_conditions?: string[];
+          };
           trace_policy?: {
             mode?: string;
             max_tail_bytes?: number;
@@ -589,6 +600,20 @@ describe("runCli", () => {
       expect(bundle.execution.policy_decision?.requested).toEqual({});
       expect(bundle.execution.policy_decision?.effective).toEqual({});
       expect(bundle.execution.policy_decision?.refusal_reason).toBeNull();
+      expect(bundle.execution.profile_runtime).toMatchObject({
+        profile: "balanced",
+        reasoning_effort: "medium",
+        budget: {
+          discovery: { used: 1, remaining: 5 },
+          implementation: { used: 1, remaining: 9 },
+        },
+      });
+      expect(bundle.execution.profile_runtime?.stop_conditions?.length).toBeGreaterThan(0);
+      expect(bundle.execution.profile_runtime?.handoff_conditions?.length).toBeGreaterThan(0);
+      expect(bundle.base_prompts?.map((prompt) => prompt.id)).toContain("base.execution_profile");
+      expect(
+        bundle.base_prompts?.find((prompt) => prompt.id === "base.execution_profile")?.content,
+      ).toContain('"reasoning_effort": "medium"');
       expect(bundle.task.task_id).toBe(taskId);
       expect(bootstrap).toContain(
         "This invocation is already inside an approved runner execution.",

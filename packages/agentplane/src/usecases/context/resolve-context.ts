@@ -9,6 +9,10 @@ import {
   type AgentplaneCapabilityRegistry,
 } from "../../runtime/capabilities/index.js";
 import {
+  resolveExecutionProfileRuntime,
+  type ResolvedExecutionProfileRuntime,
+} from "../../runtime/execution-profile/index.js";
+import {
   resolveHarnessFromCommandContext,
   type ResolvedHarnessContract,
 } from "../../runtime/harness/index.js";
@@ -35,6 +39,7 @@ export type ReadOnlyUsecaseContext = {
   harness: ResolvedHarnessContract;
   capabilities: AgentplaneCapabilityRegistry;
   execution: ResolvedHarnessContract["execution"];
+  executionProfile: ResolvedExecutionProfileRuntime;
   approvals: ResolvedHarnessContract["policy"]["approvals"];
   policy: PolicyEngine;
   approvalRuntime: ApprovalRuntime;
@@ -116,6 +121,7 @@ async function buildReadOnlyUsecaseContext(
 ): Promise<ReadOnlyUsecaseContext> {
   const harness = await resolveHarnessFromCommandContext(command);
   const policy = new PolicyEngine();
+  const executionProfile = resolveExecutionProfileRuntime(command.config);
   return {
     command,
     project: command.resolvedProject,
@@ -137,6 +143,7 @@ async function buildReadOnlyUsecaseContext(
       capabilities: command.taskBackend.capabilities ?? null,
     }),
     execution: harness.execution,
+    executionProfile,
     approvals: harness.policy.approvals,
     policy,
     approvalRuntime: createApprovalRuntime({ config: command.config, policy }),

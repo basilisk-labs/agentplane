@@ -8,6 +8,7 @@ export type { RunnerTimeoutReason } from "@agentplaneorg/core";
 import type { BehaviorResolutionTrace } from "../runtime/behavior/index.js";
 import type { TaskData, TaskEvent } from "../backends/task-backend.js";
 import type { AgentplaneCapabilityRegistry } from "../runtime/capabilities/index.js";
+import type { ResolvedExecutionProfileRuntime } from "../runtime/execution-profile/index.js";
 
 export const RUNNER_BUNDLE_SCHEMA_VERSION = 1 as const;
 export const RUNNER_API_VERSION = "1" as const;
@@ -160,6 +161,7 @@ export type RunnerExecutionContract = {
   mode: "execute" | "dry_run";
   run_id: string;
   artifact_paths: RunnerArtifactPaths;
+  profile_runtime?: ResolvedExecutionProfileRuntime;
   trace_policy: RunnerTracePolicy;
   timeout_policy: RunnerTimeoutPolicy;
   adapter_capabilities?: RunnerAdapterCapabilities;

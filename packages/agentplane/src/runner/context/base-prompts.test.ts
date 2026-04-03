@@ -2,8 +2,10 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
+import { buildExecutionProfile, defaultConfig } from "@agentplaneorg/core";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
 import {
   collectRunnerBasePrompts,
   resolveOwnerProfilePromptSource,
@@ -133,6 +135,36 @@ describe("collectRunnerBasePrompts", () => {
     expect(prompts[2]?.source).toBe("bundled:agent-profile:CODER.json");
     expect(prompts[2]?.content).toContain('"id": "CODER"');
     expect(prompts[2]?.resolution?.winner.layer).toBe("builtin");
+  });
+
+  it("inserts execution profile runtime constraints before the owner profile when provided", async () => {
+    const root = await makeTempRepo();
+    const config = defaultConfig();
+    config.execution = buildExecutionProfile("conservative");
+    const executionProfile = resolveExecutionProfileRuntime(config);
+
+    const prompts = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+      execution_profile: executionProfile,
+    });
+
+    expect(prompts.map((prompt) => prompt.id)).toEqual([
+      "base.framework_runner",
+      "base.policy_gateway",
+      "base.execution_profile",
+      "base.owner_profile",
+    ]);
+    expect(prompts[2]).toMatchObject({
+      role: "policy",
+      priority: 250,
+      source: "runtime:execution-profile:conservative",
+      title: "Execution Profile Runtime (conservative)",
+    });
+    expect(prompts[2]?.content).toContain('"reasoning_effort": "high"');
+    expect(prompts[2]?.content).toContain('"require_force": true');
+    expect(prompts[2]?.content).toContain('"terminate_grace_ms": 5000');
+    expect(prompts[2]?.resolution?.winner.layer).toBe("harness");
   });
 
   it("adds recipe-aware prompt blocks after framework, policy, and owner prompts", async () => {

@@ -13,6 +13,7 @@ import {
   resolvePolicyGatewayForRepo,
   type PolicyGatewayFlavor,
 } from "../../shared/policy-gateway.js";
+import type { ResolvedExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
 import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
 import type { RunnerPromptBlock, RunnerPromptRole, RunnerRecipeContext } from "../types.js";
 
@@ -21,6 +22,7 @@ const FRAMEWORK_RUNNER_PROMPT_URL = new URL("../../../assets/RUNNER.md", import.
 const BASE_PROMPT_PRIORITIES = {
   framework_runner: 100,
   policy_gateway: 200,
+  execution_profile: 250,
   owner_profile: 300,
   recipe_execution_context: 400,
   recipe_agent_profile: 500,
@@ -284,6 +286,47 @@ async function loadPolicyGatewayPrompt(opts: {
   });
 }
 
+function renderExecutionProfilePromptContent(runtime: ResolvedExecutionProfileRuntime): string {
+  return renderRecipePromptJson({
+    profile: runtime.profile,
+    reasoning_effort: runtime.reasoning_effort,
+    budget: runtime.budget,
+    approvals: runtime.approvals,
+    stop_conditions: runtime.stop_conditions,
+    handoff_conditions: runtime.handoff_conditions,
+    unsafe_actions_requiring_explicit_user_ok: runtime.unsafe_actions_requiring_explicit_user_ok,
+    runner: runtime.runner,
+  });
+}
+
+function loadExecutionProfilePrompt(opts: {
+  execution_profile?: ResolvedExecutionProfileRuntime;
+}): RunnerPromptBlock | null {
+  if (!opts.execution_profile) return null;
+  const source = `runtime:execution-profile:${opts.execution_profile.profile}`;
+  const resolved = resolveBehavior({
+    key: "runner.execution_profile",
+    candidates: [
+      promptCandidate({
+        layer: "harness",
+        source,
+        value: {
+          source,
+          title: `Execution Profile Runtime (${opts.execution_profile.profile})`,
+          content: renderExecutionProfilePromptContent(opts.execution_profile),
+        },
+      }),
+    ],
+  });
+
+  return promptBlockFromResolved({
+    id: "base.execution_profile",
+    role: "policy",
+    priority: BASE_PROMPT_PRIORITIES.execution_profile,
+    resolved,
+  });
+}
+
 async function loadRecipePromptJsonBlock(opts: {
   git_root: string;
   recipe_dir: string;
@@ -440,6 +483,7 @@ export async function collectRunnerBasePrompts(opts: {
   fallback_policy_gateway_flavor?: PolicyGatewayFlavor;
   recipe?: RunnerRecipeContext;
   harness?: ResolvedHarnessContract;
+  execution_profile?: ResolvedExecutionProfileRuntime;
 }): Promise<RunnerPromptBlock[]> {
   const owner_id = normalizeOwnerId(opts.owner_id);
   const trimmedAgentsDir = opts.agents_dir?.trim() ?? opts.harness?.workflow.paths.agents_dir;
@@ -447,16 +491,22 @@ export async function collectRunnerBasePrompts(opts: {
     trimmedAgentsDir && trimmedAgentsDir.length > 0 ? trimmedAgentsDir : ".agentplane/agents";
   const fallback_flavor = opts.fallback_policy_gateway_flavor ?? "codex";
 
+  const resolvedBasePrompts = await Promise.all([
+    loadFrameworkRunnerPrompt(),
+    loadPolicyGatewayPrompt({
+      git_root: opts.git_root,
+      fallback_flavor,
+      harness: opts.harness,
+    }),
+    Promise.resolve(loadExecutionProfilePrompt({ execution_profile: opts.execution_profile })),
+    loadOwnerProfilePrompt({ git_root: opts.git_root, agents_dir, owner_id }),
+  ]);
+  const basePrompts = resolvedBasePrompts.filter(
+    (prompt): prompt is RunnerPromptBlock => prompt !== null,
+  );
+
   const prompts = [
-    ...(await Promise.all([
-      loadFrameworkRunnerPrompt(),
-      loadPolicyGatewayPrompt({
-        git_root: opts.git_root,
-        fallback_flavor,
-        harness: opts.harness,
-      }),
-      loadOwnerProfilePrompt({ git_root: opts.git_root, agents_dir, owner_id }),
-    ])),
+    ...basePrompts,
     ...(await collectRecipePromptBlocks({
       git_root: opts.git_root,
       recipe: opts.recipe ?? { recipe_id: "", scenario_id: "" },
