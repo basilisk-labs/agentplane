@@ -1,10 +1,10 @@
 ---
 id: "202604030442-9CJTSA"
 title: "F-003 Introduce capability registry"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -21,16 +21,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved from framework roadmap and explicit user execution request"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-03T10:00:07.149Z"
+  updated_by: "CODER"
+  note: "Verified: bun run typecheck; bunx vitest run packages/agentplane/src/runtime/capabilities/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts packages/agentplane/src/runner/artifacts.test.ts packages/agentplane/src/runner/policy-decision.test.ts --hookTimeout 60000 --testTimeout 60000; bunx vitest run packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --hookTimeout 60000 --testTimeout 60000."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: introduce the framework capability registry and attach source-aware availability semantics for commands, recipes, runner adapters, tools, skills, and agents."
+events:
+  -
+    type: "status"
+    at: "2026-04-03T09:40:12.068Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: introduce the framework capability registry and attach source-aware availability semantics for commands, recipes, runner adapters, tools, skills, and agents."
+  -
+    type: "verify"
+    at: "2026-04-03T10:00:07.149Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bun run typecheck; bunx vitest run packages/agentplane/src/runtime/capabilities/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts packages/agentplane/src/runner/artifacts.test.ts packages/agentplane/src/runner/policy-decision.test.ts --hookTimeout 60000 --testTimeout 60000; bunx vitest run packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --hookTimeout 60000 --testTimeout 60000."
 doc_version: 3
-doc_updated_at: "2026-04-03T04:42:01.295Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-03T10:00:07.156Z"
+doc_updated_by: "CODER"
 description: "Define a reusable capability model and registry for commands, skills, tools, agents, and runners."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-03T10:00:07.149Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: bun run typecheck; bunx vitest run packages/agentplane/src/runtime/capabilities/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts packages/agentplane/src/runner/artifacts.test.ts packages/agentplane/src/runner/policy-decision.test.ts --hookTimeout 60000 --testTimeout 60000; bunx vitest run packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --hookTimeout 60000 --testTimeout 60000.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-03T09:40:12.078Z, excerpt_hash=sha256:3e2178b35503297c1ff0a0a18f5878f1fa3bf48199954e646271302e0157fc6e
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +107,14 @@ Define a reusable capability model and registry for commands, skills, tools, age
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-03T10:00:07.149Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bun run typecheck; bunx vitest run packages/agentplane/src/runtime/capabilities/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts packages/agentplane/src/runner/artifacts.test.ts packages/agentplane/src/runner/policy-decision.test.ts --hookTimeout 60000 --testTimeout 60000; bunx vitest run packages/agentplane/src/runner/adapters/codex.test.ts packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts --hookTimeout 60000 --testTimeout 60000.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-03T09:40:12.078Z, excerpt_hash=sha256:3e2178b35503297c1ff0a0a18f5878f1fa3bf48199954e646271302e0157fc6e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

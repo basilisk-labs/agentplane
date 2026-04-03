@@ -68,6 +68,7 @@ function buildPreparedMetadata(opts: {
     trace_policy: opts.bundle.execution.trace_policy,
     timeout_policy: opts.bundle.execution.timeout_policy,
     adapter_capabilities: opts.bundle.execution.adapter_capabilities,
+    adapter_capability_registry: opts.bundle.execution.adapter_capability_registry,
     policy_decision: opts.bundle.execution.policy_decision,
     invocation: createRunnerInvocationSnapshot(opts.invocation),
   };
@@ -151,6 +152,7 @@ export async function writePreparedRunnerArtifacts(opts: {
         trace_policy: preparedMetadata.trace_policy,
         timeout_policy: preparedMetadata.timeout_policy,
         adapter_capabilities: preparedMetadata.adapter_capabilities,
+        adapter_capability_registry: preparedMetadata.adapter_capability_registry,
         policy_decision: preparedMetadata.policy_decision,
         invocation: preparedMetadata.invocation,
       },

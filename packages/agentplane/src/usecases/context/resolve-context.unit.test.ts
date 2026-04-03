@@ -21,6 +21,21 @@ vi.mock("../../runtime/harness/index.js", () => ({
 }));
 
 describe("resolve-context usecase factories (unit)", () => {
+  const backendCapabilities = {
+    canonical_source: "local",
+    projection: "canonical",
+    projection_read_mode: "native",
+    reads_from_projection_by_default: false,
+    writes_task_readmes: false,
+    supports_task_revisions: true,
+    supports_revision_guarded_writes: true,
+    may_access_network_on_read: false,
+    may_access_network_on_write: false,
+    supports_projection_refresh: false,
+    supports_push_sync: false,
+    supports_snapshot_export: false,
+  } as const;
+
   beforeEach(() => {
     mocks.buildAdapters.mockReset();
     mocks.PolicyEngine.mockReset();
@@ -47,10 +62,12 @@ describe("resolve-context usecase factories (unit)", () => {
       config: {
         paths: { workflow_dir: ".agentplane/tasks" },
       },
-      taskBackend: { capabilities: { projection_read_mode: "native" } },
+      taskBackend: { capabilities: backendCapabilities },
     } as unknown as CommandContext;
 
-    await expect(makeReadOnlyUsecaseContext(command)).resolves.toEqual({
+    const context = await makeReadOnlyUsecaseContext(command);
+
+    expect(context).toMatchObject({
       command,
       project: command.resolvedProject,
       repo: {
@@ -62,7 +79,7 @@ describe("resolve-context usecase factories (unit)", () => {
       backend: {
         id: "local",
         config_path: "/repo/.agentplane/backends/local.json",
-        capabilities: { projection_read_mode: "native" },
+        capabilities: backendCapabilities,
         task_backend: command.taskBackend,
       },
       harness: {
@@ -75,6 +92,25 @@ describe("resolve-context usecase factories (unit)", () => {
       approvals: { require_plan: true, require_network: false, require_verify: true },
       policy: { policy: true },
     });
+    expect(context.capabilities.entries).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "backend.local.canonical_source",
+          availability: "available",
+          value: "local",
+        }),
+        expect.objectContaining({
+          id: "backend.local.supports_task_revisions",
+          availability: "available",
+          value: true,
+        }),
+        expect.objectContaining({
+          id: "backend.local.writes_task_readmes",
+          availability: "unavailable",
+          value: false,
+        }),
+      ]),
+    );
     expect(mocks.buildAdapters).not.toHaveBeenCalled();
     expect(mocks.PolicyEngine).toHaveBeenCalledTimes(1);
     expect(mocks.resolveHarnessFromCommandContext).toHaveBeenCalledWith(command);
@@ -121,6 +157,14 @@ describe("resolve-context usecase factories (unit)", () => {
     await expect(makeUsecaseContext(command)).resolves.toMatchObject({
       command,
       adapters: { adapters: true },
+      capabilities: {
+        entries: [
+          expect.objectContaining({
+            id: "backend.local.capabilities",
+            availability: "unavailable",
+          }),
+        ],
+      },
       execution: { profile: "balanced" },
       approvals: { require_plan: true, require_network: false, require_verify: true },
       policy: { policy: true },

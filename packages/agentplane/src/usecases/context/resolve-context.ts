@@ -4,6 +4,10 @@ import { buildAdapters } from "../../adapters/index.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { PolicyEngine } from "../../policy/engine.js";
 import {
+  resolveTaskBackendCapabilityRegistry,
+  type AgentplaneCapabilityRegistry,
+} from "../../runtime/capabilities/index.js";
+import {
   resolveHarnessFromCommandContext,
   type ResolvedHarnessContract,
 } from "../../runtime/harness/index.js";
@@ -28,6 +32,7 @@ export type ReadOnlyUsecaseContext = {
   config: CommandContext["config"];
   backend: AgentplaneBackendContext;
   harness: ResolvedHarnessContract;
+  capabilities: AgentplaneCapabilityRegistry;
   execution: ResolvedHarnessContract["execution"];
   approvals: ResolvedHarnessContract["policy"]["approvals"];
   policy: PolicyEngine;
@@ -124,6 +129,10 @@ async function buildReadOnlyUsecaseContext(
       task_backend: command.taskBackend,
     },
     harness,
+    capabilities: resolveTaskBackendCapabilityRegistry({
+      backend_id: command.backendId,
+      capabilities: command.taskBackend.capabilities ?? null,
+    }),
     execution: harness.execution,
     approvals: harness.policy.approvals,
     policy: new PolicyEngine(),

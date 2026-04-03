@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604030442-9CJTSA/capability-registry",
+  "created_at": "2026-04-03T09:40:12.102Z",
+  "head_sha": "7bce712c17f18f294b7f827b23f8610ba87e6767",
+  "last_verified_at": "2026-04-03T10:00:07.149Z",
+  "last_verified_sha": "7bce712c17f18f294b7f827b23f8610ba87e6767",
+  "schema_version": 1,
+  "task_id": "202604030442-9CJTSA",
+  "updated_at": "2026-04-03T09:59:51.106Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,6 +1,7 @@
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import { resolveRunnerAdapterCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
 
 import type { RunnerAdapter } from "../adapters/shared.js";
@@ -251,6 +252,11 @@ export async function prepareTaskRunnerExecution(opts: {
     adapter_id: bundle.execution.adapter_id,
     capabilities: bundle.execution.adapter_capabilities,
     recipe: bundle.recipe,
+  });
+  bundle.execution.adapter_capability_registry = resolveRunnerAdapterCapabilityRegistry({
+    adapter_id: bundle.execution.adapter_id,
+    capabilities: bundle.execution.adapter_capabilities,
+    requested: bundle.execution.policy_decision.requested,
   });
   assertRunnerTaskExecutable(bundle);
   try {

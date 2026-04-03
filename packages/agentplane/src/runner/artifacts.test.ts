@@ -8,6 +8,7 @@ import { appendRunnerEvent, writePreparedRunnerArtifacts } from "./artifacts.js"
 import { resolveTaskRunnerPaths } from "./task-run-paths.js";
 import type { RunnerContextBundle } from "./types.js";
 import { RUNNER_API_VERSION, RUNNER_BUNDLE_SCHEMA_VERSION } from "./types.js";
+import { resolveRunnerAdapterCapabilityRegistry } from "../runtime/capabilities/index.js";
 
 describe("runner artifacts", () => {
   let tempDir = "";
@@ -84,6 +85,20 @@ describe("runner artifacts", () => {
             },
           },
         },
+        adapter_capability_registry: resolveRunnerAdapterCapabilityRegistry({
+          adapter_id: "codex",
+          capabilities: {
+            adapter_id: "codex",
+            fields: {
+              sandbox: {
+                level: "native",
+                channel: "argv",
+                supported_values: ["read-only", "workspace-write", "danger-full-access"],
+              },
+            },
+          },
+          requested: { sandbox: "read-only" },
+        }),
       },
     };
     const invocation = {
@@ -160,12 +175,33 @@ describe("runner artifacts", () => {
         has_output_last_message_path: true,
       },
     });
+    expect(state.prepared_metadata?.adapter_capability_registry?.entries).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "runner.adapter.codex",
+          availability: "available",
+        }),
+        expect.objectContaining({
+          id: "runner.adapter.codex.policy_field.sandbox",
+          availability: "available",
+          value: "read-only",
+        }),
+      ]),
+    );
 
     const writtenBundle = JSON.parse(
       await readFile(paths.bundle_path, "utf8"),
     ) as RunnerContextBundle;
     expect(writtenBundle.execution.artifact_paths.run_dir).toBe(paths.run_dir);
     expect(writtenBundle.execution.adapter_capabilities?.adapter_id).toBe("codex");
+    expect(writtenBundle.execution.adapter_capability_registry?.entries).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "runner.adapter.codex.policy_field.sandbox",
+          availability: "available",
+        }),
+      ]),
+    );
 
     const writtenState = JSON.parse(await readFile(paths.state_path, "utf8")) as {
       status: string;
@@ -184,6 +220,9 @@ describe("runner artifacts", () => {
         };
         adapter_capabilities?: {
           adapter_id: string;
+        };
+        adapter_capability_registry?: {
+          entries: { id: string; availability: string }[];
         };
       };
     };
@@ -205,6 +244,14 @@ describe("runner artifacts", () => {
       terminate_grace_ms: 1500,
     });
     expect(writtenState.prepared_metadata?.adapter_capabilities?.adapter_id).toBe("codex");
+    expect(writtenState.prepared_metadata?.adapter_capability_registry?.entries).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "runner.adapter.codex",
+          availability: "available",
+        }),
+      ]),
+    );
 
     expect(await readFile(paths.bootstrap_path, "utf8")).toBe("# bootstrap\n");
     expect(await readFile(paths.trace_path, "utf8")).toBe("");

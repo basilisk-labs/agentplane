@@ -6,6 +6,7 @@ import type {
 export type { RunnerTimeoutReason } from "@agentplaneorg/core";
 
 import type { TaskData, TaskEvent } from "../backends/task-backend.js";
+import type { AgentplaneCapabilityRegistry } from "../runtime/capabilities/index.js";
 
 export const RUNNER_BUNDLE_SCHEMA_VERSION = 1 as const;
 export const RUNNER_API_VERSION = "1" as const;
@@ -92,6 +93,7 @@ export type RunnerRecipeContext = {
   agents?: Record<string, unknown>[];
   skills?: Record<string, unknown>[];
   tools?: Record<string, unknown>[];
+  capabilities?: AgentplaneCapabilityRegistry;
 };
 
 export type RunnerArtifactPaths = {
@@ -159,6 +161,7 @@ export type RunnerExecutionContract = {
   trace_policy: RunnerTracePolicy;
   timeout_policy: RunnerTimeoutPolicy;
   adapter_capabilities?: RunnerAdapterCapabilities;
+  adapter_capability_registry?: AgentplaneCapabilityRegistry;
   policy_decision?: RunnerPolicyDecision;
   approvals?: {
     require_plan?: boolean;
@@ -318,6 +321,7 @@ export type RunnerPreparedMetadata = {
   trace_policy: RunnerTracePolicy;
   timeout_policy: RunnerTimeoutPolicy;
   adapter_capabilities?: RunnerAdapterCapabilities;
+  adapter_capability_registry?: AgentplaneCapabilityRegistry;
   policy_decision?: RunnerPolicyDecision;
   invocation: RunnerInvocationSnapshot;
 };
