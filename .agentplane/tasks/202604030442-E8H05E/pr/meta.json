@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604030442-E8H05E/explain-hooks",
+  "created_at": "2026-04-03T13:40:36.755Z",
+  "head_sha": "b2e825bc4b59064d9d7fb9f71b70c974f46bda02",
+  "last_verified_at": "2026-04-03T13:53:53.380Z",
+  "last_verified_sha": "b2e825bc4b59064d9d7fb9f71b70c974f46bda02",
+  "schema_version": 1,
+  "task_id": "202604030442-E8H05E",
+  "updated_at": "2026-04-03T13:53:40.925Z",
+  "verify": {
+    "status": "pass"
+  }
+}

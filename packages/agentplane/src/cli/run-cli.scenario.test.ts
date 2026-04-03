@@ -212,6 +212,17 @@ describe("runCli scenario", () => {
       const runDir = path.join(runsRoot, sortedRunEntries[0] ?? "");
       const bundle = JSON.parse(await readFile(path.join(runDir, "bundle.json"), "utf8")) as {
         base_prompts?: { id?: string; source?: string }[];
+        framework_explain?: {
+          schema_version?: number;
+          runtime?: {
+            task_intake?: {
+              precedence?: {
+                extension_layer?: string;
+              };
+            };
+          };
+          behavior_inputs?: { id?: string; category?: string; source?: string }[];
+        };
         target: { kind: string; recipe_id?: string; scenario_id?: string; task_id?: string };
         recipe?: { recipe_id?: string; scenario_id?: string };
       };
@@ -240,6 +251,32 @@ describe("runCli scenario", () => {
       expect(
         bundle.base_prompts?.find((prompt) => prompt.id === "recipe.agent.RECIPE_AGENT")?.source,
       ).toBe(`.agentplane/recipes/${manifestId}/agents/recipe.json`);
+      expect(bundle.framework_explain).toMatchObject({
+        schema_version: 1,
+        runtime: {
+          task_intake: {
+            precedence: {
+              extension_layer: "recipes",
+            },
+          },
+        },
+      });
+      expect(bundle.framework_explain?.behavior_inputs).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: "base.policy_gateway",
+            category: "prompt",
+          }),
+          expect.objectContaining({
+            id: "base.execution_profile",
+            category: "prompt",
+          }),
+          expect.objectContaining({
+            id: "recipe.agent.RECIPE_AGENT",
+            category: "prompt",
+          }),
+        ]),
+      );
 
       const task = await readTask({ cwd: root, rootOverride: root, taskId });
       expect(task.frontmatter.verification?.state).toBe("pending");

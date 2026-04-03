@@ -9,6 +9,7 @@ import type { BehaviorResolutionTrace } from "../runtime/behavior/index.js";
 import type { TaskData, TaskEvent } from "../backends/task-backend.js";
 import type { AgentplaneCapabilityRegistry } from "../runtime/capabilities/index.js";
 import type { ResolvedExecutionProfileRuntime } from "../runtime/execution-profile/index.js";
+import type { FrameworkExplainPayload } from "../runtime/explain/index.js";
 
 export const RUNNER_BUNDLE_SCHEMA_VERSION = 1 as const;
 export const RUNNER_API_VERSION = "1" as const;
@@ -179,6 +180,7 @@ export type RunnerContextBundle = {
   runner_api_version: typeof RUNNER_API_VERSION;
   target: RunnerTarget;
   base_prompts: RunnerPromptBlock[];
+  framework_explain?: FrameworkExplainPayload;
   repository: RunnerRepositoryContext;
   task?: RunnerTaskContext;
   recipe?: RunnerRecipeContext;

@@ -13,6 +13,10 @@ import {
   type ResolvedExecutionProfileRuntime,
 } from "../../runtime/execution-profile/index.js";
 import {
+  buildFrameworkExplainPayload,
+  type FrameworkExplainPayload,
+} from "../../runtime/explain/index.js";
+import {
   resolveHarnessFromCommandContext,
   type ResolvedHarnessContract,
 } from "../../runtime/harness/index.js";
@@ -45,6 +49,7 @@ export type ReadOnlyUsecaseContext = {
   execution: ResolvedHarnessContract["execution"];
   executionProfile: ResolvedExecutionProfileRuntime;
   taskIntake: TaskIntakeRuntime;
+  frameworkExplain: FrameworkExplainPayload;
   approvals: ResolvedHarnessContract["policy"]["approvals"];
   policy: PolicyEngine;
   approvalRuntime: ApprovalRuntime;
@@ -131,6 +136,23 @@ async function buildReadOnlyUsecaseContext(
     backend_id: command.backendId,
     capabilities: command.taskBackend.capabilities ?? null,
   });
+  const taskIntake = createTaskIntakeRuntime({
+    repo: {
+      git_root: command.resolvedProject.gitRoot,
+      agentplane_dir: command.resolvedProject.agentplaneDir,
+      workflow_dir: command.config.paths.workflow_dir,
+    },
+    backend: {
+      id: command.backendId,
+      config_path: command.backendConfigPath,
+      capabilities: command.taskBackend.capabilities ?? null,
+      supports_generate_task_id: typeof command.taskBackend.generateTaskId === "function",
+      supports_bulk_write: typeof command.taskBackend.writeTasks === "function",
+    },
+    harness,
+    execution_profile: executionProfile,
+    capabilities,
+  });
   return {
     command,
     project: command.resolvedProject,
@@ -150,22 +172,12 @@ async function buildReadOnlyUsecaseContext(
     capabilities,
     execution: harness.execution,
     executionProfile,
-    taskIntake: createTaskIntakeRuntime({
-      repo: {
-        git_root: command.resolvedProject.gitRoot,
-        agentplane_dir: command.resolvedProject.agentplaneDir,
-        workflow_dir: command.config.paths.workflow_dir,
-      },
-      backend: {
-        id: command.backendId,
-        config_path: command.backendConfigPath,
-        capabilities: command.taskBackend.capabilities ?? null,
-        supports_generate_task_id: typeof command.taskBackend.generateTaskId === "function",
-        supports_bulk_write: typeof command.taskBackend.writeTasks === "function",
-      },
+    taskIntake,
+    frameworkExplain: buildFrameworkExplainPayload({
       harness,
-      execution_profile: executionProfile,
       capabilities,
+      execution_profile: executionProfile,
+      task_intake: taskIntake,
     }),
     approvals: harness.policy.approvals,
     policy,

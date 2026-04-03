@@ -3,6 +3,10 @@ import { loadCommandContext, type CommandContext } from "../../commands/shared/t
 import { CliError } from "../../shared/errors.js";
 import { resolveRunnerAdapterCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import { consumeExecutionProfileBudget } from "../../runtime/execution-profile/index.js";
+import {
+  appendFrameworkExplainBehaviorInputs,
+  type ExplainBehaviorInput,
+} from "../../runtime/explain/index.js";
 import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
 
 import type { RunnerAdapter } from "../adapters/shared.js";
@@ -53,6 +57,23 @@ class RunnerPreparationCliError extends CliError {
     this.bundle = opts.bundle;
     this.state = opts.state;
   }
+}
+
+function collectFrameworkExplainBehaviorInputs(
+  prompts: RunnerContextBundle["base_prompts"],
+): ExplainBehaviorInput[] {
+  return prompts.flatMap((prompt) =>
+    prompt.resolution
+      ? [
+          {
+            id: prompt.id,
+            category: "prompt" as const,
+            ...(prompt.source ? { source: prompt.source } : {}),
+            resolution: prompt.resolution,
+          },
+        ]
+      : [],
+  );
 }
 
 function isEnforcedCapabilityLevel(level: string | undefined): boolean {
@@ -227,6 +248,10 @@ export async function prepareTaskRunnerExecution(opts: {
     harness: executionContext.harness,
     execution_profile: executionProfile,
   });
+  const framework_explain = appendFrameworkExplainBehaviorInputs(
+    executionContext.frameworkExplain,
+    collectFrameworkExplainBehaviorInputs(base_prompts),
+  );
   const adapter: RunnerAdapter = createRunnerAdapter(executionContext.config);
   const configured_adapter_id: RunnerExecutionContract["adapter_id"] =
     adapter.id === "custom" ? "custom" : "codex";
@@ -242,6 +267,7 @@ export async function prepareTaskRunnerExecution(opts: {
     runner_api_version: RUNNER_API_VERSION,
     target,
     base_prompts,
+    framework_explain,
     repository: taskEnvelope.repository,
     task: taskEnvelope.task,
     recipe: opts.recipe,

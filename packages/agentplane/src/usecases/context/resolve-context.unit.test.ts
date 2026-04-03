@@ -157,6 +157,22 @@ describe("resolve-context usecase factories (unit)", () => {
           extension_layer: "recipes",
         },
       },
+      frameworkExplain: {
+        schema_version: 1,
+        runtime: {
+          execution_profile: {
+            profile: "balanced",
+            reasoning_effort: "medium",
+          },
+          task_intake: {
+            precedence: {
+              behavior_order: ["harness", "extension", "user", "builtin"],
+              extension_layer: "recipes",
+            },
+          },
+        },
+        behavior_inputs: [],
+      },
       approvals: { require_plan: true, require_network: false, require_verify: true },
       policy: { policy: true },
     });
@@ -246,6 +262,21 @@ describe("resolve-context usecase factories (unit)", () => {
           supports_generate_task_id: false,
           supports_bulk_write: false,
         },
+      },
+      frameworkExplain: {
+        schema_version: 1,
+        runtime: {
+          execution_profile: {
+            profile: "balanced",
+            reasoning_effort: "medium",
+          },
+          task_intake: {
+            precedence: {
+              extension_layer: "recipes",
+            },
+          },
+        },
+        behavior_inputs: [],
       },
       approvals: { require_plan: true, require_network: false, require_verify: true },
       policy: { policy: true },

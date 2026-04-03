@@ -545,9 +545,33 @@ describe("runCli", () => {
 
       const bundle = JSON.parse(await readFile(bundlePath, "utf8")) as {
         base_prompts?: { id?: string; title?: string; content?: string }[];
+        framework_explain?: {
+          schema_version?: number;
+          policy?: {
+            approvals?: {
+              require_plan?: boolean;
+              require_verify?: boolean;
+              require_network?: boolean;
+            };
+          };
+          runtime?: {
+            task_intake?: {
+              precedence?: {
+                behavior_order?: string[];
+                extension_layer?: string;
+              };
+            };
+          };
+          behavior_inputs?: { id?: string; category?: string; source?: string }[];
+        };
         execution: {
           mode: string;
           adapter_id: string;
+          approvals?: {
+            require_plan?: boolean;
+            require_verify?: boolean;
+            require_network?: boolean;
+          };
           profile_runtime?: {
             profile?: string;
             reasoning_effort?: string;
@@ -614,6 +638,38 @@ describe("runCli", () => {
       expect(
         bundle.base_prompts?.find((prompt) => prompt.id === "base.execution_profile")?.content,
       ).toContain('"reasoning_effort": "medium"');
+      expect(bundle.framework_explain).toMatchObject({
+        schema_version: 1,
+        policy: {
+          approvals: {
+            require_plan: true,
+            require_verify: true,
+          },
+        },
+        runtime: {
+          task_intake: {
+            precedence: {
+              behavior_order: ["harness", "extension", "user", "builtin"],
+              extension_layer: "recipes",
+            },
+          },
+        },
+      });
+      expect(bundle.framework_explain?.policy?.approvals?.require_network).toBe(
+        bundle.execution.approvals?.require_network,
+      );
+      expect(bundle.framework_explain?.behavior_inputs).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: "base.policy_gateway",
+            category: "prompt",
+          }),
+          expect.objectContaining({
+            id: "base.execution_profile",
+            category: "prompt",
+          }),
+        ]),
+      );
       expect(bundle.task.task_id).toBe(taskId);
       expect(bootstrap).toContain(
         "This invocation is already inside an approved runner execution.",
