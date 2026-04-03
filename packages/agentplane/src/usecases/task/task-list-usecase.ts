@@ -9,10 +9,10 @@ export async function taskListUsecase(opts: {
   command: CommandContext;
   filters: Parameters<typeof cmdTaskList>[0]["filters"];
 }): Promise<number> {
-  const uctx = makeReadOnlyUsecaseContext(opts.command);
+  const execution = await makeReadOnlyUsecaseContext(opts.command);
 
   return await cmdTaskList({
-    ctx: uctx.command,
+    ctx: execution.command,
     cwd: opts.cli.cwd,
     rootOverride: opts.cli.rootOverride,
     filters: opts.filters,

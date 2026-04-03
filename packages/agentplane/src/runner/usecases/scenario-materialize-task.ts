@@ -11,6 +11,7 @@ import {
 } from "../../commands/task/doc-template.js";
 import { buildTaskDocState } from "../../shared/task-doc-state.js";
 import { dedupeStrings } from "../../shared/strings.js";
+import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
 import { createRunnerRunId } from "../run-id.js";
 import type { RunnerRecipeContext } from "../types.js";
 import {
@@ -159,20 +160,21 @@ export async function materializeRecipeScenarioTask(opts: {
   scenario_id: string;
   run_id?: string;
 }): Promise<MaterializedRecipeScenarioTask> {
-  const ctx =
+  const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  if (!ctx.taskBackend.generateTaskId) {
+  const executionContext = await makeReadOnlyUsecaseContext(command);
+  if (!executionContext.backend.task_backend.generateTaskId) {
     throw new Error("Backend does not support task materialization: missing generateTaskId()");
   }
 
   const envelope = await assembleRunnerRecipeContext({
-    project: ctx.resolvedProject,
+    project: executionContext.project,
     recipe_id: opts.recipe_id,
     scenario_id: opts.scenario_id,
   });
-  const task_id = await ctx.taskBackend.generateTaskId({
-    length: ctx.config.tasks.id_suffix_length_default,
+  const task_id = await executionContext.backend.task_backend.generateTaskId({
+    length: executionContext.config.tasks.id_suffix_length_default,
     attempts: 1000,
   });
   const run_id = opts.run_id ?? createRunnerRunId();
@@ -181,15 +183,15 @@ export async function materializeRecipeScenarioTask(opts: {
     task_id,
     run_id,
   });
-  await ctx.taskBackend.writeTask(task);
+  await executionContext.backend.task_backend.writeTask(task);
 
   return {
     task,
     task_id,
     run_id,
     readme_path: path.join(
-      ctx.resolvedProject.gitRoot,
-      ctx.config.paths.workflow_dir,
+      executionContext.repo.git_root,
+      executionContext.repo.workflow_dir,
       task_id,
       "README.md",
     ),

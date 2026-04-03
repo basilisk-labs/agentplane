@@ -3,6 +3,7 @@ import path from "node:path";
 import type { TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
 import { createRunnerAdapter } from "../adapters/index.js";
 import { runnerAdapterCancelledResult } from "../adapters/shared.js";
 import { evolveRunnerRunState } from "../artifacts.js";
@@ -208,16 +209,20 @@ export async function loadExistingRunnerExecution(opts: {
   run_id: string;
   require_task_doing?: boolean;
 }): Promise<LoadedRunnerExecution> {
-  const ctx =
+  const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  const executionContext = await makeReadOnlyUsecaseContext(command);
   if (opts.require_task_doing !== false) {
-    assertCurrentTaskDoing(opts.task_id, await ctx.taskBackend.getTask(opts.task_id));
+    assertCurrentTaskDoing(
+      opts.task_id,
+      await executionContext.backend.task_backend.getTask(opts.task_id),
+    );
   }
 
   const repository = RunnerRunRepository.forTaskRun({
-    git_root: ctx.resolvedProject.gitRoot,
-    workflow_dir: ctx.config.paths.workflow_dir,
+    git_root: executionContext.repo.git_root,
+    workflow_dir: executionContext.repo.workflow_dir,
     task_id: opts.task_id,
     run_id: opts.run_id,
   });
@@ -232,10 +237,10 @@ export async function loadExistingRunnerExecution(opts: {
   assertRunnerBundleMatchesTask(record.bundle, opts.task_id, opts.run_id);
   assertRunnerTaskExecutable(record.bundle);
 
-  const adapter = createRunnerAdapter(ctx.config);
+  const adapter = createRunnerAdapter(executionContext.config);
   const invocation = await adapter.prepare(record.bundle);
   return {
-    ctx,
+    ctx: executionContext.command,
     bundle: record.bundle,
     invocation,
     state: record.state,

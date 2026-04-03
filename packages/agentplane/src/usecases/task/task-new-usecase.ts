@@ -10,16 +10,16 @@ export async function taskNewUsecase(opts: {
   command: CommandContext;
   parsed: TaskNewParsed;
 }): Promise<number> {
-  const uctx = makeUsecaseContext(opts.command);
-  void uctx.policy.evaluate({
+  const execution = await makeUsecaseContext(opts.command);
+  void execution.policy.evaluate({
     action: "task_new",
-    config: uctx.command.config,
+    config: execution.config,
     taskId: "",
     git: { stagedPaths: [] },
   });
 
   return await runTaskNewParsed({
-    ctx: uctx.command,
+    ctx: execution.command,
     cwd: opts.cli.cwd,
     rootOverride: opts.cli.rootOverride,
     parsed: opts.parsed,

@@ -31,7 +31,7 @@ describe("task-list usecase (unit)", () => {
     const cli = { cwd: "/repo", rootOverride: "/root" } as CommandCtx;
     const command = { backendId: "local" } as CommandContext;
     const filters = { quiet: false } as Parameters<typeof cmdTaskList>[0]["filters"];
-    mocks.makeReadOnlyUsecaseContext.mockReturnValue({ command });
+    mocks.makeReadOnlyUsecaseContext.mockResolvedValue({ command });
 
     const { taskListUsecase } = await import("./task-list-usecase.js");
 

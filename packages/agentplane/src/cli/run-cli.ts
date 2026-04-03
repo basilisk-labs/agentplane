@@ -9,7 +9,7 @@ import { exitCodeForError } from "./exit-codes.js";
 import { loadDotEnv } from "../shared/env.js";
 import { CliError } from "../shared/errors.js";
 import type { CommandContext } from "../commands/shared/task-backend.js";
-import { resolveContext } from "../usecases/context/resolve-context.js";
+import { resolveCommandContext } from "../usecases/context/resolve-context.js";
 import { getVersion } from "../meta/version.js";
 import { getApprovalRequirements } from "../commands/shared/approval-requirements.js";
 import { parseCommandArgv } from "./spec/parse.js";
@@ -128,7 +128,7 @@ export async function runCli(argv: string[]): Promise<number> {
       ctxPromise ??= (async () => {
         const resolvedProject = await getResolvedProject(commandForErrorContext);
         const loadedConfig = await getLoadedConfig(commandForErrorContext);
-        return await resolveContext({
+        return await resolveCommandContext({
           cwd,
           rootOverride: globals.root ?? null,
           resolvedProject,

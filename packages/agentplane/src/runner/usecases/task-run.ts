@@ -1,7 +1,7 @@
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
-import { resolveHarnessFromCommandContext } from "../../runtime/harness/index.js";
 import { CliError } from "../../shared/errors.js";
+import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
 
 import type { RunnerAdapter } from "../adapters/shared.js";
 import { evolveRunnerRunState } from "../artifacts.js";
@@ -197,25 +197,24 @@ export async function prepareTaskRunnerExecution(opts: {
   recipe?: RunnerRecipeContext;
   target?: RunnerTarget;
 }): Promise<PreparedTaskRunnerExecution> {
-  const ctx =
+  const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  const executionContext = await makeReadOnlyUsecaseContext(command);
   const taskEnvelope = await assembleRunnerTaskContext({
-    ctx,
+    ctx: executionContext.command,
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
     task_id: opts.task_id,
   });
-  const harness = await resolveHarnessFromCommandContext(ctx);
-
   const base_prompts = await collectRunnerBasePrompts({
-    git_root: taskEnvelope.repository.git_root,
+    git_root: executionContext.repo.git_root,
     owner_id: taskEnvelope.task.data.owner,
-    agents_dir: harness.workflow.paths.agents_dir,
+    agents_dir: executionContext.harness.workflow.paths.agents_dir,
     recipe: opts.recipe,
-    harness,
+    harness: executionContext.harness,
   });
-  const adapter: RunnerAdapter = createRunnerAdapter(ctx.config);
+  const adapter: RunnerAdapter = createRunnerAdapter(executionContext.config);
   const configured_adapter_id: RunnerExecutionContract["adapter_id"] =
     adapter.id === "custom" ? "custom" : "codex";
   const run_id = opts.run_id ?? createRunnerRunId();
@@ -238,12 +237,12 @@ export async function prepareTaskRunnerExecution(opts: {
       mode: opts.mode,
       run_id,
       artifact_paths,
-      trace_policy: resolveRunnerTracePolicy(ctx.config),
-      timeout_policy: resolveRunnerTimeoutPolicy(ctx.config),
+      trace_policy: resolveRunnerTracePolicy(executionContext.config),
+      timeout_policy: resolveRunnerTimeoutPolicy(executionContext.config),
       approvals: {
-        require_plan: ctx.config.agents?.approvals.require_plan,
-        require_verify: ctx.config.agents?.approvals.require_verify,
-        require_network: ctx.config.agents?.approvals.require_network,
+        require_plan: executionContext.approvals.require_plan,
+        require_verify: executionContext.approvals.require_verify,
+        require_network: executionContext.approvals.require_network,
       },
     },
   };
