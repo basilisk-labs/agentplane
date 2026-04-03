@@ -1,10 +1,11 @@
 ---
 id: "202604030442-C3HR7C"
 title: "F-005 Expand policy taxonomy"
-status: "DOING"
+result_summary: "integrate: squash task/202604030442-C3HR7C/policy-taxonomy"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-03T10:42:51.736Z"
   updated_by: "CODER"
   note: "Implemented a unified policy taxonomy and classifier across the framework policy engine, approval gateway, task mutation hooks, and runner entrypoints; verified with typecheck plus targeted policy/task/runner/backend/recipes/upgrade/release test suites."
-commit: null
+commit:
+  hash: "50f4ac2f361a48385b8ce4ee34e048308c504aa0"
+  message: "📝 C3HR7C task: add pr artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: expand the framework policy taxonomy so risky and mutating actions resolve through one classified policy model across task, runner, recipes, network, fs, git, and config surfaces."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-C3HR7C/pr."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented a unified policy taxonomy and classifier across the framework policy engine, approval gateway, task mutation hooks, and runner entrypoints; verified with typecheck plus targeted policy/task/runner/backend/recipes/upgrade/release test suites."
+  -
+    type: "status"
+    at: "2026-04-03T10:45:33.592Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-C3HR7C/pr."
 doc_version: 3
-doc_updated_at: "2026-04-03T10:42:51.743Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-03T10:45:33.595Z"
+doc_updated_by: "INTEGRATOR"
 description: "Broaden policy action taxonomy so risky and mutating framework actions are classified centrally."
 sections:
   Summary: |-

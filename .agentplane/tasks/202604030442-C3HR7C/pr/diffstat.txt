@@ -1,3 +1,11 @@
+ .agentplane/tasks/202604030442-C3HR7C/README.md    |  52 ++-
+ .../tasks/202604030442-C3HR7C/pr/diffstat.txt      |  23 ++
+ .../tasks/202604030442-C3HR7C/pr/github-body.md    |  72 ++++
+ .../tasks/202604030442-C3HR7C/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604030442-C3HR7C/pr/meta.json |  14 +
+ .../tasks/202604030442-C3HR7C/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604030442-C3HR7C/pr/review.md |  79 +++++
+ .../tasks/202604030442-C3HR7C/pr/verify.log        |   0
  packages/agentplane/src/commands/backend.ts        |   4 +
  .../src/commands/recipes/impl/commands/install.ts  |   2 +-
  .../commands/recipes/impl/commands/list-remote.ts  |   1 +
@@ -20,4 +28,4 @@
  .../agentplane/src/runner/usecases/task-run.ts     |   9 +-
  .../src/usecases/task/task-list-usecase.ts         |   6 +
  .../usecases/task/task-list-usecase.unit.test.ts   |   6 +-
- 22 files changed, 564 insertions(+), 43 deletions(-)
+ 30 files changed, 795 insertions(+), 53 deletions(-)
