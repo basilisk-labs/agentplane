@@ -39,18 +39,22 @@ Make finish/task workflows infer reusable external incident advice from resolved
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-03T16:41:53.361Z
+- Updated: 2026-04-03T16:42:32.226Z
 - Branch: task/202604031627-DA1JVW/incidents-auto-promotion
-- Head: 2740da03d7a1
+- Head: 24fe2c746f45
 
 ```text
+ .agentplane/policy/governance.md                   |   7 +-
+ .agentplane/policy/incidents.md                    |   1 +
+ .agentplane/policy/workflow.branch_pr.md           |   2 +-
+ .agentplane/policy/workflow.direct.md              |   4 +-
  .agentplane/tasks/202604031627-DA1JVW/README.md    | 118 ++++++++++++++
- .../tasks/202604031627-DA1JVW/pr/diffstat.txt      |   0
- .../tasks/202604031627-DA1JVW/pr/github-body.md    |  50 ++++++
+ .../tasks/202604031627-DA1JVW/pr/diffstat.txt      |  26 ++++
+ .../tasks/202604031627-DA1JVW/pr/github-body.md    |  75 +++++++++
  .../tasks/202604031627-DA1JVW/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604031627-DA1JVW/pr/meta.json |  14 ++
  .../tasks/202604031627-DA1JVW/pr/notes.jsonl       |   0
- .agentplane/tasks/202604031627-DA1JVW/pr/review.md |  57 +++++++
+ .agentplane/tasks/202604031627-DA1JVW/pr/review.md |  82 ++++++++++
  .../tasks/202604031627-DA1JVW/pr/verify.log        |   0
  docs/user/agent-bootstrap.generated.mdx            |   4 +-
  docs/user/agents.mdx                               |   2 +-
@@ -69,7 +73,7 @@ Make finish/task workflows infer reusable external incident advice from resolved
  .../src/runtime/incidents/resolve.test.ts          |  86 +++++++++--
  .../agentplane/src/runtime/incidents/resolve.ts    | 169 ++++++++++++++++++---
  packages/agentplane/src/runtime/incidents/types.ts |   4 +-
- 25 files changed, 493 insertions(+), 77 deletions(-)
+ 29 files changed, 576 insertions(+), 84 deletions(-)
 ```
 
 </details>
