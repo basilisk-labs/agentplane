@@ -38,14 +38,16 @@ If any step fails:
    - `doc_version=3`: task `Findings`
 3. Mark task blocked: `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`.
 4. Request re-approval before scope/risk changes.
-5. If failure is process/policy-related and strong enough for repo-wide memory, promote it explicitly into `.agentplane/policy/incidents.md`.
+5. If failure is external/process-related and should become reusable advice, record a structured `incident-candidate` block in `Findings` and let `agentplane finish` or `agentplane incidents collect <task-id>` promote it.
 
 ## Constraints
 
 - MUST NOT perform mutating actions before explicit user approval.
 - Task documentation updates MAY be batched within one turn before approval.
 - MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
+- `task start-ready` MAY surface targeted incident advice for analogous scope/tags; follow it before widening scope.
 - In direct mode, `finish` auto-creates the deterministic close commit by default; use `--no-close-commit` only for explicit manual handling.
+- `finish` evaluates structured external `incident-candidate` findings and appends valid entries to `.agentplane/policy/incidents.md`.
 - MUST stop and request re-approval on material drift.
 - Do not use worktrees in direct mode.
 - Do not perform `branch_pr`-only operations.

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604031416-HEJWTM/incidents-registry",
+  "created_at": "2026-04-03T14:18:11.287Z",
+  "head_sha": "580d998ac807910ed8c7ec68218e37c28dc44916",
+  "last_verified_at": "2026-04-03T14:48:57.623Z",
+  "last_verified_sha": "7e5c9a904d4d5be4f7a636bd90ec2ecf31dd2af0",
+  "schema_version": 1,
+  "task_id": "202604031416-HEJWTM",
+  "updated_at": "2026-04-03T14:49:58.299Z",
+  "verify": {
+    "status": "pass"
+  }
+}

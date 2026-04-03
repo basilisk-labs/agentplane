@@ -84,6 +84,8 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 ```bash
 agentplane task verify-show <task-id>
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+agentplane incidents advise <task-id>
+agentplane incidents collect <task-id> --check
 agentplane doctor
 node .agentplane/policy/check-routing.mjs
 ```
@@ -207,5 +209,5 @@ Detailed DoD rules are in `.agentplane/policy/dod.core.md`, `.agentplane/policy/
 ## CHANGE CONTROL
 
 - Follow incident-log, immutability, and policy-budget rules in `.agentplane/policy/governance.md`.
-- Record situational incident rules only in `.agentplane/policy/incidents.md`; do not load/read that file during normal startup unless the task directly touches it or recovery/incident handling requires it.
+- Record situational incident rules only in `.agentplane/policy/incidents.md`; use targeted lookup/promotion (`task start-ready`, `incidents advise`, `incidents collect`, `finish`) instead of bulk-loading it during normal startup.
 - Keep `AGENTS.md` as a gateway; move detailed procedures to canonical modules.

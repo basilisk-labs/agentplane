@@ -9,6 +9,9 @@ import {
   workflowSyncSpec,
 } from "../../../commands/workflow-playbook.command.js";
 import { workflowRestoreSpec } from "../../../commands/workflow-restore.command.js";
+import { incidentsAdviseSpec } from "../../../commands/incidents/advise.command.js";
+import { incidentsCollectSpec } from "../../../commands/incidents/collect.command.js";
+import { incidentsSpec } from "../../../commands/incidents/incidents.command.js";
 import { releaseApplySpec } from "../../../commands/release/apply.command.js";
 import { releasePlanSpec } from "../../../commands/release/plan.command.js";
 import { releaseSpec } from "../../../commands/release/release.command.js";
@@ -105,6 +108,25 @@ export const CORE_COMMANDS = [
       needsLoadedConfig: false,
       needsTaskContext: false,
     },
+  ),
+  entry(
+    incidentsSpec,
+    () => import("../../../commands/incidents/incidents.command.js").then((m) => m.runIncidents),
+    {
+      needsProject: false,
+      needsLoadedConfig: false,
+      needsTaskContext: false,
+    },
+  ),
+  entry(incidentsCollectSpec, (deps) =>
+    import("../../../commands/incidents/collect.command.js").then((m) =>
+      m.makeRunIncidentsCollectHandler(deps.getCtx),
+    ),
+  ),
+  entry(incidentsAdviseSpec, (deps) =>
+    import("../../../commands/incidents/advise.command.js").then((m) =>
+      m.makeRunIncidentsAdviseHandler(deps.getCtx),
+    ),
   ),
   entry(roleSpec, () => import("../commands/core/role.js").then((m) => m.runRole), {
     needsProject: false,
