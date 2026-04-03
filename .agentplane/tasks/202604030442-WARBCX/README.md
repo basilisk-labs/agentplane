@@ -5,7 +5,7 @@ result_summary: "Merged via PR #67."
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -21,10 +21,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-03T16:57:40.194Z"
+  updated_by: "CODER"
+  note: "Verified: release checks passed before publish on 2026-04-03. Evidence: bun run release:prepublish completed green; release tag v0.3.10 was pushed at commit 9e5682149369d654e7970484faa86f229df28c5b; PR #67 merged to main at merge commit add4d7927505d07744a044fa1ea3acd57b2d907a; release notes and generated docs were included in the release branch."
 commit:
   hash: "add4d7927505d07744a044fa1ea3acd57b2d907a"
   message: "Merge pull request #67 from basilisk-labs/task/202604030442-WARBCX/release-0-3-10"
@@ -50,8 +50,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: PR #67 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+  -
+    type: "verify"
+    at: "2026-04-03T16:57:40.194Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: release checks passed before publish on 2026-04-03. Evidence: bun run release:prepublish completed green; release tag v0.3.10 was pushed at commit 9e5682149369d654e7970484faa86f229df28c5b; PR #67 merged to main at merge commit add4d7927505d07744a044fa1ea3acd57b2d907a; release notes and generated docs were included in the release branch."
 doc_version: 3
-doc_updated_at: "2026-04-03T16:54:41.459Z"
+doc_updated_at: "2026-04-03T16:57:40.200Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare notes, run prepublish checks, bump versions, and publish the next patch release after the framework roadmap lands."
 sections:
@@ -69,6 +75,14 @@ sections:
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-03T16:57:40.194Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: release checks passed before publish on 2026-04-03. Evidence: bun run release:prepublish completed green; release tag v0.3.10 was pushed at commit 9e5682149369d654e7970484faa86f229df28c5b; PR #67 merged to main at merge commit add4d7927505d07744a044fa1ea3acd57b2d907a; release notes and generated docs were included in the release branch.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-03T16:54:41.459Z, excerpt_hash=sha256:eb1fe5987e4f85f33eb0662f0b679ab07d39d54734f150b2af382b7218467970
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -100,6 +114,14 @@ Release plan: version=0.3.10, tag=v0.3.10, scope=framework control-plane roadmap
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-03T16:57:40.194Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: release checks passed before publish on 2026-04-03. Evidence: bun run release:prepublish completed green; release tag v0.3.10 was pushed at commit 9e5682149369d654e7970484faa86f229df28c5b; PR #67 merged to main at merge commit add4d7927505d07744a044fa1ea3acd57b2d907a; release notes and generated docs were included in the release branch.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-03T16:54:41.459Z, excerpt_hash=sha256:eb1fe5987e4f85f33eb0662f0b679ab07d39d54734f150b2af382b7218467970
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

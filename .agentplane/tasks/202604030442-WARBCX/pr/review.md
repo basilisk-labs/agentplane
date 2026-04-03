@@ -24,8 +24,8 @@ Prepare notes, run prepublish checks, bump versions, and publish the next patch 
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: release checks passed before publish on 2026-04-03. Evidence: bun run release:prepublish completed green; release tag v0.3.10 was pushed at commit 9e5682149369d654e7970484faa86f229df28c5b; PR #67 merged to main at merge commit add4d7927505d07744a044fa1ea3acd57b2d907a; release notes and generated docs were included in the release branch.
 
 ## Risks
 
@@ -45,7 +45,7 @@ Prepare notes, run prepublish checks, bump versions, and publish the next patch 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-03T16:54:15.061Z
+- Updated: 2026-04-03T16:16:43Z
 - Branch: task/202604030442-WARBCX/release-0-3-10
 - Head: No commits yet
 
