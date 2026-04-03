@@ -9,6 +9,7 @@ This is the single file for incident-derived and situational policy rules.
 - New machine-matched entries SHOULD also include: `tags`, `match`, `advice`, `source_task`, `fixability`.
 - `rule` MUST be concrete and testable (`MUST` / `MUST NOT`).
 - `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.
+- First auto-promoted external incidents normally enter as `open` and still participate in targeted advice lookup; recurring equivalent incidents can append later `stabilized` entries.
 - `state` values: `open`, `stabilized`, `promoted`.
 
 ## Entry template
