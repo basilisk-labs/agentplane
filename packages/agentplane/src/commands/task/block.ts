@@ -60,6 +60,7 @@ export async function cmdBlock(opts: {
       ctx,
       taskId: opts.taskId,
       quiet: opts.quiet,
+      policyAction: "task_block",
       build: () => ({
         at,
         toStatus: "BLOCKED",

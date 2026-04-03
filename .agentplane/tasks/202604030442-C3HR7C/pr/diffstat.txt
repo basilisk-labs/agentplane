@@ -1,0 +1,23 @@
+ packages/agentplane/src/commands/backend.ts        |   4 +
+ .../src/commands/recipes/impl/commands/install.ts  |   2 +-
+ .../commands/recipes/impl/commands/list-remote.ts  |   1 +
+ .../src/commands/release/apply.command.ts          |   1 +
+ .../commands/shared/approval-requirements.test.ts  |  17 +-
+ .../src/commands/shared/approval-requirements.ts   |  61 +++-
+ .../src/commands/shared/network-approval.ts        |   4 +-
+ .../src/commands/shared/task-mutation.ts           |  10 +
+ packages/agentplane/src/commands/task/block.ts     |   1 +
+ .../agentplane/src/commands/task/close-shared.ts   |   1 +
+ .../agentplane/src/commands/task/set-status.ts     |   1 +
+ .../src/commands/task/shared/transition-command.ts |   3 +
+ packages/agentplane/src/commands/task/start.ts     |   1 +
+ packages/agentplane/src/commands/upgrade.ts        |   7 +-
+ packages/agentplane/src/policy/engine.test.ts      |  15 +-
+ packages/agentplane/src/policy/engine.ts           |  22 +-
+ packages/agentplane/src/policy/taxonomy.test.ts    |  56 +++
+ packages/agentplane/src/policy/taxonomy.ts         | 376 +++++++++++++++++++++
+ packages/agentplane/src/policy/types.ts            |   3 +-
+ .../agentplane/src/runner/usecases/task-run.ts     |   9 +-
+ .../src/usecases/task/task-list-usecase.ts         |   6 +
+ .../usecases/task/task-list-usecase.unit.test.ts   |   6 +-
+ 22 files changed, 564 insertions(+), 43 deletions(-)

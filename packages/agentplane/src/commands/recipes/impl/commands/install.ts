@@ -58,7 +58,7 @@ export async function cmdRecipeInstall(opts: {
     let networkApproved = false;
     const ensureApproved = async (reason: string): Promise<void> => {
       if (networkApproved) return;
-      await ensureNetworkApproved({ config, yes: opts.yes, reason });
+      await ensureNetworkApproved({ action: "recipe_install", config, yes: opts.yes, reason });
       networkApproved = true;
     };
 

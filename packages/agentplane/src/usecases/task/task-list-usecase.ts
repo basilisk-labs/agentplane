@@ -10,6 +10,12 @@ export async function taskListUsecase(opts: {
   filters: Parameters<typeof cmdTaskList>[0]["filters"];
 }): Promise<number> {
   const execution = await makeReadOnlyUsecaseContext(opts.command);
+  void execution.policy.evaluate({
+    action: "task_list",
+    config: execution.config,
+    taskId: "",
+    git: { stagedPaths: [] },
+  });
 
   return await cmdTaskList({
     ctx: execution.command,

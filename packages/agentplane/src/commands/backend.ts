@@ -63,6 +63,7 @@ export async function cmdBackendSyncParsed(opts: {
     }
     if (backendId !== "local") {
       await ensureNetworkApproved({
+        action: "backend_sync",
         config,
         yes: opts.flags.yes,
         reason: `backend sync may access the network (backend: ${backendId})`,
@@ -111,6 +112,7 @@ export async function cmdSyncParsed(opts: {
     }
     if (backendId !== "local") {
       await ensureNetworkApproved({
+        action: "backend_sync",
         config,
         yes: opts.flags.yes,
         reason: `sync may access the network (backend: ${backendId})`,
@@ -162,6 +164,7 @@ export async function cmdBackendMigrateCanonicalStateParsed(opts: {
     }
     if (backendId !== "local") {
       await ensureNetworkApproved({
+        action: "backend_migrate_canonical_state",
         config,
         yes: opts.flags.yes,
         reason: `backend migrate-canonical-state may access the network (backend: ${backendId})`,
@@ -226,6 +229,7 @@ export async function cmdBackendInspectParsed(opts: {
     }
     if (backendId !== "local") {
       await ensureNetworkApproved({
+        action: "backend_inspect",
         config,
         yes: opts.flags.yes,
         reason: `backend inspect may access the network (backend: ${backendId})`,

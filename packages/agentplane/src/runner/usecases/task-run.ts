@@ -202,6 +202,13 @@ export async function prepareTaskRunnerExecution(opts: {
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
   const executionContext = await makeReadOnlyUsecaseContext(command);
+  const target = opts.target ?? { kind: "task", task_id: opts.task_id };
+  void executionContext.policy.evaluate({
+    action: target.kind === "recipe_scenario" ? "scenario_execute" : "task_run",
+    config: executionContext.config,
+    taskId: opts.task_id,
+    git: { stagedPaths: [] },
+  });
   const taskEnvelope = await assembleRunnerTaskContext({
     ctx: executionContext.command,
     cwd: opts.cwd,
@@ -228,7 +235,7 @@ export async function prepareTaskRunnerExecution(opts: {
   const bundle: RunnerContextBundle = {
     schema_version: RUNNER_BUNDLE_SCHEMA_VERSION,
     runner_api_version: RUNNER_API_VERSION,
-    target: opts.target ?? { kind: "task", task_id: opts.task_id },
+    target,
     base_prompts,
     repository: taskEnvelope.repository,
     task: taskEnvelope.task,

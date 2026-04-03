@@ -140,6 +140,7 @@ async function runPushPreflight(opts: {
 }): Promise<boolean> {
   const loaded = await loadConfig(opts.agentplaneDir);
   await ensureNetworkApproved({
+    action: "release_apply",
     config: loaded.config,
     yes: opts.yes,
     reason: "release apply --push validates npm version availability and pushes over network",

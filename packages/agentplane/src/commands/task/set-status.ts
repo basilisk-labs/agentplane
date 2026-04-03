@@ -89,6 +89,7 @@ export async function cmdTaskSetStatus(opts: {
       ctx,
       taskId: opts.taskId,
       quiet: opts.quiet,
+      policyAction: "task_set_status",
       build: (current) => {
         const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
         return {

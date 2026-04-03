@@ -101,7 +101,12 @@ export async function cmdUpgradeParsed(opts: {
   let networkApproved = false;
   const ensureApproved = async (reason: string): Promise<void> => {
     if (networkApproved) return;
-    await ensureNetworkApproved({ config: loaded.config, yes: flags.yes, reason });
+    await ensureNetworkApproved({
+      action: "upgrade_apply",
+      config: loaded.config,
+      yes: flags.yes,
+      reason,
+    });
     networkApproved = true;
   };
 

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604030442-C3HR7C/policy-taxonomy",
+  "created_at": "2026-04-03T10:27:27.850Z",
+  "head_sha": "54c381ae0f3c09b4e7aeab5a3bc8cf68e0e91fc5",
+  "last_verified_at": "2026-04-03T10:42:51.736Z",
+  "last_verified_sha": "54c381ae0f3c09b4e7aeab5a3bc8cf68e0e91fc5",
+  "schema_version": 1,
+  "task_id": "202604030442-C3HR7C",
+  "updated_at": "2026-04-03T10:42:42.731Z",
+  "verify": {
+    "status": "pass"
+  }
+}

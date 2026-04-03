@@ -1,4 +1,6 @@
 import type { TaskData, TaskWriteOptions } from "../../backends/task-backend.js";
+import { PolicyEngine } from "../../policy/engine.js";
+import type { PolicyActionId } from "../../policy/taxonomy.js";
 import { loadTaskFromContext, writeTasksOrFallback, type CommandContext } from "./task-backend.js";
 import {
   applyTaskStoreIntentsToTask,
@@ -33,11 +35,19 @@ export async function withTaskMutationStorage<TResult>(opts: {
 export async function applyTaskMutation(opts: {
   ctx: CommandContext;
   taskId: string;
+  policyAction?: PolicyActionId;
   build: (
     current: TaskData,
   ) => Promise<TaskMutationPlan | null | undefined> | TaskMutationPlan | null | undefined;
   writeOptions?: TaskWriteOptions;
 }): Promise<{ changed: boolean; task: TaskData; mode: "local-store" | "backend" }> {
+  void new PolicyEngine().evaluate({
+    action: opts.policyAction ?? "task_mutation",
+    config: opts.ctx.config,
+    taskId: opts.taskId,
+    git: { stagedPaths: [] },
+  });
+
   if (backendIsLocalFileBackend(opts.ctx)) {
     const store = getTaskStore(opts.ctx);
     const result = await store.update(

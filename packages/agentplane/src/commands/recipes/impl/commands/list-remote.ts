@@ -33,6 +33,7 @@ export async function cmdRecipeListRemoteParsed(opts: {
     });
     if (willFetchRemote) {
       await ensureNetworkApproved({
+        action: "recipe_list_remote",
         config,
         yes: flags.yes,
         reason: "recipes list-remote fetches the remote recipes index",

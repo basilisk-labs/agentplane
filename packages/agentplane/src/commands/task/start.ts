@@ -111,6 +111,7 @@ export async function cmdStart(opts: {
       ctx,
       taskId: opts.taskId,
       quiet: opts.quiet,
+      policyAction: "task_start",
       build: (current) => {
         assertStartDocRequirements(current, ctx.config);
         ensurePlanApprovedIfRequired(current, ctx.config);

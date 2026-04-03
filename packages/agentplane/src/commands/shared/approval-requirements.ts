@@ -1,17 +1,18 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core";
 
 import { promptYesNo } from "../../cli/prompts.js";
+import { PolicyEngine } from "../../policy/engine.js";
+import type {
+  PolicyActionDescriptor,
+  PolicyActionId,
+  PolicyApprovalKind,
+} from "../../policy/taxonomy.js";
 import { CliError } from "../../shared/errors.js";
 
-export type ApprovalAction =
-  | "network_access"
-  | "force_action"
-  | "policy_write"
-  | "config_write"
-  | "dangerous_fs"
-  | "git_push";
+export type ApprovalAction = PolicyApprovalKind;
 
 export type ApprovalRequirement = {
+  action: PolicyActionDescriptor;
   required: boolean;
   reason: string;
 };
@@ -51,45 +52,73 @@ function resolveEffectiveApprovals(config: AgentplaneConfig): EffectiveApprovals
 
 export function getApprovalRequirements(opts: {
   config: AgentplaneConfig;
-  action: ApprovalAction;
+  action: PolicyActionId;
 }): ApprovalRequirement {
   const effectiveApprovals = resolveEffectiveApprovals(opts.config);
+  const decision = new PolicyEngine().evaluate({
+    action: opts.action,
+    config: opts.config,
+    taskId: "",
+    git: { stagedPaths: [] },
+  });
+  const classification = decision.action;
 
-  switch (opts.action) {
+  switch (classification.approval) {
     case "network_access": {
       const required = effectiveApprovals.require_network === true;
       return {
+        action: classification,
         required,
         reason: "Network access requires explicit approval",
       };
     }
     case "force_action": {
       return {
+        action: classification,
         required: effectiveApprovals.require_force === true,
         reason: "Force action requires explicit approval",
       };
     }
     case "policy_write": {
-      return { required: false, reason: "Policy writes require explicit approval" };
+      return {
+        action: classification,
+        required: false,
+        reason: "Policy writes require explicit approval",
+      };
     }
     case "config_write": {
-      return { required: false, reason: "Config writes require explicit approval" };
+      return {
+        action: classification,
+        required: false,
+        reason: "Config writes require explicit approval",
+      };
     }
     case "dangerous_fs": {
-      return { required: false, reason: "Potentially dangerous file operations require approval" };
+      return {
+        action: classification,
+        required: false,
+        reason: "Potentially dangerous file operations require approval",
+      };
     }
     case "git_push": {
-      return { required: false, reason: "Git push requires explicit approval" };
+      return {
+        action: classification,
+        required: false,
+        reason: "Git push requires explicit approval",
+      };
     }
     default: {
-      const exhaustive: never = opts.action;
-      return exhaustive;
+      return {
+        action: classification,
+        required: false,
+        reason: `${classification.summary} does not require an approval gate`,
+      };
     }
   }
 }
 
 export async function ensureActionApproved(opts: {
-  action: ApprovalAction;
+  action: PolicyActionId;
   config: AgentplaneConfig;
   yes: boolean;
   reason: string;
