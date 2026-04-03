@@ -1,5 +1,6 @@
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
+import { resolveHarnessFromCommandContext } from "../../runtime/harness/index.js";
 import { CliError } from "../../shared/errors.js";
 
 import type { RunnerAdapter } from "../adapters/shared.js";
@@ -205,12 +206,14 @@ export async function prepareTaskRunnerExecution(opts: {
     rootOverride: opts.rootOverride ?? null,
     task_id: opts.task_id,
   });
+  const harness = await resolveHarnessFromCommandContext(ctx);
 
   const base_prompts = await collectRunnerBasePrompts({
     git_root: taskEnvelope.repository.git_root,
     owner_id: taskEnvelope.task.data.owner,
-    agents_dir: ctx.config.paths.agents_dir,
+    agents_dir: harness.workflow.paths.agents_dir,
     recipe: opts.recipe,
+    harness,
   });
   const adapter: RunnerAdapter = createRunnerAdapter(ctx.config);
   const configured_adapter_id: RunnerExecutionContract["adapter_id"] =

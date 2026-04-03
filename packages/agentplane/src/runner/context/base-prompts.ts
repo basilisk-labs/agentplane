@@ -7,6 +7,7 @@ import {
   resolvePolicyGatewayForRepo,
   type PolicyGatewayFlavor,
 } from "../../shared/policy-gateway.js";
+import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
 import type { RunnerPromptBlock, RunnerPromptRole, RunnerRecipeContext } from "../types.js";
 
 const FRAMEWORK_RUNNER_PROMPT_URL = new URL("../../../assets/RUNNER.md", import.meta.url);
@@ -135,11 +136,14 @@ async function loadFrameworkRunnerPrompt(): Promise<RunnerPromptBlock> {
 async function loadPolicyGatewayPrompt(opts: {
   git_root: string;
   fallback_flavor: PolicyGatewayFlavor;
+  harness?: ResolvedHarnessContract;
 }): Promise<RunnerPromptBlock> {
-  const gateway = await resolvePolicyGatewayForRepo({
-    gitRoot: opts.git_root,
-    fallbackFlavor: opts.fallback_flavor,
-  });
+  const gateway =
+    opts.harness?.repo.policy_gateway ??
+    (await resolvePolicyGatewayForRepo({
+      gitRoot: opts.git_root,
+      fallbackFlavor: opts.fallback_flavor,
+    }));
 
   if (await fileExists(gateway.absPath)) {
     const source = path.relative(opts.git_root, gateway.absPath).replaceAll("\\", "/");
@@ -300,9 +304,10 @@ export async function collectRunnerBasePrompts(opts: {
   agents_dir?: string;
   fallback_policy_gateway_flavor?: PolicyGatewayFlavor;
   recipe?: RunnerRecipeContext;
+  harness?: ResolvedHarnessContract;
 }): Promise<RunnerPromptBlock[]> {
   const owner_id = normalizeOwnerId(opts.owner_id);
-  const trimmedAgentsDir = opts.agents_dir?.trim();
+  const trimmedAgentsDir = opts.agents_dir?.trim() ?? opts.harness?.workflow.paths.agents_dir;
   const agents_dir =
     trimmedAgentsDir && trimmedAgentsDir.length > 0 ? trimmedAgentsDir : ".agentplane/agents";
   const fallback_flavor = opts.fallback_policy_gateway_flavor ?? "codex";
@@ -310,7 +315,11 @@ export async function collectRunnerBasePrompts(opts: {
   const prompts = [
     ...(await Promise.all([
       loadFrameworkRunnerPrompt(),
-      loadPolicyGatewayPrompt({ git_root: opts.git_root, fallback_flavor }),
+      loadPolicyGatewayPrompt({
+        git_root: opts.git_root,
+        fallback_flavor,
+        harness: opts.harness,
+      }),
       loadOwnerProfilePrompt({ git_root: opts.git_root, agents_dir, owner_id }),
     ])),
     ...(await collectRecipePromptBlocks({
