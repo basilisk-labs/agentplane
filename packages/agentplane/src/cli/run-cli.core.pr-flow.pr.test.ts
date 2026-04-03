@@ -530,62 +530,219 @@ describe("runCli", () => {
     expect(notesText.trim().split("\n")).toHaveLength(2);
   });
 
-  it("verify recreates PR artifacts without a manual pr open or pr update", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    config.agents.approvals.require_plan = false;
-    await writeConfig(root, config);
+  it(
+    "verify recreates PR artifacts without a manual pr open or pr update",
+    { timeout: 90_000 },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      config.agents.approvals.require_plan = false;
+      await writeConfig(root, config);
 
-    let taskId = "";
-    const ioTask = captureStdIO();
-    try {
-      const code = await runCli([
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Verify PR auto sync",
+          "--description",
+          "Verify should restore PR artifacts automatically",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["checkout", "-b", `task/${taskId}/verify-auto-sync`], {
+        cwd: root,
+      });
+
+      await runCliSilent([
         "task",
-        "new",
-        "--title",
-        "Verify PR auto sync",
-        "--description",
-        "Verify should restore PR artifacts automatically",
-        "--priority",
-        "med",
-        "--owner",
+        "start-ready",
+        taskId,
+        "--author",
         "CODER",
-        "--tag",
-        "docs",
+        "--body",
+        "Start: create the initial PR artifact scaffold without manual PR commands.",
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
 
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/verify-auto-sync`], {
-      cwd: root,
-    });
+      const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+      await rm(path.join(prDir, "review.md"));
 
-    await runCliSilent([
-      "task",
-      "start-ready",
-      taskId,
-      "--author",
-      "CODER",
-      "--body",
-      "Start: create the initial PR artifact scaffold without manual PR commands.",
-      "--root",
-      root,
-    ]);
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "verify",
+          taskId,
+          "--ok",
+          "--by",
+          "REVIEWER",
+          "--note",
+          "Looks good",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
 
-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
-    await rm(path.join(prDir, "review.md"));
+      expect(await readFile(path.join(prDir, "review.md"), "utf8")).toContain("BEGIN AUTO SUMMARY");
+      const meta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
+        branch?: string;
+      };
+      expect(meta.branch).toBe(`task/${taskId}/verify-auto-sync`);
+    },
+  );
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
+  it(
+    "pr check fails when review metadata is stale relative to branch head",
+    { timeout: 90_000 },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      config.agents.approvals.require_plan = false;
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "PR stale review check",
+          "--description",
+          "PR check should reject stale rendered review metadata",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await execFileAsync("git", ["checkout", "-b", `task/${taskId}/stale-review`], { cwd: root });
+      await runCliSilent([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: create initial PR artifacts before the first code change.",
+        "--root",
+        root,
+      ]);
+
+      await writeFile(path.join(root, "feature.txt"), "feature", "utf8");
+      await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feature"], { cwd: root });
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["pr", "check", taskId, "--root", root]);
+        expect(code).toBe(3);
+        expect(io.stderr).toContain("PR artifacts stale:");
+      } finally {
+        io.restore();
+      }
+    },
+  );
+
+  it(
+    "pr check fails when verify metadata is stale relative to branch head",
+    { timeout: 90_000 },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      config.agents.approvals.require_plan = false;
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "PR stale verify check",
+          "--description",
+          "PR check should reject stale verify sha metadata",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--verify",
+          "echo ok",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await execFileAsync("git", ["checkout", "-b", `task/${taskId}/stale-verify`], { cwd: root });
+      await runCliSilent([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: create PR artifacts before recording the first verification snapshot.",
+        "--root",
+        root,
+      ]);
+
+      await writeFile(path.join(root, "feature-1.txt"), "feature-1", "utf8");
+      await execFileAsync("git", ["add", "feature-1.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feature-1"], { cwd: root });
+      await runCliSilent([
         "verify",
         taskId,
         "--ok",
@@ -596,168 +753,23 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
+      await runCliSilent(["pr", "check", taskId, "--root", root]);
 
-    expect(await readFile(path.join(prDir, "review.md"), "utf8")).toContain("BEGIN AUTO SUMMARY");
-    const meta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
-      branch?: string;
-    };
-    expect(meta.branch).toBe(`task/${taskId}/verify-auto-sync`);
-  });
+      await writeFile(path.join(root, "feature-2.txt"), "feature-2", "utf8");
+      await execFileAsync("git", ["add", "feature-2.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feature-2"], { cwd: root });
+      await runCliSilent(["pr", "update", taskId, "--root", root]);
 
-  it("pr check fails when review metadata is stale relative to branch head", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    config.agents.approvals.require_plan = false;
-    await writeConfig(root, config);
-    await configureGitUser(root);
-
-    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
-
-    let taskId = "";
-    const ioTask = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "PR stale review check",
-        "--description",
-        "PR check should reject stale rendered review metadata",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "docs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/stale-review`], { cwd: root });
-    await runCliSilent([
-      "task",
-      "start-ready",
-      taskId,
-      "--author",
-      "CODER",
-      "--body",
-      "Start: create initial PR artifacts before the first code change.",
-      "--root",
-      root,
-    ]);
-
-    await writeFile(path.join(root, "feature.txt"), "feature", "utf8");
-    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "feature"], { cwd: root });
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["pr", "check", taskId, "--root", root]);
-      expect(code).toBe(3);
-      expect(io.stderr).toContain("PR artifacts stale:");
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("pr check fails when verify metadata is stale relative to branch head", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    config.agents.approvals.require_plan = false;
-    await writeConfig(root, config);
-    await configureGitUser(root);
-
-    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
-
-    let taskId = "";
-    const ioTask = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "PR stale verify check",
-        "--description",
-        "PR check should reject stale verify sha metadata",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "docs",
-        "--verify",
-        "echo ok",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/stale-verify`], { cwd: root });
-    await runCliSilent([
-      "task",
-      "start-ready",
-      taskId,
-      "--author",
-      "CODER",
-      "--body",
-      "Start: create PR artifacts before recording the first verification snapshot.",
-      "--root",
-      root,
-    ]);
-
-    await writeFile(path.join(root, "feature-1.txt"), "feature-1", "utf8");
-    await execFileAsync("git", ["add", "feature-1.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "feature-1"], { cwd: root });
-    await runCliSilent([
-      "verify",
-      taskId,
-      "--ok",
-      "--by",
-      "REVIEWER",
-      "--note",
-      "Looks good",
-      "--root",
-      root,
-    ]);
-    await runCliSilent(["pr", "check", taskId, "--root", root]);
-
-    await writeFile(path.join(root, "feature-2.txt"), "feature-2", "utf8");
-    await execFileAsync("git", ["add", "feature-2.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "feature-2"], { cwd: root });
-    await runCliSilent(["pr", "update", taskId, "--root", root]);
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["pr", "check", taskId, "--root", root]);
-      expect(code).toBe(3);
-      expect(io.stderr).toContain("Verify state stale:");
-    } finally {
-      io.restore();
-    }
-  });
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["pr", "check", taskId, "--root", root]);
+        expect(code).toBe(3);
+        expect(io.stderr).toContain("Verify state stale:");
+      } finally {
+        io.restore();
+      }
+    },
+  );
 
   it("pr note requires branch_pr workflow", async () => {
     const root = await mkGitRepoRoot();
