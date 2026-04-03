@@ -1,10 +1,11 @@
 ---
 id: "202604030442-WARBCX"
 title: "Release framework patch 0.3.10"
-status: "DOING"
+result_summary: "Merged via PR #67."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "add4d7927505d07744a044fa1ea3acd57b2d907a"
+  message: "Merge pull request #67 from basilisk-labs/task/202604030442-WARBCX/release-0-3-10"
 comments:
   -
     author: "CODER"
     body: "Start: freeze patch release 0.3.10, prepare release notes, run release prepublish, and apply the release from the clean base checkout after the framework roadmap and incidents follow-up landed."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #67 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -37,9 +43,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: freeze patch release 0.3.10, prepare release notes, run release prepublish, and apply the release from the clean base checkout after the framework roadmap and incidents follow-up landed."
+  -
+    type: "status"
+    at: "2026-04-03T16:54:41.455Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #67 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-03T14:53:34.180Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-03T16:54:41.459Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare notes, run prepublish checks, bump versions, and publish the next patch release after the framework roadmap lands."
 sections:
   Summary: |-
