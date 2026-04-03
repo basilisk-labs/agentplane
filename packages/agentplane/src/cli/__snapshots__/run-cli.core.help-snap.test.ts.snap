@@ -59,7 +59,7 @@ Commands:
   Policy:
     incidents  Promote external incident advice and resolve incident hints for analogous tasks.
     incidents advise  Resolve relevant incident advice for a task or an ad hoc scope/tag query.
-    incidents collect  Promote structured external incident-candidates from a task into the incident registry.
+    incidents collect  Promote reusable resolved external findings from a task into the incident registry.
   PR:
     integrate  Integrate a task branch into the base branch (branch_pr workflow).
     pr  Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).

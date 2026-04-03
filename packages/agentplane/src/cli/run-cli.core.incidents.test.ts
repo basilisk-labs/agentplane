@@ -72,13 +72,7 @@ describe("runCli incidents", () => {
             "- Observation: external release recovery instructions drifted outside the repository fix.",
             "  Impact: operators repeated the same manual recovery mistakes.",
             "  Resolution: keep one reusable recovery note in the incident registry.",
-            "  Promotion: incident-candidate",
-            "  IncidentScope: release recovery manual steps",
-            "  IncidentTags: release, operations",
-            "  IncidentMatch: release, recovery, manual",
-            "  IncidentAdvice: review the recorded release recovery steps before rerunning manual remediation",
-            "  IncidentRule: Release recovery MUST review the recorded manual recovery steps before rerunning remediation.",
-            "  IncidentExternal: true",
+            "  Fixability: external",
           ].join("\n"),
           "--root",
           root,
@@ -104,12 +98,14 @@ describe("runCli incidents", () => {
       const payload = JSON.parse(io.stdout) as {
         task_id: string;
         checked_only: boolean;
-        promotable: { fixability: string | null }[];
+        promotable: { fixability: string | null; state: string; advice: string | null }[];
       };
       expect(payload.task_id).toBe(taskId);
       expect(payload.checked_only).toBe(true);
       expect(payload.promotable).toHaveLength(1);
       expect(payload.promotable[0].fixability).toBe("external");
+      expect(payload.promotable[0].state).toBe("open");
+      expect(payload.promotable[0].advice).toContain("reusable recovery note");
     } finally {
       io.restore();
     }
@@ -137,7 +133,7 @@ describe("runCli incidents", () => {
         "  enforcement: manual",
         "  source_task: 202604031416-HEJWTM",
         "  fixability: external",
-        "  state: stabilized",
+        "  state: open",
         "",
       ].join("\n"),
       "utf8",

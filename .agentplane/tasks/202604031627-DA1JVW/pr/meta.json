@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604031627-DA1JVW/incidents-auto-promotion",
+  "created_at": "2026-04-03T16:29:32.214Z",
+  "head_sha": "24fe2c746f453afc8019fea7d56aeff6776036b0",
+  "last_verified_at": "2026-04-03T16:40:24.330Z",
+  "last_verified_sha": "add4d7927505d07744a044fa1ea3acd57b2d907a",
+  "schema_version": 1,
+  "task_id": "202604031627-DA1JVW",
+  "updated_at": "2026-04-03T16:42:32.226Z",
+  "verify": {
+    "status": "pass"
+  }
+}

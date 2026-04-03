@@ -75,6 +75,14 @@ function parseBoolean(value: string | null | undefined): boolean {
   return normalized === "true" || normalized === "yes" || normalized === "y" || normalized === "1";
 }
 
+function parseFixability(value: string | null | undefined): "external" | null {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase() === "external"
+    ? "external"
+    : null;
+}
+
 function parseEntryState(value: string | null | undefined): IncidentRegistryEntryState {
   return value === "open" || value === "promoted" ? value : "stabilized";
 }
@@ -92,24 +100,103 @@ function appendFieldValue(
   record[key] = `${record[key]}${joiner}${value.trim()}`.trim();
 }
 
-function buildIncidentFingerprint(
-  entry: Pick<IncidentRegistryEntry, "sourceTask" | "scope" | "failure" | "rule">,
+function buildIncidentSignature(
+  entry: Pick<IncidentRegistryEntry, "scope" | "failure" | "rule">,
 ): string {
   return [
-    entry.sourceTask ?? "",
     normalizeSearchText(entry.scope),
     normalizeSearchText(entry.failure),
     normalizeSearchText(entry.rule),
   ].join("|");
 }
 
+function buildIncidentFingerprint(
+  entry: Pick<IncidentRegistryEntry, "sourceTask" | "scope" | "failure" | "rule">,
+): string {
+  return [entry.sourceTask ?? "", buildIncidentSignature(entry)].join("|");
+}
+
 function buildMatchTerms(opts: {
   scope: string;
   tags: readonly string[];
   explicitMatch: readonly string[];
+  extraText?: readonly string[];
 }): string[] {
   const scopeTokens = tokenize(opts.scope);
-  return dedupeCaseInsensitive([...opts.explicitMatch, ...opts.tags, ...scopeTokens]).slice(0, 12);
+  const extraTokens = (opts.extraText ?? []).flatMap((value) => tokenize(value));
+  return dedupeCaseInsensitive([
+    ...opts.explicitMatch,
+    ...opts.tags,
+    ...scopeTokens,
+    ...extraTokens,
+  ]).slice(0, 16);
+}
+
+function parseDateOnly(value: string): number | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const parsed = Date.parse(`${value}T00:00:00.000Z`);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function occursWithinDays(date: string, now: Date, days: number): boolean {
+  const timestamp = parseDateOnly(date);
+  if (timestamp === null) return false;
+  const delta = now.getTime() - timestamp;
+  if (delta < 0) return false;
+  return delta <= days * 24 * 60 * 60 * 1000;
+}
+
+function entryStateRank(state: IncidentRegistryEntryState): number {
+  if (state === "promoted") return 2;
+  if (state === "stabilized") return 1;
+  return 0;
+}
+
+function compareIncidentAdviceMatch(left: IncidentAdviceMatch, right: IncidentAdviceMatch): number {
+  if (right.score !== left.score) return right.score - left.score;
+  const rightState = entryStateRank(right.entry.state);
+  const leftState = entryStateRank(left.entry.state);
+  if (rightState !== leftState) return rightState - leftState;
+  return right.entry.date.localeCompare(left.entry.date);
+}
+
+function summarizeTaskScope(scope: string | null | undefined, title: string): string {
+  const lines = normalizeLines(scope ?? "");
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    let candidate = trimmed.replace(/^-+\s*/, "");
+    candidate = candidate.replace(/^in scope:\s*/i, "").trim();
+    if (!candidate || /^out of scope:/i.test(candidate)) continue;
+    return candidate;
+  }
+  return title.trim();
+}
+
+function buildDerivedIncidentRule(scope: string): string {
+  return `Analogous ${scope} work MUST review and apply the recorded external incident advice before retrying.`;
+}
+
+function resolveIncidentState(opts: {
+  registry: IncidentRegistry;
+  entry: Pick<IncidentRegistryEntry, "scope" | "failure" | "rule">;
+  now: Date;
+}): IncidentRegistryEntryState {
+  const signature = buildIncidentSignature(opts.entry);
+  const similarEntries = opts.registry.entries.filter(
+    (candidate) => buildIncidentSignature(candidate) === signature,
+  );
+  if (
+    similarEntries.some(
+      (candidate) =>
+        candidate.state === "promoted" ||
+        candidate.state === "stabilized" ||
+        occursWithinDays(candidate.date, opts.now, 30),
+    )
+  ) {
+    return "stabilized";
+  }
+  return "open";
 }
 
 export function createIncidentRegistrySkeleton(): string {
@@ -122,7 +209,8 @@ export function createIncidentRegistrySkeleton(): string {
     "- Every entry MUST include: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`.",
     "- New machine-matched entries SHOULD also include: `tags`, `match`, `advice`, `source_task`, `fixability`.",
     "- `rule` MUST be concrete and testable (`MUST` / `MUST NOT`).",
-    "- `fixability: external` means the issue cannot be removed by changing only repository code and should instead stay as reusable operational advice.",
+    "- `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.",
+    "- First auto-promoted external incidents normally enter as `open` and still participate in targeted advice lookup; recurring equivalent incidents can append later `stabilized` entries.",
     "- `state` values: `open`, `stabilized`, `promoted`.",
     "",
     "## Entry template",
@@ -272,8 +360,12 @@ export function extractIncidentCandidatesFromFindings(
 
   const flush = () => {
     if (!currentFields) return;
-    const promotion = currentFields.promotion?.trim() ?? "";
-    if (promotion.toLowerCase() !== "incident-candidate") {
+    const promotion = currentFields.promotion?.trim() || null;
+    const fixability = parseFixability(currentFields.fixability);
+    const incidentExternal =
+      parseBoolean(currentFields.incidentexternal) || fixability === "external";
+    const shouldPromote = promotion?.toLowerCase() === "incident-candidate" || incidentExternal;
+    if (!shouldPromote) {
       currentFields = null;
       currentKey = null;
       currentLine = 0;
@@ -296,7 +388,8 @@ export function extractIncidentCandidatesFromFindings(
       incidentAdvice: currentFields.incidentadvice?.trim() || null,
       incidentTags: parseCsvList(currentFields.incidenttags),
       incidentMatch: parseCsvList(currentFields.incidentmatch),
-      incidentExternal: parseBoolean(currentFields.incidentexternal),
+      incidentExternal,
+      fixability,
       line: currentLine,
       rawFields: { ...currentFields },
     });
@@ -369,10 +462,12 @@ function nextIncidentId(entries: readonly IncidentRegistryEntry[], now: Date): s
 
 function buildPromotionIssues(candidate: IncidentFindingCandidate): IncidentPromotionIssue | null {
   const missingFields: string[] = [];
-  if (!candidate.incidentExternal) missingFields.push("IncidentExternal: true");
-  if (!candidate.incidentScope) missingFields.push("IncidentScope");
-  if (!candidate.incidentRule) missingFields.push("IncidentRule");
-  if (!candidate.incidentAdvice) missingFields.push("IncidentAdvice");
+  if (!candidate.incidentExternal && candidate.fixability !== "external") {
+    missingFields.push("Fixability: external or IncidentExternal: true");
+  }
+  if (!candidate.incidentAdvice && !candidate.resolution) {
+    missingFields.push("Resolution or IncidentAdvice");
+  }
   return missingFields.length > 0 ? { candidate, missingFields } : null;
 }
 
@@ -380,30 +475,45 @@ function buildIncidentRegistryEntry(opts: {
   task: IncidentPromotionTaskContext;
   candidate: IncidentFindingCandidate;
   now: Date;
-  existingEntries: readonly IncidentRegistryEntry[];
+  registry: IncidentRegistry;
 }): IncidentRegistryEntry {
   const date = opts.now.toISOString().slice(0, 10);
+  const scope =
+    opts.candidate.incidentScope ?? summarizeTaskScope(opts.task.scope, opts.task.title);
   const tags = dedupeCaseInsensitive([
     ...opts.candidate.incidentTags,
     ...opts.task.tags.map((tag) => tag.trim()),
   ]);
+  const advice =
+    opts.candidate.incidentAdvice ?? opts.candidate.resolution ?? opts.candidate.observation;
+  const rule = opts.candidate.incidentRule ?? buildDerivedIncidentRule(scope);
+  const state = resolveIncidentState({
+    registry: opts.registry,
+    entry: {
+      scope,
+      failure: opts.candidate.observation,
+      rule,
+    },
+    now: opts.now,
+  });
   const match = buildMatchTerms({
-    scope: opts.candidate.incidentScope ?? opts.task.title,
+    scope,
     tags,
     explicitMatch: opts.candidate.incidentMatch,
+    extraText: [opts.task.title, opts.task.description, advice],
   });
   return {
-    id: nextIncidentId(opts.existingEntries, opts.now),
+    id: nextIncidentId(opts.registry.entries, opts.now),
     date,
-    scope: opts.candidate.incidentScope ?? opts.task.title,
+    scope,
     failure: opts.candidate.observation,
-    rule: opts.candidate.incidentRule ?? "",
+    rule,
     evidence: `task ${opts.task.id}${opts.task.commitHash ? `; commit ${opts.task.commitHash.slice(0, 12)}` : ""}`,
     enforcement: "manual",
-    state: "stabilized",
+    state,
     tags,
     match,
-    advice: opts.candidate.incidentAdvice,
+    advice,
     sourceTask: opts.task.id,
     fixability: "external",
     rawFields: {},
@@ -436,7 +546,12 @@ export function planIncidentCollection(opts: {
       task: opts.task,
       candidate,
       now,
-      existingEntries: [...opts.registry.entries, ...promotable.map((item) => item.entry)],
+      registry: parseIncidentRegistry(
+        appendIncidentRegistryEntries(createIncidentRegistrySkeleton(), [
+          ...opts.registry.entries,
+          ...promotable.map((item) => item.entry),
+        ]),
+      ),
     });
     const fingerprint = buildIncidentFingerprint(entry);
     const draft: IncidentPromotionDraft = { candidate, entry, fingerprint };
@@ -477,10 +592,9 @@ export function resolveIncidentAdviceMatches(opts: {
   const haystack = [opts.query.title, opts.query.description, opts.query.scope ?? ""].join(" ");
   const normalizedHaystack = normalizeSearchText(haystack);
   const queryTokens = new Set([...tokenize(haystack), ...tagSet]);
-  const matches: IncidentAdviceMatch[] = [];
+  const matchesBySignature = new Map<string, IncidentAdviceMatch>();
 
   for (const entry of opts.registry.entries) {
-    if (entry.state === "open") continue;
     const matchedTags = entry.tags.filter((tag) => tagSet.has(tag.trim().toLowerCase()));
     const matchedTerms = entry.match.filter(
       (term) =>
@@ -491,12 +605,17 @@ export function resolveIncidentAdviceMatches(opts: {
     const scopeMatched = normalizedScope.length > 0 && normalizedHaystack.includes(normalizedScope);
     const score = matchedTags.length * 5 + matchedTerms.length * 2 + (scopeMatched ? 3 : 0);
     if (score <= 0) continue;
-    matches.push({ entry, score, matchedTags, matchedTerms, scopeMatched });
+    const match: IncidentAdviceMatch = { entry, score, matchedTags, matchedTerms, scopeMatched };
+    const signature = buildIncidentSignature(entry);
+    const existing = matchesBySignature.get(signature);
+    if (!existing || compareIncidentAdviceMatch(match, existing) < 0) {
+      matchesBySignature.set(signature, match);
+    }
   }
 
+  const matches = [...matchesBySignature.values()];
   matches.sort((left, right) => {
-    if (right.score !== left.score) return right.score - left.score;
-    return right.entry.date.localeCompare(left.entry.date);
+    return compareIncidentAdviceMatch(left, right);
   });
   return matches.slice(0, limit);
 }

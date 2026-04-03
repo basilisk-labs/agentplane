@@ -6,15 +6,14 @@
 - Incident-derived and situational rules MUST be added only to `incidents.md`.
 - MUST NOT create additional incident policy files under `.agentplane/policy/`.
 - New reusable operational incidents SHOULD be promoted from task `Findings` via `agentplane finish` or `agentplane incidents collect <task-id>`.
-- Auto-promotion is reserved for explicit `incident-candidate` blocks marked `IncidentExternal: true`; repository-fixable defects stay task-local unless curated manually.
+- Auto-promotion is reserved for resolved external findings marked `Fixability: external` or `IncidentExternal: true`; optional `IncidentScope`, `IncidentAdvice`, `IncidentRule`, `IncidentTags`, and `IncidentMatch` fields override the inferred registry entry when needed.
 - Normal startup MUST NOT bulk-load `incidents.md`; targeted lookup for analogous work is allowed through `task start-ready` and `agentplane incidents advise`.
 
 ## Stabilization criteria
 
-Use `stabilized` only when one of these is true:
+Use `stabilized` only when the same failure class recurs at least 2 times in 30 days.
 
-1. The same failure class recurs at least 2 times in 30 days.
-2. A single Sev-1 / production-blocking failure has reproducible steps and evidence.
+First auto-promoted external incidents may stay `open`, but targeted advice lookup is still allowed to use them so analogous work can reuse the recovery guidance before the second recurrence.
 
 Promotion from `incidents.md` into canonical policy modules is allowed only when:
 

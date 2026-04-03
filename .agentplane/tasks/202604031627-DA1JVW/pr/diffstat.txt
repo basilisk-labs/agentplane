@@ -1,0 +1,30 @@
+ .agentplane/policy/governance.md                   |   7 +-
+ .agentplane/policy/incidents.md                    |   1 +
+ .agentplane/policy/workflow.branch_pr.md           |   2 +-
+ .agentplane/policy/workflow.direct.md              |   4 +-
+ .agentplane/tasks/202604031627-DA1JVW/README.md    | 118 ++++++++++++++
+ .../tasks/202604031627-DA1JVW/pr/diffstat.txt      |  26 ++++
+ .../tasks/202604031627-DA1JVW/pr/github-body.md    |  75 +++++++++
+ .../tasks/202604031627-DA1JVW/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604031627-DA1JVW/pr/meta.json |  14 ++
+ .../tasks/202604031627-DA1JVW/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604031627-DA1JVW/pr/review.md |  82 ++++++++++
+ .../tasks/202604031627-DA1JVW/pr/verify.log        |   0
+ docs/user/agent-bootstrap.generated.mdx            |   4 +-
+ docs/user/agents.mdx                               |   2 +-
+ docs/user/cli-reference.generated.mdx              |   6 +-
+ packages/agentplane/assets/policy/governance.md    |   7 +-
+ packages/agentplane/assets/policy/incidents.md     |   1 +
+ .../agentplane/assets/policy/workflow.branch_pr.md |   2 +-
+ .../agentplane/assets/policy/workflow.direct.md    |   4 +-
+ .../run-cli.core.help-snap.test.ts.snap            |   2 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |   4 +-
+ .../src/cli/run-cli.core.incidents.test.ts         |  14 +-
+ .../agentplane/src/cli/run-cli.core.tasks.test.ts  |  15 +-
+ .../src/commands/incidents/collect.command.ts      |   5 +-
+ .../src/commands/incidents/incidents.command.ts    |   2 +-
+ .../agentplane/src/commands/incidents/shared.ts    |   3 +-
+ .../src/runtime/incidents/resolve.test.ts          |  86 +++++++++--
+ .../agentplane/src/runtime/incidents/resolve.ts    | 169 ++++++++++++++++++---
+ packages/agentplane/src/runtime/incidents/types.ts |   4 +-
+ 29 files changed, 576 insertions(+), 84 deletions(-)

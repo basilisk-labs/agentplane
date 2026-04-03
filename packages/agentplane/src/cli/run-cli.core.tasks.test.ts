@@ -824,7 +824,7 @@ describe("runCli", () => {
         "  enforcement: manual",
         "  source_task: 202603091054-V2X1QB",
         "  fixability: external",
-        "  state: stabilized",
+        "  state: open",
         "",
       ].join("\n"),
       "utf8",
@@ -1163,13 +1163,7 @@ describe("runCli", () => {
           "- Observation: workflow_dispatch on release tags can still hang while waiting on exact-SHA push runs that never existed.",
           "  Impact: manual release recovery stalls even after the repository fix is known.",
           "  Resolution: validate the exact release ref inside the workflow before rerunning recovery.",
-          "  Promotion: incident-candidate",
-          "  IncidentScope: release publish workflow_dispatch",
-          "  IncidentTags: release, github-actions",
-          "  IncidentMatch: publish, workflow_dispatch, release-tag",
-          "  IncidentAdvice: validate the exact release ref inside the workflow before rerunning release recovery",
-          "  IncidentRule: Release recovery MUST validate the exact ref inside the workflow before rerunning manual publish recovery.",
-          "  IncidentExternal: true",
+          "  Fixability: external",
         ].join("\n"),
       ],
     ] as const) {
@@ -1269,7 +1263,10 @@ describe("runCli", () => {
     );
     expect(incidents).toContain(`source_task: ${taskId}`);
     expect(incidents).toContain("fixability: external");
-    expect(incidents).toContain("Release recovery MUST validate the exact ref inside the workflow");
+    expect(incidents).toContain("state: open");
+    expect(incidents).toContain(
+      "validate the exact release ref inside the workflow before rerunning recovery",
+    );
   });
 
   it("task update supports replace flags", async () => {

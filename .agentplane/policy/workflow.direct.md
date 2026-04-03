@@ -38,7 +38,7 @@ If any step fails:
    - `doc_version=3`: task `Findings`
 3. Mark task blocked: `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`.
 4. Request re-approval before scope/risk changes.
-5. If failure is external/process-related and should become reusable advice, record a structured `incident-candidate` block in `Findings` and let `agentplane finish` or `agentplane incidents collect <task-id>` promote it.
+5. If failure is external/process-related and should become reusable advice, record a structured `Observation` / `Impact` / `Resolution` block in `Findings` and mark it with `Fixability: external` (or `IncidentExternal: true`); optional `Incident*` fields refine the promoted registry entry.
 
 ## Constraints
 
@@ -47,7 +47,7 @@ If any step fails:
 - MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
 - `task start-ready` MAY surface targeted incident advice for analogous scope/tags; follow it before widening scope.
 - In direct mode, `finish` auto-creates the deterministic close commit by default; use `--no-close-commit` only for explicit manual handling.
-- `finish` evaluates structured external `incident-candidate` findings and appends valid entries to `.agentplane/policy/incidents.md`.
+- `finish` evaluates structured resolved external findings, auto-derives incident advice when only `Observation` / `Impact` / `Resolution` plus `Fixability: external` are present, and appends valid entries to `.agentplane/policy/incidents.md`.
 - MUST stop and request re-approval on material drift.
 - Do not use worktrees in direct mode.
 - Do not perform `branch_pr`-only operations.
