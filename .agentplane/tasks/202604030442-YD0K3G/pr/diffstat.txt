@@ -1,0 +1,8 @@
+ .../src/runner/context/base-prompts.test.ts        |  41 +++-
+ .../agentplane/src/runner/context/base-prompts.ts  | 233 ++++++++++++++++-----
+ packages/agentplane/src/runner/types.ts            |   2 +
+ packages/agentplane/src/runtime/behavior/index.ts  |   8 +
+ .../src/runtime/behavior/resolve.test.ts           | 113 ++++++++++
+ .../agentplane/src/runtime/behavior/resolve.ts     | 103 +++++++++
+ packages/agentplane/src/runtime/behavior/types.ts  |  31 +++
+ 7 files changed, 481 insertions(+), 50 deletions(-)

@@ -5,6 +5,7 @@ import type {
 } from "@agentplaneorg/core";
 export type { RunnerTimeoutReason } from "@agentplaneorg/core";
 
+import type { BehaviorResolutionTrace } from "../runtime/behavior/index.js";
 import type { TaskData, TaskEvent } from "../backends/task-backend.js";
 import type { AgentplaneCapabilityRegistry } from "../runtime/capabilities/index.js";
 
@@ -33,6 +34,7 @@ export type RunnerPromptBlock = {
   title?: string;
   source?: string;
   priority: number;
+  resolution?: BehaviorResolutionTrace<Record<string, unknown>>;
 };
 
 export type RunnerRepositoryContext = {
