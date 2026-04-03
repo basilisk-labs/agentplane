@@ -1,10 +1,11 @@
 ---
 id: "202604030442-NBBE36"
 title: "F-008 Introduce task intake contracts"
-status: "DOING"
+result_summary: "integrate: squash task/202604030442-NBBE36/task-intake-contracts"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-03T13:35:42.746Z"
   updated_by: "CODER"
   note: "Verified: bun run typecheck; bunx vitest run packages/agentplane/src/runtime/task-intake/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000; node scripts/run-pre-commit-hook.mjs"
-commit: null
+commit:
+  hash: "161279d9859f782e128981428ea004c7c6498434"
+  message: "📝 NBBE36 task: refresh verification and pr state"
 comments:
   -
     author: "CODER"
     body: "Start: define framework-level intake, clarification, graph draft, and materialization contracts, then connect them to the canonical execution context without coupling to runner or recipes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-NBBE36/pr."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun run typecheck; bunx vitest run packages/agentplane/src/runtime/task-intake/resolve.test.ts packages/agentplane/src/usecases/context/resolve-context.unit.test.ts packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000; node scripts/run-pre-commit-hook.mjs"
+  -
+    type: "status"
+    at: "2026-04-03T13:36:32.103Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=ran; pr=.agentplane/tasks/202604030442-NBBE36/pr."
 doc_version: 3
-doc_updated_at: "2026-04-03T13:35:42.753Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-03T13:36:32.106Z"
+doc_updated_by: "INTEGRATOR"
 description: "Define framework-level intake, clarification, graph draft, and materialization contracts for task create flows."
 sections:
   Summary: |-
