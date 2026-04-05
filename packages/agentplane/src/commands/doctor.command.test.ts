@@ -294,6 +294,156 @@ describe("doctor.command", () => {
     expect(rc).toBe(0);
   });
 
+  it("warns when a verified branch_pr task is already shipped on base but still open", async () => {
+    const ws = await mkWorkspace();
+    const shippedHash = await gitInitWithCommit(ws.root, "feat: shipped payload");
+    await writeFile(
+      path.join(ws.root, ".agentplane", "config.json"),
+      '{\n  "version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+      "utf8",
+    );
+    const branchPrWorkflow = VALID_WORKFLOW.replace("mode: direct", 'mode: "branch_pr"');
+    await writeFile(path.join(ws.root, ".agentplane", "WORKFLOW.md"), branchPrWorkflow, "utf8");
+    await writeFile(
+      path.join(ws.root, ".agentplane", "workflows", "last-known-good.md"),
+      branchPrWorkflow,
+      "utf8",
+    );
+
+    const taskId = "202604050900-DRGFT1";
+    await writeFile(
+      path.join(ws.root, ".agentplane", "tasks.json"),
+      JSON.stringify(
+        {
+          tasks: [
+            {
+              id: taskId,
+              title: "Shipped branch_pr drift",
+              description: "Doctor should surface shipped-but-open branch_pr tasks.",
+              status: "DOING",
+              priority: "med",
+              owner: "CODER",
+              depends_on: [],
+              tags: ["workflow"],
+              verify: [],
+              plan_approval: {
+                state: "approved",
+                updated_at: "2026-04-05T09:00:00.000Z",
+                updated_by: "ORCHESTRATOR",
+                note: null,
+              },
+              verification: {
+                state: "ok",
+                updated_at: "2026-04-05T09:10:00.000Z",
+                updated_by: "CODER",
+                note: "verified",
+              },
+              commit: {
+                hash: shippedHash,
+                message: "feat: shipped payload",
+              },
+              comments: [],
+              doc_version: 3,
+              doc_updated_at: "2026-04-05T09:10:00.000Z",
+              doc_updated_by: "CODER",
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    const taskDir = path.join(ws.root, ".agentplane", "tasks", taskId);
+    await mkdir(path.join(taskDir, "pr"), { recursive: true });
+    await writeFile(
+      path.join(taskDir, "README.md"),
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "Shipped branch_pr drift",
+          description: "Doctor should surface shipped-but-open branch_pr tasks.",
+          status: "DOING",
+          priority: "med",
+          owner: "CODER",
+          depends_on: [],
+          tags: ["workflow"],
+          verify: [],
+          plan_approval: {
+            state: "approved",
+            updated_at: "2026-04-05T09:00:00.000Z",
+            updated_by: "ORCHESTRATOR",
+            note: null,
+          },
+          verification: {
+            state: "ok",
+            updated_at: "2026-04-05T09:10:00.000Z",
+            updated_by: "CODER",
+            note: "verified",
+          },
+          commit: {
+            hash: shippedHash,
+            message: "feat: shipped payload",
+          },
+          comments: [],
+          events: [],
+          revision: 1,
+          doc_version: 3,
+          doc_updated_at: "2026-04-05T09:10:00.000Z",
+          doc_updated_by: "CODER",
+          sections: {
+            Summary: "Shipped branch_pr drift",
+            Scope: "- In scope: detect shipped-but-open branch_pr tasks.",
+            Plan: "1. Run doctor.",
+            "Verify Steps":
+              "1. Run agentplane doctor. Expected: warning mentions shipped branch_pr drift.",
+            Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+            "Rollback Plan": "- Revert.",
+            Findings: "",
+          },
+        },
+        "",
+      ),
+      "utf8",
+    );
+    await writeFile(
+      path.join(taskDir, "pr", "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          branch: `task/${taskId}/sync-local`,
+          base: "main",
+          created_at: "2026-04-05T09:00:00.000Z",
+          updated_at: "2026-04-05T09:00:00.000Z",
+          last_verified_sha: null,
+          last_verified_at: null,
+          verify: { status: "skipped" },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain("branch_pr tasks appear shipped on the base branch but remain open");
+      expect(output).toContain("agentplane task normalize --sync-branch-pr-state");
+      expect(output).toContain(taskId);
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
   it("warns when a Redmine backend is configured without canonical_state readiness", async () => {
     const ws = await mkWorkspace();
     await configureRedmineBackend(ws.root);

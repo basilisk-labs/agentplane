@@ -3,7 +3,7 @@ import { successMessage } from "../../cli/output.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskCollectionMutation } from "../shared/task-mutation.js";
-import { syncHostedMergedTasks } from "./hosted-merge-sync.js";
+import { syncHostedMergedTasks, syncLocallyShippedBranchPrTasks } from "./hosted-merge-sync.js";
 
 export async function cmdTaskNormalize(opts: {
   ctx?: CommandContext;
@@ -13,6 +13,7 @@ export async function cmdTaskNormalize(opts: {
   force: boolean;
   yes?: boolean;
   syncHostedMerges?: boolean;
+  syncBranchPrState?: boolean;
 }): Promise<number> {
   try {
     const ctx =
@@ -26,7 +27,11 @@ export async function cmdTaskNormalize(opts: {
         reason: "task normalize --force",
       });
     }
-    if (ctx.taskBackend.normalizeTasks && opts.syncHostedMerges !== true) {
+    if (
+      ctx.taskBackend.normalizeTasks &&
+      opts.syncHostedMerges !== true &&
+      opts.syncBranchPrState !== true
+    ) {
       const result = await ctx.taskBackend.normalizeTasks();
       if (!opts.quiet) {
         process.stdout.write(
@@ -37,6 +42,7 @@ export async function cmdTaskNormalize(opts: {
     }
 
     let syncedHostedMerges = 0;
+    let syncedBranchPrState = 0;
     const { result, tasksToWrite } = await applyTaskCollectionMutation({
       ctx,
       build: async (tasks) => {
@@ -45,6 +51,11 @@ export async function cmdTaskNormalize(opts: {
           const synced = await syncHostedMergedTasks({ ctx, tasks });
           nextTasks = synced.tasks;
           syncedHostedMerges = synced.synced;
+        }
+        if (opts.syncBranchPrState === true) {
+          const synced = await syncLocallyShippedBranchPrTasks({ ctx, tasks: nextTasks });
+          nextTasks = synced.tasks;
+          syncedBranchPrState = synced.synced;
         }
         return {
           result: null,
@@ -58,7 +69,11 @@ export async function cmdTaskNormalize(opts: {
         `${successMessage(
           "normalized tasks",
           undefined,
-          `count=${tasksToWrite.length}${opts.syncHostedMerges === true ? ` synced_hosted_merges=${syncedHostedMerges}` : ""}`,
+          `count=${tasksToWrite.length}${
+            opts.syncHostedMerges === true ? ` synced_hosted_merges=${syncedHostedMerges}` : ""
+          }${
+            opts.syncBranchPrState === true ? ` synced_branch_pr_state=${syncedBranchPrState}` : ""
+          }`,
         )}\n`,
       );
     }
