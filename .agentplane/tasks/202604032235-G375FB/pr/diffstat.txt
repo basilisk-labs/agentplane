@@ -1,0 +1,6 @@
+ .agentplane/tasks/202604032235-G375FB/README.md    | 103 ++++++++++++
+ .../run-cli.core.pr-flow.cleanup-merged.test.ts    | 175 +++++++++++++++++++++
+ .../src/commands/branch/cleanup-merged.ts          | 133 +++++++++++++---
+ packages/agentplane/src/commands/shared/git-ops.ts |  18 +++
+ .../agentplane/src/commands/shared/git-worktree.ts |  29 +++-
+ 5 files changed, 432 insertions(+), 26 deletions(-)
