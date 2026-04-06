@@ -20,7 +20,7 @@ Make task hosted-close close merged branch_pr tasks even when the GitHub Actions
 ### Current Status
 
 - State: ok
-- Note: Rebased 9JBSSW onto main@734042f6c6538441d624a68e737e5910aaecc9be, reran focused hosted-close vitest plus workflow contract coverage, and reran eslint on touched sources; all checks passed.
+- Note: Rebased the published 9JBSSW branch onto current main, bootstrapped the fresh worktree, reran focused hosted-close vitest, reran hosted-close eslint, and confirmed the previously blocking git-edge critical case passes in the clean worktree.
 
 ## Risks
 
@@ -39,25 +39,12 @@ Make task hosted-close close merged branch_pr tasks even when the GitHub Actions
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T22:51:30.706Z
+- Updated: 2026-04-06T23:13:33.702Z
 - Branch: task/202604062228-9JBSSW/hosted-close-missing-merge-object
-- Head: 7b1bf73deeef
+- Head: 16d77e298b08
 
 ```text
- .agentplane/tasks/202604062228-9JBSSW/README.md    | 139 ++++++++++++++++
- .../tasks/202604062228-9JBSSW/pr/diffstat.txt      |  14 ++
- .../tasks/202604062228-9JBSSW/pr/github-body.md    |  63 ++++++++
- .../tasks/202604062228-9JBSSW/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604062228-9JBSSW/pr/meta.json |  14 ++
- .../tasks/202604062228-9JBSSW/pr/notes.jsonl       |   0
- .agentplane/tasks/202604062228-9JBSSW/pr/review.md |  70 ++++++++
- .../tasks/202604062228-9JBSSW/pr/verify.log        |   0
- .github/workflows/task-hosted-close.yml            |   1 +
- .../src/cli/run-cli.core.task-hosted-close.test.ts | 176 +++++++++++++++++++++
- .../src/commands/guard/impl/close-message.ts       |  31 +++-
- .../task/hosted-close-workflow-contract.test.ts    |   1 +
- .../src/commands/task/hosted-close.command.ts      |  41 ++++-
- 13 files changed, 544 insertions(+), 7 deletions(-)
+No changes detected.
 ```
 
 </details>
