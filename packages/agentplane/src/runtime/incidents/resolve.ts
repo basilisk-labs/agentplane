@@ -3,6 +3,7 @@ import type {
   IncidentAdviceQuery,
   IncidentCollectionPlan,
   IncidentFindingCandidate,
+  IncidentSkippedFinding,
   IncidentPromotionDraft,
   IncidentPromotionIssue,
   IncidentPromotionTaskContext,
@@ -352,8 +353,16 @@ export function appendIncidentRegistryEntries(
 export function extractIncidentCandidatesFromFindings(
   findings: string,
 ): IncidentFindingCandidate[] {
+  return parseIncidentFindingBlocks(findings)
+    .filter((candidate) => candidate.shouldPromote)
+    .map(({ shouldPromote: _shouldPromote, ...candidate }) => candidate);
+}
+
+function parseIncidentFindingBlocks(
+  findings: string,
+): (IncidentFindingCandidate & { shouldPromote: boolean })[] {
   const lines = normalizeLines(findings);
-  const candidates: IncidentFindingCandidate[] = [];
+  const candidates: (IncidentFindingCandidate & { shouldPromote: boolean })[] = [];
   let currentFields: Record<string, string> | null = null;
   let currentLine = 0;
   let currentKey: string | null = null;
@@ -365,12 +374,6 @@ export function extractIncidentCandidatesFromFindings(
     const incidentExternal =
       parseBoolean(currentFields.incidentexternal) || fixability === "external";
     const shouldPromote = promotion?.toLowerCase() === "incident-candidate" || incidentExternal;
-    if (!shouldPromote) {
-      currentFields = null;
-      currentKey = null;
-      currentLine = 0;
-      return;
-    }
     const observation = currentFields.observation?.trim() ?? "";
     if (!observation) {
       currentFields = null;
@@ -390,6 +393,7 @@ export function extractIncidentCandidatesFromFindings(
       incidentMatch: parseCsvList(currentFields.incidentmatch),
       incidentExternal,
       fixability,
+      shouldPromote,
       line: currentLine,
       rawFields: { ...currentFields },
     });
@@ -527,7 +531,18 @@ export function planIncidentCollection(opts: {
   registry: IncidentRegistry;
   now?: Date;
 }): IncidentCollectionPlan {
-  const candidates = extractIncidentCandidatesFromFindings(opts.findings);
+  const parsed = parseIncidentFindingBlocks(opts.findings);
+  const candidates = parsed
+    .filter((candidate) => candidate.shouldPromote)
+    .map(({ shouldPromote: _shouldPromote, ...candidate }) => candidate);
+  const skipped: IncidentSkippedFinding[] = parsed
+    .filter((candidate) => !candidate.shouldPromote)
+    .map(({ observation, line, rawFields }) => ({
+      observation,
+      line,
+      reason: "not_marked_external_or_promotable",
+      rawFields,
+    }));
   const issues: IncidentPromotionIssue[] = [];
   const promotable: IncidentPromotionDraft[] = [];
   const duplicates: IncidentPromotionDraft[] = [];
@@ -563,7 +578,7 @@ export function planIncidentCollection(opts: {
     promotable.push(draft);
   }
 
-  return { candidates, promotable, duplicates, issues };
+  return { candidates, skipped, promotable, duplicates, issues };
 }
 
 export function buildIncidentAdviceQueryFromTask(opts: {

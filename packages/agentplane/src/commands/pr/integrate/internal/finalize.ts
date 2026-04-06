@@ -21,7 +21,7 @@ import { createTaskCloseCommit, writeFinishedTasks } from "../../../task/finish-
 import type { CommandContext } from "../../../shared/task-backend.js";
 import {
   collectTaskIncidents,
-  renderIncidentCollectionOutcome,
+  renderIncidentCollectionPlanOutcome,
 } from "../../../incidents/shared.js";
 
 function nowIso(): string {
@@ -128,7 +128,7 @@ export async function finalizeIntegrate(opts: {
     write: true,
   });
   if (!opts.quiet) {
-    output.info(renderIncidentCollectionOutcome(collectedIncidents.plan.promotable.length));
+    output.info(renderIncidentCollectionPlanOutcome(collectedIncidents.plan));
   }
   await createTaskCloseCommit({
     ctx: opts.ctx,

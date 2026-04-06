@@ -38,6 +38,13 @@ export type IncidentFindingCandidate = {
   rawFields: Record<string, string>;
 };
 
+export type IncidentSkippedFinding = {
+  observation: string;
+  line: number;
+  reason: "not_marked_external_or_promotable";
+  rawFields: Record<string, string>;
+};
+
 export type IncidentPromotionTaskContext = {
   id: string;
   title: string;
@@ -60,6 +67,7 @@ export type IncidentPromotionIssue = {
 
 export type IncidentCollectionPlan = {
   candidates: IncidentFindingCandidate[];
+  skipped: IncidentSkippedFinding[];
   promotable: IncidentPromotionDraft[];
   duplicates: IncidentPromotionDraft[];
   issues: IncidentPromotionIssue[];

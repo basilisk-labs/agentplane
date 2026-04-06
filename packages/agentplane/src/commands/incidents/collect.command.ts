@@ -1,7 +1,7 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { collectTaskIncidents } from "./shared.js";
+import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "./shared.js";
 
 type IncidentsCollectParsed = {
   taskId: string;
@@ -63,6 +63,7 @@ export function makeRunIncidentsCollectHandler(getCtx: (cmd: string) => Promise<
         task_id: p.taskId,
         checked_only: p.check,
         candidates: result.plan.candidates.length,
+        skipped: result.plan.skipped,
         promotable: result.plan.promotable.map((item) => item.entry),
         duplicates: result.plan.duplicates.map((item) => item.entry.id),
         wrote: result.wrote,
@@ -73,8 +74,9 @@ export function makeRunIncidentsCollectHandler(getCtx: (cmd: string) => Promise<
     output.success(
       p.check ? "checked" : "collected",
       p.taskId,
-      `candidates=${result.plan.candidates.length} promoted=${result.plan.promotable.length} duplicates=${result.plan.duplicates.length}`,
+      `candidates=${result.plan.candidates.length} skipped=${result.plan.skipped.length} promoted=${result.plan.promotable.length} duplicates=${result.plan.duplicates.length}`,
     );
+    output.info(renderIncidentCollectionPlanOutcome(result.plan));
     if (result.plan.promotable.length > 0 && !p.check) {
       output.info(`Incident registry updated: ${result.registryPath}`);
     }
