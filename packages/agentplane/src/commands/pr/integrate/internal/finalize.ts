@@ -19,6 +19,7 @@ import {
 import { readCommitInfo } from "../../../task/shared.js";
 import { createTaskCloseCommit, writeFinishedTasks } from "../../../task/finish-shared.js";
 import type { CommandContext } from "../../../shared/task-backend.js";
+import { collectTaskIncidents } from "../../../incidents/shared.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -98,6 +99,12 @@ export async function finalizeIntegrate(opts: {
     opts.prDir,
   )}.`;
   const resultSummary = `integrate: ${opts.mergeStrategy} ${opts.branch}`;
+  await collectTaskIncidents({
+    ctx: opts.ctx,
+    taskId: opts.taskId,
+    task: opts.task,
+    write: false,
+  });
   const taskCommitInfo = await readCommitInfo(opts.gitRoot, opts.mergeHash);
   await writeFinishedTasks({
     ctx: opts.ctx,
@@ -112,6 +119,11 @@ export async function finalizeIntegrate(opts: {
     breaking: false,
     taskCommitInfo,
   });
+  const collectedIncidents = await collectTaskIncidents({
+    ctx: opts.ctx,
+    taskId: opts.taskId,
+    write: true,
+  });
   await createTaskCloseCommit({
     ctx: opts.ctx,
     cwd: opts.cwd,
@@ -119,6 +131,7 @@ export async function finalizeIntegrate(opts: {
     taskId: opts.taskId,
     baseBranchOverride: opts.base,
     quiet: opts.quiet,
+    allowPolicy: collectedIncidents.wrote,
   });
 
   if (!opts.quiet) {
