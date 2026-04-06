@@ -108,7 +108,7 @@ export async function ensurePrArtifactsSynced(opts: {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const { resolved, config, metaPath } = await resolvePrPaths({ ...opts, ctx });
+  const { resolved, config, prDir, metaPath } = await resolvePrPaths({ ...opts, ctx });
   if (config.workflow_mode !== "branch_pr") return null;
 
   const resolvedBranch = await resolvePrSyncBranch({
@@ -136,13 +136,17 @@ export async function ensurePrArtifactsSynced(opts: {
     return null;
   }
 
-  await syncPrArtifacts({
-    ...opts,
-    ctx,
-    mode: "open",
-    author: opts.author,
-    branch,
-  });
+  const reviewPath = path.join(prDir, "review.md");
+  const artifactsExist = (await fileExists(metaPath)) && (await fileExists(reviewPath));
+  if (!artifactsExist) {
+    await syncPrArtifacts({
+      ...opts,
+      ctx,
+      mode: "open",
+      author: opts.author,
+      branch,
+    });
+  }
   const result = await syncPrArtifacts({
     ...opts,
     ctx,
