@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import { buildUpdatedPrMeta } from "../shared/pr-meta.js";
 
-import { resolveHostedMergeTargetFromEvent, syncHostedMergedTasks } from "./hosted-merge-sync.js";
+import {
+  resolveHostedMergeTargetFromEvent,
+  resolveLocalMergedPrMeta,
+  syncHostedMergedTasks,
+} from "./hosted-merge-sync.js";
 
 describe("syncHostedMergedTasks", () => {
   it("no-ops outside local branch_pr mode", async () => {
@@ -72,5 +76,43 @@ describe("syncHostedMergedTasks", () => {
         },
       },
     });
+  });
+
+  it("normalizes merged local PR metadata for the fast-path reconcile", () => {
+    expect(
+      resolveLocalMergedPrMeta({
+        schema_version: 1,
+        task_id: "202604061815-01F3CY",
+        branch: "task/202604061815-01F3CY/fast-path",
+        base: "main",
+        created_at: "2026-04-06T18:15:00.000Z",
+        updated_at: "2026-04-06T18:20:00.000Z",
+        status: "MERGED",
+        merged_at: "2026-04-06T18:19:00.000Z",
+        merge_commit: "1234567890abcdef1234567890abcdef12345678",
+        head_sha: "abcdef1234567890abcdef1234567890abcdef12",
+        last_verified_sha: null,
+        last_verified_at: null,
+        verify: { status: "pass" },
+      }),
+    ).toEqual({
+      branch: "task/202604061815-01F3CY/fast-path",
+      base: "main",
+      mergedAt: "2026-04-06T18:19:00.000Z",
+      mergeCommit: "1234567890abcdef1234567890abcdef12345678",
+      headSha: "abcdef1234567890abcdef1234567890abcdef12",
+    });
+    expect(
+      resolveLocalMergedPrMeta({
+        schema_version: 1,
+        task_id: "202604061815-01F3CY",
+        branch: "task/202604061815-01F3CY/fast-path",
+        created_at: "2026-04-06T18:15:00.000Z",
+        updated_at: "2026-04-06T18:20:00.000Z",
+        last_verified_sha: null,
+        last_verified_at: null,
+        verify: { status: "pass" },
+      }),
+    ).toBeNull();
   });
 });

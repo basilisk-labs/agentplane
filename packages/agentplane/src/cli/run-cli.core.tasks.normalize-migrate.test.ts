@@ -231,6 +231,96 @@ describe("runCli", () => {
     }
   }, 20_000);
 
+  it("task normalize --sync-hosted-merges reconciles from local merged pr/meta without gh", async () => {
+    const root = await writeAndConfigureRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const taskId = "202604061815-SYNC03";
+    const addCode = await runCliSilent([
+      "task",
+      "add",
+      taskId,
+      "--title",
+      "Local merged pr meta sync task",
+      "--description",
+      "Sync branch_pr task state from local merged pr metadata",
+      "--priority",
+      "med",
+      "--owner",
+      "CODER",
+      "--tag",
+      "workflow",
+      "--root",
+      root,
+    ]);
+    expect(addCode).toBe(0);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          branch: `task/${taskId}/sync-hosted`,
+          base: "main",
+          created_at: "2026-04-06T18:15:00.000Z",
+          updated_at: "2026-04-06T18:20:00.000Z",
+          status: "MERGED",
+          merged_at: "2026-04-06T18:19:00.000Z",
+          merge_commit: "fedcba0987654321fedcba0987654321fedcba09",
+          head_sha: "abcdef1234567890abcdef1234567890abcdef12",
+          last_verified_sha: "fedcba0987654321fedcba0987654321fedcba09",
+          last_verified_at: "2026-04-06T18:18:00.000Z",
+          verify: { status: "pass" },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const fakeBin = path.join(os.tmpdir(), `agentplane-gh-fail-${Date.now()}`);
+    await mkdir(fakeBin, { recursive: true });
+    const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
+    const ghScript =
+      process.platform === "win32"
+        ? "@echo off\r\necho unexpected gh fallback >&2\r\nexit /b 97\r\n"
+        : "#!/bin/sh\necho unexpected gh fallback >&2\nexit 97\n";
+    await writeFile(ghPath, ghScript, "utf8");
+    if (process.platform !== "win32") {
+      await chmod(ghPath, 0o755);
+    }
+
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    try {
+      const code = await runCli(["task", "normalize", "--sync-hosted-merges", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      process.env.PATH = originalPath;
+    }
+
+    const ioShow = captureStdIO();
+    try {
+      const code = await runCli(["task", "show", taskId, "--root", root]);
+      expect(code).toBe(0);
+      const task = JSON.parse(ioShow.stdout) as {
+        status?: string;
+        result_summary?: string;
+        commit?: { hash?: string } | null;
+      };
+      expect(task.status).toBe("DONE");
+      expect(task.result_summary).toBe("Merged and reconciled from local PR metadata.");
+      expect(task.commit?.hash).toBe("fedcba0987654321fedcba0987654321fedcba09");
+    } finally {
+      ioShow.restore();
+    }
+  }, 20_000);
+
   it("task normalize --sync-branch-pr-state reconciles verified branch_pr tasks already shipped on base", async () => {
     const root = await writeAndConfigureRoot();
     const config = defaultConfig();

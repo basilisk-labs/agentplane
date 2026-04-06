@@ -42,6 +42,14 @@ export type LocalBranchPrSyncCandidate = {
   verificationSource: "task" | "pr";
 };
 
+export type LocalMergedPrMeta = {
+  branch: string;
+  base?: string | null;
+  mergedAt?: string | null;
+  mergeCommit: string;
+  headSha?: string | null;
+};
+
 function normalizeMergedPr(value: unknown): HostedMergedPr | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const record = value as Record<string, unknown>;
@@ -115,6 +123,19 @@ function pickHostedMergedPr(records: unknown[]): HostedMergedPr | null {
       return right.localeCompare(left);
     })[0] ?? null
   );
+}
+
+export function resolveLocalMergedPrMeta(meta: TaskPrMeta | null): LocalMergedPrMeta | null {
+  const branch = meta?.branch?.trim() ?? "";
+  const mergeCommit = meta?.merge_commit?.trim() ?? "";
+  if (meta?.status !== "MERGED" || !branch || !mergeCommit) return null;
+  return {
+    branch,
+    base: meta.base ?? null,
+    mergedAt: meta.merged_at ?? null,
+    mergeCommit,
+    headSha: meta.head_sha ?? null,
+  };
 }
 
 export function resolveHostedMergeTargetFromEvent(opts: {
@@ -209,6 +230,48 @@ function buildSyncedTask(opts: { task: TaskData; mergedPr: HostedMergedPr }): Ta
               `Hosted PR #${opts.mergedPr.number} merged on GitHub main`,
           }
         : null,
+    events: appendTaskEvent(opts.task, statusEvent),
+    doc_version: normalizeTaskDocVersion(opts.task.doc_version),
+    doc_updated_at: at,
+    doc_updated_by: "INTEGRATOR",
+  };
+}
+
+function needsHostedMergeSyncFromLocalMeta(opts: {
+  task: TaskData;
+  meta: LocalMergedPrMeta;
+}): boolean {
+  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  const expectedCommit = opts.meta.mergeCommit;
+  if (currentStatus !== "DONE") return true;
+  if ((opts.task.commit?.hash ?? "") !== expectedCommit) return true;
+  return false;
+}
+
+function buildLocallyMergedSyncedTask(opts: { task: TaskData; meta: LocalMergedPrMeta }): TaskData {
+  const at = opts.meta.mergedAt ?? new Date().toISOString();
+  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  const note =
+    "Local PR metadata already marks the task branch as MERGED; " +
+    "task projection reconciled without an additional GitHub lookup.";
+  const statusEvent = {
+    type: "status" as const,
+    at,
+    author: "INTEGRATOR",
+    from: currentStatus,
+    to: "DONE",
+    note,
+  };
+  return {
+    ...opts.task,
+    status: "DONE",
+    result_summary: opts.task.result_summary ?? "Merged and reconciled from local PR metadata.",
+    commit: opts.task.commit?.hash?.trim()
+      ? opts.task.commit
+      : {
+          hash: opts.meta.mergeCommit,
+          message: "Merged branch_pr task reconciled from local PR metadata",
+        },
     events: appendTaskEvent(opts.task, statusEvent),
     doc_version: normalizeTaskDocVersion(opts.task.doc_version),
     doc_updated_at: at,
@@ -495,6 +558,17 @@ export async function syncHostedMergedTasks(opts: {
     const branch = prMetaRecord.meta.branch?.trim() ?? "";
     if (!branch) {
       nextTasks.push(task);
+      continue;
+    }
+
+    const localMergedMeta = resolveLocalMergedPrMeta(prMetaRecord.meta);
+    if (localMergedMeta) {
+      nextTasks.push(
+        needsHostedMergeSyncFromLocalMeta({ task, meta: localMergedMeta })
+          ? buildLocallyMergedSyncedTask({ task, meta: localMergedMeta })
+          : task,
+      );
+      if (needsHostedMergeSyncFromLocalMeta({ task, meta: localMergedMeta })) synced += 1;
       continue;
     }
 
