@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604061727-M74EFC/stale-build-drift",
+  "created_at": "2026-04-06T17:37:13.858Z",
+  "head_sha": "820620b4cd90f6fd7f505056ffc0c9ab19b75e56",
+  "last_verified_at": "2026-04-06T17:40:28.982Z",
+  "last_verified_sha": "820620b4cd90f6fd7f505056ffc0c9ab19b75e56",
+  "schema_version": 1,
+  "task_id": "202604061727-M74EFC",
+  "updated_at": "2026-04-06T17:39:39.062Z",
+  "verify": {
+    "status": "pass"
+  }
+}

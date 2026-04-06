@@ -12,6 +12,7 @@ import {
   FRAMEWORK_DEV_REINSTALL_SCRIPT,
   FRAMEWORK_DEV_REPO_LOCAL_VERIFY_COMMAND,
 } from "../packages/agentplane/bin/framework-dev-contract.js";
+import { resolveCommonRepoRoot } from "./generate-recipes-inventory.mjs";
 
 function printUsage() {
   process.stdout.write(
@@ -67,6 +68,19 @@ function hasRecipesIndex(repoRoot) {
   return fs.existsSync(path.join(repoRoot, "agentplane-recipes", "index.json"));
 }
 
+function linkDirectoryFromCommonRoot(repoRoot, commonRepoRoot, relativePath) {
+  if (repoRoot === commonRepoRoot) return false;
+  const localPath = path.join(repoRoot, relativePath);
+  if (fs.existsSync(localPath)) return false;
+
+  const commonPath = path.join(commonRepoRoot, relativePath);
+  if (!fs.existsSync(commonPath)) return false;
+
+  const symlinkType = process.platform === "win32" ? "junction" : "dir";
+  fs.symlinkSync(commonPath, localPath, symlinkType);
+  return true;
+}
+
 function printFooter() {
   process.stdout.write(
     [
@@ -80,10 +94,30 @@ function printFooter() {
   );
 }
 
-export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec) {
+function defaultResolveCommonRepoRoot(repoRoot) {
+  try {
+    return resolveCommonRepoRoot(repoRoot);
+  } catch {
+    return repoRoot;
+  }
+}
+
+export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec, options = {}) {
   const repoRoot = resolveRepoRoot(cwd);
+  const commonRepoRoot = (options.resolveCommonRepoRoot ?? defaultResolveCommonRepoRoot)(repoRoot);
 
   process.stdout.write(`==> Framework repo: ${repoRoot}\n`);
+
+  const linkedSharedNodeModules = linkDirectoryFromCommonRoot(
+    repoRoot,
+    commonRepoRoot,
+    "node_modules",
+  );
+  if (linkedSharedNodeModules) {
+    process.stdout.write(
+      `==> Reusing workspace dependencies from common repo root: ${commonRepoRoot}\n`,
+    );
+  }
 
   if (hasWorkspaceNodeModules(repoRoot)) {
     process.stdout.write("==> Workspace dependencies already present; skipping bun install\n");
@@ -95,6 +129,10 @@ export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec
   if (hasRecipesIndex(repoRoot)) {
     process.stdout.write(
       "==> Recipes submodule already initialized; skipping git submodule update\n",
+    );
+  } else if (commonRepoRoot !== repoRoot && hasRecipesIndex(commonRepoRoot)) {
+    process.stdout.write(
+      `==> Recipes submodule already available in common repo root; skipping local git submodule update: ${commonRepoRoot}\n`,
     );
   } else {
     process.stdout.write("==> Initializing agentplane-recipes submodule\n");
