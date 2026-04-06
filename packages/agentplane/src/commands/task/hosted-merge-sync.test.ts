@@ -1,12 +1,24 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { buildUpdatedPrMeta } from "../shared/pr-meta.js";
+import { execFileAsync } from "../shared/git.js";
 
 import {
   resolveHostedMergeTargetFromEvent,
+  resolveHostedMergedPr,
   resolveLocalMergedPrMeta,
   syncHostedMergedTasks,
 } from "./hosted-merge-sync.js";
+
+vi.mock("../shared/git.js", () => ({
+  execFileAsync: vi.fn(),
+}));
+
+const mockedExecFileAsync = vi.mocked(execFileAsync);
+
+beforeEach(() => {
+  mockedExecFileAsync.mockReset();
+});
 
 describe("syncHostedMergedTasks", () => {
   it("no-ops outside local branch_pr mode", async () => {
@@ -114,5 +126,55 @@ describe("syncHostedMergedTasks", () => {
         verify: { status: "pass" },
       }),
     ).toBeNull();
+  });
+
+  it("retries transient gh transport failures before succeeding", async () => {
+    mockedExecFileAsync
+      .mockRejectedValueOnce(new Error("gh: Post \"https://api.github.com/graphql\": EOF"))
+      .mockResolvedValueOnce({
+        stdout: JSON.stringify([
+          {
+            number: 42,
+            title: "Merged PR",
+            mergedAt: "2026-04-06T18:19:00.000Z",
+            baseRefName: "main",
+            headRefName: "task/202604061815-01F3CY/retry",
+            headRefOid: "abcdef1234567890abcdef1234567890abcdef12",
+            mergeCommit: { oid: "1234567890abcdef1234567890abcdef12345678" },
+          },
+        ]),
+        stderr: "",
+      });
+
+    await expect(
+      resolveHostedMergedPr({
+        cwd: "/repo",
+        branch: "task/202604061815-01F3CY/retry",
+      }),
+    ).resolves.toEqual({
+      number: 42,
+      title: "Merged PR",
+      url: null,
+      mergedAt: "2026-04-06T18:19:00.000Z",
+      baseRefName: "main",
+      headRefName: "task/202604061815-01F3CY/retry",
+      headRefOid: "abcdef1234567890abcdef1234567890abcdef12",
+      mergeCommit: {
+        oid: "1234567890abcdef1234567890abcdef12345678",
+      },
+    });
+    expect(mockedExecFileAsync).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not retry permanent gh auth failures", async () => {
+    mockedExecFileAsync.mockRejectedValueOnce(new Error("gh: authentication required"));
+
+    await expect(
+      resolveHostedMergedPr({
+        cwd: "/repo",
+        branch: "task/202604061815-01F3CY/retry",
+      }),
+    ).rejects.toThrow("authentication required");
+    expect(mockedExecFileAsync).toHaveBeenCalledTimes(1);
   });
 });
