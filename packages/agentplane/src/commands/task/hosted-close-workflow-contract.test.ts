@@ -16,6 +16,7 @@ describe("Task hosted-close workflow contract", () => {
     expect(workflow).toContain("if: github.event.pull_request.merged == true");
     expect(workflow).toContain("contents: write");
     expect(workflow).toContain("pull-requests: write");
+    expect(workflow).toContain("fetch-depth: 0");
     expect(workflow).toContain("node scripts/prepare-hosted-task-closure.mjs");
     expect(workflow).toContain("task hosted-close");
     expect(workflow).toContain("gh pr create");
