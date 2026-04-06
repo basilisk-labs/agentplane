@@ -1,10 +1,11 @@
 ---
 id: "202604050745-18JJ5E"
 title: "Fix branch_pr shipped-task reconciliation and diagnostics"
-status: "DOING"
+result_summary: "Merged via PR #74."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-06T17:01:45.736Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts. Result: pass. Evidence: 36 targeted tests passed; doctor reports shipped open branch_pr tasks; normalize sync-path regressions passed; targeted eslint on touched workflow files passed; verification recorded after refreshing PR artifacts so last_verified_sha now matches the current task head."
-commit: null
+commit:
+  hash: "aadce675ae8585d9dacab044421fcab5e6b9abcd"
+  message: "cli/workflow: Fix branch_pr shipped-task reconciliation and diagnostics (18JJ5E) (#74)"
 comments:
   -
     author: "CODER"
     body: "Start: inspect doctor, task normalize, and hosted merge reconciliation paths to detect how a branch_pr task can already be shipped on base while remaining locally DOING, then implement the smallest deterministic repair and diagnostics path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #74 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts. Result: pass. Evidence: 36 targeted tests passed; doctor reports shipped open branch_pr tasks; normalize sync-path regressions passed; targeted eslint on touched workflow files passed; verification recorded after refreshing PR artifacts so last_verified_sha now matches the current task head."
+  -
+    type: "status"
+    at: "2026-04-06T17:22:20.655Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #74 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-06T17:01:45.767Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T17:22:20.662Z"
+doc_updated_by: "INTEGRATOR"
 description: "Detect branch_pr tasks whose work is already shipped on the base branch but whose local task lifecycle was never closed, and make doctor/normalization surface or reconcile that state deterministically."
 sections:
   Summary: |-
