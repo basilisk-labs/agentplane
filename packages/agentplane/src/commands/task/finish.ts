@@ -8,7 +8,7 @@ import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
-import { collectTaskIncidents } from "../incidents/shared.js";
+import { collectTaskIncidents, renderIncidentCollectionOutcome } from "../incidents/shared.js";
 import {
   createTaskCloseCommit,
   existingCommitInfo,
@@ -390,11 +390,7 @@ export async function cmdFinish(opts: {
     }
 
     if (!opts.quiet) {
-      if (promotedIncidents > 0) {
-        process.stdout.write(
-          `${infoMessage(`incident registry updated (${promotedIncidents} promoted)`)}\n`,
-        );
-      }
+      process.stdout.write(`${infoMessage(renderIncidentCollectionOutcome(promotedIncidents))}\n`);
       process.stdout.write(`${successMessage("finished")}\n`);
     }
     return 0;

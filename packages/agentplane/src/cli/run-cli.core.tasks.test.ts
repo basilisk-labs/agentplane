@@ -1252,7 +1252,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(ioFinish.stdout).toContain("incident registry updated");
+      expect(ioFinish.stdout).toContain("incident registry updated (1 promoted)");
     } finally {
       ioFinish.restore();
     }

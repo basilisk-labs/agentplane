@@ -153,6 +153,12 @@ export async function collectTaskIncidents(opts: {
   return { loaded, registryPath, registryText, registry, plan, wrote };
 }
 
+export function renderIncidentCollectionOutcome(promotedCount: number): string {
+  return promotedCount > 0
+    ? `incident registry updated (${promotedCount} promoted)`
+    : "incident registry unchanged (no promotable external findings)";
+}
+
 export async function adviseTaskIncidents(opts: {
   ctx: CommandContext;
   taskId: string;

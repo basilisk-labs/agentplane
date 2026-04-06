@@ -190,6 +190,7 @@ describe("runCli", () => {
       }
       expect(code).toBe(0);
       expect(io.stdout).toContain(`task hosted close ${taskId}`);
+      expect(io.stdout).toContain("incident registry updated (1 promoted)");
     } finally {
       io.restore();
     }

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { CliError } from "../../../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
+  createCliEmitter: vi.fn(),
   fileExists: vi.fn(),
   readFile: vi.fn(),
   writeJsonStableIfChanged: vi.fn(),
@@ -18,6 +19,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("../../../../cli/fs-utils.js", () => ({ fileExists: mocks.fileExists }));
+vi.mock("../../../../cli/output.js", () => ({ createCliEmitter: mocks.createCliEmitter }));
 vi.mock("node:fs/promises", () => ({ readFile: mocks.readFile }));
 vi.mock("../../../../shared/write-if-changed.js", () => ({
   writeJsonStableIfChanged: mocks.writeJsonStableIfChanged,
@@ -30,9 +32,17 @@ vi.mock("../../../shared/pr-meta.js", () => ({
   buildIntegratedPrMeta: mocks.buildIntegratedPrMeta,
 }));
 vi.mock("../../../task/shared.js", () => ({ readCommitInfo: mocks.readCommitInfo }));
-vi.mock("../../../incidents/shared.js", () => ({
-  collectTaskIncidents: mocks.collectTaskIncidents,
-}));
+vi.mock("../../../incidents/shared.js", async (importOriginal) => {
+  const actualUnknown: unknown = await importOriginal();
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    collectTaskIncidents: mocks.collectTaskIncidents,
+  };
+});
 vi.mock("../../../task/finish-shared.js", () => ({
   writeFinishedTasks: mocks.writeFinishedTasks,
   createTaskCloseCommit: mocks.createTaskCloseCommit,
@@ -64,8 +74,15 @@ function baseOpts() {
 }
 
 describe("pr/integrate/internal/finalize", () => {
+  let emitter: { info: ReturnType<typeof vi.fn>; success: ReturnType<typeof vi.fn> };
+
   beforeEach(() => {
     vi.clearAllMocks();
+    emitter = {
+      info: vi.fn(),
+      success: vi.fn(),
+    };
+    mocks.createCliEmitter.mockReturnValue(emitter);
     mocks.collectTaskIncidents.mockResolvedValue({
       loaded: null,
       registryPath: "/repo/.agentplane/policy/incidents.md",
@@ -105,6 +122,7 @@ describe("pr/integrate/internal/finalize", () => {
 
     await finalizeIntegrate({
       ...baseOpts(),
+      quiet: false,
       verifyEntries: [{ header: "verify-1", content: "ok" }],
       verifyCommands: ["bun test"],
       shouldRunVerify: true,

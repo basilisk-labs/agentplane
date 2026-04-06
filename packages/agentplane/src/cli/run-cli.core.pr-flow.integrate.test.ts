@@ -267,6 +267,7 @@ describe("runCli", () => {
       const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("✅ integrate");
+      expect(io.stdout).toContain("incident registry unchanged (no promotable external findings)");
     } finally {
       io.restore();
     }
