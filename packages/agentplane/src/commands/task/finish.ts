@@ -361,10 +361,7 @@ export async function cmdFinish(opts: {
       });
       incidentPlans.push(collected.plan);
     }
-    const promotedIncidents = incidentPlans.reduce(
-      (sum, plan) => sum + plan.promotable.length,
-      0,
-    );
+    const promotedIncidents = incidentPlans.reduce((sum, plan) => sum + plan.promotable.length, 0);
 
     // tasks.json is export-only; generated via `agentplane task export`.
 

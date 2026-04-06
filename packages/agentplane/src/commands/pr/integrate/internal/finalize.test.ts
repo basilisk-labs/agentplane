@@ -202,7 +202,14 @@ describe("pr/integrate/internal/finalize", () => {
       registry: null,
       plan: {
         candidates: [],
-        skipped: [{ observation: "transport drift", line: 1, reason: "not_marked_external_or_promotable", rawFields: {} }],
+        skipped: [
+          {
+            observation: "transport drift",
+            line: 1,
+            reason: "not_marked_external_or_promotable",
+            rawFields: {},
+          },
+        ],
         promotable: [],
         duplicates: [],
         issues: [],
