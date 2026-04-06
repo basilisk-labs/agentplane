@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604061916-40FZNK/stale-open-pr-doctor",
   "created_at": "2026-04-06T19:52:25.011Z",
-  "head_sha": "7ffa4648de0a35b76d4395be8fd9c6bd9164f387",
+  "head_sha": "256cbddcc862002fee216afc5f808c861e81d4c6",
   "last_verified_at": "2026-04-06T19:56:14.162Z",
   "last_verified_sha": "7ffa4648de0a35b76d4395be8fd9c6bd9164f387",
+  "merge_commit": "ee1311f4990b594f822b4bdc10782e5edbebaba7",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-06T20:10:55.591Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604061916-40FZNK",
-  "updated_at": "2026-04-06T19:56:13.883Z",
+  "updated_at": "2026-04-06T20:10:55.591Z",
   "verify": {
     "status": "pass"
   }

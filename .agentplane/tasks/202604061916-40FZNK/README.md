@@ -1,10 +1,11 @@
 ---
 id: "202604061916-40FZNK"
 title: "Detect stale open PR drift for DONE tasks"
-status: "DOING"
+result_summary: "integrate: squash task/202604061916-40FZNK/stale-open-pr-doctor"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-06T19:56:14.162Z"
   updated_by: "CODER"
   note: "Doctor regression test passed for DONE branch_pr tasks with open PR artifacts; eslint passed; detection no longer depends on a surviving local task branch."
-commit: null
+commit:
+  hash: "ee1311f4990b594f822b4bdc10782e5edbebaba7"
+  message: "📝 40FZNK task: refresh verification artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: add doctor diagnostics for DONE branch_pr tasks whose PR artifacts still look open or unreconciled."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604061916-40FZNK/pr."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Doctor regression test passed for DONE branch_pr tasks with open PR artifacts; eslint passed; detection no longer depends on a surviving local task branch."
+  -
+    type: "status"
+    at: "2026-04-06T20:10:55.638Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604061916-40FZNK/pr."
 doc_version: 3
-doc_updated_at: "2026-04-06T19:56:14.172Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T20:10:55.644Z"
+doc_updated_by: "INTEGRATOR"
 description: "Surface DONE tasks whose GitHub PRs remain open and diverged so operators can reconcile stale remote task branches before they linger for weeks."
 sections:
   Summary: |-
