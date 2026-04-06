@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604061815-01F3CY/hosted-merge-sync-local-fast-path",
+  "created_at": "2026-04-06T18:33:08.675Z",
+  "head_sha": "3057af30c09cfb6bb0936bb6492df4b33d3c79fd",
+  "last_verified_at": "2026-04-06T18:33:10.755Z",
+  "last_verified_sha": "48d42e3337c528c3657fecadc92da5ccc14ab62f",
+  "merge_commit": "470ed6fd91b8ec1f32f23dc5a715313d56daa561",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-06T19:01:11.044Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604061815-01F3CY",
+  "updated_at": "2026-04-06T19:01:11.044Z",
+  "verify": {
+    "status": "pass"
+  }
+}
