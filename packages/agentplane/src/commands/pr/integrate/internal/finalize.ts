@@ -19,7 +19,10 @@ import {
 import { readCommitInfo } from "../../../task/shared.js";
 import { createTaskCloseCommit, writeFinishedTasks } from "../../../task/finish-shared.js";
 import type { CommandContext } from "../../../shared/task-backend.js";
-import { collectTaskIncidents } from "../../../incidents/shared.js";
+import {
+  collectTaskIncidents,
+  renderIncidentCollectionOutcome,
+} from "../../../incidents/shared.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -124,6 +127,9 @@ export async function finalizeIntegrate(opts: {
     taskId: opts.taskId,
     write: true,
   });
+  if (!opts.quiet) {
+    output.info(renderIncidentCollectionOutcome(collectedIncidents.plan.promotable.length));
+  }
   await createTaskCloseCommit({
     ctx: opts.ctx,
     cwd: opts.cwd,

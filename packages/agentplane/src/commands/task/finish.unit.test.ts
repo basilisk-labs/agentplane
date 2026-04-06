@@ -948,6 +948,58 @@ describe("task finish (unit)", () => {
     writeSpy.mockRestore();
   });
 
+  it("prints incident registry unchanged when finish does not promote external findings", async () => {
+    const writes: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+      writes.push(String(chunk));
+      return true;
+    });
+
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        id: "T-1",
+        status: "DOING",
+        tags: ["docs"],
+        commit: { hash: "abc123", message: "feat: T-1" },
+      }),
+    );
+    mocks.readCommitInfo.mockResolvedValue({ hash: "abc123", message: "feat: T-1" });
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: registry should stay unchanged.",
+      result: "no incident promotion",
+      commit: "abc123",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(writes.join("")).toContain(
+      "incident registry unchanged (no promotable external findings)",
+    );
+    expect(writes.join("")).toContain("finished");
+
+    writeSpy.mockRestore();
+  });
+
   it("records tracked task READMEs in a deterministic close commit for projection-backed backends", async () => {
     let currentTask = mkTask({
       id: "T-1",

@@ -14,7 +14,7 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
 import { createTaskCloseCommit, writeFinishedTasks } from "./finish-shared.js";
 import { resolveHostedMergeTargetFromEvent } from "./hosted-merge-sync.js";
 import { readCommitInfo } from "./shared.js";
-import { collectTaskIncidents } from "../incidents/shared.js";
+import { collectTaskIncidents, renderIncidentCollectionOutcome } from "../incidents/shared.js";
 
 export type TaskHostedCloseParsed = {
   eventJson: string;
@@ -191,6 +191,11 @@ async function closeHostedTask(opts: {
     taskId: target.taskId,
     write: true,
   });
+  if (!opts.quiet) {
+    process.stdout.write(
+      `${infoMessage(renderIncidentCollectionOutcome(collectedIncidents.plan.promotable.length))}\n`,
+    );
+  }
   await createTaskCloseCommit({
     ctx: opts.ctx,
     cwd: opts.cwd,
