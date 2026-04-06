@@ -378,6 +378,7 @@ export async function cmdFinish(opts: {
         baseBranchOverride: opts.baseBranchOverride,
         quiet: opts.quiet,
         closeUnstageOthers: opts.closeCommit === true && opts.closeUnstageOthers === true,
+        allowPolicy: promotedIncidents > 0,
       });
     }
 

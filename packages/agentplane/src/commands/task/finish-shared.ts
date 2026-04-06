@@ -232,6 +232,7 @@ export async function createTaskCloseCommit(opts: {
   baseBranchOverride?: string;
   quiet: boolean;
   closeUnstageOthers?: boolean;
+  allowPolicy?: boolean;
 }): Promise<void> {
   await cmdCommit({
     ctx: opts.ctx,
@@ -245,7 +246,7 @@ export async function createTaskCloseCommit(opts: {
     autoAllow: false,
     allowTasks: true,
     allowBase: opts.ctx.config.workflow_mode === "branch_pr",
-    allowPolicy: false,
+    allowPolicy: opts.allowPolicy === true,
     allowConfig: false,
     allowHooks: false,
     allowCI: false,

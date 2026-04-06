@@ -35,6 +35,7 @@ export const POLICY_PATH_PREFIXES = [
   "AGENTS.md",
   "CLAUDE.md",
   "packages/agentplane/assets/AGENTS.md",
+  ".agentplane/policy",
   ".agentplane/agents",
 ] as const;
 export const CONFIG_PATH_PREFIXES = [".agentplane/config.json", ".agentplane/backends"] as const;
@@ -114,6 +115,7 @@ export function protectedPathKindForFile(opts: {
     p === "AGENTS.md" ||
     p === "CLAUDE.md" ||
     p === "packages/agentplane/assets/AGENTS.md" ||
+    gitPathIsUnderPrefix(p, ".agentplane/policy") ||
     gitPathIsUnderPrefix(p, ".agentplane/agents")
   ) {
     return "policy";

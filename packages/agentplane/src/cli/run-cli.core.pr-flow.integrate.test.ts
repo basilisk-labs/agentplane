@@ -24,6 +24,7 @@ import {
   validateCommitSubject,
   type ResolvedProject,
 } from "@agentplaneorg/core";
+import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 
 import { runCli } from "./run-cli.js";
 import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
@@ -510,6 +511,118 @@ describe("runCli", () => {
     expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/README.md`);
     expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/pr/meta.json`);
     expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/pr/diffstat.txt`);
+  }, 180_000);
+
+  it("integrate promotes structured external incident candidates into the incident registry", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+    await stageGitignoreIfPresent(root);
+    await execFileAsync("git", ["add", "README.md", ".agentplane/policy/incidents.md"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate incident promotion",
+        "--description",
+        "Branch integration should promote reusable external findings.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "release",
+        "--tag",
+        "github-actions",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await approveTaskPlan(root, taskId);
+
+    for (const [section, text] of [
+      ["Verify Steps", "1. Run integrate on the prepared branch_pr task."],
+      [
+        "Findings",
+        [
+          "- Observation: hosted release recovery can still stall while waiting on a workflow run for a ref that never existed remotely.",
+          "  Impact: branch_pr operators keep repeating the same manual reconciliation steps.",
+          "  Resolution: confirm the remote ref exists before waiting on workflow runs, then retry the recovery path only for real refs.",
+          "  Fixability: external",
+        ].join("\n"),
+      ],
+    ] as const) {
+      await runCliSilent([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        section,
+        "--text",
+        text,
+        "--root",
+        root,
+      ]);
+    }
+
+    await recordVerificationOk(root, taskId);
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/incident-promote`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ integrate");
+    } finally {
+      io.restore();
+    }
+
+    const incidents = await readFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      "utf8",
+    );
+    expect(incidents).toContain(`source_task: ${taskId}`);
+    expect(incidents).toContain("fixability: external");
+    expect(incidents).toContain("state: open");
+    expect(incidents).toContain("confirm the remote ref exists before waiting on workflow runs");
   }, 180_000);
 
   it("integrate uses a compliant fallback commit subject when branch subject is invalid (squash)", async () => {
