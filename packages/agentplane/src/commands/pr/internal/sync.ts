@@ -1,4 +1,4 @@
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
 import { resolveBaseBranch } from "@agentplaneorg/core";
@@ -12,6 +12,7 @@ import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/wr
 import { execFileAsync, gitEnv } from "../../shared/git.js";
 import { gitCurrentBranch } from "../../shared/git-ops.js";
 import { parseTaskIdFromBranch } from "../../shared/git-worktree.js";
+import { INCIDENTS_POLICY_PATH } from "../../incidents/shared.js";
 import {
   buildOpenedPrMeta,
   buildUpdatedPrMeta,
@@ -35,6 +36,30 @@ import {
 
 function nowIso(): string {
   return new Date().toISOString();
+}
+
+async function readTextIfExists(filePath: string): Promise<string | null> {
+  try {
+    return await readFile(filePath, "utf8");
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code === "ENOENT") return null;
+    throw err;
+  }
+}
+
+async function restoreIncidentRegistryIfNeeded(opts: {
+  gitRoot: string;
+  previousText: string | null;
+}): Promise<void> {
+  const incidentsPath = path.join(opts.gitRoot, INCIDENTS_POLICY_PATH);
+  const nextText = await readTextIfExists(incidentsPath);
+  if (nextText === opts.previousText) return;
+  if (opts.previousText === null) {
+    await rm(incidentsPath, { force: true });
+    return;
+  }
+  await writeTextIfChanged(incidentsPath, opts.previousText);
 }
 
 function isUnknownRevisionError(err: unknown): boolean {
@@ -108,7 +133,7 @@ export async function ensurePrArtifactsSynced(opts: {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const { resolved, config, metaPath } = await resolvePrPaths({ ...opts, ctx });
+  const { resolved, config, prDir, metaPath } = await resolvePrPaths({ ...opts, ctx });
   if (config.workflow_mode !== "branch_pr") return null;
 
   const resolvedBranch = await resolvePrSyncBranch({
@@ -136,13 +161,17 @@ export async function ensurePrArtifactsSynced(opts: {
     return null;
   }
 
-  await syncPrArtifacts({
-    ...opts,
-    ctx,
-    mode: "open",
-    author: opts.author,
-    branch,
-  });
+  const reviewPath = path.join(prDir, "review.md");
+  const artifactsExist = (await fileExists(metaPath)) && (await fileExists(reviewPath));
+  if (!artifactsExist) {
+    await syncPrArtifacts({
+      ...opts,
+      ctx,
+      mode: "open",
+      author: opts.author,
+      branch,
+    });
+  }
   const result = await syncPrArtifacts({
     ...opts,
     ctx,
@@ -186,66 +215,132 @@ export async function syncPrArtifacts(opts: {
       githubTitlePath,
       githubBodyPath,
     } = await resolvePrPaths({ ...opts, ctx });
+    const incidentsTextBefore = await readTextIfExists(
+      path.join(resolved.gitRoot, INCIDENTS_POLICY_PATH),
+    );
 
-    if (config.workflow_mode !== "branch_pr") {
-      throw new CliError({
-        exitCode: exitCodeForError("E_USAGE"),
-        code: "E_USAGE",
-        message: workflowModeMessage(config.workflow_mode, "branch_pr"),
-      });
-    }
+    try {
+      if (config.workflow_mode !== "branch_pr") {
+        throw new CliError({
+          exitCode: exitCodeForError("E_USAGE"),
+          code: "E_USAGE",
+          message: workflowModeMessage(config.workflow_mode, "branch_pr"),
+        });
+      }
 
-    const resolvedBranch = await resolvePrSyncBranch({
-      resolved,
-      metaPath,
-      taskId: task.id,
-      branch: opts.branch,
-    });
-    const branch = resolvedBranch.branch?.trim() ?? "";
-    if (!branch) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_USAGE"),
-        code: "E_USAGE",
-        message: "Branch could not be resolved (use --branch).",
-      });
-    }
-
-    const metaExists = await fileExists(metaPath);
-    const reviewExists = await fileExists(reviewPath);
-    if (opts.mode === "update" && (!metaExists || !reviewExists)) {
-      const missing: string[] = [];
-      if (!metaExists) missing.push(path.relative(resolved.gitRoot, metaPath));
-      if (!reviewExists) missing.push(path.relative(resolved.gitRoot, reviewPath));
-      throw new CliError({
-        exitCode: exitCodeForError("E_VALIDATION"),
-        code: "E_VALIDATION",
-        message: `PR artifacts missing: ${missing.join(", ")} (run \`agentplane pr open\`)`,
-      });
-    }
-
-    await mkdir(prDir, { recursive: true });
-
-    const existingMeta =
-      metaExists && (await fileExists(metaPath))
-        ? parsePrMeta(await readFile(metaPath, "utf8"), task.id)
-        : null;
-    const handoffNotes = await readPrHandoffNotes(notesPath);
-    const now = nowIso();
-    const createdAt = existingMeta?.created_at ?? now;
-    const baseBranch = await resolveBaseBranch({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-      cliBaseOpt: null,
-      mode: config.workflow_mode,
-    });
-    const headSha = await resolveBranchHeadSha({ gitRoot: resolved.gitRoot, branch });
-
-    if (opts.mode === "open") {
-      const nextMeta: PrMeta = buildOpenedPrMeta({
+      const resolvedBranch = await resolvePrSyncBranch({
+        resolved,
+        metaPath,
         taskId: task.id,
+        branch: opts.branch,
+      });
+      const branch = resolvedBranch.branch?.trim() ?? "";
+      if (!branch) {
+        throw new CliError({
+          exitCode: exitCodeForError("E_USAGE"),
+          code: "E_USAGE",
+          message: "Branch could not be resolved (use --branch).",
+        });
+      }
+
+      const metaExists = await fileExists(metaPath);
+      const reviewExists = await fileExists(reviewPath);
+      if (opts.mode === "update" && (!metaExists || !reviewExists)) {
+        const missing: string[] = [];
+        if (!metaExists) missing.push(path.relative(resolved.gitRoot, metaPath));
+        if (!reviewExists) missing.push(path.relative(resolved.gitRoot, reviewPath));
+        throw new CliError({
+          exitCode: exitCodeForError("E_VALIDATION"),
+          code: "E_VALIDATION",
+          message: `PR artifacts missing: ${missing.join(", ")} (run \`agentplane pr open\`)`,
+        });
+      }
+
+      await mkdir(prDir, { recursive: true });
+
+      const existingMeta =
+        metaExists && (await fileExists(metaPath))
+          ? parsePrMeta(await readFile(metaPath, "utf8"), task.id)
+          : null;
+      const handoffNotes = await readPrHandoffNotes(notesPath);
+      const now = nowIso();
+      const createdAt = existingMeta?.created_at ?? now;
+      const baseBranch = await resolveBaseBranch({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+        cliBaseOpt: null,
+        mode: config.workflow_mode,
+      });
+      const headSha = await resolveBranchHeadSha({ gitRoot: resolved.gitRoot, branch });
+
+      if (opts.mode === "open") {
+        const nextMeta: PrMeta = buildOpenedPrMeta({
+          taskId: task.id,
+          branch,
+          at: now,
+          previousMeta: existingMeta,
+          base: baseBranch,
+          headSha,
+        });
+        const nextAutoSummary = renderPrAutoSummary({
+          updatedAt: nextMeta.updated_at,
+          branch,
+          headSha,
+          diffstat: "",
+        });
+        const nextReview = renderPrReviewDocument({
+          task,
+          author: opts.author,
+          createdAt,
+          branch,
+          handoffNotes,
+          autoSummary: nextAutoSummary,
+        });
+        const githubTitle = buildGithubPrTitle(task);
+        const githubBody = renderGithubPrBody({
+          task,
+          handoffNotes,
+          autoSummary: nextAutoSummary,
+        });
+        await writeJsonStableIfChanged(metaPath, nextMeta);
+        if (!(await fileExists(diffstatPath))) {
+          await writeTextIfChanged(diffstatPath, "");
+        }
+        if (!(await fileExists(notesPath))) {
+          await writeTextIfChanged(notesPath, "");
+        }
+        if (!(await fileExists(verifyLogPath))) {
+          await writeTextIfChanged(verifyLogPath, "");
+        }
+        await writeTextIfChanged(reviewPath, nextReview);
+        await writeTextIfChanged(githubTitlePath, `${githubTitle}\n`);
+        await writeTextIfChanged(githubBodyPath, githubBody);
+        return { prDir, resolved };
+      }
+
+      if (!baseBranch) {
+        throw new CliError({
+          exitCode: exitCodeForError("E_USAGE"),
+          code: "E_USAGE",
+          message: "Base branch could not be resolved (use `agentplane branch base set`).",
+        });
+      }
+
+      let diffstat = "";
+      try {
+        const { stdout: diffStatOut } = await execFileAsync(
+          "git",
+          ["diff", "--stat", `${baseBranch}...${branch}`],
+          { cwd: resolved.gitRoot, env: gitEnv() },
+        );
+        diffstat = diffStatOut.trimEnd();
+      } catch (err) {
+        if (!isUnknownRevisionError(err)) throw err;
+      }
+      const nextMeta: PrMeta = buildUpdatedPrMeta({
+        meta: existingMeta!,
         branch,
         at: now,
-        previousMeta: existingMeta,
         base: baseBranch,
         headSha,
       });
@@ -253,11 +348,10 @@ export async function syncPrArtifacts(opts: {
         updatedAt: nextMeta.updated_at,
         branch,
         headSha,
-        diffstat: "",
+        diffstat,
       });
       const nextReview = renderPrReviewDocument({
         task,
-        author: opts.author,
         createdAt,
         branch,
         handoffNotes,
@@ -269,74 +363,19 @@ export async function syncPrArtifacts(opts: {
         handoffNotes,
         autoSummary: nextAutoSummary,
       });
-      await writeJsonStableIfChanged(metaPath, nextMeta);
-      if (!(await fileExists(diffstatPath))) {
-        await writeTextIfChanged(diffstatPath, "");
-      }
-      if (!(await fileExists(notesPath))) {
-        await writeTextIfChanged(notesPath, "");
-      }
-      if (!(await fileExists(verifyLogPath))) {
-        await writeTextIfChanged(verifyLogPath, "");
-      }
+
+      await writeTextIfChanged(diffstatPath, diffstat ? `${diffstat}\n` : "");
       await writeTextIfChanged(reviewPath, nextReview);
       await writeTextIfChanged(githubTitlePath, `${githubTitle}\n`);
       await writeTextIfChanged(githubBodyPath, githubBody);
+      await writeJsonStableIfChanged(metaPath, nextMeta);
       return { prDir, resolved };
-    }
-
-    if (!baseBranch) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_USAGE"),
-        code: "E_USAGE",
-        message: "Base branch could not be resolved (use `agentplane branch base set`).",
+    } finally {
+      await restoreIncidentRegistryIfNeeded({
+        gitRoot: resolved.gitRoot,
+        previousText: incidentsTextBefore,
       });
     }
-
-    let diffstat = "";
-    try {
-      const { stdout: diffStatOut } = await execFileAsync(
-        "git",
-        ["diff", "--stat", `${baseBranch}...${branch}`],
-        { cwd: resolved.gitRoot, env: gitEnv() },
-      );
-      diffstat = diffStatOut.trimEnd();
-    } catch (err) {
-      if (!isUnknownRevisionError(err)) throw err;
-    }
-    const nextMeta: PrMeta = buildUpdatedPrMeta({
-      meta: existingMeta!,
-      branch,
-      at: now,
-      base: baseBranch,
-      headSha,
-    });
-    const nextAutoSummary = renderPrAutoSummary({
-      updatedAt: nextMeta.updated_at,
-      branch,
-      headSha,
-      diffstat,
-    });
-    const nextReview = renderPrReviewDocument({
-      task,
-      createdAt,
-      branch,
-      handoffNotes,
-      autoSummary: nextAutoSummary,
-    });
-    const githubTitle = buildGithubPrTitle(task);
-    const githubBody = renderGithubPrBody({
-      task,
-      handoffNotes,
-      autoSummary: nextAutoSummary,
-    });
-
-    await writeTextIfChanged(diffstatPath, diffstat ? `${diffstat}\n` : "");
-    await writeTextIfChanged(reviewPath, nextReview);
-    await writeTextIfChanged(githubTitlePath, `${githubTitle}\n`);
-    await writeTextIfChanged(githubBodyPath, githubBody);
-    await writeJsonStableIfChanged(metaPath, nextMeta);
-    return { prDir, resolved };
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "pr sync", root: opts.rootOverride ?? null });

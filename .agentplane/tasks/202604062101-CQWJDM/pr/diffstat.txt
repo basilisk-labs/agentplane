@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604062101-CQWJDM/README.md    | 129 ++++++++++
+ .../tasks/202604062101-CQWJDM/pr/diffstat.txt      |  11 +
+ .../tasks/202604062101-CQWJDM/pr/github-body.md    |  60 +++++
+ .../tasks/202604062101-CQWJDM/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604062101-CQWJDM/pr/meta.json |  14 +
+ .../tasks/202604062101-CQWJDM/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604062101-CQWJDM/pr/review.md |  67 +++++
+ .../tasks/202604062101-CQWJDM/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 175 +++++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    | 285 ++++++++++++---------
+ 10 files changed, 619 insertions(+), 123 deletions(-)

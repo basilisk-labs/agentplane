@@ -612,6 +612,103 @@ describe("runCli", () => {
     },
   );
 
+  it("verify keeps incidents.md unchanged when syncing existing PR artifacts", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const incidentsPath = path.join(root, ".agentplane", "policy", "incidents.md");
+    const baselineIncidents = [
+      "# Policy Incidents Log",
+      "",
+      "## Entry contract",
+      "",
+      "- Add entries append-only.",
+      "",
+      "## Entries",
+      "",
+      "- id: INC-20260406-00",
+      "  date: 2026-04-06",
+      "  scope: baseline",
+      "  failure: baseline",
+      "  rule: Baseline rule MUST stay unchanged.",
+      "  evidence: test fixture",
+      "  enforcement: test",
+      "  state: open",
+      "",
+    ].join("\n");
+    await mkdir(path.dirname(incidentsPath), { recursive: true });
+    await writeFile(incidentsPath, baselineIncidents, "utf8");
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify leaves incident registry alone",
+        "--description",
+        "Verification should not mutate incidents policy",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/verify-incidents`], {
+      cwd: root,
+    });
+
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: keep incident policy unchanged while verification refreshes PR artifacts.",
+      "--root",
+      root,
+    ]);
+
+    const incidentsBefore = await readFile(incidentsPath, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Verification updated PR artifacts only",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    expect(await readFile(incidentsPath, "utf8")).toBe(incidentsBefore);
+  });
+
   it(
     "pr check fails when review metadata is stale relative to branch head",
     { timeout: 90_000 },
@@ -1250,6 +1347,84 @@ describe("runCli", () => {
     const meta = JSON.parse(metaRaw) as { branch?: string; head_sha?: string | null };
     expect(meta.branch).toBe("main");
     expect(meta.head_sha).toMatch(/^[0-9a-f]{40}$/u);
+  });
+
+  it("pr open keeps incidents.md unchanged while creating PR artifacts", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const incidentsPath = path.join(root, ".agentplane", "policy", "incidents.md");
+    const baselineIncidents = [
+      "# Policy Incidents Log",
+      "",
+      "## Entry contract",
+      "",
+      "- Add entries append-only.",
+      "",
+      "## Entries",
+      "",
+      "- id: INC-20260406-00",
+      "  date: 2026-04-06",
+      "  scope: baseline",
+      "  failure: baseline",
+      "  rule: Baseline rule MUST stay unchanged.",
+      "  evidence: test fixture",
+      "  enforcement: test",
+      "  state: open",
+      "",
+    ].join("\n");
+    await mkdir(path.dirname(incidentsPath), { recursive: true });
+    await writeFile(incidentsPath, baselineIncidents, "utf8");
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open leaves incident registry alone",
+        "--description",
+        "PR artifact sync should not mutate incidents policy",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const incidentsBefore = await readFile(incidentsPath, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        `task/${taskId}/pr-open-incidents`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    expect(await readFile(incidentsPath, "utf8")).toBe(incidentsBefore);
   });
 
   it("pr open is idempotent when artifacts exist", async () => {
