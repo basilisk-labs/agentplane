@@ -4,7 +4,7 @@ title: "Retry hosted merge sync gh fallback on transient transport errors"
 status: "TODO"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T21:06:56.715Z"
+  updated_at: "2026-04-06T21:31:56.163Z"
   updated_by: "CODER"
-  note: "Verified: hosted merge sync now retries transient gh transport failures while preserving immediate auth/usage failures; focused vitest and eslint passed."
+  note: "Focused vitest, eslint, and prettier check passed after formatting hosted-merge-sync.test.ts for CI parity; scope: XYXG7Y hosted merge sync retry path."
 commit: null
 comments: []
 events:
@@ -31,8 +31,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: hosted merge sync now retries transient gh transport failures while preserving immediate auth/usage failures; focused vitest and eslint passed."
+  -
+    type: "verify"
+    at: "2026-04-06T21:31:56.163Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused vitest, eslint, and prettier check passed after formatting hosted-merge-sync.test.ts for CI parity; scope: XYXG7Y hosted merge sync retry path."
 doc_version: 3
-doc_updated_at: "2026-04-06T21:06:56.719Z"
+doc_updated_at: "2026-04-06T21:31:56.180Z"
 doc_updated_by: "CODER"
 description: "Harden the gh-based hosted merge sync fallback by retrying transient EOF/TLS failures so reconcile paths survive flaky GitHub transport without manual loops."
 sections:
@@ -66,6 +72,14 @@ sections:
     Note: Verified: hosted merge sync now retries transient gh transport failures while preserving immediate auth/usage failures; focused vitest and eslint passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:06:49.469Z, excerpt_hash=sha256:e62571ef15b172b204b7c11f0228c801c9eb650da29d4484a41a8ede1be397e3
+    
+    ### 2026-04-06T21:31:56.163Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused vitest, eslint, and prettier check passed after formatting hosted-merge-sync.test.ts for CI parity; scope: XYXG7Y hosted merge sync retry path.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:06:56.719Z, excerpt_hash=sha256:e62571ef15b172b204b7c11f0228c801c9eb650da29d4484a41a8ede1be397e3
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -117,6 +131,14 @@ Note: Verified: hosted merge sync now retries transient gh transport failures wh
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:06:49.469Z, excerpt_hash=sha256:e62571ef15b172b204b7c11f0228c801c9eb650da29d4484a41a8ede1be397e3
 
+### 2026-04-06T21:31:56.163Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused vitest, eslint, and prettier check passed after formatting hosted-merge-sync.test.ts for CI parity; scope: XYXG7Y hosted merge sync retry path.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:06:56.719Z, excerpt_hash=sha256:e62571ef15b172b204b7c11f0228c801c9eb650da29d4484a41a8ede1be397e3
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -127,46 +149,4 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:06:49.469Z, excerpt_
 ## Findings
 
 - The gh fallback path in hosted merge sync must stay narrow: retry transient transport failures only, and keep auth/usage failures immediate.
-- Fresh task worktrees may still need ==> Framework repo: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202604062101-XYXG7Y-hosted-merge-retry
-==> Bootstrap install layout already present; skipping bun install
-==> Recipes submodule already available in common repo root; skipping local git submodule update: /Users/densmirnov/Github/agentplane
-==> Building @agentplaneorg/core
-@agentplaneorg/core build: Exited with code 0
-==> Building agentplane
-agentplane build: Exited with code 0
-==> Verifying repo-local runtime
-Mode: repo-local (repo-local framework binary)
-Active binary: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202604062101-XYXG7Y-hosted-merge-retry/packages/agentplane/bin/agentplane.js
-Current cwd: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202604062101-XYXG7Y-hosted-merge-retry
-Framework checkout: yes
-Framework repo root: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202604062101-XYXG7Y-hosted-merge-retry
-Framework agentplane root: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202604062101-XYXG7Y-hosted-merge-retry/packages/agentplane
-Framework core root: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202604062101-XYXG7Y-hosted-merge-retry/packages/core
-Resolved agentplane: 0.3.10 @ /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202604062101-XYXG7Y-hosted-merge-retry/packages/agentplane
-Resolved @agentplaneorg/core: 0.3.10 @ /Users/densmirnov/Github/agentplane/packages/core
-Repository expected agentplane CLI: 0.3.10
-Repository CLI status: Active runtime 0.3.10 matches the repository expectation 0.3.10.
-
-Framework dev workflow:
-1. Canonical bootstrap:
-   - bun run framework:dev:bootstrap
-2. Manual fallback:
-   - bun install
-   - git submodule update --init --recursive agentplane-recipes
-   - bun run --filter=@agentplaneorg/core build
-   - bun run --filter=agentplane build
-3. Verify the repo-local runtime directly:
-   - node packages/agentplane/bin/agentplane.js runtime explain
-4. If the global PATH install should resolve this checkout:
-   - scripts/reinstall-global-agentplane.sh
-5. Re-verify the global wrapper:
-   - agentplane runtime explain
-6. Optional: force the global installed CLI inside this checkout:
-   - AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>
-Recommendation: Run the framework bootstrap after fresh clones or dependency drift; use the reinstall helper only when the global PATH command itself should resolve this checkout.
-
-Framework dev runtime is ready.
-Repo-local verify: node packages/agentplane/bin/agentplane.js runtime explain
-Global verify: agentplane runtime explain
-If PATH should resolve this checkout: scripts/reinstall-global-agentplane.sh
-Optional force-global override: AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command> before targeted tests can resolve the repo-local runtime.
+- Fresh task worktrees may still need bun run framework:dev:bootstrap before targeted tests can resolve the repo-local runtime.
