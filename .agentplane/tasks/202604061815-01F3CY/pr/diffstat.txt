@@ -1,5 +1,12 @@
- .agentplane/tasks/202604061815-01F3CY/README.md    | 89 +++++++++++++++++++++
- .../run-cli.core.tasks.normalize-migrate.test.ts   | 90 ++++++++++++++++++++++
- .../src/commands/task/hosted-merge-sync.test.ts    | 44 ++++++++++-
- .../src/commands/task/hosted-merge-sync.ts         | 74 ++++++++++++++++++
- 4 files changed, 296 insertions(+), 1 deletion(-)
+ .agentplane/tasks/202604061815-01F3CY/README.md    | 111 +++++++++++++++++++++
+ .../tasks/202604061815-01F3CY/pr/diffstat.txt      |   5 +
+ .../tasks/202604061815-01F3CY/pr/github-body.md    |  54 ++++++++++
+ .../tasks/202604061815-01F3CY/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604061815-01F3CY/pr/meta.json |  14 +++
+ .../tasks/202604061815-01F3CY/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604061815-01F3CY/pr/review.md |  61 +++++++++++
+ .../tasks/202604061815-01F3CY/pr/verify.log        |   0
+ .../run-cli.core.tasks.normalize-migrate.test.ts   |  90 +++++++++++++++++
+ .../src/commands/task/hosted-merge-sync.test.ts    |  44 +++++++-
+ .../src/commands/task/hosted-merge-sync.ts         |  74 ++++++++++++++
+ 11 files changed, 453 insertions(+), 1 deletion(-)

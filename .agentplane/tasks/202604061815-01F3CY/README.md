@@ -1,10 +1,11 @@
 ---
 id: "202604061815-01F3CY"
 title: "Optimize hosted merge sync with local PR meta fast-path"
-status: "TODO"
+result_summary: "integrate: squash task/202604061815-01F3CY/hosted-merge-sync-local-fast-path"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,8 +22,13 @@ verification:
   updated_at: "2026-04-06T18:33:10.755Z"
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun x eslint packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: local MERGED pr/meta now reconciles normalize without gh, fallback hosted-merge path stayed green, eslint passed, and the worktree runtime rebuilt cleanly. Scope: hosted-merge-sync module, its unit test, normalize CLI test, task README."
-commit: null
-comments: []
+commit:
+  hash: "470ed6fd91b8ec1f32f23dc5a715313d56daa561"
+  message: "🧩 01F3CY integrate: Optimize hosted merge sync with local PR meta fast-path"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604061815-01F3CY/pr."
 events:
   -
     type: "verify"
@@ -30,9 +36,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun x eslint packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: local MERGED pr/meta now reconciles normalize without gh, fallback hosted-merge path stayed green, eslint passed, and the worktree runtime rebuilt cleanly. Scope: hosted-merge-sync module, its unit test, normalize CLI test, task README."
+  -
+    type: "status"
+    at: "2026-04-06T19:01:11.077Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604061815-01F3CY/pr."
 doc_version: 3
-doc_updated_at: "2026-04-06T18:33:10.761Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T19:01:11.081Z"
+doc_updated_by: "INTEGRATOR"
 description: "Use local pr/meta.json as the primary reconciliation source for task normalize --sync-hosted-merges and fall back to GitHub only when merge state is still unknown."
 sections:
   Summary: |-
