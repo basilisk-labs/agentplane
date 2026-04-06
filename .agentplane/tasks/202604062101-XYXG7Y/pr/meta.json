@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604062101-XYXG7Y/hosted-merge-retry",
+  "created_at": "2026-04-06T21:06:56.760Z",
+  "head_sha": "96a78968e29a2291d78be98288507684fcf4d893",
+  "last_verified_at": "2026-04-06T21:06:56.715Z",
+  "last_verified_sha": "9abadf4cfad3a57cde21933c81d306b77d7b14ef",
+  "schema_version": 1,
+  "task_id": "202604062101-XYXG7Y",
+  "updated_at": "2026-04-06T21:08:21.692Z",
+  "verify": {
+    "status": "pass"
+  }
+}
