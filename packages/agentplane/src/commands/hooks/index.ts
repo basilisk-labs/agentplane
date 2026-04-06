@@ -11,11 +11,26 @@ import { CliError } from "../../shared/errors.js";
 import { GitContext } from "../shared/git-context.js";
 import { throwIfPolicyDenied } from "../shared/policy-deny.js";
 import { gitCurrentBranch, gitRevParse } from "../shared/git-ops.js";
+import { parseTaskIdFromBranch, parseTaskIdFromCloseBranch } from "../shared/git-worktree.js";
 import { isPathWithin } from "../shared/path.js";
 
 const HOOK_MARKER = "agentplane-hook";
 const SHIM_MARKER = "agentplane-hook-shim";
 export const HOOK_NAMES = ["commit-msg", "pre-commit", "pre-push"] as const;
+
+async function inferTaskIdFromBranchContext(opts: {
+  gitRoot: string;
+  taskPrefix: string;
+}): Promise<string> {
+  try {
+    const branch = await gitCurrentBranch(opts.gitRoot);
+    return (
+      parseTaskIdFromBranch(opts.taskPrefix, branch) ?? parseTaskIdFromCloseBranch(branch) ?? ""
+    );
+  } catch {
+    return "";
+  }
+}
 
 async function resolveGitHooksDir(cwd: string): Promise<string> {
   const repoRoot = await gitRevParse(cwd, ["--show-toplevel"]);
@@ -229,7 +244,12 @@ export async function cmdHooksRun(opts: {
       });
       const loaded = await loadConfig(resolved.agentplaneDir);
 
-      const taskId = (process.env.AGENTPLANE_TASK_ID ?? "").trim();
+      const taskId =
+        (process.env.AGENTPLANE_TASK_ID ?? "").trim() ||
+        (await inferTaskIdFromBranchContext({
+          gitRoot: resolved.gitRoot,
+          taskPrefix: loaded.config.branch.task_prefix,
+        }));
       const statusTo = (process.env.AGENTPLANE_STATUS_TO ?? "").trim().toUpperCase();
 
       const emoji = subject.split(/\s+/).find(Boolean) ?? "";

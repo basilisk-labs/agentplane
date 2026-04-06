@@ -1,0 +1,165 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const mocks = vi.hoisted(() => ({
+  cleanupIntegratedBranch: vi.fn(),
+  createCliEmitter: vi.fn(),
+  finalizeIntegrate: vi.fn(),
+  gitRevParse: vi.fn(),
+  prepareIntegrate: vi.fn(),
+  resolveWorktreeForIntegrate: vi.fn(),
+  runMergeCommit: vi.fn(),
+  runRebaseFastForward: vi.fn(),
+  runSquashMerge: vi.fn(),
+  runVerifyCommands: vi.fn(),
+  shouldRecommendPostIntegrateBootstrap: vi.fn(),
+}));
+
+vi.mock("../../../cli/output.js", () => ({
+  createCliEmitter: mocks.createCliEmitter,
+}));
+vi.mock("./internal/cleanup.js", () => ({
+  cleanupIntegratedBranch: mocks.cleanupIntegratedBranch,
+}));
+vi.mock("./internal/finalize.js", () => ({
+  finalizeIntegrate: mocks.finalizeIntegrate,
+}));
+vi.mock("./internal/merge.js", () => ({
+  runMergeCommit: mocks.runMergeCommit,
+  runRebaseFastForward: mocks.runRebaseFastForward,
+  runSquashMerge: mocks.runSquashMerge,
+}));
+vi.mock("./internal/prepare.js", () => ({
+  prepareIntegrate: mocks.prepareIntegrate,
+}));
+vi.mock("./internal/worktree.js", () => ({
+  resolveWorktreeForIntegrate: mocks.resolveWorktreeForIntegrate,
+}));
+vi.mock("./verify.js", () => ({
+  runVerifyCommands: mocks.runVerifyCommands,
+}));
+vi.mock("./internal/bootstrap-guidance.js", () => ({
+  renderPostIntegrateBootstrapGuidance: () =>
+    "This merge changed watched runtime sources. Run `bun run framework:dev:bootstrap` before the next command so the repo-local build stays current.",
+  shouldRecommendPostIntegrateBootstrap: mocks.shouldRecommendPostIntegrateBootstrap,
+}));
+vi.mock("../../shared/git-ops.js", () => ({
+  gitRevParse: mocks.gitRevParse,
+}));
+
+describe("pr/integrate/cmd", () => {
+  let emitter: {
+    line: ReturnType<typeof vi.fn>;
+    lines: ReturnType<typeof vi.fn>;
+    json: ReturnType<typeof vi.fn>;
+    jsonSection: ReturnType<typeof vi.fn>;
+    report: ReturnType<typeof vi.fn>;
+    info: ReturnType<typeof vi.fn>;
+    warn: ReturnType<typeof vi.fn>;
+    success: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    emitter = {
+      line: vi.fn(),
+      lines: vi.fn(),
+      json: vi.fn(),
+      jsonSection: vi.fn(),
+      report: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      success: vi.fn(),
+    };
+    mocks.createCliEmitter.mockReturnValue(emitter);
+    mocks.prepareIntegrate.mockResolvedValue({
+      ctx: { config: {}, git: {}, taskBackend: {}, resolvedProject: { gitRoot: "/repo" } },
+      resolved: { gitRoot: "/repo" },
+      loadedConfig: {
+        workflow_mode: "branch_pr",
+        paths: {
+          worktrees_dir: ".agentplane/worktrees",
+          workflow_dir: ".agentplane/tasks",
+        },
+        commit: { generic_tokens: [] },
+      },
+      task: { id: "T-1", title: "Task", tags: [], verify: [], status: "DOING" },
+      prDir: "/repo/.agentplane/tasks/T-1/pr",
+      metaPath: "/repo/.agentplane/tasks/T-1/pr/meta.json",
+      diffstatPath: "/repo/.agentplane/tasks/T-1/pr/diffstat.txt",
+      verifyLogPath: "/repo/.agentplane/tasks/T-1/pr/verify.log",
+      metaSource: {
+        base: "main",
+        branch: "task/T-1",
+        head_sha: "head-sha",
+        last_verified_sha: null,
+      },
+      branch: "task/T-1",
+      base: "main",
+      verifyLogText: "",
+      branchHeadSha: "head-sha",
+      changedPaths: ["packages/agentplane/src/cli.ts"],
+      verifyCommands: [],
+      alreadyVerifiedSha: null,
+      shouldRunVerify: false,
+    });
+    mocks.resolveWorktreeForIntegrate.mockResolvedValue({
+      worktreePath: null,
+      tempWorktreePath: null,
+      createdTempWorktree: false,
+    });
+    mocks.gitRevParse.mockResolvedValueOnce("base-sha").mockResolvedValueOnce("head-sha");
+    mocks.runSquashMerge.mockResolvedValue("merge-sha");
+    mocks.finalizeIntegrate.mockResolvedValue(null);
+    mocks.cleanupIntegratedBranch.mockResolvedValue({
+      removedBranch: true,
+      removedWorktree: false,
+      worktreePath: null,
+      skippedReason: null,
+    });
+    mocks.shouldRecommendPostIntegrateBootstrap.mockReturnValue(true);
+  });
+
+  it("warns after integrate when watched runtime sources changed", async () => {
+    const { cmdIntegrate } = await import("./cmd.js");
+
+    const exitCode = await cmdIntegrate({
+      cwd: "/repo",
+      taskId: "T-1",
+      mergeStrategy: "squash",
+      runVerify: false,
+      dryRun: false,
+      quiet: false,
+    });
+
+    expect(exitCode).toBe(0);
+    expect(mocks.shouldRecommendPostIntegrateBootstrap).toHaveBeenCalledWith([
+      "packages/agentplane/src/cli.ts",
+    ]);
+    expect(emitter.warn).toHaveBeenCalledWith(
+      "This merge changed watched runtime sources. Run `bun run framework:dev:bootstrap` before the next command so the repo-local build stays current.",
+    );
+    expect(mocks.finalizeIntegrate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        mergeHash: "merge-sha",
+      }),
+    );
+  });
+
+  it("does not warn when integrate did not touch watched runtime sources", async () => {
+    mocks.shouldRecommendPostIntegrateBootstrap.mockReturnValue(false);
+    const { cmdIntegrate } = await import("./cmd.js");
+
+    await cmdIntegrate({
+      cwd: "/repo",
+      taskId: "T-1",
+      mergeStrategy: "squash",
+      runVerify: false,
+      dryRun: false,
+      quiet: false,
+    });
+
+    expect(mocks.shouldRecommendPostIntegrateBootstrap).toHaveBeenCalled();
+    expect(emitter.warn).not.toHaveBeenCalled();
+  });
+});

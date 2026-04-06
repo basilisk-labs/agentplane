@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604062024-AEVV0A/commit-msg-task-context",
+  "created_at": "2026-04-06T20:28:16.859Z",
+  "head_sha": "018506a6ae843e8842aab6db8b49178958c55985",
+  "last_verified_at": "2026-04-06T20:28:16.807Z",
+  "last_verified_sha": "27a29c0a6f51e2dbe6f0e9659fd3f6ca4285f848",
+  "merge_commit": "9d2080e37507bc2f65d36bbfc66824d09079007e",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-06T20:48:14.622Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604062024-AEVV0A",
+  "updated_at": "2026-04-06T20:48:14.622Z",
+  "verify": {
+    "status": "pass"
+  }
+}
