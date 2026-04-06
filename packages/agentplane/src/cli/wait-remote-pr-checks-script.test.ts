@@ -164,7 +164,9 @@ describe("wait-remote-pr-checks script", () => {
     expect(callLogText).toContain(
       `["pr","view","--repo","basilisk-labs/agentplane","--json","number,headRefOid,baseRefName,url,title"]`,
     );
-    expect(callLogText).toContain(`["api","repos/basilisk-labs/agentplane/branches/main/protection"]`);
+    expect(callLogText).toContain(
+      `["api","repos/basilisk-labs/agentplane/branches/main/protection"]`,
+    );
   });
 
   it("retries transient gh transport errors before resolving the PR", async () => {

@@ -181,9 +181,10 @@ async function resolveRepositorySlug(explicitRepo) {
   if (fromEnv) return fromEnv;
 
   const payload = await runGhJsonWithRetry(["repo", "view", "--json", "nameWithOwner"]);
-  const repo = payload && typeof payload === "object" && !Array.isArray(payload)
-    ? String(payload.nameWithOwner ?? "").trim()
-    : "";
+  const repo =
+    payload && typeof payload === "object" && !Array.isArray(payload)
+      ? String(payload.nameWithOwner ?? "").trim()
+      : "";
   if (!repo) {
     throw new Error("Unable to resolve repository slug. Pass --repo or set GITHUB_REPOSITORY.");
   }
@@ -227,9 +228,10 @@ async function loadRequiredContexts(repoSlug, baseBranch) {
       "api",
       `repos/${repoSlug}/branches/${baseBranch}/protection`,
     ]);
-    const required = payload && typeof payload === "object" && !Array.isArray(payload)
-      ? payload.required_status_checks
-      : null;
+    const required =
+      payload && typeof payload === "object" && !Array.isArray(payload)
+        ? payload.required_status_checks
+        : null;
     if (!required || typeof required !== "object" || Array.isArray(required)) return [];
 
     const checks = Array.isArray(required.checks) ? required.checks : [];
@@ -237,7 +239,9 @@ async function loadRequiredContexts(repoSlug, baseBranch) {
     const explicit = checks
       .map((entry) => String(entry?.context ?? "").trim())
       .filter((value) => value.length > 0);
-    const fallback = contexts.map((entry) => String(entry).trim()).filter((value) => value.length > 0);
+    const fallback = contexts
+      .map((entry) => String(entry).trim())
+      .filter((value) => value.length > 0);
     return explicit.length > 0 ? explicit : fallback;
   } catch (error) {
     const text = normalizeErrorText(error);
