@@ -45,12 +45,32 @@ Differentiate no external incidents from structured findings that were parsed bu
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T23:18:53.185Z
+- Updated: 2026-04-06T23:21:15.275Z
 - Branch: task/202604062309-ZBNXE7/incident-diagnostics
-- Head: 232cf6eb02de
+- Head: 6ffddaf9f606
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604062309-ZBNXE7/README.md    | 107 +++++++++++++++++++++
+ .../tasks/202604062309-ZBNXE7/pr/diffstat.txt      |   0
+ .../tasks/202604062309-ZBNXE7/pr/github-body.md    |  50 ++++++++++
+ .../tasks/202604062309-ZBNXE7/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604062309-ZBNXE7/pr/meta.json |  14 +++
+ .../tasks/202604062309-ZBNXE7/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604062309-ZBNXE7/pr/review.md |  57 +++++++++++
+ .../tasks/202604062309-ZBNXE7/pr/verify.log        |   0
+ .../src/cli/run-cli.core.incidents.test.ts         |  95 ++++++++++++++++++
+ .../src/commands/incidents/collect.command.ts      |   6 +-
+ .../agentplane/src/commands/incidents/shared.ts    |  36 +++++++
+ .../pr/integrate/internal/finalize.test.ts         |  32 +++++-
+ .../src/commands/pr/integrate/internal/finalize.ts |   4 +-
+ packages/agentplane/src/commands/task/finish.ts    |  18 +++-
+ .../src/commands/task/finish.unit.test.ts          |  72 +++++++++++++-
+ .../src/commands/task/hosted-close.command.ts      |   4 +-
+ packages/agentplane/src/runtime/incidents/index.ts |   1 +
+ .../src/runtime/incidents/resolve.test.ts          |  28 ++++++
+ .../agentplane/src/runtime/incidents/resolve.ts    |  33 +++++--
+ packages/agentplane/src/runtime/incidents/types.ts |   8 ++
+ 20 files changed, 545 insertions(+), 21 deletions(-)
 ```
 
 </details>
