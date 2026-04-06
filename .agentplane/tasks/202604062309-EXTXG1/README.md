@@ -4,7 +4,7 @@ title: "Promote confirmed external workflow incidents into incidents registry"
 status: "TODO"
 priority: "med"
 owner: "DOCS"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T23:28:04.069Z"
+  updated_at: "2026-04-06T23:43:09.578Z"
   updated_by: "DOCS"
-  note: "Policy incident backfill verified: reviewed both appended external entries against task evidence, confirmed append-only registry updates, and reran node .agentplane/policy/check-routing.mjs after compressing incidents.md back under the 100-line budget. Result: pass. Evidence: incidents.md now contains explicit external guidance for flaky GitHub transport and protected-main closure permission limits."
+  note: "Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets."
 commit: null
 comments: []
 events:
@@ -32,8 +32,20 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Policy incident backfill verified: reviewed both appended external entries against task evidence, confirmed append-only registry updates, and reran node .agentplane/policy/check-routing.mjs after compressing incidents.md back under the 100-line budget. Result: pass. Evidence: incidents.md now contains explicit external guidance for flaky GitHub transport and protected-main closure permission limits."
+  -
+    type: "verify"
+    at: "2026-04-06T23:42:28.400Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets."
+  -
+    type: "verify"
+    at: "2026-04-06T23:43:09.578Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets."
 doc_version: 3
-doc_updated_at: "2026-04-06T23:28:04.074Z"
+doc_updated_at: "2026-04-06T23:43:09.584Z"
 doc_updated_by: "DOCS"
 description: "Append confirmed external operational lessons from the recent GitHub transport/reconciliation cycle into .agentplane/policy/incidents.md with concrete rules and evidence."
 sections:
@@ -58,6 +70,22 @@ sections:
     Note: Policy incident backfill verified: reviewed both appended external entries against task evidence, confirmed append-only registry updates, and reran node .agentplane/policy/check-routing.mjs after compressing incidents.md back under the 100-line budget. Result: pass. Evidence: incidents.md now contains explicit external guidance for flaky GitHub transport and protected-main closure permission limits.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:09:43.527Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
+    
+    ### 2026-04-06T23:42:28.400Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:28:04.074Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
+    
+    ### 2026-04-06T23:43:09.578Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:42:28.408Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -99,6 +127,22 @@ By: DOCS
 Note: Policy incident backfill verified: reviewed both appended external entries against task evidence, confirmed append-only registry updates, and reran node .agentplane/policy/check-routing.mjs after compressing incidents.md back under the 100-line budget. Result: pass. Evidence: incidents.md now contains explicit external guidance for flaky GitHub transport and protected-main closure permission limits.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:09:43.527Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
+
+### 2026-04-06T23:42:28.400Z — VERIFY — ok
+
+By: DOCS
+
+Note: Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:28:04.074Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
+
+### 2026-04-06T23:43:09.578Z — VERIFY — ok
+
+By: DOCS
+
+Note: Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:42:28.408Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
 
 <!-- END VERIFICATION RESULTS -->
 

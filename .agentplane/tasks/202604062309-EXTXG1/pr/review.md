@@ -25,7 +25,7 @@ Append confirmed external operational lessons from the recent GitHub transport/r
 ### Current Status
 
 - State: ok
-- Note: Policy incident backfill verified: reviewed both appended external entries against task evidence, confirmed append-only registry updates, and reran node .agentplane/policy/check-routing.mjs after compressing incidents.md back under the 100-line budget. Result: pass. Evidence: incidents.md now contains explicit external guidance for flaky GitHub transport and protected-main closure permission limits.
+- Note: Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets.
 
 ## Risks
 
@@ -45,12 +45,22 @@ Append confirmed external operational lessons from the recent GitHub transport/r
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T23:28:04.112Z
+- Updated: 2026-04-06T23:43:09.611Z
 - Branch: task/202604062309-EXTXG1/external-incident-backfill
-- Head: 4a8d694d0cda
+- Head: e26fc0b48de4
 
 ```text
-No changes detected.
+ .agentplane/policy/incidents.md                    |  48 +++++----
+ .agentplane/tasks/202604062309-EXTXG1/README.md    | 113 +++++++++++++++++++++
+ .../tasks/202604062309-EXTXG1/pr/diffstat.txt      |   0
+ .../tasks/202604062309-EXTXG1/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604062309-EXTXG1/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604062309-EXTXG1/pr/meta.json |  14 +++
+ .../tasks/202604062309-EXTXG1/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604062309-EXTXG1/pr/review.md |  57 +++++++++++
+ .../tasks/202604062309-EXTXG1/pr/verify.log        |   0
+ packages/agentplane/assets/policy/incidents.md     |  46 +++++----
+ 10 files changed, 291 insertions(+), 38 deletions(-)
 ```
 
 </details>

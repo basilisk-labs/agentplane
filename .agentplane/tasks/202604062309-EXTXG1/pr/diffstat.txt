@@ -1,0 +1,11 @@
+ .agentplane/policy/incidents.md                    |  48 +++++----
+ .agentplane/tasks/202604062309-EXTXG1/README.md    | 113 +++++++++++++++++++++
+ .../tasks/202604062309-EXTXG1/pr/diffstat.txt      |   0
+ .../tasks/202604062309-EXTXG1/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604062309-EXTXG1/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604062309-EXTXG1/pr/meta.json |  14 +++
+ .../tasks/202604062309-EXTXG1/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604062309-EXTXG1/pr/review.md |  57 +++++++++++
+ .../tasks/202604062309-EXTXG1/pr/verify.log        |   0
+ packages/agentplane/assets/policy/incidents.md     |  46 +++++----
+ 10 files changed, 291 insertions(+), 38 deletions(-)
