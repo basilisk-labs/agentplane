@@ -20,7 +20,7 @@ Make branch_pr closure paths promote reusable external incidents into .agentplan
 ### Current Status
 
 - State: ok
-- Note: Targeted vitest passed for finish/integrate/hosted-close incident promotion; eslint passed; protected policy path coverage added for .agentplane/policy/**.
+- Note: Full test:fast passed after fixing finalize integrate mock coverage for the incidents path; targeted vitest and eslint for incidents/protected-paths remain green.
 
 ## Risks
 
@@ -39,12 +39,29 @@ Make branch_pr closure paths promote reusable external incidents into .agentplan
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T19:54:27.503Z
+- Updated: 2026-04-06T20:08:33.077Z
 - Branch: task/202604061916-2860KH/branch-pr-incidents
-- Head: ca7c8399d6b5
+- Head: c1bc734972aa
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604061916-2860KH/README.md    | 123 +++++++++++++++++++++
+ .../tasks/202604061916-2860KH/pr/diffstat.txt      |   0
+ .../tasks/202604061916-2860KH/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604061916-2860KH/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604061916-2860KH/pr/meta.json |  14 +++
+ .../tasks/202604061916-2860KH/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604061916-2860KH/pr/review.md |  57 ++++++++++
+ .../tasks/202604061916-2860KH/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 113 +++++++++++++++++++
+ .../src/cli/run-cli.core.task-hosted-close.test.ts |  44 ++++++++
+ .../agentplane/src/commands/guard/impl/commands.ts |   5 +-
+ .../src/commands/pr/integrate/internal/finalize.ts |  13 +++
+ .../agentplane/src/commands/task/finish-shared.ts  |   3 +-
+ packages/agentplane/src/commands/task/finish.ts    |   1 +
+ .../src/commands/task/hosted-close.command.ts      |  13 +++
+ .../agentplane/src/shared/protected-paths.test.ts  |  25 +++++
+ packages/agentplane/src/shared/protected-paths.ts  |   2 +
+ 17 files changed, 461 insertions(+), 3 deletions(-)
 ```
 
 </details>

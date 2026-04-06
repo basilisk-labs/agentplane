@@ -4,7 +4,7 @@ title: "Promote incidents during branch_pr integrate and hosted-close"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T19:52:44.639Z"
+  updated_at: "2026-04-06T20:08:32.993Z"
   updated_by: "CODER"
-  note: "Targeted vitest passed for finish/integrate/hosted-close incident promotion; eslint passed; protected policy path coverage added for .agentplane/policy/**."
+  note: "Full test:fast passed after fixing finalize integrate mock coverage for the incidents path; targeted vitest and eslint for incidents/protected-paths remain green."
 commit: null
 comments:
   -
@@ -40,8 +40,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted vitest passed for finish/integrate/hosted-close incident promotion; eslint passed; protected policy path coverage added for .agentplane/policy/**."
+  -
+    type: "verify"
+    at: "2026-04-06T20:08:32.993Z"
+    author: "CODER"
+    state: "ok"
+    note: "Full test:fast passed after fixing finalize integrate mock coverage for the incidents path; targeted vitest and eslint for incidents/protected-paths remain green."
 doc_version: 3
-doc_updated_at: "2026-04-06T19:52:44.645Z"
+doc_updated_at: "2026-04-06T20:08:33.008Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr closure paths promote reusable external incidents into .agentplane/policy/incidents.md the same way direct finish already does, and lock the behavior with tests."
 sections:
@@ -66,6 +72,14 @@ sections:
     Note: Targeted vitest passed for finish/integrate/hosted-close incident promotion; eslint passed; protected policy path coverage added for .agentplane/policy/**.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T19:44:19.614Z, excerpt_hash=sha256:7224a389287037bf5e6c5cd69ab342ba859eb037879fc56c8f2727946ee3b0b1
+    
+    ### 2026-04-06T20:08:32.993Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Full test:fast passed after fixing finalize integrate mock coverage for the incidents path; targeted vitest and eslint for incidents/protected-paths remain green.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T19:52:44.645Z, excerpt_hash=sha256:7224a389287037bf5e6c5cd69ab342ba859eb037879fc56c8f2727946ee3b0b1
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -108,6 +122,14 @@ By: CODER
 Note: Targeted vitest passed for finish/integrate/hosted-close incident promotion; eslint passed; protected policy path coverage added for .agentplane/policy/**.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T19:44:19.614Z, excerpt_hash=sha256:7224a389287037bf5e6c5cd69ab342ba859eb037879fc56c8f2727946ee3b0b1
+
+### 2026-04-06T20:08:32.993Z — VERIFY — ok
+
+By: CODER
+
+Note: Full test:fast passed after fixing finalize integrate mock coverage for the incidents path; targeted vitest and eslint for incidents/protected-paths remain green.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T19:52:44.645Z, excerpt_hash=sha256:7224a389287037bf5e6c5cd69ab342ba859eb037879fc56c8f2727946ee3b0b1
 
 <!-- END VERIFICATION RESULTS -->
 
