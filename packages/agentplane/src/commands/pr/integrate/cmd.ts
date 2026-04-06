@@ -5,6 +5,10 @@ import { createCliEmitter } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
 
 import { cleanupIntegratedBranch } from "./internal/cleanup.js";
+import {
+  renderPostIntegrateBootstrapGuidance,
+  shouldRecommendPostIntegrateBootstrap,
+} from "./internal/bootstrap-guidance.js";
 import { execFileAsync, gitEnv } from "../../shared/git.js";
 import { gitRevParse } from "../../shared/git-ops.js";
 import type { CommandContext } from "../../shared/task-backend.js";
@@ -204,6 +208,10 @@ export async function cmdIntegrate(opts: {
     ) {
       tempWorktreePath = null;
       createdTempWorktree = false;
+    }
+
+    if (!opts.quiet && shouldRecommendPostIntegrateBootstrap(changedPaths)) {
+      output.warn(renderPostIntegrateBootstrapGuidance());
     }
 
     return 0;
