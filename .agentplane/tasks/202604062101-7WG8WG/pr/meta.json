@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604062101-7WG8WG/incident-outcome-messaging",
   "created_at": "2026-04-06T21:09:51.136Z",
-  "head_sha": "e14d47287c996ed79f2d6db58cdc83b6d81b7c11",
+  "head_sha": "4896c03f37144705722a3df51ed7b05444543f32",
   "last_verified_at": "2026-04-06T21:11:54.220Z",
   "last_verified_sha": "e14d47287c996ed79f2d6db58cdc83b6d81b7c11",
+  "merge_commit": "191e3cfb8f09d3c434859a3151d5a97621263b44",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-06T22:13:51Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604062101-7WG8WG",
-  "updated_at": "2026-04-06T21:11:54.261Z",
+  "updated_at": "2026-04-06T22:13:51Z",
   "verify": {
     "status": "pass"
   }

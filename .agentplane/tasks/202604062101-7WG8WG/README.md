@@ -1,10 +1,11 @@
 ---
 id: "202604062101-7WG8WG"
 title: "Report explicit incident promotion outcome in lifecycle commands"
-status: "TODO"
+result_summary: "Merged via PR #90."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -22,8 +23,13 @@ verification:
   updated_at: "2026-04-06T21:11:54.220Z"
   updated_by: "CODER"
   note: "Verification made incident promotion outcomes explicit in finish, integrate, and hosted-close. Commands: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts. Result: pass. Evidence: lifecycle commands now report either promoted incident count or explicit no-op, and focused contract suites passed. Scope: incidents collection messaging across finish, integrate, and hosted-close."
-commit: null
-comments: []
+commit:
+  hash: "191e3cfb8f09d3c434859a3151d5a97621263b44"
+  message: "workflow: Report explicit incident promotion outcome in lifecycle commands (7WG8WG) (#90)"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #90 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "verify"
@@ -37,9 +43,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification made incident promotion outcomes explicit in finish, integrate, and hosted-close. Commands: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts. Result: pass. Evidence: lifecycle commands now report either promoted incident count or explicit no-op, and focused contract suites passed. Scope: incidents collection messaging across finish, integrate, and hosted-close."
+  -
+    type: "status"
+    at: "2026-04-06T22:14:15.206Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #90 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-06T21:11:54.232Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T22:14:15.212Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make finish, integrate, and hosted-close report whether incidents were promoted or why the registry stayed unchanged so operators can distinguish no-op from breakage."
 sections:
   Summary: |-
