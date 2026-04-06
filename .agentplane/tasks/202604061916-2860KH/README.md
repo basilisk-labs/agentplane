@@ -1,10 +1,11 @@
 ---
 id: "202604061916-2860KH"
 title: "Promote incidents during branch_pr integrate and hosted-close"
-status: "DOING"
+result_summary: "integrate: squash task/202604061916-2860KH/branch-pr-incidents"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-06T20:08:32.993Z"
   updated_by: "CODER"
   note: "Full test:fast passed after fixing finalize integrate mock coverage for the incidents path; targeted vitest and eslint for incidents/protected-paths remain green."
-commit: null
+commit:
+  hash: "afafdc7404f94c4380a6a4157d21f9587db6360f"
+  message: "📝 2860KH task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: implement incidents promotion for branch_pr integrate and hosted-close, then lock the behavior with regression tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604061916-2860KH/pr."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Full test:fast passed after fixing finalize integrate mock coverage for the incidents path; targeted vitest and eslint for incidents/protected-paths remain green."
+  -
+    type: "status"
+    at: "2026-04-06T20:14:07.738Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604061916-2860KH/pr."
 doc_version: 3
-doc_updated_at: "2026-04-06T20:08:33.008Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T20:14:07.745Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make branch_pr closure paths promote reusable external incidents into .agentplane/policy/incidents.md the same way direct finish already does, and lock the behavior with tests."
 sections:
   Summary: |-
