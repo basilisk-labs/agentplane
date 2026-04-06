@@ -1,10 +1,10 @@
 ---
 id: "202604062024-AEVV0A"
 title: "Infer task context for commit-msg hook from task branch"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,7 +22,10 @@ verification:
   updated_by: "CODER"
   note: "Commit-msg hook now infers task context from task branches when AGENTPLANE_TASK_ID is unset; targeted hook vitest and eslint passed."
 commit: null
-comments: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: infer task context from task branch names inside commit-msg and refresh PR artifacts after the fix commit."
 events:
   -
     type: "verify"
@@ -30,8 +33,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Commit-msg hook now infers task context from task branches when AGENTPLANE_TASK_ID is unset; targeted hook vitest and eslint passed."
+  -
+    type: "status"
+    at: "2026-04-06T20:35:29.707Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: infer task context from task branch names inside commit-msg and refresh PR artifacts after the fix commit."
 doc_version: 3
-doc_updated_at: "2026-04-06T20:28:16.812Z"
+doc_updated_at: "2026-04-06T20:35:29.726Z"
 doc_updated_by: "CODER"
 description: "Let task-like commit subjects pass in task branches/worktrees even when AGENTPLANE_TASK_ID is unset by deriving the task id from the current branch or workspace context."
 sections:
