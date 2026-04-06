@@ -4,7 +4,7 @@ title: "Optimize hosted merge sync with local PR meta fast-path"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -17,15 +17,21 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-06T18:33:10.755Z"
+  updated_by: "CODER"
+  note: "Command: bun test packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun x eslint packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: local MERGED pr/meta now reconciles normalize without gh, fallback hosted-merge path stayed green, eslint passed, and the worktree runtime rebuilt cleanly. Scope: hosted-merge-sync module, its unit test, normalize CLI test, task README."
 commit: null
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-04-06T18:33:10.755Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun test packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun x eslint packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: local MERGED pr/meta now reconciles normalize without gh, fallback hosted-merge path stayed green, eslint passed, and the worktree runtime rebuilt cleanly. Scope: hosted-merge-sync module, its unit test, normalize CLI test, task README."
 doc_version: 3
-doc_updated_at: "2026-04-06T18:31:27.336Z"
+doc_updated_at: "2026-04-06T18:33:10.761Z"
 doc_updated_by: "CODER"
 description: "Use local pr/meta.json as the primary reconciliation source for task normalize --sync-hosted-merges and fall back to GitHub only when merge state is still unknown."
 sections:
@@ -43,6 +49,14 @@ sections:
     3. Run lint on touched source and test files. Expected: no new lint violations in the modified scope.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-06T18:33:10.755Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun test packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun x eslint packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: local MERGED pr/meta now reconciles normalize without gh, fallback hosted-merge path stayed green, eslint passed, and the worktree runtime rebuilt cleanly. Scope: hosted-merge-sync module, its unit test, normalize CLI test, task README.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T18:31:27.336Z, excerpt_hash=sha256:86b21d2d23042b72bfd6d5c2bd7080629b644992e26fe88abdc2ffe63c9334f2
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -76,6 +90,14 @@ Use local pr/meta.json as the primary reconciliation source for task normalize -
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-06T18:33:10.755Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun test packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun x eslint packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: local MERGED pr/meta now reconciles normalize without gh, fallback hosted-merge path stayed green, eslint passed, and the worktree runtime rebuilt cleanly. Scope: hosted-merge-sync module, its unit test, normalize CLI test, task README.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T18:31:27.336Z, excerpt_hash=sha256:86b21d2d23042b72bfd6d5c2bd7080629b644992e26fe88abdc2ffe63c9334f2
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
