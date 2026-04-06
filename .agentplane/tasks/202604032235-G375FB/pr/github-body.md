@@ -37,24 +37,24 @@ Repair local branch_pr cleanup so merged task/task-close leftovers are detected 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T16:33:41.023Z
+- Updated: 2026-04-06T16:40:46.211Z
 - Branch: task/202604032235-G375FB/cleanup-lifecycle-tails
-- Head: 996a1ad080bd
+- Head: f108f77f92a0
 
 ```text
- .agentplane/tasks/202604032235-G375FB/README.md    | 103 ++++++++++++
- .../tasks/202604032235-G375FB/pr/diffstat.txt      |   6 +
- .../tasks/202604032235-G375FB/pr/github-body.md    |  53 +++++++
+ .agentplane/tasks/202604032235-G375FB/README.md    | 135 ++++++++++++++++
+ .../tasks/202604032235-G375FB/pr/diffstat.txt      |  13 ++
+ .../tasks/202604032235-G375FB/pr/github-body.md    |  60 +++++++
  .../tasks/202604032235-G375FB/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604032235-G375FB/pr/meta.json |  14 ++
  .../tasks/202604032235-G375FB/pr/notes.jsonl       |   0
- .agentplane/tasks/202604032235-G375FB/pr/review.md |  60 +++++++
+ .agentplane/tasks/202604032235-G375FB/pr/review.md |  67 ++++++++
  .../tasks/202604032235-G375FB/pr/verify.log        |   0
  .../run-cli.core.pr-flow.cleanup-merged.test.ts    | 175 +++++++++++++++++++++
  .../src/commands/branch/cleanup-merged.ts          | 133 +++++++++++++---
  packages/agentplane/src/commands/shared/git-ops.ts |  18 +++
  .../agentplane/src/commands/shared/git-worktree.ts |  29 +++-
- 12 files changed, 566 insertions(+), 26 deletions(-)
+ 12 files changed, 619 insertions(+), 26 deletions(-)
 ```
 
 </details>
