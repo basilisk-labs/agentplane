@@ -1,10 +1,10 @@
 ---
 id: "202604050745-18JJ5E"
 title: "Fix branch_pr shipped-task reconciliation and diagnostics"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: inspect doctor, task normalize, and hosted merge reconciliation paths to detect how a branch_pr task can already be shipped on base while remaining locally DOING, then implement the smallest deterministic repair and diagnostics path."
+events:
+  -
+    type: "status"
+    at: "2026-04-05T08:02:11.770Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: inspect doctor, task normalize, and hosted merge reconciliation paths to detect how a branch_pr task can already be shipped on base while remaining locally DOING, then implement the smallest deterministic repair and diagnostics path."
 doc_version: 3
-doc_updated_at: "2026-04-05T07:47:05.169Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-05T08:02:11.813Z"
+doc_updated_by: "CODER"
 description: "Detect branch_pr tasks whose work is already shipped on the base branch but whose local task lifecycle was never closed, and make doctor/normalization surface or reconcile that state deterministically."
 sections:
   Summary: |-
