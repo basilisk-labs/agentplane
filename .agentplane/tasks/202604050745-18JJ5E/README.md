@@ -4,7 +4,7 @@ title: "Fix branch_pr shipped-task reconciliation and diagnostics"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T16:39:19.041Z"
+  updated_at: "2026-04-06T17:01:45.736Z"
   updated_by: "CODER"
-  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts. Result: pass. Evidence: 36 targeted tests passed; doctor now reports shipped open branch_pr tasks; normalize sync-path regressions passed; targeted eslint on touched workflow files passed."
+  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts. Result: pass. Evidence: 36 targeted tests passed; doctor reports shipped open branch_pr tasks; normalize sync-path regressions passed; targeted eslint on touched workflow files passed; verification recorded after refreshing PR artifacts so last_verified_sha now matches the current task head."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts. Result: pass. Evidence: 36 targeted tests passed; doctor now reports shipped open branch_pr tasks; normalize sync-path regressions passed; targeted eslint on touched workflow files passed."
+  -
+    type: "verify"
+    at: "2026-04-06T17:01:45.736Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts. Result: pass. Evidence: 36 targeted tests passed; doctor reports shipped open branch_pr tasks; normalize sync-path regressions passed; targeted eslint on touched workflow files passed; verification recorded after refreshing PR artifacts so last_verified_sha now matches the current task head."
 doc_version: 3
-doc_updated_at: "2026-04-06T16:39:19.049Z"
+doc_updated_at: "2026-04-06T17:01:45.767Z"
 doc_updated_by: "CODER"
 description: "Detect branch_pr tasks whose work is already shipped on the base branch but whose local task lifecycle was never closed, and make doctor/normalization surface or reconcile that state deterministically."
 sections:
@@ -65,6 +71,14 @@ sections:
     Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts. Result: pass. Evidence: 36 targeted tests passed; doctor now reports shipped open branch_pr tasks; normalize sync-path regressions passed; targeted eslint on touched workflow files passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-05T08:02:11.813Z, excerpt_hash=sha256:5efaece1e35fca92b3e374b9d2fb37a82e12fdceb6a4215ce9e8b9f8372f3b5a
+    
+    ### 2026-04-06T17:01:45.736Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts. Result: pass. Evidence: 36 targeted tests passed; doctor reports shipped open branch_pr tasks; normalize sync-path regressions passed; targeted eslint on touched workflow files passed; verification recorded after refreshing PR artifacts so last_verified_sha now matches the current task head.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T16:39:19.049Z, excerpt_hash=sha256:5efaece1e35fca92b3e374b9d2fb37a82e12fdceb6a4215ce9e8b9f8372f3b5a
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -102,6 +116,14 @@ By: CODER
 Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts. Result: pass. Evidence: 36 targeted tests passed; doctor now reports shipped open branch_pr tasks; normalize sync-path regressions passed; targeted eslint on touched workflow files passed.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-05T08:02:11.813Z, excerpt_hash=sha256:5efaece1e35fca92b3e374b9d2fb37a82e12fdceb6a4215ce9e8b9f8372f3b5a
+
+### 2026-04-06T17:01:45.736Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/task/hosted-merge-sync.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts. Result: pass. Evidence: 36 targeted tests passed; doctor reports shipped open branch_pr tasks; normalize sync-path regressions passed; targeted eslint on touched workflow files passed; verification recorded after refreshing PR artifacts so last_verified_sha now matches the current task head.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T16:39:19.049Z, excerpt_hash=sha256:5efaece1e35fca92b3e374b9d2fb37a82e12fdceb6a4215ce9e8b9f8372f3b5a
 
 <!-- END VERIFICATION RESULTS -->
 
