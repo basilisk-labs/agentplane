@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604032235-G375FB/cleanup-lifecycle-tails",
   "created_at": "2026-04-05T07:33:23.256Z",
-  "head_sha": "f108f77f92a0d9a6f3155b3dcb19acf6cfa278a6",
+  "head_sha": "eb6a7dbb02a6255b792f54fefc85978290fa8f58",
   "last_verified_at": "2026-04-06T16:33:41.000Z",
   "last_verified_sha": "996a1ad080bd07e02d60e6f08125fbd311badd19",
+  "merge_commit": "3e81aa0328e0006f769d1f8176e07125720e0c32",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-06T16:47:22Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604032235-G375FB",
-  "updated_at": "2026-04-06T16:40:46.211Z",
+  "updated_at": "2026-04-06T16:47:22Z",
   "verify": {
     "status": "pass"
   }
