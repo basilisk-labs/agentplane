@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604061916-0KMS28/reconcile-pr65",
   "created_at": "2026-04-06T19:22:07.977Z",
-  "head_sha": "5840f149f60a3a7caaf9b98156f85f5cbb7918d1",
+  "head_sha": "6830f7f23810f5eaf55f194ec949b7bc6ed006da",
   "last_verified_at": "2026-04-06T19:22:07.912Z",
   "last_verified_sha": "ed0d3ee37260d952822c6627e835623120a95529",
+  "merge_commit": "bb70388fe8f48a2ccc5ac1eb071461679a8b9b79",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-06T19:31:41.313Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604061916-0KMS28",
-  "updated_at": "2026-04-06T19:29:51.363Z",
+  "updated_at": "2026-04-06T19:31:41.313Z",
   "verify": {
     "status": "pass"
   }

@@ -1,10 +1,11 @@
 ---
 id: "202604061916-0KMS28"
 title: "Reconcile stale open PR #65 against current main state"
-status: "TODO"
+result_summary: "integrate: squash task/202604061916-0KMS28/reconcile-pr65"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,8 +22,13 @@ verification:
   updated_at: "2026-04-06T19:22:07.912Z"
   updated_by: "CODER"
   note: "Command: npm pack --json --silent ./packages/agentplane; Result: pass; Evidence: packed agentplane@0.3.10 successfully with no workspace dependency leak. Scope: confirms current main already ships the fixed release manifest. Command: gh api repos/basilisk-labs/agentplane/pulls/65 --jq '.state + \" \" + .head.ref' and git fetch --prune origin && git branch -r --list 'origin/task/202604021603-CK5W52/*'; Result: pass; Evidence: PR #65 is closed and the stale remote task branch no longer exists. Scope: confirms legacy PR cleanup landed on GitHub without changing main. Command: git rev-list --left-right --count origin/main...origin/task/202604021603-CK5W52/fix-npm-install-release and git status --short --untracked-files=no && git rev-list --left-right --count origin/main...main; Result: pass; Evidence: stale branch diverged 69/7 from main while local main remained 0/0 and clean. Scope: confirms cleanup was required and current base checkout stayed synced."
-commit: null
-comments: []
+commit:
+  hash: "bb70388fe8f48a2ccc5ac1eb071461679a8b9b79"
+  message: "📝 0KMS28 task: sync PR metadata to current head"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604061916-0KMS28/pr."
 events:
   -
     type: "verify"
@@ -30,9 +36,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: npm pack --json --silent ./packages/agentplane; Result: pass; Evidence: packed agentplane@0.3.10 successfully with no workspace dependency leak. Scope: confirms current main already ships the fixed release manifest. Command: gh api repos/basilisk-labs/agentplane/pulls/65 --jq '.state + \" \" + .head.ref' and git fetch --prune origin && git branch -r --list 'origin/task/202604021603-CK5W52/*'; Result: pass; Evidence: PR #65 is closed and the stale remote task branch no longer exists. Scope: confirms legacy PR cleanup landed on GitHub without changing main. Command: git rev-list --left-right --count origin/main...origin/task/202604021603-CK5W52/fix-npm-install-release and git status --short --untracked-files=no && git rev-list --left-right --count origin/main...main; Result: pass; Evidence: stale branch diverged 69/7 from main while local main remained 0/0 and clean. Scope: confirms cleanup was required and current base checkout stayed synced."
+  -
+    type: "status"
+    at: "2026-04-06T19:31:41.405Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604061916-0KMS28/pr."
 doc_version: 3
-doc_updated_at: "2026-04-06T19:22:07.918Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T19:31:41.417Z"
+doc_updated_by: "INTEGRATOR"
 description: "Confirm whether the legacy release PR is already superseded by main, then close the stale GitHub PR and remove its stale remote branch/artifacts without changing shipped behavior."
 sections:
   Summary: |-
