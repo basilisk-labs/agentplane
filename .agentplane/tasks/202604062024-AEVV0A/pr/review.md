@@ -44,22 +44,22 @@ Let task-like commit subjects pass in task branches/worktrees even when AGENTPLA
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T20:35:29.777Z
+- Updated: 2026-04-06T20:36:37.199Z
 - Branch: task/202604062024-AEVV0A/commit-msg-task-context
-- Head: 23dbab8b484f
+- Head: f7500d3a50bd
 
 ```text
- .agentplane/tasks/202604062024-AEVV0A/README.md    | 111 +++++++++++++++++++++
- .../tasks/202604062024-AEVV0A/pr/diffstat.txt      |   0
- .../tasks/202604062024-AEVV0A/pr/github-body.md    |  49 +++++++++
+ .agentplane/tasks/202604062024-AEVV0A/README.md    | 121 +++++++++++++++++++++
+ .../tasks/202604062024-AEVV0A/pr/diffstat.txt      |  11 ++
+ .../tasks/202604062024-AEVV0A/pr/github-body.md    |  59 ++++++++++
  .../tasks/202604062024-AEVV0A/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604062024-AEVV0A/pr/meta.json |  14 +++
  .../tasks/202604062024-AEVV0A/pr/notes.jsonl       |   0
- .agentplane/tasks/202604062024-AEVV0A/pr/review.md |  56 +++++++++++
+ .agentplane/tasks/202604062024-AEVV0A/pr/review.md |  66 +++++++++++
  .../tasks/202604062024-AEVV0A/pr/verify.log        |   0
  .../agentplane/src/cli/run-cli.core.hooks.test.ts  |  20 ++++
  packages/agentplane/src/commands/hooks/index.ts    |  22 +++-
- 10 files changed, 272 insertions(+), 1 deletion(-)
+ 10 files changed, 313 insertions(+), 1 deletion(-)
 ```
 
 </details>

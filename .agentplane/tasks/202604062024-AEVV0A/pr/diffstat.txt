@@ -1,11 +1,11 @@
- .agentplane/tasks/202604062024-AEVV0A/README.md    | 111 +++++++++++++++++++++
- .../tasks/202604062024-AEVV0A/pr/diffstat.txt      |   0
- .../tasks/202604062024-AEVV0A/pr/github-body.md    |  49 +++++++++
+ .agentplane/tasks/202604062024-AEVV0A/README.md    | 121 +++++++++++++++++++++
+ .../tasks/202604062024-AEVV0A/pr/diffstat.txt      |  11 ++
+ .../tasks/202604062024-AEVV0A/pr/github-body.md    |  59 ++++++++++
  .../tasks/202604062024-AEVV0A/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604062024-AEVV0A/pr/meta.json |  14 +++
  .../tasks/202604062024-AEVV0A/pr/notes.jsonl       |   0
- .agentplane/tasks/202604062024-AEVV0A/pr/review.md |  56 +++++++++++
+ .agentplane/tasks/202604062024-AEVV0A/pr/review.md |  66 +++++++++++
  .../tasks/202604062024-AEVV0A/pr/verify.log        |   0
  .../agentplane/src/cli/run-cli.core.hooks.test.ts  |  20 ++++
  packages/agentplane/src/commands/hooks/index.ts    |  22 +++-
- 10 files changed, 272 insertions(+), 1 deletion(-)
+ 10 files changed, 313 insertions(+), 1 deletion(-)
