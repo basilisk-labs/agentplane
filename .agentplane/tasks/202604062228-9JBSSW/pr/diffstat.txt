@@ -1,0 +1,14 @@
+ .agentplane/tasks/202604062228-9JBSSW/README.md    | 139 ++++++++++++++++
+ .../tasks/202604062228-9JBSSW/pr/diffstat.txt      |  14 ++
+ .../tasks/202604062228-9JBSSW/pr/github-body.md    |  63 ++++++++
+ .../tasks/202604062228-9JBSSW/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604062228-9JBSSW/pr/meta.json |  14 ++
+ .../tasks/202604062228-9JBSSW/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604062228-9JBSSW/pr/review.md |  70 ++++++++
+ .../tasks/202604062228-9JBSSW/pr/verify.log        |   0
+ .github/workflows/task-hosted-close.yml            |   1 +
+ .../src/cli/run-cli.core.task-hosted-close.test.ts | 176 +++++++++++++++++++++
+ .../src/commands/guard/impl/close-message.ts       |  31 +++-
+ .../task/hosted-close-workflow-contract.test.ts    |   1 +
+ .../src/commands/task/hosted-close.command.ts      |  41 ++++-
+ 13 files changed, 544 insertions(+), 7 deletions(-)

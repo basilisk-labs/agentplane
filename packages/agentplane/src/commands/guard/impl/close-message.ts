@@ -15,6 +15,19 @@ type NumstatEntry = {
   churn: number;
 };
 
+function isMissingCommitObjectError(err: unknown): boolean {
+  const stderr = (err as { stderr?: unknown }).stderr;
+  const text =
+    err instanceof Error
+      ? [err.message, typeof stderr === "string" ? stderr : ""]
+          .filter((part) => part.trim().length > 0)
+          .join("\n")
+      : String(err);
+  return (
+    /bad object/i.test(text) || /unknown revision/i.test(text) || /ambiguous argument/i.test(text)
+  );
+}
+
 function uniqSorted(values: string[]): string[] {
   return [...new Set(values)].toSorted((a, b) => a.localeCompare(b));
 }
@@ -45,12 +58,18 @@ function clampList<T>(items: T[], max: number): T[] {
 }
 
 async function gitNumstatForCommit(gitRoot: string, commit: string): Promise<NumstatEntry[]> {
-  const { stdout } = await execFileAsync("git", ["show", "--numstat", "--format=", commit], {
-    cwd: gitRoot,
-    env: gitEnv(),
-    encoding: "buffer",
-    maxBuffer: 10 * 1024 * 1024,
-  });
+  let stdout: string | Buffer;
+  try {
+    ({ stdout } = await execFileAsync("git", ["show", "--numstat", "--format=", commit], {
+      cwd: gitRoot,
+      env: gitEnv(),
+      encoding: "buffer",
+      maxBuffer: 10 * 1024 * 1024,
+    }));
+  } catch (err) {
+    if (isMissingCommitObjectError(err)) return [];
+    throw err;
+  }
   const text = Buffer.isBuffer(stdout) ? stdout.toString("utf8") : String(stdout);
   const entries: NumstatEntry[] = [];
   for (const line of text.split("\n")) {

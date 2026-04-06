@@ -65,6 +65,42 @@ type HostedCloseOutcome =
   | { outcome: "closed"; taskId: string; mergeHash: string }
   | { outcome: "meta-only"; taskId: string; mergeHash: string };
 
+function isMissingCommitObjectError(err: unknown): boolean {
+  const stderr = (err as { stderr?: unknown }).stderr;
+  const text =
+    err instanceof Error
+      ? [err.message, typeof stderr === "string" ? stderr : ""]
+          .filter((part) => part.trim().length > 0)
+          .join("\n")
+      : String(err);
+  return (
+    /bad object/i.test(text) || /unknown revision/i.test(text) || /ambiguous argument/i.test(text)
+  );
+}
+
+async function resolveHostedTaskCommitInfo(opts: {
+  gitRoot: string;
+  mergedPr: {
+    number: number;
+    title?: string | null;
+    baseRefName?: string | null;
+    mergeCommit?: { oid?: string | null } | null;
+  };
+}): Promise<{ hash: string; message: string }> {
+  const mergeHash = opts.mergedPr.mergeCommit?.oid ?? "";
+  try {
+    return await readCommitInfo(opts.gitRoot, mergeHash);
+  } catch (err) {
+    if (!isMissingCommitObjectError(err)) throw err;
+    return {
+      hash: mergeHash,
+      message:
+        opts.mergedPr.title?.trim() ??
+        `Hosted PR #${opts.mergedPr.number} merged on GitHub ${opts.mergedPr.baseRefName ?? "main"}`,
+    };
+  }
+}
+
 async function hasTaskArtifactChanges(opts: {
   gitRoot: string;
   taskDirRelative: string;
@@ -162,7 +198,10 @@ async function closeHostedTask(opts: {
     };
   }
 
-  const taskCommitInfo = await readCommitInfo(gitRoot, target.mergedPr.mergeCommit.oid);
+  const taskCommitInfo = await resolveHostedTaskCommitInfo({
+    gitRoot,
+    mergedPr: target.mergedPr,
+  });
   const prLabel = `PR #${target.mergedPr.number}`;
   const finishBody =
     `Verified: ${prLabel} merged on GitHub ${target.mergedPr.baseRefName ?? "main"}; ` +

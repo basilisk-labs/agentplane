@@ -1,0 +1,1 @@
+workflow: Fix hosted-close when merge commit object is absent in checkout (9JBSSW)
