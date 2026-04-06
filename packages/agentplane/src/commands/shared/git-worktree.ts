@@ -46,14 +46,37 @@ export function parseTaskIdFromBranch(prefix: string, branch: string): string | 
   return taskId ? taskId.trim() : null;
 }
 
-export async function gitListTaskBranches(cwd: string, prefix: string): Promise<string[]> {
+export function parseTaskIdFromCloseBranch(branch: string): string | null {
+  const normalized = stripBranchRef(branch);
+  if (!normalized.startsWith("task-close/")) return null;
+  const rest = normalized.slice("task-close/".length);
+  const taskId = rest.split("/", 1)[0];
+  return taskId ? taskId.trim() : null;
+}
+
+export async function gitListBranchesByPrefixes(
+  cwd: string,
+  prefixes: string[],
+): Promise<string[]> {
+  const patterns = prefixes
+    .map((prefix) => prefix.trim())
+    .filter((prefix) => prefix.length > 0)
+    .map((prefix) => `refs/heads/${prefix}`);
+  if (patterns.length === 0) return [];
   const { stdout } = await execFileAsync(
     "git",
-    ["for-each-ref", "--format=%(refname:short)", `refs/heads/${prefix}`],
-    { cwd, env: gitEnv() },
+    ["for-each-ref", "--format=%(refname:short)", ...patterns],
+    {
+      cwd,
+      env: gitEnv(),
+    },
   );
   return stdout
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
+}
+
+export async function gitListTaskBranches(cwd: string, prefix: string): Promise<string[]> {
+  return await gitListBranchesByPrefixes(cwd, [prefix]);
 }

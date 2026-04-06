@@ -1,5 +1,7 @@
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+import type { TaskData } from "../../backends/task-backend.js";
 import { resolveBaseBranch } from "@agentplaneorg/core";
 
 import { mapBackendError } from "../../cli/error-map.js";
@@ -8,21 +10,120 @@ import { CliError } from "../../shared/errors.js";
 import { ensureGitClean } from "../guard/index.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { gitDiffNames } from "../shared/git-diff.js";
-import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
+import { gitBranchExists, gitCurrentBranch, gitIsAncestor } from "../shared/git-ops.js";
 import {
   findWorktreeForBranch,
-  gitListTaskBranches,
+  gitListBranchesByPrefixes,
+  parseTaskIdFromCloseBranch,
   parseTaskIdFromBranch,
 } from "../shared/git-worktree.js";
 import { isPathWithin, resolvePathFallback } from "../shared/path.js";
+import { parsePrMeta } from "../shared/pr-meta.js";
 import {
-  listTaskProjection,
+  loadTaskFromContext,
   loadCommandContext,
   type CommandContext,
 } from "../shared/task-backend.js";
 
 import { archivePrArtifacts } from "./internal/archive-pr.js";
 const output = createCliEmitter();
+
+type CleanupBranchKind = "task" | "task-close";
+
+type CleanupCandidate = {
+  taskId: string;
+  branch: string;
+  worktreePath: string | null;
+};
+
+function resolveCleanupBranchTaskId(opts: {
+  branch: string;
+  prefix: string;
+}): { taskId: string; kind: CleanupBranchKind } | null {
+  const taskId = parseTaskIdFromBranch(opts.prefix, opts.branch);
+  if (taskId) return { taskId, kind: "task" };
+  const closeTaskId = parseTaskIdFromCloseBranch(opts.branch);
+  if (closeTaskId) return { taskId: closeTaskId, kind: "task-close" };
+  return null;
+}
+
+async function readCleanupPrMetaIfPresent(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  taskId: string;
+}) {
+  const metaPath = path.join(opts.gitRoot, opts.workflowDir, opts.taskId, "pr", "meta.json");
+  try {
+    const raw = await readFile(metaPath, "utf8");
+    return parsePrMeta(raw, opts.taskId);
+  } catch {
+    return null;
+  }
+}
+
+async function taskLifecycleIsOnBase(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  baseBranch: string;
+  task: TaskData;
+  taskId: string;
+}): Promise<boolean> {
+  const taskCommitHash = opts.task.commit?.hash?.trim() ?? "";
+  if (taskCommitHash && (await gitIsAncestor(opts.gitRoot, taskCommitHash, opts.baseBranch))) {
+    return true;
+  }
+  const meta = await readCleanupPrMetaIfPresent({
+    gitRoot: opts.gitRoot,
+    workflowDir: opts.workflowDir,
+    taskId: opts.taskId,
+  });
+  const mergeCommit = meta?.status === "MERGED" ? (meta.merge_commit?.trim() ?? "") : "";
+  return (
+    mergeCommit.length > 0 && (await gitIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))
+  );
+}
+
+async function resolveCleanupCandidates(opts: {
+  ctx: CommandContext;
+  gitRoot: string;
+  workflowDir: string;
+  baseBranch: string;
+}): Promise<CleanupCandidate[]> {
+  const prefix = opts.ctx.config.branch.task_prefix;
+  const branches = await gitListBranchesByPrefixes(opts.gitRoot, [prefix, "task-close"]);
+  const taskCache = new Map<string, TaskData | null>();
+
+  const candidates: CleanupCandidate[] = [];
+  for (const branch of branches) {
+    if (branch === opts.baseBranch) continue;
+    const target = resolveCleanupBranchTaskId({ branch, prefix });
+    if (!target) continue;
+    let task = taskCache.get(target.taskId) ?? null;
+    if (!taskCache.has(target.taskId)) {
+      try {
+        task = await loadTaskFromContext({ ctx: opts.ctx, taskId: target.taskId });
+      } catch {
+        task = null;
+      }
+      taskCache.set(target.taskId, task);
+    }
+    if (!task) continue;
+    const status = String(task.status || "").toUpperCase();
+    if (status !== "DONE") continue;
+    const diff = await gitDiffNames(opts.gitRoot, opts.baseBranch, branch);
+    const lifecycleOnBase = await taskLifecycleIsOnBase({
+      gitRoot: opts.gitRoot,
+      workflowDir: opts.workflowDir,
+      baseBranch: opts.baseBranch,
+      task,
+      taskId: target.taskId,
+    });
+    if (diff.length > 0 && !lifecycleOnBase) continue;
+    const worktreePath = await findWorktreeForBranch(opts.gitRoot, branch);
+    candidates.push({ taskId: target.taskId, branch, worktreePath });
+  }
+  return candidates;
+}
 
 export async function cmdCleanupMerged(opts: {
   ctx?: CommandContext;
@@ -80,26 +181,12 @@ export async function cmdCleanupMerged(opts: {
     }
 
     const repoRoot = await resolvePathFallback(resolved.gitRoot);
-
-    const tasks = (await listTaskProjection(ctx)) ?? [];
-    const tasksById = new Map(tasks.map((task) => [task.id, task]));
-    const prefix = config.branch.task_prefix;
-    const branches = await gitListTaskBranches(resolved.gitRoot, prefix);
-
-    const candidates: { taskId: string; branch: string; worktreePath: string | null }[] = [];
-    for (const branch of branches) {
-      if (branch === baseBranch) continue;
-      const taskId = parseTaskIdFromBranch(prefix, branch);
-      if (!taskId) continue;
-      const task = tasksById.get(taskId);
-      if (!task) continue;
-      const status = String(task.status || "").toUpperCase();
-      if (status !== "DONE") continue;
-      const diff = await gitDiffNames(resolved.gitRoot, baseBranch, branch);
-      if (diff.length > 0) continue;
-      const worktreePath = await findWorktreeForBranch(resolved.gitRoot, branch);
-      candidates.push({ taskId, branch, worktreePath });
-    }
+    const candidates = await resolveCleanupCandidates({
+      ctx,
+      gitRoot: resolved.gitRoot,
+      workflowDir: config.paths.workflow_dir,
+      baseBranch,
+    });
 
     const sortedCandidates = candidates.toSorted((a, b) => a.taskId.localeCompare(b.taskId));
 

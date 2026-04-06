@@ -51,6 +51,24 @@ export async function gitBranchExists(cwd: string, branch: string): Promise<bool
   }
 }
 
+export async function gitIsAncestor(
+  cwd: string,
+  maybeAncestor: string,
+  descendant: string,
+): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["merge-base", "--is-ancestor", maybeAncestor, descendant], {
+      cwd,
+      env: gitEnv(),
+    });
+    return true;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1) return false;
+    throw err;
+  }
+}
+
 export async function gitBranchUpstream(cwd: string, branch: string): Promise<string | null> {
   try {
     const { stdout } = await execFileAsync(

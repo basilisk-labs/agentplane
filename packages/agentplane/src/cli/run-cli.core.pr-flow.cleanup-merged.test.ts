@@ -58,6 +58,15 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
+function markTaskDoneWithCommit(readmeText: string, hash: string, message: string): string {
+  const commitBlock = `commit:\n  hash: "${hash}"\n  message: "${message}"`;
+  const withDoneStatus = readmeText.replace('status: "TODO"', 'status: "DONE"');
+  if (withDoneStatus.includes("commit: null")) {
+    return withDoneStatus.replace("commit: null", commitBlock);
+  }
+  return withDoneStatus.replace("comments:", `${commitBlock}\ncomments:`);
+}
+
 describe("runCli", () => {
   const CLEANUP_MERGED_LIST_TIMEOUT_MS = 120_000;
   const CLEANUP_MERGED_MUTATION_TIMEOUT_MS = 120_000;
@@ -424,6 +433,172 @@ describe("runCli", () => {
       expect(entries.length).toBe(1);
       expect(await pathExists(path.join(archiveRoot, entries[0]))).toBe(true);
       expect(await pathExists(prDir)).toBe(false);
+    },
+    CLEANUP_MERGED_MUTATION_TIMEOUT_MS,
+  );
+
+  it(
+    "cleanup merged deletes done task branches when the integrated commit is already on base",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await configureGitUser(root);
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+
+      await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+      await commitAll(root, "chore base");
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Cleanup integrated tail",
+          "--description",
+          "cleanup candidate",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await commitAll(root, `chore ${taskId} scaffold`);
+
+      const integratedRev = await promisify(execFile)("git", ["rev-parse", "HEAD"], { cwd: root });
+      const integratedHash = integratedRev.stdout.trim();
+      const task = await readTask({ cwd: root, taskId });
+      const readmeText = await readFile(task.readmePath, "utf8");
+      await writeFile(
+        task.readmePath,
+        markTaskDoneWithCommit(readmeText, integratedHash, "integrated on main"),
+        "utf8",
+      );
+      await commitAll(root, `chore ${taskId} done`);
+
+      const branch = `task/${taskId}/cleanup-integrated-tail`;
+      const worktreePath = path.join(
+        root,
+        ".agentplane",
+        "worktrees",
+        `${taskId}-cleanup-integrated-tail`,
+      );
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      const prDir = path.join(worktreePath, ".agentplane", "tasks", taskId, "pr");
+      await mkdir(prDir, { recursive: true });
+      await writeFile(path.join(prDir, "review.md"), "stale task tail\n", "utf8");
+      await commitAll(worktreePath, `chore ${taskId} stale pr tail`);
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["cleanup", "merged", "--yes", "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain(`branch=${branch}`);
+      } finally {
+        io.restore();
+      }
+
+      expect(await gitBranchExists(root, branch)).toBe(false);
+      expect(await pathExists(worktreePath)).toBe(false);
+    },
+    CLEANUP_MERGED_MUTATION_TIMEOUT_MS,
+  );
+
+  it(
+    "cleanup merged deletes task-close branches for done tasks whose closure commit is already on base",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await configureGitUser(root);
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+
+      await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+      await commitAll(root, "chore base");
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Cleanup close branch",
+          "--description",
+          "cleanup candidate",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await commitAll(root, `chore ${taskId} scaffold`);
+
+      const integratedRev = await promisify(execFile)("git", ["rev-parse", "HEAD"], { cwd: root });
+      const integratedHash = integratedRev.stdout.trim();
+      const task = await readTask({ cwd: root, taskId });
+      const readmeText = await readFile(task.readmePath, "utf8");
+      await writeFile(
+        task.readmePath,
+        markTaskDoneWithCommit(readmeText, integratedHash, "closure recorded on main"),
+        "utf8",
+      );
+      await commitAll(root, `chore ${taskId} done`);
+
+      const branch = `task-close/${taskId}/1234567890ab`;
+      const worktreePath = path.join(
+        root,
+        ".agentplane",
+        "worktrees",
+        `${taskId}-cleanup-close-branch`,
+      );
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      const prDir = path.join(worktreePath, ".agentplane", "tasks", taskId, "pr");
+      await mkdir(prDir, { recursive: true });
+      await writeFile(path.join(prDir, "meta.json"), "{\n}\n", "utf8");
+      await commitAll(worktreePath, `chore ${taskId} close branch tail`);
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["cleanup", "merged", "--yes", "--archive", "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain(`branch=${branch}`);
+      } finally {
+        io.restore();
+      }
+
+      expect(await gitBranchExists(root, branch)).toBe(false);
+      expect(await pathExists(worktreePath)).toBe(false);
     },
     CLEANUP_MERGED_MUTATION_TIMEOUT_MS,
   );
