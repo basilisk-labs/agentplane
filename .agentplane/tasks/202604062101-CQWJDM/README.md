@@ -1,10 +1,11 @@
 ---
 id: "202604062101-CQWJDM"
 title: "Prevent verify from mutating incidents registry"
-status: "TODO"
+result_summary: "Merged via PR #92."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,8 +23,13 @@ verification:
   updated_at: "2026-04-06T21:41:40.023Z"
   updated_by: "CODER"
   note: "Focused incidents.md regression tests and eslint passed on the committed PR sync isolation fix; scope: CQWJDM verify/pr-open incidents boundary."
-commit: null
-comments: []
+commit:
+  hash: "162f7b683bc263bea5e0cb848afc4ed7cea20493"
+  message: "workflow: Prevent verify from mutating incidents registry (CQWJDM) (#92)"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #92 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "verify"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused incidents.md regression tests and eslint passed on the committed PR sync isolation fix; scope: CQWJDM verify/pr-open incidents boundary."
+  -
+    type: "status"
+    at: "2026-04-06T22:14:37.966Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #92 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-06T21:41:40.045Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T22:14:37.972Z"
+doc_updated_by: "INTEGRATOR"
 description: "Lock the workflow boundary so verification and PR artifact sync never mutate .agentplane/policy/incidents.md; add regression coverage for branch_pr verify paths."
 sections:
   Summary: |-
