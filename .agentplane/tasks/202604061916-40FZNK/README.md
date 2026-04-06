@@ -4,7 +4,7 @@ title: "Detect stale open PR drift for DONE tasks"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -18,7 +18,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T19:52:44.544Z"
+  updated_at: "2026-04-06T19:56:14.162Z"
   updated_by: "CODER"
   note: "Doctor regression test passed for DONE branch_pr tasks with open PR artifacts; eslint passed; detection no longer depends on a surviving local task branch."
 commit: null
@@ -40,8 +40,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Doctor regression test passed for DONE branch_pr tasks with open PR artifacts; eslint passed; detection no longer depends on a surviving local task branch."
+  -
+    type: "verify"
+    at: "2026-04-06T19:56:14.162Z"
+    author: "CODER"
+    state: "ok"
+    note: "Doctor regression test passed for DONE branch_pr tasks with open PR artifacts; eslint passed; detection no longer depends on a surviving local task branch."
 doc_version: 3
-doc_updated_at: "2026-04-06T19:52:44.550Z"
+doc_updated_at: "2026-04-06T19:56:14.172Z"
 doc_updated_by: "CODER"
 description: "Surface DONE tasks whose GitHub PRs remain open and diverged so operators can reconcile stale remote task branches before they linger for weeks."
 sections:
@@ -54,11 +60,9 @@ sections:
     - Out of scope: unrelated refactors not required for "Detect stale open PR drift for DONE tasks".
   Plan: "1. Trace how doctor and branch_pr reconciliation currently detect stale shipped tasks and what they miss for DONE tasks with open diverged PRs. 2. Add a low-noise detection path that surfaces this drift before it lingers. 3. Lock the behavior with CLI or command tests. 4. Verify with targeted tests and a realistic stale-PR fixture."
   Verify Steps: |-
-    <!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-    
-    1. <Action>. Expected: <observable result>.
-    2. <Action>. Expected: <observable result>.
-    3. <Action>. Expected: <observable result>.
+    1. Run `bun test packages/agentplane/src/commands/doctor.command.test.ts -t "warns when a DONE branch_pr task still has open PR artifacts"`. Expected: the targeted doctor regression test passes and the warning text mentions stale open PR artifacts for DONE tasks.
+    2. Run `bun x eslint packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts`. Expected: lint exits 0.
+    3. Run `agentplane doctor` in a branch_pr repo with unreconciled DONE PR metadata. Expected: doctor surfaces a warning before operators drift into manual GitHub cleanup.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-06T19:52:44.544Z — VERIFY — ok
@@ -68,6 +72,14 @@ sections:
     Note: Doctor regression test passed for DONE branch_pr tasks with open PR artifacts; eslint passed; detection no longer depends on a surviving local task branch.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T19:52:24.952Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
+    
+    ### 2026-04-06T19:56:14.162Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Doctor regression test passed for DONE branch_pr tasks with open PR artifacts; eslint passed; detection no longer depends on a surviving local task branch.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T19:55:54.041Z, excerpt_hash=sha256:ea7c1bafc06309b1adc8fb837df1524aa60c97311f1c81a2fc429e4187393770
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -96,11 +108,9 @@ Surface DONE tasks whose GitHub PRs remain open and diverged so operators can re
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. <Action>. Expected: <observable result>.
-2. <Action>. Expected: <observable result>.
-3. <Action>. Expected: <observable result>.
+1. Run `bun test packages/agentplane/src/commands/doctor.command.test.ts -t "warns when a DONE branch_pr task still has open PR artifacts"`. Expected: the targeted doctor regression test passes and the warning text mentions stale open PR artifacts for DONE tasks.
+2. Run `bun x eslint packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/task/hosted-merge-sync.ts`. Expected: lint exits 0.
+3. Run `agentplane doctor` in a branch_pr repo with unreconciled DONE PR metadata. Expected: doctor surfaces a warning before operators drift into manual GitHub cleanup.
 
 ## Verification
 
@@ -112,6 +122,14 @@ By: CODER
 Note: Doctor regression test passed for DONE branch_pr tasks with open PR artifacts; eslint passed; detection no longer depends on a surviving local task branch.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T19:52:24.952Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
+
+### 2026-04-06T19:56:14.162Z — VERIFY — ok
+
+By: CODER
+
+Note: Doctor regression test passed for DONE branch_pr tasks with open PR artifacts; eslint passed; detection no longer depends on a surviving local task branch.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T19:55:54.041Z, excerpt_hash=sha256:ea7c1bafc06309b1adc8fb837df1524aa60c97311f1c81a2fc429e4187393770
 
 <!-- END VERIFICATION RESULTS -->
 
