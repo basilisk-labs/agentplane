@@ -1,10 +1,11 @@
 ---
 id: "202604062101-XYXG7Y"
 title: "Retry hosted merge sync gh fallback on transient transport errors"
-status: "TODO"
+result_summary: "integrate: squash task/202604062101-XYXG7Y/hosted-merge-retry"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -22,8 +23,13 @@ verification:
   updated_at: "2026-04-06T21:33:07.730Z"
   updated_by: "CODER"
   note: "Focused vitest, eslint, and prettier check passed on the committed CI parity fix for hosted-merge-sync.test.ts; scope: XYXG7Y hosted merge sync retry path."
-commit: null
-comments: []
+commit:
+  hash: "4dbb69711f7a7c7bdcf2f1d9446c1cd8cfcc2c47"
+  message: "📝 XYXG7Y task: refresh PR artifacts after CI parity fix"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604062101-XYXG7Y/pr."
 events:
   -
     type: "verify"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused vitest, eslint, and prettier check passed on the committed CI parity fix for hosted-merge-sync.test.ts; scope: XYXG7Y hosted merge sync retry path."
+  -
+    type: "status"
+    at: "2026-04-06T21:46:49.800Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604062101-XYXG7Y/pr."
 doc_version: 3
-doc_updated_at: "2026-04-06T21:33:07.751Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T21:46:49.807Z"
+doc_updated_by: "INTEGRATOR"
 description: "Harden the gh-based hosted merge sync fallback by retrying transient EOF/TLS failures so reconcile paths survive flaky GitHub transport without manual loops."
 sections:
   Summary: |-

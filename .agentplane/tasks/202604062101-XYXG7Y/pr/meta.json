@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604062101-XYXG7Y/hosted-merge-retry",
   "created_at": "2026-04-06T21:06:56.760Z",
-  "head_sha": "116e33f8484b8ba0d4fde618b212724474d064eb",
+  "head_sha": "e1163c1ee6b44eb0ee9bf8eabd5cf67da1c94981",
   "last_verified_at": "2026-04-06T21:33:07.730Z",
   "last_verified_sha": "116e33f8484b8ba0d4fde618b212724474d064eb",
+  "merge_commit": "4dbb69711f7a7c7bdcf2f1d9446c1cd8cfcc2c47",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-06T21:46:49.752Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604062101-XYXG7Y",
-  "updated_at": "2026-04-06T21:33:07.801Z",
+  "updated_at": "2026-04-06T21:46:49.752Z",
   "verify": {
     "status": "pass"
   }
