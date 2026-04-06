@@ -130,7 +130,7 @@ describe("syncHostedMergedTasks", () => {
 
   it("retries transient gh transport failures before succeeding", async () => {
     mockedExecFileAsync
-      .mockRejectedValueOnce(new Error("gh: Post \"https://api.github.com/graphql\": EOF"))
+      .mockRejectedValueOnce(new Error('gh: Post "https://api.github.com/graphql": EOF'))
       .mockResolvedValueOnce({
         stdout: JSON.stringify([
           {
