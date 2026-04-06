@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604061916-2860KH/branch-pr-incidents",
+  "created_at": "2026-04-06T19:44:19.445Z",
+  "head_sha": "ca7c8399d6b53052f2fa09da7e6732cabd2b258b",
+  "last_verified_at": "2026-04-06T19:52:44.639Z",
+  "last_verified_sha": "b8428763f64fef846de4dce142c90334515d49f5",
+  "schema_version": 1,
+  "task_id": "202604061916-2860KH",
+  "updated_at": "2026-04-06T19:54:27.503Z",
+  "verify": {
+    "status": "pass"
+  }
+}
