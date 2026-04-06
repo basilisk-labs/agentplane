@@ -4,7 +4,7 @@ title: "Prevent verify from mutating incidents registry"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T21:17:10.690Z"
+  updated_at: "2026-04-06T21:41:40.023Z"
   updated_by: "CODER"
-  note: "Verification now locks the whole PR artifact sync boundary, not only verify. Commands: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t incidents.md; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: both verify and pr open keep incidents.md unchanged, and PR sync restores the registry even if hidden side effects try to mutate it. Scope: PR artifact sync isolation for verify/open flows plus the narrowed update-only sync path when artifacts already exist."
+  note: "Focused incidents.md regression tests and eslint passed on the committed PR sync isolation fix; scope: CQWJDM verify/pr-open incidents boundary."
 commit: null
 comments: []
 events:
@@ -37,8 +37,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification now locks the whole PR artifact sync boundary, not only verify. Commands: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t incidents.md; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: both verify and pr open keep incidents.md unchanged, and PR sync restores the registry even if hidden side effects try to mutate it. Scope: PR artifact sync isolation for verify/open flows plus the narrowed update-only sync path when artifacts already exist."
+  -
+    type: "verify"
+    at: "2026-04-06T21:41:40.023Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused incidents.md regression tests and eslint passed on the committed PR sync isolation fix; scope: CQWJDM verify/pr-open incidents boundary."
 doc_version: 3
-doc_updated_at: "2026-04-06T21:17:10.705Z"
+doc_updated_at: "2026-04-06T21:41:40.045Z"
 doc_updated_by: "CODER"
 description: "Lock the workflow boundary so verification and PR artifact sync never mutate .agentplane/policy/incidents.md; add regression coverage for branch_pr verify paths."
 sections:
@@ -71,6 +77,14 @@ sections:
     Note: Verification now locks the whole PR artifact sync boundary, not only verify. Commands: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t incidents.md; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: both verify and pr open keep incidents.md unchanged, and PR sync restores the registry even if hidden side effects try to mutate it. Scope: PR artifact sync isolation for verify/open flows plus the narrowed update-only sync path when artifacts already exist.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:06:39.088Z, excerpt_hash=sha256:452c45dacb0e8acbe28f7d3ccbd9bed04c4e400d73d6ed99994e4d393d199c24
+    
+    ### 2026-04-06T21:41:40.023Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused incidents.md regression tests and eslint passed on the committed PR sync isolation fix; scope: CQWJDM verify/pr-open incidents boundary.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:17:10.705Z, excerpt_hash=sha256:452c45dacb0e8acbe28f7d3ccbd9bed04c4e400d73d6ed99994e4d393d199c24
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -118,6 +132,14 @@ By: CODER
 Note: Verification now locks the whole PR artifact sync boundary, not only verify. Commands: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t incidents.md; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: both verify and pr open keep incidents.md unchanged, and PR sync restores the registry even if hidden side effects try to mutate it. Scope: PR artifact sync isolation for verify/open flows plus the narrowed update-only sync path when artifacts already exist.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:06:39.088Z, excerpt_hash=sha256:452c45dacb0e8acbe28f7d3ccbd9bed04c4e400d73d6ed99994e4d393d199c24
+
+### 2026-04-06T21:41:40.023Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused incidents.md regression tests and eslint passed on the committed PR sync isolation fix; scope: CQWJDM verify/pr-open incidents boundary.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:17:10.705Z, excerpt_hash=sha256:452c45dacb0e8acbe28f7d3ccbd9bed04c4e400d73d6ed99994e4d393d199c24
 
 <!-- END VERIFICATION RESULTS -->
 
