@@ -1,10 +1,11 @@
 ---
 id: "202604032235-G375FB"
 title: "Fix branch_pr stale cleanup and reconcile hanging lifecycle tails"
-status: "DOING"
+result_summary: "Merged via PR #71."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-06T16:33:41.000Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/branch/cleanup-merged.ts packages/agentplane/src/commands/shared/git-ops.ts packages/agentplane/src/commands/shared/git-worktree.ts. Result: pass. Evidence: 17 cleanup-merged tests passed; targeted eslint on cleanup-merged/git-ops/git-worktree files passed; branch worktree remains clean after verification."
-commit: null
+commit:
+  hash: "3e81aa0328e0006f769d1f8176e07125720e0c32"
+  message: "fix: harden branch_pr cleanup tails (#71)"
 comments:
   -
     author: "CODER"
     body: "Start: audit the stale branch_pr leftovers from the recent framework/release work, fix cleanup candidate resolution for merged task and task-close branches, add regressions, then clean the safe local tails exposed by that audit."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #71 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/branch/cleanup-merged.ts packages/agentplane/src/commands/shared/git-ops.ts packages/agentplane/src/commands/shared/git-worktree.ts. Result: pass. Evidence: 17 cleanup-merged tests passed; targeted eslint on cleanup-merged/git-ops/git-worktree files passed; branch worktree remains clean after verification."
+  -
+    type: "status"
+    at: "2026-04-06T16:47:50.297Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #71 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-06T16:33:41.004Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T16:47:50.304Z"
+doc_updated_by: "INTEGRATOR"
 description: "Repair local branch_pr cleanup so merged task/task-close leftovers are detected and removable, add regressions, then clean the current repository's stale local branches/worktrees and reconcile any hanging lifecycle state exposed by the audit."
 sections:
   Summary: |-
