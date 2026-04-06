@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604061727-M74EFC/README.md    | 189 +++++++++++++++++++++
+ .../tasks/202604061727-M74EFC/pr/diffstat.txt      |   4 +
+ .../tasks/202604061727-M74EFC/pr/github-body.md    |  50 ++++++
+ .../tasks/202604061727-M74EFC/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604061727-M74EFC/pr/meta.json |  14 ++
+ .../tasks/202604061727-M74EFC/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604061727-M74EFC/pr/review.md |  57 +++++++
+ .../tasks/202604061727-M74EFC/pr/verify.log        |   0
+ .../src/cli/bootstrap-framework-dev-script.test.ts |  57 ++++++-
+ scripts/bootstrap-framework-dev.mjs                |  40 ++++-
+ 10 files changed, 404 insertions(+), 8 deletions(-)
