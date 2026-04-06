@@ -89,3 +89,11 @@ This is the single file for incident-derived and situational policy rules.
   evidence: tasks 202603081315-Y4D6AE, 202603081538-GF7P9C; docs/developer/cli-bug-ledger-v0-3-x.mdx entry 3
   enforcement: test + release mutation
   state: stabilized
+- id: INC-20260407-01
+  date: 2026-04-07
+  scope: task workflow recovery loop
+  failure: lifecycle outcome messaging was too quiet, fresh worktree bootstrap re-entered network setup instead of reusing common-root assets, and hosted-close inherited the wrong commit identity, making recovery paths noisy and ambiguous.
+  rule: lifecycle commands MUST report incident outcome explicitly; framework bootstrap MUST reuse valid common-root dependencies and recipes in fresh worktrees; hosted-close MUST use DEUS <deus@agentplane.org> as both author and committer identity.
+  evidence: tasks 202604062101-7WG8WG, 202604061727-M74EFC, 202603301808-WRE297; commits e14d4728, 4eee8254, acd0c2b45a43
+  enforcement: cli contract test + bootstrap script test + workflow contract test
+  state: promoted

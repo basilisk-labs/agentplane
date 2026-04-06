@@ -45,22 +45,12 @@ Make finish, integrate, and hosted-close report whether incidents were promoted 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T21:11:54.261Z
+- Updated: 2026-04-06T21:12:33.298Z
 - Branch: task/202604062101-7WG8WG/incident-outcome-messaging
-- Head: e14d47287c99
+- Head: e3eb8363a8fb
 
 ```text
- .agentplane/tasks/202604062101-7WG8WG/README.md    | 122 +++++++++++++++++++++
- .../src/cli/run-cli.core.pr-flow.integrate.test.ts |   1 +
- .../src/cli/run-cli.core.task-hosted-close.test.ts |   1 +
- .../agentplane/src/cli/run-cli.core.tasks.test.ts  |   2 +-
- .../agentplane/src/commands/incidents/shared.ts    |   6 +
- .../pr/integrate/internal/finalize.test.ts         |  24 +++-
- .../src/commands/pr/integrate/internal/finalize.ts |   8 +-
- packages/agentplane/src/commands/task/finish.ts    |   8 +-
- .../src/commands/task/finish.unit.test.ts          |  52 +++++++++
- .../src/commands/task/hosted-close.command.ts      |   7 +-
- 10 files changed, 219 insertions(+), 12 deletions(-)
+No changes detected.
 ```
 
 </details>
