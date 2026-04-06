@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, rm, symlink, writeFile } from "node:fs/promises";
+import { lstat, mkdtemp, mkdir, readlink, rm, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -7,9 +7,16 @@ import { afterEach, describe, expect, it } from "vitest";
 const tempRoots: string[] = [];
 const workspaceRoot = process.cwd();
 type FrameworkDevExec = (repoRoot: string, cmd: string, args: string[]) => void;
+type BootstrapOptions = {
+  resolveCommonRepoRoot?: (cwd?: string) => string;
+};
 type BootstrapModule = {
   resolveRepoRoot: (cwd?: string) => string;
-  runFrameworkDevBootstrap: (cwd?: string, exec?: FrameworkDevExec) => void;
+  runFrameworkDevBootstrap: (
+    cwd?: string,
+    exec?: FrameworkDevExec,
+    options?: BootstrapOptions,
+  ) => void;
 };
 const recordCallExec = (_repoRoot: string, cmd: string, args: string[], calls: string[]) => {
   calls.push([cmd, ...args].join(" "));
@@ -68,7 +75,9 @@ describe("bootstrap-framework-dev script", () => {
     const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
       recordCallExec(currentRepoRoot, cmd, args, calls);
 
-    runFrameworkDevBootstrap(repoRoot, exec);
+    runFrameworkDevBootstrap(repoRoot, exec, {
+      resolveCommonRepoRoot: () => repoRoot,
+    });
 
     expect(calls).toEqual([
       "bun install",
@@ -89,7 +98,9 @@ describe("bootstrap-framework-dev script", () => {
     const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
       recordCallExec(currentRepoRoot, cmd, args, calls);
 
-    runFrameworkDevBootstrap(repoRoot, exec);
+    runFrameworkDevBootstrap(repoRoot, exec, {
+      resolveCommonRepoRoot: () => repoRoot,
+    });
 
     expect(calls).toEqual([
       "bun run --filter=@agentplaneorg/core build",
@@ -98,12 +109,44 @@ describe("bootstrap-framework-dev script", () => {
     ]);
   });
 
+  it("reuses common-root dependencies and recipes for a fresh worktree checkout", async () => {
+    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
+    const commonRepoRoot = await mkFrameworkRepo();
+    const repoRoot = await mkFrameworkRepo();
+    await symlink(
+      path.join(workspaceRoot, "node_modules"),
+      path.join(commonRepoRoot, "node_modules"),
+    );
+    await mkdir(path.join(commonRepoRoot, "agentplane-recipes"), { recursive: true });
+    await writeFile(path.join(commonRepoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
+    const calls: string[] = [];
+    const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
+      recordCallExec(currentRepoRoot, cmd, args, calls);
+
+    runFrameworkDevBootstrap(repoRoot, exec, {
+      resolveCommonRepoRoot: () => commonRepoRoot,
+    });
+
+    expect(calls).toEqual([
+      "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=agentplane build",
+      "node packages/agentplane/bin/agentplane.js runtime explain",
+    ]);
+    const nodeModulesStat = await lstat(path.join(repoRoot, "node_modules"));
+    expect(nodeModulesStat.isSymbolicLink()).toBe(true);
+    expect(await readlink(path.join(repoRoot, "node_modules"))).toBe(
+      path.join(commonRepoRoot, "node_modules"),
+    );
+  });
+
   it("surfaces a precise error when the recipes gitlink cannot be initialized", async () => {
     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
     const repoRoot = await mkFrameworkRepo();
 
-    expect(() => runFrameworkDevBootstrap(repoRoot, gitFailureExec)).toThrow(
-      /Failed to initialize agentplane-recipes/,
-    );
+    expect(() =>
+      runFrameworkDevBootstrap(repoRoot, gitFailureExec, {
+        resolveCommonRepoRoot: () => repoRoot,
+      }),
+    ).toThrow(/Failed to initialize agentplane-recipes/);
   });
 });
