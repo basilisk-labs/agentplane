@@ -45,22 +45,22 @@ Append confirmed external operational lessons from the recent GitHub transport/r
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T23:46:48.361Z
+- Updated: 2026-04-06T23:59:23.792Z
 - Branch: task/202604062309-EXTXG1/external-incident-backfill
-- Head: 790cc03e3695
+- Head: 6993f6364495
 
 ```text
- .agentplane/policy/incidents.md                    |  48 ++++---
- .agentplane/tasks/202604062309-EXTXG1/README.md    | 157 +++++++++++++++++++++
+ .agentplane/policy/incidents.md                    |  46 +++---
+ .agentplane/tasks/202604062309-EXTXG1/README.md    | 179 +++++++++++++++++++++
  .../tasks/202604062309-EXTXG1/pr/diffstat.txt      |  11 ++
- .../tasks/202604062309-EXTXG1/pr/github-body.md    |  60 ++++++++
+ .../tasks/202604062309-EXTXG1/pr/github-body.md    |  60 +++++++
  .../tasks/202604062309-EXTXG1/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604062309-EXTXG1/pr/meta.json |  14 ++
  .../tasks/202604062309-EXTXG1/pr/notes.jsonl       |   0
- .agentplane/tasks/202604062309-EXTXG1/pr/review.md |  67 +++++++++
+ .agentplane/tasks/202604062309-EXTXG1/pr/review.md |  67 ++++++++
  .../tasks/202604062309-EXTXG1/pr/verify.log        |   0
  packages/agentplane/assets/policy/incidents.md     |  46 +++---
- 10 files changed, 366 insertions(+), 38 deletions(-)
+ 10 files changed, 388 insertions(+), 36 deletions(-)
 ```
 
 </details>

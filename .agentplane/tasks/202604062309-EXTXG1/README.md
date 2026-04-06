@@ -1,10 +1,10 @@
 ---
 id: "202604062309-EXTXG1"
 title: "Promote confirmed external workflow incidents into incidents registry"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,7 +24,10 @@ verification:
   updated_by: "DOCS"
   note: "Verified: aligned the canonical incidents asset with agents:check formatting expectations and re-ran agents:sync/check successfully."
 commit: null
-comments: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: promote confirmed external incidents into the canonical registry assets and sync generated policy files."
 events:
   -
     type: "verify"
@@ -50,8 +53,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: aligned the canonical incidents asset with agents:check formatting expectations and re-ran agents:sync/check successfully."
+  -
+    type: "status"
+    at: "2026-04-06T23:59:23.744Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: promote confirmed external incidents into the canonical registry assets and sync generated policy files."
 doc_version: 3
-doc_updated_at: "2026-04-06T23:46:48.337Z"
+doc_updated_at: "2026-04-06T23:59:23.758Z"
 doc_updated_by: "DOCS"
 description: "Append confirmed external operational lessons from the recent GitHub transport/reconciliation cycle into .agentplane/policy/incidents.md with concrete rules and evidence."
 sections:
