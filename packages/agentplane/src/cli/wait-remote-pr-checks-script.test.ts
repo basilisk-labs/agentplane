@@ -160,12 +160,17 @@ describe("wait-remote-pr-checks script", () => {
     expect(result.stdout).toContain("required checks passed for PR #123");
 
     const callLogText = await readFile(callLog, "utf8");
-    expect(callLogText).toContain(`["repo","view","--json","nameWithOwner"]`);
     expect(callLogText).toContain(
       `["pr","view","--repo","basilisk-labs/agentplane","--json","number,headRefOid,baseRefName,url,title"]`,
     );
     expect(callLogText).toContain(
       `["api","repos/basilisk-labs/agentplane/branches/main/protection"]`,
+    );
+    expect(callLogText).toContain(
+      `["api","repos/basilisk-labs/agentplane/commits/head-sha-1/check-runs"]`,
+    );
+    expect(callLogText).toContain(
+      `["api","repos/basilisk-labs/agentplane/commits/head-sha-1/status"]`,
     );
   });
 

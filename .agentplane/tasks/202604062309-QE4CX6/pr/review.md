@@ -45,12 +45,22 @@ Stop delegating workflow:wait-remote-checks to gh pr checks --watch and use a mo
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T23:23:06.350Z
+- Updated: 2026-04-06T23:34:25.147Z
 - Branch: task/202604062309-QE4CX6/remote-check-polling
-- Head: 61ce80966f00
+- Head: 30d5970ebafd
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604062309-QE4CX6/README.md    | 117 ++++++
+ .../tasks/202604062309-QE4CX6/pr/diffstat.txt      |   0
+ .../tasks/202604062309-QE4CX6/pr/github-body.md    |  50 +++
+ .../tasks/202604062309-QE4CX6/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604062309-QE4CX6/pr/meta.json |  14 +
+ .../tasks/202604062309-QE4CX6/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604062309-QE4CX6/pr/review.md |  57 +++
+ .../tasks/202604062309-QE4CX6/pr/verify.log        |   0
+ .../src/cli/wait-remote-pr-checks-script.test.ts   | 190 ++++++---
+ scripts/wait-remote-pr-checks.mjs                  | 424 +++++++++++++++++++--
+ 10 files changed, 774 insertions(+), 79 deletions(-)
 ```
 
 </details>
