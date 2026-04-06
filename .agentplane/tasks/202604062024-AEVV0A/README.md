@@ -1,10 +1,11 @@
 ---
 id: "202604062024-AEVV0A"
 title: "Infer task context for commit-msg hook from task branch"
-status: "DOING"
+result_summary: "integrate: squash task/202604062024-AEVV0A/commit-msg-task-context"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-06T20:28:16.807Z"
   updated_by: "CODER"
   note: "Commit-msg hook now infers task context from task branches when AGENTPLANE_TASK_ID is unset; targeted hook vitest and eslint passed."
-commit: null
+commit:
+  hash: "9d2080e37507bc2f65d36bbfc66824d09079007e"
+  message: "📝 AEVV0A task: refresh PR metadata after smoke commit"
 comments:
   -
     author: "CODER"
     body: "Start: infer task context from task branch names inside commit-msg and refresh PR artifacts after the fix commit."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604062024-AEVV0A/pr."
 events:
   -
     type: "verify"
@@ -40,9 +46,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: infer task context from task branch names inside commit-msg and refresh PR artifacts after the fix commit."
+  -
+    type: "status"
+    at: "2026-04-06T20:48:14.686Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604062024-AEVV0A/pr."
 doc_version: 3
-doc_updated_at: "2026-04-06T20:35:29.726Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T20:48:14.694Z"
+doc_updated_by: "INTEGRATOR"
 description: "Let task-like commit subjects pass in task branches/worktrees even when AGENTPLANE_TASK_ID is unset by deriving the task id from the current branch or workspace context."
 sections:
   Summary: |-
