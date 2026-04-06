@@ -1,11 +1,11 @@
- .agentplane/tasks/202604062101-XYXG7Y/README.md    | 172 +++++++++++++++++++++
- .../tasks/202604062101-XYXG7Y/pr/diffstat.txt      |   0
- .../tasks/202604062101-XYXG7Y/pr/github-body.md    |  50 ++++++
+ .agentplane/tasks/202604062101-XYXG7Y/README.md    | 152 +++++++++++++++++++++
+ .../tasks/202604062101-XYXG7Y/pr/diffstat.txt      |  11 ++
+ .../tasks/202604062101-XYXG7Y/pr/github-body.md    |  60 ++++++++
  .../tasks/202604062101-XYXG7Y/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604062101-XYXG7Y/pr/meta.json |  14 ++
  .../tasks/202604062101-XYXG7Y/pr/notes.jsonl       |   0
- .agentplane/tasks/202604062101-XYXG7Y/pr/review.md |  57 +++++++
+ .agentplane/tasks/202604062101-XYXG7Y/pr/review.md |  67 +++++++++
  .../tasks/202604062101-XYXG7Y/pr/verify.log        |   0
- .../src/commands/task/hosted-merge-sync.test.ts    |  64 +++++++-
- .../src/commands/task/hosted-merge-sync.ts         | 111 ++++++++++---
- 10 files changed, 447 insertions(+), 22 deletions(-)
+ .../src/commands/task/hosted-merge-sync.test.ts    |  64 ++++++++-
+ .../src/commands/task/hosted-merge-sync.ts         | 111 ++++++++++++---
+ 10 files changed, 458 insertions(+), 22 deletions(-)

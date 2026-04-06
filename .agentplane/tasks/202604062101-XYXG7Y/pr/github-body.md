@@ -20,7 +20,7 @@ Harden the gh-based hosted merge sync fallback by retrying transient EOF/TLS fai
 ### Current Status
 
 - State: ok
-- Note: Focused vitest, eslint, and prettier check passed after formatting hosted-merge-sync.test.ts for CI parity; scope: XYXG7Y hosted merge sync retry path.
+- Note: Focused vitest, eslint, and prettier check passed on the committed CI parity fix for hosted-merge-sync.test.ts; scope: XYXG7Y hosted merge sync retry path.
 
 ## Risks
 
@@ -39,22 +39,22 @@ Harden the gh-based hosted merge sync fallback by retrying transient EOF/TLS fai
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T21:31:56.210Z
+- Updated: 2026-04-06T21:33:07.801Z
 - Branch: task/202604062101-XYXG7Y/hosted-merge-retry
-- Head: b7265667d744
+- Head: 116e33f8484b
 
 ```text
- .agentplane/tasks/202604062101-XYXG7Y/README.md    | 172 +++++++++++++++++++++
- .../tasks/202604062101-XYXG7Y/pr/diffstat.txt      |   0
- .../tasks/202604062101-XYXG7Y/pr/github-body.md    |  50 ++++++
+ .agentplane/tasks/202604062101-XYXG7Y/README.md    | 152 +++++++++++++++++++++
+ .../tasks/202604062101-XYXG7Y/pr/diffstat.txt      |  11 ++
+ .../tasks/202604062101-XYXG7Y/pr/github-body.md    |  60 ++++++++
  .../tasks/202604062101-XYXG7Y/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604062101-XYXG7Y/pr/meta.json |  14 ++
  .../tasks/202604062101-XYXG7Y/pr/notes.jsonl       |   0
- .agentplane/tasks/202604062101-XYXG7Y/pr/review.md |  57 +++++++
+ .agentplane/tasks/202604062101-XYXG7Y/pr/review.md |  67 +++++++++
  .../tasks/202604062101-XYXG7Y/pr/verify.log        |   0
- .../src/commands/task/hosted-merge-sync.test.ts    |  64 +++++++-
- .../src/commands/task/hosted-merge-sync.ts         | 111 ++++++++++---
- 10 files changed, 447 insertions(+), 22 deletions(-)
+ .../src/commands/task/hosted-merge-sync.test.ts    |  64 ++++++++-
+ .../src/commands/task/hosted-merge-sync.ts         | 111 ++++++++++++---
+ 10 files changed, 458 insertions(+), 22 deletions(-)
 ```
 
 </details>
