@@ -4,7 +4,7 @@ title: "Report explicit incident promotion outcome in lifecycle commands"
 status: "TODO"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T21:09:51.040Z"
+  updated_at: "2026-04-06T21:11:54.220Z"
   updated_by: "CODER"
-  note: "Verified: finish, integrate, and hosted-close now emit explicit incident promotion outcome messaging, including unchanged-registry output when no promotable external findings exist. Commands: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts."
+  note: "Verification made incident promotion outcomes explicit in finish, integrate, and hosted-close. Commands: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts. Result: pass. Evidence: lifecycle commands now report either promoted incident count or explicit no-op, and focused contract suites passed. Scope: incidents collection messaging across finish, integrate, and hosted-close."
 commit: null
 comments: []
 events:
@@ -31,8 +31,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: finish, integrate, and hosted-close now emit explicit incident promotion outcome messaging, including unchanged-registry output when no promotable external findings exist. Commands: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts."
+  -
+    type: "verify"
+    at: "2026-04-06T21:11:54.220Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verification made incident promotion outcomes explicit in finish, integrate, and hosted-close. Commands: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts. Result: pass. Evidence: lifecycle commands now report either promoted incident count or explicit no-op, and focused contract suites passed. Scope: incidents collection messaging across finish, integrate, and hosted-close."
 doc_version: 3
-doc_updated_at: "2026-04-06T21:09:51.047Z"
+doc_updated_at: "2026-04-06T21:11:54.232Z"
 doc_updated_by: "CODER"
 description: "Make finish, integrate, and hosted-close report whether incidents were promoted or why the registry stayed unchanged so operators can distinguish no-op from breakage."
 sections:
@@ -62,6 +68,14 @@ sections:
     Note: Verified: finish, integrate, and hosted-close now emit explicit incident promotion outcome messaging, including unchanged-registry output when no promotable external findings exist. Commands: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:09:49.272Z, excerpt_hash=sha256:2520b3fa32cafbb99862acc5df24ed8420efab8dc602d1352f63a7cb7764c5c3
+    
+    ### 2026-04-06T21:11:54.220Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verification made incident promotion outcomes explicit in finish, integrate, and hosted-close. Commands: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts. Result: pass. Evidence: lifecycle commands now report either promoted incident count or explicit no-op, and focused contract suites passed. Scope: incidents collection messaging across finish, integrate, and hosted-close.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:09:51.047Z, excerpt_hash=sha256:2520b3fa32cafbb99862acc5df24ed8420efab8dc602d1352f63a7cb7764c5c3
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -108,6 +122,14 @@ By: CODER
 Note: Verified: finish, integrate, and hosted-close now emit explicit incident promotion outcome messaging, including unchanged-registry output when no promotable external findings exist. Commands: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:09:49.272Z, excerpt_hash=sha256:2520b3fa32cafbb99862acc5df24ed8420efab8dc602d1352f63a7cb7764c5c3
+
+### 2026-04-06T21:11:54.220Z — VERIFY — ok
+
+By: CODER
+
+Note: Verification made incident promotion outcomes explicit in finish, integrate, and hosted-close. Commands: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts. Result: pass. Evidence: lifecycle commands now report either promoted incident count or explicit no-op, and focused contract suites passed. Scope: incidents collection messaging across finish, integrate, and hosted-close.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:09:51.047Z, excerpt_hash=sha256:2520b3fa32cafbb99862acc5df24ed8420efab8dc602d1352f63a7cb7764c5c3
 
 <!-- END VERIFICATION RESULTS -->
 

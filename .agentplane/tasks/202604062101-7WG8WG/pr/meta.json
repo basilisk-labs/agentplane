@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604062101-7WG8WG/incident-outcome-messaging",
+  "created_at": "2026-04-06T21:09:51.136Z",
+  "head_sha": "e14d47287c996ed79f2d6db58cdc83b6d81b7c11",
+  "last_verified_at": "2026-04-06T21:11:54.220Z",
+  "last_verified_sha": "e14d47287c996ed79f2d6db58cdc83b6d81b7c11",
+  "schema_version": 1,
+  "task_id": "202604062101-7WG8WG",
+  "updated_at": "2026-04-06T21:11:54.261Z",
+  "verify": {
+    "status": "pass"
+  }
+}
