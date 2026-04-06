@@ -39,9 +39,9 @@ Lock the workflow boundary so verification and PR artifact sync never mutate .ag
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T21:06:39.128Z
+- Updated: 2026-04-06T21:07:49.979Z
 - Branch: task/202604062101-CQWJDM/verify-incidents-boundary
-- Head: 9abadf4cfad3
+- Head: 6c5035aa1ce8
 
 ```text
 No changes detected.
