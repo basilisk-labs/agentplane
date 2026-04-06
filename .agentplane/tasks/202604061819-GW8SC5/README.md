@@ -1,10 +1,11 @@
 ---
 id: "202604061819-GW8SC5"
 title: "Fix framework bootstrap package-local install layout reuse"
-status: "TODO"
+result_summary: "integrate: squash task/202604061819-GW8SC5/bootstrap-package-layout-reuse"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,8 +22,13 @@ verification:
   updated_at: "2026-04-06T18:25:02.584Z"
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; bun x eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: bootstrap now restores package-local install layout, targeted tests passed 6/6, eslint passed, and a fresh blocker worktree built core+agentplane and completed runtime explain. Scope: scripts/bootstrap-framework-dev.mjs, packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts, blocker task README."
-commit: null
-comments: []
+commit:
+  hash: "978357df7e928b162d2bc9f01f22a79de4756256"
+  message: "🧩 GW8SC5 integrate: Fix framework bootstrap package-local install layout reuse"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604061819-GW8SC5/pr."
 events:
   -
     type: "verify"
@@ -30,9 +36,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; bun x eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: bootstrap now restores package-local install layout, targeted tests passed 6/6, eslint passed, and a fresh blocker worktree built core+agentplane and completed runtime explain. Scope: scripts/bootstrap-framework-dev.mjs, packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts, blocker task README."
+  -
+    type: "status"
+    at: "2026-04-06T18:52:58.983Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604061819-GW8SC5/pr."
 doc_version: 3
-doc_updated_at: "2026-04-06T18:25:02.590Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T18:52:58.987Z"
+doc_updated_by: "INTEGRATOR"
 description: "When framework:dev:bootstrap reuses common-root node_modules in a fresh worktree, also restore package-local node_modules links needed for @agentplaneorg/core and agentplane builds so the bootstrap finishes successfully."
 sections:
   Summary: |-

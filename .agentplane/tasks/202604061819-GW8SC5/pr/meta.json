@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604061819-GW8SC5/bootstrap-package-layout-reuse",
   "created_at": "2026-04-06T18:25:02.641Z",
-  "head_sha": "a0c310fd5e7e3725c43a4e0ee09b073daf0a6615",
+  "head_sha": "f0495fd2d5ddca6c44303a07417cf2d558a09fcd",
   "last_verified_at": "2026-04-06T18:25:02.584Z",
   "last_verified_sha": "4d334603b862a069ba6b7465c3cfaecef6c78bee",
+  "merge_commit": "978357df7e928b162d2bc9f01f22a79de4756256",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-06T18:52:58.948Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604061819-GW8SC5",
-  "updated_at": "2026-04-06T18:26:13.419Z",
+  "updated_at": "2026-04-06T18:52:58.948Z",
   "verify": {
     "status": "pass"
   }
