@@ -1,10 +1,11 @@
 ---
 id: "202604062228-9JBSSW"
 title: "Fix hosted-close when merge commit object is absent in checkout"
-status: "DOING"
+result_summary: "Merged via PR #97."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-06T22:52:17.256Z"
   updated_by: "CODER"
   note: "Rebased 9JBSSW onto main@734042f6c6538441d624a68e737e5910aaecc9be, reran focused hosted-close vitest plus workflow contract coverage, and reran eslint on touched sources; all checks passed."
-commit: null
+commit:
+  hash: "1d4af00e11de09a0c42aa63bb61053763269a744"
+  message: "workflow: Fix hosted-close when merge commit object is absent in checkout (9JBSSW) (#97)"
 comments:
   -
     author: "CODER"
     body: "Start: reproducing the hosted-close bad-object failure from merged PR #91 and implementing a fallback that closes tasks without requiring the squash merge object in the local checkout."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #97 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -53,9 +59,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rebased 9JBSSW onto main@734042f6c6538441d624a68e737e5910aaecc9be, reran focused hosted-close vitest plus workflow contract coverage, and reran eslint on touched sources; all checks passed."
+  -
+    type: "status"
+    at: "2026-04-06T23:00:05.820Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #97 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-06T22:52:17.269Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T23:00:05.826Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make task hosted-close close merged branch_pr tasks even when the GitHub Actions checkout does not contain the squash merge commit object yet, instead of failing with git bad object on the merge SHA."
 sections:
   Summary: |-
