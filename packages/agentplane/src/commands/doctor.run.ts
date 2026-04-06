@@ -5,7 +5,10 @@ import { warnMessage, successMessage } from "../cli/output.js";
 import type { DoctorParsed } from "./doctor.spec.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import { checkDoneTaskCommitInvariants } from "./doctor/archive.js";
-import { checkBranchPrShippedTaskDrift } from "./doctor/branch-pr.js";
+import {
+  checkBranchPrDoneTaskOpenPrDrift,
+  checkBranchPrShippedTaskDrift,
+} from "./doctor/branch-pr.js";
 import { safeFixGitignore, safeFixTaskIndex } from "./doctor/fixes.js";
 import { checkLayering } from "./doctor/layering.js";
 import { checkRuntimeSourceFacts, findingSeverity } from "./doctor/runtime.js";
@@ -31,6 +34,7 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
     let checks = [
       ...(await checkWorkspace(repoRoot, { ctx: commandCtx })),
       ...(await checkBranchPrShippedTaskDrift(commandCtx)),
+      ...(await checkBranchPrDoneTaskOpenPrDrift(commandCtx)),
       ...checkRuntimeSourceFacts(ctx.cwd, loadedConfig.config),
       ...(await checkDoneTaskCommitInvariants(repoRoot, { fullArchive: p.archiveFull })),
     ];
