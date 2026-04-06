@@ -1,6 +1,9 @@
 # Policy Incidents Log
+
 This is the single file for incident-derived and situational policy rules.
+
 ## Entry contract
+
 - Add entries append-only.
 - Every entry MUST include: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`.
 - New machine-matched entries SHOULD also include: `tags`, `match`, `advice`, `source_task`, `fixability`.
@@ -8,9 +11,10 @@ This is the single file for incident-derived and situational policy rules.
 - `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.
 - First auto-promoted external incidents normally enter as `open` and still participate in targeted advice lookup; recurring equivalent incidents can append later `stabilized` entries.
 - `state` values: `open`, `stabilized`, `promoted`.
-## Entry template
-`id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state` are required.
+
+## Entry template: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state` are required.
 `tags`, `match`, `advice`, `source_task`, `fixability` are optional machine-match fields.
+
 ## Entries
 - id: INC-20260308-01
   date: 2026-03-08
@@ -73,7 +77,7 @@ This is the single file for incident-derived and situational policy rules.
   tags: workflow, github, transport, retries
   match: github, gh, graphQL, EOF, TLS, SSL_ERROR_SYSCALL, remote-checks
   failure: GitHub transport intermittently failed with GraphQL EOF, TLS handshake errors, and SSL_ERROR_SYSCALL during PR creation, remote-check waiting, and reconcile helpers
-  advice: treat transient GitHub transport failures as retriable, prefer bounded polling/REST fallbacks over single-shot watch flows, and surface auth or usage failures immediately
+  advice: treat transient GitHub transport failures as retriable, prefer bounded polling or REST fallbacks over single-shot watch flows, and surface auth or usage failures immediately
   rule: GitHub-dependent workflow helpers MUST classify EOF/TLS/SSL transport failures as transient and retry with bounded backoff; they MUST surface auth and usage failures immediately instead of looping or failing opaquely.
   evidence: tasks 202604062101-XYXG7Y, 202604062309-QE4CX6, 202604050745-18JJ5E
   enforcement: test + workflow helper
