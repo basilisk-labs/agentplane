@@ -4,7 +4,7 @@ title: "Fix stale repo-local build drift after base sync"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T17:37:13.762Z"
+  updated_at: "2026-04-06T17:40:28.982Z"
   updated_by: "CODER"
-  note: "Bootstrap recovery works in git worktrees"
+  note: "Post-commit verification synced to current head"
 commit: null
 comments: []
 events:
@@ -32,14 +32,20 @@ events:
     author: "CODER"
     state: "ok"
     note: "Bootstrap recovery works in git worktrees"
+  -
+    type: "verify"
+    at: "2026-04-06T17:40:28.982Z"
+    author: "CODER"
+    state: "ok"
+    note: "Post-commit verification synced to current head"
 doc_version: 3
-doc_updated_at: "2026-04-06T17:37:13.780Z"
+doc_updated_at: "2026-04-06T17:40:29.017Z"
 doc_updated_by: "CODER"
 description: "Investigate why a framework checkout becomes stale immediately after syncing main, run the required bootstrap, and implement the smallest reliable fix so repo-local runtime/bootstrap remains usable without repeated manual recovery after normal base updates."
 sections:
   Summary: |-
     Fix stale repo-local build drift after base sync
-
+    
     Investigate why a framework checkout becomes stale immediately after syncing main, run the required bootstrap, and implement the smallest reliable fix so repo-local runtime/bootstrap remains usable without repeated manual recovery after normal base updates.
   Scope: |-
     - In scope: Investigate why a framework checkout becomes stale immediately after syncing main, run the required bootstrap, and implement the smallest reliable fix so repo-local runtime/bootstrap remains usable without repeated manual recovery after normal base updates.
@@ -52,26 +58,46 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-06T17:37:13.762Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Bootstrap recovery works in git worktrees
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T17:36:45.929Z, excerpt_hash=sha256:7e54e328db8ac635b3fe0f0f0b360b1c8b434fa26b657f1ea66a23695cf06d21
-
+    
     Details:
-
+    
     Checks run:
     - bun run framework:dev:bootstrap
     - agentplane runtime explain
     - agentplane task list | tail -n 5
     - bun test packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts
     - bun x eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts
-
+    
     Observed behavior:
     - bootstrap reused common-root recipes instead of running a network submodule fetch in the fresh task worktree
     - repo-local runtime commands executed without stale-build warnings after bootstrap
-
+    
+    ### 2026-04-06T17:40:28.982Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Post-commit verification synced to current head
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T17:37:13.780Z, excerpt_hash=sha256:7e54e328db8ac635b3fe0f0f0b360b1c8b434fa26b657f1ea66a23695cf06d21
+    
+    Details:
+    
+    Checks run on current HEAD:
+    - agentplane runtime explain
+    - agentplane task list | tail -n 5
+    - bun test packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts
+    - bun x eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts
+    
+    Observed behavior:
+    - repo-local runtime remains healthy after the code commit
+    - targeted bootstrap regression coverage passes on the current branch head
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -127,6 +153,26 @@ Checks run:
 Observed behavior:
 - bootstrap reused common-root recipes instead of running a network submodule fetch in the fresh task worktree
 - repo-local runtime commands executed without stale-build warnings after bootstrap
+
+### 2026-04-06T17:40:28.982Z — VERIFY — ok
+
+By: CODER
+
+Note: Post-commit verification synced to current head
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T17:37:13.780Z, excerpt_hash=sha256:7e54e328db8ac635b3fe0f0f0b360b1c8b434fa26b657f1ea66a23695cf06d21
+
+Details:
+
+Checks run on current HEAD:
+- agentplane runtime explain
+- agentplane task list | tail -n 5
+- bun test packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts
+- bun x eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts
+
+Observed behavior:
+- repo-local runtime remains healthy after the code commit
+- targeted bootstrap regression coverage passes on the current branch head
 
 <!-- END VERIFICATION RESULTS -->
 
