@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604061916-2860KH/branch-pr-incidents",
+  "created_at": "2026-04-06T19:44:19.445Z",
+  "head_sha": "4fe1557c38aefcb6b83af02b775af622d6d546d8",
+  "last_verified_at": "2026-04-06T20:08:32.993Z",
+  "last_verified_sha": "c1bc734972aa52b9eb248c2d4803514f092aaf82",
+  "merge_commit": "afafdc7404f94c4380a6a4157d21f9587db6360f",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-06T20:14:07.678Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604061916-2860KH",
+  "updated_at": "2026-04-06T20:14:07.678Z",
+  "verify": {
+    "status": "pass"
+  }
+}

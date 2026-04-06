@@ -1,0 +1,19 @@
+ .agentplane/tasks/202604061916-2860KH/README.md    | 145 +++++++++++++++++++++
+ .../tasks/202604061916-2860KH/pr/diffstat.txt      |  19 +++
+ .../tasks/202604061916-2860KH/pr/github-body.md    |  68 ++++++++++
+ .../tasks/202604061916-2860KH/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604061916-2860KH/pr/meta.json |  14 ++
+ .../tasks/202604061916-2860KH/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604061916-2860KH/pr/review.md |  75 +++++++++++
+ .../tasks/202604061916-2860KH/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 113 ++++++++++++++++
+ .../src/cli/run-cli.core.task-hosted-close.test.ts |  44 +++++++
+ .../agentplane/src/commands/guard/impl/commands.ts |   5 +-
+ .../pr/integrate/internal/finalize.test.ts         |  21 +++
+ .../src/commands/pr/integrate/internal/finalize.ts |  13 ++
+ .../agentplane/src/commands/task/finish-shared.ts  |   3 +-
+ packages/agentplane/src/commands/task/finish.ts    |   1 +
+ .../src/commands/task/hosted-close.command.ts      |  13 ++
+ .../agentplane/src/shared/protected-paths.test.ts  |  25 ++++
+ packages/agentplane/src/shared/protected-paths.ts  |   2 +
+ 18 files changed, 559 insertions(+), 3 deletions(-)

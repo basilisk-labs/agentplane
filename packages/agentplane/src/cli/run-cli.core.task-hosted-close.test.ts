@@ -7,6 +7,7 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core";
+import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -29,6 +30,12 @@ describe("runCli", () => {
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
     await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
     await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
@@ -59,6 +66,33 @@ describe("runCli", () => {
       root,
     ]);
     expect(addCode).toBe(0);
+
+    for (const [section, text] of [
+      ["Verify Steps", "1. Run task hosted-close against a merged branch_pr task."],
+      [
+        "Findings",
+        [
+          "- Observation: hosted close automation can still depend on manual GitHub-side cleanup when the task PR merged but the closure branch could not be created automatically.",
+          "  Impact: operators repeat the same reconciliation steps for equivalent hosted-close tails.",
+          "  Resolution: inspect the merged PR state first, then create the missing closure branch only when the close metadata is absent.",
+          "  Fixability: external",
+        ].join("\n"),
+      ],
+    ] as const) {
+      const code = await runCliSilent([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        section,
+        "--text",
+        text,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    }
 
     await approveTaskPlan(root, taskId);
     const startCode = await runCliSilent([
@@ -188,6 +222,16 @@ describe("runCli", () => {
     );
     expect(metaRaw).toContain('"status": "MERGED"');
     expect(metaRaw).toContain(`"merge_commit": "${mergeSha}"`);
+    const incidents = await readFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      "utf8",
+    );
+    expect(incidents).toContain(`source_task: ${taskId}`);
+    expect(incidents).toContain("fixability: external");
+    expect(incidents).toContain("state: open");
+    expect(incidents).toContain(
+      "inspect the merged PR state first, then create the missing closure branch only when the close metadata is absent",
+    );
 
     const rerunIo = captureStdIO();
     try {

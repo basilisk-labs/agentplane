@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   readCommitInfo: vi.fn(),
   writeFinishedTasks: vi.fn(),
   createTaskCloseCommit: vi.fn(),
+  collectTaskIncidents: vi.fn(),
 }));
 
 vi.mock("../../../../cli/fs-utils.js", () => ({ fileExists: mocks.fileExists }));
@@ -29,6 +30,9 @@ vi.mock("../../../shared/pr-meta.js", () => ({
   buildIntegratedPrMeta: mocks.buildIntegratedPrMeta,
 }));
 vi.mock("../../../task/shared.js", () => ({ readCommitInfo: mocks.readCommitInfo }));
+vi.mock("../../../incidents/shared.js", () => ({
+  collectTaskIncidents: mocks.collectTaskIncidents,
+}));
 vi.mock("../../../task/finish-shared.js", () => ({
   writeFinishedTasks: mocks.writeFinishedTasks,
   createTaskCloseCommit: mocks.createTaskCloseCommit,
@@ -62,6 +66,14 @@ function baseOpts() {
 describe("pr/integrate/internal/finalize", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.collectTaskIncidents.mockResolvedValue({
+      loaded: null,
+      registryPath: "/repo/.agentplane/policy/incidents.md",
+      registryText: "",
+      registry: null,
+      plan: { promotable: [], issues: [] },
+      wrote: false,
+    });
   });
 
   it("rejects when PR directory is missing", async () => {
@@ -124,7 +136,16 @@ describe("pr/integrate/internal/finalize", () => {
       expect.objectContaining({
         taskId: "T-1",
         baseBranchOverride: "main",
+        allowPolicy: false,
       }),
+    );
+    expect(mocks.collectTaskIncidents).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ taskId: "T-1", write: false }),
+    );
+    expect(mocks.collectTaskIncidents).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ taskId: "T-1", write: true }),
     );
   });
 

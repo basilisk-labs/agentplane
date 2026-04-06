@@ -14,6 +14,7 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
 import { createTaskCloseCommit, writeFinishedTasks } from "./finish-shared.js";
 import { resolveHostedMergeTargetFromEvent } from "./hosted-merge-sync.js";
 import { readCommitInfo } from "./shared.js";
+import { collectTaskIncidents } from "../incidents/shared.js";
 
 export type TaskHostedCloseParsed = {
   eventJson: string;
@@ -166,6 +167,12 @@ async function closeHostedTask(opts: {
   const finishBody =
     `Verified: ${prLabel} merged on GitHub ${target.mergedPr.baseRefName ?? "main"}; ` +
     "hosted closure automation recorded canonical task artifacts.";
+  await collectTaskIncidents({
+    ctx: opts.ctx,
+    taskId: target.taskId,
+    task,
+    write: false,
+  });
   await writeFinishedTasks({
     ctx: opts.ctx,
     loadedTasks: [{ taskId: target.taskId, task }],
@@ -179,6 +186,11 @@ async function closeHostedTask(opts: {
     breaking: false,
     taskCommitInfo,
   });
+  const collectedIncidents = await collectTaskIncidents({
+    ctx: opts.ctx,
+    taskId: target.taskId,
+    write: true,
+  });
   await createTaskCloseCommit({
     ctx: opts.ctx,
     cwd: opts.cwd,
@@ -186,6 +198,7 @@ async function closeHostedTask(opts: {
     taskId: target.taskId,
     baseBranchOverride: target.mergedPr.baseRefName ?? meta.base ?? "main",
     quiet: opts.quiet,
+    allowPolicy: collectedIncidents.wrote,
   });
   return {
     outcome: "closed",
