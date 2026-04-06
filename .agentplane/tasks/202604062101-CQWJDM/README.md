@@ -4,7 +4,7 @@ title: "Prevent verify from mutating incidents registry"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T21:06:39.084Z"
+  updated_at: "2026-04-06T21:17:10.690Z"
   updated_by: "CODER"
-  note: "Verification locked the branch_pr boundary: verify now keeps incidents.md unchanged while refreshing existing PR artifacts, and PR sync no longer re-runs the open path when artifacts already exist. Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t verify; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: new verify/incidents regression test passed and the narrowed sync path stayed lint-clean. Scope: verify-record branch_pr PR-sync behavior and incidents policy isolation."
+  note: "Verification now locks the whole PR artifact sync boundary, not only verify. Commands: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t incidents.md; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: both verify and pr open keep incidents.md unchanged, and PR sync restores the registry even if hidden side effects try to mutate it. Scope: PR artifact sync isolation for verify/open flows plus the narrowed update-only sync path when artifacts already exist."
 commit: null
 comments: []
 events:
@@ -31,8 +31,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification locked the branch_pr boundary: verify now keeps incidents.md unchanged while refreshing existing PR artifacts, and PR sync no longer re-runs the open path when artifacts already exist. Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t verify; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: new verify/incidents regression test passed and the narrowed sync path stayed lint-clean. Scope: verify-record branch_pr PR-sync behavior and incidents policy isolation."
+  -
+    type: "verify"
+    at: "2026-04-06T21:17:10.690Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verification now locks the whole PR artifact sync boundary, not only verify. Commands: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t incidents.md; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: both verify and pr open keep incidents.md unchanged, and PR sync restores the registry even if hidden side effects try to mutate it. Scope: PR artifact sync isolation for verify/open flows plus the narrowed update-only sync path when artifacts already exist."
 doc_version: 3
-doc_updated_at: "2026-04-06T21:06:39.088Z"
+doc_updated_at: "2026-04-06T21:17:10.705Z"
 doc_updated_by: "CODER"
 description: "Lock the workflow boundary so verification and PR artifact sync never mutate .agentplane/policy/incidents.md; add regression coverage for branch_pr verify paths."
 sections:
@@ -57,6 +63,14 @@ sections:
     Note: Verification locked the branch_pr boundary: verify now keeps incidents.md unchanged while refreshing existing PR artifacts, and PR sync no longer re-runs the open path when artifacts already exist. Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t verify; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: new verify/incidents regression test passed and the narrowed sync path stayed lint-clean. Scope: verify-record branch_pr PR-sync behavior and incidents policy isolation.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:02:32.492Z, excerpt_hash=sha256:452c45dacb0e8acbe28f7d3ccbd9bed04c4e400d73d6ed99994e4d393d199c24
+    
+    ### 2026-04-06T21:17:10.690Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verification now locks the whole PR artifact sync boundary, not only verify. Commands: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t incidents.md; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: both verify and pr open keep incidents.md unchanged, and PR sync restores the registry even if hidden side effects try to mutate it. Scope: PR artifact sync isolation for verify/open flows plus the narrowed update-only sync path when artifacts already exist.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:06:39.088Z, excerpt_hash=sha256:452c45dacb0e8acbe28f7d3ccbd9bed04c4e400d73d6ed99994e4d393d199c24
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -96,6 +110,14 @@ By: CODER
 Note: Verification locked the branch_pr boundary: verify now keeps incidents.md unchanged while refreshing existing PR artifacts, and PR sync no longer re-runs the open path when artifacts already exist. Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t verify; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: new verify/incidents regression test passed and the narrowed sync path stayed lint-clean. Scope: verify-record branch_pr PR-sync behavior and incidents policy isolation.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:02:32.492Z, excerpt_hash=sha256:452c45dacb0e8acbe28f7d3ccbd9bed04c4e400d73d6ed99994e4d393d199c24
+
+### 2026-04-06T21:17:10.690Z — VERIFY — ok
+
+By: CODER
+
+Note: Verification now locks the whole PR artifact sync boundary, not only verify. Commands: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t incidents.md; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: both verify and pr open keep incidents.md unchanged, and PR sync restores the registry even if hidden side effects try to mutate it. Scope: PR artifact sync isolation for verify/open flows plus the narrowed update-only sync path when artifacts already exist.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T21:06:39.088Z, excerpt_hash=sha256:452c45dacb0e8acbe28f7d3ccbd9bed04c4e400d73d6ed99994e4d393d199c24
 
 <!-- END VERIFICATION RESULTS -->
 

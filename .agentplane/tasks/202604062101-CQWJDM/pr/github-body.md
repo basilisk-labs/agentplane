@@ -20,7 +20,7 @@ Lock the workflow boundary so verification and PR artifact sync never mutate .ag
 ### Current Status
 
 - State: ok
-- Note: Verification locked the branch_pr boundary: verify now keeps incidents.md unchanged while refreshing existing PR artifacts, and PR sync no longer re-runs the open path when artifacts already exist. Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t verify; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: new verify/incidents regression test passed and the narrowed sync path stayed lint-clean. Scope: verify-record branch_pr PR-sync behavior and incidents policy isolation.
+- Note: Verification now locks the whole PR artifact sync boundary, not only verify. Commands: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t incidents.md; bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: both verify and pr open keep incidents.md unchanged, and PR sync restores the registry even if hidden side effects try to mutate it. Scope: PR artifact sync isolation for verify/open flows plus the narrowed update-only sync path when artifacts already exist.
 
 ## Risks
 
@@ -39,12 +39,22 @@ Lock the workflow boundary so verification and PR artifact sync never mutate .ag
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T21:07:49.979Z
+- Updated: 2026-04-06T21:17:10.735Z
 - Branch: task/202604062101-CQWJDM/verify-incidents-boundary
-- Head: 6c5035aa1ce8
+- Head: 943d4bba4254
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604062101-CQWJDM/README.md    | 107 +++++++++++++++++++++
+ .../tasks/202604062101-CQWJDM/pr/diffstat.txt      |   0
+ .../tasks/202604062101-CQWJDM/pr/github-body.md    |  50 ++++++++++
+ .../tasks/202604062101-CQWJDM/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604062101-CQWJDM/pr/meta.json |  14 +++
+ .../tasks/202604062101-CQWJDM/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604062101-CQWJDM/pr/review.md |  57 +++++++++++
+ .../tasks/202604062101-CQWJDM/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  97 +++++++++++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |  20 ++--
+ 10 files changed, 338 insertions(+), 8 deletions(-)
 ```
 
 </details>
