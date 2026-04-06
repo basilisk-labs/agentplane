@@ -5,7 +5,7 @@ result_summary: "Merged via PR #97."
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T22:52:17.256Z"
+  updated_at: "2026-04-06T23:13:34.932Z"
   updated_by: "CODER"
-  note: "Rebased 9JBSSW onto main@734042f6c6538441d624a68e737e5910aaecc9be, reran focused hosted-close vitest plus workflow contract coverage, and reran eslint on touched sources; all checks passed."
+  note: "Rebased the published 9JBSSW branch onto current main, bootstrapped the fresh worktree, reran focused hosted-close vitest, reran hosted-close eslint, and confirmed the previously blocking git-edge critical case passes in the clean worktree."
 commit:
   hash: "1d4af00e11de09a0c42aa63bb61053763269a744"
   message: "workflow: Fix hosted-close when merge commit object is absent in checkout (9JBSSW) (#97)"
@@ -66,8 +66,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: PR #97 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+  -
+    type: "verify"
+    at: "2026-04-06T23:13:34.932Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rebased the published 9JBSSW branch onto current main, bootstrapped the fresh worktree, reran focused hosted-close vitest, reran hosted-close eslint, and confirmed the previously blocking git-edge critical case passes in the clean worktree."
 doc_version: 3
-doc_updated_at: "2026-04-06T23:00:05.826Z"
+doc_updated_at: "2026-04-06T23:13:34.937Z"
 doc_updated_by: "INTEGRATOR"
 description: "Make task hosted-close close merged branch_pr tasks even when the GitHub Actions checkout does not contain the squash merge commit object yet, instead of failing with git bad object on the merge SHA."
 sections:
@@ -108,6 +114,14 @@ sections:
     Note: Rebased 9JBSSW onto main@734042f6c6538441d624a68e737e5910aaecc9be, reran focused hosted-close vitest plus workflow contract coverage, and reran eslint on touched sources; all checks passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T22:50:43.843Z, excerpt_hash=sha256:6394e86f9933ad1aebbf33e8bde502bc86cb59e26d5df53e4f70fabf4d00c5e3
+    
+    ### 2026-04-06T23:13:34.932Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Rebased the published 9JBSSW branch onto current main, bootstrapped the fresh worktree, reran focused hosted-close vitest, reran hosted-close eslint, and confirmed the previously blocking git-edge critical case passes in the clean worktree.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:00:05.826Z, excerpt_hash=sha256:6394e86f9933ad1aebbf33e8bde502bc86cb59e26d5df53e4f70fabf4d00c5e3
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -163,6 +177,14 @@ By: CODER
 Note: Rebased 9JBSSW onto main@734042f6c6538441d624a68e737e5910aaecc9be, reran focused hosted-close vitest plus workflow contract coverage, and reran eslint on touched sources; all checks passed.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T22:50:43.843Z, excerpt_hash=sha256:6394e86f9933ad1aebbf33e8bde502bc86cb59e26d5df53e4f70fabf4d00c5e3
+
+### 2026-04-06T23:13:34.932Z — VERIFY — ok
+
+By: CODER
+
+Note: Rebased the published 9JBSSW branch onto current main, bootstrapped the fresh worktree, reran focused hosted-close vitest, reran hosted-close eslint, and confirmed the previously blocking git-edge critical case passes in the clean worktree.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:00:05.826Z, excerpt_hash=sha256:6394e86f9933ad1aebbf33e8bde502bc86cb59e26d5df53e4f70fabf4d00c5e3
 
 <!-- END VERIFICATION RESULTS -->
 

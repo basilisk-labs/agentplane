@@ -2,16 +2,16 @@
   "base": "main",
   "branch": "task/202604062228-9JBSSW/hosted-close-missing-merge-object",
   "created_at": "2026-04-06T22:36:49.689Z",
-  "head_sha": "f0803b17040aab160ecaa724e03e6bf28674c2db",
-  "last_verified_at": "2026-04-06T22:52:17.256Z",
-  "last_verified_sha": "7b1bf73deeefc6424c62598a0f2dc876dbcc8bf2",
+  "head_sha": "16d77e298b08185f794127b4fd2f1127b0b69cc0",
+  "last_verified_at": "2026-04-06T23:13:34.932Z",
+  "last_verified_sha": "16d77e298b08185f794127b4fd2f1127b0b69cc0",
   "merge_commit": "1d4af00e11de09a0c42aa63bb61053763269a744",
   "merge_strategy": "squash",
   "merged_at": "2026-04-06T22:59:40Z",
   "schema_version": 1,
   "status": "MERGED",
   "task_id": "202604062228-9JBSSW",
-  "updated_at": "2026-04-06T22:59:40Z",
+  "updated_at": "2026-04-06T23:13:33.702Z",
   "verify": {
     "status": "pass"
   }
