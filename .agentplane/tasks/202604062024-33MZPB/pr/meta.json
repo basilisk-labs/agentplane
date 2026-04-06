@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604062024-33MZPB/integrate-bootstrap-guidance",
+  "created_at": "2026-04-06T20:29:03.409Z",
+  "head_sha": "5c7ce0071e2a5ec837e4288e1e09e5932eddc41f",
+  "last_verified_at": "2026-04-06T20:35:33.437Z",
+  "last_verified_sha": "27a29c0a6f51e2dbe6f0e9659fd3f6ca4285f848",
+  "schema_version": 1,
+  "task_id": "202604062024-33MZPB",
+  "updated_at": "2026-04-06T20:37:27.757Z",
+  "verify": {
+    "status": "pass"
+  }
+}

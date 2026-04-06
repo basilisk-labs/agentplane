@@ -1,0 +1,6 @@
+ .agentplane/tasks/202604062024-33MZPB/README.md    | 151 +++++++++++++++++++
+ .../src/commands/pr/integrate/cmd.test.ts          | 165 +++++++++++++++++++++
+ .../agentplane/src/commands/pr/integrate/cmd.ts    |   8 +
+ .../integrate/internal/bootstrap-guidance.test.ts  |  35 +++++
+ .../pr/integrate/internal/bootstrap-guidance.ts    |  51 +++++++
+ 5 files changed, 410 insertions(+)
