@@ -39,15 +39,12 @@ When framework:dev:bootstrap reuses common-root node_modules in a fresh worktree
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T18:25:02.641Z
+- Updated: 2026-04-06T18:26:13.419Z
 - Branch: task/202604061819-GW8SC5/bootstrap-package-layout-reuse
-- Head: 4d334603b862
+- Head: a0c310fd5e7e
 
 ```text
- .agentplane/tasks/202604061819-GW8SC5/README.md    | 91 ++++++++++++++++++++++
- .../src/cli/bootstrap-framework-dev-script.test.ts | 48 ++++++++++++
- scripts/bootstrap-framework-dev.mjs                | 30 +++++--
- 3 files changed, 164 insertions(+), 5 deletions(-)
+No changes detected.
 ```
 
 </details>
