@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604061916-40FZNK/stale-open-pr-doctor",
+  "created_at": "2026-04-06T19:52:25.011Z",
+  "head_sha": "155d32912d07f620da082ede2c7db6c696bde5ab",
+  "last_verified_at": "2026-04-06T19:52:44.544Z",
+  "last_verified_sha": "b8428763f64fef846de4dce142c90334515d49f5",
+  "schema_version": 1,
+  "task_id": "202604061916-40FZNK",
+  "updated_at": "2026-04-06T19:54:49.122Z",
+  "verify": {
+    "status": "pass"
+  }
+}
