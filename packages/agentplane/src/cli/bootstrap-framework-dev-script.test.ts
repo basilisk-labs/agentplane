@@ -92,6 +92,14 @@ describe("bootstrap-framework-dev script", () => {
     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
     const repoRoot = await mkFrameworkRepo();
     await symlink(path.join(workspaceRoot, "node_modules"), path.join(repoRoot, "node_modules"));
+    await symlink(
+      path.join(workspaceRoot, "packages", "core", "node_modules"),
+      path.join(repoRoot, "packages", "core", "node_modules"),
+    );
+    await symlink(
+      path.join(workspaceRoot, "packages", "agentplane", "node_modules"),
+      path.join(repoRoot, "packages", "agentplane", "node_modules"),
+    );
     await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
     await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     const calls: string[] = [];
@@ -117,6 +125,14 @@ describe("bootstrap-framework-dev script", () => {
       path.join(workspaceRoot, "node_modules"),
       path.join(commonRepoRoot, "node_modules"),
     );
+    await symlink(
+      path.join(workspaceRoot, "packages", "core", "node_modules"),
+      path.join(commonRepoRoot, "packages", "core", "node_modules"),
+    );
+    await symlink(
+      path.join(workspaceRoot, "packages", "agentplane", "node_modules"),
+      path.join(commonRepoRoot, "packages", "agentplane", "node_modules"),
+    );
     await mkdir(path.join(commonRepoRoot, "agentplane-recipes"), { recursive: true });
     await writeFile(path.join(commonRepoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     const calls: string[] = [];
@@ -137,6 +153,38 @@ describe("bootstrap-framework-dev script", () => {
     expect(await readlink(path.join(repoRoot, "node_modules"))).toBe(
       path.join(commonRepoRoot, "node_modules"),
     );
+    expect(await readlink(path.join(repoRoot, "packages", "core", "node_modules"))).toBe(
+      path.join(commonRepoRoot, "packages", "core", "node_modules"),
+    );
+    expect(await readlink(path.join(repoRoot, "packages", "agentplane", "node_modules"))).toBe(
+      path.join(commonRepoRoot, "packages", "agentplane", "node_modules"),
+    );
+  });
+
+  it("runs bun install when the shared root lacks package-local build layout", async () => {
+    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
+    const commonRepoRoot = await mkFrameworkRepo();
+    const repoRoot = await mkFrameworkRepo();
+    await symlink(
+      path.join(workspaceRoot, "node_modules"),
+      path.join(commonRepoRoot, "node_modules"),
+    );
+    await mkdir(path.join(commonRepoRoot, "agentplane-recipes"), { recursive: true });
+    await writeFile(path.join(commonRepoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
+    const calls: string[] = [];
+    const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
+      recordCallExec(currentRepoRoot, cmd, args, calls);
+
+    runFrameworkDevBootstrap(repoRoot, exec, {
+      resolveCommonRepoRoot: () => commonRepoRoot,
+    });
+
+    expect(calls).toEqual([
+      "bun install",
+      "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=agentplane build",
+      "node packages/agentplane/bin/agentplane.js runtime explain",
+    ]);
   });
 
   it("surfaces a precise error when the recipes gitlink cannot be initialized", async () => {

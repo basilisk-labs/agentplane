@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604061819-GW8SC5/README.md    | 91 ++++++++++++++++++++++
+ .../src/cli/bootstrap-framework-dev-script.test.ts | 48 ++++++++++++
+ scripts/bootstrap-framework-dev.mjs                | 30 +++++--
+ 3 files changed, 164 insertions(+), 5 deletions(-)
