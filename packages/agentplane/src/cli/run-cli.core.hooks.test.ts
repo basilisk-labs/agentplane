@@ -322,6 +322,26 @@ describe("runCli", () => {
     }
   });
 
+  it("hooks run commit-msg infers task id from the current task branch when env is unset", async () => {
+    const taskId = "202601010101-ABCDEF";
+    const root = await mkGitRepoRootWithBranch(`task/${taskId}/hooks-context`);
+    await writeDefaultConfig(root);
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "✨ ABCDEF task: add hooks\n", "utf8");
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
+    }
+  });
+
   it("hooks run commit-msg accepts DEV suffix when task env is unset", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
