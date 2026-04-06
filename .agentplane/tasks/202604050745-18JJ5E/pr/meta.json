@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604050745-18JJ5E/shipped-task-reconcile",
+  "created_at": "2026-04-06T16:39:19.098Z",
+  "head_sha": "c95c2dc3ea8f08f58b313d9c378e3e70b8612533",
+  "last_verified_at": "2026-04-06T17:01:45.736Z",
+  "last_verified_sha": "c95c2dc3ea8f08f58b313d9c378e3e70b8612533",
+  "schema_version": 1,
+  "task_id": "202604050745-18JJ5E",
+  "updated_at": "2026-04-06T17:00:57.936Z",
+  "verify": {
+    "status": "pass"
+  }
+}

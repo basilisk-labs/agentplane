@@ -2626,6 +2626,7 @@ Options:
 - `--force`: Accepted for parity; currently has no additional checks in the node CLI. (default=false)
 - `--yes`: Auto-approve force-action approval checks when required. (default=false)
 - `--sync-hosted-merges`: Query GitHub for merged hosted PRs referenced by local PR artifacts and reconcile stale branch_pr task state before normalization. (default=false)
+- `--sync-branch-pr-state`: Reconcile stale local branch_pr task state when verified task commits already landed on the base branch. (default=false)
 
 Examples:
 
@@ -2646,6 +2647,12 @@ agentplane task normalize --sync-hosted-merges
 ```
 
 - Reconcile stale branch_pr task state from hosted PR merges, then normalize the local projection.
+
+```sh
+agentplane task normalize --sync-branch-pr-state
+```
+
+- Reconcile locally shipped branch_pr task state when task commits already reached the base branch.
 
 ### task plan
 

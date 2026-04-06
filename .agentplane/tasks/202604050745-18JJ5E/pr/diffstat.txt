@@ -1,0 +1,9 @@
+ .agentplane/tasks/202604050745-18JJ5E/README.md    | 113 ++++++++++++++
+ .../run-cli.core.tasks.normalize-migrate.test.ts   | 114 ++++++++++++++
+ .../agentplane/src/commands/doctor.command.test.ts | 150 +++++++++++++++++++
+ packages/agentplane/src/commands/doctor.run.ts     |   2 +
+ .../agentplane/src/commands/doctor/branch-pr.ts    |  45 ++++++
+ .../src/commands/task/hosted-merge-sync.ts         | 166 ++++++++++++++++++++-
+ .../src/commands/task/normalize.command.ts         |  14 ++
+ packages/agentplane/src/commands/task/normalize.ts |  21 ++-
+ 8 files changed, 621 insertions(+), 4 deletions(-)

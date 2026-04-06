@@ -8,6 +8,7 @@ export type TaskNormalizeParsed = {
   force: boolean;
   yes: boolean;
   syncHostedMerges: boolean;
+  syncBranchPrState: boolean;
 };
 
 export const taskNormalizeSpec: CommandSpec<TaskNormalizeParsed> = {
@@ -40,6 +41,13 @@ export const taskNormalizeSpec: CommandSpec<TaskNormalizeParsed> = {
       description:
         "Query GitHub for merged hosted PRs referenced by local PR artifacts and reconcile stale branch_pr task state before normalization.",
     },
+    {
+      kind: "boolean",
+      name: "sync-branch-pr-state",
+      default: false,
+      description:
+        "Reconcile stale local branch_pr task state when verified task commits already landed on the base branch.",
+    },
   ],
   examples: [
     { cmd: "agentplane task normalize", why: "Normalize tasks and print a short summary." },
@@ -48,12 +56,17 @@ export const taskNormalizeSpec: CommandSpec<TaskNormalizeParsed> = {
       cmd: "agentplane task normalize --sync-hosted-merges",
       why: "Reconcile stale branch_pr task state from hosted PR merges, then normalize the local projection.",
     },
+    {
+      cmd: "agentplane task normalize --sync-branch-pr-state",
+      why: "Reconcile locally shipped branch_pr task state when task commits already reached the base branch.",
+    },
   ],
   parse: (raw) => ({
     quiet: raw.opts.quiet === true,
     force: raw.opts.force === true,
     yes: raw.opts.yes === true,
     syncHostedMerges: raw.opts["sync-hosted-merges"] === true,
+    syncBranchPrState: raw.opts["sync-branch-pr-state"] === true,
   }),
 };
 
@@ -67,6 +80,7 @@ export function makeRunTaskNormalizeHandler(getCtx: (cmd: string) => Promise<Com
       force: p.force,
       yes: p.yes,
       syncHostedMerges: p.syncHostedMerges,
+      syncBranchPrState: p.syncBranchPrState,
     });
   };
 }

@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { normalizeTaskDocVersion, type TaskPrMeta } from "@agentplaneorg/core";
+import { normalizeTaskDocVersion, resolveBaseBranch, type TaskPrMeta } from "@agentplaneorg/core";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
@@ -32,6 +32,14 @@ export type HostedMergeTarget = {
 type HostedMergeSyncResult = {
   tasks: TaskData[];
   synced: number;
+};
+
+export type LocalBranchPrSyncCandidate = {
+  taskId: string;
+  branch: string;
+  base: string;
+  commitHash: string;
+  verificationSource: "task" | "pr";
 };
 
 function normalizeMergedPr(value: unknown): HostedMergedPr | null {
@@ -208,6 +216,95 @@ function buildSyncedTask(opts: { task: TaskData; mergedPr: HostedMergedPr }): Ta
   };
 }
 
+function hasTaskVerificationForLocalSync(opts: {
+  task: TaskData;
+  meta: TaskPrMeta | null;
+}): "task" | "pr" | null {
+  if (opts.task.verification?.state === "ok") return "task";
+  if (opts.meta?.verify?.status === "pass") return "pr";
+  return null;
+}
+
+async function gitRefExists(opts: { cwd: string; ref: string }): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["rev-parse", "--verify", "--quiet", opts.ref], {
+      cwd: opts.cwd,
+      env: process.env,
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function gitIsAncestor(opts: {
+  cwd: string;
+  ancestor: string;
+  descendant: string;
+}): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["merge-base", "--is-ancestor", opts.ancestor, opts.descendant], {
+      cwd: opts.cwd,
+      env: process.env,
+    });
+    return true;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1) return false;
+    throw err;
+  }
+}
+
+async function resolveSyncBaseBranch(opts: {
+  ctx: CommandContext;
+  meta: TaskPrMeta | null;
+}): Promise<string | null> {
+  const fromMeta = opts.meta?.base?.trim() ?? "";
+  if (fromMeta.length > 0) return fromMeta;
+  return await resolveBaseBranch({
+    cwd: opts.ctx.resolvedProject.gitRoot,
+    rootOverride: opts.ctx.resolvedProject.gitRoot,
+    cliBaseOpt: null,
+    mode: opts.ctx.config.workflow_mode,
+  });
+}
+
+function buildLocallySyncedTask(opts: {
+  task: TaskData;
+  candidate: LocalBranchPrSyncCandidate;
+}): TaskData {
+  const at = new Date().toISOString();
+  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  const note =
+    `Local branch_pr reconciliation detected task commit ${opts.candidate.commitHash.slice(0, 12)} ` +
+    `on base ${opts.candidate.base}; canonical task state normalized after shipment.`;
+  const statusEvent = {
+    type: "status" as const,
+    at,
+    author: "INTEGRATOR",
+    from: currentStatus,
+    to: "DONE",
+    note,
+  };
+  return {
+    ...opts.task,
+    status: "DONE",
+    result_summary:
+      opts.task.result_summary ??
+      `Shipped on ${opts.candidate.base} and reconciled from local branch_pr state.`,
+    commit: opts.task.commit?.hash?.trim()
+      ? opts.task.commit
+      : {
+          hash: opts.candidate.commitHash,
+          message: `Shipped on ${opts.candidate.base} before canonical task closure`,
+        },
+    events: appendTaskEvent(opts.task, statusEvent),
+    doc_version: normalizeTaskDocVersion(opts.task.doc_version),
+    doc_updated_at: at,
+    doc_updated_by: "INTEGRATOR",
+  };
+}
+
 async function readPrMetaIfPresent(opts: {
   ctx: CommandContext;
   taskId: string;
@@ -307,6 +404,73 @@ export async function syncHostedMergedTask(opts: {
         : entry,
     ),
     synced: 1,
+  };
+}
+
+export async function findLocallyShippedBranchPrTasks(opts: {
+  ctx: CommandContext;
+  tasks: TaskData[];
+}): Promise<LocalBranchPrSyncCandidate[]> {
+  if (opts.ctx.backendId !== "local" || opts.ctx.config.workflow_mode !== "branch_pr") {
+    return [];
+  }
+
+  const matches: LocalBranchPrSyncCandidate[] = [];
+  for (const task of opts.tasks) {
+    const currentStatus = String(task.status || "TODO").toUpperCase();
+    if (currentStatus === "DONE") continue;
+
+    const prMetaRecord = await readPrMetaIfPresent({ ctx: opts.ctx, taskId: task.id });
+    const verificationSource = hasTaskVerificationForLocalSync({
+      task,
+      meta: prMetaRecord?.meta ?? null,
+    });
+    if (!verificationSource) continue;
+
+    const commitHash = task.commit?.hash?.trim() ?? "";
+    if (!commitHash) continue;
+
+    const base = await resolveSyncBaseBranch({
+      ctx: opts.ctx,
+      meta: prMetaRecord?.meta ?? null,
+    });
+    if (!base) continue;
+    if (!(await gitRefExists({ cwd: opts.ctx.resolvedProject.gitRoot, ref: base }))) continue;
+    if (
+      !(await gitIsAncestor({
+        cwd: opts.ctx.resolvedProject.gitRoot,
+        ancestor: commitHash,
+        descendant: base,
+      }))
+    ) {
+      continue;
+    }
+
+    matches.push({
+      taskId: task.id,
+      branch: prMetaRecord?.meta.branch?.trim() ?? "",
+      base,
+      commitHash,
+      verificationSource,
+    });
+  }
+
+  return matches;
+}
+
+export async function syncLocallyShippedBranchPrTasks(opts: {
+  ctx: CommandContext;
+  tasks: TaskData[];
+}): Promise<HostedMergeSyncResult> {
+  const matches = await findLocallyShippedBranchPrTasks(opts);
+  if (matches.length === 0) return { tasks: opts.tasks, synced: 0 };
+  const byTaskId = new Map(matches.map((entry) => [entry.taskId, entry]));
+  return {
+    tasks: opts.tasks.map((task) => {
+      const candidate = byTaskId.get(task.id);
+      return candidate ? buildLocallySyncedTask({ task, candidate }) : task;
+    }),
+    synced: matches.length,
   };
 }
 

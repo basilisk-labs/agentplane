@@ -1,6 +1,8 @@
+import { execFile } from "node:child_process";
 import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core";
@@ -8,6 +10,7 @@ import { defaultConfig } from "@agentplaneorg/core";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
+  cleanGitEnv,
   installRunCliIntegrationHarness,
   runCliSilent,
   writeConfig,
@@ -15,6 +18,8 @@ import {
 } from "./run-cli.test-helpers.js";
 
 installRunCliIntegrationHarness();
+
+const execFileAsync = promisify(execFile);
 
 describe("runCli", () => {
   it("task normalize and migrate support quiet/force flags", async () => {
@@ -223,6 +228,115 @@ describe("runCli", () => {
       expect(io.stdout).toContain(taskId);
     } finally {
       io.restore();
+    }
+  }, 20_000);
+
+  it("task normalize --sync-branch-pr-state reconciles verified branch_pr tasks already shipped on base", async () => {
+    const root = await writeAndConfigureRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root, env: cleanGitEnv() });
+    await writeFile(path.join(root, "feature.txt"), "shipped payload\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt", ".agentplane/config.json"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["commit", "--no-verify", "-m", "feat: shipped payload"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const shippedHash = stdout.trim();
+
+    const taskId = "202604050900-SYNC02";
+    const addCode = await runCliSilent([
+      "task",
+      "add",
+      taskId,
+      "--title",
+      "Local branch_pr sync task",
+      "--description",
+      "Sync locally shipped branch_pr task state",
+      "--priority",
+      "med",
+      "--owner",
+      "CODER",
+      "--tag",
+      "workflow",
+      "--root",
+      root,
+    ]);
+    expect(addCode).toBe(0);
+
+    await runCliSilent([
+      "task",
+      "set-status",
+      taskId,
+      "DOING",
+      "--commit",
+      shippedHash,
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "CODER",
+      "--note",
+      "verified shipped state",
+      "--quiet",
+      "--root",
+      root,
+    ]);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          branch: `task/${taskId}/sync-local`,
+          base: "main",
+          created_at: "2026-04-05T09:00:00.000Z",
+          updated_at: "2026-04-05T09:00:00.000Z",
+          last_verified_sha: null,
+          last_verified_at: null,
+          verify: { status: "skipped" },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const code = await runCli(["task", "normalize", "--sync-branch-pr-state", "--root", root]);
+    expect(code).toBe(0);
+
+    const ioShow = captureStdIO();
+    try {
+      const showCode = await runCli(["task", "show", taskId, "--root", root]);
+      expect(showCode).toBe(0);
+      const task = JSON.parse(ioShow.stdout) as {
+        status?: string;
+        result_summary?: string;
+        commit?: { hash?: string } | null;
+      };
+      expect(task.status).toBe("DONE");
+      expect(task.result_summary).toBe(
+        "Shipped on main and reconciled from local branch_pr state.",
+      );
+      expect(task.commit?.hash).toBe(shippedHash);
+    } finally {
+      ioShow.restore();
     }
   }, 20_000);
 });
