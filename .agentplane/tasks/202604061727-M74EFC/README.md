@@ -1,10 +1,11 @@
 ---
 id: "202604061727-M74EFC"
 title: "Fix stale repo-local build drift after base sync"
-status: "TODO"
+result_summary: "integrate: squash task/202604061727-M74EFC/stale-build-drift"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,8 +24,13 @@ verification:
   updated_at: "2026-04-06T17:40:28.982Z"
   updated_by: "CODER"
   note: "Post-commit verification synced to current head"
-commit: null
-comments: []
+commit:
+  hash: "f229c6b4321a9e4a04faeaf552f6e52f07cf48cc"
+  message: "🧩 M74EFC integrate: framework/workflow: Fix stale repo-local build drift after base sync"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604061727-M74EFC/pr."
 events:
   -
     type: "verify"
@@ -38,9 +44,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-commit verification synced to current head"
+  -
+    type: "status"
+    at: "2026-04-06T17:55:03.102Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604061727-M74EFC/pr."
 doc_version: 3
-doc_updated_at: "2026-04-06T17:40:29.017Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T17:55:03.111Z"
+doc_updated_by: "INTEGRATOR"
 description: "Investigate why a framework checkout becomes stale immediately after syncing main, run the required bootstrap, and implement the smallest reliable fix so repo-local runtime/bootstrap remains usable without repeated manual recovery after normal base updates."
 sections:
   Summary: |-

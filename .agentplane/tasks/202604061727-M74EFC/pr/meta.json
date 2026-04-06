@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604061727-M74EFC/stale-build-drift",
   "created_at": "2026-04-06T17:37:13.858Z",
-  "head_sha": "820620b4cd90f6fd7f505056ffc0c9ab19b75e56",
+  "head_sha": "4eee825400e4dc71b66b5ffacd1260badbb1116d",
   "last_verified_at": "2026-04-06T17:40:28.982Z",
   "last_verified_sha": "820620b4cd90f6fd7f505056ffc0c9ab19b75e56",
+  "merge_commit": "f229c6b4321a9e4a04faeaf552f6e52f07cf48cc",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-06T17:55:03.005Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604061727-M74EFC",
-  "updated_at": "2026-04-06T17:39:39.062Z",
+  "updated_at": "2026-04-06T17:55:03.005Z",
   "verify": {
     "status": "pass"
   }
