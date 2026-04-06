@@ -18,7 +18,7 @@ Repair local branch_pr cleanup so merged task/task-close leftovers are detected 
 ### Current Status
 
 - State: ok
-- Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts && bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build. Result: pass. Evidence: 17 cleanup-merged CLI tests passed, both core and agentplane builds passed, stale local branches/worktrees for AQRVW4, DA1JVW, WARBCX, and P771ZK were reconciled in the main checkout, and P771ZK was backfilled to DONE via deterministic close commit 4c345ef2525a. Scope: branch_pr cleanup candidate resolution, task-close cleanup coverage, and repository stale-lifecycle tail audit.
+- Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts --reporter=verbose && bunx eslint packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/branch/cleanup-merged.ts packages/agentplane/src/commands/shared/git-ops.ts packages/agentplane/src/commands/shared/git-worktree.ts. Result: pass. Evidence: 17 cleanup-merged tests passed; targeted eslint on cleanup-merged/git-ops/git-worktree files passed; branch worktree remains clean after verification.
 
 ## Risks
 
@@ -37,17 +37,24 @@ Repair local branch_pr cleanup so merged task/task-close leftovers are detected 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-05T07:39:15.191Z
+- Updated: 2026-04-06T16:33:41.023Z
 - Branch: task/202604032235-G375FB/cleanup-lifecycle-tails
-- Head: 32390c360f84
+- Head: 996a1ad080bd
 
 ```text
  .agentplane/tasks/202604032235-G375FB/README.md    | 103 ++++++++++++
+ .../tasks/202604032235-G375FB/pr/diffstat.txt      |   6 +
+ .../tasks/202604032235-G375FB/pr/github-body.md    |  53 +++++++
+ .../tasks/202604032235-G375FB/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604032235-G375FB/pr/meta.json |  14 ++
+ .../tasks/202604032235-G375FB/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604032235-G375FB/pr/review.md |  60 +++++++
+ .../tasks/202604032235-G375FB/pr/verify.log        |   0
  .../run-cli.core.pr-flow.cleanup-merged.test.ts    | 175 +++++++++++++++++++++
  .../src/commands/branch/cleanup-merged.ts          | 133 +++++++++++++---
  packages/agentplane/src/commands/shared/git-ops.ts |  18 +++
  .../agentplane/src/commands/shared/git-worktree.ts |  29 +++-
- 5 files changed, 432 insertions(+), 26 deletions(-)
+ 12 files changed, 566 insertions(+), 26 deletions(-)
 ```
 
 </details>
