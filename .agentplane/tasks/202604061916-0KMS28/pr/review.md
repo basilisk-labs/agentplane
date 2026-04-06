@@ -45,9 +45,9 @@ Confirm whether the legacy release PR is already superseded by main, then close 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T19:22:07.977Z
+- Updated: 2026-04-06T19:22:40.116Z
 - Branch: task/202604061916-0KMS28/reconcile-pr65
-- Head: ed0d3ee37260
+- Head: 517750b43afb
 
 ```text
 No changes detected.
