@@ -1,6 +1,13 @@
  .agentplane/tasks/202604062024-33MZPB/README.md    | 151 +++++++++++++++++++
+ .../tasks/202604062024-33MZPB/pr/diffstat.txt      |   6 +
+ .../tasks/202604062024-33MZPB/pr/github-body.md    |  54 +++++++
+ .../tasks/202604062024-33MZPB/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604062024-33MZPB/pr/meta.json |  14 ++
+ .../tasks/202604062024-33MZPB/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604062024-33MZPB/pr/review.md |  61 ++++++++
+ .../tasks/202604062024-33MZPB/pr/verify.log        |   0
  .../src/commands/pr/integrate/cmd.test.ts          | 165 +++++++++++++++++++++
  .../agentplane/src/commands/pr/integrate/cmd.ts    |   8 +
  .../integrate/internal/bootstrap-guidance.test.ts  |  35 +++++
  .../pr/integrate/internal/bootstrap-guidance.ts    |  51 +++++++
- 5 files changed, 410 insertions(+)
+ 12 files changed, 546 insertions(+)

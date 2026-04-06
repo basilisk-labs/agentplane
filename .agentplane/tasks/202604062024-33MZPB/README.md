@@ -1,10 +1,11 @@
 ---
 id: "202604062024-33MZPB"
 title: "Emit post-integrate bootstrap guidance for stale framework runtime"
-status: "DOING"
+result_summary: "integrate: squash task/202604062024-33MZPB/integrate-bootstrap-guidance"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-06T20:35:33.437Z"
   updated_by: "CODER"
   note: "Integrate now emits explicit bootstrap guidance when watched runtime paths change; targeted vitest and eslint passed."
-commit: null
+commit:
+  hash: "61c3afc56aff5d66e7cf45abd6a59bdc4894ddee"
+  message: "📝 33MZPB task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: implement post-integrate bootstrap guidance and lock it with regression tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604062024-33MZPB/pr."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Integrate now emits explicit bootstrap guidance when watched runtime paths change; targeted vitest and eslint passed."
+  -
+    type: "status"
+    at: "2026-04-06T20:48:53.942Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604062024-33MZPB/pr."
 doc_version: 3
-doc_updated_at: "2026-04-06T20:35:33.456Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-06T20:48:53.949Z"
+doc_updated_by: "INTEGRATOR"
 description: "When branch_pr integrate mutates watched runtime sources inside a framework checkout, print an explicit bootstrap follow-up so operators do not discover the stale repo-local build only on the next command."
 sections:
   Summary: |-
