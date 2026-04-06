@@ -4,7 +4,7 @@ title: "Fix framework bootstrap package-local install layout reuse"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -17,15 +17,21 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-06T18:25:02.584Z"
+  updated_by: "CODER"
+  note: "Command: bun test packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; bun x eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: bootstrap now restores package-local install layout, targeted tests passed 6/6, eslint passed, and a fresh blocker worktree built core+agentplane and completed runtime explain. Scope: scripts/bootstrap-framework-dev.mjs, packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts, blocker task README."
 commit: null
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-04-06T18:25:02.584Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun test packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; bun x eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: bootstrap now restores package-local install layout, targeted tests passed 6/6, eslint passed, and a fresh blocker worktree built core+agentplane and completed runtime explain. Scope: scripts/bootstrap-framework-dev.mjs, packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts, blocker task README."
 doc_version: 3
-doc_updated_at: "2026-04-06T18:23:42.138Z"
+doc_updated_at: "2026-04-06T18:25:02.590Z"
 doc_updated_by: "CODER"
 description: "When framework:dev:bootstrap reuses common-root node_modules in a fresh worktree, also restore package-local node_modules links needed for @agentplaneorg/core and agentplane builds so the bootstrap finishes successfully."
 sections:
@@ -43,6 +49,14 @@ sections:
     3. Run bun run framework:dev:bootstrap in the blocker task worktree. Expected: @agentplaneorg/core and agentplane build successfully and agentplane runtime explain works repo-locally.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-06T18:25:02.584Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun test packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; bun x eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: bootstrap now restores package-local install layout, targeted tests passed 6/6, eslint passed, and a fresh blocker worktree built core+agentplane and completed runtime explain. Scope: scripts/bootstrap-framework-dev.mjs, packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts, blocker task README.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T18:23:42.138Z, excerpt_hash=sha256:fca03506d02a5d631bfe07e29b8aa381b42558d28b60d2e9b2dd4971d157d341
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -77,6 +91,14 @@ When framework:dev:bootstrap reuses common-root node_modules in a fresh worktree
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-06T18:25:02.584Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun test packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; bun x eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: bootstrap now restores package-local install layout, targeted tests passed 6/6, eslint passed, and a fresh blocker worktree built core+agentplane and completed runtime explain. Scope: scripts/bootstrap-framework-dev.mjs, packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts, blocker task README.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T18:23:42.138Z, excerpt_hash=sha256:fca03506d02a5d631bfe07e29b8aa381b42558d28b60d2e9b2dd4971d157d341
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
