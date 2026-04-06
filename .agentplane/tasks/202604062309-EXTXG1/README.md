@@ -4,7 +4,7 @@ title: "Promote confirmed external workflow incidents into incidents registry"
 status: "TODO"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T23:43:09.578Z"
+  updated_at: "2026-04-06T23:46:48.330Z"
   updated_by: "DOCS"
-  note: "Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets."
+  note: "Verified: aligned the canonical incidents asset with agents:check formatting expectations and re-ran agents:sync/check successfully."
 commit: null
 comments: []
 events:
@@ -44,8 +44,14 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets."
+  -
+    type: "verify"
+    at: "2026-04-06T23:46:48.330Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Verified: aligned the canonical incidents asset with agents:check formatting expectations and re-ran agents:sync/check successfully."
 doc_version: 3
-doc_updated_at: "2026-04-06T23:43:09.584Z"
+doc_updated_at: "2026-04-06T23:46:48.337Z"
 doc_updated_by: "DOCS"
 description: "Append confirmed external operational lessons from the recent GitHub transport/reconciliation cycle into .agentplane/policy/incidents.md with concrete rules and evidence."
 sections:
@@ -86,6 +92,14 @@ sections:
     Note: Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:42:28.408Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
+    
+    ### 2026-04-06T23:46:48.330Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Verified: aligned the canonical incidents asset with agents:check formatting expectations and re-ran agents:sync/check successfully.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:43:09.584Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -143,6 +157,14 @@ By: DOCS
 Note: Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:42:28.408Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
+
+### 2026-04-06T23:46:48.330Z — VERIFY — ok
+
+By: DOCS
+
+Note: Verified: aligned the canonical incidents asset with agents:check formatting expectations and re-ran agents:sync/check successfully.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:43:09.584Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
 
 <!-- END VERIFICATION RESULTS -->
 

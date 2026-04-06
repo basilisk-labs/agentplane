@@ -25,7 +25,7 @@ Append confirmed external operational lessons from the recent GitHub transport/r
 ### Current Status
 
 - State: ok
-- Note: Verified: promoted the confirmed external workflow incidents through the canonical policy asset, synced .agentplane policy templates, and re-checked routing budgets.
+- Note: Verified: aligned the canonical incidents asset with agents:check formatting expectations and re-ran agents:sync/check successfully.
 
 ## Risks
 
@@ -45,22 +45,22 @@ Append confirmed external operational lessons from the recent GitHub transport/r
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T23:43:09.611Z
+- Updated: 2026-04-06T23:46:48.361Z
 - Branch: task/202604062309-EXTXG1/external-incident-backfill
-- Head: e26fc0b48de4
+- Head: 790cc03e3695
 
 ```text
- .agentplane/policy/incidents.md                    |  48 +++++----
- .agentplane/tasks/202604062309-EXTXG1/README.md    | 113 +++++++++++++++++++++
- .../tasks/202604062309-EXTXG1/pr/diffstat.txt      |   0
- .../tasks/202604062309-EXTXG1/pr/github-body.md    |  50 +++++++++
+ .agentplane/policy/incidents.md                    |  48 ++++---
+ .agentplane/tasks/202604062309-EXTXG1/README.md    | 157 +++++++++++++++++++++
+ .../tasks/202604062309-EXTXG1/pr/diffstat.txt      |  11 ++
+ .../tasks/202604062309-EXTXG1/pr/github-body.md    |  60 ++++++++
  .../tasks/202604062309-EXTXG1/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604062309-EXTXG1/pr/meta.json |  14 +++
+ .agentplane/tasks/202604062309-EXTXG1/pr/meta.json |  14 ++
  .../tasks/202604062309-EXTXG1/pr/notes.jsonl       |   0
- .agentplane/tasks/202604062309-EXTXG1/pr/review.md |  57 +++++++++++
+ .agentplane/tasks/202604062309-EXTXG1/pr/review.md |  67 +++++++++
  .../tasks/202604062309-EXTXG1/pr/verify.log        |   0
- packages/agentplane/assets/policy/incidents.md     |  46 +++++----
- 10 files changed, 291 insertions(+), 38 deletions(-)
+ packages/agentplane/assets/policy/incidents.md     |  46 +++---
+ 10 files changed, 366 insertions(+), 38 deletions(-)
 ```
 
 </details>

@@ -13,9 +13,11 @@ This is the single file for incident-derived and situational policy rules.
 - `state` values: `open`, `stabilized`, `promoted`.
 
 ## Entry template: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state` are required.
+
 `tags`, `match`, `advice`, `source_task`, `fixability` are optional machine-match fields.
 
 ## Entries
+
 - id: INC-20260308-01
   date: 2026-03-08
   scope: release apply internal push path

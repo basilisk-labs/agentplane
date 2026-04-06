@@ -2,12 +2,12 @@
   "base": "main",
   "branch": "task/202604062309-EXTXG1/external-incident-backfill",
   "created_at": "2026-04-06T23:28:04.112Z",
-  "head_sha": "e26fc0b48de4ac6210d492fde00a0feb0b8cbc73",
-  "last_verified_at": "2026-04-06T23:43:09.578Z",
-  "last_verified_sha": "e26fc0b48de4ac6210d492fde00a0feb0b8cbc73",
+  "head_sha": "790cc03e369580848f08acad7b6fa5b8f18fd7e0",
+  "last_verified_at": "2026-04-06T23:46:48.330Z",
+  "last_verified_sha": "790cc03e369580848f08acad7b6fa5b8f18fd7e0",
   "schema_version": 1,
   "task_id": "202604062309-EXTXG1",
-  "updated_at": "2026-04-06T23:43:09.611Z",
+  "updated_at": "2026-04-06T23:46:48.361Z",
   "verify": {
     "status": "pass"
   }
