@@ -64,6 +64,14 @@ function hasWorkspaceNodeModules(repoRoot) {
   return fs.existsSync(path.join(repoRoot, "node_modules"));
 }
 
+function hasBootstrapBuildInstallLayout(repoRoot) {
+  return (
+    hasWorkspaceNodeModules(repoRoot) &&
+    fs.existsSync(path.join(repoRoot, "packages", "core", "node_modules")) &&
+    fs.existsSync(path.join(repoRoot, "packages", "agentplane", "node_modules"))
+  );
+}
+
 function hasRecipesIndex(repoRoot) {
   return fs.existsSync(path.join(repoRoot, "agentplane-recipes", "index.json"));
 }
@@ -79,6 +87,14 @@ function linkDirectoryFromCommonRoot(repoRoot, commonRepoRoot, relativePath) {
   const symlinkType = process.platform === "win32" ? "junction" : "dir";
   fs.symlinkSync(commonPath, localPath, symlinkType);
   return true;
+}
+
+function linkBootstrapBuildInstallLayoutFromCommonRoot(repoRoot, commonRepoRoot) {
+  return [
+    "node_modules",
+    path.join("packages", "core", "node_modules"),
+    path.join("packages", "agentplane", "node_modules"),
+  ].filter((relativePath) => linkDirectoryFromCommonRoot(repoRoot, commonRepoRoot, relativePath));
 }
 
 function printFooter() {
@@ -108,19 +124,23 @@ export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec
 
   process.stdout.write(`==> Framework repo: ${repoRoot}\n`);
 
-  const linkedSharedNodeModules = linkDirectoryFromCommonRoot(
+  const linkedInstallLayout = linkBootstrapBuildInstallLayoutFromCommonRoot(
     repoRoot,
     commonRepoRoot,
-    "node_modules",
   );
-  if (linkedSharedNodeModules) {
+  if (linkedInstallLayout.includes("node_modules")) {
     process.stdout.write(
       `==> Reusing workspace dependencies from common repo root: ${commonRepoRoot}\n`,
     );
   }
+  if (linkedInstallLayout.some((relativePath) => relativePath !== "node_modules")) {
+    process.stdout.write(
+      `==> Reusing package-local install layout from common repo root: ${commonRepoRoot}\n`,
+    );
+  }
 
-  if (hasWorkspaceNodeModules(repoRoot)) {
-    process.stdout.write("==> Workspace dependencies already present; skipping bun install\n");
+  if (hasBootstrapBuildInstallLayout(repoRoot)) {
+    process.stdout.write("==> Bootstrap install layout already present; skipping bun install\n");
   } else {
     process.stdout.write("==> Installing workspace dependencies\n");
     exec(repoRoot, "bun", ["install"]);
