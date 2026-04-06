@@ -1,0 +1,13 @@
+ .agentplane/tasks/202604061916-40FZNK/README.md    | 127 +++++++++++++++
+ .../tasks/202604061916-40FZNK/pr/diffstat.txt      |   0
+ .../tasks/202604061916-40FZNK/pr/github-body.md    |  52 ++++++
+ .../tasks/202604061916-40FZNK/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604061916-40FZNK/pr/meta.json |  14 ++
+ .../tasks/202604061916-40FZNK/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604061916-40FZNK/pr/review.md |  59 +++++++
+ .../tasks/202604061916-40FZNK/pr/verify.log        |   0
+ .../agentplane/src/commands/doctor.command.test.ts | 180 +++++++++++++++++++++
+ packages/agentplane/src/commands/doctor.run.ts     |   6 +-
+ .../agentplane/src/commands/doctor/branch-pr.ts    |  62 ++++++-
+ .../src/commands/task/hosted-merge-sync.ts         |  47 ++++++
+ 12 files changed, 546 insertions(+), 2 deletions(-)

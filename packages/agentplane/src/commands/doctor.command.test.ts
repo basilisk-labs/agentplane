@@ -425,6 +425,20 @@ describe("doctor.command", () => {
       ),
       "utf8",
     );
+    await execFileAsync(
+      "git",
+      [
+        "add",
+        ".agentplane/config.json",
+        ".agentplane/WORKFLOW.md",
+        ".agentplane/workflows/last-known-good.md",
+        ".agentplane/tasks.json",
+        `.agentplane/tasks/${taskId}/README.md`,
+        `.agentplane/tasks/${taskId}/pr/meta.json`,
+      ],
+      { cwd: ws.root },
+    );
+    await execFileAsync("git", ["commit", "-m", "chore doctor fixture"], { cwd: ws.root });
 
     const stderr = vi.spyOn(console, "error").mockImplementation(() => {
       /* muted for assertion */
@@ -438,6 +452,172 @@ describe("doctor.command", () => {
       const output = stderr.mock.calls.flat().join("\n");
       expect(output).toContain("branch_pr tasks appear shipped on the base branch but remain open");
       expect(output).toContain("agentplane task normalize --sync-branch-pr-state");
+      expect(output).toContain(taskId);
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
+  it("warns when a DONE branch_pr task still has open PR artifacts", async () => {
+    const ws = await mkWorkspace();
+    const shippedHash = await gitInitWithCommit(ws.root, "feat: shipped payload");
+    await writeFile(
+      path.join(ws.root, ".agentplane", "config.json"),
+      '{\n  "version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+      "utf8",
+    );
+    const branchPrWorkflow = VALID_WORKFLOW.replace("mode: direct", 'mode: "branch_pr"');
+    await writeFile(path.join(ws.root, ".agentplane", "WORKFLOW.md"), branchPrWorkflow, "utf8");
+    await writeFile(
+      path.join(ws.root, ".agentplane", "workflows", "last-known-good.md"),
+      branchPrWorkflow,
+      "utf8",
+    );
+
+    const taskId = "202604050901-DONEPR";
+    const branchName = `task/${taskId}/open-pr`;
+    await execFileAsync("git", ["branch", branchName, shippedHash], { cwd: ws.root });
+    await writeFile(
+      path.join(ws.root, ".agentplane", "tasks.json"),
+      JSON.stringify(
+        {
+          tasks: [
+            {
+              id: taskId,
+              title: "DONE task with open PR artifacts",
+              description: "Doctor should surface DONE branch_pr tasks whose PR is still open.",
+              status: "DONE",
+              priority: "med",
+              owner: "CODER",
+              depends_on: [],
+              tags: ["workflow"],
+              verify: [],
+              plan_approval: {
+                state: "approved",
+                updated_at: "2026-04-05T09:00:00.000Z",
+                updated_by: "ORCHESTRATOR",
+                note: null,
+              },
+              verification: {
+                state: "ok",
+                updated_at: "2026-04-05T09:10:00.000Z",
+                updated_by: "CODER",
+                note: "verified",
+              },
+              commit: {
+                hash: shippedHash,
+                message: "feat: shipped payload",
+              },
+              comments: [],
+              doc_version: 3,
+              doc_updated_at: "2026-04-05T09:10:00.000Z",
+              doc_updated_by: "CODER",
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    const taskDir = path.join(ws.root, ".agentplane", "tasks", taskId);
+    await mkdir(path.join(taskDir, "pr"), { recursive: true });
+    await writeFile(
+      path.join(taskDir, "README.md"),
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "DONE task with open PR artifacts",
+          description: "Doctor should surface DONE branch_pr tasks whose PR is still open.",
+          status: "DONE",
+          priority: "med",
+          owner: "CODER",
+          depends_on: [],
+          tags: ["workflow"],
+          verify: [],
+          plan_approval: {
+            state: "approved",
+            updated_at: "2026-04-05T09:00:00.000Z",
+            updated_by: "ORCHESTRATOR",
+            note: null,
+          },
+          verification: {
+            state: "ok",
+            updated_at: "2026-04-05T09:10:00.000Z",
+            updated_by: "CODER",
+            note: "verified",
+          },
+          commit: {
+            hash: shippedHash,
+            message: "feat: shipped payload",
+          },
+          comments: [],
+          events: [],
+          revision: 1,
+          doc_version: 3,
+          doc_updated_at: "2026-04-05T09:10:00.000Z",
+          doc_updated_by: "CODER",
+          sections: {
+            Summary: "DONE task with open PR artifacts",
+            Scope: "- In scope: detect DONE branch_pr tasks whose PR is still open.",
+            Plan: "1. Run doctor.",
+            "Verify Steps":
+              "1. Run agentplane doctor. Expected: warning mentions DONE branch_pr tasks with open PR artifacts.",
+            Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+            "Rollback Plan": "- Revert.",
+            Findings: "",
+          },
+        },
+        "",
+      ),
+      "utf8",
+    );
+    await writeFile(
+      path.join(taskDir, "pr", "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          branch: branchName,
+          base: "main",
+          created_at: "2026-04-05T09:00:00.000Z",
+          updated_at: "2026-04-05T09:00:00.000Z",
+          last_verified_sha: null,
+          last_verified_at: null,
+          verify: { status: "skipped" },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await execFileAsync(
+      "git",
+      [
+        "add",
+        ".agentplane/config.json",
+        ".agentplane/WORKFLOW.md",
+        ".agentplane/workflows/last-known-good.md",
+        ".agentplane/tasks.json",
+        `.agentplane/tasks/${taskId}/README.md`,
+        `.agentplane/tasks/${taskId}/pr/meta.json`,
+      ],
+      { cwd: ws.root },
+    );
+    await execFileAsync("git", ["commit", "-m", "chore doctor fixture"], { cwd: ws.root });
+
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain("DONE branch_pr tasks still have open or unmerged PR artifacts");
+      expect(output).toContain("agentplane pr check <task-id>");
       expect(output).toContain(taskId);
     } finally {
       stderr.mockRestore();
