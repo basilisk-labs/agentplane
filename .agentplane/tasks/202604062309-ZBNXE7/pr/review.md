@@ -45,9 +45,9 @@ Differentiate no external incidents from structured findings that were parsed bu
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T23:18:14.266Z
+- Updated: 2026-04-06T23:18:53.185Z
 - Branch: task/202604062309-ZBNXE7/incident-diagnostics
-- Head: 61ce80966f00
+- Head: 232cf6eb02de
 
 ```text
 No changes detected.
