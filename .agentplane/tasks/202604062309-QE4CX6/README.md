@@ -4,7 +4,7 @@ title: "Replace gh watch in remote-check wait path with resilient polling"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T23:23:45.472Z"
+  updated_at: "2026-04-06T23:36:48.838Z"
   updated_by: "CODER"
-  note: "Focused wait-remote-checks coverage passed after bootstrapping the task worktree: bun x vitest run packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts; bun x eslint scripts/wait-remote-pr-checks.mjs packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts. Result: pass. Evidence: workflow:wait-remote-checks now polls GitHub state directly, retries transient transport failures, and times out explicitly instead of delegating to gh pr checks --watch."
+  note: "Verified: updated the polling test contract to match the new gh api call path and refreshed branch_pr artifacts for the current head."
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused wait-remote-checks coverage passed after bootstrapping the task worktree: bun x vitest run packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts; bun x eslint scripts/wait-remote-pr-checks.mjs packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts. Result: pass. Evidence: workflow:wait-remote-checks now polls GitHub state directly, retries transient transport failures, and times out explicitly instead of delegating to gh pr checks --watch."
+  -
+    type: "verify"
+    at: "2026-04-06T23:36:48.838Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: updated the polling test contract to match the new gh api call path and refreshed branch_pr artifacts for the current head."
 doc_version: 3
-doc_updated_at: "2026-04-06T23:23:45.476Z"
+doc_updated_at: "2026-04-06T23:36:48.848Z"
 doc_updated_by: "CODER"
 description: "Stop delegating workflow:wait-remote-checks to gh pr checks --watch and use a more resilient polling path with bounded retries and explicit statuses."
 sections:
@@ -67,6 +73,14 @@ sections:
     Note: Focused wait-remote-checks coverage passed after bootstrapping the task worktree: bun x vitest run packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts; bun x eslint scripts/wait-remote-pr-checks.mjs packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts. Result: pass. Evidence: workflow:wait-remote-checks now polls GitHub state directly, retries transient transport failures, and times out explicitly instead of delegating to gh pr checks --watch.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:23:06.295Z, excerpt_hash=sha256:d66df5cf089e626245c43e79dcd613ccb9170e66075b1cba6fc3d641337f9e4e
+    
+    ### 2026-04-06T23:36:48.838Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: updated the polling test contract to match the new gh api call path and refreshed branch_pr artifacts for the current head.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:23:45.476Z, excerpt_hash=sha256:d66df5cf089e626245c43e79dcd613ccb9170e66075b1cba6fc3d641337f9e4e
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -106,6 +120,14 @@ By: CODER
 Note: Focused wait-remote-checks coverage passed after bootstrapping the task worktree: bun x vitest run packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts; bun x eslint scripts/wait-remote-pr-checks.mjs packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts. Result: pass. Evidence: workflow:wait-remote-checks now polls GitHub state directly, retries transient transport failures, and times out explicitly instead of delegating to gh pr checks --watch.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:23:06.295Z, excerpt_hash=sha256:d66df5cf089e626245c43e79dcd613ccb9170e66075b1cba6fc3d641337f9e4e
+
+### 2026-04-06T23:36:48.838Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: updated the polling test contract to match the new gh api call path and refreshed branch_pr artifacts for the current head.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:23:45.476Z, excerpt_hash=sha256:d66df5cf089e626245c43e79dcd613ccb9170e66075b1cba6fc3d641337f9e4e
 
 <!-- END VERIFICATION RESULTS -->
 

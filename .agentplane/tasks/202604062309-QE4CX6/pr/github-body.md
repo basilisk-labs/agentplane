@@ -20,7 +20,7 @@ Stop delegating workflow:wait-remote-checks to gh pr checks --watch and use a mo
 ### Current Status
 
 - State: ok
-- Note: Focused wait-remote-checks coverage passed after bootstrapping the task worktree: bun x vitest run packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts; bun x eslint scripts/wait-remote-pr-checks.mjs packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts. Result: pass. Evidence: workflow:wait-remote-checks now polls GitHub state directly, retries transient transport failures, and times out explicitly instead of delegating to gh pr checks --watch.
+- Note: Verified: updated the polling test contract to match the new gh api call path and refreshed branch_pr artifacts for the current head.
 
 ## Risks
 
@@ -39,22 +39,22 @@ Stop delegating workflow:wait-remote-checks to gh pr checks --watch and use a mo
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-06T23:34:25.147Z
+- Updated: 2026-04-06T23:36:48.874Z
 - Branch: task/202604062309-QE4CX6/remote-check-polling
-- Head: 30d5970ebafd
+- Head: 7995e257d8de
 
 ```text
  .agentplane/tasks/202604062309-QE4CX6/README.md    | 117 ++++++
- .../tasks/202604062309-QE4CX6/pr/diffstat.txt      |   0
- .../tasks/202604062309-QE4CX6/pr/github-body.md    |  50 +++
+ .../tasks/202604062309-QE4CX6/pr/diffstat.txt      |  11 +
+ .../tasks/202604062309-QE4CX6/pr/github-body.md    |  60 +++
  .../tasks/202604062309-QE4CX6/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604062309-QE4CX6/pr/meta.json |  14 +
  .../tasks/202604062309-QE4CX6/pr/notes.jsonl       |   0
- .agentplane/tasks/202604062309-QE4CX6/pr/review.md |  57 +++
+ .agentplane/tasks/202604062309-QE4CX6/pr/review.md |  67 ++++
  .../tasks/202604062309-QE4CX6/pr/verify.log        |   0
- .../src/cli/wait-remote-pr-checks-script.test.ts   | 190 ++++++---
+ .../src/cli/wait-remote-pr-checks-script.test.ts   | 195 +++++++---
  scripts/wait-remote-pr-checks.mjs                  | 424 +++++++++++++++++++--
- 10 files changed, 774 insertions(+), 79 deletions(-)
+ 10 files changed, 810 insertions(+), 79 deletions(-)
 ```
 
 </details>

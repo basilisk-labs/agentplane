@@ -1,11 +1,11 @@
  .agentplane/tasks/202604062309-QE4CX6/README.md    | 117 ++++++
- .../tasks/202604062309-QE4CX6/pr/diffstat.txt      |   0
- .../tasks/202604062309-QE4CX6/pr/github-body.md    |  50 +++
+ .../tasks/202604062309-QE4CX6/pr/diffstat.txt      |  11 +
+ .../tasks/202604062309-QE4CX6/pr/github-body.md    |  60 +++
  .../tasks/202604062309-QE4CX6/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604062309-QE4CX6/pr/meta.json |  14 +
  .../tasks/202604062309-QE4CX6/pr/notes.jsonl       |   0
- .agentplane/tasks/202604062309-QE4CX6/pr/review.md |  57 +++
+ .agentplane/tasks/202604062309-QE4CX6/pr/review.md |  67 ++++
  .../tasks/202604062309-QE4CX6/pr/verify.log        |   0
- .../src/cli/wait-remote-pr-checks-script.test.ts   | 190 ++++++---
+ .../src/cli/wait-remote-pr-checks-script.test.ts   | 195 +++++++---
  scripts/wait-remote-pr-checks.mjs                  | 424 +++++++++++++++++++--
- 10 files changed, 774 insertions(+), 79 deletions(-)
+ 10 files changed, 810 insertions(+), 79 deletions(-)
