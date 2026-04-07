@@ -4,7 +4,7 @@ title: "Explain incident promotion no-op when findings are not promotable"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-07T00:41:18.759Z"
+  updated_at: "2026-04-07T04:34:44.362Z"
   updated_by: "CODER"
-  note: "Added explicit no-op diagnostics when Findings has plain text but no structured incident blocks; focused vitest passed (resolve, incidents CLI, finish, integrate finalize) and eslint passed on all touched files."
+  note: "Published PR #109 for the incident no-op diagnostics change; focused vitest and eslint still cover the final head after PR artifact refresh."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added explicit no-op diagnostics when Findings has plain text but no structured incident blocks; focused vitest passed (resolve, incidents CLI, finish, integrate finalize) and eslint passed on all touched files."
+  -
+    type: "verify"
+    at: "2026-04-07T04:34:44.362Z"
+    author: "CODER"
+    state: "ok"
+    note: "Published PR #109 for the incident no-op diagnostics change; focused vitest and eslint still cover the final head after PR artifact refresh."
 doc_version: 3
-doc_updated_at: "2026-04-07T00:41:18.763Z"
+doc_updated_at: "2026-04-07T04:34:44.367Z"
 doc_updated_by: "CODER"
 description: "Make lifecycle and incidents commands explain why incidents.md stays unchanged when Findings contain no promotable external incident candidates, so operators can distinguish no-op, bad markers, and real write failures."
 sections:
@@ -68,6 +74,14 @@ sections:
     Note: Added explicit no-op diagnostics when Findings has plain text but no structured incident blocks; focused vitest passed (resolve, incidents CLI, finish, integrate finalize) and eslint passed on all touched files.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T00:36:58.034Z, excerpt_hash=sha256:93258cc85318aca20ac4b0cc52b239376c870bfb42e4e2753ce853ac659654b9
+    
+    ### 2026-04-07T04:34:44.362Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Published PR #109 for the incident no-op diagnostics change; focused vitest and eslint still cover the final head after PR artifact refresh.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T00:41:18.763Z, excerpt_hash=sha256:93258cc85318aca20ac4b0cc52b239376c870bfb42e4e2753ce853ac659654b9
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -107,6 +121,14 @@ By: CODER
 Note: Added explicit no-op diagnostics when Findings has plain text but no structured incident blocks; focused vitest passed (resolve, incidents CLI, finish, integrate finalize) and eslint passed on all touched files.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T00:36:58.034Z, excerpt_hash=sha256:93258cc85318aca20ac4b0cc52b239376c870bfb42e4e2753ce853ac659654b9
+
+### 2026-04-07T04:34:44.362Z — VERIFY — ok
+
+By: CODER
+
+Note: Published PR #109 for the incident no-op diagnostics change; focused vitest and eslint still cover the final head after PR artifact refresh.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T00:41:18.763Z, excerpt_hash=sha256:93258cc85318aca20ac4b0cc52b239376c870bfb42e4e2753ce853ac659654b9
 
 <!-- END VERIFICATION RESULTS -->
 

@@ -25,7 +25,7 @@ Make lifecycle and incidents commands explain why incidents.md stays unchanged w
 ### Current Status
 
 - State: ok
-- Note: Added explicit no-op diagnostics when Findings has plain text but no structured incident blocks; focused vitest passed (resolve, incidents CLI, finish, integrate finalize) and eslint passed on all touched files.
+- Note: Published PR #109 for the incident no-op diagnostics change; focused vitest and eslint still cover the final head after PR artifact refresh.
 
 ## Risks
 
@@ -45,12 +45,27 @@ Make lifecycle and incidents commands explain why incidents.md stays unchanged w
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T00:41:18.784Z
+- Updated: 2026-04-07T04:34:28.510Z
 - Branch: task/202604062308-KMTE4J/incident-promotion-diagnostics
-- Head: 9080e45e62f8
+- Head: c25ca558bbfe
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604062308-KMTE4J/README.md    | 118 +++++++++++++++++++++
+ .../tasks/202604062308-KMTE4J/pr/diffstat.txt      |  16 +++
+ .../tasks/202604062308-KMTE4J/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604062308-KMTE4J/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604062308-KMTE4J/pr/meta.json |  14 +++
+ .../tasks/202604062308-KMTE4J/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604062308-KMTE4J/pr/review.md |  57 ++++++++++
+ .../tasks/202604062308-KMTE4J/pr/verify.log        |   0
+ .../src/cli/run-cli.core.incidents.test.ts         |  72 +++++++++++++
+ .../agentplane/src/commands/incidents/shared.ts    |   9 ++
+ .../pr/integrate/internal/finalize.test.ts         |  32 ++++++
+ .../src/commands/task/finish.unit.test.ts          |  68 ++++++++++++
+ .../src/runtime/incidents/resolve.test.ts          |  20 ++++
+ .../agentplane/src/runtime/incidents/resolve.ts    |  10 +-
+ packages/agentplane/src/runtime/incidents/types.ts |   2 +
+ 15 files changed, 468 insertions(+), 1 deletion(-)
 ```
 
 </details>
