@@ -122,6 +122,13 @@ function isHooksRunCommitMsgInvocation(argv) {
   return false;
 }
 
+function renderStalePolicyWarning(reason) {
+  if (reason === "task_artifact_mutation") {
+    return "warning: allowing task-artifact lifecycle command to run with a stale repo build inside the framework checkout.\n";
+  }
+  return "warning: allowing read-only diagnostic command to run with a stale repo build inside the framework checkout.\n";
+}
+
 async function assertDistUpToDate() {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const agentplaneRoot = path.resolve(here, "..");
@@ -193,7 +200,7 @@ async function assertDistUpToDate() {
         .filter(Boolean)
         .join(" ");
       process.stderr.write(
-        "warning: allowing read-only diagnostic command to run with a stale repo build inside the framework checkout.\n" +
+        renderStalePolicyWarning(commandPolicy.reason) +
           `command: ${commandText || "<unknown>"}\n` +
           `detected: ${staleReasons.join(", ")}\n` +
           "rebuild recommended:\n" +

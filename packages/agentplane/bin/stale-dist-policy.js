@@ -38,6 +38,15 @@ function isPreflightCommand(args) {
   return args[0] === "preflight";
 }
 
+function isTaskArtifactMutationCommand(args) {
+  if (args[0] === "verify") return true;
+  if (args[0] !== "task") return false;
+  if (args[1] === "doc" && args[2] === "set") return true;
+  if (args[1] === "plan" && ["set", "approve", "reject"].includes(args[2] ?? "")) return true;
+  if (args[1] === "start-ready") return true;
+  return args[1] === "verify" && ["ok", "rework"].includes(args[2] ?? "");
+}
+
 export function classifyStaleDistPolicy(argv = process.argv) {
   const args = normalizeArgs(argv);
   if (
@@ -51,6 +60,9 @@ export function classifyStaleDistPolicy(argv = process.argv) {
     isPreflightCommand(args)
   ) {
     return { mode: "warn_and_run", reason: "read_only_diagnostic" };
+  }
+  if (isTaskArtifactMutationCommand(args)) {
+    return { mode: "warn_and_run", reason: "task_artifact_mutation" };
   }
   return { mode: "strict", reason: "default" };
 }

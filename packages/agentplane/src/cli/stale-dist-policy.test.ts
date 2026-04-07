@@ -69,11 +69,48 @@ describe("stale-dist command policy", () => {
   });
 
   it("keeps mutating commands strict", () => {
-    expect(classifyStaleDistPolicy(["node", "agentplane", "task", "doc", "set"])).toEqual({
+    expect(classifyStaleDistPolicy(["node", "agentplane", "verify", "20260307-ABC123"])).toEqual({
+      mode: "warn_and_run",
+      reason: "task_artifact_mutation",
+    });
+    expect(
+      classifyStaleDistPolicy(["node", "agentplane", "task", "plan", "set", "20260307-ABC123"]),
+    ).toEqual({
+      mode: "warn_and_run",
+      reason: "task_artifact_mutation",
+    });
+    expect(
+      classifyStaleDistPolicy(["node", "agentplane", "task", "doc", "set", "20260307-ABC123"]),
+    ).toEqual({
+      mode: "warn_and_run",
+      reason: "task_artifact_mutation",
+    });
+    expect(
+      classifyStaleDistPolicy(["node", "agentplane", "task", "start-ready", "20260307-ABC123"]),
+    ).toEqual({
+      mode: "warn_and_run",
+      reason: "task_artifact_mutation",
+    });
+    expect(
+      classifyStaleDistPolicy(["node", "agentplane", "task", "verify", "ok", "20260307-ABC123"]),
+    ).toEqual({
+      mode: "warn_and_run",
+      reason: "task_artifact_mutation",
+    });
+  });
+
+  it("keeps risky mutating commands strict", () => {
+    expect(classifyStaleDistPolicy(["node", "agentplane", "finish", "20260307-ABC123"])).toEqual({
       mode: "strict",
       reason: "default",
     });
-    expect(classifyStaleDistPolicy(["node", "agentplane", "task", "plan", "set"])).toEqual({
+    expect(classifyStaleDistPolicy(["node", "agentplane", "task", "doc", "set"])).toEqual({
+      mode: "warn_and_run",
+      reason: "task_artifact_mutation",
+    });
+    expect(
+      classifyStaleDistPolicy(["node", "agentplane", "work", "start", "20260307-ABC123"]),
+    ).toEqual({
       mode: "strict",
       reason: "default",
     });
