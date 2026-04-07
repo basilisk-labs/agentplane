@@ -125,6 +125,7 @@ export async function finalizeIntegrate(opts: {
   const collectedIncidents = await collectTaskIncidents({
     ctx: opts.ctx,
     taskId: opts.taskId,
+    task: opts.task,
     write: true,
   });
   if (!opts.quiet) {

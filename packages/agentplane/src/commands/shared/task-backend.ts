@@ -135,18 +135,29 @@ export async function loadCommandContext(opts: {
 export async function loadTaskFromContext(opts: {
   ctx: CommandContext;
   taskId: string;
+  preferBranchSnapshot?: boolean;
+  branchSnapshotBranch?: string | null;
 }): Promise<TaskData> {
+  const tasksDir = path.join(opts.ctx.resolvedProject.gitRoot, opts.ctx.config.paths.workflow_dir);
+  const readmePath = path.join(tasksDir, opts.taskId, "README.md");
+  const branchFallback = () =>
+    loadTaskFromBranchSnapshot({
+      ctx: opts.ctx,
+      taskId: opts.taskId,
+      readmePath,
+      branch: opts.branchSnapshotBranch ?? null,
+    });
+
+  if (opts.preferBranchSnapshot) {
+    const preferredBranchTask = await branchFallback();
+    if (preferredBranchTask) return preferredBranchTask;
+  }
+
   const task = await opts.ctx.taskBackend.getTask(opts.taskId);
   if (task) return task;
 
-  const tasksDir = path.join(opts.ctx.resolvedProject.gitRoot, opts.ctx.config.paths.workflow_dir);
-  const readmePath = path.join(tasksDir, opts.taskId, "README.md");
-  const branchFallback = await loadTaskFromBranchSnapshot({
-    ctx: opts.ctx,
-    taskId: opts.taskId,
-    readmePath,
-  });
-  if (branchFallback) return branchFallback;
+  const fallbackTask = await branchFallback();
+  if (fallbackTask) return fallbackTask;
 
   throw new CliError({
     exitCode: 4,
@@ -159,12 +170,16 @@ export async function loadTaskFromBranchSnapshot(opts: {
   ctx: CommandContext;
   taskId: string;
   readmePath: string;
+  branch?: string | null;
 }): Promise<TaskData | null> {
   if (opts.ctx.backendId !== "local") {
     return null;
   }
 
-  const branch = await resolveSingleTaskBranch(opts.ctx, opts.taskId);
+  const branch =
+    typeof opts.branch === "string" && opts.branch.trim().length > 0
+      ? opts.branch.trim()
+      : await resolveSingleTaskBranch(opts.ctx, opts.taskId);
   if (!branch) return null;
 
   const relReadmePath = toGitPath(path.relative(opts.ctx.resolvedProject.gitRoot, opts.readmePath));
