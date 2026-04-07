@@ -13,8 +13,8 @@ const mocks = vi.hoisted(() => ({
   gitBranchExists: vi.fn(),
   gitCurrentBranch: vi.fn(),
   gitRevParse: vi.fn(),
-  loadBackendTask: vi.fn(),
   loadCommandContext: vi.fn(),
+  loadTaskFromContext: vi.fn(),
   ensurePlanApprovedIfRequired: vi.fn(),
   ensureVerificationSatisfiedIfRequired: vi.fn(),
   resolvePrPaths: vi.fn(),
@@ -41,8 +41,8 @@ vi.mock("../../../shared/git-ops.js", () => ({
   gitRevParse: mocks.gitRevParse,
 }));
 vi.mock("../../../shared/task-backend.js", () => ({
-  loadBackendTask: mocks.loadBackendTask,
   loadCommandContext: mocks.loadCommandContext,
+  loadTaskFromContext: mocks.loadTaskFromContext,
 }));
 vi.mock("../../../task/shared.js", () => ({
   ensurePlanApprovedIfRequired: mocks.ensurePlanApprovedIfRequired,
@@ -69,7 +69,7 @@ function mkCtx(workflowMode: "direct" | "branch_pr" = "branch_pr") {
 }
 
 function seedCommon(): void {
-  mocks.loadBackendTask.mockResolvedValue({ task: { id: "T-1", verify: [] } });
+  mocks.loadTaskFromContext.mockResolvedValue({ id: "T-1", verify: [] });
   mocks.ensurePlanApprovedIfRequired.mockReturnValue();
   mocks.ensureVerificationSatisfiedIfRequired.mockReturnValue();
   mocks.ensureGitClean.mockResolvedValue();
@@ -207,5 +207,32 @@ describe("pr/integrate/internal/prepare", () => {
         branchHeadSha: "deadbeef",
       }),
     );
+  });
+
+  it("reloads the task via an integrate-scoped branch snapshot preference", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.loadTaskFromContext.mockResolvedValue({
+      id: "T-1",
+      verify: [],
+      title: "Branch-backed task",
+    });
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: "deadbeef",
+      last_verified_sha: null,
+    });
+
+    const prepared = await prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false });
+    expect(prepared.branch).toBe("task/T-1");
+    expect(prepared.task).toMatchObject({ title: "Branch-backed task" });
+
+    expect(mocks.loadTaskFromContext).toHaveBeenCalledWith({
+      ctx: prepared.ctx,
+      taskId: "T-1",
+      preferBranchSnapshot: true,
+      branchSnapshotBranch: "task/T-1",
+    });
   });
 });

@@ -2,6 +2,7 @@ import path from "node:path";
 import { readFile } from "node:fs/promises";
 
 import { resolveBaseBranch } from "@agentplaneorg/core";
+import type { TaskData } from "../../../../backends/task-backend.js";
 
 import { fileExists } from "../../../../cli/fs-utils.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
@@ -11,8 +12,8 @@ import { ensureGitClean } from "../../../guard/index.js";
 import { gitDiffNames, gitShowFile, toGitPath } from "../../../shared/git-diff.js";
 import { gitBranchExists, gitCurrentBranch, gitRevParse } from "../../../shared/git-ops.js";
 import {
-  loadBackendTask,
   loadCommandContext,
+  loadTaskFromContext,
   type CommandContext,
 } from "../../../shared/task-backend.js";
 import {
@@ -31,7 +32,7 @@ export type PreparedIntegrate = {
   ctx: CommandContext;
   resolved: CommandContext["resolvedProject"];
   loadedConfig: CommandContext["config"];
-  task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
+  task: TaskData;
 
   baseBranch: string;
   currentBranch: string;
@@ -67,12 +68,6 @@ export async function prepareIntegrate(opts: {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const { task } = await loadBackendTask({
-    ctx,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride,
-    taskId: opts.taskId,
-  });
 
   const resolved = ctx.resolvedProject;
   const loadedConfig = ctx.config;
@@ -85,8 +80,6 @@ export async function prepareIntegrate(opts: {
     });
   }
 
-  ensurePlanApprovedIfRequired(task, loadedConfig);
-  ensureVerificationSatisfiedIfRequired(task, loadedConfig);
   await ensureGitClean({ cwd: opts.cwd, rootOverride: opts.rootOverride });
 
   if (opts.base?.trim().length === 0) {
@@ -130,7 +123,7 @@ export async function prepareIntegrate(opts: {
   let meta: PrMeta | null = null;
   let branch = (opts.branch ?? "").trim();
   if (await fileExists(metaPath)) {
-    meta = parsePrMeta(await readFile(metaPath, "utf8"), task.id);
+    meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
     if (!branch) branch = (meta.branch ?? "").trim();
   }
   if (!branch) {
@@ -156,7 +149,7 @@ export async function prepareIntegrate(opts: {
         branch,
         toGitPath(path.relative(resolved.gitRoot, metaPath)),
       ),
-      task.id,
+      opts.taskId,
     );
   const baseCandidate = opts.base ?? metaSource.base ?? baseBranch;
   const base =
@@ -170,7 +163,7 @@ export async function prepareIntegrate(opts: {
     prDir,
     metaPath,
     branch,
-    taskId: task.id,
+    taskId: opts.taskId,
   });
   // readAndValidatePrArtifacts() throws if verify.log is missing; keep this non-null downstream.
   const verifyLogText = verifyLogTextMaybe!;
@@ -191,7 +184,7 @@ export async function prepareIntegrate(opts: {
     (await isTaskLocalOnlyAdvance({
       gitRoot: resolved.gitRoot,
       workflowDir: loadedConfig.paths.workflow_dir,
-      taskId: task.id,
+      taskId: opts.taskId,
       fromRef: metaSource.head_sha ?? null,
       toRef: branchHeadSha,
     }));
@@ -200,7 +193,7 @@ export async function prepareIntegrate(opts: {
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message:
-        `PR artifacts stale for ${task.id}: meta.head_sha=${metaSource.head_sha ?? "<missing>"} ` +
+        `PR artifacts stale for ${opts.taskId}: meta.head_sha=${metaSource.head_sha ?? "<missing>"} ` +
         `current_head=${branchHeadSha} (refresh the task branch artifacts before integrate)`,
     });
   }
@@ -209,10 +202,18 @@ export async function prepareIntegrate(opts: {
     (await isTaskLocalOnlyAdvance({
       gitRoot: resolved.gitRoot,
       workflowDir: loadedConfig.paths.workflow_dir,
-      taskId: task.id,
+      taskId: opts.taskId,
       fromRef: metaSource.last_verified_sha ?? null,
       toRef: branchHeadSha,
     }));
+  const task = await loadTaskFromContext({
+    ctx,
+    taskId: opts.taskId,
+    preferBranchSnapshot: true,
+    branchSnapshotBranch: branch,
+  });
+  ensurePlanApprovedIfRequired(task, loadedConfig);
+  ensureVerificationSatisfiedIfRequired(task, loadedConfig);
   const initialVerifyState = computeVerifyState({
     rawVerify: task.verify,
     metaLastVerifiedSha: verifyFresh ? branchHeadSha : (metaSource?.last_verified_sha ?? null),
