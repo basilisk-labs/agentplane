@@ -1,0 +1,6 @@
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 93 ++++++++++++++++++++++
+ packages/agentplane/src/commands/pr/check.ts       | 71 +++++++++--------
+ .../commands/pr/integrate/internal/prepare.test.ts | 43 +++++++++-
+ .../src/commands/pr/integrate/internal/prepare.ts  | 49 +++++-------
+ .../src/commands/pr/internal/freshness.ts          | 77 ++++++++++++++++++
+ 5 files changed, 272 insertions(+), 61 deletions(-)
