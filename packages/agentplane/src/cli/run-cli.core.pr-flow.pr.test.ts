@@ -105,6 +105,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("✅ pr open");
+      expect(io.stdout).toContain("local PR artifacts synced; GitHub PR not created");
     } finally {
       io.restore();
     }
@@ -1484,6 +1485,79 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr open reports linked GitHub PR identity when pr metadata already has one", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open linked identity",
+        "--description",
+        "PR open should report a linked remote PR when metadata already knows it",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/pr-open`,
+      "--root",
+      root,
+    ]);
+
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as {
+      pr_number?: number;
+      pr_url?: string;
+    };
+    meta.pr_number = 321;
+    meta.pr_url = "https://github.com/example/repo/pull/321";
+    await writeFile(metaPath, `${JSON.stringify(meta, null, 2)}\n`, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        `task/${taskId}/pr-open`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("linked to GitHub PR #321");
+      expect(io.stdout).toContain("https://github.com/example/repo/pull/321");
     } finally {
       io.restore();
     }

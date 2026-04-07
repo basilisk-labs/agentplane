@@ -190,6 +190,7 @@ export async function syncPrArtifacts(opts: {
   author?: string;
   branch?: string;
 }): Promise<{
+  meta: PrMeta;
   prDir: string;
   resolved: { gitRoot: string };
 }> {
@@ -315,7 +316,7 @@ export async function syncPrArtifacts(opts: {
         await writeTextIfChanged(reviewPath, nextReview);
         await writeTextIfChanged(githubTitlePath, `${githubTitle}\n`);
         await writeTextIfChanged(githubBodyPath, githubBody);
-        return { prDir, resolved };
+        return { meta: nextMeta, prDir, resolved };
       }
 
       if (!baseBranch) {
@@ -369,7 +370,7 @@ export async function syncPrArtifacts(opts: {
       await writeTextIfChanged(githubTitlePath, `${githubTitle}\n`);
       await writeTextIfChanged(githubBodyPath, githubBody);
       await writeJsonStableIfChanged(metaPath, nextMeta);
-      return { prDir, resolved };
+      return { meta: nextMeta, prDir, resolved };
     } finally {
       await restoreIncidentRegistryIfNeeded({
         gitRoot: resolved.gitRoot,
