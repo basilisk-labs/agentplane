@@ -1,10 +1,11 @@
 ---
 id: "202604070755-80B5J6"
 title: "Fix gh auth propagation in agentplane pr close"
-status: "DOING"
+result_summary: "integrate: squash task/202604070755-80B5J6/pr-close-gh-auth"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T08:14:10.341Z"
   updated_by: "CODER"
   note: "Verified: pr close now invokes gh with auth-bearing parent env while stripping git worktree overrides, targeted runCli and input-validation tests pass, and eslint passes for the touched pr close files."
-commit: null
+commit:
+  hash: "84573c1524ff7cdac6a9bcc974dfeb684215ef2d"
+  message: "📝 80B5J6 task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the gh 401 seen by agentplane pr close, inspect the gh invocation environment and repo resolution path, then fix the smallest auth propagation bug with focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070755-80B5J6/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: pr close now invokes gh with auth-bearing parent env while stripping git worktree overrides, targeted runCli and input-validation tests pass, and eslint passes for the touched pr close files."
+  -
+    type: "status"
+    at: "2026-04-07T09:04:26.232Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070755-80B5J6/pr."
 doc_version: 3
-doc_updated_at: "2026-04-07T08:14:10.343Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T09:04:26.237Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure the CLI can invoke gh with the same working authentication and environment that succeeds in the user shell, so pr close works from inside agentplane."
 sections:
   Summary: |-
