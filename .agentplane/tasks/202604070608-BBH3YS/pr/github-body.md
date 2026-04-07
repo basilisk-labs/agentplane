@@ -39,12 +39,29 @@ Provide an ergonomic task CLI path to append structured Findings blocks, includi
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T06:32:27.335Z
+- Updated: 2026-04-07T07:29:07.308Z
 - Branch: task/202604070608-BBH3YS/findings-append-command
-- Head: 5a84fc42e65e
+- Head: 9d79c4f911f7
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604070608-BBH3YS/README.md    | 125 +++++++++++++
+ .../tasks/202604070608-BBH3YS/pr/diffstat.txt      |   0
+ .../tasks/202604070608-BBH3YS/pr/github-body.md    |  50 +++++
+ .../tasks/202604070608-BBH3YS/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604070608-BBH3YS/pr/meta.json |  14 ++
+ .../tasks/202604070608-BBH3YS/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604070608-BBH3YS/pr/review.md |  57 ++++++
+ .../tasks/202604070608-BBH3YS/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |  44 +++++
+ packages/agentplane/src/cli/bootstrap-guide.ts     |   1 +
+ packages/agentplane/src/cli/command-guide.ts       |   3 +-
+ .../src/cli/run-cli.core.tasks.findings.test.ts    | 205 +++++++++++++++++++++
+ .../src/cli/run-cli/command-catalog/task.ts        |  16 ++
+ .../src/commands/task/findings-add.command.ts      | 155 ++++++++++++++++
+ .../src/commands/task/findings.command.ts          |  27 +++
+ packages/agentplane/src/commands/task/findings.ts  | 183 ++++++++++++++++++
+ .../src/commands/task/findings.unit.test.ts        |  35 ++++
+ 17 files changed, 915 insertions(+), 1 deletion(-)
 ```
 
 </details>
