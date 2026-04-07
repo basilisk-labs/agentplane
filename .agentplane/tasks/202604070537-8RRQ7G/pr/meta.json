@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604070537-8RRQ7G/local-main-closure-reconcile",
   "created_at": "2026-04-07T05:39:32.469Z",
-  "head_sha": "c5a02650dc7d9fc6c470e406b649efc563c22577",
+  "head_sha": "f2b4ef8ae9275091bb4b5590b43a7f56cc060e76",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "26f8304862efadaf66579de5907e2b6d55e1e00a",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T05:44:24Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604070537-8RRQ7G",
-  "updated_at": "2026-04-07T05:39:32.469Z",
+  "updated_at": "2026-04-07T05:44:24Z",
   "verify": {
     "status": "skipped"
   }
