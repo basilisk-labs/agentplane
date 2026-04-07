@@ -1,21 +1,12 @@
 import { execFileSync } from "node:child_process";
 
+import { listStagedGitFiles } from "./lib/staged-git-files.mjs";
+
 function run(command, args, env) {
   execFileSync(command, args, {
     stdio: "inherit",
     env: env ? { ...process.env, ...env } : process.env,
   });
-}
-
-function stagedFiles() {
-  const out = execFileSync("git", ["diff", "--cached", "--name-only", "--diff-filter=ACMR"], {
-    encoding: "utf8",
-  }).trim();
-  if (!out) return [];
-  return out
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
 }
 
 function commitMsgPath() {
@@ -26,7 +17,7 @@ function commitMsgPath() {
   }).trim();
 }
 
-const files = stagedFiles();
+const files = listStagedGitFiles();
 const msg = commitMsgPath();
 if (files.length === 0) {
   process.stdout.write("commit-msg: no staged files detected.\n");

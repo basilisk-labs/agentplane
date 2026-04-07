@@ -1,0 +1,1 @@
+testing/workflow: Skip broad pre-commit test-fast for artifact-only and docs-only stage... (T8F4ZZ)

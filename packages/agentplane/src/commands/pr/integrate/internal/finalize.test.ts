@@ -161,10 +161,13 @@ describe("pr/integrate/internal/finalize", () => {
       1,
       expect.objectContaining({ taskId: "T-1", write: false }),
     );
-    expect(mocks.collectTaskIncidents).toHaveBeenNthCalledWith(
-      2,
-      expect.objectContaining({ taskId: "T-1", write: true }),
-    );
+    const secondIncidentCall = mocks.collectTaskIncidents.mock.calls[1];
+    expect(secondIncidentCall).toBeDefined();
+    expect(secondIncidentCall?.[0]).toMatchObject({
+      taskId: "T-1",
+      task: { id: "T-1" },
+      write: true,
+    });
   });
 
   it("skips verify metadata update when verify commands are absent", async () => {

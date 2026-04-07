@@ -10,6 +10,8 @@ export type TaskPrMeta = {
   task_id: string;
   branch?: string;
   base?: string;
+  pr_number?: number;
+  pr_url?: string;
   created_at: string;
   updated_at: string;
   status?: "MERGED";
@@ -442,6 +444,8 @@ export const TASK_PR_META_SCHEMA = {
     task_id: { type: "string", minLength: 1 },
     branch: { type: "string", minLength: 1 },
     base: { type: "string", minLength: 1 },
+    pr_number: { type: "integer", minimum: 1 },
+    pr_url: { type: "string", minLength: 1 },
     created_at: { type: "string", format: "date-time" },
     updated_at: { type: "string", format: "date-time" },
     status: { type: "string", enum: ["MERGED"] },

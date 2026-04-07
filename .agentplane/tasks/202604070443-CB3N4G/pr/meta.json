@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604070443-CB3N4G/integrate-fresh-task-snapshot",
+  "created_at": "2026-04-07T05:16:49.961Z",
+  "head_sha": "18d87551747a24390b95bff6ff597c2920e6370c",
+  "last_verified_at": "2026-04-07T05:24:19.686Z",
+  "last_verified_sha": "090564d0c3aabaf79f3d66d6f4fc6808f9925418",
+  "merge_commit": "d1fc846add11321d63fe2fa856b08fd9b8213c7c",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T05:36:08.652Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604070443-CB3N4G",
+  "updated_at": "2026-04-07T05:36:08.652Z",
+  "verify": {
+    "status": "pass"
+  }
+}

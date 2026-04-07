@@ -41,6 +41,8 @@ export function buildOpenedPrMeta(opts: {
     schema_version: 1,
     task_id: opts.taskId,
     branch: opts.branch,
+    pr_number: opts.previousMeta?.pr_number,
+    pr_url: opts.previousMeta?.pr_url,
     created_at: opts.previousMeta?.created_at ?? opts.at,
     updated_at: changed ? opts.at : (opts.previousMeta?.updated_at ?? opts.at),
     last_verified_sha: opts.previousMeta?.last_verified_sha ?? null,

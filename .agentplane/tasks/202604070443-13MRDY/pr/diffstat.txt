@@ -1,0 +1,16 @@
+ .agentplane/tasks/202604070443-13MRDY/README.md    | 135 +++++++++++++++++++++
+ .../tasks/202604070443-13MRDY/pr/diffstat.txt      |   9 ++
+ .../tasks/202604070443-13MRDY/pr/github-body.md    |  48 ++++++++
+ .../tasks/202604070443-13MRDY/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604070443-13MRDY/pr/meta.json |  14 +++
+ .../tasks/202604070443-13MRDY/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604070443-13MRDY/pr/review.md |  55 +++++++++
+ .../tasks/202604070443-13MRDY/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  74 +++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |   5 +-
+ packages/agentplane/src/commands/pr/open.ts        |  13 +-
+ packages/agentplane/src/commands/shared/pr-meta.ts |   2 +
+ packages/core/schemas/pr-meta.schema.json          |   8 ++
+ packages/core/src/tasks/task-artifact-schema.ts    |   4 +
+ packages/spec/schemas/pr-meta.schema.json          |   8 ++
+ 15 files changed, 372 insertions(+), 4 deletions(-)

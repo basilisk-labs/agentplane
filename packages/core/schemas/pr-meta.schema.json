@@ -22,6 +22,14 @@
       "type": "string",
       "minLength": 1
     },
+    "pr_number": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "pr_url": {
+      "type": "string",
+      "minLength": 1
+    },
     "created_at": {
       "type": "string",
       "format": "date-time"
