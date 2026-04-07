@@ -1,7 +1,6 @@
 # Policy Incidents Log
 
 - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`. Optional machine-match fields: `tags`, `match`, `advice`, `source_task`, `fixability`.
-- `rule` MUST be concrete and testable (`MUST` / `MUST NOT`).
 - `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.
 - First auto-promoted external incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.
 - id: INC-20260308-01
