@@ -45,12 +45,28 @@ Avoid running the full pre-commit test-fast suite for commits that only touch ta
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T05:11:56.708Z
+- Updated: 2026-04-07T05:13:41.521Z
 - Branch: task/202604070443-T8F4ZZ/pre-commit-artifact-fast-path
-- Head: 3977423a8d6f
+- Head: 6388ae265a74
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604070443-T8F4ZZ/README.md    | 162 +++++++++++++++++++++
+ .../tasks/202604070443-T8F4ZZ/pr/diffstat.txt      |  10 ++
+ .../tasks/202604070443-T8F4ZZ/pr/github-body.md    |  50 +++++++
+ .../tasks/202604070443-T8F4ZZ/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604070443-T8F4ZZ/pr/meta.json |  14 ++
+ .../tasks/202604070443-T8F4ZZ/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604070443-T8F4ZZ/pr/review.md |  57 ++++++++
+ .../tasks/202604070443-T8F4ZZ/pr/verify.log        |   0
+ lefthook.yml                                       |   2 +-
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  28 ++++
+ .../src/cli/pre-commit-test-fast-script.test.ts    | 104 +++++++++++++
+ scripts/lib/local-ci-selection.mjs                 |   8 +-
+ scripts/lib/staged-git-files.mjs                   |  12 ++
+ scripts/run-commit-msg-hook.mjs                    |  15 +-
+ scripts/run-pre-commit-hook.mjs                    |  14 +-
+ scripts/run-pre-commit-test-fast.mjs               |  31 ++++
+ 16 files changed, 482 insertions(+), 26 deletions(-)
 ```
 
 </details>
