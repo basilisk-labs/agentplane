@@ -514,6 +514,93 @@ describe("runCli", () => {
     expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/pr/diffstat.txt`);
   }, 180_000);
 
+  it("integrate tolerates forward-compatible branch-only pr/meta variants", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+    await stageGitignoreIfPresent(root);
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate forward-compatible PR meta",
+        "--description",
+        "Base integrate should read branch PR artifacts even when branch metadata carries newer enum values.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
+
+    const branch = `task/${taskId}/integrate-forward-compatible`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await runCliSilent(["pr", "update", taskId, "--root", root]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/pr`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add task artifacts`], { cwd: root });
+
+    const branchMetaText = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"),
+      "utf8",
+    );
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const baseMetaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    await mkdir(path.dirname(baseMetaPath), { recursive: true });
+    const localForwardCompatibleMeta = JSON.parse(branchMetaText) as Record<string, unknown>;
+    localForwardCompatibleMeta.status = "FUTURE_OPEN";
+    await writeFile(
+      baseMetaPath,
+      `${JSON.stringify(localForwardCompatibleMeta, null, 2)}\n`,
+      "utf8",
+    );
+    expect(await pathExists(baseMetaPath)).toBe(true);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ integrate");
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, taskId });
+    expect(task.frontmatter.status).toBe("DONE");
+    const mergedMetaText = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"),
+      "utf8",
+    );
+    expect(mergedMetaText).toContain('"status": "MERGED"');
+  }, 180_000);
+
   it("integrate promotes structured external incident candidates into the incident registry", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
