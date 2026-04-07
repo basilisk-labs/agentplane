@@ -3,6 +3,7 @@ export type {
   IncidentAdviceQuery,
   IncidentCollectionPlan,
   IncidentFindingCandidate,
+  IncidentSkippedFinding,
   IncidentPromotionDraft,
   IncidentPromotionIssue,
   IncidentPromotionTaskContext,

@@ -8,7 +8,7 @@ import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
-import { collectTaskIncidents, renderIncidentCollectionOutcome } from "../incidents/shared.js";
+import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
 import {
   createTaskCloseCommit,
   existingCommitInfo,
@@ -350,7 +350,7 @@ export async function cmdFinish(opts: {
       taskCommitInfo,
     });
 
-    let promotedIncidents = 0;
+    const incidentPlans = [];
     for (const taskId of opts.taskIds) {
       const loadedTask = loadedTasks.find((candidate) => candidate.taskId === taskId) ?? null;
       const collected = await collectTaskIncidents({
@@ -359,8 +359,9 @@ export async function cmdFinish(opts: {
         task: loadedTask?.task ?? null,
         write: true,
       });
-      promotedIncidents += collected.plan.promotable.length;
+      incidentPlans.push(collected.plan);
     }
+    const promotedIncidents = incidentPlans.reduce((sum, plan) => sum + plan.promotable.length, 0);
 
     // tasks.json is export-only; generated via `agentplane task export`.
 
@@ -390,7 +391,13 @@ export async function cmdFinish(opts: {
     }
 
     if (!opts.quiet) {
-      process.stdout.write(`${infoMessage(renderIncidentCollectionOutcome(promotedIncidents))}\n`);
+      const incidentPlan = incidentPlans[0] ?? {
+        candidates: [],
+        skipped: [],
+        promotable: [],
+        duplicates: [],
+      };
+      process.stdout.write(`${infoMessage(renderIncidentCollectionPlanOutcome(incidentPlan))}\n`);
       process.stdout.write(`${successMessage("finished")}\n`);
     }
     return 0;

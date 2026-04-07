@@ -94,12 +94,40 @@ describe("incidents runtime", () => {
     });
 
     expect(plan.candidates).toHaveLength(2);
+    expect(plan.skipped).toHaveLength(0);
     expect(plan.promotable).toHaveLength(0);
     expect(plan.duplicates).toHaveLength(1);
     expect(plan.issues).toHaveLength(1);
     expect(plan.issues[0]?.missingFields).toEqual([
       "Fixability: external or IncidentExternal: true",
     ]);
+  });
+
+  it("tracks structured findings that are skipped because they are not marked for promotion or external handling", () => {
+    const plan = planIncidentCollection({
+      task: {
+        id: "TASK-6",
+        title: "Document transport issue",
+        description: "Capture reusable workflow lesson without promoting it yet",
+        tags: ["workflow"],
+      },
+      findings: [
+        "- Observation: transient GitHub transport failures forced manual retries.",
+        "  Impact: operators had to repeat the same reconcile loop.",
+        "  Resolution: switch the flaky path to a resilient polling implementation.",
+      ].join("\n"),
+      registry: parseIncidentRegistry(createIncidentRegistrySkeleton()),
+      now: new Date("2026-04-06T10:00:00.000Z"),
+    });
+
+    expect(plan.candidates).toHaveLength(0);
+    expect(plan.skipped).toHaveLength(1);
+    expect(plan.skipped[0]).toMatchObject({
+      observation: "transient GitHub transport failures forced manual retries.",
+      reason: "not_marked_external_or_promotable",
+    });
+    expect(plan.promotable).toHaveLength(0);
+    expect(plan.issues).toHaveLength(0);
   });
 
   it("auto-promotes first external findings as open incidents and resolves advice by tags and scope", () => {

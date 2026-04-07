@@ -168,4 +168,99 @@ describe("runCli incidents", () => {
     );
     expect(incidentsFile).toContain("INC-20260403-01");
   });
+
+  it("incidents collect reports skipped structured findings that are not marked external or promotable", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Report skipped structured findings",
+          "--description",
+          "Differentiate skipped findings from empty incident input",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "doc",
+          "set",
+          taskId,
+          "--section",
+          "Findings",
+          "--text",
+          [
+            "- Observation: transient GitHub transport failures forced manual retries.",
+            "  Impact: operators had to repeat the same reconcile loop.",
+            "  Resolution: move the flaky path onto resilient polling.",
+          ].join("\n"),
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "incidents",
+        "collect",
+        taskId,
+        "--check",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        task_id: string;
+        checked_only: boolean;
+        candidates: number;
+        skipped: { observation: string; reason: string }[];
+        promotable: unknown[];
+      };
+      expect(payload.task_id).toBe(taskId);
+      expect(payload.checked_only).toBe(true);
+      expect(payload.candidates).toBe(0);
+      expect(payload.skipped).toHaveLength(1);
+      expect(payload.skipped[0]?.reason).toBe("not_marked_external_or_promotable");
+      expect(payload.promotable).toHaveLength(0);
+    } finally {
+      io.restore();
+    }
+  });
 });

@@ -993,9 +993,79 @@ describe("task finish (unit)", () => {
 
     expect(rc).toBe(0);
     expect(writes.join("")).toContain(
-      "incident registry unchanged (no promotable external findings)",
+      "incident registry unchanged (no structured incident findings)",
     );
     expect(writes.join("")).toContain("finished");
+
+    writeSpy.mockRestore();
+  });
+
+  it("prints skipped structured finding diagnostics when finish parses findings but does not promote them", async () => {
+    const writes: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+      writes.push(String(chunk));
+      return true;
+    });
+
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        id: "T-2",
+        status: "DOING",
+        tags: ["workflow"],
+        commit: { hash: "def456", message: "feat: T-2" },
+        doc: [
+          "## Summary",
+          "Task summary",
+          "",
+          "## Scope",
+          "In-scope files",
+          "",
+          "## Plan",
+          "1. Implement",
+          "",
+          "## Verification",
+          "",
+          "## Rollback Plan",
+          "Revert commit",
+          "",
+          "## Findings",
+          "- Observation: transient GitHub transport failures forced manual retries.",
+          "  Impact: operators had to repeat the same reconcile loop.",
+          "  Resolution: move the flaky path onto resilient polling.",
+        ].join("\n"),
+      }),
+    );
+    mocks.readCommitInfo.mockResolvedValue({ hash: "def456", message: "feat: T-2" });
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-2"],
+      author: "A",
+      body: "Verified: skipped structured findings should be reported.",
+      result: "incident diagnostics",
+      commit: "def456",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(writes.join("")).toContain("structured finding skipped");
+    expect(writes.join("")).toContain("Promotion: incident-candidate");
 
     writeSpy.mockRestore();
   });

@@ -88,7 +88,7 @@ describe("pr/integrate/internal/finalize", () => {
       registryPath: "/repo/.agentplane/policy/incidents.md",
       registryText: "",
       registry: null,
-      plan: { promotable: [], issues: [] },
+      plan: { candidates: [], skipped: [], promotable: [], duplicates: [], issues: [] },
       wrote: false,
     });
   });
@@ -184,6 +184,43 @@ describe("pr/integrate/internal/finalize", () => {
         shouldRunVerify: false,
         alreadyVerifiedSha: null,
       }),
+    );
+  });
+
+  it("reports skipped structured findings when integrate does not promote incidents", async () => {
+    const { finalizeIntegrate } = await import("./finalize.js");
+    mocks.fileExists.mockResolvedValue(true);
+    mocks.readFile.mockResolvedValue("{}");
+    mocks.parsePrMeta.mockReturnValue({ schema_version: 1, task_id: "T-1" });
+    mocks.buildIntegratedPrMeta.mockReturnValue({ schema_version: 1, task_id: "T-1" });
+    mocks.gitDiffStat.mockResolvedValue("");
+    mocks.readCommitInfo.mockResolvedValue({ hash: "deadbeef", message: "merge" });
+    mocks.collectTaskIncidents.mockResolvedValue({
+      loaded: null,
+      registryPath: "/repo/.agentplane/policy/incidents.md",
+      registryText: "",
+      registry: null,
+      plan: {
+        candidates: [],
+        skipped: [
+          {
+            observation: "transport drift",
+            line: 1,
+            reason: "not_marked_external_or_promotable",
+            rawFields: {},
+          },
+        ],
+        promotable: [],
+        duplicates: [],
+        issues: [],
+      },
+      wrote: false,
+    });
+
+    await finalizeIntegrate({ ...baseOpts(), quiet: false });
+
+    expect(emitter.info).toHaveBeenCalledWith(
+      expect.stringContaining("structured finding skipped"),
     );
   });
 });

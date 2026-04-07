@@ -159,6 +159,42 @@ export function renderIncidentCollectionOutcome(promotedCount: number): string {
     : "incident registry unchanged (no promotable external findings)";
 }
 
+export function renderIncidentCollectionPlanOutcome(plan: {
+  candidates?: readonly unknown[];
+  skipped?: readonly unknown[];
+  promotable?: readonly unknown[];
+  duplicates?: readonly unknown[];
+}): string {
+  const candidates = Array.isArray(plan.candidates) ? plan.candidates.length : 0;
+  const skipped = Array.isArray(plan.skipped) ? plan.skipped.length : 0;
+  const promoted = Array.isArray(plan.promotable) ? plan.promotable.length : 0;
+  const duplicates = Array.isArray(plan.duplicates) ? plan.duplicates.length : 0;
+
+  if (promoted > 0) {
+    const suffix: string[] = [];
+    if (duplicates > 0) suffix.push(`${duplicates} duplicate${duplicates === 1 ? "" : "s"}`);
+    if (skipped > 0)
+      suffix.push(`${skipped} skipped structured finding${skipped === 1 ? "" : "s"}`);
+    return suffix.length > 0
+      ? `incident registry updated (${promoted} promoted; ${suffix.join("; ")})`
+      : renderIncidentCollectionOutcome(promoted);
+  }
+
+  if (skipped > 0) {
+    return `incident registry unchanged (${skipped} structured finding${skipped === 1 ? "" : "s"} skipped: add Promotion: incident-candidate or IncidentExternal/Fixability: external to promote reusable findings)`;
+  }
+
+  if (candidates === 0) {
+    return "incident registry unchanged (no structured incident findings)";
+  }
+
+  if (duplicates > 0 && duplicates === candidates) {
+    return `incident registry unchanged (${duplicates} duplicate incident${duplicates === 1 ? "" : "s"} already recorded)`;
+  }
+
+  return "incident registry unchanged (no promotable external findings)";
+}
+
 export async function adviseTaskIncidents(opts: {
   ctx: CommandContext;
   taskId: string;
