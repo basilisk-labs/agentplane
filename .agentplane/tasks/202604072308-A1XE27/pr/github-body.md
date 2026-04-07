@@ -22,7 +22,7 @@ Base-branch integrate should not fail when a task branch carries newer pr/meta f
 ### Current Status
 
 - State: ok
-- Note: Command: targeted integrate forward-compatible test + pr-meta forward-compatible test + eslint; Result: pass; Evidence: integrate now accepts forward-compatible branch PR metadata without loosening strict same-checkout parsing; Scope: base-side integrate preparation for branch_pr schema evolution.
+- Note: Command: prepare.test + forward-compatible integrate/pr-meta tests + eslint + full pre-push; Result: pass; Evidence: integrate accepts forward-compatible branch pr/meta while strict same-checkout parsing remains unchanged; Scope: branch_pr integrate preparation only.
 
 ## Risks
 
@@ -41,12 +41,25 @@ Base-branch integrate should not fail when a task branch carries newer pr/meta f
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T23:21:09.815Z
+- Updated: 2026-04-07T23:34:23.987Z
 - Branch: task/202604072308-A1XE27/forward-compatible-pr-meta
-- Head: c27e8033305a
+- Head: 2f40e56e00d9
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604072308-A1XE27/README.md    | 112 +++++++++++++++++++++
+ .../tasks/202604072308-A1XE27/pr/diffstat.txt      |   0
+ .../tasks/202604072308-A1XE27/pr/github-body.md    |  52 ++++++++++
+ .../tasks/202604072308-A1XE27/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604072308-A1XE27/pr/meta.json |  14 +++
+ .../tasks/202604072308-A1XE27/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604072308-A1XE27/pr/review.md |  59 +++++++++++
+ .../tasks/202604072308-A1XE27/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts |  87 ++++++++++++++++
+ .../commands/pr/integrate/internal/prepare.test.ts |   1 +
+ .../src/commands/pr/integrate/internal/prepare.ts  |   6 +-
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  31 ++++++
+ packages/agentplane/src/commands/shared/pr-meta.ts | 102 +++++++++++++++++++
+ 13 files changed, 462 insertions(+), 3 deletions(-)
 ```
 
 </details>

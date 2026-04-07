@@ -4,7 +4,7 @@ title: "Make integrate tolerate forward-compatible pr/meta schema from task bran
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-07T23:20:04.257Z"
+  updated_at: "2026-04-07T23:34:23.963Z"
   updated_by: "CODER"
-  note: "Command: targeted integrate forward-compatible test + pr-meta forward-compatible test + eslint; Result: pass; Evidence: integrate now accepts forward-compatible branch PR metadata without loosening strict same-checkout parsing; Scope: base-side integrate preparation for branch_pr schema evolution."
+  note: "Command: prepare.test + forward-compatible integrate/pr-meta tests + eslint + full pre-push; Result: pass; Evidence: integrate accepts forward-compatible branch pr/meta while strict same-checkout parsing remains unchanged; Scope: branch_pr integrate preparation only."
 commit: null
 comments: []
 events:
@@ -32,8 +32,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: targeted integrate forward-compatible test + pr-meta forward-compatible test + eslint; Result: pass; Evidence: integrate now accepts forward-compatible branch PR metadata without loosening strict same-checkout parsing; Scope: base-side integrate preparation for branch_pr schema evolution."
+  -
+    type: "verify"
+    at: "2026-04-07T23:34:23.963Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: prepare.test + forward-compatible integrate/pr-meta tests + eslint + full pre-push; Result: pass; Evidence: integrate accepts forward-compatible branch pr/meta while strict same-checkout parsing remains unchanged; Scope: branch_pr integrate preparation only."
 doc_version: 3
-doc_updated_at: "2026-04-07T23:20:04.262Z"
+doc_updated_at: "2026-04-07T23:34:23.967Z"
 doc_updated_by: "CODER"
 description: "Base-branch integrate should not fail when a task branch carries newer pr/meta fields or enum values than the current base runtime; integrate should extract the branch/base/verify freshness fields it needs without rejecting forward-compatible branch artifacts."
 sections:
@@ -60,6 +66,14 @@ sections:
     Note: Command: targeted integrate forward-compatible test + pr-meta forward-compatible test + eslint; Result: pass; Evidence: integrate now accepts forward-compatible branch PR metadata without loosening strict same-checkout parsing; Scope: base-side integrate preparation for branch_pr schema evolution.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T23:12:00.032Z, excerpt_hash=sha256:2df24f32d0cf162aa1beaf7d10904fdc97fbc9096f6cd02404ef895b76b8b34b
+    
+    ### 2026-04-07T23:34:23.963Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: prepare.test + forward-compatible integrate/pr-meta tests + eslint + full pre-push; Result: pass; Evidence: integrate accepts forward-compatible branch pr/meta while strict same-checkout parsing remains unchanged; Scope: branch_pr integrate preparation only.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T23:20:04.262Z, excerpt_hash=sha256:2df24f32d0cf162aa1beaf7d10904fdc97fbc9096f6cd02404ef895b76b8b34b
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -101,6 +115,14 @@ By: CODER
 Note: Command: targeted integrate forward-compatible test + pr-meta forward-compatible test + eslint; Result: pass; Evidence: integrate now accepts forward-compatible branch PR metadata without loosening strict same-checkout parsing; Scope: base-side integrate preparation for branch_pr schema evolution.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T23:12:00.032Z, excerpt_hash=sha256:2df24f32d0cf162aa1beaf7d10904fdc97fbc9096f6cd02404ef895b76b8b34b
+
+### 2026-04-07T23:34:23.963Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: prepare.test + forward-compatible integrate/pr-meta tests + eslint + full pre-push; Result: pass; Evidence: integrate accepts forward-compatible branch pr/meta while strict same-checkout parsing remains unchanged; Scope: branch_pr integrate preparation only.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T23:20:04.262Z, excerpt_hash=sha256:2df24f32d0cf162aa1beaf7d10904fdc97fbc9096f6cd02404ef895b76b8b34b
 
 <!-- END VERIFICATION RESULTS -->
 
