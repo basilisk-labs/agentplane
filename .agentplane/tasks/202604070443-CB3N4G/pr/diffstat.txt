@@ -1,10 +1,10 @@
  .agentplane/tasks/202604070443-CB3N4G/README.md    | 118 +++++++++++++++++++++
- .../tasks/202604070443-CB3N4G/pr/diffstat.txt      |   0
- .../tasks/202604070443-CB3N4G/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604070443-CB3N4G/pr/diffstat.txt      |  15 +++
+ .../tasks/202604070443-CB3N4G/pr/github-body.md    |  64 +++++++++++
  .../tasks/202604070443-CB3N4G/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604070443-CB3N4G/pr/meta.json |  14 +++
  .../tasks/202604070443-CB3N4G/pr/notes.jsonl       |   0
- .agentplane/tasks/202604070443-CB3N4G/pr/review.md |  57 ++++++++++
+ .agentplane/tasks/202604070443-CB3N4G/pr/review.md |  71 +++++++++++++
  .../tasks/202604070443-CB3N4G/pr/verify.log        |   0
  .../pr/integrate/internal/finalize.test.ts         |  11 +-
  .../src/commands/pr/integrate/internal/finalize.ts |   1 +
@@ -12,4 +12,4 @@
  .../src/commands/pr/integrate/internal/prepare.ts  |  33 +++---
  .../src/commands/shared/task-backend.test.ts       |  47 +++++++-
  .../agentplane/src/commands/shared/task-backend.ts |  33 ++++--
- 14 files changed, 365 insertions(+), 33 deletions(-)
+ 14 files changed, 408 insertions(+), 33 deletions(-)

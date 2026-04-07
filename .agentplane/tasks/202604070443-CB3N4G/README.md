@@ -1,10 +1,11 @@
 ---
 id: "202604070443-CB3N4G"
 title: "Prefer fresher branch task snapshots during integrate incident collection"
-status: "DOING"
+result_summary: "integrate: squash task/202604070443-CB3N4G/integrate-fresh-task-snapshot"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T05:24:19.686Z"
   updated_by: "CODER"
   note: "Focused task-backend/integrate vitest suite and ESLint passed; repo-local bootstrap rebuild passed after touched src changes."
-commit: null
+commit:
+  hash: "d1fc846add11321d63fe2fa856b08fd9b8213c7c"
+  message: "📝 CB3N4G task: record GitHub PR metadata"
 comments:
   -
     author: "CODER"
     body: "Start: implement integrate-only preference for fresher branch task snapshots during incident collection."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070443-CB3N4G/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused task-backend/integrate vitest suite and ESLint passed; repo-local bootstrap rebuild passed after touched src changes."
+  -
+    type: "status"
+    at: "2026-04-07T05:36:08.813Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070443-CB3N4G/pr."
 doc_version: 3
-doc_updated_at: "2026-04-07T05:24:19.691Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T05:36:08.831Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make integrate incident collection prefer a branch-backed task README when it is newer than the stale base snapshot so operator-facing diagnostics reflect the branch being merged."
 sections:
   Summary: |-
