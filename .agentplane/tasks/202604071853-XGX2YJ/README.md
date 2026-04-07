@@ -4,7 +4,7 @@ title: "Scope task normalize reconcile to selected task ids"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-07T19:12:28.838Z"
+  updated_at: "2026-04-07T19:41:15.063Z"
   updated_by: "CODER"
-  note: "Command: bun test packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun x eslint packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; agentplane incidents collect 202604071853-XGX2YJ --check --json. Result: pass. Evidence: selected-task normalize reconcile tests passed and incidents collect promoted one registry entry. Scope: task normalize task-id scoping, targeted branch_pr reconcile, and incident promotion path."
+  note: "Command: bun run workflow:wait-remote-checks -- 130 --repo basilisk-labs/agentplane; Result: pass; Evidence: PR #130 required checks all green on the published head."
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun x eslint packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; agentplane incidents collect 202604071853-XGX2YJ --check --json. Result: pass. Evidence: selected-task normalize reconcile tests passed and incidents collect promoted one registry entry. Scope: task normalize task-id scoping, targeted branch_pr reconcile, and incident promotion path."
+  -
+    type: "verify"
+    at: "2026-04-07T19:41:15.063Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run workflow:wait-remote-checks -- 130 --repo basilisk-labs/agentplane; Result: pass; Evidence: PR #130 required checks all green on the published head."
 doc_version: 3
-doc_updated_at: "2026-04-07T19:12:28.843Z"
+doc_updated_at: "2026-04-07T19:41:15.074Z"
 doc_updated_by: "CODER"
 description: "Allow task normalize reconcile modes to target explicit task ids so operators can close known branch_pr drift without scanning unrelated historical PR artifacts or rewriting the whole task set."
 sections:
@@ -69,6 +75,14 @@ sections:
     Note: Command: bun test packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun x eslint packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; agentplane incidents collect 202604071853-XGX2YJ --check --json. Result: pass. Evidence: selected-task normalize reconcile tests passed and incidents collect promoted one registry entry. Scope: task normalize task-id scoping, targeted branch_pr reconcile, and incident promotion path.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T19:07:37.478Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
+    
+    ### 2026-04-07T19:41:15.063Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run workflow:wait-remote-checks -- 130 --repo basilisk-labs/agentplane; Result: pass; Evidence: PR #130 required checks all green on the published head.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T19:12:28.843Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -120,6 +134,14 @@ By: CODER
 Note: Command: bun test packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; bun x eslint packages/agentplane/src/commands/task/normalize.command.ts packages/agentplane/src/commands/task/normalize.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts; agentplane incidents collect 202604071853-XGX2YJ --check --json. Result: pass. Evidence: selected-task normalize reconcile tests passed and incidents collect promoted one registry entry. Scope: task normalize task-id scoping, targeted branch_pr reconcile, and incident promotion path.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T19:07:37.478Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
+
+### 2026-04-07T19:41:15.063Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run workflow:wait-remote-checks -- 130 --repo basilisk-labs/agentplane; Result: pass; Evidence: PR #130 required checks all green on the published head.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T19:12:28.843Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
 
 <!-- END VERIFICATION RESULTS -->
 

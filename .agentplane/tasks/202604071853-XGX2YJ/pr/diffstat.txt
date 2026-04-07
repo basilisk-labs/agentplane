@@ -1,0 +1,8 @@
+ .agentplane/policy/incidents.md                    |  24 +-
+ .agentplane/tasks/202604071853-XGX2YJ/README.md    | 142 +++++++++++
+ docs/user/cli-reference.generated.mdx              |   7 +
+ packages/agentplane/assets/policy/incidents.md     |  24 +-
+ .../run-cli.core.tasks.normalize-migrate.test.ts   | 259 +++++++++++++++++++++
+ .../src/commands/task/normalize.command.ts         |  37 +++
+ packages/agentplane/src/commands/task/normalize.ts |  58 ++++-
+ 7 files changed, 524 insertions(+), 27 deletions(-)
