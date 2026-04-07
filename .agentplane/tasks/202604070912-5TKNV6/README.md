@@ -1,10 +1,11 @@
 ---
 id: "202604070912-5TKNV6"
 title: "Short-circuit pre-commit after failed checks stage"
-status: "DOING"
+result_summary: "Merged via PR #124."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T09:32:56.786Z"
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/cli/pre-commit-hook-script.test.ts; Result: pass; Evidence: 3 pass, 0 fail covering missing tools, failed prettier short-circuit, and test-fast invocation only after successful checks. Scope: pre-commit orchestration script. Command: bun x eslint scripts/run-pre-commit-hook.mjs packages/agentplane/src/cli/pre-commit-hook-script.test.ts; Result: pass; Evidence: no lint errors. Scope: touched script and regression test. Command: review lefthook.yml and run-pre-commit-hook.mjs together; Result: pass; Evidence: pre-commit now exposes a single checks entry and the script invokes test-fast only after checks succeed. Scope: hook orchestration contract."
-commit: null
+commit:
+  hash: "6767e2b123501f2415b65ff5e253f7ef6cd6ec4c"
+  message: "🧩 5TKNV6 code: short-circuit pre-commit pipeline (#124)"
 comments:
   -
     author: "CODER"
     body: "Start: collapse pre-commit orchestration into one fail-fast path so failed checks stop before test-fast and preserve the first actionable error."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: GitHub PR #124 was merged to main, the squash commit is present on the base branch, and this reconcile wave is closing the stale branch_pr task state."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/pre-commit-hook-script.test.ts; Result: pass; Evidence: 3 pass, 0 fail covering missing tools, failed prettier short-circuit, and test-fast invocation only after successful checks. Scope: pre-commit orchestration script. Command: bun x eslint scripts/run-pre-commit-hook.mjs packages/agentplane/src/cli/pre-commit-hook-script.test.ts; Result: pass; Evidence: no lint errors. Scope: touched script and regression test. Command: review lefthook.yml and run-pre-commit-hook.mjs together; Result: pass; Evidence: pre-commit now exposes a single checks entry and the script invokes test-fast only after checks succeed. Scope: hook orchestration contract."
+  -
+    type: "status"
+    at: "2026-04-07T17:58:35.185Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: GitHub PR #124 was merged to main, the squash commit is present on the base branch, and this reconcile wave is closing the stale branch_pr task state."
 doc_version: 3
-doc_updated_at: "2026-04-07T09:32:56.790Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T17:58:35.186Z"
+doc_updated_by: "INTEGRATOR"
 description: "The pre-commit pipeline still runs test-fast even when checks/prettier already failed, which wastes time and hides the first actionable error. Stop the pipeline after a failed earlier stage and preserve the original failure."
 sections:
   Summary: |-
