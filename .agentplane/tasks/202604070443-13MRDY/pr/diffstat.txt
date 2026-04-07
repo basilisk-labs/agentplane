@@ -1,0 +1,9 @@
+ .agentplane/tasks/202604070443-13MRDY/README.md    | 113 +++++++++++++++++++++
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  74 ++++++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |   5 +-
+ packages/agentplane/src/commands/pr/open.ts        |  13 ++-
+ packages/agentplane/src/commands/shared/pr-meta.ts |   2 +
+ packages/core/schemas/pr-meta.schema.json          |   8 ++
+ packages/core/src/tasks/task-artifact-schema.ts    |   4 +
+ packages/spec/schemas/pr-meta.schema.json          |   8 ++
+ 8 files changed, 223 insertions(+), 4 deletions(-)

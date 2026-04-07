@@ -4,7 +4,7 @@ title: "Make pr open report local-only artifact sync when no GitHub PR is create
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-07T04:50:52.036Z"
+  updated_at: "2026-04-07T04:52:31.440Z"
   updated_by: "CODER"
-  note: "Focused vitest passed for run-cli.core.pr-flow.pr and task-artifact-schema; eslint passed for pr open/output/meta touched files."
+  note: "Focused vitest passed for run-cli.core.pr-flow.pr and task-artifact-schema; eslint passed for pr open/output/meta touched files; final task commit 22c76331 refreshes CLI outcome wording and preserves optional remote PR identity."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused vitest passed for run-cli.core.pr-flow.pr and task-artifact-schema; eslint passed for pr open/output/meta touched files."
+  -
+    type: "verify"
+    at: "2026-04-07T04:52:31.440Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused vitest passed for run-cli.core.pr-flow.pr and task-artifact-schema; eslint passed for pr open/output/meta touched files; final task commit 22c76331 refreshes CLI outcome wording and preserves optional remote PR identity."
 doc_version: 3
-doc_updated_at: "2026-04-07T04:50:52.040Z"
+doc_updated_at: "2026-04-07T04:52:31.445Z"
 doc_updated_by: "CODER"
 description: "Stop agentplane pr open from reporting success as if a remote PR exists when it only refreshed local pr artifacts; surface the local-only state explicitly and preserve traceability for later publish steps."
 sections:
@@ -65,6 +71,14 @@ sections:
     Note: Focused vitest passed for run-cli.core.pr-flow.pr and task-artifact-schema; eslint passed for pr open/output/meta touched files.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T04:44:40.032Z, excerpt_hash=sha256:93dccd5f65adcc1951bedab522bb5a8e445b3204243924e645d8b6386dd08ea7
+    
+    ### 2026-04-07T04:52:31.440Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused vitest passed for run-cli.core.pr-flow.pr and task-artifact-schema; eslint passed for pr open/output/meta touched files; final task commit 22c76331 refreshes CLI outcome wording and preserves optional remote PR identity.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T04:50:52.040Z, excerpt_hash=sha256:93dccd5f65adcc1951bedab522bb5a8e445b3204243924e645d8b6386dd08ea7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -102,6 +116,14 @@ By: CODER
 Note: Focused vitest passed for run-cli.core.pr-flow.pr and task-artifact-schema; eslint passed for pr open/output/meta touched files.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T04:44:40.032Z, excerpt_hash=sha256:93dccd5f65adcc1951bedab522bb5a8e445b3204243924e645d8b6386dd08ea7
+
+### 2026-04-07T04:52:31.440Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused vitest passed for run-cli.core.pr-flow.pr and task-artifact-schema; eslint passed for pr open/output/meta touched files; final task commit 22c76331 refreshes CLI outcome wording and preserves optional remote PR identity.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T04:50:52.040Z, excerpt_hash=sha256:93dccd5f65adcc1951bedab522bb5a8e445b3204243924e645d8b6386dd08ea7
 
 <!-- END VERIFICATION RESULTS -->
 
