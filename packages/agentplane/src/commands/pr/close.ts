@@ -87,7 +87,7 @@ async function resolveDefaultRepo(cwd: string): Promise<string> {
 async function runGhApiJson<T>(cwd: string, args: string[]): Promise<T> {
   const { stdout } = await execFileAsyncRaw("gh", ["api", ...args], {
     cwd,
-    env: process.env,
+    env: gitEnv(),
     maxBuffer: 10 * 1024 * 1024,
   });
   return JSON.parse(stdout) as T;
@@ -96,7 +96,7 @@ async function runGhApiJson<T>(cwd: string, args: string[]): Promise<T> {
 async function runGhApiNoOutput(cwd: string, args: string[]): Promise<void> {
   await execFileAsyncRaw("gh", ["api", ...args], {
     cwd,
-    env: process.env,
+    env: gitEnv(),
     maxBuffer: 10 * 1024 * 1024,
   });
 }
