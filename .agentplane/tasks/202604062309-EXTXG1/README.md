@@ -4,7 +4,7 @@ title: "Promote confirmed external workflow incidents into incidents registry"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-06T23:46:48.330Z"
+  updated_at: "2026-04-07T00:05:34.071Z"
   updated_by: "DOCS"
-  note: "Verified: aligned the canonical incidents asset with agents:check formatting expectations and re-ran agents:sync/check successfully."
+  note: "Confirmed external-only incidents, synced canonical assets to generated policy, and passed agents:check plus routing budget."
 commit: null
 comments:
   -
@@ -60,8 +60,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: promote confirmed external incidents into the canonical registry assets and sync generated policy files."
+  -
+    type: "verify"
+    at: "2026-04-07T00:05:34.071Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Confirmed external-only incidents, synced canonical assets to generated policy, and passed agents:check plus routing budget."
 doc_version: 3
-doc_updated_at: "2026-04-06T23:59:23.758Z"
+doc_updated_at: "2026-04-07T00:05:34.082Z"
 doc_updated_by: "DOCS"
 description: "Append confirmed external operational lessons from the recent GitHub transport/reconciliation cycle into .agentplane/policy/incidents.md with concrete rules and evidence."
 sections:
@@ -110,6 +116,14 @@ sections:
     Note: Verified: aligned the canonical incidents asset with agents:check formatting expectations and re-ran agents:sync/check successfully.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:43:09.584Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
+    
+    ### 2026-04-07T00:05:34.071Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Confirmed external-only incidents, synced canonical assets to generated policy, and passed agents:check plus routing budget.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:59:23.758Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -175,6 +189,14 @@ By: DOCS
 Note: Verified: aligned the canonical incidents asset with agents:check formatting expectations and re-ran agents:sync/check successfully.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:43:09.584Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
+
+### 2026-04-07T00:05:34.071Z — VERIFY — ok
+
+By: DOCS
+
+Note: Confirmed external-only incidents, synced canonical assets to generated policy, and passed agents:check plus routing budget.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:59:23.758Z, excerpt_hash=sha256:c1e7cd793d1171b7c10c7a2be1fffd2f78ed8a5ff864461ecf59d1ccc0a3ce4c
 
 <!-- END VERIFICATION RESULTS -->
 
