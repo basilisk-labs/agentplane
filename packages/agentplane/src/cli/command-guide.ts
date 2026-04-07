@@ -39,6 +39,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       SHARED_STARTUP_NOTE,
       '- Create executable tasks with `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`.',
       '- Fill docs with `agentplane task doc set <task-id> --section <name> --text "..."` and set plan text with `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`.',
+      '- Append reusable incident-ready Findings via `agentplane task findings add <task-id> --observation "..." --impact "..." --resolution "..." [--promote] [--external]` instead of replacing the full Findings section by hand.',
       "- Approve plan only after required sections and Verify Steps are ready.",
     ],
   },
@@ -67,7 +68,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "DOCS",
     lines: [
       SHARED_STARTUP_NOTE,
-      '- Keep task docs and user docs aligned with runtime behavior via `agentplane task doc set <task-id> --section <name> --text "..."`.',
+      '- Keep task docs and user docs aligned with runtime behavior via `agentplane task doc set <task-id> --section <name> --text "..."`; use `task findings add` for append-only incident-ready Findings blocks.',
       "- For implementation tasks, verify generated/help surfaces after changing CLI-facing text.",
       "- The docs site may expand CLI behavior, but installed runtime guidance must stay self-contained and must not depend on repo-only docs paths.",
     ],
