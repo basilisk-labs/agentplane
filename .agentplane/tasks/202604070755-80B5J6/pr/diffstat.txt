@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604070755-80B5J6/README.md    | 118 +++++++++++++++++++++
+ .../tasks/202604070755-80B5J6/pr/diffstat.txt      |   0
+ .../tasks/202604070755-80B5J6/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604070755-80B5J6/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604070755-80B5J6/pr/meta.json |  14 +++
+ .../tasks/202604070755-80B5J6/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604070755-80B5J6/pr/review.md |  57 ++++++++++
+ .../tasks/202604070755-80B5J6/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-close.test.ts          |  75 ++++++++++++-
+ packages/agentplane/src/commands/pr/close.ts       |   4 +-
+ 10 files changed, 315 insertions(+), 4 deletions(-)

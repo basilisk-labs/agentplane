@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604070755-80B5J6/pr-close-gh-auth",
+  "created_at": "2026-04-07T08:10:56.220Z",
+  "head_sha": "c814efe9f15c60968d8a8ae567ff94b1095fe0fe",
+  "last_verified_at": "2026-04-07T08:14:10.341Z",
+  "last_verified_sha": "bec7459768f68588faa628cc3d208be3989f6b76",
+  "merge_commit": "84573c1524ff7cdac6a9bcc974dfeb684215ef2d",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T09:04:26.188Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604070755-80B5J6",
+  "updated_at": "2026-04-07T09:04:26.188Z",
+  "verify": {
+    "status": "pass"
+  }
+}
