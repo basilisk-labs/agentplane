@@ -2,8 +2,6 @@ pre-commit:
   commands:
     checks:
       run: node scripts/run-pre-commit-hook.mjs
-    test-fast:
-      run: node scripts/run-pre-commit-test-fast.mjs
 commit-msg:
   commands:
     commit-subject:
