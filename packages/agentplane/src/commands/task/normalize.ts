@@ -1,9 +1,54 @@
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
+import { CliError } from "../../shared/errors.js";
+import type { TaskData } from "../../backends/task-backend.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskCollectionMutation } from "../shared/task-mutation.js";
 import { syncHostedMergedTasks, syncLocallyShippedBranchPrTasks } from "./hosted-merge-sync.js";
+
+function dedupeTaskIds(taskIds: readonly string[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const rawTaskId of taskIds) {
+    const taskId = rawTaskId.trim();
+    if (!taskId || seen.has(taskId)) continue;
+    seen.add(taskId);
+    result.push(taskId);
+  }
+  return result;
+}
+
+function selectTasksForNormalize(
+  current: readonly TaskData[],
+  taskIds: readonly string[],
+): TaskData[] {
+  if (taskIds.length === 0) return current.map((task) => ({ ...task }));
+  const byId = new Map(current.map((task) => [task.id, task] as const));
+  const missing: string[] = [];
+  const selected: TaskData[] = [];
+  for (const taskId of taskIds) {
+    const task = byId.get(taskId);
+    if (!task) {
+      missing.push(taskId);
+      continue;
+    }
+    selected.push({ ...task });
+  }
+  if (missing.length > 0) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `Unknown task${missing.length === 1 ? "" : "s"}: ${missing.join(", ")}`,
+    });
+  }
+  return selected;
+}
+
+function diffTasksToWrite(current: readonly TaskData[], next: readonly TaskData[]): TaskData[] {
+  const previousById = new Map(current.map((task) => [task.id, JSON.stringify(task)] as const));
+  return next.filter((task) => previousById.get(task.id) !== JSON.stringify(task));
+}
 
 export async function cmdTaskNormalize(opts: {
   ctx?: CommandContext;
@@ -14,11 +59,13 @@ export async function cmdTaskNormalize(opts: {
   yes?: boolean;
   syncHostedMerges?: boolean;
   syncBranchPrState?: boolean;
+  taskIds?: string[];
 }): Promise<number> {
   try {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const selectedTaskIds = dedupeTaskIds(opts.taskIds ?? []);
     if (opts.force) {
       await ensureActionApproved({
         action: "force_action",
@@ -46,9 +93,10 @@ export async function cmdTaskNormalize(opts: {
     const { result, tasksToWrite } = await applyTaskCollectionMutation({
       ctx,
       build: async (tasks) => {
-        let nextTasks = tasks;
+        const scopedTasks = selectTasksForNormalize(tasks, selectedTaskIds);
+        let nextTasks = scopedTasks;
         if (opts.syncHostedMerges === true) {
-          const synced = await syncHostedMergedTasks({ ctx, tasks });
+          const synced = await syncHostedMergedTasks({ ctx, tasks: nextTasks });
           nextTasks = synced.tasks;
           syncedHostedMerges = synced.synced;
         }
@@ -59,7 +107,7 @@ export async function cmdTaskNormalize(opts: {
         }
         return {
           result: null,
-          tasksToWrite: nextTasks,
+          tasksToWrite: diffTasksToWrite(scopedTasks, nextTasks),
         };
       },
     });

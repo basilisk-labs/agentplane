@@ -58,7 +58,7 @@
   evidence: tasks 202603081315-Y4D6AE, 202603081538-GF7P9C; docs/developer/cli-bug-ledger-v0-3-x.mdx entry 3
   enforcement: test + release mutation
   state: stabilized
-- id: INC-20260407-01
+- id: INC-20260407-04
   date: 2026-04-07
   scope: branch_pr GitHub transport helpers
   tags: workflow, github, transport, retries
@@ -95,5 +95,19 @@
   evidence: task 202604070754-ZD0ZAZ
   enforcement: manual
   source_task: 202604070754-ZD0ZAZ
+  fixability: external
+  state: open
+
+- id: INC-20260407-04
+  date: 2026-04-07
+  scope: task normalize hosted reconcile target selection
+  tags: workflow, github, transport, normalize
+  match: task normalize, sync-hosted-merges, gh api EOF, GraphQL EOF, workflow, github, transport, normalize, task, hosted, reconcile, target, selection, scope, selected, ids
+  failure: GitHub EOF or TLS transport failures during hosted branch_pr reconcile could abort task normalize before it reached the known stale task because the command scanned every candidate task.
+  advice: When GitHub transport is flaky, reconcile only the known task ids instead of scanning the full branch_pr history.
+  rule: Hosted reconcile commands MUST support explicit task-id scoping so known drift can be resolved without depending on unrelated GitHub lookups.
+  evidence: task 202604071853-XGX2YJ
+  enforcement: manual
+  source_task: 202604071853-XGX2YJ
   fixability: external
   state: open

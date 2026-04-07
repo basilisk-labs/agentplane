@@ -117,6 +117,10 @@ describe("runCli", () => {
 
     const cases: { args: string[]; msg: string }[] = [
       { args: ["task", "normalize", "--nope"], msg: "Unknown option: --nope." },
+      {
+        args: ["task", "normalize", "--task-id", "202602011330-NRM01"],
+        msg: "--task-id requires --sync-hosted-merges and/or --sync-branch-pr-state.",
+      },
       { args: ["task", "migrate", "--source"], msg: "Missing value after --source" },
       { args: ["task", "migrate", "--nope"], msg: "Unknown option: --nope." },
     ];
@@ -321,6 +325,141 @@ describe("runCli", () => {
     }
   }, 20_000);
 
+  it("task normalize --sync-hosted-merges scopes reconcile to selected task ids", async () => {
+    const root = await writeAndConfigureRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const selectedTaskId = "202604071853-SYNC04";
+    const unselectedTaskId = "202604071853-SYNC05";
+    for (const taskId of [selectedTaskId, unselectedTaskId]) {
+      const addCode = await runCliSilent([
+        "task",
+        "add",
+        taskId,
+        "--title",
+        `${taskId} normalize target`,
+        "--description",
+        "Normalize reconcile target",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(addCode).toBe(0);
+    }
+
+    const selectedPrDir = path.join(root, ".agentplane", "tasks", selectedTaskId, "pr");
+    await mkdir(selectedPrDir, { recursive: true });
+    await writeFile(
+      path.join(selectedPrDir, "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: selectedTaskId,
+          branch: `task/${selectedTaskId}/selected`,
+          base: "main",
+          created_at: "2026-04-07T18:53:00.000Z",
+          updated_at: "2026-04-07T18:54:00.000Z",
+          status: "MERGED",
+          merged_at: "2026-04-07T18:54:00.000Z",
+          merge_commit: "1111111111111111111111111111111111111111",
+          head_sha: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          last_verified_sha: "1111111111111111111111111111111111111111",
+          last_verified_at: "2026-04-07T18:53:30.000Z",
+          verify: { status: "pass" },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const unselectedPrDir = path.join(root, ".agentplane", "tasks", unselectedTaskId, "pr");
+    await mkdir(unselectedPrDir, { recursive: true });
+    await writeFile(
+      path.join(unselectedPrDir, "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: unselectedTaskId,
+          branch: `task/${unselectedTaskId}/unselected`,
+          base: "main",
+          created_at: "2026-04-07T18:53:00.000Z",
+          updated_at: "2026-04-07T18:53:00.000Z",
+          last_verified_sha: null,
+          last_verified_at: null,
+          verify: { status: "skipped" },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const fakeBin = path.join(os.tmpdir(), `agentplane-gh-targeted-fail-${Date.now()}`);
+    await mkdir(fakeBin, { recursive: true });
+    const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
+    const ghScript =
+      process.platform === "win32"
+        ? "@echo off\r\necho gh should not be called for unselected tasks >&2\r\nexit /b 97\r\n"
+        : "#!/bin/sh\necho gh should not be called for unselected tasks >&2\nexit 97\n";
+    await writeFile(ghPath, ghScript, "utf8");
+    if (process.platform !== "win32") {
+      await chmod(ghPath, 0o755);
+    }
+
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    try {
+      const code = await runCli([
+        "task",
+        "normalize",
+        "--sync-hosted-merges",
+        "--task-id",
+        selectedTaskId,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      process.env.PATH = originalPath;
+    }
+
+    const ioSelected = captureStdIO();
+    try {
+      const code = await runCli(["task", "show", selectedTaskId, "--root", root]);
+      expect(code).toBe(0);
+      const task = JSON.parse(ioSelected.stdout) as {
+        status?: string;
+        result_summary?: string;
+      };
+      expect(task.status).toBe("DONE");
+      expect(task.result_summary).toBe("Merged and reconciled from local PR metadata.");
+    } finally {
+      ioSelected.restore();
+    }
+
+    const ioUnselected = captureStdIO();
+    try {
+      const code = await runCli(["task", "show", unselectedTaskId, "--root", root]);
+      expect(code).toBe(0);
+      const task = JSON.parse(ioUnselected.stdout) as {
+        status?: string;
+        result_summary?: string | null;
+      };
+      expect(task.status).toBe("TODO");
+      expect(task.result_summary ?? null).toBeNull();
+    } finally {
+      ioUnselected.restore();
+    }
+  }, 20_000);
+
   it("task normalize --sync-branch-pr-state reconciles verified branch_pr tasks already shipped on base", async () => {
     const root = await writeAndConfigureRoot();
     const config = defaultConfig();
@@ -427,6 +566,126 @@ describe("runCli", () => {
       expect(task.commit?.hash).toBe(shippedHash);
     } finally {
       ioShow.restore();
+    }
+  }, 20_000);
+
+  it("task normalize --sync-branch-pr-state scopes reconcile to selected task ids", async () => {
+    const root = await writeAndConfigureRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root, env: cleanGitEnv() });
+    await writeFile(path.join(root, "feature.txt"), "targeted shipped payload\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt", ".agentplane/config.json"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["commit", "--no-verify", "-m", "feat: targeted shipped payload"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const shippedHash = stdout.trim();
+
+    const selectedTaskId = "202604071853-SYNC06";
+    const unselectedTaskId = "202604071853-SYNC07";
+    for (const taskId of [selectedTaskId, unselectedTaskId]) {
+      const addCode = await runCliSilent([
+        "task",
+        "add",
+        taskId,
+        "--title",
+        `${taskId} local sync target`,
+        "--description",
+        "Sync locally shipped branch_pr task state",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(addCode).toBe(0);
+      await runCliSilent([
+        "task",
+        "set-status",
+        taskId,
+        "DOING",
+        "--commit",
+        shippedHash,
+        "--root",
+        root,
+      ]);
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "CODER",
+        "--note",
+        "verified shipped state",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+      await mkdir(prDir, { recursive: true });
+      await writeFile(
+        path.join(prDir, "meta.json"),
+        JSON.stringify(
+          {
+            schema_version: 1,
+            task_id: taskId,
+            branch: `task/${taskId}/sync-local`,
+            base: "main",
+            created_at: "2026-04-07T18:53:00.000Z",
+            updated_at: "2026-04-07T18:53:00.000Z",
+            last_verified_sha: null,
+            last_verified_at: null,
+            verify: { status: "skipped" },
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+    }
+
+    const code = await runCli([
+      "task",
+      "normalize",
+      "--sync-branch-pr-state",
+      "--task-id",
+      selectedTaskId,
+      "--root",
+      root,
+    ]);
+    expect(code).toBe(0);
+
+    const ioSelected = captureStdIO();
+    try {
+      const showCode = await runCli(["task", "show", selectedTaskId, "--root", root]);
+      expect(showCode).toBe(0);
+      const task = JSON.parse(ioSelected.stdout) as { status?: string };
+      expect(task.status).toBe("DONE");
+    } finally {
+      ioSelected.restore();
+    }
+
+    const ioUnselected = captureStdIO();
+    try {
+      const showCode = await runCli(["task", "show", unselectedTaskId, "--root", root]);
+      expect(showCode).toBe(0);
+      const task = JSON.parse(ioUnselected.stdout) as { status?: string };
+      expect(task.status).toBe("DOING");
+    } finally {
+      ioUnselected.restore();
     }
   }, 20_000);
 });
