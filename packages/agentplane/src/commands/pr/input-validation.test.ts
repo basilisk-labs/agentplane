@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { CliError } from "../../shared/errors.js";
+import { cmdPrClose } from "./close.js";
 import { cmdPrNote } from "./note.js";
 import { cmdPrOpen } from "./open.js";
 
@@ -43,6 +44,19 @@ describe("pr command input validation", () => {
     ).rejects.toMatchObject<CliError>({
       code: "E_USAGE",
       message: "Invalid value for --body.",
+    });
+  });
+
+  it("pr close rejects invalid PR numbers", async () => {
+    await expect(
+      cmdPrClose({
+        cwd: process.cwd(),
+        prNumber: 0,
+        deleteRemoteBranch: false,
+      }),
+    ).rejects.toMatchObject<CliError>({
+      code: "E_USAGE",
+      message: "Invalid PR number.",
     });
   });
 });
