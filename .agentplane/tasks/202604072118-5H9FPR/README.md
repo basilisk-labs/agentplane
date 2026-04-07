@@ -1,10 +1,11 @@
 ---
 id: "202604072118-5H9FPR"
 title: "Promote incidents during hosted merge reconciliation"
-status: "TODO"
+result_summary: "integrate: squash task/202604072118-5H9FPR/reconcile-incident-promotion"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,8 +24,13 @@ verification:
   updated_at: "2026-04-07T21:39:08.621Z"
   updated_by: "CODER"
   note: "Repo-local bootstrap refreshed; targeted normalize-migrate vitest passed with hosted/local incident promotion coverage; focused eslint on normalize/test files passed."
-commit: null
-comments: []
+commit:
+  hash: "32be8afef0c2a14758469a8ecaa6b7d8ae794c42"
+  message: "📝 5H9FPR task: refresh PR artifacts"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604072118-5H9FPR/pr."
 events:
   -
     type: "verify"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Repo-local bootstrap refreshed; targeted normalize-migrate vitest passed with hosted/local incident promotion coverage; focused eslint on normalize/test files passed."
+  -
+    type: "status"
+    at: "2026-04-07T21:56:57.063Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604072118-5H9FPR/pr."
 doc_version: 3
-doc_updated_at: "2026-04-07T21:39:08.631Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T21:56:57.067Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make branch_pr hosted/local reconcile paths update incidents.md when DONE task findings contain promotable external incident entries, instead of only updating task projection metadata."
 sections:
   Summary: |-
