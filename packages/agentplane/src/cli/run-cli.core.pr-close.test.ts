@@ -25,6 +25,8 @@ async function installFakeGh(opts: {
   scenarioName: string;
   branchRepo?: string | null;
   captureEnv?: boolean;
+  transientFailures?: { endpoint: string; method?: string; times?: number; message?: string }[];
+  permanentFailures?: { endpoint: string; method?: string; message: string }[];
 }) {
   const fakeBin = path.join(
     os.tmpdir(),
@@ -34,11 +36,22 @@ async function installFakeGh(opts: {
   const scriptPath = path.join(fakeBin, "fake-gh.mjs");
   const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
   const branchRepo = opts.branchRepo ?? "example/repo";
+  const statePath = path.join(fakeBin, "gh-state.json");
   await writeFile(
     scriptPath,
     [
       'import fs from "node:fs";',
       "const args = process.argv.slice(2);",
+      `const statePath = ${JSON.stringify(statePath)};`,
+      `const transientFailures = ${JSON.stringify(opts.transientFailures ?? [])};`,
+      `const permanentFailures = ${JSON.stringify(opts.permanentFailures ?? [])};`,
+      "function loadState() {",
+      "  if (!fs.existsSync(statePath)) return {};",
+      '  return JSON.parse(fs.readFileSync(statePath, "utf8"));',
+      "}",
+      "function saveState(state) {",
+      "  fs.writeFileSync(statePath, JSON.stringify(state));",
+      "}",
       "const logPath = process.env.AGENTPLANE_GH_LOG;",
       "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
       "const envLogPath = process.env.AGENTPLANE_GH_ENV_LOG;",
@@ -48,6 +61,26 @@ async function installFakeGh(opts: {
       'const endpoint = args[1] ?? "";',
       'const methodIndex = args.indexOf("-X");',
       'const method = methodIndex >= 0 ? args[methodIndex + 1] : "GET";',
+      "const state = loadState();",
+      "for (const failure of permanentFailures) {",
+      '  const failureMethod = failure.method ?? "GET";',
+      "  if (failure.endpoint === endpoint && failureMethod === method) {",
+      "    console.error(failure.message);",
+      "    process.exit(1);",
+      "  }",
+      "}",
+      "for (const failure of transientFailures) {",
+      '  const failureMethod = failure.method ?? "GET";',
+      "  const limit = Number.isInteger(failure.times) && failure.times > 0 ? failure.times : 1;",
+      "  const key = `${failureMethod} ${failure.endpoint}`;",
+      "  const seen = Number(state[key] ?? 0);",
+      "  if (failure.endpoint === endpoint && failureMethod === method && seen < limit) {",
+      "    state[key] = seen + 1;",
+      "    saveState(state);",
+      "    console.error(failure.message ?? 'gh: Post \"https://api.github.com/graphql\": EOF');",
+      "    process.exit(1);",
+      "  }",
+      "}",
       'const payload = { number: 321, state: "open", html_url: "https://github.com/example/repo/pull/321", head: { ref: "task/321/cleanup", repo: { full_name: ' +
         JSON.stringify(branchRepo) +
         " } } };",
@@ -72,6 +105,7 @@ async function installFakeGh(opts: {
     fakeBin,
     logPath: path.join(fakeBin, "gh.log"),
     envLogPath: path.join(fakeBin, "gh-env.log"),
+    statePath,
   };
 }
 
@@ -244,5 +278,98 @@ describe("runCli pr close", () => {
     expect(envLog[0]?.HOME).toBeTruthy();
     expect(envLog[0]?.GIT_DIR).toBeNull();
     expect(envLog[0]?.GIT_WORK_TREE).toBeNull();
+  });
+
+  it("retries transient gh transport failures before closing through REST", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    await writeConfig(root, config);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const { fakeBin, logPath } = await installFakeGh({
+      scenarioName: "retry-get",
+      transientFailures: [
+        {
+          endpoint: "repos/example/repo/pulls/321",
+          message: 'gh: Post "https://api.github.com/graphql": EOF',
+        },
+      ],
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "close", "321", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ pr close #321");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    const rawLog = await readFile(logPath, "utf8");
+    const log = rawLog
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line) as string[]);
+    expect(log).toHaveLength(3);
+    expect(log[0]).toEqual(["api", "repos/example/repo/pulls/321"]);
+    expect(log[1]).toEqual(["api", "repos/example/repo/pulls/321"]);
+    expect(log[2]).toEqual([
+      "api",
+      "repos/example/repo/pulls/321",
+      "-X",
+      "PATCH",
+      "-f",
+      "state=closed",
+    ]);
+  });
+
+  it("does not retry permanent gh auth failures", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    await writeConfig(root, config);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const { fakeBin, logPath } = await installFakeGh({
+      scenarioName: "auth-fail",
+      permanentFailures: [
+        {
+          endpoint: "repos/example/repo/pulls/321",
+          message: "gh: authentication required",
+        },
+      ],
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "close", "321", "--root", root]);
+      expect(code).toBeGreaterThan(0);
+      expect(io.stderr).toContain("authentication required");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    const rawLog = await readFile(logPath, "utf8");
+    const log = rawLog
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line) as string[]);
+    expect(log).toHaveLength(1);
+    expect(log[0]).toEqual(["api", "repos/example/repo/pulls/321"]);
   });
 });

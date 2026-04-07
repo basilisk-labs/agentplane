@@ -6,6 +6,7 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
+import { normalizeGhTransportError, withGhTransportRetry } from "../shared/gh-transport.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 const execFileAsyncRaw = promisify(execFile);
@@ -50,8 +51,7 @@ function ensureNonEmptyFlag(name: string, value: string): string {
 }
 
 function normalizeGhError(err: unknown): string {
-  if (err instanceof Error) return err.message;
-  return String(err);
+  return normalizeGhTransportError(err);
 }
 
 function isGhNotFound(err: unknown): boolean {
@@ -85,20 +85,32 @@ async function resolveDefaultRepo(cwd: string): Promise<string> {
 }
 
 async function runGhApiJson<T>(cwd: string, args: string[]): Promise<T> {
-  const { stdout } = await execFileAsyncRaw("gh", ["api", ...args], {
-    cwd,
-    env: gitEnv(),
-    maxBuffer: 10 * 1024 * 1024,
-  });
+  const { stdout } = await withGhTransportRetry(
+    () =>
+      execFileAsyncRaw("gh", ["api", ...args], {
+        cwd,
+        env: gitEnv(),
+        maxBuffer: 10 * 1024 * 1024,
+      }),
+    {
+      label: `running gh api ${args[0] ?? ""}`,
+    },
+  );
   return JSON.parse(stdout) as T;
 }
 
 async function runGhApiNoOutput(cwd: string, args: string[]): Promise<void> {
-  await execFileAsyncRaw("gh", ["api", ...args], {
-    cwd,
-    env: gitEnv(),
-    maxBuffer: 10 * 1024 * 1024,
-  });
+  await withGhTransportRetry(
+    () =>
+      execFileAsyncRaw("gh", ["api", ...args], {
+        cwd,
+        env: gitEnv(),
+        maxBuffer: 10 * 1024 * 1024,
+      }),
+    {
+      label: `running gh api ${args[0] ?? ""}`,
+    },
+  );
 }
 
 export async function cmdPrClose(opts: {

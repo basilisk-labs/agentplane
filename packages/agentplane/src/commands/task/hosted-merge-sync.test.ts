@@ -14,7 +14,11 @@ vi.mock("../shared/git.js", () => ({
   execFileAsync: vi.fn(),
 }));
 
-const mockedExecFileAsync = vi.mocked(execFileAsync);
+const mockedExecFileAsync = execFileAsync as unknown as {
+  mockReset: () => void;
+  mockRejectedValueOnce: (value: unknown) => typeof mockedExecFileAsync;
+  mockResolvedValueOnce: (value: unknown) => typeof mockedExecFileAsync;
+};
 
 beforeEach(() => {
   mockedExecFileAsync.mockReset();
