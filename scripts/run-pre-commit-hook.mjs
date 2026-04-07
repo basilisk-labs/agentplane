@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { access } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import {
   FRAMEWORK_DEV_BOOTSTRAP_COMMAND,
@@ -19,6 +20,8 @@ function run(command, args, env) {
 function repoRoot() {
   return execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" }).trim();
 }
+
+const testFastScriptPath = fileURLToPath(new URL("run-pre-commit-test-fast.mjs", import.meta.url));
 
 function localBin(root, name) {
   const ext = process.platform === "win32" ? ".cmd" : "";
@@ -57,24 +60,39 @@ async function runChecked(root, tool, args, missingTools) {
 }
 
 const root = repoRoot();
-const files = listStagedGitFiles();
-const missingTools = [];
+async function main() {
+  const files = listStagedGitFiles();
+  const missingTools = [];
 
-const prettierFiles = prettierTargets(files);
-if (prettierFiles.length > 0) {
-  await runChecked(root, "prettier", ["--check", ...prettierFiles], missingTools);
-} else {
-  process.stdout.write("pre-commit: no staged files for Prettier, skipping.\n");
+  const prettierFiles = prettierTargets(files);
+  if (prettierFiles.length > 0) {
+    await runChecked(root, "prettier", ["--check", ...prettierFiles], missingTools);
+  } else {
+    process.stdout.write("pre-commit: no staged files for Prettier, skipping.\n");
+  }
+
+  const eslintFiles = eslintTargets(files);
+  if (eslintFiles.length > 0) {
+    await runChecked(root, "eslint", eslintFiles, missingTools);
+  } else {
+    process.stdout.write("pre-commit: no staged files for ESLint, skipping.\n");
+  }
+
+  if (missingTools.length > 0) {
+    printMissingToolError(root, [...new Set(missingTools)]);
+    process.exitCode = 2;
+    return;
+  }
+
+  run(process.execPath, [testFastScriptPath]);
 }
 
-const eslintFiles = eslintTargets(files);
-if (eslintFiles.length > 0) {
-  await runChecked(root, "eslint", eslintFiles, missingTools);
-} else {
-  process.stdout.write("pre-commit: no staged files for ESLint, skipping.\n");
-}
-
-if (missingTools.length > 0) {
-  printMissingToolError(root, [...new Set(missingTools)]);
-  process.exitCode = 2;
+try {
+  await main();
+} catch (error) {
+  const status =
+    error && typeof error === "object" && typeof error.status === "number" && error.status > 0
+      ? error.status
+      : 1;
+  process.exitCode = status;
 }
