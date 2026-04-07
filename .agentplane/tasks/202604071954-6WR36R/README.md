@@ -1,10 +1,11 @@
 ---
 id: "202604071954-6WR36R"
 title: "Make integrate recover from repairable PR artifact drift"
-status: "DOING"
+result_summary: "Merged via PR #134."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T20:53:31.375Z"
   updated_by: "CODER"
   note: "Refreshed verification after rebase onto origin/main. Checks remain valid for the rebased head because the code diff did not change; only parent history changed."
-commit: null
+commit:
+  hash: "f4ab2104dd6bea55ddb781a85c1663acb128c8ef"
+  message: "github/workflow: Make integrate recover from repairable PR artifact drift (6WR36R) (#134)"
 comments:
   -
     author: "CODER"
     body: "Start: repair integrate/pr-check handling for refreshable PR artifact drift while preserving strict failures for real branch divergence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #134 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Refreshed verification after rebase onto origin/main. Checks remain valid for the rebased head because the code diff did not change; only parent history changed."
+  -
+    type: "status"
+    at: "2026-04-07T21:04:29.432Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #134 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-07T20:53:31.381Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T21:04:29.438Z"
+doc_updated_by: "INTEGRATOR"
 description: "Allow branch_pr integrate to repair or tolerate refreshable pr/meta.json and verify-sha drift instead of hard-failing on recoverable projection mismatches."
 sections:
   Summary: |-
