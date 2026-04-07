@@ -90,6 +90,8 @@ export async function cmdTaskNormalize(opts: {
 
     let syncedHostedMerges = 0;
     let syncedBranchPrState = 0;
+    const passThroughNormalizeWrite =
+      opts.syncHostedMerges !== true && opts.syncBranchPrState !== true;
     const { result, tasksToWrite } = await applyTaskCollectionMutation({
       ctx,
       build: async (tasks) => {
@@ -107,7 +109,9 @@ export async function cmdTaskNormalize(opts: {
         }
         return {
           result: null,
-          tasksToWrite: diffTasksToWrite(scopedTasks, nextTasks),
+          tasksToWrite: passThroughNormalizeWrite
+            ? nextTasks
+            : diffTasksToWrite(scopedTasks, nextTasks),
         };
       },
     });
