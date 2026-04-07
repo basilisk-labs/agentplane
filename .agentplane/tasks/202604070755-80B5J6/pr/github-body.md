@@ -39,9 +39,9 @@ Ensure the CLI can invoke gh with the same working authentication and environmen
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T08:10:56.220Z
+- Updated: 2026-04-07T08:17:55.869Z
 - Branch: task/202604070755-80B5J6/pr-close-gh-auth
-- Head: bec7459768f6
+- Head: 56fbaeddfb48
 
 ```text
 No changes detected.
