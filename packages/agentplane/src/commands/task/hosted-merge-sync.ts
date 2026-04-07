@@ -7,6 +7,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { execFileAsync } from "../shared/git.js";
+import { withGhTransportRetry } from "../shared/gh-transport.js";
 import { parseTaskIdFromBranch } from "../shared/git-worktree.js";
 import { parsePrMeta } from "../shared/pr-meta.js";
 import type { CommandContext } from "../shared/task-backend.js";
@@ -33,35 +34,6 @@ type HostedMergeSyncResult = {
   tasks: TaskData[];
   synced: number;
 };
-
-const GH_LOOKUP_MAX_ATTEMPTS = 3;
-const GH_LOOKUP_BASE_DELAY_MS = 250;
-
-const GH_TRANSIENT_ERROR_PATTERNS = [
-  /eof\b/i,
-  /tls handshake timeout/i,
-  /ssl_error_syscall/i,
-  /connection reset by peer/i,
-  /\beconnreset\b/i,
-  /\betimedout\b/i,
-  /socket hang up/i,
-  /temporary failure in name resolution/i,
-  /network is unreachable/i,
-  /server closed the connection/i,
-];
-
-const GH_PERMANENT_ERROR_PATTERNS = [
-  /authentication required/i,
-  /not logged into github/i,
-  /could not resolve to a pull request/i,
-  /graphql: field/i,
-  /bad credentials/i,
-  /permission denied/i,
-  /\b403\b/i,
-  /\b401\b/i,
-  /unknown command/i,
-  /usage:/i,
-];
 
 export type LocalBranchPrSyncCandidate = {
   taskId: string;
@@ -161,44 +133,6 @@ function pickHostedMergedPr(records: unknown[]): HostedMergedPr | null {
   );
 }
 
-function normalizeErrorText(err: unknown): string {
-  if (err instanceof Error) {
-    const parts = [err.name, err.message];
-    const stderr = (err as { stderr?: unknown }).stderr;
-    const stdout = (err as { stdout?: unknown }).stdout;
-    if (typeof stderr === "string" && stderr.trim()) parts.push(stderr);
-    if (typeof stdout === "string" && stdout.trim()) parts.push(stdout);
-    return parts.filter((part) => part.trim().length > 0).join("\n");
-  }
-  return String(err);
-}
-
-function isTransientGhTransportError(err: unknown): boolean {
-  const text = normalizeErrorText(err);
-  if (GH_PERMANENT_ERROR_PATTERNS.some((pattern) => pattern.test(text))) return false;
-  return GH_TRANSIENT_ERROR_PATTERNS.some((pattern) => pattern.test(text));
-}
-
-async function sleep(ms: number): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function withGhLookupRetry<T>(operation: () => Promise<T>): Promise<T> {
-  let lastError: unknown = null;
-  for (let attempt = 1; attempt <= GH_LOOKUP_MAX_ATTEMPTS; attempt += 1) {
-    try {
-      return await operation();
-    } catch (err) {
-      lastError = err;
-      if (!isTransientGhTransportError(err) || attempt === GH_LOOKUP_MAX_ATTEMPTS) {
-        throw err;
-      }
-      await sleep(GH_LOOKUP_BASE_DELAY_MS * attempt);
-    }
-  }
-  throw lastError instanceof Error ? lastError : new Error(String(lastError));
-}
-
 export function resolveLocalMergedPrMeta(meta: TaskPrMeta | null): LocalMergedPrMeta | null {
   const branch = meta?.branch?.trim() ?? "";
   const mergeCommit = meta?.merge_commit?.trim() ?? "";
@@ -233,28 +167,33 @@ export async function resolveHostedMergedPr(opts: {
   cwd: string;
   branch: string;
 }): Promise<HostedMergedPr | null> {
-  return await withGhLookupRetry(async () => {
-    const { stdout } = await execFileAsync(
-      "gh",
-      [
-        "pr",
-        "list",
-        "--state",
-        "merged",
-        "--head",
-        opts.branch,
-        "--json",
-        "number,title,url,mergedAt,baseRefName,headRefName,headRefOid,mergeCommit",
-      ],
-      {
-        cwd: opts.cwd,
-        env: process.env,
-        maxBuffer: 10 * 1024 * 1024,
-      },
-    );
-    const parsed = JSON.parse(stdout) as unknown;
-    return Array.isArray(parsed) ? pickHostedMergedPr(parsed) : null;
-  });
+  return await withGhTransportRetry(
+    async () => {
+      const { stdout } = await execFileAsync(
+        "gh",
+        [
+          "pr",
+          "list",
+          "--state",
+          "merged",
+          "--head",
+          opts.branch,
+          "--json",
+          "number,title,url,mergedAt,baseRefName,headRefName,headRefOid,mergeCommit",
+        ],
+        {
+          cwd: opts.cwd,
+          env: process.env,
+          maxBuffer: 10 * 1024 * 1024,
+        },
+      );
+      const parsed = JSON.parse(stdout) as unknown;
+      return Array.isArray(parsed) ? pickHostedMergedPr(parsed) : null;
+    },
+    {
+      label: `looking up merged PR metadata for ${opts.branch}`,
+    },
+  );
 }
 
 function buildSyncedPrMeta(opts: {
