@@ -1,10 +1,11 @@
 ---
 id: "202604070537-8RRQ7G"
 title: "Reconcile local integrated closures for 13MRDY T8F4ZZ and CB3N4G"
-status: "DOING"
+result_summary: "Merged via PR #114."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "26f8304862efadaf66579de5907e2b6d55e1e00a"
+  message: "Merge pull request #114 from basilisk-labs/task/202604070537-8RRQ7G/local-main-closure-reconcile"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: publish local integrate+close commits for 13MRDY, T8F4ZZ, and CB3N4G through a protected-main closure PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #114 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -34,8 +40,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: publish local integrate+close commits for 13MRDY, T8F4ZZ, and CB3N4G through a protected-main closure PR."
+  -
+    type: "status"
+    at: "2026-04-07T05:44:52.777Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #114 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-07T05:39:32.336Z"
+doc_updated_at: "2026-04-07T05:44:52.782Z"
 doc_updated_by: "INTEGRATOR"
 description: "Publish the local main integrate+close commits for tasks 202604070443-13MRDY, 202604070443-T8F4ZZ, and 202604070443-CB3N4G through a protected-main closure PR so GitHub, origin/main, and local task state converge."
 sections:
