@@ -31,8 +31,16 @@ describe("runCli", () => {
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await mkdir(path.join(root, "packages", "agentplane", "assets", "policy"), {
+      recursive: true,
+    });
     await writeFile(
       path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "packages", "agentplane", "assets", "policy", "incidents.md"),
       createIncidentRegistrySkeleton(),
       "utf8",
     );
@@ -227,12 +235,17 @@ describe("runCli", () => {
       path.join(root, ".agentplane", "policy", "incidents.md"),
       "utf8",
     );
+    const incidentsAsset = await readFile(
+      path.join(root, "packages", "agentplane", "assets", "policy", "incidents.md"),
+      "utf8",
+    );
     expect(incidents).toContain(`source_task: ${taskId}`);
     expect(incidents).toContain("fixability: external");
     expect(incidents).toContain("state: open");
     expect(incidents).toContain(
       "inspect the merged PR state first, then create the missing closure branch only when the close metadata is absent",
     );
+    expect(incidentsAsset).toBe(incidents);
 
     const rerunIo = captureStdIO();
     try {

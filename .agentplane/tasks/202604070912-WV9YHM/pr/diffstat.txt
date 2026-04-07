@@ -1,0 +1,15 @@
+ .agentplane/tasks/202604070912-WV9YHM/README.md    | 118 +++++++++++++++++++++
+ .../tasks/202604070912-WV9YHM/pr/diffstat.txt      |   0
+ .../tasks/202604070912-WV9YHM/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604070912-WV9YHM/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604070912-WV9YHM/pr/meta.json |  14 +++
+ .../tasks/202604070912-WV9YHM/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604070912-WV9YHM/pr/review.md |  57 ++++++++++
+ .../tasks/202604070912-WV9YHM/pr/verify.log        |   0
+ .../src/cli/run-cli.core.task-hosted-close.test.ts |  13 +++
+ .../src/cli/wait-remote-pr-checks-script.test.ts   |   9 +-
+ .../agentplane/src/commands/incidents/shared.ts    |  19 +++-
+ packages/agentplane/src/policy/evaluate.test.ts    |  10 ++
+ .../agentplane/src/shared/protected-paths.test.ts  |  11 ++
+ packages/agentplane/src/shared/protected-paths.ts  |   2 +
+ 14 files changed, 298 insertions(+), 6 deletions(-)
