@@ -1,0 +1,1 @@
+hooks/workflow: Use base diff scope for new branch pre-push publishes (HWNRXM)
