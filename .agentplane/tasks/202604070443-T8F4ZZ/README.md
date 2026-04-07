@@ -1,10 +1,11 @@
 ---
 id: "202604070443-T8F4ZZ"
 title: "Skip broad pre-commit test-fast for artifact-only and docs-only staged changes"
-status: "DOING"
+result_summary: "integrate: squash task/202604070443-T8F4ZZ/pre-commit-artifact-fast-path"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T05:11:56.662Z"
   updated_by: "CODER"
   note: "Focused vitest and eslint passed; pre-commit checks and narrowed test-fast gate passed on final HEAD 3977423a."
-commit: null
+commit:
+  hash: "2f56348002bffed271666523d9387fc3cfadf682"
+  message: "📝 T8F4ZZ task: record GitHub PR metadata"
 comments:
   -
     author: "CODER"
     body: "Start: add a pre-commit fast path that skips broad test-fast for artifact-only and docs-policy-only staged changes while keeping code-bearing commits on the current path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070443-T8F4ZZ/pr."
 events:
   -
     type: "status"
@@ -54,9 +60,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused vitest and eslint passed; pre-commit checks and narrowed test-fast gate passed on final HEAD 3977423a."
+  -
+    type: "status"
+    at: "2026-04-07T05:29:37.721Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070443-T8F4ZZ/pr."
 doc_version: 3
-doc_updated_at: "2026-04-07T05:11:56.671Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T05:29:37.725Z"
+doc_updated_by: "INTEGRATOR"
 description: "Avoid running the full pre-commit test-fast suite for commits that only touch task artifacts or docs/policy paths, so unrelated worker timeouts do not block workflow bookkeeping commits."
 sections:
   Summary: |-
