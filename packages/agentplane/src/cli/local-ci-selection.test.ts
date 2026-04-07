@@ -54,6 +54,24 @@ describe("local CI fast selection", () => {
     expect(plan.reason).toBe("docs_policy_website_only");
   });
 
+  it("treats isolated task artifacts as docs-only", () => {
+    const plan = selectFastCiPlan([
+      ".agentplane/tasks/202604070443-T8F4ZZ/README.md",
+      ".agentplane/tasks/202604070443-T8F4ZZ/pr/meta.json",
+    ]);
+    expect(plan.kind).toBe("docs-only");
+    expect(plan.reason).toBe("docs_policy_website_only");
+  });
+
+  it("treats task artifact-only staged changes as docs-only", () => {
+    const plan = selectFastCiPlan([
+      ".agentplane/tasks/202604070443-T8F4ZZ/README.md",
+      ".agentplane/tasks/202604070443-T8F4ZZ/pr/meta.json",
+    ]);
+    expect(plan.kind).toBe("docs-only");
+    expect(plan.reason).toBe("docs_policy_website_only");
+  });
+
   it("routes isolated task command paths to the task bucket", () => {
     const plan = selectFastCiPlan([
       "packages/agentplane/src/commands/task/shared.ts",
@@ -99,6 +117,16 @@ describe("local CI fast selection", () => {
     expect(plan.bucket).toBe("hooks");
     expect(plan.reason).toBe("hook_and_ci_routing_paths_only");
     expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.hooks.test.ts");
+  });
+
+  it("routes the pre-commit test-fast decision script to the hooks bucket", () => {
+    const plan = selectFastCiPlan(["scripts/run-pre-commit-test-fast.mjs"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("hooks");
+    expect(plan.reason).toBe("hook_and_ci_routing_paths_only");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/pre-commit-test-fast-script.test.ts",
+    );
   });
 
   it("routes isolated workflow lint and command-contract paths to the workflow bucket", () => {

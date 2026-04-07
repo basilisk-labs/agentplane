@@ -28,14 +28,19 @@ const BACKEND_BUCKET_PATTERNS = [
 ];
 
 const HOOKS_BUCKET_PATTERNS = [
-  /^scripts\/run-(?:pre-push|pre-commit|commit-msg)-hook\.mjs$/,
+  /^scripts\/run-pre-push-hook\.mjs$/,
+  /^scripts\/run-pre-commit-hook\.mjs$/,
+  /^scripts\/run-pre-commit-test-fast\.mjs$/,
+  /^scripts\/run-commit-msg-hook\.mjs$/,
   /^scripts\/run-local-ci\.mjs$/,
   /^scripts\/lib\/local-ci-selection\.mjs$/,
+  /^scripts\/lib\/pre-commit-staged-files\.mjs$/,
   /^scripts\/lib\/pre-push-scope\.mjs$/,
   /^lefthook\.yml$/,
   /^packages\/agentplane\/src\/cli\/local-ci-selection\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.hooks\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/pre-commit-staged-files\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/pre-commit-test-fast-script\.test\.ts$/,
 ];
 
 const WORKFLOW_BUCKET_PATTERNS = [
@@ -156,6 +161,7 @@ const HOOKS_TEST_FILES = [
   "packages/agentplane/src/cli/local-ci-selection.test.ts",
   "packages/agentplane/src/cli/run-cli.core.hooks.test.ts",
   "packages/agentplane/src/cli/pre-commit-staged-files.test.ts",
+  "packages/agentplane/src/cli/pre-commit-test-fast-script.test.ts",
 ];
 const WORKFLOW_TEST_FILES = [];
 const SELECTOR_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
