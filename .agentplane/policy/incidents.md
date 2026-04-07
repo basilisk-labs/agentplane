@@ -97,3 +97,17 @@ This is the single file for incident-derived and situational policy rules.
   source_task: 202604062309-EXTXG1
   fixability: external
   state: open
+
+- id: INC-20260407-03
+  date: 2026-04-07
+  scope: task findings incident promotion
+  tags: incidents, workflow, code
+  match: findings, promote, incidents, workflow, code, task, incident, promotion, auto, into, collect, flow, make, structured, created, during
+  failure: Structured findings needed hidden promote/external flags before incidents collection could see them.
+  advice: Use task findings add defaults for reusable incident candidates; use --local-only only for task-scoped notes.
+  rule: Structured findings intended as reusable workflow advice MUST promote by default; task-local-only notes MUST opt out explicitly with --local-only.
+  evidence: task 202604070754-ZD0ZAZ
+  enforcement: manual
+  source_task: 202604070754-ZD0ZAZ
+  fixability: external
+  state: open

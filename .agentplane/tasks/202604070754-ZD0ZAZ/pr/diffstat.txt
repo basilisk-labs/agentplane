@@ -1,0 +1,13 @@
+ .agentplane/tasks/202604070754-ZD0ZAZ/README.md    | 139 +++++++++++++++++++++
+ .../tasks/202604070754-ZD0ZAZ/pr/diffstat.txt      |   0
+ .../tasks/202604070754-ZD0ZAZ/pr/github-body.md    |  50 ++++++++
+ .../tasks/202604070754-ZD0ZAZ/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604070754-ZD0ZAZ/pr/meta.json |  14 +++
+ .../tasks/202604070754-ZD0ZAZ/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604070754-ZD0ZAZ/pr/review.md |  57 +++++++++
+ .../tasks/202604070754-ZD0ZAZ/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |  23 ++--
+ .../src/cli/run-cli.core.tasks.findings.test.ts    |  96 +++++++++++++-
+ .../src/commands/task/findings-add.command.ts      |  71 +++++++----
+ .../src/commands/task/findings.command.ts          |   5 +-
+ 12 files changed, 418 insertions(+), 38 deletions(-)

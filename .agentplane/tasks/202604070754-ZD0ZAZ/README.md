@@ -1,10 +1,11 @@
 ---
 id: "202604070754-ZD0ZAZ"
 title: "Auto-promote incident findings into incidents collect flow"
-status: "DOING"
+result_summary: "integrate: squash task/202604070754-ZD0ZAZ/incidents-autopromote"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T08:05:51.675Z"
   updated_by: "CODER"
   note: "Verified: task findings add now emits promotable external incident metadata by default, --local-only preserves task-local findings, targeted bun tests pass, eslint passes, and incidents collect --check shows a promotable candidate without hidden flags."
-commit: null
+commit:
+  hash: "1f17bf6a27f3d2bf29786381ba1a2a44225eb406"
+  message: "📝 ZD0ZAZ task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: inspect findings promotion and incident collection path, implement the smallest rule change that makes incident-oriented findings promote without hidden metadata, and verify with focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070754-ZD0ZAZ/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: task findings add now emits promotable external incident metadata by default, --local-only preserves task-local findings, targeted bun tests pass, eslint passes, and incidents collect --check shows a promotable candidate without hidden flags."
+  -
+    type: "status"
+    at: "2026-04-07T08:20:55.985Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070754-ZD0ZAZ/pr."
 doc_version: 3
-doc_updated_at: "2026-04-07T08:05:51.677Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T08:20:55.988Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make structured findings created during normal CLI/task workflows promote into incidents collection without requiring hidden manual metadata."
 sections:
   Summary: |-

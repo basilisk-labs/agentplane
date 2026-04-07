@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604070754-ZD0ZAZ/incidents-autopromote",
   "created_at": "2026-04-07T07:58:45.096Z",
-  "head_sha": "b0f177c768280e18beaa771264c91c84f7625a7d",
+  "head_sha": "1ce61d7591324068dbfebd4d431494c018025de8",
   "last_verified_at": "2026-04-07T08:05:51.675Z",
   "last_verified_sha": "bec7459768f68588faa628cc3d208be3989f6b76",
+  "merge_commit": "1f17bf6a27f3d2bf29786381ba1a2a44225eb406",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T08:20:55.959Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604070754-ZD0ZAZ",
-  "updated_at": "2026-04-07T08:08:32.104Z",
+  "updated_at": "2026-04-07T08:20:55.959Z",
   "verify": {
     "status": "pass"
   }
