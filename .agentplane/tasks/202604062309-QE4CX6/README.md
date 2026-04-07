@@ -1,10 +1,11 @@
 ---
 id: "202604062309-QE4CX6"
 title: "Replace gh watch in remote-check wait path with resilient polling"
-status: "DOING"
+result_summary: "Merged via PR #101."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-06T23:36:48.838Z"
   updated_by: "CODER"
   note: "Verified: updated the polling test contract to match the new gh api call path and refreshed branch_pr artifacts for the current head."
-commit: null
+commit:
+  hash: "d0f4476e4f033723b08a20130ec9a033d71a86e5"
+  message: "workflow: Replace gh watch in remote-check wait path with resilient polling (QE4CX6) (#101)"
 comments:
   -
     author: "CODER"
     body: "Start: replace the fragile gh watch wrapper with resilient remote-check polling and retries."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #101 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: updated the polling test contract to match the new gh api call path and refreshed branch_pr artifacts for the current head."
+  -
+    type: "status"
+    at: "2026-04-07T00:17:04.348Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #101 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-06T23:36:48.848Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T00:17:04.354Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stop delegating workflow:wait-remote-checks to gh pr checks --watch and use a more resilient polling path with bounded retries and explicit statuses."
 sections:
   Summary: |-

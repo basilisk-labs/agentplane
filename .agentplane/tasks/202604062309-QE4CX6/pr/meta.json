@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604062309-QE4CX6/remote-check-polling",
   "created_at": "2026-04-06T23:23:06.350Z",
-  "head_sha": "7995e257d8de436c8047048a68b6b9be255d8c86",
+  "head_sha": "822177548e7164470a42156001bd965f300b7765",
   "last_verified_at": "2026-04-06T23:36:48.838Z",
   "last_verified_sha": "7995e257d8de436c8047048a68b6b9be255d8c86",
+  "merge_commit": "d0f4476e4f033723b08a20130ec9a033d71a86e5",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T00:16:38Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604062309-QE4CX6",
-  "updated_at": "2026-04-06T23:36:48.874Z",
+  "updated_at": "2026-04-07T00:16:38Z",
   "verify": {
     "status": "pass"
   }
