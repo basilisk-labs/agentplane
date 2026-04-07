@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604072308-A1XE27/forward-compatible-pr-meta",
   "created_at": "2026-04-07T23:20:04.293Z",
-  "head_sha": "2f40e56e00d9abfc169c7d521d2ea73012b8c965",
+  "head_sha": "3dd4e636cf74c5d3ed8eb6b05ea89b35ce42e06e",
   "last_verified_at": "2026-04-07T23:34:23.963Z",
   "last_verified_sha": "2f40e56e00d9abfc169c7d521d2ea73012b8c965",
+  "merge_commit": "63bc0dd901e580441ea5194378f14bc10299d94c",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T23:40:43.953Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604072308-A1XE27",
-  "updated_at": "2026-04-07T23:34:23.987Z",
+  "updated_at": "2026-04-07T23:40:43.953Z",
   "verify": {
     "status": "pass"
   }

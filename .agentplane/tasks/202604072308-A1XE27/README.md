@@ -1,10 +1,11 @@
 ---
 id: "202604072308-A1XE27"
 title: "Make integrate tolerate forward-compatible pr/meta schema from task branches"
-status: "TODO"
+result_summary: "integrate: squash task/202604072308-A1XE27/forward-compatible-pr-meta"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -23,8 +24,13 @@ verification:
   updated_at: "2026-04-07T23:34:23.963Z"
   updated_by: "CODER"
   note: "Command: prepare.test + forward-compatible integrate/pr-meta tests + eslint + full pre-push; Result: pass; Evidence: integrate accepts forward-compatible branch pr/meta while strict same-checkout parsing remains unchanged; Scope: branch_pr integrate preparation only."
-commit: null
-comments: []
+commit:
+  hash: "63bc0dd901e580441ea5194378f14bc10299d94c"
+  message: "📝 A1XE27 task: refresh verification artifacts"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604072308-A1XE27/pr."
 events:
   -
     type: "verify"
@@ -38,9 +44,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: prepare.test + forward-compatible integrate/pr-meta tests + eslint + full pre-push; Result: pass; Evidence: integrate accepts forward-compatible branch pr/meta while strict same-checkout parsing remains unchanged; Scope: branch_pr integrate preparation only."
+  -
+    type: "status"
+    at: "2026-04-07T23:40:43.991Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604072308-A1XE27/pr."
 doc_version: 3
-doc_updated_at: "2026-04-07T23:34:23.967Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T23:40:43.995Z"
+doc_updated_by: "INTEGRATOR"
 description: "Base-branch integrate should not fail when a task branch carries newer pr/meta fields or enum values than the current base runtime; integrate should extract the branch/base/verify freshness fields it needs without rejecting forward-compatible branch artifacts."
 sections:
   Summary: |-

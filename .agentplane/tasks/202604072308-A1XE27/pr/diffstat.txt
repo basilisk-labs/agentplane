@@ -1,14 +1,14 @@
- .agentplane/tasks/202604072308-A1XE27/README.md    | 112 +++++++++++++++++++++
- .../tasks/202604072308-A1XE27/pr/diffstat.txt      |   0
- .../tasks/202604072308-A1XE27/pr/github-body.md    |  52 ++++++++++
+ .agentplane/tasks/202604072308-A1XE27/README.md    | 134 +++++++++++++++++++++
+ .../tasks/202604072308-A1XE27/pr/diffstat.txt      |  14 +++
+ .../tasks/202604072308-A1XE27/pr/github-body.md    |  65 ++++++++++
  .../tasks/202604072308-A1XE27/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604072308-A1XE27/pr/meta.json |  14 +++
  .../tasks/202604072308-A1XE27/pr/notes.jsonl       |   0
- .agentplane/tasks/202604072308-A1XE27/pr/review.md |  59 +++++++++++
+ .agentplane/tasks/202604072308-A1XE27/pr/review.md |  72 +++++++++++
  .../tasks/202604072308-A1XE27/pr/verify.log        |   0
- .../src/cli/run-cli.core.pr-flow.integrate.test.ts |  87 ++++++++++++++++
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts |  87 +++++++++++++
  .../commands/pr/integrate/internal/prepare.test.ts |   1 +
  .../src/commands/pr/integrate/internal/prepare.ts  |   6 +-
- .../agentplane/src/commands/shared/pr-meta.test.ts |  31 ++++++
- packages/agentplane/src/commands/shared/pr-meta.ts | 102 +++++++++++++++++++
- 13 files changed, 462 insertions(+), 3 deletions(-)
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  31 +++++
+ packages/agentplane/src/commands/shared/pr-meta.ts | 102 ++++++++++++++++
+ 13 files changed, 524 insertions(+), 3 deletions(-)
