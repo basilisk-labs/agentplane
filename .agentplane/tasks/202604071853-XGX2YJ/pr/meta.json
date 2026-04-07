@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604071853-XGX2YJ/targeted-normalize-reconcile",
+  "created_at": "2026-04-07T18:53:53.830Z",
+  "head_sha": "982fec5de3037afc5a32e45927a4a38236cd6d6d",
+  "last_verified_at": "2026-04-07T19:41:15.063Z",
+  "last_verified_sha": "982fec5de3037afc5a32e45927a4a38236cd6d6d",
+  "schema_version": 1,
+  "task_id": "202604071853-XGX2YJ",
+  "updated_at": "2026-04-07T19:33:24.862Z",
+  "verify": {
+    "status": "pass"
+  }
+}
