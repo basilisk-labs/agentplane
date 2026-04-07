@@ -19,18 +19,48 @@ function isBranchRef(ref) {
   return String(ref ?? "").startsWith("refs/heads/");
 }
 
+function readGitText(args) {
+  try {
+    return execFileSync("git", args, { encoding: "utf8" }).trim();
+  } catch {
+    return "";
+  }
+}
+
+function gitRefExists(ref) {
+  return readGitText(["rev-parse", "--verify", "--quiet", ref]).length > 0;
+}
+
 export function hasReleaseTagPush(updates) {
   return updates.some((update) => String(update.remoteRef ?? "").startsWith("refs/tags/"));
 }
 
-export function selectBranchDiffRange(updates) {
+export function resolveDefaultBaseRef() {
+  const remoteHead = readGitText([
+    "symbolic-ref",
+    "--quiet",
+    "--short",
+    "refs/remotes/origin/HEAD",
+  ]);
+  if (remoteHead) return remoteHead;
+  if (gitRefExists("origin/main")) return "origin/main";
+  if (gitRefExists("main")) return "main";
+  return null;
+}
+
+export function selectBranchDiffRange(updates, opts = {}) {
   const branchUpdates = updates.filter(
     (update) => isBranchRef(update.localRef) && isBranchRef(update.remoteRef),
   );
   if (branchUpdates.length !== 1) return null;
   const [update] = branchUpdates;
   if (!update.localSha || !update.remoteSha) return null;
-  if (isAllZeroSha(update.localSha) || isAllZeroSha(update.remoteSha)) return null;
+  if (isAllZeroSha(update.localSha)) return null;
+  if (isAllZeroSha(update.remoteSha)) {
+    const fallbackRef =
+      typeof opts.newBranchFallbackRef === "string" ? opts.newBranchFallbackRef.trim() : "";
+    return fallbackRef ? { from: fallbackRef, to: update.localSha } : null;
+  }
   return { from: update.remoteSha, to: update.localSha };
 }
 
