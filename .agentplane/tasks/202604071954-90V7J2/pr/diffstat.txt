@@ -1,0 +1,8 @@
+ .agentplane/policy/incidents.md                    |  14 ---
+ .agentplane/tasks/202604071954-90V7J2/README.md    | 118 ++++++++++++++++++
+ packages/agentplane/assets/policy/incidents.md     |  14 ---
+ .../src/cli/run-cli.core.incidents.test.ts         | 109 +++++++++++++++++
+ .../agentplane/src/commands/incidents/shared.ts    |  17 +++
+ .../src/runtime/incidents/resolve.test.ts          | 136 +++++++++++++++++++++
+ .../agentplane/src/runtime/incidents/resolve.ts    | 134 +++++++++++++++++---
+ 7 files changed, 497 insertions(+), 45 deletions(-)

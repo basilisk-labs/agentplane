@@ -4,7 +4,7 @@ title: "Repair incident registry parsing, dedupe, and budget enforcement"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-07T20:12:12.078Z"
+  updated_at: "2026-04-07T20:21:05.808Z"
   updated_by: "CODER"
-  note: "Command: bun x vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; node .agentplane/policy/check-routing.mjs; bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts. Result: pass. Evidence: compact incidents registry parsing, duplicate-id prevention, budget guard, and repaired live incidents.md all verified in the task worktree."
+  note: "Refreshed verification after source commit and pr open. Checks: bun x vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; node .agentplane/policy/check-routing.mjs. Evidence: current HEAD matches repaired incident registry parsing, dedupe, and budget guard."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; node .agentplane/policy/check-routing.mjs; bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts. Result: pass. Evidence: compact incidents registry parsing, duplicate-id prevention, budget guard, and repaired live incidents.md all verified in the task worktree."
+  -
+    type: "verify"
+    at: "2026-04-07T20:21:05.808Z"
+    author: "CODER"
+    state: "ok"
+    note: "Refreshed verification after source commit and pr open. Checks: bun x vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; node .agentplane/policy/check-routing.mjs. Evidence: current HEAD matches repaired incident registry parsing, dedupe, and budget guard."
 doc_version: 3
-doc_updated_at: "2026-04-07T20:12:12.081Z"
+doc_updated_at: "2026-04-07T20:21:05.814Z"
 doc_updated_by: "CODER"
 description: "Make incidents collect and lifecycle promotion parse the current incidents.md layout correctly, allocate unique incident IDs, prevent duplicate appends, and keep the live registry/assets within policy line budget."
 sections:
@@ -68,6 +74,14 @@ sections:
     Note: Command: bun x vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; node .agentplane/policy/check-routing.mjs; bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts. Result: pass. Evidence: compact incidents registry parsing, duplicate-id prevention, budget guard, and repaired live incidents.md all verified in the task worktree.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T19:59:42.273Z, excerpt_hash=sha256:db0f74e582f40e856d66f8d42db9bc579fd4066a1c4a262d05dc9ed4353d0b59
+    
+    ### 2026-04-07T20:21:05.808Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Refreshed verification after source commit and pr open. Checks: bun x vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; node .agentplane/policy/check-routing.mjs. Evidence: current HEAD matches repaired incident registry parsing, dedupe, and budget guard.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T20:12:12.081Z, excerpt_hash=sha256:db0f74e582f40e856d66f8d42db9bc579fd4066a1c4a262d05dc9ed4353d0b59
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -107,6 +121,14 @@ By: CODER
 Note: Command: bun x vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; node .agentplane/policy/check-routing.mjs; bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts. Result: pass. Evidence: compact incidents registry parsing, duplicate-id prevention, budget guard, and repaired live incidents.md all verified in the task worktree.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T19:59:42.273Z, excerpt_hash=sha256:db0f74e582f40e856d66f8d42db9bc579fd4066a1c4a262d05dc9ed4353d0b59
+
+### 2026-04-07T20:21:05.808Z — VERIFY — ok
+
+By: CODER
+
+Note: Refreshed verification after source commit and pr open. Checks: bun x vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; node .agentplane/policy/check-routing.mjs. Evidence: current HEAD matches repaired incident registry parsing, dedupe, and budget guard.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T20:12:12.081Z, excerpt_hash=sha256:db0f74e582f40e856d66f8d42db9bc579fd4066a1c4a262d05dc9ed4353d0b59
 
 <!-- END VERIFICATION RESULTS -->
 
