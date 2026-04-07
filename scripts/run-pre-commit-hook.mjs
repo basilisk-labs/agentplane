@@ -6,6 +6,7 @@ import {
   FRAMEWORK_DEV_BOOTSTRAP_COMMAND,
   FRAMEWORK_DEV_FORCE_GLOBAL_EXAMPLE,
 } from "../packages/agentplane/bin/framework-dev-contract.js";
+import { listStagedGitFiles } from "./lib/staged-git-files.mjs";
 import { eslintTargets, prettierTargets } from "./lib/pre-commit-staged-files.mjs";
 
 function run(command, args, env) {
@@ -17,17 +18,6 @@ function run(command, args, env) {
 
 function repoRoot() {
   return execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" }).trim();
-}
-
-function stagedFiles() {
-  const out = execFileSync("git", ["diff", "--cached", "--name-only", "--diff-filter=ACMR"], {
-    encoding: "utf8",
-  }).trim();
-  if (!out) return [];
-  return out
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
 }
 
 function localBin(root, name) {
@@ -67,7 +57,7 @@ async function runChecked(root, tool, args, missingTools) {
 }
 
 const root = repoRoot();
-const files = stagedFiles();
+const files = listStagedGitFiles();
 const missingTools = [];
 
 const prettierFiles = prettierTargets(files);
