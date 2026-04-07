@@ -16,6 +16,33 @@ import {
 
 installRunCliIntegrationHarness();
 
+const compactRegistryHeader = [
+  "# Policy Incidents Log",
+  "",
+  "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`. Optional machine-match fields: `tags`, `match`, `advice`, `source_task`, `fixability`.",
+  "- `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.",
+  "- First auto-promoted external incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.",
+].join("\n");
+
+function makeCompactOpenEntry(index: number): string {
+  const seq = String(index).padStart(2, "0");
+  return [
+    `- id: INC-20260407-${seq}`,
+    "  date: 2026-04-07",
+    `  scope: incident budget entry ${index}`,
+    "  tags: workflow, incidents, budget",
+    `  match: incidents, budget, entry-${index}`,
+    `  failure: incident budget entry ${index} consumed registry space`,
+    `  advice: compact incident budget entry ${index} before promoting more incidents`,
+    `  rule: Incident budget entry ${index} MUST stay compact enough for the policy budget.`,
+    `  evidence: task TASK-${index}`,
+    "  enforcement: manual",
+    `  source_task: TASK-${index}`,
+    "  fixability: external",
+    "  state: open",
+  ].join("\n");
+}
+
 describe("runCli incidents", () => {
   it("incidents collect validates structured external candidates and emits json", async () => {
     const root = await mkGitRepoRoot();
@@ -331,6 +358,88 @@ describe("runCli incidents", () => {
       expect(code).toBe(0);
       expect(io.stdout).toContain("Findings has text but no structured incident blocks");
       expect(io.stdout).toContain("Observation/Impact/Resolution");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("incidents collect refuses writes that would push the registry over the policy line budget", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      [
+        compactRegistryHeader,
+        ...Array.from({ length: 7 }, (_unused, index) => makeCompactOpenEntry(index + 1)),
+      ].join("\n\n") + "\n",
+      "utf8",
+    );
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Reject over-budget incident promotion",
+          "--description",
+          "Validate that incidents collect fails before writing an oversized registry",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "doc",
+          "set",
+          taskId,
+          "--section",
+          "Findings",
+          "--text",
+          [
+            "- Observation: another incident promotion would overflow the policy file budget.",
+            "  Impact: check-routing would fail after the write.",
+            "  Resolution: validate the candidate registry size before writing.",
+            "  Fixability: external",
+          ].join("\n"),
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const incidentsPath = path.join(root, ".agentplane", "policy", "incidents.md");
+    const before = await readFile(incidentsPath, "utf8");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["incidents", "collect", taskId, "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("would exceed policy budget");
+      expect(await readFile(incidentsPath, "utf8")).toBe(before);
     } finally {
       io.restore();
     }

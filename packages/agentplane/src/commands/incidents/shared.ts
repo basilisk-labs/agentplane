@@ -25,6 +25,7 @@ import type { CommandContext } from "../shared/task-backend.js";
 
 export const INCIDENTS_POLICY_PATH = ".agentplane/policy/incidents.md";
 export const INCIDENTS_POLICY_ASSET_PATH = "packages/agentplane/assets/policy/incidents.md";
+const INCIDENTS_POLICY_LINE_BUDGET = 100;
 
 export type LoadedTaskIncidents = {
   task: TaskData;
@@ -61,6 +62,10 @@ async function writeIncidentRegistryMirrors(
   const wroteRegistry = await writeTextIfChanged(registryPath, content);
   const wroteAsset = assetExists ? await writeTextIfChanged(assetPath, content) : false;
   return wroteRegistry || wroteAsset;
+}
+
+function countTextLines(text: string): number {
+  return text.replaceAll("\r\n", "\n").split("\n").length;
 }
 
 export async function loadIncidentRegistry(ctx: CommandContext): Promise<{
@@ -163,6 +168,18 @@ export async function collectTaskIncidents(opts: {
     registryText,
     plan.promotable.map((item) => item.entry),
   );
+  if (plan.promotable.length > 0) {
+    const nextLineCount = countTextLines(nextText);
+    if (nextLineCount > INCIDENTS_POLICY_LINE_BUDGET) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message:
+          `Incident registry write would exceed policy budget: ${nextLineCount} lines ` +
+          `(limit ${INCIDENTS_POLICY_LINE_BUDGET}). Compact or promote fewer entries before writing.`,
+      });
+    }
+  }
   const wrote =
     opts.write && plan.promotable.length > 0
       ? await writeIncidentRegistryMirrors(opts.ctx, nextText)
