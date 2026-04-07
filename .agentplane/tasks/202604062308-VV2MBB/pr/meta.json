@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604062308-VV2MBB/worktree-fast-ci-cwd",
+  "created_at": "2026-04-07T00:11:29.626Z",
+  "head_sha": "07aed3a93d00c7331059be03c988dbaa896b1105",
+  "last_verified_at": "2026-04-07T00:12:52.667Z",
+  "last_verified_sha": "93d74ed13456559936f7389ca9391a61b8a83103",
+  "schema_version": 1,
+  "task_id": "202604062308-VV2MBB",
+  "updated_at": "2026-04-07T00:22:30.760Z",
+  "verify": {
+    "status": "pass"
+  }
+}

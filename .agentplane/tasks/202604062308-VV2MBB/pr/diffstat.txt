@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604062308-VV2MBB/README.md    | 140 +++++++++++++++++++++
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |   5 +-
+ packages/agentplane/src/meta/release.test.ts       |  23 ++--
+ 3 files changed, 154 insertions(+), 14 deletions(-)

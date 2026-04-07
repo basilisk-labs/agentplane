@@ -1016,8 +1016,7 @@ describe("runCli", () => {
     process.env.GIT_COMMITTER_NAME = "Test User";
     process.env.GIT_COMMITTER_EMAIL = "test@example.com";
 
-    const originalCwd = process.cwd();
-    process.chdir(child);
+    const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(child);
     const io = captureStdIO();
     try {
       const code = await runCli(["init", "--yes"]);
@@ -1027,7 +1026,7 @@ describe("runCli", () => {
       expect(io.stderr).not.toContain("Init conflicts detected");
     } finally {
       io.restore();
-      process.chdir(originalCwd);
+      cwdSpy.mockRestore();
       process.env = originalEnv;
     }
   });
