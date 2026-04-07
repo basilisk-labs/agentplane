@@ -263,4 +263,76 @@ describe("runCli incidents", () => {
       io.restore();
     }
   });
+
+  it("incidents collect explains when Findings has plain text but no structured incident blocks", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Explain plain findings incident no-op",
+          "--description",
+          "Differentiate plain Findings text from structured incident blocks",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "doc",
+          "set",
+          taskId,
+          "--section",
+          "Findings",
+          "--text",
+          "Operators noted that incidents.md stayed unchanged after finish, but no structured incident block was recorded.",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["incidents", "collect", taskId, "--check", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Findings has text but no structured incident blocks");
+      expect(io.stdout).toContain("Observation/Impact/Resolution");
+    } finally {
+      io.restore();
+    }
+  });
 });

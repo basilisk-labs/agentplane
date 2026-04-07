@@ -1,0 +1,1 @@
+incidents/workflow: Explain incident promotion no-op when findings are not promotable (KMTE4J)

@@ -71,6 +71,8 @@ export type IncidentCollectionPlan = {
   promotable: IncidentPromotionDraft[];
   duplicates: IncidentPromotionDraft[];
   issues: IncidentPromotionIssue[];
+  findingsTextPresent: boolean;
+  structuredFindingCount: number;
 };
 
 export type IncidentAdviceQuery = {

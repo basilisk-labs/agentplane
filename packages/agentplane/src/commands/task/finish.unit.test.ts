@@ -1000,6 +1000,74 @@ describe("task finish (unit)", () => {
     writeSpy.mockRestore();
   });
 
+  it("explains when Findings has plain text but no structured incident blocks", async () => {
+    const writes: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+      writes.push(String(chunk));
+      return true;
+    });
+
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        id: "T-PLAIN",
+        status: "DOING",
+        tags: ["workflow"],
+        commit: { hash: "abc999", message: "feat: T-PLAIN" },
+        doc: [
+          "## Summary",
+          "Task summary",
+          "",
+          "## Scope",
+          "In-scope files",
+          "",
+          "## Plan",
+          "1. Implement",
+          "",
+          "## Verification",
+          "",
+          "## Rollback Plan",
+          "Revert commit",
+          "",
+          "## Findings",
+          "Operators noted that incidents.md stayed unchanged after finish, but no structured block was recorded.",
+        ].join("\n"),
+      }),
+    );
+    mocks.readCommitInfo.mockResolvedValue({ hash: "abc999", message: "feat: T-PLAIN" });
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-PLAIN"],
+      author: "A",
+      body: "Verified: plain Findings text should explain the no-op reason.",
+      result: "incident diagnostics",
+      commit: "abc999",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(writes.join("")).toContain("Findings has text but no structured incident blocks");
+    expect(writes.join("")).toContain("Observation/Impact/Resolution");
+
+    writeSpy.mockRestore();
+  });
+
   it("prints skipped structured finding diagnostics when finish parses findings but does not promote them", async () => {
     const writes: string[] = [];
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
