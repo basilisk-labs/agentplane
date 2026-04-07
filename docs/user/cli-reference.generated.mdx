@@ -103,6 +103,8 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task doc set](#task-doc-set)
   - [task doc show](#task-doc-show)
   - [task export](#task-export)
+  - [task findings](#task-findings)
+  - [task findings add](#task-findings-add)
   - [task handoff](#task-handoff)
   - [task handoff record](#task-handoff-record)
   - [task handoff show](#task-handoff-show)
@@ -2355,6 +2357,48 @@ agentplane task export
 ```
 
 - Write tasks export JSON and print the path.
+
+### task findings
+
+Structured Findings/Notes commands (add).
+
+Usage:
+
+```text
+agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--promote] [--external] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]
+```
+
+### task findings add
+
+Append a structured Findings/Notes block to a task README.
+
+Usage:
+
+```text
+agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--promote] [--external] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]
+```
+
+Options:
+
+- `--observation <text>`: Required. Observation field.
+- `--impact <text>`: Required. Impact field.
+- `--resolution <text>`: Required. Resolution field.
+- `--promote`: Append \`Promotion: incident-candidate\`. (default=false)
+- `--external`: Append \`Fixability: external\`. (default=false)
+- `--incident-scope <text>`: Optional. IncidentScope override.
+- `--incident-tag <tag>`: Repeatable. IncidentTags entry. (repeatable)
+- `--incident-match <term>`: Repeatable. IncidentMatch entry. (repeatable)
+- `--incident-advice <text>`: Optional. IncidentAdvice field.
+- `--incident-rule <text>`: Optional. IncidentRule field.
+- `--updated-by <id>`: Optional. Override doc_updated_by metadata (must be non-empty).
+
+Examples:
+
+```sh
+agentplane task findings add 202602030608-F1Q8AB --observation "GitHub API EOF retries were manual." --impact "Operators repeated the reconcile loop." --resolution "Switch the retry path to REST polling." --promote --external --incident-scope "GitHub PR reconciliation" --incident-tag workflow --incident-tag github
+```
+
+- Append a promotable external incident candidate without hand-editing the README.
 
 ### task handoff
 
