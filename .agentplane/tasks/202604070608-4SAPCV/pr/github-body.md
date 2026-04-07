@@ -39,12 +39,27 @@ Provide a deterministic CLI command to close stale or superseded GitHub PRs via 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T06:58:41.418Z
+- Updated: 2026-04-07T07:24:35.000Z
 - Branch: task/202604070608-4SAPCV/pr-close-rest
-- Head: 5a2a694bc7b8
+- Head: 11fcd57ce107
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604070608-4SAPCV/README.md    | 123 ++++++++++++
+ .../tasks/202604070608-4SAPCV/pr/diffstat.txt      |   0
+ .../tasks/202604070608-4SAPCV/pr/github-body.md    |  50 +++++
+ .../tasks/202604070608-4SAPCV/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604070608-4SAPCV/pr/meta.json |  14 ++
+ .../tasks/202604070608-4SAPCV/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604070608-4SAPCV/pr/review.md |  57 ++++++
+ .../tasks/202604070608-4SAPCV/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |  33 +++-
+ .../src/cli/run-cli.core.pr-close.test.ts          | 177 +++++++++++++++++
+ .../src/cli/run-cli/command-catalog/project.ts     |   4 +
+ packages/agentplane/src/commands/pr/close.ts       | 215 +++++++++++++++++++++
+ packages/agentplane/src/commands/pr/index.ts       |   1 +
+ .../src/commands/pr/input-validation.test.ts       |  14 ++
+ packages/agentplane/src/commands/pr/pr.command.ts  |  80 +++++++-
+ 15 files changed, 766 insertions(+), 3 deletions(-)
 ```
 
 </details>
