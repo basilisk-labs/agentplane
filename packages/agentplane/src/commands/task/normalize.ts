@@ -5,6 +5,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskCollectionMutation } from "../shared/task-mutation.js";
+import { collectTaskIncidents } from "../incidents/shared.js";
 import { syncHostedMergedTasks, syncLocallyShippedBranchPrTasks } from "./hosted-merge-sync.js";
 
 function dedupeTaskIds(taskIds: readonly string[]): string[] {
@@ -90,6 +91,7 @@ export async function cmdTaskNormalize(opts: {
 
     let syncedHostedMerges = 0;
     let syncedBranchPrState = 0;
+    let promotedIncidents = 0;
     const passThroughNormalizeWrite =
       opts.syncHostedMerges !== true && opts.syncBranchPrState !== true;
     const { result, tasksToWrite } = await applyTaskCollectionMutation({
@@ -107,15 +109,38 @@ export async function cmdTaskNormalize(opts: {
           nextTasks = synced.tasks;
           syncedBranchPrState = synced.synced;
         }
+        const nextTasksToWrite = passThroughNormalizeWrite
+          ? nextTasks
+          : diffTasksToWrite(scopedTasks, nextTasks);
+        const incidentCandidates =
+          opts.syncHostedMerges === true || opts.syncBranchPrState === true
+            ? nextTasksToWrite.filter(
+                (task) => String(task.status || "TODO").toUpperCase() === "DONE",
+              )
+            : [];
+        for (const task of incidentCandidates) {
+          await collectTaskIncidents({
+            ctx,
+            taskId: task.id,
+            task,
+            write: false,
+          });
+        }
         return {
-          result: null,
-          tasksToWrite: passThroughNormalizeWrite
-            ? nextTasks
-            : diffTasksToWrite(scopedTasks, nextTasks),
+          result: { incidentCandidates },
+          tasksToWrite: nextTasksToWrite,
         };
       },
     });
-    void result;
+    for (const task of result.incidentCandidates) {
+      const collected = await collectTaskIncidents({
+        ctx,
+        taskId: task.id,
+        task,
+        write: true,
+      });
+      promotedIncidents += collected.plan.promotable.length;
+    }
     if (!opts.quiet) {
       process.stdout.write(
         `${successMessage(
@@ -125,6 +150,10 @@ export async function cmdTaskNormalize(opts: {
             opts.syncHostedMerges === true ? ` synced_hosted_merges=${syncedHostedMerges}` : ""
           }${
             opts.syncBranchPrState === true ? ` synced_branch_pr_state=${syncedBranchPrState}` : ""
+          }${
+            opts.syncHostedMerges === true || opts.syncBranchPrState === true
+              ? ` promoted_incidents=${promotedIncidents}`
+              : ""
           }`,
         )}\n`,
       );

@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604072118-5H9FPR/README.md    | 147 ++++++++++++++
+ .../tasks/202604072118-5H9FPR/pr/diffstat.txt      |   3 +
+ .../tasks/202604072118-5H9FPR/pr/github-body.md    |  48 +++++
+ .../tasks/202604072118-5H9FPR/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604072118-5H9FPR/pr/meta.json |  14 ++
+ .../tasks/202604072118-5H9FPR/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604072118-5H9FPR/pr/review.md |  55 ++++++
+ .../tasks/202604072118-5H9FPR/pr/verify.log        |   0
+ .../run-cli.core.tasks.normalize-migrate.test.ts   | 213 ++++++++++++++++++++-
+ packages/agentplane/src/commands/task/normalize.ts |  39 +++-
+ 10 files changed, 513 insertions(+), 7 deletions(-)
