@@ -45,9 +45,9 @@ Provide a deterministic CLI command to close stale or superseded GitHub PRs via 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T06:37:11.558Z
+- Updated: 2026-04-07T06:58:41.418Z
 - Branch: task/202604070608-4SAPCV/pr-close-rest
-- Head: 5f952138b0ae
+- Head: 5a2a694bc7b8
 
 ```text
 No changes detected.
