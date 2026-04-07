@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604070537-8RRQ7G/local-main-closure-reconcile",
+  "created_at": "2026-04-07T05:39:32.469Z",
+  "head_sha": "c5a02650dc7d9fc6c470e406b649efc563c22577",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604070537-8RRQ7G",
+  "updated_at": "2026-04-07T05:39:32.469Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
