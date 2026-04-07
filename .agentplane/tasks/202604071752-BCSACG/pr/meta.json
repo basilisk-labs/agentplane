@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604071752-BCSACG/hosted-merge-reconcile-wave",
+  "created_at": "2026-04-07T17:53:28.876Z",
+  "head_sha": "679e7d8cc822bab752a3f62e28b759e426619109",
+  "last_verified_at": "2026-04-07T18:00:01.739Z",
+  "last_verified_sha": "679e7d8cc822bab752a3f62e28b759e426619109",
+  "schema_version": 1,
+  "task_id": "202604071752-BCSACG",
+  "updated_at": "2026-04-07T18:00:01.791Z",
+  "verify": {
+    "status": "pass"
+  }
+}
