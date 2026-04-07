@@ -1,21 +1,8 @@
 # Policy Incidents Log
-
-This is the single file for incident-derived and situational policy rules.
-
-## Entry contract
-
-- Add entries append-only.
-- Every entry MUST include: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`.
-- New machine-matched entries SHOULD also include: `tags`, `match`, `advice`, `source_task`, `fixability`.
+- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`. Optional machine-match fields: `tags`, `match`, `advice`, `source_task`, `fixability`.
 - `rule` MUST be concrete and testable (`MUST` / `MUST NOT`).
 - `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.
-- First auto-promoted external incidents normally enter as `open` and still participate in targeted advice lookup; recurring equivalent incidents can append later `stabilized` entries.
-- `state` values: `open`, `stabilized`, `promoted`.
-
-## Entry template: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state` are required; `tags`, `match`, `advice`, `source_task`, `fixability` are optional machine-match fields.
-
-## Entries
-
+- First auto-promoted external incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.
 - id: INC-20260308-01
   date: 2026-03-08
   scope: release apply internal push path
@@ -97,7 +84,6 @@ This is the single file for incident-derived and situational policy rules.
   source_task: 202604062309-EXTXG1
   fixability: external
   state: open
-
 - id: INC-20260407-03
   date: 2026-04-07
   scope: task findings incident promotion
