@@ -47,9 +47,9 @@ Base-branch integrate should not fail when a task branch carries newer pr/meta f
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T23:20:04.293Z
+- Updated: 2026-04-07T23:21:09.815Z
 - Branch: task/202604072308-A1XE27/forward-compatible-pr-meta
-- Head: dd78eddd5349
+- Head: c27e8033305a
 
 ```text
 No changes detected.
