@@ -4,7 +4,7 @@ title: "Stabilize worktree fast CI against uv_cwd worker failures"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-07T00:11:29.588Z"
+  updated_at: "2026-04-07T00:12:52.667Z"
   updated_by: "CODER"
-  note: "Removed global process.chdir leaks from the two worktree-sensitive tests; targeted vitest and eslint passed in a bootstrap-ready worktree without uv_cwd/ENOENT failures."
+  note: "Removed global process.chdir leaks from the two worktree-sensitive tests; targeted vitest and eslint passed in the published worktree branch without uv_cwd/ENOENT failures."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed global process.chdir leaks from the two worktree-sensitive tests; targeted vitest and eslint passed in a bootstrap-ready worktree without uv_cwd/ENOENT failures."
+  -
+    type: "verify"
+    at: "2026-04-07T00:12:52.667Z"
+    author: "CODER"
+    state: "ok"
+    note: "Removed global process.chdir leaks from the two worktree-sensitive tests; targeted vitest and eslint passed in the published worktree branch without uv_cwd/ENOENT failures."
 doc_version: 3
-doc_updated_at: "2026-04-07T00:11:29.592Z"
+doc_updated_at: "2026-04-07T00:12:52.682Z"
 doc_updated_by: "CODER"
 description: "Stop pre-push / ci:local:fast from failing in worktree checkouts when vitest workers inherit a deleted current working directory and crash with uv_cwd ENOENT."
 sections:
@@ -68,6 +74,14 @@ sections:
     Note: Removed global process.chdir leaks from the two worktree-sensitive tests; targeted vitest and eslint passed in a bootstrap-ready worktree without uv_cwd/ENOENT failures.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:09:02.838Z, excerpt_hash=sha256:c0b58a4368546c247a13e882ca37149a77a84f322f30db24e3e91a72532918ac
+    
+    ### 2026-04-07T00:12:52.667Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Removed global process.chdir leaks from the two worktree-sensitive tests; targeted vitest and eslint passed in the published worktree branch without uv_cwd/ENOENT failures.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T00:11:29.592Z, excerpt_hash=sha256:c0b58a4368546c247a13e882ca37149a77a84f322f30db24e3e91a72532918ac
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -107,6 +121,14 @@ By: CODER
 Note: Removed global process.chdir leaks from the two worktree-sensitive tests; targeted vitest and eslint passed in a bootstrap-ready worktree without uv_cwd/ENOENT failures.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-06T23:09:02.838Z, excerpt_hash=sha256:c0b58a4368546c247a13e882ca37149a77a84f322f30db24e3e91a72532918ac
+
+### 2026-04-07T00:12:52.667Z — VERIFY — ok
+
+By: CODER
+
+Note: Removed global process.chdir leaks from the two worktree-sensitive tests; targeted vitest and eslint passed in the published worktree branch without uv_cwd/ENOENT failures.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T00:11:29.592Z, excerpt_hash=sha256:c0b58a4368546c247a13e882ca37149a77a84f322f30db24e3e91a72532918ac
 
 <!-- END VERIFICATION RESULTS -->
 
