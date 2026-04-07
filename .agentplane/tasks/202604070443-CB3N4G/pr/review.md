@@ -45,12 +45,26 @@ Make integrate incident collection prefer a branch-backed task README when it is
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T05:25:00.537Z
+- Updated: 2026-04-07T05:26:02.476Z
 - Branch: task/202604070443-CB3N4G/integrate-fresh-task-snapshot
-- Head: add431763ba6
+- Head: aa43c8dca205
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604070443-CB3N4G/README.md    | 118 +++++++++++++++++++++
+ .../tasks/202604070443-CB3N4G/pr/diffstat.txt      |   0
+ .../tasks/202604070443-CB3N4G/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604070443-CB3N4G/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604070443-CB3N4G/pr/meta.json |  14 +++
+ .../tasks/202604070443-CB3N4G/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604070443-CB3N4G/pr/review.md |  57 ++++++++++
+ .../tasks/202604070443-CB3N4G/pr/verify.log        |   0
+ .../pr/integrate/internal/finalize.test.ts         |  11 +-
+ .../src/commands/pr/integrate/internal/finalize.ts |   1 +
+ .../commands/pr/integrate/internal/prepare.test.ts |  33 +++++-
+ .../src/commands/pr/integrate/internal/prepare.ts  |  33 +++---
+ .../src/commands/shared/task-backend.test.ts       |  47 +++++++-
+ .../agentplane/src/commands/shared/task-backend.ts |  33 ++++--
+ 14 files changed, 365 insertions(+), 33 deletions(-)
 ```
 
 </details>
