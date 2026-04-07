@@ -1,10 +1,11 @@
 ---
 id: "202604070608-4SAPCV"
 title: "Add REST-backed PR close command with optional remote branch deletion"
-status: "DOING"
+result_summary: "integrate: squash task/202604070608-4SAPCV/pr-close-rest"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T06:54:45.061Z"
   updated_by: "CODER"
   note: "Focused CLI pr-close tests and lint passed; pr close now uses REST-backed gh api calls, defaults repo from the resolved project root, and only deletes remote head branches after a successful close."
-commit: null
+commit:
+  hash: "c2a0a8232a3b98397a7571dfec82a469c5e06f9f"
+  message: "📝 4SAPCV task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: add a REST-backed PR close command with optional remote head-branch deletion for stale and superseded GitHub PR cleanup."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070608-4SAPCV/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused CLI pr-close tests and lint passed; pr close now uses REST-backed gh api calls, defaults repo from the resolved project root, and only deletes remote head branches after a successful close."
+  -
+    type: "status"
+    at: "2026-04-07T07:38:01.625Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070608-4SAPCV/pr."
 doc_version: 3
-doc_updated_at: "2026-04-07T06:54:45.067Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T07:38:01.634Z"
+doc_updated_by: "INTEGRATOR"
 description: "Provide a deterministic CLI command to close stale or superseded GitHub PRs via REST and optionally delete the remote head branch, avoiding flaky gh GraphQL high-level paths."
 sections:
   Summary: |-
