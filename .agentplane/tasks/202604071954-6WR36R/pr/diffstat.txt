@@ -1,0 +1,28 @@
+ .agentplane/policy/incidents.md                    |  14 ---
+ .agentplane/tasks/202604071954-6WR36R/README.md    | 118 +++++++++++++++++
+ .../tasks/202604071954-6WR36R/pr/diffstat.txt      |   6 +
+ .../tasks/202604071954-6WR36R/pr/github-body.md    |  55 ++++++++
+ .../tasks/202604071954-6WR36R/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604071954-6WR36R/pr/meta.json |  14 +++
+ .../tasks/202604071954-6WR36R/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604071954-6WR36R/pr/review.md |  62 +++++++++
+ .../tasks/202604071954-6WR36R/pr/verify.log        |   0
+ .agentplane/tasks/202604071954-90V7J2/README.md    | 140 +++++++++++++++++++++
+ .../tasks/202604071954-90V7J2/pr/diffstat.txt      |   8 ++
+ .../tasks/202604071954-90V7J2/pr/github-body.md    |  57 +++++++++
+ .../tasks/202604071954-90V7J2/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604071954-90V7J2/pr/meta.json |  14 +++
+ .../tasks/202604071954-90V7J2/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604071954-90V7J2/pr/review.md |  64 ++++++++++
+ .../tasks/202604071954-90V7J2/pr/verify.log        |   0
+ packages/agentplane/assets/policy/incidents.md     |  14 ---
+ .../src/cli/run-cli.core.incidents.test.ts         | 109 ++++++++++++++++
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  93 ++++++++++++++
+ .../agentplane/src/commands/incidents/shared.ts    |  17 +++
+ packages/agentplane/src/commands/pr/check.ts       |  71 ++++++-----
+ .../commands/pr/integrate/internal/prepare.test.ts |  43 ++++++-
+ .../src/commands/pr/integrate/internal/prepare.ts  |  49 ++++----
+ .../src/commands/pr/internal/freshness.ts          |  77 ++++++++++++
+ .../src/runtime/incidents/resolve.test.ts          | 136 ++++++++++++++++++++
+ .../agentplane/src/runtime/incidents/resolve.ts    | 134 +++++++++++++++++---
+ 27 files changed, 1191 insertions(+), 106 deletions(-)

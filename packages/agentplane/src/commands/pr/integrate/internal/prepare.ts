@@ -26,7 +26,7 @@ import { resolvePrPaths } from "../../internal/pr-paths.js";
 import { readAndValidatePrArtifacts } from "../artifacts.js";
 import { computeVerifyState } from "../verify.js";
 import { parsePrMeta, type PrMeta } from "../../../shared/pr-meta.js";
-import { isTaskLocalOnlyAdvance } from "../../../shared/task-local-freshness.js";
+import { assessPrArtifactFreshness } from "../../internal/freshness.js";
 
 export type PreparedIntegrate = {
   ctx: CommandContext;
@@ -168,6 +168,13 @@ export async function prepareIntegrate(opts: {
   // readAndValidatePrArtifacts() throws if verify.log is missing; keep this non-null downstream.
   const verifyLogText = verifyLogTextMaybe!;
 
+  const task = await loadTaskFromContext({
+    ctx,
+    taskId: opts.taskId,
+    preferBranchSnapshot: true,
+    branchSnapshotBranch: branch,
+  });
+
   const changedPaths = await gitDiffNames(resolved.gitRoot, base, branch);
   const tasksPath = loadedConfig.paths.tasks_path;
   if (changedPaths.includes(tasksPath)) {
@@ -179,16 +186,19 @@ export async function prepareIntegrate(opts: {
   }
 
   const branchHeadSha = await gitRevParse(resolved.gitRoot, [branch]);
-  const reviewFresh =
-    (metaSource.head_sha ?? null) === branchHeadSha ||
-    (await isTaskLocalOnlyAdvance({
-      gitRoot: resolved.gitRoot,
-      workflowDir: loadedConfig.paths.workflow_dir,
-      taskId: opts.taskId,
-      fromRef: metaSource.head_sha ?? null,
-      toRef: branchHeadSha,
-    }));
-  if (!reviewFresh) {
+  const freshness = await assessPrArtifactFreshness({
+    gitRoot: resolved.gitRoot,
+    workflowDir: loadedConfig.paths.workflow_dir,
+    taskId: opts.taskId,
+    branchHeadSha,
+    metaHeadSha: metaSource.head_sha ?? null,
+    metaLastVerifiedSha: metaSource.last_verified_sha ?? null,
+    metaVerifyStatus: metaSource.verify?.status ?? null,
+    taskVerificationState: task.verification?.state ?? null,
+    verifyLogText,
+    requiresVerify: Boolean(task.verify && task.verify.length > 0),
+  });
+  if (!freshness.reviewFresh) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
@@ -197,26 +207,11 @@ export async function prepareIntegrate(opts: {
         `current_head=${branchHeadSha} (refresh the task branch artifacts before integrate)`,
     });
   }
-  const verifyFresh =
-    (metaSource.last_verified_sha ?? null) === branchHeadSha ||
-    (await isTaskLocalOnlyAdvance({
-      gitRoot: resolved.gitRoot,
-      workflowDir: loadedConfig.paths.workflow_dir,
-      taskId: opts.taskId,
-      fromRef: metaSource.last_verified_sha ?? null,
-      toRef: branchHeadSha,
-    }));
-  const task = await loadTaskFromContext({
-    ctx,
-    taskId: opts.taskId,
-    preferBranchSnapshot: true,
-    branchSnapshotBranch: branch,
-  });
   ensurePlanApprovedIfRequired(task, loadedConfig);
   ensureVerificationSatisfiedIfRequired(task, loadedConfig);
   const initialVerifyState = computeVerifyState({
     rawVerify: task.verify,
-    metaLastVerifiedSha: verifyFresh ? branchHeadSha : (metaSource?.last_verified_sha ?? null),
+    metaLastVerifiedSha: freshness.effectiveVerifiedSha,
     verifyLogText,
     branchHeadSha,
     runVerify: opts.runVerify,

@@ -9,7 +9,6 @@ import { CliError } from "../../shared/errors.js";
 import { parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
 import { gitListTaskBranches, parseTaskIdFromBranch } from "../shared/git-worktree.js";
 import { gitRevParse } from "../shared/git-ops.js";
-import { isTaskLocalOnlyAdvance } from "../shared/task-local-freshness.js";
 import {
   loadBackendTask,
   loadCommandContext,
@@ -21,6 +20,7 @@ import {
   validateGithubPrBodyContents,
   validateReviewContents,
 } from "./internal/review-template.js";
+import { assessPrArtifactFreshness } from "./internal/freshness.js";
 
 function isUnknownRevisionError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
@@ -122,6 +122,7 @@ export async function cmdPrCheck(opts: {
     const relGithubTitlePath = path.relative(resolved.gitRoot, githubTitlePath);
     const relGithubBodyPath = path.relative(resolved.gitRoot, githubBodyPath);
     const branchCache: { value?: string | null } = {};
+    const requiresVerify = Boolean(task.verify && task.verify.length > 0);
 
     let meta: PrMeta | null = null;
     const metaText = await readPrArtifactWithOptionalBranch({
@@ -207,17 +208,9 @@ export async function cmdPrCheck(opts: {
       errors.push(`Missing ${relGithubBodyPath}`);
     }
 
-    if (task.verify && task.verify.length > 0) {
-      if (meta?.verify?.status !== "pass") {
-        errors.push("Verify requirements not satisfied (meta.verify.status != pass)");
-      }
-      if (!meta?.last_verified_sha || !meta.last_verified_at) {
-        errors.push("Verify metadata missing (last_verified_sha/last_verified_at)");
-      }
-    }
-
     const branchForFreshness =
       branchCache.value ?? (typeof meta?.branch === "string" ? meta.branch.trim() : null);
+    let evaluatedVerifyFreshness = false;
     if (meta && branchForFreshness) {
       let branchHeadSha: string | null = null;
       try {
@@ -226,37 +219,49 @@ export async function cmdPrCheck(opts: {
         if (!isUnknownRevisionError(err)) throw err;
       }
       if (branchHeadSha) {
-        const reviewFresh =
-          (meta.head_sha ?? null) === branchHeadSha ||
-          (await isTaskLocalOnlyAdvance({
-            gitRoot: resolved.gitRoot,
-            workflowDir: config.paths.workflow_dir,
-            taskId: task.id,
-            fromRef: meta.head_sha ?? null,
-            toRef: branchHeadSha,
-          }));
-        if (!reviewFresh) {
+        const freshness = await assessPrArtifactFreshness({
+          gitRoot: resolved.gitRoot,
+          workflowDir: config.paths.workflow_dir,
+          taskId: task.id,
+          branchHeadSha,
+          metaHeadSha: meta.head_sha ?? null,
+          metaLastVerifiedSha: meta.last_verified_sha ?? null,
+          metaVerifyStatus: meta.verify?.status ?? null,
+          taskVerificationState: task.verification?.state ?? null,
+          verifyLogText,
+          requiresVerify,
+        });
+        evaluatedVerifyFreshness = requiresVerify;
+        if (!freshness.reviewFresh) {
           errors.push(
             `PR artifacts stale: head_sha=${meta.head_sha ?? "<missing>"} current_head=${branchHeadSha}`,
           );
         }
-        const verifyFresh =
-          !task.verify ||
-          task.verify.length === 0 ||
-          !meta.last_verified_sha ||
-          meta.last_verified_sha === branchHeadSha ||
-          (await isTaskLocalOnlyAdvance({
-            gitRoot: resolved.gitRoot,
-            workflowDir: config.paths.workflow_dir,
-            taskId: task.id,
-            fromRef: meta.last_verified_sha,
-            toRef: branchHeadSha,
-          }));
-        if (task.verify && task.verify.length > 0 && meta.last_verified_sha && !verifyFresh) {
+        if (requiresVerify && !freshness.verifySatisfied) {
+          if (meta?.verify?.status !== "pass") {
+            errors.push("Verify requirements not satisfied (meta.verify.status != pass)");
+          }
+          if (
+            (!meta?.last_verified_sha || !meta.last_verified_at) &&
+            freshness.verifyLogSha === null
+          ) {
+            errors.push("Verify metadata missing (last_verified_sha/last_verified_at)");
+          }
+        }
+        if (requiresVerify && meta.last_verified_sha && !freshness.verifyFresh) {
           errors.push(
             `Verify state stale: last_verified_sha=${meta.last_verified_sha} current_head=${branchHeadSha}`,
           );
         }
+      }
+    }
+
+    if (requiresVerify && !evaluatedVerifyFreshness) {
+      if (meta?.verify?.status !== "pass") {
+        errors.push("Verify requirements not satisfied (meta.verify.status != pass)");
+      }
+      if (!meta?.last_verified_sha || !meta.last_verified_at) {
+        errors.push("Verify metadata missing (last_verified_sha/last_verified_at)");
       }
     }
 

@@ -869,6 +869,99 @@ describe("runCli", () => {
     },
   );
 
+  it(
+    "pr check accepts verify-log-backed verification when pr meta verify fields drift",
+    { timeout: 90_000 },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      config.agents.approvals.require_plan = false;
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "PR verify log fallback",
+          "--description",
+          "PR check should accept verify.log as authoritative when meta verify fields drift",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--verify",
+          "echo ok",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await execFileAsync("git", ["checkout", "-b", `task/${taskId}/verify-log-fallback`], {
+        cwd: root,
+      });
+      await runCliSilent([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: verify first, then simulate stale PR verify metadata.",
+        "--root",
+        root,
+      ]);
+
+      await writeFile(path.join(root, "feature.txt"), "feature", "utf8");
+      await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feature"], { cwd: root });
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Looks good",
+        "--root",
+        root,
+      ]);
+
+      const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+      const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
+      meta.last_verified_sha = null;
+      meta.last_verified_at = null;
+      meta.verify = { status: "skipped" };
+      await writeFile(metaPath, `${JSON.stringify(meta, null, 2)}\n`, "utf8");
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["pr", "check", taskId, "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stderr).not.toContain("Verify metadata missing");
+        expect(io.stderr).not.toContain("Verify state stale");
+      } finally {
+        io.restore();
+      }
+    },
+  );
+
   it("pr note requires branch_pr workflow", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
