@@ -3,6 +3,8 @@ import { taskCloseDuplicateSpec } from "../../../commands/task/close-duplicate.c
 import { taskCloseNoopSpec } from "../../../commands/task/close-noop.command.js";
 import { taskCommentSpec } from "../../../commands/task/comment.command.js";
 import { taskDeriveSpec } from "../../../commands/task/derive.command.js";
+import { taskFindingsAddSpec } from "../../../commands/task/findings-add.command.js";
+import { taskFindingsSpec } from "../../../commands/task/findings.command.js";
 import { taskDocSetSpec } from "../../../commands/task/doc-set.command.js";
 import { taskDocShowSpec } from "../../../commands/task/doc-show.command.js";
 import { taskDocSpec } from "../../../commands/task/doc.command.js";
@@ -172,6 +174,20 @@ export const TASK_COMMANDS = [
   entry(taskSetStatusSpec, (deps) =>
     import("../../../commands/task/set-status.command.js").then((m) =>
       m.makeRunTaskSetStatusHandler(deps.getCtx),
+    ),
+  ),
+  entry(
+    taskFindingsSpec,
+    () => import("../../../commands/task/findings.command.js").then((m) => m.runTaskFindings),
+    {
+      needsProject: false,
+      needsLoadedConfig: false,
+      needsTaskContext: false,
+    },
+  ),
+  entry(taskFindingsAddSpec, (deps) =>
+    import("../../../commands/task/findings-add.command.js").then((m) =>
+      m.makeRunTaskFindingsAddHandler(deps.getCtx),
     ),
   ),
   entry(
