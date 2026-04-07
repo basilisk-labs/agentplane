@@ -1,10 +1,11 @@
 ---
 id: "202604071954-90V7J2"
 title: "Repair incident registry parsing, dedupe, and budget enforcement"
-status: "DOING"
+result_summary: "Merged via PR #133."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T20:21:05.808Z"
   updated_by: "CODER"
   note: "Refreshed verification after source commit and pr open. Checks: bun x vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; node .agentplane/policy/check-routing.mjs. Evidence: current HEAD matches repaired incident registry parsing, dedupe, and budget guard."
-commit: null
+commit:
+  hash: "6ca5efa0f1e25b2d74c00e6b7635781d1e27afb3"
+  message: "incidents/workflow: Repair incident registry parsing, dedupe, and budget enforcement (90V7J2) (#133)"
 comments:
   -
     author: "CODER"
     body: "Start: repair incident registry parsing and promotion so the shipped incidents.md layout dedupes correctly, allocates unique IDs, and stays within the policy line budget."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #133 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Refreshed verification after source commit and pr open. Checks: bun x vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; node .agentplane/policy/check-routing.mjs. Evidence: current HEAD matches repaired incident registry parsing, dedupe, and budget guard."
+  -
+    type: "status"
+    at: "2026-04-07T20:52:49.308Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #133 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-07T20:21:05.814Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T20:52:49.313Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make incidents collect and lifecycle promotion parse the current incidents.md layout correctly, allocate unique incident IDs, prevent duplicate appends, and keep the live registry/assets within policy line budget."
 sections:
   Summary: |-

@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604071954-90V7J2/incident-registry-correctness",
   "created_at": "2026-04-07T20:12:12.113Z",
-  "head_sha": "c54414324e5546e9f6d026bd3f946edc0b490ec2",
+  "head_sha": "b44b642ee0596067f5521790aae2382ac1d9ab5e",
   "last_verified_at": "2026-04-07T20:21:05.808Z",
   "last_verified_sha": "c54414324e5546e9f6d026bd3f946edc0b490ec2",
+  "merge_commit": "6ca5efa0f1e25b2d74c00e6b7635781d1e27afb3",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T20:52:20Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604071954-90V7J2",
-  "updated_at": "2026-04-07T20:19:21.134Z",
+  "updated_at": "2026-04-07T20:52:20Z",
   "verify": {
     "status": "pass"
   }
