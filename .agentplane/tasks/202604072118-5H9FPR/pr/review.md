@@ -43,14 +43,12 @@ Make branch_pr hosted/local reconcile paths update incidents.md when DONE task f
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T21:39:08.661Z
+- Updated: 2026-04-07T21:39:35.352Z
 - Branch: task/202604072118-5H9FPR/reconcile-incident-promotion
-- Head: 245140db1748
+- Head: 32f377849bc4
 
 ```text
- .../run-cli.core.tasks.normalize-migrate.test.ts   | 213 ++++++++++++++++++++-
- packages/agentplane/src/commands/task/normalize.ts |  39 +++-
- 2 files changed, 245 insertions(+), 7 deletions(-)
+No changes detected.
 ```
 
 </details>
