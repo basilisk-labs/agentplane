@@ -106,7 +106,7 @@ afterEach(async () => {
   }
 });
 
-describe("stale-dist read-only diagnostics", () => {
+describe("stale-dist warn-and-run command policy", () => {
   const STALE_DIST_READONLY_TIMEOUT_MS = 60_000;
 
   it("warns but runs doctor when watched runtime paths are dirty", async () => {
@@ -202,10 +202,50 @@ describe("stale-dist read-only diagnostics", () => {
     expect(stderr).toContain("bun run framework:dev:bootstrap");
   });
 
+  it("warns but runs task plan set when watched runtime paths are dirty", async () => {
+    const { repoRoot, repoBin } = await setupFrameworkCheckout();
+
+    const { stdout, stderr } = await execFileAsync(
+      process.execPath,
+      [repoBin, "task", "plan", "set", "20260307-ABC123", "--text", "1. keep going"],
+      {
+        cwd: repoRoot,
+        encoding: "utf8",
+      },
+    );
+
+    expect(stdout).toContain("DIST");
+    expect(stdout).toContain(
+      '"args":["task","plan","set","20260307-ABC123","--text","1. keep going"]',
+    );
+    expect(stderr).toContain("allowing task-artifact lifecycle command");
+    expect(stderr).toContain("command: task plan set 20260307-ABC123 --text 1. keep going");
+  });
+
+  it("warns but runs verify when watched runtime paths are dirty", async () => {
+    const { repoRoot, repoBin } = await setupFrameworkCheckout();
+
+    const { stdout, stderr } = await execFileAsync(
+      process.execPath,
+      [repoBin, "verify", "20260307-ABC123", "--ok", "--by", "CODER", "--note", "looks good"],
+      {
+        cwd: repoRoot,
+        encoding: "utf8",
+      },
+    );
+
+    expect(stdout).toContain("DIST");
+    expect(stdout).toContain(
+      '"args":["verify","20260307-ABC123","--ok","--by","CODER","--note","looks good"]',
+    );
+    expect(stderr).toContain("allowing task-artifact lifecycle command");
+    expect(stderr).toContain("command: verify 20260307-ABC123 --ok --by CODER --note looks good");
+  });
+
   it("still blocks strict mutating commands when watched runtime paths are dirty", async () => {
     const { repoRoot, repoBin } = await setupFrameworkCheckout();
 
-    const failure = (await execFileAsync(process.execPath, [repoBin, "task", "doc", "set"], {
+    const failure = (await execFileAsync(process.execPath, [repoBin, "finish", "20260307-ABC123"], {
       cwd: repoRoot,
       encoding: "utf8",
     }).then(
