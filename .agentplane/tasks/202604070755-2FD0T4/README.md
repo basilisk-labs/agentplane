@@ -1,10 +1,11 @@
 ---
 id: "202604070755-2FD0T4"
 title: "Add retryable gh transport wrapper for flaky GitHub API calls"
-status: "DOING"
+result_summary: "Merged via PR #123."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T09:46:35.856Z"
   updated_by: "CODER"
   note: "Command: bun test hosted-merge-sync.test.ts and run-cli.core.pr-close.test.ts; Result: pass; Evidence: 11 pass, 0 fail covering transient retry and permanent auth stop behavior in hosted-merge-sync and pr close. Scope: shared GitHub transport retry wrapper and both consumer command paths. Command: bun x eslint touched gh transport files; Result: pass; Evidence: no lint errors. Scope: shared helper, command consumers, and regression tests. Command: review call sites; Result: pass; Evidence: retry/backoff classifier is centralized and pr close stays on REST gh api endpoints. Scope: transport call-site design."
-commit: null
+commit:
+  hash: "0cf28277a68597386a29455ced5b4666a569ecf5"
+  message: "🧩 2FD0T4 code: add gh transport retry wrapper (#123)"
 comments:
   -
     author: "CODER"
     body: "Start: extract a shared GitHub transport retry helper and apply it to hosted-merge-sync plus pr close so transient EOF/TLS failures retry while permanent auth and usage failures still stop immediately."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: GitHub PR #123 was merged to main, the squash commit is present on the base branch, and this reconcile wave is closing the stale branch_pr task state."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test hosted-merge-sync.test.ts and run-cli.core.pr-close.test.ts; Result: pass; Evidence: 11 pass, 0 fail covering transient retry and permanent auth stop behavior in hosted-merge-sync and pr close. Scope: shared GitHub transport retry wrapper and both consumer command paths. Command: bun x eslint touched gh transport files; Result: pass; Evidence: no lint errors. Scope: shared helper, command consumers, and regression tests. Command: review call sites; Result: pass; Evidence: retry/backoff classifier is centralized and pr close stays on REST gh api endpoints. Scope: transport call-site design."
+  -
+    type: "status"
+    at: "2026-04-07T17:58:29.005Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: GitHub PR #123 was merged to main, the squash commit is present on the base branch, and this reconcile wave is closing the stale branch_pr task state."
 doc_version: 3
-doc_updated_at: "2026-04-07T09:46:35.860Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T17:58:29.006Z"
+doc_updated_by: "INTEGRATOR"
 description: "Wrap gh-backed GitHub transport operations with bounded retry/backoff and REST-first paths so transient EOF and TLS errors stop breaking workflow commands."
 sections:
   Summary: |-
