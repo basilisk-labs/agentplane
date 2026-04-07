@@ -1,10 +1,11 @@
 ---
 id: "202604062309-ZBNXE7"
 title: "Expose skipped incident findings in lifecycle diagnostics"
-status: "TODO"
+result_summary: "Merged via PR #100."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -22,8 +23,13 @@ verification:
   updated_at: "2026-04-06T23:18:14.227Z"
   updated_by: "CODER"
   note: "Focused incidents diagnostics coverage passed after worktree bootstrap: bun x vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts; bun x eslint packages/agentplane/src/runtime/incidents/types.ts packages/agentplane/src/runtime/incidents/index.ts packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/incidents/collect.command.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts. Result: pass. Evidence: empty incident findings now differ from skipped structured findings, and lifecycle diagnostics surface the distinction without changing promotion semantics."
-commit: null
-comments: []
+commit:
+  hash: "45b0a72472b1cca2335342ab8417f5ace2b5277c"
+  message: "workflow: Expose skipped incident findings in lifecycle diagnostics (ZBNXE7) (#100)"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #100 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "verify"
@@ -31,9 +37,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused incidents diagnostics coverage passed after worktree bootstrap: bun x vitest run packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts; bun x eslint packages/agentplane/src/runtime/incidents/types.ts packages/agentplane/src/runtime/incidents/index.ts packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/incidents/collect.command.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/task/hosted-close.command.ts. Result: pass. Evidence: empty incident findings now differ from skipped structured findings, and lifecycle diagnostics surface the distinction without changing promotion semantics."
+  -
+    type: "status"
+    at: "2026-04-07T00:16:58.938Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #100 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-06T23:18:14.231Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T00:16:58.943Z"
+doc_updated_by: "INTEGRATOR"
 description: "Differentiate no external incidents from structured findings that were parsed but not promotable, and surface that distinction in incidents collection and lifecycle output."
 sections:
   Summary: |-
