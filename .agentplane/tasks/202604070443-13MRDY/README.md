@@ -1,10 +1,11 @@
 ---
 id: "202604070443-13MRDY"
 title: "Make pr open report local-only artifact sync when no GitHub PR is created"
-status: "DOING"
+result_summary: "integrate: squash task/202604070443-13MRDY/pr-open-local-only-outcome"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T04:52:31.440Z"
   updated_by: "CODER"
   note: "Focused vitest passed for run-cli.core.pr-flow.pr and task-artifact-schema; eslint passed for pr open/output/meta touched files; final task commit 22c76331 refreshes CLI outcome wording and preserves optional remote PR identity."
-commit: null
+commit:
+  hash: "327d961372882a6cd17001967318b140b7e6bcbe"
+  message: "📝 13MRDY task: refresh verification and PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: inspect the current pr open success path, distinguish local artifact refresh from an actual GitHub PR, and lock both outcomes in focused command tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070443-13MRDY/pr."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused vitest passed for run-cli.core.pr-flow.pr and task-artifact-schema; eslint passed for pr open/output/meta touched files; final task commit 22c76331 refreshes CLI outcome wording and preserves optional remote PR identity."
+  -
+    type: "status"
+    at: "2026-04-07T05:27:55.272Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070443-13MRDY/pr."
 doc_version: 3
-doc_updated_at: "2026-04-07T04:52:31.445Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T05:27:55.276Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stop agentplane pr open from reporting success as if a remote PR exists when it only refreshed local pr artifacts; surface the local-only state explicitly and preserve traceability for later publish steps."
 sections:
   Summary: |-
