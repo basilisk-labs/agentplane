@@ -1,0 +1,16 @@
+ .agentplane/tasks/202604062308-KMTE4J/README.md    | 96 ++++++++++++++++++++++
+ .../tasks/202604062308-KMTE4J/pr/diffstat.txt      |  0
+ .../tasks/202604062308-KMTE4J/pr/github-body.md    | 50 +++++++++++
+ .../tasks/202604062308-KMTE4J/pr/github-title.txt  |  1 +
+ .agentplane/tasks/202604062308-KMTE4J/pr/meta.json | 14 ++++
+ .../tasks/202604062308-KMTE4J/pr/notes.jsonl       |  0
+ .agentplane/tasks/202604062308-KMTE4J/pr/review.md | 57 +++++++++++++
+ .../tasks/202604062308-KMTE4J/pr/verify.log        |  0
+ .../src/cli/run-cli.core.incidents.test.ts         | 72 ++++++++++++++++
+ .../agentplane/src/commands/incidents/shared.ts    |  9 ++
+ .../pr/integrate/internal/finalize.test.ts         | 32 ++++++++
+ .../src/commands/task/finish.unit.test.ts          | 68 +++++++++++++++
+ .../src/runtime/incidents/resolve.test.ts          | 20 +++++
+ .../agentplane/src/runtime/incidents/resolve.ts    | 10 ++-
+ packages/agentplane/src/runtime/incidents/types.ts |  2 +
+ 15 files changed, 430 insertions(+), 1 deletion(-)

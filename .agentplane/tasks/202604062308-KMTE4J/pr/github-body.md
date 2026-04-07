@@ -19,8 +19,8 @@ Make lifecycle and incidents commands explain why incidents.md stays unchanged w
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Added explicit no-op diagnostics when Findings has plain text but no structured incident blocks; focused vitest passed (resolve, incidents CLI, finish, integrate finalize) and eslint passed on all touched files.
 
 ## Risks
 
@@ -39,9 +39,9 @@ Make lifecycle and incidents commands explain why incidents.md stays unchanged w
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T00:36:58.078Z
+- Updated: 2026-04-07T00:41:18.784Z
 - Branch: task/202604062308-KMTE4J/incident-promotion-diagnostics
-- Head: 27a928e91457
+- Head: 9080e45e62f8
 
 ```text
 No changes detected.
