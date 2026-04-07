@@ -1,10 +1,11 @@
 ---
 id: "202604071752-BCSACG"
 title: "Reconcile hosted merges for 2FD0T4 FXWXDS 5TKNV6 and WV9YHM"
-status: "DOING"
+result_summary: "integrate: squash task/202604071752-BCSACG/hosted-merge-reconcile-wave"
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-07T18:00:01.739Z"
   updated_by: "INTEGRATOR"
   note: "Command: agentplane task list; Result: pass; Evidence: 2FD0T4, FXWXDS, 5TKNV6, and WV9YHM now resolve as DONE in the reconcile branch while only BCSACG remains DOING. Command: git log --oneline -n 4; Result: pass; Evidence: branch contains deterministic close commits for each reconciled task state."
-commit: null
+commit:
+  hash: "261e0fc377e5c06e8c65fc67b849b2b28f81a38d"
+  message: "📝 BCSACG task: add reconcile artifacts"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: reconcile merged hosted PRs for 2FD0T4, FXWXDS, 5TKNV6, and WV9YHM into local branch_pr task state."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604071752-BCSACG/pr."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "Command: agentplane task list; Result: pass; Evidence: 2FD0T4, FXWXDS, 5TKNV6, and WV9YHM now resolve as DONE in the reconcile branch while only BCSACG remains DOING. Command: git log --oneline -n 4; Result: pass; Evidence: branch contains deterministic close commits for each reconciled task state."
+  -
+    type: "status"
+    at: "2026-04-07T18:21:05.022Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604071752-BCSACG/pr."
 doc_version: 3
-doc_updated_at: "2026-04-07T18:00:01.755Z"
+doc_updated_at: "2026-04-07T18:21:05.025Z"
 doc_updated_by: "INTEGRATOR"
 description: "Sync merged branch_pr task PRs into local task state and close stale DOING records after hosted merges landed on main."
 sections:
