@@ -25,7 +25,7 @@ When integrate or hosted-close promotes incidents into .agentplane/policy/incide
 ### Current Status
 
 - State: ok
-- Note: Command: bun test packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/shared/protected-paths.test.ts packages/agentplane/src/policy/evaluate.test.ts; Result: pass; Evidence: 22 pass, 0 fail including hosted-close regression and policy allowlist coverage. Scope: incident promotion writer, hosted-close closure path, protected-path policy classification. Command: bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/shared/protected-paths.ts packages/agentplane/src/shared/protected-paths.test.ts packages/agentplane/src/policy/evaluate.test.ts; Result: pass; Evidence: no lint errors. Scope: touched implementation and tests. Command: bun run agents:check; Result: pass; Evidence: agents templates OK. Scope: target/canonical policy sync contract in framework checkout.
+- Note: Stabilized the wait-remote-pr-checks gh mock under parallel polling; targeted and fast test suites pass after commit f9a5267b.
 
 ## Risks
 
@@ -45,12 +45,26 @@ When integrate or hosted-close promotes incidents into .agentplane/policy/incide
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T09:19:05.673Z
+- Updated: 2026-04-07T17:32:51.378Z
 - Branch: task/202604070912-WV9YHM/sync-incident-assets
-- Head: 498565593001
+- Head: f9a5267b2673
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604070912-WV9YHM/README.md    | 118 +++++++++++++++++++++
+ .../tasks/202604070912-WV9YHM/pr/diffstat.txt      |   0
+ .../tasks/202604070912-WV9YHM/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604070912-WV9YHM/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604070912-WV9YHM/pr/meta.json |  14 +++
+ .../tasks/202604070912-WV9YHM/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604070912-WV9YHM/pr/review.md |  57 ++++++++++
+ .../tasks/202604070912-WV9YHM/pr/verify.log        |   0
+ .../src/cli/run-cli.core.task-hosted-close.test.ts |  13 +++
+ .../src/cli/wait-remote-pr-checks-script.test.ts   |   9 +-
+ .../agentplane/src/commands/incidents/shared.ts    |  19 +++-
+ packages/agentplane/src/policy/evaluate.test.ts    |  10 ++
+ .../agentplane/src/shared/protected-paths.test.ts  |  11 ++
+ packages/agentplane/src/shared/protected-paths.ts  |   2 +
+ 14 files changed, 298 insertions(+), 6 deletions(-)
 ```
 
 </details>

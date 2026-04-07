@@ -2,12 +2,12 @@
   "base": "main",
   "branch": "task/202604070912-WV9YHM/sync-incident-assets",
   "created_at": "2026-04-07T09:19:05.673Z",
-  "head_sha": "4985655930011aab16b7edaef09dc194744ab1bc",
-  "last_verified_at": "2026-04-07T09:25:05.406Z",
-  "last_verified_sha": "4985655930011aab16b7edaef09dc194744ab1bc",
+  "head_sha": "f9a5267b2673dfaf3570497520c2a8824509a3b9",
+  "last_verified_at": "2026-04-07T17:32:51.322Z",
+  "last_verified_sha": "f9a5267b2673dfaf3570497520c2a8824509a3b9",
   "schema_version": 1,
   "task_id": "202604070912-WV9YHM",
-  "updated_at": "2026-04-07T09:19:05.673Z",
+  "updated_at": "2026-04-07T17:32:51.378Z",
   "verify": {
     "status": "pass"
   }

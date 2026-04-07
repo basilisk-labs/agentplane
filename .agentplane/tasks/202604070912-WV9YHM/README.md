@@ -4,7 +4,7 @@ title: "Sync incident template assets when incidents registry mutates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-07T09:25:05.406Z"
+  updated_at: "2026-04-07T17:32:51.322Z"
   updated_by: "CODER"
-  note: "Command: bun test packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/shared/protected-paths.test.ts packages/agentplane/src/policy/evaluate.test.ts; Result: pass; Evidence: 22 pass, 0 fail including hosted-close regression and policy allowlist coverage. Scope: incident promotion writer, hosted-close closure path, protected-path policy classification. Command: bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/shared/protected-paths.ts packages/agentplane/src/shared/protected-paths.test.ts packages/agentplane/src/policy/evaluate.test.ts; Result: pass; Evidence: no lint errors. Scope: touched implementation and tests. Command: bun run agents:check; Result: pass; Evidence: agents templates OK. Scope: target/canonical policy sync contract in framework checkout."
+  note: "Stabilized the wait-remote-pr-checks gh mock under parallel polling; targeted and fast test suites pass after commit f9a5267b."
 commit: null
 comments:
   -
@@ -42,8 +42,20 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/shared/protected-paths.test.ts packages/agentplane/src/policy/evaluate.test.ts; Result: pass; Evidence: 22 pass, 0 fail including hosted-close regression and policy allowlist coverage. Scope: incident promotion writer, hosted-close closure path, protected-path policy classification. Command: bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/shared/protected-paths.ts packages/agentplane/src/shared/protected-paths.test.ts packages/agentplane/src/policy/evaluate.test.ts; Result: pass; Evidence: no lint errors. Scope: touched implementation and tests. Command: bun run agents:check; Result: pass; Evidence: agents templates OK. Scope: target/canonical policy sync contract in framework checkout."
+  -
+    type: "verify"
+    at: "2026-04-07T17:31:37.453Z"
+    author: "CODER"
+    state: "ok"
+    note: "Stabilized wait-remote-pr-checks gh mock under parallel status/check-runs polling; hosted-close, policy, and protected-path tests pass."
+  -
+    type: "verify"
+    at: "2026-04-07T17:32:51.322Z"
+    author: "CODER"
+    state: "ok"
+    note: "Stabilized the wait-remote-pr-checks gh mock under parallel polling; targeted and fast test suites pass after commit f9a5267b."
 doc_version: 3
-doc_updated_at: "2026-04-07T09:25:05.410Z"
+doc_updated_at: "2026-04-07T17:32:51.338Z"
 doc_updated_by: "CODER"
 description: "When integrate or hosted-close promotes incidents into .agentplane/policy/incidents.md, the canonical asset copy under packages/agentplane/assets/policy remains stale and later agents:check fails. Make incident mutation paths keep both files in sync or make the canonical source update deterministic."
 sections:
@@ -68,6 +80,22 @@ sections:
     Note: Command: bun test packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/shared/protected-paths.test.ts packages/agentplane/src/policy/evaluate.test.ts; Result: pass; Evidence: 22 pass, 0 fail including hosted-close regression and policy allowlist coverage. Scope: incident promotion writer, hosted-close closure path, protected-path policy classification. Command: bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/shared/protected-paths.ts packages/agentplane/src/shared/protected-paths.test.ts packages/agentplane/src/policy/evaluate.test.ts; Result: pass; Evidence: no lint errors. Scope: touched implementation and tests. Command: bun run agents:check; Result: pass; Evidence: agents templates OK. Scope: target/canonical policy sync contract in framework checkout.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T09:19:05.634Z, excerpt_hash=sha256:d89d732ab81937b954c3325ee6aeae70c9099363f9839c6430e5c0cd7440175c
+    
+    ### 2026-04-07T17:31:37.453Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Stabilized wait-remote-pr-checks gh mock under parallel status/check-runs polling; hosted-close, policy, and protected-path tests pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T09:25:05.410Z, excerpt_hash=sha256:d89d732ab81937b954c3325ee6aeae70c9099363f9839c6430e5c0cd7440175c
+    
+    ### 2026-04-07T17:32:51.322Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Stabilized the wait-remote-pr-checks gh mock under parallel polling; targeted and fast test suites pass after commit f9a5267b.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T17:31:37.461Z, excerpt_hash=sha256:d89d732ab81937b954c3325ee6aeae70c9099363f9839c6430e5c0cd7440175c
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -107,6 +135,22 @@ By: CODER
 Note: Command: bun test packages/agentplane/src/runtime/incidents/resolve.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/shared/protected-paths.test.ts packages/agentplane/src/policy/evaluate.test.ts; Result: pass; Evidence: 22 pass, 0 fail including hosted-close regression and policy allowlist coverage. Scope: incident promotion writer, hosted-close closure path, protected-path policy classification. Command: bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/shared/protected-paths.ts packages/agentplane/src/shared/protected-paths.test.ts packages/agentplane/src/policy/evaluate.test.ts; Result: pass; Evidence: no lint errors. Scope: touched implementation and tests. Command: bun run agents:check; Result: pass; Evidence: agents templates OK. Scope: target/canonical policy sync contract in framework checkout.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T09:19:05.634Z, excerpt_hash=sha256:d89d732ab81937b954c3325ee6aeae70c9099363f9839c6430e5c0cd7440175c
+
+### 2026-04-07T17:31:37.453Z — VERIFY — ok
+
+By: CODER
+
+Note: Stabilized wait-remote-pr-checks gh mock under parallel status/check-runs polling; hosted-close, policy, and protected-path tests pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T09:25:05.410Z, excerpt_hash=sha256:d89d732ab81937b954c3325ee6aeae70c9099363f9839c6430e5c0cd7440175c
+
+### 2026-04-07T17:32:51.322Z — VERIFY — ok
+
+By: CODER
+
+Note: Stabilized the wait-remote-pr-checks gh mock under parallel polling; targeted and fast test suites pass after commit f9a5267b.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T17:31:37.461Z, excerpt_hash=sha256:d89d732ab81937b954c3325ee6aeae70c9099363f9839c6430e5c0cd7440175c
 
 <!-- END VERIFICATION RESULTS -->
 
