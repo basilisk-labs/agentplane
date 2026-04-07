@@ -1,10 +1,11 @@
 ---
 id: "202604062308-VV2MBB"
 title: "Stabilize worktree fast CI against uv_cwd worker failures"
-status: "DOING"
+result_summary: "integrate: squash task/202604062308-VV2MBB/worktree-fast-ci-cwd"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T00:12:52.667Z"
   updated_by: "CODER"
   note: "Removed global process.chdir leaks from the two worktree-sensitive tests; targeted vitest and eslint passed in the published worktree branch without uv_cwd/ENOENT failures."
-commit: null
+commit:
+  hash: "525b61e50ad6e586988e31acc4d99747c0456a54"
+  message: "📝 VV2MBB task: add tracked PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the worktree uv_cwd worker crash from fast pre-push/ci, fix the cwd lifecycle in the failing tests or helpers, and lock the publish path with regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604062308-VV2MBB/pr."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed global process.chdir leaks from the two worktree-sensitive tests; targeted vitest and eslint passed in the published worktree branch without uv_cwd/ENOENT failures."
+  -
+    type: "status"
+    at: "2026-04-07T00:29:59.536Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604062308-VV2MBB/pr."
 doc_version: 3
-doc_updated_at: "2026-04-07T00:12:52.682Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T00:29:59.545Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stop pre-push / ci:local:fast from failing in worktree checkouts when vitest workers inherit a deleted current working directory and crash with uv_cwd ENOENT."
 sections:
   Summary: |-

@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604062308-VV2MBB/worktree-fast-ci-cwd",
   "created_at": "2026-04-07T00:11:29.626Z",
-  "head_sha": "07aed3a93d00c7331059be03c988dbaa896b1105",
+  "head_sha": "b69ed24526f3663d39e5e2113302f36004f3920c",
   "last_verified_at": "2026-04-07T00:12:52.667Z",
   "last_verified_sha": "93d74ed13456559936f7389ca9391a61b8a83103",
+  "merge_commit": "525b61e50ad6e586988e31acc4d99747c0456a54",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T00:29:59.477Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604062308-VV2MBB",
-  "updated_at": "2026-04-07T00:22:30.760Z",
+  "updated_at": "2026-04-07T00:29:59.477Z",
   "verify": {
     "status": "pass"
   }
