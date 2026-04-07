@@ -79,6 +79,7 @@ export const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
     commands: BOOTSTRAP_VERIFICATION_COMMANDS,
     notes: [
       "Use `agentplane incidents advise <task-id>` after `start-ready` when analogous scope or tags might have prior external failure modes.",
+      "Use `agentplane task findings add <task-id> ... --promote --external` to append reusable structured Findings blocks without replacing the whole README.",
       "Use `agentplane incidents collect <task-id> --check` before `finish` when task `Findings` contains reusable external `Observation` / `Impact` / `Resolution` blocks marked with `Fixability: external` (or `IncidentExternal: true`).",
       "Keep repository-fixable defects task-local; only external or process incidents belong in `.agentplane/policy/incidents.md`.",
     ],

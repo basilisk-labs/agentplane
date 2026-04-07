@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604070608-BBH3YS/findings-append-command",
+  "created_at": "2026-04-07T06:16:40.383Z",
+  "head_sha": "5825a34227d203995bf6325a2cb143284698bb48",
+  "last_verified_at": "2026-04-07T06:28:45.125Z",
+  "last_verified_sha": "5f952138b0aeab77e8ab86631729dc6c0055d6e0",
+  "merge_commit": "3b78be75fe42c268bcd405a41eb42060d75e2a3a",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T07:36:29.926Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604070608-BBH3YS",
+  "updated_at": "2026-04-07T07:36:29.926Z",
+  "verify": {
+    "status": "pass"
+  }
+}
