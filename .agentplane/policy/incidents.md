@@ -97,3 +97,17 @@
   enforcement: manual
   fixability: external
   state: open
+
+- id: INC-20260407-01
+  date: 2026-04-07
+  scope: task normalize hosted reconcile target selection
+  tags: workflow, github, transport, normalize
+  match: task normalize, sync-hosted-merges, gh api EOF, GraphQL EOF, workflow, github, transport, normalize, task, hosted, reconcile, target, selection, scope, selected, ids
+  failure: GitHub EOF or TLS transport failures during hosted branch_pr reconcile could abort task normalize before it reached the known stale task because the command scanned every candidate task.
+  advice: When GitHub transport is flaky, reconcile only the known task ids instead of scanning the full branch_pr history.
+  rule: Hosted reconcile commands MUST support explicit task-id scoping so known drift can be resolved without depending on unrelated GitHub lookups.
+  evidence: task 202604071853-XGX2YJ; commit 5fd312cceb20
+  enforcement: manual
+  source_task: 202604071853-XGX2YJ
+  fixability: external
+  state: open
