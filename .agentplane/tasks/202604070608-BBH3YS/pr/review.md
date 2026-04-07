@@ -45,9 +45,9 @@ Provide an ergonomic task CLI path to append structured Findings blocks, includi
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T06:16:40.383Z
+- Updated: 2026-04-07T06:32:27.335Z
 - Branch: task/202604070608-BBH3YS/findings-append-command
-- Head: 5f952138b0ae
+- Head: 5a84fc42e65e
 
 ```text
 No changes detected.
