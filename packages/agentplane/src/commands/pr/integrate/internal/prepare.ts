@@ -25,7 +25,7 @@ import { resolvePrPaths } from "../../internal/pr-paths.js";
 
 import { readAndValidatePrArtifacts } from "../artifacts.js";
 import { computeVerifyState } from "../verify.js";
-import { parsePrMeta, type PrMeta } from "../../../shared/pr-meta.js";
+import { parsePrMetaForwardCompatible, type PrMeta } from "../../../shared/pr-meta.js";
 import { assessPrArtifactFreshness } from "../../internal/freshness.js";
 
 export type PreparedIntegrate = {
@@ -123,7 +123,7 @@ export async function prepareIntegrate(opts: {
   let meta: PrMeta | null = null;
   let branch = (opts.branch ?? "").trim();
   if (await fileExists(metaPath)) {
-    meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
+    meta = parsePrMetaForwardCompatible(await readFile(metaPath, "utf8"), opts.taskId);
     if (!branch) branch = (meta.branch ?? "").trim();
   }
   if (!branch) {
@@ -143,7 +143,7 @@ export async function prepareIntegrate(opts: {
 
   const metaSource =
     meta ??
-    parsePrMeta(
+    parsePrMetaForwardCompatible(
       await gitShowFile(
         resolved.gitRoot,
         branch,

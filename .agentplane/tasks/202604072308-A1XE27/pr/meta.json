@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604072308-A1XE27/forward-compatible-pr-meta",
+  "created_at": "2026-04-07T23:20:04.293Z",
+  "head_sha": "2f40e56e00d9abfc169c7d521d2ea73012b8c965",
+  "last_verified_at": "2026-04-07T23:34:23.963Z",
+  "last_verified_sha": "2f40e56e00d9abfc169c7d521d2ea73012b8c965",
+  "schema_version": 1,
+  "task_id": "202604072308-A1XE27",
+  "updated_at": "2026-04-07T23:34:23.987Z",
+  "verify": {
+    "status": "pass"
+  }
+}

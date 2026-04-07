@@ -56,6 +56,7 @@ vi.mock("../artifacts.js", () => ({
 vi.mock("../verify.js", () => ({ computeVerifyState: mocks.computeVerifyState }));
 vi.mock("../../../shared/pr-meta.js", () => ({
   parsePrMeta: mocks.parsePrMeta,
+  parsePrMetaForwardCompatible: mocks.parsePrMeta,
   extractLastVerifiedSha: mocks.extractLastVerifiedSha,
 }));
 vi.mock("../../../shared/task-local-freshness.js", () => ({
