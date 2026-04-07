@@ -1,10 +1,11 @@
 ---
 id: "202604062309-EXTXG1"
 title: "Promote confirmed external workflow incidents into incidents registry"
-status: "DOING"
+result_summary: "Merged via PR #102."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T00:08:00.603Z"
   updated_by: "DOCS"
   note: "Confirmed external-only incidents, synced canonical assets to generated policy, and refreshed PR artifacts on the published head."
-commit: null
+commit:
+  hash: "ad4a2793e127084cac3c2de12f9da22e3f9e805c"
+  message: "docs/policy: Promote confirmed external workflow incidents into incidents registry (EXTXG1) (#102)"
 comments:
   -
     author: "DOCS"
     body: "Start: promote confirmed external incidents into the canonical registry assets and sync generated policy files."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #102 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "verify"
@@ -72,9 +78,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Confirmed external-only incidents, synced canonical assets to generated policy, and refreshed PR artifacts on the published head."
+  -
+    type: "status"
+    at: "2026-04-07T00:18:08.503Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #102 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-07T00:08:00.610Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-04-07T00:18:08.511Z"
+doc_updated_by: "INTEGRATOR"
 description: "Append confirmed external operational lessons from the recent GitHub transport/reconciliation cycle into .agentplane/policy/incidents.md with concrete rules and evidence."
 sections:
   Summary: |-
