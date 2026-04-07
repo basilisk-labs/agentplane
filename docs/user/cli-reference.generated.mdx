@@ -63,6 +63,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [integrate](#integrate)
   - [pr](#pr)
   - [pr check](#pr-check)
+  - [pr close](#pr-close)
   - [pr note](#pr-note)
   - [pr open](#pr-open)
   - [pr update](#pr-update)
@@ -1338,7 +1339,7 @@ Manage local PR review and GitHub publication artifacts for a task (branch_pr wo
 Usage:
 
 ```text
-agentplane pr <open|update|check|note> <task-id> [options]
+agentplane pr <open|update|check|note|close> <task-id|pr-number> [options]
 ```
 
 Examples:
@@ -1367,6 +1368,12 @@ agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "Looks good"
 
 - Append a handoff note.
 
+```sh
+agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch
+```
+
+- Close a stale GitHub PR through REST and optionally delete its remote head branch.
+
 ### pr check
 
 Check that PR artifacts are present and valid.
@@ -1384,6 +1391,30 @@ agentplane pr check 202602030608-F1Q8AB
 ```
 
 - Check artifacts.
+
+### pr close
+
+Close a GitHub PR through REST with optional remote head-branch deletion.
+
+Usage:
+
+```text
+agentplane pr close <pr-number> [options]
+```
+
+Options:
+
+- `--repo <owner/name>`: Optional. GitHub owner/repo override (defaults to origin remote).
+- `--comment <text>`: Optional. Add a close comment before closing the PR.
+- `--delete-remote-branch`: Delete the remote head branch after a successful close when it belongs to the target repo. (default=false)
+
+Examples:
+
+```sh
+agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch
+```
+
+- Close a stale PR and remove its remote head branch when it belongs to the same repo.
 
 ### pr note
 
