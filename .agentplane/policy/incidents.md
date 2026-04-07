@@ -12,9 +12,7 @@ This is the single file for incident-derived and situational policy rules.
 - First auto-promoted external incidents normally enter as `open` and still participate in targeted advice lookup; recurring equivalent incidents can append later `stabilized` entries.
 - `state` values: `open`, `stabilized`, `promoted`.
 
-## Entry template: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state` are required.
-
-`tags`, `match`, `advice`, `source_task`, `fixability` are optional machine-match fields.
+## Entry template: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state` are required; `tags`, `match`, `advice`, `source_task`, `fixability` are optional machine-match fields.
 
 ## Entries
 
