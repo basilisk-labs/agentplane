@@ -25,7 +25,7 @@ Append confirmed external operational lessons from the recent GitHub transport/r
 ### Current Status
 
 - State: ok
-- Note: Confirmed external-only incidents, synced canonical assets to generated policy, and passed agents:check plus routing budget.
+- Note: Confirmed external-only incidents, synced canonical assets to generated policy, and refreshed PR artifacts on the published head.
 
 ## Risks
 
@@ -45,22 +45,22 @@ Append confirmed external operational lessons from the recent GitHub transport/r
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T00:05:25.873Z
+- Updated: 2026-04-07T00:07:54.112Z
 - Branch: task/202604062309-EXTXG1/external-incident-backfill
-- Head: a5e2dd01ba0f
+- Head: 611b4f1283d5
 
 ```text
- .agentplane/policy/incidents.md                    |  46 ++---
- .agentplane/tasks/202604062309-EXTXG1/README.md    | 189 +++++++++++++++++++++
+ .agentplane/policy/incidents.md                    |  46 +++--
+ .agentplane/tasks/202604062309-EXTXG1/README.md    | 211 +++++++++++++++++++++
  .../tasks/202604062309-EXTXG1/pr/diffstat.txt      |  11 ++
- .../tasks/202604062309-EXTXG1/pr/github-body.md    |  60 +++++++
+ .../tasks/202604062309-EXTXG1/pr/github-body.md    |  60 ++++++
  .../tasks/202604062309-EXTXG1/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604062309-EXTXG1/pr/meta.json |  14 ++
  .../tasks/202604062309-EXTXG1/pr/notes.jsonl       |   0
- .agentplane/tasks/202604062309-EXTXG1/pr/review.md |  67 ++++++++
+ .agentplane/tasks/202604062309-EXTXG1/pr/review.md |  67 +++++++
  .../tasks/202604062309-EXTXG1/pr/verify.log        |   0
- packages/agentplane/assets/policy/incidents.md     |  46 ++---
- 10 files changed, 396 insertions(+), 38 deletions(-)
+ packages/agentplane/assets/policy/incidents.md     |  46 +++--
+ 10 files changed, 418 insertions(+), 38 deletions(-)
 ```
 
 </details>
