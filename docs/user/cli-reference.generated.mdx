@@ -2709,6 +2709,7 @@ Options:
 - `--yes`: Auto-approve force-action approval checks when required. (default=false)
 - `--sync-hosted-merges`: Query GitHub for merged hosted PRs referenced by local PR artifacts and reconcile stale branch_pr task state before normalization. (default=false)
 - `--sync-branch-pr-state`: Reconcile stale local branch_pr task state when verified task commits already landed on the base branch. (default=false)
+- `--task-id <task-id>`: Repeatable. Limit reconcile modes to explicit task ids instead of scanning every task. (repeatable)
 
 Examples:
 
@@ -2735,6 +2736,12 @@ agentplane task normalize --sync-branch-pr-state
 ```
 
 - Reconcile locally shipped branch_pr task state when task commits already reached the base branch.
+
+```sh
+agentplane task normalize --sync-hosted-merges --task-id 202604071853-XGX2YJ
+```
+
+- Reconcile only known stale tasks instead of scanning unrelated historical PR metadata.
 
 ### task plan
 
