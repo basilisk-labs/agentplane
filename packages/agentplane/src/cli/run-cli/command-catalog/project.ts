@@ -18,6 +18,7 @@ import { workStartSpec } from "../../../commands/branch/work-start.command.js";
 import { integrateSpec } from "../../../commands/integrate.command.js";
 import {
   prCheckSpec,
+  prCloseSpec,
   prNoteSpec,
   prOpenSpec,
   prSpec,
@@ -181,6 +182,9 @@ export const PROJECT_COMMANDS = [
   ),
   entry(prCheckSpec, (deps) =>
     import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrCheckHandler(deps.getCtx)),
+  ),
+  entry(prCloseSpec, (deps) =>
+    import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrCloseHandler(deps.getCtx)),
   ),
   entry(prNoteSpec, (deps) =>
     import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrNoteHandler(deps.getCtx)),

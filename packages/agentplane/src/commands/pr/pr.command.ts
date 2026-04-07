@@ -8,7 +8,7 @@ import {
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-import { cmdPrCheck, cmdPrNote, cmdPrOpen, cmdPrUpdate } from "./index.js";
+import { cmdPrCheck, cmdPrClose, cmdPrNote, cmdPrOpen, cmdPrUpdate } from "./index.js";
 
 type PrGroupParsed = GroupCommandParsed;
 
@@ -17,7 +17,7 @@ export const prSpec: CommandSpec<PrGroupParsed> = {
   group: "PR",
   summary:
     "Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).",
-  synopsis: ["agentplane pr <open|update|check|note> <task-id> [options]"],
+  synopsis: ["agentplane pr <open|update|check|note|close> <task-id|pr-number> [options]"],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
     { cmd: "agentplane pr open 202602030608-F1Q8AB --author CODER", why: "Create PR artifacts." },
@@ -29,6 +29,10 @@ export const prSpec: CommandSpec<PrGroupParsed> = {
     {
       cmd: 'agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "Looks good"',
       why: "Append a handoff note.",
+    },
+    {
+      cmd: 'agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch',
+      why: "Close a stale GitHub PR through REST and optionally delete its remote head branch.",
     },
   ],
   parse: (raw) => parseGroupCommand(raw),
@@ -93,6 +97,12 @@ export const prCheckSpec: CommandSpec<PrCheckParsed> = {
 };
 
 export type PrNoteParsed = { taskId: string; author: string; body: string };
+export type PrCloseParsed = {
+  prNumber: number;
+  repo?: string;
+  comment?: string;
+  deleteRemoteBranch: boolean;
+};
 
 export const prNoteSpec: CommandSpec<PrNoteParsed> = {
   id: ["pr", "note"],
@@ -135,6 +145,58 @@ export const prNoteSpec: CommandSpec<PrNoteParsed> = {
     taskId: String(raw.args["task-id"]),
     author: String(raw.opts.author),
     body: String(raw.opts.body),
+  }),
+};
+
+export const prCloseSpec: CommandSpec<PrCloseParsed> = {
+  id: ["pr", "close"],
+  group: "PR",
+  summary: "Close a GitHub PR through REST with optional remote head-branch deletion.",
+  args: [{ name: "pr-number", required: true, valueHint: "<pr-number>" }],
+  options: [
+    {
+      kind: "string",
+      name: "repo",
+      valueHint: "<owner/name>",
+      description: "Optional. GitHub owner/repo override (defaults to origin remote).",
+    },
+    {
+      kind: "string",
+      name: "comment",
+      valueHint: "<text>",
+      description: "Optional. Add a close comment before closing the PR.",
+    },
+    {
+      kind: "boolean",
+      name: "delete-remote-branch",
+      default: false,
+      description:
+        "Delete the remote head branch after a successful close when it belongs to the target repo.",
+    },
+  ],
+  examples: [
+    {
+      cmd: 'agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch',
+      why: "Close a stale PR and remove its remote head branch when it belongs to the same repo.",
+    },
+  ],
+  validateRaw: (raw) => {
+    const prNumber = Number.parseInt(String(raw.args["pr-number"] ?? ""), 10);
+    if (!Number.isInteger(prNumber) || prNumber <= 0) {
+      throw usageError({ spec: prCloseSpec, message: "Invalid value for <pr-number>." });
+    }
+    if (typeof raw.opts.repo === "string" && raw.opts.repo.trim() === "") {
+      throw usageError({ spec: prCloseSpec, message: "Invalid value for --repo: empty." });
+    }
+    if (typeof raw.opts.comment === "string" && raw.opts.comment.trim() === "") {
+      throw usageError({ spec: prCloseSpec, message: "Invalid value for --comment: empty." });
+    }
+  },
+  parse: (raw) => ({
+    prNumber: Number.parseInt(String(raw.args["pr-number"]), 10),
+    repo: typeof raw.opts.repo === "string" ? raw.opts.repo : undefined,
+    comment: typeof raw.opts.comment === "string" ? raw.opts.comment : undefined,
+    deleteRemoteBranch: raw.opts["delete-remote-branch"] === true,
   }),
 };
 
@@ -197,6 +259,20 @@ export function makeRunPrNoteHandler(getCtx: (cmd: string) => Promise<CommandCon
       taskId: p.taskId,
       author: p.author,
       body: p.body,
+    });
+  };
+}
+
+export function makeRunPrCloseHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+  return async (ctx: CommandCtx, p: PrCloseParsed): Promise<number> => {
+    return await cmdPrClose({
+      ctx: await getCtx("pr close"),
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
+      prNumber: p.prNumber,
+      repo: p.repo,
+      comment: p.comment,
+      deleteRemoteBranch: p.deleteRemoteBranch,
     });
   };
 }
