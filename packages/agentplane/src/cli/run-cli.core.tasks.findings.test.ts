@@ -17,7 +17,7 @@ import {
 installRunCliIntegrationHarness();
 
 describe("runCli task findings", () => {
-  it("task findings add appends a structured Findings block to a v3 task README", async () => {
+  it("task findings add appends a promotable external Findings block by default", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const config = defaultConfig();
@@ -86,13 +86,15 @@ describe("runCli task findings", () => {
     expect(readme).toContain(
       "  Resolution: Use the new append command instead of editing the whole README.",
     );
+    expect(readme).toContain("  Promotion: incident-candidate");
+    expect(readme).toContain("  Fixability: external");
     expect(readme).toContain('doc_updated_by: "CODER"');
     expect(parseTaskReadme(readme).frontmatter.sections.Findings).toContain(
       "- Observation: GitHub transport retries were manual.",
     );
   });
 
-  it("task findings add writes structured external metadata that incidents collect can promote", async () => {
+  it("task findings add writes promotable metadata without requiring hidden flags", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const config = defaultConfig();
@@ -146,8 +148,6 @@ describe("runCli task findings", () => {
           "Task cleanup required repeated operator retries.",
           "--resolution",
           "Switch close flows to REST-backed helpers.",
-          "--promote",
-          "--external",
           "--incident-scope",
           "GitHub PR cleanup",
           "--incident-tag",
@@ -198,6 +198,94 @@ describe("runCli task findings", () => {
       expect(payload.promotable[0]?.advice).toContain("REST-backed helpers");
       expect(payload.promotable[0]?.scope).toBe("GitHub PR cleanup");
       expect(payload.promotable[0]?.tags).toEqual(expect.arrayContaining(["github", "workflow"]));
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task findings add supports --local-only for task-local observations that should not promote", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Keep observation local",
+          "--description",
+          "Need task-local findings without incidents promotion",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "findings",
+          "add",
+          taskId,
+          "--observation",
+          "One follow-up remains local to this task.",
+          "--impact",
+          "No reusable incident policy should be created.",
+          "--resolution",
+          "Keep it in the task README only.",
+          "--local-only",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "incidents",
+        "collect",
+        taskId,
+        "--check",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        promotable: unknown[];
+        skipped: { reason: string }[];
+      };
+      expect(payload.promotable).toHaveLength(0);
+      expect(payload.skipped).toHaveLength(1);
+      expect(payload.skipped[0]?.reason).toBe("not_marked_external_or_promotable");
     } finally {
       io.restore();
     }
