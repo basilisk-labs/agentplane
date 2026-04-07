@@ -4,7 +4,7 @@ title: "Make integrate recover from repairable PR artifact drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-07T20:47:13.337Z"
+  updated_at: "2026-04-07T20:53:31.375Z"
   updated_by: "CODER"
-  note: "Checks: bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts; bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t 'pr check'; bun x eslint packages/agentplane/src/commands/pr/internal/freshness.ts packages/agentplane/src/commands/pr/check.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Evidence: pr check now recovers missing verify metadata only when task verification or verify.log proves current-head freshness, while real stale verify-sha drift still fails."
+  note: "Refreshed verification after rebase onto origin/main. Checks remain valid for the rebased head because the code diff did not change; only parent history changed."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Checks: bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts; bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t 'pr check'; bun x eslint packages/agentplane/src/commands/pr/internal/freshness.ts packages/agentplane/src/commands/pr/check.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Evidence: pr check now recovers missing verify metadata only when task verification or verify.log proves current-head freshness, while real stale verify-sha drift still fails."
+  -
+    type: "verify"
+    at: "2026-04-07T20:53:31.375Z"
+    author: "CODER"
+    state: "ok"
+    note: "Refreshed verification after rebase onto origin/main. Checks remain valid for the rebased head because the code diff did not change; only parent history changed."
 doc_version: 3
-doc_updated_at: "2026-04-07T20:47:13.340Z"
+doc_updated_at: "2026-04-07T20:53:31.381Z"
 doc_updated_by: "CODER"
 description: "Allow branch_pr integrate to repair or tolerate refreshable pr/meta.json and verify-sha drift instead of hard-failing on recoverable projection mismatches."
 sections:
@@ -68,6 +74,14 @@ sections:
     Note: Checks: bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts; bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t 'pr check'; bun x eslint packages/agentplane/src/commands/pr/internal/freshness.ts packages/agentplane/src/commands/pr/check.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Evidence: pr check now recovers missing verify metadata only when task verification or verify.log proves current-head freshness, while real stale verify-sha drift still fails.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T20:28:06.106Z, excerpt_hash=sha256:1a3def187f7dc53641cdf9e5a826f814531967db06217c3ee6d9a782b614e533
+    
+    ### 2026-04-07T20:53:31.375Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Refreshed verification after rebase onto origin/main. Checks remain valid for the rebased head because the code diff did not change; only parent history changed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T20:47:13.340Z, excerpt_hash=sha256:1a3def187f7dc53641cdf9e5a826f814531967db06217c3ee6d9a782b614e533
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -107,6 +121,14 @@ By: CODER
 Note: Checks: bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts; bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t 'pr check'; bun x eslint packages/agentplane/src/commands/pr/internal/freshness.ts packages/agentplane/src/commands/pr/check.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Evidence: pr check now recovers missing verify metadata only when task verification or verify.log proves current-head freshness, while real stale verify-sha drift still fails.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T20:28:06.106Z, excerpt_hash=sha256:1a3def187f7dc53641cdf9e5a826f814531967db06217c3ee6d9a782b614e533
+
+### 2026-04-07T20:53:31.375Z — VERIFY — ok
+
+By: CODER
+
+Note: Refreshed verification after rebase onto origin/main. Checks remain valid for the rebased head because the code diff did not change; only parent history changed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T20:47:13.340Z, excerpt_hash=sha256:1a3def187f7dc53641cdf9e5a826f814531967db06217c3ee6d9a782b614e533
 
 <!-- END VERIFICATION RESULTS -->
 
