@@ -6,6 +6,7 @@ import {
   buildObservedGithubPrMeta,
   buildIntegratedPrMeta,
   buildVerifiedPrMeta,
+  parsePrMetaForwardCompatible,
   parsePrMeta,
   resolveShellInvocation,
   runShellCommand,
@@ -85,6 +86,36 @@ describe("pr-meta shell invocations", () => {
         "202601010101-ABCDE",
       ),
     ).toThrow(/pr\/meta\.json schema validation failed/u);
+  });
+
+  it("reads forward-compatible pr/meta variants for branch-artifact consumers", () => {
+    expect(
+      parsePrMetaForwardCompatible(
+        JSON.stringify({
+          schema_version: 1,
+          task_id: "202601010101-ABCDE",
+          branch: "task/202601010101-ABCDE/example",
+          created_at: "2026-01-27T00:00:00Z",
+          updated_at: "2026-01-28T00:00:00Z",
+          status: "FUTURE_OPEN",
+          verify: { status: "pass" },
+          base: "main",
+          head_sha: "deadbeef",
+        }),
+        "202601010101-ABCDE",
+      ),
+    ).toEqual(
+      expect.objectContaining({
+        task_id: "202601010101-ABCDE",
+        branch: "task/202601010101-ABCDE/example",
+        created_at: "2026-01-27T00:00:00Z",
+        updated_at: "2026-01-28T00:00:00Z",
+        status: undefined,
+        verify: { status: "pass" },
+        base: "main",
+        head_sha: "deadbeef",
+      }),
+    );
   });
 
   it("builds typed merged PR metadata without record casts", () => {
