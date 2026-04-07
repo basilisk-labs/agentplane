@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604071841-HWNRXM/pre-push-new-branch-scope",
   "created_at": "2026-04-07T18:42:04.675Z",
-  "head_sha": "97d448fc0fc721741d5a2777d5d4b965220d0a81",
+  "head_sha": "f31201d00e87cd4cfa61198c52e07f2830106897",
   "last_verified_at": "2026-04-07T18:45:41.900Z",
   "last_verified_sha": "97d448fc0fc721741d5a2777d5d4b965220d0a81",
+  "merge_commit": "a427b8a5cd3e8104957cf1dfa4027fd65c00fa0d",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T18:59:40Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604071841-HWNRXM",
-  "updated_at": "2026-04-07T18:42:04.675Z",
+  "updated_at": "2026-04-07T18:59:40Z",
   "verify": {
     "status": "pass"
   }
