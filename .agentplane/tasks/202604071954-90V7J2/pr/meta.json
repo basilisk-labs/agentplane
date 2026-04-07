@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604071954-90V7J2/incident-registry-correctness",
+  "created_at": "2026-04-07T20:12:12.113Z",
+  "head_sha": "c54414324e5546e9f6d026bd3f946edc0b490ec2",
+  "last_verified_at": "2026-04-07T20:21:05.808Z",
+  "last_verified_sha": "c54414324e5546e9f6d026bd3f946edc0b490ec2",
+  "schema_version": 1,
+  "task_id": "202604071954-90V7J2",
+  "updated_at": "2026-04-07T20:19:21.134Z",
+  "verify": {
+    "status": "pass"
+  }
+}

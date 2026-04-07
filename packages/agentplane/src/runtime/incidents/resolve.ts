@@ -12,10 +12,18 @@ import type {
   IncidentRegistryEntryState,
 } from "./types.js";
 
-const INCIDENTS_HEADER = [
+const STRUCTURED_INCIDENTS_HEADER = [
   "# Policy Incidents Log",
   "",
   "This is the single file for incident-derived and situational policy rules.",
+].join("\n");
+
+const COMPACT_INCIDENTS_HEADER = [
+  "# Policy Incidents Log",
+  "",
+  "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`. Optional machine-match fields: `tags`, `match`, `advice`, `source_task`, `fixability`.",
+  "- `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.",
+  "- First auto-promoted external incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.",
 ].join("\n");
 
 function normalizeLines(text: string): string[] {
@@ -99,6 +107,16 @@ function appendFieldValue(
     return;
   }
   record[key] = `${record[key]}${joiner}${value.trim()}`.trim();
+}
+
+function deriveSourceTask(
+  explicitSourceTask: string | null | undefined,
+  evidence: string | null | undefined,
+): string | null {
+  const direct = String(explicitSourceTask ?? "").trim();
+  if (direct) return direct;
+  const match = /\btasks?\s+([A-Za-z0-9-]+)/iu.exec(String(evidence ?? ""));
+  return match?.[1]?.trim() ?? null;
 }
 
 function buildIncidentSignature(
@@ -202,7 +220,7 @@ function resolveIncidentState(opts: {
 
 export function createIncidentRegistrySkeleton(): string {
   return [
-    INCIDENTS_HEADER,
+    STRUCTURED_INCIDENTS_HEADER,
     "",
     "## Entry contract",
     "",
@@ -238,7 +256,6 @@ export function createIncidentRegistrySkeleton(): string {
 export function parseIncidentRegistry(text: string): IncidentRegistry {
   const lines = normalizeLines(text);
   const entries: IncidentRegistryEntry[] = [];
-  let inEntries = false;
   let currentFields: Record<string, string> | null = null;
   let currentLine = 0;
   let currentKey: string | null = null;
@@ -246,7 +263,7 @@ export function parseIncidentRegistry(text: string): IncidentRegistry {
   const flush = () => {
     if (!currentFields) return;
     const id = currentFields.id?.trim();
-    if (!id) {
+    if (!id || !/^INC-\d{8}-\d+$/u.test(id)) {
       currentFields = null;
       currentKey = null;
       currentLine = 0;
@@ -257,6 +274,7 @@ export function parseIncidentRegistry(text: string): IncidentRegistry {
     const rule = currentFields.rule?.trim() ?? "";
     const evidence = currentFields.evidence?.trim() ?? "";
     const enforcement = currentFields.enforcement?.trim() ?? "manual";
+    const sourceTask = deriveSourceTask(currentFields.source_task, evidence);
     entries.push({
       id,
       date: currentFields.date?.trim() ?? "",
@@ -269,7 +287,7 @@ export function parseIncidentRegistry(text: string): IncidentRegistry {
       tags: parseCsvList(currentFields.tags),
       match: parseCsvList(currentFields.match),
       advice: currentFields.advice?.trim() || null,
-      sourceTask: currentFields.source_task?.trim() || null,
+      sourceTask,
       fixability: currentFields.fixability?.trim().toLowerCase() === "external" ? "external" : null,
       rawFields: { ...currentFields },
       line: currentLine,
@@ -281,12 +299,6 @@ export function parseIncidentRegistry(text: string): IncidentRegistry {
 
   for (const [index, line] of lines.entries()) {
     const trimmed = line.trim();
-    if (!inEntries) {
-      if (trimmed === "## Entries") inEntries = true;
-      continue;
-    }
-    if (/^##\s+/.test(trimmed)) break;
-
     const idMatch = /^- id:\s*(.+?)\s*$/.exec(trimmed);
     if (idMatch) {
       flush();
@@ -297,6 +309,11 @@ export function parseIncidentRegistry(text: string): IncidentRegistry {
     }
 
     if (!currentFields) continue;
+
+    if (/^##\s+/.test(trimmed)) {
+      flush();
+      continue;
+    }
 
     const fieldMatch = /^\s{2}([a-z_]+):\s*(.*?)\s*$/.exec(line);
     if (fieldMatch) {
@@ -337,17 +354,100 @@ export function formatIncidentRegistryEntry(entry: IncidentRegistryEntry): strin
   ].join("\n");
 }
 
+function detectRegistryStyle(text: string): "structured" | "compact" {
+  return /(^|\n)## Entries\s*$/mu.test(text) || /(^|\n)## Entry contract\s*$/mu.test(text)
+    ? "structured"
+    : "compact";
+}
+
+function entryRichness(entry: IncidentRegistryEntry): number {
+  return [
+    entry.sourceTask ? 4 : 0,
+    entry.advice ? 3 : 0,
+    entry.tags.length,
+    entry.match.length,
+    entry.fixability ? 1 : 0,
+    entry.evidence.length > 0 ? 1 : 0,
+  ].reduce((sum, item) => sum + item, 0);
+}
+
+function nextIncidentIdForDate(
+  dateStamp: string,
+  usedIds: Set<string>,
+  nextByDate: Map<string, number>,
+): string {
+  let next = nextByDate.get(dateStamp) ?? 0;
+  do {
+    next += 1;
+  } while (usedIds.has(`INC-${dateStamp}-${String(next).padStart(2, "0")}`));
+  nextByDate.set(dateStamp, next);
+  return `INC-${dateStamp}-${String(next).padStart(2, "0")}`;
+}
+
+function normalizeIncidentRegistryEntries(
+  entries: readonly IncidentRegistryEntry[],
+): IncidentRegistryEntry[] {
+  const byFingerprint = new Map<string, IncidentRegistryEntry>();
+  const orderedFingerprints: string[] = [];
+
+  for (const entry of entries) {
+    const fingerprint = buildIncidentFingerprint(entry);
+    const existing = byFingerprint.get(fingerprint);
+    if (!existing) {
+      byFingerprint.set(fingerprint, { ...entry });
+      orderedFingerprints.push(fingerprint);
+      continue;
+    }
+    if (entryRichness(entry) >= entryRichness(existing)) {
+      byFingerprint.set(fingerprint, { ...entry });
+    }
+  }
+
+  const normalized = orderedFingerprints.map((fingerprint) => byFingerprint.get(fingerprint)!);
+  const usedIds = new Set<string>();
+  const nextByDate = new Map<string, number>();
+  for (const entry of normalized) {
+    const match = /^INC-(\d{8})-(\d+)$/u.exec(entry.id);
+    if (!match) continue;
+    const [, dateStamp, seqRaw] = match;
+    const seq = Number.parseInt(seqRaw ?? "", 10);
+    if (!Number.isInteger(seq)) continue;
+    const existing = nextByDate.get(dateStamp) ?? 0;
+    if (seq > existing) nextByDate.set(dateStamp, seq);
+  }
+
+  return normalized.map((entry) => {
+    const dateStamp = /^\d{4}-\d{2}-\d{2}$/u.test(entry.date)
+      ? entry.date.replaceAll("-", "")
+      : "00000000";
+    const nextId = usedIds.has(entry.id)
+      ? nextIncidentIdForDate(dateStamp, usedIds, nextByDate)
+      : entry.id;
+    usedIds.add(nextId);
+    return nextId === entry.id ? entry : { ...entry, id: nextId };
+  });
+}
+
+function renderIncidentRegistryDocument(
+  entries: readonly IncidentRegistryEntry[],
+  style: "structured" | "compact",
+): string {
+  const header =
+    style === "structured" ? createIncidentRegistrySkeleton().trimEnd() : COMPACT_INCIDENTS_HEADER;
+  if (entries.length === 0) return `${header}\n`;
+  return `${header}\n\n${entries.map((entry) => formatIncidentRegistryEntry(entry)).join("\n\n")}\n`;
+}
+
 export function appendIncidentRegistryEntries(
   currentText: string,
   entries: readonly IncidentRegistryEntry[],
 ): string {
   if (entries.length === 0) return currentText;
-  const base =
-    currentText.trim().length > 0
-      ? currentText.trimEnd()
-      : createIncidentRegistrySkeleton().trimEnd();
-  const suffix = entries.map((entry) => formatIncidentRegistryEntry(entry)).join("\n\n");
-  return `${base}\n\n${suffix}\n`;
+  const baseText = currentText.trim().length > 0 ? currentText : createIncidentRegistrySkeleton();
+  const style = detectRegistryStyle(baseText);
+  const existing = parseIncidentRegistry(baseText);
+  const merged = normalizeIncidentRegistryEntries([...existing.entries, ...entries]);
+  return renderIncidentRegistryDocument(merged, style);
 }
 
 export function extractIncidentCandidatesFromFindings(
