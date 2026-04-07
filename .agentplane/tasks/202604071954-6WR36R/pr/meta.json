@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604071954-6WR36R/integrate-artifact-recovery",
   "created_at": "2026-04-07T20:28:06.142Z",
-  "head_sha": "92a3c7bc82118a15c9778e435ddf73b73c5b6989",
+  "head_sha": "b535253e5ee5f1a3a6cd6d2a4b4f26097000dc40",
   "last_verified_at": "2026-04-07T20:53:31.375Z",
   "last_verified_sha": "92a3c7bc82118a15c9778e435ddf73b73c5b6989",
+  "merge_commit": "f4ab2104dd6bea55ddb781a85c1663acb128c8ef",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T21:04:01Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604071954-6WR36R",
-  "updated_at": "2026-04-07T20:53:31.402Z",
+  "updated_at": "2026-04-07T21:04:01Z",
   "verify": {
     "status": "pass"
   }
