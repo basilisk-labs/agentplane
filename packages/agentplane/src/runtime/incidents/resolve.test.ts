@@ -130,6 +130,26 @@ describe("incidents runtime", () => {
     expect(plan.issues).toHaveLength(0);
   });
 
+  it("tracks plain Findings text separately from structured incident blocks", () => {
+    const plan = planIncidentCollection({
+      task: {
+        id: "TASK-7",
+        title: "Record operator confusion",
+        description: "Explain why incidents promotion stayed unchanged",
+        tags: ["workflow"],
+      },
+      findings:
+        "Operators noted that incidents.md did not change after finish, but no structured incident block was recorded.",
+      registry: parseIncidentRegistry(createIncidentRegistrySkeleton()),
+      now: new Date("2026-04-07T10:00:00.000Z"),
+    });
+
+    expect(plan.findingsTextPresent).toBe(true);
+    expect(plan.structuredFindingCount).toBe(0);
+    expect(plan.candidates).toHaveLength(0);
+    expect(plan.skipped).toHaveLength(0);
+  });
+
   it("auto-promotes first external findings as open incidents and resolves advice by tags and scope", () => {
     const base = createIncidentRegistrySkeleton();
     const plan = planIncidentCollection({

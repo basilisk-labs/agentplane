@@ -578,7 +578,15 @@ export function planIncidentCollection(opts: {
     promotable.push(draft);
   }
 
-  return { candidates, skipped, promotable, duplicates, issues };
+  return {
+    candidates,
+    skipped,
+    promotable,
+    duplicates,
+    issues,
+    findingsTextPresent: opts.findings.trim().length > 0,
+    structuredFindingCount: parsed.length,
+  };
 }
 
 export function buildIncidentAdviceQueryFromTask(opts: {

@@ -223,4 +223,36 @@ describe("pr/integrate/internal/finalize", () => {
       expect.stringContaining("structured finding skipped"),
     );
   });
+
+  it("explains plain Findings text when integrate sees no structured incident blocks", async () => {
+    const { finalizeIntegrate } = await import("./finalize.js");
+    mocks.fileExists.mockResolvedValue(true);
+    mocks.readFile.mockResolvedValue("{}");
+    mocks.parsePrMeta.mockReturnValue({ schema_version: 1, task_id: "T-1" });
+    mocks.buildIntegratedPrMeta.mockReturnValue({ schema_version: 1, task_id: "T-1" });
+    mocks.gitDiffStat.mockResolvedValue("");
+    mocks.readCommitInfo.mockResolvedValue({ hash: "deadbeef", message: "merge" });
+    mocks.collectTaskIncidents.mockResolvedValue({
+      loaded: null,
+      registryPath: "/repo/.agentplane/policy/incidents.md",
+      registryText: "",
+      registry: null,
+      plan: {
+        candidates: [],
+        skipped: [],
+        promotable: [],
+        duplicates: [],
+        issues: [],
+        findingsTextPresent: true,
+        structuredFindingCount: 0,
+      },
+      wrote: false,
+    });
+
+    await finalizeIntegrate({ ...baseOpts(), quiet: false });
+
+    expect(emitter.info).toHaveBeenCalledWith(
+      expect.stringContaining("Findings has text but no structured incident blocks"),
+    );
+  });
 });

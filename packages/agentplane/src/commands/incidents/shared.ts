@@ -164,11 +164,16 @@ export function renderIncidentCollectionPlanOutcome(plan: {
   skipped?: readonly unknown[];
   promotable?: readonly unknown[];
   duplicates?: readonly unknown[];
+  findingsTextPresent?: boolean;
+  structuredFindingCount?: number;
 }): string {
   const candidates = Array.isArray(plan.candidates) ? plan.candidates.length : 0;
   const skipped = Array.isArray(plan.skipped) ? plan.skipped.length : 0;
   const promoted = Array.isArray(plan.promotable) ? plan.promotable.length : 0;
   const duplicates = Array.isArray(plan.duplicates) ? plan.duplicates.length : 0;
+  const findingsTextPresent = plan.findingsTextPresent === true;
+  const structuredFindingCount =
+    typeof plan.structuredFindingCount === "number" ? plan.structuredFindingCount : 0;
 
   if (promoted > 0) {
     const suffix: string[] = [];
@@ -182,6 +187,10 @@ export function renderIncidentCollectionPlanOutcome(plan: {
 
   if (skipped > 0) {
     return `incident registry unchanged (${skipped} structured finding${skipped === 1 ? "" : "s"} skipped: add Promotion: incident-candidate or IncidentExternal/Fixability: external to promote reusable findings)`;
+  }
+
+  if (candidates === 0 && structuredFindingCount === 0 && findingsTextPresent) {
+    return "incident registry unchanged (Findings has text but no structured incident blocks: add Observation/Impact/Resolution fields before Promotion: incident-candidate or IncidentExternal/Fixability: external)";
   }
 
   if (candidates === 0) {
