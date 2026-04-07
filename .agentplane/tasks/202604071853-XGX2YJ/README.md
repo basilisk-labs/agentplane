@@ -1,10 +1,11 @@
 ---
 id: "202604071853-XGX2YJ"
 title: "Scope task normalize reconcile to selected task ids"
-status: "DOING"
+result_summary: "Merged via PR #130."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-07T19:41:15.063Z"
   updated_by: "CODER"
   note: "Command: bun run workflow:wait-remote-checks -- 130 --repo basilisk-labs/agentplane; Result: pass; Evidence: PR #130 required checks all green on the published head."
-commit: null
+commit:
+  hash: "5fd312cceb200917bdf8aaba9a5a59532c158252"
+  message: "github/workflow: Scope task normalize reconcile to selected task ids (XGX2YJ) (#130)"
 comments:
   -
     author: "CODER"
     body: "Start: add targeted task-id filters to task normalize reconcile modes so known branch_pr drift can be fixed without scanning unrelated historical PR artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #130 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run workflow:wait-remote-checks -- 130 --repo basilisk-labs/agentplane; Result: pass; Evidence: PR #130 required checks all green on the published head."
+  -
+    type: "status"
+    at: "2026-04-07T19:46:10.370Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #130 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-07T19:41:15.074Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T19:46:10.376Z"
+doc_updated_by: "INTEGRATOR"
 description: "Allow task normalize reconcile modes to target explicit task ids so operators can close known branch_pr drift without scanning unrelated historical PR artifacts or rewriting the whole task set."
 sections:
   Summary: |-

@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604071853-XGX2YJ/targeted-normalize-reconcile",
   "created_at": "2026-04-07T18:53:53.830Z",
-  "head_sha": "982fec5de3037afc5a32e45927a4a38236cd6d6d",
+  "head_sha": "727c21a2be531abc8d694e37d02ada239e9ec978",
   "last_verified_at": "2026-04-07T19:41:15.063Z",
   "last_verified_sha": "982fec5de3037afc5a32e45927a4a38236cd6d6d",
+  "merge_commit": "5fd312cceb200917bdf8aaba9a5a59532c158252",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T19:45:40Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604071853-XGX2YJ",
-  "updated_at": "2026-04-07T19:33:24.862Z",
+  "updated_at": "2026-04-07T19:45:40Z",
   "verify": {
     "status": "pass"
   }
