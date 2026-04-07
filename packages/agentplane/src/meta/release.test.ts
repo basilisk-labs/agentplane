@@ -17,13 +17,10 @@ function repoRootFromThisFile(): string {
 }
 
 describe("release meta", () => {
-  const originalCwd = process.cwd();
-
   beforeEach(() => {
     vi.resetModules();
     mockExistsSync.mockReset();
     mockExecFileSync.mockReset();
-    process.chdir(originalCwd);
   });
 
   it("returns null when git root cannot be resolved (and does not call git)", async () => {
@@ -66,17 +63,21 @@ describe("release meta", () => {
 
   it("falls back to locating git root from the package location when CWD is outside repo", async () => {
     const repoRoot = repoRootFromThisFile();
-    process.chdir("/tmp");
+    const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue("/tmp");
 
     mockExistsSync.mockImplementation((p) => p === path.join(repoRoot, ".git"));
     mockExecFileSync.mockReturnValue("2026-02-01\n");
 
-    const { getReleaseCommitDate } = await import("./release.js");
-    expect(getReleaseCommitDate()).toBe("2026-02-01");
-    expect(mockExecFileSync).toHaveBeenCalledWith(
-      "git",
-      ["-C", repoRoot, "show", "-s", "--format=%cs", "v1.2.3"],
-      expect.any(Object),
-    );
+    try {
+      const { getReleaseCommitDate } = await import("./release.js");
+      expect(getReleaseCommitDate()).toBe("2026-02-01");
+      expect(mockExecFileSync).toHaveBeenCalledWith(
+        "git",
+        ["-C", repoRoot, "show", "-s", "--format=%cs", "v1.2.3"],
+        expect.any(Object),
+      );
+    } finally {
+      cwdSpy.mockRestore();
+    }
   });
 });
