@@ -7,6 +7,15 @@ import { validateTaskPrMeta, type TaskPrMeta } from "@agentplaneorg/core";
 import { execFileAsync } from "./git.js";
 
 export type PrMeta = TaskPrMeta;
+export type ObservedGithubPrState = {
+  prNumber: number;
+  prUrl: string | null;
+  status: "OPEN" | "CLOSED" | "MERGED";
+  mergedAt?: string | null;
+  mergeCommit?: string | null;
+  base?: string | null;
+  headSha?: string | null;
+};
 export type PrArtifactTextState = {
   diffstatText: string | null;
   verifyLogText: string | null;
@@ -45,6 +54,10 @@ export function buildOpenedPrMeta(opts: {
     pr_url: opts.previousMeta?.pr_url,
     created_at: opts.previousMeta?.created_at ?? opts.at,
     updated_at: changed ? opts.at : (opts.previousMeta?.updated_at ?? opts.at),
+    status: opts.previousMeta?.status,
+    merge_strategy: opts.previousMeta?.merge_strategy,
+    merged_at: opts.previousMeta?.merged_at,
+    merge_commit: opts.previousMeta?.merge_commit,
     last_verified_sha: opts.previousMeta?.last_verified_sha ?? null,
     last_verified_at: opts.previousMeta?.last_verified_at ?? null,
     verify: opts.previousMeta?.verify ?? { status: "skipped" },
@@ -75,6 +88,47 @@ export function buildUpdatedPrMeta(opts: {
     last_verified_sha: opts.meta.last_verified_sha ?? null,
     last_verified_at: opts.meta.last_verified_at ?? null,
   };
+}
+
+export function buildObservedGithubPrMeta(opts: {
+  meta: PrMeta;
+  observed: ObservedGithubPrState;
+  at: string;
+}): PrMeta {
+  const nextStatus = opts.observed.status;
+  const nextMeta: PrMeta = {
+    ...opts.meta,
+    pr_number: opts.observed.prNumber,
+    pr_url: opts.observed.prUrl ?? opts.meta.pr_url,
+    status: nextStatus,
+    base: opts.observed.base ?? opts.meta.base,
+    head_sha: opts.observed.headSha ?? opts.meta.head_sha,
+    updated_at: opts.meta.updated_at,
+  };
+
+  if (nextStatus === "MERGED") {
+    nextMeta.merged_at = opts.observed.mergedAt ?? opts.meta.merged_at;
+    nextMeta.merge_commit = opts.observed.mergeCommit ?? opts.meta.merge_commit;
+  } else {
+    delete nextMeta.merged_at;
+    delete nextMeta.merge_commit;
+    delete nextMeta.merge_strategy;
+  }
+
+  const changed =
+    nextMeta.pr_number !== opts.meta.pr_number ||
+    (nextMeta.pr_url ?? null) !== (opts.meta.pr_url ?? null) ||
+    nextMeta.status !== opts.meta.status ||
+    (nextMeta.base ?? null) !== (opts.meta.base ?? null) ||
+    (nextMeta.head_sha ?? null) !== (opts.meta.head_sha ?? null) ||
+    (nextMeta.merged_at ?? null) !== (opts.meta.merged_at ?? null) ||
+    (nextMeta.merge_commit ?? null) !== (opts.meta.merge_commit ?? null);
+
+  if (changed) {
+    nextMeta.updated_at = opts.at;
+  }
+
+  return nextMeta;
 }
 
 export function buildVerifiedPrMeta(opts: {

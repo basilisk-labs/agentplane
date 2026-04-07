@@ -58,6 +58,62 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
+async function installFakeGhPrLookup(opts: {
+  scenarioName: string;
+  branch: string;
+  state?: "open" | "closed";
+  mergedAt?: string | null;
+  mergeCommitSha?: string | null;
+}) {
+  const fakeBin = path.join(
+    os.tmpdir(),
+    `agentplane-gh-pr-lookup-${Date.now()}-${opts.scenarioName}`,
+  );
+  await mkdir(fakeBin, { recursive: true });
+  const scriptPath = path.join(fakeBin, "fake-gh.mjs");
+  const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
+  await writeFile(
+    scriptPath,
+    [
+      'import fs from "node:fs";',
+      "const args = process.argv.slice(2);",
+      "const logPath = process.env.AGENTPLANE_GH_LOG;",
+      "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
+      'if (args[0] !== "api") { console.error("unexpected gh command"); process.exit(90); }',
+      'const endpoint = args[1] ?? "";',
+      'const [route, query = ""] = endpoint.split("?", 2);',
+      "const params = new URLSearchParams(query);",
+      `const expectedHead = ${JSON.stringify(`example:${opts.branch}`)};`,
+      `const response = ${JSON.stringify([
+        {
+          number: 321,
+          html_url: "https://github.com/example/repo/pull/321",
+          state: opts.state ?? "open",
+          merged_at: opts.mergedAt ?? null,
+          merge_commit_sha: opts.mergeCommitSha ?? null,
+          head: { sha: "remote-head-sha" },
+          base: { ref: "main" },
+        },
+      ])};`,
+      'if (route === "repos/example/repo/pulls" && params.get("head") === expectedHead) {',
+      "  console.log(JSON.stringify(response));",
+      "  process.exit(0);",
+      "}",
+      'console.log("[]");',
+      "process.exit(0);",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  if (process.platform === "win32") {
+    await writeFile(ghPath, '@echo off\r\nnode "%~dp0\\fake-gh.mjs" %*\r\n', "utf8");
+  } else {
+    await writeFile(ghPath, '#!/bin/sh\nnode "$(dirname "$0")/fake-gh.mjs" "$@"\n', "utf8");
+    await chmod(ghPath, 0o755);
+  }
+  return { fakeBin, logPath: path.join(fakeBin, "gh.log") };
+}
+
 describe("runCli", () => {
   it("pr open creates PR artifacts", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -1656,6 +1712,181 @@ describe("runCli", () => {
     }
   });
 
+  it("pr open hydrates an existing GitHub PR by branch into pr metadata", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open hydrates existing PR",
+        "--description",
+        "PR open should discover an already-existing remote PR for the branch",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/existing-pr`;
+    const { fakeBin, logPath } = await installFakeGhPrLookup({
+      scenarioName: "open-existing",
+      branch,
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("linked to GitHub PR #321");
+      expect(io.stdout).not.toContain("GitHub PR not created");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    const meta = JSON.parse(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"), "utf8"),
+    ) as {
+      pr_number?: number;
+      pr_url?: string;
+      status?: string;
+      head_sha?: string;
+    };
+    expect(meta.pr_number).toBe(321);
+    expect(meta.pr_url).toBe("https://github.com/example/repo/pull/321");
+    expect(meta.status).toBe("OPEN");
+    expect(meta.head_sha).toBe("remote-head-sha");
+
+    const rawLog = await readFile(logPath, "utf8");
+    expect(rawLog).toContain(`head=example%3Atask%2F${taskId}%2Fexisting-pr`);
+  });
+
+  it("pr update hydrates existing GitHub PR state into previously local-only artifacts", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR update hydrates existing PR",
+        "--description",
+        "PR update should discover an already-existing remote PR for the branch",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const branch = `task/${taskId}/existing-pr-update`;
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      branch,
+      "--root",
+      root,
+    ]);
+
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const { fakeBin, logPath } = await installFakeGhPrLookup({
+      scenarioName: "update-existing",
+      branch,
+      state: "closed",
+      mergedAt: "2026-04-07T22:00:00.000Z",
+      mergeCommitSha: "1234567890abcdef1234567890abcdef12345678",
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+
+    try {
+      const code = await runCli(["pr", "update", taskId, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    const meta = JSON.parse(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"), "utf8"),
+    ) as {
+      pr_number?: number;
+      pr_url?: string;
+      status?: string;
+      merged_at?: string;
+      merge_commit?: string;
+    };
+    expect(meta.pr_number).toBe(321);
+    expect(meta.pr_url).toBe("https://github.com/example/repo/pull/321");
+    expect(meta.status).toBe("MERGED");
+    expect(meta.merged_at).toBe("2026-04-07T22:00:00.000Z");
+    expect(meta.merge_commit).toBe("1234567890abcdef1234567890abcdef12345678");
+
+    const rawLog = await readFile(logPath, "utf8");
+    expect(rawLog).toContain(`head=example%3Atask%2F${taskId}%2Fexisting-pr-update`);
+  });
+
   it("pr update rejects missing artifacts", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -2017,7 +2248,7 @@ describe("runCli", () => {
       const code = await runCli(["pr", "nope", "202601010101-ABCDEF", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage:");
-      expect(io.stderr).toContain("agentplane pr <open|update|check|note>");
+      expect(io.stderr).toContain("agentplane pr <open|update|check|note|close>");
     } finally {
       io.restore();
     }

@@ -12,8 +12,10 @@ import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/wr
 import { execFileAsync, gitEnv } from "../../shared/git.js";
 import { gitCurrentBranch } from "../../shared/git-ops.js";
 import { parseTaskIdFromBranch } from "../../shared/git-worktree.js";
+import { normalizeGhTransportError, withGhTransportRetry } from "../../shared/gh-transport.js";
 import { INCIDENTS_POLICY_PATH } from "../../incidents/shared.js";
 import {
+  buildObservedGithubPrMeta,
   buildOpenedPrMeta,
   buildUpdatedPrMeta,
   parsePrMeta,
@@ -65,6 +67,120 @@ async function restoreIncidentRegistryIfNeeded(opts: {
 function isUnknownRevisionError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
   return /unknown revision or path not in the working tree/i.test(message);
+}
+
+function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {
+  const trimmed = remoteUrl.trim();
+  if (!trimmed) return null;
+  const httpsMatch = /^https?:\/\/github\.com\/([^/]+)\/([^/]+?)(?:\.git)?\/?$/.exec(trimmed);
+  if (httpsMatch) return `${httpsMatch[1]}/${httpsMatch[2]}`;
+  const sshMatch = /^git@github\.com:([^/]+)\/([^/]+?)(?:\.git)?$/.exec(trimmed);
+  if (sshMatch) return `${sshMatch[1]}/${sshMatch[2]}`;
+  return null;
+}
+
+async function resolveGithubRepoFromOrigin(gitRoot: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", ["remote", "get-url", "origin"], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    return parseGithubRepoFromRemoteUrl(stdout);
+  } catch {
+    return null;
+  }
+}
+
+type GithubPullLookupRecord = {
+  number?: number;
+  html_url?: string | null;
+  state?: string | null;
+  merged_at?: string | null;
+  merge_commit_sha?: string | null;
+  head?: {
+    sha?: string | null;
+  } | null;
+  base?: {
+    ref?: string | null;
+  } | null;
+};
+
+function normalizeObservedGithubPr(record: GithubPullLookupRecord): {
+  prNumber: number;
+  prUrl: string | null;
+  status: "OPEN" | "CLOSED" | "MERGED";
+  mergedAt: string | null;
+  mergeCommit: string | null;
+  base: string | null;
+  headSha: string | null;
+} | null {
+  const number = Number(record.number);
+  if (!Number.isInteger(number) || number <= 0) return null;
+  const state = record.state?.trim().toLowerCase() ?? "";
+  const mergedAt = record.merged_at?.trim() ?? null;
+  const status =
+    mergedAt && mergedAt.length > 0
+      ? "MERGED"
+      : state === "open"
+        ? "OPEN"
+        : state === "closed"
+          ? "CLOSED"
+          : null;
+  if (!status) return null;
+  const prUrl = record.html_url?.trim() ?? null;
+  const mergeCommit = record.merge_commit_sha?.trim() ?? null;
+  const base = record.base?.ref?.trim() ?? null;
+  const headSha = record.head?.sha?.trim() ?? null;
+  return {
+    prNumber: number,
+    prUrl,
+    status,
+    mergedAt,
+    mergeCommit,
+    base,
+    headSha,
+  };
+}
+
+async function tryLookupExistingGithubPrByBranch(opts: {
+  gitRoot: string;
+  branch: string;
+  baseBranch?: string | null;
+}): Promise<ReturnType<typeof normalizeObservedGithubPr>> {
+  const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
+  if (!repo) return null;
+  const owner = repo.split("/")[0]?.trim() ?? "";
+  if (!owner) return null;
+
+  const query = new URLSearchParams({ state: "all", head: `${owner}:${opts.branch}` });
+  const baseBranch = opts.baseBranch?.trim() ?? "";
+  if (baseBranch) query.set("base", baseBranch);
+  const endpoint = `repos/${repo}/pulls?${query.toString()}`;
+
+  try {
+    const { stdout } = await withGhTransportRetry(
+      () =>
+        execFileAsync("gh", ["api", endpoint], {
+          cwd: opts.gitRoot,
+          env: gitEnv(),
+          maxBuffer: 10 * 1024 * 1024,
+        }),
+      { label: `running gh api ${endpoint}` },
+    );
+    const parsed = JSON.parse(stdout) as GithubPullLookupRecord[];
+    if (!Array.isArray(parsed) || parsed.length === 0) return null;
+    for (const record of parsed) {
+      const observed = normalizeObservedGithubPr(record);
+      if (observed) return observed;
+    }
+    return null;
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code === "ENOENT") return null;
+    const message = normalizeGhTransportError(err);
+    if (message.trim().length > 0) return null;
+    return null;
+  }
 }
 
 async function resolveBranchHeadSha(opts: {
@@ -275,7 +391,7 @@ export async function syncPrArtifacts(opts: {
       const headSha = await resolveBranchHeadSha({ gitRoot: resolved.gitRoot, branch });
 
       if (opts.mode === "open") {
-        const nextMeta: PrMeta = buildOpenedPrMeta({
+        let nextMeta: PrMeta = buildOpenedPrMeta({
           taskId: task.id,
           branch,
           at: now,
@@ -283,6 +399,18 @@ export async function syncPrArtifacts(opts: {
           base: baseBranch,
           headSha,
         });
+        const observedGithubPr = await tryLookupExistingGithubPrByBranch({
+          gitRoot: resolved.gitRoot,
+          branch,
+          baseBranch,
+        });
+        if (observedGithubPr) {
+          nextMeta = buildObservedGithubPrMeta({
+            meta: nextMeta,
+            observed: observedGithubPr,
+            at: now,
+          });
+        }
         const nextAutoSummary = renderPrAutoSummary({
           updatedAt: nextMeta.updated_at,
           branch,
@@ -338,13 +466,25 @@ export async function syncPrArtifacts(opts: {
       } catch (err) {
         if (!isUnknownRevisionError(err)) throw err;
       }
-      const nextMeta: PrMeta = buildUpdatedPrMeta({
+      let nextMeta: PrMeta = buildUpdatedPrMeta({
         meta: existingMeta!,
         branch,
         at: now,
         base: baseBranch,
         headSha,
       });
+      const observedGithubPr = await tryLookupExistingGithubPrByBranch({
+        gitRoot: resolved.gitRoot,
+        branch,
+        baseBranch,
+      });
+      if (observedGithubPr) {
+        nextMeta = buildObservedGithubPrMeta({
+          meta: nextMeta,
+          observed: observedGithubPr,
+          at: now,
+        });
+      }
       const nextAutoSummary = renderPrAutoSummary({
         updatedAt: nextMeta.updated_at,
         branch,

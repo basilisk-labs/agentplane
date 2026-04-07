@@ -14,7 +14,7 @@ export type TaskPrMeta = {
   pr_url?: string;
   created_at: string;
   updated_at: string;
-  status?: "MERGED";
+  status?: "OPEN" | "CLOSED" | "MERGED";
   merge_strategy?: "squash" | "merge" | "rebase";
   merged_at?: string;
   merge_commit?: string;
@@ -448,7 +448,7 @@ export const TASK_PR_META_SCHEMA = {
     pr_url: { type: "string", minLength: 1 },
     created_at: { type: "string", format: "date-time" },
     updated_at: { type: "string", format: "date-time" },
-    status: { type: "string", enum: ["MERGED"] },
+    status: { type: "string", enum: ["OPEN", "CLOSED", "MERGED"] },
     merge_strategy: { type: "string", enum: ["squash", "merge", "rebase"] },
     merged_at: { type: "string", format: "date-time" },
     merge_commit: { type: "string", minLength: 1 },

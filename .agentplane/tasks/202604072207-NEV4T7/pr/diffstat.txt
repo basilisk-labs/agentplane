@@ -1,0 +1,8 @@
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 233 ++++++++++++++++++++-
+ .../agentplane/src/commands/pr/internal/sync.ts    | 144 ++++++++++++-
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  62 ++++++
+ packages/agentplane/src/commands/shared/pr-meta.ts |  54 +++++
+ packages/core/schemas/pr-meta.schema.json          |   2 +-
+ packages/core/src/tasks/task-artifact-schema.ts    |   4 +-
+ packages/spec/schemas/pr-meta.schema.json          |   2 +-
+ 7 files changed, 494 insertions(+), 7 deletions(-)

@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as git from "./git.js";
 import {
+  buildObservedGithubPrMeta,
   buildIntegratedPrMeta,
   buildVerifiedPrMeta,
   parsePrMeta,
@@ -145,5 +146,66 @@ describe("pr-meta shell invocations", () => {
         verify: { status: "pass" },
       }),
     );
+  });
+
+  it("hydrates observed remote PR identity without disturbing stable timestamps", () => {
+    expect(
+      buildObservedGithubPrMeta({
+        meta: {
+          schema_version: 1,
+          task_id: "202601010101-ABCDE",
+          branch: "task/202601010101-ABCDE/example",
+          created_at: "2026-01-27T00:00:00Z",
+          updated_at: "2026-01-27T00:00:00Z",
+          head_sha: "deadbeef",
+          verify: { status: "skipped" },
+        },
+        observed: {
+          prNumber: 321,
+          prUrl: "https://github.com/example/repo/pull/321",
+          status: "OPEN",
+          base: "main",
+          headSha: "deadbeef",
+        },
+        at: "2026-01-28T00:00:00Z",
+      }),
+    ).toEqual(
+      expect.objectContaining({
+        pr_number: 321,
+        pr_url: "https://github.com/example/repo/pull/321",
+        status: "OPEN",
+        base: "main",
+        head_sha: "deadbeef",
+        updated_at: "2026-01-28T00:00:00Z",
+      }),
+    );
+  });
+
+  it("keeps updated_at byte-stable when observed remote PR identity is unchanged", () => {
+    expect(
+      buildObservedGithubPrMeta({
+        meta: {
+          schema_version: 1,
+          task_id: "202601010101-ABCDE",
+          branch: "task/202601010101-ABCDE/example",
+          created_at: "2026-01-27T00:00:00Z",
+          updated_at: "2026-01-27T00:00:00Z",
+          pr_number: 321,
+          pr_url: "https://github.com/example/repo/pull/321",
+          status: "OPEN",
+          base: "main",
+          head_sha: "deadbeef",
+          verify: { status: "skipped" },
+        },
+        observed: {
+          prNumber: 321,
+          prUrl: "https://github.com/example/repo/pull/321",
+          status: "OPEN",
+          base: "main",
+          headSha: "deadbeef",
+        },
+        at: "2026-01-28T00:00:00Z",
+      }).updated_at,
+    ).toBe("2026-01-27T00:00:00Z");
   });
 });

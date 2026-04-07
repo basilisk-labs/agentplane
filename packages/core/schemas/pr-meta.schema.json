@@ -40,7 +40,7 @@
     },
     "status": {
       "type": "string",
-      "enum": ["MERGED"]
+      "enum": ["OPEN", "CLOSED", "MERGED"]
     },
     "merge_strategy": {
       "type": "string",
