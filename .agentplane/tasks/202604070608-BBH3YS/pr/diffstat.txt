@@ -1,10 +1,10 @@
  .agentplane/tasks/202604070608-BBH3YS/README.md    | 125 +++++++++++++
- .../tasks/202604070608-BBH3YS/pr/diffstat.txt      |   0
- .../tasks/202604070608-BBH3YS/pr/github-body.md    |  50 +++++
+ .../tasks/202604070608-BBH3YS/pr/diffstat.txt      |  18 ++
+ .../tasks/202604070608-BBH3YS/pr/github-body.md    |  67 +++++++
  .../tasks/202604070608-BBH3YS/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604070608-BBH3YS/pr/meta.json |  14 ++
  .../tasks/202604070608-BBH3YS/pr/notes.jsonl       |   0
- .agentplane/tasks/202604070608-BBH3YS/pr/review.md |  57 ++++++
+ .agentplane/tasks/202604070608-BBH3YS/pr/review.md |  74 ++++++++
  .../tasks/202604070608-BBH3YS/pr/verify.log        |   0
  docs/user/cli-reference.generated.mdx              |  44 +++++
  packages/agentplane/src/cli/bootstrap-guide.ts     |   1 +
@@ -15,4 +15,4 @@
  .../src/commands/task/findings.command.ts          |  27 +++
  packages/agentplane/src/commands/task/findings.ts  | 183 ++++++++++++++++++
  .../src/commands/task/findings.unit.test.ts        |  35 ++++
- 17 files changed, 915 insertions(+), 1 deletion(-)
+ 17 files changed, 967 insertions(+), 1 deletion(-)

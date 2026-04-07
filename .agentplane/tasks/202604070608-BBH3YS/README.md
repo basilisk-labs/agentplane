@@ -1,10 +1,11 @@
 ---
 id: "202604070608-BBH3YS"
 title: "Add first-class command to append structured Findings incident candidates"
-status: "DOING"
+result_summary: "integrate: squash task/202604070608-BBH3YS/findings-append-command"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T06:28:45.125Z"
   updated_by: "CODER"
   note: "Focused findings command tests and eslint passed; task findings add now appends structured incident-ready blocks and incidents collect reads them directly."
-commit: null
+commit:
+  hash: "3b78be75fe42c268bcd405a41eb42060d75e2a3a"
+  message: "📝 BBH3YS task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: add a first-class task command for appending structured Findings incident candidates without manual full-doc editing."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070608-BBH3YS/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused findings command tests and eslint passed; task findings add now appends structured incident-ready blocks and incidents collect reads them directly."
+  -
+    type: "status"
+    at: "2026-04-07T07:36:29.993Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604070608-BBH3YS/pr."
 doc_version: 3
-doc_updated_at: "2026-04-07T06:28:45.136Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T07:36:30.002Z"
+doc_updated_by: "INTEGRATOR"
 description: "Provide an ergonomic task CLI path to append structured Findings blocks, including external incident metadata, so incident promotion does not depend on manual full-doc editing."
 sections:
   Summary: |-
