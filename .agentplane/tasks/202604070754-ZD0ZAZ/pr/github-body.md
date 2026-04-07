@@ -39,9 +39,9 @@ Make structured findings created during normal CLI/task workflows promote into i
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-07T07:58:45.096Z
+- Updated: 2026-04-07T08:08:32.104Z
 - Branch: task/202604070754-ZD0ZAZ/incidents-autopromote
-- Head: bec7459768f6
+- Head: b0f177c76828
 
 ```text
 No changes detected.
