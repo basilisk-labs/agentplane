@@ -1,0 +1,10 @@
+ .agentplane/tasks/202604070443-T8F4ZZ/README.md    | 140 +++++++++++++++++++++
+ lefthook.yml                                       |   2 +-
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  28 +++++
+ .../src/cli/pre-commit-test-fast-script.test.ts    | 104 +++++++++++++++
+ scripts/lib/local-ci-selection.mjs                 |   8 +-
+ scripts/lib/staged-git-files.mjs                   |  12 ++
+ scripts/run-commit-msg-hook.mjs                    |  15 +--
+ scripts/run-pre-commit-hook.mjs                    |  14 +--
+ scripts/run-pre-commit-test-fast.mjs               |  31 +++++
+ 9 files changed, 328 insertions(+), 26 deletions(-)

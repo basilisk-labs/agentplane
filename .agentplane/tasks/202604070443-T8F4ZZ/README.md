@@ -4,7 +4,7 @@ title: "Skip broad pre-commit test-fast for artifact-only and docs-only staged c
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-07T05:08:19.072Z"
+  updated_at: "2026-04-07T05:11:56.662Z"
   updated_by: "CODER"
-  note: "Focused vitest passed for local-ci-selection and pre-commit-test-fast-script; eslint passed for the new pre-commit test-fast script, selector updates, and tests."
+  note: "Focused vitest and eslint passed; pre-commit checks and narrowed test-fast gate passed on final HEAD 3977423a."
 commit: null
 comments:
   -
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused vitest passed for local-ci-selection and pre-commit-test-fast-script; eslint passed for the new pre-commit test-fast script, selector updates, and tests."
+  -
+    type: "verify"
+    at: "2026-04-07T05:11:56.662Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused vitest and eslint passed; pre-commit checks and narrowed test-fast gate passed on final HEAD 3977423a."
 doc_version: 3
-doc_updated_at: "2026-04-07T05:08:19.083Z"
+doc_updated_at: "2026-04-07T05:11:56.671Z"
 doc_updated_by: "CODER"
 description: "Avoid running the full pre-commit test-fast suite for commits that only touch task artifacts or docs/policy paths, so unrelated worker timeouts do not block workflow bookkeeping commits."
 sections:
@@ -82,6 +88,14 @@ sections:
     Note: Focused vitest passed for local-ci-selection and pre-commit-test-fast-script; eslint passed for the new pre-commit test-fast script, selector updates, and tests.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T05:02:55.294Z, excerpt_hash=sha256:e3ebff84249c962b5bf4b6f3d95d665a5b93552550e462f3dc60bf0e9a410f9b
+    
+    ### 2026-04-07T05:11:56.662Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused vitest and eslint passed; pre-commit checks and narrowed test-fast gate passed on final HEAD 3977423a.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T05:08:19.083Z, excerpt_hash=sha256:e3ebff84249c962b5bf4b6f3d95d665a5b93552550e462f3dc60bf0e9a410f9b
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -129,6 +143,14 @@ By: CODER
 Note: Focused vitest passed for local-ci-selection and pre-commit-test-fast-script; eslint passed for the new pre-commit test-fast script, selector updates, and tests.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T05:02:55.294Z, excerpt_hash=sha256:e3ebff84249c962b5bf4b6f3d95d665a5b93552550e462f3dc60bf0e9a410f9b
+
+### 2026-04-07T05:11:56.662Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused vitest and eslint passed; pre-commit checks and narrowed test-fast gate passed on final HEAD 3977423a.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-07T05:08:19.083Z, excerpt_hash=sha256:e3ebff84249c962b5bf4b6f3d95d665a5b93552550e462f3dc60bf0e9a410f9b
 
 <!-- END VERIFICATION RESULTS -->
 
