@@ -1,0 +1,3 @@
+ .../run-cli.core.tasks.normalize-migrate.test.ts   | 213 ++++++++++++++++++++-
+ packages/agentplane/src/commands/task/normalize.ts |  39 +++-
+ 2 files changed, 245 insertions(+), 7 deletions(-)
