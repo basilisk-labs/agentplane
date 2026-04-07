@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604072207-NEV4T7/existing-pr-hydration",
   "created_at": "2026-04-07T22:32:31.995Z",
-  "head_sha": "c455c465b28eebeca6ca282faf7db56c11641d71",
+  "head_sha": "c7213de322ab952d4a7793d3d5e8d8802ffea67e",
   "last_verified_at": "2026-04-07T22:43:03.167Z",
   "last_verified_sha": "c455c465b28eebeca6ca282faf7db56c11641d71",
+  "merge_commit": "5e8625ea5d41273744f9d98b57eaa658fde5fb40",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T22:50:24Z",
   "pr_number": 139,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/139",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604072207-NEV4T7",
-  "updated_at": "2026-04-07T22:38:46.802Z",
+  "updated_at": "2026-04-07T22:50:24Z",
   "verify": {
     "status": "pass"
   }

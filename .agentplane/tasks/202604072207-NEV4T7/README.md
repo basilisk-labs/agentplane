@@ -1,10 +1,11 @@
 ---
 id: "202604072207-NEV4T7"
 title: "Hydrate existing GitHub PR state during pr open and pr update"
-status: "TODO"
+result_summary: "Merged via PR #139."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,8 +24,13 @@ verification:
   updated_at: "2026-04-07T22:43:03.167Z"
   updated_by: "CODER"
   note: "Command: targeted vitest + eslint + live gh pr create/pr open/pr update; Result: pass; Evidence: 51 targeted tests passed, eslint clean, PR #139 hydrated into pr/meta.json with status=OPEN; Scope: existing GitHub PR discovery and pr artifact hydration."
-commit: null
-comments: []
+commit:
+  hash: "5e8625ea5d41273744f9d98b57eaa658fde5fb40"
+  message: "github/workflow: Hydrate existing GitHub PR state during pr open and pr update (NEV4T7) (#139)"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #139 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "verify"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: targeted vitest + eslint + live gh pr create/pr open/pr update; Result: pass; Evidence: 51 targeted tests passed, eslint clean, PR #139 hydrated into pr/meta.json with status=OPEN; Scope: existing GitHub PR discovery and pr artifact hydration."
+  -
+    type: "status"
+    at: "2026-04-07T22:50:54.627Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #139 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-07T22:43:03.172Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T22:50:54.632Z"
+doc_updated_by: "INTEGRATOR"
 description: "When a branch already has a GitHub PR, agentplane pr open/update should discover that PR by branch, record its number/url/state in pr/meta.json, and stop reporting local-only sync."
 sections:
   Summary: |-
