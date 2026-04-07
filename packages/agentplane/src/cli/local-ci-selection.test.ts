@@ -44,7 +44,10 @@ const { parseChangedFilesEnv, selectFastCiPlan, shouldRunCliDocsCheck } =
 const { hasReleaseTagPush, parsePrePushStdin, selectBranchDiffRange } = prePushScopeModule as {
   hasReleaseTagPush: (updates: PrePushUpdate[]) => boolean;
   parsePrePushStdin: (rawStdin: unknown) => PrePushUpdate[];
-  selectBranchDiffRange: (updates: PrePushUpdate[]) => { from: string; to: string } | null;
+  selectBranchDiffRange: (
+    updates: PrePushUpdate[],
+    opts?: { newBranchFallbackRef?: string | null },
+  ) => { from: string; to: string } | null;
 };
 
 describe("local CI fast selection", () => {
@@ -364,5 +367,15 @@ describe("pre-push scope selection", () => {
       "refs/heads/feature abc refs/heads/feature 0000000000000000000000000000000000000000\n",
     );
     expect(selectBranchDiffRange(updates)).toBeNull();
+  });
+
+  it("selects a diff range for new branch pushes when a default base ref is available", () => {
+    const updates = parsePrePushStdin(
+      "refs/heads/feature abc refs/heads/feature 0000000000000000000000000000000000000000\n",
+    );
+    expect(selectBranchDiffRange(updates, { newBranchFallbackRef: "origin/main" })).toEqual({
+      from: "origin/main",
+      to: "abc",
+    });
   });
 });

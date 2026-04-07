@@ -5,6 +5,7 @@ import {
   hasReleaseTagPush,
   parsePrePushStdin,
   readChangedFilesForRange,
+  resolveDefaultBaseRef,
   selectBranchDiffRange,
 } from "./lib/pre-push-scope.mjs";
 
@@ -58,7 +59,11 @@ function main() {
   const mode = isReleasePush ? "release" : "standard";
   process.stdout.write(`Running pre-push checks in ${mode} mode.\n`);
   const ciScript = envFull ? "ci:local:full" : "ci:local:fast";
-  const changedFiles = readChangedFilesForRange(selectBranchDiffRange(updates));
+  const changedFiles = readChangedFilesForRange(
+    selectBranchDiffRange(updates, {
+      newBranchFallbackRef: resolveDefaultBaseRef(),
+    }),
+  );
   const ciEnv =
     changedFiles.length > 0
       ? { ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") }

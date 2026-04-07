@@ -553,6 +553,105 @@ describe("runCli", () => {
     expect(await readFile(trackedFile, "utf8")).toBe("export const example = 2;\n");
   });
 
+  it("pre-push hook derives task-only scope for a new branch publish from origin/main", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await writeDefaultConfig(root);
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "hook-test",
+          private: true,
+          scripts: {
+            "format:check": "node scripts/format-check.mjs",
+            "ci:local:fast": "node scripts/ci-fast.mjs",
+            "ci:local:full": "node scripts/ci-fast.mjs",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(path.join(root, "scripts", "format-check.mjs"), "process.exit(0);\n", "utf8");
+    await writeFile(
+      path.join(root, "scripts", "ci-fast.mjs"),
+      [
+        'import { writeFileSync } from "node:fs";',
+        'writeFileSync("changed-files.txt", process.env.AGENTPLANE_FAST_CHANGED_FILES ?? "", "utf8");',
+        "process.exit(0);",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "package.json", "scripts", ".agentplane/config.json"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["commit", "-m", "seed hook scripts"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    const remote = await mkdtemp(path.join(os.tmpdir(), "agentplane-hook-remote-"));
+    await execFileAsync("git", ["init", "--bare", remote], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["remote", "add", "origin", remote], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["push", "-u", "origin", "main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync(
+      "git",
+      ["symbolic-ref", "refs/remotes/origin/HEAD", "refs/remotes/origin/main"],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+
+    await execFileAsync(
+      "git",
+      ["checkout", "-b", "task/202604071841-HWNRXM/pre-push-new-branch-scope"],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    const taskReadme = path.join(root, ".agentplane", "tasks", "202604071841-HWNRXM", "README.md");
+    await mkdir(path.dirname(taskReadme), { recursive: true });
+    await writeFile(taskReadme, "# task\n", "utf8");
+    await execFileAsync("git", ["add", taskReadme], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["commit", "-m", "task: add task artifact"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const { stdout: shaOut } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const headSha = shaOut.trim();
+
+    execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
+      cwd: root,
+      stdio: "pipe",
+      input: `refs/heads/task/202604071841-HWNRXM/pre-push-new-branch-scope ${headSha} refs/heads/task/202604071841-HWNRXM/pre-push-new-branch-scope 0000000000000000000000000000000000000000\n`,
+    });
+
+    const changedFiles = await readFile(path.join(root, "changed-files.txt"), "utf8");
+    expect(changedFiles.trim()).toBe(".agentplane/tasks/202604071841-HWNRXM/README.md");
+  });
+
   it("hooks run pre-commit allows tasks.json with env override", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
