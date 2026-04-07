@@ -1,10 +1,11 @@
 ---
 id: "202604070912-WV9YHM"
 title: "Sync incident template assets when incidents registry mutates"
-status: "DOING"
+result_summary: "Merged via PR #125."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T17:32:51.322Z"
   updated_by: "CODER"
   note: "Stabilized the wait-remote-pr-checks gh mock under parallel polling; targeted and fast test suites pass after commit f9a5267b."
-commit: null
+commit:
+  hash: "1acca0925aa367f453879959e697d42340961a68"
+  message: "policy/workflow: Sync incident template assets when incidents registry mutates (WV9YHM) (#125)"
 comments:
   -
     author: "CODER"
     body: "Start: add a shared incident-registry writer, route promotion through it, and cover framework-checkout sync so incidents.md mutations stop leaving canonical policy assets stale."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: GitHub PR #125 was merged to main, the squash commit is present on the base branch, and this reconcile wave is closing the stale branch_pr task state."
 events:
   -
     type: "status"
@@ -54,9 +60,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Stabilized the wait-remote-pr-checks gh mock under parallel polling; targeted and fast test suites pass after commit f9a5267b."
+  -
+    type: "status"
+    at: "2026-04-07T17:59:25.230Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: GitHub PR #125 was merged to main, the squash commit is present on the base branch, and this reconcile wave is closing the stale branch_pr task state."
 doc_version: 3
-doc_updated_at: "2026-04-07T17:32:51.338Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T17:59:25.231Z"
+doc_updated_by: "INTEGRATOR"
 description: "When integrate or hosted-close promotes incidents into .agentplane/policy/incidents.md, the canonical asset copy under packages/agentplane/assets/policy remains stale and later agents:check fails. Make incident mutation paths keep both files in sync or make the canonical source update deterministic."
 sections:
   Summary: |-
