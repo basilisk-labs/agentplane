@@ -1,10 +1,11 @@
 ---
 id: "202604062308-KMTE4J"
 title: "Explain incident promotion no-op when findings are not promotable"
-status: "DOING"
+result_summary: "integrate: squash task/202604062308-KMTE4J/incident-promotion-diagnostics"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T04:34:44.362Z"
   updated_by: "CODER"
   note: "Published PR #109 for the incident no-op diagnostics change; focused vitest and eslint still cover the final head after PR artifact refresh."
-commit: null
+commit:
+  hash: "e4bf80c3b8534f05bf3575bce08f1b5aa441b156"
+  message: "📝 KMTE4J task: refresh published PR head artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: inspect the no-promotable incident path, distinguish plain Findings text from absent structured incident blocks, and add focused diagnostics plus tests for incidents collect and lifecycle output."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604062308-KMTE4J/pr."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Published PR #109 for the incident no-op diagnostics change; focused vitest and eslint still cover the final head after PR artifact refresh."
+  -
+    type: "status"
+    at: "2026-04-07T04:39:37.482Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604062308-KMTE4J/pr."
 doc_version: 3
-doc_updated_at: "2026-04-07T04:34:44.367Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T04:39:37.485Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make lifecycle and incidents commands explain why incidents.md stays unchanged when Findings contain no promotable external incident candidates, so operators can distinguish no-op, bad markers, and real write failures."
 sections:
   Summary: |-

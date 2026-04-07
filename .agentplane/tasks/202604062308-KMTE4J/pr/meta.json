@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604062308-KMTE4J/incident-promotion-diagnostics",
   "created_at": "2026-04-07T00:36:58.078Z",
-  "head_sha": "c25ca558bbfe605e0a9fcf75a8e7921918c25a21",
+  "head_sha": "e2dac05eca54d3607c0131ce45915bae3f936161",
   "last_verified_at": "2026-04-07T04:34:44.362Z",
   "last_verified_sha": "c25ca558bbfe605e0a9fcf75a8e7921918c25a21",
+  "merge_commit": "e4bf80c3b8534f05bf3575bce08f1b5aa441b156",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-07T04:39:37.457Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604062308-KMTE4J",
-  "updated_at": "2026-04-07T04:34:28.510Z",
+  "updated_at": "2026-04-07T04:39:37.457Z",
   "verify": {
     "status": "pass"
   }
