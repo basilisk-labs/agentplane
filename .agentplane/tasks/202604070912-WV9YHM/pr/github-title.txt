@@ -1,0 +1,1 @@
+policy/workflow: Sync incident template assets when incidents registry mutates (WV9YHM)

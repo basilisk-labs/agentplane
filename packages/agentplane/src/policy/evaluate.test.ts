@@ -59,6 +59,16 @@ describe("policy/evaluatePolicy", () => {
     expect(res.errors.map((e) => e.message).join("\n")).toContain("protected");
   });
 
+  it("allows canonical policy assets when --allow-policy is set", () => {
+    const res = evaluatePolicy(
+      makeCtx({
+        git: { stagedPaths: ["packages/agentplane/assets/policy/incidents.md"] },
+        allow: { prefixes: [], allowPolicy: true },
+      }),
+    );
+    expect(res.ok).toBe(true);
+  });
+
   it("renders hook-style protected path messages for pre-commit", () => {
     const res = evaluatePolicy(
       makeCtx({

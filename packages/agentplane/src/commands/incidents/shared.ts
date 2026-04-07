@@ -24,6 +24,7 @@ import {
 import type { CommandContext } from "../shared/task-backend.js";
 
 export const INCIDENTS_POLICY_PATH = ".agentplane/policy/incidents.md";
+export const INCIDENTS_POLICY_ASSET_PATH = "packages/agentplane/assets/policy/incidents.md";
 
 export type LoadedTaskIncidents = {
   task: TaskData;
@@ -44,6 +45,22 @@ async function readTextIfExists(filePath: string): Promise<string | null> {
 
 export function incidentRegistryPath(ctx: CommandContext): string {
   return path.join(ctx.resolvedProject.gitRoot, INCIDENTS_POLICY_PATH);
+}
+
+export function incidentRegistryAssetPath(ctx: CommandContext): string {
+  return path.join(ctx.resolvedProject.gitRoot, INCIDENTS_POLICY_ASSET_PATH);
+}
+
+async function writeIncidentRegistryMirrors(
+  ctx: CommandContext,
+  content: string,
+): Promise<boolean> {
+  const registryPath = incidentRegistryPath(ctx);
+  const assetPath = incidentRegistryAssetPath(ctx);
+  const assetExists = (await readTextIfExists(assetPath)) !== null;
+  const wroteRegistry = await writeTextIfChanged(registryPath, content);
+  const wroteAsset = assetExists ? await writeTextIfChanged(assetPath, content) : false;
+  return wroteRegistry || wroteAsset;
 }
 
 export async function loadIncidentRegistry(ctx: CommandContext): Promise<{
@@ -148,7 +165,7 @@ export async function collectTaskIncidents(opts: {
   );
   const wrote =
     opts.write && plan.promotable.length > 0
-      ? await writeTextIfChanged(registryPath, nextText)
+      ? await writeIncidentRegistryMirrors(opts.ctx, nextText)
       : false;
   return { loaded, registryPath, registryText, registry, plan, wrote };
 }
