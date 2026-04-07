@@ -21,7 +21,11 @@ const execFileAsync = promisify(execFile);
 
 installRunCliIntegrationHarness();
 
-async function installFakeGh(opts: { scenarioName: string; branchRepo?: string | null }) {
+async function installFakeGh(opts: {
+  scenarioName: string;
+  branchRepo?: string | null;
+  captureEnv?: boolean;
+}) {
   const fakeBin = path.join(
     os.tmpdir(),
     `agentplane-gh-pr-close-${Date.now()}-${opts.scenarioName}`,
@@ -37,6 +41,10 @@ async function installFakeGh(opts: { scenarioName: string; branchRepo?: string |
       "const args = process.argv.slice(2);",
       "const logPath = process.env.AGENTPLANE_GH_LOG;",
       "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
+      "const envLogPath = process.env.AGENTPLANE_GH_ENV_LOG;",
+      opts.captureEnv
+        ? "if (envLogPath) fs.appendFileSync(envLogPath, `${JSON.stringify({ GH_TOKEN: process.env.GH_TOKEN ?? null, HOME: process.env.HOME ?? null, GIT_DIR: process.env.GIT_DIR ?? null, GIT_WORK_TREE: process.env.GIT_WORK_TREE ?? null })}\\n`);"
+        : "",
       'const endpoint = args[1] ?? "";',
       'const methodIndex = args.indexOf("-X");',
       'const method = methodIndex >= 0 ? args[methodIndex + 1] : "GET";',
@@ -60,7 +68,11 @@ async function installFakeGh(opts: { scenarioName: string; branchRepo?: string |
     await writeFile(ghPath, '#!/bin/sh\nnode "$(dirname "$0")/fake-gh.mjs" "$@"\n', "utf8");
     await chmod(ghPath, 0o755);
   }
-  return { fakeBin, logPath: path.join(fakeBin, "gh.log") };
+  return {
+    fakeBin,
+    logPath: path.join(fakeBin, "gh.log"),
+    envLogPath: path.join(fakeBin, "gh-env.log"),
+  };
 }
 
 describe("runCli pr close", () => {
@@ -173,5 +185,64 @@ describe("runCli pr close", () => {
       "-X",
       "DELETE",
     ]);
+  });
+
+  it("passes auth env through to gh while stripping git worktree overrides", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    await writeConfig(root, config);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const { fakeBin, envLogPath } = await installFakeGh({
+      scenarioName: "env-sanitized",
+      captureEnv: true,
+    });
+    const originalPath = process.env.PATH;
+    const originalGhToken = process.env.GH_TOKEN;
+    const originalGitDir = process.env.GIT_DIR;
+    const originalGitWorkTree = process.env.GIT_WORK_TREE;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.GH_TOKEN = "token-from-parent-env";
+    process.env.GIT_DIR = "/tmp/should-not-leak.git";
+    process.env.GIT_WORK_TREE = "/tmp/should-not-leak-tree";
+    process.env.AGENTPLANE_GH_ENV_LOG = envLogPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "close", "321", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      if (originalGhToken === undefined) delete process.env.GH_TOKEN;
+      else process.env.GH_TOKEN = originalGhToken;
+      if (originalGitDir === undefined) delete process.env.GIT_DIR;
+      else process.env.GIT_DIR = originalGitDir;
+      if (originalGitWorkTree === undefined) delete process.env.GIT_WORK_TREE;
+      else process.env.GIT_WORK_TREE = originalGitWorkTree;
+      delete process.env.AGENTPLANE_GH_ENV_LOG;
+    }
+
+    const rawEnvLog = await readFile(envLogPath, "utf8");
+    const envLog = rawEnvLog
+      .trim()
+      .split("\n")
+      .map(
+        (line) =>
+          JSON.parse(line) as {
+            GH_TOKEN: string | null;
+            HOME: string | null;
+            GIT_DIR: string | null;
+            GIT_WORK_TREE: string | null;
+          },
+      );
+    expect(envLog.length).toBeGreaterThan(0);
+    expect(envLog[0]?.GH_TOKEN).toBe("token-from-parent-env");
+    expect(envLog[0]?.HOME).toBeTruthy();
+    expect(envLog[0]?.GIT_DIR).toBeNull();
+    expect(envLog[0]?.GIT_WORK_TREE).toBeNull();
   });
 });
