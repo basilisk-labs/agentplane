@@ -1,10 +1,11 @@
 ---
 id: "202604070755-FXWXDS"
 title: "Reduce stale-build false positives after protected-main sync"
-status: "DOING"
+result_summary: "Merged via PR #126."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-07T16:51:21.539Z"
   updated_by: "CODER"
   note: "Targeted stale-dist tests passed; allowlisted task-artifact commands now warn-and-run while finish/work-start remain strict."
-commit: null
+commit:
+  hash: "d42edbee94dc3ab11b2c9ae58704aa0e246b77ee"
+  message: "🧩 FXWXDS code: allow stale-dist task-artifact commands (#126)"
 comments:
   -
     author: "CODER"
     body: "Start: implement safe stale-dist allowlist for task-artifact lifecycle commands after protected-main sync."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: GitHub PR #126 was merged to main, the squash commit is present on the base branch, and this reconcile wave is closing the stale branch_pr task state."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted stale-dist tests passed; allowlisted task-artifact commands now warn-and-run while finish/work-start remain strict."
+  -
+    type: "status"
+    at: "2026-04-07T17:58:40.153Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: GitHub PR #126 was merged to main, the squash commit is present on the base branch, and this reconcile wave is closing the stale branch_pr task state."
 doc_version: 3
-doc_updated_at: "2026-04-07T16:51:21.548Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-07T17:58:40.154Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stop repo-local stale-build guards from forcing repeated framework bootstrap after merge and pull paths when the effective source/runtime state is already current."
 sections:
   Summary: |-
