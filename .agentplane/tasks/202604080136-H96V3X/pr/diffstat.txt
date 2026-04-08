@@ -1,0 +1,12 @@
+ .agentplane/tasks/202604080136-H96V3X/README.md    | 113 +++++++++++++++++++++
+ .../tasks/202604080136-H96V3X/pr/diffstat.txt      |  12 +++
+ .../tasks/202604080136-H96V3X/pr/github-body.md    |  61 +++++++++++
+ .../tasks/202604080136-H96V3X/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604080136-H96V3X/pr/meta.json |  17 ++++
+ .../tasks/202604080136-H96V3X/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604080136-H96V3X/pr/review.md |  68 +++++++++++++
+ .../tasks/202604080136-H96V3X/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts |  93 ++++++++++++++++-
+ .../commands/pr/integrate/internal/merge.test.ts   |  36 +++++++
+ .../src/commands/pr/integrate/internal/merge.ts    |  34 ++++++-
+ 11 files changed, 433 insertions(+), 2 deletions(-)

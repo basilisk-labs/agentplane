@@ -1,0 +1,1 @@
+git/workflow: Make integrate metadata deterministic when task branch ends with arti... (H96V3X)

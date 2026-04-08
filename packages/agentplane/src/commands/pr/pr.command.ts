@@ -38,7 +38,12 @@ export const prSpec: CommandSpec<PrGroupParsed> = {
   parse: (raw) => parseGroupCommand(raw),
 };
 
-export type PrOpenParsed = { taskId: string; author: string; branch: string | null };
+export type PrOpenParsed = {
+  taskId: string;
+  author: string;
+  branch: string | null;
+  syncOnly: boolean;
+};
 
 export const prOpenSpec: CommandSpec<PrOpenParsed> = {
   id: ["pr", "open"],
@@ -59,6 +64,12 @@ export const prOpenSpec: CommandSpec<PrOpenParsed> = {
       valueHint: "<name>",
       description: "Branch name (default: current branch).",
     },
+    {
+      kind: "boolean",
+      name: "sync-only",
+      default: false,
+      description: "Only write local PR artifacts; do not create a remote GitHub PR.",
+    },
   ],
   examples: [{ cmd: "agentplane pr open 202602030608-F1Q8AB --author CODER", why: "Open." }],
   validateRaw: (raw) => {
@@ -71,6 +82,7 @@ export const prOpenSpec: CommandSpec<PrOpenParsed> = {
     taskId: String(raw.args["task-id"]),
     author: String(raw.opts.author),
     branch: typeof raw.opts.branch === "string" ? raw.opts.branch : null,
+    syncOnly: Boolean(raw.opts["sync-only"]),
   }),
 };
 
@@ -224,6 +236,7 @@ export function makeRunPrOpenHandler(getCtx: (cmd: string) => Promise<CommandCon
       taskId: p.taskId,
       author: p.author,
       branch: p.branch ?? undefined,
+      syncOnly: p.syncOnly,
     });
   };
 }

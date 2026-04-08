@@ -1,0 +1,14 @@
+ .agentplane/tasks/202604080136-NWTPFP/README.md    | 118 ++++++++++
+ .../tasks/202604080136-NWTPFP/pr/diffstat.txt      |   0
+ .../tasks/202604080136-NWTPFP/pr/github-body.md    |  50 ++++
+ .../tasks/202604080136-NWTPFP/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604080136-NWTPFP/pr/meta.json |  17 ++
+ .../tasks/202604080136-NWTPFP/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604080136-NWTPFP/pr/review.md |  57 +++++
+ .../tasks/202604080136-NWTPFP/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |   1 +
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 261 ++++++++++++++++++++-
+ .../agentplane/src/commands/pr/internal/sync.ts    | 182 +++++++++++++-
+ packages/agentplane/src/commands/pr/open.ts        |  20 +-
+ packages/agentplane/src/commands/pr/pr.command.ts  |  15 +-
+ 13 files changed, 710 insertions(+), 12 deletions(-)

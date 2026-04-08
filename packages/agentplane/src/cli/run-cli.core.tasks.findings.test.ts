@@ -72,6 +72,9 @@ describe("runCli task findings", () => {
       expect(code).toBe(0);
       expect(io.stdout).toContain(path.join(root, ".agentplane", "tasks", taskId, "README.md"));
       expect(io.stderr).toContain("task findings add outcome=entry-appended section=Findings");
+      expect(io.stderr).toContain(
+        `incident candidate recorded for ${taskId}; incidents.md updates later during finish or`,
+      );
     } finally {
       io.restore();
     }
@@ -262,6 +265,9 @@ describe("runCli task findings", () => {
           root,
         ]);
         expect(code).toBe(0);
+        expect(io.stderr).toContain(
+          `task-local finding recorded for ${taskId}; incidents.md unchanged`,
+        );
       } finally {
         io.restore();
       }

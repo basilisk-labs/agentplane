@@ -1,0 +1,20 @@
+{
+  "base": "main",
+  "branch": "task/202604080136-H96V3X/integrate-metadata-clarity",
+  "created_at": "2026-04-08T04:28:47.709Z",
+  "head_sha": "3a7a2d5affda2caf8680c78bc92e092a9752e84b",
+  "last_verified_at": "2026-04-08T04:28:47.656Z",
+  "last_verified_sha": "7de5c2956604fb3c8921e02c71ddd5aadc806980",
+  "merge_commit": "2a41eb92b435aa941022275e134fb12f5cc78ed6",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-08T17:58:33.029Z",
+  "pr_number": 151,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/151",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604080136-H96V3X",
+  "updated_at": "2026-04-08T17:58:33.029Z",
+  "verify": {
+    "status": "pass"
+  }
+}

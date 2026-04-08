@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604080135-YP0R5D/README.md    | 167 +++++++++++++++++++++
+ .../tasks/202604080135-YP0R5D/pr/diffstat.txt      |  11 ++
+ .../tasks/202604080135-YP0R5D/pr/github-body.md    |  73 +++++++++
+ .../tasks/202604080135-YP0R5D/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604080135-YP0R5D/pr/meta.json |  17 +++
+ .../tasks/202604080135-YP0R5D/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604080135-YP0R5D/pr/review.md |  80 ++++++++++
+ .../tasks/202604080135-YP0R5D/pr/verify.log        |   0
+ .../src/cli/run-cli.core.tasks.findings.test.ts    |   6 +
+ packages/agentplane/src/commands/task/findings.ts  |  23 +++
+ 10 files changed, 378 insertions(+)

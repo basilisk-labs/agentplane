@@ -72,6 +72,35 @@ describe("run-pre-commit-hook.mjs", () => {
     }
   });
 
+  it("fails fast for policy mirror edits before running expensive checks", async () => {
+    const root = await setupTempGitRepo({ stageSource: false });
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "workflow.branch_pr.md"),
+      "# stale mirror change\n",
+      "utf8",
+    );
+    await execFileAsync("git", ["add", ".agentplane/policy/workflow.branch_pr.md"], { cwd: root });
+
+    try {
+      await execFileAsync(process.execPath, [hookScriptPath], {
+        cwd: root,
+        encoding: "utf8",
+      });
+      throw new Error("expected hook script to fail");
+    } catch (error) {
+      const err = error as { stdout?: string; stderr?: string };
+      expect(err.stderr ?? "").toContain(
+        "policy mirror edits must be made through canonical assets first.",
+      );
+      expect(err.stderr ?? "").toContain("packages/agentplane/assets/policy/");
+      expect(err.stderr ?? "").toContain(".agentplane/policy/workflow.branch_pr.md");
+      expect(err.stderr ?? "").toContain("bun run agents:sync");
+      expect(err.stderr ?? "").not.toContain("pre-commit hook dependencies are missing");
+      expect(err.stdout ?? "").toBe("");
+    }
+  });
+
   it("stops before test-fast when prettier fails", async () => {
     const root = await setupTempGitRepo();
     await writeExecutable(root, "prettier", "#!/bin/sh\necho PRETTIER_FAIL >&2\nexit 1\n");

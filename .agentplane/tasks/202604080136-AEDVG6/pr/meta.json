@@ -1,0 +1,20 @@
+{
+  "base": "main",
+  "branch": "task/202604080136-AEDVG6/policy-canonical-guard",
+  "created_at": "2026-04-08T17:43:15.263Z",
+  "head_sha": "912589e3fd4d49c20544536092e10bb8346c3589",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "6524ce06d4178386a0f478a42ad59190adcdb8ec",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-08T17:57:55.903Z",
+  "pr_number": 150,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/150",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604080136-AEDVG6",
+  "updated_at": "2026-04-08T17:57:55.903Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

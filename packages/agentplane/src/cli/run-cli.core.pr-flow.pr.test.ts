@@ -114,6 +114,57 @@ async function installFakeGhPrLookup(opts: {
   return { fakeBin, logPath: path.join(fakeBin, "gh.log") };
 }
 
+async function installFakeGhPrApi(opts: {
+  scenarioName: string;
+  branch: string;
+  existingResponse?: object[];
+  createResponse: object;
+}) {
+  const fakeBin = path.join(os.tmpdir(), `agentplane-gh-pr-api-${Date.now()}-${opts.scenarioName}`);
+  await mkdir(fakeBin, { recursive: true });
+  const scriptPath = path.join(fakeBin, "fake-gh.mjs");
+  const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
+  await writeFile(
+    scriptPath,
+    [
+      'import fs from "node:fs";',
+      "const args = process.argv.slice(2);",
+      "const logPath = process.env.AGENTPLANE_GH_LOG;",
+      "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
+      'if (args[0] !== "api") { console.error("unexpected gh command"); process.exit(90); }',
+      'const endpoint = args[1] ?? "";',
+      'const [route, query = ""] = endpoint.split("?", 2);',
+      "const params = new URLSearchParams(query);",
+      `const expectedHead = ${JSON.stringify(`example:${opts.branch}`)};`,
+      `const existingResponse = ${JSON.stringify(opts.existingResponse ?? [])};`,
+      `const createResponse = ${JSON.stringify(opts.createResponse)};`,
+      'let method = "GET";',
+      "for (let i = 2; i < args.length; i += 1) {",
+      '  if (args[i] === "-X" && typeof args[i + 1] === "string") method = String(args[i + 1]).toUpperCase();',
+      "}",
+      'if (route === "repos/example/repo/pulls" && method === "GET" && params.get("head") === expectedHead) {',
+      "  console.log(JSON.stringify(existingResponse));",
+      "  process.exit(0);",
+      "}",
+      'if (route === "repos/example/repo/pulls" && method === "POST") {',
+      "  console.log(JSON.stringify(createResponse));",
+      "  process.exit(0);",
+      "}",
+      'console.log("[]");',
+      "process.exit(0);",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  if (process.platform === "win32") {
+    await writeFile(ghPath, '@echo off\r\nnode "%~dp0\\fake-gh.mjs" %*\r\n', "utf8");
+  } else {
+    await writeFile(ghPath, '#!/bin/sh\nnode "$(dirname "$0")/fake-gh.mjs" "$@"\n', "utf8");
+    await chmod(ghPath, 0o755);
+  }
+  return { fakeBin, logPath: path.join(fakeBin, "gh.log") };
+}
+
 describe("runCli", () => {
   it("pr open creates PR artifacts", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -161,7 +212,9 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("✅ pr open");
-      expect(io.stdout).toContain("local PR artifacts synced; GitHub PR not created");
+      expect(io.stdout).toContain(
+        "local PR artifacts synced; remote PR creation staged (GitHub origin repo unavailable)",
+      );
     } finally {
       io.restore();
     }
@@ -179,6 +232,212 @@ describe("runCli", () => {
       `(${extractTaskSuffix(taskId)})`,
     );
     expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toContain("## Verification");
+  });
+
+  it("pr open creates a remote GitHub PR when origin and gh are available", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open remote create",
+        "--description",
+        "PR open should create a remote PR when GitHub is available",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/remote-create`;
+    const { fakeBin, logPath } = await installFakeGhPrApi({
+      scenarioName: "open-create",
+      branch,
+      createResponse: {
+        number: 654,
+        html_url: "https://github.com/example/repo/pull/654",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        head: { sha: "remote-head-sha" },
+        base: { ref: "main" },
+      },
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("created GitHub PR #654");
+      expect(io.stdout).toContain("https://github.com/example/repo/pull/654");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as {
+      pr_number?: number;
+      pr_url?: string;
+      status?: string;
+    };
+    expect(meta.pr_number).toBe(654);
+    expect(meta.pr_url).toBe("https://github.com/example/repo/pull/654");
+    expect(meta.status).toBe("OPEN");
+
+    const logText = await readFile(logPath, "utf8");
+    const log = logText
+      .trim()
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => JSON.parse(line) as string[]);
+    expect(
+      log.some(
+        (args) =>
+          args[0] === "api" &&
+          args[1] === "repos/example/repo/pulls" &&
+          args.includes("-X") &&
+          args.includes("POST"),
+      ),
+    ).toBe(true);
+  });
+
+  it("pr open respects --sync-only and skips remote GitHub PR creation", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open sync only",
+        "--description",
+        "PR open should allow local-only artifact sync without remote creation",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/sync-only`;
+    const { fakeBin, logPath } = await installFakeGhPrApi({
+      scenarioName: "open-sync-only",
+      branch,
+      createResponse: {
+        number: 987,
+        html_url: "https://github.com/example/repo/pull/987",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        head: { sha: "remote-head-sha" },
+        base: { ref: "main" },
+      },
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--sync-only",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("remote PR creation skipped (--sync-only)");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as {
+      pr_number?: number;
+    };
+    expect(meta.pr_number).toBeUndefined();
+
+    const logText = await readFile(logPath, "utf8");
+    const log = logText
+      .trim()
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => JSON.parse(line) as string[]);
+    expect(
+      log.some(
+        (args) =>
+          args[0] === "api" &&
+          args[1] === "repos/example/repo/pulls" &&
+          args.includes("-X") &&
+          args.includes("POST"),
+      ),
+    ).toBe(false);
   });
 
   it("task start-ready auto-creates PR artifacts in branch_pr mode", async () => {

@@ -19,6 +19,11 @@ type MovedTaskArtifact = {
 
 const noopPromise = (): Promise<void> => Promise.resolve();
 
+function isTaskArtifactPath(filePath: string): boolean {
+  const normalized = filePath.replaceAll("\\", "/");
+  return normalized.startsWith(".agentplane/tasks/") || normalized.startsWith("tasks/");
+}
+
 function fallbackIntegrateSummary(opts: {
   taskId: string;
   taskTitle: string;
@@ -55,6 +60,24 @@ async function listUntrackedTaskArtifacts(opts: {
     .map((line) => line.trim())
     .filter((line) => line.startsWith("?? "))
     .map((line) => line.slice(3).trim())
+    .filter(Boolean);
+}
+
+async function listCommitChangedPaths(opts: {
+  gitRoot: string;
+  revision: string;
+}): Promise<string[]> {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["show", "--name-only", "--format=", opts.revision],
+    {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    },
+  );
+  return stdout
+    .split("\n")
+    .map((line) => line.trim())
     .filter(Boolean);
 }
 
@@ -196,7 +219,16 @@ export async function runSquashMerge(opts: {
     taskId: opts.taskId,
     genericTokens: opts.genericTokens,
   });
-  if (!subjectPolicy.ok) {
+  let shouldFallback = !subjectPolicy.ok;
+  if (!shouldFallback) {
+    const headPaths = await listCommitChangedPaths({
+      gitRoot: opts.gitRoot,
+      revision: opts.branch,
+    });
+    shouldFallback =
+      headPaths.length > 0 && headPaths.every((filePath) => isTaskArtifactPath(filePath));
+  }
+  if (shouldFallback) {
     const suffix = extractTaskSuffix(opts.taskId);
     subject = `🧩 ${suffix} integrate: ${fallbackIntegrateSummary(opts)}`;
   }
