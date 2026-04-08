@@ -1,0 +1,13 @@
+ .agentplane/tasks/202604080136-0Q524H/README.md    | 167 +++++++++++++++++++++
+ .../tasks/202604080136-0Q524H/pr/diffstat.txt      |   0
+ .../tasks/202604080136-0Q524H/pr/github-body.md    |  63 ++++++++
+ .../tasks/202604080136-0Q524H/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604080136-0Q524H/pr/meta.json |  14 ++
+ .../tasks/202604080136-0Q524H/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604080136-0Q524H/pr/review.md |  70 +++++++++
+ .../tasks/202604080136-0Q524H/pr/verify.log        |   0
+ .../src/cli/bootstrap-doc-build-freshness.test.ts  | 120 +++++++++++++++
+ scripts/check-agent-bootstrap-fresh.mjs            |  12 +-
+ scripts/generate-agent-bootstrap-doc.mjs           |   6 +-
+ scripts/lib/generated-artifacts.mjs                |  37 +++++
+ 12 files changed, 487 insertions(+), 3 deletions(-)

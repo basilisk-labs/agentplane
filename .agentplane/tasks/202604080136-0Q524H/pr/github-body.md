@@ -52,12 +52,24 @@ Scope: real framework-worktree bootstrap and docs freshness path.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-08T04:05:43.755Z
+- Updated: 2026-04-08T05:03:22.241Z
 - Branch: task/202604080136-0Q524H/bootstrap-doc-freshness
-- Head: 7de5c2956604
+- Head: 8b38947c5fda
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604080136-0Q524H/README.md    | 167 +++++++++++++++++++++
+ .../tasks/202604080136-0Q524H/pr/diffstat.txt      |   0
+ .../tasks/202604080136-0Q524H/pr/github-body.md    |  63 ++++++++
+ .../tasks/202604080136-0Q524H/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604080136-0Q524H/pr/meta.json |  14 ++
+ .../tasks/202604080136-0Q524H/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604080136-0Q524H/pr/review.md |  70 +++++++++
+ .../tasks/202604080136-0Q524H/pr/verify.log        |   0
+ .../src/cli/bootstrap-doc-build-freshness.test.ts  | 120 +++++++++++++++
+ scripts/check-agent-bootstrap-fresh.mjs            |  12 +-
+ scripts/generate-agent-bootstrap-doc.mjs           |   6 +-
+ scripts/lib/generated-artifacts.mjs                |  37 +++++
+ 12 files changed, 487 insertions(+), 3 deletions(-)
 ```
 
 </details>
