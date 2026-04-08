@@ -2,6 +2,7 @@ import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
+import { distExists, isPackageBuildFresh } from "../../packages/agentplane/bin/dist-guard.js";
 
 export const ROOT = process.cwd();
 
@@ -75,4 +76,40 @@ export async function checkGeneratedArtifactFresh({
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
+}
+
+export async function assertAgentplaneCliDistFreshForDocs(root = ROOT) {
+  const packageRoot = path.join(root, "packages", "agentplane");
+  if (!(await distExists(packageRoot))) {
+    throw new Error(
+      "CLI dist is missing for bootstrap docs. Refresh repo-local runtime first:\n" +
+        "  bun run framework:dev:bootstrap\n" +
+        "Or rebuild explicitly:\n" +
+        "  bun run --filter=@agentplaneorg/core build\n" +
+        "  bun run --filter=agentplane build",
+    );
+  }
+
+  const freshness = await isPackageBuildFresh(packageRoot, {
+    watchedPaths: [
+      "src",
+      "bin/agentplane.js",
+      "bin/runtime-context.js",
+      "bin/stale-dist-policy.js",
+    ],
+  });
+  if (freshness.ok) return;
+
+  const changedSummary =
+    Array.isArray(freshness.changedPaths) && freshness.changedPaths.length > 0
+      ? `\nChanged watched paths:\n- ${freshness.changedPaths.join("\n- ")}`
+      : "";
+  throw new Error(
+    `CLI dist is stale for bootstrap docs (${freshness.reason}). Refresh repo-local runtime first:\n` +
+      "  bun run framework:dev:bootstrap\n" +
+      "Or rebuild explicitly:\n" +
+      "  bun run --filter=@agentplaneorg/core build\n" +
+      "  bun run --filter=agentplane build" +
+      changedSummary,
+  );
 }
