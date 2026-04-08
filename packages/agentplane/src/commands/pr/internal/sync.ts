@@ -12,7 +12,11 @@ import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/wr
 import { execFileAsync, gitEnv } from "../../shared/git.js";
 import { gitCurrentBranch } from "../../shared/git-ops.js";
 import { parseTaskIdFromBranch } from "../../shared/git-worktree.js";
-import { normalizeGhTransportError, withGhTransportRetry } from "../../shared/gh-transport.js";
+import {
+  isTransientGhTransportError,
+  normalizeGhTransportError,
+  withGhTransportRetry,
+} from "../../shared/gh-transport.js";
 import { INCIDENTS_POLICY_PATH } from "../../incidents/shared.js";
 import {
   buildObservedGithubPrMeta,
@@ -105,6 +109,13 @@ type GithubPullLookupRecord = {
   } | null;
 };
 
+export type PrRemoteMode = "auto" | "sync-only";
+
+export type PrOpenOutcome = {
+  action: "linked-existing" | "created" | "sync-only" | "staged";
+  message: string;
+};
+
 function normalizeObservedGithubPr(record: GithubPullLookupRecord): {
   prNumber: number;
   prUrl: string | null;
@@ -180,6 +191,100 @@ async function tryLookupExistingGithubPrByBranch(opts: {
     const message = normalizeGhTransportError(err);
     if (message.trim().length > 0) return null;
     return null;
+  }
+}
+
+function formatGithubPrLink(
+  prNumber: number,
+  prUrl: string | null,
+  verb: "linked to" | "created",
+): string {
+  return prUrl?.trim()
+    ? `${verb} GitHub PR #${prNumber}: ${prUrl.trim()}`
+    : `${verb} GitHub PR #${prNumber}`;
+}
+
+function summarizeGithubPrCreateFailure(err: unknown): string {
+  const text = normalizeGhTransportError(err);
+  if ((err as { code?: string } | null)?.code === "ENOENT") {
+    return "gh CLI is unavailable";
+  }
+  if (
+    /authentication required/i.test(text) ||
+    /not logged into github/i.test(text) ||
+    /bad credentials/i.test(text) ||
+    /permission denied/i.test(text) ||
+    /\b401\b/i.test(text) ||
+    /\b403\b/i.test(text)
+  ) {
+    return "GitHub auth or permissions unavailable";
+  }
+  if (isTransientGhTransportError(err)) {
+    return "GitHub transport failed; retry `agentplane pr open`";
+  }
+  return "GitHub PR creation failed";
+}
+
+async function tryCreateGithubPr(opts: {
+  gitRoot: string;
+  branch: string;
+  baseBranch: string | null;
+  title: string;
+  body: string;
+}): Promise<{
+  observed: ReturnType<typeof normalizeObservedGithubPr>;
+  stagedReason: string | null;
+}> {
+  const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
+  if (!repo) {
+    return {
+      observed: null,
+      stagedReason: "GitHub origin repo unavailable",
+    };
+  }
+  const baseBranch = opts.baseBranch?.trim() ?? "";
+  if (!baseBranch) {
+    return {
+      observed: null,
+      stagedReason: "base branch unresolved",
+    };
+  }
+  try {
+    const { stdout } = await withGhTransportRetry(
+      () =>
+        execFileAsync(
+          "gh",
+          [
+            "api",
+            `repos/${repo}/pulls`,
+            "-X",
+            "POST",
+            "-f",
+            `title=${opts.title}`,
+            "-f",
+            `body=${opts.body}`,
+            "-f",
+            `head=${opts.branch}`,
+            "-f",
+            `base=${baseBranch}`,
+          ],
+          {
+            cwd: opts.gitRoot,
+            env: gitEnv(),
+            maxBuffer: 10 * 1024 * 1024,
+          },
+        ),
+      { label: `running gh api repos/${repo}/pulls` },
+    );
+    return {
+      observed: normalizeObservedGithubPr(JSON.parse(stdout) as GithubPullLookupRecord),
+      stagedReason: null,
+    };
+  } catch (err) {
+    return {
+      observed: null,
+      stagedReason: summarizeGithubPrCreateFailure(err),
+    };
   }
 }
 
@@ -286,6 +391,7 @@ export async function ensurePrArtifactsSynced(opts: {
       mode: "open",
       author: opts.author,
       branch,
+      remoteMode: "sync-only",
     });
   }
   const result = await syncPrArtifacts({
@@ -305,10 +411,12 @@ export async function syncPrArtifacts(opts: {
   mode: PrSyncMode;
   author?: string;
   branch?: string;
+  remoteMode?: PrRemoteMode;
 }): Promise<{
   meta: PrMeta;
   prDir: string;
   resolved: { gitRoot: string };
+  openOutcome?: PrOpenOutcome;
 }> {
   try {
     const ctx =
@@ -391,6 +499,7 @@ export async function syncPrArtifacts(opts: {
       const headSha = await resolveBranchHeadSha({ gitRoot: resolved.gitRoot, branch });
 
       if (opts.mode === "open") {
+        const remoteMode = opts.remoteMode ?? "auto";
         let nextMeta: PrMeta = buildOpenedPrMeta({
           taskId: task.id,
           branch,
@@ -398,6 +507,29 @@ export async function syncPrArtifacts(opts: {
           previousMeta: existingMeta,
           base: baseBranch,
           headSha,
+        });
+        const linkedExistingOutcome =
+          typeof nextMeta.pr_number === "number" && nextMeta.pr_number > 0
+            ? {
+                action: "linked-existing" as const,
+                message: formatGithubPrLink(
+                  nextMeta.pr_number,
+                  nextMeta.pr_url ?? null,
+                  "linked to",
+                ),
+              }
+            : null;
+        let openOutcome: PrOpenOutcome | undefined;
+        const githubTitle = buildGithubPrTitle(task);
+        const githubBody = renderGithubPrBody({
+          task,
+          handoffNotes,
+          autoSummary: renderPrAutoSummary({
+            updatedAt: nextMeta.updated_at,
+            branch,
+            headSha,
+            diffstat: "",
+          }),
         });
         const observedGithubPr = await tryLookupExistingGithubPrByBranch({
           gitRoot: resolved.gitRoot,
@@ -410,6 +542,47 @@ export async function syncPrArtifacts(opts: {
             observed: observedGithubPr,
             at: now,
           });
+          openOutcome = {
+            action: "linked-existing",
+            message: formatGithubPrLink(
+              observedGithubPr.prNumber,
+              observedGithubPr.prUrl,
+              "linked to",
+            ),
+          };
+        } else if (remoteMode === "sync-only") {
+          openOutcome = linkedExistingOutcome ?? {
+            action: "sync-only",
+            message: "local PR artifacts synced; remote PR creation skipped (--sync-only)",
+          };
+        } else {
+          const createdGithubPr = await tryCreateGithubPr({
+            gitRoot: resolved.gitRoot,
+            branch,
+            baseBranch,
+            title: githubTitle,
+            body: githubBody,
+          });
+          if (createdGithubPr.observed) {
+            nextMeta = buildObservedGithubPrMeta({
+              meta: nextMeta,
+              observed: createdGithubPr.observed,
+              at: now,
+            });
+            openOutcome = {
+              action: "created",
+              message: formatGithubPrLink(
+                createdGithubPr.observed.prNumber,
+                createdGithubPr.observed.prUrl,
+                "created",
+              ),
+            };
+          } else {
+            openOutcome = linkedExistingOutcome ?? {
+              action: "staged",
+              message: `local PR artifacts synced; remote PR creation staged (${createdGithubPr.stagedReason ?? "remote creation unavailable"})`,
+            };
+          }
         }
         const nextAutoSummary = renderPrAutoSummary({
           updatedAt: nextMeta.updated_at,
@@ -425,8 +598,7 @@ export async function syncPrArtifacts(opts: {
           handoffNotes,
           autoSummary: nextAutoSummary,
         });
-        const githubTitle = buildGithubPrTitle(task);
-        const githubBody = renderGithubPrBody({
+        const nextGithubBody = renderGithubPrBody({
           task,
           handoffNotes,
           autoSummary: nextAutoSummary,
@@ -443,8 +615,8 @@ export async function syncPrArtifacts(opts: {
         }
         await writeTextIfChanged(reviewPath, nextReview);
         await writeTextIfChanged(githubTitlePath, `${githubTitle}\n`);
-        await writeTextIfChanged(githubBodyPath, githubBody);
-        return { meta: nextMeta, prDir, resolved };
+        await writeTextIfChanged(githubBodyPath, nextGithubBody);
+        return { meta: nextMeta, prDir, resolved, openOutcome };
       }
 
       if (!baseBranch) {
