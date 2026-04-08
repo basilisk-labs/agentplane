@@ -37,9 +37,9 @@ Protected-main closure can leave the original task PR open even after the task i
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-08T18:40:52.066Z
+- Updated: 2026-04-08T18:43:55.059Z
 - Branch: task/202604081816-TQKZ66/close-superseded-task-pr
-- Head: 70c479c09c78
+- Head: 3ad1b5bff095
 
 ```text
 No changes detected.
