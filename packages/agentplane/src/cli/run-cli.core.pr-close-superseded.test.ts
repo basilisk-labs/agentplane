@@ -26,6 +26,7 @@ async function installFakeGhRepair(opts: {
   branch: string;
   prNumber?: number;
   openPrs?: number;
+  captureEnv?: boolean;
 }) {
   const fakeBin = path.join(
     os.tmpdir(),
@@ -59,6 +60,10 @@ async function installFakeGhRepair(opts: {
       "const args = process.argv.slice(2);",
       "const logPath = process.env.AGENTPLANE_GH_LOG;",
       "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
+      "const envLogPath = process.env.AGENTPLANE_GH_ENV_LOG;",
+      opts.captureEnv
+        ? "if (envLogPath) fs.appendFileSync(envLogPath, `${JSON.stringify({ GH_TOKEN: process.env.GH_TOKEN ?? null, HOME: process.env.HOME ?? null, GIT_DIR: process.env.GIT_DIR ?? null, GIT_WORK_TREE: process.env.GIT_WORK_TREE ?? null })}\\n`);"
+        : "",
       `const expectedHead = ${JSON.stringify(expectedHead)};`,
       `const openPrs = ${openPrsPayload};`,
       `const closePayload = ${closePayloadJson};`,
@@ -110,7 +115,11 @@ async function installFakeGhRepair(opts: {
     await writeFile(ghPath, '#!/bin/sh\nnode "$(dirname "$0")/fake-gh.mjs" "$@"\n', "utf8");
     await chmod(ghPath, 0o755);
   }
-  return { fakeBin, logPath: path.join(fakeBin, "gh.log") };
+  return {
+    fakeBin,
+    logPath: path.join(fakeBin, "gh.log"),
+    envLogPath: path.join(fakeBin, "gh-env.log"),
+  };
 }
 
 async function prepareDoneTaskWithPrMeta(
@@ -380,5 +389,101 @@ describe("runCli pr close-superseded", () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("passes auth env through to gh while stripping git worktree overrides", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await commitAll(root, "chore config");
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const execFileAsyncLocal = promisify(execFile);
+    await execFileAsyncLocal(
+      "git",
+      ["remote", "add", "origin", "https://github.com/example/repo.git"],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Superseded PR auth env",
+        "--description",
+        "Ensure gh env propagates through close-superseded",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/close-superseded`;
+    await prepareDoneTaskWithPrMeta(root, taskId, branch);
+    const { fakeBin, envLogPath } = await installFakeGhRepair({
+      scenarioName: "env-sanitized",
+      branch,
+      captureEnv: true,
+    });
+    const originalPath = process.env.PATH;
+    const originalGhToken = process.env.GH_TOKEN;
+    const originalGitDir = process.env.GIT_DIR;
+    const originalGitWorkTree = process.env.GIT_WORK_TREE;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.GH_TOKEN = "token-from-parent-env";
+    process.env.GIT_DIR = "/tmp/should-not-leak.git";
+    process.env.GIT_WORK_TREE = "/tmp/should-not-leak-tree";
+    process.env.AGENTPLANE_GH_ENV_LOG = envLogPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "close-superseded", taskId, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      if (originalGhToken === undefined) delete process.env.GH_TOKEN;
+      else process.env.GH_TOKEN = originalGhToken;
+      if (originalGitDir === undefined) delete process.env.GIT_DIR;
+      else process.env.GIT_DIR = originalGitDir;
+      if (originalGitWorkTree === undefined) delete process.env.GIT_WORK_TREE;
+      else process.env.GIT_WORK_TREE = originalGitWorkTree;
+      delete process.env.AGENTPLANE_GH_ENV_LOG;
+    }
+
+    const rawEnvLog = await readFile(envLogPath, "utf8");
+    const envLog = rawEnvLog
+      .trim()
+      .split("\n")
+      .map(
+        (line) =>
+          JSON.parse(line) as {
+            GH_TOKEN: string | null;
+            HOME: string | null;
+            GIT_DIR: string | null;
+            GIT_WORK_TREE: string | null;
+          },
+      );
+    expect(envLog.length).toBeGreaterThan(0);
+    expect(envLog[0]?.GH_TOKEN).toBe("token-from-parent-env");
+    expect(envLog[0]?.HOME).toBeTruthy();
+    expect(envLog[0]?.GIT_DIR).toBeNull();
+    expect(envLog[0]?.GIT_WORK_TREE).toBeNull();
   });
 });
