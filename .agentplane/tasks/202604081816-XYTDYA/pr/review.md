@@ -43,9 +43,9 @@ Doctor currently misses real DONE-task open-PR drift because it reads the legacy
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-08T18:26:00.596Z
+- Updated: 2026-04-08T18:26:44.577Z
 - Branch: task/202604081816-XYTDYA/doctor-open-pr-projection
-- Head: 70c479c09c78
+- Head: 9dcfcdd6365b
 
 ```text
 No changes detected.
