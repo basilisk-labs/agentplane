@@ -1,0 +1,6 @@
+ .agentplane/tasks/202604081931-P5XKNF/README.md    |  91 ++++++++++++++++++
+ .../cli/run-cli.core.pr-close-superseded.test.ts   | 107 ++++++++++++++++++++-
+ .../agentplane/src/commands/pr/close-superseded.ts |  75 ++-------------
+ packages/agentplane/src/commands/pr/close.ts       |  78 ++-------------
+ .../agentplane/src/commands/pr/internal/gh-api.ts  |  81 ++++++++++++++++
+ 5 files changed, 293 insertions(+), 139 deletions(-)
