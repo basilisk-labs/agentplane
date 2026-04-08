@@ -1,0 +1,1 @@
+incidents/ux: Explain deferred incidents promotion at findings append time (YP0R5D)
