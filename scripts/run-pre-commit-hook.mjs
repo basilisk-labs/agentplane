@@ -8,7 +8,11 @@ import {
   FRAMEWORK_DEV_FORCE_GLOBAL_EXAMPLE,
 } from "../packages/agentplane/bin/framework-dev-contract.js";
 import { listStagedGitFiles } from "./lib/staged-git-files.mjs";
-import { eslintTargets, prettierTargets } from "./lib/pre-commit-staged-files.mjs";
+import {
+  eslintTargets,
+  policyMirrorOnlyTargets,
+  prettierTargets,
+} from "./lib/pre-commit-staged-files.mjs";
 
 function run(command, args, env) {
   execFileSync(command, args, {
@@ -50,6 +54,21 @@ function printMissingToolError(root, missingTools) {
   );
 }
 
+function printPolicyMirrorError(mirrorOnlyFiles) {
+  process.stderr.write(
+    "error: policy mirror edits must be made through canonical assets first.\n" +
+      "Canonical source:\n" +
+      "  packages/agentplane/assets/policy/\n" +
+      "Mirror target:\n" +
+      "  .agentplane/policy/\n" +
+      "Mirror-only staged files:\n" +
+      mirrorOnlyFiles.map((file) => `  ${file}\n`).join("") +
+      "Fix:\n" +
+      "  edit the matching file under packages/agentplane/assets/policy/\n" +
+      "  bun run agents:sync\n",
+  );
+}
+
 async function runChecked(root, tool, args, missingTools) {
   const toolPath = await ensureLocalTool(root, tool);
   if (!toolPath) {
@@ -62,6 +81,12 @@ async function runChecked(root, tool, args, missingTools) {
 const root = repoRoot();
 async function main() {
   const files = listStagedGitFiles();
+  const mirrorOnlyFiles = policyMirrorOnlyTargets(files);
+  if (mirrorOnlyFiles.length > 0) {
+    printPolicyMirrorError(mirrorOnlyFiles);
+    process.exitCode = 2;
+    return;
+  }
   const missingTools = [];
 
   const prettierFiles = prettierTargets(files);
