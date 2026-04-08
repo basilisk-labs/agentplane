@@ -543,6 +543,22 @@ describe("runCli", () => {
       );
       expect(await pathExists(taskReadmePath)).toBe(true);
       expect(await pathExists(siblingReadmePath)).toBe(true);
+      expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
+        false,
+      );
+      expect(
+        await pathExists(path.join(root, ".agentplane", "tasks", siblingTaskId, "README.md")),
+      ).toBe(false);
+
+      const { stdout: baseStatus } = await execFileAsync("git", [
+        "status",
+        "--short",
+        "--untracked-files=all",
+      ], {
+        cwd: root,
+      });
+      expect(baseStatus).not.toContain(`?? .agentplane/tasks/${taskId}/README.md`);
+      expect(baseStatus).not.toContain(`?? .agentplane/tasks/${siblingTaskId}/README.md`);
 
       const showIo = captureStdIO();
       try {
@@ -573,12 +589,7 @@ describe("runCli", () => {
       }
 
       const seededReadme = await readFile(taskReadmePath, "utf8");
-      const baseReadme = await readFile(
-        path.join(root, ".agentplane", "tasks", taskId, "README.md"),
-        "utf8",
-      );
       expect(seededReadme).toContain('status: "DOING"');
-      expect(baseReadme).toContain('status: "TODO"');
     },
     WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
   );
