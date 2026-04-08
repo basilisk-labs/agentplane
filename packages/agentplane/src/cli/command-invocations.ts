@@ -22,7 +22,10 @@ const COMMAND_INVOCATIONS = new Map<string, string>([
   ["task show", "agentplane task show <task-id>"],
   ["task start-ready", 'agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."'],
   ["task verify-show", "agentplane task verify-show <task-id>"],
-  ["verify", 'agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."'],
+  [
+    "verify",
+    'agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]',
+  ],
 ]);
 
 function formatCommandId(id: CommandId): string {

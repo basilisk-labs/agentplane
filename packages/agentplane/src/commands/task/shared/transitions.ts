@@ -56,6 +56,7 @@ export function ensureVerificationSatisfiedIfRequired(
 
   const hint =
     `use \`agentplane verify ${task.id} --ok|--rework --by <ID> --note <TEXT>\` ` +
+    `and add \`--observation <TEXT> --impact <TEXT> --resolution <TEXT>\` when you want a structured finding ` +
     `or \`agentplane task verify ok|rework ${task.id} --by <ID> --note <TEXT>\``;
 
   throw new CliError({

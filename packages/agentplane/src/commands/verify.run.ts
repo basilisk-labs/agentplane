@@ -17,6 +17,15 @@ export function makeRunVerifyHandler(getCtx: (cmd: string) => Promise<CommandCon
       noteFile: p.noteFile,
       details: p.details,
       file: p.file,
+      observation: p.observation,
+      impact: p.impact,
+      resolution: p.resolution,
+      localOnly: p.localOnly,
+      incidentScope: p.incidentScope,
+      incidentTags: p.incidentTags,
+      incidentMatch: p.incidentMatch,
+      incidentAdvice: p.incidentAdvice,
+      incidentRule: p.incidentRule,
       quiet: p.quiet,
     });
   };
