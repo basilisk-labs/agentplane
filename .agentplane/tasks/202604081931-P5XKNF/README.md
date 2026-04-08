@@ -4,7 +4,7 @@ title: "Fix pr close-superseded GitHub auth propagation"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-08T19:43:38.928Z"
+  updated_by: "REVIEWER"
+  note: "Focused pr close-superseded auth/env regression tests passed; eslint passed on touched command and test files; command diff remains limited to shared gh auth propagation for close-superseded and close."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reproduce the repo-local close-superseded auth failure, fix gh child auth propagation, and cover the path with a focused regression test before integrating the change."
+  -
+    type: "verify"
+    at: "2026-04-08T19:43:38.928Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Focused pr close-superseded auth/env regression tests passed; eslint passed on touched command and test files; command diff remains limited to shared gh auth propagation for close-superseded and close."
 doc_version: 3
-doc_updated_at: "2026-04-08T19:32:12.376Z"
+doc_updated_at: "2026-04-08T19:43:38.943Z"
 doc_updated_by: "CODER"
 description: "Ensure repo-local agentplane can close superseded task PRs using the authenticated gh session without losing auth context in child gh api calls."
 sections:
@@ -52,6 +58,14 @@ sections:
   Verify Steps: "1. Run the pr close-superseded focused test suite. Expected: it proves the command forwards the authenticated gh environment and closes the matched PR path without auth failures. 2. Run eslint on touched command/test files. Expected: no lint violations in the modified scope. 3. Re-check the command contract diff. Expected: the fix is limited to auth propagation and does not change unrelated PR-close behavior."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-08T19:43:38.928Z — VERIFY — ok
+    
+    By: REVIEWER
+    
+    Note: Focused pr close-superseded auth/env regression tests passed; eslint passed on touched command and test files; command diff remains limited to shared gh auth propagation for close-superseded and close.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-08T19:32:12.376Z, excerpt_hash=sha256:9267bad68143cf3817bcfaa132de52344c2e3d3bdb594508ee0a2d41d481b2ff
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -81,6 +95,14 @@ Ensure repo-local agentplane can close superseded task PRs using the authenticat
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-08T19:43:38.928Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Focused pr close-superseded auth/env regression tests passed; eslint passed on touched command and test files; command diff remains limited to shared gh auth propagation for close-superseded and close.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-08T19:32:12.376Z, excerpt_hash=sha256:9267bad68143cf3817bcfaa132de52344c2e3d3bdb594508ee0a2d41d481b2ff
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
