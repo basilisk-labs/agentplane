@@ -267,7 +267,7 @@ describe("runCli", () => {
       const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("✅ integrate");
-      expect(io.stdout).toContain("incident registry unchanged (no promotable external findings)");
+      expect(io.stdout).toContain("incident registry unchanged (no structured incident findings)");
     } finally {
       io.restore();
     }
@@ -798,6 +798,97 @@ describe("runCli", () => {
         genericTokens: config.commit.generic_tokens,
       }).ok,
     ).toBe(true);
+  }, 180_000);
+
+  it("integrate ignores artifact-only branch tip subjects and uses the deterministic integrate summary", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+    await stageGitignoreIfPresent(root);
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate subject ignores artifact tip",
+        "--description",
+        "Integration should not inherit artifact refresh commit subjects",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/artifact-tip`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["commit", "-m", `✨ ${extractTaskSuffix(taskId)} api: add feature body`],
+      {
+        cwd: root,
+      },
+    );
+
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["commit", "-m", `📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`],
+      {
+        cwd: root,
+      },
+    );
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const { stdout: subjectOut } = await execFileAsync("git", ["log", "-2", "--pretty=%s"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const subjects = subjectOut
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const suffix = extractTaskSuffix(taskId);
+    const mergeSubject = subjects[1] ?? "";
+    expect(mergeSubject.startsWith(`🧩 ${suffix} integrate:`)).toBe(true);
+    expect(mergeSubject).toContain("Integrate subject ignores artifact tip");
+    expect(mergeSubject).not.toContain("refresh PR artifacts");
   }, 180_000);
 
   it(

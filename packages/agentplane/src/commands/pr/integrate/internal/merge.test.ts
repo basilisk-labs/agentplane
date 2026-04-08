@@ -58,6 +58,42 @@ describe("pr/integrate/internal/merge", () => {
     );
   });
 
+  it("runSquashMerge falls back when the branch tip commit only touches task artifacts", async () => {
+    const { runSquashMerge } = await import("./merge.js");
+    mocks.execFileAsync
+      .mockResolvedValueOnce({}) // merge --squash
+      .mockResolvedValueOnce({ stdout: "src/app.ts\n" }) // diff --cached
+      .mockResolvedValueOnce({ stdout: "📝 X32XPT task: refresh PR artifacts\n" }) // log -1 subject
+      .mockResolvedValueOnce({
+        stdout:
+          ".agentplane/tasks/202602111653-X32XPT/pr/meta.json\n.agentplane/tasks/202602111653-X32XPT/pr/review.md\n",
+      }) // show changed paths
+      .mockResolvedValueOnce({}); // commit
+    mocks.validateCommitSubject.mockReturnValue({ ok: true, errors: [] });
+    mocks.extractTaskSuffix.mockReturnValue("X32XPT");
+    mocks.buildGithubPrTitle.mockReturnValue("workflow/cli: improve PR UX (X32XPT)");
+    mocks.gitRevParse.mockResolvedValue("deadbeefcafebabe");
+
+    const hash = await runSquashMerge({
+      gitRoot: "/repo",
+      base: "main",
+      branch: "task/T-1",
+      headBeforeMerge: "before",
+      taskId: "202602111653-X32XPT",
+      taskTitle: "Improve PR UX",
+      taskTags: ["workflow", "cli"],
+      workflowDir: ".agentplane/tasks",
+      changedPaths: [],
+      genericTokens: ["wip"],
+    });
+    expect(hash).toBe("deadbeefcafebabe");
+    expect(mocks.execFileAsync).toHaveBeenCalledWith(
+      "git",
+      ["commit", "-m", "🧩 X32XPT integrate: workflow/cli: improve PR UX"],
+      expect.objectContaining({ cwd: "/repo" }),
+    );
+  });
+
   it("runSquashMerge resets and fails when there is nothing staged after squash", async () => {
     const { runSquashMerge } = await import("./merge.js");
     mocks.execFileAsync
