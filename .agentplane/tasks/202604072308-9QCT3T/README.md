@@ -1,10 +1,11 @@
 ---
 id: "202604072308-9QCT3T"
 title: "Add file-backed note input for verify commands"
-status: "DOING"
+result_summary: "integrate: squash task/202604072308-9QCT3T/verify-note-file"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-08T00:28:55.537Z"
   updated_by: "CODER"
   note: "Implemented --note-file for verify/task verify; targeted vitest, eslint, and docs:cli:check passed on commit f3b0427a."
-commit: null
+commit:
+  hash: "d42137c39bc82305b2aa349c095af21e28509d44"
+  message: "📝 9QCT3T task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: add note-file support for verify commands while preserving existing details/file semantics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604072308-9QCT3T/pr."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented --note-file for verify/task verify; targeted vitest, eslint, and docs:cli:check passed on commit f3b0427a."
+  -
+    type: "status"
+    at: "2026-04-08T01:12:26.752Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604072308-9QCT3T/pr."
 doc_version: 3
-doc_updated_at: "2026-04-08T00:28:55.544Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-08T01:12:26.758Z"
+doc_updated_by: "INTEGRATOR"
 description: "task verify and verify should accept note text from a file so multiline or long verification notes can be recorded without shell or TTY corruption of task artifacts."
 sections:
   Summary: |-

@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604072308-9QCT3T/verify-note-file",
   "created_at": "2026-04-08T00:23:41.291Z",
-  "head_sha": "dd104d7a234cb9d8788c75319a7a6a8780272db4",
+  "head_sha": "e3305fc2dff99a43f6b9242e49379e77d46ad114",
   "last_verified_at": "2026-04-08T00:28:55.537Z",
   "last_verified_sha": "f3b0427ac540b25971e6ec0f9cc9bb8f6d71631f",
+  "merge_commit": "d42137c39bc82305b2aa349c095af21e28509d44",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-08T01:12:26.702Z",
   "pr_number": 143,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/143",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604072308-9QCT3T",
-  "updated_at": "2026-04-08T00:40:50.929Z",
+  "updated_at": "2026-04-08T01:12:26.702Z",
   "verify": {
     "status": "pass"
   }
