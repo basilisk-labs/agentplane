@@ -9,6 +9,7 @@ import { promisify } from "node:util";
 import { renderTaskReadme } from "@agentplaneorg/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { checkBranchPrDoneTaskOpenPrDrift } from "./doctor/branch-pr.js";
 import { runDoctor } from "./doctor.run.js";
 
 type TestWorkspace = {
@@ -622,6 +623,128 @@ describe("doctor.command", () => {
     } finally {
       stderr.mockRestore();
     }
+  });
+
+  it("detects DONE branch_pr open-PR drift from live backend state even when tasks.json is stale", async () => {
+    const ws = await mkWorkspace();
+    const shippedHash = await gitInitWithCommit(ws.root, "feat: projection-only shipped payload");
+    await writeFile(
+      path.join(ws.root, ".agentplane", "config.json"),
+      '{\n  "version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+      "utf8",
+    );
+    const branchPrWorkflow = VALID_WORKFLOW.replace("mode: direct", 'mode: "branch_pr"');
+    await writeFile(path.join(ws.root, ".agentplane", "WORKFLOW.md"), branchPrWorkflow, "utf8");
+    await writeFile(
+      path.join(ws.root, ".agentplane", "workflows", "last-known-good.md"),
+      branchPrWorkflow,
+      "utf8",
+    );
+
+    const taskId = "202604050902-PROJPR";
+    const branchName = `task/${taskId}/projection-only-open-pr`;
+    await writeFile(
+      path.join(ws.root, ".agentplane", "tasks.json"),
+      JSON.stringify({ tasks: [] }, null, 2),
+      "utf8",
+    );
+    const taskDir = path.join(ws.root, ".agentplane", "tasks", taskId);
+    await mkdir(path.join(taskDir, "pr"), { recursive: true });
+    await writeFile(
+      path.join(taskDir, "README.md"),
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "Projection-only DONE task with open PR artifacts",
+          description:
+            "Doctor should use the current projection/task docs, not just legacy tasks.json snapshots.",
+          status: "DONE",
+          priority: "med",
+          owner: "CODER",
+          depends_on: [],
+          tags: ["workflow"],
+          verify: [],
+          plan_approval: {
+            state: "approved",
+            updated_at: "2026-04-05T09:00:00.000Z",
+            updated_by: "ORCHESTRATOR",
+            note: null,
+          },
+          verification: {
+            state: "ok",
+            updated_at: "2026-04-05T09:10:00.000Z",
+            updated_by: "CODER",
+            note: "verified",
+          },
+          commit: {
+            hash: shippedHash,
+            message: "feat: projection-only shipped payload",
+          },
+          comments: [],
+          events: [],
+          revision: 1,
+          doc_version: 3,
+          doc_updated_at: "2026-04-05T09:10:00.000Z",
+          doc_updated_by: "CODER",
+          sections: {
+            Summary: "Projection-only DONE task with open PR artifacts",
+            Scope: "- In scope: detect DONE branch_pr tasks from projection snapshots.",
+            Plan: "1. Run doctor.",
+            "Verify Steps":
+              "1. Run agentplane doctor. Expected: warning mentions DONE branch_pr tasks with open PR artifacts even when tasks.json is stale.",
+            Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+            "Rollback Plan": "- Revert.",
+            Findings: "",
+          },
+        },
+        "",
+      ),
+      "utf8",
+    );
+    await writeFile(
+      path.join(taskDir, "pr", "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          branch: branchName,
+          base: "main",
+          created_at: "2026-04-05T09:00:00.000Z",
+          updated_at: "2026-04-05T09:00:00.000Z",
+          last_verified_sha: null,
+          last_verified_at: null,
+          verify: { status: "skipped" },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    const ctx = {
+      backendId: "local",
+      config: {
+        workflow_mode: "branch_pr",
+        paths: { workflow_dir: ".agentplane/tasks" },
+      },
+      resolvedProject: { gitRoot: ws.root },
+      taskBackend: {
+        listTasks: vi.fn().mockResolvedValue([
+          {
+            id: taskId,
+            status: "DONE",
+            commit: {
+              hash: shippedHash,
+              message: "feat: projection-only shipped payload",
+            },
+          },
+        ]),
+      },
+    } as unknown as Parameters<typeof checkBranchPrDoneTaskOpenPrDrift>[0];
+    const findings = await checkBranchPrDoneTaskOpenPrDrift(ctx);
+    expect(findings).toHaveLength(1);
+    expect(findings[0]).toContain("DONE branch_pr tasks still have open or unmerged PR artifacts");
+    expect(findings[0]).toContain("agentplane pr check <task-id>");
+    expect(findings[0]).toContain(taskId);
   });
 
   it("warns when a Redmine backend is configured without canonical_state readiness", async () => {
