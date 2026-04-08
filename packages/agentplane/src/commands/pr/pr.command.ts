@@ -8,7 +8,14 @@ import {
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-import { cmdPrCheck, cmdPrClose, cmdPrNote, cmdPrOpen, cmdPrUpdate } from "./index.js";
+import {
+  cmdPrCheck,
+  cmdPrClose,
+  cmdPrCloseSuperseded,
+  cmdPrNote,
+  cmdPrOpen,
+  cmdPrUpdate,
+} from "./index.js";
 
 type PrGroupParsed = GroupCommandParsed;
 
@@ -17,7 +24,9 @@ export const prSpec: CommandSpec<PrGroupParsed> = {
   group: "PR",
   summary:
     "Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).",
-  synopsis: ["agentplane pr <open|update|check|note|close> <task-id|pr-number> [options]"],
+  synopsis: [
+    "agentplane pr <open|update|check|note|close|close-superseded> <task-id|pr-number> [options]",
+  ],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
     { cmd: "agentplane pr open 202602030608-F1Q8AB --author CODER", why: "Create PR artifacts." },
@@ -33,6 +42,10 @@ export const prSpec: CommandSpec<PrGroupParsed> = {
     {
       cmd: 'agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch',
       why: "Close a stale GitHub PR through REST and optionally delete its remote head branch.",
+    },
+    {
+      cmd: "agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch",
+      why: "Close a superseded task PR from task artifacts after protected-main closure.",
     },
   ],
   parse: (raw) => parseGroupCommand(raw),
@@ -113,6 +126,11 @@ export type PrCloseParsed = {
   prNumber: number;
   repo?: string;
   comment?: string;
+  deleteRemoteBranch: boolean;
+};
+
+export type PrCloseSupersededParsed = {
+  taskId: string;
   deleteRemoteBranch: boolean;
 };
 
@@ -212,6 +230,32 @@ export const prCloseSpec: CommandSpec<PrCloseParsed> = {
   }),
 };
 
+export const prCloseSupersededSpec: CommandSpec<PrCloseSupersededParsed> = {
+  id: ["pr", "close-superseded"],
+  group: "PR",
+  summary: "Close a superseded task PR using task artifacts.",
+  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+  options: [
+    {
+      kind: "boolean",
+      name: "delete-remote-branch",
+      default: false,
+      description:
+        "Delete the remote head branch after a successful close when it belongs to the task repo.",
+    },
+  ],
+  examples: [
+    {
+      cmd: "agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch",
+      why: "Repair a stale task PR after the task has already been merged to main.",
+    },
+  ],
+  parse: (raw) => ({
+    taskId: String(raw.args["task-id"]),
+    deleteRemoteBranch: raw.opts["delete-remote-branch"] === true,
+  }),
+};
+
 async function runPrRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   throwGroupCommandUsage({
     spec: prSpec,
@@ -285,6 +329,18 @@ export function makeRunPrCloseHandler(getCtx: (cmd: string) => Promise<CommandCo
       prNumber: p.prNumber,
       repo: p.repo,
       comment: p.comment,
+      deleteRemoteBranch: p.deleteRemoteBranch,
+    });
+  };
+}
+
+export function makeRunPrCloseSupersededHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+  return async (ctx: CommandCtx, p: PrCloseSupersededParsed): Promise<number> => {
+    return await cmdPrCloseSuperseded({
+      ctx: await getCtx("pr close-superseded"),
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
+      taskId: p.taskId,
       deleteRemoteBranch: p.deleteRemoteBranch,
     });
   };
