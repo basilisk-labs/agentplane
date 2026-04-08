@@ -43,12 +43,22 @@ Doctor currently misses real DONE-task open-PR drift because it reads the legacy
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-08T18:26:44.577Z
+- Updated: 2026-04-08T18:32:22.444Z
 - Branch: task/202604081816-XYTDYA/doctor-open-pr-projection
-- Head: 9dcfcdd6365b
+- Head: 1616c12bbca9
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604081816-XYTDYA/README.md    | 113 +++++++++++++++++++
+ .../tasks/202604081816-XYTDYA/pr/diffstat.txt      |   0
+ .../tasks/202604081816-XYTDYA/pr/github-body.md    |  48 ++++++++
+ .../tasks/202604081816-XYTDYA/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604081816-XYTDYA/pr/meta.json |  14 +++
+ .../tasks/202604081816-XYTDYA/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604081816-XYTDYA/pr/review.md |  55 +++++++++
+ .../tasks/202604081816-XYTDYA/pr/verify.log        |   0
+ .../agentplane/src/commands/doctor.command.test.ts | 123 +++++++++++++++++++++
+ .../agentplane/src/commands/doctor/branch-pr.ts    |   9 ++
+ 10 files changed, 363 insertions(+)
 ```
 
 </details>
