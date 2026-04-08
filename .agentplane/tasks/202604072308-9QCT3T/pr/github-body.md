@@ -37,13 +37,21 @@ task verify and verify should accept note text from a file so multiline or long 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-08T00:28:55.573Z
+- Updated: 2026-04-08T00:40:50.929Z
 - Branch: task/202604072308-9QCT3T/verify-note-file
-- Head: f3b0427ac540
+- Head: dd104d7a234c
 
 ```text
+ .agentplane/tasks/202604072308-9QCT3T/README.md    | 135 +++++++++++++++++++++
+ .../tasks/202604072308-9QCT3T/pr/diffstat.txt      |  11 ++
+ .../tasks/202604072308-9QCT3T/pr/github-body.md    |  58 +++++++++
+ .../tasks/202604072308-9QCT3T/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604072308-9QCT3T/pr/meta.json |  14 +++
+ .../tasks/202604072308-9QCT3T/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604072308-9QCT3T/pr/review.md |  65 ++++++++++
+ .../tasks/202604072308-9QCT3T/pr/verify.log        |   0
  docs/user/cli-reference.generated.mdx              |  21 +++-
- .../src/cli/run-cli.core.lifecycle.verify.test.ts  | 134 ++++++++++++++++++++-
+ .../src/cli/run-cli.core.lifecycle.verify.test.ts  | 134 +++++++++++++++++++-
  .../src/commands/task/verify-command-shared.ts     |  46 ++++++-
  .../src/commands/task/verify-ok.command.ts         |   4 +-
  .../agentplane/src/commands/task/verify-record.ts  |  48 +++++++-
@@ -52,7 +60,7 @@ task verify and verify should accept note text from a file so multiline or long 
  packages/agentplane/src/commands/verify.run.ts     |   1 +
  packages/agentplane/src/commands/verify.spec.ts    |  16 ++-
  .../src/commands/workflow.verify-hooks.test.ts     |  45 ++++++-
- 10 files changed, 393 insertions(+), 18 deletions(-)
+ 18 files changed, 677 insertions(+), 18 deletions(-)
 ```
 
 </details>
