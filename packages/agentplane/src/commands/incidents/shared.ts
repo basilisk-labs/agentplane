@@ -220,11 +220,11 @@ export function renderIncidentCollectionPlanOutcome(plan: {
   }
 
   if (skipped > 0) {
-    return `incident registry unchanged (${skipped} structured finding${skipped === 1 ? "" : "s"} skipped: add Promotion: incident-candidate or IncidentExternal/Fixability: external to promote reusable findings)`;
+    return `incident registry unchanged (${skipped} structured finding${skipped === 1 ? "" : "s"} stayed task-local: mark reusable external findings with Promotion: incident-candidate plus Fixability: external, or use task findings add without --local-only)`;
   }
 
   if (candidates === 0 && structuredFindingCount === 0 && findingsTextPresent) {
-    return "incident registry unchanged (Findings has text but no structured incident blocks: add Observation/Impact/Resolution fields before Promotion: incident-candidate or IncidentExternal/Fixability: external)";
+    return "incident registry unchanged (plain Findings text stays task-local and does not update incidents.md: add a structured Observation/Impact/Resolution block for reusable external incidents, or use task findings add without --local-only)";
   }
 
   if (candidates === 0) {

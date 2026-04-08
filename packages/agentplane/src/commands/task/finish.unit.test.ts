@@ -1062,7 +1062,8 @@ describe("task finish (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(writes.join("")).toContain("Findings has text but no structured incident blocks");
+    expect(writes.join("")).toContain("plain Findings text stays task-local");
+    expect(writes.join("")).toContain("does not update incidents.md");
     expect(writes.join("")).toContain("Observation/Impact/Resolution");
 
     writeSpy.mockRestore();
@@ -1132,8 +1133,8 @@ describe("task finish (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(writes.join("")).toContain("structured finding skipped");
-    expect(writes.join("")).toContain("Promotion: incident-candidate");
+    expect(writes.join("")).toContain("structured finding stayed task-local");
+    expect(writes.join("")).toContain("use task findings add without --local-only");
 
     writeSpy.mockRestore();
   });

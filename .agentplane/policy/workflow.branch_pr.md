@@ -30,7 +30,7 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 - Task documentation updates MAY be batched within one turn before approval.
 - MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
 - `task start-ready` MAY surface targeted incident advice for analogous scope/tags; follow it before widening scope.
-- Keep structured resolved external findings in the task README; mark reusable ones with `Fixability: external` (or `IncidentExternal: true`) and let base-branch `finish` or `agentplane incidents collect <task-id>` promote them into `.agentplane/policy/incidents.md`, using optional `Incident*` fields only when the inferred scope/advice needs refinement.
+- Keep structured resolved external findings in the task README; mark reusable ones with `Fixability: external` (or `IncidentExternal: true`) and let base-branch `finish` or `agentplane incidents collect <task-id>` promote them into `.agentplane/policy/incidents.md`, using optional `Incident*` fields only when the inferred scope/advice needs refinement. Plain `Findings` text remains task-local and does not update the shared incident registry.
 - MUST stop and request re-approval on material drift.
 - Planning and closure happen on base checkout.
 - Do not export task snapshots from task branches.
