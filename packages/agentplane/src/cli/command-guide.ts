@@ -39,7 +39,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       SHARED_STARTUP_NOTE,
       '- Create executable tasks with `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`.',
       '- Fill docs with `agentplane task doc set <task-id> --section <name> --text "..."` and set plan text with `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`.',
-      '- Append reusable incident-ready Findings via `agentplane task findings add <task-id> --observation "..." --impact "..." --resolution "..." [--promote] [--external]` instead of replacing the full Findings section by hand.',
+      '- Append reusable incident-ready Findings via `agentplane task findings add <task-id> --observation "..." --impact "..." --resolution "..."`; promotion is the default unless `--local-only` is set.',
       "- Approve plan only after required sections and Verify Steps are ready.",
     ],
   },

@@ -223,7 +223,7 @@ describe("pr/integrate/internal/finalize", () => {
     await finalizeIntegrate({ ...baseOpts(), quiet: false });
 
     expect(emitter.info).toHaveBeenCalledWith(
-      expect.stringContaining("structured finding skipped"),
+      expect.stringContaining("structured finding stayed task-local"),
     );
   });
 
@@ -255,7 +255,7 @@ describe("pr/integrate/internal/finalize", () => {
     await finalizeIntegrate({ ...baseOpts(), quiet: false });
 
     expect(emitter.info).toHaveBeenCalledWith(
-      expect.stringContaining("Findings has text but no structured incident blocks"),
+      expect.stringContaining("plain Findings text stays task-local"),
     );
   });
 });

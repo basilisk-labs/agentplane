@@ -1,0 +1,22 @@
+ .agentplane/policy/workflow.branch_pr.md           |   2 +-
+ .agentplane/policy/workflow.direct.md              |   4 +-
+ .agentplane/tasks/202604072309-R3SG76/README.md    | 140 +++++++++++++++++++++
+ .../tasks/202604072309-R3SG76/pr/diffstat.txt      |  22 ++++
+ .../tasks/202604072309-R3SG76/pr/github-body.md    |  69 ++++++++++
+ .../tasks/202604072309-R3SG76/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604072309-R3SG76/pr/meta.json |  17 +++
+ .../tasks/202604072309-R3SG76/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604072309-R3SG76/pr/review.md |  76 +++++++++++
+ .../tasks/202604072309-R3SG76/pr/verify.log        |   0
+ docs/user/agent-bootstrap.generated.mdx            |   3 +-
+ docs/user/tasks-and-backends.mdx                   |   3 +-
+ .../agentplane/assets/policy/workflow.branch_pr.md |   2 +-
+ .../agentplane/assets/policy/workflow.direct.md    |   4 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |   4 +-
+ packages/agentplane/src/cli/command-guide.test.ts  |   8 ++
+ packages/agentplane/src/cli/command-guide.ts       |   2 +-
+ .../src/cli/run-cli.core.incidents.test.ts         |   3 +-
+ .../agentplane/src/commands/incidents/shared.ts    |   4 +-
+ .../pr/integrate/internal/finalize.test.ts         |   4 +-
+ .../src/commands/task/finish.unit.test.ts          |   7 +-
+ 21 files changed, 356 insertions(+), 19 deletions(-)

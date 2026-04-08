@@ -64,7 +64,8 @@ Section semantics:
 
 - `## Findings` is task-local and may contain raw incident candidates.
 - `.agentplane/policy/incidents.md` stores only curated strong incidents with repository-wide value.
-- Promotion from `Findings` to policy incidents is explicit, not automatic.
+- Plain prose in `## Findings` stays task-local and never updates `.agentplane/policy/incidents.md` by itself.
+- Structured reusable external findings are promoted during `agentplane finish` or `agentplane incidents collect <task-id>`.
 
 ### Frontmatter boundaries
 

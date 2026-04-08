@@ -356,7 +356,8 @@ describe("runCli incidents", () => {
     try {
       const code = await runCli(["incidents", "collect", taskId, "--check", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("Findings has text but no structured incident blocks");
+      expect(io.stdout).toContain("plain Findings text stays task-local");
+      expect(io.stdout).toContain("does not update incidents.md");
       expect(io.stdout).toContain("Observation/Impact/Resolution");
     } finally {
       io.restore();
