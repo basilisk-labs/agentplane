@@ -1,10 +1,11 @@
 ---
 id: "202604080136-0Q524H"
 title: "Fix bootstrap doc generation to reject stale dist"
-status: "TODO"
+result_summary: "integrate: squash task/202604080136-0Q524H/bootstrap-doc-freshness"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -37,8 +38,13 @@ verification:
     Result: pass
     Evidence: repo-local runtime rebuilt successfully and bootstrap freshness check reported docs/runtime surfaces aligned.
     Scope: real framework-worktree bootstrap and docs freshness path.
-commit: null
-comments: []
+commit:
+  hash: "0aa967241e7e9aa46c1b90e039092992c735be09"
+  message: "📝 0Q524H task: sync GitHub PR metadata"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604080136-0Q524H/pr."
 events:
   -
     type: "verify"
@@ -60,9 +66,16 @@ events:
       Result: pass
       Evidence: repo-local runtime rebuilt successfully and bootstrap freshness check reported docs/runtime surfaces aligned.
       Scope: real framework-worktree bootstrap and docs freshness path.
+  -
+    type: "status"
+    at: "2026-04-08T17:56:26.001Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604080136-0Q524H/pr."
 doc_version: 3
-doc_updated_at: "2026-04-08T04:05:43.710Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-08T17:56:26.005Z"
+doc_updated_by: "INTEGRATOR"
 description: "Generator and freshness check for agent bootstrap docs still import dist bootstrap-guide modules directly, so docs can be regenerated and validated against stale dist after src changes. Make the path source-truth safe or fail fast when dist is stale."
 sections:
   Summary: |-
