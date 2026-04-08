@@ -4,7 +4,7 @@ title: "Explain internal Findings vs incidents registry promotion"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-08T00:57:13.792Z"
+  updated_at: "2026-04-08T01:08:26.576Z"
   updated_by: "CODER"
-  note: "Verified targeted incidents and command-guide coverage; messaging now distinguishes plain task-local Findings from structured external incident promotion without changing promotion semantics."
+  note: "Re-verified after syncing canonical policy assets; incidents/finish/integrate diagnostics, bootstrap docs, routing, and agent-template sync remain aligned on the current head."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified targeted incidents and command-guide coverage; messaging now distinguishes plain task-local Findings from structured external incident promotion without changing promotion semantics."
+  -
+    type: "verify"
+    at: "2026-04-08T01:08:26.576Z"
+    author: "CODER"
+    state: "ok"
+    note: "Re-verified after syncing canonical policy assets; incidents/finish/integrate diagnostics, bootstrap docs, routing, and agent-template sync remain aligned on the current head."
 doc_version: 3
-doc_updated_at: "2026-04-08T00:57:13.796Z"
+doc_updated_at: "2026-04-08T01:08:26.586Z"
 doc_updated_by: "CODER"
 description: "When Findings contains plain text, incidents collect and close-path diagnostics should explicitly distinguish internal follow-up defects from reusable external incident candidates so operators do not expect incidents.md updates from task-local code bugs."
 sections:
@@ -68,6 +74,14 @@ sections:
     Note: Verified targeted incidents and command-guide coverage; messaging now distinguishes plain task-local Findings from structured external incident promotion without changing promotion semantics.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-08T00:44:20.068Z, excerpt_hash=sha256:97786aa004558cc1c6ef29cdb1ee926f4b4735b67de3ed304137441ae54c4931
+    
+    ### 2026-04-08T01:08:26.576Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Re-verified after syncing canonical policy assets; incidents/finish/integrate diagnostics, bootstrap docs, routing, and agent-template sync remain aligned on the current head.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-08T00:57:13.796Z, excerpt_hash=sha256:97786aa004558cc1c6ef29cdb1ee926f4b4735b67de3ed304137441ae54c4931
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -107,6 +121,14 @@ By: CODER
 Note: Verified targeted incidents and command-guide coverage; messaging now distinguishes plain task-local Findings from structured external incident promotion without changing promotion semantics.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-08T00:44:20.068Z, excerpt_hash=sha256:97786aa004558cc1c6ef29cdb1ee926f4b4735b67de3ed304137441ae54c4931
+
+### 2026-04-08T01:08:26.576Z — VERIFY — ok
+
+By: CODER
+
+Note: Re-verified after syncing canonical policy assets; incidents/finish/integrate diagnostics, bootstrap docs, routing, and agent-template sync remain aligned on the current head.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-08T00:57:13.796Z, excerpt_hash=sha256:97786aa004558cc1c6ef29cdb1ee926f4b4735b67de3ed304137441ae54c4931
 
 <!-- END VERIFICATION RESULTS -->
 

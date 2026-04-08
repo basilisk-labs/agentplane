@@ -23,7 +23,7 @@ When Findings contains plain text, incidents collect and close-path diagnostics 
 ### Current Status
 
 - State: ok
-- Note: Verified targeted incidents and command-guide coverage; messaging now distinguishes plain task-local Findings from structured external incident promotion without changing promotion semantics.
+- Note: Re-verified after syncing canonical policy assets; incidents/finish/integrate diagnostics, bootstrap docs, routing, and agent-template sync remain aligned on the current head.
 
 ## Risks
 
@@ -43,12 +43,33 @@ When Findings contains plain text, incidents collect and close-path diagnostics 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-08T01:00:59.289Z
+- Updated: 2026-04-08T01:07:42.241Z
 - Branch: task/202604072309-R3SG76/incidents-findings-boundary
-- Head: f40d5aa39527
+- Head: dba269e19c27
 
 ```text
-No changes detected.
+ .agentplane/policy/workflow.branch_pr.md           |   2 +-
+ .agentplane/policy/workflow.direct.md              |   4 +-
+ .agentplane/tasks/202604072309-R3SG76/README.md    | 118 +++++++++++++++++++++
+ .../tasks/202604072309-R3SG76/pr/diffstat.txt      |   0
+ .../tasks/202604072309-R3SG76/pr/github-body.md    |  48 +++++++++
+ .../tasks/202604072309-R3SG76/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604072309-R3SG76/pr/meta.json |  14 +++
+ .../tasks/202604072309-R3SG76/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604072309-R3SG76/pr/review.md |  55 ++++++++++
+ .../tasks/202604072309-R3SG76/pr/verify.log        |   0
+ docs/user/agent-bootstrap.generated.mdx            |   3 +-
+ docs/user/tasks-and-backends.mdx                   |   3 +-
+ .../agentplane/assets/policy/workflow.branch_pr.md |   2 +-
+ .../agentplane/assets/policy/workflow.direct.md    |   4 +-
+ packages/agentplane/src/cli/bootstrap-guide.ts     |   4 +-
+ packages/agentplane/src/cli/command-guide.test.ts  |   8 ++
+ packages/agentplane/src/cli/command-guide.ts       |   2 +-
+ .../src/cli/run-cli.core.incidents.test.ts         |   3 +-
+ .../agentplane/src/commands/incidents/shared.ts    |   4 +-
+ .../pr/integrate/internal/finalize.test.ts         |   4 +-
+ .../src/commands/task/finish.unit.test.ts          |   7 +-
+ 21 files changed, 267 insertions(+), 19 deletions(-)
 ```
 
 </details>
