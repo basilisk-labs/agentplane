@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604080135-YP0R5D/findings-deferred-promotion",
   "created_at": "2026-04-08T04:10:15.241Z",
-  "head_sha": "0707ffa5dace832a00234ef30ce15cd9ff7a2ecc",
+  "head_sha": "0f19698f75e05c7648bc6cc3070d6f102cf5205f",
   "last_verified_at": "2026-04-08T04:10:15.216Z",
   "last_verified_sha": "7de5c2956604fb3c8921e02c71ddd5aadc806980",
+  "merge_commit": "f11d65f4abfd7cbd7bb46f26a7a6352f042f1031",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-08T17:56:51.971Z",
   "pr_number": 149,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/149",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604080135-YP0R5D",
-  "updated_at": "2026-04-08T17:33:47.309Z",
+  "updated_at": "2026-04-08T17:56:51.971Z",
   "verify": {
     "status": "pass"
   }

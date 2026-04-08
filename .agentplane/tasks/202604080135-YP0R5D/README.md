@@ -1,10 +1,11 @@
 ---
 id: "202604080135-YP0R5D"
 title: "Explain deferred incidents promotion at findings append time"
-status: "TODO"
+result_summary: "integrate: squash task/202604080135-YP0R5D/findings-deferred-promotion"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -37,8 +38,13 @@ verification:
     Result: pass
     Evidence: no lint errors on touched files.
     Scope: touched implementation and tests only.
-commit: null
-comments: []
+commit:
+  hash: "f11d65f4abfd7cbd7bb46f26a7a6352f042f1031"
+  message: "📝 YP0R5D task: sync GitHub PR metadata"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604080135-YP0R5D/pr."
 events:
   -
     type: "verify"
@@ -60,9 +66,16 @@ events:
       Result: pass
       Evidence: no lint errors on touched files.
       Scope: touched implementation and tests only.
+  -
+    type: "status"
+    at: "2026-04-08T17:56:52.018Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604080135-YP0R5D/pr."
 doc_version: 3
-doc_updated_at: "2026-04-08T04:10:15.219Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-08T17:56:52.023Z"
+doc_updated_by: "INTEGRATOR"
 description: "task findings add still appends promotable findings silently, so operators expect incidents.md to update immediately. Add explicit CLI diagnostics and contract coverage for deferred promotion through finish or incidents collect."
 sections:
   Summary: |-
