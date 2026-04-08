@@ -1,0 +1,1 @@
+github/workflow: Fix pr close-superseded GitHub auth propagation (P5XKNF)

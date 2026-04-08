@@ -1,14 +1,10 @@
-import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
-import { promisify } from "node:util";
 
 import { mapCoreError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter, infoMessage, workflowModeMessage } from "../../cli/output.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { CliError } from "../../shared/errors.js";
-import { execFileAsync, gitEnv } from "../shared/git.js";
-import { normalizeGhTransportError, withGhTransportRetry } from "../shared/gh-transport.js";
 import {
   loadBackendTask,
   loadCommandContext,
@@ -17,74 +13,19 @@ import {
 import { parsePrMetaForwardCompatible } from "../shared/pr-meta.js";
 
 import { cmdPrClose } from "./close.js";
+import {
+  isGhNotFound,
+  resolveDefaultGithubRepo,
+  runGhApiJson,
+  runGhApiNoOutput,
+} from "./internal/gh-api.js";
 import { resolvePrPaths } from "./internal/pr-paths.js";
-
-const execFileAsyncRaw = promisify(execFile);
 
 type GithubPullRecord = {
   number?: number;
   state?: string;
   html_url?: string;
 };
-
-function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {
-  const trimmed = remoteUrl.trim();
-  if (!trimmed) return null;
-  const httpsMatch = /^https?:\/\/github\.com\/([^/]+)\/([^/]+?)(?:\.git)?\/?$/.exec(trimmed);
-  if (httpsMatch) return `${httpsMatch[1]}/${httpsMatch[2]}`;
-  const sshMatch = /^git@github\.com:([^/]+)\/([^/]+?)(?:\.git)?$/.exec(trimmed);
-  if (sshMatch) return `${sshMatch[1]}/${sshMatch[2]}`;
-  return null;
-}
-
-async function resolveDefaultRepo(cwd: string): Promise<string> {
-  const { stdout } = await execFileAsync("git", ["remote", "get-url", "origin"], {
-    cwd,
-    env: gitEnv(),
-  });
-  const repo = parseGithubRepoFromRemoteUrl(stdout);
-  if (!repo) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: "Could not derive GitHub owner/repo from git remote origin.",
-    });
-  }
-  return repo;
-}
-
-async function runGhApiJson<T>(cwd: string, args: string[]): Promise<T> {
-  const { stdout } = await withGhTransportRetry(
-    () =>
-      execFileAsyncRaw("gh", ["api", ...args], {
-        cwd,
-        env: gitEnv(),
-        maxBuffer: 10 * 1024 * 1024,
-      }),
-    {
-      label: `running gh api ${args[0] ?? ""}`,
-    },
-  );
-  return JSON.parse(stdout) as T;
-}
-
-async function runGhApiNoOutput(cwd: string, endpoint: string): Promise<void> {
-  await withGhTransportRetry(
-    () =>
-      execFileAsyncRaw("gh", ["api", endpoint, "-X", "DELETE"], {
-        cwd,
-        env: gitEnv(),
-        maxBuffer: 10 * 1024 * 1024,
-      }),
-    {
-      label: `running gh api ${endpoint}`,
-    },
-  );
-}
-
-function isGhNotFound(err: unknown): boolean {
-  return /\b404\b/.test(normalizeGhTransportError(err));
-}
 
 async function deleteRemoteBranch(opts: {
   cwd: string;
@@ -93,7 +34,7 @@ async function deleteRemoteBranch(opts: {
 }): Promise<"deleted" | "already-absent"> {
   const endpoint = `repos/${opts.repo}/git/refs/heads/${encodeURIComponent(opts.branch)}`;
   try {
-    await runGhApiNoOutput(opts.cwd, endpoint);
+    await runGhApiNoOutput(opts.cwd, [endpoint, "-X", "DELETE"]);
     return "deleted";
   } catch (err) {
     if (isGhNotFound(err)) return "already-absent";
@@ -157,7 +98,7 @@ export async function cmdPrCloseSuperseded(opts: {
       });
     }
 
-    const repo = await resolveDefaultRepo(resolved.gitRoot);
+    const repo = await resolveDefaultGithubRepo(resolved.gitRoot);
     const owner = repo.split("/", 1)[0]?.trim() ?? "";
     if (!owner) {
       throw new CliError({
