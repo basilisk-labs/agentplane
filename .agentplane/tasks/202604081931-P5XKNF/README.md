@@ -1,11 +1,10 @@
 ---
 id: "202604081931-P5XKNF"
 title: "Fix pr close-superseded GitHub auth propagation"
-result_summary: "integrate: squash task/202604081931-P5XKNF/close-superseded-auth"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,16 +23,11 @@ verification:
   updated_at: "2026-04-08T19:43:38.928Z"
   updated_by: "REVIEWER"
   note: "Focused pr close-superseded auth/env regression tests passed; eslint passed on touched command and test files; command diff remains limited to shared gh auth propagation for close-superseded and close."
-commit:
-  hash: "3af2fe2a14bdaa0380da91828768bd36d9bbc780"
-  message: "🧩 P5XKNF integrate: github/workflow: Fix pr close-superseded GitHub auth propagation"
+commit: null
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the repo-local close-superseded auth failure, fix gh child auth propagation, and cover the path with a focused regression test before integrating the change."
-  -
-    author: "INTEGRATOR"
-    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604081931-P5XKNF/pr."
 events:
   -
     type: "status"
@@ -48,16 +42,9 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Focused pr close-superseded auth/env regression tests passed; eslint passed on touched command and test files; command diff remains limited to shared gh auth propagation for close-superseded and close."
-  -
-    type: "status"
-    at: "2026-04-08T19:57:55.636Z"
-    author: "INTEGRATOR"
-    from: "DOING"
-    to: "DONE"
-    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604081931-P5XKNF/pr."
 doc_version: 3
-doc_updated_at: "2026-04-08T19:57:55.642Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-04-08T19:43:38.943Z"
+doc_updated_by: "CODER"
 description: "Ensure repo-local agentplane can close superseded task PRs using the authenticated gh session without losing auth context in child gh api calls."
 sections:
   Summary: |-
