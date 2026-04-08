@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202604081816-DCDXVB/verify-incident-finding",
   "created_at": "2026-04-08T18:50:24.855Z",
-  "head_sha": "70c479c09c783a817bd2ad4b9971a9a84bbc74fb",
+  "head_sha": "f276e87312749a6d0076011c8fcdd933d39736ad",
   "last_verified_at": "2026-04-08T18:50:24.765Z",
   "last_verified_sha": "70c479c09c783a817bd2ad4b9971a9a84bbc74fb",
+  "pr_number": 154,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/154",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202604081816-DCDXVB",
-  "updated_at": "2026-04-08T18:50:24.855Z",
+  "updated_at": "2026-04-08T18:57:12.941Z",
   "verify": {
     "status": "pass"
   }

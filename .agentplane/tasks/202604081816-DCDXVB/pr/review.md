@@ -43,12 +43,32 @@ The incident registry path exists, but real operator flow almost never leaves st
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-08T18:50:24.855Z
+- Updated: 2026-04-08T18:57:12.941Z
 - Branch: task/202604081816-DCDXVB/verify-incident-finding
-- Head: 70c479c09c78
+- Head: f276e8731274
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604081816-DCDXVB/README.md    | 113 +++++++++++++
+ .../tasks/202604081816-DCDXVB/pr/diffstat.txt      |   0
+ .../tasks/202604081816-DCDXVB/pr/github-body.md    |  48 ++++++
+ .../tasks/202604081816-DCDXVB/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604081816-DCDXVB/pr/meta.json |  14 ++
+ .../tasks/202604081816-DCDXVB/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604081816-DCDXVB/pr/review.md |  55 +++++++
+ .../tasks/202604081816-DCDXVB/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |  33 ++++
+ packages/agentplane/src/cli/command-invocations.ts |   5 +-
+ .../src/cli/run-cli.core.incidents.test.ts         | 178 +++++++++++++++++++++
+ packages/agentplane/src/commands/task/findings.ts  | 138 +++++++++++-----
+ .../src/commands/task/shared/transitions.ts        |   1 +
+ .../src/commands/task/verify-command-shared.ts     | 121 ++++++++++++++
+ .../src/commands/task/verify-ok.command.ts         |  11 ++
+ .../agentplane/src/commands/task/verify-record.ts  | 133 ++++++++++++++-
+ .../src/commands/task/verify-rework.command.ts     |  11 ++
+ packages/agentplane/src/commands/verify.run.ts     |   9 ++
+ packages/agentplane/src/commands/verify.spec.ts    |  17 +-
+ .../src/commands/workflow.verify-hooks.test.ts     |  35 ++++
+ 20 files changed, 867 insertions(+), 56 deletions(-)
 ```
 
 </details>
