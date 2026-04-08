@@ -1,10 +1,11 @@
 ---
 id: "202604081816-XYTDYA"
 title: "Detect stale open branch_pr PR drift from projection snapshots"
-status: "DOING"
+result_summary: "integrate: squash task/202604081816-XYTDYA/doctor-open-pr-projection"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-08T18:26:00.526Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/commands/doctor.command.test.ts; bun x eslint packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/doctor.command.test.ts. Result: pass. Evidence: doctor branch_pr open-PR drift now reads live backend state before falling back to tasks.json, and the new regression locks the projection-only stale snapshot shape. Scope: doctor branch_pr stale open-PR detection."
-commit: null
+commit:
+  hash: "93b24ee85dea659b185742b210f03278e7bf7366"
+  message: "🧩 XYTDYA integrate: github/workflow: Detect stale open branch_pr PR drift from projection snapshots"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the projection-vs-tasks.json doctor gap around stale open branch_pr PRs, then fix the detector against the live A1XE27 shape with focused regressions."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604081816-XYTDYA/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/commands/doctor.command.test.ts; bun x eslint packages/agentplane/src/commands/doctor/branch-pr.ts packages/agentplane/src/commands/doctor.command.test.ts. Result: pass. Evidence: doctor branch_pr open-PR drift now reads live backend state before falling back to tasks.json, and the new regression locks the projection-only stale snapshot shape. Scope: doctor branch_pr stale open-PR detection."
+  -
+    type: "status"
+    at: "2026-04-08T19:01:53.226Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604081816-XYTDYA/pr."
 doc_version: 3
-doc_updated_at: "2026-04-08T18:26:00.544Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-08T19:01:53.241Z"
+doc_updated_by: "INTEGRATOR"
 description: "Doctor currently misses real DONE-task open-PR drift because it reads the legacy tasks.json snapshot instead of the current projection/task docs. Fix doctor to use the same current-state source that task list and local backend use, and lock the regression with a live-style fixture."
 sections:
   Summary: |-
