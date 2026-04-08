@@ -1,0 +1,1 @@
+incidents/workflow: Explain internal Findings vs incidents registry promotion (R3SG76)
