@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604072309-R3SG76/incidents-findings-boundary",
   "created_at": "2026-04-08T00:57:13.825Z",
-  "head_sha": "dba269e19c27b919b7551e758660f5bfc9899dfd",
+  "head_sha": "1d84ff959898d39b24c1249a0934d3b90b0b8fbe",
   "last_verified_at": "2026-04-08T01:08:26.576Z",
   "last_verified_sha": "dba269e19c27b919b7551e758660f5bfc9899dfd",
+  "merge_commit": "3476e3e487cfb366f67e6766bc4851adbbed786b",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-08T01:26:14.647Z",
   "pr_number": 144,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/144",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604072309-R3SG76",
-  "updated_at": "2026-04-08T01:07:42.241Z",
+  "updated_at": "2026-04-08T01:26:14.647Z",
   "verify": {
     "status": "pass"
   }

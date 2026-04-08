@@ -1,10 +1,11 @@
 ---
 id: "202604072309-R3SG76"
 title: "Explain internal Findings vs incidents registry promotion"
-status: "DOING"
+result_summary: "integrate: squash task/202604072309-R3SG76/incidents-findings-boundary"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-08T01:08:26.576Z"
   updated_by: "CODER"
   note: "Re-verified after syncing canonical policy assets; incidents/finish/integrate diagnostics, bootstrap docs, routing, and agent-template sync remain aligned on the current head."
-commit: null
+commit:
+  hash: "3476e3e487cfb366f67e6766bc4851adbbed786b"
+  message: "📝 R3SG76 task: sync verified PR metadata"
 comments:
   -
     author: "CODER"
     body: "Start: clarify Findings versus incidents registry promotion without changing incident collection semantics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604072309-R3SG76/pr."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Re-verified after syncing canonical policy assets; incidents/finish/integrate diagnostics, bootstrap docs, routing, and agent-template sync remain aligned on the current head."
+  -
+    type: "status"
+    at: "2026-04-08T01:26:14.699Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604072309-R3SG76/pr."
 doc_version: 3
-doc_updated_at: "2026-04-08T01:08:26.586Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-08T01:26:14.703Z"
+doc_updated_by: "INTEGRATOR"
 description: "When Findings contains plain text, incidents collect and close-path diagnostics should explicitly distinguish internal follow-up defects from reusable external incident candidates so operators do not expect incidents.md updates from task-local code bugs."
 sections:
   Summary: |-
