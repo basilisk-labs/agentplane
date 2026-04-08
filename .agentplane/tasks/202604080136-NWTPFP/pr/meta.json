@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202604080136-NWTPFP/remote-pr-open",
   "created_at": "2026-04-08T04:32:24.670Z",
-  "head_sha": "7de5c2956604fb3c8921e02c71ddd5aadc806980",
+  "head_sha": "d16ba3e98ebdc51bc581be25fcee5d5832c92b97",
   "last_verified_at": "2026-04-08T04:46:08.527Z",
   "last_verified_sha": "7de5c2956604fb3c8921e02c71ddd5aadc806980",
+  "pr_number": 147,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/147",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202604080136-NWTPFP",
-  "updated_at": "2026-04-08T04:32:24.670Z",
+  "updated_at": "2026-04-08T04:55:43.862Z",
   "verify": {
     "status": "pass"
   }

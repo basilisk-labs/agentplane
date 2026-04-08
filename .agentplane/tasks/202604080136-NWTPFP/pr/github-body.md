@@ -39,9 +39,9 @@ pr open still acts as local artifact sync only unless an existing GitHub PR is a
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-08T04:32:24.670Z
+- Updated: 2026-04-08T04:55:43.862Z
 - Branch: task/202604080136-NWTPFP/remote-pr-open
-- Head: 7de5c2956604
+- Head: d16ba3e98ebd
 
 ```text
 No changes detected.
