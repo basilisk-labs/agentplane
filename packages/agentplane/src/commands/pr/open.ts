@@ -6,15 +6,19 @@ import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { type CommandContext } from "../shared/task-backend.js";
 
-import { syncPrArtifacts } from "./internal/sync.js";
+import { type PrOpenOutcome, syncPrArtifacts } from "./internal/sync.js";
 
-function prOpenOutcomeDetails(meta: { pr_number?: number; pr_url?: string }): string {
+function prOpenOutcomeDetails(
+  meta: { pr_number?: number; pr_url?: string },
+  openOutcome: PrOpenOutcome | null,
+): string {
+  if (openOutcome) return openOutcome.message;
   if (typeof meta.pr_number === "number" && meta.pr_number > 0) {
     return meta.pr_url?.trim()
       ? `linked to GitHub PR #${meta.pr_number}: ${meta.pr_url.trim()}`
       : `linked to GitHub PR #${meta.pr_number}`;
   }
-  return "local PR artifacts synced; GitHub PR not created";
+  return "local PR artifacts synced; remote PR creation staged";
 }
 
 export async function cmdPrOpen(opts: {
@@ -24,6 +28,7 @@ export async function cmdPrOpen(opts: {
   taskId: string;
   author: string;
   branch?: string;
+  syncOnly?: boolean;
 }): Promise<number> {
   try {
     const output = createCliEmitter();
@@ -36,7 +41,7 @@ export async function cmdPrOpen(opts: {
       });
     }
 
-    const { meta, prDir, resolved } = await syncPrArtifacts({
+    const { meta, prDir, resolved, openOutcome } = await syncPrArtifacts({
       ctx: opts.ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
@@ -44,9 +49,14 @@ export async function cmdPrOpen(opts: {
       mode: "open",
       author,
       branch: opts.branch,
+      remoteMode: opts.syncOnly ? "sync-only" : "auto",
     });
 
-    output.success("pr open", path.relative(resolved.gitRoot, prDir), prOpenOutcomeDetails(meta));
+    output.success(
+      "pr open",
+      path.relative(resolved.gitRoot, prDir),
+      prOpenOutcomeDetails(meta, openOutcome ?? null),
+    );
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
