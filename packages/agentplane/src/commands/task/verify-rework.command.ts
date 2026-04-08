@@ -5,6 +5,7 @@ import { cmdTaskVerifyRework } from "./verify-record.js";
 import {
   parseVerifyCommonOptions,
   validateVerifyDetailsFileExclusive,
+  validateVerifyFindingSource,
   validateVerifyNonEmptyInput,
   validateVerifyNoteSource,
   verifyCommonOptions,
@@ -34,6 +35,7 @@ export const taskVerifyReworkSpec: CommandSpec<TaskVerifyReworkParsed> = {
     });
     validateVerifyNonEmptyInput(raw, taskVerifyReworkSpec, "by");
     validateVerifyNoteSource(raw, taskVerifyReworkSpec);
+    validateVerifyFindingSource(raw, taskVerifyReworkSpec);
   },
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
@@ -54,6 +56,15 @@ export function makeRunTaskVerifyReworkHandler(getCtx: (cmd: string) => Promise<
       details: p.details,
       file: p.file,
       quiet: p.quiet,
+      observation: p.observation,
+      impact: p.impact,
+      resolution: p.resolution,
+      localOnly: p.localOnly,
+      incidentScope: p.incidentScope,
+      incidentTags: p.incidentTags,
+      incidentMatch: p.incidentMatch,
+      incidentAdvice: p.incidentAdvice,
+      incidentRule: p.incidentRule,
     });
   };
 }

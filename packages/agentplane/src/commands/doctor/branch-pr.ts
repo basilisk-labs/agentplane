@@ -87,6 +87,15 @@ export async function checkBranchPrDoneTaskOpenPrDrift(ctx?: CommandContext): Pr
 }
 
 async function readDoneTaskSnapshot(ctx: CommandContext): Promise<TaskData[]> {
+  try {
+    const tasks = await ctx.taskBackend.listTasks();
+    if (tasks.length > 0) {
+      return tasks;
+    }
+  } catch {
+    // Fall back to the legacy export snapshot when the live backend read is unavailable.
+  }
+
   const tasksJsonPath = path.join(ctx.resolvedProject.agentplaneDir, "tasks.json");
   try {
     const raw = await readFile(tasksJsonPath, "utf8");

@@ -19,6 +19,7 @@ import { integrateSpec } from "../../../commands/integrate.command.js";
 import {
   prCheckSpec,
   prCloseSpec,
+  prCloseSupersededSpec,
   prNoteSpec,
   prOpenSpec,
   prSpec,
@@ -185,6 +186,11 @@ export const PROJECT_COMMANDS = [
   ),
   entry(prCloseSpec, (deps) =>
     import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrCloseHandler(deps.getCtx)),
+  ),
+  entry(prCloseSupersededSpec, (deps) =>
+    import("../../../commands/pr/pr.command.js").then((m) =>
+      m.makeRunPrCloseSupersededHandler(deps.getCtx),
+    ),
   ),
   entry(prNoteSpec, (deps) =>
     import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrNoteHandler(deps.getCtx)),

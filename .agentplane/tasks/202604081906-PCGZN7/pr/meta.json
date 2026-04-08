@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604081906-PCGZN7/sync-main-wave",
+  "created_at": "2026-04-08T19:07:27.368Z",
+  "head_sha": "782e8c18446bda1a245655849ee7993de93fe777",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "pr_number": 156,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/156",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604081906-PCGZN7",
+  "updated_at": "2026-04-08T19:12:57.457Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

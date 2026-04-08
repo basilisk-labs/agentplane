@@ -64,6 +64,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [pr](#pr)
   - [pr check](#pr-check)
   - [pr close](#pr-close)
+  - [pr close-superseded](#pr-close-superseded)
   - [pr note](#pr-note)
   - [pr open](#pr-open)
   - [pr update](#pr-update)
@@ -1226,6 +1227,15 @@ Options:
 - `--details <text>`: Optional free-form details (mutually exclusive with --file).
 - `--file <path>`: Read details from a file path (mutually exclusive with --details).
 - `--quiet`: Suppress output. (default=false)
+- `--observation <text>`: Structured finding observation to append with the verification.
+- `--impact <text>`: Structured finding impact to append with the verification.
+- `--resolution <text>`: Structured finding resolution to append with the verification.
+- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--incident-scope <text>`: Optional incident scope for the appended finding.
+- `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
+- `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
+- `--incident-advice <text>`: Optional operator advice for the appended finding.
+- `--incident-rule <text>`: Optional incident rule for the appended finding.
 
 Examples:
 
@@ -1246,6 +1256,12 @@ agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs chang
 ```
 
 - Record a needs-rework outcome with details.
+
+```sh
+agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --observation "Repeated recovery was manual." --impact "Operators needed a second command." --resolution "Append structured findings during verify."
+```
+
+- Record verification and append a promotable structured finding in one command.
 
 ## Policy
 
@@ -1348,7 +1364,7 @@ Manage local PR review and GitHub publication artifacts for a task (branch_pr wo
 Usage:
 
 ```text
-agentplane pr <open|update|check|note|close> <task-id|pr-number> [options]
+agentplane pr <open|update|check|note|close|close-superseded> <task-id|pr-number> [options]
 ```
 
 Examples:
@@ -1382,6 +1398,12 @@ agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch
 ```
 
 - Close a stale GitHub PR through REST and optionally delete its remote head branch.
+
+```sh
+agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch
+```
+
+- Close a superseded task PR from task artifacts after protected-main closure.
 
 ### pr check
 
@@ -1424,6 +1446,28 @@ agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch
 ```
 
 - Close a stale PR and remove its remote head branch when it belongs to the same repo.
+
+### pr close-superseded
+
+Close a superseded task PR using task artifacts.
+
+Usage:
+
+```text
+agentplane pr close-superseded <task-id> [options]
+```
+
+Options:
+
+- `--delete-remote-branch`: Delete the remote head branch after a successful close when it belongs to the task repo. (default=false)
+
+Examples:
+
+```sh
+agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch
+```
+
+- Repair a stale task PR after the task has already been merged to main.
 
 ### pr note
 
@@ -3341,6 +3385,15 @@ Options:
 - `--details <text>`: Optional details text (mutually exclusive with --file).
 - `--file <path>`: Optional details file path (mutually exclusive with --details).
 - `--quiet`: Suppress normal output (still prints errors). (default=false)
+- `--observation <text>`: Structured finding observation to append with the verification.
+- `--impact <text>`: Structured finding impact to append with the verification.
+- `--resolution <text>`: Structured finding resolution to append with the verification.
+- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--incident-scope <text>`: Optional incident scope for the appended finding.
+- `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
+- `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
+- `--incident-advice <text>`: Optional operator advice for the appended finding.
+- `--incident-rule <text>`: Optional incident rule for the appended finding.
 
 Examples:
 
@@ -3368,6 +3421,15 @@ Options:
 - `--details <text>`: Optional details text (mutually exclusive with --file).
 - `--file <path>`: Optional details file path (mutually exclusive with --details).
 - `--quiet`: Suppress normal output (still prints errors). (default=false)
+- `--observation <text>`: Structured finding observation to append with the verification.
+- `--impact <text>`: Structured finding impact to append with the verification.
+- `--resolution <text>`: Structured finding resolution to append with the verification.
+- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--incident-scope <text>`: Optional incident scope for the appended finding.
+- `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
+- `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
+- `--incident-advice <text>`: Optional operator advice for the appended finding.
+- `--incident-rule <text>`: Optional incident rule for the appended finding.
 
 Examples:
 

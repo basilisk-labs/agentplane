@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604081816-XYTDYA/README.md    | 113 +++++++++++++++++++
+ .../tasks/202604081816-XYTDYA/pr/diffstat.txt      |  11 ++
+ .../tasks/202604081816-XYTDYA/pr/github-body.md    |  58 ++++++++++
+ .../tasks/202604081816-XYTDYA/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604081816-XYTDYA/pr/meta.json |  17 +++
+ .../tasks/202604081816-XYTDYA/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604081816-XYTDYA/pr/review.md |  65 +++++++++++
+ .../tasks/202604081816-XYTDYA/pr/verify.log        |   0
+ .../agentplane/src/commands/doctor.command.test.ts | 123 +++++++++++++++++++++
+ .../agentplane/src/commands/doctor/branch-pr.ts    |   9 ++
+ 10 files changed, 397 insertions(+)
