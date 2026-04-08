@@ -8,6 +8,7 @@ export type VerifyCommonParsed = {
   details?: string;
   file?: string;
   quiet: boolean;
+  collectIncidents: boolean;
   observation?: string;
   impact?: string;
   resolution?: string;
@@ -109,6 +110,13 @@ export const verifyCommonOptions: readonly OptionSpec[] = [
     name: "quiet",
     default: false,
     description: "Suppress normal output (still prints errors).",
+  },
+  {
+    kind: "boolean",
+    name: "collect-incidents",
+    default: false,
+    description:
+      "After recording verification, immediately run incidents collection and update incidents.md.",
   },
   ...verifyFindingOptions,
 ] as const;
@@ -223,6 +231,7 @@ export function parseVerifyCommonOptions(raw: ParsedRaw): VerifyCommonParsed {
     details: typeof raw.opts.details === "string" ? raw.opts.details : undefined,
     file: typeof raw.opts.file === "string" ? raw.opts.file : undefined,
     quiet: raw.opts.quiet === true,
+    collectIncidents: raw.opts["collect-incidents"] === true,
     observation: typeof raw.opts.observation === "string" ? raw.opts.observation : undefined,
     impact: typeof raw.opts.impact === "string" ? raw.opts.impact : undefined,
     resolution: typeof raw.opts.resolution === "string" ? raw.opts.resolution : undefined,

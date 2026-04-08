@@ -1226,6 +1226,7 @@ Options:
 - `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
 - `--details <text>`: Optional free-form details (mutually exclusive with --file).
 - `--file <path>`: Read details from a file path (mutually exclusive with --details).
+- `--collect-incidents`: After recording verification, immediately run incidents collection and update incidents.md. (default=false)
 - `--quiet`: Suppress output. (default=false)
 - `--observation <text>`: Structured finding observation to append with the verification.
 - `--impact <text>`: Structured finding impact to append with the verification.
@@ -1262,6 +1263,12 @@ agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --o
 ```
 
 - Record verification and append a promotable structured finding in one command.
+
+```sh
+agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --collect-incidents
+```
+
+- Record verification and immediately update incidents.md when reusable findings are present.
 
 ## Policy
 
@@ -3385,6 +3392,7 @@ Options:
 - `--details <text>`: Optional details text (mutually exclusive with --file).
 - `--file <path>`: Optional details file path (mutually exclusive with --details).
 - `--quiet`: Suppress normal output (still prints errors). (default=false)
+- `--collect-incidents`: After recording verification, immediately run incidents collection and update incidents.md. (default=false)
 - `--observation <text>`: Structured finding observation to append with the verification.
 - `--impact <text>`: Structured finding impact to append with the verification.
 - `--resolution <text>`: Structured finding resolution to append with the verification.
@@ -3421,6 +3429,7 @@ Options:
 - `--details <text>`: Optional details text (mutually exclusive with --file).
 - `--file <path>`: Optional details file path (mutually exclusive with --details).
 - `--quiet`: Suppress normal output (still prints errors). (default=false)
+- `--collect-incidents`: After recording verification, immediately run incidents collection and update incidents.md. (default=false)
 - `--observation <text>`: Structured finding observation to append with the verification.
 - `--impact <text>`: Structured finding impact to append with the verification.
 - `--resolution <text>`: Structured finding resolution to append with the verification.

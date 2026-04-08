@@ -2,9 +2,10 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
-import { backendNotSupportedMessage, successMessage } from "../../cli/output.js";
+import { backendNotSupportedMessage, infoMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
@@ -52,6 +53,7 @@ async function recordVerificationResult(opts: {
   note: string;
   details?: string | null;
   finding?: VerifyStructuredFindingInput | null;
+  collectIncidents?: boolean;
   quiet: boolean;
 }): Promise<void> {
   const ctx =
@@ -135,6 +137,16 @@ async function recordVerificationResult(opts: {
     }
   }
 
+  let incidentSummary: string | null = null;
+  if (opts.collectIncidents === true) {
+    const collected = await collectTaskIncidents({
+      ctx,
+      taskId: opts.taskId,
+      write: true,
+    });
+    incidentSummary = renderIncidentCollectionPlanOutcome(collected.plan);
+  }
+
   if (!opts.quiet) {
     const findingState = opts.finding
       ? opts.finding.localOnly
@@ -156,6 +168,9 @@ async function recordVerificationResult(opts: {
         `state=${opts.state} readme=${relReadmePath}${extra}`,
       )}\n`,
     );
+    if (incidentSummary) {
+      process.stdout.write(`${infoMessage(incidentSummary)}\n`);
+    }
   }
 }
 
@@ -245,6 +260,7 @@ async function executeVerifyRecordCommand(opts: {
   details?: string;
   file?: string;
   finding?: VerifyStructuredFindingInput | null;
+  collectIncidents?: boolean;
   quiet: boolean;
   command: VerifyCommandName;
 }): Promise<number> {
@@ -261,6 +277,7 @@ async function executeVerifyRecordCommand(opts: {
       note: input.note,
       details: input.details,
       finding: opts.finding,
+      collectIncidents: opts.collectIncidents,
       quiet: opts.quiet,
     });
     return 0;
@@ -280,6 +297,7 @@ export async function cmdTaskVerifyOk(opts: {
   noteFile?: string;
   details?: string;
   file?: string;
+  collectIncidents?: boolean;
   observation?: string;
   impact?: string;
   resolution?: string;
@@ -324,6 +342,7 @@ export async function cmdTaskVerifyRework(opts: {
   noteFile?: string;
   details?: string;
   file?: string;
+  collectIncidents?: boolean;
   observation?: string;
   impact?: string;
   resolution?: string;
@@ -369,6 +388,7 @@ export async function cmdVerifyParsed(opts: {
   noteFile?: string;
   details?: string;
   file?: string;
+  collectIncidents?: boolean;
   observation?: string;
   impact?: string;
   resolution?: string;

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604081931-J2NC32/verify-collect-incidents",
+  "created_at": "2026-04-08T19:59:13.153Z",
+  "head_sha": "9a538ffebad32bf60cdc417ac31d636c04f2cfac",
+  "last_verified_at": "2026-04-08T19:59:13.057Z",
+  "last_verified_sha": "9a538ffebad32bf60cdc417ac31d636c04f2cfac",
+  "schema_version": 1,
+  "task_id": "202604081931-J2NC32",
+  "updated_at": "2026-04-08T19:59:13.153Z",
+  "verify": {
+    "status": "pass"
+  }
+}
