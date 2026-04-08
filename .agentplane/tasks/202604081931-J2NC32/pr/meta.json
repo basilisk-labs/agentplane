@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202604081931-J2NC32/verify-collect-incidents",
   "created_at": "2026-04-08T19:59:13.153Z",
-  "head_sha": "9a538ffebad32bf60cdc417ac31d636c04f2cfac",
+  "head_sha": "82cae319625f4059b53e2d79c1445f80cb1e861d",
   "last_verified_at": "2026-04-08T19:59:13.057Z",
   "last_verified_sha": "9a538ffebad32bf60cdc417ac31d636c04f2cfac",
+  "pr_number": 160,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/160",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202604081931-J2NC32",
-  "updated_at": "2026-04-08T19:59:13.153Z",
+  "updated_at": "2026-04-08T20:02:55.268Z",
   "verify": {
     "status": "pass"
   }

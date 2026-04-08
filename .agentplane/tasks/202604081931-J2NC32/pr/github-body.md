@@ -41,12 +41,29 @@ Add an explicit verify flag that records structured findings and immediately run
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-08T19:59:13.153Z
+- Updated: 2026-04-08T20:02:55.268Z
 - Branch: task/202604081931-J2NC32/verify-collect-incidents
-- Head: 9a538ffebad3
+- Head: 82cae319625f
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604081931-J2NC32/README.md    | 112 +++++++++++++++++
+ .../tasks/202604081931-J2NC32/pr/diffstat.txt      |   0
+ .../tasks/202604081931-J2NC32/pr/github-body.md    |  52 ++++++++
+ .../tasks/202604081931-J2NC32/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604081931-J2NC32/pr/meta.json |  14 +++
+ .../tasks/202604081931-J2NC32/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604081931-J2NC32/pr/review.md |  59 +++++++++
+ .../tasks/202604081931-J2NC32/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |   9 ++
+ .../src/cli/run-cli.core.incidents.test.ts         | 139 +++++++++++++++++++++
+ .../src/commands/task/verify-command-shared.ts     |   9 ++
+ .../src/commands/task/verify-ok.command.ts         |   1 +
+ .../agentplane/src/commands/task/verify-record.ts  |  22 +++-
+ .../src/commands/task/verify-record.unit.test.ts   |  87 +++++++++++++
+ .../src/commands/task/verify-rework.command.ts     |   1 +
+ packages/agentplane/src/commands/verify.run.ts     |   1 +
+ packages/agentplane/src/commands/verify.spec.ts    |  11 ++
+ 17 files changed, 517 insertions(+), 1 deletion(-)
 ```
 
 </details>
