@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604080135-YP0R5D/findings-deferred-promotion",
+  "created_at": "2026-04-08T04:10:15.241Z",
+  "head_sha": "7de5c2956604fb3c8921e02c71ddd5aadc806980",
+  "last_verified_at": "2026-04-08T04:10:15.216Z",
+  "last_verified_sha": "7de5c2956604fb3c8921e02c71ddd5aadc806980",
+  "schema_version": 1,
+  "task_id": "202604080135-YP0R5D",
+  "updated_at": "2026-04-08T04:10:15.241Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -76,6 +76,20 @@ function appendFindingBlock(existingSection: string | null, block: string): stri
   return `${current}\n\n${block}`;
 }
 
+export function renderFindingsAddRegistryNote(opts: {
+  promote: boolean;
+  external: boolean;
+  taskId: string;
+}): string {
+  if (opts.promote && opts.external) {
+    return (
+      `incident candidate recorded for ${opts.taskId}; ` +
+      "incidents.md updates later during finish or `agentplane incidents collect <task-id>`"
+    );
+  }
+  return `task-local finding recorded for ${opts.taskId}; incidents.md unchanged`;
+}
+
 export async function cmdTaskFindingsAdd(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -174,6 +188,15 @@ export async function cmdTaskFindingsAdd(opts: {
     process.stdout.write(`${tasksDir}/${opts.taskId}/README.md\n`);
     process.stderr.write(
       `${infoMessage(`task findings add outcome=entry-appended section=${targetSection}`)}\n`,
+    );
+    process.stderr.write(
+      `${infoMessage(
+        renderFindingsAddRegistryNote({
+          promote: opts.promote,
+          external: opts.external,
+          taskId: opts.taskId,
+        }),
+      )}\n`,
     );
     return 0;
   } catch (err) {
