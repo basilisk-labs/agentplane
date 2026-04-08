@@ -1,10 +1,11 @@
 ---
 id: "202604080136-H96V3X"
 title: "Make integrate metadata deterministic when task branch ends with artifact commits"
-status: "TODO"
+result_summary: "integrate: squash task/202604080136-H96V3X/integrate-metadata-clarity"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,8 +24,13 @@ verification:
   updated_at: "2026-04-08T04:28:47.656Z"
   updated_by: "CODER"
   note: "Targeted bootstrap, vitest integrate slices, and eslint passed after deterministic integrate-subject fallback for artifact-only branch tips."
-commit: null
-comments: []
+commit:
+  hash: "2a41eb92b435aa941022275e134fb12f5cc78ed6"
+  message: "📝 H96V3X task: sync GitHub PR metadata"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604080136-H96V3X/pr."
 events:
   -
     type: "verify"
@@ -32,9 +38,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted bootstrap, vitest integrate slices, and eslint passed after deterministic integrate-subject fallback for artifact-only branch tips."
+  -
+    type: "status"
+    at: "2026-04-08T17:58:33.075Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604080136-H96V3X/pr."
 doc_version: 3
-doc_updated_at: "2026-04-08T04:28:47.661Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-08T17:58:33.079Z"
+doc_updated_by: "INTEGRATOR"
 description: "Squash integrate currently inherits the task branch tip subject when it passes generic-subject validation, which makes main-branch integrate commits and task commit metadata read like artifact refresh noise. Normalize this path to a deterministic integrate summary."
 sections:
   Summary: |-
