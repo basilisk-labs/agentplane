@@ -1,10 +1,11 @@
 ---
 id: "202604080136-NWTPFP"
 title: "Let pr open create or explicitly stage remote GitHub PRs"
-status: "DOING"
+result_summary: "integrate: squash task/202604080136-NWTPFP/remote-pr-open"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-08T04:46:08.527Z"
   updated_by: "CODER"
   note: "Targeted vitest for pr open flows and pr input validation passed; eslint passed after final sync-only/output cleanup. pr open now auto-creates remote PRs when GitHub is available and otherwise reports explicit staged/skipped remote semantics."
-commit: null
+commit:
+  hash: "5b2c8347e31cd913df6b188306664c086eaeb586"
+  message: "📝 NWTPFP task: sync GitHub PR metadata"
 comments:
   -
     author: "CODER"
     body: "Start: implement deterministic remote-PR semantics for pr open and cover the touched branch_pr flows with targeted CLI tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604080136-NWTPFP/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted vitest for pr open flows and pr input validation passed; eslint passed after final sync-only/output cleanup. pr open now auto-creates remote PRs when GitHub is available and otherwise reports explicit staged/skipped remote semantics."
+  -
+    type: "status"
+    at: "2026-04-08T17:54:38.083Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604080136-NWTPFP/pr."
 doc_version: 3
-doc_updated_at: "2026-04-08T04:46:08.530Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-08T17:54:38.087Z"
+doc_updated_by: "INTEGRATOR"
 description: "pr open still acts as local artifact sync only unless an existing GitHub PR is already found. Add a first-class remote creation path or explicit remote-open mode so operators do not need manual gh pr create after every branch_pr task."
 sections:
   Summary: |-
