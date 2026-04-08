@@ -1,6 +1,13 @@
  .agentplane/tasks/202604080136-AEDVG6/README.md    | 91 ++++++++++++++++++++++
+ .../tasks/202604080136-AEDVG6/pr/diffstat.txt      |  6 ++
+ .../tasks/202604080136-AEDVG6/pr/github-body.md    | 55 +++++++++++++
+ .../tasks/202604080136-AEDVG6/pr/github-title.txt  |  1 +
+ .agentplane/tasks/202604080136-AEDVG6/pr/meta.json | 17 ++++
+ .../tasks/202604080136-AEDVG6/pr/notes.jsonl       |  0
+ .agentplane/tasks/202604080136-AEDVG6/pr/review.md | 62 +++++++++++++++
+ .../tasks/202604080136-AEDVG6/pr/verify.log        |  0
  .../src/cli/pre-commit-hook-script.test.ts         | 29 +++++++
  .../src/cli/pre-commit-staged-files.test.ts        | 18 ++++-
  scripts/lib/pre-commit-staged-files.mjs            | 12 +++
  scripts/run-pre-commit-hook.mjs                    | 27 ++++++-
- 5 files changed, 175 insertions(+), 2 deletions(-)
+ 12 files changed, 316 insertions(+), 2 deletions(-)
