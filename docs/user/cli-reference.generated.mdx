@@ -64,6 +64,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [pr](#pr)
   - [pr check](#pr-check)
   - [pr close](#pr-close)
+  - [pr close-superseded](#pr-close-superseded)
   - [pr note](#pr-note)
   - [pr open](#pr-open)
   - [pr update](#pr-update)
@@ -1348,7 +1349,7 @@ Manage local PR review and GitHub publication artifacts for a task (branch_pr wo
 Usage:
 
 ```text
-agentplane pr <open|update|check|note|close> <task-id|pr-number> [options]
+agentplane pr <open|update|check|note|close|close-superseded> <task-id|pr-number> [options]
 ```
 
 Examples:
@@ -1382,6 +1383,12 @@ agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch
 ```
 
 - Close a stale GitHub PR through REST and optionally delete its remote head branch.
+
+```sh
+agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch
+```
+
+- Close a superseded task PR from task artifacts after protected-main closure.
 
 ### pr check
 
@@ -1424,6 +1431,28 @@ agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch
 ```
 
 - Close a stale PR and remove its remote head branch when it belongs to the same repo.
+
+### pr close-superseded
+
+Close a superseded task PR using task artifacts.
+
+Usage:
+
+```text
+agentplane pr close-superseded <task-id> [options]
+```
+
+Options:
+
+- `--delete-remote-branch`: Delete the remote head branch after a successful close when it belongs to the task repo. (default=false)
+
+Examples:
+
+```sh
+agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch
+```
+
+- Repair a stale task PR after the task has already been merged to main.
 
 ### pr note
 
