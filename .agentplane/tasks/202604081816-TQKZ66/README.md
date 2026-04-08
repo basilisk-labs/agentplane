@@ -1,10 +1,11 @@
 ---
 id: "202604081816-TQKZ66"
 title: "Add repair command to close superseded task PRs after protected-main closure"
-status: "DOING"
+result_summary: "integrate: squash task/202604081816-TQKZ66/close-superseded-task-pr"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-08T18:40:51.970Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-close-superseded.test.ts; bun x eslint packages/agentplane/src/commands/pr/close-superseded.ts packages/agentplane/src/commands/pr/pr.command.ts packages/agentplane/src/commands/pr/index.ts packages/agentplane/src/cli/run-cli/command-catalog/project.ts packages/agentplane/src/cli/run-cli.core.pr-close-superseded.test.ts; bun run framework:dev:bootstrap; agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch; gh pr view 141 --json number,state,closed,headRefName. Result: pass. Evidence: focused tests are green, the new repair path closes stale task PR #141 and deletes its remote task branch, and GitHub now reports PR #141 CLOSED. Scope: pr close-superseded repair path."
-commit: null
+commit:
+  hash: "d6ca765bd265d488367ba9faf40106da6e2967bb"
+  message: "🧩 TQKZ66 integrate: github/workflow: Add repair command to close superseded task PRs after protected-main ..."
 comments:
   -
     author: "CODER"
     body: "Start: inspect the live A1XE27/#141 stale PR drift, then add the smallest artifact-driven repair path that can close superseded task PRs after protected-main closure."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604081816-TQKZ66/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-close-superseded.test.ts; bun x eslint packages/agentplane/src/commands/pr/close-superseded.ts packages/agentplane/src/commands/pr/pr.command.ts packages/agentplane/src/commands/pr/index.ts packages/agentplane/src/cli/run-cli/command-catalog/project.ts packages/agentplane/src/cli/run-cli.core.pr-close-superseded.test.ts; bun run framework:dev:bootstrap; agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch; gh pr view 141 --json number,state,closed,headRefName. Result: pass. Evidence: focused tests are green, the new repair path closes stale task PR #141 and deletes its remote task branch, and GitHub now reports PR #141 CLOSED. Scope: pr close-superseded repair path."
+  -
+    type: "status"
+    at: "2026-04-08T19:04:21.334Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604081816-TQKZ66/pr."
 doc_version: 3
-doc_updated_at: "2026-04-08T18:40:51.986Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-08T19:04:21.348Z"
+doc_updated_by: "INTEGRATOR"
 description: "Protected-main closure can leave the original task PR open even after the task is DONE and the code is already in main. Add a first-class repair path that closes the stale task PR (optionally deleting its remote branch) from task artifacts instead of relying on manual gh commands."
 sections:
   Summary: |-

@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604081816-TQKZ66/close-superseded-task-pr",
   "created_at": "2026-04-08T18:40:52.066Z",
-  "head_sha": "d2eb7cec97110cdf8a80dbe367c5ebcfeae900b8",
+  "head_sha": "5d1f50f0e59c087df607ecbce8deec99e86317ce",
   "last_verified_at": "2026-04-08T18:40:51.970Z",
   "last_verified_sha": "70c479c09c783a817bd2ad4b9971a9a84bbc74fb",
+  "merge_commit": "d6ca765bd265d488367ba9faf40106da6e2967bb",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-08T19:04:21.222Z",
   "pr_number": 155,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/155",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604081816-TQKZ66",
-  "updated_at": "2026-04-08T18:58:05.992Z",
+  "updated_at": "2026-04-08T19:04:21.222Z",
   "verify": {
     "status": "pass"
   }
