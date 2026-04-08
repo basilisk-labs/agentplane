@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { resolveBaseBranch } from "@agentplaneorg/core";
@@ -84,6 +84,26 @@ async function materializeLocalBackendReadmesForWorktree(opts: {
     const targetReadme = path.join(targetRoot, entry.name, "README.md");
     await mkdir(path.dirname(targetReadme), { recursive: true });
     await copyFile(sourceReadme, targetReadme);
+
+    const relativeReadme = path.relative(opts.repoRoot, sourceReadme);
+    const tracked = await isGitTracked(opts.repoRoot, relativeReadme);
+    if (!tracked) {
+      await rm(sourceReadme, { force: true });
+    }
+  }
+}
+
+async function isGitTracked(gitRoot: string, relativePath: string): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["ls-files", "--error-unmatch", "--", relativePath], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    return true;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1) return false;
+    throw err;
   }
 }
 
