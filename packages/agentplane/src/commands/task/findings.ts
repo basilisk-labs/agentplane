@@ -1,11 +1,21 @@
-import { ensureDocSections, normalizeTaskDoc, setMarkdownSection } from "@agentplaneorg/core";
+import {
+  ensureDocSections,
+  normalizeTaskDoc,
+  setMarkdownSection,
+  type AgentplaneConfig,
+} from "@agentplaneorg/core";
 
+import type { TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { infoMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
-import { setTaskSectionIntent, touchTaskDocMetaIntent } from "../shared/task-store.js";
+import {
+  setTaskSectionIntent,
+  touchTaskDocMetaIntent,
+  type TaskStoreIntent,
+} from "../shared/task-store.js";
 
 import { resolveWritableDocSections } from "./shared.js";
 import {
@@ -76,6 +86,69 @@ function appendFindingBlock(existingSection: string | null, block: string): stri
   return `${current}\n\n${block}`;
 }
 
+export type StructuredFindingMutationPlan = {
+  targetSection: string;
+  expectedCurrentText: string | null;
+  intents: readonly TaskStoreIntent[];
+};
+
+export function buildStructuredFindingMutationPlan(opts: {
+  current: TaskData;
+  config: AgentplaneConfig;
+  observation: string;
+  impact: string;
+  resolution: string;
+  promote: boolean;
+  external: boolean;
+  incidentScope?: string;
+  incidentTags: readonly string[];
+  incidentMatch: readonly string[];
+  incidentAdvice?: string;
+  incidentRule?: string;
+  updatedBy?: string;
+}): StructuredFindingMutationPlan | null {
+  const currentDocRaw = typeof opts.current.doc === "string" ? opts.current.doc : "";
+  const docVersion = normalizeTaskDocVersion(opts.current.doc_version);
+  const targetSection = taskObservationSectionName(docVersion);
+  const sectionOrder = resolveWritableDocSections({
+    allowedSections: opts.config.tasks.doc.sections,
+    requiredSections: opts.config.tasks.doc.required_sections,
+    targetSection,
+  });
+  const existingSection = extractTaskObservationSection(currentDocRaw, docVersion);
+  const block = renderStructuredFindingBlock({
+    observation: opts.observation,
+    impact: opts.impact,
+    resolution: opts.resolution,
+    promote: opts.promote,
+    external: opts.external,
+    incidentScope: opts.incidentScope,
+    incidentTags: opts.incidentTags,
+    incidentMatch: opts.incidentMatch,
+    incidentAdvice: opts.incidentAdvice,
+    incidentRule: opts.incidentRule,
+  });
+  const nextSectionText = appendFindingBlock(existingSection, block);
+  const nextDoc = ensureDocSections(
+    setMarkdownSection(currentDocRaw, targetSection, nextSectionText),
+    sectionOrder,
+  );
+  if (normalizeTaskDoc(currentDocRaw) === normalizeTaskDoc(nextDoc) && !opts.updatedBy) {
+    return null;
+  }
+  const expectedCurrentText = extractDocSection(currentDocRaw, targetSection);
+  const intents: TaskStoreIntent[] = [
+    setTaskSectionIntent({
+      section: targetSection,
+      text: nextSectionText,
+      requiredSections: sectionOrder,
+      expectedCurrentText,
+    }),
+    ...(opts.updatedBy ? [touchTaskDocMetaIntent({ updatedBy: opts.updatedBy })] : []),
+  ];
+  return { targetSection, expectedCurrentText, intents };
+}
+
 export function renderFindingsAddRegistryNote(opts: {
   promote: boolean;
   external: boolean;
@@ -112,19 +185,6 @@ export async function cmdTaskFindingsAdd(opts: {
     updatedBy = ensureNonEmptyFlag("updated-by", opts.updatedBy);
   }
 
-  const block = renderStructuredFindingBlock({
-    observation: opts.observation,
-    impact: opts.impact,
-    resolution: opts.resolution,
-    promote: opts.promote,
-    external: opts.external,
-    incidentScope: opts.incidentScope,
-    incidentTags: opts.incidentTags,
-    incidentMatch: opts.incidentMatch,
-    incidentAdvice: opts.incidentAdvice,
-    incidentRule: opts.incidentRule,
-  });
-
   try {
     const ctx =
       opts.ctx ??
@@ -144,40 +204,30 @@ export async function cmdTaskFindingsAdd(opts: {
     await applyTaskMutation({
       ctx,
       taskId: opts.taskId,
-      build: async (current) => {
-        const currentDocRaw =
-          typeof current.doc === "string"
-            ? current.doc
-            : ((await backend.getTaskDoc!(opts.taskId)) ?? "");
-        const docVersion = normalizeTaskDocVersion(current.doc_version);
-        targetSection = taskObservationSectionName(docVersion);
-        const sectionOrder = resolveWritableDocSections({
-          allowedSections: config.tasks.doc.sections,
-          requiredSections: config.tasks.doc.required_sections,
-          targetSection,
+      build: (current) => {
+        const plan = buildStructuredFindingMutationPlan({
+          current,
+          config,
+          observation: opts.observation,
+          impact: opts.impact,
+          resolution: opts.resolution,
+          promote: opts.promote,
+          external: opts.external,
+          incidentScope: opts.incidentScope,
+          incidentTags: opts.incidentTags,
+          incidentMatch: opts.incidentMatch,
+          incidentAdvice: opts.incidentAdvice,
+          incidentRule: opts.incidentRule,
+          updatedBy,
         });
-        const existingSection = extractTaskObservationSection(currentDocRaw, docVersion);
-        const nextSectionText = appendFindingBlock(existingSection, block);
-        const nextDoc = ensureDocSections(
-          setMarkdownSection(currentDocRaw, targetSection, nextSectionText),
-          sectionOrder,
-        );
-        if (normalizeTaskDoc(currentDocRaw) === normalizeTaskDoc(nextDoc) && !updatedBy) {
+        if (!plan) {
           return null;
         }
-        const expectedCurrentText = extractDocSection(currentDocRaw, targetSection);
+        targetSection = plan.targetSection;
         return {
-          intents: [
-            setTaskSectionIntent({
-              section: targetSection,
-              text: nextSectionText,
-              requiredSections: sectionOrder,
-              expectedCurrentText,
-            }),
-            ...(updatedBy ? [touchTaskDocMetaIntent({ updatedBy })] : []),
-          ],
+          intents: plan.intents,
           writeOptions: {
-            expectedCurrentText,
+            expectedCurrentText: plan.expectedCurrentText,
             expectedSection: targetSection,
           },
         };

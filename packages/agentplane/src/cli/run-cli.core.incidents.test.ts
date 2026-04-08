@@ -138,6 +138,184 @@ describe("runCli incidents", () => {
     }
   });
 
+  it("verify can append promotable findings and local-only findings stay skipped in incidents collect", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+
+    let promotableTaskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Verify appends promotable finding",
+          "--description",
+          "Exercise verify to incidents collect flow",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        promotableTaskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "verify",
+          promotableTaskId,
+          "--ok",
+          "--by",
+          "REVIEWER",
+          "--note",
+          "Looks good",
+          "--observation",
+          "Repeated recovery was still manual.",
+          "--impact",
+          "Operators had to remember a second command to preserve findings.",
+          "--resolution",
+          "Append incident-ready findings during verify.",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("finding=incident-candidate");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "incidents",
+          "collect",
+          promotableTaskId,
+          "--check",
+          "--json",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        const payload = JSON.parse(io.stdout) as {
+          task_id: string;
+          promotable: { observation: string; fixability: string | null; state: string }[];
+          skipped: unknown[];
+        };
+        expect(payload.task_id).toBe(promotableTaskId);
+        expect(payload.promotable).toHaveLength(1);
+        expect(payload.promotable[0]?.fixability).toBe("external");
+        expect(payload.promotable[0]?.state).toBe("open");
+        expect(payload.skipped).toHaveLength(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    let localOnlyTaskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Verify appends local-only finding",
+          "--description",
+          "Keep finding task-local",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        localOnlyTaskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "verify",
+          localOnlyTaskId,
+          "--ok",
+          "--by",
+          "REVIEWER",
+          "--note",
+          "Looks good",
+          "--observation",
+          "The issue is already local to this task.",
+          "--impact",
+          "No registry promotion is needed.",
+          "--resolution",
+          "Keep this finding task-local.",
+          "--local-only",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("finding=task-local");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "incidents",
+          "collect",
+          localOnlyTaskId,
+          "--check",
+          "--json",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        const payload = JSON.parse(io.stdout) as {
+          task_id: string;
+          promotable: unknown[];
+          skipped: { observation: string; reason: string }[];
+        };
+        expect(payload.task_id).toBe(localOnlyTaskId);
+        expect(payload.promotable).toHaveLength(0);
+        expect(payload.skipped).toHaveLength(1);
+        expect(payload.skipped[0]?.reason).toBe("not_marked_external_or_promotable");
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
   it("incidents advise resolves matches for ad hoc scope and tags", async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();

@@ -8,7 +8,75 @@ export type VerifyCommonParsed = {
   details?: string;
   file?: string;
   quiet: boolean;
+  observation?: string;
+  impact?: string;
+  resolution?: string;
+  localOnly: boolean;
+  incidentScope?: string;
+  incidentTags: string[];
+  incidentMatch: string[];
+  incidentAdvice?: string;
+  incidentRule?: string;
 };
+
+export const verifyFindingOptions: readonly OptionSpec[] = [
+  {
+    kind: "string",
+    name: "observation",
+    valueHint: "<text>",
+    description: "Structured finding observation to append with the verification.",
+  },
+  {
+    kind: "string",
+    name: "impact",
+    valueHint: "<text>",
+    description: "Structured finding impact to append with the verification.",
+  },
+  {
+    kind: "string",
+    name: "resolution",
+    valueHint: "<text>",
+    description: "Structured finding resolution to append with the verification.",
+  },
+  {
+    kind: "boolean",
+    name: "local-only",
+    default: false,
+    description: "Keep the finding task-local; omit incident-candidate promotion.",
+  },
+  {
+    kind: "string",
+    name: "incident-scope",
+    valueHint: "<text>",
+    description: "Optional incident scope for the appended finding.",
+  },
+  {
+    kind: "string",
+    name: "incident-tag",
+    valueHint: "<tag>",
+    repeatable: true,
+    description: "Repeatable incident tag for the appended finding.",
+  },
+  {
+    kind: "string",
+    name: "incident-match",
+    valueHint: "<term>",
+    repeatable: true,
+    description: "Repeatable incident match term for the appended finding.",
+  },
+  {
+    kind: "string",
+    name: "incident-advice",
+    valueHint: "<text>",
+    description: "Optional operator advice for the appended finding.",
+  },
+  {
+    kind: "string",
+    name: "incident-rule",
+    valueHint: "<text>",
+    description: "Optional incident rule for the appended finding.",
+  },
+] as const;
 
 export const verifyCommonOptions: readonly OptionSpec[] = [
   { kind: "string", name: "by", valueHint: "<id>", required: true, description: "Verifier id." },
@@ -42,6 +110,7 @@ export const verifyCommonOptions: readonly OptionSpec[] = [
     default: false,
     description: "Suppress normal output (still prints errors).",
   },
+  ...verifyFindingOptions,
 ] as const;
 
 export function validateVerifyDetailsFileExclusive<TParsed>(
@@ -106,6 +175,46 @@ export function validateVerifyNoteSource<TParsed>(
   }
 }
 
+export function validateVerifyFindingSource<TParsed>(
+  raw: ParsedRaw,
+  spec: CommandSpec<TParsed>,
+  opts?: { command?: string },
+): void {
+  const hasFindingField = [
+    raw.opts.observation,
+    raw.opts.impact,
+    raw.opts.resolution,
+    raw.opts["incident-scope"],
+    raw.opts["incident-advice"],
+    raw.opts["incident-rule"],
+  ].some((value) => typeof value === "string" && value.trim().length > 0);
+  const hasFindingCollections =
+    Array.isArray(raw.opts["incident-tag"]) && raw.opts["incident-tag"].length > 0
+      ? true
+      : Array.isArray(raw.opts["incident-match"]) && raw.opts["incident-match"].length > 0;
+  const hasFindingToggle = raw.opts["local-only"] === true;
+  if (!hasFindingField && !hasFindingCollections && !hasFindingToggle) return;
+
+  const observation = raw.opts.observation;
+  const impact = raw.opts.impact;
+  const resolution = raw.opts.resolution;
+  if (
+    typeof observation !== "string" ||
+    observation.trim().length === 0 ||
+    typeof impact !== "string" ||
+    impact.trim().length === 0 ||
+    typeof resolution !== "string" ||
+    resolution.trim().length === 0
+  ) {
+    throw usageError({
+      spec,
+      command: opts?.command,
+      message:
+        "Provide --observation, --impact, and --resolution together when appending a structured finding.",
+    });
+  }
+}
+
 export function parseVerifyCommonOptions(raw: ParsedRaw): VerifyCommonParsed {
   return {
     by: typeof raw.opts.by === "string" ? raw.opts.by : "",
@@ -114,5 +223,17 @@ export function parseVerifyCommonOptions(raw: ParsedRaw): VerifyCommonParsed {
     details: typeof raw.opts.details === "string" ? raw.opts.details : undefined,
     file: typeof raw.opts.file === "string" ? raw.opts.file : undefined,
     quiet: raw.opts.quiet === true,
+    observation: typeof raw.opts.observation === "string" ? raw.opts.observation : undefined,
+    impact: typeof raw.opts.impact === "string" ? raw.opts.impact : undefined,
+    resolution: typeof raw.opts.resolution === "string" ? raw.opts.resolution : undefined,
+    localOnly: raw.opts["local-only"] === true,
+    incidentScope:
+      typeof raw.opts["incident-scope"] === "string" ? raw.opts["incident-scope"] : undefined,
+    incidentTags: (raw.opts["incident-tag"] as string[] | undefined) ?? [],
+    incidentMatch: (raw.opts["incident-match"] as string[] | undefined) ?? [],
+    incidentAdvice:
+      typeof raw.opts["incident-advice"] === "string" ? raw.opts["incident-advice"] : undefined,
+    incidentRule:
+      typeof raw.opts["incident-rule"] === "string" ? raw.opts["incident-rule"] : undefined,
   };
 }

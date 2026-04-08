@@ -1,23 +1,20 @@
 import type { CommandSpec } from "../cli/spec/spec.js";
 import { usageError } from "../cli/spec/errors.js";
 import {
+  type VerifyCommonParsed,
   parseVerifyCommonOptions,
   validateVerifyDetailsFileExclusive,
+  validateVerifyFindingSource,
   validateVerifyNonEmptyInput,
   validateVerifyNoteSource,
+  verifyFindingOptions,
 } from "./task/verify-command-shared.js";
 
 type VerifyState = "ok" | "needs_rework";
 
-export type VerifyParsed = {
+export type VerifyParsed = VerifyCommonParsed & {
   taskId: string;
   state: VerifyState;
-  by: string;
-  note: string;
-  noteFile?: string;
-  details?: string;
-  file?: string;
-  quiet: boolean;
 };
 
 export const verifySpec: CommandSpec<VerifyParsed> = {
@@ -77,6 +74,7 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
       description: "Read details from a file path (mutually exclusive with --details).",
     },
     { kind: "boolean", name: "quiet", default: false, description: "Suppress output." },
+    ...verifyFindingOptions,
   ],
   examples: [
     {
@@ -90,6 +88,10 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
     {
       cmd: 'agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs changes" --details "Missing tests"',
       why: "Record a needs-rework outcome with details.",
+    },
+    {
+      cmd: 'agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --observation "Repeated recovery was manual." --impact "Operators needed a second command." --resolution "Append structured findings during verify."',
+      why: "Record verification and append a promotable structured finding in one command.",
     },
   ],
   validateRaw: (raw) => {
@@ -105,6 +107,7 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
     validateVerifyDetailsFileExclusive(raw, verifySpec, { command: "verify" });
     validateVerifyNonEmptyInput(raw, verifySpec, "by");
     validateVerifyNoteSource(raw, verifySpec, { command: "verify" });
+    validateVerifyFindingSource(raw, verifySpec, { command: "verify" });
   },
   parse: (raw) => {
     const ok = raw.opts.ok === true;

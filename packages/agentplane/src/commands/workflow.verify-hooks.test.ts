@@ -101,6 +101,41 @@ describe("commands/workflow", () => {
     ).not.toThrow();
   });
 
+  it("verify requires a complete structured finding tuple when finding flags are present", () => {
+    const taskId = "202602050900-V1F3";
+
+    expect(() =>
+      parseCommandArgv(verifySpec, [
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "x",
+        "--observation",
+        "Manual recovery repeated.",
+      ]),
+    ).toThrow();
+
+    expect(() =>
+      parseCommandArgv(verifySpec, [
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "x",
+        "--observation",
+        "Manual recovery repeated.",
+        "--impact",
+        "Operators needed an extra command.",
+        "--resolution",
+        "Append a structured finding during verify.",
+        "--local-only",
+      ]),
+    ).not.toThrow();
+  });
+
   it("verify appends a result entry and updates task.verification state", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-V1F4B";
