@@ -1,10 +1,10 @@
  .agentplane/tasks/202604081816-DCDXVB/README.md    | 113 +++++++++++++
- .../tasks/202604081816-DCDXVB/pr/diffstat.txt      |   0
- .../tasks/202604081816-DCDXVB/pr/github-body.md    |  48 ++++++
+ .../tasks/202604081816-DCDXVB/pr/diffstat.txt      |  21 +++
+ .../tasks/202604081816-DCDXVB/pr/github-body.md    |  68 ++++++++
  .../tasks/202604081816-DCDXVB/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604081816-DCDXVB/pr/meta.json |  14 ++
+ .agentplane/tasks/202604081816-DCDXVB/pr/meta.json |  17 ++
  .../tasks/202604081816-DCDXVB/pr/notes.jsonl       |   0
- .agentplane/tasks/202604081816-DCDXVB/pr/review.md |  55 +++++++
+ .agentplane/tasks/202604081816-DCDXVB/pr/review.md |  75 +++++++++
  .../tasks/202604081816-DCDXVB/pr/verify.log        |   0
  docs/user/cli-reference.generated.mdx              |  33 ++++
  packages/agentplane/src/cli/command-invocations.ts |   5 +-
@@ -18,4 +18,4 @@
  packages/agentplane/src/commands/verify.run.ts     |   9 ++
  packages/agentplane/src/commands/verify.spec.ts    |  17 +-
  .../src/commands/workflow.verify-hooks.test.ts     |  35 ++++
- 20 files changed, 867 insertions(+), 56 deletions(-)
+ 20 files changed, 931 insertions(+), 56 deletions(-)

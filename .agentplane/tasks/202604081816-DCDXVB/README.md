@@ -1,10 +1,11 @@
 ---
 id: "202604081816-DCDXVB"
 title: "Let verify append promotable incident findings in one command"
-status: "DOING"
+result_summary: "integrate: squash task/202604081816-DCDXVB/verify-incident-finding"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-08T18:50:24.765Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; bun x eslint packages/agentplane/src/cli/command-invocations.ts packages/agentplane/src/commands/task/findings.ts packages/agentplane/src/commands/task/shared/transitions.ts packages/agentplane/src/commands/task/verify-command-shared.ts packages/agentplane/src/commands/task/verify-ok.command.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/verify-rework.command.ts packages/agentplane/src/commands/verify.run.ts packages/agentplane/src/commands/verify.spec.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: verify now accepts structured finding flags, records incident-candidate vs task-local findings in the same mutation path, and incidents collect sees verify-appended promotable findings while local-only entries stay skipped. Scope: verify-to-findings incident flow."
-commit: null
+commit:
+  hash: "02141f1ad9f97bd4858467b1c4440c891113c597"
+  message: "🧩 DCDXVB integrate: incidents/ux: Let verify append promotable incident findings in one command"
 comments:
   -
     author: "CODER"
     body: "Start: trace verify and findings flows, then add the smallest verify-side structured finding append path so incident candidates can be recorded without a second command."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604081816-DCDXVB/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; bun x eslint packages/agentplane/src/cli/command-invocations.ts packages/agentplane/src/commands/task/findings.ts packages/agentplane/src/commands/task/shared/transitions.ts packages/agentplane/src/commands/task/verify-command-shared.ts packages/agentplane/src/commands/task/verify-ok.command.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/verify-rework.command.ts packages/agentplane/src/commands/verify.run.ts packages/agentplane/src/commands/verify.spec.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: verify now accepts structured finding flags, records incident-candidate vs task-local findings in the same mutation path, and incidents collect sees verify-appended promotable findings while local-only entries stay skipped. Scope: verify-to-findings incident flow."
+  -
+    type: "status"
+    at: "2026-04-08T19:05:09.423Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604081816-DCDXVB/pr."
 doc_version: 3
-doc_updated_at: "2026-04-08T18:50:24.776Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-08T19:05:09.427Z"
+doc_updated_by: "INTEGRATOR"
 description: "The incident registry path exists, but real operator flow almost never leaves structured incident candidates because verify and findings are separate steps. Extend verify so a verifier can append a structured finding/incident candidate in the same command, preserving task-local opt-out and existing promotion semantics."
 sections:
   Summary: |-
