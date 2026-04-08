@@ -1213,7 +1213,7 @@ Record a verification outcome for a task (record-only; does not execute commands
 Usage:
 
 ```text
-agentplane verify <task-id> --by <id> --note <text> [options]
+agentplane verify <task-id> --by <id> [options]
 ```
 
 Options:
@@ -1221,7 +1221,8 @@ Options:
 - `--ok`: Record an OK verification outcome. (default=false)
 - `--rework`: Record a needs-rework verification outcome. (default=false)
 - `--by <id>`: Verifier id (e.g. REVIEWER). (required)
-- `--note <text>`: Short note describing the verification outcome. (required)
+- `--note <text>`: Short note describing the verification outcome.
+- `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
 - `--details <text>`: Optional free-form details (mutually exclusive with --file).
 - `--file <path>`: Read details from a file path (mutually exclusive with --details).
 - `--quiet`: Suppress output. (default=false)
@@ -1233,6 +1234,12 @@ agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --q
 ```
 
 - Record an OK verification outcome.
+
+```sh
+agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note-file ./verify-note.txt
+```
+
+- Record an OK verification outcome using a file-backed note.
 
 ```sh
 agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs changes" --details "Missing tests"
@@ -3322,13 +3329,14 @@ Record verification as OK (updates Verification section and verification frontma
 Usage:
 
 ```text
-agentplane task verify ok <task-id> --by <id> --note <text> [options]
+agentplane task verify ok <task-id> --by <id> [options]
 ```
 
 Options:
 
 - `--by <id>`: Verifier id. (required)
-- `--note <text>`: Short verification note. (required)
+- `--note <text>`: Short verification note.
+- `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
 - `--details <text>`: Optional details text (mutually exclusive with --file).
 - `--file <path>`: Optional details file path (mutually exclusive with --details).
 - `--quiet`: Suppress normal output (still prints errors). (default=false)
@@ -3348,13 +3356,14 @@ Record verification as needs rework (resets commit, sets status to DOING, update
 Usage:
 
 ```text
-agentplane task verify rework <task-id> --by <id> --note <text> [options]
+agentplane task verify rework <task-id> --by <id> [options]
 ```
 
 Options:
 
 - `--by <id>`: Verifier id. (required)
-- `--note <text>`: Short verification note. (required)
+- `--note <text>`: Short verification note.
+- `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
 - `--details <text>`: Optional details text (mutually exclusive with --file).
 - `--file <path>`: Optional details file path (mutually exclusive with --details).
 - `--quiet`: Suppress normal output (still prints errors). (default=false)

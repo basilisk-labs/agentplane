@@ -26,6 +26,10 @@ type ResolvedVerifyRecordInput = {
   details: string | null;
 };
 
+function normalizeFileBackedVerifyNote(raw: string): string {
+  return decodeEscapedTaskTextNewlines(raw).replaceAll(/\s+/gu, " ").trim();
+}
+
 async function recordVerificationResult(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -118,17 +122,33 @@ async function resolveVerifyRecordInput(opts: {
   cwd: string;
   by: string;
   note: string;
+  noteFile?: string;
   details?: string;
   file?: string;
   command: VerifyCommandName;
 }): Promise<ResolvedVerifyRecordInput> {
   const by = String(opts.by ?? "").trim();
-  const note = String(opts.note ?? "").trim();
-  if (!by || !note) {
+  const inlineNote = String(opts.note ?? "").trim();
+  const noteFile = typeof opts.noteFile === "string" ? opts.noteFile.trim() : "";
+  if (!by) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: "Missing required inputs: --by and --note.",
+      message: "Missing required input: --by.",
+    });
+  }
+  if (!inlineNote && !noteFile) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Provide exactly one of --note or --note-file.",
+    });
+  }
+  if (inlineNote && noteFile) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Options --note and --note-file are mutually exclusive.",
     });
   }
   if (typeof opts.details === "string" && typeof opts.file === "string") {
@@ -136,6 +156,24 @@ async function resolveVerifyRecordInput(opts: {
       exitCode: 2,
       code: "E_USAGE",
       message: "Options --details and --file are mutually exclusive.",
+    });
+  }
+
+  let note = inlineNote;
+  if (noteFile) {
+    try {
+      note = normalizeFileBackedVerifyNote(
+        await readFile(path.resolve(opts.cwd, noteFile), "utf8"),
+      );
+    } catch (err) {
+      throw mapCoreError(err, { command: opts.command, filePath: noteFile });
+    }
+  }
+  if (!note) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Verification note cannot be empty after normalization.",
     });
   }
 
@@ -162,6 +200,7 @@ async function executeVerifyRecordCommand(opts: {
   state: VerifyState;
   by: string;
   note: string;
+  noteFile?: string;
   details?: string;
   file?: string;
   quiet: boolean;
@@ -195,6 +234,7 @@ export async function cmdTaskVerifyOk(opts: {
   taskId: string;
   by: string;
   note: string;
+  noteFile?: string;
   details?: string;
   file?: string;
   quiet: boolean;
@@ -209,6 +249,7 @@ export async function cmdTaskVerifyRework(opts: {
   taskId: string;
   by: string;
   note: string;
+  noteFile?: string;
   details?: string;
   file?: string;
   quiet: boolean;
@@ -228,6 +269,7 @@ export async function cmdVerifyParsed(opts: {
   state: VerifyState;
   by: string;
   note: string;
+  noteFile?: string;
   details?: string;
   file?: string;
   quiet: boolean;
