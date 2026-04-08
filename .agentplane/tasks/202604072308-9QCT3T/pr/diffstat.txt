@@ -1,0 +1,19 @@
+ .agentplane/tasks/202604072308-9QCT3T/README.md    | 135 +++++++++++++++++++++
+ .../tasks/202604072308-9QCT3T/pr/diffstat.txt      |  19 +++
+ .../tasks/202604072308-9QCT3T/pr/github-body.md    |  66 ++++++++++
+ .../tasks/202604072308-9QCT3T/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604072308-9QCT3T/pr/meta.json |  17 +++
+ .../tasks/202604072308-9QCT3T/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604072308-9QCT3T/pr/review.md |  73 +++++++++++
+ .../tasks/202604072308-9QCT3T/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |  21 +++-
+ .../src/cli/run-cli.core.lifecycle.verify.test.ts  | 134 +++++++++++++++++++-
+ .../src/commands/task/verify-command-shared.ts     |  46 ++++++-
+ .../src/commands/task/verify-ok.command.ts         |   4 +-
+ .../agentplane/src/commands/task/verify-record.ts  |  48 +++++++-
+ .../src/commands/task/verify-record.unit.test.ts   |  92 +++++++++++++-
+ .../src/commands/task/verify-rework.command.ts     |   4 +-
+ packages/agentplane/src/commands/verify.run.ts     |   1 +
+ packages/agentplane/src/commands/verify.spec.ts    |  16 ++-
+ .../src/commands/workflow.verify-hooks.test.ts     |  45 ++++++-
+ 18 files changed, 704 insertions(+), 18 deletions(-)
