@@ -1,10 +1,11 @@
 ---
 id: "202604081931-77V6J5"
 title: "Clean base task README after branch_pr work start"
-status: "DOING"
+result_summary: "Merged via local task branch commit e820c9f93593."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,15 +20,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-08T19:54:41.280Z"
+  updated_by: "REVIEWER"
+  note: "The fresh branch_pr worktree still seeds local-backend task READMEs; the base checkout no longer retains untracked task README copies after work start; targeted lint and the seeded-worktree integration test passed in the task worktree after bootstrap."
+commit:
+  hash: "e820c9f935932fb1f09dfd88f502a684379f6cbf"
+  message: "🧩 77V6J5 task: prune base-side task README duplicates after worktree seeding"
 comments:
   -
     author: "CODER"
     body: "Start: remove base-checkout task README duplicates after worktree seeding so future upstream task README tracking does not block git pull."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: branch_pr worktree seeding keeps README copies in the task worktree and removes the base-side untracked duplicates so later pulls do not fail."
 events:
   -
     type: "status"
@@ -36,9 +42,22 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: remove base-checkout task README duplicates after worktree seeding so future upstream task README tracking does not block git pull."
+  -
+    type: "verify"
+    at: "2026-04-08T19:54:41.280Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "The fresh branch_pr worktree still seeds local-backend task READMEs; the base checkout no longer retains untracked task README copies after work start; targeted lint and the seeded-worktree integration test passed in the task worktree after bootstrap."
+  -
+    type: "status"
+    at: "2026-04-08T19:54:48.146Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: branch_pr worktree seeding keeps README copies in the task worktree and removes the base-side untracked duplicates so later pulls do not fail."
 doc_version: 3
-doc_updated_at: "2026-04-08T19:48:41.431Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-08T19:54:48.147Z"
+doc_updated_by: "INTEGRATOR"
 description: "When branch_pr work start seeds task artifacts into a new worktree, remove the duplicate untracked base-checkout task README for that task so later pulls do not fail when the task README becomes tracked upstream."
 sections:
   Summary: |-
@@ -58,6 +77,14 @@ sections:
     3. Run the targeted lint and test coverage for the touched `work-start` path. Expected: no regressions in the branch_pr work start flow or its CLI integration test.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-08T19:54:41.280Z — VERIFY — ok
+    
+    By: REVIEWER
+    
+    Note: The fresh branch_pr worktree still seeds local-backend task READMEs; the base checkout no longer retains untracked task README copies after work start; targeted lint and the seeded-worktree integration test passed in the task worktree after bootstrap.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-08T19:48:41.431Z, excerpt_hash=sha256:7ef955b9c1ea7d4ff27d2d15939b542f995717614a08e276dc6c1b43f2526244
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -91,6 +118,14 @@ When branch_pr work start seeds task artifacts into a new worktree, remove the d
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-08T19:54:41.280Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: The fresh branch_pr worktree still seeds local-backend task READMEs; the base checkout no longer retains untracked task README copies after work start; targeted lint and the seeded-worktree integration test passed in the task worktree after bootstrap.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-08T19:48:41.431Z, excerpt_hash=sha256:7ef955b9c1ea7d4ff27d2d15939b542f995717614a08e276dc6c1b43f2526244
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
