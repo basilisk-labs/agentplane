@@ -1,7 +1,12 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { ROOT, checkGeneratedArtifactFresh, fileExists } from "./lib/generated-artifacts.mjs";
+import {
+  ROOT,
+  assertAgentplaneCliDistFreshForDocs,
+  checkGeneratedArtifactFresh,
+  fileExists,
+} from "./lib/generated-artifacts.mjs";
 
 const CLI_DIST_DIR = path.join(ROOT, "packages", "agentplane", "dist", "cli");
 const BOOTSTRAP_DIST = path.join(CLI_DIST_DIR, "bootstrap-guide.js");
@@ -70,6 +75,7 @@ function assertExcludesAll(source, unexpected, label) {
 }
 
 async function main() {
+  await assertAgentplaneCliDistFreshForDocs(ROOT);
   if (
     !(await fileExists(BOOTSTRAP_DIST)) ||
     !(await fileExists(COMMAND_GUIDE_DIST)) ||
@@ -77,7 +83,9 @@ async function main() {
     !(await fileExists(RUNTIME_SOURCE_DIST))
   ) {
     throw new Error(
-      "CLI dist is missing. Build first:\n" +
+      "CLI dist artifacts required for bootstrap freshness checks are missing. Refresh repo-local runtime first:\n" +
+        "  bun run framework:dev:bootstrap\n" +
+        "Or rebuild explicitly:\n" +
         "  bun run --filter=@agentplaneorg/core build\n" +
         "  bun run --filter=agentplane build",
     );
