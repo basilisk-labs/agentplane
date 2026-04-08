@@ -43,12 +43,26 @@ Protected-main closure can leave the original task PR open even after the task i
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-08T18:43:55.059Z
+- Updated: 2026-04-08T18:58:05.992Z
 - Branch: task/202604081816-TQKZ66/close-superseded-task-pr
-- Head: 3ad1b5bff095
+- Head: d2eb7cec9711
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604081816-TQKZ66/README.md    | 113 ++++++
+ .../tasks/202604081816-TQKZ66/pr/diffstat.txt      |   0
+ .../tasks/202604081816-TQKZ66/pr/github-body.md    |  48 +++
+ .../tasks/202604081816-TQKZ66/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604081816-TQKZ66/pr/meta.json |  14 +
+ .../tasks/202604081816-TQKZ66/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604081816-TQKZ66/pr/review.md |  55 +++
+ .../tasks/202604081816-TQKZ66/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |  31 +-
+ .../cli/run-cli.core.pr-close-superseded.test.ts   | 384 +++++++++++++++++++++
+ .../src/cli/run-cli/command-catalog/project.ts     |   6 +
+ .../agentplane/src/commands/pr/close-superseded.ts | 228 ++++++++++++
+ packages/agentplane/src/commands/pr/index.ts       |   1 +
+ packages/agentplane/src/commands/pr/pr.command.ts  |  60 +++-
+ 14 files changed, 938 insertions(+), 3 deletions(-)
 ```
 
 </details>
