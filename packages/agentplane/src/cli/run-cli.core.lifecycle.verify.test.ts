@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
@@ -41,7 +41,7 @@ describe("runCli", () => {
     }
   });
 
-  it("verify requires --ok|--rework and --by/--note", async () => {
+  it("verify requires --ok|--rework and exactly one note source", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
@@ -76,6 +76,27 @@ describe("runCli", () => {
       expect(io.stderr).toContain("agentplane verify");
     } finally {
       io.restore();
+    }
+
+    const ioConflict = captureStdIO();
+    try {
+      const code = await runCli([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "inline",
+        "--note-file",
+        "note.txt",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(ioConflict.stderr).toContain("Options --note and --note-file are mutually exclusive.");
+    } finally {
+      ioConflict.restore();
     }
   });
 
@@ -130,6 +151,60 @@ describe("runCli", () => {
     const readme = await readFile(readmePath, "utf8");
     expect(readme).toContain("VERIFY — ok");
     expect(readme).toContain("Note: Looks good");
+  });
+
+  it("verify supports --note-file and normalizes it to a single line", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify file note",
+        "--description",
+        "Verify records normalized note-file content",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const notePath = path.join(root, "verify-note.txt");
+    await writeFile(notePath, "Looks\\n\\n  good   from file\n", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note-file",
+        notePath,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`✅ verified ${taskId} (state=ok`);
+    } finally {
+      io.restore();
+    }
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("Note: Looks good from file");
   });
 
   it("verify supports --quiet", async () => {
@@ -279,6 +354,61 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("task verify ok supports --note-file", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Task verify file note",
+        "--description",
+        "Task verify ok accepts --note-file",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const notePath = path.join(root, "task-verify-note.txt");
+    await writeFile(notePath, "Needs\\n no changes\n", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "verify",
+        "ok",
+        taskId,
+        "--by",
+        "REVIEWER",
+        "--note-file",
+        notePath,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`✅ verified ${taskId} (state=ok`);
+    } finally {
+      io.restore();
+    }
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("Note: Needs no changes");
   });
 
   it("verify does not accept missing task id even when flags come first (no env fallback)", async () => {

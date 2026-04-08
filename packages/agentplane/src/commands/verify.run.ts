@@ -14,6 +14,7 @@ export function makeRunVerifyHandler(getCtx: (cmd: string) => Promise<CommandCon
       state: p.state,
       by: p.by,
       note: p.note,
+      noteFile: p.noteFile,
       details: p.details,
       file: p.file,
       quiet: p.quiet,

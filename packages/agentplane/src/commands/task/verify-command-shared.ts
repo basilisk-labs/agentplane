@@ -4,6 +4,7 @@ import type { CommandSpec, OptionSpec, ParsedRaw } from "../../cli/spec/spec.js"
 export type VerifyCommonParsed = {
   by: string;
   note: string;
+  noteFile?: string;
   details?: string;
   file?: string;
   quiet: boolean;
@@ -15,8 +16,13 @@ export const verifyCommonOptions: readonly OptionSpec[] = [
     kind: "string",
     name: "note",
     valueHint: "<text>",
-    required: true,
     description: "Short verification note.",
+  },
+  {
+    kind: "string",
+    name: "note-file",
+    valueHint: "<path>",
+    description: "Read the verification note from a file path (mutually exclusive with --note).",
   },
   {
     kind: "string",
@@ -63,10 +69,48 @@ export function validateVerifyNonEmptyInput<TParsed>(
   }
 }
 
+export function validateVerifyNoteSource<TParsed>(
+  raw: ParsedRaw,
+  spec: CommandSpec<TParsed>,
+  opts?: { command?: string },
+): void {
+  const inlineNote = raw.opts.note;
+  const noteFile = raw.opts["note-file"];
+  if (typeof inlineNote === "string" && typeof noteFile === "string") {
+    throw usageError({
+      spec,
+      command: opts?.command,
+      message: "Options --note and --note-file are mutually exclusive.",
+    });
+  }
+  if (typeof noteFile === "string" && noteFile.trim().length === 0) {
+    throw usageError({
+      spec,
+      command: opts?.command,
+      message: "Invalid value for --note-file: empty.",
+    });
+  }
+  if (typeof inlineNote === "string" && inlineNote.trim().length === 0) {
+    throw usageError({
+      spec,
+      command: opts?.command,
+      message: "Invalid value for --note: empty.",
+    });
+  }
+  if (typeof inlineNote !== "string" && typeof noteFile !== "string") {
+    throw usageError({
+      spec,
+      command: opts?.command,
+      message: "Provide exactly one of --note or --note-file.",
+    });
+  }
+}
+
 export function parseVerifyCommonOptions(raw: ParsedRaw): VerifyCommonParsed {
   return {
     by: typeof raw.opts.by === "string" ? raw.opts.by : "",
     note: typeof raw.opts.note === "string" ? raw.opts.note : "",
+    noteFile: typeof raw.opts["note-file"] === "string" ? raw.opts["note-file"] : undefined,
     details: typeof raw.opts.details === "string" ? raw.opts.details : undefined,
     file: typeof raw.opts.file === "string" ? raw.opts.file : undefined,
     quiet: raw.opts.quiet === true,

@@ -93,7 +93,7 @@ describe("task verify record (unit)", () => {
     vi.useRealTimers();
   });
 
-  it("cmdTaskVerifyOk validates required inputs and mutually exclusive details/file", async () => {
+  it("cmdTaskVerifyOk validates note sources and mutually exclusive details/file", async () => {
     const { cmdTaskVerifyOk } = await import("./verify-record.js");
 
     await expect(
@@ -101,6 +101,16 @@ describe("task verify record (unit)", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
     await expect(
       cmdTaskVerifyOk({ cwd: "/repo", taskId: "T-1", by: "A", note: "", quiet: true }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+    await expect(
+      cmdTaskVerifyOk({
+        cwd: "/repo",
+        taskId: "T-1",
+        by: "A",
+        note: "x",
+        noteFile: "note.txt",
+        quiet: true,
+      }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
 
     await expect(
@@ -114,6 +124,21 @@ describe("task verify record (unit)", () => {
         quiet: true,
       }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
+  });
+
+  it("cmdTaskVerifyOk maps readFile errors when --note-file is provided", async () => {
+    mocks.readFile.mockRejectedValue(new Error("ENOENT: nope"));
+    const { cmdTaskVerifyOk } = await import("./verify-record.js");
+    await expect(
+      cmdTaskVerifyOk({
+        cwd: "/repo",
+        taskId: "T-1",
+        by: "A",
+        note: "",
+        noteFile: "missing-note.txt",
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_IO" });
   });
 
   it("cmdTaskVerifyOk maps readFile errors when --file is provided", async () => {
@@ -356,6 +381,58 @@ describe("task verify record (unit)", () => {
     expect(next?.doc).not.toContain(String.raw`line one\nline two`);
   });
 
+  it("cmdTaskVerifyOk normalizes note-file content to a single verification line", async () => {
+    mocks.readFile.mockResolvedValue("Looks\\n\\n good   from file\n");
+    const writeTask = vi.fn<(t: TaskData) => Promise<void>>(() => Promise.resolve());
+    const backend: TaskBackend = {
+      id: "mock",
+      listTasks: () => Promise.resolve([]),
+      getTask: () => Promise.resolve(null),
+      writeTask,
+      getTaskDoc: () =>
+        Promise.resolve(
+          [
+            "## Summary",
+            "x",
+            "",
+            "## Verify Steps",
+            "step",
+            "",
+            "## Verification",
+            "<!-- BEGIN VERIFICATION RESULTS -->",
+            "<!-- END VERIFICATION RESULTS -->",
+            "",
+          ].join("\n"),
+        ),
+    };
+    const ctx = mkCtx({ taskBackend: backend, backend });
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        status: "DONE",
+        commit: { hash: "abc", message: "msg" },
+        doc: undefined,
+        doc_version: 3,
+        doc_updated_at: "2026-02-01T00:00:00Z",
+      }),
+    );
+
+    const { cmdTaskVerifyOk } = await import("./verify-record.js");
+    const rc = await cmdTaskVerifyOk({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      by: "TESTER",
+      note: "",
+      noteFile: "verify-note.txt",
+      quiet: true,
+    });
+    expect(rc).toBe(0);
+
+    const next = writeTask.mock.calls[0]?.[0];
+    expect(next?.doc).toContain("Note: Looks good from file");
+    expect(next?.doc).not.toContain("Note: Looks\n");
+  });
+
   it("cmdTaskVerifyRework records needs_rework, clears commit, forces status DOING, and does not print when quiet=true", async () => {
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 
@@ -498,7 +575,7 @@ describe("task verify record (unit)", () => {
     ).rejects.toMatchObject({ code: "E_IO" });
   });
 
-  it("cmdVerifyParsed validates required inputs and mutually exclusive details/file", async () => {
+  it("cmdVerifyParsed validates note sources and mutually exclusive details/file", async () => {
     const { cmdVerifyParsed } = await import("./verify-record.js");
 
     await expect(
@@ -518,6 +595,17 @@ describe("task verify record (unit)", () => {
         state: "ok",
         by: "TESTER",
         note: "",
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+    await expect(
+      cmdVerifyParsed({
+        cwd: "/repo",
+        taskId: "T-1",
+        state: "ok",
+        by: "TESTER",
+        note: "x",
+        noteFile: "note.txt",
         quiet: true,
       }),
     ).rejects.toMatchObject({ code: "E_USAGE" });

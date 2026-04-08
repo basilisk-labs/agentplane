@@ -3,6 +3,8 @@ import { usageError } from "../cli/spec/errors.js";
 import {
   parseVerifyCommonOptions,
   validateVerifyDetailsFileExclusive,
+  validateVerifyNonEmptyInput,
+  validateVerifyNoteSource,
 } from "./task/verify-command-shared.js";
 
 type VerifyState = "ok" | "needs_rework";
@@ -12,6 +14,7 @@ export type VerifyParsed = {
   state: VerifyState;
   by: string;
   note: string;
+  noteFile?: string;
   details?: string;
   file?: string;
   quiet: boolean;
@@ -53,8 +56,13 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
       kind: "string",
       name: "note",
       valueHint: "<text>",
-      required: true,
       description: "Short note describing the verification outcome.",
+    },
+    {
+      kind: "string",
+      name: "note-file",
+      valueHint: "<path>",
+      description: "Read the verification note from a file path (mutually exclusive with --note).",
     },
     {
       kind: "string",
@@ -76,6 +84,10 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
       why: "Record an OK verification outcome.",
     },
     {
+      cmd: "agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note-file ./verify-note.txt",
+      why: "Record an OK verification outcome using a file-backed note.",
+    },
+    {
       cmd: 'agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs changes" --details "Missing tests"',
       why: "Record a needs-rework outcome with details.",
     },
@@ -91,6 +103,8 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
       });
     }
     validateVerifyDetailsFileExclusive(raw, verifySpec, { command: "verify" });
+    validateVerifyNonEmptyInput(raw, verifySpec, "by");
+    validateVerifyNoteSource(raw, verifySpec, { command: "verify" });
   },
   parse: (raw) => {
     const ok = raw.opts.ok === true;

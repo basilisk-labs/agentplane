@@ -6,6 +6,7 @@ import {
   parseVerifyCommonOptions,
   validateVerifyDetailsFileExclusive,
   validateVerifyNonEmptyInput,
+  validateVerifyNoteSource,
   verifyCommonOptions,
   type VerifyCommonParsed,
 } from "./verify-command-shared.js";
@@ -31,7 +32,7 @@ export const taskVerifyOkSpec: CommandSpec<TaskVerifyOkParsed> = {
       message: "Provide at most one of --details or --file.",
     });
     validateVerifyNonEmptyInput(raw, taskVerifyOkSpec, "by");
-    validateVerifyNonEmptyInput(raw, taskVerifyOkSpec, "note");
+    validateVerifyNoteSource(raw, taskVerifyOkSpec);
   },
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
@@ -48,6 +49,7 @@ export function makeRunTaskVerifyOkHandler(getCtx: (cmd: string) => Promise<Comm
       taskId: p.taskId,
       by: p.by,
       note: p.note,
+      noteFile: p.noteFile,
       details: p.details,
       file: p.file,
       quiet: p.quiet,

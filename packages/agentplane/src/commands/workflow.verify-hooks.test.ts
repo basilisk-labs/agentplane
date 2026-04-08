@@ -71,7 +71,7 @@ describe("commands/workflow", () => {
     restoreStdIO = null;
   });
 
-  it("verify requires --ok|--rework and --by/--note", async () => {
+  it("verify requires --ok|--rework and exactly one note source", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-V1F2";
     await addTask(root, taskId);
@@ -84,6 +84,21 @@ describe("commands/workflow", () => {
       parseCommandArgv(verifySpec, [taskId, "--ok", "--rework", "--by", "REVIEWER", "--note", "x"]),
     ).toThrow();
     expect(() => parseCommandArgv(verifySpec, [taskId, "--ok", "--by", "REVIEWER"])).toThrow();
+    expect(() =>
+      parseCommandArgv(verifySpec, [
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "x",
+        "--note-file",
+        "note.txt",
+      ]),
+    ).toThrow();
+    expect(() =>
+      parseCommandArgv(verifySpec, [taskId, "--ok", "--by", "REVIEWER", "--note-file", "note.txt"]),
+    ).not.toThrow();
   });
 
   it("verify appends a result entry and updates task.verification state", async () => {
@@ -159,6 +174,34 @@ describe("commands/workflow", () => {
         "--quiet",
       ]),
     ).toThrow();
+  });
+
+  it("verify normalizes file-backed notes into a single task-doc line", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F4D";
+    await addTask(root, taskId);
+
+    const notePath = path.join(root, "verify-note.txt");
+    await writeFile(notePath, "Looks\\n\\n good   from file\n", "utf8");
+
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    const code = await cmdVerifyParsed({
+      ctx,
+      cwd: root,
+      rootOverride: undefined,
+      taskId,
+      state: "ok",
+      by: "REVIEWER",
+      note: "",
+      noteFile: notePath,
+      quiet: true,
+    });
+    expect(code).toBe(0);
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("Note: Looks good from file");
+    expect(readme).not.toContain("Note: Looks\n");
   });
 
   it(
