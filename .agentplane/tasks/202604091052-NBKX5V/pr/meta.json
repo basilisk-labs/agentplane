@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604091052-NBKX5V/incident-locality-ux",
+  "created_at": "2026-04-09T11:00:58.818Z",
+  "head_sha": "b5a20bc8804ffe3243387029927c993c5b0a8b39",
+  "last_verified_at": "2026-04-09T11:08:29.547Z",
+  "last_verified_sha": "b5a20bc8804ffe3243387029927c993c5b0a8b39",
+  "schema_version": 1,
+  "task_id": "202604091052-NBKX5V",
+  "updated_at": "2026-04-09T11:08:29.684Z",
+  "verify": {
+    "status": "pass"
+  }
+}

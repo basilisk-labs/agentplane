@@ -153,14 +153,21 @@ export function renderFindingsAddRegistryNote(opts: {
   promote: boolean;
   external: boolean;
   taskId: string;
+  branchPr?: boolean;
 }): string {
   if (opts.promote && opts.external) {
+    if (opts.branchPr) {
+      return (
+        `incident candidate recorded for ${opts.taskId}; ` +
+        "incidents.md updates later during finish or `agentplane incidents collect <task-id>`; task-local until base-branch promotion in the current task worktree"
+      );
+    }
     return (
       `incident candidate recorded for ${opts.taskId}; ` +
-      "incidents.md updates later during finish or `agentplane incidents collect <task-id>`"
+      "incidents.md updates later during finish or `agentplane incidents collect <task-id>`; task-local in the current checkout until promotion"
     );
   }
-  return `task-local finding recorded for ${opts.taskId}; incidents.md unchanged`;
+  return `task-local finding recorded for ${opts.taskId}; incidents.md unchanged in the current checkout`;
 }
 
 export async function cmdTaskFindingsAdd(opts: {
@@ -245,6 +252,7 @@ export async function cmdTaskFindingsAdd(opts: {
           promote: opts.promote,
           external: opts.external,
           taskId: opts.taskId,
+          branchPr: config.workflow_mode === "branch_pr",
         }),
       )}\n`,
     );

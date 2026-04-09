@@ -147,6 +147,14 @@ async function recordVerificationResult(opts: {
     incidentSummary = renderIncidentCollectionPlanOutcome(collected.plan);
   }
 
+  if (config.workflow_mode === "branch_pr" && (opts.finding || opts.collectIncidents)) {
+    process.stdout.write(
+      infoMessage(
+        "branch_pr note: incident-related changes stay in the current task worktree until structured findings are promoted on the base branch or collected explicitly.",
+      ) + "\n",
+    );
+  }
+
   if (!opts.quiet) {
     const findingState = opts.finding
       ? opts.finding.localOnly
