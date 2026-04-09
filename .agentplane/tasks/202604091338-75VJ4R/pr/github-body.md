@@ -39,12 +39,21 @@ Fix the flaky wait-remote-pr-checks script test harness so concurrent gh api cal
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T13:57:30.099Z
+- Updated: 2026-04-09T14:00:28.340Z
 - Branch: task/202604091338-75VJ4R/wait-remote-gh-mock-race
-- Head: b564d3604f34
+- Head: b27d802a40db
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604091338-75VJ4R/README.md    | 116 +++++++++++++++++++++
+ .../tasks/202604091338-75VJ4R/pr/diffstat.txt      |   2 +
+ .../tasks/202604091338-75VJ4R/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604091338-75VJ4R/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091338-75VJ4R/pr/meta.json |  14 +++
+ .../tasks/202604091338-75VJ4R/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091338-75VJ4R/pr/review.md |  57 ++++++++++
+ .../tasks/202604091338-75VJ4R/pr/verify.log        |   0
+ .../src/cli/wait-remote-pr-checks-script.test.ts   |  25 +++--
+ 9 files changed, 259 insertions(+), 6 deletions(-)
 ```
 
 </details>
