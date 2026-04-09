@@ -409,6 +409,15 @@ export async function cmdCommit(opts: {
         }
         return 0;
       }
+      if (opts.closeStageTaskArtifacts === true) {
+        await refreshBranchPrArtifactsAfterTaskCommit({
+          ctx,
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride,
+          taskId: opts.taskId,
+          quiet: opts.quiet,
+        });
+      }
       await (opts.closeStageTaskArtifacts === true
         ? stageAllowlist({
             ctx,

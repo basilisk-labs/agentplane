@@ -474,6 +474,124 @@ describe("runCli", () => {
   });
 
   it(
+    "finish --close-commit leaves branch_pr PR artifacts clean and verified on the base checkout",
+    { timeout: 120_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root });
+      await writeFile(path.join(root, "file.txt"), "content", "utf8");
+      await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
+      const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Finish branch_pr close commit refreshes PR artifacts",
+          "--description",
+          "Finish should not leave refreshed pr artifacts dirty after the close commit.",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await runCliSilent([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        `task/${taskId}/close-artifacts`,
+        "--root",
+        root,
+      ]);
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Ok to finish after PR artifacts reflect pass state.",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "finish",
+          taskId,
+          "--author",
+          "INTEGRATOR",
+          "--body",
+          "Verified: branch_pr close commit should commit the refreshed pr artifacts and leave the base checkout clean.",
+          "--result",
+          "branch_pr close commit refreshes PR artifacts",
+          "--commit",
+          implHash.trim(),
+          "--close-commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("creating deterministic close commit");
+        expect(io.stdout).toContain("✅ finished");
+      } finally {
+        io.restore();
+      }
+
+      const { stdout: status } = await execFileAsync(
+        "git",
+        ["status", "--short", "--untracked-files=no"],
+        { cwd: root },
+      );
+      expect(status.trim()).toBe("");
+
+      const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+      const meta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
+        last_verified_at?: string | null;
+        verify?: { status?: string | null };
+      };
+      expect(meta.last_verified_at).toBeTruthy();
+      expect(meta.verify?.status).toBe("pass");
+      expect(await readFile(path.join(prDir, "review.md"), "utf8")).toContain("- State: ok");
+      expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toContain(
+        "- State: ok",
+      );
+      expect(await readFile(path.join(prDir, "review.md"), "utf8")).not.toContain(
+        "Not recorded yet.",
+      );
+      expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).not.toContain(
+        "Not recorded yet.",
+      );
+    },
+  );
+
+  it(
     "finish --close-commit succeeds on main in branch_pr mode without a pinned base when origin HEAD resolves main",
     { timeout: 120_000 },
     async () => {
