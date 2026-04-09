@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202604091725-BKV5RY/verify-incident-outcome",
   "created_at": "2026-04-09T18:16:58.042Z",
-  "head_sha": "a046740bdfe81a116a781f68857d34faf6b61232",
+  "head_sha": "3f4cd58ead6371267fc1e5cf6b9e33fb80864db0",
   "last_verified_at": "2026-04-09T18:23:10.288Z",
   "last_verified_sha": "a046740bdfe81a116a781f68857d34faf6b61232",
+  "pr_number": 213,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/213",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202604091725-BKV5RY",
-  "updated_at": "2026-04-09T18:16:58.042Z",
+  "updated_at": "2026-04-09T18:25:47.704Z",
   "verify": {
     "status": "pass"
   }

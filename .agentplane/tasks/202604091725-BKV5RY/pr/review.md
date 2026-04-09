@@ -18,11 +18,9 @@ After verify in branch_pr mode, print a deterministic incident-promotion outcome
 
 ### Plan
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. <Action>. Expected: <observable result>.
-2. <Action>. Expected: <observable result>.
-3. <Action>. Expected: <observable result>.
+1. Run targeted verify/incidents regressions that cover default branch_pr verify, verify --collect-incidents, and incidents collect --check. Expected: outputs distinguish updated incidents.md from validated-only or task-local outcomes.
+2. Run the targeted branch_pr PR-flow incident locality regression. Expected: verify reports the deferred promotion path explicitly instead of a generic note.
+3. Lint the touched incidents/verify/finalize sources and tests. Expected: eslint exits 0 for all modified files.
 
 ### Current Status
 
@@ -47,12 +45,29 @@ After verify in branch_pr mode, print a deterministic incident-promotion outcome
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T18:16:58.042Z
+- Updated: 2026-04-09T18:25:47.704Z
 - Branch: task/202604091725-BKV5RY/verify-incident-outcome
-- Head: a046740bdfe8
+- Head: 3f4cd58ead63
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604091725-BKV5RY/README.md    | 116 +++++++++++++++++++++
+ .../tasks/202604091725-BKV5RY/pr/diffstat.txt      |   0
+ .../tasks/202604091725-BKV5RY/pr/github-body.md    |  52 +++++++++
+ .../tasks/202604091725-BKV5RY/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091725-BKV5RY/pr/meta.json |  14 +++
+ .../tasks/202604091725-BKV5RY/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091725-BKV5RY/pr/review.md |  59 +++++++++++
+ .../tasks/202604091725-BKV5RY/pr/verify.log        |   0
+ .../src/cli/run-cli.core.incidents.test.ts         |  16 ++-
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |   2 +-
+ .../src/commands/incidents/collect.command.ts      |   7 +-
+ .../agentplane/src/commands/incidents/shared.ts    |  85 ++++++++++++---
+ .../src/commands/pr/integrate/internal/finalize.ts |   7 +-
+ packages/agentplane/src/commands/task/finish.ts    |   9 +-
+ .../src/commands/task/hosted-close.command.ts      |   7 +-
+ .../agentplane/src/commands/task/verify-record.ts  |  30 ++++--
+ .../src/commands/task/verify-record.unit.test.ts   |  14 ++-
+ 17 files changed, 382 insertions(+), 37 deletions(-)
 ```
 
 </details>
