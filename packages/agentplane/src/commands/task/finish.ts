@@ -534,7 +534,7 @@ export async function cmdFinish(opts: {
         `${infoMessage(
           renderIncidentCollectionPlanOutcome(incidentPlan, {
             wrote: promotedIncidents > 0,
-            context: "generic",
+            context: "finish",
           }),
         )}\n`,
       );

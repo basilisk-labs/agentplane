@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
   collectTaskIncidents: vi.fn(),
   inspectTaskIncidents: vi.fn(),
   renderIncidentCollectionPlanOutcome: vi.fn(),
+  ensurePrArtifactsSynced: vi.fn(),
 }));
 
 vi.mock("node:fs/promises", async (importOriginal) => {
@@ -43,6 +44,9 @@ vi.mock("../incidents/shared.js", () => ({
   collectTaskIncidents: mocks.collectTaskIncidents,
   inspectTaskIncidents: mocks.inspectTaskIncidents,
   renderIncidentCollectionPlanOutcome: mocks.renderIncidentCollectionPlanOutcome,
+}));
+vi.mock("../pr/internal/sync.js", () => ({
+  ensurePrArtifactsSynced: mocks.ensurePrArtifactsSynced,
 }));
 vi.mock("../shared/task-store.js", async (importOriginal) => {
   const actualUnknown: unknown = await importOriginal();
@@ -93,6 +97,7 @@ describe("task verify record (unit)", () => {
     mocks.collectTaskIncidents.mockReset();
     mocks.inspectTaskIncidents.mockReset();
     mocks.renderIncidentCollectionPlanOutcome.mockReset();
+    mocks.ensurePrArtifactsSynced.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
@@ -112,14 +117,75 @@ describe("task verify record (unit)", () => {
       plan: { promotable: [], skipped: [], duplicates: [], issues: [] },
     });
     mocks.renderIncidentCollectionPlanOutcome.mockReturnValue(
-      "incident registry unchanged (no structured incident findings)",
+      "incident registry unchanged (plain verify note stayed task-local and did not update incidents.md: add --observation, --impact, and --resolution for a reusable incident, then rerun with --collect-incidents or collect later on the base branch)",
     );
+    mocks.ensurePrArtifactsSynced.mockResolvedValue(false);
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-02-09T00:00:00.000Z"));
   });
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it("prints an explicit no-op explanation when verify records no structured incident finding", async () => {
+    const writes: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+      writes.push(String(chunk));
+      return true;
+    });
+    const backend: TaskBackend = {
+      id: "mock",
+      listTasks: () => Promise.resolve([]),
+      getTask: () => Promise.resolve(null),
+      writeTask: () => Promise.resolve(),
+      getTaskDoc: () =>
+        Promise.resolve(
+          [
+            "## Summary",
+            "x",
+            "",
+            "## Verify Steps",
+            "step",
+            "",
+            "## Verification",
+            "<!-- BEGIN VERIFICATION RESULTS -->",
+            "<!-- END VERIFICATION RESULTS -->",
+            "",
+            "## Findings",
+            "",
+          ].join("\n"),
+        ),
+    };
+    const ctx = mkCtx({ taskBackend: backend, backend });
+    ctx.config.workflow_mode = "branch_pr";
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        status: "DONE",
+        commit: { hash: "abc", message: "msg" },
+        doc: undefined,
+        doc_version: 3,
+        doc_updated_at: "2026-02-01T00:00:00Z",
+      }),
+    );
+
+    const { cmdTaskVerifyOk } = await import("./verify-record.js");
+    await expect(
+      cmdTaskVerifyOk({
+        ctx,
+        cwd: "/repo",
+        taskId: "T-1",
+        by: "A",
+        note: "Looks good",
+        quiet: false,
+      }),
+    ).resolves.toBe(0);
+
+    expect(writes.join("")).toContain("plain verify note stayed task-local");
+    expect(writes.join("")).toContain("did not update incidents.md");
+    expect(writes.join("")).toContain("--observation, --impact, and --resolution");
+
+    writeSpy.mockRestore();
   });
 
   it("cmdTaskVerifyOk validates note sources and mutually exclusive details/file", async () => {
