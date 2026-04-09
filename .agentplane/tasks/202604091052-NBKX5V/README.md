@@ -1,10 +1,11 @@
 ---
 id: "202604091052-NBKX5V"
 title: "Explain branch_pr incident collection locality and promotion requirements"
-status: "DOING"
+result_summary: "Merged via PR #171."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-09T11:08:29.547Z"
   updated_by: "REVIEWER"
   note: "Command: bun test packages/agentplane/src/cli/run-cli.core.tasks.findings.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/task/findings.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/cli/run-cli.core.tasks.findings.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: focused findings/incidents/branch_pr verify tests passed, including the new branch_pr locality case, and eslint exited 0 after narrowing generic messages to current checkout while keeping branch_pr-specific guidance in verify. Scope: incident promotion UX, findings add messaging, branch_pr verify locality explanation."
-commit: null
+commit:
+  hash: "a4ee212282a6c2b30b8039b230cc92a2403cbf11"
+  message: "workflow/incidents: Explain branch_pr incident collection locality and promotion requirem... (NBKX5V) (#171)"
 comments:
   -
     author: "CODER"
     body: "Start: clarify branch_pr incident locality and promotion semantics so operators know when incidents.md changes stay local and when promotion happens on base."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #171 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/run-cli.core.tasks.findings.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/task/findings.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/cli/run-cli.core.tasks.findings.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: focused findings/incidents/branch_pr verify tests passed, including the new branch_pr locality case, and eslint exited 0 after narrowing generic messages to current checkout while keeping branch_pr-specific guidance in verify. Scope: incident promotion UX, findings add messaging, branch_pr verify locality explanation."
+  -
+    type: "status"
+    at: "2026-04-09T11:21:40.051Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #171 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T11:08:29.574Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T11:21:40.058Z"
+doc_updated_by: "INTEGRATOR"
 description: "Clarify branch_pr incident collection locality, promotion timing, and why plain findings or verify notes do not update .agentplane/policy/incidents.md."
 sections:
   Summary: |-
