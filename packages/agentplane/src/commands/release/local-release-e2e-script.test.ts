@@ -272,8 +272,10 @@ describe("local release E2E script", () => {
     async () => {
       const { root, binDir } = await initWorkspace();
 
-      const result = await runScript(root, ["--skip-prepublish"], {
+      const result = await runScript(root, ["--skip-prepublish", "--repo", "basilisk-labs/agentplane"], {
         PATH: `${binDir}:${process.env.PATH ?? ""}`,
+        GITHUB_TOKEN: "",
+        GH_TOKEN: "",
       }).then(
         () => ({ ok: true as const, stderr: "" }),
         (error: unknown) => {
