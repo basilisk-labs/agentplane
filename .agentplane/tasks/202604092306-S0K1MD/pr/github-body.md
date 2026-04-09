@@ -20,7 +20,7 @@ Treat finish as a task-artifact mutation in the stale-dist policy so base-side c
 ### Current Status
 
 - State: ok
-- Note: Verified current HEAD after task commit: stale-dist policy now allows finish as task-artifact closeout; stale-dist policy and readonly tests plus eslint passed.
+- Note: Verified current HEAD after formatting commit: stale-dist policy now allows finish as task-artifact closeout; stale-dist policy and readonly tests plus eslint passed.
 
 ## Risks
 
@@ -39,23 +39,23 @@ Treat finish as a task-artifact mutation in the stale-dist policy so base-side c
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T23:17:02.398Z
+- Updated: 2026-04-09T23:17:51.247Z
 - Branch: task/202604092306-S0K1MD/finish-stale-dist
-- Head: 40916644a90f
+- Head: 655d62fec58a
 
 ```text
- .agentplane/tasks/202604092306-S0K1MD/README.md    | 122 +++++++++++++++++++++
- .../tasks/202604092306-S0K1MD/pr/diffstat.txt      |   0
- .../tasks/202604092306-S0K1MD/pr/github-body.md    |  50 +++++++++
+ .agentplane/tasks/202604092306-S0K1MD/README.md    | 144 +++++++++++++++++++++
+ .../tasks/202604092306-S0K1MD/pr/diffstat.txt      |  12 ++
+ .../tasks/202604092306-S0K1MD/pr/github-body.md    |  61 +++++++++
  .../tasks/202604092306-S0K1MD/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604092306-S0K1MD/pr/meta.json |  14 +++
+ .agentplane/tasks/202604092306-S0K1MD/pr/meta.json |  14 ++
  .../tasks/202604092306-S0K1MD/pr/notes.jsonl       |   0
- .agentplane/tasks/202604092306-S0K1MD/pr/review.md |  57 ++++++++++
+ .agentplane/tasks/202604092306-S0K1MD/pr/review.md |  68 ++++++++++
  .../tasks/202604092306-S0K1MD/pr/verify.log        |   0
  packages/agentplane/bin/stale-dist-policy.js       |   1 +
  .../agentplane/src/cli/stale-dist-policy.test.ts   |   8 +-
- .../agentplane/src/cli/stale-dist-readonly.test.ts |  19 ++--
- 11 files changed, 257 insertions(+), 15 deletions(-)
+ .../agentplane/src/cli/stale-dist-readonly.test.ts |  27 ++--
+ 11 files changed, 319 insertions(+), 17 deletions(-)
 ```
 
 </details>
