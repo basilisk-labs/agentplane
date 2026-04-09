@@ -1,0 +1,1 @@
+branch_pr/workflow: Infer branch_pr base branch from default branch when pin is absent (1Y4FGP)
