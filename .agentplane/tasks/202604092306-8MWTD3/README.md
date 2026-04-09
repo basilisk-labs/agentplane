@@ -1,10 +1,11 @@
 ---
 id: "202604092306-8MWTD3"
 title: "Print exact findings-add next step when incidents stay local"
-status: "DOING"
+result_summary: "Merged via PR #239."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,22 @@ verification:
   updated_at: "2026-04-09T23:13:23.207Z"
   updated_by: "CODER"
   note: "Verified current HEAD after task commit: incident no-op guidance now prints exact task findings add next step; vitest and eslint passed in worktree."
-commit: null
+commit:
+  hash: "15b5db39aa16de242aa1297f28b930215d38dbce"
+  message: "incidents/ux: Print exact findings-add next step when incidents stay local (8MWTD3) (#239)"
 comments:
   -
     author: "CODER"
     body: "Start: refine verify/finish incident no-op messaging so operators get an exact task findings add command when incidents.md stays unchanged after plain text input."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged via PR #239 after hosted checks passed; closeout metadata reconciled on base."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged via PR #239 after hosted checks passed; closeout metadata reconciled on base."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged via PR #239 after hosted checks passed; closeout metadata reconciled on base."
 events:
   -
     type: "status"
@@ -47,9 +59,30 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified current HEAD after task commit: incident no-op guidance now prints exact task findings add next step; vitest and eslint passed in worktree."
+  -
+    type: "status"
+    at: "2026-04-09T23:31:51.575Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged via PR #239 after hosted checks passed; closeout metadata reconciled on base."
+  -
+    type: "status"
+    at: "2026-04-09T23:32:52.847Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: merged via PR #239 after hosted checks passed; closeout metadata reconciled on base."
+  -
+    type: "status"
+    at: "2026-04-09T23:33:07.565Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: merged via PR #239 after hosted checks passed; closeout metadata reconciled on base."
 doc_version: 3
-doc_updated_at: "2026-04-09T23:13:23.210Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T23:33:07.565Z"
+doc_updated_by: "INTEGRATOR"
 description: "When verify or finish leaves incidents.md unchanged because the operator only passed plain note/body text, print an exact task findings add command template for the active task instead of generic prose."
 sections:
   Summary: |-

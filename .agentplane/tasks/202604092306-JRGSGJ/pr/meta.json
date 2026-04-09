@@ -2,12 +2,17 @@
   "base": "main",
   "branch": "task/202604092306-JRGSGJ/doctor-safe-cleanup",
   "created_at": "2026-04-09T23:21:28.810Z",
-  "head_sha": "593d86d5e2b8a45e9b3b9941ec00536b25bbeed1",
+  "head_sha": "a33ae34f30b4ade3b92384797d949edcd38a1742",
   "last_verified_at": "2026-04-09T23:22:53.109Z",
   "last_verified_sha": "593d86d5e2b8a45e9b3b9941ec00536b25bbeed1",
+  "merge_commit": "078c5e9b31aaba074041ecf2b34daad5f3b79d5a",
+  "merged_at": "2026-04-09T23:28:16Z",
+  "pr_number": 241,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/241",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604092306-JRGSGJ",
-  "updated_at": "2026-04-09T23:22:53.124Z",
+  "updated_at": "2026-04-09T23:33:25.761Z",
   "verify": {
     "status": "pass"
   }

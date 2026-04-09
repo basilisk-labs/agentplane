@@ -1,10 +1,11 @@
 ---
 id: "202604092306-JRGSGJ"
 title: "Doctor --fix safe-removes legacy untracked task README collisions"
-status: "DOING"
+result_summary: "Merged via PR #241."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-09T23:22:53.109Z"
   updated_by: "CODER"
   note: "Verified current HEAD after formatting commit: doctor --fix now removes only untracked DONE task README collisions; doctor fast/command tests and eslint passed."
-commit: null
+commit:
+  hash: "078c5e9b31aaba074041ecf2b34daad5f3b79d5a"
+  message: "doctor/workflow: Doctor --fix safe-removes legacy untracked task README collisions (JRGSGJ) (#241)"
 comments:
   -
     author: "CODER"
     body: "Start: extend doctor --fix with a safe cleanup for legacy untracked task README collisions that would otherwise block pull or rebase once upstream tracks the same task path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged via PR #241 after hosted checks passed; closeout metadata reconciled on base."
 events:
   -
     type: "status"
@@ -54,9 +60,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified current HEAD after formatting commit: doctor --fix now removes only untracked DONE task README collisions; doctor fast/command tests and eslint passed."
+  -
+    type: "status"
+    at: "2026-04-09T23:33:25.676Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged via PR #241 after hosted checks passed; closeout metadata reconciled on base."
 doc_version: 3
-doc_updated_at: "2026-04-09T23:22:53.112Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T23:33:25.677Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend doctor --fix with a safe cleanup for legacy untracked .agentplane/tasks/<task-id>/README.md collisions that would be overwritten by tracked task artifacts from origin/main and block git pull or rebase."
 sections:
   Summary: |-

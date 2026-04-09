@@ -1,10 +1,11 @@
 ---
 id: "202604092306-S0K1MD"
 title: "Allow finish to warn-and-run under stale-dist for task artifact closeout"
-status: "DOING"
+result_summary: "Merged via PR #240."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-09T23:17:51.232Z"
   updated_by: "CODER"
   note: "Verified current HEAD after formatting commit: stale-dist policy now allows finish as task-artifact closeout; stale-dist policy and readonly tests plus eslint passed."
-commit: null
+commit:
+  hash: "94a5167f2e07471a566a0f65cda3cf9ea29668e0"
+  message: "workflow: Allow finish to warn-and-run under stale-dist for task artifact closeout (S0K1MD) (#240)"
 comments:
   -
     author: "CODER"
     body: "Start: treat finish as a task-artifact mutation in the stale-dist policy so base-side closeout no longer requires a manual bootstrap after merged code changes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged via PR #240 after hosted checks passed; closeout metadata reconciled on base."
 events:
   -
     type: "status"
@@ -53,9 +59,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified current HEAD after formatting commit: stale-dist policy now allows finish as task-artifact closeout; stale-dist policy and readonly tests plus eslint passed."
+  -
+    type: "status"
+    at: "2026-04-09T23:33:23.277Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged via PR #240 after hosted checks passed; closeout metadata reconciled on base."
 doc_version: 3
-doc_updated_at: "2026-04-09T23:17:51.235Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T23:33:23.277Z"
+doc_updated_by: "INTEGRATOR"
 description: "Treat finish as a task-artifact mutation in the stale-dist policy so base-side closeout can proceed after merged code changes without a mandatory manual framework bootstrap."
 sections:
   Summary: |-
