@@ -10,15 +10,28 @@ import {
   syncHostedMergedTasks,
 } from "./hosted-merge-sync.js";
 
-vi.mock("../shared/git.js", () => ({
-  execFileAsync: vi.fn(),
-}));
+vi.mock("../shared/git.js", () => {
+  return {
+    execFileAsync: vi.fn(),
+    gitEnv: () => {
+      const env: NodeJS.ProcessEnv = { ...process.env };
+      delete env.GIT_DIR;
+      delete env.GIT_WORK_TREE;
+      delete env.GIT_COMMON_DIR;
+      delete env.GIT_INDEX_FILE;
+      delete env.GIT_OBJECT_DIRECTORY;
+      delete env.GIT_ALTERNATE_OBJECT_DIRECTORIES;
+      return env;
+    },
+  };
+});
 
 const mockedExecFileAsync = execFileAsync as unknown as {
   mockReset: () => void;
   mockRejectedValueOnce: (value: unknown) => typeof mockedExecFileAsync;
   mockResolvedValueOnce: (value: unknown) => typeof mockedExecFileAsync;
 };
+type ExecCall = [string, string[], { cwd?: string; env?: NodeJS.ProcessEnv; maxBuffer?: number }?];
 
 beforeEach(() => {
   mockedExecFileAsync.mockReset();
@@ -180,5 +193,61 @@ describe("syncHostedMergedTasks", () => {
       }),
     ).rejects.toThrow("authentication required");
     expect(mockedExecFileAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it("uses sanitized gh env for hosted merge lookups", async () => {
+    const originalGhToken = process.env.GH_TOKEN;
+    const originalHome = process.env.HOME;
+    const originalGitDir = process.env.GIT_DIR;
+    const originalGitWorkTree = process.env.GIT_WORK_TREE;
+    process.env.GH_TOKEN = "token-from-parent-env";
+    process.env.HOME = "/tmp/agentplane-home";
+    process.env.GIT_DIR = "/tmp/leaked.git";
+    process.env.GIT_WORK_TREE = "/tmp/leaked-tree";
+    mockedExecFileAsync.mockResolvedValueOnce({
+      stdout: JSON.stringify([
+        {
+          number: 42,
+          title: "Merged PR",
+          mergedAt: "2026-04-06T18:19:00.000Z",
+          baseRefName: "main",
+          headRefName: "task/202604061815-01F3CY/retry",
+          headRefOid: "abcdef1234567890abcdef1234567890abcdef12",
+          mergeCommit: { oid: "1234567890abcdef1234567890abcdef12345678" },
+        },
+      ]),
+      stderr: "",
+    });
+
+    try {
+      await expect(
+        resolveHostedMergedPr({
+          cwd: "/repo",
+          branch: "task/202604061815-01F3CY/retry",
+        }),
+      ).resolves.toMatchObject({
+        number: 42,
+        mergeCommit: { oid: "1234567890abcdef1234567890abcdef12345678" },
+      });
+    } finally {
+      if (originalGhToken === undefined) delete process.env.GH_TOKEN;
+      else process.env.GH_TOKEN = originalGhToken;
+      if (originalHome === undefined) delete process.env.HOME;
+      else process.env.HOME = originalHome;
+      if (originalGitDir === undefined) delete process.env.GIT_DIR;
+      else process.env.GIT_DIR = originalGitDir;
+      if (originalGitWorkTree === undefined) delete process.env.GIT_WORK_TREE;
+      else process.env.GIT_WORK_TREE = originalGitWorkTree;
+    }
+
+    const calls = vi.mocked(execFileAsync).mock.calls as ExecCall[];
+    expect(calls[0]?.[0]).toBe("gh");
+    expect(calls[0]?.[1]).toEqual(expect.arrayContaining(["pr", "list", "--state", "merged"]));
+    expect(calls[0]?.[2]?.cwd).toBe("/repo");
+    const env = calls[0]?.[2]?.env;
+    expect(env?.GH_TOKEN).toBe("token-from-parent-env");
+    expect(env?.HOME).toBe("/tmp/agentplane-home");
+    expect(env?.GIT_DIR).toBeUndefined();
+    expect(env?.GIT_WORK_TREE).toBeUndefined();
   });
 });

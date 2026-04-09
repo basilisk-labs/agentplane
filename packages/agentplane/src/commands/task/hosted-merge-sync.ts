@@ -11,6 +11,7 @@ import { withGhTransportRetry } from "../shared/gh-transport.js";
 import { parseTaskIdFromBranch } from "../shared/git-worktree.js";
 import { parsePrMeta } from "../shared/pr-meta.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { ghEnv } from "../pr/internal/gh-api.js";
 import { appendTaskEvent } from "./shared.js";
 
 export type HostedMergedPr = {
@@ -183,7 +184,7 @@ export async function resolveHostedMergedPr(opts: {
         ],
         {
           cwd: opts.cwd,
-          env: process.env,
+          env: ghEnv(),
           maxBuffer: 10 * 1024 * 1024,
         },
       );

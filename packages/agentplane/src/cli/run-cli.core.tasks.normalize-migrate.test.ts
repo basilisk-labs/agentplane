@@ -204,12 +204,24 @@ describe("runCli", () => {
     }
 
     const originalPath = process.env.PATH;
+    const originalGhToken = process.env.GH_TOKEN;
+    const originalGitDir = process.env.GIT_DIR;
+    const originalGitWorkTree = process.env.GIT_WORK_TREE;
     process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.GH_TOKEN = "token-from-parent-env";
+    process.env.GIT_DIR = "/tmp/leaked.git";
+    process.env.GIT_WORK_TREE = "/tmp/leaked-tree";
     try {
       const code = await runCli(["task", "normalize", "--sync-hosted-merges", "--root", root]);
       expect(code).toBe(0);
     } finally {
       process.env.PATH = originalPath;
+      if (originalGhToken === undefined) delete process.env.GH_TOKEN;
+      else process.env.GH_TOKEN = originalGhToken;
+      if (originalGitDir === undefined) delete process.env.GIT_DIR;
+      else process.env.GIT_DIR = originalGitDir;
+      if (originalGitWorkTree === undefined) delete process.env.GIT_WORK_TREE;
+      else process.env.GIT_WORK_TREE = originalGitWorkTree;
     }
 
     const ioShow = captureStdIO();
