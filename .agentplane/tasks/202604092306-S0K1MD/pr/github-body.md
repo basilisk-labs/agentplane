@@ -39,23 +39,23 @@ Treat finish as a task-artifact mutation in the stale-dist policy so base-side c
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T23:17:51.247Z
+- Updated: 2026-04-09T23:33:23.353Z
 - Branch: task/202604092306-S0K1MD/finish-stale-dist
-- Head: 655d62fec58a
+- Head: e4dd4832e6c0
 
 ```text
- .agentplane/tasks/202604092306-S0K1MD/README.md    | 144 +++++++++++++++++++++
+ .agentplane/tasks/202604092306-S0K1MD/README.md    | 166 +++++++++++++++++++++
  .../tasks/202604092306-S0K1MD/pr/diffstat.txt      |  12 ++
- .../tasks/202604092306-S0K1MD/pr/github-body.md    |  61 +++++++++
+ .../tasks/202604092306-S0K1MD/pr/github-body.md    |  61 ++++++++
  .../tasks/202604092306-S0K1MD/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604092306-S0K1MD/pr/meta.json |  14 ++
  .../tasks/202604092306-S0K1MD/pr/notes.jsonl       |   0
- .agentplane/tasks/202604092306-S0K1MD/pr/review.md |  68 ++++++++++
+ .agentplane/tasks/202604092306-S0K1MD/pr/review.md |  68 +++++++++
  .../tasks/202604092306-S0K1MD/pr/verify.log        |   0
  packages/agentplane/bin/stale-dist-policy.js       |   1 +
  .../agentplane/src/cli/stale-dist-policy.test.ts   |   8 +-
  .../agentplane/src/cli/stale-dist-readonly.test.ts |  27 ++--
- 11 files changed, 319 insertions(+), 17 deletions(-)
+ 11 files changed, 341 insertions(+), 17 deletions(-)
 ```
 
 </details>
