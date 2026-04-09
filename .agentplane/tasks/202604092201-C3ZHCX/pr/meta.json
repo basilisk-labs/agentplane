@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604092201-C3ZHCX/cleanup-fetch-origin",
+  "created_at": "2026-04-09T22:14:04.887Z",
+  "head_sha": "684a2bdcec50b910b0e2aee0286c63523954b46d",
+  "last_verified_at": "2026-04-09T22:16:42.206Z",
+  "last_verified_sha": "0d13cfc3fdcc2d53ebb34513442c89a1f9ee2609",
+  "pr_number": 236,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/236",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604092201-C3ZHCX",
+  "updated_at": "2026-04-09T22:24:51.747Z",
+  "verify": {
+    "status": "pass"
+  }
+}

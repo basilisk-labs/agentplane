@@ -1,0 +1,5 @@
+ docs/user/cli-reference.generated.mdx              |  7 ++
+ .../run-cli.core.pr-flow.cleanup-merged.test.ts    | 96 +++++++++++++++++++++-
+ .../src/commands/branch/cleanup-merged.ts          | 11 ++-
+ .../src/commands/cleanup/merged.command.ts         | 13 +++
+ 4 files changed, 125 insertions(+), 2 deletions(-)
