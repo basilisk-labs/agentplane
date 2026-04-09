@@ -28,6 +28,7 @@ export type CleanupMergedParsed = {
   base: string | null;
   yes: boolean;
   archive: boolean;
+  deleteRemoteBranches: boolean;
   quiet: boolean;
 };
 
@@ -44,6 +45,12 @@ export const cleanupMergedSpec: CommandSpec<CleanupMergedParsed> = {
       default: false,
       description: "Archive PR artifacts before deletion.",
     },
+    {
+      kind: "boolean",
+      name: "delete-remote-branches",
+      default: false,
+      description: "Also delete matching remote task branches on origin.",
+    },
     { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
   ],
   examples: [
@@ -51,6 +58,10 @@ export const cleanupMergedSpec: CommandSpec<CleanupMergedParsed> = {
     {
       cmd: "agentplane cleanup merged --yes --archive",
       why: "Delete candidates and archive PR artifacts.",
+    },
+    {
+      cmd: "agentplane cleanup merged --yes --delete-remote-branches",
+      why: "Delete candidates and matching remote task branches on origin.",
     },
   ],
   validateRaw: (raw) => {
@@ -63,6 +74,7 @@ export const cleanupMergedSpec: CommandSpec<CleanupMergedParsed> = {
     base: typeof raw.opts.base === "string" ? raw.opts.base : null,
     yes: raw.opts.yes === true,
     archive: raw.opts.archive === true,
+    deleteRemoteBranches: raw.opts["delete-remote-branches"] === true,
     quiet: raw.opts.quiet === true,
   }),
 };
@@ -86,6 +98,7 @@ export function makeRunCleanupMergedHandler(getCtx: (cmd: string) => Promise<Com
       base: p.base ?? undefined,
       yes: p.yes,
       archive: p.archive,
+      deleteRemoteBranches: p.deleteRemoteBranches,
       quiet: p.quiet,
     });
   };
