@@ -170,7 +170,9 @@ function listLegacyLefthookHooks(repoRoot) {
   const hooksDir = resolveGitHooksDir(repoRoot);
   return HOOK_NAMES.filter((hookName) => {
     const hookText = readHookIfPresent(path.join(hooksDir, hookName));
-    return Boolean(hookText) && !isManagedAgentplaneHook(hookText) && isLegacyLefthookHook(hookText);
+    return (
+      Boolean(hookText) && !isManagedAgentplaneHook(hookText) && isLegacyLefthookHook(hookText)
+    );
   });
 }
 

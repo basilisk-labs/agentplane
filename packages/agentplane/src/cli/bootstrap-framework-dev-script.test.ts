@@ -188,7 +188,7 @@ describe("bootstrap-framework-dev script", () => {
     await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     await writeFile(
       path.join(repoRoot, ".git", "hooks", "pre-push"),
-      "#!/bin/sh\ncall_lefthook()\n{\n  echo \"Can't find lefthook in PATH\"\n}\n",
+      '#!/bin/sh\ncall_lefthook()\n{\n  echo "Can\'t find lefthook in PATH"\n}\n',
       "utf8",
     );
     const calls: string[] = [];
