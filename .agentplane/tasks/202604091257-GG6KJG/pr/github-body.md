@@ -20,7 +20,7 @@ Make pr check recover from stale base task PR artifacts by reading fresher branc
 ### Current Status
 
 - State: ok
-- Note: Rebased onto main after 75VJ4R, fixed Windows formatting drift in pr/check.ts, replaced incompatible vi.hoisted test harness in pr-paths.test.ts, and reran targeted pr-flow/pr-paths coverage.
+- Note: Completed the follow-up lint-safe mock wrapper cleanup in pr-paths.test.ts, reran prettier, eslint, and targeted pr-flow/pr-paths tests, and confirmed the branch is green after the rebase blocker wave.
 
 ## Risks
 
@@ -39,24 +39,24 @@ Make pr check recover from stale base task PR artifacts by reading fresher branc
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T14:20:05.443Z
+- Updated: 2026-04-09T14:28:13.016Z
 - Branch: task/202604091257-GG6KJG/pr-check-freshness
-- Head: 508b9591ff4d
+- Head: 1916191ffcb9
 
 ```text
- .agentplane/tasks/202604091257-GG6KJG/README.md    | 116 ++++++
- .../tasks/202604091257-GG6KJG/pr/diffstat.txt      |   0
- .../tasks/202604091257-GG6KJG/pr/github-body.md    |  50 +++
+ .agentplane/tasks/202604091257-GG6KJG/README.md    | 138 +++++++
+ .../tasks/202604091257-GG6KJG/pr/diffstat.txt      |  13 +
+ .../tasks/202604091257-GG6KJG/pr/github-body.md    |  62 +++
  .../tasks/202604091257-GG6KJG/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604091257-GG6KJG/pr/meta.json |  17 +
  .../tasks/202604091257-GG6KJG/pr/notes.jsonl       |   0
- .agentplane/tasks/202604091257-GG6KJG/pr/review.md |  57 +++
+ .agentplane/tasks/202604091257-GG6KJG/pr/review.md |  69 ++++
  .../tasks/202604091257-GG6KJG/pr/verify.log        |   0
  .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  99 +++++
  packages/agentplane/src/commands/pr/check.ts       | 440 ++++++++++++++-------
- .../src/commands/pr/internal/pr-paths.test.ts      |  47 ++-
+ .../src/commands/pr/internal/pr-paths.test.ts      |  72 +++-
  .../src/commands/pr/internal/pr-paths.ts           |  17 +-
- 12 files changed, 681 insertions(+), 163 deletions(-)
+ 12 files changed, 765 insertions(+), 163 deletions(-)
 ```
 
 </details>

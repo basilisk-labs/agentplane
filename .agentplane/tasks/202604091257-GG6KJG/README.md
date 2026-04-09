@@ -4,7 +4,7 @@ title: "Prefer fresh branch PR artifacts in pr check when base snapshot is stale
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T14:20:05.416Z"
+  updated_at: "2026-04-09T14:28:12.987Z"
   updated_by: "CODER"
-  note: "Rebased onto main after 75VJ4R, fixed Windows formatting drift in pr/check.ts, replaced incompatible vi.hoisted test harness in pr-paths.test.ts, and reran targeted pr-flow/pr-paths coverage."
+  note: "Completed the follow-up lint-safe mock wrapper cleanup in pr-paths.test.ts, reran prettier, eslint, and targeted pr-flow/pr-paths tests, and confirmed the branch is green after the rebase blocker wave."
 commit: null
 comments:
   -
@@ -46,8 +46,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rebased onto main after 75VJ4R, fixed Windows formatting drift in pr/check.ts, replaced incompatible vi.hoisted test harness in pr-paths.test.ts, and reran targeted pr-flow/pr-paths coverage."
+  -
+    type: "verify"
+    at: "2026-04-09T14:28:12.987Z"
+    author: "CODER"
+    state: "ok"
+    note: "Completed the follow-up lint-safe mock wrapper cleanup in pr-paths.test.ts, reran prettier, eslint, and targeted pr-flow/pr-paths tests, and confirmed the branch is green after the rebase blocker wave."
 doc_version: 3
-doc_updated_at: "2026-04-09T14:20:05.421Z"
+doc_updated_at: "2026-04-09T14:28:12.993Z"
 doc_updated_by: "CODER"
 description: "Make pr check recover from stale base task PR artifacts by reading fresher branch/worktree snapshots instead of failing on outdated local meta/review state."
 sections:
@@ -80,6 +86,14 @@ sections:
     Note: Rebased onto main after 75VJ4R, fixed Windows formatting drift in pr/check.ts, replaced incompatible vi.hoisted test harness in pr-paths.test.ts, and reran targeted pr-flow/pr-paths coverage.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:11:41.861Z, excerpt_hash=sha256:efa806729371604dbecd3259721b6273f5956e1b851d55136c9592d33984ed7a
+    
+    ### 2026-04-09T14:28:12.987Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Completed the follow-up lint-safe mock wrapper cleanup in pr-paths.test.ts, reran prettier, eslint, and targeted pr-flow/pr-paths tests, and confirmed the branch is green after the rebase blocker wave.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T14:20:05.421Z, excerpt_hash=sha256:efa806729371604dbecd3259721b6273f5956e1b851d55136c9592d33984ed7a
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -127,6 +141,14 @@ By: CODER
 Note: Rebased onto main after 75VJ4R, fixed Windows formatting drift in pr/check.ts, replaced incompatible vi.hoisted test harness in pr-paths.test.ts, and reran targeted pr-flow/pr-paths coverage.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:11:41.861Z, excerpt_hash=sha256:efa806729371604dbecd3259721b6273f5956e1b851d55136c9592d33984ed7a
+
+### 2026-04-09T14:28:12.987Z — VERIFY — ok
+
+By: CODER
+
+Note: Completed the follow-up lint-safe mock wrapper cleanup in pr-paths.test.ts, reran prettier, eslint, and targeted pr-flow/pr-paths tests, and confirmed the branch is green after the rebase blocker wave.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T14:20:05.421Z, excerpt_hash=sha256:efa806729371604dbecd3259721b6273f5956e1b851d55136c9592d33984ed7a
 
 <!-- END VERIFICATION RESULTS -->
 
