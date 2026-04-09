@@ -39,9 +39,9 @@ When finish --close-commit is already allowed under stale-dist for task-artifact
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T23:52:31.350Z
+- Updated: 2026-04-09T23:53:13.739Z
 - Branch: task/202604092339-NFXA6G/stale-dist-close-commit
-- Head: fa2e799ba028
+- Head: da76959c2c82
 
 ```text
 No changes detected.
