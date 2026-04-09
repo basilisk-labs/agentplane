@@ -262,12 +262,15 @@ export function renderIncidentCollectionPlanOutcome(
     if (duplicates > 0) suffix.push(`${duplicates} duplicate${duplicates === 1 ? "" : "s"}`);
     if (skipped > 0)
       suffix.push(`${skipped} skipped structured finding${skipped === 1 ? "" : "s"}`);
-    const base = suffix.length > 0
-      ? `incident registry updated (${promoted} promoted; ${suffix.join("; ")})`
-      : renderIncidentCollectionOutcome(promoted);
+    const base =
+      suffix.length > 0
+        ? `incident registry updated (${promoted} promoted; ${suffix.join("; ")})`
+        : renderIncidentCollectionOutcome(promoted);
     const details: string[] = [];
     const promotedIds = Array.isArray(opts?.promotedIds)
-      ? opts.promotedIds.filter((id): id is string => typeof id === "string" && id.trim().length > 0)
+      ? opts.promotedIds.filter(
+          (id): id is string => typeof id === "string" && id.trim().length > 0,
+        )
       : [];
     const registryPaths = Array.isArray(opts?.registryPaths)
       ? opts.registryPaths.filter(
