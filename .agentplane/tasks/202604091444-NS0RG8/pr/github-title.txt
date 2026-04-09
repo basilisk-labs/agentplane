@@ -1,0 +1,1 @@
+hooks/workflow: Repair legacy lefthook installs during framework bootstrap (NS0RG8)

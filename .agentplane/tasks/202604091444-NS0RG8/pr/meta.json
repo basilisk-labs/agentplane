@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604091444-NS0RG8/repair-legacy-lefthook",
+  "created_at": "2026-04-09T15:07:25.340Z",
+  "head_sha": "c43d40f930dc444ac2d7466e352d46896bfe2c34",
+  "last_verified_at": "2026-04-09T15:14:15.086Z",
+  "last_verified_sha": "c43d40f930dc444ac2d7466e352d46896bfe2c34",
+  "pr_number": 193,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/193",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604091444-NS0RG8",
+  "updated_at": "2026-04-09T15:14:29.409Z",
+  "verify": {
+    "status": "pass"
+  }
+}
