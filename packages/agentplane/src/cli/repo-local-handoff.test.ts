@@ -166,11 +166,7 @@ async function setupFrameworkCheckoutWithoutInstallLayout() {
   );
   await writeFile(
     path.join(distDir, "cli.js"),
-    [
-      "#!/usr/bin/env node",
-      String.raw`process.stdout.write("SHOULD_NOT_RUN\n");`,
-      "",
-    ].join("\n"),
+    ["#!/usr/bin/env node", String.raw`process.stdout.write("SHOULD_NOT_RUN\n");`, ""].join("\n"),
     "utf8",
   );
   await execFileAsync("git", ["init", "-q", "-b", "main"], { cwd: repoRoot });
