@@ -1,10 +1,11 @@
 ---
 id: "202604091600-348SVA"
 title: "Recover hosted-close-pr merge metadata from remote close branches"
-status: "DOING"
+result_summary: "Merged via PR #201."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-09T16:29:24.994Z"
   updated_by: "CODER"
   note: "Verified: targeted vitest, format:check, and docs:cli:check passed after formatting hosted-close-pr.command.ts for hosted CI parity."
-commit: null
+commit:
+  hash: "a8072af0eadaab760b82fc889e31f0a7f80a15e7"
+  message: "github/workflow: Recover hosted-close-pr merge metadata from remote close branches (348SVA) (#201)"
 comments:
   -
     author: "CODER"
     body: "Start: make hosted-close-pr recover merge metadata from remote task-close branches instead of requiring hydrated base-side pr/meta first."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #201 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: targeted vitest, format:check, and docs:cli:check passed after formatting hosted-close-pr.command.ts for hosted CI parity."
+  -
+    type: "status"
+    at: "2026-04-09T16:48:47.317Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #201 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T16:29:25.010Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T16:48:47.324Z"
+doc_updated_by: "INTEGRATOR"
 description: "Allow task hosted-close-pr to open a closure PR even when base-side pr/meta.json is stale by deriving merge metadata from the remote task-close branch and merged task PR context."
 sections:
   Summary: |-

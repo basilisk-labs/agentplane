@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604091600-348SVA/hosted-close-pr-fallback",
   "created_at": "2026-04-09T16:23:56.418Z",
-  "head_sha": "f6f2660e13d43bf821e64fb73c26e74a6e69c08f",
+  "head_sha": "b8ae5682425de5922ab768eba8521d8a9f8ba892",
   "last_verified_at": "2026-04-09T16:23:56.350Z",
   "last_verified_sha": "f6f2660e13d43bf821e64fb73c26e74a6e69c08f",
+  "merge_commit": "a8072af0eadaab760b82fc889e31f0a7f80a15e7",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T16:48:21Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604091600-348SVA",
-  "updated_at": "2026-04-09T16:23:56.418Z",
+  "updated_at": "2026-04-09T16:48:21Z",
   "verify": {
     "status": "pass"
   }
