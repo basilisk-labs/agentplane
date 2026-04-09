@@ -39,12 +39,22 @@ Allow branch_pr duplicate-closure bookkeeping commands to resolve task artifacts
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T18:05:01.851Z
+- Updated: 2026-04-09T18:16:11.866Z
 - Branch: task/202604091725-G6QE2N/duplicate-close-worktree-fallback
-- Head: a046740bdfe8
+- Head: 325d50ee9aaa
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604091725-G6QE2N/README.md    | 116 +++++++++++++++++++++
+ .../tasks/202604091725-G6QE2N/pr/diffstat.txt      |   0
+ .../tasks/202604091725-G6QE2N/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604091725-G6QE2N/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091725-G6QE2N/pr/meta.json |  14 +++
+ .../tasks/202604091725-G6QE2N/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091725-G6QE2N/pr/review.md |  57 ++++++++++
+ .../tasks/202604091725-G6QE2N/pr/verify.log        |   0
+ .../agentplane/src/cli/run-cli.core.tasks.test.ts  |  97 +++++++++++++++++
+ .../src/commands/task/close-duplicate.ts           |  49 ++++++++-
+ 10 files changed, 383 insertions(+), 1 deletion(-)
 ```
 
 </details>
