@@ -1,0 +1,3 @@
+ .../commands/task/hosted-close-pr.command.test.ts  | 31 ++++++++++++++
+ .../src/commands/task/hosted-close-pr.command.ts   | 49 +++++++++++++++-------
+ 2 files changed, 66 insertions(+), 14 deletions(-)

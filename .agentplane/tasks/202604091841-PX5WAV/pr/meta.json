@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604091841-PX5WAV/tracked-closure-state",
+  "created_at": "2026-04-09T18:59:43.960Z",
+  "head_sha": "90eda1ee7f3efab0d3460b3c9232d2dd1c2b3fc4",
+  "last_verified_at": "2026-04-09T18:59:43.941Z",
+  "last_verified_sha": "dfcc52eefa55537b250adcadde367aa24fc6abd5",
+  "schema_version": 1,
+  "task_id": "202604091841-PX5WAV",
+  "updated_at": "2026-04-09T18:59:58.583Z",
+  "verify": {
+    "status": "pass"
+  }
+}
