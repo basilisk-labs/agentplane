@@ -1,5 +1,7 @@
+import { spawnSync } from "node:child_process";
 import { chmod, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
 
@@ -142,6 +144,52 @@ function readCommitSubject(message: string): string {
     return trimmed;
   }
   return "";
+}
+
+function resolveBundledPrePushHookScriptPath(): string {
+  return fileURLToPath(new URL("../../../../../scripts/run-pre-push-hook.mjs", import.meta.url));
+}
+
+async function readHookStdinUtf8(timeoutMs = 25): Promise<string> {
+  if (process.stdin.isTTY) return "";
+
+  const chunks: Buffer[] = [];
+  const consume = (): void => {
+    let chunk = process.stdin.read() as string | Buffer | null;
+    while (chunk !== null) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk)));
+      chunk = process.stdin.read() as string | Buffer | null;
+    }
+  };
+
+  consume();
+  if (chunks.length > 0 || process.stdin.readableEnded) {
+    return Buffer.concat(chunks).toString("utf8");
+  }
+
+  await new Promise<void>((resolve) => {
+    const finish = (): void => {
+      clearTimeout(timer);
+      process.stdin.off("readable", onReadable);
+      process.stdin.off("end", onEnd);
+      resolve();
+    };
+    const onReadable = (): void => {
+      consume();
+      finish();
+    };
+    const onEnd = (): void => {
+      consume();
+      finish();
+    };
+    const timer = setTimeout(finish, timeoutMs);
+    process.stdin.on("readable", onReadable);
+    process.stdin.on("end", onEnd);
+    process.stdin.resume();
+  });
+
+  consume();
+  return Buffer.concat(chunks).toString("utf8");
 }
 
 export async function cmdHooksInstall(opts: {
@@ -323,8 +371,46 @@ export async function cmdHooksRun(opts: {
       return 0;
     }
 
+    if (opts.hook === "pre-push") {
+      const resolved = await resolveProject({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+      });
+      const scriptPath = resolveBundledPrePushHookScriptPath();
+      if (!(await fileExists(scriptPath))) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: `Missing pre-push hook script: ${scriptPath}`,
+        });
+      }
+      const result = spawnSync("node", [scriptPath], {
+        cwd: resolved.gitRoot,
+        env: process.env,
+        encoding: "utf8",
+        input: await readHookStdinUtf8(),
+        stdio: "pipe",
+      });
+      if (typeof result.stdout === "string" && result.stdout.length > 0) {
+        process.stdout.write(result.stdout);
+      }
+      if (typeof result.stderr === "string" && result.stderr.length > 0) {
+        process.stderr.write(result.stderr);
+      }
+      if (result.error) throw result.error;
+      return result.status ?? (result.signal ? 1 : 0);
+    }
+
     return 0;
   } catch (err) {
+    const status = (err as { status?: unknown } | null)?.status;
+    const stdout = (err as { stdout?: unknown } | null)?.stdout;
+    const stderr = (err as { stderr?: unknown } | null)?.stderr;
+    if (typeof stdout === "string" && stdout.length > 0) process.stdout.write(stdout);
+    if (typeof stderr === "string" && stderr.length > 0) process.stderr.write(stderr);
+    if (typeof status === "number" && Number.isInteger(status) && status >= 0) {
+      return status;
+    }
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, {
       command: `hooks run ${opts.hook}`,
