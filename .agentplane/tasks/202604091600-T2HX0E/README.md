@@ -1,10 +1,11 @@
 ---
 id: "202604091600-T2HX0E"
 title: "Add near-duplicate guardrails to task new"
-status: "DOING"
+result_summary: "Merged via PR #202."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-09T16:29:25.067Z"
   updated_by: "CODER"
   note: "Verified: targeted vitest, format:check, and docs:cli:check passed after formatting task/new.ts and regenerating CLI docs."
-commit: null
+commit:
+  hash: "6392f0dde9f88a36ceccc7b8d3d8d655940830e0"
+  message: "ux/workflow: Add near-duplicate guardrails to task new (T2HX0E) (#202)"
 comments:
   -
     author: "CODER"
     body: "Start: add duplicate-intake guardrails so task new stops silently forking equivalent branch_pr work into parallel task shells."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #202 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: targeted vitest, format:check, and docs:cli:check passed after formatting task/new.ts and regenerating CLI docs."
+  -
+    type: "status"
+    at: "2026-04-09T16:49:02.786Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #202 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T16:29:25.073Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T16:49:02.792Z"
+doc_updated_by: "INTEGRATOR"
 description: "Warn or block task new when an open task with a highly similar title already exists so branch_pr work does not fork into duplicate task shells and root-checkout drift."
 sections:
   Summary: |-
