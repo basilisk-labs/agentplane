@@ -1,10 +1,11 @@
 ---
 id: "202604081956-59ERCT"
 title: "Record branch_pr work-start README cleanup incident"
-status: "DOING"
+result_summary: "Merged via PR #161."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-08T19:58:30.587Z"
   updated_by: "REVIEWER"
   note: "policy routing OK; incidents registry stays within the 100-line budget; strict task scan no longer skips the repaired README artifacts; diff shows only the intended incident-registry update."
-commit: null
+commit:
+  hash: "7bb96b1eda60aea927d1b91590bc9e9fd2a661cb"
+  message: "Merge pull request #161 from basilisk-labs/task/202604081956-59ERCT/branch-pr-readme-incident"
 comments:
   -
     author: "CODER"
     body: "Start: update the incident registry with the branch_pr work-start README cleanup bug and verify the resulting policy file."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: the incident registry update shipped on main via PR #161 and the repaired task README artifacts are present in the tracked task set."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "policy routing OK; incidents registry stays within the 100-line budget; strict task scan no longer skips the repaired README artifacts; diff shows only the intended incident-registry update."
+  -
+    type: "status"
+    at: "2026-04-09T09:41:37.842Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the incident registry update shipped on main via PR #161 and the repaired task README artifacts are present in the tracked task set."
 doc_version: 3
-doc_updated_at: "2026-04-08T19:58:30.600Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T09:41:37.843Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a stabilized incident entry for the branch_pr work-start bug where base-checkout task READMEs were left untracked and could later block git pull after upstream started tracking them. Update .agentplane/policy/incidents.md with the failure, rule, evidence, and enforcement."
 sections:
   Summary: |-
