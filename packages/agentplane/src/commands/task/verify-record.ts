@@ -5,7 +5,11 @@ import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, infoMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
-import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
+import {
+  collectTaskIncidents,
+  inspectTaskIncidents,
+  renderIncidentCollectionPlanOutcome,
+} from "../incidents/shared.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
@@ -146,15 +150,19 @@ async function recordVerificationResult(opts: {
       taskId: opts.taskId,
       write: true,
     });
-    incidentSummary = renderIncidentCollectionPlanOutcome(collected.plan);
-  }
-
-  if (config.workflow_mode === "branch_pr" && (opts.finding || opts.collectIncidents)) {
-    process.stdout.write(
-      infoMessage(
-        "branch_pr note: structured findings stay in the current task worktree until promoted on the base branch or collected explicitly with `--collect-incidents` or `agentplane incidents collect <task-id>`.",
-      ) + "\n",
-    );
+    incidentSummary = renderIncidentCollectionPlanOutcome(collected.plan, {
+      wrote: collected.wrote,
+      context: "collect",
+    });
+  } else if (config.workflow_mode === "branch_pr") {
+    const inspected = await inspectTaskIncidents({
+      ctx,
+      taskId: opts.taskId,
+    });
+    incidentSummary = renderIncidentCollectionPlanOutcome(inspected.plan, {
+      wrote: false,
+      context: "verify",
+    });
   }
 
   if (!opts.quiet) {
@@ -178,7 +186,7 @@ async function recordVerificationResult(opts: {
         `state=${opts.state} readme=${relReadmePath}${extra}`,
       )}\n`,
     );
-    if (incidentSummary) {
+    if (incidentSummary && config.workflow_mode === "branch_pr") {
       process.stdout.write(`${infoMessage(incidentSummary)}\n`);
     }
   }

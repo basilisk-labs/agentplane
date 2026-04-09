@@ -142,21 +142,8 @@ export async function collectTaskIncidents(opts: {
   plan: IncidentCollectionPlan;
   wrote: boolean;
 }> {
-  const loaded = await loadTaskIncidents(opts.ctx, opts.taskId, opts.task ?? null);
-  const { registryPath, registryText, registry } = await loadIncidentRegistry(opts.ctx);
-  const plan = planIncidentCollection({
-    task: {
-      id: loaded.task.id,
-      title: loaded.task.title,
-      description: loaded.task.description,
-      scope: loaded.scope,
-      tags: loaded.task.tags ?? [],
-      commitHash: loaded.task.commit?.hash ?? null,
-    },
-    findings: loaded.findings,
-    registry,
-    now: opts.now,
-  });
+  const inspected = await inspectTaskIncidents(opts);
+  const { loaded, registryPath, registryText, registry, plan } = inspected;
   if (plan.issues.length > 0) {
     throw new CliError({
       exitCode: 3,
@@ -187,6 +174,36 @@ export async function collectTaskIncidents(opts: {
   return { loaded, registryPath, registryText, registry, plan, wrote };
 }
 
+export async function inspectTaskIncidents(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  task?: TaskData | null;
+  now?: Date;
+}): Promise<{
+  loaded: LoadedTaskIncidents;
+  registryPath: string;
+  registryText: string;
+  registry: IncidentRegistry;
+  plan: IncidentCollectionPlan;
+}> {
+  const loaded = await loadTaskIncidents(opts.ctx, opts.taskId, opts.task ?? null);
+  const { registryPath, registryText, registry } = await loadIncidentRegistry(opts.ctx);
+  const plan = planIncidentCollection({
+    task: {
+      id: loaded.task.id,
+      title: loaded.task.title,
+      description: loaded.task.description,
+      scope: loaded.scope,
+      tags: loaded.task.tags ?? [],
+      commitHash: loaded.task.commit?.hash ?? null,
+    },
+    findings: loaded.findings,
+    registry,
+    now: opts.now,
+  });
+  return { loaded, registryPath, registryText, registry, plan };
+}
+
 export function renderIncidentCollectionOutcome(promotedCount: number): string {
   return promotedCount > 0
     ? `incident registry updated (${promotedCount} promoted)`
@@ -198,18 +215,25 @@ export function renderIncidentCollectionPlanOutcome(plan: {
   skipped?: readonly unknown[];
   promotable?: readonly unknown[];
   duplicates?: readonly unknown[];
+  issues?: readonly { missingFields?: readonly string[] }[];
   findingsTextPresent?: boolean;
   structuredFindingCount?: number;
+}, opts?: {
+  wrote?: boolean;
+  context?: "collect" | "verify" | "generic";
 }): string {
   const candidates = Array.isArray(plan.candidates) ? plan.candidates.length : 0;
   const skipped = Array.isArray(plan.skipped) ? plan.skipped.length : 0;
   const promoted = Array.isArray(plan.promotable) ? plan.promotable.length : 0;
   const duplicates = Array.isArray(plan.duplicates) ? plan.duplicates.length : 0;
+  const issues = Array.isArray(plan.issues) ? plan.issues.length : 0;
   const findingsTextPresent = plan.findingsTextPresent === true;
   const structuredFindingCount =
     typeof plan.structuredFindingCount === "number" ? plan.structuredFindingCount : 0;
+  const wrote = opts?.wrote === true;
+  const context = opts?.context ?? "generic";
 
-  if (promoted > 0) {
+  if (promoted > 0 && wrote) {
     const suffix: string[] = [];
     if (duplicates > 0) suffix.push(`${duplicates} duplicate${duplicates === 1 ? "" : "s"}`);
     if (skipped > 0)
@@ -217,6 +241,35 @@ export function renderIncidentCollectionPlanOutcome(plan: {
     return suffix.length > 0
       ? `incident registry updated (${promoted} promoted; ${suffix.join("; ")})`
       : renderIncidentCollectionOutcome(promoted);
+  }
+
+  if (promoted > 0 && !wrote) {
+    if (context === "collect") {
+      return `incident registry unchanged (${promoted} promotable external finding${promoted === 1 ? "" : "s"} validated; rerun without --check to update incidents.md)`;
+    }
+    if (context === "verify") {
+      return `incident registry unchanged (${promoted} promotable external finding${promoted === 1 ? "" : "s"} stayed task-local in the current task worktree; run verify --collect-incidents, agentplane incidents collect <task-id>, or finish on the base branch to update incidents.md)`;
+    }
+    return `incident registry unchanged (${promoted} promotable external finding${promoted === 1 ? "" : "s"} pending promotion)`;
+  }
+
+  if (issues > 0) {
+    const issueEntries = Array.isArray(plan.issues)
+      ? (plan.issues as readonly { missingFields?: readonly string[] }[])
+      : [];
+    const firstIssue = issueEntries[0];
+    const rawMissingFields = firstIssue?.missingFields;
+    const missingFields = Array.isArray(rawMissingFields)
+      ? rawMissingFields.filter(
+          (field): field is string => typeof field === "string" && field.trim().length > 0,
+        )
+      : [];
+    const detail =
+      missingFields.length > 0
+        ? ` missing required fields: ${missingFields.join(", ")}`
+        : " missing required promotion fields";
+    const suffix = issues > 1 ? `; +${issues - 1} more candidate${issues - 1 === 1 ? "" : "s"}` : "";
+    return `incident registry unchanged (${issues} structured finding candidate${issues === 1 ? "" : "s"} still invalid;${detail}${suffix})`;
   }
 
   if (skipped > 0) {

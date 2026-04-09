@@ -495,9 +495,8 @@ describe("runCli incidents", () => {
           root,
         ]);
         expect(code).toBe(0);
-        expect(io.stdout).not.toContain("incident registry");
         expect(io.stdout).toContain(
-          "branch_pr note: structured findings stay in the current task worktree until promoted on the base branch or collected explicitly with `--collect-incidents` or `agentplane incidents collect <task-id>`.",
+          "incident registry unchanged (1 promotable external finding stayed task-local in the current task worktree; run verify --collect-incidents, agentplane incidents collect <task-id>, or finish on the base branch to update incidents.md)",
         );
       } finally {
         io.restore();
@@ -510,6 +509,19 @@ describe("runCli incidents", () => {
         "utf8",
       );
       expect(incidentsFile).not.toContain("Default verify still records reusable findings.");
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["incidents", "collect", defaultTaskId, "--check", "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain(
+          "incident registry unchanged (1 promotable external finding validated; rerun without --check to update incidents.md)",
+        );
+      } finally {
+        io.restore();
+      }
     }
 
     let collectTaskId = "";

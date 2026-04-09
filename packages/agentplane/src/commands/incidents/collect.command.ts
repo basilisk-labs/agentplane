@@ -76,7 +76,12 @@ export function makeRunIncidentsCollectHandler(getCtx: (cmd: string) => Promise<
       p.taskId,
       `candidates=${result.plan.candidates.length} skipped=${result.plan.skipped.length} promoted=${result.plan.promotable.length} duplicates=${result.plan.duplicates.length}`,
     );
-    output.info(renderIncidentCollectionPlanOutcome(result.plan));
+    output.info(
+      renderIncidentCollectionPlanOutcome(result.plan, {
+        wrote: result.wrote,
+        context: "collect",
+      }),
+    );
     if (result.plan.promotable.length > 0 && !p.check) {
       output.info(`Incident registry updated: ${result.registryPath}`);
     }
