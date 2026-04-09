@@ -1,11 +1,76 @@
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { type CommandContext } from "../shared/task-backend.js";
+import { gitRevParse } from "../shared/git-ops.js";
+import { loadBackendTask, loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
+import { assessPrArtifactFreshness } from "./internal/freshness.js";
 import { syncPrArtifacts } from "./internal/sync.js";
+
+async function readTextIfExists(filePath: string): Promise<string | null> {
+  try {
+    return await readFile(filePath, "utf8");
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code === "ENOENT") return null;
+    throw err;
+  }
+}
+
+async function warnOnStaleVerifyAfterUpdate(opts: {
+  output: ReturnType<typeof createCliEmitter>;
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  prDir: string;
+  resolved: { gitRoot: string };
+  meta: {
+    branch?: string | null;
+    head_sha?: string | null;
+    last_verified_sha?: string | null;
+    verify?: { status?: string | null } | null;
+  };
+}): Promise<void> {
+  const branch = opts.meta.branch?.trim() ?? "";
+  if (!branch) return;
+
+  const ctx =
+    opts.ctx ??
+    (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  const { config, task } = await loadBackendTask({
+    ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    taskId: opts.taskId,
+  });
+  const requiresVerify = Boolean(task.verify && task.verify.length > 0);
+  if (!requiresVerify) return;
+
+  const branchHeadSha = await gitRevParse(opts.resolved.gitRoot, [`${branch}^{commit}`]);
+  const verifyLogText = await readTextIfExists(path.join(opts.prDir, "verify.log"));
+  const freshness = await assessPrArtifactFreshness({
+    gitRoot: opts.resolved.gitRoot,
+    workflowDir: path.join(opts.resolved.gitRoot, config.paths.workflow_dir),
+    taskId: opts.taskId,
+    branchHeadSha,
+    metaHeadSha: opts.meta.head_sha ?? null,
+    metaLastVerifiedSha: opts.meta.last_verified_sha ?? null,
+    metaVerifyStatus: opts.meta.verify?.status ?? null,
+    taskVerificationState: task.verification?.state ?? null,
+    verifyLogText,
+    requiresVerify,
+  });
+
+  if (opts.meta.last_verified_sha && !freshness.verifyFresh) {
+    opts.output.warn(
+      `Verify state stale: last_verified_sha=${opts.meta.last_verified_sha} current_head=${branchHeadSha}; run \`agentplane verify ${opts.taskId} --ok --by <ROLE> --note "Verified: ..."\` before integrating`,
+    );
+  }
+}
 
 export async function cmdPrUpdate(opts: {
   ctx?: CommandContext;
@@ -15,12 +80,23 @@ export async function cmdPrUpdate(opts: {
 }): Promise<number> {
   try {
     const output = createCliEmitter();
-    const { prDir, resolved } = await syncPrArtifacts({
+    const { meta, prDir, resolved } = await syncPrArtifacts({
       ctx: opts.ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
       mode: "update",
+    });
+
+    await warnOnStaleVerifyAfterUpdate({
+      output,
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: opts.taskId,
+      prDir,
+      resolved,
+      meta,
     });
 
     output.success("pr update", path.relative(resolved.gitRoot, prDir));
