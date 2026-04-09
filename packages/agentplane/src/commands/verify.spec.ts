@@ -20,7 +20,8 @@ export type VerifyParsed = VerifyCommonParsed & {
 export const verifySpec: CommandSpec<VerifyParsed> = {
   id: ["verify"],
   group: "Lifecycle",
-  summary: "Record a verification outcome for a task (record-only; does not execute commands).",
+  summary:
+    "Record a verification outcome for a task; incident candidates stay task-local unless collected explicitly.",
   args: [
     {
       name: "task-id",
@@ -78,7 +79,7 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
       name: "collect-incidents",
       default: false,
       description:
-        "After recording verification, immediately run incidents collection and update incidents.md.",
+        "After recording verification, collect promotable findings into incidents.md immediately.",
     },
     { kind: "boolean", name: "quiet", default: false, description: "Suppress output." },
     ...verifyFindingOptions,
@@ -102,7 +103,7 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
     },
     {
       cmd: 'agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --collect-incidents',
-      why: "Record verification and immediately update incidents.md when reusable findings are present.",
+      why: "Record verification and collect promotable findings into incidents.md immediately.",
     },
   ],
   validateRaw: (raw) => {

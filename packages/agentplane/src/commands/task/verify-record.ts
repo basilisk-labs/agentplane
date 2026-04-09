@@ -150,7 +150,7 @@ async function recordVerificationResult(opts: {
   if (config.workflow_mode === "branch_pr" && (opts.finding || opts.collectIncidents)) {
     process.stdout.write(
       infoMessage(
-        "branch_pr note: incident-related changes stay in the current task worktree until structured findings are promoted on the base branch or collected explicitly.",
+        "branch_pr note: structured findings stay in the current task worktree until promoted on the base branch or collected explicitly with `--collect-incidents` or `agentplane incidents collect <task-id>`.",
       ) + "\n",
     );
   }
