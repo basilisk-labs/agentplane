@@ -1857,6 +1857,105 @@ describe("runCli", () => {
     }
   }, 120_000);
 
+  it(
+    "pr check prefers a fresher branch snapshot when local base PR artifacts are stale",
+    { timeout: 120_000 },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      const execFileAsync = promisify(execFile);
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "PR check stale local snapshot fallback",
+          "--description",
+          "Base checkout should prefer fresher branch PR artifacts when local copies drift",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+
+      await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      const branch = `task/${taskId}/fresh-branch-snapshot`;
+      await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+      await runCliSilent([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", `${taskId} add initial pr artifacts`], {
+        cwd: root,
+      });
+
+      const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+      const staleMeta = await readFile(path.join(prDir, "meta.json"), "utf8");
+      const staleDiffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
+      const staleVerifyLog = await readFile(path.join(prDir, "verify.log"), "utf8");
+      const staleReview = await readFile(path.join(prDir, "review.md"), "utf8");
+      const staleGithubTitle = await readFile(path.join(prDir, "github-title.txt"), "utf8");
+      const staleGithubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
+
+      await writeFile(path.join(root, "feature.txt"), "feature", "utf8");
+      await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feature"], { cwd: root });
+      await runCliSilent(["pr", "update", taskId, "--root", root]);
+      await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", `${taskId} refresh pr artifacts`], {
+        cwd: root,
+      });
+
+      await execFileAsync("git", ["checkout", "main"], { cwd: root });
+      await mkdir(prDir, { recursive: true });
+      await writeFile(path.join(prDir, "meta.json"), staleMeta, "utf8");
+      await writeFile(path.join(prDir, "diffstat.txt"), staleDiffstat, "utf8");
+      await writeFile(path.join(prDir, "verify.log"), staleVerifyLog, "utf8");
+      await writeFile(path.join(prDir, "review.md"), staleReview, "utf8");
+      await writeFile(path.join(prDir, "github-title.txt"), staleGithubTitle, "utf8");
+      await writeFile(path.join(prDir, "github-body.md"), staleGithubBody, "utf8");
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["pr", "check", taskId, "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("✅ pr check");
+      } finally {
+        io.restore();
+      }
+    },
+  );
+
   it("pr check still reports multiple task branches when fallback is required", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

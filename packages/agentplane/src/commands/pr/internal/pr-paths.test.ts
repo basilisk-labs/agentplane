@@ -75,7 +75,7 @@ describe("pr/internal/pr-paths", () => {
   });
 
   it("readPrArtifact reads local file first, then falls back to git show, then returns null", async () => {
-    const { readPrArtifact } = await import("./pr-paths.js");
+    const { readPrArtifact, readPrArtifactFromBranch } = await import("./pr-paths.js");
     mocks.fileExists.mockResolvedValueOnce(true);
     mocks.readFile.mockResolvedValueOnce("local-content");
     const local = await readPrArtifact({
@@ -116,5 +116,26 @@ describe("pr/internal/pr-paths", () => {
       branch: "task/T-3",
     });
     expect(missing).toBeNull();
+
+    mocks.fileExists.mockResolvedValueOnce(true);
+    mocks.readFile.mockResolvedValueOnce("worktree-preferred");
+    const branchPreferred = await readPrArtifactFromBranch({
+      resolved: { gitRoot: "/repo" },
+      prDir: "/repo/.agentplane/tasks/T-3/pr",
+      fileName: "meta.json",
+      branch: "task/T-3",
+      worktreePath: "/repo/.agentplane/worktrees/T-3",
+    });
+    expect(branchPreferred).toBe("worktree-preferred");
+
+    mocks.fileExists.mockResolvedValueOnce(false);
+    mocks.gitShowFile.mockResolvedValueOnce("git-only");
+    const fromBranchOnly = await readPrArtifactFromBranch({
+      resolved: { gitRoot: "/repo" },
+      prDir: "/repo/.agentplane/tasks/T-3/pr",
+      fileName: "meta.json",
+      branch: "task/T-3",
+    });
+    expect(fromBranchOnly).toBe("git-only");
   });
 });
