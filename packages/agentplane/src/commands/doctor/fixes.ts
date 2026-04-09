@@ -102,7 +102,9 @@ export async function safeFixLegacyUntrackedTaskReadmes(
         ? parsed.frontmatter.id.trim()
         : taskId;
     const status =
-      typeof parsed.frontmatter.status === "string" ? parsed.frontmatter.status.trim().toUpperCase() : "";
+      typeof parsed.frontmatter.status === "string"
+        ? parsed.frontmatter.status.trim().toUpperCase()
+        : "";
     if (parsedId !== taskId || status !== "DONE") continue;
 
     await fs.rm(absPath, { force: true });
