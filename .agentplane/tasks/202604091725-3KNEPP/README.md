@@ -1,10 +1,11 @@
 ---
 id: "202604091725-3KNEPP"
 title: "Keep active branch_pr task README synced into worktree after start-ready"
-status: "DOING"
+result_summary: "Merged via PR #211."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-09T18:02:36.011Z"
   updated_by: "CODER"
   note: "Verified that start-ready keeps the task README synchronized between the active task worktree and the base checkout, with targeted branch_pr lifecycle regression coverage and eslint clean."
-commit: null
+commit:
+  hash: "f41efa68184fd57afbae63a2f4ab1fd64e3381af"
+  message: "workflow: Keep active branch_pr task README synced into worktree after start-ready (3KNEPP) (#211)"
 comments:
   -
     author: "CODER"
     body: "Start: keep the active task README synchronized into the branch_pr worktree after start-ready so the task branch and base projection do not diverge immediately on lifecycle state."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #211 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified that start-ready keeps the task README synchronized between the active task worktree and the base checkout, with targeted branch_pr lifecycle regression coverage and eslint clean."
+  -
+    type: "status"
+    at: "2026-04-09T18:09:17.397Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #211 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T18:02:36.014Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T18:09:17.403Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure the active task README in the task worktree reflects branch_pr status transitions such as task start-ready instead of staying stale relative to the base checkout copy."
 sections:
   Summary: |-
