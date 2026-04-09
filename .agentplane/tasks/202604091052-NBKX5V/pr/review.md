@@ -25,7 +25,7 @@ Clarify branch_pr incident collection locality, promotion timing, and why plain 
 ### Current Status
 
 - State: ok
-- Note: Incident messaging now distinguishes task-local findings from shared incidents.md promotion.
+- Note: Command: bun test packages/agentplane/src/cli/run-cli.core.tasks.findings.test.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/task/findings.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/cli/run-cli.core.tasks.findings.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts. Result: pass. Evidence: focused findings/incidents/branch_pr verify tests passed, including the new branch_pr locality case, and eslint exited 0 after narrowing generic messages to current checkout while keeping branch_pr-specific guidance in verify. Scope: incident promotion UX, findings add messaging, branch_pr verify locality explanation.
 
 ## Risks
 
@@ -45,12 +45,25 @@ Clarify branch_pr incident collection locality, promotion timing, and why plain 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T11:00:58.818Z
+- Updated: 2026-04-09T11:08:29.684Z
 - Branch: task/202604091052-NBKX5V/incident-locality-ux
-- Head: 1453eeb17631
+- Head: b5a20bc8804f
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604091052-8TZCF0/README.md    |  86 +++++++++++++++
+ .agentplane/tasks/202604091052-NBKX5V/README.md    | 119 +++++++++++++++++++++
+ .../tasks/202604091052-NBKX5V/pr/diffstat.txt      |   0
+ .../tasks/202604091052-NBKX5V/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604091052-NBKX5V/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091052-NBKX5V/pr/meta.json |  14 +++
+ .../tasks/202604091052-NBKX5V/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091052-NBKX5V/pr/review.md |  57 ++++++++++
+ .../tasks/202604091052-NBKX5V/pr/verify.log        |   0
+ .../src/cli/run-cli.core.tasks.findings.test.ts    |   1 +
+ .../agentplane/src/commands/incidents/shared.ts    |   4 +-
+ packages/agentplane/src/commands/task/findings.ts  |   4 +-
+ .../agentplane/src/commands/task/verify-record.ts  |   8 ++
+ 13 files changed, 340 insertions(+), 4 deletions(-)
 ```
 
 </details>

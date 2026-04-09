@@ -1025,6 +1025,113 @@ describe("runCli", () => {
     expect(await readFile(incidentsPath, "utf8")).toBe(incidentsBefore);
   });
 
+  it("verify explains branch_pr incident locality when findings stay on the task worktree", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const incidentsPath = path.join(root, ".agentplane", "policy", "incidents.md");
+    const baselineIncidents = [
+      "# Policy Incidents Log",
+      "",
+      "## Entry contract",
+      "",
+      "- Add entries append-only.",
+      "",
+      "## Entries",
+      "",
+      "- id: INC-20260406-00",
+      "  date: 2026-04-06",
+      "  scope: baseline",
+      "  failure: baseline",
+      "  rule: Baseline rule MUST stay unchanged.",
+      "  evidence: test fixture",
+      "  enforcement: test",
+      "  state: open",
+      "",
+    ].join("\n");
+    await mkdir(path.dirname(incidentsPath), { recursive: true });
+    await writeFile(incidentsPath, baselineIncidents, "utf8");
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify explains branch_pr incident locality",
+        "--description",
+        "Verification should explain when incident candidates stay local to the task worktree",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/verify-incident-locality`], {
+      cwd: root,
+    });
+
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: explain when branch_pr incident findings remain local to the current task branch.",
+      "--root",
+      root,
+    ]);
+
+    const incidentsBefore = await readFile(incidentsPath, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Verification captured a reusable incident candidate",
+        "--observation",
+        "Incident promotion still depends on an explicit base-branch step.",
+        "--impact",
+        "Operators can misread a task-branch verify as a shared incidents registry update.",
+        "--resolution",
+        "Emit an explicit branch_pr locality note during verify.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(
+        "branch_pr note: incident-related changes stay in the current task worktree until structured findings are promoted on the base branch or collected explicitly.",
+      );
+      expect(io.stdout).toContain("finding=incident-candidate");
+    } finally {
+      io.restore();
+    }
+
+    expect(await readFile(incidentsPath, "utf8")).toBe(incidentsBefore);
+  });
+
   it(
     "pr check fails when review metadata is stale relative to branch head",
     { timeout: 90_000 },
