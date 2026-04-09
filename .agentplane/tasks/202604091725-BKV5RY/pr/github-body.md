@@ -39,29 +39,29 @@ After verify in branch_pr mode, print a deterministic incident-promotion outcome
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T18:25:47.704Z
+- Updated: 2026-04-09T18:30:11.209Z
 - Branch: task/202604091725-BKV5RY/verify-incident-outcome
-- Head: 3f4cd58ead63
+- Head: e4e60472965b
 
 ```text
  .agentplane/tasks/202604091725-BKV5RY/README.md    | 116 +++++++++++++++++++++
- .../tasks/202604091725-BKV5RY/pr/diffstat.txt      |   0
- .../tasks/202604091725-BKV5RY/pr/github-body.md    |  52 +++++++++
+ .../tasks/202604091725-BKV5RY/pr/diffstat.txt      |  18 ++++
+ .../tasks/202604091725-BKV5RY/pr/github-body.md    |  67 ++++++++++++
  .../tasks/202604091725-BKV5RY/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604091725-BKV5RY/pr/meta.json |  14 +++
+ .agentplane/tasks/202604091725-BKV5RY/pr/meta.json |  17 +++
  .../tasks/202604091725-BKV5RY/pr/notes.jsonl       |   0
- .agentplane/tasks/202604091725-BKV5RY/pr/review.md |  59 +++++++++++
+ .agentplane/tasks/202604091725-BKV5RY/pr/review.md |  74 +++++++++++++
  .../tasks/202604091725-BKV5RY/pr/verify.log        |   0
- .../src/cli/run-cli.core.incidents.test.ts         |  16 ++-
+ .../src/cli/run-cli.core.incidents.test.ts         |  23 +++-
  .../src/cli/run-cli.core.pr-flow.pr.test.ts        |   2 +-
  .../src/commands/incidents/collect.command.ts      |   7 +-
- .../agentplane/src/commands/incidents/shared.ts    |  85 ++++++++++++---
+ .../agentplane/src/commands/incidents/shared.ts    | 105 ++++++++++++++-----
  .../src/commands/pr/integrate/internal/finalize.ts |   7 +-
  packages/agentplane/src/commands/task/finish.ts    |   9 +-
  .../src/commands/task/hosted-close.command.ts      |   7 +-
  .../agentplane/src/commands/task/verify-record.ts  |  30 ++++--
  .../src/commands/task/verify-record.unit.test.ts   |  14 ++-
- 17 files changed, 382 insertions(+), 37 deletions(-)
+ 17 files changed, 452 insertions(+), 45 deletions(-)
 ```
 
 </details>
