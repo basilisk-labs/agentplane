@@ -26,6 +26,13 @@ type GithubPullRequestRecord = {
   html_url?: string | null;
   state?: string | null;
   merged_at?: string | null;
+  merge_commit_sha?: string | null;
+  head?: {
+    ref?: string | null;
+  } | null;
+  base?: {
+    ref?: string | null;
+  } | null;
 };
 
 export const taskHostedClosePrSpec: CommandSpec<TaskHostedClosePrParsed> = {
@@ -89,6 +96,57 @@ async function resolveGithubRepo(opts: {
   const repo = opts.repoOverride?.trim() ?? "";
   if (repo) return repo;
   return await resolveDefaultGithubRepo(opts.gitRoot);
+}
+
+function selectMergedPullRecord(opts: {
+  pulls: GithubPullRequestRecord[];
+  sourceBranch: string;
+  baseBranch: string | null;
+  prNumber: number | null;
+}): GithubPullRequestRecord | null {
+  const merged = opts.pulls.filter((record) => {
+    if (typeof record.merged_at !== "string" || record.merged_at.trim().length === 0) return false;
+    const headRef = record.head?.ref?.trim() ?? "";
+    if (headRef && headRef !== opts.sourceBranch) return false;
+    const baseRef = record.base?.ref?.trim() ?? "";
+    if (opts.baseBranch && baseRef && baseRef !== opts.baseBranch) return false;
+    return true;
+  });
+  if (merged.length === 0) return null;
+  if (typeof opts.prNumber === "number" && opts.prNumber > 0) {
+    const exact = merged.find((record) => Number(record.number ?? 0) === opts.prNumber);
+    if (exact) return exact;
+  }
+  return [...merged].toSorted((left, right) => {
+      const leftAt = Date.parse(left.merged_at ?? "");
+      const rightAt = Date.parse(right.merged_at ?? "");
+      return Number.isNaN(rightAt) || Number.isNaN(leftAt) ? 0 : rightAt - leftAt;
+    })[0] ?? null;
+}
+
+async function resolveHostedCloseMergeRecord(opts: {
+  gitRoot: string;
+  repo: string;
+  sourceBranch: string;
+  baseBranch: string | null;
+  prNumber: number | null;
+}): Promise<GithubPullRequestRecord | null> {
+  const owner = opts.repo.split("/")[0]?.trim() ?? "";
+  if (!owner) return null;
+  const query = new URLSearchParams({
+    state: "closed",
+    head: `${owner}:${opts.sourceBranch}`,
+  });
+  if (opts.baseBranch) query.set("base", opts.baseBranch);
+  const records = await runGhApiJson<GithubPullRequestRecord[]>(opts.gitRoot, [
+    `repos/${opts.repo}/pulls?${query.toString()}`,
+  ]);
+  return selectMergedPullRecord({
+    pulls: Array.isArray(records) ? records : [],
+    sourceBranch: opts.sourceBranch,
+    baseBranch: opts.baseBranch,
+    prNumber: opts.prNumber,
+  });
 }
 
 async function readHostedCloseMeta(opts: {
@@ -269,7 +327,6 @@ async function openHostedClosePr(opts: {
     taskId: opts.taskId,
   });
 
-  const mergeCommit = meta.merge_commit?.trim() ?? task.commit?.hash?.trim() ?? "";
   const sourceBranch = meta.branch?.trim() ?? "";
   if (!sourceBranch) {
     throw new CliError({
@@ -278,28 +335,7 @@ async function openHostedClosePr(opts: {
       message: `Missing hosted close source branch for ${opts.taskId}.`,
     });
   }
-  if (!mergeCommit) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: `Missing hosted close merge commit for ${opts.taskId}.`,
-    });
-  }
-  if (meta.status !== "MERGED") {
-    throw new CliError({
-      exitCode: exitCodeForError("E_USAGE"),
-      code: "E_USAGE",
-      message: `Task ${opts.taskId} is not in MERGED hosted-close state.`,
-    });
-  }
-
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
-  const branch = await resolveHostedCloseBranch({
-    gitRoot,
-    taskId: opts.taskId,
-    explicitBranch: opts.branch ?? null,
-    mergeCommit,
-  });
   const repo = await resolveGithubRepo({ gitRoot, repoOverride: opts.repo ?? null });
   const baseBranch =
     meta.base?.trim() ??
@@ -309,6 +345,41 @@ async function openHostedClosePr(opts: {
       cliBaseOpt: null,
       mode: opts.ctx.config.workflow_mode,
     }));
+  const mergedRecord =
+    meta.status === "MERGED" && (meta.merge_commit?.trim() ?? task.commit?.hash?.trim() ?? "")
+      ? null
+      : await resolveHostedCloseMergeRecord({
+          gitRoot,
+          repo,
+          sourceBranch,
+          baseBranch: baseBranch?.trim() ?? null,
+          prNumber: typeof meta.pr_number === "number" ? meta.pr_number : null,
+        });
+  const mergeCommit =
+    meta.merge_commit?.trim() ??
+    task.commit?.hash?.trim() ??
+    mergedRecord?.merge_commit_sha?.trim() ??
+    "";
+  if (!mergeCommit) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Missing hosted close merge commit for ${opts.taskId}.`,
+    });
+  }
+  if (meta.status !== "MERGED" && !mergedRecord?.merged_at) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_USAGE"),
+      code: "E_USAGE",
+      message: `Task ${opts.taskId} is not in MERGED hosted-close state.`,
+    });
+  }
+  const branch = await resolveHostedCloseBranch({
+    gitRoot,
+    taskId: opts.taskId,
+    explicitBranch: opts.branch ?? null,
+    mergeCommit,
+  });
   const owner = repo.split("/")[0]?.trim() ?? "";
   const existingQuery = new URLSearchParams({
     state: "open",
@@ -337,7 +408,12 @@ async function openHostedClosePr(opts: {
     "-f",
     `body=${buildHostedClosePrBody({
       taskId: opts.taskId,
-      prNumber: typeof meta.pr_number === "number" ? meta.pr_number : null,
+      prNumber:
+        typeof meta.pr_number === "number"
+          ? meta.pr_number
+          : typeof mergedRecord?.number === "number"
+            ? mergedRecord.number
+            : null,
       sourceBranch,
       mergeSha: mergeCommit,
     })}`,

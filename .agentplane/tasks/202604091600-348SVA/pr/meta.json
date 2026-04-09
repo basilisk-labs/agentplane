@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604091600-348SVA/hosted-close-pr-fallback",
+  "created_at": "2026-04-09T16:23:56.418Z",
+  "head_sha": "f6f2660e13d43bf821e64fb73c26e74a6e69c08f",
+  "last_verified_at": "2026-04-09T16:23:56.350Z",
+  "last_verified_sha": "f6f2660e13d43bf821e64fb73c26e74a6e69c08f",
+  "schema_version": 1,
+  "task_id": "202604091600-348SVA",
+  "updated_at": "2026-04-09T16:23:56.418Z",
+  "verify": {
+    "status": "pass"
+  }
+}
