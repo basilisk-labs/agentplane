@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604091218-WWSX2G/integrate-artifact-recovery",
+  "created_at": "2026-04-09T12:26:37.310Z",
+  "head_sha": "af4d3dd2740788d00319ce6c7520b18931d9401f",
+  "last_verified_at": "2026-04-09T12:28:04.350Z",
+  "last_verified_sha": "af4d3dd2740788d00319ce6c7520b18931d9401f",
+  "schema_version": 1,
+  "task_id": "202604091218-WWSX2G",
+  "updated_at": "2026-04-09T12:26:37.310Z",
+  "verify": {
+    "status": "pass"
+  }
+}

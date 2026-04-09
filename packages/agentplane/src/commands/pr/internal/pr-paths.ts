@@ -55,8 +55,18 @@ export async function readPrArtifact(opts: {
   prDir: string;
   fileName: string;
   branch: string;
+  worktreePath?: string | null;
 }): Promise<string | null> {
   const filePath = path.join(opts.prDir, opts.fileName);
+  if (opts.worktreePath) {
+    const worktreeFilePath = path.join(
+      opts.worktreePath,
+      path.relative(opts.resolved.gitRoot, filePath),
+    );
+    if (await fileExists(worktreeFilePath)) {
+      return await readFile(worktreeFilePath, "utf8");
+    }
+  }
   if (await fileExists(filePath)) {
     return await readFile(filePath, "utf8");
   }

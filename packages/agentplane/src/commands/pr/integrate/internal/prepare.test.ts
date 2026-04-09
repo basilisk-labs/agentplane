@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   gitRevParse: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
+  resolveTaskBranchFromContext: vi.fn(),
   ensurePlanApprovedIfRequired: vi.fn(),
   ensureVerificationSatisfiedIfRequired: vi.fn(),
   resolvePrPaths: vi.fn(),
@@ -44,6 +45,7 @@ vi.mock("../../../shared/git-ops.js", () => ({
 vi.mock("../../../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
   loadTaskFromContext: mocks.loadTaskFromContext,
+  resolveTaskBranchFromContext: mocks.resolveTaskBranchFromContext,
 }));
 vi.mock("../../../task/shared.js", () => ({
   ensurePlanApprovedIfRequired: mocks.ensurePlanApprovedIfRequired,
@@ -93,6 +95,7 @@ function seedCommon(): void {
   mocks.readAndValidatePrArtifacts.mockResolvedValue({ verifyLogText: "ok" });
   mocks.gitDiffNames.mockResolvedValue(["src/app.ts"]);
   mocks.gitRevParse.mockResolvedValue("deadbeef");
+  mocks.resolveTaskBranchFromContext.mockResolvedValue(null);
   mocks.computeVerifyState.mockReturnValue({
     verifyCommands: [],
     alreadyVerifiedSha: null,
@@ -156,6 +159,30 @@ describe("pr/integrate/internal/prepare", () => {
       prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
     ).rejects.toMatchObject<CliError>({
       code: "E_USAGE",
+    });
+  });
+
+  it("resolves the task branch from the active task branch snapshot when pr metadata is missing", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.fileExists.mockResolvedValue(false);
+    mocks.resolveTaskBranchFromContext.mockResolvedValue("task/T-1");
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: "deadbeef",
+      last_verified_sha: null,
+    });
+    mocks.gitShowFile.mockResolvedValue(
+      JSON.stringify({ branch: "task/T-1", head_sha: "deadbeef", last_verified_sha: null }),
+    );
+
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).resolves.toMatchObject({
+      branch: "task/T-1",
+      base: "main",
+      branchHeadSha: "deadbeef",
     });
   });
 

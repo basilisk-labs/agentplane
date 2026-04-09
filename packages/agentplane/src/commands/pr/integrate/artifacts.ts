@@ -4,6 +4,7 @@ import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 
 import { readPrArtifact } from "../internal/pr-paths.js";
+import { findWorktreeForBranch } from "../../shared/git-worktree.js";
 
 import type { CommandContext } from "../../shared/task-backend.js";
 
@@ -14,6 +15,7 @@ type ReadPrArtifactOpts = {
   prDir: string;
   fileName: string;
   branch: string;
+  worktreePath?: string | null;
 };
 
 export async function readAndValidatePrArtifacts(opts: {
@@ -31,6 +33,7 @@ export async function readAndValidatePrArtifacts(opts: {
   const diffstatPath = path.join(prDir, "diffstat.txt");
   const verifyLogPath = path.join(prDir, "verify.log");
   const reviewPath = path.join(prDir, "review.md");
+  const worktreePath = await findWorktreeForBranch(opts.resolved.gitRoot, opts.branch);
 
   const errors: string[] = [];
   const relDiffstat = path.relative(opts.resolved.gitRoot, diffstatPath);
@@ -42,6 +45,7 @@ export async function readAndValidatePrArtifacts(opts: {
     prDir,
     fileName: "diffstat.txt",
     branch: opts.branch,
+    worktreePath,
   });
   if (diffstatText === null) errors.push(`Missing ${relDiffstat}`);
 
@@ -50,6 +54,7 @@ export async function readAndValidatePrArtifacts(opts: {
     prDir,
     fileName: "verify.log",
     branch: opts.branch,
+    worktreePath,
   });
   if (verifyLogText === null) errors.push(`Missing ${relVerifyLog}`);
 
@@ -58,6 +63,7 @@ export async function readAndValidatePrArtifacts(opts: {
     prDir,
     fileName: "review.md",
     branch: opts.branch,
+    worktreePath,
   });
   if (reviewText === null) errors.push(`Missing ${relReview}`);
   if (reviewText) validateReviewContents(reviewText, errors);

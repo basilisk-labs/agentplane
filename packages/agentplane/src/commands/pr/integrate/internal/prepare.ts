@@ -9,11 +9,13 @@ import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { unknownEntityMessage, workflowModeMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 import { ensureGitClean } from "../../../guard/index.js";
-import { gitDiffNames, gitShowFile, toGitPath } from "../../../shared/git-diff.js";
+import { gitDiffNames } from "../../../shared/git-diff.js";
 import { gitBranchExists, gitCurrentBranch, gitRevParse } from "../../../shared/git-ops.js";
+import { findWorktreeForBranch } from "../../../shared/git-worktree.js";
 import {
   loadCommandContext,
   loadTaskFromContext,
+  resolveTaskBranchFromContext,
   type CommandContext,
 } from "../../../shared/task-backend.js";
 import {
@@ -21,7 +23,7 @@ import {
   ensureVerificationSatisfiedIfRequired,
 } from "../../../task/shared.js";
 
-import { resolvePrPaths } from "../../internal/pr-paths.js";
+import { readPrArtifact, resolvePrPaths } from "../../internal/pr-paths.js";
 
 import { readAndValidatePrArtifacts } from "../artifacts.js";
 import { computeVerifyState } from "../verify.js";
@@ -127,6 +129,12 @@ export async function prepareIntegrate(opts: {
     if (!branch) branch = (meta.branch ?? "").trim();
   }
   if (!branch) {
+    const inferredBranch = await resolveTaskBranchFromContext({ ctx, taskId: opts.taskId });
+    if (inferredBranch) {
+      branch = inferredBranch;
+    }
+  }
+  if (!branch) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
@@ -141,16 +149,22 @@ export async function prepareIntegrate(opts: {
     });
   }
 
-  const metaSource =
-    meta ??
-    parsePrMetaForwardCompatible(
-      await gitShowFile(
-        resolved.gitRoot,
-        branch,
-        toGitPath(path.relative(resolved.gitRoot, metaPath)),
-      ),
-      opts.taskId,
-    );
+  const worktreePath = await findWorktreeForBranch(resolved.gitRoot, branch);
+  const metaText = await readPrArtifact({
+    resolved,
+    prDir,
+    fileName: "meta.json",
+    branch,
+    worktreePath,
+  });
+  if (!metaText) {
+    throw new CliError({
+      exitCode: 4,
+      code: "E_IO",
+      message: `PR artifacts missing: ${path.relative(resolved.gitRoot, metaPath)} (run \`agentplane pr open\`)`,
+    });
+  }
+  const metaSource = parsePrMetaForwardCompatible(metaText, opts.taskId);
   const baseCandidate = opts.base ?? metaSource.base ?? baseBranch;
   const base =
     typeof baseCandidate === "string" && baseCandidate.trim().length > 0

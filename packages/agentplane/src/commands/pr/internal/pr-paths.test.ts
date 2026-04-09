@@ -86,6 +86,17 @@ describe("pr/internal/pr-paths", () => {
     });
     expect(local).toBe("local-content");
 
+    mocks.fileExists.mockResolvedValueOnce(true);
+    mocks.readFile.mockResolvedValueOnce("worktree-content");
+    const fromWorktree = await readPrArtifact({
+      resolved: { gitRoot: "/repo" },
+      prDir: "/repo/.agentplane/tasks/T-3/pr",
+      fileName: "review.md",
+      branch: "task/T-3",
+      worktreePath: "/repo/.agentplane/worktrees/T-3",
+    });
+    expect(fromWorktree).toBe("worktree-content");
+
     mocks.fileExists.mockResolvedValueOnce(false);
     mocks.gitShowFile.mockResolvedValueOnce("git-content");
     const fromGit = await readPrArtifact({
