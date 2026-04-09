@@ -1,10 +1,11 @@
 ---
 id: "202604091841-PX5WAV"
 title: "Persist merged branch_pr task closure state onto main"
-status: "DOING"
+result_summary: "integrate: squash task/202604091841-PX5WAV/tracked-closure-state"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-09T18:59:43.941Z"
   updated_by: "CODER"
   note: "Verified that task hosted-close-pr accepts multiple task ids, with targeted hosted-close regressions and a live batch run that opened closure PRs #215-#219 for the current stale merged tasks."
-commit: null
+commit:
+  hash: "afda89ee7b3e400d40ccbe85f99db525eba9f820"
+  message: "🧩 PX5WAV integrate: tasks/workflow: Persist merged branch_pr task closure state onto main"
 comments:
   -
     author: "CODER"
     body: "Start: trace why merged branch_pr tasks still arrive on main as DOING and fix the closure path so tracked history lands in DONE without local normalize dirt."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091841-PX5WAV/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified that task hosted-close-pr accepts multiple task ids, with targeted hosted-close regressions and a live batch run that opened closure PRs #215-#219 for the current stale merged tasks."
+  -
+    type: "status"
+    at: "2026-04-09T19:43:03.639Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091841-PX5WAV/pr."
 doc_version: 3
-doc_updated_at: "2026-04-09T18:59:43.943Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T19:43:03.641Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make merged branch_pr tasks land in tracked main history as DONE with reconciled PR metadata, so pulling origin/main does not reopen them as DOING or require local normalize dirt."
 sections:
   Summary: |-
