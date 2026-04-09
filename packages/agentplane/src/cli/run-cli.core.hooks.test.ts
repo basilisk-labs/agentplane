@@ -429,13 +429,43 @@ describe("runCli", () => {
     }
   });
 
-  it("hooks run pre-push returns success", async () => {
+  it("hooks run pre-push dispatches the real script", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "hook-test",
+          private: true,
+          scripts: {
+            "format:check": "node scripts/format-check.mjs",
+            "ci:local:fast": "node scripts/ci-fast.mjs",
+            "ci:local:full": "node scripts/ci-fast.mjs",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "scripts", "format-check.mjs"), "process.exit(1);\n", "utf8");
+    await writeFile(path.join(root, "scripts", "ci-fast.mjs"), "process.exit(0);\n", "utf8");
+    await writeFile(path.join(root, "src", "example.ts"), "export const example = 1;\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "package.json", "scripts", "src/example.ts"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test fixture"], { cwd: root });
+
     const io = captureStdIO();
     try {
       const code = await runCli(["hooks", "run", "pre-push", "--root", root]);
-      expect(code).toBe(0);
+      expect(code).toBe(1);
+      expect(io.stdout).toContain("Running pre-push checks in standard mode.");
+      expect(io.stderr).toContain(
+        "pre-push blocked: formatting check failed. Run `bun run format`, review the diff, commit it, and push again.",
+      );
     } finally {
       io.restore();
     }
