@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604091130-P47MPX/april9-cleanup",
   "created_at": "2026-04-09T12:09:25.210Z",
-  "head_sha": "247d0e1bdd695674465a66a36007d07d1a45a600",
+  "head_sha": "ea5aef167b4548d91492a590023bb3d3fac1a1b5",
   "last_verified_at": "2026-04-09T12:09:25.157Z",
   "last_verified_sha": "247d0e1bdd695674465a66a36007d07d1a45a600",
+  "merge_commit": "15990facf57a5b9a80a1034463bf19dfafff142e",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T12:10:05.422Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604091130-P47MPX",
-  "updated_at": "2026-04-09T12:09:25.210Z",
+  "updated_at": "2026-04-09T12:10:05.422Z",
   "verify": {
     "status": "pass"
   }
