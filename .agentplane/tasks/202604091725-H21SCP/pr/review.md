@@ -45,12 +45,23 @@ Exclude junk dotfiles such as .DS_Store from watched runtime snapshot collection
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T17:46:37.278Z
+- Updated: 2026-04-09T17:48:27.708Z
 - Branch: task/202604091725-H21SCP/ignore-runtime-dotfiles
-- Head: a046740bdfe8
+- Head: 19cb4970e8ea
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604091725-H21SCP/README.md    | 116 +++++++++++++++++++++
+ .../tasks/202604091725-H21SCP/pr/diffstat.txt      |   0
+ .../tasks/202604091725-H21SCP/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604091725-H21SCP/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091725-H21SCP/pr/meta.json |  14 +++
+ .../tasks/202604091725-H21SCP/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091725-H21SCP/pr/review.md |  57 ++++++++++
+ .../tasks/202604091725-H21SCP/pr/verify.log        |   0
+ packages/agentplane/bin/runtime-watch.js           |   1 +
+ packages/agentplane/src/cli/dist-guard.test.ts     |  23 ++++
+ packages/agentplane/src/cli/runtime-watch.test.ts  |   7 ++
+ 11 files changed, 269 insertions(+)
 ```
 
 </details>
