@@ -20,11 +20,7 @@ const STRUCTURED_INCIDENTS_HEADER = [
 
 const COMPACT_INCIDENTS_HEADER = [
   "# Policy Incidents Log",
-  "",
-  "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`. Optional machine-match fields: `tags`, `match`, `advice`, `source_task`, `fixability`.",
-  "- `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.",
-  "- `fixability: repo-fixable` means the issue can be removed by changing repository code and should still be captured as reusable incident advice when marked explicitly.",
-  "- First auto-promoted reusable incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.",
+  "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.",
 ].join("\n");
 
 function normalizeLines(text: string): string[] {
@@ -76,6 +72,10 @@ function parseCsvList(value: string | null | undefined): string[] {
       .map((item) => item.trim())
       .filter(Boolean),
   );
+}
+
+function incidentField(key: string, value: string): [string, string] {
+  return [key, value];
 }
 
 function parseBoolean(value: string | null | undefined): boolean {
@@ -303,11 +303,12 @@ export function parseIncidentRegistry(text: string): IncidentRegistry {
 
   for (const [index, line] of lines.entries()) {
     const trimmed = line.trim();
-    const idMatch = /^- id:\s*(.+?)\s*$/.exec(trimmed);
-    if (idMatch) {
+    const inlineFields = parseInlineIncidentEntry(trimmed);
+    if (inlineFields) {
       flush();
-      currentFields = { id: idMatch[1] ?? "" };
-      currentKey = "id";
+      currentFields = { ...inlineFields };
+      const keys = Object.keys(inlineFields);
+      currentKey = keys.at(-1) ?? "id";
       currentLine = index + 1;
       continue;
     }
@@ -341,20 +342,64 @@ export function parseIncidentRegistry(text: string): IncidentRegistry {
 }
 
 export function formatIncidentRegistryEntry(entry: IncidentRegistryEntry): string {
+  return formatIncidentRegistryEntryForStyle(entry, "structured");
+}
+
+function parseInlineIncidentEntry(trimmedLine: string): Record<string, string> | null {
+  if (!trimmedLine.startsWith("- ")) return null;
+  const body = trimmedLine.slice(2).trim();
+  if (!body) return null;
+  const segments = body.split(/\s+\|\s+(?=[a-z_]+:\s*)/u);
+  const fields: Record<string, string> = {};
+  for (const segment of segments) {
+    const match = /^([a-z_]+):\s*(.*?)\s*$/.exec(segment.trim());
+    if (!match) return null;
+    const key = String(match[1] ?? "").trim();
+    if (!key) return null;
+    fields[key] = match[2] ?? "";
+  }
+  return fields.id ? fields : null;
+}
+
+function formatIncidentRegistryEntryForStyle(
+  entry: IncidentRegistryEntry,
+  style: "structured" | "compact",
+): string {
+  const compactFields: [string, string][] = [
+    incidentField("id", entry.id),
+    incidentField("date", entry.date),
+    incidentField("scope", entry.scope),
+    ...(entry.tags.length > 0 ? [incidentField("tags", entry.tags.join(", "))] : []),
+    ...(entry.match.length > 0 ? [incidentField("match", entry.match.join(", "))] : []),
+    incidentField("failure", entry.failure),
+    ...(entry.advice ? [incidentField("advice", entry.advice)] : []),
+    incidentField("rule", entry.rule),
+    incidentField("evidence", entry.evidence),
+    incidentField("enforcement", entry.enforcement),
+    ...(entry.fixability ? [incidentField("fixability", entry.fixability)] : []),
+    incidentField("state", entry.state),
+  ];
+  if (style === "compact") {
+    return `- ${compactFields.map(([key, value]) => `${key}: ${value}`).join(" | ")}`;
+  }
+  const structuredFields: [string, string][] = [
+    incidentField("id", entry.id),
+    incidentField("date", entry.date),
+    incidentField("scope", entry.scope),
+    ...(entry.tags.length > 0 ? [incidentField("tags", entry.tags.join(", "))] : []),
+    ...(entry.match.length > 0 ? [incidentField("match", entry.match.join(", "))] : []),
+    incidentField("failure", entry.failure),
+    ...(entry.advice ? [incidentField("advice", entry.advice)] : []),
+    incidentField("rule", entry.rule),
+    incidentField("evidence", entry.evidence),
+    incidentField("enforcement", entry.enforcement),
+    ...(entry.sourceTask ? [incidentField("source_task", entry.sourceTask)] : []),
+    ...(entry.fixability ? [incidentField("fixability", entry.fixability)] : []),
+    incidentField("state", entry.state),
+  ];
   return [
-    `- id: ${entry.id}`,
-    `  date: ${entry.date}`,
-    `  scope: ${entry.scope}`,
-    ...(entry.tags.length > 0 ? [`  tags: ${entry.tags.join(", ")}`] : []),
-    ...(entry.match.length > 0 ? [`  match: ${entry.match.join(", ")}`] : []),
-    `  failure: ${entry.failure}`,
-    ...(entry.advice ? [`  advice: ${entry.advice}`] : []),
-    `  rule: ${entry.rule}`,
-    `  evidence: ${entry.evidence}`,
-    `  enforcement: ${entry.enforcement}`,
-    ...(entry.sourceTask ? [`  source_task: ${entry.sourceTask}`] : []),
-    ...(entry.fixability ? [`  fixability: ${entry.fixability}`] : []),
-    `  state: ${entry.state}`,
+    `- ${structuredFields[0]?.[0]}: ${structuredFields[0]?.[1] ?? ""}`,
+    ...structuredFields.slice(1).map(([key, value]) => `  ${key}: ${value}`),
   ].join("\n");
 }
 
@@ -439,7 +484,8 @@ function renderIncidentRegistryDocument(
   const header =
     style === "structured" ? createIncidentRegistrySkeleton().trimEnd() : COMPACT_INCIDENTS_HEADER;
   if (entries.length === 0) return `${header}\n`;
-  return `${header}\n\n${entries.map((entry) => formatIncidentRegistryEntry(entry)).join("\n\n")}\n`;
+  const separator = style === "structured" ? "\n\n" : "\n";
+  return `${header}\n${entries.map((entry) => formatIncidentRegistryEntryForStyle(entry, style)).join(separator)}\n`;
 }
 
 export function appendIncidentRegistryEntries(
