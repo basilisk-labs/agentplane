@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604091218-8S07FZ/multi-pr-wait",
   "created_at": "2026-04-09T12:21:08.124Z",
-  "head_sha": "5f70b702cfa930688dfb0d35ba6251f54d7eca07",
+  "head_sha": "668d386fe80c65bd9097f5fc112cb3a337a23543",
   "last_verified_at": "2026-04-09T12:23:06.707Z",
   "last_verified_sha": "af4d3dd2740788d00319ce6c7520b18931d9401f",
+  "merge_commit": "1e6b8a5b9acf86a98becae05d2f82ca4f4023b72",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T12:49:52Z",
   "pr_number": 179,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/179",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604091218-8S07FZ",
-  "updated_at": "2026-04-09T12:42:22.684Z",
+  "updated_at": "2026-04-09T12:49:52Z",
   "verify": {
     "status": "pass"
   }
