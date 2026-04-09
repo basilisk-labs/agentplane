@@ -1,10 +1,11 @@
 ---
 id: "202604091006-M0YKF4"
 title: "Point DONE PR-artifact drift recovery at targeted normalize"
-status: "DOING"
+result_summary: "integrate: squash task/202604091006-M0YKF4/done-pr-drift-guidance"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-09T10:16:49.332Z"
   updated_by: "REVIEWER"
   note: "doctor.command tests passed with the updated DONE drift guidance and eslint passed on touched doctor files after framework bootstrap."
-commit: null
+commit:
+  hash: "6207bbe144dae4b3096eed2185004423d1be742b"
+  message: "🧩 M0YKF4 integrate: workflow/ux: Point DONE PR-artifact drift recovery at targeted normalize"
 comments:
   -
     author: "CODER"
     body: "Start: fix DONE branch_pr drift guidance so operators are pointed at the targeted normalize recovery path instead of a read-only PR check."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091006-M0YKF4/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "doctor.command tests passed with the updated DONE drift guidance and eslint passed on touched doctor files after framework bootstrap."
+  -
+    type: "status"
+    at: "2026-04-09T10:36:24.951Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091006-M0YKF4/pr."
 doc_version: 3
-doc_updated_at: "2026-04-09T10:16:49.337Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T10:36:24.965Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update diagnostics and docs so DONE branch_pr tasks with stale OPEN PR artifacts recommend the actual recovery path: task normalize --sync-hosted-merges --task-id <task-id>, not pr check."
 sections:
   Summary: |-
