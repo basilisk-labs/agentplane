@@ -1,10 +1,11 @@
 ---
 id: "202604091006-7HAZ1F"
 title: "Allow integrate to reconcile already-DONE branch_pr tasks"
-status: "DOING"
+result_summary: "integrate: squash task/202604091006-7HAZ1F/integrate-done-recovery"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,7 +24,9 @@ verification:
   updated_at: "2026-04-09T10:16:49.341Z"
   updated_by: "REVIEWER"
   note: "Focused integrate finalize regression tests passed under vitest; integrate cmd tests passed after framework bootstrap; eslint passed on touched integrate finalize files."
-commit: null
+commit:
+  hash: "5df4c3fe547500be07bc02063244334b6e0b8c69"
+  message: "🧩 7HAZ1F integrate: workflow/branch_pr: Allow integrate to reconcile already-DONE branch_pr tasks"
 comments:
   -
     author: "CODER"
@@ -31,6 +34,9 @@ comments:
   -
     author: "CODER"
     body: "Start: add a meta-only integrate recovery path so already-DONE repair tasks can still reconcile PR metadata and deterministic closure on the base branch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091006-7HAZ1F/pr."
 events:
   -
     type: "status"
@@ -52,9 +58,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Focused integrate finalize regression tests passed under vitest; integrate cmd tests passed after framework bootstrap; eslint passed on touched integrate finalize files."
+  -
+    type: "status"
+    at: "2026-04-09T10:28:20.729Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091006-7HAZ1F/pr."
 doc_version: 3
-doc_updated_at: "2026-04-09T10:16:49.345Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T10:28:20.734Z"
+doc_updated_by: "INTEGRATOR"
 description: "Teach branch_pr integrate to finish in a meta-only recovery path when the task README is already DONE but PR metadata and base-branch closure still need to be reconciled."
 sections:
   Summary: |-

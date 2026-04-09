@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604091006-7HAZ1F/README.md    | 123 +++++++++++++++++++++
+ .../tasks/202604091006-7HAZ1F/pr/diffstat.txt      |   0
+ .../tasks/202604091006-7HAZ1F/pr/github-body.md    |  48 ++++++++
+ .../tasks/202604091006-7HAZ1F/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091006-7HAZ1F/pr/meta.json |  17 +++
+ .../tasks/202604091006-7HAZ1F/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091006-7HAZ1F/pr/review.md |  55 +++++++++
+ .../tasks/202604091006-7HAZ1F/pr/verify.log        |   0
+ .../pr/integrate/internal/finalize.test.ts         |  28 +++++
+ .../src/commands/pr/integrate/internal/finalize.ts |  34 +++---
+ 10 files changed, 292 insertions(+), 14 deletions(-)
