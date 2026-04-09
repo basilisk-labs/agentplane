@@ -20,7 +20,7 @@ Extend doctor --fix with a safe cleanup for legacy untracked .agentplane/tasks/<
 ### Current Status
 
 - State: ok
-- Note: Verified current HEAD after task commit: doctor --fix now removes only untracked DONE task README collisions; doctor fast/command tests and eslint passed.
+- Note: Verified current HEAD after formatting commit: doctor --fix now removes only untracked DONE task README collisions; doctor fast/command tests and eslint passed.
 
 ## Risks
 
@@ -39,23 +39,23 @@ Extend doctor --fix with a safe cleanup for legacy untracked .agentplane/tasks/<
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T23:21:51.067Z
+- Updated: 2026-04-09T23:22:53.124Z
 - Branch: task/202604092306-JRGSGJ/doctor-safe-cleanup
-- Head: cae1e7851978
+- Head: 593d86d5e2b8
 
 ```text
- .agentplane/tasks/202604092306-JRGSGJ/README.md    | 118 +++++++++++++++++++
- .../tasks/202604092306-JRGSGJ/pr/diffstat.txt      |   0
- .../tasks/202604092306-JRGSGJ/pr/github-body.md    |  50 ++++++++
+ .agentplane/tasks/202604092306-JRGSGJ/README.md    | 140 +++++++++++++++++++++
+ .../tasks/202604092306-JRGSGJ/pr/diffstat.txt      |  12 ++
+ .../tasks/202604092306-JRGSGJ/pr/github-body.md    |  61 +++++++++
  .../tasks/202604092306-JRGSGJ/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604092306-JRGSGJ/pr/meta.json |  14 +++
  .../tasks/202604092306-JRGSGJ/pr/notes.jsonl       |   0
- .agentplane/tasks/202604092306-JRGSGJ/pr/review.md |  57 +++++++++
+ .agentplane/tasks/202604092306-JRGSGJ/pr/review.md |  68 ++++++++++
  .../tasks/202604092306-JRGSGJ/pr/verify.log        |   0
- .../agentplane/src/commands/doctor.fast.test.ts    | 128 +++++++++++++++++++++
+ .../agentplane/src/commands/doctor.fast.test.ts    | 128 +++++++++++++++++++
  packages/agentplane/src/commands/doctor.run.ts     |   8 +-
- packages/agentplane/src/commands/doctor/fixes.ts   |  85 ++++++++++++++
- 11 files changed, 460 insertions(+), 1 deletion(-)
+ packages/agentplane/src/commands/doctor/fixes.ts   |  87 +++++++++++++
+ 11 files changed, 518 insertions(+), 1 deletion(-)
 ```
 
 </details>
