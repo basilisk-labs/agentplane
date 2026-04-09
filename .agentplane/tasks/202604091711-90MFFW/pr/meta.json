@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604091711-90MFFW/persist-duplicate-closures",
   "created_at": "2026-04-09T17:14:55.599Z",
-  "head_sha": "cbd088effec4a08e7b37885baee303437fc452a5",
+  "head_sha": "9bdbc89b4648ce36687c974203d05ddbc02341f7",
   "last_verified_at": "2026-04-09T17:17:12.462Z",
   "last_verified_sha": "cbd088effec4a08e7b37885baee303437fc452a5",
+  "merge_commit": "895e31ae7e740faf0549c5bcafdc46700fd83c61",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T17:18:17Z",
   "pr_number": 207,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/207",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604091711-90MFFW",
-  "updated_at": "2026-04-09T17:17:12.478Z",
+  "updated_at": "2026-04-09T17:18:17Z",
   "verify": {
     "status": "pass"
   }
