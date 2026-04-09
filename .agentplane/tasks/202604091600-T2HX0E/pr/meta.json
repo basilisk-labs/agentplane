@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604091600-T2HX0E/task-new-duplicate-guard",
+  "created_at": "2026-04-09T16:23:56.389Z",
+  "head_sha": "f6f2660e13d43bf821e64fb73c26e74a6e69c08f",
+  "last_verified_at": "2026-04-09T16:23:56.328Z",
+  "last_verified_sha": "f6f2660e13d43bf821e64fb73c26e74a6e69c08f",
+  "schema_version": 1,
+  "task_id": "202604091600-T2HX0E",
+  "updated_at": "2026-04-09T16:23:56.389Z",
+  "verify": {
+    "status": "pass"
+  }
+}

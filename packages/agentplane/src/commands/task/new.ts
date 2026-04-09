@@ -12,6 +12,7 @@ import { CliError } from "../../shared/errors.js";
 import { buildTaskDocState } from "../../shared/task-doc-state.js";
 import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import type { TaskData } from "../../backends/task-backend/shared/types.js";
 import {
   ensureTaskDependsOnGraphIsAcyclic,
   nowIso,
@@ -33,7 +34,25 @@ export type TaskNewParsed = {
   tags: string[];
   dependsOn: string[];
   verify: string[];
+  allowDuplicate: boolean;
 };
+
+const TASK_NEW_DUPLICATE_THRESHOLD = 0.75;
+const TASK_NEW_DUPLICATE_STOPWORDS = new Set([
+  "a",
+  "an",
+  "and",
+  "for",
+  "from",
+  "in",
+  "is",
+  "of",
+  "on",
+  "the",
+  "to",
+  "when",
+  "with",
+]);
 
 function dedupeTrimmed(values: string[]): string[] {
   const seen = new Set<string>();
@@ -84,6 +103,62 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
   return { ...p, title, description, owner, tags, dependsOn, verify };
 }
 
+function normalizeDuplicateTitleTokens(value: string): string[] {
+  return value
+    .trim()
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, " ")
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter(
+      (token) =>
+        token.length > 0 &&
+        (token.length > 2 || /\d/.test(token)) &&
+        !TASK_NEW_DUPLICATE_STOPWORDS.has(token),
+    );
+}
+
+function duplicateSimilarity(left: string, right: string): number {
+  const leftTokens = normalizeDuplicateTitleTokens(left);
+  const rightTokens = normalizeDuplicateTitleTokens(right);
+  if (leftTokens.length === 0 || rightTokens.length === 0) {
+    return left.trim().toLowerCase() === right.trim().toLowerCase() ? 1 : 0;
+  }
+  const leftSet = new Set(leftTokens);
+  const rightSet = new Set(rightTokens);
+  const intersection = [...leftSet].filter((token) => rightSet.has(token)).length;
+  const union = new Set([...leftSet, ...rightSet]).size;
+  return union === 0 ? 0 : intersection / union;
+}
+
+function listOpenTaskDuplicates(tasks: TaskData[], title: string): { task: TaskData; score: number }[] {
+  return tasks
+    .filter((task) => String(task.status ?? "").toUpperCase() !== "DONE")
+    .map((task) => ({
+      task,
+      score: duplicateSimilarity(task.title ?? "", title),
+    }))
+    .filter(({ score }) => score >= TASK_NEW_DUPLICATE_THRESHOLD)
+    .toSorted((left, right) => right.score - left.score || left.task.id.localeCompare(right.task.id));
+}
+
+function formatDuplicateTaskMessage(
+  duplicates: { task: TaskData; score: number }[],
+  allowDuplicate: boolean,
+): string {
+  const summary = duplicates
+    .slice(0, 3)
+    .map(
+      ({ task, score }) =>
+        `${task.id} (${Math.round(score * 100)}% title overlap, status=${String(task.status || "TODO").toUpperCase()}): ${task.title}`,
+    )
+    .join("; ");
+  const tail = allowDuplicate
+    ? "creating a duplicate because --allow-duplicate was passed"
+    : "rerun with --allow-duplicate only when intentional or close the extra task with `agentplane task close-duplicate`";
+  return `potential duplicate open task detected: ${summary}; ${tail}.`;
+}
+
 export async function runTaskNewParsed(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -95,6 +170,17 @@ export async function runTaskNewParsed(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const duplicateTasks = listOpenTaskDuplicates(await ctx.taskBackend.listTasks(), p.title);
+    if (duplicateTasks.length > 0 && !p.allowDuplicate) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: formatDuplicateTaskMessage(duplicateTasks, false),
+      });
+    }
+    if (duplicateTasks.length > 0 && p.allowDuplicate) {
+      process.stderr.write(`${warnMessage(formatDuplicateTaskMessage(duplicateTasks, true))}\n`);
+    }
     const suffixLength = ctx.config.tasks.id_suffix_length_default;
     if (!ctx.taskBackend.generateTaskId) {
       throw new CliError({
