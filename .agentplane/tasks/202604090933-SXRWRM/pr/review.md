@@ -47,9 +47,9 @@ Repair task artifacts for 202604081931-P5XKNF and 202604081956-59ERCT so local b
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T09:43:08.764Z
+- Updated: 2026-04-09T09:44:15.033Z
 - Branch: task/202604090933-SXRWRM/reconcile-shipped-task-state
-- Head: d5b93fe7573f
+- Head: e1189c6240cd
 
 ```text
 No changes detected.
