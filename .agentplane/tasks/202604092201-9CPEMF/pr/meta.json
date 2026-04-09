@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604092201-9CPEMF/incidents-promotion-success",
+  "created_at": "2026-04-09T22:06:35.842Z",
+  "head_sha": "1950026d55d971f99439e861bdeac4c5580c4019",
+  "last_verified_at": "2026-04-09T22:06:35.822Z",
+  "last_verified_sha": "1950026d55d971f99439e861bdeac4c5580c4019",
+  "schema_version": 1,
+  "task_id": "202604092201-9CPEMF",
+  "updated_at": "2026-04-09T22:06:35.842Z",
+  "verify": {
+    "status": "pass"
+  }
+}
