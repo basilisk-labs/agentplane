@@ -1,0 +1,12 @@
+ .agentplane/tasks/202604091725-H21SCP/README.md    | 116 +++++++++++++++++++++
+ .../tasks/202604091725-H21SCP/pr/diffstat.txt      |   0
+ .../tasks/202604091725-H21SCP/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604091725-H21SCP/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091725-H21SCP/pr/meta.json |  14 +++
+ .../tasks/202604091725-H21SCP/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091725-H21SCP/pr/review.md |  57 ++++++++++
+ .../tasks/202604091725-H21SCP/pr/verify.log        |   0
+ packages/agentplane/bin/runtime-watch.js           |   1 +
+ packages/agentplane/src/cli/dist-guard.test.ts     |  23 ++++
+ packages/agentplane/src/cli/runtime-watch.test.ts  |   7 ++
+ 11 files changed, 269 insertions(+)

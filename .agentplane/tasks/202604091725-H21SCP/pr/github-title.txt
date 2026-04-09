@@ -1,0 +1,1 @@
+Ignore dotfiles in watched runtime snapshots (H21SCP)
