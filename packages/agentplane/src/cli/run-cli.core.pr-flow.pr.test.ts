@@ -2614,7 +2614,7 @@ describe("runCli", () => {
       const code = await runCli(["pr", "nope", "202601010101-ABCDEF", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage:");
-      expect(io.stderr).toContain("agentplane pr <open|update|check|note|close>");
+      expect(io.stderr).toContain("agentplane pr <open|update|check|note|close|close-superseded>");
     } finally {
       io.restore();
     }
