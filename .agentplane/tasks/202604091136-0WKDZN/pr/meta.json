@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604091136-0WKDZN/incident-promotion-ux",
+  "created_at": "2026-04-09T12:06:06.969Z",
+  "head_sha": "ab94eb497a2e02f7265b4e271acba6671edadfe3",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "ae802bfd02372f14143608cf6092d2ca2bd0798b",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T12:06:16.990Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604091136-0WKDZN",
+  "updated_at": "2026-04-09T12:06:16.990Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

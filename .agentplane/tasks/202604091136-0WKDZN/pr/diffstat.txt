@@ -1,0 +1,11 @@
+ docs/user/cli-reference.generated.mdx              |  10 +-
+ .../run-cli.core.help-snap.test.ts.snap            | 310 ++++++++++++++++++++-
+ .../src/cli/run-cli.core.help-snap.test.ts         |  16 ++
+ .../src/cli/run-cli.core.incidents.test.ts         |   6 +
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |   4 +-
+ .../src/cli/run-cli.core.tasks.findings.test.ts    |   2 +-
+ packages/agentplane/src/commands/task/findings.ts  |   4 +-
+ .../src/commands/task/verify-command-shared.ts     |   2 +-
+ .../agentplane/src/commands/task/verify-record.ts  |   2 +-
+ packages/agentplane/src/commands/verify.spec.ts    |   7 +-
+ 10 files changed, 347 insertions(+), 16 deletions(-)
