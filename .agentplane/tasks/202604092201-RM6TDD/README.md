@@ -1,10 +1,11 @@
 ---
 id: "202604092201-RM6TDD"
 title: "Allow cleanup merged to delete remote task branches"
-status: "DOING"
+result_summary: "Merged via PR #235."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-09T22:16:51.053Z"
   updated_by: "CODER"
   note: "Refreshed CLI reference after adding cleanup merged remote delete mode; targeted cleanup merged parser and remote deletion tests remain green."
-commit: null
+commit:
+  hash: "3b19584f87e1a30dcb34816fd3b3128fd381ff05"
+  message: "github/workflow: Allow cleanup merged to delete remote task branches (RM6TDD) (#235)"
 comments:
   -
     author: "CODER"
     body: "Start: extend cleanup merged with opt-in remote branch deletion."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #235 merged on main and cleanup merged now supports opt-in remote branch deletion with tracked PR artifacts."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Refreshed CLI reference after adding cleanup merged remote delete mode; targeted cleanup merged parser and remote deletion tests remain green."
+  -
+    type: "status"
+    at: "2026-04-09T22:58:24.501Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #235 merged on main and cleanup merged now supports opt-in remote branch deletion with tracked PR artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T22:16:51.057Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T22:58:24.501Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend cleanup merged with an opt-in remote-branch deletion mode for merged DONE task branches so operators do not need manual git push --delete cleanup."
 sections:
   Summary: |-

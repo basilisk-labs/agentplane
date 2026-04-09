@@ -1,0 +1,27 @@
+ .agentplane/tasks/202604092201-9CPEMF/README.md    | 143 +++++++++++++++++++++
+ .../tasks/202604092201-9CPEMF/pr/diffstat.txt      |  17 +++
+ .../tasks/202604092201-9CPEMF/pr/github-body.md    |  68 ++++++++++
+ .../tasks/202604092201-9CPEMF/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604092201-9CPEMF/pr/meta.json |  17 +++
+ .../tasks/202604092201-9CPEMF/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604092201-9CPEMF/pr/review.md |  75 +++++++++++
+ .../tasks/202604092201-9CPEMF/pr/verify.log        |   0
+ .agentplane/tasks/202604092232-YJ4245/README.md    | 117 +++++++++++++++++
+ .../tasks/202604092232-YJ4245/pr/diffstat.txt      |   0
+ .../tasks/202604092232-YJ4245/pr/github-body.md    |  50 +++++++
+ .../tasks/202604092232-YJ4245/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604092232-YJ4245/pr/meta.json |  17 +++
+ .../tasks/202604092232-YJ4245/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604092232-YJ4245/pr/review.md |  57 ++++++++
+ .../tasks/202604092232-YJ4245/pr/verify.log        |   0
+ .../src/cli/run-cli.core.incidents.test.ts         |  84 ++++++++++++
+ .../agentplane/src/cli/run-cli.core.tasks.test.ts  |   2 +
+ .../agentplane/src/commands/guard/impl/commands.ts |   3 +
+ .../src/commands/guard/impl/commands.unit.test.ts  |   9 ++
+ .../src/commands/incidents/collect.command.ts      |   6 +-
+ .../agentplane/src/commands/incidents/shared.ts    |  51 +++++++-
+ .../src/commands/pr/integrate/internal/finalize.ts |   2 +
+ packages/agentplane/src/commands/task/finish.ts    |   4 +
+ .../src/commands/task/hosted-close.command.ts      |   2 +
+ .../agentplane/src/commands/task/verify-record.ts  |   2 +
+ 26 files changed, 719 insertions(+), 9 deletions(-)

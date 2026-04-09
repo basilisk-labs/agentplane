@@ -47,28 +47,28 @@ Make incident collection success output name promoted incident IDs and the regis
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T22:20:12.357Z
+- Updated: 2026-04-09T22:58:21.814Z
 - Branch: task/202604092201-9CPEMF/incidents-promotion-success
-- Head: 731125fdbb0d
+- Head: 425c0b4b208f
 
 ```text
- .agentplane/tasks/202604092201-9CPEMF/README.md    | 121 +++++++++++++++++++++
- .../tasks/202604092201-9CPEMF/pr/diffstat.txt      |   9 ++
- .../tasks/202604092201-9CPEMF/pr/github-body.md    |  52 +++++++++
+ .agentplane/tasks/202604092201-9CPEMF/README.md    | 143 +++++++++++++++++++++
+ .../tasks/202604092201-9CPEMF/pr/diffstat.txt      |  17 +++
+ .../tasks/202604092201-9CPEMF/pr/github-body.md    |  68 ++++++++++
  .../tasks/202604092201-9CPEMF/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604092201-9CPEMF/pr/meta.json |  14 +++
+ .agentplane/tasks/202604092201-9CPEMF/pr/meta.json |  17 +++
  .../tasks/202604092201-9CPEMF/pr/notes.jsonl       |   0
- .agentplane/tasks/202604092201-9CPEMF/pr/review.md |  59 ++++++++++
+ .agentplane/tasks/202604092201-9CPEMF/pr/review.md |  75 +++++++++++
  .../tasks/202604092201-9CPEMF/pr/verify.log        |   0
- .../src/cli/run-cli.core.incidents.test.ts         |  84 ++++++++++++++
+ .../src/cli/run-cli.core.incidents.test.ts         |  84 ++++++++++++
  .../agentplane/src/cli/run-cli.core.tasks.test.ts  |   2 +
  .../src/commands/incidents/collect.command.ts      |   6 +-
- .../agentplane/src/commands/incidents/shared.ts    |  51 ++++++++-
+ .../agentplane/src/commands/incidents/shared.ts    |  51 +++++++-
  .../src/commands/pr/integrate/internal/finalize.ts |   2 +
  packages/agentplane/src/commands/task/finish.ts    |   4 +
  .../src/commands/task/hosted-close.command.ts      |   2 +
  .../agentplane/src/commands/task/verify-record.ts  |   2 +
- 16 files changed, 400 insertions(+), 9 deletions(-)
+ 16 files changed, 465 insertions(+), 9 deletions(-)
 ```
 
 </details>

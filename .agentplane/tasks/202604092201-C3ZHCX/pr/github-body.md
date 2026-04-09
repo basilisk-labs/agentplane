@@ -41,24 +41,24 @@ Add an explicit fetch/prune option to cleanup merged so operators can refresh or
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T22:53:56.616Z
+- Updated: 2026-04-09T22:59:55.970Z
 - Branch: task/202604092201-C3ZHCX/cleanup-fetch-origin
-- Head: dd1c7f4b0d45
+- Head: 90fa5ac7a195
 
 ```text
- .agentplane/tasks/202604092201-C3ZHCX/README.md    | 143 +++++++++++++
- .../tasks/202604092201-C3ZHCX/pr/diffstat.txt      |   5 +
- .../tasks/202604092201-C3ZHCX/pr/github-body.md    |  52 +++++
+ .agentplane/tasks/202604092201-C3ZHCX/README.md    | 165 +++++++++++++++++++++
+ .../tasks/202604092201-C3ZHCX/pr/diffstat.txt      |  13 ++
+ .../tasks/202604092201-C3ZHCX/pr/github-body.md    |  64 ++++++++
  .../tasks/202604092201-C3ZHCX/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604092201-C3ZHCX/pr/meta.json |  17 ++
+ .agentplane/tasks/202604092201-C3ZHCX/pr/meta.json |  17 +++
  .../tasks/202604092201-C3ZHCX/pr/notes.jsonl       |   0
- .agentplane/tasks/202604092201-C3ZHCX/pr/review.md |  59 ++++++
+ .agentplane/tasks/202604092201-C3ZHCX/pr/review.md |  71 +++++++++
  .../tasks/202604092201-C3ZHCX/pr/verify.log        |   0
  docs/user/cli-reference.generated.mdx              |   7 +
- .../run-cli.core.pr-flow.cleanup-merged.test.ts    | 234 ++++++++++++++-------
+ .../run-cli.core.pr-flow.cleanup-merged.test.ts    |  99 ++++++++++++-
  .../src/commands/branch/cleanup-merged.ts          |  11 +-
  .../src/commands/cleanup/merged.command.ts         |  13 ++
- 12 files changed, 464 insertions(+), 78 deletions(-)
+ 12 files changed, 459 insertions(+), 2 deletions(-)
 ```
 
 </details>
