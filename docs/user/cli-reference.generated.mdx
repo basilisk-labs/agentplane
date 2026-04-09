@@ -2596,12 +2596,12 @@ agentplane task hosted-close --event-json "$GITHUB_EVENT_PATH"
 
 ### task hosted-close-pr
 
-Open the follow-up hosted closure PR from a remote task-close branch.
+Open one or more follow-up hosted closure PRs from remote task-close branches.
 
 Usage:
 
 ```text
-agentplane task hosted-close-pr <task-id> [options]
+agentplane task hosted-close-pr <task-id> ... [options]
 ```
 
 Options:
@@ -2616,6 +2616,12 @@ agentplane task hosted-close-pr 202604091218-JREJ4K
 ```
 
 - Open the hosted closure PR after the workflow left a manual handoff comment.
+
+```sh
+agentplane task hosted-close-pr 202604091725-CB0Y6S 202604091725-H21SCP
+```
+
+- Open multiple pending hosted closure PRs in one batch after a closure-wave merge.
 
 ### task lint
 
