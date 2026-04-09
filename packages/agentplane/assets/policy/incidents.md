@@ -7,7 +7,6 @@
   date: 2026-03-08
   scope: release apply internal push path
   failure: release apply re-entered local pre-push hooks and could stall after creating the local release commit and tag
-  advice: keep release ref pushes inside the release orchestrator path and avoid recursively re-entering local pre-push hooks
   rule: Release orchestration MUST push its own release refs without recursively re-entering local pre-push hooks.
   evidence: task 202603061532-9Y41NM; docs/developer/cli-bug-ledger-v0-3-x.mdx entry 4
   enforcement: test + command implementation
@@ -16,7 +15,6 @@
   date: 2026-03-08
   scope: stale-dist guard in framework checkout
   failure: stale-dist enforcement treated git dirtiness as stale runtime and blocked diagnostics or rebuilt checkouts incorrectly
-  advice: compare stale-dist state against recorded build snapshots and let read-only diagnostics warn instead of hard-failing on dirty runtime trees
   rule: Stale-dist freshness MUST compare current runtime inputs against the recorded build snapshot, and read-only diagnostics MUST warn-and-run instead of hard-failing on dirty runtime trees.
   evidence: tasks 202603072032-2M0V8V, 202603072032-1BC7VQ, 202603072032-V9VGT2, 202603072032-4D9ASG
   enforcement: test + runtime guard
@@ -25,7 +23,6 @@
   date: 2026-03-08
   scope: framework checkout PATH resolution
   failure: contributors inside the framework repo could execute an older global agentplane binary instead of the checkout they were editing
-  advice: verify the active runtime inside the framework checkout and keep PATH handoff repo-local by default unless a deliberate global override is set
   rule: Inside the framework checkout, agentplane resolved from PATH MUST hand off to the repo-local runtime by default unless an explicit global opt-out is set.
   evidence: tasks 202603071647-M0Q79C, 202603071647-Y4BZ1T, 202603071647-25WS52
   enforcement: test + wrapper logic
@@ -34,7 +31,6 @@
   date: 2026-03-08
   scope: release mutation generated surfaces
   failure: release apply could leave version-sensitive generated docs stale until later parity checks failed
-  advice: regenerate version-sensitive generated docs inside the release mutation itself instead of deferring them to later parity checks
   rule: Release mutation MUST regenerate and stage generated docs that encode released package versions as part of the release commit itself.
   evidence: task 202603071745-T3QE04; docs/developer/cli-bug-ledger-v0-3-x.mdx entry 5
   enforcement: test + release mutation
@@ -43,7 +39,6 @@
   date: 2026-03-08
   scope: release mutation repository CLI expectation
   failure: repository-owned framework.cli.expected_version could drift behind the actual released version because release apply did not persist it
-  advice: keep repository CLI expectation aligned with the released package version whenever release mutation touches repository config
   rule: Release mutation MUST keep framework.cli.expected_version aligned with the released package version whenever repository config is present.
   evidence: tasks 202603081315-Y4D6AE, 202603081538-GF7P9C; docs/developer/cli-bug-ledger-v0-3-x.mdx entry 3
   enforcement: test + release mutation
@@ -56,8 +51,6 @@
   rule: GitHub-dependent workflow helpers MUST classify EOF/TLS/SSL transport failures as transient and retry with bounded backoff; they MUST surface auth and usage failures immediately instead of looping or failing opaquely.
   evidence: tasks 202604062101-XYXG7Y, 202604062309-QE4CX6, 202604050745-18JJ5E
   enforcement: test + workflow helper
-  source_task: 202604062309-EXTXG1
-  fixability: external
   state: open
 - id: INC-20260407-02
   date: 2026-04-07
@@ -67,7 +60,6 @@
   rule: Protected-main branch_pr closure MUST preserve enough task metadata for deterministic manual reconciliation when hosted automation cannot create the closure PR due to external GitHub permission limits.
   evidence: tasks 202604032235-G375FB, 202604050745-18JJ5E, 202604062153-RSJFC2
   enforcement: manual + workflow
-  fixability: external
   state: open
 - id: INC-20260407-03
   date: 2026-04-07
@@ -77,7 +69,6 @@
   rule: Structured findings intended as reusable workflow advice MUST promote by default; task-local-only notes MUST opt out explicitly with --local-only.
   evidence: task 202604070754-ZD0ZAZ
   enforcement: manual
-  fixability: external
   state: open
 - id: INC-20260407-04
   date: 2026-04-07
@@ -87,7 +78,6 @@
   rule: Hosted reconcile commands MUST support explicit task-id scoping so known drift can be resolved without depending on unrelated GitHub lookups.
   evidence: task 202604071853-XGX2YJ; commit 5fd312cceb20
   enforcement: manual
-  fixability: external
   state: open
 - id: INC-20260409-01
   date: 2026-04-09
@@ -97,3 +87,13 @@
   evidence: task 202604081931-77V6J5
   enforcement: test + command implementation
   state: stabilized
+- id: INC-20260409-02
+  date: 2026-04-09
+  scope: branch_pr follow-up orchestration helpers
+  match: branch_pr, integrate, pr artifacts, pr meta, wait-remote-checks, remote checks, multi pr
+  failure: integrate recovery assumed PR artifacts already existed and the remote-check wait helper only accepted one PR target, forcing manual base-side hydration and serial closure-wave waiting.
+  advice: keep integrate able to recover PR metadata without a pre-hydrated base checkout and let remote-check waiting accept explicit PR batches during closure waves.
+  rule: branch_pr follow-up helpers MUST recover missing PR artifacts from available branch or hosted metadata and MUST accept explicit multi-PR batches so integrate and remote-check waiting stay runnable during closure waves.
+  evidence: tasks 202604091136-SR7Z25, 202604091136-V5N3P8; fixes 202604091218-WWSX2G, 202604091218-8S07FZ
+  enforcement: test + command implementation
+  state: open
