@@ -45,15 +45,12 @@ Refuse finish/close-commit on non-base branches in branch_pr so task-state and i
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T10:15:59.967Z
+- Updated: 2026-04-09T10:39:00.366Z
 - Branch: task/202604091006-VRQHZ1/guard-finish-base-branch
-- Head: 643aad9db4da
+- Head: 32fe12d12bd9
 
 ```text
- .../run-cli.core.lifecycle.block-finish.test.ts    | 82 ++++++++++++++++++++++
- packages/agentplane/src/commands/task/finish.ts    | 42 +++++++++++
- .../src/commands/task/finish.unit.test.ts          | 21 ++++++
- 3 files changed, 145 insertions(+)
+No changes detected.
 ```
 
 </details>
