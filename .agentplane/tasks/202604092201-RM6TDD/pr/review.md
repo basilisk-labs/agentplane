@@ -47,24 +47,12 @@ Extend cleanup merged with an opt-in remote-branch deletion mode for merged DONE
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T22:16:51.077Z
+- Updated: 2026-04-09T22:22:23.980Z
 - Branch: task/202604092201-RM6TDD/cleanup-remote-delete
-- Head: 8401e016e721
+- Head: 50ac0ec65b26
 
 ```text
- .agentplane/tasks/202604092201-RM6TDD/README.md    | 121 ++++++++++++++++++++
- .../tasks/202604092201-RM6TDD/pr/diffstat.txt      |   4 +
- .../tasks/202604092201-RM6TDD/pr/github-body.md    |  52 +++++++++
- .../tasks/202604092201-RM6TDD/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604092201-RM6TDD/pr/meta.json |  14 +++
- .../tasks/202604092201-RM6TDD/pr/notes.jsonl       |   0
- .agentplane/tasks/202604092201-RM6TDD/pr/review.md |  59 ++++++++++
- .../tasks/202604092201-RM6TDD/pr/verify.log        |   0
- docs/user/cli-reference.generated.mdx              |   7 ++
- .../run-cli.core.pr-flow.cleanup-merged.test.ts    | 125 ++++++++++++++++++++-
- .../src/commands/branch/cleanup-merged.ts          |  48 +++++++-
- .../src/commands/cleanup/merged.command.ts         |  13 +++
- 12 files changed, 441 insertions(+), 3 deletions(-)
+No changes detected.
 ```
 
 </details>

@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202604092201-RM6TDD/cleanup-remote-delete",
   "created_at": "2026-04-09T22:12:00.653Z",
-  "head_sha": "8401e016e721756c93b8ac2e9247ec6cc78f5116",
+  "head_sha": "50ac0ec65b261cf7f08d6c548a73fad09962b360",
   "last_verified_at": "2026-04-09T22:16:51.053Z",
   "last_verified_sha": "8401e016e721756c93b8ac2e9247ec6cc78f5116",
+  "pr_number": 235,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/235",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202604092201-RM6TDD",
-  "updated_at": "2026-04-09T22:16:51.077Z",
+  "updated_at": "2026-04-09T22:22:23.980Z",
   "verify": {
     "status": "pass"
   }
