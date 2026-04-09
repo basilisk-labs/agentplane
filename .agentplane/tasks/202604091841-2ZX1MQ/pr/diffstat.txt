@@ -1,0 +1,5 @@
+ .../run-cli.core.tasks.normalize-migrate.test.ts   | 102 +++++++++++++++++++++
+ .../agentplane/src/commands/pr/internal/gh-api.ts  |  14 ++-
+ .../src/commands/task/hosted-merge-sync.test.ts    |  42 +++++++++
+ packages/agentplane/src/shared/env.ts              |  30 +++++-
+ 4 files changed, 184 insertions(+), 4 deletions(-)
