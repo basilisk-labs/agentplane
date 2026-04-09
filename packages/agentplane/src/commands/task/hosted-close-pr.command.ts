@@ -92,12 +92,11 @@ export const taskHostedClosePrSpec: CommandSpec<TaskHostedClosePrParsed> = {
     }
   },
   parse: (raw) => ({
-    taskIds: (
-      Array.isArray(raw.args["task-id"])
-        ? raw.args["task-id"]
-        : typeof raw.args["task-id"] === "string"
-          ? [raw.args["task-id"]]
-          : []
+    taskIds: (Array.isArray(raw.args["task-id"])
+      ? raw.args["task-id"]
+      : typeof raw.args["task-id"] === "string"
+        ? [raw.args["task-id"]]
+        : []
     )
       .map((taskId) => String(taskId).trim())
       .filter(Boolean),

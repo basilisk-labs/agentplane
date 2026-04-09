@@ -26,6 +26,9 @@ describe("taskHostedClosePrSpec", () => {
         opts: {},
         tokens: [],
       } as never),
-    ).toThrowError(usageError({ spec: taskHostedClosePrSpec, message: "Invalid value for task-id: empty." }).message);
+    ).toThrowError(
+      usageError({ spec: taskHostedClosePrSpec, message: "Invalid value for task-id: empty." })
+        .message,
+    );
   });
 });
