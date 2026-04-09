@@ -1014,8 +1014,10 @@ describe("task finish (unit)", () => {
 
     expect(rc).toBe(0);
     expect(writes.join("")).toContain(
-      "incident registry unchanged (no structured incident findings)",
+      "plain finish body/result stayed task-local",
     );
+    expect(writes.join("")).toContain("did not update incidents.md");
+    expect(writes.join("")).toContain("--observation, --impact, and --resolution");
     expect(writes.join("")).toContain("finished");
 
     writeSpy.mockRestore();

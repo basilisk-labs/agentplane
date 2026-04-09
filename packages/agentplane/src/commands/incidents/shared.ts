@@ -222,7 +222,7 @@ export function renderIncidentCollectionPlanOutcome(
   },
   opts?: {
     wrote?: boolean;
-    context?: "collect" | "verify" | "generic";
+    context?: "collect" | "verify" | "finish" | "generic";
   },
 ): string {
   const candidates = Array.isArray(plan.candidates) ? plan.candidates.length : 0;
@@ -285,6 +285,12 @@ export function renderIncidentCollectionPlanOutcome(
   }
 
   if (candidates === 0) {
+    if (context === "verify") {
+      return "incident registry unchanged (plain verify note stayed task-local and did not update incidents.md: add --observation, --impact, and --resolution for a reusable incident, then rerun with --collect-incidents or collect later on the base branch)";
+    }
+    if (context === "finish") {
+      return "incident registry unchanged (plain finish body/result stayed task-local and did not update incidents.md: add --observation, --impact, and --resolution for a reusable incident before closeout)";
+    }
     return "incident registry unchanged (no structured incident findings)";
   }
 
