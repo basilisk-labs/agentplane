@@ -39,22 +39,23 @@ Make merged branch_pr tasks land in tracked main history as DONE with reconciled
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T19:08:30.603Z
+- Updated: 2026-04-09T19:11:09.426Z
 - Branch: task/202604091841-PX5WAV/tracked-closure-state
-- Head: 8c719b6b998c
+- Head: 9b9706c76f34
 
 ```text
  .agentplane/tasks/202604091841-PX5WAV/README.md    | 129 +++++++++++++++++++++
- .../tasks/202604091841-PX5WAV/pr/diffstat.txt      |   3 +
- .../tasks/202604091841-PX5WAV/pr/github-body.md    |  50 ++++++++
+ .../tasks/202604091841-PX5WAV/pr/diffstat.txt      |  11 ++
+ .../tasks/202604091841-PX5WAV/pr/github-body.md    |  60 ++++++++++
  .../tasks/202604091841-PX5WAV/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604091841-PX5WAV/pr/meta.json |  14 +++
+ .agentplane/tasks/202604091841-PX5WAV/pr/meta.json |  17 +++
  .../tasks/202604091841-PX5WAV/pr/notes.jsonl       |   0
- .agentplane/tasks/202604091841-PX5WAV/pr/review.md |  57 +++++++++
+ .agentplane/tasks/202604091841-PX5WAV/pr/review.md |  67 +++++++++++
  .../tasks/202604091841-PX5WAV/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |  10 +-
  .../commands/task/hosted-close-pr.command.test.ts  |  34 ++++++
  .../src/commands/task/hosted-close-pr.command.ts   |  48 +++++---
- 10 files changed, 322 insertions(+), 14 deletions(-)
+ 11 files changed, 361 insertions(+), 16 deletions(-)
 ```
 
 </details>

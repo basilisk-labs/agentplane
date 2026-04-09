@@ -1,11 +1,12 @@
  .agentplane/tasks/202604091841-PX5WAV/README.md    | 129 +++++++++++++++++++++
- .../tasks/202604091841-PX5WAV/pr/diffstat.txt      |   3 +
- .../tasks/202604091841-PX5WAV/pr/github-body.md    |  50 ++++++++
+ .../tasks/202604091841-PX5WAV/pr/diffstat.txt      |  11 ++
+ .../tasks/202604091841-PX5WAV/pr/github-body.md    |  60 ++++++++++
  .../tasks/202604091841-PX5WAV/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604091841-PX5WAV/pr/meta.json |  14 +++
+ .agentplane/tasks/202604091841-PX5WAV/pr/meta.json |  17 +++
  .../tasks/202604091841-PX5WAV/pr/notes.jsonl       |   0
- .agentplane/tasks/202604091841-PX5WAV/pr/review.md |  57 +++++++++
+ .agentplane/tasks/202604091841-PX5WAV/pr/review.md |  67 +++++++++++
  .../tasks/202604091841-PX5WAV/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |  10 +-
  .../commands/task/hosted-close-pr.command.test.ts  |  34 ++++++
  .../src/commands/task/hosted-close-pr.command.ts   |  48 +++++---
- 10 files changed, 322 insertions(+), 14 deletions(-)
+ 11 files changed, 361 insertions(+), 16 deletions(-)
