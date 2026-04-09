@@ -1,0 +1,4 @@
+ .../run-cli.core.lifecycle.block-finish.test.ts    | 82 ++++++++++++++++++++++
+ packages/agentplane/src/commands/task/finish.ts    | 42 +++++++++++
+ .../src/commands/task/finish.unit.test.ts          | 21 ++++++
+ 3 files changed, 145 insertions(+)
