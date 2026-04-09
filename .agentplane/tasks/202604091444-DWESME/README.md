@@ -1,10 +1,11 @@
 ---
 id: "202604091444-DWESME"
 title: "Let finish append structured incident findings before promotion"
-status: "DOING"
+result_summary: "Merged via PR #191."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +28,16 @@ verification:
     Result: pass
     Evidence: regenerated docs/user/cli-reference.generated.mdx and docs parity check reported the reference up to date.
     Scope: current branch head after refreshing generated CLI docs for finish command changes.
-commit: null
+commit:
+  hash: "3789bce02dcfe8cf2870ac5204355b728785d40d"
+  message: "incidents/workflow: Let finish append structured incident findings before promotion (DWESME) (#191)"
 comments:
   -
     author: "CODER"
     body: "Start: let finish append a structured finding and collect it into incidents.md during closeout."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: hosted checks passed, PR #191 was squash-merged, and the merged commit is recorded on main."
 events:
   -
     type: "status"
@@ -80,9 +86,16 @@ events:
       Result: pass
       Evidence: regenerated docs/user/cli-reference.generated.mdx and docs parity check reported the reference up to date.
       Scope: current branch head after refreshing generated CLI docs for finish command changes.
+  -
+    type: "status"
+    at: "2026-04-09T15:26:41.607Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: hosted checks passed, PR #191 was squash-merged, and the merged commit is recorded on main."
 doc_version: 3
-doc_updated_at: "2026-04-09T15:17:27.595Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T15:26:41.607Z"
+doc_updated_by: "INTEGRATOR"
 description: "Allow finish-time closure to record a structured finding and immediately promote it into incidents.md so recurring workflow failures can be captured even when the finding was identified only at closeout."
 sections:
   Summary: |-
