@@ -6,7 +6,7 @@
 - Incident-derived and situational rules MUST be added only to `incidents.md`.
 - MUST NOT create additional incident policy files under `.agentplane/policy/`.
 - New reusable operational incidents SHOULD be promoted from task `Findings` via `agentplane finish` or `agentplane incidents collect <task-id>`.
-- Auto-promotion is reserved for resolved external findings marked `Fixability: external` or `IncidentExternal: true`; optional `IncidentScope`, `IncidentAdvice`, `IncidentRule`, `IncidentTags`, and `IncidentMatch` fields override the inferred registry entry when needed.
+- Auto-promotion is reserved for resolved reusable findings marked `Fixability: external` or `Fixability: repo-fixable` (or the compatibility markers `IncidentExternal: true` / `IncidentInternal: true`); optional `IncidentScope`, `IncidentAdvice`, `IncidentRule`, `IncidentTags`, and `IncidentMatch` fields override the inferred registry entry when needed.
 - Normal startup MUST NOT bulk-load `incidents.md`; targeted lookup for analogous work is allowed through `task start-ready` and `agentplane incidents advise`.
 
 ## Stabilization criteria

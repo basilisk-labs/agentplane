@@ -23,7 +23,8 @@ const COMPACT_INCIDENTS_HEADER = [
   "",
   "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`. Optional machine-match fields: `tags`, `match`, `advice`, `source_task`, `fixability`.",
   "- `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.",
-  "- First auto-promoted external incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.",
+  "- `fixability: repo-fixable` means the issue can be removed by changing repository code and should still be captured as reusable incident advice when marked explicitly.",
+  "- First auto-promoted reusable incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.",
 ].join("\n");
 
 function normalizeLines(text: string): string[] {
@@ -84,12 +85,14 @@ function parseBoolean(value: string | null | undefined): boolean {
   return normalized === "true" || normalized === "yes" || normalized === "y" || normalized === "1";
 }
 
-function parseFixability(value: string | null | undefined): "external" | null {
-  return String(value ?? "")
+function parseFixability(value: string | null | undefined): "external" | "repo-fixable" | null {
+  const normalized = String(value ?? "")
     .trim()
-    .toLowerCase() === "external"
-    ? "external"
-    : null;
+    .toLowerCase()
+    .replaceAll(/[\s_-]+/g, "");
+  if (normalized === "external") return "external";
+  if (normalized === "repofixable" || normalized === "internal") return "repo-fixable";
+  return null;
 }
 
 function parseEntryState(value: string | null | undefined): IncidentRegistryEntryState {
@@ -229,7 +232,8 @@ export function createIncidentRegistrySkeleton(): string {
     "- New machine-matched entries SHOULD also include: `tags`, `match`, `advice`, `source_task`, `fixability`.",
     "- `rule` MUST be concrete and testable (`MUST` / `MUST NOT`).",
     "- `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.",
-    "- First auto-promoted external incidents normally enter as `open` and still participate in targeted advice lookup; recurring equivalent incidents can append later `stabilized` entries.",
+    "- `fixability: repo-fixable` means the issue can be removed by repository code changes and should still be captured as reusable incident advice when explicitly marked.",
+    "- First auto-promoted reusable incidents normally enter as `open` and still participate in targeted advice lookup; recurring equivalent incidents can append later `stabilized` entries.",
     "- `state` values: `open`, `stabilized`, `promoted`.",
     "",
     "## Entry template",
@@ -245,7 +249,7 @@ export function createIncidentRegistrySkeleton(): string {
     "- evidence: `<task ids / logs / links>`",
     "- enforcement: `<CI|test|lint|script|manual>`",
     "- source_task: `<task id>`",
-    "- fixability: `<external>`",
+    "- fixability: `<external|repo-fixable>`",
     "- state: `<open|stabilized|promoted>`",
     "",
     "## Entries",
@@ -288,7 +292,7 @@ export function parseIncidentRegistry(text: string): IncidentRegistry {
       match: parseCsvList(currentFields.match),
       advice: currentFields.advice?.trim() || null,
       sourceTask,
-      fixability: currentFields.fixability?.trim().toLowerCase() === "external" ? "external" : null,
+      fixability: parseFixability(currentFields.fixability),
       rawFields: { ...currentFields },
       line: currentLine,
     });
@@ -473,7 +477,10 @@ function parseIncidentFindingBlocks(
     const fixability = parseFixability(currentFields.fixability);
     const incidentExternal =
       parseBoolean(currentFields.incidentexternal) || fixability === "external";
-    const shouldPromote = promotion?.toLowerCase() === "incident-candidate" || incidentExternal;
+    const incidentInternal =
+      parseBoolean(currentFields.incidentinternal) || fixability === "repo-fixable";
+    const shouldPromote =
+      promotion?.toLowerCase() === "incident-candidate" || incidentExternal || incidentInternal;
     const observation = currentFields.observation?.trim() ?? "";
     if (!observation) {
       currentFields = null;
@@ -492,6 +499,7 @@ function parseIncidentFindingBlocks(
       incidentTags: parseCsvList(currentFields.incidenttags),
       incidentMatch: parseCsvList(currentFields.incidentmatch),
       incidentExternal,
+      incidentInternal,
       fixability,
       shouldPromote,
       line: currentLine,
@@ -566,7 +574,7 @@ function nextIncidentId(entries: readonly IncidentRegistryEntry[], now: Date): s
 
 function buildPromotionIssues(candidate: IncidentFindingCandidate): IncidentPromotionIssue | null {
   const missingFields: string[] = [];
-  if (!candidate.incidentExternal && candidate.fixability !== "external") {
+  if (!candidate.incidentExternal && !candidate.incidentInternal && candidate.fixability === null) {
     missingFields.push("Fixability: external or IncidentExternal: true");
   }
   if (!candidate.incidentAdvice && !candidate.resolution) {
@@ -619,7 +627,8 @@ function buildIncidentRegistryEntry(opts: {
     match,
     advice,
     sourceTask: opts.task.id,
-    fixability: "external",
+    fixability:
+      opts.candidate.fixability ?? (opts.candidate.incidentInternal ? "repo-fixable" : "external"),
     rawFields: {},
     line: 0,
   };
