@@ -73,6 +73,10 @@ describe("stale-dist command policy", () => {
       mode: "warn_and_run",
       reason: "task_artifact_mutation",
     });
+    expect(classifyStaleDistPolicy(["node", "agentplane", "finish", "20260307-ABC123"])).toEqual({
+      mode: "warn_and_run",
+      reason: "task_artifact_mutation",
+    });
     expect(
       classifyStaleDistPolicy(["node", "agentplane", "task", "plan", "set", "20260307-ABC123"]),
     ).toEqual({
@@ -100,10 +104,6 @@ describe("stale-dist command policy", () => {
   });
 
   it("keeps risky mutating commands strict", () => {
-    expect(classifyStaleDistPolicy(["node", "agentplane", "finish", "20260307-ABC123"])).toEqual({
-      mode: "strict",
-      reason: "default",
-    });
     expect(classifyStaleDistPolicy(["node", "agentplane", "task", "doc", "set"])).toEqual({
       mode: "warn_and_run",
       reason: "task_artifact_mutation",

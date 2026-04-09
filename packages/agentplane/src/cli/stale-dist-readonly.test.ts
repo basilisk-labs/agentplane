@@ -9,7 +9,6 @@ import { afterEach, describe, expect, it } from "vitest";
 const execFileAsync = promisify(execFile);
 const tempRoots: string[] = [];
 const workspaceRoot = process.cwd();
-type ExecFileError = Error & { stderr?: string };
 
 async function setupFrameworkCheckout() {
   const repoRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-stale-readonly-"));
@@ -242,19 +241,17 @@ describe("stale-dist warn-and-run command policy", () => {
     expect(stderr).toContain("command: verify 20260307-ABC123 --ok --by CODER --note looks good");
   });
 
-  it("still blocks strict mutating commands when watched runtime paths are dirty", async () => {
+  it("warns but runs finish when watched runtime paths are dirty", async () => {
     const { repoRoot, repoBin } = await setupFrameworkCheckout();
 
-    const failure = (await execFileAsync(process.execPath, [repoBin, "finish", "20260307-ABC123"], {
+    const { stdout, stderr } = await execFileAsync(process.execPath, [repoBin, "finish", "20260307-ABC123"], {
       cwd: repoRoot,
       encoding: "utf8",
-    }).then(
-      () => null,
-      (error: unknown) => error as ExecFileError,
-    )) satisfies ExecFileError | null;
+    });
 
-    expect(failure).toBeTruthy();
-    expect(String(failure?.stderr ?? "")).toContain("refusing to run a stale repo build");
-    expect(String(failure?.stderr ?? "")).toContain("bun run framework:dev:bootstrap");
+    expect(stdout).toContain("DIST");
+    expect(stdout).toContain('"args":["finish","20260307-ABC123"]');
+    expect(stderr).toContain("allowing task-artifact lifecycle command");
+    expect(stderr).toContain("command: finish 20260307-ABC123");
   });
 });
