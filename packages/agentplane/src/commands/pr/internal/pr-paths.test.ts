@@ -1,27 +1,60 @@
 import path from "node:path";
 
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({
+import type { readFile as readFileFn } from "node:fs/promises";
+import type {
+  loadConfig as loadConfigFn,
+  resolveProject as resolveProjectFn,
+} from "@agentplaneorg/core";
+import type { fileExists as fileExistsFn } from "../../../cli/fs-utils.js";
+import type { gitShowFile as gitShowFileFn } from "../../shared/git-diff.js";
+
+const mocks = {
   resolveProject: vi.fn(),
   loadConfig: vi.fn(),
   fileExists: vi.fn(),
   readFile: vi.fn(),
   gitShowFile: vi.fn(),
-}));
+};
+
+const callResolveProject = (
+  ...args: Parameters<typeof resolveProjectFn>
+): ReturnType<typeof resolveProjectFn> =>
+  mocks.resolveProject(...args) as ReturnType<typeof resolveProjectFn>;
+const callLoadConfig = (
+  ...args: Parameters<typeof loadConfigFn>
+): ReturnType<typeof loadConfigFn> => mocks.loadConfig(...args) as ReturnType<typeof loadConfigFn>;
+const callFileExists = (
+  ...args: Parameters<typeof fileExistsFn>
+): ReturnType<typeof fileExistsFn> => mocks.fileExists(...args) as ReturnType<typeof fileExistsFn>;
+const callReadFile = (...args: Parameters<typeof readFileFn>): ReturnType<typeof readFileFn> =>
+  mocks.readFile(...args) as ReturnType<typeof readFileFn>;
+const callGitShowFile = (
+  ...args: Parameters<typeof gitShowFileFn>
+): ReturnType<typeof gitShowFileFn> =>
+  mocks.gitShowFile(...args) as ReturnType<typeof gitShowFileFn>;
 
 vi.mock("@agentplaneorg/core", () => ({
-  resolveProject: mocks.resolveProject,
-  loadConfig: mocks.loadConfig,
+  resolveProject: callResolveProject,
+  loadConfig: callLoadConfig,
 }));
-vi.mock("../../../cli/fs-utils.js", () => ({ fileExists: mocks.fileExists }));
-vi.mock("node:fs/promises", () => ({ readFile: mocks.readFile }));
+vi.mock("../../../cli/fs-utils.js", () => ({
+  fileExists: callFileExists,
+}));
+vi.mock("node:fs/promises", () => ({
+  readFile: callReadFile,
+}));
 vi.mock("../../shared/git-diff.js", () => ({
   toGitPath: (value: string) => value.replaceAll("\\", "/"),
-  gitShowFile: mocks.gitShowFile,
+  gitShowFile: callGitShowFile,
 }));
 
 describe("pr/internal/pr-paths", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("resolvePrPaths uses ctx data when provided", async () => {
     const { resolvePrPaths } = await import("./pr-paths.js");
     const cfg = { paths: { workflow_dir: ".agentplane/tasks" } };
@@ -75,7 +108,7 @@ describe("pr/internal/pr-paths", () => {
   });
 
   it("readPrArtifact reads local file first, then falls back to git show, then returns null", async () => {
-    const { readPrArtifact } = await import("./pr-paths.js");
+    const { readPrArtifact, readPrArtifactFromBranch } = await import("./pr-paths.js");
     mocks.fileExists.mockResolvedValueOnce(true);
     mocks.readFile.mockResolvedValueOnce("local-content");
     const local = await readPrArtifact({
@@ -116,5 +149,26 @@ describe("pr/internal/pr-paths", () => {
       branch: "task/T-3",
     });
     expect(missing).toBeNull();
+
+    mocks.fileExists.mockResolvedValueOnce(true);
+    mocks.readFile.mockResolvedValueOnce("worktree-preferred");
+    const branchPreferred = await readPrArtifactFromBranch({
+      resolved: { gitRoot: "/repo" },
+      prDir: "/repo/.agentplane/tasks/T-3/pr",
+      fileName: "meta.json",
+      branch: "task/T-3",
+      worktreePath: "/repo/.agentplane/worktrees/T-3",
+    });
+    expect(branchPreferred).toBe("worktree-preferred");
+
+    mocks.fileExists.mockResolvedValueOnce(false);
+    mocks.gitShowFile.mockResolvedValueOnce("git-only");
+    const fromBranchOnly = await readPrArtifactFromBranch({
+      resolved: { gitRoot: "/repo" },
+      prDir: "/repo/.agentplane/tasks/T-3/pr",
+      fileName: "meta.json",
+      branch: "task/T-3",
+    });
+    expect(fromBranchOnly).toBe("git-only");
   });
 });
