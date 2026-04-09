@@ -54,13 +54,14 @@ async function ensureFinishRunsOnBaseBranch(opts: {
   ctx: CommandContext;
   cwd: string;
   rootOverride?: string;
+  baseBranchOverride?: string;
 }): Promise<void> {
   if (opts.ctx.config.workflow_mode !== "branch_pr") return;
 
   const baseBranch = await resolveBaseBranch({
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
-    cliBaseOpt: null,
+    cliBaseOpt: opts.baseBranchOverride ?? null,
     mode: opts.ctx.config.workflow_mode,
   });
   if (!baseBranch) {
@@ -177,6 +178,7 @@ export async function cmdFinish(opts: {
       ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
+      baseBranchOverride: opts.baseBranchOverride,
     });
     if (opts.force) {
       await ensureActionApproved({
