@@ -484,6 +484,7 @@ export async function cmdFinish(opts: {
     });
 
     const incidentPlans = [];
+    const incidentRegistryPaths: string[][] = [];
     for (const taskId of opts.taskIds) {
       const loadedTask = loadedTasks.find((candidate) => candidate.taskId === taskId) ?? null;
       const collected = await collectTaskIncidents({
@@ -493,6 +494,7 @@ export async function cmdFinish(opts: {
         write: true,
       });
       incidentPlans.push(collected.plan);
+      incidentRegistryPaths.push(collected.registryPaths);
     }
     const promotedIncidents = incidentPlans.reduce((sum, plan) => sum + plan.promotable.length, 0);
 
@@ -535,6 +537,8 @@ export async function cmdFinish(opts: {
           renderIncidentCollectionPlanOutcome(incidentPlan, {
             wrote: promotedIncidents > 0,
             context: "finish",
+            promotedIds: incidentPlan.promotable.map((item) => item.entry.id),
+            registryPaths: incidentRegistryPaths[0] ?? [],
           }),
         )}\n`,
       );
