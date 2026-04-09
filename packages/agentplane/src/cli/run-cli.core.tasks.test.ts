@@ -615,6 +615,121 @@ describe("runCli", () => {
     }
   });
 
+  it("task close-duplicate recovers the duplicate README from the task worktree when base is missing it", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const ids: string[] = [];
+    for (const title of ["Canonical task", "Duplicate task"]) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          title,
+          "--description",
+          "Task closure check",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        ids.push(io.stdout.trim());
+      } finally {
+        io.restore();
+      }
+    }
+
+    const canonicalId = ids[0] ?? "";
+    const duplicateId = ids[1] ?? "";
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await runCliSilent([
+      "task",
+      "plan",
+      "approve",
+      duplicateId,
+      "--by",
+      "USER",
+      "--note",
+      "OK",
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "work",
+      "start",
+      duplicateId,
+      "--agent",
+      "CODER",
+      "--slug",
+      "duplicate-close-worktree",
+      "--worktree",
+      "--root",
+      root,
+    ]);
+
+    const worktreePath = path.join(
+      root,
+      ".agentplane",
+      "worktrees",
+      `${duplicateId}-duplicate-close-worktree`,
+    );
+    const worktreeReadmePath = path.join(
+      worktreePath,
+      ".agentplane",
+      "tasks",
+      duplicateId,
+      "README.md",
+    );
+    expect(await pathExists(worktreeReadmePath)).toBe(true);
+
+    await rm(path.join(root, ".agentplane", "tasks", duplicateId), {
+      recursive: true,
+      force: true,
+    });
+    expect(
+      await pathExists(path.join(root, ".agentplane", "tasks", duplicateId, "README.md")),
+    ).toBe(false);
+
+    const ioClose = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "close-duplicate",
+        duplicateId,
+        "--of",
+        canonicalId,
+        "--author",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      ioClose.restore();
+    }
+
+    const duplicate = await readTask({ cwd: root, rootOverride: root, taskId: duplicateId });
+    expect(duplicate.frontmatter.status).toBe("DONE");
+    expect(duplicate.frontmatter.result_summary).toBe(`Closed as duplicate of ${canonicalId}.`);
+    expect(
+      await pathExists(path.join(root, ".agentplane", "tasks", duplicateId, "README.md")),
+    ).toBe(true);
+  });
+
   it("task close-noop closes bookkeeping tasks in one command", async () => {
     const root = await mkGitRepoRoot();
     let taskId = "";
