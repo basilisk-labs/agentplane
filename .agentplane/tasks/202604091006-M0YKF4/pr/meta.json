@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604091006-M0YKF4/done-pr-drift-guidance",
+  "created_at": "2026-04-09T10:16:49.632Z",
+  "head_sha": "ef529694d35e0606409183df3062094bc3536507",
+  "last_verified_at": "2026-04-09T10:16:49.332Z",
+  "last_verified_sha": "1bb989422caa8c476fed0c8c693b1191bee1d655",
+  "pr_number": 166,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/166",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604091006-M0YKF4",
+  "updated_at": "2026-04-09T10:22:30.128Z",
+  "verify": {
+    "status": "pass"
+  }
+}

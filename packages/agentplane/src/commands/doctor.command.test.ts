@@ -618,7 +618,9 @@ describe("doctor.command", () => {
       expect(rc).toBe(0);
       const output = stderr.mock.calls.flat().join("\n");
       expect(output).toContain("DONE branch_pr tasks still have open or unmerged PR artifacts");
-      expect(output).toContain("agentplane pr check <task-id>");
+      expect(output).toContain(
+        "agentplane task normalize --sync-hosted-merges --task-id <task-id>",
+      );
       expect(output).toContain(taskId);
     } finally {
       stderr.mockRestore();
@@ -743,7 +745,9 @@ describe("doctor.command", () => {
     const findings = await checkBranchPrDoneTaskOpenPrDrift(ctx);
     expect(findings).toHaveLength(1);
     expect(findings[0]).toContain("DONE branch_pr tasks still have open or unmerged PR artifacts");
-    expect(findings[0]).toContain("agentplane pr check <task-id>");
+    expect(findings[0]).toContain(
+      "agentplane task normalize --sync-hosted-merges --task-id <task-id>",
+    );
     expect(findings[0]).toContain(taskId);
   });
 
