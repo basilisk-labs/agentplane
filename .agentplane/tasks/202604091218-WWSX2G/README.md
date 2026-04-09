@@ -1,10 +1,11 @@
 ---
 id: "202604091218-WWSX2G"
 title: "Make branch_pr integrate work without manual base-side PR artifact hydration"
-status: "TODO"
+result_summary: "Merged via PR #180."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,8 +22,13 @@ verification:
   updated_at: "2026-04-09T12:28:04.350Z"
   updated_by: "CODER"
   note: "Verified integrate recovery from task worktree artifacts; base-side pr open hydration no longer required for this scenario."
-commit: null
-comments: []
+commit:
+  hash: "d61b553a6fdee0d25300e9e572cefef84cbf9041"
+  message: "workflow: Make branch_pr integrate work without manual base-side PR artifact hy... (WWSX2G) (#180)"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #180 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "verify"
@@ -30,9 +36,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified integrate recovery from task worktree artifacts; base-side pr open hydration no longer required for this scenario."
+  -
+    type: "status"
+    at: "2026-04-09T12:50:15.752Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #180 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T12:28:04.354Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T12:50:15.756Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure integrate can succeed when recent task README/pr artifacts exist in the active task worktree but are not yet committed on the task branch or hydrated on the base checkout."
 sections:
   Summary: |-
