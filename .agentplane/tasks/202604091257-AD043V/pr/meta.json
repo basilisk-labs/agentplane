@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604091257-AD043V/hosted-close-open-pr",
   "created_at": "2026-04-09T13:11:17.142Z",
-  "head_sha": "c15849da88e3ec9ff35775c55f4666c0f260ab5d",
+  "head_sha": "3dedb3b8f376b186107e43a61b6eaa106d820ed3",
   "last_verified_at": "2026-04-09T14:21:06.150Z",
   "last_verified_sha": "c15849da88e3ec9ff35775c55f4666c0f260ab5d",
+  "merge_commit": "cc82a0fbdaae1c7407314d5567a6c026f1605f11",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T14:32:27.565Z",
   "pr_number": 186,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/186",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604091257-AD043V",
-  "updated_at": "2026-04-09T14:21:06.178Z",
+  "updated_at": "2026-04-09T14:32:27.565Z",
   "verify": {
     "status": "pass"
   }

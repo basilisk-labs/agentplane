@@ -1,10 +1,11 @@
 ---
 id: "202604091257-AD043V"
 title: "Add helper to open pending hosted-close PRs from task-close branches"
-status: "DOING"
+result_summary: "integrate: squash task/202604091257-AD043V/hosted-close-open-pr"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-09T14:21:06.150Z"
   updated_by: "CODER"
   note: "Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted wait-remote/task-hosted-close coverage for the hosted-close PR helper path."
-commit: null
+commit:
+  hash: "cc82a0fbdaae1c7407314d5567a6c026f1605f11"
+  message: "🧩 AD043V integrate: github/workflow: Add helper to open pending hosted-close PRs from task-close branches"
 comments:
   -
     author: "CODER"
     body: "Start: Add a helper that opens pending hosted-close PRs from existing task-close branches when hosted automation can only leave manual handoff comments."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091257-AD043V/pr."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted wait-remote/task-hosted-close coverage for the hosted-close PR helper path."
+  -
+    type: "status"
+    at: "2026-04-09T14:32:27.606Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091257-AD043V/pr."
 doc_version: 3
-doc_updated_at: "2026-04-09T14:21:06.155Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T14:32:27.610Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a first-class command that opens the protected-main closure PR from an existing remote task-close branch when GitHub Actions can only leave a manual handoff comment."
 sections:
   Summary: |-
