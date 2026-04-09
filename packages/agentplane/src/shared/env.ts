@@ -1,6 +1,8 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+const DOTENV_LOADED_KEYS_ENV = "AGENTPLANE_DOTENV_LOADED_KEYS";
+
 export function parseDotEnv(text: string): Record<string, string> {
   const out: Record<string, string> = {};
   const lines = text.split(/\r?\n/u);
@@ -31,6 +33,30 @@ export function parseDotEnv(text: string): Record<string, string> {
   return out;
 }
 
+function readDotEnvLoadedKeys(env: NodeJS.ProcessEnv = process.env): Set<string> {
+  const raw = env[DOTENV_LOADED_KEYS_ENV]?.trim() ?? "";
+  if (!raw) return new Set<string>();
+  return new Set(
+    raw
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean),
+  );
+}
+
+function recordDotEnvLoadedKey(key: string, env: NodeJS.ProcessEnv = process.env): void {
+  const keys = readDotEnvLoadedKeys(env);
+  keys.add(key);
+  env[DOTENV_LOADED_KEYS_ENV] = [...keys].toSorted().join(",");
+}
+
+export function isDotEnvLoadedKey(
+  key: string,
+  env: NodeJS.ProcessEnv = process.env,
+): boolean {
+  return readDotEnvLoadedKeys(env).has(key);
+}
+
 export async function loadDotEnv(rootDir: string): Promise<void> {
   const envPath = path.join(rootDir, ".env");
   let text = "";
@@ -43,6 +69,8 @@ export async function loadDotEnv(rootDir: string): Promise<void> {
   }
   const parsed = parseDotEnv(text);
   for (const [key, value] of Object.entries(parsed)) {
-    process.env[key] ??= value;
+    if (process.env[key] !== undefined) continue;
+    process.env[key] = value;
+    recordDotEnvLoadedKey(key);
   }
 }

@@ -254,6 +254,108 @@ describe("runCli", () => {
     }
   }, 20_000);
 
+  it("task normalize ignores GitHub auth tokens loaded only from repo dotenv", async () => {
+    const root = await writeAndConfigureRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const taskId = "202603271330-SYNC02";
+    const addCode = await runCliSilent([
+      "task",
+      "add",
+      taskId,
+      "--title",
+      "Hosted merge sync task via dotenv auth",
+      "--description",
+      "Sync stale local branch_pr task state while repo dotenv carries a stale GitHub token",
+      "--priority",
+      "med",
+      "--owner",
+      "CODER",
+      "--tag",
+      "workflow",
+      "--root",
+      root,
+    ]);
+    expect(addCode).toBe(0);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          branch: `task/${taskId}/sync-hosted`,
+          created_at: "2026-03-27T17:24:00.000Z",
+          updated_at: "2026-03-27T17:24:00.000Z",
+          last_verified_sha: null,
+          last_verified_at: null,
+          verify: { status: "skipped" },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(path.join(root, ".env"), "GITHUB_TOKEN=repo-dotenv-token\n", "utf8");
+
+    const fakeBin = path.join(os.tmpdir(), `agentplane-gh-dotenv-${Date.now()}`);
+    await mkdir(fakeBin, { recursive: true });
+    const envLog = path.join(fakeBin, "gh-env.log");
+    const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
+    const ghScript =
+      process.platform === "win32"
+        ? `@echo off\r\n>> "%AGENTPLANE_GH_ENV_LOG%" echo GITHUB_TOKEN=%GITHUB_TOKEN%\r\necho [{"number":24,"title":"Hosted merge sync task (#24)","mergedAt":"2026-03-27T17:40:00.000Z","baseRefName":"main","headRefName":"task/${taskId}/sync-hosted","headRefOid":"abcdef1234567890abcdef1234567890abcdef12","mergeCommit":{"oid":"1234567890abcdef1234567890abcdef12345679"}}]\r\n`
+        : [
+            "#!/bin/sh",
+            "printf 'GITHUB_TOKEN=%s\\n' \"${GITHUB_TOKEN-}\" >> \"$AGENTPLANE_GH_ENV_LOG\"",
+            String.raw`printf '%s\n' '[{"number":24,"title":"Hosted merge sync task (#24)","mergedAt":"2026-03-27T17:40:00.000Z","baseRefName":"main","headRefName":"task/${taskId}/sync-hosted","headRefOid":"abcdef1234567890abcdef1234567890abcdef12","mergeCommit":{"oid":"1234567890abcdef1234567890abcdef12345679"}}]'`,
+            "",
+          ].join("\n");
+    await writeFile(ghPath, ghScript, "utf8");
+    if (process.platform !== "win32") {
+      await chmod(ghPath, 0o755);
+    }
+
+    const originalPath = process.env.PATH;
+    const originalGithubToken = process.env.GITHUB_TOKEN;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    delete process.env.GITHUB_TOKEN;
+    process.env.AGENTPLANE_GH_ENV_LOG = envLog;
+    try {
+      const code = await runCli(["task", "normalize", "--sync-hosted-merges", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      process.env.PATH = originalPath;
+      if (originalGithubToken === undefined) delete process.env.GITHUB_TOKEN;
+      else process.env.GITHUB_TOKEN = originalGithubToken;
+      delete process.env.AGENTPLANE_GH_ENV_LOG;
+    }
+
+    const envLogRaw = await readFile(envLog, "utf8");
+    expect(envLogRaw).toContain("GITHUB_TOKEN=");
+    expect(envLogRaw).not.toContain("repo-dotenv-token");
+
+    const ioShow = captureStdIO();
+    try {
+      const code = await runCli(["task", "show", taskId, "--root", root]);
+      expect(code).toBe(0);
+      const task = JSON.parse(ioShow.stdout) as {
+        status?: string;
+        result_summary?: string;
+        commit?: { hash?: string } | null;
+      };
+      expect(task.status).toBe("DONE");
+      expect(task.result_summary).toBe("Merged via PR #24.");
+      expect(task.commit?.hash).toBe("1234567890abcdef1234567890abcdef12345679");
+    } finally {
+      ioShow.restore();
+    }
+  }, 20_000);
+
   it("task normalize --sync-hosted-merges reconciles from local merged pr/meta without gh", async () => {
     const root = await writeAndConfigureRoot();
     const config = defaultConfig();
