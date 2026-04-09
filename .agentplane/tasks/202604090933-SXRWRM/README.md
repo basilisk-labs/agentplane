@@ -1,10 +1,11 @@
 ---
 id: "202604090933-SXRWRM"
 title: "Reconcile stale DONE state for merged branch_pr tasks"
-status: "DOING"
+result_summary: "Reconciled stale DONE state for P5XKNF and 59ERCT on main."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-09T09:43:08.703Z"
   updated_by: "REVIEWER"
   note: "Task projection now reports 202604081931-P5XKNF and 202604081956-59ERCT as DONE with shipped GitHub merge metadata; the repair diff is limited to the two stale task READMEs plus the active reconciliation task artifact."
-commit: null
+commit:
+  hash: "fc5b0829cbc3308f80bdee3938d64354cbc6683c"
+  message: "🧩 SXRWRM task: reconcile stale shipped task state"
 comments:
   -
     author: "CODER"
     body: "Start: reconcile stale branch_pr task artifacts for P5XKNF and 59ERCT so merged GitHub history and local task projection agree on main."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: repaired stale shipped task artifacts for P5XKNF and 59ERCT so main now matches merged GitHub history and local projection state."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Task projection now reports 202604081931-P5XKNF and 202604081956-59ERCT as DONE with shipped GitHub merge metadata; the repair diff is limited to the two stale task READMEs plus the active reconciliation task artifact."
+  -
+    type: "status"
+    at: "2026-04-09T09:43:37.232Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: repaired stale shipped task artifacts for P5XKNF and 59ERCT so main now matches merged GitHub history and local projection state."
 doc_version: 3
-doc_updated_at: "2026-04-09T09:43:08.716Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T09:43:37.232Z"
+doc_updated_by: "INTEGRATOR"
 description: "Repair task artifacts for 202604081931-P5XKNF and 202604081956-59ERCT so local backend state matches merged GitHub history and both tasks are marked DONE with traceable result metadata on main."
 sections:
   Summary: |-
