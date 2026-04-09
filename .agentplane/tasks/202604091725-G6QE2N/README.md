@@ -1,10 +1,11 @@
 ---
 id: "202604091725-G6QE2N"
 title: "Let duplicate closure load task artifacts from task worktrees"
-status: "DOING"
+result_summary: "Merged via PR #212."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-09T18:07:59.008Z"
   updated_by: "CODER"
   note: "Verified that task close-duplicate hydrates the missing duplicate README from the task worktree or branch fallback, with targeted branch_pr regression coverage and eslint clean."
-commit: null
+commit:
+  hash: "58ca7a8a1bb39de51633500e1b6eff9f2436ce3c"
+  message: "workflow: Let duplicate closure load task artifacts from task worktrees (G6QE2N) (#212)"
 comments:
   -
     author: "CODER"
     body: "Start: let duplicate closure recover the task README from the task branch or worktree when the base checkout has not materialized the task artifacts yet."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #212 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified that task close-duplicate hydrates the missing duplicate README from the task worktree or branch fallback, with targeted branch_pr regression coverage and eslint clean."
+  -
+    type: "status"
+    at: "2026-04-09T18:28:18.690Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #212 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T18:07:59.013Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T18:28:18.695Z"
+doc_updated_by: "INTEGRATOR"
 description: "Allow branch_pr duplicate-closure bookkeeping commands to resolve task artifacts from task worktrees or materialize them deterministically when the base checkout lacks .agentplane/tasks/<id>/README.md."
 sections:
   Summary: |-
