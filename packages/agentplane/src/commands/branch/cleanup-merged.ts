@@ -125,6 +125,32 @@ async function resolveCleanupCandidates(opts: {
   return candidates;
 }
 
+function isMissingRemoteBranchDelete(error: unknown): boolean {
+  const stdout = String((error as { stdout?: string } | null)?.stdout ?? "");
+  const stderr = String((error as { stderr?: string } | null)?.stderr ?? "");
+  const text = `${stdout}\n${stderr}`;
+  return (
+    text.includes("remote ref does not exist") ||
+    text.includes("unable to delete") ||
+    text.includes("remote reference is not a full refname")
+  );
+}
+
+async function deleteRemoteBranchIfPresent(gitRoot: string, branch: string): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["push", "origin", "--delete", branch], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    return true;
+  } catch (error) {
+    if (isMissingRemoteBranchDelete(error)) {
+      return false;
+    }
+    throw error;
+  }
+}
+
 export async function cmdCleanupMerged(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -132,6 +158,7 @@ export async function cmdCleanupMerged(opts: {
   base?: string;
   yes: boolean;
   archive: boolean;
+  deleteRemoteBranches: boolean;
   quiet: boolean;
 }): Promise<number> {
   try {
@@ -192,7 +219,8 @@ export async function cmdCleanupMerged(opts: {
 
     if (!opts.quiet) {
       const archiveLabel = opts.archive ? " archive=on" : "";
-      output.line(`cleanup merged (base=${baseBranch}${archiveLabel})`);
+      const remoteLabel = opts.deleteRemoteBranches ? " remote=delete" : "";
+      output.line(`cleanup merged (base=${baseBranch}${archiveLabel}${remoteLabel})`);
       if (sortedCandidates.length === 0) {
         output.line("no candidates");
         return 0;
@@ -209,6 +237,7 @@ export async function cmdCleanupMerged(opts: {
       return 0;
     }
 
+    let deletedRemoteBranches = 0;
     for (const item of sortedCandidates) {
       const worktreePath = item.worktreePath ? await resolvePathFallback(item.worktreePath) : null;
       if (worktreePath) {
@@ -243,10 +272,25 @@ export async function cmdCleanupMerged(opts: {
         cwd: resolved.gitRoot,
         env: gitEnv(),
       });
+      if (opts.deleteRemoteBranches) {
+        deletedRemoteBranches += (await deleteRemoteBranchIfPresent(resolved.gitRoot, item.branch))
+          ? 1
+          : 0;
+      }
+    }
+
+    if (opts.deleteRemoteBranches) {
+      await execFileAsync("git", ["fetch", "--prune", "origin"], {
+        cwd: resolved.gitRoot,
+        env: gitEnv(),
+      });
     }
 
     if (!opts.quiet) {
-      output.success("cleanup merged", undefined, `deleted=${candidates.length}`);
+      const remoteDetail = opts.deleteRemoteBranches
+        ? ` remote_deleted=${deletedRemoteBranches}`
+        : "";
+      output.success("cleanup merged", undefined, `deleted=${candidates.length}${remoteDetail}`);
     }
     return 0;
   } catch (err) {
