@@ -555,6 +555,96 @@ describe("runCli", () => {
     expect(task.frontmatter.status).toBe("TODO");
   });
 
+  it("finish accepts the default base branch in branch_pr mode when origin/HEAD is available", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root });
+    await writeFile(path.join(root, "file.txt"), "content", "utf8");
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
+    const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+
+    const remote = path.join(root, "origin.git");
+    await execFileAsync("git", ["init", "--bare", remote], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", remote], { cwd: root });
+    await execFileAsync("git", ["push", "-u", "origin", "main"], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["symbolic-ref", "refs/remotes/origin/HEAD", "refs/remotes/origin/main"],
+      { cwd: root },
+    );
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Finish branch_pr on inferred default base",
+        "--description",
+        "Finish should allow the current default base branch without an extra pin",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "REVIEWER",
+      "--note",
+      "Ok to finish on the inferred default base branch in branch_pr mode.",
+      "--quiet",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        taskId,
+        "--author",
+        "INTEGRATOR",
+        "--body",
+        "Verified: branch_pr finish should work on the inferred default base checkout.",
+        "--result",
+        "branch_pr inferred base",
+        "--commit",
+        implHash.trim(),
+        "--close-commit",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("creating deterministic close commit");
+      expect(io.stdout).toContain("✅ finished");
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.status).toBe("DONE");
+  });
+
   it(
     "finish --commit-from-comment records implementation hash in task metadata and uses a separate close commit for tracked task docs",
     { timeout: 120_000 },

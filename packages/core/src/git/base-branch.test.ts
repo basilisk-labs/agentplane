@@ -27,6 +27,19 @@ async function mkGitRepoRoot(): Promise<string> {
   return root;
 }
 
+async function addOriginWithHead(root: string, branch: string): Promise<string> {
+  const remote = await mkdtemp(path.join(os.tmpdir(), "agentplane-base-branch-remote-"));
+  await execFileAsync("git", ["init", "--bare", remote], { cwd: root });
+  await execFileAsync("git", ["remote", "add", "origin", remote], { cwd: root });
+  await execFileAsync("git", ["push", "-u", "origin", branch], { cwd: root });
+  await execFileAsync(
+    "git",
+    ["symbolic-ref", `refs/remotes/origin/HEAD`, `refs/remotes/origin/${branch}`],
+    { cwd: root },
+  );
+  return remote;
+}
+
 describe("base-branch", () => {
   it("getBaseBranch rejects when base branch is not pinned", async () => {
     const root = await mkGitRepoRoot();
@@ -103,6 +116,51 @@ describe("base-branch", () => {
       cliBaseOpt: null,
       mode: "branch_pr",
     });
+    expect(base).toBeNull();
+  });
+
+  it("resolveBaseBranch falls back to the current default branch in branch_pr mode when unpinned", async () => {
+    const root = await mkGitRepoRoot();
+    await execFileAsync("git", ["checkout", "-q", "-b", "main"], { cwd: root });
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["-c", "user.email=test@example.com", "-c", "user.name=Tester", "commit", "-m", "init"],
+      { cwd: root },
+    );
+    await addOriginWithHead(root, "main");
+
+    const base = await resolveBaseBranch({
+      cwd: root,
+      rootOverride: root,
+      cliBaseOpt: null,
+      mode: "branch_pr",
+    });
+
+    expect(base).toBe("main");
+  });
+
+  it("resolveBaseBranch still returns null when current branch differs from origin/HEAD", async () => {
+    const root = await mkGitRepoRoot();
+    await execFileAsync("git", ["checkout", "-q", "-b", "main"], { cwd: root });
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["-c", "user.email=test@example.com", "-c", "user.name=Tester", "commit", "-m", "init"],
+      { cwd: root },
+    );
+    await addOriginWithHead(root, "main");
+    await execFileAsync("git", ["checkout", "-q", "-b", "feature"], { cwd: root });
+
+    const base = await resolveBaseBranch({
+      cwd: root,
+      rootOverride: root,
+      cliBaseOpt: null,
+      mode: "branch_pr",
+    });
+
     expect(base).toBeNull();
   });
 

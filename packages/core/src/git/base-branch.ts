@@ -35,6 +35,36 @@ async function gitConfigUnset(cwd: string, key: string): Promise<boolean> {
   }
 }
 
+async function gitCurrentBranch(cwd: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], { cwd });
+    const trimmed = stdout.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1 || code === 128) return null;
+    throw err;
+  }
+}
+
+async function gitRemoteHeadBranch(cwd: string, remote = "origin"): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync(
+      "git",
+      ["symbolic-ref", "--quiet", "--short", `refs/remotes/${remote}/HEAD`],
+      { cwd },
+    );
+    const trimmed = stdout.trim();
+    if (!trimmed) return null;
+    const prefix = `${remote}/`;
+    return trimmed.startsWith(prefix) ? trimmed.slice(prefix.length) : trimmed;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1 || code === 128) return null;
+    throw err;
+  }
+}
+
 export async function getPinnedBaseBranch(opts: {
   cwd: string;
   rootOverride?: string | null;
@@ -80,10 +110,19 @@ export async function resolveBaseBranch(opts: {
 }): Promise<string | null> {
   const explicit = (opts.cliBaseOpt ?? "").trim();
   if (explicit.length > 0) return explicit;
+  const resolved = await resolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
   const pinned = await getPinnedBaseBranch({
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride ?? null,
+    cwd: resolved.gitRoot,
+    rootOverride: resolved.gitRoot,
   });
   if (pinned) return pinned;
+  if (opts.mode !== "branch_pr") return null;
+  const [currentBranch, defaultBranch] = await Promise.all([
+    gitCurrentBranch(resolved.gitRoot),
+    gitRemoteHeadBranch(resolved.gitRoot),
+  ]);
+  if (currentBranch && defaultBranch && currentBranch === defaultBranch) {
+    return defaultBranch;
+  }
   return null;
 }
