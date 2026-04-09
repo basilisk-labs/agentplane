@@ -550,13 +550,13 @@ describe("runCli", () => {
         await pathExists(path.join(root, ".agentplane", "tasks", siblingTaskId, "README.md")),
       ).toBe(false);
 
-      const { stdout: baseStatus } = await execFileAsync("git", [
-        "status",
-        "--short",
-        "--untracked-files=all",
-      ], {
-        cwd: root,
-      });
+      const { stdout: baseStatus } = await execFileAsync(
+        "git",
+        ["status", "--short", "--untracked-files=all"],
+        {
+          cwd: root,
+        },
+      );
       expect(baseStatus).not.toContain(`?? .agentplane/tasks/${taskId}/README.md`);
       expect(baseStatus).not.toContain(`?? .agentplane/tasks/${siblingTaskId}/README.md`);
 

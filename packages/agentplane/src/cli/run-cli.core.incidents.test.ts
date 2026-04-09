@@ -316,6 +316,145 @@ describe("runCli incidents", () => {
     }
   });
 
+  it("verify --collect-incidents updates incidents.md immediately while default verify stays record-only", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+
+    let defaultTaskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Default verify stays record only",
+          "--description",
+          "Verify without collect-incidents must not touch incidents registry",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        defaultTaskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "verify",
+          defaultTaskId,
+          "--ok",
+          "--by",
+          "REVIEWER",
+          "--note",
+          "Looks good",
+          "--observation",
+          "Default verify still records reusable findings.",
+          "--impact",
+          "Operators should not get incidents side effects unless they opt in.",
+          "--resolution",
+          "Require an explicit collect-incidents flag.",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).not.toContain("incident registry");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const incidentsFile = await readFile(
+        path.join(root, ".agentplane", "policy", "incidents.md"),
+        "utf8",
+      );
+      expect(incidentsFile).not.toContain("Default verify still records reusable findings.");
+    }
+
+    let collectTaskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Verify can collect incidents explicitly",
+          "--description",
+          "Verify with collect-incidents should update incidents.md immediately",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        collectTaskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "verify",
+          collectTaskId,
+          "--ok",
+          "--by",
+          "REVIEWER",
+          "--note",
+          "Looks good",
+          "--collect-incidents",
+          "--observation",
+          "Verify can now update incidents.md immediately.",
+          "--impact",
+          "Operators no longer need a second collect command for reusable findings.",
+          "--resolution",
+          "Run incident collection explicitly from verify when requested.",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("incident registry updated (1 promoted)");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const incidentsFile = await readFile(
+        path.join(root, ".agentplane", "policy", "incidents.md"),
+        "utf8",
+      );
+      expect(incidentsFile).toContain("Verify can now update incidents.md immediately.");
+    }
+  });
+
   it("incidents advise resolves matches for ad hoc scope and tags", async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();

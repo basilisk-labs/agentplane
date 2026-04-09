@@ -1,0 +1,20 @@
+{
+  "base": "main",
+  "branch": "task/202604081931-J2NC32/verify-collect-incidents",
+  "created_at": "2026-04-08T19:59:13.153Z",
+  "head_sha": "767195753337f4a9defdb6f590e62606b27c8d19",
+  "last_verified_at": "2026-04-08T19:59:13.057Z",
+  "last_verified_sha": "9a538ffebad32bf60cdc417ac31d636c04f2cfac",
+  "merge_commit": "d6b2f6e05f9d163d545089f7770ec2b3984213b7",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-08T20:16:29.127Z",
+  "pr_number": 160,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/160",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604081931-J2NC32",
+  "updated_at": "2026-04-08T20:16:29.127Z",
+  "verify": {
+    "status": "pass"
+  }
+}

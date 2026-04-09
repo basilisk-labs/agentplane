@@ -73,6 +73,13 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
       valueHint: "<path>",
       description: "Read details from a file path (mutually exclusive with --details).",
     },
+    {
+      kind: "boolean",
+      name: "collect-incidents",
+      default: false,
+      description:
+        "After recording verification, immediately run incidents collection and update incidents.md.",
+    },
     { kind: "boolean", name: "quiet", default: false, description: "Suppress output." },
     ...verifyFindingOptions,
   ],
@@ -92,6 +99,10 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
     {
       cmd: 'agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --observation "Repeated recovery was manual." --impact "Operators needed a second command." --resolution "Append structured findings during verify."',
       why: "Record verification and append a promotable structured finding in one command.",
+    },
+    {
+      cmd: 'agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --collect-incidents',
+      why: "Record verification and immediately update incidents.md when reusable findings are present.",
     },
   ],
   validateRaw: (raw) => {
