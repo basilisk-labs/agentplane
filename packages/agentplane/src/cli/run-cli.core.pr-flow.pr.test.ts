@@ -1304,7 +1304,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain(
-        "branch_pr note: incident-related changes stay in the current task worktree until structured findings are promoted on the base branch or collected explicitly.",
+        "branch_pr note: structured findings stay in the current task worktree until promoted on the base branch or collected explicitly with `--collect-incidents` or `agentplane incidents collect <task-id>`.",
       );
       expect(io.stdout).toContain("finding=incident-candidate");
     } finally {
@@ -2796,7 +2796,7 @@ describe("runCli", () => {
       const code = await runCli(["pr", "nope", "202601010101-ABCDEF", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage:");
-      expect(io.stderr).toContain("agentplane pr <open|update|check|note|close>");
+      expect(io.stderr).toContain("agentplane pr <open|update|check|note|close|close-superseded>");
     } finally {
       io.restore();
     }

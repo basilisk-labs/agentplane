@@ -48,6 +48,7 @@ describe("runCli incidents", () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
     config.agents.approvals.require_plan = false;
     await writeConfig(root, config);
     await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
@@ -142,6 +143,7 @@ describe("runCli incidents", () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
     config.agents.approvals.require_plan = false;
     await writeConfig(root, config);
     await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
@@ -320,6 +322,7 @@ describe("runCli incidents", () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
     config.agents.approvals.require_plan = false;
     await writeConfig(root, config);
     await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
@@ -378,6 +381,9 @@ describe("runCli incidents", () => {
         ]);
         expect(code).toBe(0);
         expect(io.stdout).not.toContain("incident registry");
+        expect(io.stdout).toContain(
+          "branch_pr note: structured findings stay in the current task worktree until promoted on the base branch or collected explicitly with `--collect-incidents` or `agentplane incidents collect <task-id>`.",
+        );
       } finally {
         io.restore();
       }
