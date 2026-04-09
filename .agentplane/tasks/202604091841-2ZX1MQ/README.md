@@ -1,10 +1,11 @@
 ---
 id: "202604091841-2ZX1MQ"
 title: "Fix normalize GitHub auth propagation without manual GH_TOKEN export"
-status: "DOING"
+result_summary: "Merged via PR #214."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-09T18:49:20.388Z"
   updated_by: "CODER"
   note: "Verified that normalize and hosted merge sync no longer let repo dotenv GitHub tokens shadow a valid gh login, with targeted normalize and hosted-merge-sync regressions plus eslint."
-commit: null
+commit:
+  hash: "3f71884dad3ea379707edd5d1c1e7b27a5f60320"
+  message: "🧩 2ZX1MQ integrate: github/workflow: Fix normalize GitHub auth propagation without manual GH_TOKEN export"
 comments:
   -
     author: "CODER"
     body: "Start: remove the manual GH_TOKEN requirement from normalize and hosted-merge reconcile so GitHub lookups work from an already logged-in gh session."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: targeted normalize and hosted-merge regressions, eslint, and hosted required checks for PR #214 passed before base integration."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified that normalize and hosted merge sync no longer let repo dotenv GitHub tokens shadow a valid gh login, with targeted normalize and hosted-merge-sync regressions plus eslint."
+  -
+    type: "status"
+    at: "2026-04-09T19:42:39.895Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: targeted normalize and hosted-merge regressions, eslint, and hosted required checks for PR #214 passed before base integration."
 doc_version: 3
-doc_updated_at: "2026-04-09T18:49:20.394Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T19:42:39.895Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make branch_pr hosted-merge reconcile and task normalize resolve GitHub auth from the user's existing gh login, without requiring a manual GH_TOKEN export in the shell."
 sections:
   Summary: |-
