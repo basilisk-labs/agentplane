@@ -20,7 +20,7 @@ When verify or finish leaves incidents.md unchanged because the operator only pa
 ### Current Status
 
 - State: ok
-- Note: Verified: incident no-op guidance now prints exact task findings add next step; vitest and eslint passed in worktree.
+- Note: Verified current HEAD after task commit: incident no-op guidance now prints exact task findings add next step; vitest and eslint passed in worktree.
 
 ## Risks
 
@@ -39,12 +39,25 @@ When verify or finish leaves incidents.md unchanged because the operator only pa
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T23:11:28.410Z
+- Updated: 2026-04-09T23:13:02.626Z
 - Branch: task/202604092306-8MWTD3/incident-next-step
-- Head: 9e0a2ff77553
+- Head: 8dfa583e30e8
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604092306-8MWTD3/README.md    | 122 +++++++++++++++++++++
+ .../tasks/202604092306-8MWTD3/pr/diffstat.txt      |   0
+ .../tasks/202604092306-8MWTD3/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604092306-8MWTD3/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604092306-8MWTD3/pr/meta.json |  14 +++
+ .../tasks/202604092306-8MWTD3/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604092306-8MWTD3/pr/review.md |  57 ++++++++++
+ .../tasks/202604092306-8MWTD3/pr/verify.log        |   0
+ .../agentplane/src/commands/incidents/shared.ts    |  18 ++-
+ packages/agentplane/src/commands/task/finish.ts    |   1 +
+ .../src/commands/task/finish.unit.test.ts          |   1 +
+ .../agentplane/src/commands/task/verify-record.ts  |   2 +
+ .../src/commands/task/verify-record.unit.test.ts   |   3 +-
+ 13 files changed, 266 insertions(+), 3 deletions(-)
 ```
 
 </details>

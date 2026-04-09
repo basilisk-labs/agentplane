@@ -4,7 +4,7 @@ title: "Print exact findings-add next step when incidents stay local"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T23:11:28.385Z"
+  updated_at: "2026-04-09T23:13:23.207Z"
   updated_by: "CODER"
-  note: "Verified: incident no-op guidance now prints exact task findings add next step; vitest and eslint passed in worktree."
+  note: "Verified current HEAD after task commit: incident no-op guidance now prints exact task findings add next step; vitest and eslint passed in worktree."
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: incident no-op guidance now prints exact task findings add next step; vitest and eslint passed in worktree."
+  -
+    type: "verify"
+    at: "2026-04-09T23:13:23.207Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified current HEAD after task commit: incident no-op guidance now prints exact task findings add next step; vitest and eslint passed in worktree."
 doc_version: 3
-doc_updated_at: "2026-04-09T23:11:28.387Z"
+doc_updated_at: "2026-04-09T23:13:23.210Z"
 doc_updated_by: "CODER"
 description: "When verify or finish leaves incidents.md unchanged because the operator only passed plain note/body text, print an exact task findings add command template for the active task instead of generic prose."
 sections:
@@ -70,6 +76,14 @@ sections:
     Note: Verified: incident no-op guidance now prints exact task findings add next step; vitest and eslint passed in worktree.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T23:07:41.717Z, excerpt_hash=sha256:3ea085f9b2bd79cb922dd92a7bd9498fd5eb5b639dfc0177d89f84c11963bd36
+    
+    ### 2026-04-09T23:13:23.207Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified current HEAD after task commit: incident no-op guidance now prints exact task findings add next step; vitest and eslint passed in worktree.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T23:11:28.387Z, excerpt_hash=sha256:3ea085f9b2bd79cb922dd92a7bd9498fd5eb5b639dfc0177d89f84c11963bd36
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -111,6 +125,14 @@ By: CODER
 Note: Verified: incident no-op guidance now prints exact task findings add next step; vitest and eslint passed in worktree.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T23:07:41.717Z, excerpt_hash=sha256:3ea085f9b2bd79cb922dd92a7bd9498fd5eb5b639dfc0177d89f84c11963bd36
+
+### 2026-04-09T23:13:23.207Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified current HEAD after task commit: incident no-op guidance now prints exact task findings add next step; vitest and eslint passed in worktree.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T23:11:28.387Z, excerpt_hash=sha256:3ea085f9b2bd79cb922dd92a7bd9498fd5eb5b639dfc0177d89f84c11963bd36
 
 <!-- END VERIFICATION RESULTS -->
 
