@@ -579,9 +579,7 @@ describe("runCli", () => {
       expect(meta.last_verified_at).toBeTruthy();
       expect(meta.verify?.status).toBe("pass");
       expect(await readFile(path.join(prDir, "review.md"), "utf8")).toContain("- State: ok");
-      expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toContain(
-        "- State: ok",
-      );
+      expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toContain("- State: ok");
       expect(await readFile(path.join(prDir, "review.md"), "utf8")).not.toContain(
         "Not recorded yet.",
       );
