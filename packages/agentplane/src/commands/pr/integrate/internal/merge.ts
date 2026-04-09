@@ -237,7 +237,7 @@ export async function runSquashMerge(opts: {
     ...process.env,
     AGENTPLANE_TASK_ID: opts.taskId,
     AGENTPLANE_ALLOW_BASE: "1",
-    AGENTPLANE_ALLOW_TASKS: "0",
+    AGENTPLANE_ALLOW_TASKS: "1",
   };
   try {
     await execFileAsync("git", ["commit", "-m", subject], {
@@ -278,7 +278,7 @@ export async function runMergeCommit(opts: {
     ...process.env,
     AGENTPLANE_TASK_ID: opts.taskId,
     AGENTPLANE_ALLOW_BASE: "1",
-    AGENTPLANE_ALLOW_TASKS: "0",
+    AGENTPLANE_ALLOW_TASKS: "1",
   };
   try {
     await execFileAsync(
