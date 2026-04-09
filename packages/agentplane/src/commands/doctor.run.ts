@@ -9,7 +9,11 @@ import {
   checkBranchPrDoneTaskOpenPrDrift,
   checkBranchPrShippedTaskDrift,
 } from "./doctor/branch-pr.js";
-import { safeFixGitignore, safeFixTaskIndex } from "./doctor/fixes.js";
+import {
+  safeFixGitignore,
+  safeFixLegacyUntrackedTaskReadmes,
+  safeFixTaskIndex,
+} from "./doctor/fixes.js";
 import { checkLayering } from "./doctor/layering.js";
 import { checkRuntimeSourceFacts, findingSeverity } from "./doctor/runtime.js";
 import { checkWorkspace } from "./doctor/workspace.js";
@@ -60,6 +64,8 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   if (p.fix) {
     const fix = await safeFixGitignore(repoRoot);
     console.log(successMessage("doctor fix", undefined, fix.note));
+    const legacyTaskReadmes = await safeFixLegacyUntrackedTaskReadmes(repoRoot, commandCtx);
+    console.log(successMessage("doctor fix", undefined, legacyTaskReadmes.note));
     const idx = await safeFixTaskIndex(repoRoot);
     console.log(successMessage("doctor fix", undefined, idx.note));
     const workflowFix = await safeFixWorkflow(repoRoot);
