@@ -29,10 +29,7 @@ function normalizeCommentBody(value: string | null | undefined): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function commitInfoMatches(
-  current: TaskData,
-  requested: ResolvedCommitInfo | null,
-): boolean {
+function commitInfoMatches(current: TaskData, requested: ResolvedCommitInfo | null): boolean {
   if (!requested) return true;
   const existing = existingCommitInfo(current);
   if (!existing) return false;
