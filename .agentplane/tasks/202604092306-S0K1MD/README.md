@@ -4,7 +4,7 @@ title: "Allow finish to warn-and-run under stale-dist for task artifact closeout
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T23:16:32.334Z"
+  updated_at: "2026-04-09T23:17:02.384Z"
   updated_by: "CODER"
-  note: "Verified: stale-dist policy now allows finish as task-artifact closeout; stale-dist policy and readonly tests plus eslint passed."
+  note: "Verified current HEAD after task commit: stale-dist policy now allows finish as task-artifact closeout; stale-dist policy and readonly tests plus eslint passed."
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: stale-dist policy now allows finish as task-artifact closeout; stale-dist policy and readonly tests plus eslint passed."
+  -
+    type: "verify"
+    at: "2026-04-09T23:17:02.384Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified current HEAD after task commit: stale-dist policy now allows finish as task-artifact closeout; stale-dist policy and readonly tests plus eslint passed."
 doc_version: 3
-doc_updated_at: "2026-04-09T23:16:32.335Z"
+doc_updated_at: "2026-04-09T23:17:02.387Z"
 doc_updated_by: "CODER"
 description: "Treat finish as a task-artifact mutation in the stale-dist policy so base-side closeout can proceed after merged code changes without a mandatory manual framework bootstrap."
 sections:
@@ -70,6 +76,14 @@ sections:
     Note: Verified: stale-dist policy now allows finish as task-artifact closeout; stale-dist policy and readonly tests plus eslint passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T23:07:43.384Z, excerpt_hash=sha256:88443e2dbe18823e58d0351fcbcd96e060435129faad6d9a0fa593c56c334cbd
+    
+    ### 2026-04-09T23:17:02.384Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified current HEAD after task commit: stale-dist policy now allows finish as task-artifact closeout; stale-dist policy and readonly tests plus eslint passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T23:16:32.335Z, excerpt_hash=sha256:88443e2dbe18823e58d0351fcbcd96e060435129faad6d9a0fa593c56c334cbd
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -111,6 +125,14 @@ By: CODER
 Note: Verified: stale-dist policy now allows finish as task-artifact closeout; stale-dist policy and readonly tests plus eslint passed.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T23:07:43.384Z, excerpt_hash=sha256:88443e2dbe18823e58d0351fcbcd96e060435129faad6d9a0fa593c56c334cbd
+
+### 2026-04-09T23:17:02.384Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified current HEAD after task commit: stale-dist policy now allows finish as task-artifact closeout; stale-dist policy and readonly tests plus eslint passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T23:16:32.335Z, excerpt_hash=sha256:88443e2dbe18823e58d0351fcbcd96e060435129faad6d9a0fa593c56c334cbd
 
 <!-- END VERIFICATION RESULTS -->
 
