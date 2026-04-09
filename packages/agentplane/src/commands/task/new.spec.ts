@@ -62,6 +62,13 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
       repeatable: true,
       description: "Repeatable. Verification commands/checks to run for this task.",
     },
+    {
+      kind: "boolean",
+      name: "allow-duplicate",
+      default: false,
+      description:
+        "Allow creating a task even when an open task with a highly similar title already exists.",
+    },
   ],
   examples: [
     {
@@ -81,5 +88,6 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     tags: (raw.opts.tag ?? []) as string[],
     dependsOn: (raw.opts["depends-on"] ?? []) as string[],
     verify: (raw.opts.verify ?? []) as string[],
+    allowDuplicate: raw.opts["allow-duplicate"] === true,
   }),
 };

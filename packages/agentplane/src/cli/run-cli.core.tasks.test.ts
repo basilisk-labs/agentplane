@@ -176,6 +176,114 @@ describe("runCli", () => {
     expect(task.frontmatter.verify).toContain("bun run ci");
   });
 
+  it("task new rejects highly similar open task titles unless --allow-duplicate is passed", async () => {
+    const root = await mkGitRepoRoot();
+    const firstIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Sanitize gh env for hosted merge sync lookups",
+        "--description",
+        "Original workflow task",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      firstIo.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Sanitize hosted-merge-sync gh lookups",
+        "--description",
+        "Duplicate workflow task",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(4);
+      expect(io.stderr).toContain("potential duplicate open task detected");
+      expect(io.stderr).toContain("--allow-duplicate");
+      expect(io.stderr).toContain("close-duplicate");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task new allows similar titles when --allow-duplicate is explicit", async () => {
+    const root = await mkGitRepoRoot();
+    const firstIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Infer branch_pr base branch from default branch when pin is absent",
+        "--description",
+        "Original workflow task",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      firstIo.restore();
+    }
+
+    const io = captureStdIO();
+    let duplicateId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Infer default branch_pr base when pin is absent",
+        "--description",
+        "Intentional follow-up task",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--allow-duplicate",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      duplicateId = io.stdout.trim();
+      expect(io.stderr).toContain("potential duplicate open task detected");
+      expect(io.stderr).toContain("creating a duplicate because --allow-duplicate was passed");
+    } finally {
+      io.restore();
+    }
+
+    expect(duplicateId).toMatch(/^\d{12}-[A-Z0-9]{6}$/);
+  });
+
   it("task new requires values for flags", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
