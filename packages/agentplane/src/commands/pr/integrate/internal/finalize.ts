@@ -136,6 +136,8 @@ export async function finalizeIntegrate(opts: {
       renderIncidentCollectionPlanOutcome(collectedIncidents.plan, {
         wrote: collectedIncidents.wrote,
         context: "generic",
+        promotedIds: collectedIncidents.plan.promotable.map((item) => item.entry.id),
+        registryPaths: collectedIncidents.registryPaths,
       }),
     );
     if (taskAlreadyDone) {

@@ -563,6 +563,8 @@ describe("runCli incidents", () => {
         ]);
         expect(code).toBe(0);
         expect(io.stdout).toContain("incident registry updated (1 promoted)");
+        expect(io.stdout).toContain("ids=INC-");
+        expect(io.stdout).toContain("files=.agentplane/policy/incidents.md");
       } finally {
         io.restore();
       }
@@ -574,6 +576,86 @@ describe("runCli incidents", () => {
         "utf8",
       );
       expect(incidentsFile).toContain("Verify can now update incidents.md immediately.");
+    }
+  });
+
+  it("incidents collect success output names promoted ids and registry files", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Collect incidents reports exact write targets",
+          "--description",
+          "Collect should name the promoted ids and registry files.",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "doc",
+          "set",
+          taskId,
+          "--section",
+          "Findings",
+          "--text",
+          [
+            "- Observation: operators still could not see which incident id was promoted.",
+            "  Impact: they had to open incidents.md manually after every collect run.",
+            "  Resolution: include promoted ids and registry files directly in the success output.",
+            "  Fixability: external",
+          ].join("\n"),
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["incidents", "collect", taskId, "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("incident registry updated (1 promoted)");
+        expect(io.stdout).toContain("ids=INC-");
+        expect(io.stdout).toContain("files=.agentplane/policy/incidents.md");
+      } finally {
+        io.restore();
+      }
     }
   });
 
@@ -927,6 +1009,8 @@ describe("runCli incidents", () => {
       ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("incident registry updated (1 promoted)");
+      expect(io.stdout).toContain("ids=INC-");
+      expect(io.stdout).toContain("files=.agentplane/policy/incidents.md");
       expect(io.stdout).toContain("finished");
     } finally {
       io.restore();

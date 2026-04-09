@@ -68,6 +68,7 @@ export function makeRunIncidentsCollectHandler(getCtx: (cmd: string) => Promise<
         duplicates: result.plan.duplicates.map((item) => item.entry.id),
         wrote: result.wrote,
         registry_path: result.registryPath,
+        registry_paths: result.registryPaths,
       });
       return 0;
     }
@@ -80,11 +81,10 @@ export function makeRunIncidentsCollectHandler(getCtx: (cmd: string) => Promise<
       renderIncidentCollectionPlanOutcome(result.plan, {
         wrote: result.wrote,
         context: "collect",
+        promotedIds: result.plan.promotable.map((item) => item.entry.id),
+        registryPaths: result.registryPaths,
       }),
     );
-    if (result.plan.promotable.length > 0 && !p.check) {
-      output.info(`Incident registry updated: ${result.registryPath}`);
-    }
     return 0;
   };
 }
