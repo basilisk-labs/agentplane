@@ -1013,9 +1013,7 @@ describe("task finish (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(writes.join("")).toContain(
-      "plain finish body/result stayed task-local",
-    );
+    expect(writes.join("")).toContain("plain finish body/result stayed task-local");
     expect(writes.join("")).toContain("did not update incidents.md");
     expect(writes.join("")).toContain("--observation, --impact, and --resolution");
     expect(writes.join("")).toContain("finished");
