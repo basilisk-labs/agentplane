@@ -39,12 +39,22 @@ If finish reaches DONE state before the deterministic close commit fails, rerunn
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T23:54:50.022Z
+- Updated: 2026-04-09T23:59:21.088Z
 - Branch: task/202604092339-VSV0CZ/idempotent-finish-retry
-- Head: 719b036bb1cd
+- Head: 79615659a8c5
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604092339-VSV0CZ/README.md    | 117 +++++++++++++++++++++
+ .../tasks/202604092339-VSV0CZ/pr/diffstat.txt      |   0
+ .../tasks/202604092339-VSV0CZ/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604092339-VSV0CZ/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604092339-VSV0CZ/pr/meta.json |  14 +++
+ .../tasks/202604092339-VSV0CZ/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604092339-VSV0CZ/pr/review.md |  57 ++++++++++
+ .../tasks/202604092339-VSV0CZ/pr/verify.log        |   0
+ .../agentplane/src/commands/task/finish-shared.ts  |  56 ++++++++++
+ .../src/commands/task/finish.unit.test.ts          |  93 ++++++++++++++++
+ 10 files changed, 388 insertions(+)
 ```
 
 </details>

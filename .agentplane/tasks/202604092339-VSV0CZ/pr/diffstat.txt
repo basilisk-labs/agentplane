@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604092339-VSV0CZ/README.md    | 117 +++++++++++++++++++++
+ .../tasks/202604092339-VSV0CZ/pr/diffstat.txt      |   0
+ .../tasks/202604092339-VSV0CZ/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604092339-VSV0CZ/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604092339-VSV0CZ/pr/meta.json |  14 +++
+ .../tasks/202604092339-VSV0CZ/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604092339-VSV0CZ/pr/review.md |  57 ++++++++++
+ .../tasks/202604092339-VSV0CZ/pr/verify.log        |   0
+ .../agentplane/src/commands/task/finish-shared.ts  |  56 ++++++++++
+ .../src/commands/task/finish.unit.test.ts          |  93 ++++++++++++++++
+ 10 files changed, 388 insertions(+)
