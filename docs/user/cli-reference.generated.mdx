@@ -111,6 +111,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task handoff record](#task-handoff-record)
   - [task handoff show](#task-handoff-show)
   - [task hosted-close](#task-hosted-close)
+  - [task hosted-close-pr](#task-hosted-close-pr)
   - [task lint](#task-lint)
   - [task list](#task-list)
   - [task migrate](#task-migrate)
@@ -2200,6 +2201,12 @@ agentplane task hosted-close --event-json "$GITHUB_EVENT_PATH"
 - Apply deterministic task closure from a merged hosted PR event on an automation branch.
 
 ```sh
+agentplane task hosted-close-pr 202604091218-JREJ4K
+```
+
+- Open the hosted closure PR after a manual handoff comment leaves only the remote task-close branch.
+
+```sh
 agentplane task resume-context <task-id>
 ```
 
@@ -2567,6 +2574,29 @@ agentplane task hosted-close --event-json "$GITHUB_EVENT_PATH"
 ```
 
 - Apply the canonical branch_pr closure payload on an automation branch after a hosted PR merge.
+
+### task hosted-close-pr
+
+Open the follow-up hosted closure PR from a remote task-close branch.
+
+Usage:
+
+```text
+agentplane task hosted-close-pr <task-id> [options]
+```
+
+Options:
+
+- `--branch <name>`: Optional explicit task-close branch name (default: derive from task PR metadata or remote refs).
+- `--repo <owner/name>`: Optional GitHub owner/repo override (defaults to origin remote).
+
+Examples:
+
+```sh
+agentplane task hosted-close-pr 202604091218-JREJ4K
+```
+
+- Open the hosted closure PR after the workflow left a manual handoff comment.
 
 ### task lint
 
