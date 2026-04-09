@@ -68,6 +68,7 @@ describe("pr/integrate/internal/merge", () => {
         AGENTPLANE_TASK_ID: "202602111653-X32XPT",
         AGENTPLANE_ALLOW_BASE: "1",
         AGENTPLANE_ALLOW_TASKS: "1",
+        AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
       },
     });
   });
@@ -114,6 +115,7 @@ describe("pr/integrate/internal/merge", () => {
         AGENTPLANE_TASK_ID: "202602111653-X32XPT",
         AGENTPLANE_ALLOW_BASE: "1",
         AGENTPLANE_ALLOW_TASKS: "1",
+        AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
       },
     });
   });
@@ -203,6 +205,7 @@ describe("pr/integrate/internal/merge", () => {
         AGENTPLANE_TASK_ID: "202602111653-X32XPT",
         AGENTPLANE_ALLOW_BASE: "1",
         AGENTPLANE_ALLOW_TASKS: "1",
+        AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
       },
     });
   });

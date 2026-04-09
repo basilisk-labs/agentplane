@@ -19,6 +19,16 @@ type MovedTaskArtifact = {
 
 const noopPromise = (): Promise<void> => Promise.resolve();
 
+function integrateCommitEnv(taskId: string): NodeJS.ProcessEnv {
+  return {
+    ...gitEnv(),
+    AGENTPLANE_TASK_ID: taskId,
+    AGENTPLANE_ALLOW_BASE: "1",
+    AGENTPLANE_ALLOW_TASKS: "1",
+    AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
+  };
+}
+
 function isTaskArtifactPath(filePath: string): boolean {
   const normalized = filePath.replaceAll("\\", "/");
   return normalized.startsWith(".agentplane/tasks/") || normalized.startsWith("tasks/");
@@ -233,12 +243,7 @@ export async function runSquashMerge(opts: {
     subject = `🧩 ${suffix} integrate: ${fallbackIntegrateSummary(opts)}`;
   }
 
-  const env = {
-    ...process.env,
-    AGENTPLANE_TASK_ID: opts.taskId,
-    AGENTPLANE_ALLOW_BASE: "1",
-    AGENTPLANE_ALLOW_TASKS: "1",
-  };
+  const env = integrateCommitEnv(opts.taskId);
   try {
     await execFileAsync("git", ["commit", "-m", subject], {
       cwd: opts.gitRoot,
@@ -274,12 +279,7 @@ export async function runMergeCommit(opts: {
     taskId: opts.taskId,
     changedPaths: opts.changedPaths,
   });
-  const env = {
-    ...process.env,
-    AGENTPLANE_TASK_ID: opts.taskId,
-    AGENTPLANE_ALLOW_BASE: "1",
-    AGENTPLANE_ALLOW_TASKS: "1",
-  };
+  const env = integrateCommitEnv(opts.taskId);
   try {
     await execFileAsync(
       "git",
