@@ -117,11 +117,13 @@ function selectMergedPullRecord(opts: {
     const exact = merged.find((record) => Number(record.number ?? 0) === opts.prNumber);
     if (exact) return exact;
   }
-  return [...merged].toSorted((left, right) => {
+  return (
+    [...merged].toSorted((left, right) => {
       const leftAt = Date.parse(left.merged_at ?? "");
       const rightAt = Date.parse(right.merged_at ?? "");
       return Number.isNaN(rightAt) || Number.isNaN(leftAt) ? 0 : rightAt - leftAt;
-    })[0] ?? null;
+    })[0] ?? null
+  );
 }
 
 async function resolveHostedCloseMergeRecord(opts: {

@@ -4,7 +4,7 @@ title: "Recover hosted-close-pr merge metadata from remote close branches"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T16:23:56.350Z"
+  updated_at: "2026-04-09T16:29:24.994Z"
   updated_by: "CODER"
-  note: "Verified: target vitest and eslint passed; hosted-close-pr now recovers merged PR metadata from GitHub when base-side pr meta is stale."
+  note: "Verified: targeted vitest, format:check, and docs:cli:check passed after formatting hosted-close-pr.command.ts for hosted CI parity."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: target vitest and eslint passed; hosted-close-pr now recovers merged PR metadata from GitHub when base-side pr meta is stale."
+  -
+    type: "verify"
+    at: "2026-04-09T16:29:24.994Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: targeted vitest, format:check, and docs:cli:check passed after formatting hosted-close-pr.command.ts for hosted CI parity."
 doc_version: 3
-doc_updated_at: "2026-04-09T16:23:56.357Z"
+doc_updated_at: "2026-04-09T16:29:25.010Z"
 doc_updated_by: "CODER"
 description: "Allow task hosted-close-pr to open a closure PR even when base-side pr/meta.json is stale by deriving merge metadata from the remote task-close branch and merged task PR context."
 sections:
@@ -71,6 +77,14 @@ sections:
     Note: Verified: target vitest and eslint passed; hosted-close-pr now recovers merged PR metadata from GitHub when base-side pr meta is stale.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T16:01:27.068Z, excerpt_hash=sha256:7b10fdded9105f7fbaacf807100d394dd8c16d31ddefb0061f4cab70a9857dc6
+    
+    ### 2026-04-09T16:29:24.994Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: targeted vitest, format:check, and docs:cli:check passed after formatting hosted-close-pr.command.ts for hosted CI parity.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T16:23:56.357Z, excerpt_hash=sha256:7b10fdded9105f7fbaacf807100d394dd8c16d31ddefb0061f4cab70a9857dc6
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -112,6 +126,14 @@ By: CODER
 Note: Verified: target vitest and eslint passed; hosted-close-pr now recovers merged PR metadata from GitHub when base-side pr meta is stale.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T16:01:27.068Z, excerpt_hash=sha256:7b10fdded9105f7fbaacf807100d394dd8c16d31ddefb0061f4cab70a9857dc6
+
+### 2026-04-09T16:29:24.994Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: targeted vitest, format:check, and docs:cli:check passed after formatting hosted-close-pr.command.ts for hosted CI parity.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T16:23:56.357Z, excerpt_hash=sha256:7b10fdded9105f7fbaacf807100d394dd8c16d31ddefb0061f4cab70a9857dc6
 
 <!-- END VERIFICATION RESULTS -->
 
