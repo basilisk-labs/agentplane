@@ -1233,6 +1233,7 @@ Options:
 - `--impact <text>`: Structured finding impact to append with the verification.
 - `--resolution <text>`: Structured finding resolution to append with the verification.
 - `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
 - `--incident-scope <text>`: Optional incident scope for the appended finding.
 - `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
 - `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
@@ -2472,7 +2473,7 @@ Append a structured Findings/Notes block; incident promotion is default unless -
 Usage:
 
 ```text
-agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--local-only] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]
+agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--local-only] [--repo-fixable] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]
 ```
 
 Options:
@@ -2482,7 +2483,8 @@ Options:
 - `--resolution <text>`: Required. Resolution field.
 - `--promote`: Compatibility flag. Promotion is the default unless \`--local-only\` is set.
 - `--external`: Compatibility flag. External incident metadata is the default unless \`--local-only\` is set.
-- `--local-only`: Keep the entry task-local only; omit \`Promotion: incident-candidate\` and \`Fixability: external\`. (default=false)
+- `--repo-fixable`: Mark the structured finding as repo-fixable so it can promote into incidents.md.
+- `--local-only`: Keep the entry task-local only; omit \`Promotion: incident-candidate\` and any explicit fixability marker. (default=false)
 - `--incident-scope <text>`: Optional. IncidentScope override.
 - `--incident-tag <tag>`: Repeatable. IncidentTags entry. (repeatable)
 - `--incident-match <term>`: Repeatable. IncidentMatch entry. (repeatable)
@@ -3427,6 +3429,7 @@ Options:
 - `--impact <text>`: Structured finding impact to append with the verification.
 - `--resolution <text>`: Structured finding resolution to append with the verification.
 - `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
 - `--incident-scope <text>`: Optional incident scope for the appended finding.
 - `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
 - `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
@@ -3464,6 +3467,7 @@ Options:
 - `--impact <text>`: Structured finding impact to append with the verification.
 - `--resolution <text>`: Structured finding resolution to append with the verification.
 - `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
 - `--incident-scope <text>`: Optional incident scope for the appended finding.
 - `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
 - `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)

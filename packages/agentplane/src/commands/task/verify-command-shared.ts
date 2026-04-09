@@ -13,6 +13,7 @@ export type VerifyCommonParsed = {
   impact?: string;
   resolution?: string;
   localOnly: boolean;
+  repoFixable: boolean;
   incidentScope?: string;
   incidentTags: string[];
   incidentMatch: string[];
@@ -44,6 +45,12 @@ export const verifyFindingOptions: readonly OptionSpec[] = [
     name: "local-only",
     default: false,
     description: "Keep the finding task-local; omit incident-candidate promotion.",
+  },
+  {
+    kind: "boolean",
+    name: "repo-fixable",
+    default: false,
+    description: "Mark the structured finding as repo-fixable so incidents collect can promote it.",
   },
   {
     kind: "string",
@@ -200,7 +207,7 @@ export function validateVerifyFindingSource<TParsed>(
     Array.isArray(raw.opts["incident-tag"]) && raw.opts["incident-tag"].length > 0
       ? true
       : Array.isArray(raw.opts["incident-match"]) && raw.opts["incident-match"].length > 0;
-  const hasFindingToggle = raw.opts["local-only"] === true;
+  const hasFindingToggle = raw.opts["local-only"] === true || raw.opts["repo-fixable"] === true;
   if (!hasFindingField && !hasFindingCollections && !hasFindingToggle) return;
 
   const observation = raw.opts.observation;
@@ -236,6 +243,7 @@ export function parseVerifyCommonOptions(raw: ParsedRaw): VerifyCommonParsed {
     impact: typeof raw.opts.impact === "string" ? raw.opts.impact : undefined,
     resolution: typeof raw.opts.resolution === "string" ? raw.opts.resolution : undefined,
     localOnly: raw.opts["local-only"] === true,
+    repoFixable: raw.opts["repo-fixable"] === true,
     incidentScope:
       typeof raw.opts["incident-scope"] === "string" ? raw.opts["incident-scope"] : undefined,
     incidentTags: (raw.opts["incident-tag"] as string[] | undefined) ?? [],

@@ -1,8 +1,8 @@
 # Policy Incidents Log
 
 - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`. Optional machine-match fields: `tags`, `match`, `advice`, `source_task`, `fixability`.
-- `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.
-- First auto-promoted external incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.
+- `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice; `fixability: repo-fixable` means the issue can be removed by repository code changes and should still be captured as reusable operational advice when explicitly marked.
+- First auto-promoted reusable incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.
 - id: INC-20260308-01
   date: 2026-03-08
   scope: release apply internal push path

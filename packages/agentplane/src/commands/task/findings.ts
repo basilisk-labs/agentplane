@@ -57,19 +57,22 @@ export function renderStructuredFindingBlock(opts: {
   resolution: string;
   promote: boolean;
   external: boolean;
+  fixability?: "repo-fixable" | null;
   incidentScope?: string;
   incidentTags: readonly string[];
   incidentMatch: readonly string[];
   incidentAdvice?: string;
   incidentRule?: string;
 }): string {
+  const fixability = opts.fixability ?? (opts.external ? "external" : null);
   const lines = [
     `- Observation: ${ensureNonEmptyFlag("observation", opts.observation)}`,
     `  Impact: ${ensureNonEmptyFlag("impact", opts.impact)}`,
     `  Resolution: ${ensureNonEmptyFlag("resolution", opts.resolution)}`,
   ];
   if (opts.promote) lines.push("  Promotion: incident-candidate");
-  if (opts.external) lines.push("  Fixability: external");
+  if (fixability === "external") lines.push("  Fixability: external");
+  if (fixability === "repo-fixable") lines.push("  Fixability: repo-fixable");
   if (opts.incidentScope?.trim()) lines.push(`  IncidentScope: ${opts.incidentScope.trim()}`);
   const tags = dedupeTrimmed(opts.incidentTags);
   if (tags.length > 0) lines.push(`  IncidentTags: ${tags.join(", ")}`);
@@ -100,6 +103,7 @@ export function buildStructuredFindingMutationPlan(opts: {
   resolution: string;
   promote: boolean;
   external: boolean;
+  fixability?: "repo-fixable" | null;
   incidentScope?: string;
   incidentTags: readonly string[];
   incidentMatch: readonly string[];
@@ -122,6 +126,7 @@ export function buildStructuredFindingMutationPlan(opts: {
     resolution: opts.resolution,
     promote: opts.promote,
     external: opts.external,
+    fixability: opts.fixability ?? null,
     incidentScope: opts.incidentScope,
     incidentTags: opts.incidentTags,
     incidentMatch: opts.incidentMatch,
@@ -180,6 +185,7 @@ export async function cmdTaskFindingsAdd(opts: {
   resolution: string;
   promote: boolean;
   external: boolean;
+  fixability?: "repo-fixable" | null;
   incidentScope?: string;
   incidentTags: string[];
   incidentMatch: string[];
@@ -220,6 +226,7 @@ export async function cmdTaskFindingsAdd(opts: {
           resolution: opts.resolution,
           promote: opts.promote,
           external: opts.external,
+          fixability: opts.fixability ?? null,
           incidentScope: opts.incidentScope,
           incidentTags: opts.incidentTags,
           incidentMatch: opts.incidentMatch,

@@ -60,6 +60,7 @@ export function makeRunTaskVerifyOkHandler(getCtx: (cmd: string) => Promise<Comm
       impact: p.impact,
       resolution: p.resolution,
       localOnly: p.localOnly,
+      repoFixable: p.repoFixable,
       incidentScope: p.incidentScope,
       incidentTags: p.incidentTags,
       incidentMatch: p.incidentMatch,
