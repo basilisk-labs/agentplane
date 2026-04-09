@@ -159,6 +159,7 @@ export async function cmdCleanupMerged(opts: {
   yes: boolean;
   archive: boolean;
   deleteRemoteBranches: boolean;
+  fetch: boolean;
   quiet: boolean;
 }): Promise<number> {
   try {
@@ -176,6 +177,13 @@ export async function cmdCleanupMerged(opts: {
     }
 
     await ensureGitClean({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+
+    if (opts.fetch) {
+      await execFileAsync("git", ["fetch", "--prune", "origin"], {
+        cwd: resolved.gitRoot,
+        env: gitEnv(),
+      });
+    }
 
     const baseBranch = await resolveBaseBranch({
       cwd: opts.cwd,
@@ -219,8 +227,9 @@ export async function cmdCleanupMerged(opts: {
 
     if (!opts.quiet) {
       const archiveLabel = opts.archive ? " archive=on" : "";
+      const fetchLabel = opts.fetch ? " fetch=on" : "";
       const remoteLabel = opts.deleteRemoteBranches ? " remote=delete" : "";
-      output.line(`cleanup merged (base=${baseBranch}${archiveLabel}${remoteLabel})`);
+      output.line(`cleanup merged (base=${baseBranch}${archiveLabel}${fetchLabel}${remoteLabel})`);
       if (sortedCandidates.length === 0) {
         output.line("no candidates");
         return 0;
