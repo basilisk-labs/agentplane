@@ -2,6 +2,7 @@
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { stat } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { distExists, isPackageBuildFresh } from "./dist-guard.js";
 import {
@@ -129,6 +130,19 @@ function renderStalePolicyWarning(reason) {
   return "warning: allowing read-only diagnostic command to run with a stale repo build inside the framework checkout.\n";
 }
 
+function missingRepoRuntimeDependencies(agentplaneRoot) {
+  const requireFromAgentplane = createRequire(path.join(agentplaneRoot, "package.json"));
+  const requiredSpecifiers = ["@agentplaneorg/core"];
+  return requiredSpecifiers.filter((specifier) => {
+    try {
+      requireFromAgentplane.resolve(specifier);
+      return false;
+    } catch {
+      return true;
+    }
+  });
+}
+
 async function assertDistUpToDate() {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const agentplaneRoot = path.resolve(here, "..");
@@ -140,6 +154,24 @@ async function assertDistUpToDate() {
     process.stderr.write(
       "error: agentplane dist is missing for this framework checkout.\n" +
         "This worktree is not bootstrapped yet.\n" +
+        "Fix:\n" +
+        `  ${FRAMEWORK_DEV_BOOTSTRAP_COMMAND}\n` +
+        "Manual fallback:\n" +
+        FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS.map((command) => `  ${command}\n`).join("") +
+        "Supported global override when you intentionally want the installed binary:\n" +
+        `  ${FRAMEWORK_DEV_FORCE_GLOBAL_EXAMPLE}\n`,
+    );
+    process.exitCode = 2;
+    return false;
+  }
+
+  const missingDeps = missingRepoRuntimeDependencies(agentplaneRoot);
+  if (missingDeps.length > 0) {
+    process.stderr.write(
+      "error: repo-local runtime dependencies are missing for this framework checkout.\n" +
+        "This worktree is not bootstrapped yet.\n" +
+        "Missing module resolution:\n" +
+        missingDeps.map((specifier) => `  ${specifier}\n`).join("") +
         "Fix:\n" +
         `  ${FRAMEWORK_DEV_BOOTSTRAP_COMMAND}\n` +
         "Manual fallback:\n" +
