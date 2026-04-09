@@ -24,6 +24,7 @@ import {
 } from "../../../task/shared.js";
 
 import { readPrArtifact, resolvePrPaths } from "../../internal/pr-paths.js";
+import { ensurePrArtifactsSynced } from "../../internal/sync.js";
 
 import { readAndValidatePrArtifacts } from "../artifacts.js";
 import { computeVerifyState } from "../verify.js";
@@ -164,7 +165,7 @@ export async function prepareIntegrate(opts: {
       message: `PR artifacts missing: ${path.relative(resolved.gitRoot, metaPath)} (run \`agentplane pr open\`)`,
     });
   }
-  const metaSource = parsePrMetaForwardCompatible(metaText, opts.taskId);
+  let metaSource = parsePrMetaForwardCompatible(metaText, opts.taskId);
   const baseCandidate = opts.base ?? metaSource.base ?? baseBranch;
   const base =
     typeof baseCandidate === "string" && baseCandidate.trim().length > 0
@@ -180,7 +181,7 @@ export async function prepareIntegrate(opts: {
     taskId: opts.taskId,
   });
   // readAndValidatePrArtifacts() throws if verify.log is missing; keep this non-null downstream.
-  const verifyLogText = verifyLogTextMaybe!;
+  let verifyLogText = verifyLogTextMaybe!;
 
   const task = await loadTaskFromContext({
     ctx,
@@ -200,7 +201,7 @@ export async function prepareIntegrate(opts: {
   }
 
   const branchHeadSha = await gitRevParse(resolved.gitRoot, [branch]);
-  const freshness = await assessPrArtifactFreshness({
+  let freshness = await assessPrArtifactFreshness({
     gitRoot: resolved.gitRoot,
     workflowDir: loadedConfig.paths.workflow_dir,
     taskId: opts.taskId,
@@ -212,6 +213,46 @@ export async function prepareIntegrate(opts: {
     verifyLogText,
     requiresVerify: Boolean(task.verify && task.verify.length > 0),
   });
+  if (!freshness.reviewFresh && worktreePath) {
+    await ensurePrArtifactsSynced({
+      cwd: worktreePath,
+      taskId: opts.taskId,
+      branch,
+    });
+    const repairedMetaText = await readPrArtifact({
+      resolved,
+      prDir,
+      fileName: "meta.json",
+      branch,
+      worktreePath,
+    });
+    if (repairedMetaText) {
+      const repairedMetaSource = parsePrMetaForwardCompatible(repairedMetaText, opts.taskId);
+      const repairedArtifacts = await readAndValidatePrArtifacts({
+        ctx,
+        resolved,
+        prDir,
+        metaPath,
+        branch,
+        taskId: opts.taskId,
+      });
+      verifyLogText = repairedArtifacts.verifyLogText ?? verifyLogText;
+      freshness = await assessPrArtifactFreshness({
+        gitRoot: resolved.gitRoot,
+        workflowDir: loadedConfig.paths.workflow_dir,
+        taskId: opts.taskId,
+        branchHeadSha,
+        metaHeadSha: repairedMetaSource.head_sha ?? null,
+        metaLastVerifiedSha: repairedMetaSource.last_verified_sha ?? null,
+        metaVerifyStatus: repairedMetaSource.verify?.status ?? null,
+        taskVerificationState: task.verification?.state ?? null,
+        verifyLogText,
+        requiresVerify: Boolean(task.verify && task.verify.length > 0),
+      });
+      meta = repairedMetaSource;
+      metaSource = repairedMetaSource;
+    }
+  }
   if (!freshness.reviewFresh) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
@@ -248,9 +289,9 @@ export async function prepareIntegrate(opts: {
     base,
     verifyLogText,
     branchHeadSha,
-    changedPaths,
-    verifyCommands: initialVerifyState.verifyCommands,
-    alreadyVerifiedSha: initialVerifyState.alreadyVerifiedSha,
-    shouldRunVerify: initialVerifyState.shouldRunVerify,
+      changedPaths,
+      verifyCommands: initialVerifyState.verifyCommands,
+      alreadyVerifiedSha: initialVerifyState.alreadyVerifiedSha,
+      shouldRunVerify: initialVerifyState.shouldRunVerify,
   };
 }
