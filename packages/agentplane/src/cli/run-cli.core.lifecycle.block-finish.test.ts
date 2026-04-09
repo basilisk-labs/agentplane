@@ -473,6 +473,99 @@ describe("runCli", () => {
     expect(headSubject).toContain("close:");
   });
 
+  it(
+    "finish --close-commit succeeds on main in branch_pr mode without a pinned base when origin HEAD resolves main",
+    { timeout: 120_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root });
+      await writeFile(path.join(root, "file.txt"), "content", "utf8");
+      await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
+      await execFileAsync(
+        "git",
+        ["symbolic-ref", "refs/remotes/origin/HEAD", "refs/remotes/origin/main"],
+        {
+          cwd: root,
+        },
+      );
+      const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Finish branch_pr close commit without pinned base",
+          "--description",
+          "Finish should allow the default branch fallback when branch_pr base pin is absent",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Ok to finish on main when the effective base branch resolves from origin HEAD.",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "finish",
+          taskId,
+          "--author",
+          "INTEGRATOR",
+          "--body",
+          "Verified: branch_pr close commit should succeed when origin HEAD resolves the base branch even without a pin.",
+          "--result",
+          "branch_pr close commit remote default base",
+          "--commit",
+          implHash.trim(),
+          "--close-commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("creating deterministic close commit");
+        expect(io.stdout).toContain("✅ finished");
+      } finally {
+        io.restore();
+      }
+
+      const { stdout: headSubject } = await execFileAsync("git", ["show", "-s", "--format=%s"], {
+        cwd: root,
+      });
+      expect(headSubject).toContain("close:");
+    },
+  );
+
   it("finish rejects non-base branches in branch_pr mode", { timeout: 120_000 }, async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();

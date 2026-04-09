@@ -74,7 +74,33 @@ describe("base-branch", () => {
     expect(base).toBe("develop");
   });
 
-  it("resolveBaseBranch uses current branch for branch_pr when unpinned", async () => {
+  it("resolveBaseBranch falls back to the remote default branch in branch_pr mode", async () => {
+    const root = await mkGitRepoRoot();
+    await execFileAsync("git", ["checkout", "-q", "-b", "main"], { cwd: root });
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["-c", "user.email=test@example.com", "-c", "user.name=Tester", "commit", "-m", "init"],
+      { cwd: root },
+    );
+    await execFileAsync(
+      "git",
+      ["symbolic-ref", "refs/remotes/origin/HEAD", "refs/remotes/origin/main"],
+      {
+        cwd: root,
+      },
+    );
+    const base = await resolveBaseBranch({
+      cwd: root,
+      rootOverride: root,
+      cliBaseOpt: null,
+      mode: "branch_pr",
+    });
+    expect(base).toBe("main");
+  });
+
+  it("resolveBaseBranch returns null in branch_pr mode when no default branch is available", async () => {
     const root = await mkGitRepoRoot();
     await execFileAsync("git", ["checkout", "-q", "-b", "feature"], { cwd: root });
     const base = await resolveBaseBranch({
@@ -86,7 +112,7 @@ describe("base-branch", () => {
     expect(base).toBeNull();
   });
 
-  it("resolveBaseBranch returns null in branch_pr mode when unpinned (no defaults)", async () => {
+  it("resolveBaseBranch does not fall back to the current branch without a remote default", async () => {
     const root = await mkGitRepoRoot();
     await execFileAsync("git", ["checkout", "-q", "-b", "main"], { cwd: root });
     await writeFile(path.join(root, "file.txt"), "x", "utf8");

@@ -35,6 +35,23 @@ async function gitConfigUnset(cwd: string, key: string): Promise<boolean> {
   }
 }
 
+async function gitDefaultBranch(cwd: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync(
+      "git",
+      ["symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD"],
+      { cwd },
+    );
+    const trimmed = stdout.trim();
+    if (!trimmed) return null;
+    return trimmed.startsWith("origin/") ? trimmed.slice("origin/".length) : trimmed;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1) return null;
+    throw err;
+  }
+}
+
 export async function getPinnedBaseBranch(opts: {
   cwd: string;
   rootOverride?: string | null;
@@ -80,10 +97,14 @@ export async function resolveBaseBranch(opts: {
 }): Promise<string | null> {
   const explicit = (opts.cliBaseOpt ?? "").trim();
   if (explicit.length > 0) return explicit;
+  if (opts.mode !== "branch_pr") return null;
+  const resolved = await resolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
   const pinned = await getPinnedBaseBranch({
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
   });
   if (pinned) return pinned;
+  const defaultBranch = await gitDefaultBranch(resolved.gitRoot);
+  if (defaultBranch) return defaultBranch;
   return null;
 }
