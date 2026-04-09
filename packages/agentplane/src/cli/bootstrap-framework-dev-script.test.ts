@@ -1,11 +1,11 @@
-import { lstat, mkdtemp, mkdir, readlink, rm, symlink, writeFile } from "node:fs/promises";
+import { lstat, mkdtemp, mkdir, readFile, readlink, rm, writeFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
 const tempRoots: string[] = [];
-const workspaceRoot = process.cwd();
 type FrameworkDevExec = (repoRoot: string, cmd: string, args: string[]) => void;
 type BootstrapOptions = {
   resolveCommonRepoRoot?: (cwd?: string) => string;
@@ -34,6 +34,7 @@ async function loadBootstrapModule(): Promise<BootstrapModule> {
 async function mkFrameworkRepo() {
   const repoRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-framework-bootstrap-"));
   tempRoots.push(repoRoot);
+  execFileSync("git", ["init", "-q"], { cwd: repoRoot });
   await mkdir(path.join(repoRoot, ".agentplane"), { recursive: true });
   await mkdir(path.join(repoRoot, "packages", "agentplane"), { recursive: true });
   await mkdir(path.join(repoRoot, "packages", "core"), { recursive: true });
@@ -91,15 +92,11 @@ describe("bootstrap-framework-dev script", () => {
   it("skips install and submodule init when prerequisites already exist", async () => {
     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
     const repoRoot = await mkFrameworkRepo();
-    await symlink(path.join(workspaceRoot, "node_modules"), path.join(repoRoot, "node_modules"));
-    await symlink(
-      path.join(workspaceRoot, "packages", "core", "node_modules"),
-      path.join(repoRoot, "packages", "core", "node_modules"),
-    );
-    await symlink(
-      path.join(workspaceRoot, "packages", "agentplane", "node_modules"),
-      path.join(repoRoot, "packages", "agentplane", "node_modules"),
-    );
+    await mkdir(path.join(repoRoot, "node_modules"), { recursive: true });
+    await mkdir(path.join(repoRoot, "packages", "core", "node_modules"), { recursive: true });
+    await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
+      recursive: true,
+    });
     await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
     await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     const calls: string[] = [];
@@ -121,18 +118,13 @@ describe("bootstrap-framework-dev script", () => {
     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
     const commonRepoRoot = await mkFrameworkRepo();
     const repoRoot = await mkFrameworkRepo();
-    await symlink(
-      path.join(workspaceRoot, "node_modules"),
-      path.join(commonRepoRoot, "node_modules"),
-    );
-    await symlink(
-      path.join(workspaceRoot, "packages", "core", "node_modules"),
-      path.join(commonRepoRoot, "packages", "core", "node_modules"),
-    );
-    await symlink(
-      path.join(workspaceRoot, "packages", "agentplane", "node_modules"),
-      path.join(commonRepoRoot, "packages", "agentplane", "node_modules"),
-    );
+    await mkdir(path.join(commonRepoRoot, "node_modules"), { recursive: true });
+    await mkdir(path.join(commonRepoRoot, "packages", "core", "node_modules"), {
+      recursive: true,
+    });
+    await mkdir(path.join(commonRepoRoot, "packages", "agentplane", "node_modules"), {
+      recursive: true,
+    });
     await mkdir(path.join(commonRepoRoot, "agentplane-recipes"), { recursive: true });
     await writeFile(path.join(commonRepoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     const calls: string[] = [];
@@ -165,10 +157,7 @@ describe("bootstrap-framework-dev script", () => {
     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
     const commonRepoRoot = await mkFrameworkRepo();
     const repoRoot = await mkFrameworkRepo();
-    await symlink(
-      path.join(workspaceRoot, "node_modules"),
-      path.join(commonRepoRoot, "node_modules"),
-    );
+    await mkdir(path.join(commonRepoRoot, "node_modules"), { recursive: true });
     await mkdir(path.join(commonRepoRoot, "agentplane-recipes"), { recursive: true });
     await writeFile(path.join(commonRepoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
     const calls: string[] = [];
@@ -185,6 +174,41 @@ describe("bootstrap-framework-dev script", () => {
       "bun run --filter=agentplane build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
+  });
+
+  it("repairs legacy lefthook-generated hooks after building the repo-local runtime", async () => {
+    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
+    const repoRoot = await mkFrameworkRepo();
+    await mkdir(path.join(repoRoot, "node_modules"), { recursive: true });
+    await mkdir(path.join(repoRoot, "packages", "core", "node_modules"), { recursive: true });
+    await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
+      recursive: true,
+    });
+    await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
+    await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
+    await writeFile(
+      path.join(repoRoot, ".git", "hooks", "pre-push"),
+      "#!/bin/sh\ncall_lefthook()\n{\n  echo \"Can't find lefthook in PATH\"\n}\n",
+      "utf8",
+    );
+    const calls: string[] = [];
+    const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
+      recordCallExec(currentRepoRoot, cmd, args, calls);
+
+    runFrameworkDevBootstrap(repoRoot, exec, {
+      resolveCommonRepoRoot: () => repoRoot,
+    });
+
+    expect(calls).toEqual([
+      "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=agentplane build",
+      "node packages/agentplane/bin/agentplane.js runtime explain",
+    ]);
+    const prePush = await readFile(path.join(repoRoot, ".git", "hooks", "pre-push"), "utf8");
+    const shim = await readFile(path.join(repoRoot, ".agentplane", "bin", "agentplane"), "utf8");
+    expect(prePush).toContain("agentplane-hook");
+    expect(prePush).toContain("hooks run pre-push");
+    expect(shim).toContain("agentplane-hook-shim");
   });
 
   it("surfaces a precise error when the recipes gitlink cannot be initialized", async () => {

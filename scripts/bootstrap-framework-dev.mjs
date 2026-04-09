@@ -76,6 +76,117 @@ function hasRecipesIndex(repoRoot) {
   return fs.existsSync(path.join(repoRoot, "agentplane-recipes", "index.json"));
 }
 
+function resolveGitHooksDir(repoRoot) {
+  const hooksPath = execFileSync("git", ["rev-parse", "--git-path", "hooks"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: process.env,
+  }).trim();
+  return path.resolve(repoRoot, hooksPath);
+}
+
+function readHookIfPresent(filePath) {
+  try {
+    return fs.readFileSync(filePath, "utf8");
+  } catch {
+    return null;
+  }
+}
+
+function isManagedAgentplaneHook(text) {
+  return typeof text === "string" && text.includes("agentplane-hook");
+}
+
+function isLegacyLefthookHook(text) {
+  return (
+    typeof text === "string" &&
+    (text.includes("call_lefthook()") || text.includes("Can't find lefthook in PATH"))
+  );
+}
+
+const HOOK_MARKER = "agentplane-hook";
+const SHIM_MARKER = "agentplane-hook-shim";
+const HOOK_NAMES = ["commit-msg", "pre-commit", "pre-push"];
+
+function hookScriptText(hook) {
+  return [
+    "#!/usr/bin/env sh",
+    `# ${HOOK_MARKER} (do not edit)`,
+    "set -e",
+    'REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"',
+    'SHIM="$REPO_ROOT/.agentplane/bin/agentplane"',
+    'if [ -x "$SHIM" ]; then',
+    `  exec "$SHIM" hooks run ${hook} "$@"`,
+    "fi",
+    "if ! command -v agentplane >/dev/null 2>&1; then",
+    '  echo "agentplane hooks: runner not found (PATH missing and shim unavailable)." >&2',
+    "  exit 127",
+    "fi",
+    `exec agentplane hooks run ${hook} "$@"`,
+    "",
+  ].join("\n");
+}
+
+function shimScriptText() {
+  return [
+    "#!/usr/bin/env sh",
+    `# ${SHIM_MARKER} (do not edit)`,
+    "set -e",
+    'SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"',
+    'REPO_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"',
+    'ENV_BIN="${AGENTPLANE_HOOK_RUNNER:-}"',
+    'if [ -n "$ENV_BIN" ] && command -v node >/dev/null 2>&1 && [ -f "$ENV_BIN" ]; then',
+    '  exec node "$ENV_BIN" "$@"',
+    "fi",
+    'LOCAL_BIN="$REPO_ROOT/packages/agentplane/bin/agentplane.js"',
+    'if command -v node >/dev/null 2>&1 && [ -f "$LOCAL_BIN" ]; then',
+    '  exec node "$LOCAL_BIN" "$@"',
+    "fi",
+    "if command -v agentplane >/dev/null 2>&1; then",
+    '  exec agentplane "$@"',
+    "fi",
+    "if command -v npx >/dev/null 2>&1; then",
+    '  exec npx --yes agentplane "$@"',
+    "fi",
+    'echo "agentplane shim: runner not found (need env runner, repo-local source, agentplane in PATH, or node+npx)." >&2',
+    "  exit 127",
+    "",
+  ].join("\n");
+}
+
+function ensureManagedShim(repoRoot) {
+  const shimDir = path.join(repoRoot, ".agentplane", "bin");
+  const shimPath = path.join(shimDir, "agentplane");
+  const existingShim = readHookIfPresent(shimPath);
+  if (existingShim && !existingShim.includes(SHIM_MARKER)) {
+    throw new Error(`Refusing to overwrite existing shim: ${path.relative(repoRoot, shimPath)}`);
+  }
+  fs.mkdirSync(shimDir, { recursive: true });
+  fs.writeFileSync(shimPath, shimScriptText(), "utf8");
+  fs.chmodSync(shimPath, 0o755);
+}
+
+function listLegacyLefthookHooks(repoRoot) {
+  const hooksDir = resolveGitHooksDir(repoRoot);
+  return HOOK_NAMES.filter((hookName) => {
+    const hookText = readHookIfPresent(path.join(hooksDir, hookName));
+    return Boolean(hookText) && !isManagedAgentplaneHook(hookText) && isLegacyLefthookHook(hookText);
+  });
+}
+
+function repairLegacyLefthookHooks(repoRoot) {
+  const hooksDir = resolveGitHooksDir(repoRoot);
+  const legacyHooks = listLegacyLefthookHooks(repoRoot);
+  if (legacyHooks.length === 0) return [];
+  ensureManagedShim(repoRoot);
+  for (const hookName of legacyHooks) {
+    const hookPath = path.join(hooksDir, hookName);
+    fs.writeFileSync(hookPath, hookScriptText(hookName), "utf8");
+    fs.chmodSync(hookPath, 0o755);
+  }
+  return legacyHooks;
+}
+
 function linkDirectoryFromCommonRoot(repoRoot, commonRepoRoot, relativePath) {
   if (repoRoot === commonRepoRoot) return false;
   const localPath = path.join(repoRoot, relativePath);
@@ -170,6 +281,13 @@ export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec
   exec(repoRoot, "bun", ["run", "--filter=@agentplaneorg/core", "build"]);
   process.stdout.write("==> Building agentplane\n");
   exec(repoRoot, "bun", ["run", "--filter=agentplane", "build"]);
+
+  const repairedLegacyHooks = repairLegacyLefthookHooks(repoRoot);
+  if (repairedLegacyHooks.length > 0) {
+    process.stdout.write(
+      `==> Repairing legacy lefthook-generated git hooks: ${repairedLegacyHooks.join(", ")}\n`,
+    );
+  }
 
   process.stdout.write("==> Verifying repo-local runtime\n");
   exec(repoRoot, "node", ["packages/agentplane/bin/agentplane.js", "runtime", "explain"]);
