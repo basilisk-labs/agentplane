@@ -2,15 +2,17 @@
   "base": "main",
   "branch": "task/202604092201-9CPEMF/incidents-promotion-success",
   "created_at": "2026-04-09T22:06:35.842Z",
-  "head_sha": "731125fdbb0d0007f8b4f622f3a379b90f452c7b",
+  "head_sha": "425c0b4b208f861abca3fbbf0a3ee0dbc419fcf2",
   "last_verified_at": "2026-04-09T22:20:12.342Z",
   "last_verified_sha": "731125fdbb0d0007f8b4f622f3a379b90f452c7b",
+  "merge_commit": "62448ed52a3f5ec110233702308a19d07b3f3c90",
+  "merged_at": "2026-04-09T22:45:41Z",
   "pr_number": 234,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/234",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604092201-9CPEMF",
-  "updated_at": "2026-04-09T22:20:12.357Z",
+  "updated_at": "2026-04-09T22:58:21.814Z",
   "verify": {
     "status": "pass"
   }

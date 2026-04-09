@@ -1,10 +1,11 @@
 ---
 id: "202604092201-9CPEMF"
 title: "Show incident IDs and registry paths after successful promotion"
-status: "DOING"
+result_summary: "Merged via PR #234."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-09T22:20:12.342Z"
   updated_by: "CODER"
   note: "Verification refreshed on final branch head after success-output cleanup; targeted incidents/task CLI tests and eslint remain green."
-commit: null
+commit:
+  hash: "62448ed52a3f5ec110233702308a19d07b3f3c90"
+  message: "incidents/ux: Show incident IDs and registry paths after successful promotion (9CPEMF) (#234)"
 comments:
   -
     author: "CODER"
     body: "Start: enrich incident promotion success output with IDs and registry paths."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #234 merged and the promoted incident success-output change is present on main after runtime bootstrap."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification refreshed on final branch head after success-output cleanup; targeted incidents/task CLI tests and eslint remain green."
+  -
+    type: "status"
+    at: "2026-04-09T22:58:21.740Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #234 merged and the promoted incident success-output change is present on main after runtime bootstrap."
 doc_version: 3
-doc_updated_at: "2026-04-09T22:20:12.345Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T22:58:21.740Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make incident collection success output name promoted incident IDs and the registry files that changed so operators can immediately verify incidents.md updates."
 sections:
   Summary: |-
