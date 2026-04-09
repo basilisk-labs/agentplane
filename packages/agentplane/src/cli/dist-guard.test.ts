@@ -265,4 +265,27 @@ describe("dist-guard", () => {
       expect(result.changedPaths).toEqual([]);
     },
   );
+
+  it(
+    "ignores source-tree dotfiles for snapshot-backed manifests",
+    { timeout: DIST_GUARD_TIMEOUT_MS },
+    async () => {
+      const { packageRoot } = await setupPackageRepo();
+      const watchedPaths = [
+        "src",
+        "bin/agentplane.js",
+        "bin/runtime-context.js",
+        "bin/stale-dist-policy.js",
+      ];
+      await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
+      await mkdir(path.join(packageRoot, "src", "commands"), { recursive: true });
+      await writeFile(path.join(packageRoot, "src", ".DS_Store"), "noise\n", "utf8");
+      await writeFile(path.join(packageRoot, "src", "commands", ".DS_Store"), "noise\n", "utf8");
+
+      const result = await readBuildFreshness(packageRoot, { watchedPaths });
+
+      expect(result.ok).toBe(true);
+      expect(result.changedPaths).toEqual([]);
+    },
+  );
 });

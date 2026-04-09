@@ -23,6 +23,7 @@ export function isRuntimeRelevantWatchedFile(filePath) {
   if (!inSourceTree) return true;
   if (normalized.includes("/__snapshots__/")) return false;
   const baseName = path.posix.basename(normalized);
+  if (baseName.startsWith(".")) return false;
   return !/\.(?:test)\.[cm]?[jt]sx?$/u.test(baseName);
 }
 

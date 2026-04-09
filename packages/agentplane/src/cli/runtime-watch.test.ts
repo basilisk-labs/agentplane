@@ -113,6 +113,7 @@ describe("runtime-watch", () => {
   it("ignores test-only source files and snapshots when collecting runtime snapshots", async () => {
     const { packageDir } = await setupPackageFixture("agentplane");
     await mkdir(path.join(packageDir, "src", "__snapshots__"), { recursive: true });
+    await mkdir(path.join(packageDir, "src", "commands"), { recursive: true });
     await writeFile(
       path.join(packageDir, "src", "cli.test.ts"),
       "export const runtimeWatchTest = true;\n",
@@ -123,6 +124,8 @@ describe("runtime-watch", () => {
       "snapshot\n",
       "utf8",
     );
+    await writeFile(path.join(packageDir, "src", ".DS_Store"), "noise\n", "utf8");
+    await writeFile(path.join(packageDir, "src", "commands", ".DS_Store"), "noise\n", "utf8");
 
     const snapshot = await collectWatchedRuntimeSnapshot(
       packageDir,
@@ -133,12 +136,16 @@ describe("runtime-watch", () => {
     expect(snapshot.files.map((file) => file.path)).not.toContain(
       "src/__snapshots__/runtime-watch.snap",
     );
+    expect(snapshot.files.map((file) => file.path)).not.toContain("src/.DS_Store");
+    expect(snapshot.files.map((file) => file.path)).not.toContain("src/commands/.DS_Store");
   });
 
   it("classifies runtime-relevant watched files conservatively", () => {
     expect(isRuntimeRelevantWatchedFile("src/cli.ts")).toBe(true);
     expect(isRuntimeRelevantWatchedFile("src/cli.test.ts")).toBe(false);
     expect(isRuntimeRelevantWatchedFile("src/__snapshots__/help.snap")).toBe(false);
+    expect(isRuntimeRelevantWatchedFile("src/.DS_Store")).toBe(false);
+    expect(isRuntimeRelevantWatchedFile("src/commands/.runtime-noise")).toBe(false);
     expect(isRuntimeRelevantWatchedFile("bin/stale-dist-policy.js")).toBe(true);
   });
 
