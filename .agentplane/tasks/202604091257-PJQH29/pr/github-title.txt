@@ -1,0 +1,1 @@
+incidents: Allow explicit internal incident findings to promote into incidents.md (PJQH29)
