@@ -227,6 +227,51 @@ describe("pr/integrate/internal/finalize", () => {
     );
   });
 
+  it("ships already DONE tasks without rewriting task status or creating a close commit", async () => {
+    const { finalizeIntegrate } = await import("./finalize.js");
+    mocks.fileExists.mockResolvedValue(true);
+    mocks.readFile.mockResolvedValue("{}");
+    mocks.parsePrMeta.mockReturnValue({ schema_version: 1, task_id: "T-1" });
+    mocks.buildIntegratedPrMeta.mockReturnValue({ schema_version: 1, task_id: "T-1" });
+    mocks.gitDiffStat.mockResolvedValue("");
+    mocks.collectTaskIncidents.mockResolvedValue({
+      loaded: null,
+      registryPath: "/repo/.agentplane/policy/incidents.md",
+      registryText: "",
+      registry: null,
+      plan: { candidates: [], skipped: [], promotable: [], duplicates: [], issues: [] },
+      wrote: true,
+    });
+
+    await finalizeIntegrate({
+      ...baseOpts(),
+      quiet: false,
+      task: { id: "T-1", status: "DONE", title: "Task" },
+    });
+
+    expect(mocks.writeFinishedTasks).not.toHaveBeenCalled();
+    expect(mocks.createTaskCloseCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        baseBranchOverride: "main",
+        allowPolicy: true,
+      }),
+    );
+    expect(mocks.readCommitInfo).not.toHaveBeenCalled();
+    expect(mocks.collectTaskIncidents).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ taskId: "T-1", write: false }),
+    );
+    expect(mocks.collectTaskIncidents).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ taskId: "T-1", write: true }),
+    );
+    expect(emitter.info).toHaveBeenCalledWith(
+      expect.stringContaining("task already DONE; integrate shipped the existing closure state"),
+    );
+    expect(emitter.success).toHaveBeenCalledWith("integrate", "T-1", "merge=deadbeef");
+  });
+
   it("explains plain Findings text when integrate sees no structured incident blocks", async () => {
     const { finalizeIntegrate } = await import("./finalize.js");
     mocks.fileExists.mockResolvedValue(true);

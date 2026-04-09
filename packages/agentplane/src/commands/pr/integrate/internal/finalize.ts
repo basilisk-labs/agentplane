@@ -55,6 +55,7 @@ export async function finalizeIntegrate(opts: {
   quiet: boolean;
 }): Promise<void> {
   const output = createCliEmitter();
+  const taskAlreadyDone = String(opts.task.status || "TODO").toUpperCase() === "DONE";
   if (!(await fileExists(opts.prDir))) {
     throw new CliError({
       exitCode: 3,
@@ -108,20 +109,22 @@ export async function finalizeIntegrate(opts: {
     task: opts.task,
     write: false,
   });
-  const taskCommitInfo = await readCommitInfo(opts.gitRoot, opts.mergeHash);
-  await writeFinishedTasks({
-    ctx: opts.ctx,
-    loadedTasks: [{ taskId: opts.taskId, task: opts.task }],
-    metaTaskId: opts.taskId,
-    author: "INTEGRATOR",
-    body: finishBody,
-    force: false,
-    resultProvided: true,
-    resultSummary,
-    riskLevel: undefined,
-    breaking: false,
-    taskCommitInfo,
-  });
+  if (!taskAlreadyDone) {
+    const taskCommitInfo = await readCommitInfo(opts.gitRoot, opts.mergeHash);
+    await writeFinishedTasks({
+      ctx: opts.ctx,
+      loadedTasks: [{ taskId: opts.taskId, task: opts.task }],
+      metaTaskId: opts.taskId,
+      author: "INTEGRATOR",
+      body: finishBody,
+      force: false,
+      resultProvided: true,
+      resultSummary,
+      riskLevel: undefined,
+      breaking: false,
+      taskCommitInfo,
+    });
+  }
   const collectedIncidents = await collectTaskIncidents({
     ctx: opts.ctx,
     taskId: opts.taskId,
@@ -129,6 +132,9 @@ export async function finalizeIntegrate(opts: {
     write: true,
   });
   if (!opts.quiet) {
+    if (taskAlreadyDone) {
+      output.info("task already DONE; integrate shipped the existing closure state without rewriting task status");
+    }
     output.info(renderIncidentCollectionPlanOutcome(collectedIncidents.plan));
   }
   await createTaskCloseCommit({

@@ -340,9 +340,17 @@ describe("runCli", () => {
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await runCliSilent(["pr", "update", taskId, "--root", root]);
     await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/pr`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `${taskId} refresh pr artifacts`], {
-      cwd: root,
-    });
+    const prArtifactStatusResult = await execFileAsync(
+      "git",
+      ["status", "--short", `.agentplane/tasks/${taskId}/pr`],
+      {
+        cwd: root,
+      },
+    );
+    const prArtifactStatus = prArtifactStatusResult.stdout.trim();
+    if (prArtifactStatus.length > 0) {
+      await commitAll(root, `${taskId} refresh pr artifacts`);
+    }
 
     const prMetaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
     expect(await pathExists(prMetaPath)).toBe(true);
@@ -711,6 +719,188 @@ describe("runCli", () => {
     expect(incidents).toContain("fixability: external");
     expect(incidents).toContain("state: open");
     expect(incidents).toContain("confirm the remote ref exists before waiting on workflow runs");
+  }, 180_000);
+
+  it("integrate ships an already DONE branch_pr task without duplicating closure state and still promotes incidents", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+    await stageGitignoreIfPresent(root);
+    await execFileAsync("git", ["add", "README.md", ".agentplane/policy/incidents.md"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate already-done recovery",
+        "--description",
+        "Integrate should ship a branch that is already closed locally.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "release",
+        "--tag",
+        "github-actions",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await approveTaskPlan(root, taskId);
+
+    for (const [section, text] of [
+      ["Verify Steps", "1. Run integrate on the prepared already-DONE branch_pr task."],
+      [
+        "Findings",
+        [
+          "- Observation: shipped repair tasks can already be DONE before the base branch integrates them.",
+          "  Impact: integrate can dirty the base checkout and skip incident promotion if it insists on reclosing the task.",
+          "  Resolution: let integrate ship an already-DONE task idempotently while still syncing PR metadata and incident promotion.",
+          "  Fixability: external",
+        ].join("\n"),
+      ],
+    ] as const) {
+      await runCliSilent([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        section,
+        "--text",
+        text,
+        "--root",
+        root,
+      ]);
+    }
+
+    await recordVerificationOk(root, taskId);
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/integrate-done`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+    const shippedCommitResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const shippedCommit = shippedCommitResult.stdout.trim();
+
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/pr`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+    const branchTask = await readTask({ cwd: root, taskId });
+    const doneAt = "2026-04-09T10:10:00.000Z";
+    const doneNote =
+      "Verified: the task branch is intentionally closed before base integrate so recovery flows can ship the existing closure state.";
+    const nextComments = [...(branchTask.frontmatter.comments ?? []), { author: "CODER", body: doneNote }];
+    const nextEvents = [
+      ...(branchTask.frontmatter.events ?? []),
+      {
+        type: "status",
+        at: doneAt,
+        author: "CODER",
+        from: String(branchTask.frontmatter.status || "TODO").toUpperCase(),
+        to: "DONE",
+        note: doneNote,
+      },
+    ];
+    const nextFrontmatter = {
+      ...branchTask.frontmatter,
+      status: "DONE",
+      result_summary: "Prepared already-DONE branch_pr task for integrate recovery coverage.",
+      commit: {
+        hash: shippedCommit,
+        message: `${taskId} add feature`,
+      },
+      comments: nextComments,
+      events: nextEvents,
+      doc_updated_at: doneAt,
+      doc_updated_by: "CODER",
+    };
+    await writeFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      renderTaskReadme(nextFrontmatter, branchTask.body),
+      "utf8",
+    );
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/README.md`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} mark done locally`], { cwd: root });
+    await runCliSilent(["pr", "update", taskId, "--root", root]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/pr`], { cwd: root });
+    const prArtifactStatusResult = await execFileAsync(
+      "git",
+      ["status", "--short", `.agentplane/tasks/${taskId}/pr`],
+      {
+        cwd: root,
+      },
+    );
+    const prArtifactStatus = prArtifactStatusResult.stdout.trim();
+    if (prArtifactStatus.length > 0) {
+      await commitAll(root, `${taskId} refresh pr artifacts`);
+    }
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("task already DONE; integrate shipped the existing closure state");
+      expect(io.stdout).toContain("✅ integrate");
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, taskId });
+    expect(task.frontmatter.status).toBe("DONE");
+    const comments = JSON.stringify(task.frontmatter.comments ?? []);
+    expect(comments).not.toContain("Verified: Integrated via");
+    const mergedMetaText = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"),
+      "utf8",
+    );
+    expect(mergedMetaText).toContain('"status": "MERGED"');
+    const incidents = await readFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      "utf8",
+    );
+    expect(incidents).toContain(`source_task: ${taskId}`);
+    expect(incidents).toContain("let integrate ship an already-DONE task idempotently");
+    const statusAfterResult = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=no"],
+      {
+        cwd: root,
+      },
+    );
+    const statusAfter = statusAfterResult.stdout.trim();
+    expect(statusAfter).toBe("");
   }, 180_000);
 
   it("integrate uses a compliant fallback commit subject when branch subject is invalid (squash)", async () => {
