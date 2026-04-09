@@ -7,6 +7,7 @@ import { infoMessage, successMessage } from "../../../cli/output.js";
 import { stripAnsi } from "../../../cli/shared/ansi.js";
 import { withDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
+import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commit-pr-artifacts.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
 import { loadTaskFromContext } from "../../shared/task-backend.js";
 import { execFileAsync, gitEnv } from "../../shared/git.js";
@@ -538,6 +539,13 @@ export async function cmdCommit(opts: {
       allowCI: opts.allowCI,
     });
     await ctx.git.commit({ message: opts.message, env });
+    await refreshBranchPrArtifactsAfterTaskCommit({
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: opts.taskId,
+      quiet: opts.quiet,
+    });
 
     if (!opts.quiet) {
       const { hash, subject } = await ctx.git.headHashSubject();

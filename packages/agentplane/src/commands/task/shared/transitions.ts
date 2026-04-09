@@ -10,6 +10,7 @@ import { CliError } from "../../../shared/errors.js";
 import { parseGitLogHashSubject } from "../../../shared/git-log.js";
 import type { TaskData, TaskEvent } from "../../../backends/task-backend.js";
 import { commitFromComment } from "../../guard/index.js";
+import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commit-pr-artifacts.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { requiresVerificationByPrimary, toStringArray } from "./tags.js";
 
@@ -224,7 +225,7 @@ export async function runTaskTransitionCommentCommit(opts: {
         author: opts.author,
       })
     : undefined;
-  return await commitFromComment({
+  const result = await commitFromComment({
     ctx: opts.ctx,
     cwd: opts.cwd,
     rootOverride: opts.rootOverride,
@@ -244,6 +245,14 @@ export async function runTaskTransitionCommentCommit(opts: {
     quiet: opts.quiet,
     config: opts.ctx.config,
   });
+  await refreshBranchPrArtifactsAfterTaskCommit({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    taskId: opts.taskId,
+    quiet: opts.quiet,
+  });
+  return result;
 }
 
 export async function readHeadCommit(cwd: string): Promise<{ hash: string; message: string }> {
