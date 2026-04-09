@@ -8,6 +8,9 @@ import { afterEach, describe, expect, it } from "vitest";
 
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts", "wait-remote-pr-checks.mjs");
+const explicitNodeBinary = process.env.NODE_BINARY?.trim();
+const SCRIPT_RUNTIME =
+  explicitNodeBinary && explicitNodeBinary.length > 0 ? explicitNodeBinary : "node";
 
 const tempRoots: string[] = [];
 type RunScriptResult = { exitCode: number; stdout: string; stderr: string };
@@ -16,6 +19,7 @@ type RunScriptOptions = { env?: Record<string, string> };
 function toText(value: unknown) {
   if (typeof value === "string") return value;
   if (Buffer.isBuffer(value)) return value.toString("utf8");
+  if (value instanceof Uint8Array) return Buffer.from(value).toString("utf8");
   return "";
 }
 
@@ -55,21 +59,30 @@ async function writeGhMock(root: string) {
   const script = [
     "#!/usr/bin/env node",
     "const fs = require('node:fs');",
+    "const path = require('node:path');",
     "const statePath = process.env.GH_STATE_FILE;",
     "const logPath = process.env.GH_CALL_LOG;",
     "const scenario = process.env.GH_SCENARIO || 'success';",
     "const args = process.argv.slice(2);",
     "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
-    "const state = statePath && fs.existsSync(statePath) ? JSON.parse(fs.readFileSync(statePath, 'utf8')) : {};",
-    "function save(next) { if (statePath) fs.writeFileSync(statePath, JSON.stringify(next, null, 2)); }",
+    "const stateSeed = statePath && fs.existsSync(statePath) ? JSON.parse(fs.readFileSync(statePath, 'utf8')) : {};",
+    "const stateDir = statePath ? `${statePath}.parts` : null;",
+    "if (stateDir) fs.mkdirSync(stateDir, { recursive: true });",
+    "function counterPath(key, subkey) { if (!stateDir) return null; const suffix = typeof subkey === 'string' ? subkey : '__root__'; return path.join(stateDir, `${key}__${encodeURIComponent(suffix)}.txt`); }",
+    "function readCounter(key, subkey) { const file = counterPath(key, subkey); if (!file || !fs.existsSync(file)) { if (typeof subkey === 'string') { const map = stateSeed[key] && typeof stateSeed[key] === 'object' ? stateSeed[key] : {}; return Number(map[subkey] || 0); } return Number(stateSeed[key] || 0); } const raw = fs.readFileSync(file, 'utf8').trim(); return raw.length > 0 ? Number(raw) : 0; }",
+    "function writeCounter(key, subkey, value) { const file = counterPath(key, subkey); if (!file) return; fs.writeFileSync(file, String(value)); }",
+    "function mapFromCounters(key) { if (!stateDir || !fs.existsSync(stateDir)) return stateSeed[key] && typeof stateSeed[key] === 'object' ? { ...stateSeed[key] } : {}; const result = stateSeed[key] && typeof stateSeed[key] === 'object' ? { ...stateSeed[key] } : {}; for (const entry of fs.readdirSync(stateDir)) { const prefix = `${key}__`; if (!entry.startsWith(prefix) || !entry.endsWith('.txt')) continue; const subkey = decodeURIComponent(entry.slice(prefix.length, -4)); if (subkey === '__root__') continue; const raw = fs.readFileSync(path.join(stateDir, entry), 'utf8').trim(); result[subkey] = raw.length > 0 ? Number(raw) : 0; } return result; }",
+    "function snapshotState() { return { ...stateSeed, prViewCalls: readCounter('prViewCalls'), prViewCallsByTarget: mapFromCounters('prViewCallsByTarget'), statusCallsByHead: mapFromCounters('statusCallsByHead'), checkRunCalls: readCounter('checkRunCalls'), protectionCalls: readCounter('protectionCalls'), repoViewCalls: readCounter('repoViewCalls') }; }",
+    "function saveSnapshot() { if (!statePath) return; fs.writeFileSync(statePath, JSON.stringify(snapshotState(), null, 2)); }",
+    "function readState() { return snapshotState(); }",
     "function ok(payload) { process.stdout.write(`${JSON.stringify(payload)}\\n`); process.exit(0); }",
     "function fail(message, code = 1) { process.stderr.write(`${message}\\n`); process.exit(code); }",
-    "function nextCount(key, subkey) { const current = statePath && fs.existsSync(statePath) ? JSON.parse(fs.readFileSync(statePath, 'utf8')) : state; const next = { ...current }; if (typeof subkey === 'string') { const currentMap = current[key] && typeof current[key] === 'object' ? current[key] : {}; const updatedMap = { ...currentMap, [subkey]: Number(currentMap[subkey] || 0) + 1 }; next[key] = updatedMap; save(next); return updatedMap[subkey]; } const value = Number(current[key] || 0) + 1; next[key] = value; save(next); return value; }",
+    "function nextCount(key, subkey) { const value = readCounter(key, subkey) + 1; writeCounter(key, subkey, value); saveSnapshot(); return value; }",
     "function prPayload(target) { if (target === '456') { return { number: 456, headRefOid: 'head-sha-2', baseRefName: 'main', url: 'https://github.com/basilisk-labs/agentplane/pull/456', title: 'Check polling 2' }; } return { number: 123, headRefOid: 'head-sha-1', baseRefName: 'main', url: 'https://github.com/basilisk-labs/agentplane/pull/123', title: 'Check polling' }; }",
     "function repoPayload() { return { nameWithOwner: 'basilisk-labs/agentplane' }; }",
     "function protectionPayload() { return { required_status_checks: { strict: true, contexts: ['Core CI / test', 'Docs CI / docs'], checks: [ { context: 'Core CI / test', app_id: 123 }, { context: 'Docs CI / docs', app_id: 456 } ] } }; }",
     "function statusPayload(headSha) {",
-    "  const currentMap = statePath && fs.existsSync(statePath) ? JSON.parse(fs.readFileSync(statePath, 'utf8')) : state;",
+    "  const currentMap = readState();",
     "  const attempts = currentMap.statusCallsByHead && typeof currentMap.statusCallsByHead === 'object' ? currentMap.statusCallsByHead : {};",
     "  const attempt = Number(attempts[headSha] || 0);",
     "  const pending = { state: 'pending', statuses: [ { context: 'Core CI / test', state: 'pending', description: 'running' }, { context: 'Docs CI / docs', state: 'pending', description: 'queued' } ] };",
@@ -81,7 +94,7 @@ async function writeGhMock(root: string) {
     "}",
     "function checkRunsPayload() { return { total_count: 0, check_runs: [] }; }",
     "function transientFailureOnce() {",
-    "  const attempt = Number(state.prViewCalls || 0);",
+    "  const attempt = Number(readState().prViewCalls || 0);",
     "  if (scenario === 'retry-transient' && attempt === 0) {",
     "    nextCount('prViewCalls');",
     String.raw`    fail('gh: Post "https://api.github.com/graphql": EOF');`,
@@ -114,7 +127,7 @@ async function writeGhMock(root: string) {
 
 async function runScript(args: string[], opts: RunScriptOptions = {}): Promise<RunScriptResult> {
   try {
-    const result = await execFileAsync(process.execPath, [SCRIPT_PATH, ...args], {
+    const result = await execFileAsync(SCRIPT_RUNTIME, [SCRIPT_PATH, ...args], {
       cwd: process.cwd(),
       env: { ...process.env, ...opts.env },
       maxBuffer: 10 * 1024 * 1024,
