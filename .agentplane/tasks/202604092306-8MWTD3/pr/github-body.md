@@ -39,25 +39,25 @@ When verify or finish leaves incidents.md unchanged because the operator only pa
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T23:13:02.626Z
+- Updated: 2026-04-09T23:31:51.650Z
 - Branch: task/202604092306-8MWTD3/incident-next-step
-- Head: 8dfa583e30e8
+- Head: e5d4a0e8f67b
 
 ```text
- .agentplane/tasks/202604092306-8MWTD3/README.md    | 122 +++++++++++++++++++++
- .../tasks/202604092306-8MWTD3/pr/diffstat.txt      |   0
- .../tasks/202604092306-8MWTD3/pr/github-body.md    |  50 +++++++++
+ .agentplane/tasks/202604092306-8MWTD3/README.md    | 144 +++++++++++++++++++++
+ .../tasks/202604092306-8MWTD3/pr/diffstat.txt      |  14 ++
+ .../tasks/202604092306-8MWTD3/pr/github-body.md    |  63 +++++++++
  .../tasks/202604092306-8MWTD3/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604092306-8MWTD3/pr/meta.json |  14 +++
+ .agentplane/tasks/202604092306-8MWTD3/pr/meta.json |  14 ++
  .../tasks/202604092306-8MWTD3/pr/notes.jsonl       |   0
- .agentplane/tasks/202604092306-8MWTD3/pr/review.md |  57 ++++++++++
+ .agentplane/tasks/202604092306-8MWTD3/pr/review.md |  70 ++++++++++
  .../tasks/202604092306-8MWTD3/pr/verify.log        |   0
  .../agentplane/src/commands/incidents/shared.ts    |  18 ++-
  packages/agentplane/src/commands/task/finish.ts    |   1 +
  .../src/commands/task/finish.unit.test.ts          |   1 +
  .../agentplane/src/commands/task/verify-record.ts  |   2 +
  .../src/commands/task/verify-record.unit.test.ts   |   3 +-
- 13 files changed, 266 insertions(+), 3 deletions(-)
+ 13 files changed, 328 insertions(+), 3 deletions(-)
 ```
 
 </details>

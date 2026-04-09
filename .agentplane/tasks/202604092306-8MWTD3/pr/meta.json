@@ -2,12 +2,17 @@
   "base": "main",
   "branch": "task/202604092306-8MWTD3/incident-next-step",
   "created_at": "2026-04-09T23:11:28.410Z",
-  "head_sha": "8dfa583e30e888ecc73d21b07ffe5775e51245da",
+  "head_sha": "e5d4a0e8f67b67cec480158f7f15ff4dd71d6624",
   "last_verified_at": "2026-04-09T23:13:23.207Z",
   "last_verified_sha": "8dfa583e30e888ecc73d21b07ffe5775e51245da",
+  "merge_commit": "15b5db39aa16de242aa1297f28b930215d38dbce",
+  "merged_at": "2026-04-09T23:27:06Z",
+  "pr_number": 239,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/239",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604092306-8MWTD3",
-  "updated_at": "2026-04-09T23:13:02.626Z",
+  "updated_at": "2026-04-09T23:31:51.650Z",
   "verify": {
     "status": "pass"
   }
