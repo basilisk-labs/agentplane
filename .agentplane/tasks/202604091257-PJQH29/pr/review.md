@@ -25,7 +25,7 @@ Extend incidents collection so explicitly marked internal or repository-fixable 
 ### Current Status
 
 - State: ok
-- Note: Command: bun test packages/agentplane/src/cli/run-cli.core.incidents.test.ts --timeout 120000 && bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/types.ts packages/agentplane/src/commands/task/findings.ts packages/agentplane/src/commands/task/findings-add.command.ts packages/agentplane/src/commands/task/verify-command-shared.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/verify-ok.command.ts packages/agentplane/src/commands/task/verify-rework.command.ts packages/agentplane/src/commands/verify.run.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts && node .agentplane/policy/check-routing.mjs; Result: pass. Evidence: incidents tests passed, eslint clean, routing check OK. Scope: repo-fixable incident promotion and incidents policy/runtime alignment.
+- Note: Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted incidents and wait-remote coverage for internal finding promotion into incidents.md.
 
 ## Risks
 
@@ -45,12 +45,36 @@ Extend incidents collection so explicitly marked internal or repository-fixable 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T13:28:56.872Z
+- Updated: 2026-04-09T14:21:26.353Z
 - Branch: task/202604091257-PJQH29/internal-incident-promotion
-- Head: 9312f3687b8b
+- Head: 33a630ec1f8f
 
 ```text
-No changes detected.
+ .agentplane/policy/governance.md                   |   2 +-
+ .agentplane/policy/incidents.md                    |   4 +-
+ .agentplane/tasks/202604091257-PJQH29/README.md    | 117 +++++++++++++++++++++
+ .../tasks/202604091257-PJQH29/pr/diffstat.txt      |   0
+ .../tasks/202604091257-PJQH29/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604091257-PJQH29/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091257-PJQH29/pr/meta.json |  17 +++
+ .../tasks/202604091257-PJQH29/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091257-PJQH29/pr/review.md |  57 ++++++++++
+ .../tasks/202604091257-PJQH29/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |   8 +-
+ packages/agentplane/assets/policy/governance.md    |   2 +-
+ packages/agentplane/assets/policy/incidents.md     |   4 +-
+ .../src/cli/run-cli.core.incidents.test.ts         |  96 ++++++++++++++++-
+ .../src/commands/task/findings-add.command.ts      |  25 ++++-
+ packages/agentplane/src/commands/task/findings.ts  |   9 +-
+ .../src/commands/task/verify-command-shared.ts     |  10 +-
+ .../src/commands/task/verify-ok.command.ts         |   1 +
+ .../agentplane/src/commands/task/verify-record.ts  |   8 ++
+ .../src/commands/task/verify-rework.command.ts     |   1 +
+ packages/agentplane/src/commands/verify.run.ts     |   1 +
+ .../src/runtime/incidents/resolve.test.ts          |   3 +-
+ .../agentplane/src/runtime/incidents/resolve.ts    |  33 +++---
+ packages/agentplane/src/runtime/incidents/types.ts |   5 +-
+ 24 files changed, 424 insertions(+), 30 deletions(-)
 ```
 
 </details>

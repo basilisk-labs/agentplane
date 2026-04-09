@@ -4,7 +4,7 @@ title: "Allow explicit internal incident findings to promote into incidents.md"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T13:15:19.186Z"
+  updated_at: "2026-04-09T14:21:26.323Z"
   updated_by: "CODER"
-  note: "Command: bun test packages/agentplane/src/cli/run-cli.core.incidents.test.ts --timeout 120000 && bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/types.ts packages/agentplane/src/commands/task/findings.ts packages/agentplane/src/commands/task/findings-add.command.ts packages/agentplane/src/commands/task/verify-command-shared.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/verify-ok.command.ts packages/agentplane/src/commands/task/verify-rework.command.ts packages/agentplane/src/commands/verify.run.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts && node .agentplane/policy/check-routing.mjs; Result: pass. Evidence: incidents tests passed, eslint clean, routing check OK. Scope: repo-fixable incident promotion and incidents policy/runtime alignment."
+  note: "Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted incidents and wait-remote coverage for internal finding promotion into incidents.md."
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/run-cli.core.incidents.test.ts --timeout 120000 && bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/types.ts packages/agentplane/src/commands/task/findings.ts packages/agentplane/src/commands/task/findings-add.command.ts packages/agentplane/src/commands/task/verify-command-shared.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/verify-ok.command.ts packages/agentplane/src/commands/task/verify-rework.command.ts packages/agentplane/src/commands/verify.run.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts && node .agentplane/policy/check-routing.mjs; Result: pass. Evidence: incidents tests passed, eslint clean, routing check OK. Scope: repo-fixable incident promotion and incidents policy/runtime alignment."
+  -
+    type: "verify"
+    at: "2026-04-09T14:21:26.323Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted incidents and wait-remote coverage for internal finding promotion into incidents.md."
 doc_version: 3
-doc_updated_at: "2026-04-09T13:15:19.193Z"
+doc_updated_at: "2026-04-09T14:21:26.329Z"
 doc_updated_by: "CODER"
 description: "Extend incidents collection so explicitly marked internal or repository-fixable workflow findings can promote into the shared incidents registry without manual incidents.md edits."
 sections:
@@ -67,6 +73,14 @@ sections:
     Note: Command: bun test packages/agentplane/src/cli/run-cli.core.incidents.test.ts --timeout 120000 && bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/types.ts packages/agentplane/src/commands/task/findings.ts packages/agentplane/src/commands/task/findings-add.command.ts packages/agentplane/src/commands/task/verify-command-shared.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/verify-ok.command.ts packages/agentplane/src/commands/task/verify-rework.command.ts packages/agentplane/src/commands/verify.run.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts && node .agentplane/policy/check-routing.mjs; Result: pass. Evidence: incidents tests passed, eslint clean, routing check OK. Scope: repo-fixable incident promotion and incidents policy/runtime alignment.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:11:17.106Z, excerpt_hash=sha256:b9f64d4eec78460d064482fc143529bba19b12d004d085ab526fb574c1c310b7
+    
+    ### 2026-04-09T14:21:26.323Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted incidents and wait-remote coverage for internal finding promotion into incidents.md.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:15:19.193Z, excerpt_hash=sha256:b9f64d4eec78460d064482fc143529bba19b12d004d085ab526fb574c1c310b7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -106,6 +120,14 @@ By: CODER
 Note: Command: bun test packages/agentplane/src/cli/run-cli.core.incidents.test.ts --timeout 120000 && bun x eslint packages/agentplane/src/runtime/incidents/resolve.ts packages/agentplane/src/runtime/incidents/types.ts packages/agentplane/src/commands/task/findings.ts packages/agentplane/src/commands/task/findings-add.command.ts packages/agentplane/src/commands/task/verify-command-shared.ts packages/agentplane/src/commands/task/verify-record.ts packages/agentplane/src/commands/task/verify-ok.command.ts packages/agentplane/src/commands/task/verify-rework.command.ts packages/agentplane/src/commands/verify.run.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts && node .agentplane/policy/check-routing.mjs; Result: pass. Evidence: incidents tests passed, eslint clean, routing check OK. Scope: repo-fixable incident promotion and incidents policy/runtime alignment.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:11:17.106Z, excerpt_hash=sha256:b9f64d4eec78460d064482fc143529bba19b12d004d085ab526fb574c1c310b7
+
+### 2026-04-09T14:21:26.323Z — VERIFY — ok
+
+By: CODER
+
+Note: Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted incidents and wait-remote coverage for internal finding promotion into incidents.md.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:15:19.193Z, excerpt_hash=sha256:b9f64d4eec78460d064482fc143529bba19b12d004d085ab526fb574c1c310b7
 
 <!-- END VERIFICATION RESULTS -->
 
