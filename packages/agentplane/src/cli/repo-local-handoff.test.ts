@@ -138,6 +138,69 @@ async function setupFrameworkCheckoutWithoutDist() {
   };
 }
 
+async function setupFrameworkCheckoutWithoutInstallLayout() {
+  const repoRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-framework-checkout-"));
+  tempRoots.push(repoRoot);
+  const binDir = path.join(repoRoot, "packages", "agentplane", "bin");
+  const distDir = path.join(repoRoot, "packages", "agentplane", "dist");
+  const srcDir = path.join(repoRoot, "packages", "agentplane", "src", "nested");
+  await mkdir(binDir, { recursive: true });
+  await mkdir(distDir, { recursive: true });
+  await mkdir(srcDir, { recursive: true });
+  for (const entry of await readdir(path.join(workspaceRoot, "packages", "agentplane", "bin"))) {
+    if (!entry.endsWith(".js")) continue;
+    await copyFile(
+      path.join(workspaceRoot, "packages", "agentplane", "bin", entry),
+      path.join(binDir, entry),
+    );
+  }
+  await writeFile(
+    path.join(repoRoot, "packages", "agentplane", "src", "cli.ts"),
+    "export const cli = true;\n",
+    "utf8",
+  );
+  await writeFile(
+    path.join(repoRoot, "packages", "agentplane", "package.json"),
+    '{\n  "name": "agentplane",\n  "type": "module",\n  "dependencies": {\n    "@agentplaneorg/core": "0.0.0-test"\n  }\n}\n',
+    "utf8",
+  );
+  await writeFile(
+    path.join(distDir, "cli.js"),
+    ["#!/usr/bin/env node", String.raw`process.stdout.write("SHOULD_NOT_RUN\n");`, ""].join("\n"),
+    "utf8",
+  );
+  await execFileAsync("git", ["init", "-q", "-b", "main"], { cwd: repoRoot });
+  await execFileAsync("git", ["config", "user.name", "Repo Local Handoff Test"], { cwd: repoRoot });
+  await execFileAsync("git", ["config", "user.email", "repo-local-handoff@example.com"], {
+    cwd: repoRoot,
+  });
+  await execFileAsync("git", ["add", "."], { cwd: repoRoot });
+  await execFileAsync("git", ["commit", "-m", "feat: install-layout harness"], {
+    cwd: repoRoot,
+  });
+  const headResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: path.join(repoRoot, "packages", "agentplane"),
+    encoding: "utf8",
+  });
+  const head = headResult.stdout.trim();
+  await writeFile(
+    path.join(distDir, ".build-manifest.json"),
+    JSON.stringify({
+      schema_version: 1,
+      git_head: head,
+      watched_runtime_paths: ["src"],
+      watched_runtime_files: [{ path: "src/cli.ts", sha256: "stub", size_bytes: 24 }],
+      watched_runtime_snapshot_hash: "stub",
+    }),
+    "utf8",
+  );
+
+  return {
+    repoRoot,
+    nestedCwd: srcDir,
+  };
+}
+
 afterEach(async () => {
   while (tempRoots.length > 0) {
     const root = tempRoots.pop();
@@ -252,6 +315,34 @@ describe("repo-local handoff wrapper", () => {
       expect(err.stderr ?? "").toContain(
         "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>",
       );
+      expect(err.stdout ?? "").toBe("");
+    }
+  });
+
+  it("reports bootstrap guidance when repo-local install layout is missing", async () => {
+    const globalInstall = await setupGlobalInstall();
+    const framework = await setupFrameworkCheckoutWithoutInstallLayout();
+
+    try {
+      await execFileAsync(process.execPath, [globalInstall.binPath, "help"], {
+        cwd: framework.nestedCwd,
+        encoding: "utf8",
+        env: buildChildEnv(),
+      });
+      throw new Error("expected command to fail");
+    } catch (error) {
+      const err = error as { stderr?: string; stdout?: string };
+      expect(err.stderr ?? "").toContain(
+        "repo-local runtime dependencies are missing for this framework checkout",
+      );
+      expect(err.stderr ?? "").toContain("This worktree is not bootstrapped yet.");
+      expect(err.stderr ?? "").toContain("@agentplaneorg/core");
+      expect(err.stderr ?? "").toContain("bun run framework:dev:bootstrap");
+      expect(err.stderr ?? "").toContain(
+        "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>",
+      );
+      expect(err.stderr ?? "").not.toContain("ERR_MODULE_NOT_FOUND");
+      expect(err.stdout ?? "").not.toContain("SHOULD_NOT_RUN");
       expect(err.stdout ?? "").toBe("");
     }
   });
