@@ -1,10 +1,11 @@
 ---
 id: "202604091218-JREJ4K"
 title: "Promote April 9 workflow findings into incidents.md"
-status: "TODO"
+result_summary: "Merged via PR #178."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,8 +22,13 @@ verification:
   updated_at: "2026-04-09T12:27:17.172Z"
   updated_by: "CODER"
   note: "Verified incidents registry update: April 9 orchestration incident added, incidents advise now matches WWSX2G/8S07FZ, and routing check passes within budget."
-commit: null
-comments: []
+commit:
+  hash: "7a72d5aa5741a8139cef00abab3d703900696621"
+  message: "📝 JREJ4K task: promote April 9 incidents (#178)"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #178 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "verify"
@@ -30,9 +36,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified incidents registry update: April 9 orchestration incident added, incidents advise now matches WWSX2G/8S07FZ, and routing check passes within budget."
+  -
+    type: "status"
+    at: "2026-04-09T12:50:44.357Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #178 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T12:27:17.176Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T12:50:44.362Z"
+doc_updated_by: "INTEGRATOR"
 description: "Record reusable workflow incidents from the April 9 execution wave so incident advice reflects the real failure modes encountered during branch_pr orchestration."
 sections:
   Summary: |-
