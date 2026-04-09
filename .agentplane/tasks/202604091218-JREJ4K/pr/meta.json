@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604091218-JREJ4K/incident-promotion-apr9",
   "created_at": "2026-04-09T12:27:17.208Z",
-  "head_sha": "af4d3dd2740788d00319ce6c7520b18931d9401f",
+  "head_sha": "7b27a9c803e1bb92b029483286642eee04eb15bb",
   "last_verified_at": "2026-04-09T12:27:17.172Z",
   "last_verified_sha": "af4d3dd2740788d00319ce6c7520b18931d9401f",
+  "merge_commit": "7a72d5aa5741a8139cef00abab3d703900696621",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T12:50:15Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604091218-JREJ4K",
-  "updated_at": "2026-04-09T12:27:17.208Z",
+  "updated_at": "2026-04-09T12:50:15Z",
   "verify": {
     "status": "pass"
   }
