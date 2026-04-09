@@ -1,10 +1,11 @@
 ---
 id: "202604091258-XKAYP1"
 title: "Reduce pr open artifact churn after remote PR linkage"
-status: "DOING"
+result_summary: "integrate: squash task/202604091258-XKAYP1/pr-open-churn"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-09T14:20:35.833Z"
   updated_by: "CODER"
   note: "Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted wait-remote/pr-flow coverage for the pr open artifact-churn path."
-commit: null
+commit:
+  hash: "13a0bcfb382848d0f1df3495782329b4d70d4234"
+  message: "🧩 XKAYP1 integrate: ux/workflow: Reduce pr open artifact churn after remote PR linkage"
 comments:
   -
     author: "CODER"
     body: "Start: Reduce pr open metadata churn so GitHub PR linkage updates avoid rewriting stable review and body artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091258-XKAYP1/pr."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted wait-remote/pr-flow coverage for the pr open artifact-churn path."
+  -
+    type: "status"
+    at: "2026-04-09T14:31:41.858Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091258-XKAYP1/pr."
 doc_version: 3
-doc_updated_at: "2026-04-09T14:20:35.839Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T14:31:41.863Z"
+doc_updated_by: "INTEGRATOR"
 description: "When pr open creates or links a GitHub PR, avoid rewriting review/body artifacts unnecessarily so the task branch does not require a broad metadata-only follow-up commit."
 sections:
   Summary: |-
