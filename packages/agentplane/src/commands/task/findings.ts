@@ -159,12 +159,12 @@ export function renderFindingsAddRegistryNote(opts: {
     if (opts.branchPr) {
       return (
         `incident candidate recorded for ${opts.taskId}; ` +
-        "incidents.md updates later during finish or `agentplane incidents collect <task-id>`; task-local until base-branch promotion in the current task worktree"
+        "incidents.md updates later during finish, `verify --collect-incidents`, or `agentplane incidents collect <task-id>`; task-local until base-branch promotion in the current task worktree"
       );
     }
     return (
       `incident candidate recorded for ${opts.taskId}; ` +
-      "incidents.md updates later during finish or `agentplane incidents collect <task-id>`; task-local in the current checkout until promotion"
+      "incidents.md updates later during finish, `verify --collect-incidents`, or `agentplane incidents collect <task-id>`; task-local in the current checkout until promotion"
     );
   }
   return `task-local finding recorded for ${opts.taskId}; incidents.md unchanged in the current checkout`;

@@ -509,6 +509,188 @@ describe("runCli", () => {
     await readFile(path.join(prDir, "github-body.md"), "utf8");
   });
 
+  it("task set-status --commit-from-comment refreshes branch_pr PR head_sha after the commit", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Branch PR meta head sync",
+        "--description",
+        "Comment-driven task commits should keep pr/meta head_sha current",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/status-sync`], { cwd: root });
+
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/status-sync`,
+      "--root",
+      root,
+    ]);
+
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: move the task into DOING before the comment-driven status commit sync regression.",
+      "--root",
+      root,
+    ]);
+
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const before = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
+    expect(before.head_sha).toMatch(/^[0-9a-f]{40}$/u);
+
+    await writeFile(path.join(root, "blocker.txt"), "blocked\n", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "set-status",
+        taskId,
+        "BLOCKED",
+        "--author",
+        "CODER",
+        "--body",
+        "Blocked: waiting on a dependency while the branch_pr PR artifact refresh regression is under test.",
+        "--commit-from-comment",
+        "--commit-allow",
+        "blocker.txt",
+        "--confirm-status-commit",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const after = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
+    const { stdout: headStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const headSha = headStdout.trim();
+    expect(after.head_sha).toBe(headSha);
+    expect(after.head_sha).not.toBe(before.head_sha);
+  });
+
+  it("commit refreshes branch_pr PR head_sha after a task-scoped commit", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Branch PR guard commit sync",
+        "--description",
+        "Commit should keep pr/meta head_sha current on task branches",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/guard-sync`], { cwd: root });
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/guard-sync`,
+      "--root",
+      root,
+    ]);
+
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const before = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
+    expect(before.head_sha).toMatch(/^[0-9a-f]{40}$/u);
+    const suffix = extractTaskSuffix(taskId);
+
+    await writeFile(path.join(root, "src.ts"), "export const value = 1;\n", "utf8");
+    await execFileAsync("git", ["add", "src.ts"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        taskId,
+        "-m",
+        `🧩 ${suffix} workflow: refresh branch_pr artifacts after guard commit`,
+        "--allow",
+        "src.ts",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const after = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
+    const { stdout: headStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const headSha = headStdout.trim();
+    expect(after.head_sha).toBe(headSha);
+    expect(after.head_sha).not.toBe(before.head_sha);
+  });
+
   it("pr update refreshes diffstat and auto summary", { timeout: 60_000 }, async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -1122,7 +1304,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain(
-        "branch_pr note: incident-related changes stay in the current task worktree until structured findings are promoted on the base branch or collected explicitly.",
+        "branch_pr note: structured findings stay in the current task worktree until promoted on the base branch or collected explicitly with `--collect-incidents` or `agentplane incidents collect <task-id>`.",
       );
       expect(io.stdout).toContain("finding=incident-candidate");
     } finally {
@@ -2614,7 +2796,7 @@ describe("runCli", () => {
       const code = await runCli(["pr", "nope", "202601010101-ABCDEF", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage:");
-      expect(io.stderr).toContain("agentplane pr <open|update|check|note|close>");
+      expect(io.stderr).toContain("agentplane pr <open|update|check|note|close|close-superseded>");
     } finally {
       io.restore();
     }

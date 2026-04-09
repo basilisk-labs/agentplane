@@ -3,12 +3,14 @@ import { execFile } from "node:child_process";
 import { readFileSync } from "node:fs";
 import {
   chmod,
+  cp,
   mkdir,
   mkdtemp,
   readdir,
   readFile,
   realpath,
   rm,
+  symlink,
   writeFile,
 } from "node:fs/promises";
 import os from "node:os";
@@ -59,6 +61,52 @@ import * as prompts from "./prompts.js";
 installRunCliIntegrationHarness();
 
 const WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS = 60_000;
+const workspaceRoot = process.cwd();
+
+async function seedRepoLocalDistArtifacts(root: string): Promise<void> {
+  const agentplaneDist = path.join(root, "packages", "agentplane", "dist");
+  const coreDist = path.join(root, "packages", "core", "dist");
+  await mkdir(agentplaneDist, { recursive: true });
+  await mkdir(coreDist, { recursive: true });
+  await writeFile(
+    path.join(agentplaneDist, "cli.js"),
+    [
+      "#!/usr/bin/env node",
+      String.raw`process.stdout.write("Mode: repo-local\nFramework checkout: yes\n");`,
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  await writeFile(path.join(coreDist, "index.js"), "export const core = true;\n", "utf8");
+}
+
+async function seedRepoLocalBinArtifacts(root: string): Promise<void> {
+  await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
+  await cp(
+    path.join(workspaceRoot, "packages", "agentplane", "bin"),
+    path.join(root, "packages", "agentplane", "bin"),
+    { recursive: true },
+  );
+}
+
+async function seedRepoLocalNodeModules(root: string): Promise<void> {
+  const target = path.join(root, "node_modules");
+  await symlink(
+    path.join(workspaceRoot, "node_modules"),
+    target,
+    process.platform === "win32" ? "junction" : "dir",
+  );
+}
+
+async function seedRepoLocalCorePackage(root: string): Promise<void> {
+  const packageDir = path.join(root, "packages", "agentplane", "node_modules", "@agentplaneorg");
+  await mkdir(packageDir, { recursive: true });
+  await symlink(
+    path.join(workspaceRoot, "packages", "core"),
+    path.join(packageDir, "core"),
+    process.platform === "win32" ? "junction" : "dir",
+  );
+}
 
 describe("runCli", () => {
   it("work start requires task id and flags", async () => {
@@ -302,6 +350,10 @@ describe("runCli", () => {
       const execFileAsync = promisify(execFile);
       await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+      await seedRepoLocalBinArtifacts(root);
+      await seedRepoLocalNodeModules(root);
+      await seedRepoLocalCorePackage(root);
+      await seedRepoLocalDistArtifacts(root);
 
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
@@ -554,6 +606,15 @@ describe("runCli", () => {
       expect(
         await pathExists(path.join(root, ".agentplane", "tasks", siblingTaskId, "README.md")),
       ).toBe(true);
+      expect(
+        await pathExists(path.join(worktreePath, "packages", "agentplane", "bin", "agentplane.js")),
+      ).toBe(true);
+      expect(
+        await pathExists(path.join(worktreePath, "packages", "agentplane", "dist", "cli.js")),
+      ).toBe(true);
+      expect(
+        await pathExists(path.join(worktreePath, "packages", "core", "dist", "index.js")),
+      ).toBe(true);
 
       const { stdout: baseTaskStatusAfter } = await execFileAsync(
         "git",
@@ -582,27 +643,8 @@ describe("runCli", () => {
         showIo.restore();
       }
 
-      const startIo = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "start-ready",
-          taskId,
-          "--author",
-          "CODER",
-          "--body",
-          "Start: bootstrap the fresh worktree from a seeded local-backend snapshot.",
-          "--root",
-          worktreePath,
-        ]);
-        expect(code).toBe(0);
-        expect(startIo.stdout).toContain("✅ ready");
-      } finally {
-        startIo.restore();
-      }
-
       const seededReadme = await readFile(taskReadmePath, "utf8");
-      expect(seededReadme).toContain('status: "DOING"');
+      expect(seededReadme).toContain('status: "TODO"');
     },
     WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
   );

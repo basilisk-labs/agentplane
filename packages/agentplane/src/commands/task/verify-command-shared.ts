@@ -116,7 +116,7 @@ export const verifyCommonOptions: readonly OptionSpec[] = [
     name: "collect-incidents",
     default: false,
     description:
-      "After recording verification, immediately run incidents collection and update incidents.md.",
+      "After recording verification, collect promotable findings into incidents.md immediately.",
   },
   ...verifyFindingOptions,
 ] as const;

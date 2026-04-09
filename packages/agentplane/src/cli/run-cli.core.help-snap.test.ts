@@ -37,6 +37,22 @@ describe("runCli help snapshots (cli2)", () => {
     }
   });
 
+  it("help verify --compact highlights explicit incident collection", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help", "verify", "--compact"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(
+        "Record a verification outcome for a task; incident candidates stay task-local unless collected explicitly.",
+      );
+      expect(io.stdout).toContain(
+        "After recording verification, collect promotable findings into incidents.md immediately.",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
   it("help task --compact snapshot", async () => {
     const io = captureStdIO();
     try {
