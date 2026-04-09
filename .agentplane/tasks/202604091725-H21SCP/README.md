@@ -1,10 +1,11 @@
 ---
 id: "202604091725-H21SCP"
 title: "Ignore dotfiles in watched runtime snapshots"
-status: "DOING"
+result_summary: "Merged via PR #210."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-09T17:46:37.218Z"
   updated_by: "CODER"
   note: "Verified targeted runtime-watch/dist-guard regressions and eslint; source-tree dotfiles no longer affect watched runtime snapshots or stale-dist freshness."
-commit: null
+commit:
+  hash: "6a2eb21689b0de41719937d51cd31e051e7e6635"
+  message: "Ignore dotfiles in watched runtime snapshots (H21SCP) (#210)"
 comments:
   -
     author: "CODER"
     body: "Start: exclude dotfile litter like .DS_Store from watched runtime snapshots so stale-dist manifests stop drifting across branches and machines for non-code filesystem noise."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #210 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified targeted runtime-watch/dist-guard regressions and eslint; source-tree dotfiles no longer affect watched runtime snapshots or stale-dist freshness."
+  -
+    type: "status"
+    at: "2026-04-09T18:08:04.568Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #210 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T17:46:37.225Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T18:08:04.574Z"
+doc_updated_by: "INTEGRATOR"
 description: "Exclude junk dotfiles such as .DS_Store from watched runtime snapshot collection so stale-dist manifests do not drift across branches or machines because of filesystem litter."
 sections:
   Summary: |-
