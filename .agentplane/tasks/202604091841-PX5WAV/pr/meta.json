@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202604091841-PX5WAV/tracked-closure-state",
   "created_at": "2026-04-09T18:59:43.960Z",
-  "head_sha": "90eda1ee7f3efab0d3460b3c9232d2dd1c2b3fc4",
+  "head_sha": "9270e53dc2d64ee1419226c62df5cd972ccaa6d1",
   "last_verified_at": "2026-04-09T18:59:43.941Z",
   "last_verified_sha": "dfcc52eefa55537b250adcadde367aa24fc6abd5",
+  "pr_number": 220,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/220",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202604091841-PX5WAV",
-  "updated_at": "2026-04-09T18:59:58.583Z",
+  "updated_at": "2026-04-09T19:08:30.603Z",
   "verify": {
     "status": "pass"
   }
