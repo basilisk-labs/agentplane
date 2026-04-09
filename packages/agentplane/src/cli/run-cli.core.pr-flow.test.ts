@@ -648,4 +648,99 @@ describe("runCli", () => {
     },
     WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
   );
+
+  it(
+    "task start-ready keeps the active task README synchronized between base and task worktree",
+    { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      const ioTask = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Start ready worktree sync",
+          "--description",
+          "Branch_pr start-ready should keep base and worktree task README state aligned.",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await approveTaskPlan(root, taskId);
+
+      const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-readme-sync`);
+      await runCliSilent([
+        "work",
+        "start",
+        taskId,
+        "--agent",
+        "CODER",
+        "--slug",
+        "readme-sync",
+        "--worktree",
+        "--root",
+        root,
+      ]);
+
+      const ioStart = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "start-ready",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: synchronize the task README state between base and task worktree.",
+          "--root",
+          worktreePath,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        ioStart.restore();
+      }
+
+      const baseReadmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+      const worktreeReadmePath = path.join(
+        worktreePath,
+        ".agentplane",
+        "tasks",
+        taskId,
+        "README.md",
+      );
+      const [baseReadme, worktreeReadme] = await Promise.all([
+        readFile(baseReadmePath, "utf8"),
+        readFile(worktreeReadmePath, "utf8"),
+      ]);
+
+      expect(baseReadme).toContain('status: "DOING"');
+      expect(worktreeReadme).toContain('status: "DOING"');
+      expect(baseReadme).toContain("Start: synchronize the task README state");
+      expect(baseReadme).toBe(worktreeReadme);
+    },
+  );
 });
