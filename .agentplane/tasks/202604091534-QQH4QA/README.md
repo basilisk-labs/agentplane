@@ -1,10 +1,11 @@
 ---
 id: "202604091534-QQH4QA"
 title: "Sanitize hosted-merge-sync gh lookups"
-status: "DOING"
+result_summary: "Merged via PR #198."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +33,16 @@ verification:
     Result: pass
     Evidence: eslint exited 0 for all touched hosted-merge-sync files.
     Scope: implementation, unit regression, and CLI normalize regression.
-commit: null
+commit:
+  hash: "98680d56adf17897e38300d7087d5c9ef72f117b"
+  message: "github/workflow: Sanitize hosted-merge-sync gh lookups (QQH4QA) (#198)"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce hosted-merge-sync gh child-process auth drift and move it onto the shared sanitized gh environment path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #198 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
       Result: pass
       Evidence: eslint exited 0 for all touched hosted-merge-sync files.
       Scope: implementation, unit regression, and CLI normalize regression.
+  -
+    type: "status"
+    at: "2026-04-09T15:52:24.756Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #198 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T15:44:24.402Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T15:52:24.762Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make hosted branch_pr reconcile use the same sanitized GitHub CLI environment contract as other gh helpers so task normalize no longer fails with child-process 401 errors when standalone gh is authenticated."
 sections:
   Summary: |-
