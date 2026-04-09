@@ -2,6 +2,14 @@ import path from "node:path";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { readFile as readFileFn } from "node:fs/promises";
+import type {
+  loadConfig as loadConfigFn,
+  resolveProject as resolveProjectFn,
+} from "@agentplaneorg/core";
+import type { fileExists as fileExistsFn } from "../../../cli/fs-utils.js";
+import type { gitShowFile as gitShowFileFn } from "../../shared/git-diff.js";
+
 const mocks = {
   resolveProject: vi.fn(),
   loadConfig: vi.fn(),
@@ -10,19 +18,36 @@ const mocks = {
   gitShowFile: vi.fn(),
 };
 
+const callResolveProject = (
+  ...args: Parameters<typeof resolveProjectFn>
+): ReturnType<typeof resolveProjectFn> =>
+  mocks.resolveProject(...args) as ReturnType<typeof resolveProjectFn>;
+const callLoadConfig = (
+  ...args: Parameters<typeof loadConfigFn>
+): ReturnType<typeof loadConfigFn> => mocks.loadConfig(...args) as ReturnType<typeof loadConfigFn>;
+const callFileExists = (
+  ...args: Parameters<typeof fileExistsFn>
+): ReturnType<typeof fileExistsFn> => mocks.fileExists(...args) as ReturnType<typeof fileExistsFn>;
+const callReadFile = (...args: Parameters<typeof readFileFn>): ReturnType<typeof readFileFn> =>
+  mocks.readFile(...args) as ReturnType<typeof readFileFn>;
+const callGitShowFile = (
+  ...args: Parameters<typeof gitShowFileFn>
+): ReturnType<typeof gitShowFileFn> =>
+  mocks.gitShowFile(...args) as ReturnType<typeof gitShowFileFn>;
+
 vi.mock("@agentplaneorg/core", () => ({
-  resolveProject: (...args: unknown[]) => mocks.resolveProject(...args),
-  loadConfig: (...args: unknown[]) => mocks.loadConfig(...args),
+  resolveProject: callResolveProject,
+  loadConfig: callLoadConfig,
 }));
 vi.mock("../../../cli/fs-utils.js", () => ({
-  fileExists: (...args: unknown[]) => mocks.fileExists(...args),
+  fileExists: callFileExists,
 }));
 vi.mock("node:fs/promises", () => ({
-  readFile: (...args: unknown[]) => mocks.readFile(...args),
+  readFile: callReadFile,
 }));
 vi.mock("../../shared/git-diff.js", () => ({
   toGitPath: (value: string) => value.replaceAll("\\", "/"),
-  gitShowFile: (...args: unknown[]) => mocks.gitShowFile(...args),
+  gitShowFile: callGitShowFile,
 }));
 
 describe("pr/internal/pr-paths", () => {
