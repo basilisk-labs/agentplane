@@ -1,10 +1,11 @@
 ---
 id: "202604091218-8S07FZ"
 title: "Allow workflow:wait-remote-checks to accept multiple PRs"
-status: "DOING"
+result_summary: "Merged via PR #179."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-09T12:23:06.707Z"
   updated_by: "CODER"
   note: "Verified multi-PR support in workflow:wait-remote-checks. Focused tests passed for single-PR, multi-PR order/caching, failure semantics, transient GH retry, auth failure, and timeout paths. Focused lint passed for scripts/wait-remote-pr-checks.mjs and packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts."
-commit: null
+commit:
+  hash: "1e6b8a5b9acf86a98becae05d2f82ca4f4023b72"
+  message: "workflow: Allow workflow:wait-remote-checks to accept multiple PRs (8S07FZ) (#179)"
 comments:
   -
     author: "CODER"
     body: "Start: implement multi-PR wait support in workflow:wait-remote-checks with focused tests and verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #179 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified multi-PR support in workflow:wait-remote-checks. Focused tests passed for single-PR, multi-PR order/caching, failure semantics, transient GH retry, auth failure, and timeout paths. Focused lint passed for scripts/wait-remote-pr-checks.mjs and packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts."
+  -
+    type: "status"
+    at: "2026-04-09T12:50:20.470Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #179 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T12:23:06.711Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T12:50:20.476Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make the remote-check wait helper accept multiple PR numbers in one invocation so orchestration waves do not need ad hoc shell fan-out just to wait for several task PRs."
 sections:
   Summary: |-
