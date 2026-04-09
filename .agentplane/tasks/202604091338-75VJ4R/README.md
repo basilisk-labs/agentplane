@@ -1,10 +1,11 @@
 ---
 id: "202604091338-75VJ4R"
 title: "Stabilize wait-remote-pr-checks gh mock under parallel polling"
-status: "DOING"
+result_summary: "integrate: squash task/202604091338-75VJ4R/wait-remote-gh-mock-race"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-09T13:57:30.062Z"
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts --timeout 120000; for i in {1..10}; do bun test packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts -t 'retries transient gh transport errors before resolving the PR' --timeout 120000; done; for i in {1..10}; do bun test packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts -t 'times out with an explicit message when checks never settle' --timeout 120000; done; bun x eslint packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts. Result: pass. Evidence: full file 7/7 pass; transient retry loop 10/10 pass; timeout loop 10/10 pass; eslint and prettier clean. Scope: packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts gh mock harness stability under concurrent status/check-runs polling."
-commit: null
+commit:
+  hash: "d73aa5574c1054cd520f55c208e179619d54deec"
+  message: "🧩 75VJ4R integrate: Stabilize wait-remote-pr-checks gh mock under parallel polling"
 comments:
   -
     author: "CODER"
     body: "Start: reproduced the shared gh-state file race locally; concurrent gh api status/check-runs calls in the wait-remote-pr-checks test harness can read partially written JSON and make CI fail nondeterministically across multiple PRs."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091338-75VJ4R/pr."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts --timeout 120000; for i in {1..10}; do bun test packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts -t 'retries transient gh transport errors before resolving the PR' --timeout 120000; done; for i in {1..10}; do bun test packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts -t 'times out with an explicit message when checks never settle' --timeout 120000; done; bun x eslint packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts. Result: pass. Evidence: full file 7/7 pass; transient retry loop 10/10 pass; timeout loop 10/10 pass; eslint and prettier clean. Scope: packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts gh mock harness stability under concurrent status/check-runs polling."
+  -
+    type: "status"
+    at: "2026-04-09T14:05:41.819Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091338-75VJ4R/pr."
 doc_version: 3
-doc_updated_at: "2026-04-09T13:57:30.066Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T14:05:41.823Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the flaky wait-remote-pr-checks script test harness so concurrent gh api calls do not corrupt shared mock state and block PR CI across branch_pr workflow tasks."
 sections:
   Summary: |-
