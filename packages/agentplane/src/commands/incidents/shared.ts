@@ -210,18 +210,21 @@ export function renderIncidentCollectionOutcome(promotedCount: number): string {
     : "incident registry unchanged (no promotable external findings)";
 }
 
-export function renderIncidentCollectionPlanOutcome(plan: {
-  candidates?: readonly unknown[];
-  skipped?: readonly unknown[];
-  promotable?: readonly unknown[];
-  duplicates?: readonly unknown[];
-  issues?: readonly { missingFields?: readonly string[] }[];
-  findingsTextPresent?: boolean;
-  structuredFindingCount?: number;
-}, opts?: {
-  wrote?: boolean;
-  context?: "collect" | "verify" | "generic";
-}): string {
+export function renderIncidentCollectionPlanOutcome(
+  plan: {
+    candidates?: readonly unknown[];
+    skipped?: readonly unknown[];
+    promotable?: readonly unknown[];
+    duplicates?: readonly unknown[];
+    issues?: readonly { missingFields?: readonly string[] }[];
+    findingsTextPresent?: boolean;
+    structuredFindingCount?: number;
+  },
+  opts?: {
+    wrote?: boolean;
+    context?: "collect" | "verify" | "generic";
+  },
+): string {
   const candidates = Array.isArray(plan.candidates) ? plan.candidates.length : 0;
   const skipped = Array.isArray(plan.skipped) ? plan.skipped.length : 0;
   const promoted = Array.isArray(plan.promotable) ? plan.promotable.length : 0;
@@ -268,7 +271,8 @@ export function renderIncidentCollectionPlanOutcome(plan: {
       missingFields.length > 0
         ? ` missing required fields: ${missingFields.join(", ")}`
         : " missing required promotion fields";
-    const suffix = issues > 1 ? `; +${issues - 1} more candidate${issues - 1 === 1 ? "" : "s"}` : "";
+    const suffix =
+      issues > 1 ? `; +${issues - 1} more candidate${issues - 1 === 1 ? "" : "s"}` : "";
     return `incident registry unchanged (${issues} structured finding candidate${issues === 1 ? "" : "s"} still invalid;${detail}${suffix})`;
   }
 

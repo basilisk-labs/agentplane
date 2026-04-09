@@ -514,7 +514,14 @@ describe("runCli incidents", () => {
     {
       const io = captureStdIO();
       try {
-        const code = await runCli(["incidents", "collect", defaultTaskId, "--check", "--root", root]);
+        const code = await runCli([
+          "incidents",
+          "collect",
+          defaultTaskId,
+          "--check",
+          "--root",
+          root,
+        ]);
         expect(code).toBe(0);
         expect(io.stdout).toContain(
           "incident registry unchanged (1 promotable external finding validated; rerun without --check to update incidents.md)",
