@@ -20,7 +20,7 @@ Make pr check recover from stale base task PR artifacts by reading fresher branc
 ### Current Status
 
 - State: ok
-- Note: Command: bun x eslint packages/agentplane/src/commands/pr/check.ts packages/agentplane/src/commands/pr/internal/pr-paths.ts packages/agentplane/src/commands/pr/internal/pr-paths.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; Result: pass. Evidence: eslint clean and targeted pr-check vitest passed including stale-local/fresh-branch fallback coverage. Scope: pr check artifact snapshot selection and helper path reads.
+- Note: Rebased onto main after 75VJ4R, fixed Windows formatting drift in pr/check.ts, replaced incompatible vi.hoisted test harness in pr-paths.test.ts, and reran targeted pr-flow/pr-paths coverage.
 
 ## Risks
 
@@ -39,12 +39,24 @@ Make pr check recover from stale base task PR artifacts by reading fresher branc
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T13:12:18.632Z
+- Updated: 2026-04-09T14:20:05.443Z
 - Branch: task/202604091257-GG6KJG/pr-check-freshness
-- Head: 14b5ecd6ca96
+- Head: 508b9591ff4d
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604091257-GG6KJG/README.md    | 116 ++++++
+ .../tasks/202604091257-GG6KJG/pr/diffstat.txt      |   0
+ .../tasks/202604091257-GG6KJG/pr/github-body.md    |  50 +++
+ .../tasks/202604091257-GG6KJG/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091257-GG6KJG/pr/meta.json |  17 +
+ .../tasks/202604091257-GG6KJG/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091257-GG6KJG/pr/review.md |  57 +++
+ .../tasks/202604091257-GG6KJG/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  99 +++++
+ packages/agentplane/src/commands/pr/check.ts       | 440 ++++++++++++++-------
+ .../src/commands/pr/internal/pr-paths.test.ts      |  47 ++-
+ .../src/commands/pr/internal/pr-paths.ts           |  17 +-
+ 12 files changed, 681 insertions(+), 163 deletions(-)
 ```
 
 </details>

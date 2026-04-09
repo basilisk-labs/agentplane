@@ -4,7 +4,7 @@ title: "Prefer fresh branch PR artifacts in pr check when base snapshot is stale
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T13:11:41.852Z"
+  updated_at: "2026-04-09T14:20:05.416Z"
   updated_by: "CODER"
-  note: "Command: bun x eslint packages/agentplane/src/commands/pr/check.ts packages/agentplane/src/commands/pr/internal/pr-paths.ts packages/agentplane/src/commands/pr/internal/pr-paths.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; Result: pass. Evidence: eslint clean and targeted pr-check vitest passed including stale-local/fresh-branch fallback coverage. Scope: pr check artifact snapshot selection and helper path reads."
+  note: "Rebased onto main after 75VJ4R, fixed Windows formatting drift in pr/check.ts, replaced incompatible vi.hoisted test harness in pr-paths.test.ts, and reran targeted pr-flow/pr-paths coverage."
 commit: null
 comments:
   -
@@ -40,8 +40,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x eslint packages/agentplane/src/commands/pr/check.ts packages/agentplane/src/commands/pr/internal/pr-paths.ts packages/agentplane/src/commands/pr/internal/pr-paths.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; Result: pass. Evidence: eslint clean and targeted pr-check vitest passed including stale-local/fresh-branch fallback coverage. Scope: pr check artifact snapshot selection and helper path reads."
+  -
+    type: "verify"
+    at: "2026-04-09T14:20:05.416Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rebased onto main after 75VJ4R, fixed Windows formatting drift in pr/check.ts, replaced incompatible vi.hoisted test harness in pr-paths.test.ts, and reran targeted pr-flow/pr-paths coverage."
 doc_version: 3
-doc_updated_at: "2026-04-09T13:11:41.861Z"
+doc_updated_at: "2026-04-09T14:20:05.421Z"
 doc_updated_by: "CODER"
 description: "Make pr check recover from stale base task PR artifacts by reading fresher branch/worktree snapshots instead of failing on outdated local meta/review state."
 sections:
@@ -66,6 +72,14 @@ sections:
     Note: Command: bun x eslint packages/agentplane/src/commands/pr/check.ts packages/agentplane/src/commands/pr/internal/pr-paths.ts packages/agentplane/src/commands/pr/internal/pr-paths.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; Result: pass. Evidence: eslint clean and targeted pr-check vitest passed including stale-local/fresh-branch fallback coverage. Scope: pr check artifact snapshot selection and helper path reads.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:10:49.362Z, excerpt_hash=sha256:efa806729371604dbecd3259721b6273f5956e1b851d55136c9592d33984ed7a
+    
+    ### 2026-04-09T14:20:05.416Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Rebased onto main after 75VJ4R, fixed Windows formatting drift in pr/check.ts, replaced incompatible vi.hoisted test harness in pr-paths.test.ts, and reran targeted pr-flow/pr-paths coverage.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:11:41.861Z, excerpt_hash=sha256:efa806729371604dbecd3259721b6273f5956e1b851d55136c9592d33984ed7a
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -105,6 +119,14 @@ By: CODER
 Note: Command: bun x eslint packages/agentplane/src/commands/pr/check.ts packages/agentplane/src/commands/pr/internal/pr-paths.ts packages/agentplane/src/commands/pr/internal/pr-paths.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; Result: pass. Evidence: eslint clean and targeted pr-check vitest passed including stale-local/fresh-branch fallback coverage. Scope: pr check artifact snapshot selection and helper path reads.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:10:49.362Z, excerpt_hash=sha256:efa806729371604dbecd3259721b6273f5956e1b851d55136c9592d33984ed7a
+
+### 2026-04-09T14:20:05.416Z — VERIFY — ok
+
+By: CODER
+
+Note: Rebased onto main after 75VJ4R, fixed Windows formatting drift in pr/check.ts, replaced incompatible vi.hoisted test harness in pr-paths.test.ts, and reran targeted pr-flow/pr-paths coverage.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:11:41.861Z, excerpt_hash=sha256:efa806729371604dbecd3259721b6273f5956e1b851d55136c9592d33984ed7a
 
 <!-- END VERIFICATION RESULTS -->
 

@@ -1,0 +1,13 @@
+ .agentplane/tasks/202604091257-GG6KJG/README.md    | 116 ++++++
+ .../tasks/202604091257-GG6KJG/pr/diffstat.txt      |   0
+ .../tasks/202604091257-GG6KJG/pr/github-body.md    |  50 +++
+ .../tasks/202604091257-GG6KJG/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091257-GG6KJG/pr/meta.json |  17 +
+ .../tasks/202604091257-GG6KJG/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091257-GG6KJG/pr/review.md |  57 +++
+ .../tasks/202604091257-GG6KJG/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  99 +++++
+ packages/agentplane/src/commands/pr/check.ts       | 440 ++++++++++++++-------
+ .../src/commands/pr/internal/pr-paths.test.ts      |  47 ++-
+ .../src/commands/pr/internal/pr-paths.ts           |  17 +-
+ 12 files changed, 681 insertions(+), 163 deletions(-)
