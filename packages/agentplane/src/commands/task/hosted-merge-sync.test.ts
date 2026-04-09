@@ -250,4 +250,46 @@ describe("syncHostedMergedTasks", () => {
     expect(env?.GIT_DIR).toBeUndefined();
     expect(env?.GIT_WORK_TREE).toBeUndefined();
   });
+
+  it("does not forward GitHub auth tokens that came only from repo dotenv loading", async () => {
+    const originalGithubToken = process.env.GITHUB_TOKEN;
+    const originalDotEnvKeys = process.env.AGENTPLANE_DOTENV_LOADED_KEYS;
+    mockedExecFileAsync.mockResolvedValueOnce({
+      stdout: JSON.stringify([
+        {
+          number: 42,
+          title: "Merged PR",
+          mergedAt: "2026-04-06T18:19:00.000Z",
+          baseRefName: "main",
+          headRefName: "task/202604061815-01F3CY/retry",
+          headRefOid: "abcdef1234567890abcdef1234567890abcdef12",
+          mergeCommit: { oid: "1234567890abcdef1234567890abcdef12345678" },
+        },
+      ]),
+      stderr: "",
+    });
+    process.env.GITHUB_TOKEN = "token-from-dotenv";
+    process.env.AGENTPLANE_DOTENV_LOADED_KEYS = "GITHUB_TOKEN";
+
+    try {
+      await expect(
+        resolveHostedMergedPr({
+          cwd: "/repo",
+          branch: "task/202604061815-01F3CY/retry",
+        }),
+      ).resolves.toMatchObject({
+        number: 42,
+        mergeCommit: { oid: "1234567890abcdef1234567890abcdef12345678" },
+      });
+    } finally {
+      if (originalGithubToken === undefined) delete process.env.GITHUB_TOKEN;
+      else process.env.GITHUB_TOKEN = originalGithubToken;
+      if (originalDotEnvKeys === undefined) delete process.env.AGENTPLANE_DOTENV_LOADED_KEYS;
+      else process.env.AGENTPLANE_DOTENV_LOADED_KEYS = originalDotEnvKeys;
+    }
+
+    const calls = vi.mocked(execFileAsync).mock.calls as ExecCall[];
+    const env = calls[0]?.[2]?.env;
+    expect(env?.GITHUB_TOKEN).toBeUndefined();
+  });
 });
