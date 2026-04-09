@@ -1341,6 +1341,99 @@ describe("task finish (unit)", () => {
     writeSpy.mockRestore();
   });
 
+  it("retries a partial DONE closeout without duplicating DONE metadata", async () => {
+    const staleTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["code"],
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
+      verification: {
+        state: "ok",
+        updated_at: "2026-02-09T00:00:00.000Z",
+        updated_by: "TESTER",
+        note: "ok",
+      },
+    });
+    let currentTask = mkTask({
+      id: "T-1",
+      status: "DONE",
+      tags: ["code"],
+      result_summary: "closeout-retry",
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
+      verification: {
+        state: "ok",
+        updated_at: "2026-02-09T00:00:00.000Z",
+        updated_by: "TESTER",
+        note: "ok",
+      },
+      comments: [
+        {
+          author: "INTEGRATOR",
+          body: "Verified: retry the deterministic close commit without rewriting DONE metadata.",
+        },
+      ],
+      events: [
+        {
+          type: "status",
+          at: "2026-02-09T00:00:00.000Z",
+          author: "INTEGRATOR",
+          from: "DOING",
+          to: "DONE",
+          note: "Verified: retry the deterministic close commit without rewriting DONE metadata.",
+        },
+      ],
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(staleTask),
+      patch: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+    mocks.readCommitInfo.mockResolvedValue({ hash: "impl-hash", message: "feat: implement T-1" });
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "INTEGRATOR",
+      body: "Verified: retry the deterministic close commit without rewriting DONE metadata.",
+      result: "closeout-retry",
+      commit: "impl-hash",
+      breaking: false,
+      force: true,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      closeCommit: true,
+      noCloseCommit: false,
+      closeUnstageOthers: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(currentTask.comments).toHaveLength(1);
+    expect(currentTask.events).toHaveLength(1);
+    expect(currentTask.status).toBe("DONE");
+    expect(mocks.cmdCommit).toHaveBeenCalledTimes(1);
+  });
+
   it("rejects implicit HEAD fallback when deterministic close commit lacks implementation metadata", async () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "direct";
