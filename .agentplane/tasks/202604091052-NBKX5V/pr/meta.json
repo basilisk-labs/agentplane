@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604091052-NBKX5V/incident-locality-ux",
   "created_at": "2026-04-09T11:00:58.818Z",
-  "head_sha": "b5a20bc8804ffe3243387029927c993c5b0a8b39",
+  "head_sha": "3dc2c221b64c8782d4f6f54e8923b009e3df3ce6",
   "last_verified_at": "2026-04-09T11:08:29.547Z",
   "last_verified_sha": "b5a20bc8804ffe3243387029927c993c5b0a8b39",
+  "merge_commit": "a4ee212282a6c2b30b8039b230cc92a2403cbf11",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T11:21:15Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604091052-NBKX5V",
-  "updated_at": "2026-04-09T11:08:29.684Z",
+  "updated_at": "2026-04-09T11:21:15Z",
   "verify": {
     "status": "pass"
   }
