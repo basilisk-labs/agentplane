@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604092306-S0K1MD/finish-stale-dist",
+  "created_at": "2026-04-09T23:16:32.353Z",
+  "head_sha": "655d62fec58ad8d8c03fc285b9183eaa7605a5a6",
+  "last_verified_at": "2026-04-09T23:17:51.232Z",
+  "last_verified_sha": "655d62fec58ad8d8c03fc285b9183eaa7605a5a6",
+  "schema_version": 1,
+  "task_id": "202604092306-S0K1MD",
+  "updated_at": "2026-04-09T23:17:51.247Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -40,6 +40,7 @@ function isPreflightCommand(args) {
 
 function isTaskArtifactMutationCommand(args) {
   if (args[0] === "verify") return true;
+  if (args[0] === "finish") return true;
   if (args[0] !== "task") return false;
   if (args[1] === "doc" && args[2] === "set") return true;
   if (args[1] === "plan" && ["set", "approve", "reject"].includes(args[2] ?? "")) return true;
