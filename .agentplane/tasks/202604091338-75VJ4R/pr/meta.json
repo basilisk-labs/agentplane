@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604091338-75VJ4R/wait-remote-gh-mock-race",
+  "created_at": "2026-04-09T13:57:30.099Z",
+  "head_sha": "b564d3604f340726f28e9addc611c64be9dc5240",
+  "last_verified_at": "2026-04-09T13:57:30.062Z",
+  "last_verified_sha": "b564d3604f340726f28e9addc611c64be9dc5240",
+  "schema_version": 1,
+  "task_id": "202604091338-75VJ4R",
+  "updated_at": "2026-04-09T13:57:30.099Z",
+  "verify": {
+    "status": "pass"
+  }
+}
