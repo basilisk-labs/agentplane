@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604091956-BKQG36/reconcile-close-artifacts",
+  "created_at": "2026-04-09T19:58:17.443Z",
+  "head_sha": "008a74883db1bbc24488b857a8b9183cc32db78c",
+  "last_verified_at": "2026-04-09T20:28:27.130Z",
+  "last_verified_sha": "008a74883db1bbc24488b857a8b9183cc32db78c",
+  "schema_version": 1,
+  "task_id": "202604091956-BKQG36",
+  "updated_at": "2026-04-09T19:58:17.443Z",
+  "verify": {
+    "status": "pass"
+  }
+}
