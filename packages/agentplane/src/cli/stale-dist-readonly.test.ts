@@ -244,10 +244,14 @@ describe("stale-dist warn-and-run command policy", () => {
   it("warns but runs finish when watched runtime paths are dirty", async () => {
     const { repoRoot, repoBin } = await setupFrameworkCheckout();
 
-    const { stdout, stderr } = await execFileAsync(process.execPath, [repoBin, "finish", "20260307-ABC123"], {
-      cwd: repoRoot,
-      encoding: "utf8",
-    });
+    const { stdout, stderr } = await execFileAsync(
+      process.execPath,
+      [repoBin, "finish", "20260307-ABC123"],
+      {
+        cwd: repoRoot,
+        encoding: "utf8",
+      },
+    );
 
     expect(stdout).toContain("DIST");
     expect(stdout).toContain('"args":["finish","20260307-ABC123"]');
