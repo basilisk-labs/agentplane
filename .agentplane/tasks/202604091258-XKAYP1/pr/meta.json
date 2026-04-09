@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604091258-XKAYP1/pr-open-churn",
+  "created_at": "2026-04-09T13:10:49.187Z",
+  "head_sha": "0c2ad60b7a72466db316e38dfb79434bd882f2ae",
+  "last_verified_at": "2026-04-09T13:12:58.480Z",
+  "last_verified_sha": "cacf395430f9aad76c9868391a1aeca7f9bc3826",
+  "pr_number": 185,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/185",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604091258-XKAYP1",
+  "updated_at": "2026-04-09T13:13:53.609Z",
+  "verify": {
+    "status": "pass"
+  }
+}
