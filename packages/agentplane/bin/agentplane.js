@@ -132,6 +132,22 @@ function renderStalePolicyWarning(reason) {
 
 function missingRepoRuntimeDependencies(agentplaneRoot) {
   const requireFromAgentplane = createRequire(path.join(agentplaneRoot, "package.json"));
+  let packageJson = null;
+  try {
+    packageJson = requireFromAgentplane("./package.json");
+  } catch {
+    return [];
+  }
+  const declaredDeps = {};
+  if (packageJson?.dependencies && typeof packageJson.dependencies === "object") {
+    Object.assign(declaredDeps, packageJson.dependencies);
+  }
+  if (packageJson?.optionalDependencies && typeof packageJson.optionalDependencies === "object") {
+    Object.assign(declaredDeps, packageJson.optionalDependencies);
+  }
+  if (!("@agentplaneorg/core" in declaredDeps)) {
+    return [];
+  }
   const requiredSpecifiers = ["@agentplaneorg/core"];
   return requiredSpecifiers.filter((specifier) => {
     try {

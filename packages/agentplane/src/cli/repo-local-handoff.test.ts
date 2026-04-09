@@ -161,14 +161,37 @@ async function setupFrameworkCheckoutWithoutInstallLayout() {
   );
   await writeFile(
     path.join(repoRoot, "packages", "agentplane", "package.json"),
-    '{\n  "name": "agentplane",\n  "type": "module"\n}\n',
+    '{\n  "name": "agentplane",\n  "type": "module",\n  "dependencies": {\n    "@agentplaneorg/core": "0.0.0-test"\n  }\n}\n',
     "utf8",
   );
+  await writeFile(
+    path.join(distDir, "cli.js"),
+    [
+      "#!/usr/bin/env node",
+      String.raw`process.stdout.write("SHOULD_NOT_RUN\n");`,
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  await execFileAsync("git", ["init", "-q", "-b", "main"], { cwd: repoRoot });
+  await execFileAsync("git", ["config", "user.name", "Repo Local Handoff Test"], { cwd: repoRoot });
+  await execFileAsync("git", ["config", "user.email", "repo-local-handoff@example.com"], {
+    cwd: repoRoot,
+  });
+  await execFileAsync("git", ["add", "."], { cwd: repoRoot });
+  await execFileAsync("git", ["commit", "-m", "feat: install-layout harness"], {
+    cwd: repoRoot,
+  });
+  const headResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: path.join(repoRoot, "packages", "agentplane"),
+    encoding: "utf8",
+  });
+  const head = headResult.stdout.trim();
   await writeFile(
     path.join(distDir, ".build-manifest.json"),
     JSON.stringify({
       schema_version: 1,
-      git_head: null,
+      git_head: head,
       watched_runtime_paths: ["src"],
       watched_runtime_files: [{ path: "src/cli.ts", sha256: "stub", size_bytes: 24 }],
       watched_runtime_snapshot_hash: "stub",
@@ -323,6 +346,7 @@ describe("repo-local handoff wrapper", () => {
         "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>",
       );
       expect(err.stderr ?? "").not.toContain("ERR_MODULE_NOT_FOUND");
+      expect(err.stdout ?? "").not.toContain("SHOULD_NOT_RUN");
       expect(err.stdout ?? "").toBe("");
     }
   });
