@@ -1,0 +1,1 @@
+git/workflow: Allow cleanup merged to fetch origin before candidate resolution (C3ZHCX)

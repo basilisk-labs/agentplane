@@ -251,7 +251,7 @@ describe("runCli", () => {
     }
   }, 60_000);
 
-  it("cleanup merged accepts --base, --archive, and --delete-remote-branches", async () => {
+  it("cleanup merged accepts --base, --archive, --fetch, and --delete-remote-branches", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
     const config = defaultConfig();
@@ -260,6 +260,20 @@ describe("runCli", () => {
 
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
     await commitAll(root, "chore base");
+    const execFileAsync = promisify(execFile);
+    const remoteRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-fetch-accepts-"));
+    await execFileAsync("git", ["init", "--bare"], {
+      cwd: remoteRoot,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["remote", "add", "origin", remoteRoot], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["push", "-u", "origin", "main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
 
     const io = captureStdIO();
     try {
@@ -270,6 +284,7 @@ describe("runCli", () => {
         "main",
         "--archive",
         "--delete-remote-branches",
+        "--fetch",
         "--quiet",
         "--root",
         root,
@@ -398,6 +413,88 @@ describe("runCli", () => {
         },
       );
       expect(afterStdout.trim()).toBe("");
+    },
+    CLEANUP_MERGED_MUTATION_TIMEOUT_MS,
+  );
+
+  it(
+    "cleanup merged prunes stale origin refs only when --fetch is set",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await configureGitUser(root);
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+
+      await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+      await commitAll(root, "chore base");
+      const execFileAsync = promisify(execFile);
+      const remoteRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-fetch-"));
+      await execFileAsync("git", ["init", "--bare"], {
+        cwd: remoteRoot,
+        env: cleanGitEnv(),
+      });
+      await execFileAsync("git", ["remote", "add", "origin", remoteRoot], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      await execFileAsync("git", ["push", "-u", "origin", "main"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      const staleBranch = "task/stale-cleanup/origin-ref";
+      await execFileAsync("git", ["branch", staleBranch, "main"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      await execFileAsync("git", ["push", "origin", staleBranch], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      await execFileAsync("git", ["fetch", "origin"], { cwd: root, env: cleanGitEnv() });
+      await execFileAsync("git", ["update-ref", "-d", `refs/heads/${staleBranch}`], {
+        cwd: remoteRoot,
+        env: cleanGitEnv(),
+      });
+
+      const { stdout: beforeDefault } = await execFileAsync(
+        "git",
+        ["branch", "-r", "--list", `origin/${staleBranch}`],
+        { cwd: root, env: cleanGitEnv() },
+      );
+      expect(beforeDefault).toContain(`origin/${staleBranch}`);
+
+      const ioDefault = captureStdIO();
+      try {
+        const code = await runCli(["cleanup", "merged", "--quiet", "--root", root]);
+        expect(code).toBe(0);
+      } finally {
+        ioDefault.restore();
+      }
+
+      const { stdout: afterDefault } = await execFileAsync(
+        "git",
+        ["branch", "-r", "--list", `origin/${staleBranch}`],
+        { cwd: root, env: cleanGitEnv() },
+      );
+      expect(afterDefault).toContain(`origin/${staleBranch}`);
+
+      const ioFetch = captureStdIO();
+      try {
+        const code = await runCli(["cleanup", "merged", "--fetch", "--quiet", "--root", root]);
+        expect(code).toBe(0);
+      } finally {
+        ioFetch.restore();
+      }
+
+      const { stdout: afterFetch } = await execFileAsync(
+        "git",
+        ["branch", "-r", "--list", `origin/${staleBranch}`],
+        { cwd: root, env: cleanGitEnv() },
+      );
+      expect(afterFetch.trim()).toBe("");
     },
     CLEANUP_MERGED_MUTATION_TIMEOUT_MS,
   );

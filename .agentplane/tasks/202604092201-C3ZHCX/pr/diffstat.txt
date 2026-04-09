@@ -1,0 +1,13 @@
+ .agentplane/tasks/202604092201-C3ZHCX/README.md    | 143 +++++++++++++
+ .../tasks/202604092201-C3ZHCX/pr/diffstat.txt      |   5 +
+ .../tasks/202604092201-C3ZHCX/pr/github-body.md    |  52 +++++
+ .../tasks/202604092201-C3ZHCX/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604092201-C3ZHCX/pr/meta.json |  17 ++
+ .../tasks/202604092201-C3ZHCX/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604092201-C3ZHCX/pr/review.md |  59 ++++++
+ .../tasks/202604092201-C3ZHCX/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |   7 +
+ .../run-cli.core.pr-flow.cleanup-merged.test.ts    | 234 ++++++++++++++-------
+ .../src/commands/branch/cleanup-merged.ts          |  11 +-
+ .../src/commands/cleanup/merged.command.ts         |  13 ++
+ 12 files changed, 464 insertions(+), 78 deletions(-)
