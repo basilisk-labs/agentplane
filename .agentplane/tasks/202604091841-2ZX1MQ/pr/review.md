@@ -45,24 +45,24 @@ Make branch_pr hosted-merge reconcile and task normalize resolve GitHub auth fro
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T18:52:45.711Z
+- Updated: 2026-04-09T19:05:05.960Z
 - Branch: task/202604091841-2ZX1MQ/normalize-gh-auth
-- Head: cbfcb50f8b51
+- Head: 30c33a87d76b
 
 ```text
  .agentplane/tasks/202604091841-2ZX1MQ/README.md    | 129 +++++++++++++++++++++
- .../tasks/202604091841-2ZX1MQ/pr/diffstat.txt      |   5 +
+ .../tasks/202604091841-2ZX1MQ/pr/diffstat.txt      |  13 +++
  .../tasks/202604091841-2ZX1MQ/pr/github-body.md    |  62 ++++++++++
  .../tasks/202604091841-2ZX1MQ/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604091841-2ZX1MQ/pr/meta.json |  14 +++
+ .agentplane/tasks/202604091841-2ZX1MQ/pr/meta.json |  17 +++
  .../tasks/202604091841-2ZX1MQ/pr/notes.jsonl       |   0
  .agentplane/tasks/202604091841-2ZX1MQ/pr/review.md |  69 +++++++++++
  .../tasks/202604091841-2ZX1MQ/pr/verify.log        |   0
  .../run-cli.core.tasks.normalize-migrate.test.ts   | 102 ++++++++++++++++
  .../agentplane/src/commands/pr/internal/gh-api.ts  |  14 ++-
  .../src/commands/task/hosted-merge-sync.test.ts    |  42 +++++++
- packages/agentplane/src/shared/env.ts              |  30 ++++-
- 12 files changed, 464 insertions(+), 4 deletions(-)
+ packages/agentplane/src/shared/env.ts              |  27 ++++-
+ 12 files changed, 472 insertions(+), 4 deletions(-)
 ```
 
 </details>
