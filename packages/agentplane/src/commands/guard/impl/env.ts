@@ -8,6 +8,7 @@ export function buildGitCommitEnv(opts: {
   allowConfig: boolean;
   allowHooks: boolean;
   allowCI: boolean;
+  allowStaleDist?: boolean;
 }): NodeJS.ProcessEnv {
   return {
     ...process.env,
@@ -20,5 +21,6 @@ export function buildGitCommitEnv(opts: {
     AGENTPLANE_ALLOW_CONFIG: opts.allowConfig ? "1" : "0",
     AGENTPLANE_ALLOW_HOOKS: opts.allowHooks ? "1" : "0",
     AGENTPLANE_ALLOW_CI: opts.allowCI ? "1" : "0",
+    ...(opts.allowStaleDist ? { AGENTPLANE_DEV_ALLOW_STALE_DIST: "1" } : null),
   };
 }
