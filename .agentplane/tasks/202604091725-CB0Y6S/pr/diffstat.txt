@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604091725-CB0Y6S/README.md    | 98 ++++++++++++++++++++++
+ .../agentplane/src/cli/run-cli.core.hooks.test.ts  | 34 +++++++-
+ packages/agentplane/src/commands/hooks/index.ts    | 86 +++++++++++++++++++
+ 3 files changed, 216 insertions(+), 2 deletions(-)
