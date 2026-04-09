@@ -1,10 +1,11 @@
 ---
 id: "202604081931-P5XKNF"
 title: "Fix pr close-superseded GitHub auth propagation"
-status: "DOING"
+result_summary: "Merged via PR #158; protected-main closure via PR #159."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-08T19:43:38.928Z"
   updated_by: "REVIEWER"
   note: "Focused pr close-superseded auth/env regression tests passed; eslint passed on touched command and test files; command diff remains limited to shared gh auth propagation for close-superseded and close."
-commit: null
+commit:
+  hash: "fd9a5aec6ede55828fb9801affdca00ec44906d0"
+  message: "Merge pull request #159 from basilisk-labs/task-close/202604081931-P5XKNF/manual-158"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the repo-local close-superseded auth failure, fix gh child auth propagation, and cover the path with a focused regression test before integrating the change."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged task PR #158, merged protected-main closure PR #159, and no open GitHub PR refs remain for this task."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Focused pr close-superseded auth/env regression tests passed; eslint passed on touched command and test files; command diff remains limited to shared gh auth propagation for close-superseded and close."
+  -
+    type: "status"
+    at: "2026-04-09T09:41:37.807Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged task PR #158, merged protected-main closure PR #159, and no open GitHub PR refs remain for this task."
 doc_version: 3
-doc_updated_at: "2026-04-08T19:43:38.943Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T09:41:37.808Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure repo-local agentplane can close superseded task PRs using the authenticated gh session without losing auth context in child gh api calls."
 sections:
   Summary: |-
