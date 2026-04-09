@@ -1,10 +1,11 @@
 ---
 id: "202604091600-B22F3T"
 title: "Expose explicit --base on finish for branch_pr closure"
-status: "DOING"
+result_summary: "Merged via PR #203."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-09T16:29:25.065Z"
   updated_by: "CODER"
   note: "Verified: targeted vitest, format:check, and docs:cli:check passed after regenerating CLI docs for finish --base output."
-commit: null
+commit:
+  hash: "8978708638ac1f158515a77491795663320d00c5"
+  message: "cli/workflow: Expose explicit --base on finish for branch_pr closure (B22F3T) (#203)"
 comments:
   -
     author: "CODER"
     body: "Start: add a real --base override to finish and wire it into branch_pr base validation so manual closeouts stop depending on pinned config only."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #203 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: targeted vitest, format:check, and docs:cli:check passed after regenerating CLI docs for finish --base output."
+  -
+    type: "status"
+    at: "2026-04-09T16:49:06.718Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #203 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T16:29:25.073Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T16:49:06.725Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a real --base override to finish and honor it during branch_pr base validation so manual closure from isolated base checkouts does not depend on pinned git config alone."
 sections:
   Summary: |-
