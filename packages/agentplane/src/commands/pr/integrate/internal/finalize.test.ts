@@ -258,4 +258,32 @@ describe("pr/integrate/internal/finalize", () => {
       expect.stringContaining("plain Findings text stays task-local"),
     );
   });
+
+  it("uses a meta-only recovery path when the task is already DONE", async () => {
+    const { finalizeIntegrate } = await import("./finalize.js");
+    mocks.fileExists.mockResolvedValue(true);
+    mocks.readFile.mockResolvedValue("{}");
+    mocks.parsePrMeta.mockReturnValue({ schema_version: 1, task_id: "T-1" });
+    mocks.buildIntegratedPrMeta.mockReturnValue({ schema_version: 1, task_id: "T-1" });
+    mocks.gitDiffStat.mockResolvedValue("");
+    mocks.readCommitInfo.mockResolvedValue({ hash: "deadbeef", message: "merge" });
+
+    await finalizeIntegrate({
+      ...baseOpts(),
+      quiet: false,
+      task: { id: "T-1", status: "DONE", title: "Task", commit: { hash: "task-sha" } },
+    });
+
+    expect(mocks.writeFinishedTasks).not.toHaveBeenCalled();
+    expect(mocks.readCommitInfo).not.toHaveBeenCalled();
+    expect(mocks.createTaskCloseCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        baseBranchOverride: "main",
+      }),
+    );
+    expect(emitter.info).toHaveBeenCalledWith(
+      "task already DONE; integrating only missing PR metadata and close artifacts",
+    );
+  });
 });
