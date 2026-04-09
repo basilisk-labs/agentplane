@@ -50,10 +50,7 @@ function recordDotEnvLoadedKey(key: string, env: NodeJS.ProcessEnv = process.env
   env[DOTENV_LOADED_KEYS_ENV] = [...keys].toSorted().join(",");
 }
 
-export function isDotEnvLoadedKey(
-  key: string,
-  env: NodeJS.ProcessEnv = process.env,
-): boolean {
+export function isDotEnvLoadedKey(key: string, env: NodeJS.ProcessEnv = process.env): boolean {
   return readDotEnvLoadedKeys(env).has(key);
 }
 

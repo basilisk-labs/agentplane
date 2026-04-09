@@ -311,7 +311,7 @@ describe("runCli", () => {
         ? `@echo off\r\n>> "%AGENTPLANE_GH_ENV_LOG%" echo GITHUB_TOKEN=%GITHUB_TOKEN%\r\necho [{"number":24,"title":"Hosted merge sync task (#24)","mergedAt":"2026-03-27T17:40:00.000Z","baseRefName":"main","headRefName":"task/${taskId}/sync-hosted","headRefOid":"abcdef1234567890abcdef1234567890abcdef12","mergeCommit":{"oid":"1234567890abcdef1234567890abcdef12345679"}}]\r\n`
         : [
             "#!/bin/sh",
-            "printf 'GITHUB_TOKEN=%s\\n' \"${GITHUB_TOKEN-}\" >> \"$AGENTPLANE_GH_ENV_LOG\"",
+            'printf \'GITHUB_TOKEN=%s\\n\' "${GITHUB_TOKEN-}" >> "$AGENTPLANE_GH_ENV_LOG"',
             String.raw`printf '%s\n' '[{"number":24,"title":"Hosted merge sync task (#24)","mergedAt":"2026-03-27T17:40:00.000Z","baseRefName":"main","headRefName":"task/${taskId}/sync-hosted","headRefOid":"abcdef1234567890abcdef1234567890abcdef12","mergeCommit":{"oid":"1234567890abcdef1234567890abcdef12345679"}}]'`,
             "",
           ].join("\n");
