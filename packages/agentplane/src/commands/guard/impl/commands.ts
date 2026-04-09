@@ -417,6 +417,9 @@ export async function cmdCommit(opts: {
           taskId: opts.taskId,
           quiet: opts.quiet,
         });
+        // Artifact refresh writes tracked task files on disk; invalidate the memoized
+        // porcelain snapshot so staging/cleanliness checks see the refreshed state.
+        ctx.git.invalidateStatus();
       }
       await (opts.closeStageTaskArtifacts === true
         ? stageAllowlist({

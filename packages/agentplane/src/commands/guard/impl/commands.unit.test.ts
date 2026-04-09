@@ -448,7 +448,16 @@ describe("guard/impl/commands", () => {
       ".agentplane/tasks/T-12/pr/meta.json",
       ".agentplane/tasks/T-12/pr/review.md",
     ]);
+    expect(ctx.git.invalidateStatus).toHaveBeenCalled();
     expect(mocks.refreshBranchPrArtifactsAfterTaskCommit.mock.invocationCallOrder[0]).toBeLessThan(
+      ctx.git.stage.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
+    );
+    const lastInvalidateOrder =
+      ctx.git.invalidateStatus.mock.invocationCallOrder.at(-1) ?? Number.POSITIVE_INFINITY;
+    expect(mocks.refreshBranchPrArtifactsAfterTaskCommit.mock.invocationCallOrder[0]).toBeLessThan(
+      lastInvalidateOrder,
+    );
+    expect(lastInvalidateOrder).toBeLessThan(
       ctx.git.stage.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
     );
   });

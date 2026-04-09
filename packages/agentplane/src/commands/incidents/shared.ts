@@ -64,6 +64,15 @@ async function writeIncidentRegistryMirrors(
   return wroteRegistry || wroteAsset;
 }
 
+async function resolveIncidentRegistryMirrorPaths(ctx: CommandContext): Promise<string[]> {
+  const paths = [INCIDENTS_POLICY_PATH];
+  const assetPath = incidentRegistryAssetPath(ctx);
+  if ((await readTextIfExists(assetPath)) !== null) {
+    paths.push(INCIDENTS_POLICY_ASSET_PATH);
+  }
+  return paths;
+}
+
 function countTextLines(text: string): number {
   return text.replaceAll("\r\n", "\n").split("\n").length;
 }
@@ -137,13 +146,14 @@ export async function collectTaskIncidents(opts: {
 }): Promise<{
   loaded: LoadedTaskIncidents;
   registryPath: string;
+  registryPaths: string[];
   registryText: string;
   registry: IncidentRegistry;
   plan: IncidentCollectionPlan;
   wrote: boolean;
 }> {
   const inspected = await inspectTaskIncidents(opts);
-  const { loaded, registryPath, registryText, registry, plan } = inspected;
+  const { loaded, registryPath, registryPaths, registryText, registry, plan } = inspected;
   if (plan.issues.length > 0) {
     throw new CliError({
       exitCode: 3,
@@ -171,7 +181,7 @@ export async function collectTaskIncidents(opts: {
     opts.write && plan.promotable.length > 0
       ? await writeIncidentRegistryMirrors(opts.ctx, nextText)
       : false;
-  return { loaded, registryPath, registryText, registry, plan, wrote };
+  return { loaded, registryPath, registryPaths, registryText, registry, plan, wrote };
 }
 
 export async function inspectTaskIncidents(opts: {
@@ -182,12 +192,14 @@ export async function inspectTaskIncidents(opts: {
 }): Promise<{
   loaded: LoadedTaskIncidents;
   registryPath: string;
+  registryPaths: string[];
   registryText: string;
   registry: IncidentRegistry;
   plan: IncidentCollectionPlan;
 }> {
   const loaded = await loadTaskIncidents(opts.ctx, opts.taskId, opts.task ?? null);
   const { registryPath, registryText, registry } = await loadIncidentRegistry(opts.ctx);
+  const registryPaths = await resolveIncidentRegistryMirrorPaths(opts.ctx);
   const plan = planIncidentCollection({
     task: {
       id: loaded.task.id,
@@ -201,13 +213,20 @@ export async function inspectTaskIncidents(opts: {
     registry,
     now: opts.now,
   });
-  return { loaded, registryPath, registryText, registry, plan };
+  return { loaded, registryPath, registryPaths, registryText, registry, plan };
 }
 
 export function renderIncidentCollectionOutcome(promotedCount: number): string {
   return promotedCount > 0
     ? `incident registry updated (${promotedCount} promoted)`
     : "incident registry unchanged (no promotable external findings)";
+}
+
+function summarizeDetailList(values: readonly string[], maxItems = 3): string | null {
+  const filtered = values.map((value) => value.trim()).filter((value) => value.length > 0);
+  if (filtered.length === 0) return null;
+  if (filtered.length <= maxItems) return filtered.join(", ");
+  return `${filtered.slice(0, maxItems).join(", ")}, +${filtered.length - maxItems} more`;
 }
 
 export function renderIncidentCollectionPlanOutcome(
@@ -223,6 +242,8 @@ export function renderIncidentCollectionPlanOutcome(
   opts?: {
     wrote?: boolean;
     context?: "collect" | "verify" | "finish" | "generic";
+    promotedIds?: readonly string[];
+    registryPaths?: readonly string[];
   },
 ): string {
   const candidates = Array.isArray(plan.candidates) ? plan.candidates.length : 0;
@@ -241,9 +262,27 @@ export function renderIncidentCollectionPlanOutcome(
     if (duplicates > 0) suffix.push(`${duplicates} duplicate${duplicates === 1 ? "" : "s"}`);
     if (skipped > 0)
       suffix.push(`${skipped} skipped structured finding${skipped === 1 ? "" : "s"}`);
-    return suffix.length > 0
-      ? `incident registry updated (${promoted} promoted; ${suffix.join("; ")})`
-      : renderIncidentCollectionOutcome(promoted);
+    const base =
+      suffix.length > 0
+        ? `incident registry updated (${promoted} promoted; ${suffix.join("; ")})`
+        : renderIncidentCollectionOutcome(promoted);
+    const details: string[] = [];
+    const promotedIds = Array.isArray(opts?.promotedIds)
+      ? opts.promotedIds.filter(
+          (id): id is string => typeof id === "string" && id.trim().length > 0,
+        )
+      : [];
+    const registryPaths = Array.isArray(opts?.registryPaths)
+      ? opts.registryPaths.filter(
+          (filePath): filePath is string =>
+            typeof filePath === "string" && filePath.trim().length > 0,
+        )
+      : [];
+    const idsSummary = summarizeDetailList(promotedIds);
+    const pathsSummary = summarizeDetailList(registryPaths);
+    if (idsSummary) details.push(`ids=${idsSummary}`);
+    if (pathsSummary) details.push(`files=${pathsSummary}`);
+    return details.length > 0 ? `${base} ${details.join(" ")}` : base;
   }
 
   if (promoted > 0 && !wrote) {

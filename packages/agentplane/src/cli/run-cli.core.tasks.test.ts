@@ -1476,6 +1476,8 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       expect(ioFinish.stdout).toContain("incident registry updated (1 promoted)");
+      expect(ioFinish.stdout).toContain("ids=INC-");
+      expect(ioFinish.stdout).toContain("files=.agentplane/policy/incidents.md");
     } finally {
       ioFinish.restore();
     }
