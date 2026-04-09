@@ -1,10 +1,11 @@
 ---
 id: "202604091002-H7D0M0"
 title: "Make integrate idempotent for already DONE branch_pr tasks"
-status: "DOING"
+result_summary: "Superseded by 202604091006-7HAZ1F."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-09T10:17:45.178Z"
   updated_by: "REVIEWER"
   note: "Focused integrate regressions passed: vitest finalize + branch_pr integrate incident flows now cover already-DONE task shipment, and eslint passed on touched integrate files."
-commit: null
+commit:
+  hash: "471c75ca8832526b5d02e359c0c09e95e19787db"
+  message: "✅ 7HAZ1F close: integrate already-DONE branch_pr recovery"
 comments:
   -
     author: "CODER"
     body: "Start: make branch_pr integrate handle already-DONE repair branches without partial base mutations, while still syncing PR metadata and promoting incidents when the branch is finally shipped."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: this duplicate DONE-recovery branch was superseded by the shipped 202604091006-7HAZ1F path on local main, and its failing GitHub PR was closed to avoid redundant drift."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Focused integrate regressions passed: vitest finalize + branch_pr integrate incident flows now cover already-DONE task shipment, and eslint passed on touched integrate files."
+  -
+    type: "status"
+    at: "2026-04-09T10:46:02.475Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: this duplicate DONE-recovery branch was superseded by the shipped 202604091006-7HAZ1F path on local main, and its failing GitHub PR was closed to avoid redundant drift."
 doc_version: 3
-doc_updated_at: "2026-04-09T10:17:45.184Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T10:46:02.476Z"
+doc_updated_by: "INTEGRATOR"
 description: "When a repair or reconcile task is already marked DONE on its task branch before shipment, integrate currently updates PR artifacts on base and then fails because writeFinishedTasks rejects DONE. Add an idempotent branch_pr integrate path that ships the branch, keeps PR metadata consistent, and still promotes incidents without leaving partial mutations behind."
 sections:
   Summary: |-
