@@ -2346,6 +2346,193 @@ describe("runCli", () => {
     expect(rawLog).toContain(`head=example%3Atask%2F${taskId}%2Fexisting-pr`);
   });
 
+  it("pr open keeps review/body stable when a second run creates the remote PR", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open preserves rendered packet on remote create",
+        "--description",
+        "A second pr open should avoid rewriting review/body when only PR linkage changes",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/remote-create-second-pass`;
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      branch,
+      "--sync-only",
+      "--root",
+      root,
+    ]);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    const reviewBefore = await readFile(path.join(prDir, "review.md"), "utf8");
+    const githubBodyBefore = await readFile(path.join(prDir, "github-body.md"), "utf8");
+
+    const { fakeBin, logPath } = await installFakeGhPrApi({
+      scenarioName: "open-create-second-pass",
+      branch,
+      createResponse: {
+        number: 654,
+        html_url: "https://github.com/example/repo/pull/654",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        head: { sha: "remote-head-sha" },
+        base: { ref: "main" },
+      },
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("created GitHub PR #654");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(reviewBefore);
+    expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(githubBodyBefore);
+  });
+
+  it("pr open keeps review/body stable when a second run links an existing remote PR", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open preserves rendered packet on existing PR hydration",
+        "--description",
+        "A second pr open should avoid rewriting review/body when it only links an existing PR",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/existing-pr-second-pass`;
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      branch,
+      "--sync-only",
+      "--root",
+      root,
+    ]);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    const reviewBefore = await readFile(path.join(prDir, "review.md"), "utf8");
+    const githubBodyBefore = await readFile(path.join(prDir, "github-body.md"), "utf8");
+
+    const { fakeBin, logPath } = await installFakeGhPrLookup({
+      scenarioName: "open-existing-second-pass",
+      branch,
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("linked to GitHub PR #321");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(reviewBefore);
+    expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(githubBodyBefore);
+  });
+
   it("pr update hydrates existing GitHub PR state into previously local-only artifacts", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

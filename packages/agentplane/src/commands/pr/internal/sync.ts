@@ -497,6 +497,14 @@ export async function syncPrArtifacts(opts: {
         mode: config.workflow_mode,
       });
       const headSha = await resolveBranchHeadSha({ gitRoot: resolved.gitRoot, branch });
+      const preservedRenderUpdatedAt =
+        existingMeta &&
+        (existingMeta.branch ?? null) === branch &&
+        (existingMeta.base ?? null) === (baseBranch ?? null) &&
+        (existingMeta.head_sha ?? null) === (headSha ?? null)
+          ? existingMeta.updated_at
+          : null;
+      const renderUpdatedAt = preservedRenderUpdatedAt ?? now;
 
       if (opts.mode === "open") {
         const remoteMode = opts.remoteMode ?? "auto";
@@ -525,7 +533,7 @@ export async function syncPrArtifacts(opts: {
           task,
           handoffNotes,
           autoSummary: renderPrAutoSummary({
-            updatedAt: nextMeta.updated_at,
+            updatedAt: renderUpdatedAt,
             branch,
             headSha,
             diffstat: "",
@@ -585,7 +593,7 @@ export async function syncPrArtifacts(opts: {
           }
         }
         const nextAutoSummary = renderPrAutoSummary({
-          updatedAt: nextMeta.updated_at,
+          updatedAt: renderUpdatedAt,
           branch,
           headSha,
           diffstat: "",

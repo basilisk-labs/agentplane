@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604091258-XKAYP1/README.md    | 118 +++++++++++++
+ .../tasks/202604091258-XKAYP1/pr/diffstat.txt      |   0
+ .../tasks/202604091258-XKAYP1/pr/github-body.md    |  50 ++++++
+ .../tasks/202604091258-XKAYP1/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091258-XKAYP1/pr/meta.json |  17 ++
+ .../tasks/202604091258-XKAYP1/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091258-XKAYP1/pr/review.md |  57 +++++++
+ .../tasks/202604091258-XKAYP1/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 187 +++++++++++++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |  12 +-
+ 10 files changed, 440 insertions(+), 2 deletions(-)
