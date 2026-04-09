@@ -47,6 +47,7 @@ async function writeGhMock(root: string) {
         prViewCallsByTarget: {},
         statusCallsByHead: {},
         checkRunCalls: 0,
+        jobCallsById: {},
         protectionCalls: 0,
         repoViewCalls: 0,
       },
@@ -72,7 +73,7 @@ async function writeGhMock(root: string) {
     "function readCounter(key, subkey) { const file = counterPath(key, subkey); if (!file || !fs.existsSync(file)) { if (typeof subkey === 'string') { const map = stateSeed[key] && typeof stateSeed[key] === 'object' ? stateSeed[key] : {}; return Number(map[subkey] || 0); } return Number(stateSeed[key] || 0); } const raw = fs.readFileSync(file, 'utf8').trim(); return raw.length > 0 ? Number(raw) : 0; }",
     "function writeCounter(key, subkey, value) { const file = counterPath(key, subkey); if (!file) return; fs.writeFileSync(file, String(value)); }",
     "function mapFromCounters(key) { if (!stateDir || !fs.existsSync(stateDir)) return stateSeed[key] && typeof stateSeed[key] === 'object' ? { ...stateSeed[key] } : {}; const result = stateSeed[key] && typeof stateSeed[key] === 'object' ? { ...stateSeed[key] } : {}; for (const entry of fs.readdirSync(stateDir)) { const prefix = `${key}__`; if (!entry.startsWith(prefix) || !entry.endsWith('.txt')) continue; const subkey = decodeURIComponent(entry.slice(prefix.length, -4)); if (subkey === '__root__') continue; const raw = fs.readFileSync(path.join(stateDir, entry), 'utf8').trim(); result[subkey] = raw.length > 0 ? Number(raw) : 0; } return result; }",
-    "function snapshotState() { return { ...stateSeed, prViewCalls: readCounter('prViewCalls'), prViewCallsByTarget: mapFromCounters('prViewCallsByTarget'), statusCallsByHead: mapFromCounters('statusCallsByHead'), checkRunCalls: readCounter('checkRunCalls'), protectionCalls: readCounter('protectionCalls'), repoViewCalls: readCounter('repoViewCalls') }; }",
+    "function snapshotState() { return { ...stateSeed, prViewCalls: readCounter('prViewCalls'), prViewCallsByTarget: mapFromCounters('prViewCallsByTarget'), statusCallsByHead: mapFromCounters('statusCallsByHead'), checkRunCalls: readCounter('checkRunCalls'), jobCallsById: mapFromCounters('jobCallsById'), protectionCalls: readCounter('protectionCalls'), repoViewCalls: readCounter('repoViewCalls') }; }",
     "function saveSnapshot() { if (!statePath) return; fs.writeFileSync(statePath, JSON.stringify(snapshotState(), null, 2)); }",
     "function readState() { return snapshotState(); }",
     "function ok(payload) { process.stdout.write(`${JSON.stringify(payload)}\\n`); process.exit(0); }",
@@ -90,9 +91,28 @@ async function writeGhMock(root: string) {
     "  const failure = { state: 'failure', statuses: [ { context: 'Core CI / test', state: 'failure', description: 'failed' }, { context: 'Docs CI / docs', state: 'success', description: 'done' } ] };",
     "  if (headSha === 'head-sha-2' && scenario === 'multi-second-failure') return failure;",
     "  if (scenario === 'timeout') return pending;",
+    "  if (scenario === 'progressing-in-progress') return attempt < 2 ? pending : success;",
+    "  if (scenario === 'stuck-in-progress') return pending;",
     "  return attempt === 0 ? pending : success;",
     "}",
-    "function checkRunsPayload() { return { total_count: 0, check_runs: [] }; }",
+    "function checkRunsPayload(headSha) {",
+    "  const attempt = Number(readState().checkRunCalls || 0);",
+    "  if (scenario === 'progressing-in-progress' && headSha === 'head-sha-1' && attempt < 2) {",
+    "    return { total_count: 1, check_runs: [ { name: 'Core CI / test', status: 'in_progress', conclusion: null, details_url: 'https://github.com/basilisk-labs/agentplane/actions/runs/1/job/99', started_at: '2026-01-01T00:00:00Z', completed_at: null } ] };",
+    "  }",
+    "  if (scenario === 'stuck-in-progress' && headSha === 'head-sha-1') {",
+    "    return { total_count: 1, check_runs: [ { name: 'Core CI / test', status: 'in_progress', conclusion: null, details_url: 'https://github.com/basilisk-labs/agentplane/actions/runs/1/job/99', started_at: '2026-01-01T00:00:00Z', completed_at: null } ] };",
+    "  }",
+    "  return { total_count: 0, check_runs: [] };",
+    "}",
+    "function actionsJobPayload(jobId) {",
+    "  const attempt = Number((readState().jobCallsById || {})[jobId] || 0);",
+    "  if (scenario === 'progressing-in-progress') {",
+    "    if (attempt === 0) return { status: 'in_progress', conclusion: null, started_at: '2026-01-01T00:00:00Z', completed_at: null, steps: [ { number: 1, name: 'Set up job', status: 'completed', conclusion: 'success', completed_at: '2026-01-01T00:00:05Z' }, { number: 2, name: 'Run tests', status: 'in_progress', conclusion: null, completed_at: null } ] };",
+    "    return { status: 'in_progress', conclusion: null, started_at: '2026-01-01T00:00:00Z', completed_at: null, steps: [ { number: 1, name: 'Set up job', status: 'completed', conclusion: 'success', completed_at: '2026-01-01T00:00:05Z' }, { number: 2, name: 'Run tests', status: 'completed', conclusion: 'success', completed_at: '2026-01-01T00:00:20Z' }, { number: 3, name: 'Upload artifacts', status: 'in_progress', conclusion: null, completed_at: null } ] };",
+    "  }",
+    "  return { status: 'in_progress', conclusion: null, started_at: '2026-01-01T00:00:00Z', completed_at: null, steps: [ { number: 1, name: 'Set up job', status: 'completed', conclusion: 'success', completed_at: '2026-01-01T00:00:05Z' }, { number: 2, name: 'Run tests', status: 'in_progress', conclusion: null, completed_at: null } ] };",
+    "}",
     "function transientFailureOnce() {",
     "  const attempt = Number(readState().prViewCalls || 0);",
     "  if (scenario === 'retry-transient' && attempt === 0) {",
@@ -116,8 +136,9 @@ async function writeGhMock(root: string) {
     "}",
     String.raw`if (args[0] === 'api' && /\/commits\/head-sha-1\/status$/.test(args[1])) { const payload = statusPayload('head-sha-1'); nextCount('statusCallsByHead', 'head-sha-1'); ok(payload); }`,
     String.raw`if (args[0] === 'api' && /\/commits\/head-sha-2\/status$/.test(args[1])) { const payload = statusPayload('head-sha-2'); nextCount('statusCallsByHead', 'head-sha-2'); ok(payload); }`,
-    String.raw`if (args[0] === 'api' && /\/commits\/head-sha-1\/check-runs$/.test(args[1])) { nextCount('checkRunCalls'); ok(checkRunsPayload()); }`,
-    String.raw`if (args[0] === 'api' && /\/commits\/head-sha-2\/check-runs$/.test(args[1])) { nextCount('checkRunCalls'); ok(checkRunsPayload()); }`,
+    String.raw`if (args[0] === 'api' && /\/commits\/head-sha-1\/check-runs$/.test(args[1])) { nextCount('checkRunCalls'); ok(checkRunsPayload('head-sha-1')); }`,
+    String.raw`if (args[0] === 'api' && /\/commits\/head-sha-2\/check-runs$/.test(args[1])) { nextCount('checkRunCalls'); ok(checkRunsPayload('head-sha-2')); }`,
+    String.raw`if (args[0] === 'api' && /\/actions\/jobs\/99$/.test(args[1])) { nextCount('jobCallsById', '99'); ok(actionsJobPayload('99')); }`,
     "fail(`unexpected gh invocation: ${args.join(' ')}`);",
   ].join("\n");
 
@@ -184,8 +205,8 @@ describe("wait-remote-pr-checks script", () => {
     });
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("attempt 1/3");
-    expect(result.stdout).toContain("attempt 2/3");
+    expect(result.stdout).toContain("poll 1 (idle 1/3)");
+    expect(result.stdout).toContain("poll 2 (idle 0/3)");
     expect(result.stdout).toContain("required checks passed for PR #123");
 
     const callLogText = await readFile(callLog, "utf8");
@@ -325,8 +346,49 @@ describe("wait-remote-pr-checks script", () => {
     });
 
     expect(result.exitCode).toBe(1);
-    expect(result.stdout).toContain("attempt 1/2");
-    expect(result.stdout).toContain("attempt 2/2");
-    expect(result.stderr).toContain("timed out waiting for required checks");
+    expect(result.stdout).toContain("poll 1 (idle 1/2)");
+    expect(result.stdout).toContain("poll 2 (idle 2/2)");
+    expect(result.stderr).toContain("timed out waiting for required checks after 2 idle polls");
+  });
+
+  it("keeps waiting while an in-progress required check keeps advancing", async () => {
+    const root = await makeTempRoot();
+    const { stateFile } = await writeGhMock(root);
+
+    const result = await runScript([], {
+      env: {
+        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+        GH_STATE_FILE: stateFile,
+        GH_SCENARIO: "progressing-in-progress",
+        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
+      },
+    });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("poll 1 (idle 1/2): Core CI / test=in_progress");
+    expect(result.stdout).toContain("poll 2 (idle 1/2)");
+    expect(result.stdout).toContain("poll 3 (idle 0/2)");
+    expect(result.stdout).toContain("required checks passed for PR #123");
+  });
+
+  it("still times out when an in-progress required check stops changing", async () => {
+    const root = await makeTempRoot();
+    const { stateFile } = await writeGhMock(root);
+
+    const result = await runScript([], {
+      env: {
+        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+        GH_STATE_FILE: stateFile,
+        GH_SCENARIO: "stuck-in-progress",
+        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
+      },
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toContain("poll 1 (idle 1/2): Core CI / test=in_progress");
+    expect(result.stdout).toContain("poll 2 (idle 2/2): Core CI / test=in_progress");
+    expect(result.stderr).toContain("timed out waiting for required checks after 2 idle polls");
   });
 });
