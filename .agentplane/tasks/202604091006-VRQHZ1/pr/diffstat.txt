@@ -1,0 +1,12 @@
+ .agentplane/tasks/202604091006-VRQHZ1/README.md    | 131 +++++++++++++++++++++
+ .../tasks/202604091006-VRQHZ1/pr/diffstat.txt      |   4 +
+ .../tasks/202604091006-VRQHZ1/pr/github-body.md    |  50 ++++++++
+ .../tasks/202604091006-VRQHZ1/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091006-VRQHZ1/pr/meta.json |  14 +++
+ .../tasks/202604091006-VRQHZ1/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091006-VRQHZ1/pr/review.md |  57 +++++++++
+ .../tasks/202604091006-VRQHZ1/pr/verify.log        |   0
+ .../run-cli.core.lifecycle.block-finish.test.ts    |  82 +++++++++++++
+ packages/agentplane/src/commands/task/finish.ts    |  42 +++++++
+ .../src/commands/task/finish.unit.test.ts          |  21 ++++
+ 11 files changed, 402 insertions(+)

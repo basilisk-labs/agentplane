@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604091006-VRQHZ1/guard-finish-base-branch",
+  "created_at": "2026-04-09T10:15:59.967Z",
+  "head_sha": "3beac0172e67f0b62c5f551330a4b1180c8aa1d2",
+  "last_verified_at": "2026-04-09T10:15:59.911Z",
+  "last_verified_sha": "643aad9db4da385a1f9070153fdcaee15d20b32e",
+  "merge_commit": "a88659acfab1838b3e3530eb911d5834e7cf872a",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T10:44:55.104Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604091006-VRQHZ1",
+  "updated_at": "2026-04-09T10:44:55.104Z",
+  "verify": {
+    "status": "pass"
+  }
+}
