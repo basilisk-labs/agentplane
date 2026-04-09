@@ -512,6 +512,11 @@ describe("runCli", () => {
       );
       await approveTaskPlan(root, taskId);
       await approveTaskPlan(root, siblingTaskId);
+      const { stdout: baseTaskStatusBefore } = await execFileAsync(
+        "git",
+        ["status", "--short", "--untracked-files=all", "--", ".agentplane/tasks"],
+        { cwd: root },
+      );
 
       const worktreeIo = captureStdIO();
       const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-seed-readmes`);
@@ -544,21 +549,29 @@ describe("runCli", () => {
       expect(await pathExists(taskReadmePath)).toBe(true);
       expect(await pathExists(siblingReadmePath)).toBe(true);
       expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
-        false,
+        true,
       );
       expect(
         await pathExists(path.join(root, ".agentplane", "tasks", siblingTaskId, "README.md")),
-      ).toBe(false);
+      ).toBe(true);
 
-      const { stdout: baseStatus } = await execFileAsync(
+      const { stdout: baseTaskStatusAfter } = await execFileAsync(
         "git",
-        ["status", "--short", "--untracked-files=all"],
+        ["status", "--short", "--untracked-files=all", "--", ".agentplane/tasks"],
         {
           cwd: root,
         },
       );
-      expect(baseStatus).not.toContain(`?? .agentplane/tasks/${taskId}/README.md`);
-      expect(baseStatus).not.toContain(`?? .agentplane/tasks/${siblingTaskId}/README.md`);
+      expect(baseTaskStatusAfter).toBe(baseTaskStatusBefore);
+
+      const baseShowIo = captureStdIO();
+      try {
+        const code = await runCli(["task", "show", taskId, "--root", root]);
+        expect(code).toBe(0);
+        expect(baseShowIo.stdout).toContain(taskId);
+      } finally {
+        baseShowIo.restore();
+      }
 
       const showIo = captureStdIO();
       try {
