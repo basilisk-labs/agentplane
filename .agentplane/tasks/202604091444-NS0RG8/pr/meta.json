@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604091444-NS0RG8/repair-legacy-lefthook",
+  "created_at": "2026-04-09T15:07:25.340Z",
+  "head_sha": "437bd1e0099a9a866d7ed4e12059e60aa939f647",
+  "last_verified_at": "2026-04-09T15:07:25.299Z",
+  "last_verified_sha": "c8aa3abd686b7abfa9aeb0f7c7f55182aad68949",
+  "schema_version": 1,
+  "task_id": "202604091444-NS0RG8",
+  "updated_at": "2026-04-09T15:09:00.074Z",
+  "verify": {
+    "status": "pass"
+  }
+}
