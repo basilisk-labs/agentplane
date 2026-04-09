@@ -1,10 +1,11 @@
 ---
 id: "202604091257-GG6KJG"
 title: "Prefer fresh branch PR artifacts in pr check when base snapshot is stale"
-status: "DOING"
+result_summary: "integrate: squash task/202604091257-GG6KJG/pr-check-freshness"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-09T14:28:12.987Z"
   updated_by: "CODER"
   note: "Completed the follow-up lint-safe mock wrapper cleanup in pr-paths.test.ts, reran prettier, eslint, and targeted pr-flow/pr-paths tests, and confirmed the branch is green after the rebase blocker wave."
-commit: null
+commit:
+  hash: "340f0fc19fcec931502f61024fb7c8d03a0edfd9"
+  message: "🧩 GG6KJG integrate: workflow: Prefer fresh branch PR artifacts in pr check when base snapshot is stale"
 comments:
   -
     author: "CODER"
     body: "Start: Implement fresher branch/worktree PR artifact fallback in pr check and cover stale-local versus fresh-branch regression paths."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091257-GG6KJG/pr."
 events:
   -
     type: "status"
@@ -52,9 +58,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Completed the follow-up lint-safe mock wrapper cleanup in pr-paths.test.ts, reran prettier, eslint, and targeted pr-flow/pr-paths tests, and confirmed the branch is green after the rebase blocker wave."
+  -
+    type: "status"
+    at: "2026-04-09T14:33:16.147Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091257-GG6KJG/pr."
 doc_version: 3
-doc_updated_at: "2026-04-09T14:28:12.993Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T14:33:16.152Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make pr check recover from stale base task PR artifacts by reading fresher branch/worktree snapshots instead of failing on outdated local meta/review state."
 sections:
   Summary: |-
