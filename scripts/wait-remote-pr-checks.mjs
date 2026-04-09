@@ -39,15 +39,17 @@ const IGNORED_LEGACY_FLAGS = new Set(["--watch", "--required", "--fail-fast"]);
 function usage() {
   process.stdout.write(
     [
-      "Usage: bun run workflow:wait-remote-checks -- [<number>|<url>|<branch>] [--repo <owner/name>]",
+      "Usage: bun run workflow:wait-remote-checks -- [<number>|<url>|<branch>]... [--repo <owner/name>]",
       "",
       "Wait for required GitHub PR checks before integrate/finish in branch_pr workflow.",
       "This command polls PR check state with bounded retries and explicit status output.",
+      "Pass one or more PR targets; they are resolved and waited in input order.",
       "",
       "Examples:",
       "  bun run workflow:wait-remote-checks",
       "  bun run workflow:wait-remote-checks -- task/202603241919-QVGXZ5/remote-check-wait",
       "  bun run workflow:wait-remote-checks -- 123 --repo basilisk-labs/agentplane",
+      "  bun run workflow:wait-remote-checks -- 123 456 --repo basilisk-labs/agentplane",
     ].join("\n"),
   );
 }
@@ -191,16 +193,14 @@ async function resolveRepositorySlug(explicitRepo) {
   return repo;
 }
 
-async function resolvePullRequest(targetArgs, repoSlug) {
-  const payload = await runGhJsonWithRetry([
-    "pr",
-    "view",
-    ...targetArgs,
-    "--repo",
-    repoSlug,
-    "--json",
-    "number,headRefOid,baseRefName,url,title",
-  ]);
+async function resolvePullRequest(targetArg, repoSlug) {
+  const prArgs = ["pr", "view"];
+  if (typeof targetArg === "string" && targetArg.trim().length > 0) {
+    prArgs.push(targetArg.trim());
+  }
+  prArgs.push("--repo", repoSlug, "--json", "number,headRefOid,baseRefName,url,title");
+
+  const payload = await runGhJsonWithRetry([...prArgs]);
 
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
     throw new Error("gh pr view returned an unexpected payload.");
@@ -220,6 +220,18 @@ async function resolvePullRequest(targetArgs, repoSlug) {
     url: typeof payload.url === "string" ? payload.url : null,
     title: typeof payload.title === "string" ? payload.title : null,
   };
+}
+
+async function resolvePullRequests(targetArgs, repoSlug) {
+  if (targetArgs.length === 0) {
+    return [await resolvePullRequest(null, repoSlug)];
+  }
+
+  const prs = [];
+  for (const targetArg of targetArgs) {
+    prs.push(await resolvePullRequest(targetArg, repoSlug));
+  }
+  return prs;
 }
 
 async function loadRequiredContexts(repoSlug, baseBranch) {
@@ -367,6 +379,43 @@ function formatSummary(items) {
   return items.map((item) => `${item.name}=${item.outcome}`).join(", ");
 }
 
+function formatPullRequestPrefix(pr, index, total) {
+  const title = pr.title ? ` (${pr.title})` : "";
+  const position = total > 1 ? ` [${index}/${total}]` : "";
+  return `PR #${pr.number}${position}${title}`;
+}
+
+async function waitForPullRequestChecks(repoSlug, pr, requiredContexts, options, prefix) {
+  for (let attempt = 1; attempt <= options.maxAttempts; attempt += 1) {
+    const checks = await loadCurrentCheckState(repoSlug, pr.headRefOid);
+    const summary = summarizeChecks(checks, requiredContexts);
+    process.stdout.write(
+      `${prefix} attempt ${attempt}/${options.maxAttempts}: ${formatSummary(summary.items)}\n`,
+    );
+
+    if (summary.failures.length > 0) {
+      process.stderr.write(
+        `error: required checks failed for ${prefix}: ${formatSummary(summary.failures)}\n`,
+      );
+      return { ok: false };
+    }
+
+    if (summary.ready) {
+      process.stdout.write(`required checks passed for ${prefix}\n`);
+      return { ok: true };
+    }
+
+    if (attempt < options.maxAttempts) {
+      await sleep(options.intervalMs);
+    }
+  }
+
+  process.stderr.write(
+    `error: timed out waiting for required checks after ${options.maxAttempts} attempts for ${prefix}\n`,
+  );
+  return { ok: false };
+}
+
 async function main() {
   const argv = process.argv.slice(2);
   if (argv.includes("--help") || argv.includes("-h")) {
@@ -376,40 +425,26 @@ async function main() {
 
   const options = parseArgs(argv);
   const repoSlug = await resolveRepositorySlug(options.repo);
-  const pr = await resolvePullRequest(options.targetArgs, repoSlug);
-  const requiredContexts = await loadRequiredContexts(repoSlug, pr.baseRefName);
+  const prs = await resolvePullRequests(options.targetArgs, repoSlug);
+  const requiredContextsByBase = new Map();
 
-  for (let attempt = 1; attempt <= options.maxAttempts; attempt += 1) {
-    const checks = await loadCurrentCheckState(repoSlug, pr.headRefOid);
-    const summary = summarizeChecks(checks, requiredContexts);
-    const prefix = `PR #${pr.number}${pr.title ? ` (${pr.title})` : ""}`;
-    process.stdout.write(
-      `${prefix} attempt ${attempt}/${options.maxAttempts}: ${formatSummary(summary.items)}\n`,
-    );
+  for (let index = 0; index < prs.length; index += 1) {
+    const pr = prs[index];
+    let requiredContexts = requiredContextsByBase.get(pr.baseRefName);
+    if (!requiredContexts) {
+      requiredContexts = await loadRequiredContexts(repoSlug, pr.baseRefName);
+      requiredContextsByBase.set(pr.baseRefName, requiredContexts);
+    }
 
-    if (summary.failures.length > 0) {
-      process.stderr.write(
-        `error: required checks failed for ${prefix}: ${formatSummary(summary.failures)}\n`,
-      );
+    const prefix = formatPullRequestPrefix(pr, index + 1, prs.length);
+    const result = await waitForPullRequestChecks(repoSlug, pr, requiredContexts, options, prefix);
+    if (!result.ok) {
       process.exitCode = 1;
       return;
     }
-
-    if (summary.ready) {
-      process.stdout.write(`required checks passed for ${prefix}\n`);
-      process.exitCode = 0;
-      return;
-    }
-
-    if (attempt < options.maxAttempts) {
-      await sleep(options.intervalMs);
-    }
   }
 
-  process.stderr.write(
-    `error: timed out waiting for required checks after ${options.maxAttempts} attempts for PR #${pr.number}\n`,
-  );
-  process.exitCode = 1;
+  process.exitCode = 0;
 }
 
 try {

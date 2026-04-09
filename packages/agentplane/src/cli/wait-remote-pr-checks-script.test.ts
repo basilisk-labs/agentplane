@@ -13,6 +13,12 @@ const tempRoots: string[] = [];
 type RunScriptResult = { exitCode: number; stdout: string; stderr: string };
 type RunScriptOptions = { env?: Record<string, string> };
 
+function toText(value: unknown) {
+  if (typeof value === "string") return value;
+  if (Buffer.isBuffer(value)) return value.toString("utf8");
+  return "";
+}
+
 async function makeTempRoot() {
   const root = await mkdtemp(path.join(tmpdir(), "agentplane-remote-check-wait-"));
   tempRoots.push(root);
@@ -34,7 +40,8 @@ async function writeGhMock(root: string) {
     JSON.stringify(
       {
         prViewCalls: 0,
-        statusCalls: 0,
+        prViewCallsByTarget: {},
+        statusCallsByHead: {},
         checkRunCalls: 0,
         protectionCalls: 0,
         repoViewCalls: 0,
@@ -57,15 +64,20 @@ async function writeGhMock(root: string) {
     "function save(next) { if (statePath) fs.writeFileSync(statePath, JSON.stringify(next, null, 2)); }",
     "function ok(payload) { process.stdout.write(`${JSON.stringify(payload)}\\n`); process.exit(0); }",
     "function fail(message, code = 1) { process.stderr.write(`${message}\\n`); process.exit(code); }",
-    "function nextCount(key) { const current = statePath && fs.existsSync(statePath) ? JSON.parse(fs.readFileSync(statePath, 'utf8')) : state; const next = { ...current, [key]: Number(current[key] || 0) + 1 }; save(next); return next[key]; }",
-    "function prPayload() { return { number: 123, headRefOid: 'head-sha-1', baseRefName: 'main', url: 'https://github.com/basilisk-labs/agentplane/pull/123', title: 'Check polling' }; }",
+    "function nextCount(key, subkey) { const current = statePath && fs.existsSync(statePath) ? JSON.parse(fs.readFileSync(statePath, 'utf8')) : state; const next = { ...current }; if (typeof subkey === 'string') { const currentMap = current[key] && typeof current[key] === 'object' ? current[key] : {}; const updatedMap = { ...currentMap, [subkey]: Number(currentMap[subkey] || 0) + 1 }; next[key] = updatedMap; save(next); return updatedMap[subkey]; } const value = Number(current[key] || 0) + 1; next[key] = value; save(next); return value; }",
+    "function prPayload(target) { if (target === '456') { return { number: 456, headRefOid: 'head-sha-2', baseRefName: 'main', url: 'https://github.com/basilisk-labs/agentplane/pull/456', title: 'Check polling 2' }; } return { number: 123, headRefOid: 'head-sha-1', baseRefName: 'main', url: 'https://github.com/basilisk-labs/agentplane/pull/123', title: 'Check polling' }; }",
     "function repoPayload() { return { nameWithOwner: 'basilisk-labs/agentplane' }; }",
     "function protectionPayload() { return { required_status_checks: { strict: true, contexts: ['Core CI / test', 'Docs CI / docs'], checks: [ { context: 'Core CI / test', app_id: 123 }, { context: 'Docs CI / docs', app_id: 456 } ] } }; }",
-    "function statusPayload() {",
-    "  const attempt = Number(state.statusCalls || 0);",
+    "function statusPayload(headSha) {",
+    "  const currentMap = statePath && fs.existsSync(statePath) ? JSON.parse(fs.readFileSync(statePath, 'utf8')) : state;",
+    "  const attempts = currentMap.statusCallsByHead && typeof currentMap.statusCallsByHead === 'object' ? currentMap.statusCallsByHead : {};",
+    "  const attempt = Number(attempts[headSha] || 0);",
     "  const pending = { state: 'pending', statuses: [ { context: 'Core CI / test', state: 'pending', description: 'running' }, { context: 'Docs CI / docs', state: 'pending', description: 'queued' } ] };",
     "  const success = { state: 'success', statuses: [ { context: 'Core CI / test', state: 'success', description: 'done' }, { context: 'Docs CI / docs', state: 'success', description: 'done' } ] };",
-    "  return scenario === 'timeout' ? pending : attempt === 0 ? pending : success;",
+    "  const failure = { state: 'failure', statuses: [ { context: 'Core CI / test', state: 'failure', description: 'failed' }, { context: 'Docs CI / docs', state: 'success', description: 'done' } ] };",
+    "  if (headSha === 'head-sha-2' && scenario === 'multi-second-failure') return failure;",
+    "  if (scenario === 'timeout') return pending;",
+    "  return attempt === 0 ? pending : success;",
     "}",
     "function checkRunsPayload() { return { total_count: 0, check_runs: [] }; }",
     "function transientFailureOnce() {",
@@ -75,19 +87,24 @@ async function writeGhMock(root: string) {
     String.raw`    fail('gh: Post "https://api.github.com/graphql": EOF');`,
     "  }",
     "}",
-    "if (args[0] === 'repo' && args[1] === 'view') { ok(repoPayload()); }",
+    "if (args[0] === 'repo' && args[1] === 'view') { nextCount('repoViewCalls'); ok(repoPayload()); }",
     "if (args[0] === 'pr' && args[1] === 'view') {",
     "  transientFailureOnce();",
+    "  const target = args.find((arg, index) => index >= 2 && !arg.startsWith('--')) || 'default';",
     "  nextCount('prViewCalls');",
+    "  nextCount('prViewCallsByTarget', target);",
     "  if (scenario === 'auth-failure') fail('gh: Authentication required');",
-    "  ok(prPayload());",
+    "  ok(prPayload(target));",
     "}",
     String.raw`if (args[0] === 'api' && /\/branches\/main\/protection$/.test(args[1])) {`,
     "  if (scenario === 'auth-failure') fail('gh: Authentication required');",
+    "  nextCount('protectionCalls');",
     "  ok(protectionPayload());",
     "}",
-    String.raw`if (args[0] === 'api' && /\/commits\/head-sha-1\/status$/.test(args[1])) { const payload = statusPayload(); nextCount('statusCalls'); ok(payload); }`,
-    String.raw`if (args[0] === 'api' && /\/commits\/head-sha-1\/check-runs$/.test(args[1])) { ok(checkRunsPayload()); }`,
+    String.raw`if (args[0] === 'api' && /\/commits\/head-sha-1\/status$/.test(args[1])) { const payload = statusPayload('head-sha-1'); nextCount('statusCallsByHead', 'head-sha-1'); ok(payload); }`,
+    String.raw`if (args[0] === 'api' && /\/commits\/head-sha-2\/status$/.test(args[1])) { const payload = statusPayload('head-sha-2'); nextCount('statusCallsByHead', 'head-sha-2'); ok(payload); }`,
+    String.raw`if (args[0] === 'api' && /\/commits\/head-sha-1\/check-runs$/.test(args[1])) { nextCount('checkRunCalls'); ok(checkRunsPayload()); }`,
+    String.raw`if (args[0] === 'api' && /\/commits\/head-sha-2\/check-runs$/.test(args[1])) { nextCount('checkRunCalls'); ok(checkRunsPayload()); }`,
     "fail(`unexpected gh invocation: ${args.join(' ')}`);",
   ].join("\n");
 
@@ -115,8 +132,8 @@ async function runScript(args: string[], opts: RunScriptOptions = {}): Promise<R
     };
     return {
       exitCode: Number.isInteger(execError.code) ? execError.code : 1,
-      stdout: typeof execError.stdout === "string" ? execError.stdout : "",
-      stderr: typeof execError.stderr === "string" ? execError.stderr : String(error),
+      stdout: toText(execError.stdout),
+      stderr: toText(execError.stderr) || String(error),
     };
   }
 }
@@ -170,6 +187,71 @@ describe("wait-remote-pr-checks script", () => {
     );
     expect(callLogText).toContain(
       `["api","repos/basilisk-labs/agentplane/commits/head-sha-1/status"]`,
+    );
+  });
+
+  it("waits for multiple PRs in input order and caches shared protection lookups", async () => {
+    const root = await makeTempRoot();
+    const { stateFile, callLog } = await writeGhMock(root);
+
+    const result = await runScript(["123", "456"], {
+      env: {
+        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+        GH_SCENARIO: "multi-success",
+        GH_STATE_FILE: stateFile,
+        GH_CALL_LOG: callLog,
+        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "3",
+      },
+    });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("PR #123 [1/2]");
+    expect(result.stdout).toContain("required checks passed for PR #123 [1/2]");
+    expect(result.stdout).toContain("PR #456 [2/2]");
+    expect(result.stdout).toContain("required checks passed for PR #456 [2/2]");
+
+    const callLogText = await readFile(callLog, "utf8");
+    expect(callLogText).toContain(`["pr","view","123"`);
+    expect(callLogText).toContain(`["pr","view","456"`);
+    expect(callLogText.match(/branches\/main\/protection/g)?.length).toBe(1);
+
+    const state = JSON.parse(await readFile(stateFile, "utf8")) as {
+      prViewCallsByTarget: Record<string, number>;
+      statusCallsByHead: Record<string, number>;
+      protectionCalls: number;
+    };
+    expect(state.prViewCallsByTarget["123"]).toBeGreaterThan(0);
+    expect(state.prViewCallsByTarget["456"]).toBeGreaterThan(0);
+    expect(state.statusCallsByHead["head-sha-1"]).toBeGreaterThan(1);
+    expect(state.statusCallsByHead["head-sha-2"]).toBeGreaterThan(1);
+    expect(state.protectionCalls).toBe(1);
+  });
+
+  it("fails on the first failing PR and stops before later targets", async () => {
+    const root = await makeTempRoot();
+    const { stateFile, callLog } = await writeGhMock(root);
+
+    const result = await runScript(["123", "456"], {
+      env: {
+        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+        GH_SCENARIO: "multi-second-failure",
+        GH_STATE_FILE: stateFile,
+        GH_CALL_LOG: callLog,
+        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "3",
+      },
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toContain("required checks passed for PR #123 [1/2]");
+    expect(result.stderr).toContain("required checks failed for PR #456 [2/2]");
+
+    const callLogText = await readFile(callLog, "utf8");
+    expect(callLogText).toContain(`["pr","view","123"`);
+    expect(callLogText).toContain(`["pr","view","456"`);
+    expect(callLogText).toContain(
+      `["api","repos/basilisk-labs/agentplane/commits/head-sha-2/status"]`,
     );
   });
 
