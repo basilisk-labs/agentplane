@@ -1,0 +1,1 @@
+incidents/workflow: Let finish append structured incident findings before promotion (DWESME)

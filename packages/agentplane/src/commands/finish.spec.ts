@@ -1,5 +1,6 @@
 import type { CommandSpec } from "../cli/spec/spec.js";
 import { usageError } from "../cli/spec/errors.js";
+import { verifyFindingOptions, validateVerifyFindingSource } from "./task/verify-command-shared.js";
 
 import { toStringList } from "../cli/spec/parse-utils.js";
 import {
@@ -32,6 +33,16 @@ export type FinishParsed = {
   closeCommit: boolean;
   noCloseCommit: boolean;
   closeUnstageOthers: boolean;
+  observation?: string;
+  impact?: string;
+  resolution?: string;
+  localOnly: boolean;
+  repoFixable: boolean;
+  incidentScope?: string;
+  incidentTags: string[];
+  incidentMatch: string[];
+  incidentAdvice?: string;
+  incidentRule?: string;
   quiet: boolean;
 };
 
@@ -199,6 +210,7 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       description:
         "With --close-commit: unstage any currently staged paths before staging the task README.",
     },
+    ...verifyFindingOptions,
     { kind: "boolean", name: "quiet", default: false, description: "Suppress output." },
   ],
   examples: [
@@ -209,6 +221,10 @@ export const finishSpec: CommandSpec<FinishParsed> = {
     {
       cmd: 'agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit-from-comment --commit-allow packages/agentplane/src',
       why: "Finish and create a commit from the comment (single-task only).",
+    },
+    {
+      cmd: 'agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit abcdef123456 --observation "Recurring manual recovery remained easy to miss." --impact "incidents.md stayed stale until a second command." --resolution "Capture the closeout finding during finish itself."',
+      why: "Finish a task while appending a structured finding that can promote into incidents.md.",
     },
   ],
   validateRaw: (raw) => {
@@ -323,6 +339,19 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       typeof raw.opts.result === "string" ||
       typeof raw.opts.risk === "string" ||
       raw.opts.breaking === true;
+    const hasFindingInput = [
+      raw.opts.observation,
+      raw.opts.impact,
+      raw.opts.resolution,
+      raw.opts["incident-scope"],
+      raw.opts["incident-advice"],
+      raw.opts["incident-rule"],
+    ].some((value) => typeof value === "string" && value.trim().length > 0)
+      ? true
+      : (Array.isArray(raw.opts["incident-tag"]) && raw.opts["incident-tag"].length > 0) ||
+        (Array.isArray(raw.opts["incident-match"]) && raw.opts["incident-match"].length > 0) ||
+        raw.opts["local-only"] === true ||
+        raw.opts["repo-fixable"] === true;
     if (hasMeta && taskIds.length !== 1) {
       throw usageError({
         spec: finishSpec,
@@ -330,6 +359,15 @@ export const finishSpec: CommandSpec<FinishParsed> = {
         message: "--result/--risk/--breaking requires exactly one task id",
       });
     }
+    if (hasFindingInput && taskIds.length !== 1) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message:
+          "--observation/--impact/--resolution and incident finding options require exactly one task id",
+      });
+    }
+    validateVerifyFindingSource(raw, finishSpec, { command: "finish" });
   },
   parse: (raw) => ({
     taskIds: Array.isArray(raw.args["task-id"])
@@ -358,6 +396,19 @@ export const finishSpec: CommandSpec<FinishParsed> = {
     closeCommit: raw.opts["close-commit"] === true,
     noCloseCommit: raw.opts["no-close-commit"] === true,
     closeUnstageOthers: raw.opts["close-unstage-others"] === true,
+    observation: typeof raw.opts.observation === "string" ? raw.opts.observation : undefined,
+    impact: typeof raw.opts.impact === "string" ? raw.opts.impact : undefined,
+    resolution: typeof raw.opts.resolution === "string" ? raw.opts.resolution : undefined,
+    localOnly: raw.opts["local-only"] === true,
+    repoFixable: raw.opts["repo-fixable"] === true,
+    incidentScope:
+      typeof raw.opts["incident-scope"] === "string" ? raw.opts["incident-scope"] : undefined,
+    incidentTags: toStringList(raw.opts["incident-tag"]),
+    incidentMatch: toStringList(raw.opts["incident-match"]),
+    incidentAdvice:
+      typeof raw.opts["incident-advice"] === "string" ? raw.opts["incident-advice"] : undefined,
+    incidentRule:
+      typeof raw.opts["incident-rule"] === "string" ? raw.opts["incident-rule"] : undefined,
     quiet: raw.opts.quiet === true,
   }),
 };

@@ -1,4 +1,5 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -8,6 +9,7 @@ import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
+  commitAll,
   configureGitUser,
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
@@ -58,7 +60,6 @@ describe("runCli incidents", () => {
       createIncidentRegistrySkeleton(),
       "utf8",
     );
-
     let taskId = "";
     {
       const io = captureStdIO();
@@ -103,6 +104,26 @@ describe("runCli incidents", () => {
             "  Resolution: keep one reusable recovery note in the incident registry.",
             "  Fixability: external",
           ].join("\n"),
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "verify",
+          taskId,
+          "--ok",
+          "--by",
+          "CODER",
+          "--note",
+          "Verified: finish-time incident promotion path is ready for closeout.",
           "--root",
           root,
         ]);
@@ -779,6 +800,145 @@ describe("runCli incidents", () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("finish can append and promote a structured finding during closeout", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await commitAll(root, "seed");
+    const headSha = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      encoding: "utf8",
+    }).trim();
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["branch", "base", "set", "main", "--root", root]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Promote finish-time incident finding",
+          "--description",
+          "Capture a reusable workflow finding during finish",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "doc",
+          "set",
+          taskId,
+          "--section",
+          "Verify Steps",
+          "--text",
+          "1. Run the finish-time incident promotion closeout flow.",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "start-ready",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: reproduce finish-time incident promotion.",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        taskId,
+        "--author",
+        "INTEGRATOR",
+        "--body",
+        "Verified: finish appended and promoted the closeout finding.",
+        "--result",
+        "finish finding promoted",
+        "--commit",
+        headSha,
+        "--observation",
+        "Closeout repeatedly surfaced a reusable workflow failure only after implementation was complete.",
+        "--impact",
+        "incidents.md stayed behind real operator experience until someone ran a second manual command.",
+        "--resolution",
+        "Allow finish to append and promote the finding in one deterministic flow.",
+        "--incident-scope",
+        "finish closeout incident capture",
+        "--no-close-commit",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("incident registry updated (1 promoted)");
+      expect(io.stdout).toContain("finished");
+    } finally {
+      io.restore();
+    }
+
+    const incidentsText = await readFile(path.join(root, ".agentplane", "policy", "incidents.md"));
+    const taskReadme = await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"));
+    expect(String(incidentsText)).toContain("scope: finish closeout incident capture");
+    expect(String(incidentsText)).toContain(`source_task: ${taskId}`);
+    expect(String(taskReadme)).toContain("Promotion: incident-candidate");
+    expect(String(taskReadme)).toContain(
+      "Resolution: Allow finish to append and promote the finding",
+    );
   });
 
   it("incidents collect refuses writes that would push the registry over the policy line budget", async () => {

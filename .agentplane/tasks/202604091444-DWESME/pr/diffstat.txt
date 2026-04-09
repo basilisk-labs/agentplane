@@ -1,0 +1,14 @@
+ .agentplane/tasks/202604091444-DWESME/README.md    | 194 +++++++++++++++++++++
+ .../tasks/202604091444-DWESME/pr/diffstat.txt      |  13 ++
+ .../tasks/202604091444-DWESME/pr/github-body.md    |  63 +++++++
+ .../tasks/202604091444-DWESME/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091444-DWESME/pr/meta.json |  17 ++
+ .../tasks/202604091444-DWESME/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091444-DWESME/pr/review.md |  70 ++++++++
+ .../tasks/202604091444-DWESME/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |  16 ++
+ .../src/cli/run-cli.core.incidents.test.ts         | 162 ++++++++++++++++-
+ packages/agentplane/src/commands/finish.run.ts     |  10 ++
+ packages/agentplane/src/commands/finish.spec.ts    |  51 ++++++
+ packages/agentplane/src/commands/task/finish.ts    |  89 ++++++++++
+ 13 files changed, 685 insertions(+), 1 deletion(-)

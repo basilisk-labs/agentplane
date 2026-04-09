@@ -1154,6 +1154,16 @@ Options:
 - `--close-commit`: After finishing, run a deterministic close commit for the task README (single-task only). (default=false)
 - `--no-close-commit`: Disable the default deterministic close commit in direct mode (single-task only). (default=false)
 - `--close-unstage-others`: With --close-commit: unstage any currently staged paths before staging the task README. (default=false)
+- `--observation <text>`: Structured finding observation to append with the verification.
+- `--impact <text>`: Structured finding impact to append with the verification.
+- `--resolution <text>`: Structured finding resolution to append with the verification.
+- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
+- `--incident-scope <text>`: Optional incident scope for the appended finding.
+- `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
+- `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
+- `--incident-advice <text>`: Optional operator advice for the appended finding.
+- `--incident-rule <text>`: Optional incident rule for the appended finding.
 - `--quiet`: Suppress output. (default=false)
 
 Examples:
@@ -1169,6 +1179,12 @@ agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all 
 ```
 
 - Finish and create a commit from the comment (single-task only).
+
+```sh
+agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit abcdef123456 --observation "Recurring manual recovery remained easy to miss." --impact "incidents.md stayed stale until a second command." --resolution "Capture the closeout finding during finish itself."
+```
+
+- Finish a task while appending a structured finding that can promote into incidents.md.
 
 ### start
 

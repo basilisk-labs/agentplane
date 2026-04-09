@@ -42,6 +42,16 @@ export function makeRunFinishHandler(getCtx: (cmd: string) => Promise<CommandCon
       closeCommit: p.closeCommit,
       noCloseCommit: p.noCloseCommit,
       closeUnstageOthers: p.closeUnstageOthers,
+      observation: p.observation,
+      impact: p.impact,
+      resolution: p.resolution,
+      localOnly: p.localOnly,
+      repoFixable: p.repoFixable,
+      incidentScope: p.incidentScope,
+      incidentTags: p.incidentTags,
+      incidentMatch: p.incidentMatch,
+      incidentAdvice: p.incidentAdvice,
+      incidentRule: p.incidentRule,
       quiet: p.quiet,
     });
   };

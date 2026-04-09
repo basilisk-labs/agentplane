@@ -12,6 +12,7 @@ import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import { applyTaskMutation } from "../shared/task-mutation.js";
 import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
 import {
   createTaskCloseCommit,
@@ -21,6 +22,7 @@ import {
   type ResolvedCommitInfo,
   writeFinishedTasks,
 } from "./finish-shared.js";
+import { buildStructuredFindingMutationPlan } from "./findings.js";
 
 import {
   defaultCommitEmojiForStatus,
@@ -81,6 +83,50 @@ async function ensureFinishRunsOnBaseBranch(opts: {
   });
 }
 
+type FinishStructuredFindingInput = {
+  observation: string;
+  impact: string;
+  resolution: string;
+  localOnly: boolean;
+  repoFixable: boolean;
+  incidentScope?: string;
+  incidentTags: string[];
+  incidentMatch: string[];
+  incidentAdvice?: string;
+  incidentRule?: string;
+};
+
+async function appendFinishStructuredFinding(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  author: string;
+  finding: FinishStructuredFindingInput;
+}): Promise<void> {
+  await applyTaskMutation({
+    ctx: opts.ctx,
+    taskId: opts.taskId,
+    build: (current) => {
+      const plan = buildStructuredFindingMutationPlan({
+        current,
+        config: opts.ctx.config,
+        observation: opts.finding.observation,
+        impact: opts.finding.impact,
+        resolution: opts.finding.resolution,
+        promote: !opts.finding.localOnly,
+        external: !opts.finding.localOnly,
+        fixability: opts.finding.repoFixable ? "repo-fixable" : null,
+        incidentScope: opts.finding.incidentScope,
+        incidentTags: opts.finding.incidentTags,
+        incidentMatch: opts.finding.incidentMatch,
+        incidentAdvice: opts.finding.incidentAdvice,
+        incidentRule: opts.finding.incidentRule,
+        updatedBy: opts.author,
+      });
+      return plan ? { intents: plan.intents } : null;
+    },
+  });
+}
+
 export async function cmdFinish(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -110,6 +156,16 @@ export async function cmdFinish(opts: {
   noCloseCommit?: boolean;
   closeUnstageOthers?: boolean;
   baseBranchOverride?: string;
+  observation?: string;
+  impact?: string;
+  resolution?: string;
+  localOnly?: boolean;
+  repoFixable?: boolean;
+  incidentScope?: string;
+  incidentTags?: string[];
+  incidentMatch?: string[];
+  incidentAdvice?: string;
+  incidentRule?: string;
   quiet: boolean;
 }): Promise<number> {
   try {
@@ -240,6 +296,39 @@ export async function cmdFinish(opts: {
     const resultSummary = typeof opts.result === "string" ? opts.result.trim() : "";
     const riskLevel = opts.risk;
     const breaking = opts.breaking === true;
+    const finishFinding =
+      typeof opts.observation === "string" &&
+      typeof opts.impact === "string" &&
+      typeof opts.resolution === "string"
+        ? {
+            observation: opts.observation,
+            impact: opts.impact,
+            resolution: opts.resolution,
+            localOnly: opts.localOnly === true,
+            repoFixable: opts.repoFixable === true,
+            incidentScope: opts.incidentScope,
+            incidentTags: opts.incidentTags ?? [],
+            incidentMatch: opts.incidentMatch ?? [],
+            incidentAdvice: opts.incidentAdvice,
+            incidentRule: opts.incidentRule,
+          }
+        : null;
+    if (finishFinding && opts.taskIds.length !== 1) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          "--observation/--impact/--resolution and incident finding options require exactly one task id",
+      });
+    }
+    if (finishFinding && primaryTaskId) {
+      await appendFinishStructuredFinding({
+        ctx,
+        taskId: primaryTaskId,
+        author: opts.author,
+        finding: finishFinding,
+      });
+    }
 
     let primaryStatusFrom: string | null = null;
     let primaryTag: string | null = null;

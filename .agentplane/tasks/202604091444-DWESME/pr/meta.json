@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604091444-DWESME/finish-findings-promotion",
+  "created_at": "2026-04-09T15:07:25.382Z",
+  "head_sha": "aaeefac97065f884a944793537b6c8a8b1513b57",
+  "last_verified_at": "2026-04-09T15:17:27.588Z",
+  "last_verified_sha": "aaeefac97065f884a944793537b6c8a8b1513b57",
+  "pr_number": 191,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/191",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604091444-DWESME",
+  "updated_at": "2026-04-09T15:17:49.460Z",
+  "verify": {
+    "status": "pass"
+  }
+}
