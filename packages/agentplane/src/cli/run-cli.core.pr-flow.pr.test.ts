@@ -1857,6 +1857,105 @@ describe("runCli", () => {
     }
   }, 120_000);
 
+  it(
+    "pr check prefers a fresher branch snapshot when local base PR artifacts are stale",
+    { timeout: 120_000 },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      const execFileAsync = promisify(execFile);
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "PR check stale local snapshot fallback",
+          "--description",
+          "Base checkout should prefer fresher branch PR artifacts when local copies drift",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+
+      await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      const branch = `task/${taskId}/fresh-branch-snapshot`;
+      await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+      await runCliSilent([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", `${taskId} add initial pr artifacts`], {
+        cwd: root,
+      });
+
+      const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+      const staleMeta = await readFile(path.join(prDir, "meta.json"), "utf8");
+      const staleDiffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
+      const staleVerifyLog = await readFile(path.join(prDir, "verify.log"), "utf8");
+      const staleReview = await readFile(path.join(prDir, "review.md"), "utf8");
+      const staleGithubTitle = await readFile(path.join(prDir, "github-title.txt"), "utf8");
+      const staleGithubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
+
+      await writeFile(path.join(root, "feature.txt"), "feature", "utf8");
+      await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feature"], { cwd: root });
+      await runCliSilent(["pr", "update", taskId, "--root", root]);
+      await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", `${taskId} refresh pr artifacts`], {
+        cwd: root,
+      });
+
+      await execFileAsync("git", ["checkout", "main"], { cwd: root });
+      await mkdir(prDir, { recursive: true });
+      await writeFile(path.join(prDir, "meta.json"), staleMeta, "utf8");
+      await writeFile(path.join(prDir, "diffstat.txt"), staleDiffstat, "utf8");
+      await writeFile(path.join(prDir, "verify.log"), staleVerifyLog, "utf8");
+      await writeFile(path.join(prDir, "review.md"), staleReview, "utf8");
+      await writeFile(path.join(prDir, "github-title.txt"), staleGithubTitle, "utf8");
+      await writeFile(path.join(prDir, "github-body.md"), staleGithubBody, "utf8");
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["pr", "check", taskId, "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("✅ pr check");
+      } finally {
+        io.restore();
+      }
+    },
+  );
+
   it("pr check still reports multiple task branches when fallback is required", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -2344,6 +2443,193 @@ describe("runCli", () => {
 
     const rawLog = await readFile(logPath, "utf8");
     expect(rawLog).toContain(`head=example%3Atask%2F${taskId}%2Fexisting-pr`);
+  });
+
+  it("pr open keeps review/body stable when a second run creates the remote PR", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open preserves rendered packet on remote create",
+        "--description",
+        "A second pr open should avoid rewriting review/body when only PR linkage changes",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/remote-create-second-pass`;
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      branch,
+      "--sync-only",
+      "--root",
+      root,
+    ]);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    const reviewBefore = await readFile(path.join(prDir, "review.md"), "utf8");
+    const githubBodyBefore = await readFile(path.join(prDir, "github-body.md"), "utf8");
+
+    const { fakeBin, logPath } = await installFakeGhPrApi({
+      scenarioName: "open-create-second-pass",
+      branch,
+      createResponse: {
+        number: 654,
+        html_url: "https://github.com/example/repo/pull/654",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        head: { sha: "remote-head-sha" },
+        base: { ref: "main" },
+      },
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("created GitHub PR #654");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(reviewBefore);
+    expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(githubBodyBefore);
+  });
+
+  it("pr open keeps review/body stable when a second run links an existing remote PR", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open preserves rendered packet on existing PR hydration",
+        "--description",
+        "A second pr open should avoid rewriting review/body when it only links an existing PR",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/existing-pr-second-pass`;
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      branch,
+      "--sync-only",
+      "--root",
+      root,
+    ]);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    const reviewBefore = await readFile(path.join(prDir, "review.md"), "utf8");
+    const githubBodyBefore = await readFile(path.join(prDir, "github-body.md"), "utf8");
+
+    const { fakeBin, logPath } = await installFakeGhPrLookup({
+      scenarioName: "open-existing-second-pass",
+      branch,
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("linked to GitHub PR #321");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(reviewBefore);
+    expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(githubBodyBefore);
   });
 
   it("pr update hydrates existing GitHub PR state into previously local-only artifacts", async () => {

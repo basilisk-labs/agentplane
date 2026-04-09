@@ -11,6 +11,7 @@ export type TaskFindingsAddParsed = {
   resolution: string;
   promote: boolean;
   external: boolean;
+  fixability: "external" | "repo-fixable" | null;
   incidentScope?: string;
   incidentTags: string[];
   incidentMatch: string[];
@@ -25,7 +26,7 @@ export const taskFindingsAddSpec: CommandSpec<TaskFindingsAddParsed> = {
   summary:
     "Append a structured Findings/Notes block; incident promotion is default unless --local-only.",
   synopsis: [
-    "agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--local-only] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]",
+    "agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--local-only] [--repo-fixable] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]",
   ],
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
@@ -55,10 +56,16 @@ export const taskFindingsAddSpec: CommandSpec<TaskFindingsAddParsed> = {
     },
     {
       kind: "boolean",
+      name: "repo-fixable",
+      description:
+        "Mark the structured finding as repo-fixable so it can promote into incidents.md.",
+    },
+    {
+      kind: "boolean",
       name: "local-only",
       default: false,
       description:
-        "Keep the entry task-local only; omit `Promotion: incident-candidate` and `Fixability: external`.",
+        "Keep the entry task-local only; omit `Promotion: incident-candidate` and any explicit fixability marker.",
     },
     {
       kind: "string",
@@ -125,16 +132,24 @@ export const taskFindingsAddSpec: CommandSpec<TaskFindingsAddParsed> = {
     }
     if (
       raw.opts["local-only"] === true &&
-      (raw.opts.promote === true || raw.opts.external === true)
+      (raw.opts.promote === true || raw.opts.external === true || raw.opts["repo-fixable"] === true)
     ) {
       throw usageError({
         spec: taskFindingsAddSpec,
-        message: "--local-only cannot be combined with --promote or --external.",
+        message: "--local-only cannot be combined with --promote, --external, or --repo-fixable.",
+      });
+    }
+    if (raw.opts.external === true && raw.opts["repo-fixable"] === true) {
+      throw usageError({
+        spec: taskFindingsAddSpec,
+        message: "--external and --repo-fixable are mutually exclusive.",
       });
     }
   },
   parse: (raw) => {
     const localOnly = raw.opts["local-only"] === true;
+    const repoFixable = raw.opts["repo-fixable"] === true;
+    const fixability = localOnly ? null : repoFixable ? "repo-fixable" : "external";
     return {
       taskId: String(raw.args["task-id"]),
       observation: String(raw.opts.observation),
@@ -142,6 +157,7 @@ export const taskFindingsAddSpec: CommandSpec<TaskFindingsAddParsed> = {
       resolution: String(raw.opts.resolution),
       promote: !localOnly,
       external: !localOnly,
+      fixability,
       incidentScope:
         typeof raw.opts["incident-scope"] === "string" ? raw.opts["incident-scope"] : undefined,
       incidentTags: (raw.opts["incident-tag"] as string[] | undefined) ?? [],
@@ -167,6 +183,7 @@ export function makeRunTaskFindingsAddHandler(getCtx: (cmd: string) => Promise<C
       resolution: p.resolution,
       promote: p.promote,
       external: p.external,
+      fixability: p.fixability === "repo-fixable" ? "repo-fixable" : null,
       incidentScope: p.incidentScope,
       incidentTags: p.incidentTags,
       incidentMatch: p.incidentMatch,

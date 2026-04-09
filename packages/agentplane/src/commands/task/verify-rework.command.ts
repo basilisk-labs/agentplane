@@ -61,6 +61,7 @@ export function makeRunTaskVerifyReworkHandler(getCtx: (cmd: string) => Promise<
       impact: p.impact,
       resolution: p.resolution,
       localOnly: p.localOnly,
+      repoFixable: p.repoFixable,
       incidentScope: p.incidentScope,
       incidentTags: p.incidentTags,
       incidentMatch: p.incidentMatch,

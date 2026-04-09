@@ -13,7 +13,7 @@ export type IncidentRegistryEntry = {
   match: string[];
   advice: string | null;
   sourceTask: string | null;
-  fixability: "external" | null;
+  fixability: "external" | "repo-fixable" | null;
   rawFields: Record<string, string>;
   line: number;
 };
@@ -33,7 +33,8 @@ export type IncidentFindingCandidate = {
   incidentTags: string[];
   incidentMatch: string[];
   incidentExternal: boolean;
-  fixability: "external" | null;
+  incidentInternal: boolean;
+  fixability: "external" | "repo-fixable" | null;
   line: number;
   rawFields: Record<string, string>;
 };

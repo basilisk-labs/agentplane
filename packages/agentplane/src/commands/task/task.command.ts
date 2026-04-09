@@ -48,6 +48,10 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
       why: "Apply deterministic task closure from a merged hosted PR event on an automation branch.",
     },
     {
+      cmd: "agentplane task hosted-close-pr 202604091218-JREJ4K",
+      why: "Open the hosted closure PR after a manual handoff comment leaves only the remote task-close branch.",
+    },
+    {
       cmd: "agentplane task resume-context <task-id>",
       why: "Inspect deterministic recovery context before resuming or retrying a run.",
     },

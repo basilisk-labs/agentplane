@@ -21,7 +21,8 @@ const compactRegistryHeader = [
   "",
   "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`. Optional machine-match fields: `tags`, `match`, `advice`, `source_task`, `fixability`.",
   "- `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.",
-  "- First auto-promoted external incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.",
+  "- `fixability: repo-fixable` means the issue can be removed by repository code changes and should still be captured as reusable operational advice when explicitly marked.",
+  "- First auto-promoted reusable incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.",
 ].join("\n");
 
 function makeCompactOpenEntry(index: number): string {
@@ -315,6 +316,99 @@ describe("runCli incidents", () => {
       } finally {
         io.restore();
       }
+    }
+  });
+
+  it("verify can append repo-fixable findings and incidents collect promotes them", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Verify appends repo-fixable finding",
+          "--description",
+          "Exercise verify to incidents collect flow for repo-fixable findings",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "verify",
+          taskId,
+          "--ok",
+          "--by",
+          "REVIEWER",
+          "--note",
+          "Looks good",
+          "--repo-fixable",
+          "--observation",
+          "The remaining issue can be fixed in repository code.",
+          "--impact",
+          "We need a reusable reminder in incidents.md.",
+          "--resolution",
+          "Add the incident note from the verify flow.",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("finding=incident-candidate");
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "incidents",
+        "collect",
+        taskId,
+        "--check",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        promotable: { fixability: string | null; state: string; advice: string | null }[];
+      };
+      expect(payload.promotable).toHaveLength(1);
+      expect(payload.promotable[0]?.fixability).toBe("repo-fixable");
+      expect(payload.promotable[0]?.state).toBe("open");
+      expect(payload.promotable[0]?.advice).toContain("incident note");
+    } finally {
+      io.restore();
     }
   });
 

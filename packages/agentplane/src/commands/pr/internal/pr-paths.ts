@@ -58,6 +58,20 @@ export async function readPrArtifact(opts: {
   worktreePath?: string | null;
 }): Promise<string | null> {
   const filePath = path.join(opts.prDir, opts.fileName);
+  if (await fileExists(filePath)) {
+    return await readFile(filePath, "utf8");
+  }
+  return await readPrArtifactFromBranch(opts);
+}
+
+export async function readPrArtifactFromBranch(opts: {
+  resolved: { gitRoot: string };
+  prDir: string;
+  fileName: string;
+  branch: string;
+  worktreePath?: string | null;
+}): Promise<string | null> {
+  const filePath = path.join(opts.prDir, opts.fileName);
   if (opts.worktreePath) {
     const worktreeFilePath = path.join(
       opts.worktreePath,
@@ -66,9 +80,6 @@ export async function readPrArtifact(opts: {
     if (await fileExists(worktreeFilePath)) {
       return await readFile(worktreeFilePath, "utf8");
     }
-  }
-  if (await fileExists(filePath)) {
-    return await readFile(filePath, "utf8");
   }
   const rel = toGitPath(path.relative(opts.resolved.gitRoot, filePath));
   try {

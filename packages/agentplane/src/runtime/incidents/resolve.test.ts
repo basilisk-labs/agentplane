@@ -15,7 +15,8 @@ const compactRegistryHeader = [
   "",
   "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`. Optional machine-match fields: `tags`, `match`, `advice`, `source_task`, `fixability`.",
   "- `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.",
-  "- First auto-promoted external incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.",
+  "- `fixability: repo-fixable` means the issue can be removed by changing repository code and should still be captured as reusable incident advice when marked explicitly.",
+  "- First auto-promoted reusable incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.",
 ].join("\n");
 
 describe("incidents runtime", () => {

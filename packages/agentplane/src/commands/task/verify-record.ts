@@ -27,6 +27,7 @@ type VerifyStructuredFindingInput = {
   impact: string;
   resolution: string;
   localOnly?: boolean;
+  repoFixable?: boolean;
   incidentScope?: string;
   incidentTags?: string[];
   incidentMatch?: string[];
@@ -98,6 +99,7 @@ async function recordVerificationResult(opts: {
           resolution: opts.finding.resolution,
           promote: !opts.finding.localOnly,
           external: !opts.finding.localOnly,
+          fixability: opts.finding.repoFixable ? "repo-fixable" : null,
           incidentScope: opts.finding.incidentScope,
           incidentTags: opts.finding.incidentTags ?? [],
           incidentMatch: opts.finding.incidentMatch ?? [],
@@ -310,6 +312,7 @@ export async function cmdTaskVerifyOk(opts: {
   impact?: string;
   resolution?: string;
   localOnly: boolean;
+  repoFixable: boolean;
   incidentScope?: string;
   incidentTags: string[];
   incidentMatch: string[];
@@ -330,6 +333,7 @@ export async function cmdTaskVerifyOk(opts: {
             impact: opts.impact,
             resolution: opts.resolution,
             localOnly: opts.localOnly === true,
+            repoFixable: opts.repoFixable === true,
             incidentScope: opts.incidentScope,
             incidentTags: opts.incidentTags ?? [],
             incidentMatch: opts.incidentMatch ?? [],
@@ -355,6 +359,7 @@ export async function cmdTaskVerifyRework(opts: {
   impact?: string;
   resolution?: string;
   localOnly?: boolean;
+  repoFixable?: boolean;
   incidentScope?: string;
   incidentTags?: string[];
   incidentMatch?: string[];
@@ -375,6 +380,7 @@ export async function cmdTaskVerifyRework(opts: {
             impact: opts.impact,
             resolution: opts.resolution,
             localOnly: opts.localOnly === true,
+            repoFixable: opts.repoFixable === true,
             incidentScope: opts.incidentScope,
             incidentTags: opts.incidentTags ?? [],
             incidentMatch: opts.incidentMatch ?? [],
@@ -401,6 +407,7 @@ export async function cmdVerifyParsed(opts: {
   impact?: string;
   resolution?: string;
   localOnly?: boolean;
+  repoFixable?: boolean;
   incidentScope?: string;
   incidentTags?: string[];
   incidentMatch?: string[];
@@ -420,6 +427,7 @@ export async function cmdVerifyParsed(opts: {
             impact: opts.impact,
             resolution: opts.resolution,
             localOnly: opts.localOnly === true,
+            repoFixable: opts.repoFixable === true,
             incidentScope: opts.incidentScope,
             incidentTags: opts.incidentTags ?? [],
             incidentMatch: opts.incidentMatch ?? [],

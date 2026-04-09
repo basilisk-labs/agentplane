@@ -7,7 +7,11 @@ import { fileExists } from "../../cli/fs-utils.js";
 import { createCliEmitter, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
-import { gitListTaskBranches, parseTaskIdFromBranch } from "../shared/git-worktree.js";
+import {
+  findWorktreeForBranch,
+  gitListTaskBranches,
+  parseTaskIdFromBranch,
+} from "../shared/git-worktree.js";
 import { gitRevParse } from "../shared/git-ops.js";
 import {
   loadBackendTask,
@@ -15,7 +19,7 @@ import {
   type CommandContext,
 } from "../shared/task-backend.js";
 
-import { readPrArtifact, resolvePrPaths } from "./internal/pr-paths.js";
+import { readPrArtifactFromBranch, resolvePrPaths } from "./internal/pr-paths.js";
 import {
   validateGithubPrBodyContents,
   validateReviewContents,
@@ -48,32 +52,145 @@ async function resolveArtifactBranch(opts: {
   return null;
 }
 
-async function readPrArtifactWithOptionalBranch(opts: {
-  ctx: CommandContext;
-  resolved: { gitRoot: string };
-  prDir: string;
-  fileName: string;
+type PrArtifactTexts = {
+  metaText: string | null;
+  diffstatText: string | null;
+  verifyLogText: string | null;
+  reviewText: string | null;
+  githubTitleText: string | null;
+  githubBodyText: string | null;
+};
+
+type PrArtifactSnapshot = {
+  source: "local" | "branch";
+  texts: PrArtifactTexts;
+  meta: PrMeta | null;
+  errors: string[];
+  freshnessEvaluated: boolean;
+  freshnessReviewFresh: boolean;
+  freshnessVerifySatisfied: boolean;
+  freshnessVerifyFresh: boolean;
+  freshnessVerifyLogSha: string | null;
+};
+
+async function readLocalPrArtifactText(prDir: string, fileName: string): Promise<string | null> {
+  const localPath = path.join(prDir, fileName);
+  if (!(await fileExists(localPath))) return null;
+  return await readFile(localPath, "utf8");
+}
+
+function validateSnapshotContents(opts: {
+  texts: PrArtifactTexts;
+  relPrDir: string;
+  relMetaPath: string;
+  relDiffstatPath: string;
+  relVerifyLogPath: string;
+  relReviewPath: string;
+  relGithubTitlePath: string;
+  relGithubBodyPath: string;
   taskId: string;
-  branchCache: { value?: string | null };
-}): Promise<string | null> {
-  const localPath = path.join(opts.prDir, opts.fileName);
-  if (await fileExists(localPath)) {
-    return await readFile(localPath, "utf8");
+}): { meta: PrMeta | null; errors: string[] } {
+  const errors: string[] = [];
+  let meta: PrMeta | null = null;
+  if (opts.texts.metaText) {
+    try {
+      meta = parsePrMeta(opts.texts.metaText, opts.taskId);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      errors.push(message);
+    }
+  } else {
+    errors.push(`Missing PR directory: ${opts.relPrDir}`, `Missing ${opts.relMetaPath}`);
   }
-  if (opts.branchCache.value === undefined) {
-    opts.branchCache.value = await resolveArtifactBranch({
-      ctx: opts.ctx,
-      resolved: opts.resolved,
-      taskId: opts.taskId,
-    });
+
+  if (opts.texts.diffstatText === null) errors.push(`Missing ${opts.relDiffstatPath}`);
+  if (opts.texts.verifyLogText === null) errors.push(`Missing ${opts.relVerifyLogPath}`);
+  if (opts.texts.reviewText) {
+    validateReviewContents(opts.texts.reviewText, errors);
+  } else {
+    errors.push(`Missing ${opts.relReviewPath}`);
   }
-  if (!opts.branchCache.value) return null;
-  return await readPrArtifact({
-    resolved: opts.resolved,
-    prDir: opts.prDir,
-    fileName: opts.fileName,
-    branch: opts.branchCache.value,
+  if (!opts.texts.githubTitleText?.trim()) {
+    errors.push(`Missing ${opts.relGithubTitlePath}`);
+  }
+  if (opts.texts.githubBodyText) {
+    validateGithubPrBodyContents(opts.texts.githubBodyText, errors);
+  } else {
+    errors.push(`Missing ${opts.relGithubBodyPath}`);
+  }
+  return { meta, errors };
+}
+
+async function evaluateSnapshotFreshness(opts: {
+  snapshot: PrArtifactSnapshot;
+  gitRoot: string;
+  workflowDir: string;
+  taskId: string;
+  branchHeadSha: string | null;
+  taskVerificationState: unknown;
+  requiresVerify: boolean;
+}): Promise<void> {
+  if (!opts.snapshot.meta || !opts.branchHeadSha) return;
+  const freshness = await assessPrArtifactFreshness({
+    gitRoot: opts.gitRoot,
+    workflowDir: opts.workflowDir,
+    taskId: opts.taskId,
+    branchHeadSha: opts.branchHeadSha,
+    metaHeadSha: opts.snapshot.meta.head_sha ?? null,
+    metaLastVerifiedSha: opts.snapshot.meta.last_verified_sha ?? null,
+    metaVerifyStatus: opts.snapshot.meta.verify?.status ?? null,
+    taskVerificationState: opts.taskVerificationState,
+    verifyLogText: opts.snapshot.texts.verifyLogText,
+    requiresVerify: opts.requiresVerify,
   });
+  opts.snapshot.freshnessEvaluated = true;
+  opts.snapshot.freshnessReviewFresh = freshness.reviewFresh;
+  opts.snapshot.freshnessVerifySatisfied = freshness.verifySatisfied;
+  opts.snapshot.freshnessVerifyFresh = freshness.verifyFresh;
+  opts.snapshot.freshnessVerifyLogSha = freshness.verifyLogSha;
+}
+
+function finalizeSnapshotErrors(opts: {
+  snapshot: PrArtifactSnapshot;
+  branchHeadSha: string | null;
+  requiresVerify: boolean;
+}): string[] {
+  const errors = [...opts.snapshot.errors];
+  const meta = opts.snapshot.meta;
+  if (!meta) return errors;
+  if (opts.branchHeadSha && opts.snapshot.freshnessEvaluated) {
+    if (!opts.snapshot.freshnessReviewFresh) {
+      errors.push(
+        `PR artifacts stale: head_sha=${meta.head_sha ?? "<missing>"} current_head=${opts.branchHeadSha}`,
+      );
+    }
+    if (opts.requiresVerify && !opts.snapshot.freshnessVerifySatisfied) {
+      if (meta.verify?.status !== "pass") {
+        errors.push("Verify requirements not satisfied (meta.verify.status != pass)");
+      }
+      if (
+        (!meta.last_verified_sha || !meta.last_verified_at) &&
+        !opts.snapshot.freshnessVerifyLogSha
+      ) {
+        errors.push("Verify metadata missing (last_verified_sha/last_verified_at)");
+      }
+    }
+    if (opts.requiresVerify && meta.last_verified_sha && !opts.snapshot.freshnessVerifyFresh) {
+      errors.push(
+        `Verify state stale: last_verified_sha=${meta.last_verified_sha} current_head=${opts.branchHeadSha}`,
+      );
+    }
+    return errors;
+  }
+  if (opts.requiresVerify) {
+    if (meta.verify?.status !== "pass") {
+      errors.push("Verify requirements not satisfied (meta.verify.status != pass)");
+    }
+    if (!meta.last_verified_sha || !meta.last_verified_at) {
+      errors.push("Verify metadata missing (last_verified_sha/last_verified_at)");
+    }
+  }
+  return errors;
 }
 
 export async function cmdPrCheck(opts: {
@@ -124,146 +241,167 @@ export async function cmdPrCheck(opts: {
     const branchCache: { value?: string | null } = {};
     const requiresVerify = Boolean(task.verify && task.verify.length > 0);
 
-    let meta: PrMeta | null = null;
-    const metaText = await readPrArtifactWithOptionalBranch({
-      ctx,
-      resolved,
-      prDir,
-      fileName: "meta.json",
+    const localTexts: PrArtifactTexts = {
+      metaText: await readLocalPrArtifactText(prDir, "meta.json"),
+      diffstatText: await readLocalPrArtifactText(prDir, "diffstat.txt"),
+      verifyLogText: await readLocalPrArtifactText(prDir, "verify.log"),
+      reviewText: await readLocalPrArtifactText(prDir, "review.md"),
+      githubTitleText: await readLocalPrArtifactText(prDir, "github-title.txt"),
+      githubBodyText: await readLocalPrArtifactText(prDir, "github-body.md"),
+    };
+    const localParsed = validateSnapshotContents({
+      texts: localTexts,
+      relPrDir,
+      relMetaPath,
+      relDiffstatPath,
+      relVerifyLogPath,
+      relReviewPath,
+      relGithubTitlePath,
+      relGithubBodyPath,
       taskId: task.id,
-      branchCache,
     });
-    if (metaText) {
-      try {
-        meta = parsePrMeta(metaText, task.id);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        errors.push(message);
-      }
-    } else {
-      errors.push(`Missing PR directory: ${relPrDir}`, `Missing ${relMetaPath}`);
-    }
+    const localSnapshot: PrArtifactSnapshot = {
+      source: "local",
+      texts: localTexts,
+      meta: localParsed.meta,
+      errors: localParsed.errors,
+      freshnessEvaluated: false,
+      freshnessReviewFresh: false,
+      freshnessVerifySatisfied: false,
+      freshnessVerifyFresh: false,
+      freshnessVerifyLogSha: null,
+    };
 
-    const diffstatText = await readPrArtifactWithOptionalBranch({
-      ctx,
-      resolved,
-      prDir,
-      fileName: "diffstat.txt",
-      taskId: task.id,
-      branchCache,
-    });
-    if (diffstatText === null) {
-      errors.push(`Missing ${relDiffstatPath}`);
+    const localBranch = localSnapshot.meta?.branch?.trim() ?? "";
+    if (localBranch) {
+      branchCache.value = localBranch;
+    } else if (branchCache.value === undefined) {
+      branchCache.value = await resolveArtifactBranch({
+        ctx,
+        resolved,
+        taskId: task.id,
+      });
     }
-
-    const verifyLogText = await readPrArtifactWithOptionalBranch({
-      ctx,
-      resolved,
-      prDir,
-      fileName: "verify.log",
-      taskId: task.id,
-      branchCache,
-    });
-    if (verifyLogText === null) {
-      errors.push(`Missing ${relVerifyLogPath}`);
-    }
-
-    const reviewText = await readPrArtifactWithOptionalBranch({
-      ctx,
-      resolved,
-      prDir,
-      fileName: "review.md",
-      taskId: task.id,
-      branchCache,
-    });
-    if (reviewText) {
-      validateReviewContents(reviewText, errors);
-    } else {
-      errors.push(`Missing ${relReviewPath}`);
-    }
-
-    const githubTitleText = await readPrArtifactWithOptionalBranch({
-      ctx,
-      resolved,
-      prDir,
-      fileName: "github-title.txt",
-      taskId: task.id,
-      branchCache,
-    });
-    if (!githubTitleText?.trim()) {
-      errors.push(`Missing ${relGithubTitlePath}`);
-    }
-
-    const githubBodyText = await readPrArtifactWithOptionalBranch({
-      ctx,
-      resolved,
-      prDir,
-      fileName: "github-body.md",
-      taskId: task.id,
-      branchCache,
-    });
-    if (githubBodyText) {
-      validateGithubPrBodyContents(githubBodyText, errors);
-    } else {
-      errors.push(`Missing ${relGithubBodyPath}`);
-    }
-
-    const branchForFreshness =
-      branchCache.value ?? (typeof meta?.branch === "string" ? meta.branch.trim() : null);
-    let evaluatedVerifyFreshness = false;
-    if (meta && branchForFreshness) {
-      let branchHeadSha: string | null = null;
+    const branchForFreshness = branchCache.value ?? null;
+    let branchHeadSha: string | null = null;
+    if (branchForFreshness) {
       try {
         branchHeadSha = await gitRevParse(resolved.gitRoot, [branchForFreshness]);
       } catch (err) {
         if (!isUnknownRevisionError(err)) throw err;
       }
-      if (branchHeadSha) {
-        const freshness = await assessPrArtifactFreshness({
-          gitRoot: resolved.gitRoot,
-          workflowDir: config.paths.workflow_dir,
-          taskId: task.id,
-          branchHeadSha,
-          metaHeadSha: meta.head_sha ?? null,
-          metaLastVerifiedSha: meta.last_verified_sha ?? null,
-          metaVerifyStatus: meta.verify?.status ?? null,
-          taskVerificationState: task.verification?.state ?? null,
-          verifyLogText,
-          requiresVerify,
-        });
-        evaluatedVerifyFreshness = requiresVerify;
-        if (!freshness.reviewFresh) {
-          errors.push(
-            `PR artifacts stale: head_sha=${meta.head_sha ?? "<missing>"} current_head=${branchHeadSha}`,
-          );
-        }
-        if (requiresVerify && !freshness.verifySatisfied) {
-          if (meta?.verify?.status !== "pass") {
-            errors.push("Verify requirements not satisfied (meta.verify.status != pass)");
-          }
-          if (
-            (!meta?.last_verified_sha || !meta.last_verified_at) &&
-            freshness.verifyLogSha === null
-          ) {
-            errors.push("Verify metadata missing (last_verified_sha/last_verified_at)");
-          }
-        }
-        if (requiresVerify && meta.last_verified_sha && !freshness.verifyFresh) {
-          errors.push(
-            `Verify state stale: last_verified_sha=${meta.last_verified_sha} current_head=${branchHeadSha}`,
-          );
-        }
+    }
+    await evaluateSnapshotFreshness({
+      snapshot: localSnapshot,
+      gitRoot: resolved.gitRoot,
+      workflowDir: config.paths.workflow_dir,
+      taskId: task.id,
+      branchHeadSha,
+      taskVerificationState: task.verification?.state ?? null,
+      requiresVerify,
+    });
+
+    let selectedSnapshot = localSnapshot;
+    if (
+      branchForFreshness &&
+      branchHeadSha &&
+      (!localSnapshot.meta ||
+        !localSnapshot.freshnessReviewFresh ||
+        (requiresVerify && !localSnapshot.freshnessVerifySatisfied))
+    ) {
+      const worktreePath = await findWorktreeForBranch(resolved.gitRoot, branchForFreshness);
+      const branchTexts: PrArtifactTexts = {
+        metaText: await readPrArtifactFromBranch({
+          resolved,
+          prDir,
+          fileName: "meta.json",
+          branch: branchForFreshness,
+          worktreePath,
+        }),
+        diffstatText: await readPrArtifactFromBranch({
+          resolved,
+          prDir,
+          fileName: "diffstat.txt",
+          branch: branchForFreshness,
+          worktreePath,
+        }),
+        verifyLogText: await readPrArtifactFromBranch({
+          resolved,
+          prDir,
+          fileName: "verify.log",
+          branch: branchForFreshness,
+          worktreePath,
+        }),
+        reviewText: await readPrArtifactFromBranch({
+          resolved,
+          prDir,
+          fileName: "review.md",
+          branch: branchForFreshness,
+          worktreePath,
+        }),
+        githubTitleText: await readPrArtifactFromBranch({
+          resolved,
+          prDir,
+          fileName: "github-title.txt",
+          branch: branchForFreshness,
+          worktreePath,
+        }),
+        githubBodyText: await readPrArtifactFromBranch({
+          resolved,
+          prDir,
+          fileName: "github-body.md",
+          branch: branchForFreshness,
+          worktreePath,
+        }),
+      };
+      const branchParsed = validateSnapshotContents({
+        texts: branchTexts,
+        relPrDir,
+        relMetaPath,
+        relDiffstatPath,
+        relVerifyLogPath,
+        relReviewPath,
+        relGithubTitlePath,
+        relGithubBodyPath,
+        taskId: task.id,
+      });
+      const branchSnapshot: PrArtifactSnapshot = {
+        source: "branch",
+        texts: branchTexts,
+        meta: branchParsed.meta,
+        errors: branchParsed.errors,
+        freshnessEvaluated: false,
+        freshnessReviewFresh: false,
+        freshnessVerifySatisfied: false,
+        freshnessVerifyFresh: false,
+        freshnessVerifyLogSha: null,
+      };
+      await evaluateSnapshotFreshness({
+        snapshot: branchSnapshot,
+        gitRoot: resolved.gitRoot,
+        workflowDir: config.paths.workflow_dir,
+        taskId: task.id,
+        branchHeadSha,
+        taskVerificationState: task.verification?.state ?? null,
+        requiresVerify,
+      });
+      if (
+        branchSnapshot.errors.length === 0 &&
+        branchSnapshot.meta &&
+        branchSnapshot.freshnessReviewFresh &&
+        (!requiresVerify || branchSnapshot.freshnessVerifySatisfied)
+      ) {
+        selectedSnapshot = branchSnapshot;
       }
     }
 
-    if (requiresVerify && !evaluatedVerifyFreshness) {
-      if (meta?.verify?.status !== "pass") {
-        errors.push("Verify requirements not satisfied (meta.verify.status != pass)");
-      }
-      if (!meta?.last_verified_sha || !meta.last_verified_at) {
-        errors.push("Verify metadata missing (last_verified_sha/last_verified_at)");
-      }
-    }
+    errors.push(
+      ...finalizeSnapshotErrors({
+        snapshot: selectedSnapshot,
+        branchHeadSha,
+        requiresVerify,
+      }),
+    );
 
     if (errors.length > 0) {
       throw new CliError({
