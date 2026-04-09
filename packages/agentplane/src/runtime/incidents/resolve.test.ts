@@ -363,7 +363,8 @@ describe("incidents runtime", () => {
         state: "open",
         tags: ["workflow", "github"],
         match: ["gh", "github", "dotenv"],
-        advice: "prefer explicit shell auth and strip repo dotenv fallback tokens from gh child env",
+        advice:
+          "prefer explicit shell auth and strip repo dotenv fallback tokens from gh child env",
         sourceTask: "202604091841-2ZX1MQ",
         fixability: "external",
         rawFields: {},
