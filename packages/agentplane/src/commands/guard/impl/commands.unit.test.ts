@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   ensureReconciledBeforeMutation: vi.fn(),
   execFileAsync: vi.fn(),
   gitEnv: vi.fn(),
+  refreshBranchPrArtifactsAfterTaskCommit: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
   buildCloseCommitMessage: vi.fn(),
@@ -28,6 +29,9 @@ vi.mock("../../shared/reconcile-check.js", () => ({
 vi.mock("../../shared/git.js", () => ({
   execFileAsync: mocks.execFileAsync,
   gitEnv: mocks.gitEnv,
+}));
+vi.mock("../../shared/post-commit-pr-artifacts.js", () => ({
+  refreshBranchPrArtifactsAfterTaskCommit: mocks.refreshBranchPrArtifactsAfterTaskCommit,
 }));
 vi.mock("./close-message.js", () => ({
   buildCloseCommitMessage: mocks.buildCloseCommitMessage,
@@ -396,6 +400,57 @@ describe("guard/impl/commands", () => {
     } finally {
       stdout.mockRestore();
     }
+  });
+
+  it("cmdCommit close refreshes PR artifacts before staging task artifact scope", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusChangedPaths.mockResolvedValue([
+      ".agentplane/tasks/T-12/pr/meta.json",
+      ".agentplane/tasks/T-12/pr/review.md",
+    ]);
+    mocks.loadTaskFromContext.mockResolvedValue({ id: "T-12" });
+    mocks.buildCloseCommitMessage.mockResolvedValue({
+      subject: "✅ ABC123 close: done",
+      body: "body",
+    });
+    mocks.taskReadmePathForTask.mockReturnValue("/repo/.agentplane/tasks/T-12/README.md");
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-12" });
+
+    const rc = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-12",
+      message: "",
+      close: true,
+      allow: [],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+      closeStageTaskArtifacts: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(mocks.refreshBranchPrArtifactsAfterTaskCommit).toHaveBeenCalledWith({
+      ctx,
+      cwd: "/repo",
+      rootOverride: undefined,
+      taskId: "T-12",
+      quiet: true,
+    });
+    expect(ctx.git.stage).toHaveBeenCalledWith([
+      ".agentplane/tasks/T-12/pr/meta.json",
+      ".agentplane/tasks/T-12/pr/review.md",
+    ]);
+    expect(mocks.refreshBranchPrArtifactsAfterTaskCommit.mock.invocationCallOrder[0]).toBeLessThan(
+      ctx.git.stage.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
+    );
   });
 
   it("cmdCommit rejects auto-allow mode", async () => {
