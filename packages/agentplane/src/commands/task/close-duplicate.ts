@@ -21,7 +21,12 @@ async function ensureLocalTaskReadmeHydrated(opts: {
   taskId: string;
 }): Promise<void> {
   const workflowDir = opts.ctx.config.paths.workflow_dir;
-  const targetReadmePath = path.join(opts.ctx.resolvedProject.gitRoot, workflowDir, opts.taskId, "README.md");
+  const targetReadmePath = path.join(
+    opts.ctx.resolvedProject.gitRoot,
+    workflowDir,
+    opts.taskId,
+    "README.md",
+  );
   if (await fileExists(targetReadmePath)) return;
 
   const worktrees = await listWorktrees(opts.ctx.resolvedProject.gitRoot).catch(() => []);
@@ -31,7 +36,12 @@ async function ensureLocalTaskReadmeHydrated(opts: {
       parseTaskIdFromBranch(opts.ctx.config.branch.task_prefix, entry.branch) === opts.taskId,
   );
   if (matchingTaskWorktrees.length === 1) {
-    const sourceReadmePath = path.join(matchingTaskWorktrees[0].path, workflowDir, opts.taskId, "README.md");
+    const sourceReadmePath = path.join(
+      matchingTaskWorktrees[0].path,
+      workflowDir,
+      opts.taskId,
+      "README.md",
+    );
     if (await fileExists(sourceReadmePath)) {
       const text = await readFile(sourceReadmePath, "utf8");
       await mkdir(path.dirname(targetReadmePath), { recursive: true });

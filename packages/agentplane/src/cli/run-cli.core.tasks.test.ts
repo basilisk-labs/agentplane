@@ -656,7 +656,18 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    await runCliSilent(["task", "plan", "approve", duplicateId, "--by", "USER", "--note", "OK", "--root", root]);
+    await runCliSilent([
+      "task",
+      "plan",
+      "approve",
+      duplicateId,
+      "--by",
+      "USER",
+      "--note",
+      "OK",
+      "--root",
+      root,
+    ]);
     await runCliSilent([
       "work",
       "start",
@@ -685,8 +696,13 @@ describe("runCli", () => {
     );
     expect(await pathExists(worktreeReadmePath)).toBe(true);
 
-    await rm(path.join(root, ".agentplane", "tasks", duplicateId), { recursive: true, force: true });
-    expect(await pathExists(path.join(root, ".agentplane", "tasks", duplicateId, "README.md"))).toBe(false);
+    await rm(path.join(root, ".agentplane", "tasks", duplicateId), {
+      recursive: true,
+      force: true,
+    });
+    expect(
+      await pathExists(path.join(root, ".agentplane", "tasks", duplicateId, "README.md")),
+    ).toBe(false);
 
     const ioClose = captureStdIO();
     try {
@@ -709,7 +725,9 @@ describe("runCli", () => {
     const duplicate = await readTask({ cwd: root, rootOverride: root, taskId: duplicateId });
     expect(duplicate.frontmatter.status).toBe("DONE");
     expect(duplicate.frontmatter.result_summary).toBe(`Closed as duplicate of ${canonicalId}.`);
-    expect(await pathExists(path.join(root, ".agentplane", "tasks", duplicateId, "README.md"))).toBe(true);
+    expect(
+      await pathExists(path.join(root, ".agentplane", "tasks", duplicateId, "README.md")),
+    ).toBe(true);
   });
 
   it("task close-noop closes bookkeeping tasks in one command", async () => {
