@@ -1,10 +1,11 @@
 ---
 id: "202604091444-NS0RG8"
 title: "Repair legacy lefthook installs during framework bootstrap"
-status: "DOING"
+result_summary: "Merged via PR #193."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +28,16 @@ verification:
     Result: pass
     Evidence: Prettier matched, bootstrap tests passed, eslint exited 0 after CI formatting fix.
     Scope: current branch head after post-CI formatting for legacy lefthook bootstrap repair.
-commit: null
+commit:
+  hash: "9210627d6a31587cea2ce817dc026caaa673ff2e"
+  message: "hooks/workflow: Repair legacy lefthook installs during framework bootstrap (NS0RG8) (#193)"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce stale lefthook-managed git hooks and repair them through bootstrap-managed hook installation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: hosted checks passed, PR #193 was squash-merged, and the merged commit is recorded on main."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
       Result: pass
       Evidence: Prettier matched, bootstrap tests passed, eslint exited 0 after CI formatting fix.
       Scope: current branch head after post-CI formatting for legacy lefthook bootstrap repair.
+  -
+    type: "status"
+    at: "2026-04-09T15:26:39.760Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: hosted checks passed, PR #193 was squash-merged, and the merged commit is recorded on main."
 doc_version: 3
-doc_updated_at: "2026-04-09T15:14:15.095Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T15:26:39.760Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make framework bootstrap or managed hook flow detect and replace stale lefthook-generated git hooks so task worktrees do not silently skip pre-commit or pre-push when agentplane-managed hooks are expected."
 sections:
   Summary: |-
