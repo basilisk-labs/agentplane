@@ -349,9 +349,9 @@ export const finishSpec: CommandSpec<FinishParsed> = {
     ].some((value) => typeof value === "string" && value.trim().length > 0)
       ? true
       : (Array.isArray(raw.opts["incident-tag"]) && raw.opts["incident-tag"].length > 0) ||
-          (Array.isArray(raw.opts["incident-match"]) && raw.opts["incident-match"].length > 0) ||
-          raw.opts["local-only"] === true ||
-          raw.opts["repo-fixable"] === true;
+        (Array.isArray(raw.opts["incident-match"]) && raw.opts["incident-match"].length > 0) ||
+        raw.opts["local-only"] === true ||
+        raw.opts["repo-fixable"] === true;
     if (hasMeta && taskIds.length !== 1) {
       throw usageError({
         spec: finishSpec,

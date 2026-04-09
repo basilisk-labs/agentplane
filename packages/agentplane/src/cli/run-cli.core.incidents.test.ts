@@ -936,7 +936,9 @@ describe("runCli incidents", () => {
     expect(String(incidentsText)).toContain("scope: finish closeout incident capture");
     expect(String(incidentsText)).toContain(`source_task: ${taskId}`);
     expect(String(taskReadme)).toContain("Promotion: incident-candidate");
-    expect(String(taskReadme)).toContain("Resolution: Allow finish to append and promote the finding");
+    expect(String(taskReadme)).toContain(
+      "Resolution: Allow finish to append and promote the finding",
+    );
   });
 
   it("incidents collect refuses writes that would push the registry over the policy line budget", async () => {
