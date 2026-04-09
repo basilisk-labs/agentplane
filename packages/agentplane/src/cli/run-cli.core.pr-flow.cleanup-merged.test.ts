@@ -428,7 +428,10 @@ describe("runCli", () => {
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
       const staleBranch = "task/stale-cleanup/origin-ref";
-      await execFileAsync("git", ["branch", staleBranch, "main"], { cwd: root, env: cleanGitEnv() });
+      await execFileAsync("git", ["branch", staleBranch, "main"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
       await execFileAsync("git", ["push", "origin", staleBranch], {
         cwd: root,
         env: cleanGitEnv(),
