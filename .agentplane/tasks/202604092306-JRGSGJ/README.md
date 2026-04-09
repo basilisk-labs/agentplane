@@ -4,7 +4,7 @@ title: "Doctor --fix safe-removes legacy untracked task README collisions"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T23:21:28.791Z"
+  updated_at: "2026-04-09T23:21:51.052Z"
   updated_by: "CODER"
-  note: "Verified: doctor --fix now removes only untracked DONE task README collisions; doctor fast/command tests and eslint passed."
+  note: "Verified current HEAD after task commit: doctor --fix now removes only untracked DONE task README collisions; doctor fast/command tests and eslint passed."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: doctor --fix now removes only untracked DONE task README collisions; doctor fast/command tests and eslint passed."
+  -
+    type: "verify"
+    at: "2026-04-09T23:21:51.052Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified current HEAD after task commit: doctor --fix now removes only untracked DONE task README collisions; doctor fast/command tests and eslint passed."
 doc_version: 3
-doc_updated_at: "2026-04-09T23:21:28.793Z"
+doc_updated_at: "2026-04-09T23:21:51.055Z"
 doc_updated_by: "CODER"
 description: "Extend doctor --fix with a safe cleanup for legacy untracked .agentplane/tasks/<task-id>/README.md collisions that would be overwritten by tracked task artifacts from origin/main and block git pull or rebase."
 sections:
@@ -68,6 +74,14 @@ sections:
     Note: Verified: doctor --fix now removes only untracked DONE task README collisions; doctor fast/command tests and eslint passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T23:07:45.195Z, excerpt_hash=sha256:286890642ec9560c8baa39a2ad92ac5a7971fd4bd6f493cd20629f740f08e557
+    
+    ### 2026-04-09T23:21:51.052Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified current HEAD after task commit: doctor --fix now removes only untracked DONE task README collisions; doctor fast/command tests and eslint passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T23:21:28.793Z, excerpt_hash=sha256:286890642ec9560c8baa39a2ad92ac5a7971fd4bd6f493cd20629f740f08e557
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -107,6 +121,14 @@ By: CODER
 Note: Verified: doctor --fix now removes only untracked DONE task README collisions; doctor fast/command tests and eslint passed.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T23:07:45.195Z, excerpt_hash=sha256:286890642ec9560c8baa39a2ad92ac5a7971fd4bd6f493cd20629f740f08e557
+
+### 2026-04-09T23:21:51.052Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified current HEAD after task commit: doctor --fix now removes only untracked DONE task README collisions; doctor fast/command tests and eslint passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T23:21:28.793Z, excerpt_hash=sha256:286890642ec9560c8baa39a2ad92ac5a7971fd4bd6f493cd20629f740f08e557
 
 <!-- END VERIFICATION RESULTS -->
 

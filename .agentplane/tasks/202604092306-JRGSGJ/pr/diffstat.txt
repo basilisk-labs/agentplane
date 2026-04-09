@@ -1,0 +1,12 @@
+ .agentplane/tasks/202604092306-JRGSGJ/README.md    | 118 +++++++++++++++++++
+ .../tasks/202604092306-JRGSGJ/pr/diffstat.txt      |   0
+ .../tasks/202604092306-JRGSGJ/pr/github-body.md    |  50 ++++++++
+ .../tasks/202604092306-JRGSGJ/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604092306-JRGSGJ/pr/meta.json |  14 +++
+ .../tasks/202604092306-JRGSGJ/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604092306-JRGSGJ/pr/review.md |  57 +++++++++
+ .../tasks/202604092306-JRGSGJ/pr/verify.log        |   0
+ .../agentplane/src/commands/doctor.fast.test.ts    | 128 +++++++++++++++++++++
+ packages/agentplane/src/commands/doctor.run.ts     |   8 +-
+ packages/agentplane/src/commands/doctor/fixes.ts   |  85 ++++++++++++++
+ 11 files changed, 460 insertions(+), 1 deletion(-)
