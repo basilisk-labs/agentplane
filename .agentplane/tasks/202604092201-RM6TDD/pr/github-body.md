@@ -22,7 +22,7 @@ Extend cleanup merged with an opt-in remote-branch deletion mode for merged DONE
 ### Current Status
 
 - State: ok
-- Note: Added opt-in remote branch deletion for cleanup merged and covered parser plus destructive remote cleanup flow.
+- Note: Refreshed CLI reference after adding cleanup merged remote delete mode; targeted cleanup merged parser and remote deletion tests remain green.
 
 ## Risks
 
@@ -41,12 +41,24 @@ Extend cleanup merged with an opt-in remote-branch deletion mode for merged DONE
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T22:12:00.653Z
+- Updated: 2026-04-09T22:16:51.077Z
 - Branch: task/202604092201-RM6TDD/cleanup-remote-delete
-- Head: 2f331e28e550
+- Head: 8401e016e721
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604092201-RM6TDD/README.md    | 121 ++++++++++++++++++++
+ .../tasks/202604092201-RM6TDD/pr/diffstat.txt      |   4 +
+ .../tasks/202604092201-RM6TDD/pr/github-body.md    |  52 +++++++++
+ .../tasks/202604092201-RM6TDD/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604092201-RM6TDD/pr/meta.json |  14 +++
+ .../tasks/202604092201-RM6TDD/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604092201-RM6TDD/pr/review.md |  59 ++++++++++
+ .../tasks/202604092201-RM6TDD/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |   7 ++
+ .../run-cli.core.pr-flow.cleanup-merged.test.ts    | 125 ++++++++++++++++++++-
+ .../src/commands/branch/cleanup-merged.ts          |  48 +++++++-
+ .../src/commands/cleanup/merged.command.ts         |  13 +++
+ 12 files changed, 441 insertions(+), 3 deletions(-)
 ```
 
 </details>

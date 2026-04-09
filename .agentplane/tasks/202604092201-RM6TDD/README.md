@@ -4,7 +4,7 @@ title: "Allow cleanup merged to delete remote task branches"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T22:12:00.634Z"
+  updated_at: "2026-04-09T22:16:51.053Z"
   updated_by: "CODER"
-  note: "Added opt-in remote branch deletion for cleanup merged and covered parser plus destructive remote cleanup flow."
+  note: "Refreshed CLI reference after adding cleanup merged remote delete mode; targeted cleanup merged parser and remote deletion tests remain green."
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added opt-in remote branch deletion for cleanup merged and covered parser plus destructive remote cleanup flow."
+  -
+    type: "verify"
+    at: "2026-04-09T22:16:51.053Z"
+    author: "CODER"
+    state: "ok"
+    note: "Refreshed CLI reference after adding cleanup merged remote delete mode; targeted cleanup merged parser and remote deletion tests remain green."
 doc_version: 3
-doc_updated_at: "2026-04-09T22:12:00.636Z"
+doc_updated_at: "2026-04-09T22:16:51.057Z"
 doc_updated_by: "CODER"
 description: "Extend cleanup merged with an opt-in remote-branch deletion mode for merged DONE task branches so operators do not need manual git push --delete cleanup."
 sections:
@@ -69,6 +75,14 @@ sections:
     Note: Added opt-in remote branch deletion for cleanup merged and covered parser plus destructive remote cleanup flow.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T22:02:12.739Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
+    
+    ### 2026-04-09T22:16:51.053Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Refreshed CLI reference after adding cleanup merged remote delete mode; targeted cleanup merged parser and remote deletion tests remain green.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T22:12:00.636Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -110,6 +124,14 @@ By: CODER
 Note: Added opt-in remote branch deletion for cleanup merged and covered parser plus destructive remote cleanup flow.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T22:02:12.739Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
+
+### 2026-04-09T22:16:51.053Z — VERIFY — ok
+
+By: CODER
+
+Note: Refreshed CLI reference after adding cleanup merged remote delete mode; targeted cleanup merged parser and remote deletion tests remain green.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T22:12:00.636Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
 
 <!-- END VERIFICATION RESULTS -->
 
