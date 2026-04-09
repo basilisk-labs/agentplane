@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604091725-CB0Y6S/hooks-run-pre-push",
   "created_at": "2026-04-09T17:34:29.342Z",
-  "head_sha": "864b659d89680b72af2ad5296921001d42a96f32",
+  "head_sha": "29190139e9300e203d4b0387d36967f360038e37",
   "last_verified_at": "2026-04-09T17:34:29.261Z",
   "last_verified_sha": "a046740bdfe81a116a781f68857d34faf6b61232",
+  "merge_commit": "810c8834fd043de4638c21e6247a6bbbf334f648",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T17:54:53Z",
   "pr_number": 209,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/209",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604091725-CB0Y6S",
-  "updated_at": "2026-04-09T17:40:18.191Z",
+  "updated_at": "2026-04-09T17:54:53Z",
   "verify": {
     "status": "pass"
   }
