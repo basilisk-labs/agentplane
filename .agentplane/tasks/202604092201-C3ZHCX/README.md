@@ -1,10 +1,11 @@
 ---
 id: "202604092201-C3ZHCX"
 title: "Allow cleanup merged to fetch origin before candidate resolution"
-status: "DOING"
+result_summary: "Merged via PR #236."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-09T22:53:55.569Z"
   updated_by: "CODER"
   note: "Rebased cleanup merged fetch mode on top of remote-delete support; targeted cleanup merged vitest suite and eslint passed on the final branch head."
-commit: null
+commit:
+  hash: "120e619ec23a579a9ac9000079fab9df2c7f60da"
+  message: "git/workflow: Allow cleanup merged to fetch origin before candidate resolution (C3ZHCX) (#236)"
 comments:
   -
     author: "CODER"
     body: "Start: add explicit fetch/prune mode to cleanup merged."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #236 merged on main after rebasing fetch mode on top of remote-delete support; targeted cleanup merged tests and eslint passed on the final branch head."
 events:
   -
     type: "status"
@@ -53,9 +59,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rebased cleanup merged fetch mode on top of remote-delete support; targeted cleanup merged vitest suite and eslint passed on the final branch head."
+  -
+    type: "status"
+    at: "2026-04-09T22:59:55.883Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #236 merged on main after rebasing fetch mode on top of remote-delete support; targeted cleanup merged tests and eslint passed on the final branch head."
 doc_version: 3
-doc_updated_at: "2026-04-09T22:53:55.572Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T22:59:55.884Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add an explicit fetch/prune option to cleanup merged so operators can refresh origin state before local and remote cleanup decisions."
 sections:
   Summary: |-
