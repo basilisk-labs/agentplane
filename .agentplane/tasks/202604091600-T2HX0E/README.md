@@ -4,7 +4,7 @@ title: "Add near-duplicate guardrails to task new"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T16:23:56.328Z"
+  updated_at: "2026-04-09T16:29:25.067Z"
   updated_by: "CODER"
-  note: "Verified: target vitest and eslint passed; task new now blocks near-duplicate open titles unless --allow-duplicate is explicit."
+  note: "Verified: targeted vitest, format:check, and docs:cli:check passed after formatting task/new.ts and regenerating CLI docs."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: target vitest and eslint passed; task new now blocks near-duplicate open titles unless --allow-duplicate is explicit."
+  -
+    type: "verify"
+    at: "2026-04-09T16:29:25.067Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: targeted vitest, format:check, and docs:cli:check passed after formatting task/new.ts and regenerating CLI docs."
 doc_version: 3
-doc_updated_at: "2026-04-09T16:23:56.336Z"
+doc_updated_at: "2026-04-09T16:29:25.073Z"
 doc_updated_by: "CODER"
 description: "Warn or block task new when an open task with a highly similar title already exists so branch_pr work does not fork into duplicate task shells and root-checkout drift."
 sections:
@@ -71,6 +77,14 @@ sections:
     Note: Verified: target vitest and eslint passed; task new now blocks near-duplicate open titles unless --allow-duplicate is explicit.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T16:01:45.034Z, excerpt_hash=sha256:ab2df02470dab39f4ce45e60eb7a437ebdbeb51e3f26429779736ff4b46a72fc
+    
+    ### 2026-04-09T16:29:25.067Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: targeted vitest, format:check, and docs:cli:check passed after formatting task/new.ts and regenerating CLI docs.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T16:23:56.336Z, excerpt_hash=sha256:ab2df02470dab39f4ce45e60eb7a437ebdbeb51e3f26429779736ff4b46a72fc
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -112,6 +126,14 @@ By: CODER
 Note: Verified: target vitest and eslint passed; task new now blocks near-duplicate open titles unless --allow-duplicate is explicit.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T16:01:45.034Z, excerpt_hash=sha256:ab2df02470dab39f4ce45e60eb7a437ebdbeb51e3f26429779736ff4b46a72fc
+
+### 2026-04-09T16:29:25.067Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: targeted vitest, format:check, and docs:cli:check passed after formatting task/new.ts and regenerating CLI docs.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T16:23:56.336Z, excerpt_hash=sha256:ab2df02470dab39f4ce45e60eb7a437ebdbeb51e3f26429779736ff4b46a72fc
 
 <!-- END VERIFICATION RESULTS -->
 

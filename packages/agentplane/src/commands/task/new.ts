@@ -131,7 +131,10 @@ function duplicateSimilarity(left: string, right: string): number {
   return union === 0 ? 0 : intersection / union;
 }
 
-function listOpenTaskDuplicates(tasks: TaskData[], title: string): { task: TaskData; score: number }[] {
+function listOpenTaskDuplicates(
+  tasks: TaskData[],
+  title: string,
+): { task: TaskData; score: number }[] {
   return tasks
     .filter((task) => String(task.status ?? "").toUpperCase() !== "DONE")
     .map((task) => ({
@@ -139,7 +142,9 @@ function listOpenTaskDuplicates(tasks: TaskData[], title: string): { task: TaskD
       score: duplicateSimilarity(task.title ?? "", title),
     }))
     .filter(({ score }) => score >= TASK_NEW_DUPLICATE_THRESHOLD)
-    .toSorted((left, right) => right.score - left.score || left.task.id.localeCompare(right.task.id));
+    .toSorted(
+      (left, right) => right.score - left.score || left.task.id.localeCompare(right.task.id),
+    );
 }
 
 function formatDuplicateTaskMessage(
