@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { copyFile, cp, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { resolveBaseBranch } from "@agentplaneorg/core";
@@ -84,6 +84,36 @@ async function materializeLocalBackendReadmesForWorktree(opts: {
     const targetReadme = path.join(targetRoot, entry.name, "README.md");
     await mkdir(path.dirname(targetReadme), { recursive: true });
     await copyFile(sourceReadme, targetReadme);
+  }
+}
+
+async function materializeRepoLocalDistForWorktree(opts: {
+  repoRoot: string;
+  worktreePath: string;
+}): Promise<void> {
+  const sourceRoots = [path.resolve(opts.repoRoot), path.resolve(process.cwd())];
+  const copyTargets = [
+    ["packages/core/dist", "packages/core/dist"],
+    ["packages/agentplane/dist", "packages/agentplane/dist"],
+    ["packages/agentplane/bin", "packages/agentplane/bin"],
+  ] as const;
+
+  for (const [sourceRelativePath, targetRelativePath] of copyTargets) {
+    let sourcePath = "";
+    for (const sourceRoot of sourceRoots) {
+      const candidate = path.join(sourceRoot, sourceRelativePath);
+      if (await fileExists(candidate)) {
+        sourcePath = candidate;
+        break;
+      }
+    }
+    if (!sourcePath) continue;
+
+    const targetPath = path.join(opts.worktreePath, targetRelativePath);
+    if (await fileExists(targetPath)) continue;
+
+    await mkdir(path.dirname(targetPath), { recursive: true });
+    await cp(sourcePath, targetPath, { recursive: true });
   }
 }
 
@@ -274,6 +304,10 @@ export async function cmdWorkStart(opts: {
       await execFileAsync("git", worktreeArgs, { cwd: resolved.gitRoot, env: gitEnv() });
       await materializeLocalBackendReadmesForWorktree({
         backend: ctx.taskBackend,
+        repoRoot: resolved.gitRoot,
+        worktreePath,
+      });
+      await materializeRepoLocalDistForWorktree({
         repoRoot: resolved.gitRoot,
         worktreePath,
       });
