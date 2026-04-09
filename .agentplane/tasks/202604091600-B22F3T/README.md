@@ -4,7 +4,7 @@ title: "Expose explicit --base on finish for branch_pr closure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T16:23:56.300Z"
+  updated_at: "2026-04-09T16:29:25.065Z"
   updated_by: "CODER"
-  note: "Verified: target vitest and eslint passed; finish --close-commit accepts explicit --base and rejects blank overrides."
+  note: "Verified: targeted vitest, format:check, and docs:cli:check passed after regenerating CLI docs for finish --base output."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: target vitest and eslint passed; finish --close-commit accepts explicit --base and rejects blank overrides."
+  -
+    type: "verify"
+    at: "2026-04-09T16:29:25.065Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: targeted vitest, format:check, and docs:cli:check passed after regenerating CLI docs for finish --base output."
 doc_version: 3
-doc_updated_at: "2026-04-09T16:23:56.309Z"
+doc_updated_at: "2026-04-09T16:29:25.073Z"
 doc_updated_by: "CODER"
 description: "Add a real --base override to finish and honor it during branch_pr base validation so manual closure from isolated base checkouts does not depend on pinned git config alone."
 sections:
@@ -71,6 +77,14 @@ sections:
     Note: Verified: target vitest and eslint passed; finish --close-commit accepts explicit --base and rejects blank overrides.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T16:01:58.691Z, excerpt_hash=sha256:72db7f1b6d4171c93bd616d92e42064470954f80c34cc125a36496bb287e797b
+    
+    ### 2026-04-09T16:29:25.065Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: targeted vitest, format:check, and docs:cli:check passed after regenerating CLI docs for finish --base output.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T16:23:56.309Z, excerpt_hash=sha256:72db7f1b6d4171c93bd616d92e42064470954f80c34cc125a36496bb287e797b
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -112,6 +126,14 @@ By: CODER
 Note: Verified: target vitest and eslint passed; finish --close-commit accepts explicit --base and rejects blank overrides.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T16:01:58.691Z, excerpt_hash=sha256:72db7f1b6d4171c93bd616d92e42064470954f80c34cc125a36496bb287e797b
+
+### 2026-04-09T16:29:25.065Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: targeted vitest, format:check, and docs:cli:check passed after regenerating CLI docs for finish --base output.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T16:23:56.309Z, excerpt_hash=sha256:72db7f1b6d4171c93bd616d92e42064470954f80c34cc125a36496bb287e797b
 
 <!-- END VERIFICATION RESULTS -->
 
