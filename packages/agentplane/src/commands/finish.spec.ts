@@ -33,6 +33,7 @@ export type FinishParsed = {
   closeCommit: boolean;
   noCloseCommit: boolean;
   closeUnstageOthers: boolean;
+  baseBranchOverride?: string;
   observation?: string;
   impact?: string;
   resolution?: string;
@@ -210,6 +211,13 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       description:
         "With --close-commit: unstage any currently staged paths before staging the task README.",
     },
+    {
+      kind: "string",
+      name: "base",
+      valueHint: "<branch>",
+      description:
+        "Optional explicit base branch override for branch_pr finish validation and close-commit reconciliation.",
+    },
     ...verifyFindingOptions,
     { kind: "boolean", name: "quiet", default: false, description: "Suppress output." },
   ],
@@ -335,6 +343,13 @@ export const finishSpec: CommandSpec<FinishParsed> = {
         message: "--close-unstage-others requires --close-commit",
       });
     }
+    if (typeof raw.opts.base === "string" && raw.opts.base.trim().length === 0) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message: "Invalid value for --base: empty.",
+      });
+    }
     const hasMeta =
       typeof raw.opts.result === "string" ||
       typeof raw.opts.risk === "string" ||
@@ -396,6 +411,7 @@ export const finishSpec: CommandSpec<FinishParsed> = {
     closeCommit: raw.opts["close-commit"] === true,
     noCloseCommit: raw.opts["no-close-commit"] === true,
     closeUnstageOthers: raw.opts["close-unstage-others"] === true,
+    baseBranchOverride: typeof raw.opts.base === "string" ? raw.opts.base : undefined,
     observation: typeof raw.opts.observation === "string" ? raw.opts.observation : undefined,
     impact: typeof raw.opts.impact === "string" ? raw.opts.impact : undefined,
     resolution: typeof raw.opts.resolution === "string" ? raw.opts.resolution : undefined,
