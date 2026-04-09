@@ -1,4 +1,7 @@
+import { resolveBaseBranch } from "@agentplaneorg/core";
+
 import { mapBackendError } from "../../cli/error-map.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
 import { infoMessage, invalidValueMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { readFile, rm } from "node:fs/promises";
@@ -6,6 +9,7 @@ import path from "node:path";
 
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
+import { gitCurrentBranch } from "../shared/git-ops.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
@@ -44,6 +48,39 @@ async function clearDirectWorkLockIfMatches(opts: {
   }
 }
 
+async function ensureFinishRunsOnBaseBranch(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+}): Promise<void> {
+  if (opts.ctx.config.workflow_mode !== "branch_pr") return;
+
+  const baseBranch = await resolveBaseBranch({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+    cliBaseOpt: null,
+    mode: opts.ctx.config.workflow_mode,
+  });
+  if (!baseBranch) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_USAGE"),
+      code: "E_USAGE",
+      message: "Base branch could not be resolved (use `agentplane branch base set` or --base).",
+    });
+  }
+
+  const currentBranch = await gitCurrentBranch(opts.ctx.resolvedProject.gitRoot);
+  if (currentBranch === baseBranch) return;
+
+  throw new CliError({
+    exitCode: exitCodeForError("E_GIT"),
+    code: "E_GIT",
+    message:
+      `finish must run on base branch ${baseBranch} in branch_pr mode ` +
+      `(current: ${currentBranch}); integrate first or reconcile from the base checkout.`,
+  });
+}
+
 export async function cmdFinish(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -80,6 +117,11 @@ export async function cmdFinish(opts: {
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     await ensureReconciledBeforeMutation({ ctx, command: "finish" });
+    await ensureFinishRunsOnBaseBranch({
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+    });
     if (opts.force) {
       await ensureActionApproved({
         action: "force_action",

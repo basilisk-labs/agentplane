@@ -23,7 +23,21 @@ const mocks = vi.hoisted(() => ({
   getTaskStore: vi.fn(),
   readCommitInfo: vi.fn(),
   nowIso: vi.fn(),
+  resolveBaseBranch: vi.fn(),
+  gitCurrentBranch: vi.fn(),
 }));
+
+vi.mock("@agentplaneorg/core", async (importOriginal) => {
+  const actualUnknown: unknown = await importOriginal();
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    resolveBaseBranch: mocks.resolveBaseBranch,
+  };
+});
 
 vi.mock("../guard/index.js", () => ({
   commitFromComment: mocks.commitFromComment,
@@ -35,6 +49,9 @@ vi.mock("../shared/reconcile-check.js", () => ({
 vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
   loadTaskFromContext: mocks.loadTaskFromContext,
+}));
+vi.mock("../shared/git-ops.js", () => ({
+  gitCurrentBranch: mocks.gitCurrentBranch,
 }));
 vi.mock("../shared/task-store.js", async (importOriginal) => {
   const actualUnknown: unknown = await importOriginal();
@@ -186,10 +203,14 @@ describe("task finish (unit)", () => {
     mocks.getTaskStore.mockReset();
     mocks.readCommitInfo.mockReset();
     mocks.nowIso.mockReset();
+    mocks.resolveBaseBranch.mockReset();
+    mocks.gitCurrentBranch.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.readCommitInfo.mockResolvedValue({ hash: "hc", message: "mc" });
     mocks.nowIso.mockReturnValue("2026-02-09T00:00:00.000Z");
+    mocks.resolveBaseBranch.mockResolvedValue("main");
+    mocks.gitCurrentBranch.mockResolvedValue("main");
     mocks.commitFromComment.mockResolvedValue({
       hash: "new-hash",
       message: "✅ T-1 task: verified",

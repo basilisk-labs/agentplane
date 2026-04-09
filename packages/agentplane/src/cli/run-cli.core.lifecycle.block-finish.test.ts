@@ -473,6 +473,88 @@ describe("runCli", () => {
     expect(headSubject).toContain("close:");
   });
 
+  it("finish rejects non-base branches in branch_pr mode", { timeout: 120_000 }, async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root });
+    await writeFile(path.join(root, "file.txt"), "content", "utf8");
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
+    const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Reject branch_pr finish from task branch",
+        "--description",
+        "Finish must reject non-base branches in branch_pr mode",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "REVIEWER",
+      "--note",
+      "Ok to reject branch_pr finish from a task branch.",
+      "--quiet",
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["checkout", "-b", "task/demo-finish-branch"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        taskId,
+        "--author",
+        "INTEGRATOR",
+        "--body",
+        "Verified: branch_pr finish should fail outside the base checkout.",
+        "--result",
+        "branch_pr finish guard",
+        "--commit",
+        implHash.trim(),
+        "--close-commit",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("finish must run on base branch main in branch_pr mode");
+      expect(io.stderr).toContain("integrate first or reconcile from the base checkout");
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.status).toBe("TODO");
+  });
+
   it(
     "finish --commit-from-comment records implementation hash in task metadata and uses a separate close commit for tracked task docs",
     { timeout: 120_000 },
