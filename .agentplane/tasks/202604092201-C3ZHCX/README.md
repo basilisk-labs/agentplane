@@ -4,7 +4,7 @@ title: "Allow cleanup merged to fetch origin before candidate resolution"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T22:16:42.206Z"
+  updated_at: "2026-04-09T22:53:55.569Z"
   updated_by: "CODER"
-  note: "Refreshed CLI reference after adding cleanup merged fetch mode; targeted cleanup merged tests remain green."
+  note: "Rebased cleanup merged fetch mode on top of remote-delete support; targeted cleanup merged vitest suite and eslint passed on the final branch head."
 commit: null
 comments:
   -
@@ -47,8 +47,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Refreshed CLI reference after adding cleanup merged fetch mode; targeted cleanup merged tests remain green."
+  -
+    type: "verify"
+    at: "2026-04-09T22:53:55.569Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rebased cleanup merged fetch mode on top of remote-delete support; targeted cleanup merged vitest suite and eslint passed on the final branch head."
 doc_version: 3
-doc_updated_at: "2026-04-09T22:16:42.209Z"
+doc_updated_at: "2026-04-09T22:53:55.572Z"
 doc_updated_by: "CODER"
 description: "Add an explicit fetch/prune option to cleanup merged so operators can refresh origin state before local and remote cleanup decisions."
 sections:
@@ -83,6 +89,14 @@ sections:
     Note: Refreshed CLI reference after adding cleanup merged fetch mode; targeted cleanup merged tests remain green.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T22:14:04.869Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
+    
+    ### 2026-04-09T22:53:55.569Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Rebased cleanup merged fetch mode on top of remote-delete support; targeted cleanup merged vitest suite and eslint passed on the final branch head.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T22:16:42.209Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -132,6 +146,14 @@ By: CODER
 Note: Refreshed CLI reference after adding cleanup merged fetch mode; targeted cleanup merged tests remain green.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T22:14:04.869Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
+
+### 2026-04-09T22:53:55.569Z — VERIFY — ok
+
+By: CODER
+
+Note: Rebased cleanup merged fetch mode on top of remote-delete support; targeted cleanup merged vitest suite and eslint passed on the final branch head.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T22:16:42.209Z, excerpt_hash=sha256:5d419a099ca6ed7132cf75ede098e500ba03c9ec835a77f962f63f83b789e100
 
 <!-- END VERIFICATION RESULTS -->
 

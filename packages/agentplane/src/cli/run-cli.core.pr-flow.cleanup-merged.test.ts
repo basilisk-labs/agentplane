@@ -295,110 +295,127 @@ describe("runCli", () => {
     }
   }, 60_000);
 
-  it("cleanup merged deletes matching remote task branches when requested", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    await configureGitUser(root);
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
+  it(
+    "cleanup merged deletes matching remote task branches when requested",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await configureGitUser(root);
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
 
-    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
-    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
-    await commitAll(root, "chore base");
-    const execFileAsync = promisify(execFile);
-    const remoteRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-remote-"));
-    await execFileAsync("git", ["init", "--bare"], {
-      cwd: remoteRoot,
-      env: cleanGitEnv(),
-    });
-    await execFileAsync("git", ["remote", "add", "origin", remoteRoot], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-    await execFileAsync("git", ["push", "-u", "origin", "main"], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+      await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+      await commitAll(root, "chore base");
+      const execFileAsync = promisify(execFile);
+      const remoteRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-remote-"));
+      await execFileAsync("git", ["init", "--bare"], {
+        cwd: remoteRoot,
+        env: cleanGitEnv(),
+      });
+      await execFileAsync("git", ["remote", "add", "origin", remoteRoot], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      await execFileAsync("git", ["push", "-u", "origin", "main"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
-    let taskId = "";
-    const ioTask = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Cleanup remote delete",
-        "--description",
-        "cleanup candidate",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Cleanup remote delete",
+          "--description",
+          "cleanup candidate",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await commitAll(root, `chore ${taskId} scaffold`);
+
+      const task = await readTask({ cwd: root, taskId });
+      const readmeText = await readFile(task.readmePath, "utf8");
+      await writeFile(
+        task.readmePath,
+        readmeText.replace('status: "TODO"', 'status: "DONE"'),
+        "utf8",
+      );
+      await commitAll(root, `chore ${taskId} done`);
+
+      const branch = `task/${taskId}/cleanup-remote-delete`;
+      const worktreePath = path.join(
         root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-    await commitAll(root, `chore ${taskId} scaffold`);
+        ".agentplane",
+        "worktrees",
+        `${taskId}-cleanup-remote-delete`,
+      );
+      await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      await execFileAsync("git", ["push", "-u", "origin", branch], {
+        cwd: worktreePath,
+        env: cleanGitEnv(),
+      });
 
-    const task = await readTask({ cwd: root, taskId });
-    const readmeText = await readFile(task.readmePath, "utf8");
-    await writeFile(
-      task.readmePath,
-      readmeText.replace('status: "TODO"', 'status: "DONE"'),
-      "utf8",
-    );
-    await commitAll(root, `chore ${taskId} done`);
+      const { stdout: beforeStdout } = await execFileAsync(
+        "git",
+        ["ls-remote", "--heads", "origin", branch],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
+      );
+      expect(beforeStdout).toContain(branch);
 
-    const branch = `task/${taskId}/cleanup-remote-delete`;
-    const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-cleanup-remote-delete`);
-    await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-    await execFileAsync("git", ["push", "-u", "origin", branch], {
-      cwd: worktreePath,
-      env: cleanGitEnv(),
-    });
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "cleanup",
+          "merged",
+          "--yes",
+          "--delete-remote-branches",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("remote=delete");
+        expect(io.stdout).toContain("remote_deleted=1");
+      } finally {
+        io.restore();
+      }
 
-    const { stdout: beforeStdout } = await execFileAsync("git", ["ls-remote", "--heads", "origin", branch], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-    expect(beforeStdout).toContain(branch);
+      expect(await gitBranchExists(root, branch)).toBe(false);
+      expect(await pathExists(worktreePath)).toBe(false);
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "cleanup",
-        "merged",
-        "--yes",
-        "--delete-remote-branches",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("remote=delete");
-      expect(io.stdout).toContain("remote_deleted=1");
-    } finally {
-      io.restore();
-    }
-
-    expect(await gitBranchExists(root, branch)).toBe(false);
-    expect(await pathExists(worktreePath)).toBe(false);
-
-    const { stdout: afterStdout } = await execFileAsync("git", ["ls-remote", "--heads", "origin", branch], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-    expect(afterStdout.trim()).toBe("");
-  }, CLEANUP_MERGED_MUTATION_TIMEOUT_MS);
+      const { stdout: afterStdout } = await execFileAsync(
+        "git",
+        ["ls-remote", "--heads", "origin", branch],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
+      );
+      expect(afterStdout.trim()).toBe("");
+    },
+    CLEANUP_MERGED_MUTATION_TIMEOUT_MS,
+  );
 
   it(
     "cleanup merged prunes stale origin refs only when --fetch is set",
