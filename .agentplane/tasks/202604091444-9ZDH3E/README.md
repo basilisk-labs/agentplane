@@ -4,7 +4,7 @@ title: "Refresh branch_pr PR artifacts after plain git commits"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,23 +20,13 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T15:07:25.248Z"
+  updated_at: "2026-04-09T15:14:15.092Z"
   updated_by: "CODER"
   note: |-
-    Command: bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts
+    Command: bun x prettier --check packages/agentplane/src/commands/pr/integrate/internal/prepare.ts && bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts && bun x eslint packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts
     Result: pass
-    Evidence: 12/12 tests passed, including stale PR metadata repair before integrate fails.
-    Scope: branch_pr integrate preparation and PR artifact freshness repair.
-    
-    Command: bun x eslint packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts
-    Result: pass
-    Evidence: eslint exited 0.
-    Scope: prepare repair path implementation and tests.
-    
-    Command: bun run framework:dev:bootstrap
-    Result: pass
-    Evidence: core + agentplane builds completed and runtime explain reported repo-local runtime ready.
-    Scope: compile and runtime validity for the task branch.
+    Evidence: Prettier matched, 12/12 tests passed, eslint exited 0 after CI formatting fix.
+    Scope: current branch head after post-CI formatting for integrate stale-metadata repair.
 commit: null
 comments:
   -
@@ -70,8 +60,18 @@ events:
       Result: pass
       Evidence: core + agentplane builds completed and runtime explain reported repo-local runtime ready.
       Scope: compile and runtime validity for the task branch.
+  -
+    type: "verify"
+    at: "2026-04-09T15:14:15.092Z"
+    author: "CODER"
+    state: "ok"
+    note: |-
+      Command: bun x prettier --check packages/agentplane/src/commands/pr/integrate/internal/prepare.ts && bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts && bun x eslint packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts
+      Result: pass
+      Evidence: Prettier matched, 12/12 tests passed, eslint exited 0 after CI formatting fix.
+      Scope: current branch head after post-CI formatting for integrate stale-metadata repair.
 doc_version: 3
-doc_updated_at: "2026-04-09T15:07:25.252Z"
+doc_updated_at: "2026-04-09T15:14:15.100Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr tooling recover when a normal git commit after pr update leaves pr/meta head_sha stale, so later push/integrate flows do not require a manual artifact refresh workaround."
 sections:
@@ -106,6 +106,17 @@ sections:
     Scope: compile and runtime validity for the task branch.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T14:45:49.970Z, excerpt_hash=sha256:f48312edab89f3ffd8ad84dc45b20dec90e2e7d9632e05e1e63ebc6e4b4f16fc
+    
+    ### 2026-04-09T15:14:15.092Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun x prettier --check packages/agentplane/src/commands/pr/integrate/internal/prepare.ts && bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts && bun x eslint packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts
+    Result: pass
+    Evidence: Prettier matched, 12/12 tests passed, eslint exited 0 after CI formatting fix.
+    Scope: current branch head after post-CI formatting for integrate stale-metadata repair.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T15:07:25.252Z, excerpt_hash=sha256:f48312edab89f3ffd8ad84dc45b20dec90e2e7d9632e05e1e63ebc6e4b4f16fc
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -156,6 +167,17 @@ Evidence: core + agentplane builds completed and runtime explain reported repo-l
 Scope: compile and runtime validity for the task branch.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T14:45:49.970Z, excerpt_hash=sha256:f48312edab89f3ffd8ad84dc45b20dec90e2e7d9632e05e1e63ebc6e4b4f16fc
+
+### 2026-04-09T15:14:15.092Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun x prettier --check packages/agentplane/src/commands/pr/integrate/internal/prepare.ts && bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts && bun x eslint packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts
+Result: pass
+Evidence: Prettier matched, 12/12 tests passed, eslint exited 0 after CI formatting fix.
+Scope: current branch head after post-CI formatting for integrate stale-metadata repair.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T15:07:25.252Z, excerpt_hash=sha256:f48312edab89f3ffd8ad84dc45b20dec90e2e7d9632e05e1e63ebc6e4b4f16fc
 
 <!-- END VERIFICATION RESULTS -->
 

@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604091444-9ZDH3E/README.md    | 167 +++++++++++++++++++++
+ .../tasks/202604091444-9ZDH3E/pr/diffstat.txt      |   0
+ .../tasks/202604091444-9ZDH3E/pr/github-body.md    |  61 ++++++++
+ .../tasks/202604091444-9ZDH3E/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091444-9ZDH3E/pr/meta.json |  14 ++
+ .../tasks/202604091444-9ZDH3E/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091444-9ZDH3E/pr/review.md |  68 +++++++++
+ .../tasks/202604091444-9ZDH3E/pr/verify.log        |   0
+ .../commands/pr/integrate/internal/prepare.test.ts |  48 ++++++
+ .../src/commands/pr/integrate/internal/prepare.ts  |  47 +++++-
+ 10 files changed, 403 insertions(+), 3 deletions(-)
