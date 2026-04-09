@@ -1,0 +1,10 @@
+ .agentplane/tasks/202604091338-75VJ4R/README.md    | 116 +++++++++++++++++++++
+ .../tasks/202604091338-75VJ4R/pr/diffstat.txt      |  10 ++
+ .../tasks/202604091338-75VJ4R/pr/github-body.md    |  59 +++++++++++
+ .../tasks/202604091338-75VJ4R/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091338-75VJ4R/pr/meta.json |  17 +++
+ .../tasks/202604091338-75VJ4R/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091338-75VJ4R/pr/review.md |  66 ++++++++++++
+ .../tasks/202604091338-75VJ4R/pr/verify.log        |   0
+ .../src/cli/wait-remote-pr-checks-script.test.ts   |  25 +++--
+ 9 files changed, 288 insertions(+), 6 deletions(-)
