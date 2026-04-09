@@ -1,10 +1,11 @@
 ---
 id: "202604091257-PJQH29"
 title: "Allow explicit internal incident findings to promote into incidents.md"
-status: "DOING"
+result_summary: "integrate: squash task/202604091257-PJQH29/internal-incident-promotion"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-09T14:21:26.323Z"
   updated_by: "CODER"
   note: "Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted incidents and wait-remote coverage for internal finding promotion into incidents.md."
-commit: null
+commit:
+  hash: "b815d8c916890057177d960ff47f54792c41a61e"
+  message: "🧩 PJQH29 integrate: incidents: Allow explicit internal incident findings to promote into incidents.md"
 comments:
   -
     author: "CODER"
     body: "Start: Enable explicit repo-fixable workflow findings to promote into incidents registry without manual incidents.md edits."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091257-PJQH29/pr."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted incidents and wait-remote coverage for internal finding promotion into incidents.md."
+  -
+    type: "status"
+    at: "2026-04-09T14:33:52.203Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604091257-PJQH29/pr."
 doc_version: 3
-doc_updated_at: "2026-04-09T14:21:26.329Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T14:33:52.207Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend incidents collection so explicitly marked internal or repository-fixable workflow findings can promote into the shared incidents registry without manual incidents.md edits."
 sections:
   Summary: |-

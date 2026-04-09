@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604091257-PJQH29/internal-incident-promotion",
   "created_at": "2026-04-09T13:11:17.142Z",
-  "head_sha": "82fce4d5b647ad3b06dd39c62e1d4816024e67d0",
+  "head_sha": "4c67dcff5e49f72bc65f496d57b8ccec54a38c01",
   "last_verified_at": "2026-04-09T14:21:26.323Z",
   "last_verified_sha": "82fce4d5b647ad3b06dd39c62e1d4816024e67d0",
+  "merge_commit": "b815d8c916890057177d960ff47f54792c41a61e",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T14:33:52.160Z",
   "pr_number": 187,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/187",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604091257-PJQH29",
-  "updated_at": "2026-04-09T14:21:26.353Z",
+  "updated_at": "2026-04-09T14:33:52.160Z",
   "verify": {
     "status": "pass"
   }

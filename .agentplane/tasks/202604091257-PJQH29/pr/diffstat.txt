@@ -1,18 +1,18 @@
  .agentplane/policy/governance.md                   |   2 +-
  .agentplane/policy/incidents.md                    |   4 +-
- .agentplane/tasks/202604091257-PJQH29/README.md    | 117 +++++++++++++++++++++
- .../tasks/202604091257-PJQH29/pr/diffstat.txt      |   0
- .../tasks/202604091257-PJQH29/pr/github-body.md    |  50 +++++++++
+ .agentplane/tasks/202604091257-PJQH29/README.md    | 139 +++++++++++++++++++++
+ .../tasks/202604091257-PJQH29/pr/diffstat.txt      |  25 ++++
+ .../tasks/202604091257-PJQH29/pr/github-body.md    |  74 +++++++++++
  .../tasks/202604091257-PJQH29/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604091257-PJQH29/pr/meta.json |  17 +++
  .../tasks/202604091257-PJQH29/pr/notes.jsonl       |   0
- .agentplane/tasks/202604091257-PJQH29/pr/review.md |  57 ++++++++++
+ .agentplane/tasks/202604091257-PJQH29/pr/review.md |  81 ++++++++++++
  .../tasks/202604091257-PJQH29/pr/verify.log        |   0
  docs/user/cli-reference.generated.mdx              |   8 +-
  packages/agentplane/assets/policy/governance.md    |   2 +-
  packages/agentplane/assets/policy/incidents.md     |   4 +-
- .../src/cli/run-cli.core.incidents.test.ts         |  96 ++++++++++++++++-
- .../src/commands/task/findings-add.command.ts      |  25 ++++-
+ .../src/cli/run-cli.core.incidents.test.ts         |  96 +++++++++++++-
+ .../src/commands/task/findings-add.command.ts      |  25 +++-
  packages/agentplane/src/commands/task/findings.ts  |   9 +-
  .../src/commands/task/verify-command-shared.ts     |  10 +-
  .../src/commands/task/verify-ok.command.ts         |   1 +
@@ -20,6 +20,6 @@
  .../src/commands/task/verify-rework.command.ts     |   1 +
  packages/agentplane/src/commands/verify.run.ts     |   1 +
  .../src/runtime/incidents/resolve.test.ts          |   3 +-
- .../agentplane/src/runtime/incidents/resolve.ts    |  33 +++---
+ .../agentplane/src/runtime/incidents/resolve.ts    |  33 +++--
  packages/agentplane/src/runtime/incidents/types.ts |   5 +-
- 24 files changed, 424 insertions(+), 30 deletions(-)
+ 24 files changed, 519 insertions(+), 30 deletions(-)
