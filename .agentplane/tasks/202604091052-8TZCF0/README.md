@@ -1,10 +1,11 @@
 ---
 id: "202604091052-8TZCF0"
 title: "Fix task lifecycle README seeding and base artifact preservation"
-status: "DOING"
+result_summary: "Merged via PR #170."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-09T11:04:15.154Z"
   updated_by: "CODER"
   note: "README seeding now preserves the canonical base README and leaves the worktree snapshot intact."
-commit: null
+commit:
+  hash: "ecc96941f0d935c117cb43cec464c673fbbd8f65"
+  message: "tasks/workflow: Fix task lifecycle README seeding and base artifact preservation (8TZCF0) (#170)"
 comments:
   -
     author: "CODER"
     body: "Start: fix branch_pr work start so task README seeding preserves canonical base artifacts and strict task scans remain readable after worktree creation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #170 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "README seeding now preserves the canonical base README and leaves the worktree snapshot intact."
+  -
+    type: "status"
+    at: "2026-04-09T11:15:06.910Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #170 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T11:04:15.170Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T11:15:06.915Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make task creation/work-start preserve canonical base README artifacts and refuse to leave empty .agentplane/tasks/<id> directories without README.md in branch_pr flows."
 sections:
   Summary: |-
