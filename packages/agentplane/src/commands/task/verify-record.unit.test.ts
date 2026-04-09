@@ -18,6 +18,8 @@ const mocks = vi.hoisted(() => ({
     vi.fn<(opts: { ctx: CommandContext; taskId: string }) => Promise<TaskData>>(),
   backendIsLocalFileBackend: vi.fn<(ctx: CommandContext) => boolean>(),
   getTaskStore: vi.fn(),
+  collectTaskIncidents: vi.fn(),
+  renderIncidentCollectionPlanOutcome: vi.fn(),
 }));
 
 vi.mock("node:fs/promises", async (importOriginal) => {
@@ -35,6 +37,10 @@ vi.mock("../shared/task-backend.js", () => ({
 }));
 vi.mock("../shared/reconcile-check.js", () => ({
   ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
+}));
+vi.mock("../incidents/shared.js", () => ({
+  collectTaskIncidents: mocks.collectTaskIncidents,
+  renderIncidentCollectionPlanOutcome: mocks.renderIncidentCollectionPlanOutcome,
 }));
 vi.mock("../shared/task-store.js", async (importOriginal) => {
   const actualUnknown: unknown = await importOriginal();
@@ -82,9 +88,22 @@ describe("task verify record (unit)", () => {
     mocks.loadTaskFromContext.mockReset();
     mocks.backendIsLocalFileBackend.mockReset();
     mocks.getTaskStore.mockReset();
+    mocks.collectTaskIncidents.mockReset();
+    mocks.renderIncidentCollectionPlanOutcome.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
+    mocks.collectTaskIncidents.mockResolvedValue({
+      loaded: null,
+      registryPath: "/repo/.agentplane/policy/incidents.md",
+      registryText: "",
+      registry: null,
+      plan: { promotable: [], skipped: [], duplicates: [] },
+      wrote: false,
+    });
+    mocks.renderIncidentCollectionPlanOutcome.mockReturnValue(
+      "incident registry unchanged (no structured incident findings)",
+    );
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-02-09T00:00:00.000Z"));
   });
@@ -184,6 +203,74 @@ describe("task verify record (unit)", () => {
     await expect(
       cmdTaskVerifyOk({ ctx, cwd: "/repo", taskId: "T-1", by: "A", note: "x", quiet: true }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
+  });
+
+  it("cmdTaskVerifyOk can collect incidents explicitly after recording verification", async () => {
+    const writes: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+      writes.push(String(chunk));
+      return true;
+    });
+
+    const writeTask = vi.fn<(t: TaskData) => Promise<void>>(() => Promise.resolve());
+    const getTaskDoc = vi.fn<() => Promise<string>>(() =>
+      Promise.resolve(
+        [
+          "## Summary",
+          "x",
+          "",
+          "## Verify Steps",
+          "step",
+          "",
+          "## Verification",
+          "<!-- BEGIN VERIFICATION RESULTS -->",
+          "<!-- END VERIFICATION RESULTS -->",
+          "",
+          "## Findings",
+          "",
+        ].join("\n"),
+      ),
+    );
+
+    const backend: TaskBackend = {
+      id: "mock",
+      listTasks: () => Promise.resolve([]),
+      getTask: () => Promise.resolve(null),
+      writeTask,
+      getTaskDoc,
+    };
+    const ctx = mkCtx({ taskBackend: backend, backend });
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        status: "DONE",
+        commit: { hash: "abc", message: "msg" },
+        doc: undefined,
+        doc_version: 3,
+        doc_updated_at: "2026-02-01T00:00:00Z",
+      }),
+    );
+
+    const { cmdTaskVerifyOk } = await import("./verify-record.js");
+    const rc = await cmdTaskVerifyOk({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      by: "REVIEWER",
+      note: "Looks good",
+      collectIncidents: true,
+      quiet: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(mocks.collectTaskIncidents).toHaveBeenCalledWith({
+      ctx,
+      taskId: "T-1",
+      write: true,
+    });
+    expect(writes.join("")).toContain(
+      "incident registry unchanged (no structured incident findings)",
+    );
+    writeSpy.mockRestore();
   });
 
   it("cmdTaskVerifyOk preserves legacy verification scaffold for doc_version=2", async () => {

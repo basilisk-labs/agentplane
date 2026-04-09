@@ -55,6 +55,7 @@ export function makeRunTaskVerifyReworkHandler(getCtx: (cmd: string) => Promise<
       noteFile: p.noteFile,
       details: p.details,
       file: p.file,
+      collectIncidents: p.collectIncidents,
       quiet: p.quiet,
       observation: p.observation,
       impact: p.impact,

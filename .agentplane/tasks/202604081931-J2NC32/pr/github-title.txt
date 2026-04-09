@@ -1,0 +1,1 @@
+incidents/ux: Add explicit verify incident collection path (J2NC32)
