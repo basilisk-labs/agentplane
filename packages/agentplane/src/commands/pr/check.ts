@@ -168,7 +168,10 @@ function finalizeSnapshotErrors(opts: {
       if (meta.verify?.status !== "pass") {
         errors.push("Verify requirements not satisfied (meta.verify.status != pass)");
       }
-      if ((!meta.last_verified_sha || !meta.last_verified_at) && !opts.snapshot.freshnessVerifyLogSha) {
+      if (
+        (!meta.last_verified_sha || !meta.last_verified_at) &&
+        !opts.snapshot.freshnessVerifyLogSha
+      ) {
         errors.push("Verify metadata missing (last_verified_sha/last_verified_at)");
       }
     }

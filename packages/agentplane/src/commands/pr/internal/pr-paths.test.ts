@@ -1,27 +1,35 @@
 import path from "node:path";
 
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({
+const mocks = {
   resolveProject: vi.fn(),
   loadConfig: vi.fn(),
   fileExists: vi.fn(),
   readFile: vi.fn(),
   gitShowFile: vi.fn(),
-}));
+};
 
 vi.mock("@agentplaneorg/core", () => ({
-  resolveProject: mocks.resolveProject,
-  loadConfig: mocks.loadConfig,
+  resolveProject: (...args: unknown[]) => mocks.resolveProject(...args),
+  loadConfig: (...args: unknown[]) => mocks.loadConfig(...args),
 }));
-vi.mock("../../../cli/fs-utils.js", () => ({ fileExists: mocks.fileExists }));
-vi.mock("node:fs/promises", () => ({ readFile: mocks.readFile }));
+vi.mock("../../../cli/fs-utils.js", () => ({
+  fileExists: (...args: unknown[]) => mocks.fileExists(...args),
+}));
+vi.mock("node:fs/promises", () => ({
+  readFile: (...args: unknown[]) => mocks.readFile(...args),
+}));
 vi.mock("../../shared/git-diff.js", () => ({
   toGitPath: (value: string) => value.replaceAll("\\", "/"),
-  gitShowFile: mocks.gitShowFile,
+  gitShowFile: (...args: unknown[]) => mocks.gitShowFile(...args),
 }));
 
 describe("pr/internal/pr-paths", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("resolvePrPaths uses ctx data when provided", async () => {
     const { resolvePrPaths } = await import("./pr-paths.js");
     const cfg = { paths: { workflow_dir: ".agentplane/tasks" } };
