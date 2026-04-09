@@ -1,10 +1,11 @@
 ---
 id: "202604091031-N061T1"
 title: "Repair malformed task directories blocking reconcile"
-status: "DOING"
+result_summary: "Restored malformed live task README artifacts and removed the abandoned empty scaffold that blocked reconcile."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,15 +19,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-09T10:45:48.364Z"
+  updated_by: "REVIEWER"
+  note: "Strict task scans now pass after restoring canonical task README artifacts for live worktrees and pruning the abandoned empty scaffold; pr check for 7HAZ1F also passes again, so branch_pr integrate is unblocked."
+commit:
+  hash: "3c7228ffcdfd18b1133af3a7c8db5aef1d8f6967"
+  message: "🧩 N061T1 task: restore malformed task readmes"
 comments:
   -
     author: "CODER"
     body: "Start: repair malformed task directories on the base checkout so strict task scans stop blocking integrate, while preserving live branch_pr task state and deleting only abandoned empty scaffolds."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: strict task scans and branch_pr pr-check preflight are healthy again after restoring canonical task README artifacts and removing the abandoned empty scaffold."
 events:
   -
     type: "status"
@@ -35,9 +41,22 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: repair malformed task directories on the base checkout so strict task scans stop blocking integrate, while preserving live branch_pr task state and deleting only abandoned empty scaffolds."
+  -
+    type: "verify"
+    at: "2026-04-09T10:45:48.364Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Strict task scans now pass after restoring canonical task README artifacts for live worktrees and pruning the abandoned empty scaffold; pr check for 7HAZ1F also passes again, so branch_pr integrate is unblocked."
+  -
+    type: "status"
+    at: "2026-04-09T10:45:52.958Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: strict task scans and branch_pr pr-check preflight are healthy again after restoring canonical task README artifacts and removing the abandoned empty scaffold."
 doc_version: 3
-doc_updated_at: "2026-04-09T10:33:37.147Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T10:45:52.959Z"
+doc_updated_by: "INTEGRATOR"
 description: "Restore or remove empty .agentplane/tasks/<id> directories without README.md so strict task scans stop blocking integrate and other mutating branch_pr commands."
 sections:
   Summary: |-
@@ -54,6 +73,14 @@ sections:
     3. Inspect `git status --short --untracked-files=all`. Expected: only intentional repair-task files remain, with no new malformed `.agentplane/tasks/<id>` directories.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-09T10:45:48.364Z — VERIFY — ok
+    
+    By: REVIEWER
+    
+    Note: Strict task scans now pass after restoring canonical task README artifacts for live worktrees and pruning the abandoned empty scaffold; pr check for 7HAZ1F also passes again, so branch_pr integrate is unblocked.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T10:33:37.147Z, excerpt_hash=sha256:31285102b08d5ed9bcb2b31dde4fc867db2c914877506bb0c3cb08e1e763e0bc
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +112,14 @@ Restore or remove empty .agentplane/tasks/<id> directories without README.md so 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-09T10:45:48.364Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Strict task scans now pass after restoring canonical task README artifacts for live worktrees and pruning the abandoned empty scaffold; pr check for 7HAZ1F also passes again, so branch_pr integrate is unblocked.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T10:33:37.147Z, excerpt_hash=sha256:31285102b08d5ed9bcb2b31dde4fc867db2c914877506bb0c3cb08e1e763e0bc
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
