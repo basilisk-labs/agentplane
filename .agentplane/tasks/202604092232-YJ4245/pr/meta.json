@@ -2,15 +2,17 @@
   "base": "main",
   "branch": "task/202604092232-YJ4245/finish-close-dirty-fix",
   "created_at": "2026-04-09T22:37:33.545Z",
-  "head_sha": "0f7ebe698302597012949f09cba26986f14ef7b2",
+  "head_sha": "46ab715bc0bebb0c13b8ea14209643c40e269537",
   "last_verified_at": "2026-04-09T22:37:33.526Z",
   "last_verified_sha": "cf5b0d473eda8ace830fa94bd4fdf5a6281f28f8",
+  "merge_commit": "375362976d8ab0a8b4ca2a85d7320917b5159ea6",
+  "merged_at": "2026-04-09T22:43:55Z",
   "pr_number": 237,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/237",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604092232-YJ4245",
-  "updated_at": "2026-04-09T22:38:59.152Z",
+  "updated_at": "2026-04-09T22:58:26.918Z",
   "verify": {
     "status": "pass"
   }

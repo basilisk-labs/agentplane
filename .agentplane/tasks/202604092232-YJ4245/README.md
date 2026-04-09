@@ -1,10 +1,11 @@
 ---
 id: "202604092232-YJ4245"
 title: "Let branch_pr finish close committed task artifacts without self-dirty failure"
-status: "DOING"
+result_summary: "Merged via PR #237."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-09T22:37:33.526Z"
   updated_by: "CODER"
   note: "Invalidated memoized git status after branch_pr PR artifact refresh so deterministic close commits see fresh task artifact changes; verified targeted guard/finish unit tests and eslint."
-commit: null
+commit:
+  hash: "375362976d8ab0a8b4ca2a85d7320917b5159ea6"
+  message: "workflow: Let branch_pr finish close committed task artifacts without self-dirt... (YJ4245) (#237)"
 comments:
   -
     author: "CODER"
     body: "Start: repair branch_pr finish closeout so deterministic close commits can stage the finish-generated task README and PR artifacts without self-dirty failure."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #237 merged on main and branch_pr close commits now invalidate memoized git status after artifact refresh."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Invalidated memoized git status after branch_pr PR artifact refresh so deterministic close commits see fresh task artifact changes; verified targeted guard/finish unit tests and eslint."
+  -
+    type: "status"
+    at: "2026-04-09T22:58:26.838Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #237 merged on main and branch_pr close commits now invalidate memoized git status after artifact refresh."
 doc_version: 3
-doc_updated_at: "2026-04-09T22:37:33.527Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T22:58:26.839Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix finish --close-commit so branch_pr closeout can commit the task README and task PR artifacts that finish itself just updated, instead of failing on a self-generated dirty working tree."
 sections:
   Summary: |-
