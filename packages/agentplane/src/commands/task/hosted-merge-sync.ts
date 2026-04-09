@@ -58,6 +58,23 @@ export type LocalMergedPrMeta = {
   headSha?: string | null;
 };
 
+function ghLookupEnv(): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = { ...process.env };
+  delete env.GIT_DIR;
+  delete env.GIT_WORK_TREE;
+  delete env.GIT_COMMON_DIR;
+  delete env.GIT_INDEX_FILE;
+  delete env.GIT_OBJECT_DIRECTORY;
+  delete env.GIT_ALTERNATE_OBJECT_DIRECTORIES;
+  if (typeof process.env.GH_TOKEN === "string") env.GH_TOKEN = process.env.GH_TOKEN;
+  if (typeof process.env.GITHUB_TOKEN === "string") env.GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+  if (typeof process.env.GH_CONFIG_DIR === "string") env.GH_CONFIG_DIR = process.env.GH_CONFIG_DIR;
+  if (typeof process.env.XDG_CONFIG_HOME === "string")
+    env.XDG_CONFIG_HOME = process.env.XDG_CONFIG_HOME;
+  if (typeof process.env.HOME === "string") env.HOME = process.env.HOME;
+  return env;
+}
+
 function normalizeMergedPr(value: unknown): HostedMergedPr | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const record = value as Record<string, unknown>;
@@ -183,7 +200,7 @@ export async function resolveHostedMergedPr(opts: {
         ],
         {
           cwd: opts.cwd,
-          env: process.env,
+          env: ghLookupEnv(),
           maxBuffer: 10 * 1024 * 1024,
         },
       );

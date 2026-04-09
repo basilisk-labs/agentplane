@@ -15,6 +15,7 @@ vi.mock("../shared/git.js", () => ({
 }));
 
 const mockedExecFileAsync = execFileAsync as unknown as {
+  mock: { calls: unknown[][] };
   mockReset: () => void;
   mockRejectedValueOnce: (value: unknown) => typeof mockedExecFileAsync;
   mockResolvedValueOnce: (value: unknown) => typeof mockedExecFileAsync;
@@ -168,6 +169,57 @@ describe("syncHostedMergedTasks", () => {
       },
     });
     expect(mockedExecFileAsync).toHaveBeenCalledTimes(2);
+  });
+
+  it("sanitizes git override env while preserving gh auth inputs", async () => {
+    const originalGhToken = process.env.GH_TOKEN;
+    const originalGitDir = process.env.GIT_DIR;
+    const originalGitWorkTree = process.env.GIT_WORK_TREE;
+    const originalHome = process.env.HOME;
+    process.env.GH_TOKEN = "token-from-parent-env";
+    process.env.GIT_DIR = "/tmp/should-not-leak.git";
+    process.env.GIT_WORK_TREE = "/tmp/should-not-leak-tree";
+    process.env.HOME = "/tmp/test-home";
+
+    mockedExecFileAsync.mockResolvedValueOnce({
+      stdout: JSON.stringify([
+        {
+          number: 42,
+          title: "Merged PR",
+          mergedAt: "2026-04-06T18:19:00.000Z",
+          baseRefName: "main",
+          headRefName: "task/202604061815-01F3CY/env-sanitized",
+          headRefOid: "abcdef1234567890abcdef1234567890abcdef12",
+          mergeCommit: { oid: "1234567890abcdef1234567890abcdef12345678" },
+        },
+      ]),
+      stderr: "",
+    });
+
+    try {
+      await resolveHostedMergedPr({
+        cwd: "/repo",
+        branch: "task/202604061815-01F3CY/env-sanitized",
+      });
+    } finally {
+      if (originalGhToken === undefined) delete process.env.GH_TOKEN;
+      else process.env.GH_TOKEN = originalGhToken;
+      if (originalGitDir === undefined) delete process.env.GIT_DIR;
+      else process.env.GIT_DIR = originalGitDir;
+      if (originalGitWorkTree === undefined) delete process.env.GIT_WORK_TREE;
+      else process.env.GIT_WORK_TREE = originalGitWorkTree;
+      if (originalHome === undefined) delete process.env.HOME;
+      else process.env.HOME = originalHome;
+    }
+
+    expect(mockedExecFileAsync).toHaveBeenCalledTimes(1);
+    const execOptions = mockedExecFileAsync.mock.calls[0]?.[2] as
+      | { env?: NodeJS.ProcessEnv }
+      | undefined;
+    expect(execOptions?.env?.GH_TOKEN).toBe("token-from-parent-env");
+    expect(execOptions?.env?.HOME).toBe("/tmp/test-home");
+    expect(execOptions?.env?.GIT_DIR).toBeUndefined();
+    expect(execOptions?.env?.GIT_WORK_TREE).toBeUndefined();
   });
 
   it("does not retry permanent gh auth failures", async () => {
