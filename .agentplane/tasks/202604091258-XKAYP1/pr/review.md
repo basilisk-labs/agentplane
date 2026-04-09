@@ -25,7 +25,7 @@ When pr open creates or links a GitHub PR, avoid rewriting review/body artifacts
 ### Current Status
 
 - State: ok
-- Note: Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t "pr open keeps review/body stable" && bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; Result: pass. Evidence: create-path and existing-PR-path stability tests passed and eslint stayed clean. Scope: pr open artifact rendering during remote PR linkage.
+- Note: Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted wait-remote/pr-flow coverage for the pr open artifact-churn path.
 
 ## Risks
 
@@ -45,12 +45,22 @@ When pr open creates or links a GitHub PR, avoid rewriting review/body artifacts
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T13:13:53.609Z
+- Updated: 2026-04-09T14:20:35.861Z
 - Branch: task/202604091258-XKAYP1/pr-open-churn
-- Head: 0c2ad60b7a72
+- Head: affb7387cdd6
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604091258-XKAYP1/README.md    | 118 +++++++++++++
+ .../tasks/202604091258-XKAYP1/pr/diffstat.txt      |   0
+ .../tasks/202604091258-XKAYP1/pr/github-body.md    |  50 ++++++
+ .../tasks/202604091258-XKAYP1/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091258-XKAYP1/pr/meta.json |  17 ++
+ .../tasks/202604091258-XKAYP1/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091258-XKAYP1/pr/review.md |  57 +++++++
+ .../tasks/202604091258-XKAYP1/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 187 +++++++++++++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |  12 +-
+ 10 files changed, 440 insertions(+), 2 deletions(-)
 ```
 
 </details>
