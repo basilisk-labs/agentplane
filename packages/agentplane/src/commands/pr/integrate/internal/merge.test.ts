@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CliError } from "../../../../../shared/errors.js";
 
@@ -26,6 +26,10 @@ vi.mock("../../internal/review-template.js", () => ({
 }));
 
 describe("pr/integrate/internal/merge", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("runSquashMerge falls back to deterministic subject when branch head subject is invalid", async () => {
     const { runSquashMerge } = await import("./merge.js");
     mocks.execFileAsync
@@ -51,11 +55,21 @@ describe("pr/integrate/internal/merge", () => {
       genericTokens: ["wip"],
     });
     expect(hash).toBe("deadbeefcafebabe");
-    expect(mocks.execFileAsync).toHaveBeenCalledWith(
-      "git",
-      ["commit", "-m", "🧩 ABC123 integrate: workflow/cli: improve PR UX"],
-      expect.objectContaining({ cwd: "/repo" }),
-    );
+    const commitCall = mocks.execFileAsync.mock.calls.at(-1);
+    expect(commitCall?.[0]).toBe("git");
+    expect(commitCall?.[1]).toEqual([
+      "commit",
+      "-m",
+      "🧩 ABC123 integrate: workflow/cli: improve PR UX",
+    ]);
+    expect(commitCall?.[2]).toMatchObject({
+      cwd: "/repo",
+      env: {
+        AGENTPLANE_TASK_ID: "202602111653-X32XPT",
+        AGENTPLANE_ALLOW_BASE: "1",
+        AGENTPLANE_ALLOW_TASKS: "1",
+      },
+    });
   });
 
   it("runSquashMerge falls back when the branch tip commit only touches task artifacts", async () => {
@@ -87,11 +101,21 @@ describe("pr/integrate/internal/merge", () => {
       genericTokens: ["wip"],
     });
     expect(hash).toBe("deadbeefcafebabe");
-    expect(mocks.execFileAsync).toHaveBeenCalledWith(
-      "git",
-      ["commit", "-m", "🧩 X32XPT integrate: workflow/cli: improve PR UX"],
-      expect.objectContaining({ cwd: "/repo" }),
-    );
+    const commitCall = mocks.execFileAsync.mock.calls.at(-1);
+    expect(commitCall?.[0]).toBe("git");
+    expect(commitCall?.[1]).toEqual([
+      "commit",
+      "-m",
+      "🧩 X32XPT integrate: workflow/cli: improve PR UX",
+    ]);
+    expect(commitCall?.[2]).toMatchObject({
+      cwd: "/repo",
+      env: {
+        AGENTPLANE_TASK_ID: "202602111653-X32XPT",
+        AGENTPLANE_ALLOW_BASE: "1",
+        AGENTPLANE_ALLOW_TASKS: "1",
+      },
+    });
   });
 
   it("runSquashMerge resets and fails when there is nothing staged after squash", async () => {
@@ -144,5 +168,42 @@ describe("pr/integrate/internal/merge", () => {
       ["merge", "--abort"],
       expect.objectContaining({ cwd: "/repo" }),
     );
+  });
+
+  it("runMergeCommit allows tracked task state updates on the base commit path", async () => {
+    const { runMergeCommit } = await import("./merge.js");
+    mocks.extractTaskSuffix.mockReturnValue("ABC123");
+    mocks.buildGithubPrTitle.mockReturnValue("workflow/cli: improve PR UX (ABC123)");
+    mocks.execFileAsync.mockResolvedValueOnce({}).mockResolvedValueOnce({});
+    mocks.gitRevParse.mockResolvedValue("deadbeefcafebabe");
+
+    const hash = await runMergeCommit({
+      gitRoot: "/repo",
+      branch: "task/T-3",
+      taskId: "202602111653-X32XPT",
+      taskTitle: "Improve PR UX",
+      taskTags: ["workflow", "cli"],
+      workflowDir: ".agentplane/tasks",
+      changedPaths: [],
+    });
+
+    expect(hash).toBe("deadbeefcafebabe");
+    const mergeCall = mocks.execFileAsync.mock.calls[0];
+    expect(mergeCall?.[0]).toBe("git");
+    expect(mergeCall?.[1]).toEqual([
+      "merge",
+      "--no-ff",
+      "task/T-3",
+      "-m",
+      "🔀 ABC123 integrate: workflow/cli: improve PR UX",
+    ]);
+    expect(mergeCall?.[2]).toMatchObject({
+      cwd: "/repo",
+      env: {
+        AGENTPLANE_TASK_ID: "202602111653-X32XPT",
+        AGENTPLANE_ALLOW_BASE: "1",
+        AGENTPLANE_ALLOW_TASKS: "1",
+      },
+    });
   });
 });

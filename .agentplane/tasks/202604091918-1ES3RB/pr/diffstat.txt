@@ -1,0 +1,3 @@
+ .../commands/pr/integrate/internal/merge.test.ts   | 83 +++++++++++++++++++---
+ .../src/commands/pr/integrate/internal/merge.ts    |  4 +-
+ 2 files changed, 74 insertions(+), 13 deletions(-)
