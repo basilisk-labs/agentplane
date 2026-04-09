@@ -1,10 +1,11 @@
 ---
 id: "202604091725-BKV5RY"
 title: "Make verify explain incident promotion outcome deterministically"
-status: "DOING"
+result_summary: "Merged via PR #213."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-09T18:23:10.288Z"
   updated_by: "CODER"
   note: "Verified deterministic incident outcome reporting in branch_pr verify and incidents collect --check with targeted incident-flow regressions plus eslint."
-commit: null
+commit:
+  hash: "dfcc52eefa55537b250adcadde367aa24fc6abd5"
+  message: "incidents: Make verify explain incident promotion outcome deterministically (BKV5RY) (#213)"
 comments:
   -
     author: "CODER"
     body: "Start: make verify report the exact incident-promotion outcome in branch_pr so operators can see whether incidents.md changed now, stayed task-local, or still needs explicit collection or finish."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #213 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified deterministic incident outcome reporting in branch_pr verify and incidents collect --check with targeted incident-flow regressions plus eslint."
+  -
+    type: "status"
+    at: "2026-04-09T18:38:18.761Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #213 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T18:23:36.792Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T18:38:18.767Z"
+doc_updated_by: "INTEGRATOR"
 description: "After verify in branch_pr mode, print a deterministic incident-promotion outcome or next action so operators know whether incidents.md changed, stayed task-local, or needs explicit collection/finish."
 sections:
   Summary: |-
