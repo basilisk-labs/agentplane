@@ -166,6 +166,30 @@ export async function loadTaskFromContext(opts: {
   });
 }
 
+export async function resolveTaskBranchFromContext(opts: {
+  ctx: CommandContext;
+  taskId: string;
+}): Promise<string | null> {
+  if (opts.ctx.backendId !== "local") {
+    return null;
+  }
+
+  const prefix = opts.ctx.config.branch.task_prefix;
+  const branches = await gitListTaskBranches(opts.ctx.resolvedProject.gitRoot, prefix);
+  const matches = branches.filter(
+    (branch) => parseTaskIdFromBranch(prefix, branch) === opts.taskId,
+  );
+  if (matches.length === 1) return matches[0] ?? null;
+  if (matches.length > 1) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: `Multiple task branches match ${opts.taskId}: ${matches.join(", ")}`,
+    });
+  }
+  return null;
+}
+
 export async function loadTaskFromBranchSnapshot(opts: {
   ctx: CommandContext;
   taskId: string;
@@ -179,7 +203,7 @@ export async function loadTaskFromBranchSnapshot(opts: {
   const branch =
     typeof opts.branch === "string" && opts.branch.trim().length > 0
       ? opts.branch.trim()
-      : await resolveSingleTaskBranch(opts.ctx, opts.taskId);
+      : await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   if (!branch) return null;
 
   const relReadmePath = toGitPath(path.relative(opts.ctx.resolvedProject.gitRoot, opts.readmePath));
@@ -207,24 +231,6 @@ export async function loadTaskFromBranchSnapshot(opts: {
     body: parsed.body,
     readmePath: opts.readmePath,
   });
-}
-
-async function resolveSingleTaskBranch(
-  ctx: CommandContext,
-  taskId: string,
-): Promise<string | null> {
-  const prefix = ctx.config.branch.task_prefix;
-  const branches = await gitListTaskBranches(ctx.resolvedProject.gitRoot, prefix);
-  const matches = branches.filter((branch) => parseTaskIdFromBranch(prefix, branch) === taskId);
-  if (matches.length === 1) return matches[0] ?? null;
-  if (matches.length > 1) {
-    throw new CliError({
-      exitCode: 3,
-      code: "E_VALIDATION",
-      message: `Multiple task branches match ${taskId}: ${matches.join(", ")}`,
-    });
-  }
-  return null;
 }
 
 export async function loadBackendTask(opts: {

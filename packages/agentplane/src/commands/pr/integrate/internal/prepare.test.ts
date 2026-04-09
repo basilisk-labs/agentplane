@@ -8,16 +8,17 @@ const mocks = vi.hoisted(() => ({
   readFile: vi.fn(),
   ensureGitClean: vi.fn(),
   gitDiffNames: vi.fn(),
-  gitShowFile: vi.fn(),
-  toGitPath: vi.fn((v: string) => v),
   gitBranchExists: vi.fn(),
   gitCurrentBranch: vi.fn(),
   gitRevParse: vi.fn(),
+  findWorktreeForBranch: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
+  resolveTaskBranchFromContext: vi.fn(),
   ensurePlanApprovedIfRequired: vi.fn(),
   ensureVerificationSatisfiedIfRequired: vi.fn(),
   resolvePrPaths: vi.fn(),
+  readPrArtifact: vi.fn(),
   readAndValidatePrArtifacts: vi.fn(),
   computeVerifyState: vi.fn(),
   parsePrMeta: vi.fn(),
@@ -31,25 +32,28 @@ vi.mock("@agentplaneorg/core", () => ({
 vi.mock("../../../../cli/fs-utils.js", () => ({ fileExists: mocks.fileExists }));
 vi.mock("node:fs/promises", () => ({ readFile: mocks.readFile }));
 vi.mock("../../../guard/index.js", () => ({ ensureGitClean: mocks.ensureGitClean }));
-vi.mock("../../../shared/git-diff.js", () => ({
-  gitDiffNames: mocks.gitDiffNames,
-  gitShowFile: mocks.gitShowFile,
-  toGitPath: mocks.toGitPath,
-}));
+vi.mock("../../../shared/git-diff.js", () => ({ gitDiffNames: mocks.gitDiffNames }));
 vi.mock("../../../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
   gitCurrentBranch: mocks.gitCurrentBranch,
   gitRevParse: mocks.gitRevParse,
 }));
+vi.mock("../../../shared/git-worktree.js", () => ({
+  findWorktreeForBranch: mocks.findWorktreeForBranch,
+}));
 vi.mock("../../../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
   loadTaskFromContext: mocks.loadTaskFromContext,
+  resolveTaskBranchFromContext: mocks.resolveTaskBranchFromContext,
 }));
 vi.mock("../../../task/shared.js", () => ({
   ensurePlanApprovedIfRequired: mocks.ensurePlanApprovedIfRequired,
   ensureVerificationSatisfiedIfRequired: mocks.ensureVerificationSatisfiedIfRequired,
 }));
-vi.mock("../../internal/pr-paths.js", () => ({ resolvePrPaths: mocks.resolvePrPaths }));
+vi.mock("../../internal/pr-paths.js", () => ({
+  resolvePrPaths: mocks.resolvePrPaths,
+  readPrArtifact: mocks.readPrArtifact,
+}));
 vi.mock("../artifacts.js", () => ({
   readAndValidatePrArtifacts: mocks.readAndValidatePrArtifacts,
 }));
@@ -80,6 +84,7 @@ function seedCommon(): void {
   mocks.ensureGitClean.mockResolvedValue();
   mocks.resolveBaseBranch.mockResolvedValue("main");
   mocks.gitCurrentBranch.mockResolvedValue("main");
+  mocks.findWorktreeForBranch.mockResolvedValue(null);
   mocks.resolvePrPaths.mockResolvedValue({
     prDir: "/repo/.agentplane/tasks/T-1/pr",
     metaPath: "/repo/.agentplane/tasks/T-1/pr/meta.json",
@@ -88,11 +93,13 @@ function seedCommon(): void {
   });
   mocks.fileExists.mockResolvedValue(true);
   mocks.readFile.mockResolvedValue('{"branch":"task/T-1"}');
+  mocks.readPrArtifact.mockResolvedValue('{"branch":"task/T-1"}');
   mocks.parsePrMeta.mockReturnValue({ branch: "task/T-1", last_verified_sha: null });
   mocks.gitBranchExists.mockResolvedValue(true);
   mocks.readAndValidatePrArtifacts.mockResolvedValue({ verifyLogText: "ok" });
   mocks.gitDiffNames.mockResolvedValue(["src/app.ts"]);
   mocks.gitRevParse.mockResolvedValue("deadbeef");
+  mocks.resolveTaskBranchFromContext.mockResolvedValue(null);
   mocks.computeVerifyState.mockReturnValue({
     verifyCommands: [],
     alreadyVerifiedSha: null,
@@ -156,6 +163,30 @@ describe("pr/integrate/internal/prepare", () => {
       prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
     ).rejects.toMatchObject<CliError>({
       code: "E_USAGE",
+    });
+  });
+
+  it("resolves the task branch from the active task branch snapshot when pr metadata is missing", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.fileExists.mockResolvedValue(false);
+    mocks.resolveTaskBranchFromContext.mockResolvedValue("task/T-1");
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: "deadbeef",
+      last_verified_sha: null,
+    });
+    mocks.readPrArtifact.mockResolvedValue(
+      JSON.stringify({ branch: "task/T-1", head_sha: "deadbeef", last_verified_sha: null }),
+    );
+
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).resolves.toMatchObject({
+      branch: "task/T-1",
+      base: "main",
+      branchHeadSha: "deadbeef",
     });
   });
 

@@ -284,7 +284,7 @@ describe("runCli", () => {
     expect(meta).not.toHaveProperty("base_branch");
   }, 180_000);
 
-  it("integrate falls back to a branch-backed task README when base lacks the local task snapshot", async () => {
+  it("integrate resolves the task branch from branch_pr worktree artifacts when base lacks the local task snapshot", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
     const config = defaultConfig();
@@ -338,11 +338,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    await runCliSilent(["pr", "update", taskId, "--root", root]);
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/pr`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `${taskId} refresh pr artifacts`], {
-      cwd: root,
-    });
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
 
     const prMetaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
     expect(await pathExists(prMetaPath)).toBe(true);
@@ -355,7 +351,7 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      const code = await runCli(["integrate", taskId, "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("✅ integrate");
     } finally {
