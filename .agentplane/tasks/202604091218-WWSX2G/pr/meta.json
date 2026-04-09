@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202604091218-WWSX2G/integrate-artifact-recovery",
   "created_at": "2026-04-09T12:26:37.310Z",
-  "head_sha": "0c2c2feb76d3fd3c8f92406f19efa779ff98c69f",
+  "head_sha": "8a99d8655bdd6a34a5a8e70e2e57516de5a2fae4",
   "last_verified_at": "2026-04-09T12:28:04.350Z",
   "last_verified_sha": "af4d3dd2740788d00319ce6c7520b18931d9401f",
+  "pr_number": 180,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/180",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202604091218-WWSX2G",
-  "updated_at": "2026-04-09T12:30:44.721Z",
+  "updated_at": "2026-04-09T12:42:22.644Z",
   "verify": {
     "status": "pass"
   }

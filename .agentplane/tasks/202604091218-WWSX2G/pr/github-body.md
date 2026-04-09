@@ -39,27 +39,12 @@ Ensure integrate can succeed when recent task README/pr artifacts exist in the a
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T12:30:44.721Z
+- Updated: 2026-04-09T12:42:22.644Z
 - Branch: task/202604091218-WWSX2G/integrate-artifact-recovery
-- Head: 0c2c2feb76d3
+- Head: 8a99d8655bdd
 
 ```text
- .agentplane/tasks/202604091218-WWSX2G/README.md    | 125 +++++++++++++++++++++
- .../tasks/202604091218-WWSX2G/pr/diffstat.txt      |   0
- .../tasks/202604091218-WWSX2G/pr/github-body.md    |  50 +++++++++
- .../tasks/202604091218-WWSX2G/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604091218-WWSX2G/pr/meta.json |  14 +++
- .../tasks/202604091218-WWSX2G/pr/notes.jsonl       |   0
- .agentplane/tasks/202604091218-WWSX2G/pr/review.md |  57 ++++++++++
- .../tasks/202604091218-WWSX2G/pr/verify.log        |   0
- .../src/cli/run-cli.core.pr-flow.integrate.test.ts |  10 +-
- .../src/commands/pr/integrate/artifacts.ts         |   6 +
- .../commands/pr/integrate/internal/prepare.test.ts |  27 +++++
- .../src/commands/pr/integrate/internal/prepare.ts  |  38 +++++--
- .../src/commands/pr/internal/pr-paths.test.ts      |  11 ++
- .../src/commands/pr/internal/pr-paths.ts           |  10 ++
- .../agentplane/src/commands/shared/task-backend.ts |  44 ++++----
- 15 files changed, 355 insertions(+), 38 deletions(-)
+No changes detected.
 ```
 
 </details>
