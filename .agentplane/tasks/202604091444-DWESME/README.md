@@ -4,7 +4,7 @@ title: "Let finish append structured incident findings before promotion"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,23 +20,13 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T15:07:25.338Z"
+  updated_at: "2026-04-09T15:14:15.106Z"
   updated_by: "CODER"
   note: |-
-    Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts
+    Command: bun x prettier --check packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/finish.spec.ts && bun x vitest run packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts && bun x eslint packages/agentplane/src/commands/finish.spec.ts packages/agentplane/src/commands/finish.run.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts
     Result: pass
-    Evidence: 40/40 tests passed, including finish-time structured finding promotion during closeout.
-    Scope: finish CLI parsing, finish task mutation, and incident promotion flow.
-    
-    Command: bun x eslint packages/agentplane/src/commands/finish.spec.ts packages/agentplane/src/commands/finish.run.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts
-    Result: pass
-    Evidence: eslint exited 0.
-    Scope: finish implementation and integration test coverage.
-    
-    Command: node .agentplane/policy/check-routing.mjs
-    Result: pass
-    Evidence: policy routing OK.
-    Scope: policy gateway and routing budget integrity after finish command changes.
+    Evidence: Prettier matched, 40/40 tests passed, eslint exited 0 after CI formatting fix.
+    Scope: current branch head after post-CI formatting for finish-time incident promotion.
 commit: null
 comments:
   -
@@ -70,8 +60,18 @@ events:
       Result: pass
       Evidence: policy routing OK.
       Scope: policy gateway and routing budget integrity after finish command changes.
+  -
+    type: "verify"
+    at: "2026-04-09T15:14:15.106Z"
+    author: "CODER"
+    state: "ok"
+    note: |-
+      Command: bun x prettier --check packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/finish.spec.ts && bun x vitest run packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts && bun x eslint packages/agentplane/src/commands/finish.spec.ts packages/agentplane/src/commands/finish.run.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts
+      Result: pass
+      Evidence: Prettier matched, 40/40 tests passed, eslint exited 0 after CI formatting fix.
+      Scope: current branch head after post-CI formatting for finish-time incident promotion.
 doc_version: 3
-doc_updated_at: "2026-04-09T15:07:25.342Z"
+doc_updated_at: "2026-04-09T15:14:15.115Z"
 doc_updated_by: "CODER"
 description: "Allow finish-time closure to record a structured finding and immediately promote it into incidents.md so recurring workflow failures can be captured even when the finding was identified only at closeout."
 sections:
@@ -109,6 +109,17 @@ sections:
     Scope: policy gateway and routing budget integrity after finish command changes.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T14:46:06.088Z, excerpt_hash=sha256:287e4845bf228f50eda79665fdc1b5d86aa80fd51cc825c032459c75f423d5b1
+    
+    ### 2026-04-09T15:14:15.106Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun x prettier --check packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/finish.spec.ts && bun x vitest run packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts && bun x eslint packages/agentplane/src/commands/finish.spec.ts packages/agentplane/src/commands/finish.run.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts
+    Result: pass
+    Evidence: Prettier matched, 40/40 tests passed, eslint exited 0 after CI formatting fix.
+    Scope: current branch head after post-CI formatting for finish-time incident promotion.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T15:07:25.342Z, excerpt_hash=sha256:287e4845bf228f50eda79665fdc1b5d86aa80fd51cc825c032459c75f423d5b1
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -161,6 +172,17 @@ Evidence: policy routing OK.
 Scope: policy gateway and routing budget integrity after finish command changes.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T14:46:06.088Z, excerpt_hash=sha256:287e4845bf228f50eda79665fdc1b5d86aa80fd51cc825c032459c75f423d5b1
+
+### 2026-04-09T15:14:15.106Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun x prettier --check packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/finish.spec.ts && bun x vitest run packages/agentplane/src/cli/run-cli.core.incidents.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts && bun x eslint packages/agentplane/src/commands/finish.spec.ts packages/agentplane/src/commands/finish.run.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/cli/run-cli.core.incidents.test.ts
+Result: pass
+Evidence: Prettier matched, 40/40 tests passed, eslint exited 0 after CI formatting fix.
+Scope: current branch head after post-CI formatting for finish-time incident promotion.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T15:07:25.342Z, excerpt_hash=sha256:287e4845bf228f50eda79665fdc1b5d86aa80fd51cc825c032459c75f423d5b1
 
 <!-- END VERIFICATION RESULTS -->
 
