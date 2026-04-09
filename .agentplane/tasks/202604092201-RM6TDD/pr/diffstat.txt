@@ -1,0 +1,4 @@
+ .../run-cli.core.pr-flow.cleanup-merged.test.ts    | 125 ++++++++++++++++++++-
+ .../src/commands/branch/cleanup-merged.ts          |  48 +++++++-
+ .../src/commands/cleanup/merged.command.ts         |  13 +++
+ 3 files changed, 183 insertions(+), 3 deletions(-)
