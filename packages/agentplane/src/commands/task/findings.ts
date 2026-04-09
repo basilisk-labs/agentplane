@@ -157,10 +157,10 @@ export function renderFindingsAddRegistryNote(opts: {
   if (opts.promote && opts.external) {
     return (
       `incident candidate recorded for ${opts.taskId}; ` +
-      "incidents.md updates later during finish or `agentplane incidents collect <task-id>`"
+      "incidents.md updates later during finish or `agentplane incidents collect <task-id>`; task-local until base-branch promotion on the current worktree"
     );
   }
-  return `task-local finding recorded for ${opts.taskId}; incidents.md unchanged`;
+  return `task-local finding recorded for ${opts.taskId}; incidents.md unchanged in the current task worktree`;
 }
 
 export async function cmdTaskFindingsAdd(opts: {

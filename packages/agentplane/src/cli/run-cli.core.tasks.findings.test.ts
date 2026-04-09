@@ -75,6 +75,7 @@ describe("runCli task findings", () => {
       expect(io.stderr).toContain(
         `incident candidate recorded for ${taskId}; incidents.md updates later during finish or`,
       );
+      expect(io.stderr).toContain("task-local until base-branch promotion on the current worktree");
     } finally {
       io.restore();
     }
