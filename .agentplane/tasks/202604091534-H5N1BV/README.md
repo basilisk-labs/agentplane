@@ -1,10 +1,11 @@
 ---
 id: "202604091534-H5N1BV"
 title: "Infer default branch_pr base when pin is absent"
-status: "DOING"
+result_summary: "Merged via PR #197."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -37,11 +38,16 @@ verification:
     Result: pass
     Evidence: 38/38 tests passed, including fresh-checkout finish on main without branch base pin when origin HEAD resolves main.
     Scope: core base resolution and branch_pr finish gating.
-commit: null
+commit:
+  hash: "124129a4a228d3520ff92c0b8fe38d62ceb193a8"
+  message: "git/workflow: Infer default branch_pr base when pin is absent (H5N1BV) (#197)"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce branch_pr base resolution failure in fresh checkouts and add a safe default-branch fallback."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #197 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
       Result: pass
       Evidence: 38/38 tests passed, including fresh-checkout finish on main without branch base pin when origin HEAD resolves main.
       Scope: core base resolution and branch_pr finish gating.
+  -
+    type: "status"
+    at: "2026-04-09T15:51:54.174Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #197 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T15:44:24.514Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T15:51:54.180Z"
+doc_updated_by: "INTEGRATOR"
 description: "Let branch_pr base resolution fall back to the repository default branch so finish and related base-only commands remain runnable in fresh or isolated checkouts where agentplane.baseBranch has not been pinned yet."
 sections:
   Summary: |-
