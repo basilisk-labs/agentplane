@@ -1,0 +1,1 @@
+workflow: Make fresh branch_pr worktrees runnable without manual bootstrap (SR7Z25)

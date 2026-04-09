@@ -1,0 +1,18 @@
+{
+  "base": "main",
+  "branch": "task/202604091136-SR7Z25/runnable-worktree-default",
+  "created_at": "2026-04-09T12:05:09.099Z",
+  "head_sha": "76e31b82be868df897c4a3a04c9dfd9b9a264763",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "542cbf5b96e2c91cd2eaf0dcde8d05305fdf5d47",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T12:05:17.412Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604091136-SR7Z25",
+  "updated_at": "2026-04-09T12:05:17.412Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
