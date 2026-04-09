@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604091534-H5N1BV/base-branch-fallback",
   "created_at": "2026-04-09T15:44:24.607Z",
-  "head_sha": "c0499bff93a32243482603bccba0042392ded218",
+  "head_sha": "e79c9d21d71f5b4f14dbade5dab4c3a3d3a16334",
   "last_verified_at": "2026-04-09T15:44:24.506Z",
   "last_verified_sha": "eda373d8a0231b5beb0c8054b80349a8c0a65276",
+  "merge_commit": "124129a4a228d3520ff92c0b8fe38d62ceb193a8",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T15:51:26Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604091534-H5N1BV",
-  "updated_at": "2026-04-09T15:44:50.112Z",
+  "updated_at": "2026-04-09T15:51:26Z",
   "verify": {
     "status": "pass"
   }
