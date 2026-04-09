@@ -33,6 +33,7 @@ import {
 
 import { resolvePrPaths } from "./pr-paths.js";
 import { readPrHandoffNotes } from "./note-store.js";
+import { ghEnv } from "./gh-api.js";
 import {
   buildGithubPrTitle,
   renderGithubPrBody,
@@ -173,7 +174,7 @@ async function tryLookupExistingGithubPrByBranch(opts: {
       () =>
         execFileAsync("gh", ["api", endpoint], {
           cwd: opts.gitRoot,
-          env: gitEnv(),
+          env: ghEnv(),
           maxBuffer: 10 * 1024 * 1024,
         }),
       { label: `running gh api ${endpoint}` },
@@ -270,7 +271,7 @@ async function tryCreateGithubPr(opts: {
           ],
           {
             cwd: opts.gitRoot,
-            env: gitEnv(),
+            env: ghEnv(),
             maxBuffer: 10 * 1024 * 1024,
           },
         ),

@@ -119,6 +119,8 @@ async function installFakeGhPrApi(opts: {
   branch: string;
   existingResponse?: object[];
   createResponse: object;
+  rejectEnvKey?: string;
+  rejectEnvValue?: string;
 }) {
   const fakeBin = path.join(os.tmpdir(), `agentplane-gh-pr-api-${Date.now()}-${opts.scenarioName}`);
   await mkdir(fakeBin, { recursive: true });
@@ -131,6 +133,12 @@ async function installFakeGhPrApi(opts: {
       "const args = process.argv.slice(2);",
       "const logPath = process.env.AGENTPLANE_GH_LOG;",
       "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
+      `const rejectEnvKey = ${JSON.stringify(opts.rejectEnvKey ?? null)};`,
+      `const rejectEnvValue = ${JSON.stringify(opts.rejectEnvValue ?? null)};`,
+      "if (rejectEnvKey && process.env[rejectEnvKey] === rejectEnvValue) {",
+      "  console.error(`unexpected env ${rejectEnvKey}`);",
+      "  process.exit(1);",
+      "}",
       'if (args[0] !== "api") { console.error("unexpected gh command"); process.exit(90); }',
       'const endpoint = args[1] ?? "";',
       'const [route, query = ""] = endpoint.split("?", 2);',
@@ -337,6 +345,105 @@ describe("runCli", () => {
           args.includes("POST"),
       ),
     ).toBe(true);
+  });
+
+  it("pr open ignores dotenv-injected GitHub tokens when gh auth is otherwise available", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open dotenv auth drift",
+        "--description",
+        "PR open should ignore dotenv-injected GitHub auth that would override gh login",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/dotenv-auth`;
+    const { fakeBin, logPath } = await installFakeGhPrApi({
+      scenarioName: "open-dotenv-auth",
+      branch,
+      rejectEnvKey: "GITHUB_TOKEN",
+      rejectEnvValue: "dotenv-bad-token",
+      createResponse: {
+        number: 655,
+        html_url: "https://github.com/example/repo/pull/655",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        head: { sha: "remote-head-sha" },
+        base: { ref: "main" },
+      },
+    });
+    const originalPath = process.env.PATH;
+    const originalGithubToken = process.env.GITHUB_TOKEN;
+    const originalDotenvKeys = process.env.AGENTPLANE_DOTENV_LOADED_KEYS;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+    process.env.GITHUB_TOKEN = "dotenv-bad-token";
+    process.env.AGENTPLANE_DOTENV_LOADED_KEYS = "GITHUB_TOKEN";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("created GitHub PR #655");
+      expect(io.stdout).not.toContain("remote PR creation staged");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+      if (originalGithubToken === undefined) delete process.env.GITHUB_TOKEN;
+      else process.env.GITHUB_TOKEN = originalGithubToken;
+      if (originalDotenvKeys === undefined) delete process.env.AGENTPLANE_DOTENV_LOADED_KEYS;
+      else process.env.AGENTPLANE_DOTENV_LOADED_KEYS = originalDotenvKeys;
+    }
+
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as {
+      pr_number?: number;
+      pr_url?: string;
+      status?: string;
+    };
+    expect(meta.pr_number).toBe(655);
+    expect(meta.pr_url).toBe("https://github.com/example/repo/pull/655");
+    expect(meta.status).toBe("OPEN");
   });
 
   it("pr open respects --sync-only and skips remote GitHub PR creation", async () => {
