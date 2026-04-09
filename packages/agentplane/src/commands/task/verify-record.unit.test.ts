@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   backendIsLocalFileBackend: vi.fn<(ctx: CommandContext) => boolean>(),
   getTaskStore: vi.fn(),
   collectTaskIncidents: vi.fn(),
+  inspectTaskIncidents: vi.fn(),
   renderIncidentCollectionPlanOutcome: vi.fn(),
 }));
 
@@ -40,6 +41,7 @@ vi.mock("../shared/reconcile-check.js", () => ({
 }));
 vi.mock("../incidents/shared.js", () => ({
   collectTaskIncidents: mocks.collectTaskIncidents,
+  inspectTaskIncidents: mocks.inspectTaskIncidents,
   renderIncidentCollectionPlanOutcome: mocks.renderIncidentCollectionPlanOutcome,
 }));
 vi.mock("../shared/task-store.js", async (importOriginal) => {
@@ -89,6 +91,7 @@ describe("task verify record (unit)", () => {
     mocks.backendIsLocalFileBackend.mockReset();
     mocks.getTaskStore.mockReset();
     mocks.collectTaskIncidents.mockReset();
+    mocks.inspectTaskIncidents.mockReset();
     mocks.renderIncidentCollectionPlanOutcome.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
@@ -100,6 +103,13 @@ describe("task verify record (unit)", () => {
       registry: null,
       plan: { promotable: [], skipped: [], duplicates: [] },
       wrote: false,
+    });
+    mocks.inspectTaskIncidents.mockResolvedValue({
+      loaded: null,
+      registryPath: "/repo/.agentplane/policy/incidents.md",
+      registryText: "",
+      registry: null,
+      plan: { promotable: [], skipped: [], duplicates: [], issues: [] },
     });
     mocks.renderIncidentCollectionPlanOutcome.mockReturnValue(
       "incident registry unchanged (no structured incident findings)",
@@ -267,9 +277,7 @@ describe("task verify record (unit)", () => {
       taskId: "T-1",
       write: true,
     });
-    expect(writes.join("")).toContain(
-      "incident registry unchanged (no structured incident findings)",
-    );
+    expect(writes.join("")).toContain("✅ verified T-1");
     writeSpy.mockRestore();
   });
 

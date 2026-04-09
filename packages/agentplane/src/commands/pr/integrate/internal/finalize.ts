@@ -132,7 +132,12 @@ export async function finalizeIntegrate(opts: {
     write: true,
   });
   if (!opts.quiet) {
-    output.info(renderIncidentCollectionPlanOutcome(collectedIncidents.plan));
+    output.info(
+      renderIncidentCollectionPlanOutcome(collectedIncidents.plan, {
+        wrote: collectedIncidents.wrote,
+        context: "generic",
+      }),
+    );
     if (taskAlreadyDone) {
       output.info("task already DONE; integrating only missing PR metadata and close artifacts");
     }

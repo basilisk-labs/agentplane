@@ -1,0 +1,1 @@
+incidents: Make verify explain incident promotion outcome deterministically (BKV5RY)

@@ -232,7 +232,12 @@ async function closeHostedTask(opts: {
   });
   if (!opts.quiet) {
     process.stdout.write(
-      `${infoMessage(renderIncidentCollectionPlanOutcome(collectedIncidents.plan))}\n`,
+      `${infoMessage(
+        renderIncidentCollectionPlanOutcome(collectedIncidents.plan, {
+          wrote: collectedIncidents.wrote,
+          context: "generic",
+        }),
+      )}\n`,
     );
   }
   await createTaskCloseCommit({

@@ -530,7 +530,14 @@ export async function cmdFinish(opts: {
         promotable: [],
         duplicates: [],
       };
-      process.stdout.write(`${infoMessage(renderIncidentCollectionPlanOutcome(incidentPlan))}\n`);
+      process.stdout.write(
+        `${infoMessage(
+          renderIncidentCollectionPlanOutcome(incidentPlan, {
+            wrote: promotedIncidents > 0,
+            context: "generic",
+          }),
+        )}\n`,
+      );
       process.stdout.write(`${successMessage("finished")}\n`);
     }
     return 0;
