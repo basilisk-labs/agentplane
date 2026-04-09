@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604091725-3KNEPP/README.md    | 116 +++++++++++++++++++++
+ .../tasks/202604091725-3KNEPP/pr/diffstat.txt      |   0
+ .../tasks/202604091725-3KNEPP/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604091725-3KNEPP/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091725-3KNEPP/pr/meta.json |  14 +++
+ .../tasks/202604091725-3KNEPP/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091725-3KNEPP/pr/review.md |  57 ++++++++++
+ .../tasks/202604091725-3KNEPP/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.test.ts           |  95 +++++++++++++++++
+ .../agentplane/src/commands/task/start-ready.ts    | 105 +++++++++++++++++++
+ 10 files changed, 438 insertions(+)

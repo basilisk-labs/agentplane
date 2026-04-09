@@ -39,12 +39,22 @@ Ensure the active task README in the task worktree reflects branch_pr status tra
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T17:50:28.326Z
+- Updated: 2026-04-09T18:03:31.411Z
 - Branch: task/202604091725-3KNEPP/sync-start-ready-worktree-readme
-- Head: a046740bdfe8
+- Head: 8184d737c2d3
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604091725-3KNEPP/README.md    | 116 +++++++++++++++++++++
+ .../tasks/202604091725-3KNEPP/pr/diffstat.txt      |   0
+ .../tasks/202604091725-3KNEPP/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604091725-3KNEPP/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091725-3KNEPP/pr/meta.json |  14 +++
+ .../tasks/202604091725-3KNEPP/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091725-3KNEPP/pr/review.md |  57 ++++++++++
+ .../tasks/202604091725-3KNEPP/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.test.ts           |  95 +++++++++++++++++
+ .../agentplane/src/commands/task/start-ready.ts    | 105 +++++++++++++++++++
+ 10 files changed, 438 insertions(+)
 ```
 
 </details>
