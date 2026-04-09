@@ -1,10 +1,11 @@
 ---
 id: "202604091444-9ZDH3E"
 title: "Refresh branch_pr PR artifacts after plain git commits"
-status: "DOING"
+result_summary: "Merged via PR #192."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +28,16 @@ verification:
     Result: pass
     Evidence: Prettier matched, 12/12 tests passed, eslint exited 0 after CI formatting fix.
     Scope: current branch head after post-CI formatting for integrate stale-metadata repair.
-commit: null
+commit:
+  hash: "57cd1d2606e3c5047d347bd26f4af5914a543a2e"
+  message: "github/workflow: Refresh branch_pr PR artifacts after plain git commits (9ZDH3E) (#192)"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce stale pr/meta after plain git commits and add a deterministic repair path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: hosted checks passed, PR #192 was squash-merged, and the merged commit is recorded on main."
 events:
   -
     type: "status"
@@ -70,9 +76,16 @@ events:
       Result: pass
       Evidence: Prettier matched, 12/12 tests passed, eslint exited 0 after CI formatting fix.
       Scope: current branch head after post-CI formatting for integrate stale-metadata repair.
+  -
+    type: "status"
+    at: "2026-04-09T15:26:37.871Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: hosted checks passed, PR #192 was squash-merged, and the merged commit is recorded on main."
 doc_version: 3
-doc_updated_at: "2026-04-09T15:14:15.100Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T15:26:37.872Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make branch_pr tooling recover when a normal git commit after pr update leaves pr/meta head_sha stale, so later push/integrate flows do not require a manual artifact refresh workaround."
 sections:
   Summary: |-
