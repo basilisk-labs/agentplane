@@ -3,6 +3,7 @@ import { promisify } from "node:util";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
+import { isDotEnvLoadedKey } from "../../../shared/env.js";
 import { gitEnv } from "../../shared/git.js";
 import { normalizeGhTransportError, withGhTransportRetry } from "../../shared/gh-transport.js";
 
@@ -20,9 +21,16 @@ function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {
 
 export function ghEnv(): NodeJS.ProcessEnv {
   const env = gitEnv();
-  // Make the auth/session contract explicit for nested repo-local invocations.
-  if (typeof process.env.GH_TOKEN === "string") env.GH_TOKEN = process.env.GH_TOKEN;
-  if (typeof process.env.GITHUB_TOKEN === "string") env.GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+  // Preserve explicit shell/CI auth, but do not let repo-local `.env` tokens override
+  // a valid gh keyring session for nested CLI invocations.
+  if (isDotEnvLoadedKey("GH_TOKEN")) delete env.GH_TOKEN;
+  if (isDotEnvLoadedKey("GITHUB_TOKEN")) delete env.GITHUB_TOKEN;
+  if (typeof process.env.GH_TOKEN === "string" && !isDotEnvLoadedKey("GH_TOKEN")) {
+    env.GH_TOKEN = process.env.GH_TOKEN;
+  }
+  if (typeof process.env.GITHUB_TOKEN === "string" && !isDotEnvLoadedKey("GITHUB_TOKEN")) {
+    env.GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+  }
   if (typeof process.env.GH_CONFIG_DIR === "string") env.GH_CONFIG_DIR = process.env.GH_CONFIG_DIR;
   if (typeof process.env.XDG_CONFIG_HOME === "string")
     env.XDG_CONFIG_HOME = process.env.XDG_CONFIG_HOME;

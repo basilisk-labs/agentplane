@@ -1,7 +1,8 @@
 ---
 id: "202604091918-1ES3RB"
 title: "Allow branch_pr integrate to commit tracked task state on base"
-status: "TODO"
+result_summary: "Merged via PR #221."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 4
@@ -21,7 +22,9 @@ verification:
   updated_at: "2026-04-09T19:21:13.182Z"
   updated_by: "CODER"
   note: "Verified that integrate merge paths now allow tracked task-state writes on the base commit path, with targeted merge regressions plus eslint and prettier."
-commit: null
+commit:
+  hash: "7815195424c3dd2eacd49c494ba427ed8de83c3d"
+  message: "workflow/integrate: Allow branch_pr integrate to commit tracked task state on base (1ES3RB)"
 comments: []
 events:
   -
@@ -30,9 +33,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified that integrate merge paths now allow tracked task-state writes on the base commit path, with targeted merge regressions plus eslint and prettier."
+  -
+    type: "status"
+    at: "2026-04-09T19:28:09Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Hosted PR #221 merged on GitHub main; task projection reconciled from hosted PR artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T19:21:13.184Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-09T19:28:09Z"
+doc_updated_by: "INTEGRATOR"
 description: "Base-side integrate currently hard-codes AGENTPLANE_ALLOW_TASKS=0 even though integrate updates tracked task state, so protected-path hooks reject the integrate commit and block closing live branch_pr tasks."
 sections:
   Summary: |-

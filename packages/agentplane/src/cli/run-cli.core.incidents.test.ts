@@ -20,30 +20,12 @@ installRunCliIntegrationHarness();
 
 const compactRegistryHeader = [
   "# Policy Incidents Log",
-  "",
-  "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`. Optional machine-match fields: `tags`, `match`, `advice`, `source_task`, `fixability`.",
-  "- `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.",
-  "- `fixability: repo-fixable` means the issue can be removed by repository code changes and should still be captured as reusable operational advice when explicitly marked.",
-  "- First auto-promoted reusable incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.",
+  "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.",
 ].join("\n");
 
 function makeCompactOpenEntry(index: number): string {
   const seq = String(index).padStart(2, "0");
-  return [
-    `- id: INC-20260407-${seq}`,
-    "  date: 2026-04-07",
-    `  scope: incident budget entry ${index}`,
-    "  tags: workflow, incidents, budget",
-    `  match: incidents, budget, entry-${index}`,
-    `  failure: incident budget entry ${index} consumed registry space`,
-    `  advice: compact incident budget entry ${index} before promoting more incidents`,
-    `  rule: Incident budget entry ${index} MUST stay compact enough for the policy budget.`,
-    `  evidence: task TASK-${index}`,
-    "  enforcement: manual",
-    `  source_task: TASK-${index}`,
-    "  fixability: external",
-    "  state: open",
-  ].join("\n");
+  return `- id: INC-20260407-${seq} | date: 2026-04-07 | scope: incident budget entry ${index} | tags: workflow, incidents, budget | match: incidents, budget, entry-${index} | failure: incident budget entry ${index} consumed registry space | advice: compact incident budget entry ${index} before promoting more incidents | rule: Incident budget entry ${index} MUST stay compact enough for the policy budget. | evidence: task TASK-${index} | enforcement: manual | fixability: external | state: open`;
 }
 
 describe("runCli incidents", () => {
@@ -971,8 +953,8 @@ describe("runCli incidents", () => {
       path.join(root, ".agentplane", "policy", "incidents.md"),
       [
         compactRegistryHeader,
-        ...Array.from({ length: 7 }, (_unused, index) => makeCompactOpenEntry(index + 1)),
-      ].join("\n\n") + "\n",
+        ...Array.from({ length: 99 }, (_unused, index) => makeCompactOpenEntry(index + 1)),
+      ].join("\n") + "\n",
       "utf8",
     );
 

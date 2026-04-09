@@ -12,11 +12,7 @@ import {
 
 const compactRegistryHeader = [
   "# Policy Incidents Log",
-  "",
-  "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`. Optional machine-match fields: `tags`, `match`, `advice`, `source_task`, `fixability`.",
-  "- `fixability: external` means the issue cannot be removed by changing only repository code and should stay as reusable operational advice.",
-  "- `fixability: repo-fixable` means the issue can be removed by changing repository code and should still be captured as reusable incident advice when marked explicitly.",
-  "- First auto-promoted reusable incidents normally enter as `open`; recurring equivalent incidents can append later `stabilized` entries.",
+  "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.",
 ].join("\n");
 
 describe("incidents runtime", () => {
@@ -275,20 +271,7 @@ describe("incidents runtime", () => {
     const registry = parseIncidentRegistry(
       [
         compactRegistryHeader,
-        "",
-        "- id: INC-20260407-01",
-        "  date: 2026-04-07",
-        "  scope: task normalize hosted reconcile target selection",
-        "  tags: workflow, github, transport, normalize",
-        "  match: task normalize, sync-hosted-merges, gh api EOF, GraphQL EOF",
-        "  failure: GitHub EOF or TLS transport failures during hosted branch_pr reconcile could abort task normalize before it reached the known stale task because the command scanned every candidate task.",
-        "  advice: When GitHub transport is flaky, reconcile only the known task ids instead of scanning the full branch_pr history.",
-        "  rule: Hosted reconcile commands MUST support explicit task-id scoping so known drift can be resolved without depending on unrelated GitHub lookups.",
-        "  evidence: task 202604071853-XGX2YJ",
-        "  enforcement: manual",
-        "  fixability: external",
-        "  state: open",
-        "",
+        "- id: INC-20260407-01 | date: 2026-04-07 | scope: task normalize hosted reconcile target selection | tags: workflow, github, transport, normalize | match: task normalize, sync-hosted-merges, gh api EOF, GraphQL EOF | failure: GitHub EOF or TLS transport failures during hosted branch_pr reconcile could abort task normalize before it reached the known stale task because the command scanned every candidate task. | advice: When GitHub transport is flaky, reconcile only the known task ids instead of scanning the full branch_pr history. | rule: Hosted reconcile commands MUST support explicit task-id scoping so known drift can be resolved without depending on unrelated GitHub lookups. | evidence: task 202604071853-XGX2YJ | enforcement: manual | fixability: external | state: open",
       ].join("\n"),
     );
 
@@ -326,48 +309,9 @@ describe("incidents runtime", () => {
   it("normalizes compact registry writes by removing duplicate fingerprints and preserving unique ids", () => {
     const current = [
       compactRegistryHeader,
-      "",
-      "- id: INC-20260407-01",
-      "  date: 2026-04-07",
-      "  scope: branch_pr GitHub transport helpers",
-      "  tags: workflow, github, transport, retries",
-      "  match: github, gh, graphQL, EOF, TLS, SSL_ERROR_SYSCALL, remote-checks",
-      "  failure: GitHub transport intermittently failed with GraphQL EOF, TLS handshake errors, and SSL_ERROR_SYSCALL during PR creation, remote-check waiting, and reconcile helpers",
-      "  advice: treat transient GitHub transport failures as retriable",
-      "  rule: GitHub-dependent workflow helpers MUST classify EOF/TLS/SSL transport failures as transient and retry with bounded backoff.",
-      "  evidence: task 202604062309-EXTXG1",
-      "  enforcement: test + workflow helper",
-      "  source_task: 202604062309-EXTXG1",
-      "  fixability: external",
-      "  state: open",
-      "",
-      "- id: INC-20260407-04",
-      "  date: 2026-04-07",
-      "  scope: task normalize hosted reconcile target selection",
-      "  tags: workflow, github, transport, normalize",
-      "  match: task normalize, sync-hosted-merges, gh api EOF, GraphQL EOF",
-      "  failure: GitHub EOF or TLS transport failures during hosted branch_pr reconcile could abort task normalize before it reached the known stale task because the command scanned every candidate task.",
-      "  advice: When GitHub transport is flaky, reconcile only the known task ids instead of scanning the full branch_pr history.",
-      "  rule: Hosted reconcile commands MUST support explicit task-id scoping so known drift can be resolved without depending on unrelated GitHub lookups.",
-      "  evidence: task 202604071853-XGX2YJ",
-      "  enforcement: manual",
-      "  fixability: external",
-      "  state: open",
-      "",
-      "- id: INC-20260407-01",
-      "  date: 2026-04-07",
-      "  scope: task normalize hosted reconcile target selection",
-      "  tags: workflow, github, transport, normalize",
-      "  match: task normalize, sync-hosted-merges, gh api EOF, GraphQL EOF",
-      "  failure: GitHub EOF or TLS transport failures during hosted branch_pr reconcile could abort task normalize before it reached the known stale task because the command scanned every candidate task.",
-      "  advice: When GitHub transport is flaky, reconcile only the known task ids instead of scanning the full branch_pr history.",
-      "  rule: Hosted reconcile commands MUST support explicit task-id scoping so known drift can be resolved without depending on unrelated GitHub lookups.",
-      "  evidence: task 202604071853-XGX2YJ; commit 5fd312cceb20",
-      "  enforcement: manual",
-      "  source_task: 202604071853-XGX2YJ",
-      "  fixability: external",
-      "  state: open",
-      "",
+      "- id: INC-20260407-01 | date: 2026-04-07 | scope: branch_pr GitHub transport helpers | tags: workflow, github, transport, retries | match: github, gh, graphQL, EOF, TLS, SSL_ERROR_SYSCALL, remote-checks | failure: GitHub transport intermittently failed with GraphQL EOF, TLS handshake errors, and SSL_ERROR_SYSCALL during PR creation, remote-check waiting, and reconcile helpers | advice: treat transient GitHub transport failures as retriable | rule: GitHub-dependent workflow helpers MUST classify EOF/TLS/SSL transport failures as transient and retry with bounded backoff. | evidence: task 202604062309-EXTXG1 | enforcement: test + workflow helper | source_task: 202604062309-EXTXG1 | fixability: external | state: open",
+      "- id: INC-20260407-04 | date: 2026-04-07 | scope: task normalize hosted reconcile target selection | tags: workflow, github, transport, normalize | match: task normalize, sync-hosted-merges, gh api EOF, GraphQL EOF | failure: GitHub EOF or TLS transport failures during hosted branch_pr reconcile could abort task normalize before it reached the known stale task because the command scanned every candidate task. | advice: When GitHub transport is flaky, reconcile only the known task ids instead of scanning the full branch_pr history. | rule: Hosted reconcile commands MUST support explicit task-id scoping so known drift can be resolved without depending on unrelated GitHub lookups. | evidence: task 202604071853-XGX2YJ | enforcement: manual | fixability: external | state: open",
+      "- id: INC-20260407-01 | date: 2026-04-07 | scope: task normalize hosted reconcile target selection | tags: workflow, github, transport, normalize | match: task normalize, sync-hosted-merges, gh api EOF, GraphQL EOF | failure: GitHub EOF or TLS transport failures during hosted branch_pr reconcile could abort task normalize before it reached the known stale task because the command scanned every candidate task. | advice: When GitHub transport is flaky, reconcile only the known task ids instead of scanning the full branch_pr history. | rule: Hosted reconcile commands MUST support explicit task-id scoping so known drift can be resolved without depending on unrelated GitHub lookups. | evidence: task 202604071853-XGX2YJ; commit 5fd312cceb20 | enforcement: manual | source_task: 202604071853-XGX2YJ | fixability: external | state: open",
     ].join("\n");
 
     const next = appendIncidentRegistryEntries(current, [
@@ -392,10 +336,48 @@ describe("incidents runtime", () => {
     const reparsed = parseIncidentRegistry(next);
 
     expect(next.startsWith(compactRegistryHeader)).toBe(true);
+    expect(next).not.toContain("\n\n- id:");
+    expect(next).not.toContain("source_task: 202604071853-XGX2YJ |");
     expect(reparsed.entries.map((entry) => entry.id)).toEqual([
       "INC-20260407-01",
       "INC-20260407-02",
       "INC-20260408-01",
+    ]);
+  });
+
+  it("keeps compact appends within the existing compact style without materializing derived source_task lines", () => {
+    const current = [
+      compactRegistryHeader,
+      "- id: INC-20260409-01 | date: 2026-04-09 | scope: branch_pr work-start base task README cleanup | failure: work start left untracked base README copies that later blocked git pull. | rule: branch_pr work start MUST remove base-checkout task README copies that were only materialized for the worktree. | evidence: task 202604081931-77V6J5 | enforcement: test + command implementation | state: stabilized",
+    ].join("\n");
+
+    const next = appendIncidentRegistryEntries(current, [
+      {
+        id: "INC-20260409-02",
+        date: "2026-04-09",
+        scope: "branch_pr GitHub auth env propagation",
+        failure: "dotenv-injected auth vars overrode a valid gh keyring session",
+        rule: "branch_pr GitHub child processes MUST prefer explicit shell auth and ignore repo dotenv auth fallbacks.",
+        evidence: "task 202604091841-2ZX1MQ",
+        enforcement: "test + command implementation",
+        state: "open",
+        tags: ["workflow", "github"],
+        match: ["gh", "github", "dotenv"],
+        advice:
+          "prefer explicit shell auth and strip repo dotenv fallback tokens from gh child env",
+        sourceTask: "202604091841-2ZX1MQ",
+        fixability: "external",
+        rawFields: {},
+        line: 0,
+      },
+    ]);
+
+    expect(next.startsWith(compactRegistryHeader)).toBe(true);
+    expect(next).not.toContain("\n\n- id:");
+    expect(next).not.toContain("source_task:");
+    expect(parseIncidentRegistry(next).entries.map((entry) => entry.sourceTask)).toEqual([
+      "202604081931-77V6J5",
+      "202604091841-2ZX1MQ",
     ]);
   });
 });

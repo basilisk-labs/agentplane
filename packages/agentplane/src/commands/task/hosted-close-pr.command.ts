@@ -16,7 +16,7 @@ import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { resolveBaseBranch } from "@agentplaneorg/core";
 
 type TaskHostedClosePrParsed = {
-  taskId: string;
+  taskIds: string[];
   branch: string | null;
   repo: string | null;
 };
@@ -38,8 +38,8 @@ type GithubPullRequestRecord = {
 export const taskHostedClosePrSpec: CommandSpec<TaskHostedClosePrParsed> = {
   id: ["task", "hosted-close-pr"],
   group: "Task",
-  summary: "Open the follow-up hosted closure PR from a remote task-close branch.",
-  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+  summary: "Open one or more follow-up hosted closure PRs from remote task-close branches.",
+  args: [{ name: "task-id", required: true, variadic: true, valueHint: "<task-id>" }],
   options: [
     {
       kind: "string",
@@ -60,10 +60,19 @@ export const taskHostedClosePrSpec: CommandSpec<TaskHostedClosePrParsed> = {
       cmd: "agentplane task hosted-close-pr 202604091218-JREJ4K",
       why: "Open the hosted closure PR after the workflow left a manual handoff comment.",
     },
+    {
+      cmd: "agentplane task hosted-close-pr 202604091725-CB0Y6S 202604091725-H21SCP",
+      why: "Open multiple pending hosted closure PRs in one batch after a closure-wave merge.",
+    },
   ],
   validateRaw: (raw) => {
-    const taskId = typeof raw.args["task-id"] === "string" ? raw.args["task-id"].trim() : "";
-    if (!taskId) {
+    const taskIds = Array.isArray(raw.args["task-id"])
+      ? raw.args["task-id"]
+      : typeof raw.args["task-id"] === "string"
+        ? [raw.args["task-id"]]
+        : [];
+    const normalizedTaskIds = taskIds.map((taskId) => String(taskId).trim()).filter(Boolean);
+    if (normalizedTaskIds.length === 0) {
       throw usageError({
         spec: taskHostedClosePrSpec,
         message: "Invalid value for task-id: empty.",
@@ -83,7 +92,14 @@ export const taskHostedClosePrSpec: CommandSpec<TaskHostedClosePrParsed> = {
     }
   },
   parse: (raw) => ({
-    taskId: String(raw.args["task-id"]),
+    taskIds: (Array.isArray(raw.args["task-id"])
+      ? raw.args["task-id"]
+      : typeof raw.args["task-id"] === "string"
+        ? [raw.args["task-id"]]
+        : []
+    )
+      .map((taskId) => String(taskId).trim())
+      .filter(Boolean),
     branch: typeof raw.opts.branch === "string" ? raw.opts.branch : null,
     repo: typeof raw.opts.repo === "string" ? raw.opts.repo : null,
   }),
@@ -443,14 +459,18 @@ async function openHostedClosePr(opts: {
 export function makeRunTaskHostedClosePrHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: TaskHostedClosePrParsed): Promise<number> => {
     try {
-      return await openHostedClosePr({
-        ctx: await getCtx("task hosted-close-pr"),
-        cwd: ctx.cwd,
-        rootOverride: ctx.rootOverride,
-        taskId: p.taskId,
-        branch: p.branch,
-        repo: p.repo,
-      });
+      const commandCtx = await getCtx("task hosted-close-pr");
+      for (const taskId of p.taskIds) {
+        await openHostedClosePr({
+          ctx: commandCtx,
+          cwd: ctx.cwd,
+          rootOverride: ctx.rootOverride,
+          taskId,
+          branch: p.branch,
+          repo: p.repo,
+        });
+      }
+      return 0;
     } catch (err) {
       if (err instanceof CliError) throw err;
       throw mapBackendError(err, {

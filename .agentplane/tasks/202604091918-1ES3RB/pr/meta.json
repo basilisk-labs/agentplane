@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202604091918-1ES3RB/integrate-task-state-allow",
   "created_at": "2026-04-09T19:21:13.201Z",
-  "head_sha": "1217966a2f8a7d41f9d002765afb6a1dbd3b44b5",
+  "head_sha": "9301cea5604517d871a614678723b0c1198f849b",
   "last_verified_at": "2026-04-09T19:21:13.182Z",
   "last_verified_sha": "1217966a2f8a7d41f9d002765afb6a1dbd3b44b5",
+  "merge_commit": "7815195424c3dd2eacd49c494ba427ed8de83c3d",
+  "merged_at": "2026-04-09T19:28:09Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604091918-1ES3RB",
-  "updated_at": "2026-04-09T19:21:13.201Z",
+  "updated_at": "2026-04-09T19:28:09Z",
   "verify": {
     "status": "pass"
   }
