@@ -45,23 +45,23 @@ Extend doctor --fix with a safe cleanup for legacy untracked .agentplane/tasks/<
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T23:22:53.124Z
+- Updated: 2026-04-09T23:33:25.761Z
 - Branch: task/202604092306-JRGSGJ/doctor-safe-cleanup
-- Head: 593d86d5e2b8
+- Head: a33ae34f30b4
 
 ```text
- .agentplane/tasks/202604092306-JRGSGJ/README.md    | 140 +++++++++++++++++++++
+ .agentplane/tasks/202604092306-JRGSGJ/README.md    | 162 +++++++++++++++++++++
  .../tasks/202604092306-JRGSGJ/pr/diffstat.txt      |  12 ++
- .../tasks/202604092306-JRGSGJ/pr/github-body.md    |  61 +++++++++
+ .../tasks/202604092306-JRGSGJ/pr/github-body.md    |  61 ++++++++
  .../tasks/202604092306-JRGSGJ/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604092306-JRGSGJ/pr/meta.json |  14 +++
+ .agentplane/tasks/202604092306-JRGSGJ/pr/meta.json |  14 ++
  .../tasks/202604092306-JRGSGJ/pr/notes.jsonl       |   0
- .agentplane/tasks/202604092306-JRGSGJ/pr/review.md |  68 ++++++++++
+ .agentplane/tasks/202604092306-JRGSGJ/pr/review.md |  68 +++++++++
  .../tasks/202604092306-JRGSGJ/pr/verify.log        |   0
- .../agentplane/src/commands/doctor.fast.test.ts    | 128 +++++++++++++++++++
+ .../agentplane/src/commands/doctor.fast.test.ts    | 128 ++++++++++++++++
  packages/agentplane/src/commands/doctor.run.ts     |   8 +-
- packages/agentplane/src/commands/doctor/fixes.ts   |  87 +++++++++++++
- 11 files changed, 518 insertions(+), 1 deletion(-)
+ packages/agentplane/src/commands/doctor/fixes.ts   |  87 +++++++++++
+ 11 files changed, 540 insertions(+), 1 deletion(-)
 ```
 
 </details>
