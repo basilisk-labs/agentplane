@@ -244,6 +244,7 @@ export function renderIncidentCollectionPlanOutcome(
     context?: "collect" | "verify" | "finish" | "generic";
     promotedIds?: readonly string[];
     registryPaths?: readonly string[];
+    taskId?: string | null;
   },
 ): string {
   const candidates = Array.isArray(plan.candidates) ? plan.candidates.length : 0;
@@ -256,6 +257,11 @@ export function renderIncidentCollectionPlanOutcome(
     typeof plan.structuredFindingCount === "number" ? plan.structuredFindingCount : 0;
   const wrote = opts?.wrote === true;
   const context = opts?.context ?? "generic";
+  const taskId =
+    typeof opts?.taskId === "string" && opts.taskId.trim().length > 0 ? opts.taskId.trim() : null;
+  const findingsNextStep = taskId
+    ? ` next: agentplane task findings add ${taskId} --observation "<observation>" --impact "<impact>" --resolution "<resolution>"`
+    : "";
 
   if (promoted > 0 && wrote) {
     const suffix: string[] = [];
@@ -325,10 +331,18 @@ export function renderIncidentCollectionPlanOutcome(
 
   if (candidates === 0) {
     if (context === "verify") {
-      return "incident registry unchanged (plain verify note stayed task-local and did not update incidents.md: add --observation, --impact, and --resolution for a reusable incident, then rerun with --collect-incidents or collect later on the base branch)";
+      return (
+        "incident registry unchanged (plain verify note stayed task-local and did not update " +
+        "incidents.md: add --observation, --impact, and --resolution for a reusable incident, " +
+        `then rerun with --collect-incidents or collect later on the base branch.${findingsNextStep})`
+      );
     }
     if (context === "finish") {
-      return "incident registry unchanged (plain finish body/result stayed task-local and did not update incidents.md: add --observation, --impact, and --resolution for a reusable incident before closeout)";
+      return (
+        "incident registry unchanged (plain finish body/result stayed task-local and did not " +
+        "update incidents.md: add --observation, --impact, and --resolution for a reusable " +
+        `incident before closeout.${findingsNextStep})`
+      );
     }
     return "incident registry unchanged (no structured incident findings)";
   }

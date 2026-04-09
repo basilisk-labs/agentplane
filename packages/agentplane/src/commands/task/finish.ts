@@ -539,6 +539,7 @@ export async function cmdFinish(opts: {
             context: "finish",
             promotedIds: incidentPlan.promotable.map((item) => item.entry.id),
             registryPaths: incidentRegistryPaths[0] ?? [],
+            taskId: opts.taskIds[0] ?? null,
           }),
         )}\n`,
       );

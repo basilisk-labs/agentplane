@@ -155,6 +155,7 @@ async function recordVerificationResult(opts: {
       context: "collect",
       promotedIds: collected.plan.promotable.map((item) => item.entry.id),
       registryPaths: collected.registryPaths,
+      taskId: opts.taskId,
     });
   } else if (config.workflow_mode === "branch_pr") {
     const inspected = await inspectTaskIncidents({
@@ -164,6 +165,7 @@ async function recordVerificationResult(opts: {
     incidentSummary = renderIncidentCollectionPlanOutcome(inspected.plan, {
       wrote: false,
       context: "verify",
+      taskId: opts.taskId,
     });
   }
 
