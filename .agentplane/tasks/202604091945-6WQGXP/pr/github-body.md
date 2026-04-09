@@ -21,8 +21,8 @@ Push the local main wave that closes 2ZX1MQ, PX5WAV, 1ES3RB, and EPMJDB onto Git
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified publish-wave PR #222 merged with merge commit 46634ad5229932eb7bad887b8d4782cbdfa3ef27, superseded PRs #214 and #220 are closed, open PR list is empty, and local main matches origin/main.
 
 ## Risks
 
@@ -43,7 +43,7 @@ Push the local main wave that closes 2ZX1MQ, PX5WAV, 1ES3RB, and EPMJDB onto Git
 
 - Updated: 2026-04-09T19:50:49.489Z
 - Branch: task/202604091945-6WQGXP/publish-main-wave
-- Head: fb7f3d750de7
+- Head: No commits yet
 
 ```text
 No changes detected.
