@@ -108,6 +108,7 @@ Commands:
     task handoff record  Record a task handoff snapshot with runner recovery hints.
     task handoff show  Show the latest persisted task handoff snapshot.
     task hosted-close  Close a branch_pr task on the current branch from a merged hosted PR event payload.
+    task hosted-close-pr  Open the follow-up hosted closure PR from a remote task-close branch.
     task lint  Lint the exported tasks JSON file (schema + invariants).
     task list  List tasks (optionally filtered by status/owner/tag).
     task migrate  Import tasks from an exported JSON file into the configured backend.
@@ -416,6 +417,7 @@ Commands:
     task handoff record  Record a task handoff snapshot with runner recovery hints.
     task handoff show  Show the latest persisted task handoff snapshot.
     task hosted-close  Close a branch_pr task on the current branch from a merged hosted PR event payload.
+    task hosted-close-pr  Open the follow-up hosted closure PR from a remote task-close branch.
     task lint  Lint the exported tasks JSON file (schema + invariants).
     task list  List tasks (optionally filtered by status/owner/tag).
     task migrate  Import tasks from an exported JSON file into the configured backend.

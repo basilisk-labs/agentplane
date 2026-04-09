@@ -21,6 +21,10 @@ export { cmdTaskDerive } from "./derive.js";
 export { cmdTaskCloseDuplicate } from "./close-duplicate.js";
 export { cmdTaskStartReady } from "./start-ready.js";
 export { cmdTaskCloseNoop } from "./close-noop.js";
+export {
+  makeRunTaskHostedClosePrHandler,
+  taskHostedClosePrSpec,
+} from "./hosted-close-pr.command.js";
 
 export { cmdTaskExport } from "./export.js";
 export { cmdTaskLint } from "./lint.js";

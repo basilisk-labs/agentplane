@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -23,6 +23,66 @@ import {
 const execFileAsync = promisify(execFile);
 
 installRunCliIntegrationHarness();
+
+async function installFakeGhHostedClosePr(opts: {
+  scenarioName: string;
+  branch: string;
+  existingResponse: object[];
+  createResponse: object;
+  allowCreate: boolean;
+}) {
+  const fakeBin = path.join(
+    tmpdir(),
+    `agentplane-gh-hosted-close-pr-${Date.now()}-${opts.scenarioName}`,
+  );
+  await mkdir(fakeBin, { recursive: true });
+  const scriptPath = path.join(fakeBin, "fake-gh.mjs");
+  const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
+  await writeFile(
+    scriptPath,
+    [
+      'import fs from "node:fs";',
+      "const args = process.argv.slice(2);",
+      "const logPath = process.env.AGENTPLANE_GH_LOG;",
+      "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
+      'if (args[0] !== "api") { console.error("unexpected gh command"); process.exit(90); }',
+      'const endpoint = args[1] ?? "";',
+      'const [route, query = ""] = endpoint.split("?", 2);',
+      "const params = new URLSearchParams(query);",
+      `const expectedHead = ${JSON.stringify(`example:${opts.branch}`)};`,
+      `const existingResponse = ${JSON.stringify(opts.existingResponse)};`,
+      `const createResponse = ${JSON.stringify(opts.createResponse)};`,
+      `const allowCreate = ${JSON.stringify(opts.allowCreate)};`,
+      'let method = "GET";',
+      "for (let i = 2; i < args.length; i += 1) {",
+      '  if (args[i] === "-X" && typeof args[i + 1] === "string") method = String(args[i + 1]).toUpperCase();',
+      "}",
+      'if (route === "repos/example/repo/pulls" && method === "GET" && params.get("state") === "open" && params.get("head") === expectedHead) {',
+      "  console.log(JSON.stringify(existingResponse));",
+      "  process.exit(0);",
+      "}",
+      'if (route === "repos/example/repo/pulls" && method === "POST") {',
+      "  if (!allowCreate) {",
+      '    console.error("unexpected gh api create");',
+      "    process.exit(91);",
+      "  }",
+      "  console.log(JSON.stringify(createResponse));",
+      "  process.exit(0);",
+      "}",
+      'console.error(`unexpected gh api call: ${args.join(" ")}`);',
+      "process.exit(91);",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  if (process.platform === "win32") {
+    await writeFile(ghPath, '@echo off\r\nnode "%~dp0\\fake-gh.mjs" %*\r\n', "utf8");
+  } else {
+    await writeFile(ghPath, '#!/bin/sh\nnode "$(dirname "$0")/fake-gh.mjs" "$@"\n', "utf8");
+    await chmod(ghPath, 0o755);
+  }
+  return { fakeBin, logPath: path.join(fakeBin, "gh.log") };
+}
 
 describe("runCli", () => {
   it("task hosted-close closes a merged branch_pr task exactly once", async () => {
@@ -443,5 +503,253 @@ describe("runCli", () => {
     );
     expect(metaRaw).toContain('"status": "MERGED"');
     expect(metaRaw).toContain(`"merge_commit": "${mergeSha}"`);
+  }, 120_000);
+
+  it("task hosted-close-pr opens the remote task-close branch and reuses an existing PR", async () => {
+    const root = await writeAndConfigureRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await mkdir(path.join(root, "packages", "agentplane", "assets", "policy"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "packages", "agentplane", "assets", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+    const { stdout: baseBranchStdout } = await execFileAsync(
+      "git",
+      ["rev-parse", "--abbrev-ref", "HEAD"],
+      { cwd: root },
+    );
+    const baseBranch = baseBranchStdout.trim();
+
+    const taskId = "202604091257-AD043V";
+    const branch = `task/${taskId}/hosted-close-pr`;
+    expect(
+      await runCliSilent([
+        "task",
+        "add",
+        taskId,
+        "--title",
+        "Hosted close PR helper",
+        "--description",
+        "Open a hosted closure PR from a remote task-close branch",
+        "--priority",
+        "high",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    expect(
+      await runCliSilent([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        "1. Run task hosted-close-pr against a remote task-close branch after a manual hosted-close handoff.",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    await approveTaskPlan(root, taskId);
+    expect(
+      await runCliSilent([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: verify hosted-close PR helper against a remote closure branch.",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    await recordVerificationOk(root, taskId);
+    expect(
+      await runCliSilent([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    const touchedFile = path.join(root, "src", "hosted-close-pr.ts");
+    await mkdir(path.dirname(touchedFile), { recursive: true });
+    await writeFile(touchedFile, "export const hostedClosePr = true;\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: hosted close PR fixture"], {
+      cwd: root,
+    });
+    const { stdout: branchHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const branchHead = branchHeadStdout.trim();
+
+    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["merge", "--no-ff", branch, "-m", "Merge hosted close PR fixture"],
+      {
+        cwd: root,
+      },
+    );
+    const { stdout: mergeHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const mergeSha = mergeHeadStdout.trim();
+
+    const eventDir = await mkdtemp(path.join(tmpdir(), "agentplane-hosted-close-pr-event-"));
+    const eventPath = path.join(eventDir, "event.json");
+    await writeFile(
+      eventPath,
+      `${JSON.stringify(
+        {
+          pull_request: {
+            merged: true,
+            number: 97,
+            title: "Hosted close PR helper",
+            merge_commit_sha: mergeSha,
+            merged_at: "2026-04-09T12:57:00.000Z",
+            head: { ref: branch, sha: branchHead },
+            base: { ref: baseBranch },
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const ioClose = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "hosted-close",
+        "--event-json",
+        eventPath,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      ioClose.restore();
+    }
+
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as {
+      branch?: string;
+      merge_commit?: string;
+      pr_number?: number;
+      base?: string;
+    };
+    const mergeCommit = meta.merge_commit ?? mergeSha;
+    const closureBranch = `task-close/${taskId}/${mergeCommit.slice(0, 12)}`;
+
+    const bareOrigin = await mkdtemp(path.join(tmpdir(), "agentplane-hosted-close-pr-origin-"));
+    await execFileAsync("git", ["init", "--bare", bareOrigin], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", bareOrigin], { cwd: root });
+    await execFileAsync("git", ["push", "origin", `HEAD:refs/heads/${closureBranch}`], {
+      cwd: root,
+    });
+
+    const createResponse = {
+      number: 902,
+      html_url: "https://github.com/example/repo/pull/902",
+      state: "open",
+      merged_at: null,
+    };
+
+    const firstGh = await installFakeGhHostedClosePr({
+      scenarioName: "create",
+      branch: closureBranch,
+      existingResponse: [],
+      createResponse,
+      allowCreate: true,
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${firstGh.fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = firstGh.logPath;
+
+    const ioCreate = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "hosted-close-pr",
+        taskId,
+        "--repo",
+        "example/repo",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(ioCreate.stdout).toContain("created GitHub PR #902");
+      expect(ioCreate.stdout).toContain("https://github.com/example/repo/pull/902");
+    } finally {
+      ioCreate.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    const secondGh = await installFakeGhHostedClosePr({
+      scenarioName: "reuse",
+      branch: closureBranch,
+      existingResponse: [createResponse],
+      createResponse,
+      allowCreate: false,
+    });
+    process.env.PATH = `${secondGh.fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = secondGh.logPath;
+
+    const ioReuse = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "hosted-close-pr",
+        taskId,
+        "--repo",
+        "example/repo",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(ioReuse.stdout).toContain("linked to GitHub PR #902");
+      expect(ioReuse.stdout).toContain("https://github.com/example/repo/pull/902");
+    } finally {
+      ioReuse.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    const firstLog = await readFile(firstGh.logPath, "utf8");
+    expect(firstLog).toContain('"api"');
+    expect(firstLog).toContain('"POST"');
+    const secondLog = await readFile(secondGh.logPath, "utf8");
+    expect(secondLog).not.toContain('"POST"');
   }, 120_000);
 });
