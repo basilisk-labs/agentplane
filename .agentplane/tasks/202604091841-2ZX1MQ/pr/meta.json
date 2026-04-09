@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202604091841-2ZX1MQ/normalize-gh-auth",
   "created_at": "2026-04-09T18:49:20.415Z",
-  "head_sha": "55b04a7a853c9260a8ec6f4ac5dcf292363ce2d3",
+  "head_sha": "cbfcb50f8b515736350d0187f8cab0ea3dc68b99",
   "last_verified_at": "2026-04-09T18:49:20.388Z",
   "last_verified_sha": "dfcc52eefa55537b250adcadde367aa24fc6abd5",
+  "pr_number": 214,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/214",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202604091841-2ZX1MQ",
-  "updated_at": "2026-04-09T18:49:31.900Z",
+  "updated_at": "2026-04-09T18:52:45.711Z",
   "verify": {
     "status": "pass"
   }
