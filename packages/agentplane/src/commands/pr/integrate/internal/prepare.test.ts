@@ -24,6 +24,7 @@ const mocks = vi.hoisted(() => ({
   parsePrMeta: vi.fn(),
   extractLastVerifiedSha: vi.fn(),
   isTaskLocalOnlyAdvance: vi.fn(),
+  ensurePrArtifactsSynced: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core", () => ({
@@ -66,6 +67,9 @@ vi.mock("../../../shared/pr-meta.js", () => ({
 vi.mock("../../../shared/task-local-freshness.js", () => ({
   isTaskLocalOnlyAdvance: mocks.isTaskLocalOnlyAdvance,
 }));
+vi.mock("../../internal/sync.js", () => ({
+  ensurePrArtifactsSynced: mocks.ensurePrArtifactsSynced,
+}));
 
 function mkCtx(workflowMode: "direct" | "branch_pr" = "branch_pr") {
   return {
@@ -107,6 +111,7 @@ function seedCommon(): void {
   });
   mocks.extractLastVerifiedSha.mockReturnValue(null);
   mocks.isTaskLocalOnlyAdvance.mockResolvedValue(false);
+  mocks.ensurePrArtifactsSynced.mockResolvedValue({ branch: "task/T-1" });
 }
 
 describe("pr/integrate/internal/prepare", () => {
@@ -217,6 +222,49 @@ describe("pr/integrate/internal/prepare", () => {
       code: "E_VALIDATION",
     });
     await expect(promise).rejects.toThrow(/meta\.head_sha=stalebeef/u);
+  });
+
+  it("repairs stale PR metadata from the task worktree before integrate fails", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.findWorktreeForBranch.mockResolvedValue("/repo/.agentplane/worktrees/T-1");
+    mocks.parsePrMeta
+      .mockReturnValueOnce({
+        branch: "task/T-1",
+        head_sha: "deadbeef",
+        last_verified_sha: null,
+      })
+      .mockReturnValueOnce({
+        branch: "task/T-1",
+        head_sha: "stalebeef",
+        last_verified_sha: null,
+      })
+      .mockReturnValueOnce({
+        branch: "task/T-1",
+        head_sha: "deadbeef",
+        last_verified_sha: null,
+      });
+    mocks.readPrArtifact
+      .mockResolvedValueOnce(
+        JSON.stringify({ branch: "task/T-1", head_sha: "stalebeef", last_verified_sha: null }),
+      )
+      .mockResolvedValueOnce(
+        JSON.stringify({ branch: "task/T-1", head_sha: "deadbeef", last_verified_sha: null }),
+      );
+
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).resolves.toMatchObject({
+      branch: "task/T-1",
+      branchHeadSha: "deadbeef",
+      metaSource: { head_sha: "deadbeef" },
+    });
+    expect(mocks.ensurePrArtifactsSynced).toHaveBeenCalledWith({
+      cwd: "/repo/.agentplane/worktrees/T-1",
+      taskId: "T-1",
+      branch: "task/T-1",
+    });
   });
 
   it("accepts task-local-only advance between rendered sha and branch head", async () => {

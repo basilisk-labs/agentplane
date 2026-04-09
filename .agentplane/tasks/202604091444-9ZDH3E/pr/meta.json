@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604091444-9ZDH3E/pr-meta-after-plain-commit",
+  "created_at": "2026-04-09T15:07:25.295Z",
+  "head_sha": "8dcdedf388fe14d0b2e78237f6bda17736bd69b5",
+  "last_verified_at": "2026-04-09T15:14:15.092Z",
+  "last_verified_sha": "8dcdedf388fe14d0b2e78237f6bda17736bd69b5",
+  "pr_number": 192,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/192",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604091444-9ZDH3E",
+  "updated_at": "2026-04-09T15:14:29.332Z",
+  "verify": {
+    "status": "pass"
+  }
+}
