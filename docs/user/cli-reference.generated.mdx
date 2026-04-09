@@ -482,6 +482,7 @@ Options:
 - `--base <name>`: Base branch override.
 - `--yes`: Confirm deletions. (default=false)
 - `--archive`: Archive PR artifacts before deletion. (default=false)
+- `--delete-remote-branches`: Also delete matching remote task branches on origin. (default=false)
 - `--quiet`: Reduce output noise. (default=false)
 
 Examples:
@@ -497,6 +498,12 @@ agentplane cleanup merged --yes --archive
 ```
 
 - Delete candidates and archive PR artifacts.
+
+```sh
+agentplane cleanup merged --yes --delete-remote-branches
+```
+
+- Delete candidates and matching remote task branches on origin.
 
 ## Config
 
