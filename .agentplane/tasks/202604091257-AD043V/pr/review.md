@@ -25,7 +25,7 @@ Add a first-class command that opens the protected-main closure PR from an exist
 ### Current Status
 
 - State: ok
-- Note: Command: bun test packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts --timeout 120000 && bun test packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --timeout 120000 && bun x eslint packages/agentplane/src/commands/task/hosted-close-pr.command.ts packages/agentplane/src/commands/task/task.command.ts packages/agentplane/src/cli/run-cli/command-catalog/task.ts packages/agentplane/src/commands/task/index.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; Result: pass. Evidence: hosted-close helper tests passed, help snapshots remained valid, eslint clean. Scope: manual hosted-close PR helper command and task help surface.
+- Note: Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted wait-remote/task-hosted-close coverage for the hosted-close PR helper path.
 
 ## Risks
 
@@ -45,12 +45,27 @@ Add a first-class command that opens the protected-main closure PR from an exist
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T13:23:48.834Z
+- Updated: 2026-04-09T14:21:06.178Z
 - Branch: task/202604091257-AD043V/hosted-close-open-pr
-- Head: 6c22a97d72e9
+- Head: 12fac7c77362
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604091257-AD043V/README.md    | 118 +++++++
+ .../tasks/202604091257-AD043V/pr/diffstat.txt      |   0
+ .../tasks/202604091257-AD043V/pr/github-body.md    |  50 +++
+ .../tasks/202604091257-AD043V/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091257-AD043V/pr/meta.json |  17 +
+ .../tasks/202604091257-AD043V/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091257-AD043V/pr/review.md |  57 +++
+ .../tasks/202604091257-AD043V/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |  30 ++
+ .../run-cli.core.help-snap.test.ts.snap            |   2 +
+ .../src/cli/run-cli.core.task-hosted-close.test.ts | 310 ++++++++++++++++-
+ .../src/cli/run-cli/command-catalog/task.ts        |   6 +
+ .../src/commands/task/hosted-close-pr.command.ts   | 384 +++++++++++++++++++++
+ packages/agentplane/src/commands/task/index.ts     |   4 +
+ .../agentplane/src/commands/task/task.command.ts   |   4 +
+ 15 files changed, 982 insertions(+), 1 deletion(-)
 ```
 
 </details>

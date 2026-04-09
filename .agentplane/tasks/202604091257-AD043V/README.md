@@ -4,7 +4,7 @@ title: "Add helper to open pending hosted-close PRs from task-close branches"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T13:15:19.204Z"
+  updated_at: "2026-04-09T14:21:06.150Z"
   updated_by: "CODER"
-  note: "Command: bun test packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts --timeout 120000 && bun test packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --timeout 120000 && bun x eslint packages/agentplane/src/commands/task/hosted-close-pr.command.ts packages/agentplane/src/commands/task/task.command.ts packages/agentplane/src/cli/run-cli/command-catalog/task.ts packages/agentplane/src/commands/task/index.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; Result: pass. Evidence: hosted-close helper tests passed, help snapshots remained valid, eslint clean. Scope: manual hosted-close PR helper command and task help surface."
+  note: "Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted wait-remote/task-hosted-close coverage for the hosted-close PR helper path."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts --timeout 120000 && bun test packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --timeout 120000 && bun x eslint packages/agentplane/src/commands/task/hosted-close-pr.command.ts packages/agentplane/src/commands/task/task.command.ts packages/agentplane/src/cli/run-cli/command-catalog/task.ts packages/agentplane/src/commands/task/index.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; Result: pass. Evidence: hosted-close helper tests passed, help snapshots remained valid, eslint clean. Scope: manual hosted-close PR helper command and task help surface."
+  -
+    type: "verify"
+    at: "2026-04-09T14:21:06.150Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted wait-remote/task-hosted-close coverage for the hosted-close PR helper path."
 doc_version: 3
-doc_updated_at: "2026-04-09T13:15:19.211Z"
+doc_updated_at: "2026-04-09T14:21:06.155Z"
 doc_updated_by: "CODER"
 description: "Add a first-class command that opens the protected-main closure PR from an existing remote task-close branch when GitHub Actions can only leave a manual handoff comment."
 sections:
@@ -68,6 +74,14 @@ sections:
     Note: Command: bun test packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts --timeout 120000 && bun test packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --timeout 120000 && bun x eslint packages/agentplane/src/commands/task/hosted-close-pr.command.ts packages/agentplane/src/commands/task/task.command.ts packages/agentplane/src/cli/run-cli/command-catalog/task.ts packages/agentplane/src/commands/task/index.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; Result: pass. Evidence: hosted-close helper tests passed, help snapshots remained valid, eslint clean. Scope: manual hosted-close PR helper command and task help surface.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:11:17.107Z, excerpt_hash=sha256:2dcea28fe089c76f219ab13a639c88d81fcc0741330729b66b2d362219a60810
+    
+    ### 2026-04-09T14:21:06.150Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted wait-remote/task-hosted-close coverage for the hosted-close PR helper path.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:15:19.211Z, excerpt_hash=sha256:2dcea28fe089c76f219ab13a639c88d81fcc0741330729b66b2d362219a60810
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -107,6 +121,14 @@ By: CODER
 Note: Command: bun test packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts --timeout 120000 && bun test packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --timeout 120000 && bun x eslint packages/agentplane/src/commands/task/hosted-close-pr.command.ts packages/agentplane/src/commands/task/task.command.ts packages/agentplane/src/cli/run-cli/command-catalog/task.ts packages/agentplane/src/commands/task/index.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; Result: pass. Evidence: hosted-close helper tests passed, help snapshots remained valid, eslint clean. Scope: manual hosted-close PR helper command and task help surface.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:11:17.107Z, excerpt_hash=sha256:2dcea28fe089c76f219ab13a639c88d81fcc0741330729b66b2d362219a60810
+
+### 2026-04-09T14:21:06.150Z — VERIFY — ok
+
+By: CODER
+
+Note: Rebased onto main after 75VJ4R removed the shared wait-remote-checks blocker and reran targeted wait-remote/task-hosted-close coverage for the hosted-close PR helper path.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T13:15:19.211Z, excerpt_hash=sha256:2dcea28fe089c76f219ab13a639c88d81fcc0741330729b66b2d362219a60810
 
 <!-- END VERIFICATION RESULTS -->
 
