@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604091600-B22F3T/finish-base-override",
   "created_at": "2026-04-09T16:23:56.370Z",
-  "head_sha": "f6f2660e13d43bf821e64fb73c26e74a6e69c08f",
+  "head_sha": "4d7056f8341954f54eaa6112878cf0c4d8873e4e",
   "last_verified_at": "2026-04-09T16:23:56.300Z",
   "last_verified_sha": "f6f2660e13d43bf821e64fb73c26e74a6e69c08f",
+  "merge_commit": "8978708638ac1f158515a77491795663320d00c5",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-09T16:48:42Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604091600-B22F3T",
-  "updated_at": "2026-04-09T16:23:56.370Z",
+  "updated_at": "2026-04-09T16:48:42Z",
   "verify": {
     "status": "pass"
   }
