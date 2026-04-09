@@ -47,9 +47,9 @@ Make the remote-check wait helper accept multiple PR numbers in one invocation s
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T12:32:54.189Z
+- Updated: 2026-04-09T12:42:22.684Z
 - Branch: task/202604091218-8S07FZ/multi-pr-wait
-- Head: 146bc13fb3a2
+- Head: 5f70b702cfa9
 
 ```text
 No changes detected.
