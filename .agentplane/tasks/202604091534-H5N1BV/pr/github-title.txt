@@ -1,0 +1,1 @@
+git/workflow: Infer default branch_pr base when pin is absent (H5N1BV)
