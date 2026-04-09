@@ -1,10 +1,11 @@
 ---
 id: "202604091711-90MFFW"
 title: "Persist duplicate closure artifacts for superseded branch_pr tasks"
-status: "DOING"
+result_summary: "Merged via PR #207."
+status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ verification:
     Result: pass
     Evidence: committed branch diff is limited to .agentplane/tasks/202604091534-1Y4FGP, .agentplane/tasks/202604091534-2ETZXS, and .agentplane/tasks/202604091711-90MFFW/README.md.
     Scope: reconcile branch change surface.
-commit: null
+commit:
+  hash: "895e31ae7e740faf0549c5bcafdc46700fd83c61"
+  message: "workflow: Persist duplicate closure artifacts for superseded branch_pr tasks (90MFFW) (#207)"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: record canonical base artifacts for the already-superseded branch_pr tasks 1Y4FGP and 2ETZXS so duplicate closure state no longer exists only as local untracked files."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #207 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -68,8 +74,15 @@ events:
       Result: pass
       Evidence: committed branch diff is limited to .agentplane/tasks/202604091534-1Y4FGP, .agentplane/tasks/202604091534-2ETZXS, and .agentplane/tasks/202604091711-90MFFW/README.md.
       Scope: reconcile branch change surface.
+  -
+    type: "status"
+    at: "2026-04-09T17:18:50.718Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #207 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T17:17:12.464Z"
+doc_updated_at: "2026-04-09T17:18:50.724Z"
 doc_updated_by: "INTEGRATOR"
 description: "Record canonical DONE state on base for duplicate-closed branch_pr tasks 202604091534-1Y4FGP and 202604091534-2ETZXS after their stale GitHub PRs were superseded and closed, so main/origin/task projections stay consistent without local untracked task artifacts."
 sections:
