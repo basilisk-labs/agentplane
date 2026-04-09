@@ -25,7 +25,7 @@ Make task creation/work-start preserve canonical base README artifacts and refus
 ### Current Status
 
 - State: ok
-- Note: Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; bun x eslint packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts. Result: pass. Evidence: the focused work-start regression suite passed 10/10 and eslint exited 0 after preserving base task READMEs during worktree seeding. Scope: branch_pr work start lifecycle, base task artifact preservation, strict task-readability after worktree creation.
+- Note: README seeding now preserves the canonical base README and leaves the worktree snapshot intact.
 
 ## Risks
 
@@ -45,9 +45,9 @@ Make task creation/work-start preserve canonical base README artifacts and refus
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T11:00:58.802Z
+- Updated: 2026-04-09T11:04:49.814Z
 - Branch: task/202604091052-8TZCF0/task-readme-seeding
-- Head: 1453eeb17631
+- Head: 555ae389b771
 
 ```text
 No changes detected.

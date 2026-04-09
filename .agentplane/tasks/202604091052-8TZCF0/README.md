@@ -4,7 +4,7 @@ title: "Fix task lifecycle README seeding and base artifact preservation"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-09T11:04:02.656Z"
-  updated_by: "REVIEWER"
-  note: "Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; bun x eslint packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts. Result: pass. Evidence: the focused work-start regression suite passed 10/10 and eslint exited 0 after preserving base task READMEs during worktree seeding. Scope: branch_pr work start lifecycle, base task artifact preservation, strict task-readability after worktree creation."
+  updated_at: "2026-04-09T11:04:15.154Z"
+  updated_by: "CODER"
+  note: "README seeding now preserves the canonical base README and leaves the worktree snapshot intact."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; bun x eslint packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts. Result: pass. Evidence: the focused work-start regression suite passed 10/10 and eslint exited 0 after preserving base task READMEs during worktree seeding. Scope: branch_pr work start lifecycle, base task artifact preservation, strict task-readability after worktree creation."
+  -
+    type: "verify"
+    at: "2026-04-09T11:04:15.154Z"
+    author: "CODER"
+    state: "ok"
+    note: "README seeding now preserves the canonical base README and leaves the worktree snapshot intact."
 doc_version: 3
-doc_updated_at: "2026-04-09T11:04:02.665Z"
+doc_updated_at: "2026-04-09T11:04:15.170Z"
 doc_updated_by: "CODER"
 description: "Make task creation/work-start preserve canonical base README artifacts and refuse to leave empty .agentplane/tasks/<id> directories without README.md in branch_pr flows."
 sections:
@@ -68,6 +74,14 @@ sections:
     Note: Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; bun x eslint packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts. Result: pass. Evidence: the focused work-start regression suite passed 10/10 and eslint exited 0 after preserving base task READMEs during worktree seeding. Scope: branch_pr work start lifecycle, base task artifact preservation, strict task-readability after worktree creation.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T11:00:58.739Z, excerpt_hash=sha256:d37a3d993842ec65d7226c66a3f280994623696fa0bd9233477e086d0dfd7af3
+    
+    ### 2026-04-09T11:04:15.154Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: README seeding now preserves the canonical base README and leaves the worktree snapshot intact.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T11:04:02.665Z, excerpt_hash=sha256:d37a3d993842ec65d7226c66a3f280994623696fa0bd9233477e086d0dfd7af3
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -107,6 +121,14 @@ By: REVIEWER
 Note: Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; bun x eslint packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts. Result: pass. Evidence: the focused work-start regression suite passed 10/10 and eslint exited 0 after preserving base task READMEs during worktree seeding. Scope: branch_pr work start lifecycle, base task artifact preservation, strict task-readability after worktree creation.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T11:00:58.739Z, excerpt_hash=sha256:d37a3d993842ec65d7226c66a3f280994623696fa0bd9233477e086d0dfd7af3
+
+### 2026-04-09T11:04:15.154Z — VERIFY — ok
+
+By: CODER
+
+Note: README seeding now preserves the canonical base README and leaves the worktree snapshot intact.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-09T11:04:02.665Z, excerpt_hash=sha256:d37a3d993842ec65d7226c66a3f280994623696fa0bd9233477e086d0dfd7af3
 
 <!-- END VERIFICATION RESULTS -->
 
