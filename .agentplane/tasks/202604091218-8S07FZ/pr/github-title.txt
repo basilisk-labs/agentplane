@@ -1,0 +1,1 @@
+workflow: Allow workflow:wait-remote-checks to accept multiple PRs (8S07FZ)
