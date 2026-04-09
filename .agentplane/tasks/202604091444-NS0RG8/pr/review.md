@@ -23,20 +23,10 @@ Make framework bootstrap or managed hook flow detect and replace stale lefthook-
 ### Current Status
 
 - State: ok
-- Note: Command: bun test packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts
+- Note: Command: bun x prettier --check packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts scripts/bootstrap-framework-dev.mjs && bun test packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts && bun x eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts
 Result: pass
-Evidence: 7/7 tests passed, including legacy lefthook repair coverage.
-Scope: framework bootstrap and hook repair flow.
-
-Command: bun x eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts
-Result: pass
-Evidence: eslint exited 0.
-Scope: bootstrap script and regression tests.
-
-Command: bun run framework:dev:bootstrap
-Result: pass
-Evidence: core + agentplane builds completed, legacy hooks repaired, and runtime explain reported repo-local runtime ready.
-Scope: end-to-end bootstrap behavior in a framework worktree.
+Evidence: Prettier matched, bootstrap tests passed, eslint exited 0 after CI formatting fix.
+Scope: current branch head after post-CI formatting for legacy lefthook bootstrap repair.
 
 ## Risks
 
@@ -56,12 +46,22 @@ Scope: end-to-end bootstrap behavior in a framework worktree.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T15:09:00.074Z
+- Updated: 2026-04-09T15:14:29.409Z
 - Branch: task/202604091444-NS0RG8/repair-legacy-lefthook
-- Head: 437bd1e0099a
+- Head: c6cbd71b668f
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604091444-NS0RG8/README.md    | 172 +++++++++++++++++++++
+ .../tasks/202604091444-NS0RG8/pr/diffstat.txt      |   0
+ .../tasks/202604091444-NS0RG8/pr/github-body.md    |  61 ++++++++
+ .../tasks/202604091444-NS0RG8/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091444-NS0RG8/pr/meta.json |  14 ++
+ .../tasks/202604091444-NS0RG8/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091444-NS0RG8/pr/review.md |  68 ++++++++
+ .../tasks/202604091444-NS0RG8/pr/verify.log        |   0
+ .../src/cli/bootstrap-framework-dev-script.test.ts |  78 ++++++----
+ scripts/bootstrap-framework-dev.mjs                | 120 ++++++++++++++
+ 10 files changed, 487 insertions(+), 27 deletions(-)
 ```
 
 </details>

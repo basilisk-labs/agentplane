@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604091444-NS0RG8/README.md    | 172 +++++++++++++++++++++
+ .../tasks/202604091444-NS0RG8/pr/diffstat.txt      |   0
+ .../tasks/202604091444-NS0RG8/pr/github-body.md    |  61 ++++++++
+ .../tasks/202604091444-NS0RG8/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604091444-NS0RG8/pr/meta.json |  14 ++
+ .../tasks/202604091444-NS0RG8/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604091444-NS0RG8/pr/review.md |  68 ++++++++
+ .../tasks/202604091444-NS0RG8/pr/verify.log        |   0
+ .../src/cli/bootstrap-framework-dev-script.test.ts |  78 ++++++----
+ scripts/bootstrap-framework-dev.mjs                | 120 ++++++++++++++
+ 10 files changed, 487 insertions(+), 27 deletions(-)
