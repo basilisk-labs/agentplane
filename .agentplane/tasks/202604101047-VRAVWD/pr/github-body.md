@@ -22,21 +22,22 @@ Eliminate branch_pr pr/* self-drift after commit/open/update and make the releas
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T14:02:33.538Z
+- Updated: 2026-04-10T14:11:51.328Z
 - Branch: task/202604101047-VRAVWD/release-flow-pr-drift
-- Head: 2f8d77a319ba
+- Head: 444c2a9b6ce0
 
 ```text
- .agentplane/tasks/202604101047-VRAVWD/README.md    | 118 +++++++++++++++++++++
+ .agentplane/tasks/202604101047-VRAVWD/README.md    | 140 +++++++++++++++++++++
  docs/user/cli-reference.generated.mdx              |   4 +-
- .../agentplane/src/commands/pr/internal/sync.ts    |  39 ++++---
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  76 +++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |  86 +++++++++----
  .../src/commands/release/apply.command.ts          |  21 +---
  .../src/commands/release/apply.preflight.ts        |   3 +-
  .../agentplane/src/commands/release/apply.test.ts  |  10 +-
  .../agentplane/src/commands/shared/git-diff.ts     |  17 ++-
- .../agentplane/src/commands/shared/pr-meta.test.ts |  58 ++++++++++
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  58 +++++++++
  packages/agentplane/src/commands/shared/pr-meta.ts |  14 ++-
- 9 files changed, 245 insertions(+), 39 deletions(-)
+ 10 files changed, 379 insertions(+), 50 deletions(-)
 ```
 
 </details>

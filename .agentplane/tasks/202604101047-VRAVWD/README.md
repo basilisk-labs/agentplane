@@ -4,7 +4,7 @@ title: "Fix protected-main release flow and PR artifact self-drift"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,7 +20,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-10T14:10:47.149Z"
+  updated_at: "2026-04-10T14:13:03.924Z"
   updated_by: "CODER"
   note: "Verified pr open diffstat rendering, remote-link stability, and protected-main local release apply."
 commit: null
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified pr open diffstat rendering, remote-link stability, and protected-main local release apply."
+  -
+    type: "verify"
+    at: "2026-04-10T14:13:03.924Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified pr open diffstat rendering, remote-link stability, and protected-main local release apply."
 doc_version: 3
-doc_updated_at: "2026-04-10T14:10:47.151Z"
+doc_updated_at: "2026-04-10T14:13:03.927Z"
 doc_updated_by: "CODER"
 description: "Eliminate branch_pr pr/* self-drift after commit/open/update and make the release publish path compatible with protected-main repositories without requiring direct push semantics."
 sections:
@@ -82,6 +88,14 @@ sections:
     Note: Verified pr open diffstat rendering, remote-link stability, and protected-main local release apply.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T11:00:11.347Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-04-10T14:13:03.924Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified pr open diffstat rendering, remote-link stability, and protected-main local release apply.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T14:10:47.151Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -129,6 +143,14 @@ By: CODER
 Note: Verified pr open diffstat rendering, remote-link stability, and protected-main local release apply.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T11:00:11.347Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+### 2026-04-10T14:13:03.924Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified pr open diffstat rendering, remote-link stability, and protected-main local release apply.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T14:10:47.151Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 <!-- END VERIFICATION RESULTS -->
 
