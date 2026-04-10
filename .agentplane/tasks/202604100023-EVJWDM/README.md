@@ -1,10 +1,11 @@
 ---
 id: "202604100023-EVJWDM"
 title: "Auto-bootstrap framework runtime after integrate touches watched sources"
-status: "DOING"
+result_summary: "integrate: squash task/202604100023-EVJWDM/integrate-autobootstrap"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-10T00:30:41.131Z"
   updated_by: "CODER"
   note: "Verified: bunx vitest run packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.test.ts and bun x eslint packages/agentplane/src/commands/pr/integrate/cmd.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.ts packages/agentplane/src/commands/pr/integrate/internal/post-integrate-bootstrap.ts passed; integrate now auto-refreshes repo-local runtime on watched-source merges and falls back to explicit manual guidance on bootstrap failure."
-commit: null
+commit:
+  hash: "8a170e55092cd66ad3e0c736fd15dbc29325b565"
+  message: "🧩 EVJWDM integrate: workflow: Auto-bootstrap framework runtime after integrate touches watched sources"
 comments:
   -
     author: "CODER"
     body: "Start: auto-refresh the framework runtime after integrate when watched runtime sources changed so finish closeout does not need a separate manual bootstrap."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100023-EVJWDM/pr."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bunx vitest run packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.test.ts and bun x eslint packages/agentplane/src/commands/pr/integrate/cmd.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.ts packages/agentplane/src/commands/pr/integrate/internal/post-integrate-bootstrap.ts passed; integrate now auto-refreshes repo-local runtime on watched-source merges and falls back to explicit manual guidance on bootstrap failure."
+  -
+    type: "status"
+    at: "2026-04-10T00:37:12.981Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100023-EVJWDM/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T00:30:41.133Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T00:37:12.983Z"
+doc_updated_by: "INTEGRATOR"
 description: "When branch_pr integrate lands watched runtime source changes on base inside the framework checkout, refresh the repo-local runtime automatically so the next finish --close-commit does not fail on stale dist."
 sections:
   Summary: |-
