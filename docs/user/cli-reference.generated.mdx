@@ -1876,7 +1876,7 @@ agentplane release apply [options]
 Options:
 
 - `--plan <path>`: Path to a release plan directory (defaults to the latest under .agentplane/.release/plan/).
-- `--push`: Mandatory for real releases: push commit and tag so GitHub publish workflow can publish to npm (requires --yes). Local tests can skip with AGENTPLANE_RELEASE_DRY_RUN=1. (default=false)
+- `--push`: Optional direct-push mode: push the release commit and tag immediately (requires --yes). Leave this off when publishing happens later from a protected branch workflow. (default=false)
 - `--remote <name>`: Git remote to push to (default: origin).
 - `--yes`: Approve minor/major bumps and allow pushing. Patch bumps can be applied without this flag. (default=false)
 
@@ -1886,7 +1886,7 @@ Examples:
 agentplane release apply
 ```
 
-- Apply the latest release plan (expects docs/releases/vX.Y.Z.md to exist).
+- Apply the latest release plan locally (expects docs/releases/vX.Y.Z.md to exist).
 
 ```sh
 agentplane release apply --plan .agentplane/.release/plan/<runId>
