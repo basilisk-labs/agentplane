@@ -1,10 +1,11 @@
 ---
 id: "202604100138-87X9YD"
 title: "Use finish-style incident no-op guidance in branch_pr closeout flows"
-status: "DOING"
+result_summary: "integrate: squash task/202604100138-87X9YD/closeout-incident-guidance"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-10T01:57:40.502Z"
   updated_by: "CODER"
   note: "Focused regression checks passed: targeted vitest for integrate and hosted-close incident no-op messaging plus eslint on the touched command/test files."
-commit: null
+commit:
+  hash: "a72f337620b6744bf5bf8d2addc94ae3341a0f01"
+  message: "🧩 87X9YD integrate: workflow: Use finish-style incident no-op guidance in branch_pr closeout flows"
 comments:
   -
     author: "CODER"
     body: "Start: inspect integrate and hosted-close incident output, switch their no-op rendering to the finish-style guidance path, and cover the behavior with focused regression tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100138-87X9YD/pr."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused regression checks passed: targeted vitest for integrate and hosted-close incident no-op messaging plus eslint on the touched command/test files."
+  -
+    type: "status"
+    at: "2026-04-10T02:07:38.452Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100138-87X9YD/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T01:57:40.504Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T02:07:38.454Z"
+doc_updated_by: "INTEGRATOR"
 description: "branch_pr integrate and hosted-close currently render generic incident collection messages, which obscures why incidents.md stays unchanged when only plain verify/finish text exists. Reuse finish-context messaging so operators get explicit next steps during base-side closeout."
 sections:
   Summary: |-

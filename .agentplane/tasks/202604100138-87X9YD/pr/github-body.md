@@ -39,16 +39,24 @@ branch_pr integrate and hosted-close currently render generic incident collectio
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T01:57:01.303Z
+- Updated: 2026-04-10T02:07:39.172Z
 - Branch: task/202604100138-87X9YD/closeout-incident-guidance
-- Head: 20c6ef6f8d03
+- Head: 373b29880520
 
 ```text
- packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts | 2 +-
- packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts | 2 +-
- packages/agentplane/src/commands/pr/integrate/internal/finalize.ts | 2 +-
- packages/agentplane/src/commands/task/hosted-close.command.ts      | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ .agentplane/tasks/202604100138-87X9YD/README.md    | 117 +++++++++++++++++++++
+ .../tasks/202604100138-87X9YD/pr/diffstat.txt      |   5 +
+ .../tasks/202604100138-87X9YD/pr/github-body.md    |  54 ++++++++++
+ .../tasks/202604100138-87X9YD/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604100138-87X9YD/pr/meta.json |  17 +++
+ .../tasks/202604100138-87X9YD/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604100138-87X9YD/pr/review.md |  61 +++++++++++
+ .../tasks/202604100138-87X9YD/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts |   2 +-
+ .../src/cli/run-cli.core.task-hosted-close.test.ts |   2 +-
+ .../src/commands/pr/integrate/internal/finalize.ts |   2 +-
+ .../src/commands/task/hosted-close.command.ts      |   2 +-
+ 12 files changed, 259 insertions(+), 4 deletions(-)
 ```
 
 </details>
