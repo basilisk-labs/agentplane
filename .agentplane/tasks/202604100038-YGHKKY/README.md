@@ -1,10 +1,11 @@
 ---
 id: "202604100038-YGHKKY"
 title: "Reconcile April 10 local main wave for MFGFK9 and EVJWDM"
-status: "TODO"
+result_summary: "Merged via PR #250."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -21,12 +22,24 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
-comments: []
-events: []
+commit:
+  hash: "24738a558f8c5ea6a07d63962cbe7dace81629eb"
+  message: "Merge pull request #250 from basilisk-labs/task/202604100038-YGHKKY/april10-main-wave-reconcile"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #250 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+events:
+  -
+    type: "status"
+    at: "2026-04-10T00:46:30.702Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #250 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-10T00:38:43.284Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-10T00:46:30.707Z"
+doc_updated_by: "INTEGRATOR"
 description: "Publish the local main commits for MFGFK9 and EVJWDM to GitHub, then close the superseded task PRs and restore main/origin convergence."
 sections:
   Summary: |-

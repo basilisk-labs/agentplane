@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604100038-YGHKKY/april10-main-wave-reconcile",
   "created_at": "2026-04-10T00:39:12.111Z",
-  "head_sha": "2bdb03d1b9298608ad3e400d87985aa5a3f9e44d",
+  "head_sha": "55c2fb8aec500b0dbcb64652c45dd9d9e07e2e12",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "24738a558f8c5ea6a07d63962cbe7dace81629eb",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-10T00:46:01Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604100038-YGHKKY",
-  "updated_at": "2026-04-10T00:39:12.111Z",
+  "updated_at": "2026-04-10T00:46:01Z",
   "verify": {
     "status": "skipped"
   }
