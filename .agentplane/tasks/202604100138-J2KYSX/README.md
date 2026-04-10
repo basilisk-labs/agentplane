@@ -1,10 +1,11 @@
 ---
 id: "202604100138-J2KYSX"
 title: "Make pr open explain unpushed task branches before remote create"
-status: "DOING"
+result_summary: "integrate: squash task/202604100138-J2KYSX/pr-open-unpushed-branch"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-10T01:48:33.992Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t \"pr open\"; Result: pass; Evidence: the new unpublished-branch scenario and the existing remote-create/sync-only/linkage scenarios passed in the touched CLI slice. Command: bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; Result: pass; Evidence: the matcher expansion and test harness updates remained lint-clean. Command: agentplane pr open before push plus repeat after git push; Result: pass; Evidence: the first run emitted explicit origin-publish guidance for the task branch, and the second run auto-created GitHub PR #257 without manual gh pr create."
-commit: null
+commit:
+  hash: "749ec4e09a1f54c21c6fefb9109bdeb26bc4ab3d"
+  message: "🧩 J2KYSX integrate: workflow: Make pr open explain unpushed task branches before remote create"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the branch_pr pr open remote-create failure for an unpushed task branch, make the operator-facing outcome explicit, and cover it with focused CLI tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100138-J2KYSX/pr."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t \"pr open\"; Result: pass; Evidence: the new unpublished-branch scenario and the existing remote-create/sync-only/linkage scenarios passed in the touched CLI slice. Command: bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; Result: pass; Evidence: the matcher expansion and test harness updates remained lint-clean. Command: agentplane pr open before push plus repeat after git push; Result: pass; Evidence: the first run emitted explicit origin-publish guidance for the task branch, and the second run auto-created GitHub PR #257 without manual gh pr create."
+  -
+    type: "status"
+    at: "2026-04-10T01:59:06.520Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100138-J2KYSX/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T01:48:33.994Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T01:59:06.522Z"
+doc_updated_by: "INTEGRATOR"
 description: "When branch_pr pr open runs before the task branch exists on origin, GitHub returns a validation failure and the command collapses it into a generic staged/failed message. Detect the missing remote head case and print an explicit actionable outcome instead of a misleading partial-success summary."
 sections:
   Summary: |-
