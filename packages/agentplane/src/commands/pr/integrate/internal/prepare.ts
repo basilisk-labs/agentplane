@@ -26,10 +26,7 @@ import {
 import { readPrArtifact, resolvePrPaths } from "../../internal/pr-paths.js";
 import { ensurePrArtifactsSynced } from "../../internal/sync.js";
 
-import {
-  readAndValidatePrArtifacts,
-  ensureCommittedPrArtifactsOnBranch,
-} from "../artifacts.js";
+import { readAndValidatePrArtifacts, ensureCommittedPrArtifactsOnBranch } from "../artifacts.js";
 import { computeVerifyState } from "../verify.js";
 import { parsePrMetaForwardCompatible, type PrMeta } from "../../../shared/pr-meta.js";
 import { assessPrArtifactFreshness } from "../../internal/freshness.js";
