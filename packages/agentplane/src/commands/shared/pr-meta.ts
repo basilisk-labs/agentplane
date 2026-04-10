@@ -90,19 +90,31 @@ export function buildUpdatedPrMeta(opts: {
   };
 }
 
+export function resolvePrArtifactHeadSha(opts: {
+  previousHeadSha?: string | null;
+  currentHeadSha?: string | null;
+  preservePrevious: boolean;
+}): string | undefined {
+  const previousHeadSha = asNonEmptyString(opts.previousHeadSha);
+  const currentHeadSha = asNonEmptyString(opts.currentHeadSha);
+  if (opts.preservePrevious && previousHeadSha) return previousHeadSha;
+  return currentHeadSha ?? previousHeadSha;
+}
+
 export function buildObservedGithubPrMeta(opts: {
   meta: PrMeta;
   observed: ObservedGithubPrState;
   at: string;
 }): PrMeta {
   const nextStatus = opts.observed.status;
+  const nextHeadSha = opts.meta.head_sha ?? opts.observed.headSha ?? undefined;
   const nextMeta: PrMeta = {
     ...opts.meta,
     pr_number: opts.observed.prNumber,
     pr_url: opts.observed.prUrl ?? opts.meta.pr_url,
     status: nextStatus,
     base: opts.observed.base ?? opts.meta.base,
-    head_sha: opts.observed.headSha ?? opts.meta.head_sha,
+    head_sha: nextHeadSha,
     updated_at: opts.meta.updated_at,
   };
 

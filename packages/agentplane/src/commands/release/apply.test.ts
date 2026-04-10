@@ -219,7 +219,7 @@ describeWhenNotHook("release apply", () => {
   );
 
   it(
-    "requires --push in normal mode for non-dry-run release apply",
+    "allows local release apply without mandatory direct push",
     async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
@@ -267,7 +267,13 @@ describeWhenNotHook("release apply", () => {
           { cwd: root, rootOverride: root },
           { plan: undefined, yes: true, push: false, remote: "origin" },
         ),
-      ).rejects.toThrow(/Release publish is mandatory/u);
+      ).resolves.toBe(0);
+
+      const headTagResult = await execFileAsync("git", ["tag", "--points-at", "HEAD"], {
+        cwd: root,
+      });
+      const headTag = headTagResult.stdout.trim().split(/\r?\n/u).filter(Boolean);
+      expect(headTag).toContain("v0.2.7");
 
       if (wasDryRun === undefined) {
         delete process.env.AGENTPLANE_RELEASE_DRY_RUN;
