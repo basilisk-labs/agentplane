@@ -55,7 +55,7 @@ export function makeRunTaskVerifyShowHandler(getCtx: (cmd: string) => Promise<Co
     }
     const task = await loadTaskFromContext({ ctx: commandCtx, taskId: p.taskId });
     const doc =
-      typeof task.doc === "string" ? task.doc : (await backend.getTaskDoc(p.taskId)) ?? "";
+      typeof task.doc === "string" ? task.doc : ((await backend.getTaskDoc(p.taskId)) ?? "");
     const verifySteps = extractDocSection(doc, "Verify Steps");
     if (!p.quiet) {
       assertVerifyStepsFilled({

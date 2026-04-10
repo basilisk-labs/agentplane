@@ -287,7 +287,12 @@ export function validateReviewContents(review: string, errors: string[]): void {
 }
 
 export function validateGithubPrBodyContents(body: string, errors: string[]): void {
-  const requiredSections = [SUMMARY_SECTION, SCOPE_SECTION, VERIFICATION_SECTION, HANDOFF_NOTES_MARKER];
+  const requiredSections = [
+    SUMMARY_SECTION,
+    SCOPE_SECTION,
+    VERIFICATION_SECTION,
+    HANDOFF_NOTES_MARKER,
+  ];
   for (const section of requiredSections) {
     if (!body.includes(section)) errors.push(`Missing section: ${section}`);
   }

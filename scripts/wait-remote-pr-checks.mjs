@@ -198,8 +198,7 @@ async function resolveRepositorySlug(explicitRepo) {
 }
 
 async function resolveDefaultPrTarget() {
-  const envBranch =
-    process.env.GITHUB_HEAD_REF?.trim() || process.env.BRANCH_NAME?.trim() || "";
+  const envBranch = process.env.GITHUB_HEAD_REF?.trim() || process.env.BRANCH_NAME?.trim() || "";
   if (envBranch) return envBranch;
 
   const result = await execFileAsync("git", ["branch", "--show-current"], {

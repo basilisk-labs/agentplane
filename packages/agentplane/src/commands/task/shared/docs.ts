@@ -13,8 +13,7 @@ export const VERIFY_STEPS_PLACEHOLDER =
 export const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
 export const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
 export type TaskDocVersion = 2 | 3;
-const VERIFY_STEPS_TEMPLATE_LINE_RE =
-  /^\d+\.\s*<[^>\n]+>\.\s*Expected:\s*<[^>\n]+>\.?$/m;
+const VERIFY_STEPS_TEMPLATE_LINE_RE = /^\d+\.\s*<[^>\n]+>\.\s*Expected:\s*<[^>\n]+>\.?$/m;
 
 export function decodeEscapedTaskTextNewlines(text: string): string {
   const normalized = text.replaceAll("\r\n", "\n");
