@@ -1,0 +1,20 @@
+{
+  "base": "main",
+  "branch": "task/202604100255-Z807YX/close-wave-reconcile",
+  "created_at": "2026-04-10T02:56:26.338Z",
+  "head_sha": "5ea378537faab9222bcb4222fe13c77d28616bc5",
+  "last_verified_at": "2026-04-10T03:10:30.771Z",
+  "last_verified_sha": "5ea378537faab9222bcb4222fe13c77d28616bc5",
+  "merge_commit": "8af7ee8205280b5c6ba3df4375bf1aa3a40640d5",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-10T02:59:47Z",
+  "pr_number": 262,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/262",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604100255-Z807YX",
+  "updated_at": "2026-04-10T02:59:47Z",
+  "verify": {
+    "status": "pass"
+  }
+}
