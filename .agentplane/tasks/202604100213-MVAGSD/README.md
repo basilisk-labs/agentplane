@@ -4,7 +4,7 @@ title: "Fail integrate before merging when task PR artifacts are missing"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-10T02:26:59.567Z"
+  updated_by: "CODER"
+  note: "OK: bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts; bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts -t 'integrate fails before merge when the task branch never committed PR artifacts|integrate fails when post-merge hook removes pr dir'; bun x eslint packages/agentplane/src/commands/pr/integrate/artifacts.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reproduce integrate with missing committed task PR artifacts, move artifact validation ahead of merge-side mutation, and cover the guard with focused integration tests."
+  -
+    type: "verify"
+    at: "2026-04-10T02:26:59.567Z"
+    author: "CODER"
+    state: "ok"
+    note: "OK: bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts; bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts -t 'integrate fails before merge when the task branch never committed PR artifacts|integrate fails when post-merge hook removes pr dir'; bun x eslint packages/agentplane/src/commands/pr/integrate/artifacts.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts."
 doc_version: 3
-doc_updated_at: "2026-04-10T02:15:08.456Z"
+doc_updated_at: "2026-04-10T02:26:59.569Z"
 doc_updated_by: "CODER"
 description: "Integrate currently can apply task code onto the base branch and only then discover that the task branch never committed .agentplane/tasks/<task-id>/pr artifacts. Validate the branch-backed task/PR artifact set before any merge-side mutation so base never advances when closeout metadata is absent."
 sections:
@@ -54,11 +60,24 @@ sections:
     3. Inspect the operator-facing error for the missing artifact case. Expected: it names the missing `.agentplane/tasks/<task-id>/pr` artifact set and points at the task branch as the source to fix.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-10T02:26:59.567Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: OK: bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts; bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts -t 'integrate fails before merge when the task branch never committed PR artifacts|integrate fails when post-merge hook removes pr dir'; bun x eslint packages/agentplane/src/commands/pr/integrate/artifacts.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T02:15:08.456Z, excerpt_hash=sha256:474fbf77c7b83d3c2bbbce393fab51cd327718b4a050bb23e7984b1691057208
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Integrate validated task/PR metadata too late: a task branch could omit committed .agentplane/tasks/<task-id>/pr artifacts and still reach merge-side mutation before failing.
+      Impact: Base could advance without committed closeout metadata, forcing manual cleanup and leaving task/incident state inconsistent.
+      Resolution: Added committed-artifact validation before merge-side mutation, covered the missing-artifact and post-merge-removal regressions, and updated prepare.test mocks for the new contract.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -85,6 +104,14 @@ Integrate currently can apply task code onto the base branch and only then disco
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-10T02:26:59.567Z — VERIFY — ok
+
+By: CODER
+
+Note: OK: bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts; bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts -t 'integrate fails before merge when the task branch never committed PR artifacts|integrate fails when post-merge hook removes pr dir'; bun x eslint packages/agentplane/src/commands/pr/integrate/artifacts.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T02:15:08.456Z, excerpt_hash=sha256:474fbf77c7b83d3c2bbbce393fab51cd327718b4a050bb23e7984b1691057208
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -93,3 +120,9 @@ Integrate currently can apply task code onto the base branch and only then disco
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Integrate validated task/PR metadata too late: a task branch could omit committed .agentplane/tasks/<task-id>/pr artifacts and still reach merge-side mutation before failing.
+  Impact: Base could advance without committed closeout metadata, forcing manual cleanup and leaving task/incident state inconsistent.
+  Resolution: Added committed-artifact validation before merge-side mutation, covered the missing-artifact and post-merge-removal regressions, and updated prepare.test mocks for the new contract.
+  Promotion: incident-candidate
+  Fixability: external
