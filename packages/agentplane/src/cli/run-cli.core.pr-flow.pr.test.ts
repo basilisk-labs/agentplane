@@ -1567,7 +1567,15 @@ describe("runCli", () => {
       await writeFile(path.join(root, "feature-2.txt"), "feature-2", "utf8");
       await execFileAsync("git", ["add", "feature-2.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "feature-2"], { cwd: root });
-      await runCliSilent(["pr", "update", taskId, "--root", root]);
+
+      const ioUpdate = captureStdIO();
+      try {
+        const code = await runCli(["pr", "update", taskId, "--root", root]);
+        expect(code).toBe(0);
+        expect(ioUpdate.stderr).toContain("Verify state stale:");
+      } finally {
+        ioUpdate.restore();
+      }
 
       const io = captureStdIO();
       try {
