@@ -25,8 +25,21 @@ export async function gitDiffNames(cwd: string, base: string, branch: string): P
     .filter((line) => line.length > 0);
 }
 
-export async function gitDiffStat(cwd: string, base: string, branch: string): Promise<string> {
-  const { stdout } = await execFileAsync("git", ["diff", "--stat", `${base}...${branch}`], {
+export async function gitDiffStat(
+  cwd: string,
+  base: string,
+  branch: string,
+  opts?: { excludePaths?: string[] },
+): Promise<string> {
+  const args = ["diff", "--stat", `${base}...${branch}`];
+  const excludePaths = (opts?.excludePaths ?? [])
+    .map((relPath) => relPath.trim())
+    .filter((relPath) => relPath.length > 0)
+    .map((relPath) => `:(exclude)${toGitPath(relPath)}`);
+  if (excludePaths.length > 0) {
+    args.push("--", ".", ...excludePaths);
+  }
+  const { stdout } = await execFileAsync("git", args, {
     cwd,
     env: gitEnv(),
   });

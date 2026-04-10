@@ -155,16 +155,15 @@ export async function ensureCleanTrackedTree(gitRoot: string): Promise<void> {
       { command: "release apply" },
       {
         state: "release apply cannot start from a dirty tracked tree",
-        likelyCause:
-          "the release flow needs to create one deterministic version-bump commit and tag, but tracked edits already exist in the workspace",
-        nextAction: {
-          command: "git status --short --untracked-files=no",
-          reason:
-            "inspect or clear tracked changes before rerunning `agentplane release apply --push --yes`",
-          reasonCode: "release_dirty_tree",
+          likelyCause:
+            "the release flow needs to create one deterministic version-bump commit and tag, but tracked edits already exist in the workspace",
+          nextAction: {
+            command: "git status --short --untracked-files=no",
+            reason: "inspect or clear tracked changes before rerunning `agentplane release apply`",
+            reasonCode: "release_dirty_tree",
+          },
         },
-      },
-    ),
+      ),
   });
 }
 
