@@ -1,15 +1,17 @@
  .agentplane/config.json                            |   2 +-
  .agentplane/tasks/202604101009-36KKA9/README.md    | 127 +++++++++
- .../tasks/202604101009-36KKA9/pr/diffstat.txt      |   0
- .../tasks/202604101009-36KKA9/pr/github-body.md    |  33 +++
- .../tasks/202604101009-36KKA9/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604101009-36KKA9/pr/meta.json |  14 +
- .../tasks/202604101009-36KKA9/pr/notes.jsonl       |   0
- .agentplane/tasks/202604101009-36KKA9/pr/review.md |  57 ++++
- .../tasks/202604101009-36KKA9/pr/verify.log        |   0
  bun.lock                                           |   6 +-
  docs/reference/generated-reference.mdx             |   4 +-
  docs/releases/v0.3.11.md                           | 309 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   4 +-
  packages/agentplane/package.json                   |   4 +-
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  76 +++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |  86 ++++--
+ .../src/commands/release/apply.command.ts          |  21 +-
+ .../src/commands/release/apply.preflight.ts        |   3 +-
+ .../agentplane/src/commands/release/apply.test.ts  |  10 +-
+ .../agentplane/src/commands/shared/git-diff.ts     |  17 +-
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  58 ++++
+ packages/agentplane/src/commands/shared/pr-meta.ts |  14 +-
  packages/core/package.json                         |   2 +-
- 14 files changed, 550 insertions(+), 9 deletions(-)
+ 16 files changed, 684 insertions(+), 59 deletions(-)

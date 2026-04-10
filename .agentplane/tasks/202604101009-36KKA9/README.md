@@ -4,7 +4,7 @@ title: "Prepare patch release v0.3.11 and reconcile protected-main publish path"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-10T10:34:56.715Z"
+  updated_at: "2026-04-10T14:43:34.091Z"
   updated_by: "CODER"
-  note: "Release checks: updated release parity to 0.3.11, regenerated generated-reference docs, and passed bun run release:check with successful build plus npm pack --dry-run for both published packages."
+  note: "Verified release/apply + PR-flow backports with bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/release/apply.test.ts and bun x tsc --noEmit -p packages/agentplane/tsconfig.json"
 commit: null
 comments:
   -
@@ -40,8 +40,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release checks: updated release parity to 0.3.11, regenerated generated-reference docs, and passed bun run release:check with successful build plus npm pack --dry-run for both published packages."
+  -
+    type: "verify"
+    at: "2026-04-10T14:43:34.091Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified release/apply + PR-flow backports with bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/release/apply.test.ts and bun x tsc --noEmit -p packages/agentplane/tsconfig.json"
 doc_version: 3
-doc_updated_at: "2026-04-10T10:34:56.724Z"
+doc_updated_at: "2026-04-10T14:43:34.098Z"
 doc_updated_by: "CODER"
 description: "Generate the next patch release plan from v0.3.10, draft release notes, prepare a release candidate branch/PR, and reconcile the current mismatch between release apply --push and the protected-main publish route before any irreversible release action."
 sections:
@@ -66,6 +72,14 @@ sections:
     Note: Release checks: updated release parity to 0.3.11, regenerated generated-reference docs, and passed bun run release:check with successful build plus npm pack --dry-run for both published packages.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T10:09:58.538Z, excerpt_hash=sha256:324c71066dc78e486d11bf059d5b70f9cd299b98ff97c898e0ea2c71418009d6
+    
+    ### 2026-04-10T14:43:34.091Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified release/apply + PR-flow backports with bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/release/apply.test.ts and bun x tsc --noEmit -p packages/agentplane/tsconfig.json
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T10:34:56.724Z, excerpt_hash=sha256:324c71066dc78e486d11bf059d5b70f9cd299b98ff97c898e0ea2c71418009d6
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -110,6 +124,14 @@ By: CODER
 Note: Release checks: updated release parity to 0.3.11, regenerated generated-reference docs, and passed bun run release:check with successful build plus npm pack --dry-run for both published packages.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T10:09:58.538Z, excerpt_hash=sha256:324c71066dc78e486d11bf059d5b70f9cd299b98ff97c898e0ea2c71418009d6
+
+### 2026-04-10T14:43:34.091Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified release/apply + PR-flow backports with bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/release/apply.test.ts and bun x tsc --noEmit -p packages/agentplane/tsconfig.json
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T10:34:56.724Z, excerpt_hash=sha256:324c71066dc78e486d11bf059d5b70f9cd299b98ff97c898e0ea2c71418009d6
 
 <!-- END VERIFICATION RESULTS -->
 

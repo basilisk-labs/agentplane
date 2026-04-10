@@ -12,7 +12,7 @@ Generate the next patch release plan from v0.3.10, draft release notes, prepare 
 ## Verification
 
 - State: ok
-- Note: Release checks: updated release parity to 0.3.11, regenerated generated-reference docs, and passed bun run release:check with successful build plus npm pack --dry-run for both published packages.
+- Note: Verified release/apply + PR-flow backports with bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/release/apply.test.ts and bun x tsc --noEmit -p packages/agentplane/tsconfig.json
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
@@ -22,26 +22,28 @@ Generate the next patch release plan from v0.3.10, draft release notes, prepare 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T10:36:00.677Z
+- Updated: 2026-04-10T14:43:15.565Z
 - Branch: task/202604101009-36KKA9/patch-release-v0-3-11
-- Head: 12eb875696b1
+- Head: f599c7fa8709
 
 ```text
  .agentplane/config.json                            |   2 +-
  .agentplane/tasks/202604101009-36KKA9/README.md    | 127 +++++++++
- .../tasks/202604101009-36KKA9/pr/diffstat.txt      |   0
- .../tasks/202604101009-36KKA9/pr/github-body.md    |  33 +++
- .../tasks/202604101009-36KKA9/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604101009-36KKA9/pr/meta.json |  14 +
- .../tasks/202604101009-36KKA9/pr/notes.jsonl       |   0
- .agentplane/tasks/202604101009-36KKA9/pr/review.md |  57 ++++
- .../tasks/202604101009-36KKA9/pr/verify.log        |   0
  bun.lock                                           |   6 +-
  docs/reference/generated-reference.mdx             |   4 +-
  docs/releases/v0.3.11.md                           | 309 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   4 +-
  packages/agentplane/package.json                   |   4 +-
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  76 +++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |  86 ++++--
+ .../src/commands/release/apply.command.ts          |  21 +-
+ .../src/commands/release/apply.preflight.ts        |   3 +-
+ .../agentplane/src/commands/release/apply.test.ts  |  10 +-
+ .../agentplane/src/commands/shared/git-diff.ts     |  17 +-
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  58 ++++
+ packages/agentplane/src/commands/shared/pr-meta.ts |  14 +-
  packages/core/package.json                         |   2 +-
- 14 files changed, 550 insertions(+), 9 deletions(-)
+ 16 files changed, 684 insertions(+), 59 deletions(-)
 ```
 
 </details>
