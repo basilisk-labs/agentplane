@@ -1,7 +1,10 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
-import type { CommandContext } from "../shared/task-backend.js";
+import { backendNotSupportedMessage } from "../../cli/output.js";
+import { CliError } from "../../shared/errors.js";
+import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
 import { cmdTaskDocShow } from "./doc.js";
+import { assertVerifyStepsFilled, extractDocSection, isVerifyStepsFilled } from "./shared.js";
 
 export type TaskVerifyShowParsed = {
   taskId: string;
@@ -41,8 +44,32 @@ export const taskVerifyShowSpec: CommandSpec<TaskVerifyShowParsed> = {
 
 export function makeRunTaskVerifyShowHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: TaskVerifyShowParsed): Promise<number> => {
+    const commandCtx = await getCtx("task verify-show");
+    const backend = commandCtx.taskBackend;
+    if (!backend.getTaskDoc) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: backendNotSupportedMessage("task docs"),
+      });
+    }
+    const task = await loadTaskFromContext({ ctx: commandCtx, taskId: p.taskId });
+    const doc =
+      typeof task.doc === "string" ? task.doc : ((await backend.getTaskDoc(p.taskId)) ?? "");
+    const verifySteps = extractDocSection(doc, "Verify Steps");
+    if (!p.quiet) {
+      assertVerifyStepsFilled({
+        taskId: p.taskId,
+        sectionText: verifySteps,
+        action: "show Verify Steps",
+        guidance: "fill it before verification",
+      });
+    } else if (!isVerifyStepsFilled(verifySteps)) {
+      return 0;
+    }
+
     return await cmdTaskDocShow({
-      ctx: await getCtx("task verify-show"),
+      ctx: commandCtx,
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,

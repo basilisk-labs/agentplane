@@ -3224,6 +3224,59 @@ describe("runCli", () => {
     }
   });
 
+  it("task verify-show rejects placeholder Verify Steps unless quiet", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Verify show placeholder",
+          "--description",
+          "Has scaffolded verify steps",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["task", "verify-show", taskId, "--root", root]);
+        expect(code).toBe(3);
+        expect(io.stderr).toContain("cannot show Verify Steps");
+        expect(io.stderr).toContain("Verify Steps");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["task", "verify-show", taskId, "--quiet", "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toBe("");
+        expect(io.stderr).toBe("");
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
   it("task doc show supports quiet when section is missing", async () => {
     const root = await mkGitRepoRoot();
     let taskId = "";

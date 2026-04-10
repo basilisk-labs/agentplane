@@ -199,6 +199,7 @@ describe("wait-remote-pr-checks script", () => {
         PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
         GH_STATE_FILE: stateFile,
         GH_CALL_LOG: callLog,
+        GITHUB_HEAD_REF: "task/test-default-target",
         AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
         AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "3",
       },
@@ -211,7 +212,7 @@ describe("wait-remote-pr-checks script", () => {
 
     const callLogText = await readFile(callLog, "utf8");
     expect(callLogText).toContain(
-      `["pr","view","--repo","basilisk-labs/agentplane","--json","number,headRefOid,baseRefName,url,title"]`,
+      `["pr","view","task/test-default-target","--repo","basilisk-labs/agentplane","--json","number,headRefOid,baseRefName,url,title"]`,
     );
     expect(callLogText).toContain(
       `["api","repos/basilisk-labs/agentplane/branches/main/protection"]`,

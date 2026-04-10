@@ -20,11 +20,11 @@ import {
 } from "../shared/task-store.js";
 
 import {
+  assertVerifyStepsFilled,
   decodeEscapedTaskTextNewlines,
   ensureAgentFilledRequiredDocSections,
   extractDocSection,
   extractTaskObservationSection,
-  isVerifyStepsFilled,
   nowIso,
   normalizeTaskDocVersion,
   taskObservationSectionName,
@@ -122,16 +122,12 @@ function assertPlanCanBeApproved(opts: {
   const verifyRequired = requiresVerifyStepsByPrimary(tags, opts.config);
   const isSpike = tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
   if (verifyRequired || isSpike) {
-    const verifySteps = extractDocSection(opts.doc, "Verify Steps");
-    if (!isVerifyStepsFilled(verifySteps)) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message:
-          `${opts.task.id}: cannot approve plan: ## Verify Steps section is missing/empty/unfilled ` +
-          "(fill it before approving plan)",
-      });
-    }
+    assertVerifyStepsFilled({
+      taskId: opts.task.id,
+      sectionText: extractDocSection(opts.doc, "Verify Steps"),
+      action: "approve plan",
+      guidance: "fill it before approving plan",
+    });
   }
   if (!isSpike) return;
 
