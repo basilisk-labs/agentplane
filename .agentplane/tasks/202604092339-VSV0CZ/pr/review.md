@@ -45,22 +45,22 @@ If finish reaches DONE state before the deterministic close commit fails, rerunn
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T23:59:21.088Z
+- Updated: 2026-04-10T00:03:20.447Z
 - Branch: task/202604092339-VSV0CZ/idempotent-finish-retry
-- Head: 79615659a8c5
+- Head: cb4afec3eb8e
 
 ```text
  .agentplane/tasks/202604092339-VSV0CZ/README.md    | 117 +++++++++++++++++++++
- .../tasks/202604092339-VSV0CZ/pr/diffstat.txt      |   0
- .../tasks/202604092339-VSV0CZ/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604092339-VSV0CZ/pr/diffstat.txt      |  11 ++
+ .../tasks/202604092339-VSV0CZ/pr/github-body.md    |  60 +++++++++++
  .../tasks/202604092339-VSV0CZ/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604092339-VSV0CZ/pr/meta.json |  14 +++
+ .agentplane/tasks/202604092339-VSV0CZ/pr/meta.json |  17 +++
  .../tasks/202604092339-VSV0CZ/pr/notes.jsonl       |   0
- .agentplane/tasks/202604092339-VSV0CZ/pr/review.md |  57 ++++++++++
+ .agentplane/tasks/202604092339-VSV0CZ/pr/review.md |  67 ++++++++++++
  .../tasks/202604092339-VSV0CZ/pr/verify.log        |   0
  .../agentplane/src/commands/task/finish-shared.ts  |  56 ++++++++++
  .../src/commands/task/finish.unit.test.ts          |  93 ++++++++++++++++
- 10 files changed, 388 insertions(+)
+ 10 files changed, 422 insertions(+)
 ```
 
 </details>

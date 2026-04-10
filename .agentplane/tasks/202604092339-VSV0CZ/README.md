@@ -1,10 +1,11 @@
 ---
 id: "202604092339-VSV0CZ"
 title: "Make finish closeout idempotent after partial DONE retries"
-status: "DOING"
+result_summary: "integrate: squash task/202604092339-VSV0CZ/idempotent-finish-retry"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-09T23:54:20.202Z"
   updated_by: "CODER"
   note: "Verified: targeted finish retry unit tests and eslint passed for idempotent DONE closeout handling."
-commit: null
+commit:
+  hash: "5aa6de6f86eb31cc663a03f1f5a1b34f7589286b"
+  message: "🧩 VSV0CZ integrate: workflow: Make finish closeout idempotent after partial DONE retries"
 comments:
   -
     author: "CODER"
     body: "Start: make finish retries idempotent after partial DONE closeout failures so operators can recreate the close commit without duplicating lifecycle metadata."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604092339-VSV0CZ/pr."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: targeted finish retry unit tests and eslint passed for idempotent DONE closeout handling."
+  -
+    type: "status"
+    at: "2026-04-10T00:03:20.247Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604092339-VSV0CZ/pr."
 doc_version: 3
-doc_updated_at: "2026-04-09T23:54:20.204Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T00:03:20.249Z"
+doc_updated_by: "INTEGRATOR"
 description: "If finish reaches DONE state before the deterministic close commit fails, rerunning finish for the same task/result should not append duplicate DONE comments or duplicate status events before recreating the close commit."
 sections:
   Summary: |-
