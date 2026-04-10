@@ -31,8 +31,9 @@ describe("runCli", () => {
     expect(readme).toContain('title: "(untitled task)"');
     expect(readme).toContain('owner: "UNKNOWN"');
     expect(readme).toContain("## Verify Steps");
-    expect(readme).toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
-    expect(readme).toContain("1. <Action>. Expected: <observable result>.");
+    expect(readme).toContain('Review the requested outcome for "(untitled task)".');
+    expect(readme).toContain("Run the most relevant validation step for this task.");
+    expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
     expect(readme).toContain("## Verification");
     expect(readme).toContain("## Findings");
     expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
@@ -84,6 +85,7 @@ describe("runCli", () => {
 
     const readme = await readFile(readmePath, "utf8");
     expect(readme).toContain("Custom title");
+    expect(readme).toContain('Review the requested outcome for "Custom title".');
   });
 
   it("task scaffold rejects missing title values and unknown flags", async () => {

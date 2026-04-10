@@ -9,11 +9,11 @@ import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
 
 import {
   applyTaskStatusTransitionCommand,
+  assertVerifyStepsFilled,
   ensurePlanApprovedIfRequired,
   extractTaskObservationSection,
   defaultCommitEmojiForStatus,
   extractDocSection,
-  isVerifyStepsFilled,
   normalizeTaskDocVersion,
   nowIso,
   prepareTaskTransitionComment,
@@ -37,16 +37,12 @@ function assertStartDocRequirements(task: TaskData, config: CommandContext["conf
   const doc = typeof task.doc === "string" ? task.doc : "";
 
   if (verifyRequired || isSpike) {
-    const verifySteps = extractDocSection(doc, "Verify Steps");
-    if (!isVerifyStepsFilled(verifySteps)) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message:
-          `${task.id}: cannot start work: ## Verify Steps section is missing/empty/unfilled ` +
-          "(fill it before starting work when plan approval is disabled)",
-      });
-    }
+    assertVerifyStepsFilled({
+      taskId: task.id,
+      sectionText: extractDocSection(doc, "Verify Steps"),
+      action: "start work",
+      guidance: "fill it before starting work when plan approval is disabled",
+    });
   }
 
   if (!isSpike) return;

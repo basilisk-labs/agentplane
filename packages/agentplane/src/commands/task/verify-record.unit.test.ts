@@ -222,6 +222,56 @@ describe("task verify record (unit)", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
+  it("cmdTaskVerifyOk rejects scaffolded Verify Steps before writing verification", async () => {
+    const backend: TaskBackend = {
+      id: "mock",
+      listTasks: () => Promise.resolve([]),
+      getTask: () => Promise.resolve(null),
+      writeTask: () => Promise.resolve(),
+      getTaskDoc: () =>
+        Promise.resolve(
+          [
+            "## Summary",
+            "x",
+            "",
+            "## Verify Steps",
+            "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
+            "",
+            "1. <Action>. Expected: <observable result>.",
+            "2. <Action>. Expected: <observable result>.",
+            "",
+            "## Verification",
+            "<!-- BEGIN VERIFICATION RESULTS -->",
+            "<!-- END VERIFICATION RESULTS -->",
+            "",
+            "## Findings",
+            "",
+          ].join("\n"),
+        ),
+    };
+    const ctx = mkCtx({ taskBackend: backend, backend });
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        status: "DONE",
+        doc: undefined,
+        doc_version: 3,
+        doc_updated_at: "2026-02-01T00:00:00Z",
+      }),
+    );
+
+    const { cmdTaskVerifyOk } = await import("./verify-record.js");
+    await expect(
+      cmdTaskVerifyOk({
+        ctx,
+        cwd: "/repo",
+        taskId: "T-1",
+        by: "A",
+        note: "Looks good",
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+  });
+
   it("cmdTaskVerifyOk maps readFile errors when --note-file is provided", async () => {
     mocks.readFile.mockRejectedValue(new Error("ENOENT: nope"));
     const { cmdTaskVerifyOk } = await import("./verify-record.js");

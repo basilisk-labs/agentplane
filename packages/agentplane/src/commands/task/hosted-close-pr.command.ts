@@ -7,7 +7,11 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
-import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import {
+  loadTaskFromContext,
+  resolveTaskBranchFromContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import { parseTaskIdFromCloseBranch } from "../shared/git-worktree.js";
 import { parsePrMeta } from "../shared/pr-meta.js";
 import { resolveDefaultGithubRepo, runGhApiJson } from "../pr/internal/gh-api.js";
@@ -116,14 +120,14 @@ async function resolveGithubRepo(opts: {
 
 function selectMergedPullRecord(opts: {
   pulls: GithubPullRequestRecord[];
-  sourceBranch: string;
+  sourceBranch: string | null;
   baseBranch: string | null;
   prNumber: number | null;
 }): GithubPullRequestRecord | null {
   const merged = opts.pulls.filter((record) => {
     if (typeof record.merged_at !== "string" || record.merged_at.trim().length === 0) return false;
     const headRef = record.head?.ref?.trim() ?? "";
-    if (headRef && headRef !== opts.sourceBranch) return false;
+    if (opts.sourceBranch && headRef && headRef !== opts.sourceBranch) return false;
     const baseRef = record.base?.ref?.trim() ?? "";
     if (opts.baseBranch && baseRef && baseRef !== opts.baseBranch) return false;
     return true;
@@ -167,16 +171,37 @@ async function resolveHostedCloseMergeRecord(opts: {
   });
 }
 
-async function readHostedCloseMeta(opts: {
+async function resolveHostedCloseMergeRecordByCommit(opts: {
+  gitRoot: string;
+  repo: string;
+  mergeCommit: string;
+  sourceBranch: string | null;
+  baseBranch: string | null;
+  prNumber: number | null;
+}): Promise<GithubPullRequestRecord | null> {
+  const records = await runGhApiJson<GithubPullRequestRecord[]>(opts.gitRoot, [
+    `repos/${opts.repo}/commits/${opts.mergeCommit}/pulls`,
+  ]);
+  return selectMergedPullRecord({
+    pulls: Array.isArray(records) ? records : [],
+    sourceBranch: opts.sourceBranch,
+    baseBranch: opts.baseBranch,
+    prNumber: opts.prNumber,
+  });
+}
+
+async function readHostedCloseState(opts: {
   ctx: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
 }): Promise<{
-  meta: ReturnType<typeof parsePrMeta>;
+  meta: ReturnType<typeof parsePrMeta> | null;
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+  taskBranch: string | null;
 }> {
   const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
+  const taskBranch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   const { metaPath, config } = await resolvePrPaths({
     ctx: opts.ctx,
     cwd: opts.cwd,
@@ -191,14 +216,10 @@ async function readHostedCloseMeta(opts: {
     });
   }
   if (!(await fileExists(metaPath))) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: `Missing pr/meta.json for ${opts.taskId}`,
-    });
+    return { meta: null, task, taskBranch };
   }
   const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
-  return { meta, task };
+  return { meta, task, taskBranch };
 }
 
 async function listRemoteTaskCloseBranches(opts: {
@@ -338,14 +359,56 @@ async function openHostedClosePr(opts: {
   repo?: string | null;
 }): Promise<number> {
   const output = createCliEmitter();
-  const { meta, task } = await readHostedCloseMeta({
+  const { meta, task, taskBranch } = await readHostedCloseState({
     ctx: opts.ctx,
     cwd: opts.cwd,
     rootOverride: opts.rootOverride,
     taskId: opts.taskId,
   });
 
-  const sourceBranch = meta.branch?.trim() ?? "";
+  const gitRoot = opts.ctx.resolvedProject.gitRoot;
+  const repo = await resolveGithubRepo({ gitRoot, repoOverride: opts.repo ?? null });
+  const defaultBaseBranch = await resolveBaseBranch({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+    cliBaseOpt: null,
+    mode: opts.ctx.config.workflow_mode,
+  });
+  let sourceBranch = meta?.branch?.trim() ?? taskBranch?.trim() ?? "";
+  let baseBranch = meta?.base?.trim() ?? defaultBaseBranch?.trim() ?? "";
+  let mergedRecord =
+    sourceBranch.length > 0 &&
+    (meta?.status !== "MERGED" || !(meta?.merge_commit?.trim() ?? task.commit?.hash?.trim() ?? ""))
+      ? await resolveHostedCloseMergeRecord({
+          gitRoot,
+          repo,
+          sourceBranch,
+          baseBranch: baseBranch || null,
+          prNumber: typeof meta?.pr_number === "number" ? meta.pr_number : null,
+        })
+      : null;
+  const localMergeCommit = meta?.merge_commit?.trim() ?? task.commit?.hash?.trim() ?? "";
+  if (!mergedRecord && localMergeCommit) {
+    mergedRecord = await resolveHostedCloseMergeRecordByCommit({
+      gitRoot,
+      repo,
+      mergeCommit: localMergeCommit,
+      sourceBranch: sourceBranch || null,
+      baseBranch: baseBranch || null,
+      prNumber: typeof meta?.pr_number === "number" ? meta.pr_number : null,
+    });
+  }
+  if (!sourceBranch) {
+    sourceBranch = mergedRecord?.head?.ref?.trim() ?? "";
+  }
+  if (!baseBranch) {
+    baseBranch = mergedRecord?.base?.ref?.trim() ?? defaultBaseBranch?.trim() ?? "";
+  }
+  const mergeCommit =
+    meta?.merge_commit?.trim() ??
+    task.commit?.hash?.trim() ??
+    mergedRecord?.merge_commit_sha?.trim() ??
+    "";
   if (!sourceBranch) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
@@ -353,31 +416,6 @@ async function openHostedClosePr(opts: {
       message: `Missing hosted close source branch for ${opts.taskId}.`,
     });
   }
-  const gitRoot = opts.ctx.resolvedProject.gitRoot;
-  const repo = await resolveGithubRepo({ gitRoot, repoOverride: opts.repo ?? null });
-  const baseBranch =
-    meta.base?.trim() ??
-    (await resolveBaseBranch({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-      cliBaseOpt: null,
-      mode: opts.ctx.config.workflow_mode,
-    }));
-  const mergedRecord =
-    meta.status === "MERGED" && (meta.merge_commit?.trim() ?? task.commit?.hash?.trim() ?? "")
-      ? null
-      : await resolveHostedCloseMergeRecord({
-          gitRoot,
-          repo,
-          sourceBranch,
-          baseBranch: baseBranch?.trim() ?? null,
-          prNumber: typeof meta.pr_number === "number" ? meta.pr_number : null,
-        });
-  const mergeCommit =
-    meta.merge_commit?.trim() ??
-    task.commit?.hash?.trim() ??
-    mergedRecord?.merge_commit_sha?.trim() ??
-    "";
   if (!mergeCommit) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
@@ -385,7 +423,7 @@ async function openHostedClosePr(opts: {
       message: `Missing hosted close merge commit for ${opts.taskId}.`,
     });
   }
-  if (meta.status !== "MERGED" && !mergedRecord?.merged_at) {
+  if (meta?.status !== "MERGED" && !mergedRecord?.merged_at) {
     throw new CliError({
       exitCode: exitCodeForError("E_USAGE"),
       code: "E_USAGE",
@@ -427,7 +465,7 @@ async function openHostedClosePr(opts: {
     `body=${buildHostedClosePrBody({
       taskId: opts.taskId,
       prNumber:
-        typeof meta.pr_number === "number"
+        typeof meta?.pr_number === "number"
           ? meta.pr_number
           : typeof mergedRecord?.number === "number"
             ? mergedRecord.number

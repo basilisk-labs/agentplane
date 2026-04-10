@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -7,6 +7,7 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core";
+import { loadTaskBackend } from "../backends/task-backend.js";
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 
 import { runCli } from "./run-cli.js";
@@ -29,6 +30,7 @@ async function installFakeGhHostedClosePr(opts: {
   branch: string;
   existingResponse: object[];
   mergedResponse?: object[];
+  commitPullsResponse?: object[];
   createResponse: object;
   allowCreate: boolean;
 }) {
@@ -53,6 +55,7 @@ async function installFakeGhHostedClosePr(opts: {
       `const expectedHead = ${JSON.stringify(`example:${opts.branch}`)};`,
       `const existingResponse = ${JSON.stringify(opts.existingResponse)};`,
       `const mergedResponse = ${JSON.stringify(opts.mergedResponse ?? [])};`,
+      `const commitPullsResponse = ${JSON.stringify(opts.commitPullsResponse ?? [])};`,
       `const createResponse = ${JSON.stringify(opts.createResponse)};`,
       `const allowCreate = ${JSON.stringify(opts.allowCreate)};`,
       'let method = "GET";',
@@ -65,6 +68,10 @@ async function installFakeGhHostedClosePr(opts: {
       "}",
       'if (route === "repos/example/repo/pulls" && method === "GET" && params.get("state") === "closed") {',
       "  console.log(JSON.stringify(mergedResponse));",
+      "  process.exit(0);",
+      "}",
+      'if (route.startsWith("repos/example/repo/commits/") && route.endsWith("/pulls") && method === "GET") {',
+      "  console.log(JSON.stringify(commitPullsResponse));",
       "  process.exit(0);",
       "}",
       'if (route === "repos/example/repo/pulls" && method === "POST") {',
@@ -955,6 +962,198 @@ describe("runCli", () => {
     expect(log).toContain(
       '"repos/example/repo/pulls?state=closed&head=example%3Atask%2F202604091600-348SVA%2Fhosted-close-pr-fallback&base=main"',
     );
+    expect(log).toContain('"POST"');
+  }, 120_000);
+
+  it("task hosted-close-pr recovers from missing base pr meta via merge-commit lookup", async () => {
+    const root = await writeAndConfigureRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await mkdir(path.join(root, "packages", "agentplane", "assets", "policy"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "packages", "agentplane", "assets", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+    const { stdout: baseBranchStdout } = await execFileAsync(
+      "git",
+      ["rev-parse", "--abbrev-ref", "HEAD"],
+      { cwd: root },
+    );
+    const baseBranch = baseBranchStdout.trim();
+
+    const taskId = "202604091625-5Y1QMK";
+    const branch = `task/${taskId}/hosted-close-pr-commit-fallback`;
+    expect(
+      await runCliSilent([
+        "task",
+        "add",
+        taskId,
+        "--title",
+        "Hosted close PR commit fallback",
+        "--description",
+        "Recover hosted-close-pr from missing base metadata via merge commit lookup",
+        "--priority",
+        "high",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    expect(
+      await runCliSilent([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        "1. Run task hosted-close-pr after deleting base-side pr metadata.",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    await approveTaskPlan(root, taskId);
+    expect(
+      await runCliSilent([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: verify hosted-close-pr commit fallback without base-side PR metadata.",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    await recordVerificationOk(root, taskId);
+    expect(
+      await runCliSilent([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    const touchedFile = path.join(root, "src", "hosted-close-pr-commit-fallback.ts");
+    await mkdir(path.dirname(touchedFile), { recursive: true });
+    await writeFile(touchedFile, "export const hostedClosePrCommitFallback = true;\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: hosted close PR commit fallback"], {
+      cwd: root,
+    });
+
+    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["merge", "--no-ff", branch, "-m", "Merge hosted close PR commit fallback"],
+      { cwd: root },
+    );
+    const { stdout: mergeHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const mergeSha = mergeHeadStdout.trim();
+    const closureBranch = `task-close/${taskId}/${mergeSha.slice(0, 12)}`;
+
+    const bareOrigin = await mkdtemp(
+      path.join(tmpdir(), "agentplane-hosted-close-pr-commit-fallback-origin-"),
+    );
+    await execFileAsync("git", ["init", "--bare", bareOrigin], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", bareOrigin], { cwd: root });
+    await execFileAsync("git", ["push", "origin", `HEAD:refs/heads/${closureBranch}`], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["branch", "-D", branch], { cwd: root });
+
+    const { backend } = await loadTaskBackend({ cwd: root, rootOverride: null });
+    const task = await backend.getTask(taskId);
+    expect(task).not.toBeNull();
+    await backend.writeTask({
+      ...task!,
+      commit: { hash: mergeSha, message: "Hosted close PR commit fallback" },
+      result_summary: "Merged via PR #204.",
+    });
+
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    await rm(metaPath, { force: true });
+
+    const createResponse = {
+      number: 904,
+      html_url: "https://github.com/example/repo/pull/904",
+      state: "open",
+      merged_at: null,
+    };
+    const commitPullsResponse = [
+      {
+        number: 204,
+        html_url: "https://github.com/example/repo/pull/204",
+        state: "closed",
+        merged_at: "2026-04-09T16:26:00.000Z",
+        merge_commit_sha: mergeSha,
+        head: { ref: branch },
+        base: { ref: baseBranch },
+      },
+    ];
+
+    const fakeGh = await installFakeGhHostedClosePr({
+      scenarioName: "commit-fallback",
+      branch: closureBranch,
+      existingResponse: [],
+      mergedResponse: [],
+      commitPullsResponse,
+      createResponse,
+      allowCreate: true,
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeGh.fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = fakeGh.logPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "hosted-close-pr",
+        taskId,
+        "--repo",
+        "example/repo",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("created GitHub PR #904");
+      expect(io.stdout).toContain("https://github.com/example/repo/pull/904");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    const log = await readFile(fakeGh.logPath, "utf8");
+    expect(log).toContain(`"repos/example/repo/commits/${mergeSha}/pulls"`);
     expect(log).toContain('"POST"');
   }, 120_000);
 });

@@ -58,6 +58,21 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
+async function setConcreteVerifySteps(root: string, taskId: string): Promise<void> {
+  await runCliSilent([
+    "task",
+    "doc",
+    "set",
+    taskId,
+    "--section",
+    "Verify Steps",
+    "--text",
+    "Run verify for this task. Expected: verification records successfully and PR artifacts stay coherent.",
+    "--root",
+    root,
+  ]);
+}
+
 async function installFakeGhPrLookup(opts: {
   scenarioName: string;
   branch: string;
@@ -246,6 +261,7 @@ describe("runCli", () => {
       `(${extractTaskSuffix(taskId)})`,
     );
     expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toContain("## Verification");
+    expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).not.toContain("## Risks");
   });
 
   it("pr open creates a remote GitHub PR when origin and gh are available", async () => {
@@ -954,8 +970,11 @@ describe("runCli", () => {
     expect(githubBody).toContain("## Summary");
     expect(githubBody).toContain("## Scope");
     expect(githubBody).toContain("## Verification");
+    expect(githubBody).toContain("## Handoff Notes");
     expect(githubBody).toContain("<details>");
     expect(githubBody).toContain("change.txt");
+    expect(githubBody).not.toContain("## Risks");
+    expect(githubBody).not.toContain("### Plan");
   });
 
   it("pr update is idempotent when HEAD and diff are unchanged", { timeout: 60_000 }, async () => {
@@ -1266,6 +1285,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await setConcreteVerifySteps(root, taskId);
 
       const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
       await rm(path.join(prDir, "review.md"));
@@ -1369,6 +1389,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await setConcreteVerifySteps(root, taskId);
 
     const incidentsBefore = await readFile(incidentsPath, "utf8");
 
@@ -1466,6 +1487,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await setConcreteVerifySteps(root, taskId);
 
     const incidentsBefore = await readFile(incidentsPath, "utf8");
 
@@ -1626,6 +1648,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await setConcreteVerifySteps(root, taskId);
 
       await writeFile(path.join(root, "feature-1.txt"), "feature-1", "utf8");
       await execFileAsync("git", ["add", "feature-1.txt"], { cwd: root });
@@ -1725,6 +1748,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await setConcreteVerifySteps(root, taskId);
 
       await writeFile(path.join(root, "feature.txt"), "feature", "utf8");
       await execFileAsync("git", ["add", "feature.txt"], { cwd: root });

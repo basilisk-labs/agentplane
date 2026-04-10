@@ -84,7 +84,7 @@ function renderRiskSummary(task: TaskData): string {
   ].join("\n");
 }
 
-function renderSharedPrSections(opts: { task: TaskData; handoffNotes: PrHandoffNote[] }): string[] {
+function renderReviewSections(opts: { task: TaskData; handoffNotes: PrHandoffNote[] }): string[] {
   return [
     SUMMARY_SECTION,
     "",
@@ -101,6 +101,46 @@ function renderSharedPrSections(opts: { task: TaskData; handoffNotes: PrHandoffN
     RISKS_SECTION,
     "",
     renderRiskSummary(opts.task),
+    "",
+    HANDOFF_NOTES_MARKER,
+    "",
+    ...renderPrHandoffNotes(opts.handoffNotes),
+    "",
+  ];
+}
+
+function renderGithubVerificationSummary(task: TaskData): string {
+  const state = task.verification?.state ?? "pending";
+  const note = typeof task.verification?.note === "string" ? task.verification.note.trim() : "";
+  const statusLine =
+    state === "ok"
+      ? note || "Recorded as passed."
+      : state === "needs_rework"
+        ? note || "Recorded as needs rework."
+        : note || "Not recorded yet.";
+  return [
+    `- State: ${state}`,
+    `- Note: ${statusLine}`,
+    "- Full verification checklist lives in local review.md.",
+  ].join("\n");
+}
+
+function renderGithubBodySections(opts: {
+  task: TaskData;
+  handoffNotes: PrHandoffNote[];
+}): string[] {
+  return [
+    SUMMARY_SECTION,
+    "",
+    sectionText(opts.task, "Summary", opts.task.title.trim() || "- Not recorded."),
+    "",
+    SCOPE_SECTION,
+    "",
+    sectionText(opts.task, "Scope", "- Not recorded."),
+    "",
+    VERIFICATION_SECTION,
+    "",
+    renderGithubVerificationSummary(opts.task),
     "",
     HANDOFF_NOTES_MARKER,
     "",
@@ -201,7 +241,7 @@ export function renderPrReviewDocument(opts: {
     `Created: ${opts.createdAt || "UNKNOWN"}`,
     `Branch: ${opts.branch || "UNKNOWN"}`,
     "",
-    ...renderSharedPrSections({
+    ...renderReviewSections({
       task: opts.task,
       handoffNotes: opts.handoffNotes ?? [],
     }),
@@ -218,7 +258,7 @@ export function renderGithubPrBody(opts: {
   autoSummary: string;
 }): string {
   return [
-    ...renderSharedPrSections({
+    ...renderGithubBodySections({
       task: opts.task,
       handoffNotes: opts.handoffNotes ?? [],
     }),
@@ -251,7 +291,6 @@ export function validateGithubPrBodyContents(body: string, errors: string[]): vo
     SUMMARY_SECTION,
     SCOPE_SECTION,
     VERIFICATION_SECTION,
-    RISKS_SECTION,
     HANDOFF_NOTES_MARKER,
   ];
   for (const section of requiredSections) {
