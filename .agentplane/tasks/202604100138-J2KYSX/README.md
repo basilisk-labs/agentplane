@@ -4,7 +4,7 @@ title: "Make pr open explain unpushed task branches before remote create"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-10T01:48:33.992Z"
+  updated_by: "CODER"
+  note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t \"pr open\"; Result: pass; Evidence: the new unpublished-branch scenario and the existing remote-create/sync-only/linkage scenarios passed in the touched CLI slice. Command: bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; Result: pass; Evidence: the matcher expansion and test harness updates remained lint-clean. Command: agentplane pr open before push plus repeat after git push; Result: pass; Evidence: the first run emitted explicit origin-publish guidance for the task branch, and the second run auto-created GitHub PR #257 without manual gh pr create."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reproduce the branch_pr pr open remote-create failure for an unpushed task branch, make the operator-facing outcome explicit, and cover it with focused CLI tests."
+  -
+    type: "verify"
+    at: "2026-04-10T01:48:33.992Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t \"pr open\"; Result: pass; Evidence: the new unpublished-branch scenario and the existing remote-create/sync-only/linkage scenarios passed in the touched CLI slice. Command: bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; Result: pass; Evidence: the matcher expansion and test harness updates remained lint-clean. Command: agentplane pr open before push plus repeat after git push; Result: pass; Evidence: the first run emitted explicit origin-publish guidance for the task branch, and the second run auto-created GitHub PR #257 without manual gh pr create."
 doc_version: 3
-doc_updated_at: "2026-04-10T01:39:55.491Z"
+doc_updated_at: "2026-04-10T01:48:33.994Z"
 doc_updated_by: "CODER"
 description: "When branch_pr pr open runs before the task branch exists on origin, GitHub returns a validation failure and the command collapses it into a generic staged/failed message. Detect the missing remote head case and print an explicit actionable outcome instead of a misleading partial-success summary."
 sections:
@@ -54,6 +60,14 @@ sections:
     3. Inspect operator-facing output for the unpushed-branch path. Expected: it explicitly says the task branch is not yet published on `origin` and tells the operator to push before rerunning remote creation.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-10T01:48:33.992Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t "pr open"; Result: pass; Evidence: the new unpublished-branch scenario and the existing remote-create/sync-only/linkage scenarios passed in the touched CLI slice. Command: bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; Result: pass; Evidence: the matcher expansion and test harness updates remained lint-clean. Command: agentplane pr open before push plus repeat after git push; Result: pass; Evidence: the first run emitted explicit origin-publish guidance for the task branch, and the second run auto-created GitHub PR #257 without manual gh pr create.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T01:39:55.491Z, excerpt_hash=sha256:0a99a2a7aca3b144c5e14b06bcd056dae7678b972fdc57cbcabc7ed6df1ad24e
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +99,14 @@ When branch_pr pr open runs before the task branch exists on origin, GitHub retu
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-10T01:48:33.992Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts -t "pr open"; Result: pass; Evidence: the new unpublished-branch scenario and the existing remote-create/sync-only/linkage scenarios passed in the touched CLI slice. Command: bun x eslint packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts; Result: pass; Evidence: the matcher expansion and test harness updates remained lint-clean. Command: agentplane pr open before push plus repeat after git push; Result: pass; Evidence: the first run emitted explicit origin-publish guidance for the task branch, and the second run auto-created GitHub PR #257 without manual gh pr create.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T01:39:55.491Z, excerpt_hash=sha256:0a99a2a7aca3b144c5e14b06bcd056dae7678b972fdc57cbcabc7ed6df1ad24e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
