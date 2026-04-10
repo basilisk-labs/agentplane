@@ -159,8 +159,7 @@ export async function ensureCleanTrackedTree(gitRoot: string): Promise<void> {
           "the release flow needs to create one deterministic version-bump commit and tag, but tracked edits already exist in the workspace",
         nextAction: {
           command: "git status --short --untracked-files=no",
-          reason:
-            "inspect or clear tracked changes before rerunning `agentplane release apply --push --yes`",
+          reason: "inspect or clear tracked changes before rerunning `agentplane release apply`",
           reasonCode: "release_dirty_tree",
         },
       },

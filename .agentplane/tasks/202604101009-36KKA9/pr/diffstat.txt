@@ -1,0 +1,19 @@
+ .agentplane/config.json                            |   2 +-
+ .agentplane/tasks/202604101009-36KKA9/README.md    | 171 ++++++++++++
+ bun.lock                                           |   6 +-
+ docs/reference/generated-reference.mdx             |   4 +-
+ docs/releases/v0.3.11.md                           | 309 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   4 +-
+ packages/agentplane/package.json                   |   4 +-
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  76 +++++
+ .../commands/pr/integrate/internal/merge.test.ts   |   3 +
+ .../src/commands/pr/integrate/internal/merge.ts    |   1 +
+ .../agentplane/src/commands/pr/internal/sync.ts    |  86 ++++--
+ .../src/commands/release/apply.command.ts          |  21 +-
+ .../src/commands/release/apply.preflight.ts        |   3 +-
+ .../agentplane/src/commands/release/apply.test.ts  |  10 +-
+ .../agentplane/src/commands/shared/git-diff.ts     |  17 +-
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  58 ++++
+ packages/agentplane/src/commands/shared/pr-meta.ts |  14 +-
+ packages/core/package.json                         |   2 +-
+ 18 files changed, 732 insertions(+), 59 deletions(-)

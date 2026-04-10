@@ -264,6 +264,82 @@ describe("runCli", () => {
     expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).not.toContain("## Risks");
   });
 
+  it("pr open renders diffstat immediately when the task branch already has changes", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open existing branch diffstat",
+        "--description",
+        "PR open should render the current branch diffstat without waiting for pr update",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const branch = `task/${taskId}/pr-open-existing-diffstat`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "change.txt"), "change", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task branch change"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ pr open");
+    } finally {
+      io.restore();
+    }
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    const diffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
+    const review = await readFile(path.join(prDir, "review.md"), "utf8");
+    const githubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
+
+    expect(diffstat).toContain("change.txt");
+    expect(review).toContain("change.txt");
+    expect(githubBody).toContain("change.txt");
+    expect(review).not.toContain("No changes detected.");
+    expect(githubBody).not.toContain("No changes detected.");
+  });
+
   it("pr open creates a remote GitHub PR when origin and gh are available", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

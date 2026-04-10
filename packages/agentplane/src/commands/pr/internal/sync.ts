@@ -10,6 +10,7 @@ import { workflowModeMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/write-if-changed.js";
 import { execFileAsync, gitEnv } from "../../shared/git.js";
+import { gitDiffStat } from "../../shared/git-diff.js";
 import { gitCurrentBranch } from "../../shared/git-ops.js";
 import { parseTaskIdFromBranch } from "../../shared/git-worktree.js";
 import {
@@ -21,6 +22,7 @@ import { INCIDENTS_POLICY_PATH } from "../../incidents/shared.js";
 import {
   buildObservedGithubPrMeta,
   buildOpenedPrMeta,
+  resolvePrArtifactHeadSha,
   buildUpdatedPrMeta,
   parsePrMeta,
   type PrMeta,
@@ -30,6 +32,7 @@ import {
   loadCommandContext,
   type CommandContext,
 } from "../../shared/task-backend.js";
+import { isTaskLocalOnlyAdvance } from "../../shared/task-local-freshness.js";
 
 import { resolvePrPaths } from "./pr-paths.js";
 import { readPrHandoffNotes } from "./note-store.js";
@@ -71,7 +74,11 @@ async function restoreIncidentRegistryIfNeeded(opts: {
 
 function isUnknownRevisionError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
-  return /unknown revision or path not in the working tree/i.test(message);
+  return (
+    /unknown revision or path not in the working tree/i.test(message) ||
+    /bad revision/i.test(message) ||
+    /ambiguous argument/i.test(message)
+  );
 }
 
 function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {
@@ -332,6 +339,22 @@ async function resolveBranchHeadSha(opts: {
   }
 }
 
+async function computePrDiffstat(opts: {
+  gitRoot: string;
+  baseBranch: string;
+  branch: string;
+  prDir: string;
+}): Promise<string> {
+  try {
+    return await gitDiffStat(opts.gitRoot, opts.baseBranch, opts.branch, {
+      excludePaths: [path.relative(opts.gitRoot, opts.prDir)],
+    });
+  } catch (err) {
+    if (!isUnknownRevisionError(err)) throw err;
+    return "";
+  }
+}
+
 type PrSyncMode = "open" | "update";
 
 type ResolvedPrSyncBranch = {
@@ -525,24 +548,48 @@ export async function syncPrArtifacts(opts: {
         mode: config.workflow_mode,
       });
       const headSha = await resolveBranchHeadSha({ gitRoot: resolved.gitRoot, branch });
+      const preservePreviousHead =
+        Boolean(existingMeta?.head_sha) &&
+        Boolean(headSha) &&
+        (await isTaskLocalOnlyAdvance({
+          gitRoot: resolved.gitRoot,
+          workflowDir: config.paths.workflow_dir,
+          taskId: task.id,
+          fromRef: existingMeta?.head_sha ?? null,
+          toRef: headSha!,
+        }));
+      const renderedHeadSha = resolvePrArtifactHeadSha({
+        previousHeadSha: existingMeta?.head_sha ?? null,
+        currentHeadSha: headSha,
+        preservePrevious: preservePreviousHead,
+      });
       const preservedRenderUpdatedAt =
         existingMeta &&
         (existingMeta.branch ?? null) === branch &&
         (existingMeta.base ?? null) === (baseBranch ?? null) &&
-        (existingMeta.head_sha ?? null) === (headSha ?? null)
+        (existingMeta.head_sha ?? null) === (renderedHeadSha ?? null)
           ? existingMeta.updated_at
           : null;
       const renderUpdatedAt = preservedRenderUpdatedAt ?? now;
 
       if (opts.mode === "open") {
         const remoteMode = opts.remoteMode ?? "auto";
+        const diffstat = baseBranch
+          ? await computePrDiffstat({
+              gitRoot: resolved.gitRoot,
+              baseBranch,
+              branch,
+              prDir,
+            })
+          : "";
+        const renderedSummaryHeadSha = renderedHeadSha ?? headSha;
         let nextMeta: PrMeta = buildOpenedPrMeta({
           taskId: task.id,
           branch,
           at: now,
           previousMeta: existingMeta,
           base: baseBranch,
-          headSha,
+          headSha: renderedHeadSha,
         });
         const linkedExistingOutcome =
           typeof nextMeta.pr_number === "number" && nextMeta.pr_number > 0
@@ -563,8 +610,8 @@ export async function syncPrArtifacts(opts: {
           autoSummary: renderPrAutoSummary({
             updatedAt: renderUpdatedAt,
             branch,
-            headSha,
-            diffstat: "",
+            headSha: renderedSummaryHeadSha,
+            diffstat,
           }),
         });
         const observedGithubPr = await tryLookupExistingGithubPrByBranch({
@@ -623,8 +670,8 @@ export async function syncPrArtifacts(opts: {
         const nextAutoSummary = renderPrAutoSummary({
           updatedAt: renderUpdatedAt,
           branch,
-          headSha,
-          diffstat: "",
+          headSha: renderedSummaryHeadSha,
+          diffstat,
         });
         const nextReview = renderPrReviewDocument({
           task,
@@ -640,9 +687,7 @@ export async function syncPrArtifacts(opts: {
           autoSummary: nextAutoSummary,
         });
         await writeJsonStableIfChanged(metaPath, nextMeta);
-        if (!(await fileExists(diffstatPath))) {
-          await writeTextIfChanged(diffstatPath, "");
-        }
+        await writeTextIfChanged(diffstatPath, diffstat ? `${diffstat}\n` : "");
         if (!(await fileExists(notesPath))) {
           await writeTextIfChanged(notesPath, "");
         }
@@ -663,23 +708,18 @@ export async function syncPrArtifacts(opts: {
         });
       }
 
-      let diffstat = "";
-      try {
-        const { stdout: diffStatOut } = await execFileAsync(
-          "git",
-          ["diff", "--stat", `${baseBranch}...${branch}`],
-          { cwd: resolved.gitRoot, env: gitEnv() },
-        );
-        diffstat = diffStatOut.trimEnd();
-      } catch (err) {
-        if (!isUnknownRevisionError(err)) throw err;
-      }
+      const diffstat = await computePrDiffstat({
+        gitRoot: resolved.gitRoot,
+        baseBranch,
+        branch,
+        prDir,
+      });
       let nextMeta: PrMeta = buildUpdatedPrMeta({
         meta: existingMeta!,
         branch,
         at: now,
         base: baseBranch,
-        headSha,
+        headSha: renderedHeadSha,
       });
       const observedGithubPr = await tryLookupExistingGithubPrByBranch({
         gitRoot: resolved.gitRoot,
@@ -696,7 +736,7 @@ export async function syncPrArtifacts(opts: {
       const nextAutoSummary = renderPrAutoSummary({
         updatedAt: nextMeta.updated_at,
         branch,
-        headSha,
+        headSha: nextMeta.head_sha ?? renderedHeadSha ?? headSha,
         diffstat,
       });
       const nextReview = renderPrReviewDocument({

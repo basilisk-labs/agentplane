@@ -5,9 +5,11 @@ import * as git from "./git.js";
 import {
   buildObservedGithubPrMeta,
   buildIntegratedPrMeta,
+  buildUpdatedPrMeta,
   buildVerifiedPrMeta,
   parsePrMetaForwardCompatible,
   parsePrMeta,
+  resolvePrArtifactHeadSha,
   resolveShellInvocation,
   runShellCommand,
 } from "./pr-meta.js";
@@ -238,5 +240,61 @@ describe("pr-meta shell invocations", () => {
         at: "2026-01-28T00:00:00Z",
       }).updated_at,
     ).toBe("2026-01-27T00:00:00Z");
+  });
+
+  it("preserves the local rendered head when GitHub still reports an older remote head", () => {
+    expect(
+      buildObservedGithubPrMeta({
+        meta: {
+          schema_version: 1,
+          task_id: "202601010101-ABCDE",
+          branch: "task/202601010101-ABCDE/example",
+          created_at: "2026-01-27T00:00:00Z",
+          updated_at: "2026-01-27T00:00:00Z",
+          pr_number: 321,
+          pr_url: "https://github.com/example/repo/pull/321",
+          status: "OPEN",
+          base: "main",
+          head_sha: "deadbeef",
+          verify: { status: "skipped" },
+        },
+        observed: {
+          prNumber: 321,
+          prUrl: "https://github.com/example/repo/pull/321",
+          status: "OPEN",
+          base: "main",
+          headSha: "cafebabe",
+        },
+        at: "2026-01-28T00:00:00Z",
+      }).head_sha,
+    ).toBe("deadbeef");
+  });
+
+  it("preserves the previous rendered head for task-local-only advances", () => {
+    const effectiveHeadSha = resolvePrArtifactHeadSha({
+      previousHeadSha: "deadbeef",
+      currentHeadSha: "cafebabe",
+      preservePrevious: true,
+    });
+
+    const nextMeta = buildUpdatedPrMeta({
+      meta: {
+        schema_version: 1,
+        task_id: "202601010101-ABCDE",
+        branch: "task/202601010101-ABCDE/example",
+        created_at: "2026-01-27T00:00:00Z",
+        updated_at: "2026-01-27T00:00:00Z",
+        base: "main",
+        head_sha: "deadbeef",
+        verify: { status: "skipped" },
+      },
+      branch: "task/202601010101-ABCDE/example",
+      base: "main",
+      headSha: effectiveHeadSha,
+      at: "2026-01-28T00:00:00Z",
+    });
+
+    expect(nextMeta.head_sha).toBe("deadbeef");
+    expect(nextMeta.updated_at).toBe("2026-01-27T00:00:00Z");
   });
 });
