@@ -269,11 +269,10 @@ describeWhenNotHook("release apply", () => {
         ),
       ).resolves.toBe(0);
 
-      const headTag = (
-        await execFileAsync("git", ["tag", "--points-at", "HEAD"], {
-          cwd: root,
-        })
-      ).stdout
+      const headTagResult = await execFileAsync("git", ["tag", "--points-at", "HEAD"], {
+        cwd: root,
+      });
+      const headTag = headTagResult.stdout
         .trim()
         .split(/\r?\n/u)
         .filter(Boolean);
