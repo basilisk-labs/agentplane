@@ -45,9 +45,9 @@ When branch_pr pr open runs before the task branch exists on origin, GitHub retu
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T01:43:24.158Z
+- Updated: 2026-04-10T01:47:46.553Z
 - Branch: task/202604100138-J2KYSX/pr-open-unpushed-branch
-- Head: 49aaa86d868a
+- Head: 490f5582946e
 
 ```text
 No changes detected.
