@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604100054-RQH3ZW/README.md    | 114 ++++++++++++++++++
+ .../tasks/202604100054-RQH3ZW/pr/diffstat.txt      |   4 +
+ .../tasks/202604100054-RQH3ZW/pr/github-body.md    |  50 ++++++++
+ .../tasks/202604100054-RQH3ZW/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604100054-RQH3ZW/pr/meta.json |  14 +++
+ .../tasks/202604100054-RQH3ZW/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604100054-RQH3ZW/pr/review.md |  57 +++++++++
+ .../tasks/202604100054-RQH3ZW/pr/verify.log        |   0
+ .../src/commands/incidents/shared.test.ts          | 133 +++++++++++++++++++++
+ .../agentplane/src/commands/incidents/shared.ts    |  18 ++-
+ 10 files changed, 389 insertions(+), 2 deletions(-)

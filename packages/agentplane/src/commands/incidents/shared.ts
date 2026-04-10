@@ -52,6 +52,11 @@ export function incidentRegistryAssetPath(ctx: CommandContext): string {
   return path.join(ctx.resolvedProject.gitRoot, INCIDENTS_POLICY_ASSET_PATH);
 }
 
+function normalizeIncidentRegistryDocument(text: string): string {
+  const normalized = text.replaceAll("\r\n", "\n").trimEnd();
+  return normalized.length > 0 ? `${normalized}\n` : createIncidentRegistrySkeleton();
+}
+
 async function writeIncidentRegistryMirrors(
   ctx: CommandContext,
   content: string,
@@ -59,8 +64,17 @@ async function writeIncidentRegistryMirrors(
   const registryPath = incidentRegistryPath(ctx);
   const assetPath = incidentRegistryAssetPath(ctx);
   const assetExists = (await readTextIfExists(assetPath)) !== null;
-  const wroteRegistry = await writeTextIfChanged(registryPath, content);
-  const wroteAsset = assetExists ? await writeTextIfChanged(assetPath, content) : false;
+  const normalizedContent = normalizeIncidentRegistryDocument(content);
+  let wroteRegistry = await writeTextIfChanged(registryPath, normalizedContent);
+  let wroteAsset = false;
+  if (assetExists) {
+    const canonicalText = (await readTextIfExists(registryPath)) ?? normalizedContent;
+    wroteAsset = await writeTextIfChanged(assetPath, canonicalText);
+    const registryText = await readTextIfExists(registryPath);
+    if (registryText !== canonicalText) {
+      wroteRegistry = (await writeTextIfChanged(registryPath, canonicalText)) || wroteRegistry;
+    }
+  }
   return wroteRegistry || wroteAsset;
 }
 
