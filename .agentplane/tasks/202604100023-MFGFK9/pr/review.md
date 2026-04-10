@@ -45,12 +45,22 @@ Surface changed/untracked .agentplane/tasks/<task-id>/... paths in preflight so 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T00:27:58.173Z
+- Updated: 2026-04-10T00:32:12.123Z
 - Branch: task/202604100023-MFGFK9/preflight-task-drift
-- Head: d7188b41dcff
+- Head: 136ded830d38
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604100023-MFGFK9/README.md    | 117 +++++++++++++++++++++
+ .../tasks/202604100023-MFGFK9/pr/diffstat.txt      |   4 +
+ .../tasks/202604100023-MFGFK9/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604100023-MFGFK9/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604100023-MFGFK9/pr/meta.json |  17 +++
+ .../tasks/202604100023-MFGFK9/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604100023-MFGFK9/pr/review.md |  57 ++++++++++
+ .../tasks/202604100023-MFGFK9/pr/verify.log        |   0
+ .../cli/run-cli.core.branch-meta.readiness.test.ts |  57 ++++++++++
+ .../src/cli/run-cli/commands/core/preflight.ts     |  56 +++++++++-
+ 10 files changed, 358 insertions(+), 1 deletion(-)
 ```
 
 </details>

@@ -1,10 +1,11 @@
 ---
 id: "202604100023-MFGFK9"
 title: "Expose task artifact drift in preflight when tracked status looks clean"
-status: "DOING"
+result_summary: "integrate: squash task/202604100023-MFGFK9/preflight-task-drift"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-10T00:27:28.256Z"
   updated_by: "CODER"
   note: "Verified: bunx vitest run packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts and bun x eslint packages/agentplane/src/cli/run-cli/commands/core/preflight.ts packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts passed; preflight now surfaces task artifact drift explicitly while preserving tracked-only clean semantics."
-commit: null
+commit:
+  hash: "a2b9ccf1e12efad0423b8c48f2a3962f470ceaf5"
+  message: "🧩 MFGFK9 integrate: workflow: Expose task artifact drift in preflight when tracked status looks clean"
 comments:
   -
     author: "CODER"
     body: "Start: surface hidden .agentplane/tasks drift in preflight so cross-task artifacts are visible even when tracked status looks clean."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100023-MFGFK9/pr."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bunx vitest run packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts and bun x eslint packages/agentplane/src/cli/run-cli/commands/core/preflight.ts packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts passed; preflight now surfaces task artifact drift explicitly while preserving tracked-only clean semantics."
+  -
+    type: "status"
+    at: "2026-04-10T00:32:11.899Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100023-MFGFK9/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T00:27:28.258Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T00:32:11.901Z"
+doc_updated_by: "INTEGRATOR"
 description: "Surface changed/untracked .agentplane/tasks/<task-id>/... paths in preflight so operators can see cross-task artifact drift that git status --untracked-files=no hides."
 sections:
   Summary: |-

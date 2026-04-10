@@ -1,4 +1,11 @@
- .agentplane/tasks/202604100023-MFGFK9/README.md    | 95 ++++++++++++++++++++++
- .../cli/run-cli.core.branch-meta.readiness.test.ts | 57 +++++++++++++
- .../src/cli/run-cli/commands/core/preflight.ts     | 56 ++++++++++++-
- 3 files changed, 207 insertions(+), 1 deletion(-)
+ .agentplane/tasks/202604100023-MFGFK9/README.md    | 117 +++++++++++++++++++++
+ .../tasks/202604100023-MFGFK9/pr/diffstat.txt      |   4 +
+ .../tasks/202604100023-MFGFK9/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604100023-MFGFK9/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604100023-MFGFK9/pr/meta.json |  17 +++
+ .../tasks/202604100023-MFGFK9/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604100023-MFGFK9/pr/review.md |  57 ++++++++++
+ .../tasks/202604100023-MFGFK9/pr/verify.log        |   0
+ .../cli/run-cli.core.branch-meta.readiness.test.ts |  57 ++++++++++
+ .../src/cli/run-cli/commands/core/preflight.ts     |  56 +++++++++-
+ 10 files changed, 358 insertions(+), 1 deletion(-)
