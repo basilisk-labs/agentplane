@@ -22,20 +22,20 @@ Eliminate branch_pr pr/* self-drift after commit/open/update and make the releas
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T11:00:44.951Z
+- Updated: 2026-04-10T11:02:56.353Z
 - Branch: task/202604101047-VRAVWD/release-flow-pr-drift
-- Head: 5a8df40d13ec
+- Head: 32b06a1aa8a8
 
 ```text
  .agentplane/tasks/202604101047-VRAVWD/README.md    | 118 +++++++++++++++++++++
  .../agentplane/src/commands/pr/internal/sync.ts    |  39 ++++---
  .../src/commands/release/apply.command.ts          |  21 +---
- .../src/commands/release/apply.preflight.ts        |  17 ++-
+ .../src/commands/release/apply.preflight.ts        |   3 +-
  .../agentplane/src/commands/release/apply.test.ts  |  14 ++-
  .../agentplane/src/commands/shared/git-diff.ts     |  17 ++-
  .../agentplane/src/commands/shared/pr-meta.test.ts |  58 ++++++++++
  packages/agentplane/src/commands/shared/pr-meta.ts |  14 ++-
- 8 files changed, 254 insertions(+), 44 deletions(-)
+ 8 files changed, 247 insertions(+), 37 deletions(-)
 ```
 
 </details>
