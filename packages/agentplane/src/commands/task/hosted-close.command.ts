@@ -235,7 +235,7 @@ async function closeHostedTask(opts: {
       `${infoMessage(
         renderIncidentCollectionPlanOutcome(collectedIncidents.plan, {
           wrote: collectedIncidents.wrote,
-          context: "generic",
+          context: "finish",
           promotedIds: collectedIncidents.plan.promotable.map((item) => item.entry.id),
           registryPaths: collectedIncidents.registryPaths,
         }),
