@@ -4,7 +4,7 @@ title: "Auto-bootstrap framework runtime after integrate touches watched sources
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-10T00:30:41.131Z"
+  updated_by: "CODER"
+  note: "Verified: bunx vitest run packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.test.ts and bun x eslint packages/agentplane/src/commands/pr/integrate/cmd.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.ts packages/agentplane/src/commands/pr/integrate/internal/post-integrate-bootstrap.ts passed; integrate now auto-refreshes repo-local runtime on watched-source merges and falls back to explicit manual guidance on bootstrap failure."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: auto-refresh the framework runtime after integrate when watched runtime sources changed so finish closeout does not need a separate manual bootstrap."
+  -
+    type: "verify"
+    at: "2026-04-10T00:30:41.131Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bunx vitest run packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.test.ts and bun x eslint packages/agentplane/src/commands/pr/integrate/cmd.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.ts packages/agentplane/src/commands/pr/integrate/internal/post-integrate-bootstrap.ts passed; integrate now auto-refreshes repo-local runtime on watched-source merges and falls back to explicit manual guidance on bootstrap failure."
 doc_version: 3
-doc_updated_at: "2026-04-10T00:28:24.002Z"
+doc_updated_at: "2026-04-10T00:30:41.133Z"
 doc_updated_by: "CODER"
 description: "When branch_pr integrate lands watched runtime source changes on base inside the framework checkout, refresh the repo-local runtime automatically so the next finish --close-commit does not fail on stale dist."
 sections:
@@ -54,6 +60,14 @@ sections:
     3. Run the touched-unit lint/test slice for the integrate command and any new bootstrap helper. Expected: the new auto-bootstrap path passes without regressing existing integrate behavior.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-10T00:30:41.131Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: bunx vitest run packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.test.ts and bun x eslint packages/agentplane/src/commands/pr/integrate/cmd.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.ts packages/agentplane/src/commands/pr/integrate/internal/post-integrate-bootstrap.ts passed; integrate now auto-refreshes repo-local runtime on watched-source merges and falls back to explicit manual guidance on bootstrap failure.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T00:28:24.002Z, excerpt_hash=sha256:a4149add8987958c1a0823a24c2e8a4e4d6432bb33bedc0efbf6ecf824fbf8ec
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +99,14 @@ When branch_pr integrate lands watched runtime source changes on base inside the
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-10T00:30:41.131Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bunx vitest run packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.test.ts and bun x eslint packages/agentplane/src/commands/pr/integrate/cmd.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.ts packages/agentplane/src/commands/pr/integrate/internal/post-integrate-bootstrap.ts passed; integrate now auto-refreshes repo-local runtime on watched-source merges and falls back to explicit manual guidance on bootstrap failure.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T00:28:24.002Z, excerpt_hash=sha256:a4149add8987958c1a0823a24c2e8a4e4d6432bb33bedc0efbf6ecf824fbf8ec
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
