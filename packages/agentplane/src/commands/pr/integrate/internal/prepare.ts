@@ -26,7 +26,10 @@ import {
 import { readPrArtifact, resolvePrPaths } from "../../internal/pr-paths.js";
 import { ensurePrArtifactsSynced } from "../../internal/sync.js";
 
-import { readAndValidatePrArtifacts } from "../artifacts.js";
+import {
+  readAndValidatePrArtifacts,
+  ensureCommittedPrArtifactsOnBranch,
+} from "../artifacts.js";
 import { computeVerifyState } from "../verify.js";
 import { parsePrMetaForwardCompatible, type PrMeta } from "../../../shared/pr-meta.js";
 import { assessPrArtifactFreshness } from "../../internal/freshness.js";
@@ -149,6 +152,12 @@ export async function prepareIntegrate(opts: {
       message: unknownEntityMessage("branch", branch),
     });
   }
+
+  await ensureCommittedPrArtifactsOnBranch({
+    resolved,
+    prDir,
+    branch,
+  });
 
   const worktreePath = await findWorktreeForBranch(resolved.gitRoot, branch);
   const metaText = await readPrArtifact({
