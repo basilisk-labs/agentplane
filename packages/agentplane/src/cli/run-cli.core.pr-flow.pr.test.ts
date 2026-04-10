@@ -397,7 +397,7 @@ describe("runCli", () => {
       branch,
       createResponse: {},
       createError:
-        "gh: HTTP 422: Validation Failed ({\"message\":\"Validation Failed\",\"errors\":[{\"resource\":\"PullRequest\",\"field\":\"head\",\"code\":\"invalid\",\"message\":\"Head sha can't be blank\"}]})",
+        'gh: HTTP 422: Validation Failed ({"message":"Validation Failed","errors":[{"resource":"PullRequest","field":"head","code":"invalid","message":"Head sha can\'t be blank"}]})',
     });
     const originalPath = process.env.PATH;
     process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
