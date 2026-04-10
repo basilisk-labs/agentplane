@@ -327,6 +327,18 @@ export async function approveTaskPlan(root: string, taskId: string): Promise<voi
 
 export async function recordVerificationOk(root: string, taskId: string): Promise<void> {
   await runCliSilent([
+    "task",
+    "doc",
+    "set",
+    taskId,
+    "--section",
+    "Verify Steps",
+    "--text",
+    "Run verify for this task. Expected: verification records successfully.",
+    "--root",
+    root,
+  ]);
+  await runCliSilent([
     "verify",
     taskId,
     "--ok",

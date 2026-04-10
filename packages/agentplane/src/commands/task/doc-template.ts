@@ -40,13 +40,11 @@ function buildDefaultPlan(opts: { title: string }): string {
   ].join("\n");
 }
 
-function buildDefaultVerifyStepsTemplate(): string {
+function buildDefaultVerifyStepsTemplate(opts: { title: string }): string {
   return [
-    "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
-    "",
-    "1. <Action>. Expected: <observable result>.",
-    "2. <Action>. Expected: <observable result>.",
-    "3. <Action>. Expected: <observable result>.",
+    `1. Review the requested outcome for "${opts.title}". Expected: the visible result matches ## Summary and stays inside approved scope.`,
+    "2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.",
+    "3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
   ].join("\n");
 }
 
@@ -90,7 +88,11 @@ export function defaultTaskDocV3(opts: { title: string; description: string }): 
     buildDefaultScope({ title: opts.title, description: opts.description }),
   );
   body = setMarkdownSection(body, "Plan", buildDefaultPlan({ title: opts.title }));
-  body = setMarkdownSection(body, "Verify Steps", buildDefaultVerifyStepsTemplate());
+  body = setMarkdownSection(
+    body,
+    "Verify Steps",
+    buildDefaultVerifyStepsTemplate({ title: opts.title }),
+  );
   body = setMarkdownSection(body, "Verification", buildDefaultVerificationTemplate());
   body = setMarkdownSection(body, "Rollback Plan", buildDefaultRollbackPlan());
   body = setMarkdownSection(body, "Findings", "");

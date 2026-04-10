@@ -70,6 +70,14 @@ describe("task shared helpers", () => {
     expect(isVerifyStepsFilled(`x\n${VERIFY_STEPS_PLACEHOLDER}\n`)).toBe(false);
     expect(
       isVerifyStepsFilled(
+        [
+          "1. <Action>. Expected: <observable result>.",
+          "2. Review the output. Expected: exit code is 0.",
+        ].join("\n"),
+      ),
+    ).toBe(false);
+    expect(
+      isVerifyStepsFilled(
         "1. Review the changed artifact. Expected: the requested outcome is visible.",
       ),
     ).toBe(true);

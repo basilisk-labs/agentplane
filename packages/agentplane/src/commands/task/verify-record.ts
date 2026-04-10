@@ -19,8 +19,10 @@ import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 import { buildStructuredFindingMutationPlan } from "./findings.js";
 
 import {
+  assertVerifyStepsFilled,
   decodeEscapedTaskTextNewlines,
   executeTaskVerificationTransitionRequest,
+  extractDocSection,
   nowIso,
 } from "./shared.js";
 
@@ -81,6 +83,15 @@ async function recordVerificationResult(opts: {
     ctx,
     taskId: opts.taskId,
     build: async (current) => {
+      const doc =
+        (typeof current.doc === "string" ? current.doc : "") ||
+        (await backend.getTaskDoc!(current.id));
+      assertVerifyStepsFilled({
+        taskId: current.id,
+        sectionText: extractDocSection(doc, "Verify Steps"),
+        action: "record verification",
+        guidance: "fill it before running `agentplane verify ...`",
+      });
       const execution = executeTaskVerificationTransitionRequest({
         task: current,
         at,
@@ -88,9 +99,7 @@ async function recordVerificationResult(opts: {
         note: opts.note,
         state: opts.state,
         details: opts.details ?? null,
-        doc:
-          (typeof current.doc === "string" ? current.doc : "") ||
-          (await backend.getTaskDoc!(current.id)),
+        doc,
         requiredSections: config.tasks.doc.required_sections,
       });
       const intents = [...execution.intents];

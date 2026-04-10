@@ -417,6 +417,42 @@ describe("runCli", () => {
     expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
   });
 
+  it("task new seeds concrete Verify Steps even for non-verify-required tags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    let id = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Workflow task",
+        "--description",
+        "Improve lifecycle ergonomics",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      id = io.stdout.trim();
+      expect(io.stderr).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
+    } finally {
+      io.restore();
+    }
+
+    const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("## Verify Steps");
+    expect(readme).toContain('Review the requested outcome for "Workflow task".');
+    expect(readme).toContain("Run the most relevant validation step for this task.");
+    expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
+  });
+
   it("task add creates tasks with explicit ids", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

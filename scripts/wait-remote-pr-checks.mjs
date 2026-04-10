@@ -197,6 +197,25 @@ async function resolveRepositorySlug(explicitRepo) {
   return repo;
 }
 
+async function resolveDefaultPrTarget() {
+  const envBranch =
+    process.env.GITHUB_HEAD_REF?.trim() || process.env.BRANCH_NAME?.trim() || "";
+  if (envBranch) return envBranch;
+
+  const result = await execFileAsync("git", ["branch", "--show-current"], {
+    cwd: process.cwd(),
+    env: process.env,
+    encoding: "utf8",
+    maxBuffer: 1024 * 1024,
+  });
+  const branch = String(result.stdout ?? "").trim();
+  if (branch && branch !== "HEAD") return branch;
+
+  throw new Error(
+    "Unable to resolve current branch for gh pr view. Pass a PR number/url/branch explicitly or set GITHUB_HEAD_REF.",
+  );
+}
+
 async function resolvePullRequest(targetArg, repoSlug) {
   const prArgs = ["pr", "view"];
   if (typeof targetArg === "string" && targetArg.trim().length > 0) {
@@ -228,7 +247,7 @@ async function resolvePullRequest(targetArg, repoSlug) {
 
 async function resolvePullRequests(targetArgs, repoSlug) {
   if (targetArgs.length === 0) {
-    return [await resolvePullRequest(null, repoSlug)];
+    return [await resolvePullRequest(await resolveDefaultPrTarget(), repoSlug)];
   }
 
   const prs = [];

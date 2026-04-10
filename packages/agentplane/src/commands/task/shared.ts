@@ -10,6 +10,7 @@ export {
   VERIFICATION_RESULTS_BEGIN,
   VERIFICATION_RESULTS_END,
   extractDocSection,
+  assertVerifyStepsFilled,
   isVerifyStepsFilled,
   isDocSectionFilled,
   ensureAgentFilledRequiredDocSections,

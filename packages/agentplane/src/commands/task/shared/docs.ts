@@ -13,6 +13,8 @@ export const VERIFY_STEPS_PLACEHOLDER =
 export const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
 export const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
 export type TaskDocVersion = 2 | 3;
+const VERIFY_STEPS_TEMPLATE_LINE_RE =
+  /^\d+\.\s*<[^>\n]+>\.\s*Expected:\s*<[^>\n]+>\.?$/m;
 
 export function decodeEscapedTaskTextNewlines(text: string): string {
   const normalized = text.replaceAll("\r\n", "\n");
@@ -45,7 +47,25 @@ export function isVerifyStepsFilled(sectionText: string | null): boolean {
   const normalized = (sectionText ?? "").trim();
   if (!normalized) return false;
   if (normalized.includes(VERIFY_STEPS_PLACEHOLDER)) return false;
+  if (VERIFY_STEPS_TEMPLATE_LINE_RE.test(normalized)) return false;
   return true;
+}
+
+export function assertVerifyStepsFilled(opts: {
+  taskId: string;
+  sectionText: string | null;
+  action: string;
+  guidance?: string;
+}): void {
+  if (isVerifyStepsFilled(opts.sectionText)) return;
+  const guidance = opts.guidance ? ` (${opts.guidance})` : "";
+  throw new CliError({
+    exitCode: 3,
+    code: "E_VALIDATION",
+    message:
+      `${opts.taskId}: cannot ${opts.action}: ## Verify Steps section is missing/empty/unfilled` +
+      guidance,
+  });
 }
 
 export function normalizeTaskDocVersion(
