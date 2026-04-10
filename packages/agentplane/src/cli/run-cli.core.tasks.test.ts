@@ -367,7 +367,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       id = io.stdout.trim();
-      expect(io.stderr).toContain("seeded a default ## Verify Steps section");
+      expect(io.stderr).toContain("seeded a concrete ## Verify Steps section");
     } finally {
       io.restore();
     }
@@ -378,6 +378,42 @@ describe("runCli", () => {
     expect(readme).toContain("Run `bun run test:fast`.");
     expect(readme).toContain("Expected: it succeeds and confirms the requested outcome");
     expect(readme).toContain("## Findings");
+    expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
+  });
+
+  it("task new without verify commands still seeds approvable Verify Steps for verify-required primary tags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    let id = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Code task without verify command",
+        "--description",
+        "Still needs approvable verify steps",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      id = io.stdout.trim();
+      expect(io.stderr).toContain("seeded a concrete ## Verify Steps section");
+    } finally {
+      io.restore();
+    }
+
+    const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("## Verify Steps");
+    expect(readme).toContain("Review the changed artifact or behavior for the `code` task.");
+    expect(readme).toContain("Run the most relevant validation step for the `code` task.");
     expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
   });
 
