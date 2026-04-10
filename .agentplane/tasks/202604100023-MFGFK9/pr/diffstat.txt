@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604100023-MFGFK9/README.md    | 95 ++++++++++++++++++++++
+ .../cli/run-cli.core.branch-meta.readiness.test.ts | 57 +++++++++++++
+ .../src/cli/run-cli/commands/core/preflight.ts     | 56 ++++++++++++-
+ 3 files changed, 207 insertions(+), 1 deletion(-)

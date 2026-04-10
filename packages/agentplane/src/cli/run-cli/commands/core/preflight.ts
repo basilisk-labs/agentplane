@@ -22,6 +22,11 @@ type PreflightParsed = { json: boolean; mode: PreflightMode };
 
 type NextAction = { command: string; reason: string };
 type Probe = { ok: boolean; error?: string };
+type TaskArtifactDrift = {
+  present: boolean;
+  task_ids: string[];
+  paths: string[];
+};
 
 type PreflightReport = {
   mode: PreflightMode;
@@ -31,6 +36,7 @@ type PreflightReport = {
   workflow_loaded: Probe;
   task_list_loaded: Probe & { count?: number };
   working_tree_clean_tracked: Probe & { value?: boolean };
+  task_artifact_drift: TaskArtifactDrift;
   current_branch: Probe & { value?: string };
   workflow_mode: "direct" | "branch_pr" | "unknown";
   approvals: {
@@ -82,6 +88,35 @@ function inferApprovals(config: AgentplaneConfig | null): PreflightReport["appro
     require_plan: approvals.require_plan,
     require_verify: approvals.require_verify,
     require_network: approvals.require_network,
+  };
+}
+
+function normalizeRepoPath(value: string): string {
+  return value.replaceAll("\\", "/");
+}
+
+function detectTaskArtifactDrift(opts: {
+  changedPaths: string[];
+  workflowDir: string;
+}): TaskArtifactDrift {
+  const workflowDir = normalizeRepoPath(opts.workflowDir).replace(/\/+$/, "");
+  const prefix = `${workflowDir}/`;
+  const matched = opts.changedPaths
+    .map((value) => normalizeRepoPath(value))
+    .filter((value) => value.startsWith(prefix))
+    .toSorted((a, b) => a.localeCompare(b));
+  const taskIds = new Set<string>();
+  for (const matchedPath of matched) {
+    const relative = matchedPath.slice(prefix.length);
+    const [taskId] = relative.split("/", 1);
+    if (taskId && taskId !== "." && taskId !== "..") {
+      taskIds.add(taskId);
+    }
+  }
+  return {
+    present: matched.length > 0,
+    task_ids: [...taskIds].toSorted((a, b) => a.localeCompare(b)),
+    paths: matched,
   };
 }
 
@@ -195,6 +230,11 @@ async function buildPreflightReport(opts: {
     ok: false,
     error: "project not resolved",
   };
+  let taskArtifactDrift: TaskArtifactDrift = {
+    present: false,
+    task_ids: [],
+    paths: [],
+  };
   let branch: PreflightReport["current_branch"] = {
     ok: false,
     error: "project not resolved",
@@ -202,16 +242,28 @@ async function buildPreflightReport(opts: {
   if (resolved) {
     try {
       const git = new GitContext({ gitRoot: resolved.gitRoot });
-      const [staged, unstagedTracked] = await Promise.all([
+      const [changed, staged, unstagedTracked] = await Promise.all([
+        git.statusChangedPaths(),
         git.statusStagedPaths(),
         git.statusUnstagedTrackedPaths(),
       ]);
+      taskArtifactDrift = detectTaskArtifactDrift({
+        changedPaths: changed,
+        workflowDir: config?.paths.workflow_dir ?? ".agentplane/tasks",
+      });
       workingTree = { ok: true, value: staged.length === 0 && unstagedTracked.length === 0 };
       if (!workingTree.value) {
         harnessHealthReasons.push("working_tree_dirty");
         nextActions.push({
           command: "git status --short --untracked-files=no",
           reason: "tracked changes detected",
+        });
+      }
+      if (taskArtifactDrift.present) {
+        harnessHealthReasons.push("task_artifact_drift");
+        nextActions.push({
+          command: `git status --short --untracked-files=all -- ${config?.paths.workflow_dir ?? ".agentplane/tasks"}`,
+          reason: `task artifact drift detected for ${taskArtifactDrift.task_ids.join(", ")}`,
         });
       }
     } catch (err) {
@@ -239,6 +291,7 @@ async function buildPreflightReport(opts: {
     workflow_loaded: workflowLoaded,
     task_list_loaded: taskListLoaded,
     working_tree_clean_tracked: workingTree,
+    task_artifact_drift: taskArtifactDrift,
     current_branch: branch,
     workflow_mode: inferWorkflowMode(config),
     approvals: inferApprovals(config),
@@ -317,6 +370,7 @@ async function cmdPreflight(opts: {
       `- workflow loaded: ${probeYesNo(report.workflow_loaded)}`,
       `- task list loaded: ${probeYesNo(report.task_list_loaded)}`,
       `- working tree clean (tracked-only): ${probeValueOrUnknown(report.working_tree_clean_tracked)}`,
+      `- task artifact drift: ${report.task_artifact_drift.present ? report.task_artifact_drift.task_ids.join(", ") : "none"}`,
       `- current git branch: ${probeValueOrUnknown(report.current_branch)}`,
       `- workflow_mode: ${report.workflow_mode}`,
       `- harness engeneering health: ${report.harness_health.status}`,
