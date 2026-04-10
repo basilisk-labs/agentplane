@@ -1,10 +1,11 @@
 ---
 id: "202604101009-36KKA9"
 title: "Prepare patch release v0.3.11 and reconcile protected-main publish path"
-status: "DOING"
+result_summary: "integrate: squash task/202604101009-36KKA9/patch-release-v0-3-11"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-10T15:09:00.039Z"
   updated_by: "INTEGRATOR"
   note: "Verified integrate-hook config override with bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts and bun run docs:site:build"
-commit: null
+commit:
+  hash: "d95b2762f78815b60407a62f2227136c85cae5ee"
+  message: "🧩 36KKA9 integrate: release: Prepare patch release v0.3.11 and reconcile protected-main publish path"
 comments:
   -
     author: "CODER"
     body: "Start: preparing the v0.3.11 patch-release candidate from v0.3.10, including release-plan artifacts, release notes, validation, and a protected-main-safe publication route before any irreversible publish step."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604101009-36KKA9/pr."
 events:
   -
     type: "status"
@@ -52,9 +58,16 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "Verified integrate-hook config override with bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts and bun run docs:site:build"
+  -
+    type: "status"
+    at: "2026-04-10T15:17:08.704Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604101009-36KKA9/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T15:09:00.046Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T15:17:08.706Z"
+doc_updated_by: "INTEGRATOR"
 description: "Generate the next patch release plan from v0.3.10, draft release notes, prepare a release candidate branch/PR, and reconcile the current mismatch between release apply --push and the protected-main publish route before any irreversible release action."
 sections:
   Summary: |-

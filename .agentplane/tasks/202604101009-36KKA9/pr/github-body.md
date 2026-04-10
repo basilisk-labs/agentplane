@@ -22,9 +22,9 @@ Generate the next patch release plan from v0.3.10, draft release notes, prepare 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T15:08:21.987Z
+- Updated: 2026-04-10T15:17:09.432Z
 - Branch: task/202604101009-36KKA9/patch-release-v0-3-11
-- Head: af5c99a1f219
+- Head: 17ddcf80bc41
 
 ```text
  .agentplane/config.json                            |   2 +-
