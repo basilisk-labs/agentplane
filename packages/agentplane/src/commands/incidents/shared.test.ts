@@ -58,7 +58,7 @@ function mkCtx(root: string, task: TaskData): CommandContext {
       supports_snapshot_export: true,
     },
     listTasks: () => Promise.resolve([task]),
-    getTask: (taskId) => Promise.resolve((taskId === task.id ? task : null)),
+    getTask: (taskId) => Promise.resolve(taskId === task.id ? task : null),
     writeTask: () => Promise.resolve(),
   };
   const resolved = {
@@ -117,7 +117,10 @@ describe("incident registry mirror writes", () => {
       "packages/agentplane/assets/policy/incidents.md",
     ]);
 
-    const mirrored = await readFile(path.join(root, ".agentplane", "policy", "incidents.md"), "utf8");
+    const mirrored = await readFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      "utf8",
+    );
     const canonical = await readFile(
       path.join(root, "packages", "agentplane", "assets", "policy", "incidents.md"),
       "utf8",
