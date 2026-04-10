@@ -481,7 +481,7 @@ describe("runCli", () => {
       }
       expect(code).toBe(0);
       expect(io.stdout).toContain(`task hosted close ${taskId}`);
-      expect(io.stdout).toContain("incident registry unchanged");
+      expect(io.stdout).toContain("plain finish body/result stayed task-local");
     } finally {
       io.restore();
     }
