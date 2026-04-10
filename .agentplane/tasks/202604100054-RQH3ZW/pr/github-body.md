@@ -39,12 +39,22 @@ Make incident promotion update canonical and mirrored incidents registries in a 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T01:12:46.893Z
+- Updated: 2026-04-10T01:22:07.645Z
 - Branch: task/202604100054-RQH3ZW/incident-promotion-hygiene
-- Head: 5dc2fdee82a2
+- Head: 522600fe3972
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604100054-RQH3ZW/README.md    | 114 ++++++++++++++++++
+ .../tasks/202604100054-RQH3ZW/pr/diffstat.txt      |   4 +
+ .../tasks/202604100054-RQH3ZW/pr/github-body.md    |  50 ++++++++
+ .../tasks/202604100054-RQH3ZW/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604100054-RQH3ZW/pr/meta.json |  14 +++
+ .../tasks/202604100054-RQH3ZW/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604100054-RQH3ZW/pr/review.md |  57 +++++++++
+ .../tasks/202604100054-RQH3ZW/pr/verify.log        |   0
+ .../src/commands/incidents/shared.test.ts          | 133 +++++++++++++++++++++
+ .../agentplane/src/commands/incidents/shared.ts    |  18 ++-
+ 10 files changed, 389 insertions(+), 2 deletions(-)
 ```
 
 </details>

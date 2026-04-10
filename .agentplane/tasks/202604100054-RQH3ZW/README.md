@@ -1,10 +1,11 @@
 ---
 id: "202604100054-RQH3ZW"
 title: "Keep incident promotion formatted and synced without manual follow-up"
-status: "TODO"
+result_summary: "integrate: squash task/202604100054-RQH3ZW/incident-promotion-hygiene"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -22,8 +23,13 @@ verification:
   updated_at: "2026-04-10T01:04:16.416Z"
   updated_by: "CODER"
   note: "bootstrap: bun run framework:dev:bootstrap; vitest: bun x vitest run packages/agentplane/src/commands/incidents/shared.test.ts; eslint: bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/incidents/shared.test.ts"
-commit: null
-comments: []
+commit:
+  hash: "7a5121335ab9751074db1976d401bdb08f0e0582"
+  message: "🎨 RQH3ZW task: format incident promotion test"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100054-RQH3ZW/pr."
 events:
   -
     type: "verify"
@@ -31,9 +37,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "bootstrap: bun run framework:dev:bootstrap; vitest: bun x vitest run packages/agentplane/src/commands/incidents/shared.test.ts; eslint: bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/incidents/shared.test.ts"
+  -
+    type: "status"
+    at: "2026-04-10T01:22:06.971Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100054-RQH3ZW/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T01:04:16.418Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T01:22:06.973Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make incident promotion update canonical and mirrored incidents registries in a format- and sync-safe way so later hooks do not require manual prettier or agents:sync remediation."
 sections:
   Summary: |-
