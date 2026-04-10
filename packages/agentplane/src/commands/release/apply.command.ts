@@ -280,8 +280,8 @@ export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
       name: "push",
       default: false,
       description:
-        "Mandatory for real releases: push commit and tag so GitHub publish workflow can publish to npm " +
-        "(requires --yes). Local tests can skip with AGENTPLANE_RELEASE_DRY_RUN=1.",
+        "Optional direct-push mode: push the release commit and tag immediately " +
+        "(requires --yes). Leave this off when publishing happens later from a protected branch workflow.",
     },
     {
       kind: "string",
@@ -306,13 +306,6 @@ export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
     };
   },
   validate: (p) => {
-    if (!p.push && process.env.AGENTPLANE_RELEASE_DRY_RUN !== "1") {
-      throw usageError({
-        spec: releaseApplySpec,
-        command: "release apply",
-        message: "Release publish is mandatory. Run `agentplane release apply --push --yes`.",
-      });
-    }
     if (p.push && p.yes !== true) {
       throw usageError({
         spec: releaseApplySpec,
@@ -331,7 +324,7 @@ export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
   examples: [
     {
       cmd: "agentplane release apply",
-      why: "Apply the latest release plan (expects docs/releases/vX.Y.Z.md to exist).",
+      why: "Apply the latest release plan locally (expects docs/releases/vX.Y.Z.md to exist).",
     },
     {
       cmd: "agentplane release apply --plan .agentplane/.release/plan/<runId>",
@@ -345,14 +338,6 @@ export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
 };
 
 export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, flags) => {
-  if (!flags.push && process.env.AGENTPLANE_RELEASE_DRY_RUN !== "1") {
-    throw usageError({
-      spec: releaseApplySpec,
-      command: "release apply",
-      message: "Release publish is mandatory. Run `agentplane release apply --push --yes`.",
-    });
-  }
-
   return await runOperatorPipeline({
     init: async () => {
       const resolved = await resolveProject({

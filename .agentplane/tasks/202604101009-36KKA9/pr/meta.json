@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604101009-36KKA9/patch-release-v0-3-11",
+  "created_at": "2026-04-10T10:34:56.796Z",
+  "head_sha": "af5c99a1f21992bee33956aee73a01847635daa7",
+  "last_verified_at": "2026-04-10T15:09:00.039Z",
+  "last_verified_sha": "af5c99a1f21992bee33956aee73a01847635daa7",
+  "pr_number": 267,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/267",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604101009-36KKA9",
+  "updated_at": "2026-04-10T15:08:21.987Z",
+  "verify": {
+    "status": "pass"
+  }
+}

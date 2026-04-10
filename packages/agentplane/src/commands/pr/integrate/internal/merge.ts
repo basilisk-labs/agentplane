@@ -25,6 +25,7 @@ function integrateCommitEnv(taskId: string): NodeJS.ProcessEnv {
     AGENTPLANE_TASK_ID: taskId,
     AGENTPLANE_ALLOW_BASE: "1",
     AGENTPLANE_ALLOW_TASKS: "1",
+    AGENTPLANE_ALLOW_CONFIG: "1",
     AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
   };
 }
