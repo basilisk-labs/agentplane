@@ -272,10 +272,7 @@ describeWhenNotHook("release apply", () => {
       const headTagResult = await execFileAsync("git", ["tag", "--points-at", "HEAD"], {
         cwd: root,
       });
-      const headTag = headTagResult.stdout
-        .trim()
-        .split(/\r?\n/u)
-        .filter(Boolean);
+      const headTag = headTagResult.stdout.trim().split(/\r?\n/u).filter(Boolean);
       expect(headTag).toContain("v0.2.7");
 
       if (wasDryRun === undefined) {
