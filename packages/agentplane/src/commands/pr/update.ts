@@ -5,7 +5,11 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { gitRevParse } from "../shared/git-ops.js";
-import { loadBackendTask, loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import {
+  loadBackendTask,
+  loadCommandContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 import { assessPrArtifactFreshness } from "./internal/freshness.js";
 import { syncPrArtifacts } from "./internal/sync.js";
