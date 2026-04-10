@@ -4,7 +4,7 @@ title: "Prevent finish from mutating task docs before DONE validation"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -18,16 +18,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-10T00:58:54.535Z"
+  updated_by: "CODER"
+  note: "vitest: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts; eslint: bun x eslint packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts"
 commit: null
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-04-10T00:58:54.535Z"
+    author: "CODER"
+    state: "ok"
+    note: "vitest: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts; eslint: bun x eslint packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts"
 doc_version: 3
-doc_updated_at: "2026-04-10T00:54:48.139Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-10T00:58:54.537Z"
+doc_updated_by: "CODER"
 description: "Fix finish so structured findings do not append to task README before already-DONE and --force validation completes; add regression coverage for failure without mutation and idempotent forced retry."
 sections:
   Summary: |-
@@ -48,6 +54,14 @@ sections:
     3. Inspect the finish flow ordering in code. Expected: DONE/force validation executes before any task-doc mutation helper is called.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-10T00:58:54.535Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: vitest: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts; eslint: bun x eslint packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T00:54:48.139Z, excerpt_hash=sha256:b116b3a0b6a81570f0d7fd3868327429dcfef39b1c68f9e768c1b9d110ac1c4a
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +96,14 @@ Fix finish so structured findings do not append to task README before already-DO
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-10T00:58:54.535Z — VERIFY — ok
+
+By: CODER
+
+Note: vitest: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts; eslint: bun x eslint packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T00:54:48.139Z, excerpt_hash=sha256:b116b3a0b6a81570f0d7fd3868327429dcfef39b1c68f9e768c1b9d110ac1c4a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

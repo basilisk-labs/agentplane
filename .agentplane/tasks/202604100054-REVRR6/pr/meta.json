@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604100054-REVRR6/finish-done-validation-order",
+  "created_at": "2026-04-10T00:58:54.553Z",
+  "head_sha": "992c04e4dc3749566fc4359fdfc5ba4e8eaadc1c",
+  "last_verified_at": "2026-04-10T00:58:54.535Z",
+  "last_verified_sha": "992c04e4dc3749566fc4359fdfc5ba4e8eaadc1c",
+  "schema_version": 1,
+  "task_id": "202604100054-REVRR6",
+  "updated_at": "2026-04-10T00:58:54.553Z",
+  "verify": {
+    "status": "pass"
+  }
+}
