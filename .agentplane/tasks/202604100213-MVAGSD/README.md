@@ -1,10 +1,11 @@
 ---
 id: "202604100213-MVAGSD"
 title: "Fail integrate before merging when task PR artifacts are missing"
-status: "DOING"
+result_summary: "integrate: squash task/202604100213-MVAGSD/integrate-premerge-artifact-guard"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-10T02:26:59.567Z"
   updated_by: "CODER"
   note: "OK: bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts; bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts -t 'integrate fails before merge when the task branch never committed PR artifacts|integrate fails when post-merge hook removes pr dir'; bun x eslint packages/agentplane/src/commands/pr/integrate/artifacts.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts."
-commit: null
+commit:
+  hash: "7c7ba8a4098ba804d7f2f7ae717e79754e33ff6c"
+  message: "🧩 MVAGSD integrate: workflow: Fail integrate before merging when task PR artifacts are missing"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce integrate with missing committed task PR artifacts, move artifact validation ahead of merge-side mutation, and cover the guard with focused integration tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100213-MVAGSD/pr."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts; bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts -t 'integrate fails before merge when the task branch never committed PR artifacts|integrate fails when post-merge hook removes pr dir'; bun x eslint packages/agentplane/src/commands/pr/integrate/artifacts.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts."
+  -
+    type: "status"
+    at: "2026-04-10T02:40:41.212Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100213-MVAGSD/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T02:26:59.569Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T02:40:41.214Z"
+doc_updated_by: "INTEGRATOR"
 description: "Integrate currently can apply task code onto the base branch and only then discover that the task branch never committed .agentplane/tasks/<task-id>/pr artifacts. Validate the branch-backed task/PR artifact set before any merge-side mutation so base never advances when closeout metadata is absent."
 sections:
   Summary: |-

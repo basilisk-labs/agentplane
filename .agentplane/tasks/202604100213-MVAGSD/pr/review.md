@@ -45,17 +45,26 @@ Integrate currently can apply task code onto the base branch and only then disco
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T02:26:18.567Z
+- Updated: 2026-04-10T02:40:41.475Z
 - Branch: task/202604100213-MVAGSD/integrate-premerge-artifact-guard
-- Head: cd383aa8c7ea
+- Head: e418b5d722e5
 
 ```text
- .agentplane/tasks/202604100213-MVAGSD/README.md    | 95 ++++++++++++++++++++++
- .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 90 ++++++++++++++++++++
- .../src/commands/pr/integrate/artifacts.ts         | 74 ++++++++++++++++-
- .../commands/pr/integrate/internal/prepare.test.ts |  3 +
- .../src/commands/pr/integrate/internal/prepare.ts  |  8 +-
- 5 files changed, 268 insertions(+), 2 deletions(-)
+ .agentplane/policy/incidents.md                    |   1 +
+ .agentplane/tasks/202604100213-MVAGSD/README.md    | 128 +++++++++++++++++++++
+ .../tasks/202604100213-MVAGSD/pr/diffstat.txt      |   6 +
+ .../tasks/202604100213-MVAGSD/pr/github-body.md    |  55 +++++++++
+ .../tasks/202604100213-MVAGSD/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604100213-MVAGSD/pr/meta.json |  17 +++
+ .../tasks/202604100213-MVAGSD/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604100213-MVAGSD/pr/review.md |  62 ++++++++++
+ .../tasks/202604100213-MVAGSD/pr/verify.log        |   0
+ packages/agentplane/assets/policy/incidents.md     |   1 +
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts |  90 +++++++++++++++
+ .../src/commands/pr/integrate/artifacts.ts         |  74 +++++++++++-
+ .../commands/pr/integrate/internal/prepare.test.ts |   3 +
+ .../src/commands/pr/integrate/internal/prepare.ts  |   8 +-
+ 14 files changed, 444 insertions(+), 2 deletions(-)
 ```
 
 </details>
