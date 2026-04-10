@@ -20,6 +20,7 @@ const mocks = vi.hoisted(() => ({
   resolvePrPaths: vi.fn(),
   readPrArtifact: vi.fn(),
   readAndValidatePrArtifacts: vi.fn(),
+  ensureCommittedPrArtifactsOnBranch: vi.fn(),
   computeVerifyState: vi.fn(),
   parsePrMeta: vi.fn(),
   extractLastVerifiedSha: vi.fn(),
@@ -57,6 +58,7 @@ vi.mock("../../internal/pr-paths.js", () => ({
 }));
 vi.mock("../artifacts.js", () => ({
   readAndValidatePrArtifacts: mocks.readAndValidatePrArtifacts,
+  ensureCommittedPrArtifactsOnBranch: mocks.ensureCommittedPrArtifactsOnBranch,
 }));
 vi.mock("../verify.js", () => ({ computeVerifyState: mocks.computeVerifyState }));
 vi.mock("../../../shared/pr-meta.js", () => ({
@@ -101,6 +103,7 @@ function seedCommon(): void {
   mocks.parsePrMeta.mockReturnValue({ branch: "task/T-1", last_verified_sha: null });
   mocks.gitBranchExists.mockResolvedValue(true);
   mocks.readAndValidatePrArtifacts.mockResolvedValue({ verifyLogText: "ok" });
+  mocks.ensureCommittedPrArtifactsOnBranch.mockResolvedValue();
   mocks.gitDiffNames.mockResolvedValue(["src/app.ts"]);
   mocks.gitRevParse.mockResolvedValue("deadbeef");
   mocks.resolveTaskBranchFromContext.mockResolvedValue(null);
