@@ -1,0 +1,6 @@
+ .agentplane/tasks/202604100213-MVAGSD/README.md    | 95 ++++++++++++++++++++++
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 90 ++++++++++++++++++++
+ .../src/commands/pr/integrate/artifacts.ts         | 74 ++++++++++++++++-
+ .../commands/pr/integrate/internal/prepare.test.ts |  3 +
+ .../src/commands/pr/integrate/internal/prepare.ts  |  8 +-
+ 5 files changed, 268 insertions(+), 2 deletions(-)

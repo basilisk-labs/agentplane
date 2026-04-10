@@ -3,7 +3,7 @@ import path from "node:path";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 
-import { readPrArtifact } from "../internal/pr-paths.js";
+import { readPrArtifact, readPrArtifactFromBranch } from "../internal/pr-paths.js";
 import { findWorktreeForBranch } from "../../shared/git-worktree.js";
 
 import type { CommandContext } from "../../shared/task-backend.js";
@@ -77,4 +77,76 @@ export async function readAndValidatePrArtifacts(opts: {
   }
 
   return { verifyLogText };
+}
+
+export async function ensureCommittedPrArtifactsOnBranch(opts: {
+  resolved: { gitRoot: string };
+  prDir: string;
+  branch: string;
+}): Promise<void> {
+  const readCommittedPrArtifact = readPrArtifactFromBranch as (
+    o: ReadPrArtifactOpts,
+  ) => Promise<string | null>;
+  const { prDir } = opts;
+  const diffstatPath = path.join(prDir, "diffstat.txt");
+  const verifyLogPath = path.join(prDir, "verify.log");
+  const reviewPath = path.join(prDir, "review.md");
+  const metaPath = path.join(prDir, "meta.json");
+
+  const errors: string[] = [];
+  const relMeta = path.relative(opts.resolved.gitRoot, metaPath);
+  const relDiffstat = path.relative(opts.resolved.gitRoot, diffstatPath);
+  const relVerifyLog = path.relative(opts.resolved.gitRoot, verifyLogPath);
+  const relReview = path.relative(opts.resolved.gitRoot, reviewPath);
+
+  const metaText = await readCommittedPrArtifact({
+    resolved: opts.resolved,
+    prDir,
+    fileName: "meta.json",
+    branch: opts.branch,
+  });
+  if (metaText === null) errors.push(`Missing committed ${relMeta} on branch ${opts.branch}`);
+
+  const diffstatText = await readCommittedPrArtifact({
+    resolved: opts.resolved,
+    prDir,
+    fileName: "diffstat.txt",
+    branch: opts.branch,
+  });
+  if (diffstatText === null) {
+    errors.push(`Missing committed ${relDiffstat} on branch ${opts.branch}`);
+  }
+
+  const verifyLogText = await readCommittedPrArtifact({
+    resolved: opts.resolved,
+    prDir,
+    fileName: "verify.log",
+    branch: opts.branch,
+  });
+  if (verifyLogText === null) {
+    errors.push(`Missing committed ${relVerifyLog} on branch ${opts.branch}`);
+  }
+
+  const reviewText = await readCommittedPrArtifact({
+    resolved: opts.resolved,
+    prDir,
+    fileName: "review.md",
+    branch: opts.branch,
+  });
+  if (reviewText === null) {
+    errors.push(`Missing committed ${relReview} on branch ${opts.branch}`);
+  } else {
+    validateReviewContents(reviewText, errors);
+  }
+
+  if (errors.length > 0) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Task branch ${opts.branch} is missing committed PR artifacts required for integrate.\n` +
+        `${errors.join("\n")}\n` +
+        "Commit the task README/PR artifacts on the task branch (for example via `agentplane pr open` + git add/commit) before rerunning integrate.",
+    });
+  }
 }

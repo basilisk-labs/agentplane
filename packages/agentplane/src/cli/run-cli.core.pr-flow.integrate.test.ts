@@ -1405,6 +1405,96 @@ describe("runCli", () => {
     }
   }, 60_000);
 
+  it("integrate fails before merge when the task branch never committed PR artifacts", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+    await stageGitignoreIfPresent(root);
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate missing committed PR artifacts",
+        "--description",
+        "Branch integration",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/integrate-untracked-pr-artifacts`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    const statusAfterPrOpen = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=all", `.agentplane/tasks/${taskId}`],
+      { cwd: root },
+    );
+    expect(statusAfterPrOpen.stdout).toContain(`?? .agentplane/tasks/${taskId}/pr/meta.json`);
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const baseHeadBeforeResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const baseHeadBefore = baseHeadBeforeResult.stdout.trim();
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "integrate",
+        taskId,
+        "--branch",
+        branch,
+        "--merge-strategy",
+        "merge",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("missing committed PR artifacts required for integrate");
+      expect(io.stderr).toContain(`.agentplane/tasks/${taskId}/pr/meta.json`);
+    } finally {
+      io.restore();
+    }
+
+    const baseHeadAfterResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const baseHeadAfter = baseHeadAfterResult.stdout.trim();
+    expect(baseHeadAfter).toBe(baseHeadBefore);
+  }, 60_000);
+
   it("integrate runs verify when requested", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
