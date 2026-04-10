@@ -5,7 +5,7 @@ result_summary: "integrate: squash task/202604100023-MFGFK9/preflight-task-drift
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -55,7 +55,7 @@ events:
     to: "DONE"
     note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100023-MFGFK9/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T00:32:11.901Z"
+doc_updated_at: "2026-04-10T00:36:49.556Z"
 doc_updated_by: "INTEGRATOR"
 description: "Surface changed/untracked .agentplane/tasks/<task-id>/... paths in preflight so operators can see cross-task artifact drift that git status --untracked-files=no hides."
 sections:
@@ -85,7 +85,14 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Preflight could report a tracked-clean working tree while untracked .agentplane/tasks artifacts from other task ids were still present and capable of breaking later integrate or close flows.
+      Impact: Operators could trust the tracked-only cleanliness signal, miss hidden task drift, and only discover the collision after a merge or close commit failed.
+      Resolution: Preflight now inspects full changed paths under the workflow task directory, reports task artifact drift explicitly in JSON/text output, and points operators at git status --short --untracked-files=all -- .agentplane/tasks.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+      IncidentScope: Preflight hides cross-task workflow artifact drift when tracked status looks clean.
+      IncidentTags: workflow, git, ux
 id_source: "generated"
 ---
 ## Summary
@@ -128,3 +135,11 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T00:25:07.551Z, excerpt_
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Preflight could report a tracked-clean working tree while untracked .agentplane/tasks artifacts from other task ids were still present and capable of breaking later integrate or close flows.
+  Impact: Operators could trust the tracked-only cleanliness signal, miss hidden task drift, and only discover the collision after a merge or close commit failed.
+  Resolution: Preflight now inspects full changed paths under the workflow task directory, reports task artifact drift explicitly in JSON/text output, and points operators at git status --short --untracked-files=all -- .agentplane/tasks.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+  IncidentScope: Preflight hides cross-task workflow artifact drift when tracked status looks clean.
+  IncidentTags: workflow, git, ux
