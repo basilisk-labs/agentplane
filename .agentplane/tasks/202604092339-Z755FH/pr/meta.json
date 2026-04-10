@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604092339-Z755FH/pr-update-stale-verify-warning",
+  "created_at": "2026-04-09T23:55:37.075Z",
+  "head_sha": "154bedb0e103c9df9777c91e496635cc53e808b5",
+  "last_verified_at": "2026-04-09T23:55:37.055Z",
+  "last_verified_sha": "fa2e799ba028cb90b1415eb68d0e90cc6f20ed88",
+  "pr_number": 245,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/245",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604092339-Z755FH",
+  "updated_at": "2026-04-10T00:07:35.610Z",
+  "verify": {
+    "status": "pass"
+  }
+}

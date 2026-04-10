@@ -25,6 +25,46 @@ export type LoadedFinishTask = {
   task: TaskData;
 };
 
+function normalizeCommentBody(value: string | null | undefined): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function commitInfoMatches(current: TaskData, requested: ResolvedCommitInfo | null): boolean {
+  if (!requested) return true;
+  const existing = existingCommitInfo(current);
+  if (!existing) return false;
+  return existing.hash === requested.hash && existing.message === requested.message;
+}
+
+function isIdempotentDoneRetry(opts: {
+  task: TaskData;
+  author: string;
+  body: string;
+  resultSummary: string;
+  metaTaskId: string;
+  taskId: string;
+  riskLevel?: "low" | "med" | "high";
+  breaking: boolean;
+  taskCommitInfo: ResolvedCommitInfo | null;
+}): boolean {
+  if (String(opts.task.status ?? "TODO").toUpperCase() !== "DONE") return false;
+  const lastComment = opts.task.comments?.at(-1) ?? null;
+  const lastEvent = opts.task.events?.at(-1) ?? null;
+  if (lastComment?.author !== opts.author) return false;
+  if (normalizeCommentBody(lastComment.body) !== normalizeCommentBody(opts.body)) return false;
+  if (lastEvent?.type !== "status" || lastEvent.author !== opts.author) return false;
+  if (String(lastEvent.from ?? "").toUpperCase() !== "DOING") return false;
+  if (String(lastEvent.to ?? "").toUpperCase() !== "DONE") return false;
+  if (normalizeCommentBody(lastEvent.note) !== normalizeCommentBody(opts.body)) return false;
+  if (!commitInfoMatches(opts.task, opts.taskCommitInfo)) return false;
+  if (opts.taskId === opts.metaTaskId) {
+    if ((opts.task.result_summary ?? "") !== opts.resultSummary) return false;
+    if ((opts.task.risk_level ?? undefined) !== opts.riskLevel) return false;
+    if (Boolean(opts.task.breaking) !== opts.breaking) return false;
+  }
+  return true;
+}
+
 export function existingCommitInfo(task: TaskData): ResolvedCommitInfo | null {
   const hash = typeof task.commit?.hash === "string" ? task.commit.hash.trim() : "";
   if (!hash) return null;
@@ -185,6 +225,22 @@ export async function writeFinishedTasks(opts: {
         resultSummary: opts.resultSummary,
         force: opts.force,
       });
+      if (
+        opts.force &&
+        isIdempotentDoneRetry({
+          task: currentTask,
+          author: opts.author,
+          body: opts.body,
+          resultSummary: opts.resultSummary,
+          metaTaskId: opts.metaTaskId,
+          taskId,
+          riskLevel: opts.riskLevel,
+          breaking: opts.breaking,
+          taskCommitInfo: opts.taskCommitInfo,
+        })
+      ) {
+        return { intents: [], nextTask: currentTask };
+      }
       return await executeTaskStatusTransitionRequest({
         task: currentTask,
         backend: opts.ctx.taskBackend,

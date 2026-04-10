@@ -466,6 +466,7 @@ export async function cmdCommit(opts: {
         allowConfig: false,
         allowHooks: false,
         allowCI: false,
+        allowStaleDist: true,
       });
       await ctx.git.commit({ message: msg.subject, body: msg.body, env });
 

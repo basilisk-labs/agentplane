@@ -234,6 +234,12 @@ describe("guard/impl/commands", () => {
       command: "commit",
     });
     expect(ctx.git.stage).toHaveBeenCalledWith(["/outside/README.md"]);
+    expect(mocks.buildGitCommitEnv).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-2",
+        allowStaleDist: true,
+      }),
+    );
   });
 
   it("cmdCommit close --check-only skips reconcile guard", async () => {
@@ -392,6 +398,12 @@ describe("guard/impl/commands", () => {
         body: "body",
         env: { AGENTPLANE_TASK_ID: "T-2" },
       });
+      expect(mocks.buildGitCommitEnv).toHaveBeenCalledWith(
+        expect.objectContaining({
+          taskId: "T-2",
+          allowStaleDist: true,
+        }),
+      );
       expect(
         stdout.mock.calls.some(([text]) =>
           String(text).includes("fedcba987654 ✅ ABC123 close: done"),
@@ -460,6 +472,38 @@ describe("guard/impl/commands", () => {
     expect(lastInvalidateOrder).toBeLessThan(
       ctx.git.stage.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
     );
+  });
+
+  it("cmdCommit non-close path does not opt into stale-dist bypass", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-1" });
+
+    const rc = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-1",
+      message: "✅ ABC123 task: message",
+      close: false,
+      allow: ["src"],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    const envCall = mocks.buildGitCommitEnv.mock.calls.at(-1)?.[0] as
+      | { taskId: string; allowStaleDist?: boolean }
+      | undefined;
+    expect(envCall).toMatchObject({ taskId: "T-1" });
+    expect(envCall).not.toHaveProperty("allowStaleDist");
   });
 
   it("cmdCommit rejects auto-allow mode", async () => {

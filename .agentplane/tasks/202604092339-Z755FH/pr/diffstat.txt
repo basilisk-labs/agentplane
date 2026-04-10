@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604092339-Z755FH/README.md    | 117 +++++++++++++++++++++
+ .../tasks/202604092339-Z755FH/pr/diffstat.txt      |  11 ++
+ .../tasks/202604092339-Z755FH/pr/github-body.md    |  60 +++++++++++
+ .../tasks/202604092339-Z755FH/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604092339-Z755FH/pr/meta.json |  17 +++
+ .../tasks/202604092339-Z755FH/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604092339-Z755FH/pr/review.md |  67 ++++++++++++
+ .../tasks/202604092339-Z755FH/pr/verify.log        |   0
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  10 +-
+ packages/agentplane/src/commands/pr/update.ts      |  84 ++++++++++++++-
+ 10 files changed, 364 insertions(+), 3 deletions(-)
