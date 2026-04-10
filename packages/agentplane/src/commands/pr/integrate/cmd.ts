@@ -6,6 +6,7 @@ import { CliError } from "../../../shared/errors.js";
 
 import { cleanupIntegratedBranch } from "./internal/cleanup.js";
 import {
+  renderPostIntegrateBootstrapFailureGuidance,
   renderPostIntegrateBootstrapGuidance,
   shouldRecommendPostIntegrateBootstrap,
 } from "./internal/bootstrap-guidance.js";
@@ -15,6 +16,7 @@ import type { CommandContext } from "../../shared/task-backend.js";
 
 import { finalizeIntegrate } from "./internal/finalize.js";
 import { runMergeCommit, runRebaseFastForward, runSquashMerge } from "./internal/merge.js";
+import { maybeRunPostIntegrateBootstrap } from "./internal/post-integrate-bootstrap.js";
 import { prepareIntegrate } from "./internal/prepare.js";
 import { resolveWorktreeForIntegrate } from "./internal/worktree.js";
 import { runVerifyCommands } from "./verify.js";
@@ -210,8 +212,18 @@ export async function cmdIntegrate(opts: {
       createdTempWorktree = false;
     }
 
-    if (!opts.quiet && shouldRecommendPostIntegrateBootstrap(changedPaths)) {
-      output.warn(renderPostIntegrateBootstrapGuidance());
+    if (shouldRecommendPostIntegrateBootstrap(changedPaths)) {
+      const bootstrapResult = await maybeRunPostIntegrateBootstrap({
+        gitRoot: resolved.gitRoot,
+        changedPaths,
+      });
+      if (!opts.quiet) {
+        if (bootstrapResult.status === "skipped") {
+          output.warn(renderPostIntegrateBootstrapGuidance());
+        } else if (bootstrapResult.status === "failed") {
+          output.warn(renderPostIntegrateBootstrapFailureGuidance(bootstrapResult.error));
+        }
+      }
     }
 
     return 0;

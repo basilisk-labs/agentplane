@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   createCliEmitter: vi.fn(),
   finalizeIntegrate: vi.fn(),
   gitRevParse: vi.fn(),
+  maybeRunPostIntegrateBootstrap: vi.fn(),
   prepareIntegrate: vi.fn(),
   resolveWorktreeForIntegrate: vi.fn(),
   runMergeCommit: vi.fn(),
@@ -23,6 +24,9 @@ vi.mock("./internal/cleanup.js", () => ({
 vi.mock("./internal/finalize.js", () => ({
   finalizeIntegrate: mocks.finalizeIntegrate,
 }));
+vi.mock("./internal/post-integrate-bootstrap.js", () => ({
+  maybeRunPostIntegrateBootstrap: mocks.maybeRunPostIntegrateBootstrap,
+}));
 vi.mock("./internal/merge.js", () => ({
   runMergeCommit: mocks.runMergeCommit,
   runRebaseFastForward: mocks.runRebaseFastForward,
@@ -40,6 +44,8 @@ vi.mock("./verify.js", () => ({
 vi.mock("./internal/bootstrap-guidance.js", () => ({
   renderPostIntegrateBootstrapGuidance: () =>
     "This merge changed watched runtime sources. Run `bun run framework:dev:bootstrap` before the next command so the repo-local build stays current.",
+  renderPostIntegrateBootstrapFailureGuidance: (reason: string) =>
+    `This merge changed watched runtime sources and the automatic repo-local runtime refresh failed (${reason}). Run \`bun run framework:dev:bootstrap\` manually before the next command.`,
   shouldRecommendPostIntegrateBootstrap: mocks.shouldRecommendPostIntegrateBootstrap,
 }));
 vi.mock("../../shared/git-ops.js", () => ({
@@ -116,10 +122,11 @@ describe("pr/integrate/cmd", () => {
       worktreePath: null,
       skippedReason: null,
     });
+    mocks.maybeRunPostIntegrateBootstrap.mockResolvedValue({ status: "ran" });
     mocks.shouldRecommendPostIntegrateBootstrap.mockReturnValue(true);
   });
 
-  it("warns after integrate when watched runtime sources changed", async () => {
+  it("auto-bootstraps after integrate when watched runtime sources changed", async () => {
     const { cmdIntegrate } = await import("./cmd.js");
 
     const exitCode = await cmdIntegrate({
@@ -135,14 +142,55 @@ describe("pr/integrate/cmd", () => {
     expect(mocks.shouldRecommendPostIntegrateBootstrap).toHaveBeenCalledWith([
       "packages/agentplane/src/cli.ts",
     ]);
-    expect(emitter.warn).toHaveBeenCalledWith(
-      "This merge changed watched runtime sources. Run `bun run framework:dev:bootstrap` before the next command so the repo-local build stays current.",
-    );
+    expect(mocks.maybeRunPostIntegrateBootstrap).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      changedPaths: ["packages/agentplane/src/cli.ts"],
+    });
+    expect(emitter.warn).not.toHaveBeenCalled();
     expect(mocks.finalizeIntegrate).toHaveBeenCalledWith(
       expect.objectContaining({
         taskId: "T-1",
         mergeHash: "merge-sha",
       }),
+    );
+  });
+
+  it("warns with manual bootstrap guidance when auto-bootstrap is skipped", async () => {
+    mocks.maybeRunPostIntegrateBootstrap.mockResolvedValue({ status: "skipped" });
+    const { cmdIntegrate } = await import("./cmd.js");
+
+    await cmdIntegrate({
+      cwd: "/repo",
+      taskId: "T-1",
+      mergeStrategy: "squash",
+      runVerify: false,
+      dryRun: false,
+      quiet: false,
+    });
+
+    expect(emitter.warn).toHaveBeenCalledWith(
+      "This merge changed watched runtime sources. Run `bun run framework:dev:bootstrap` before the next command so the repo-local build stays current.",
+    );
+  });
+
+  it("warns explicitly when auto-bootstrap fails", async () => {
+    mocks.maybeRunPostIntegrateBootstrap.mockResolvedValue({
+      status: "failed",
+      error: "bootstrap exit 1",
+    });
+    const { cmdIntegrate } = await import("./cmd.js");
+
+    await cmdIntegrate({
+      cwd: "/repo",
+      taskId: "T-1",
+      mergeStrategy: "squash",
+      runVerify: false,
+      dryRun: false,
+      quiet: false,
+    });
+
+    expect(emitter.warn).toHaveBeenCalledWith(
+      "This merge changed watched runtime sources and the automatic repo-local runtime refresh failed (bootstrap exit 1). Run `bun run framework:dev:bootstrap` manually before the next command.",
     );
   });
 
@@ -160,6 +208,7 @@ describe("pr/integrate/cmd", () => {
     });
 
     expect(mocks.shouldRecommendPostIntegrateBootstrap).toHaveBeenCalled();
+    expect(mocks.maybeRunPostIntegrateBootstrap).not.toHaveBeenCalled();
     expect(emitter.warn).not.toHaveBeenCalled();
   });
 });
