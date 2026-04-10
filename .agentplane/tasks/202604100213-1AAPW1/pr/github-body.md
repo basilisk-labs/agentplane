@@ -39,19 +39,19 @@ Verify-required task scaffolds currently seed a placeholder Verify Steps block t
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T02:39:35.381Z
+- Updated: 2026-04-10T02:49:22.079Z
 - Branch: task/202604100213-1AAPW1/verify-steps-scaffold-approval
-- Head: 5e2eb49845e2
+- Head: 0df643bfee64
 
 ```text
  .agentplane/policy/incidents.md                    |   1 +
  .agentplane/tasks/202604100213-1AAPW1/README.md    | 128 +++++++++++++++++++++
- .../tasks/202604100213-1AAPW1/pr/diffstat.txt      |   8 ++
- .../tasks/202604100213-1AAPW1/pr/github-body.md    |  57 +++++++++
+ .../tasks/202604100213-1AAPW1/pr/diffstat.txt      |  17 +++
+ .../tasks/202604100213-1AAPW1/pr/github-body.md    |  66 +++++++++++
  .../tasks/202604100213-1AAPW1/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604100213-1AAPW1/pr/meta.json |  17 +++
  .../tasks/202604100213-1AAPW1/pr/notes.jsonl       |   0
- .agentplane/tasks/202604100213-1AAPW1/pr/review.md |  64 +++++++++++
+ .agentplane/tasks/202604100213-1AAPW1/pr/review.md |  73 ++++++++++++
  .../tasks/202604100213-1AAPW1/pr/verify.log        |   0
  packages/agentplane/assets/policy/incidents.md     |   1 +
  .../src/cli/run-cli.core.lifecycle.test.ts         |  66 +++++++++++
@@ -60,7 +60,7 @@ Verify-required task scaffolds currently seed a placeholder Verify Steps block t
  packages/agentplane/src/commands/task/derive.ts    |   2 +-
  .../agentplane/src/commands/task/doc-template.ts   |   6 +-
  packages/agentplane/src/commands/task/new.ts       |   2 +-
- 16 files changed, 456 insertions(+), 8 deletions(-)
+ 16 files changed, 483 insertions(+), 8 deletions(-)
 ```
 
 </details>
