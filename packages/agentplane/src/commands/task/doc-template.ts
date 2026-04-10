@@ -115,10 +115,8 @@ export function buildDefaultVerifyStepsSection(opts: {
 
   if (commandSteps.length === 0) {
     return [
-      "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
-      "",
-      "1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.",
-      "2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.",
+      `1. Review the changed artifact or behavior for the \`${opts.primary}\` task. Expected: the requested outcome is visible and matches the approved scope.`,
+      `2. Run the most relevant validation step for the \`${opts.primary}\` task. Expected: it succeeds without unexpected regressions in touched scope.`,
       "3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.",
     ].join("\n");
   }

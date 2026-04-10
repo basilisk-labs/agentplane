@@ -102,7 +102,7 @@ export async function cmdTaskDerive(opts: {
       );
       process.stderr.write(
         `${warnMessage(
-          "task requires Verify Steps by primary tag; seeded a default ## Verify Steps section in README (review and refine before approval/start)",
+          "task requires Verify Steps by primary tag; seeded a concrete ## Verify Steps section in README (refine it only if the task needs stricter acceptance coverage)",
         )}\n`,
       );
     }

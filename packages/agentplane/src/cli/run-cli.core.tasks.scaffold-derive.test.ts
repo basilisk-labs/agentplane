@@ -161,7 +161,7 @@ describe("runCli", () => {
       derivedId = ioDerive.stdout.trim();
       expect(derivedId).toContain("-");
       expect(ioDerive.stderr).toContain(
-        "task requires Verify Steps by primary tag; seeded a default ## Verify Steps section in README",
+        "task requires Verify Steps by primary tag; seeded a concrete ## Verify Steps section in README",
       );
     } finally {
       ioDerive.restore();
@@ -202,5 +202,76 @@ describe("runCli", () => {
     } finally {
       ioList.restore();
     }
+  });
+
+  it("task derive without verify commands still seeds approvable Verify Steps", async () => {
+    const root = await writeAndConfigureRoot();
+
+    const ioSpike = captureStdIO();
+    let spikeId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Spike task without explicit verify",
+        "--description",
+        "Research the thing",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "spike",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      spikeId = ioSpike.stdout.trim();
+    } finally {
+      ioSpike.restore();
+    }
+
+    const ioDerive = captureStdIO();
+    let derivedId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "derive",
+        spikeId,
+        "--title",
+        "Implementation task without explicit verify",
+        "--description",
+        "Build the researched thing",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      derivedId = ioDerive.stdout.trim();
+      expect(ioDerive.stderr).toContain(
+        "task requires Verify Steps by primary tag; seeded a concrete ## Verify Steps section in README",
+      );
+    } finally {
+      ioDerive.restore();
+    }
+
+    const derivedReadme = await readFile(
+      path.join(root, ".agentplane", "tasks", derivedId, "README.md"),
+      "utf8",
+    );
+    expect(derivedReadme).toContain("## Verify Steps");
+    expect(derivedReadme).toContain("Review the changed artifact or behavior for the `code` task.");
+    expect(derivedReadme).toContain(
+      "Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.",
+    );
+    expect(derivedReadme).not.toContain(
+      "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
+    );
   });
 });
