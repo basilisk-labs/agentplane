@@ -135,7 +135,7 @@ export async function finalizeIntegrate(opts: {
     output.info(
       renderIncidentCollectionPlanOutcome(collectedIncidents.plan, {
         wrote: collectedIncidents.wrote,
-        context: "generic",
+        context: "finish",
         promotedIds: collectedIncidents.plan.promotable.map((item) => item.entry.id),
         registryPaths: collectedIncidents.registryPaths,
       }),

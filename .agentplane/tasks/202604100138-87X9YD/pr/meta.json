@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604100138-87X9YD/closeout-incident-guidance",
+  "created_at": "2026-04-10T01:50:27.909Z",
+  "head_sha": "373b298805202686435d517ffcfbc2203ca1a5bf",
+  "last_verified_at": "2026-04-10T01:57:40.502Z",
+  "last_verified_sha": "20c6ef6f8d03b36a17022ac0326962622cc0503a",
+  "pr_number": 258,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/258",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604100138-87X9YD",
+  "updated_at": "2026-04-10T02:07:39.172Z",
+  "verify": {
+    "status": "pass"
+  }
+}
