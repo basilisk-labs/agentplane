@@ -1,3 +1,6 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
+
 import { isRuntimeRelevantWatchedFile } from "../../../../../bin/runtime-watch.js";
 
 const WATCHED_RUNTIME_PACKAGES = [
@@ -43,9 +46,30 @@ export function shouldRecommendPostIntegrateBootstrap(changedPaths: string[]): b
   return changedPaths.some((changedPath) => isWatchedRuntimeSourcePath(changedPath));
 }
 
+export function shouldAutoBootstrapAfterIntegrate(opts: {
+  changedPaths: string[];
+  gitRoot: string;
+}): boolean {
+  if (!shouldRecommendPostIntegrateBootstrap(opts.changedPaths)) {
+    return false;
+  }
+  return (
+    existsSync(path.join(opts.gitRoot, "package.json")) &&
+    existsSync(path.join(opts.gitRoot, "packages", "agentplane", "package.json")) &&
+    existsSync(path.join(opts.gitRoot, "scripts", "bootstrap-framework-dev.mjs"))
+  );
+}
+
 export function renderPostIntegrateBootstrapGuidance(): string {
   return (
     "This merge changed watched runtime sources. Run `bun run framework:dev:bootstrap` " +
     "before the next command so the repo-local build stays current."
+  );
+}
+
+export function renderPostIntegrateBootstrapFailureGuidance(reason: string): string {
+  return (
+    "This merge changed watched runtime sources and the automatic repo-local runtime refresh " +
+    `failed (${reason}). Run \`bun run framework:dev:bootstrap\` manually before the next command.`
   );
 }
