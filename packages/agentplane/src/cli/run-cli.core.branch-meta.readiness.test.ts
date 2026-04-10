@@ -272,6 +272,63 @@ describe("runCli", () => {
     }
   });
 
+  it("preflight --json surfaces task artifact drift even when tracked status is clean", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const otherTaskDir = path.join(root, ".agentplane", "tasks", "202604100023-OTHER");
+    await mkdir(otherTaskDir, { recursive: true });
+    await writeFile(path.join(otherTaskDir, "README.md"), "drift\n", "utf8");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        working_tree_clean_tracked?: { value?: boolean };
+        task_artifact_drift?: { present?: boolean; task_ids?: string[]; paths?: string[] };
+        harness_health?: { status?: string; reasons?: string[] };
+        next_actions?: { command?: string; reason?: string }[];
+      };
+      expect(payload.working_tree_clean_tracked?.value).toBe(true);
+      expect(payload.task_artifact_drift).toMatchObject({
+        present: true,
+        task_ids: ["202604100023-OTHER"],
+      });
+      expect(payload.task_artifact_drift?.paths).toContain(
+        ".agentplane/tasks/202604100023-OTHER/README.md",
+      );
+      expect(payload.harness_health?.status).toBe("warn");
+      expect(payload.harness_health?.reasons).toContain("task_artifact_drift");
+      expect(payload.next_actions).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            command: "git status --short --untracked-files=all -- .agentplane/tasks",
+          }),
+        ]),
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("preflight text output calls out task artifact drift explicitly", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const otherTaskDir = path.join(root, ".agentplane", "tasks", "202604100023-OTHER");
+    await mkdir(otherTaskDir, { recursive: true });
+    await writeFile(path.join(otherTaskDir, "README.md"), "drift\n", "utf8");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("- task artifact drift: 202604100023-OTHER");
+      expect(io.stdout).toContain(
+        "- git status --short --untracked-files=all -- .agentplane/tasks: task artifact drift detected for 202604100023-OTHER",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
   it("preflight --json supports workflow kill-switch via env", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
