@@ -1,0 +1,1 @@
+workflow: Auto-bootstrap framework runtime after integrate touches watched sources (EVJWDM)
