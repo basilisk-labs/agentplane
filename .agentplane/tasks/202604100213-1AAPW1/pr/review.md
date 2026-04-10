@@ -45,19 +45,28 @@ Verify-required task scaffolds currently seed a placeholder Verify Steps block t
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T02:35:53.792Z
+- Updated: 2026-04-10T02:39:35.381Z
 - Branch: task/202604100213-1AAPW1/verify-steps-scaffold-approval
-- Head: f79f3b9571c3
+- Head: 5e2eb49845e2
 
 ```text
- .agentplane/tasks/202604100213-1AAPW1/README.md    | 95 ++++++++++++++++++++++
- .../src/cli/run-cli.core.lifecycle.test.ts         | 66 +++++++++++++++
- .../cli/run-cli.core.tasks.scaffold-derive.test.ts | 73 ++++++++++++++++-
- .../agentplane/src/cli/run-cli.core.tasks.test.ts  | 38 ++++++++-
- packages/agentplane/src/commands/task/derive.ts    |  2 +-
- .../agentplane/src/commands/task/doc-template.ts   |  6 +-
- packages/agentplane/src/commands/task/new.ts       |  2 +-
- 7 files changed, 274 insertions(+), 8 deletions(-)
+ .agentplane/policy/incidents.md                    |   1 +
+ .agentplane/tasks/202604100213-1AAPW1/README.md    | 128 +++++++++++++++++++++
+ .../tasks/202604100213-1AAPW1/pr/diffstat.txt      |   8 ++
+ .../tasks/202604100213-1AAPW1/pr/github-body.md    |  57 +++++++++
+ .../tasks/202604100213-1AAPW1/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604100213-1AAPW1/pr/meta.json |  17 +++
+ .../tasks/202604100213-1AAPW1/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604100213-1AAPW1/pr/review.md |  64 +++++++++++
+ .../tasks/202604100213-1AAPW1/pr/verify.log        |   0
+ packages/agentplane/assets/policy/incidents.md     |   1 +
+ .../src/cli/run-cli.core.lifecycle.test.ts         |  66 +++++++++++
+ .../cli/run-cli.core.tasks.scaffold-derive.test.ts |  73 +++++++++++-
+ .../agentplane/src/cli/run-cli.core.tasks.test.ts  |  38 +++++-
+ packages/agentplane/src/commands/task/derive.ts    |   2 +-
+ .../agentplane/src/commands/task/doc-template.ts   |   6 +-
+ packages/agentplane/src/commands/task/new.ts       |   2 +-
+ 16 files changed, 456 insertions(+), 8 deletions(-)
 ```
 
 </details>
