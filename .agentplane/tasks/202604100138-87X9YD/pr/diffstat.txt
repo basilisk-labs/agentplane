@@ -1,0 +1,5 @@
+ packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts | 2 +-
+ packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts | 2 +-
+ packages/agentplane/src/commands/pr/integrate/internal/finalize.ts | 2 +-
+ packages/agentplane/src/commands/task/hosted-close.command.ts      | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
