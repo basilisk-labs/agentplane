@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604100123-YSM0S2/finalize",
+  "created_at": "2026-04-10T01:29:57.097Z",
+  "head_sha": "650ae5f67a7b0b2616cad86d81097cbae9ffe66e",
+  "last_verified_at": "2026-04-10T01:29:57.073Z",
+  "last_verified_sha": "650ae5f67a7b0b2616cad86d81097cbae9ffe66e",
+  "schema_version": 1,
+  "task_id": "202604100123-YSM0S2",
+  "updated_at": "2026-04-10T01:29:57.097Z",
+  "verify": {
+    "status": "pass"
+  }
+}
