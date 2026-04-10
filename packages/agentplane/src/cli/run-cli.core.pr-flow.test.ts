@@ -650,6 +650,105 @@ describe("runCli", () => {
   );
 
   it(
+    "work start makes a fresh framework worktree immediately runnable for repo-local commands",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      await seedRepoLocalBinArtifacts(root);
+      await seedRepoLocalDistArtifacts(root);
+      await seedRepoLocalNodeModules(root);
+      await seedRepoLocalCorePackage(root);
+      await mkdir(path.join(root, "agentplane-recipes"), { recursive: true });
+      await writeFile(
+        path.join(root, "agentplane-recipes", "index.json"),
+        '{"schema_version":1,"recipes":[]}\n',
+        "utf8",
+      );
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "."], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      const ioTask = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Fresh worktree runtime bootstrap",
+          "--description",
+          "Fresh branch_pr worktree should run repo-local commands without manual bootstrap.",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await approveTaskPlan(root, taskId);
+
+      const io = captureStdIO();
+      const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-runtime-ready`);
+      try {
+        const code = await runCli([
+          "work",
+          "start",
+          taskId,
+          "--agent",
+          "CODER",
+          "--slug",
+          "runtime-ready",
+          "--worktree",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+
+      expect(await pathExists(path.join(worktreePath, "node_modules"))).toBe(true);
+      expect(await pathExists(path.join(worktreePath, "packages", "agentplane", "node_modules"))).toBe(
+        true,
+      );
+      expect(await pathExists(path.join(worktreePath, "agentplane-recipes", "index.json"))).toBe(
+        true,
+      );
+
+      const runtime = await execFileAsync(
+        process.execPath,
+        [
+          path.join(worktreePath, "packages", "agentplane", "bin", "agentplane.js"),
+          "runtime",
+          "explain",
+        ],
+        {
+          cwd: worktreePath,
+          env: cleanGitEnv({ PATH: process.env.PATH ?? "" }),
+          encoding: "utf8",
+        },
+      );
+      expect(runtime.stdout).toContain("Mode: repo-local");
+      expect(runtime.stdout).toContain("Framework checkout: yes");
+    },
+    WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
+  );
+
+  it(
     "task start-ready keeps the active task README synchronized between base and task worktree",
     { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS },
     async () => {

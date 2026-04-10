@@ -1,4 +1,4 @@
-import { copyFile, cp, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { copyFile, cp, mkdir, readFile, readdir, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { resolveBaseBranch } from "@agentplaneorg/core";
@@ -114,6 +114,41 @@ async function materializeRepoLocalDistForWorktree(opts: {
 
     await mkdir(path.dirname(targetPath), { recursive: true });
     await cp(sourcePath, targetPath, { recursive: true });
+  }
+}
+
+async function linkDirectoryIntoWorktree(opts: {
+  repoRoot: string;
+  worktreePath: string;
+  relativePath: string;
+}): Promise<boolean> {
+  const sourcePath = path.join(opts.repoRoot, opts.relativePath);
+  if (!(await fileExists(sourcePath))) return false;
+
+  const targetPath = path.join(opts.worktreePath, opts.relativePath);
+  if (await fileExists(targetPath)) return false;
+
+  await mkdir(path.dirname(targetPath), { recursive: true });
+  await symlink(sourcePath, targetPath, process.platform === "win32" ? "junction" : "dir");
+  return true;
+}
+
+async function materializeRepoLocalInstallLayoutForWorktree(opts: {
+  repoRoot: string;
+  worktreePath: string;
+}): Promise<void> {
+  const linkTargets = [
+    "node_modules",
+    path.join("packages", "core", "node_modules"),
+    path.join("packages", "agentplane", "node_modules"),
+    "agentplane-recipes",
+  ];
+  for (const relativePath of linkTargets) {
+    await linkDirectoryIntoWorktree({
+      repoRoot: opts.repoRoot,
+      worktreePath: opts.worktreePath,
+      relativePath,
+    });
   }
 }
 
@@ -308,6 +343,10 @@ export async function cmdWorkStart(opts: {
         worktreePath,
       });
       await materializeRepoLocalDistForWorktree({
+        repoRoot: resolved.gitRoot,
+        worktreePath,
+      });
+      await materializeRepoLocalInstallLayoutForWorktree({
         repoRoot: resolved.gitRoot,
         worktreePath,
       });
