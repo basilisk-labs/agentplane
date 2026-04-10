@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202604100827-QG5AN4/cleanup-stale-worktrees",
   "created_at": "2026-04-10T08:34:06.859Z",
-  "head_sha": "3fe2b1a83753da182a17e385a5b16d54a7e83516",
+  "head_sha": "408e62ba73d71a1a89b390747d70e373122ed65a",
   "last_verified_at": "2026-04-10T08:34:06.815Z",
   "last_verified_sha": "3fe2b1a83753da182a17e385a5b16d54a7e83516",
+  "pr_number": 265,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/265",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202604100827-QG5AN4",
-  "updated_at": "2026-04-10T08:34:06.859Z",
+  "updated_at": "2026-04-10T09:09:07.046Z",
   "verify": {
     "status": "pass"
   }

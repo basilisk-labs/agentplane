@@ -1,10 +1,11 @@
 ---
 id: "202604100827-QG5AN4"
 title: "Clean merged stale repo-local task branches and worktrees"
-status: "DOING"
+result_summary: "integrate: squash task/202604100827-QG5AN4/cleanup-stale-worktrees"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-10T08:34:06.815Z"
   updated_by: "CODER"
   note: "Removed 9 DONE repo-local worktrees, deleted their 9 local task branches, and dropped merged task-close/202604092006-BGDQEG/root-close while preserving active worktrees and detached ~/.codex checkouts."
-commit: null
+commit:
+  hash: "10ae95de8993b5e85a1402873cf9b53955a7c5ae"
+  message: "🧩 QG5AN4 integrate: maintenance: Clean merged stale repo-local task branches and worktrees"
 comments:
   -
     author: "CODER"
     body: "Start: inventory merged repo-local task branches and remove only stale worktrees/branches that are already integrated into main."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100827-QG5AN4/pr."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed 9 DONE repo-local worktrees, deleted their 9 local task branches, and dropped merged task-close/202604092006-BGDQEG/root-close while preserving active worktrees and detached ~/.codex checkouts."
+  -
+    type: "status"
+    at: "2026-04-10T09:09:05.726Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100827-QG5AN4/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T08:34:06.819Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T09:09:05.732Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove finished repo-local task worktrees and local branches that are already merged into main, while preserving the active task branch/worktree and leaving detached ~/.codex worktrees out of scope."
 sections:
   Summary: |-

@@ -45,12 +45,20 @@ Remove finished repo-local task worktrees and local branches that are already me
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T08:34:06.859Z
+- Updated: 2026-04-10T09:09:07.046Z
 - Branch: task/202604100827-QG5AN4/cleanup-stale-worktrees
-- Head: 3fe2b1a83753
+- Head: 408e62ba73d7
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604100827-QG5AN4/README.md    | 161 +++++++++++++++++++++
+ .../tasks/202604100827-QG5AN4/pr/diffstat.txt      |   0
+ .../tasks/202604100827-QG5AN4/pr/github-body.md    |  50 +++++++
+ .../tasks/202604100827-QG5AN4/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604100827-QG5AN4/pr/meta.json |  14 ++
+ .../tasks/202604100827-QG5AN4/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604100827-QG5AN4/pr/review.md |  57 ++++++++
+ .../tasks/202604100827-QG5AN4/pr/verify.log        |   0
+ 8 files changed, 283 insertions(+)
 ```
 
 </details>
