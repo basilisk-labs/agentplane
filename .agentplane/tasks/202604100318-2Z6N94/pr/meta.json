@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202604100318-2Z6N94/harden-task-lifecycle-status",
   "created_at": "2026-04-10T03:29:50.795Z",
-  "head_sha": "3fe2b1a83753da182a17e385a5b16d54a7e83516",
+  "head_sha": "f49e0b4c01c56cb03cf0d42c6f8cb73436cb3190",
   "last_verified_at": "2026-04-10T08:42:21.429Z",
   "last_verified_sha": "3fe2b1a83753da182a17e385a5b16d54a7e83516",
+  "pr_number": 264,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/264",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202604100318-2Z6N94",
-  "updated_at": "2026-04-10T03:29:50.795Z",
+  "updated_at": "2026-04-10T09:14:40.667Z",
   "verify": {
     "status": "pass"
   }

@@ -1,10 +1,11 @@
 ---
 id: "202604100318-2Z6N94"
 title: "Harden task lifecycle status handoff and reduce PR artifact duplication"
-status: "DOING"
+result_summary: "integrate: squash task/202604100318-2Z6N94/harden-task-lifecycle-status"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-10T08:42:21.429Z"
   updated_by: "CODER"
   note: "Verified branch_pr lifecycle handoff, auto-seeded Verify Steps generation, and PR artifact regressions against the updated contract."
-commit: null
+commit:
+  hash: "b82ccd2e4612bc85bf64140a9e955f50f0ebf66b"
+  message: "🧹 2Z6N94 task: format lifecycle handoff files"
 comments:
   -
     author: "CODER"
     body: "Start: harden branch_pr lifecycle status handoff by fixing default remote-check resolution, making hosted-close-pr recover without base-side pr metadata, and reducing duplicate GitHub PR body churn."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100318-2Z6N94/pr."
 events:
   -
     type: "status"
@@ -52,9 +58,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified branch_pr lifecycle handoff, auto-seeded Verify Steps generation, and PR artifact regressions against the updated contract."
+  -
+    type: "status"
+    at: "2026-04-10T09:14:39.108Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100318-2Z6N94/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T08:42:21.436Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T09:14:39.114Z"
+doc_updated_by: "INTEGRATOR"
 description: "Audit branch_pr task lifecycle, fix status handoff failures in remote-check wait and hosted-close-pr recovery, and reduce avoidable PR artifact duplication/churn so task development has fewer manual recovery paths."
 sections:
   Summary: |-
