@@ -1,10 +1,11 @@
 ---
 id: "202604100054-BJ7V3H"
 title: "Make fresh branch_pr worktrees runnable before repo-local PR commands"
-status: "TODO"
+result_summary: "integrate: squash task/202604100054-BJ7V3H/fresh-worktree-bootstrap"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -22,8 +23,13 @@ verification:
   updated_at: "2026-04-10T01:11:06.441Z"
   updated_by: "CODER"
   note: "bootstrap: bun run framework:dev:bootstrap; runtime: agentplane runtime explain; vitest: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts -t 'work start makes a fresh framework worktree immediately runnable for repo-local commands'; eslint: bun x eslint packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
-commit: null
-comments: []
+commit:
+  hash: "8eddb3230e7352b901b74e6335628a4b48125839"
+  message: "🎨 BJ7V3H task: format worktree runtime test"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100054-BJ7V3H/pr."
 events:
   -
     type: "verify"
@@ -31,9 +37,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "bootstrap: bun run framework:dev:bootstrap; runtime: agentplane runtime explain; vitest: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts -t 'work start makes a fresh framework worktree immediately runnable for repo-local commands'; eslint: bun x eslint packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts"
+  -
+    type: "status"
+    at: "2026-04-10T01:22:26.191Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100054-BJ7V3H/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T01:11:06.443Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T01:22:26.193Z"
+doc_updated_by: "INTEGRATOR"
 description: "Let a fresh framework worktree run repo-local commands like pr open without requiring a manual framework:dev:bootstrap step."
 sections:
   Summary: |-
