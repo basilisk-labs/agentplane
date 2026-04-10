@@ -39,23 +39,23 @@ When finish --close-commit is already allowed under stale-dist for task-artifact
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T00:06:20.709Z
+- Updated: 2026-04-10T00:11:49.997Z
 - Branch: task/202604092339-NFXA6G/stale-dist-close-commit
-- Head: f3280043e1aa
+- Head: e07879a08473
 
 ```text
  .agentplane/tasks/202604092339-NFXA6G/README.md    | 117 +++++++++++++++++++++
- .../tasks/202604092339-NFXA6G/pr/diffstat.txt      |  14 +++
- .../tasks/202604092339-NFXA6G/pr/github-body.md    |  63 +++++++++++
+ .../tasks/202604092339-NFXA6G/pr/diffstat.txt      |  12 +++
+ .../tasks/202604092339-NFXA6G/pr/github-body.md    |  61 +++++++++++
  .../tasks/202604092339-NFXA6G/pr/github-title.txt  |   1 +
  .agentplane/tasks/202604092339-NFXA6G/pr/meta.json |  17 +++
  .../tasks/202604092339-NFXA6G/pr/notes.jsonl       |   0
- .agentplane/tasks/202604092339-NFXA6G/pr/review.md |  70 ++++++++++++
+ .agentplane/tasks/202604092339-NFXA6G/pr/review.md |  68 ++++++++++++
  .../tasks/202604092339-NFXA6G/pr/verify.log        |   0
  .../agentplane/src/commands/guard/impl/commands.ts |   1 +
  .../src/commands/guard/impl/commands.unit.test.ts  |  44 ++++++++
  packages/agentplane/src/commands/guard/impl/env.ts |   2 +
- 11 files changed, 329 insertions(+)
+ 11 files changed, 323 insertions(+)
 ```
 
 </details>

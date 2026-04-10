@@ -1,10 +1,11 @@
 ---
 id: "202604092339-NFXA6G"
 title: "Allow deterministic finish close commits under stale-dist task-artifact policy"
-status: "DOING"
+result_summary: "integrate: squash task/202604092339-NFXA6G/stale-dist-close-commit"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-09T23:52:31.332Z"
   updated_by: "CODER"
   note: "Verified: targeted guard unit tests and eslint passed for deterministic stale-dist close commit behavior."
-commit: null
+commit:
+  hash: "8b3e7bb7edf348d07fdafb0249d60886bbb67cd5"
+  message: "🧩 NFXA6G integrate: workflow: Allow deterministic finish close commits under stale-dist task-artifa..."
 comments:
   -
     author: "CODER"
     body: "Start: make deterministic close commits complete under the same stale-dist allowance already granted to finish task-artifact closeout."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604092339-NFXA6G/pr."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: targeted guard unit tests and eslint passed for deterministic stale-dist close commit behavior."
+  -
+    type: "status"
+    at: "2026-04-10T00:11:49.369Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604092339-NFXA6G/pr."
 doc_version: 3
-doc_updated_at: "2026-04-09T23:52:31.334Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T00:11:49.371Z"
+doc_updated_by: "INTEGRATOR"
 description: "When finish --close-commit is already allowed under stale-dist for task-artifact closeout, the internal deterministic git commit must not re-fail on the stale-dist hook for the same task-only payload."
 sections:
   Summary: |-
