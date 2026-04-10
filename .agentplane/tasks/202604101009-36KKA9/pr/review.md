@@ -45,12 +45,26 @@ Generate the next patch release plan from v0.3.10, draft release notes, prepare 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T10:34:56.796Z
+- Updated: 2026-04-10T10:36:00.677Z
 - Branch: task/202604101009-36KKA9/patch-release-v0-3-11
-- Head: 6eaf1ac6198f
+- Head: 12eb875696b1
 
 ```text
-No changes detected.
+ .agentplane/config.json                            |   2 +-
+ .agentplane/tasks/202604101009-36KKA9/README.md    | 127 +++++++++
+ .../tasks/202604101009-36KKA9/pr/diffstat.txt      |   0
+ .../tasks/202604101009-36KKA9/pr/github-body.md    |  33 +++
+ .../tasks/202604101009-36KKA9/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604101009-36KKA9/pr/meta.json |  14 +
+ .../tasks/202604101009-36KKA9/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604101009-36KKA9/pr/review.md |  57 ++++
+ .../tasks/202604101009-36KKA9/pr/verify.log        |   0
+ bun.lock                                           |   6 +-
+ docs/reference/generated-reference.mdx             |   4 +-
+ docs/releases/v0.3.11.md                           | 309 +++++++++++++++++++++
+ packages/agentplane/package.json                   |   4 +-
+ packages/core/package.json                         |   2 +-
+ 14 files changed, 550 insertions(+), 9 deletions(-)
 ```
 
 </details>
