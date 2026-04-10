@@ -41,22 +41,10 @@ When branch_pr integrate lands watched runtime source changes on base inside the
 
 - Updated: 2026-04-10T00:37:13.668Z
 - Branch: task/202604100023-EVJWDM/integrate-autobootstrap
-- Head: 6321abe29f60
+- Head: No commits yet
 
 ```text
- .agentplane/tasks/202604100023-EVJWDM/README.md    | 117 +++++++++++++++++++++
- .../tasks/202604100023-EVJWDM/pr/diffstat.txt      |   6 ++
- .../tasks/202604100023-EVJWDM/pr/github-body.md    |  50 +++++++++
- .../tasks/202604100023-EVJWDM/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604100023-EVJWDM/pr/meta.json |  17 +++
- .../tasks/202604100023-EVJWDM/pr/notes.jsonl       |   0
- .agentplane/tasks/202604100023-EVJWDM/pr/review.md |  57 ++++++++++
- .../tasks/202604100023-EVJWDM/pr/verify.log        |   0
- .../src/commands/pr/integrate/cmd.test.ts          |  57 +++++++++-
- .../agentplane/src/commands/pr/integrate/cmd.ts    |  16 ++-
- .../pr/integrate/internal/bootstrap-guidance.ts    |  24 +++++
- .../integrate/internal/post-integrate-bootstrap.ts |  35 ++++++
- 12 files changed, 374 insertions(+), 6 deletions(-)
+No changes detected.
 ```
 
 </details>
