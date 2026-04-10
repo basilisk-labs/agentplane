@@ -220,6 +220,8 @@ function isMissingRemoteHeadCreateError(err: unknown): boolean {
     /head ref/i.test(text) ||
     /head.*must be a branch/i.test(text) ||
     /head.*not found/i.test(text) ||
+    /field["']?\s*:\s*["']head["']/i.test(text) ||
+    /field\s+head\b/i.test(text) ||
     /no commits between/i.test(text)
   );
 }
