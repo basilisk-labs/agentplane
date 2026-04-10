@@ -1,0 +1,6 @@
+ .agentplane/tasks/202604100023-EVJWDM/README.md    | 95 ++++++++++++++++++++++
+ .../src/commands/pr/integrate/cmd.test.ts          | 57 ++++++++++++-
+ .../agentplane/src/commands/pr/integrate/cmd.ts    | 16 +++-
+ .../pr/integrate/internal/bootstrap-guidance.ts    | 24 ++++++
+ .../integrate/internal/post-integrate-bootstrap.ts | 35 ++++++++
+ 5 files changed, 221 insertions(+), 6 deletions(-)

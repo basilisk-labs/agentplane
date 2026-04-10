@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604100023-EVJWDM/integrate-autobootstrap",
+  "created_at": "2026-04-10T00:30:41.150Z",
+  "head_sha": "8d7a7e30ce9375bf31bacd6669c4b131693d5a2f",
+  "last_verified_at": "2026-04-10T00:30:41.131Z",
+  "last_verified_sha": "029ab8e346d88647acc761f89aa7ddba7f91e72c",
+  "pr_number": 249,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/249",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604100023-EVJWDM",
+  "updated_at": "2026-04-10T00:31:13.346Z",
+  "verify": {
+    "status": "pass"
+  }
+}
