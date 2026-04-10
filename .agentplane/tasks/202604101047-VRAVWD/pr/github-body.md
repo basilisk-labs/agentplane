@@ -12,7 +12,7 @@ Eliminate branch_pr pr/* self-drift after commit/open/update and make the releas
 ## Verification
 
 - State: ok
-- Note: Verified: bun x vitest run packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts; bun x tsc --noEmit -p packages/agentplane/tsconfig.json
+- Note: Verified pr open diffstat rendering, remote-link stability, and protected-main local release apply.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
@@ -22,7 +22,7 @@ Eliminate branch_pr pr/* self-drift after commit/open/update and make the releas
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T11:08:35.142Z
+- Updated: 2026-04-10T14:02:33.538Z
 - Branch: task/202604101047-VRAVWD/release-flow-pr-drift
 - Head: 2f8d77a319ba
 
