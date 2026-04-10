@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604100054-RQH3ZW/README.md    |  92 +++++++++++++++
+ .../src/commands/incidents/shared.test.ts          | 130 +++++++++++++++++++++
+ .../agentplane/src/commands/incidents/shared.ts    |  18 ++-
+ 3 files changed, 238 insertions(+), 2 deletions(-)
