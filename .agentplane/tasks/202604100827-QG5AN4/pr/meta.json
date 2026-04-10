@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604100827-QG5AN4/cleanup-stale-worktrees",
+  "created_at": "2026-04-10T08:34:06.859Z",
+  "head_sha": "3fe2b1a83753da182a17e385a5b16d54a7e83516",
+  "last_verified_at": "2026-04-10T08:34:06.815Z",
+  "last_verified_sha": "3fe2b1a83753da182a17e385a5b16d54a7e83516",
+  "schema_version": 1,
+  "task_id": "202604100827-QG5AN4",
+  "updated_at": "2026-04-10T08:34:06.859Z",
+  "verify": {
+    "status": "pass"
+  }
+}
