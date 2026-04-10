@@ -350,6 +350,72 @@ describe("runCli", () => {
     expect(codeApprove2).toBe(0);
   });
 
+  it("task plan approve accepts scaffolded Verify Steps for verify-required tasks without README surgery", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Approvable scaffold task",
+        "--description",
+        "Verify-required scaffolds should be approvable as created",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+      expect(ioNew.stderr).toContain("seeded a concrete ## Verify Steps section");
+    } finally {
+      ioNew.restore();
+    }
+
+    const codeSet = await runCli([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "1) Implement the change\n2) Verify the change",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    expect(codeSet).toBe(0);
+
+    const codeApprove = await runCli([
+      "task",
+      "plan",
+      "approve",
+      taskId,
+      "--by",
+      "USER",
+      "--note",
+      "OK",
+      "--root",
+      root,
+    ]);
+    expect(codeApprove).toBe(0);
+
+    const readme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme).toContain("Review the changed artifact or behavior for the `code` task.");
+    expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
+  });
+
   it("start blocks verify-required tasks when plan approval is disabled and Verify Steps is missing", async () => {
     const root = await mkGitRepoRoot();
 
