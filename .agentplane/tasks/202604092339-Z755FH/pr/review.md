@@ -45,22 +45,22 @@ When pr update refreshes PR artifacts after branch HEAD advanced beyond last_ver
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-09T23:59:25.027Z
+- Updated: 2026-04-10T00:07:35.610Z
 - Branch: task/202604092339-Z755FH/pr-update-stale-verify-warning
-- Head: c41381cb5cfc
+- Head: 154bedb0e103
 
 ```text
  .agentplane/tasks/202604092339-Z755FH/README.md    | 117 +++++++++++++++++++++
- .../tasks/202604092339-Z755FH/pr/diffstat.txt      |   0
- .../tasks/202604092339-Z755FH/pr/github-body.md    |  50 +++++++++
+ .../tasks/202604092339-Z755FH/pr/diffstat.txt      |  11 ++
+ .../tasks/202604092339-Z755FH/pr/github-body.md    |  60 +++++++++++
  .../tasks/202604092339-Z755FH/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604092339-Z755FH/pr/meta.json |  14 +++
+ .agentplane/tasks/202604092339-Z755FH/pr/meta.json |  17 +++
  .../tasks/202604092339-Z755FH/pr/notes.jsonl       |   0
- .agentplane/tasks/202604092339-Z755FH/pr/review.md |  57 ++++++++++
+ .agentplane/tasks/202604092339-Z755FH/pr/review.md |  67 ++++++++++++
  .../tasks/202604092339-Z755FH/pr/verify.log        |   0
  .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  10 +-
- packages/agentplane/src/commands/pr/update.ts      |  80 +++++++++++++-
- 10 files changed, 326 insertions(+), 3 deletions(-)
+ packages/agentplane/src/commands/pr/update.ts      |  84 ++++++++++++++-
+ 10 files changed, 364 insertions(+), 3 deletions(-)
 ```
 
 </details>

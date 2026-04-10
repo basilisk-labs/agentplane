@@ -1,10 +1,11 @@
 ---
 id: "202604092339-Z755FH"
 title: "Warn on stale verify metadata during pr update"
-status: "DOING"
+result_summary: "integrate: squash task/202604092339-Z755FH/pr-update-stale-verify-warning"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-09T23:55:37.055Z"
   updated_by: "CODER"
   note: "Verified: targeted pr-flow stale-verify regression test and eslint passed for pr update warning behavior."
-commit: null
+commit:
+  hash: "34bdf9a48c5d31408bf11baf4e994491833f8a97"
+  message: "📝 Z755FH task: format stale verify warning path"
 comments:
   -
     author: "CODER"
     body: "Start: surface stale verify metadata immediately during pr update so operators do not learn about it only from a later pr check failure."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604092339-Z755FH/pr."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: targeted pr-flow stale-verify regression test and eslint passed for pr update warning behavior."
+  -
+    type: "status"
+    at: "2026-04-10T00:07:34.919Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604092339-Z755FH/pr."
 doc_version: 3
-doc_updated_at: "2026-04-09T23:55:37.057Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T00:07:34.920Z"
+doc_updated_by: "INTEGRATOR"
 description: "When pr update refreshes PR artifacts after branch HEAD advanced beyond last_verified_sha, surface an exact rerun-verify warning instead of silently leaving the stale verify state for pr check to discover later."
 sections:
   Summary: |-
