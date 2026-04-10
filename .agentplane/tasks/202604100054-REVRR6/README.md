@@ -1,10 +1,11 @@
 ---
 id: "202604100054-REVRR6"
 title: "Prevent finish from mutating task docs before DONE validation"
-status: "TODO"
+result_summary: "integrate: squash task/202604100054-REVRR6/finish-done-validation-order"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -22,8 +23,13 @@ verification:
   updated_at: "2026-04-10T00:58:54.535Z"
   updated_by: "CODER"
   note: "vitest: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts; eslint: bun x eslint packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts"
-commit: null
-comments: []
+commit:
+  hash: "5f3697c03e58eba9481197bb93cf5d02ec79b85a"
+  message: "🧩 REVRR6 integrate: workflow: Prevent finish from mutating task docs before DONE validation"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100054-REVRR6/pr."
 events:
   -
     type: "verify"
@@ -31,9 +37,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "vitest: bun x vitest run packages/agentplane/src/commands/task/finish.unit.test.ts; eslint: bun x eslint packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/finish.unit.test.ts"
+  -
+    type: "status"
+    at: "2026-04-10T01:19:31.060Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100054-REVRR6/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T00:58:54.537Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T01:19:31.062Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix finish so structured findings do not append to task README before already-DONE and --force validation completes; add regression coverage for failure without mutation and idempotent forced retry."
 sections:
   Summary: |-
