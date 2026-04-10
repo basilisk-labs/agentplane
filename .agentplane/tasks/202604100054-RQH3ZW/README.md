@@ -4,7 +4,7 @@ title: "Keep incident promotion formatted and synced without manual follow-up"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -18,16 +18,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-10T01:04:16.416Z"
+  updated_by: "CODER"
+  note: "bootstrap: bun run framework:dev:bootstrap; vitest: bun x vitest run packages/agentplane/src/commands/incidents/shared.test.ts; eslint: bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/incidents/shared.test.ts"
 commit: null
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-04-10T01:04:16.416Z"
+    author: "CODER"
+    state: "ok"
+    note: "bootstrap: bun run framework:dev:bootstrap; vitest: bun x vitest run packages/agentplane/src/commands/incidents/shared.test.ts; eslint: bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/incidents/shared.test.ts"
 doc_version: 3
-doc_updated_at: "2026-04-10T00:54:48.657Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-10T01:04:16.418Z"
+doc_updated_by: "CODER"
 description: "Make incident promotion update canonical and mirrored incidents registries in a format- and sync-safe way so later hooks do not require manual prettier or agents:sync remediation."
 sections:
   Summary: |-
@@ -48,6 +54,14 @@ sections:
     3. Inspect canonical and mirrored incidents files. Expected: they remain synchronized after a single promotion operation.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-10T01:04:16.416Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: bootstrap: bun run framework:dev:bootstrap; vitest: bun x vitest run packages/agentplane/src/commands/incidents/shared.test.ts; eslint: bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/incidents/shared.test.ts
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T00:54:48.657Z, excerpt_hash=sha256:ca63227b5323e5657a44836f0ada605dd7481c7d93416b1a77bb57265df6f196
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +96,14 @@ Make incident promotion update canonical and mirrored incidents registries in a 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-10T01:04:16.416Z — VERIFY — ok
+
+By: CODER
+
+Note: bootstrap: bun run framework:dev:bootstrap; vitest: bun x vitest run packages/agentplane/src/commands/incidents/shared.test.ts; eslint: bun x eslint packages/agentplane/src/commands/incidents/shared.ts packages/agentplane/src/commands/incidents/shared.test.ts
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T00:54:48.657Z, excerpt_hash=sha256:ca63227b5323e5657a44836f0ada605dd7481c7d93416b1a77bb57265df6f196
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
