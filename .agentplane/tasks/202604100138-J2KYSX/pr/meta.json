@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604100138-J2KYSX/pr-open-unpushed-branch",
+  "created_at": "2026-04-10T01:39:55.511Z",
+  "head_sha": "490f5582946e44c6fc6e36614a0cc712e6f78edc",
+  "last_verified_at": "2026-04-10T01:48:33.992Z",
+  "last_verified_sha": "490f5582946e44c6fc6e36614a0cc712e6f78edc",
+  "pr_number": 257,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/257",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604100138-J2KYSX",
+  "updated_at": "2026-04-10T01:48:34.005Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -119,6 +119,7 @@ async function installFakeGhPrApi(opts: {
   branch: string;
   existingResponse?: object[];
   createResponse: object;
+  createError?: string;
   rejectEnvKey?: string;
   rejectEnvValue?: string;
 }) {
@@ -146,6 +147,7 @@ async function installFakeGhPrApi(opts: {
       `const expectedHead = ${JSON.stringify(`example:${opts.branch}`)};`,
       `const existingResponse = ${JSON.stringify(opts.existingResponse ?? [])};`,
       `const createResponse = ${JSON.stringify(opts.createResponse)};`,
+      `const createError = ${JSON.stringify(opts.createError ?? null)};`,
       'let method = "GET";',
       "for (let i = 2; i < args.length; i += 1) {",
       '  if (args[i] === "-X" && typeof args[i + 1] === "string") method = String(args[i + 1]).toUpperCase();',
@@ -155,6 +157,10 @@ async function installFakeGhPrApi(opts: {
       "  process.exit(0);",
       "}",
       'if (route === "repos/example/repo/pulls" && method === "POST") {',
+      "  if (createError) {",
+      "    console.error(createError);",
+      "    process.exit(1);",
+      "  }",
       "  console.log(JSON.stringify(createResponse));",
       "  process.exit(0);",
       "}",
@@ -345,6 +351,79 @@ describe("runCli", () => {
           args.includes("POST"),
       ),
     ).toBe(true);
+  });
+
+  it("pr open explains when the task branch is not yet published on origin", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open unpublished branch",
+        "--description",
+        "PR open should explain when the task branch has not been pushed yet",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/unpushed-head`;
+    const { fakeBin } = await installFakeGhPrApi({
+      scenarioName: "open-unpublished-branch",
+      branch,
+      createResponse: {},
+      createError:
+        'gh: HTTP 422: Validation Failed ({"message":"Validation Failed","errors":[{"resource":"PullRequest","field":"head","code":"invalid","message":"Head sha can\'t be blank"}]})',
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("remote PR creation staged");
+      expect(io.stdout).toContain(`task branch ${branch} is not yet published on origin`);
+      expect(io.stdout).toContain(`git push -u origin ${branch}`);
+      expect(io.stdout).not.toContain("GitHub PR creation failed");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+    }
   });
 
   it("pr open ignores dotenv-injected GitHub tokens when gh auth is otherwise available", async () => {
