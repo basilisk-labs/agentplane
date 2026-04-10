@@ -39,14 +39,12 @@ Let a fresh framework worktree run repo-local commands like pr open without requ
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T01:11:06.460Z
+- Updated: 2026-04-10T01:12:46.941Z
 - Branch: task/202604100054-BJ7V3H/fresh-worktree-bootstrap
-- Head: 47a800016afc
+- Head: d08f58c6efd2
 
 ```text
- .../src/cli/run-cli.core.pr-flow.test.ts           | 99 ++++++++++++++++++++++
- .../agentplane/src/commands/branch/work-start.ts   | 41 ++++++++-
- 2 files changed, 139 insertions(+), 1 deletion(-)
+No changes detected.
 ```
 
 </details>
