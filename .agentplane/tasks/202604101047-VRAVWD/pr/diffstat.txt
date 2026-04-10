@@ -1,4 +1,5 @@
  .agentplane/tasks/202604101047-VRAVWD/README.md    | 118 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   4 +-
  .../agentplane/src/commands/pr/internal/sync.ts    |  39 ++++---
  .../src/commands/release/apply.command.ts          |  21 +---
  .../src/commands/release/apply.preflight.ts        |   3 +-
@@ -6,4 +7,4 @@
  .../agentplane/src/commands/shared/git-diff.ts     |  17 ++-
  .../agentplane/src/commands/shared/pr-meta.test.ts |  58 ++++++++++
  packages/agentplane/src/commands/shared/pr-meta.ts |  14 ++-
- 8 files changed, 247 insertions(+), 37 deletions(-)
+ 9 files changed, 249 insertions(+), 39 deletions(-)
