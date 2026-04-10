@@ -39,15 +39,12 @@ Fix finish so structured findings do not append to task README before already-DO
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T00:58:54.553Z
+- Updated: 2026-04-10T01:11:53.948Z
 - Branch: task/202604100054-REVRR6/finish-done-validation-order
-- Head: 992c04e4dc37
+- Head: 0bf76c7322cc
 
 ```text
- .agentplane/tasks/202604100054-REVRR6/README.md    | 92 ++++++++++++++++++++++
- packages/agentplane/src/commands/task/finish.ts    | 12 +++
- .../src/commands/task/finish.unit.test.ts          | 82 +++++++++++++++++++
- 3 files changed, 186 insertions(+)
+No changes detected.
 ```
 
 </details>
