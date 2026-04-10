@@ -45,9 +45,9 @@ Verify-required task scaffolds currently seed a placeholder Verify Steps block t
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T02:49:22.079Z
+- Updated: 2026-04-10T02:54:30.671Z
 - Branch: task/202604100213-1AAPW1/verify-steps-scaffold-approval
-- Head: 0df643bfee64
+- Head: 4712f4ce5bf6
 
 ```text
  .agentplane/policy/incidents.md                    |   1 +

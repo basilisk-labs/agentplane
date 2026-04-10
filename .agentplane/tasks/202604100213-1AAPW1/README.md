@@ -1,10 +1,11 @@
 ---
 id: "202604100213-1AAPW1"
 title: "Seed approvable Verify Steps for verify-required task scaffolds"
-status: "DOING"
+result_summary: "integrate: squash task/202604100213-1AAPW1/verify-steps-scaffold-approval"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-10T02:36:25.980Z"
   updated_by: "CODER"
   note: "OK: bun x vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts -t 'task new seeds Verify Steps in README for verify-required primary tags|task new without verify commands still seeds approvable Verify Steps for verify-required primary tags'; bun x vitest run packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts -t 'task derive seeds verify steps for implementation tasks and task list shows wait deps until spike is DONE|task derive without verify commands still seeds approvable Verify Steps'; bun x vitest run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts -t 'task plan approve rejects verify-required tasks with missing Verify Steps|task plan approve accepts scaffolded Verify Steps for verify-required tasks without README surgery'; bun x eslint packages/agentplane/src/commands/task/doc-template.ts packages/agentplane/src/commands/task/new.ts packages/agentplane/src/commands/task/derive.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts."
-commit: null
+commit:
+  hash: "3d5e3fb99be7a4611e707859aee887cf1e7ad71e"
+  message: "🧩 1AAPW1 integrate: workflow: Seed approvable Verify Steps for verify-required task scaffolds"
 comments:
   -
     author: "CODER"
     body: "Start: make verify-required task scaffolds immediately approvable by replacing placeholder Verify Steps with concrete acceptance steps, then cover new/derive paths with focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100213-1AAPW1/pr."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "OK: bun x vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts -t 'task new seeds Verify Steps in README for verify-required primary tags|task new without verify commands still seeds approvable Verify Steps for verify-required primary tags'; bun x vitest run packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts -t 'task derive seeds verify steps for implementation tasks and task list shows wait deps until spike is DONE|task derive without verify commands still seeds approvable Verify Steps'; bun x vitest run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts -t 'task plan approve rejects verify-required tasks with missing Verify Steps|task plan approve accepts scaffolded Verify Steps for verify-required tasks without README surgery'; bun x eslint packages/agentplane/src/commands/task/doc-template.ts packages/agentplane/src/commands/task/new.ts packages/agentplane/src/commands/task/derive.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts."
+  -
+    type: "status"
+    at: "2026-04-10T02:54:30.451Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604100213-1AAPW1/pr."
 doc_version: 3
-doc_updated_at: "2026-04-10T02:36:25.982Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-10T02:54:30.453Z"
+doc_updated_by: "INTEGRATOR"
 description: "Verify-required task scaffolds currently seed a placeholder Verify Steps block that immediately fails plan approval. Generate concrete acceptance steps from the primary tag and any explicit verify commands so a freshly scaffolded task is reviewable without manual README surgery."
 sections:
   Summary: |-
