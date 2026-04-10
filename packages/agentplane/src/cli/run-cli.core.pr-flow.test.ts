@@ -722,9 +722,9 @@ describe("runCli", () => {
       }
 
       expect(await pathExists(path.join(worktreePath, "node_modules"))).toBe(true);
-      expect(await pathExists(path.join(worktreePath, "packages", "agentplane", "node_modules"))).toBe(
-        true,
-      );
+      expect(
+        await pathExists(path.join(worktreePath, "packages", "agentplane", "node_modules")),
+      ).toBe(true);
       expect(await pathExists(path.join(worktreePath, "agentplane-recipes", "index.json"))).toBe(
         true,
       );
