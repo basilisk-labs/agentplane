@@ -350,6 +350,88 @@ describe("task finish (unit)", () => {
     expect(mocks.commitFromComment).not.toHaveBeenCalled();
   });
 
+  it("rejects DONE structured-finding finish without mutating the task README", async () => {
+    const originalDoc = [
+      "## Summary",
+      "Task summary",
+      "",
+      "## Scope",
+      "In-scope files",
+      "",
+      "## Plan",
+      "1. Implement",
+      "",
+      "## Verification",
+      "",
+      "## Rollback Plan",
+      "Revert commit",
+      "",
+      "## Findings",
+      "",
+    ].join("\n");
+    let currentTask = mkTask({
+      id: "T-1",
+      status: "DONE",
+      tags: ["code"],
+      doc: originalDoc,
+      verification: {
+        state: "ok",
+        updated_at: "2026-02-09T00:00:00.000Z",
+        updated_by: "TESTER",
+        note: "ok",
+      },
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
+    });
+    const storePatch = vi.fn(
+      async (_taskId: string, builder: (task: TaskData) => Promise<TaskStorePatch>) => {
+        currentTask = applyStorePatch(currentTask, await builder(currentTask));
+        return { changed: true, task: currentTask };
+      },
+    );
+    const ctx = mkCtx();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue({
+      get: vi.fn(() => currentTask),
+      patch: storePatch,
+    });
+
+    const { cmdFinish } = await import("./finish.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "INTEGRATOR",
+        body: "Verified: do not mutate DONE task docs before validation rejects the retry.",
+        result: "done",
+        commit: "impl-hash",
+        breaking: false,
+        force: false,
+        observation: "Observed partial closeout retry path.",
+        impact: "Task docs mutated before finish rejected the retry.",
+        resolution: "Validate DONE and force semantics before writing structured findings.",
+        repoFixable: true,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+
+    expect(currentTask.doc).toBe(originalDoc);
+    expect(storePatch).toHaveBeenCalledTimes(1);
+    expect(currentTask.comments ?? []).toHaveLength(0);
+    expect(currentTask.events ?? []).toHaveLength(0);
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
+  });
+
   it("runs deterministic close commit when --close-commit is enabled", async () => {
     const ctx = mkCtx();
     mocks.loadTaskFromContext.mockResolvedValue(

@@ -1,0 +1,1 @@
+workflow: Prevent finish from mutating task docs before DONE validation (REVRR6)

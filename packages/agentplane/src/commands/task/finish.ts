@@ -324,6 +324,18 @@ export async function cmdFinish(opts: {
       });
     }
     if (finishFinding && primaryTaskId) {
+      await loadTaskForFinish({
+        ctx,
+        store,
+        useStore,
+        taskId: primaryTaskId,
+        taskCount: opts.taskIds.length,
+        metaTaskId,
+        resultProvided,
+        resultSummary,
+        force: opts.force,
+        capturePrimaryLifecycleMeta: false,
+      });
       await appendFinishStructuredFinding({
         ctx,
         taskId: primaryTaskId,
