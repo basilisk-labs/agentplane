@@ -25,7 +25,7 @@ Generate the next patch release plan from v0.3.10, draft release notes, prepare 
 ### Current Status
 
 - State: ok
-- Note: Verified release/apply + PR-flow backports with bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/release/apply.test.ts and bun x tsc --noEmit -p packages/agentplane/tsconfig.json
+- Note: Verified integrate-hook config override with bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts and bun run docs:site:build
 
 ## Risks
 
@@ -45,9 +45,9 @@ Generate the next patch release plan from v0.3.10, draft release notes, prepare 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-10T15:01:47.592Z
+- Updated: 2026-04-10T15:08:21.987Z
 - Branch: task/202604101009-36KKA9/patch-release-v0-3-11
-- Head: 9fc1371bfe4f
+- Head: af5c99a1f219
 
 ```text
  .agentplane/config.json                            |   2 +-
@@ -58,6 +58,8 @@ Generate the next patch release plan from v0.3.10, draft release notes, prepare 
  docs/user/cli-reference.generated.mdx              |   4 +-
  packages/agentplane/package.json                   |   4 +-
  .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  76 +++++
+ .../commands/pr/integrate/internal/merge.test.ts   |   3 +
+ .../src/commands/pr/integrate/internal/merge.ts    |   1 +
  .../agentplane/src/commands/pr/internal/sync.ts    |  86 ++++--
  .../src/commands/release/apply.command.ts          |  21 +-
  .../src/commands/release/apply.preflight.ts        |   3 +-
@@ -66,7 +68,7 @@ Generate the next patch release plan from v0.3.10, draft release notes, prepare 
  .../agentplane/src/commands/shared/pr-meta.test.ts |  58 ++++
  packages/agentplane/src/commands/shared/pr-meta.ts |  14 +-
  packages/core/package.json                         |   2 +-
- 16 files changed, 706 insertions(+), 59 deletions(-)
+ 18 files changed, 710 insertions(+), 59 deletions(-)
 ```
 
 </details>

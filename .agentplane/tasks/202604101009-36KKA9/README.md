@@ -4,7 +4,7 @@ title: "Prepare patch release v0.3.11 and reconcile protected-main publish path"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-10T14:43:34.091Z"
-  updated_by: "CODER"
-  note: "Verified release/apply + PR-flow backports with bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/release/apply.test.ts and bun x tsc --noEmit -p packages/agentplane/tsconfig.json"
+  updated_at: "2026-04-10T15:09:00.039Z"
+  updated_by: "INTEGRATOR"
+  note: "Verified integrate-hook config override with bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts and bun run docs:site:build"
 commit: null
 comments:
   -
@@ -46,8 +46,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified release/apply + PR-flow backports with bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/release/apply.test.ts and bun x tsc --noEmit -p packages/agentplane/tsconfig.json"
+  -
+    type: "verify"
+    at: "2026-04-10T15:09:00.039Z"
+    author: "INTEGRATOR"
+    state: "ok"
+    note: "Verified integrate-hook config override with bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts and bun run docs:site:build"
 doc_version: 3
-doc_updated_at: "2026-04-10T14:43:34.098Z"
+doc_updated_at: "2026-04-10T15:09:00.046Z"
 doc_updated_by: "CODER"
 description: "Generate the next patch release plan from v0.3.10, draft release notes, prepare a release candidate branch/PR, and reconcile the current mismatch between release apply --push and the protected-main publish route before any irreversible release action."
 sections:
@@ -80,6 +86,14 @@ sections:
     Note: Verified release/apply + PR-flow backports with bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/release/apply.test.ts and bun x tsc --noEmit -p packages/agentplane/tsconfig.json
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T10:34:56.724Z, excerpt_hash=sha256:324c71066dc78e486d11bf059d5b70f9cd299b98ff97c898e0ea2c71418009d6
+    
+    ### 2026-04-10T15:09:00.039Z — VERIFY — ok
+    
+    By: INTEGRATOR
+    
+    Note: Verified integrate-hook config override with bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts and bun run docs:site:build
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T14:43:34.098Z, excerpt_hash=sha256:324c71066dc78e486d11bf059d5b70f9cd299b98ff97c898e0ea2c71418009d6
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -132,6 +146,14 @@ By: CODER
 Note: Verified release/apply + PR-flow backports with bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/release/apply.test.ts and bun x tsc --noEmit -p packages/agentplane/tsconfig.json
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T10:34:56.724Z, excerpt_hash=sha256:324c71066dc78e486d11bf059d5b70f9cd299b98ff97c898e0ea2c71418009d6
+
+### 2026-04-10T15:09:00.039Z — VERIFY — ok
+
+By: INTEGRATOR
+
+Note: Verified integrate-hook config override with bun x vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts and bun run docs:site:build
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T14:43:34.098Z, excerpt_hash=sha256:324c71066dc78e486d11bf059d5b70f9cd299b98ff97c898e0ea2c71418009d6
 
 <!-- END VERIFICATION RESULTS -->
 

@@ -6,6 +6,8 @@
  docs/user/cli-reference.generated.mdx              |   4 +-
  packages/agentplane/package.json                   |   4 +-
  .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  76 +++++
+ .../commands/pr/integrate/internal/merge.test.ts   |   3 +
+ .../src/commands/pr/integrate/internal/merge.ts    |   1 +
  .../agentplane/src/commands/pr/internal/sync.ts    |  86 ++++--
  .../src/commands/release/apply.command.ts          |  21 +-
  .../src/commands/release/apply.preflight.ts        |   3 +-
@@ -14,4 +16,4 @@
  .../agentplane/src/commands/shared/pr-meta.test.ts |  58 ++++
  packages/agentplane/src/commands/shared/pr-meta.ts |  14 +-
  packages/core/package.json                         |   2 +-
- 16 files changed, 706 insertions(+), 59 deletions(-)
+ 18 files changed, 710 insertions(+), 59 deletions(-)
