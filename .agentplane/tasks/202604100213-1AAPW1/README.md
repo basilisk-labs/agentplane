@@ -4,7 +4,7 @@ title: "Seed approvable Verify Steps for verify-required task scaffolds"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-10T02:36:25.980Z"
+  updated_by: "CODER"
+  note: "OK: bun x vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts -t 'task new seeds Verify Steps in README for verify-required primary tags|task new without verify commands still seeds approvable Verify Steps for verify-required primary tags'; bun x vitest run packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts -t 'task derive seeds verify steps for implementation tasks and task list shows wait deps until spike is DONE|task derive without verify commands still seeds approvable Verify Steps'; bun x vitest run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts -t 'task plan approve rejects verify-required tasks with missing Verify Steps|task plan approve accepts scaffolded Verify Steps for verify-required tasks without README surgery'; bun x eslint packages/agentplane/src/commands/task/doc-template.ts packages/agentplane/src/commands/task/new.ts packages/agentplane/src/commands/task/derive.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: make verify-required task scaffolds immediately approvable by replacing placeholder Verify Steps with concrete acceptance steps, then cover new/derive paths with focused tests."
+  -
+    type: "verify"
+    at: "2026-04-10T02:36:25.980Z"
+    author: "CODER"
+    state: "ok"
+    note: "OK: bun x vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts -t 'task new seeds Verify Steps in README for verify-required primary tags|task new without verify commands still seeds approvable Verify Steps for verify-required primary tags'; bun x vitest run packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts -t 'task derive seeds verify steps for implementation tasks and task list shows wait deps until spike is DONE|task derive without verify commands still seeds approvable Verify Steps'; bun x vitest run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts -t 'task plan approve rejects verify-required tasks with missing Verify Steps|task plan approve accepts scaffolded Verify Steps for verify-required tasks without README surgery'; bun x eslint packages/agentplane/src/commands/task/doc-template.ts packages/agentplane/src/commands/task/new.ts packages/agentplane/src/commands/task/derive.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts."
 doc_version: 3
-doc_updated_at: "2026-04-10T02:31:00.993Z"
+doc_updated_at: "2026-04-10T02:36:25.982Z"
 doc_updated_by: "CODER"
 description: "Verify-required task scaffolds currently seed a placeholder Verify Steps block that immediately fails plan approval. Generate concrete acceptance steps from the primary tag and any explicit verify commands so a freshly scaffolded task is reviewable without manual README surgery."
 sections:
@@ -54,11 +60,24 @@ sections:
     3. Inspect the seeded Verify Steps text. Expected: it contains concrete acceptance steps and no placeholder marker.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-10T02:36:25.980Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: OK: bun x vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts -t 'task new seeds Verify Steps in README for verify-required primary tags|task new without verify commands still seeds approvable Verify Steps for verify-required primary tags'; bun x vitest run packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts -t 'task derive seeds verify steps for implementation tasks and task list shows wait deps until spike is DONE|task derive without verify commands still seeds approvable Verify Steps'; bun x vitest run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts -t 'task plan approve rejects verify-required tasks with missing Verify Steps|task plan approve accepts scaffolded Verify Steps for verify-required tasks without README surgery'; bun x eslint packages/agentplane/src/commands/task/doc-template.ts packages/agentplane/src/commands/task/new.ts packages/agentplane/src/commands/task/derive.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T02:31:00.993Z, excerpt_hash=sha256:b5e6b57e6ea922198537b04a3e857d4c3d0f88204f2b935fca1b59e8035a4062
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Verify-required task scaffolds could seed a placeholder Verify Steps block when no explicit verify command was supplied, so plan approval failed on a fresh task before any human refinement.
+      Impact: Fresh code-task scaffolds were not immediately approvable, forcing manual README surgery and slowing the normal task lifecycle for both task new and task derive.
+      Resolution: Removed the placeholder path for verify-required scaffolds without explicit verify commands, updated warning text to reflect concrete seeded acceptance steps, and added regression coverage for task new, task derive, and plan approve.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -85,6 +104,14 @@ Verify-required task scaffolds currently seed a placeholder Verify Steps block t
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-10T02:36:25.980Z — VERIFY — ok
+
+By: CODER
+
+Note: OK: bun x vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts -t 'task new seeds Verify Steps in README for verify-required primary tags|task new without verify commands still seeds approvable Verify Steps for verify-required primary tags'; bun x vitest run packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts -t 'task derive seeds verify steps for implementation tasks and task list shows wait deps until spike is DONE|task derive without verify commands still seeds approvable Verify Steps'; bun x vitest run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts -t 'task plan approve rejects verify-required tasks with missing Verify Steps|task plan approve accepts scaffolded Verify Steps for verify-required tasks without README surgery'; bun x eslint packages/agentplane/src/commands/task/doc-template.ts packages/agentplane/src/commands/task/new.ts packages/agentplane/src/commands/task/derive.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-10T02:31:00.993Z, excerpt_hash=sha256:b5e6b57e6ea922198537b04a3e857d4c3d0f88204f2b935fca1b59e8035a4062
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -93,3 +120,9 @@ Verify-required task scaffolds currently seed a placeholder Verify Steps block t
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Verify-required task scaffolds could seed a placeholder Verify Steps block when no explicit verify command was supplied, so plan approval failed on a fresh task before any human refinement.
+  Impact: Fresh code-task scaffolds were not immediately approvable, forcing manual README surgery and slowing the normal task lifecycle for both task new and task derive.
+  Resolution: Removed the placeholder path for verify-required scaffolds without explicit verify commands, updated warning text to reflect concrete seeded acceptance steps, and added regression coverage for task new, task derive, and plan approve.
+  Promotion: incident-candidate
+  Fixability: external

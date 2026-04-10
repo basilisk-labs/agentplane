@@ -1,0 +1,8 @@
+ .agentplane/tasks/202604100213-1AAPW1/README.md    | 95 ++++++++++++++++++++++
+ .../src/cli/run-cli.core.lifecycle.test.ts         | 66 +++++++++++++++
+ .../cli/run-cli.core.tasks.scaffold-derive.test.ts | 73 ++++++++++++++++-
+ .../agentplane/src/cli/run-cli.core.tasks.test.ts  | 38 ++++++++-
+ packages/agentplane/src/commands/task/derive.ts    |  2 +-
+ .../agentplane/src/commands/task/doc-template.ts   |  6 +-
+ packages/agentplane/src/commands/task/new.ts       |  2 +-
+ 7 files changed, 274 insertions(+), 8 deletions(-)
