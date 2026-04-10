@@ -51,7 +51,7 @@ Generate the next patch release plan from v0.3.10, draft release notes, prepare 
 
 ```text
  .agentplane/config.json                            |   2 +-
- .agentplane/tasks/202604101009-36KKA9/README.md    | 149 ++++++++++
+ .agentplane/tasks/202604101009-36KKA9/README.md    | 171 ++++++++++++
  bun.lock                                           |   6 +-
  docs/reference/generated-reference.mdx             |   4 +-
  docs/releases/v0.3.11.md                           | 309 +++++++++++++++++++++
@@ -68,7 +68,7 @@ Generate the next patch release plan from v0.3.10, draft release notes, prepare 
  .../agentplane/src/commands/shared/pr-meta.test.ts |  58 ++++
  packages/agentplane/src/commands/shared/pr-meta.ts |  14 +-
  packages/core/package.json                         |   2 +-
- 18 files changed, 710 insertions(+), 59 deletions(-)
+ 18 files changed, 732 insertions(+), 59 deletions(-)
 ```
 
 </details>
