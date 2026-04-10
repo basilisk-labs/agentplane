@@ -205,6 +205,25 @@ function formatGithubPrLink(
     : `${verb} GitHub PR #${prNumber}`;
 }
 
+function formatUnpublishedRemoteHeadReason(branch: string): string {
+  return (
+    `task branch ${branch} is not yet published on origin; push it with ` +
+    `\`git push -u origin ${branch}\` and rerun \`agentplane pr open\``
+  );
+}
+
+function isMissingRemoteHeadCreateError(err: unknown): boolean {
+  const text = normalizeGhTransportError(err);
+  if (!/\b422\b/i.test(text)) return false;
+  return (
+    /head sha/i.test(text) ||
+    /head ref/i.test(text) ||
+    /head.*must be a branch/i.test(text) ||
+    /head.*not found/i.test(text) ||
+    /no commits between/i.test(text)
+  );
+}
+
 function summarizeGithubPrCreateFailure(err: unknown): string {
   const text = normalizeGhTransportError(err);
   if ((err as { code?: string } | null)?.code === "ENOENT") {
@@ -282,6 +301,12 @@ async function tryCreateGithubPr(opts: {
       stagedReason: null,
     };
   } catch (err) {
+    if (isMissingRemoteHeadCreateError(err)) {
+      return {
+        observed: null,
+        stagedReason: formatUnpublishedRemoteHeadReason(opts.branch),
+      };
+    }
     return {
       observed: null,
       stagedReason: summarizeGithubPrCreateFailure(err),
