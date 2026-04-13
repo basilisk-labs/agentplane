@@ -5,6 +5,19 @@ import { execFileAsync, gitEnv } from "../shared/git.js";
 
 import type { ReleaseApplyReport } from "./apply.types.js";
 
+async function pushRefspecsNoVerify(
+  gitRoot: string,
+  remote: string,
+  refspecs: readonly string[],
+): Promise<void> {
+  for (const refspec of refspecs) {
+    await execFileAsync("git", ["push", "--no-verify", remote, refspec], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+  }
+}
+
 export async function writeReleaseApplyReport(
   gitRoot: string,
   report: ReleaseApplyReport,
@@ -21,12 +34,9 @@ export async function writeReleaseApplyReport(
 }
 
 export async function pushReleaseRefs(gitRoot: string, remote: string, tag: string): Promise<void> {
-  await execFileAsync("git", ["push", "--no-verify", remote, "HEAD"], {
-    cwd: gitRoot,
-    env: gitEnv(),
-  });
-  await execFileAsync("git", ["push", "--no-verify", remote, tag], {
-    cwd: gitRoot,
-    env: gitEnv(),
-  });
+  await pushRefspecsNoVerify(gitRoot, remote, ["HEAD", tag]);
+}
+
+export async function pushReleaseCandidateBranch(gitRoot: string, remote: string): Promise<void> {
+  await pushRefspecsNoVerify(gitRoot, remote, ["HEAD"]);
 }

@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import { loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
 
 import { createCliEmitter } from "../../cli/output.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
@@ -10,6 +10,7 @@ import { withDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { GitContext } from "../shared/git-context.js";
+import { gitCurrentBranch } from "../shared/git-ops.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureNetworkApproved } from "../shared/network-approval.js";
 import { runOperatorPipeline } from "../shared/operator-pipeline.js";
@@ -34,8 +35,17 @@ import {
   runReleasePrepublishGate,
   validateReleaseNotes,
 } from "./apply.preflight.js";
-import { pushReleaseRefs, writeReleaseApplyReport } from "./apply.reporting.js";
-import type { ReleaseApplyParsed, ReleaseApplyReport, ReleaseVersionPlan } from "./apply.types.js";
+import {
+  pushReleaseCandidateBranch,
+  pushReleaseRefs,
+  writeReleaseApplyReport,
+} from "./apply.reporting.js";
+import type {
+  ReleaseApplyParsed,
+  ReleaseApplyReport,
+  ReleaseApplyRoute,
+  ReleaseVersionPlan,
+} from "./apply.types.js";
 const output = createCliEmitter();
 
 async function resolveReleasePlanInputs(opts: { gitRoot: string; planOverride?: string }): Promise<{
@@ -137,9 +147,14 @@ async function runPushPreflight(opts: {
   remote: string;
   nextTag: string;
   nextVersion: string;
+  route: ReleaseApplyRoute;
   yes: boolean;
 }): Promise<boolean> {
   const loaded = await loadConfig(opts.agentplaneDir);
+  const pushReason =
+    opts.route.kind === "branch_pr_candidate"
+      ? `release apply --push will push current branch ${opts.route.current_branch} to ${opts.remote} as a release candidate for ${opts.nextTag}; final publication stays deferred until merge to ${opts.route.base_branch}`
+      : `release apply --push will push HEAD and ${opts.nextTag} to ${opts.remote}`;
   await ensureNetworkApproved({
     action: "release_apply",
     config: loaded.config,
@@ -151,7 +166,7 @@ async function runPushPreflight(opts: {
     action: "git_push",
     config: loaded.config,
     yes: opts.yes,
-    reason: `release apply --push will push HEAD and ${opts.nextTag} to ${opts.remote}`,
+    reason: pushReason,
     interactive: Boolean(process.stdin.isTTY),
   });
   await ensureRemoteExists(opts.gitRoot, opts.remote);
@@ -159,6 +174,74 @@ async function runPushPreflight(opts: {
   await ensureNpmVersionsAvailable(opts.gitRoot, opts.nextVersion);
   await runReleasePrepublishGate(opts.gitRoot);
   return true;
+}
+
+async function resolveReleaseApplyRoute(opts: {
+  cwd: string;
+  rootOverride?: string | null;
+  gitRoot: string;
+  agentplaneDir: string;
+}): Promise<ReleaseApplyRoute> {
+  const loaded = await loadConfig(opts.agentplaneDir);
+  const workflowMode = loaded.config.workflow_mode;
+  const currentBranch = await gitCurrentBranch(opts.gitRoot);
+
+  if (workflowMode !== "branch_pr") {
+    return {
+      kind: "direct_release",
+      workflow_mode: workflowMode,
+      current_branch: currentBranch,
+      base_branch: null,
+      final_publish_deferred: false,
+    };
+  }
+
+  const baseBranch = await resolveBaseBranch({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+    mode: workflowMode,
+  });
+  if (!baseBranch) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        "Release apply in branch_pr mode requires a resolved base branch.\n" +
+        "Pin it with `agentplane branch base set <branch>` or configure origin/HEAD before rerunning.",
+      context: withDiagnosticContext(
+        { command: "release apply" },
+        {
+          state: "branch_pr release routing could not resolve the protected base branch",
+          likelyCause:
+            "the release flow needs to know whether this checkout is the protected base branch or a task branch before deciding if it should create or push a release tag",
+          nextAction: {
+            command: "agentplane branch base set <branch>",
+            reason:
+              "pin the protected base branch so release apply can choose between direct publish and task-branch candidate mode",
+            reasonCode: "release_branch_pr_base_unresolved",
+          },
+        },
+      ),
+    });
+  }
+
+  if (currentBranch !== baseBranch) {
+    return {
+      kind: "branch_pr_candidate",
+      workflow_mode: workflowMode,
+      current_branch: currentBranch,
+      base_branch: baseBranch,
+      final_publish_deferred: true,
+    };
+  }
+
+  return {
+    kind: "direct_release",
+    workflow_mode: workflowMode,
+    current_branch: currentBranch,
+    base_branch: baseBranch,
+    final_publish_deferred: false,
+  };
 }
 
 async function applyReleaseMutation(opts: {
@@ -223,18 +306,39 @@ async function finalizeReleaseApply(opts: {
   plan: ReleaseVersionPlan;
   npmVersionChecked: boolean;
   releaseCommit: { hash: string; subject: string } | null;
+  route: ReleaseApplyRoute;
   push: boolean;
   remote: string;
 }): Promise<number> {
-  await execFileAsync("git", ["tag", opts.plan.nextTag], {
-    cwd: opts.gitRoot,
-    env: gitEnv(),
-  });
-
-  output.line(`Release tag created: ${opts.plan.nextTag}`);
+  const tagCreated = opts.route.kind === "direct_release";
+  const pushedRefs: string[] = [];
+  if (tagCreated) {
+    await execFileAsync("git", ["tag", opts.plan.nextTag], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    });
+    output.line(`Release tag created: ${opts.plan.nextTag}`);
+  } else {
+    output.line(
+      `Release candidate prepared on ${opts.route.current_branch}; skipped local tag creation for ${opts.plan.nextTag} because final publication is deferred until merge to ${opts.route.base_branch}.`,
+    );
+  }
   if (opts.push) {
-    await pushReleaseRefs(opts.gitRoot, opts.remote, opts.plan.nextTag);
-    output.line(`Pushed: ${opts.remote} HEAD + ${opts.plan.nextTag}`);
+    if (opts.route.kind === "branch_pr_candidate") {
+      await pushReleaseCandidateBranch(opts.gitRoot, opts.remote);
+      pushedRefs.push("HEAD");
+      output.line(
+        `Pushed: ${opts.remote} ${opts.route.current_branch} (release candidate branch only; no tag pushed)`,
+      );
+    } else {
+      await pushReleaseRefs(opts.gitRoot, opts.remote, opts.plan.nextTag);
+      pushedRefs.push("HEAD", opts.plan.nextTag);
+      output.line(`Pushed: ${opts.remote} HEAD + ${opts.plan.nextTag}`);
+    }
+  } else if (opts.route.kind === "branch_pr_candidate") {
+    output.line(
+      `Next: git push <remote> HEAD  # merge ${opts.route.current_branch} into ${opts.route.base_branch} before publishing ${opts.plan.nextTag}`,
+    );
   } else {
     output.line(`Next: git push <remote> HEAD && git push <remote> ${opts.plan.nextTag}`);
   }
@@ -255,7 +359,18 @@ async function finalizeReleaseApply(opts: {
       npm_version_available_checked: opts.npmVersionChecked,
     },
     commit: opts.releaseCommit,
-    push: { requested: opts.push, remote: opts.remote, performed: opts.push },
+    route: opts.route,
+    tag: {
+      name: opts.plan.nextTag,
+      created: tagCreated,
+      pushed: tagCreated && opts.push,
+    },
+    push: {
+      requested: opts.push,
+      remote: opts.remote,
+      performed: pushedRefs.length > 0,
+      refs: pushedRefs,
+    },
   } satisfies ReleaseApplyReport);
   output.line(`Release report: ${path.relative(opts.gitRoot, reportPath)}`);
   return 0;
@@ -355,6 +470,12 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
         planDir,
         plan,
         notesPath,
+        route: await resolveReleaseApplyRoute({
+          cwd: ctx.cwd,
+          rootOverride: ctx.rootOverride ?? null,
+          gitRoot,
+          agentplaneDir: resolved.agentplaneDir,
+        }),
         corePkgPath: path.join(gitRoot, "packages", "core", "package.json"),
         agentplanePkgPath: path.join(gitRoot, "packages", "agentplane", "package.json"),
         npmVersionChecked: false,
@@ -383,6 +504,7 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
           remote: flags.remote,
           nextTag: state.plan.nextTag,
           nextVersion: state.plan.nextVersion,
+          route: state.route,
           yes: flags.yes,
         });
       }
@@ -408,10 +530,11 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
         plan: state.plan,
         npmVersionChecked: state.npmVersionChecked,
         releaseCommit: mutation.releaseCommit,
+        route: state.route,
         push: flags.push,
         remote: flags.remote,
       }),
   });
 };
 
-export { pushReleaseRefs } from "./apply.reporting.js";
+export { pushReleaseCandidateBranch, pushReleaseRefs } from "./apply.reporting.js";

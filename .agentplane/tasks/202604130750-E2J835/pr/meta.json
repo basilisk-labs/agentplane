@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604130750-E2J835/release-apply-branch-pr-safe",
+  "created_at": "2026-04-13T07:55:31.342Z",
+  "head_sha": "d5d99da3dbf4e8bc0b833e0396e427351b8a7c2f",
+  "last_verified_at": "2026-04-13T08:07:19.262Z",
+  "last_verified_sha": "d5d99da3dbf4e8bc0b833e0396e427351b8a7c2f",
+  "schema_version": 1,
+  "task_id": "202604130750-E2J835",
+  "updated_at": "2026-04-13T07:55:31.342Z",
+  "verify": {
+    "status": "pass"
+  }
+}
