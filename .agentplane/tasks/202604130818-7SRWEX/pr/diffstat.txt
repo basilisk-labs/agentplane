@@ -1,13 +1,20 @@
- .agentplane/tasks/202604130818-7SRWEX/README.md    | 116 ++++++++++++++++++++
- packages/agentplane/bin/agentplane.js              |  47 ++++++++-
- .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 105 ++++++++++++++++++
- .../src/cli/run-cli.core.pr-flow.test.ts           | 117 +++++++++++++++++++++
- .../agentplane/src/commands/branch/work-start.ts   |  45 +++++++-
+ .agentplane/tasks/202604130818-7SRWEX/README.md    | 118 +++++++++++++++++
+ packages/agentplane/bin/agentplane.js              |  61 ++++++++-
+ .../agentplane/src/cli/repo-local-handoff.test.ts  |  74 ++++++-----
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 141 ++++++++++++++++++++-
+ .../src/cli/run-cli.core.pr-flow.test.ts           | 117 +++++++++++++++++
+ .../src/cli/wait-remote-pr-checks-script.test.ts   |  53 +++++---
+ .../agentplane/src/commands/branch/work-start.ts   |  45 ++++++-
+ .../agentplane/src/commands/guard/impl/commands.ts |  83 ++++++++++++
+ .../src/commands/guard/impl/commands.unit.test.ts  |  61 +++++++++
  packages/agentplane/src/commands/pr/check.ts       |   4 +
+ .../src/commands/pr/integrate/cmd.test.ts          |  49 +++++++
+ .../agentplane/src/commands/pr/integrate/cmd.ts    |  15 +++
+ .../integrate/internal/pre-integrate-bootstrap.ts  |  50 ++++++++
  .../src/commands/pr/integrate/internal/prepare.ts  |   2 +
  .../src/commands/pr/internal/freshness.ts          |   3 +
  .../agentplane/src/commands/pr/internal/sync.ts    |   1 +
  packages/agentplane/src/commands/pr/update.ts      |   1 +
- .../commands/shared/post-commit-pr-artifacts.ts    |  40 +++++++
+ .../commands/shared/post-commit-pr-artifacts.ts    |  40 ++++++
  .../src/commands/shared/task-local-freshness.ts    |  10 +-
- 12 files changed, 482 insertions(+), 9 deletions(-)
+ 19 files changed, 861 insertions(+), 67 deletions(-)
