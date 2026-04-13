@@ -45,12 +45,18 @@ After successful branch_pr integration and closure, automatically remove the tas
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-13T14:57:20.049Z
+- Updated: 2026-04-13T15:07:30.556Z
 - Branch: task/202604131456-JEQT5N/auto-prune-task-worktree
-- Head: 8f96bf8fa03e
+- Head: a2a6f4a56b50
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604131456-JEQT5N/README.md    | 125 +++++++++++++++++++++
+ .../src/cli/run-cli.core.task-hosted-close.test.ts |   6 +
+ .../src/commands/pr/integrate/internal/cleanup.ts  |  65 +----------
+ .../merged-branch-cleanup.test.ts}                 |  42 +++++--
+ .../src/commands/shared/merged-branch-cleanup.ts   |  61 ++++++++++
+ .../src/commands/task/hosted-close-pr.command.ts   |  42 +++++++
+ 6 files changed, 268 insertions(+), 73 deletions(-)
 ```
 
 </details>
