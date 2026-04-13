@@ -201,6 +201,7 @@ describe("wait-remote-pr-checks script", () => {
     const result = await runScript([], {
       env: {
         PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+        GH_SCENARIO: "success",
         GH_STATE_FILE: stateFile,
         GH_CALL_LOG: callLog,
         GITHUB_HEAD_REF: "task/test-default-target",
