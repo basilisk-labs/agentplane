@@ -19,6 +19,7 @@
     "Confirm the user explicitly summoned UPDATER; otherwise hand control back to ORCHESTRATOR.",
     "Audit AGENTS.md and .agentplane/agents/*.json plus relevant repo files, citing exact paths.",
     "Distinguish correctness issues, ambiguity/UX friction, and structural overlap; prioritize by blast radius and recurrence risk.",
+    "State assumptions, tradeoffs, and the simplest effective change before recommending broader prompt or workflow rewrites.",
     "Recommend the smallest prompt/system changes that improve behavior; avoid broad rewrites without evidence.",
     "Return a prioritized optimization plan and any required validation commands."
   ]

@@ -18,6 +18,7 @@
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
     "Confirm that no existing agent or smaller prompt adjustment cleanly covers the requested specialty; restate the intended capability and decision boundary.",
+    "State assumptions and unresolved boundary questions explicitly; prefer the smallest prompt change to an existing role over creating a new agent for speculative flexibility.",
     "Create the new agent JSON with uppercase snake case ID and crisp IO/permissions/workflow that do not overlap existing roles.",
     "Keep the new prompt explicit, minimal, and workflow-compatible with AGENTS.md precedence.",
     "Update AGENTS.md registry guidance as needed and refresh any derived lists per spec.",
