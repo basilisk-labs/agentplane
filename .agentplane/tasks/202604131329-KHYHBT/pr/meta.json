@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202604131329-KHYHBT/hosted-close-pr-meta-fallback",
   "created_at": "2026-04-13T13:37:53.837Z",
-  "head_sha": "a59a3ea045092a7cbe179e76503e112065003189",
+  "head_sha": "fafd8f2ae617f244346ebbd649cdf87351e1e43e",
   "last_verified_at": "2026-04-13T13:37:53.783Z",
   "last_verified_sha": "a59a3ea045092a7cbe179e76503e112065003189",
+  "pr_number": 275,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/275",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202604131329-KHYHBT",
-  "updated_at": "2026-04-13T13:37:53.837Z",
+  "updated_at": "2026-04-13T13:44:43.627Z",
   "verify": {
     "status": "pass"
   }

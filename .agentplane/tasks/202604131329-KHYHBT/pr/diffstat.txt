@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604131329-KHYHBT/README.md    | 116 +++++++++++++
+ .../src/cli/run-cli.core.task-hosted-close.test.ts | 186 +++++++++++++++++++++
+ .../src/commands/task/hosted-close.command.ts      |  88 +++++++---
+ 3 files changed, 367 insertions(+), 23 deletions(-)

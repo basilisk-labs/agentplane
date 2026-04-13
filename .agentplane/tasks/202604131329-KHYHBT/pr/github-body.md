@@ -22,12 +22,15 @@ Make the hosted task closure command recover the merged PR/task metadata from th
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-13T13:37:53.837Z
+- Updated: 2026-04-13T13:44:43.627Z
 - Branch: task/202604131329-KHYHBT/hosted-close-pr-meta-fallback
-- Head: a59a3ea04509
+- Head: fafd8f2ae617
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604131329-KHYHBT/README.md    | 116 +++++++++++++
+ .../src/cli/run-cli.core.task-hosted-close.test.ts | 186 +++++++++++++++++++++
+ .../src/commands/task/hosted-close.command.ts      |  88 +++++++---
+ 3 files changed, 367 insertions(+), 23 deletions(-)
 ```
 
 </details>
