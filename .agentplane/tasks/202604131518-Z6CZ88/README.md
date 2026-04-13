@@ -1,10 +1,11 @@
 ---
 id: "202604131518-Z6CZ88"
 title: "Auto-prune merged local task branches on post-merge"
-status: "DOING"
+result_summary: "integrate: squash task/202604131518-Z6CZ88/post-merge-prune-hook"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-13T15:25:36.712Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --hookTimeout 60000 --testTimeout 120000; bunx eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/commands/hooks/index.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; bunx prettier --check scripts/bootstrap-framework-dev.mjs packages/agentplane/src/commands/hooks/index.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: hooks install/bootstrap now reconcile a managed post-merge hook, the post-merge hook silently no-ops off-base and prunes merged local task worktrees on base via cleanup merged, and .agentplane/bin is now ignored so shim refreshes stop dirtying framework checkouts."
-commit: null
+commit:
+  hash: "e76ae51eda7fd681338dbcb16c8427ca02fec174"
+  message: "🧩 Z6CZ88 integrate: hooks/workflow: Auto-prune merged local task branches on post-merge"
 comments:
   -
     author: "CODER"
     body: "Start: add a managed post-merge prune path so local merged task branches/worktrees disappear automatically after main is updated, with hook/bootstrap coverage and targeted regressions."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604131518-Z6CZ88/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.test.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts --hookTimeout 60000 --testTimeout 120000; bunx eslint scripts/bootstrap-framework-dev.mjs packages/agentplane/src/commands/hooks/index.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; bunx prettier --check scripts/bootstrap-framework-dev.mjs packages/agentplane/src/commands/hooks/index.ts packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; bun run framework:dev:bootstrap. Result: pass. Evidence: hooks install/bootstrap now reconcile a managed post-merge hook, the post-merge hook silently no-ops off-base and prunes merged local task worktrees on base via cleanup merged, and .agentplane/bin is now ignored so shim refreshes stop dirtying framework checkouts."
+  -
+    type: "status"
+    at: "2026-04-13T15:36:27.242Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604131518-Z6CZ88/pr."
 doc_version: 3
-doc_updated_at: "2026-04-13T15:25:36.716Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T15:36:27.250Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a managed post-merge hook path that safely prunes merged local task branches/worktrees after main is updated, so protected-main releases do not leave stale local worktrees behind."
 sections:
   Summary: |-
