@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604131403-GZ659S/hosted-close-ci-skip",
   "created_at": "2026-04-13T14:06:53.021Z",
-  "head_sha": "03ddee98df0610e94a41d6420bb5d56d80440705",
+  "head_sha": "e03bd15ced1cb092ddcb2690138cc0476ecc6fe4",
   "last_verified_at": "2026-04-13T14:09:38.880Z",
   "last_verified_sha": "eeab0b9be107c61300279a50cc5856c0287a0c1e",
+  "merge_commit": "0d853ff39b9044e5bed68ba1d9fe8011c9df6a4c",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-13T14:26:25Z",
   "pr_number": 277,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/277",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604131403-GZ659S",
-  "updated_at": "2026-04-13T14:14:48.390Z",
+  "updated_at": "2026-04-13T14:26:25Z",
   "verify": {
     "status": "pass"
   }
