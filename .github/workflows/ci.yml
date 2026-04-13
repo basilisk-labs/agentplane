@@ -24,6 +24,7 @@ jobs:
         id: filter
         with:
           filters: .github/path-filters.yml
+          predicate-quantifier: every
 
   test:
     needs: changes

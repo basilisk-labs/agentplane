@@ -4,6 +4,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const CI_WORKFLOW_PATH = path.resolve(process.cwd(), ".github/workflows/ci.yml");
+const PREPUBLISH_WORKFLOW_PATH = path.resolve(process.cwd(), ".github/workflows/prepublish.yml");
 const PATH_FILTERS_PATH = path.resolve(process.cwd(), ".github/path-filters.yml");
 
 describe("Core CI workflow contract", () => {
@@ -30,8 +31,14 @@ describe("Core CI workflow contract", () => {
   });
 
   it("keeps task-artifact-only diffs out of the heavy core gate", async () => {
+    const ciWorkflow = await readFile(CI_WORKFLOW_PATH, "utf8");
+    const prepublishWorkflow = await readFile(PREPUBLISH_WORKFLOW_PATH, "utf8");
     const filters = await readFile(PATH_FILTERS_PATH, "utf8");
 
+    expect(ciWorkflow).toContain("filters: .github/path-filters.yml");
+    expect(ciWorkflow).toContain("predicate-quantifier: every");
+    expect(prepublishWorkflow).toContain("filters: .github/path-filters.yml");
+    expect(prepublishWorkflow).toContain("predicate-quantifier: every");
     expect(filters).toContain(".agentplane/**");
     expect(filters).toContain("!.agentplane/tasks/**");
     expect(filters).toContain(".github/workflows/**");

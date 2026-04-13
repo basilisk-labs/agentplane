@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604131433-5NX3AW/ci-filter-every",
+  "created_at": "2026-04-13T14:34:48.718Z",
+  "head_sha": "6b8b256a4354e5eed66771ac7779a60a5ac5c22f",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "pr_number": 279,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/279",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604131433-5NX3AW",
+  "updated_at": "2026-04-13T14:41:11.081Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
