@@ -118,7 +118,7 @@ export async function cmdIntegrate(opts: {
     });
     if (preBootstrapResult.status === "failed") {
       throw new CliError({
-        exitCode: 2,
+        exitCode: 8,
         code: "E_RUNTIME",
         message:
           "Unable to prepare the base worktree for integrate: automatic repo-local runtime refresh " +
