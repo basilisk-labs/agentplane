@@ -1,10 +1,11 @@
 ---
 id: "202604131752-6S8T1C"
 title: "Delete hosted-close branch on auto-merge and tighten agent prompts"
-status: "DOING"
+result_summary: "Merged via PR #288."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "f5f105e70623c173507150cead47e4e20d710898"
+  message: "Delete hosted-close branch on auto-merge and tighten agent prompts (6S8T1C) (#288)"
 comments:
   -
     author: "CODER"
     body: "Start: update Task Hosted Close so follow-up closure PR auto-merge deletes the task-close branch, then tighten agent JSON prompts around explicit assumptions, simplicity, surgical edits, and verification-first execution without widening repository policy."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #288 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -34,9 +40,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: update Task Hosted Close so follow-up closure PR auto-merge deletes the task-close branch, then tighten agent JSON prompts around explicit assumptions, simplicity, surgical edits, and verification-first execution without widening repository policy."
+  -
+    type: "status"
+    at: "2026-04-13T18:17:39.373Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #288 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-13T17:53:25.893Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T18:17:39.378Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make Task Hosted Close delete merged task-close branches automatically after follow-up closure PR auto-merge, then update agent prompt JSON profiles to encode the Karpathy-style constraints on assumptions, simplicity, surgical edits, and verification-first execution without weakening existing repository policy."
 sections:
   Summary: |-
