@@ -1,10 +1,11 @@
 ---
 id: "202604131433-5NX3AW"
 title: "Make Core CI task-artifact exclusions effective"
-status: "DOING"
+result_summary: "Merged via PR #279."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "c15891c14c257d262af016671cc3133891a4ee1f"
+  message: "release: Make Core CI task-artifact exclusions effective (5NX3AW) (#279)"
 comments:
   -
     author: "CODER"
     body: "Start: make GitHub path-filter exclusions effective so artifact-only hosted-close PRs stop triggering heavy Core CI and prepublish gates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #279 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -34,9 +40,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: make GitHub path-filter exclusions effective so artifact-only hosted-close PRs stop triggering heavy Core CI and prepublish gates."
+  -
+    type: "status"
+    at: "2026-04-13T14:45:08.197Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #279 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-13T14:34:48.662Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T14:45:08.205Z"
+doc_updated_by: "INTEGRATOR"
 description: "Artifact-only hosted-close PR #278 still triggered Core CI test/test-windows even though .agentplane/tasks/** was excluded from .github/path-filters.yml. Root cause: dorny/paths-filter evaluates list entries with default some semantics, so the positive .agentplane/** rule still wins. Update CI/prepublish filter steps so exclusions are effective, add regression coverage, and verify on the next hosted closure tail."
 sections:
   Summary: |-
