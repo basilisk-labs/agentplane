@@ -9,15 +9,22 @@ function taskRootPrefix(workflowDir: string, taskId: string): string {
 export function isTaskLocalAdvancePath(opts: {
   workflowDir: string;
   taskId: string;
+  tasksPath?: string;
   relPath: string;
 }): boolean {
-  return opts.relPath.startsWith(taskRootPrefix(opts.workflowDir, opts.taskId));
+  const normalizedRelPath = toGitPath(opts.relPath);
+  if (normalizedRelPath.startsWith(taskRootPrefix(opts.workflowDir, opts.taskId))) {
+    return true;
+  }
+  const normalizedTasksPath = opts.tasksPath ? toGitPath(opts.tasksPath) : null;
+  return normalizedTasksPath !== null && normalizedRelPath === normalizedTasksPath;
 }
 
 export async function isTaskLocalOnlyAdvance(opts: {
   gitRoot: string;
   workflowDir: string;
   taskId: string;
+  tasksPath?: string;
   fromRef: string | null;
   toRef: string;
 }): Promise<boolean> {
@@ -31,6 +38,7 @@ export async function isTaskLocalOnlyAdvance(opts: {
       isTaskLocalAdvancePath({
         workflowDir: opts.workflowDir,
         taskId: opts.taskId,
+        tasksPath: opts.tasksPath,
         relPath,
       }),
     )

@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   createCliEmitter: vi.fn(),
   finalizeIntegrate: vi.fn(),
   gitRevParse: vi.fn(),
+  maybeRunPreIntegrateBootstrap: vi.fn(),
   maybeRunPostIntegrateBootstrap: vi.fn(),
   prepareIntegrate: vi.fn(),
   resolveWorktreeForIntegrate: vi.fn(),
@@ -23,6 +24,9 @@ vi.mock("./internal/cleanup.js", () => ({
 }));
 vi.mock("./internal/finalize.js", () => ({
   finalizeIntegrate: mocks.finalizeIntegrate,
+}));
+vi.mock("./internal/pre-integrate-bootstrap.js", () => ({
+  maybeRunPreIntegrateBootstrap: mocks.maybeRunPreIntegrateBootstrap,
 }));
 vi.mock("./internal/post-integrate-bootstrap.js", () => ({
   maybeRunPostIntegrateBootstrap: mocks.maybeRunPostIntegrateBootstrap,
@@ -122,8 +126,53 @@ describe("pr/integrate/cmd", () => {
       worktreePath: null,
       skippedReason: null,
     });
+    mocks.maybeRunPreIntegrateBootstrap.mockResolvedValue({ status: "not-needed" });
     mocks.maybeRunPostIntegrateBootstrap.mockResolvedValue({ status: "ran" });
     mocks.shouldRecommendPostIntegrateBootstrap.mockReturnValue(true);
+  });
+
+  it("bootstraps the base worktree before merge when runtime layout is missing", async () => {
+    mocks.maybeRunPreIntegrateBootstrap.mockResolvedValue({ status: "ran" });
+    const { cmdIntegrate } = await import("./cmd.js");
+
+    const exitCode = await cmdIntegrate({
+      cwd: "/repo",
+      taskId: "T-1",
+      mergeStrategy: "squash",
+      runVerify: false,
+      dryRun: false,
+      quiet: false,
+    });
+
+    expect(exitCode).toBe(0);
+    expect(mocks.maybeRunPreIntegrateBootstrap).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      changedPaths: ["packages/agentplane/src/cli.ts"],
+    });
+    expect(mocks.runSquashMerge).toHaveBeenCalled();
+  });
+
+  it("aborts integrate when the base bootstrap fails", async () => {
+    mocks.maybeRunPreIntegrateBootstrap.mockResolvedValue({
+      status: "failed",
+      error: "bootstrap exit 1",
+    });
+    const { cmdIntegrate } = await import("./cmd.js");
+
+    await expect(
+      cmdIntegrate({
+        cwd: "/repo",
+        taskId: "T-1",
+        mergeStrategy: "squash",
+        runVerify: false,
+        dryRun: false,
+        quiet: false,
+      }),
+    ).rejects.toThrow(
+      "Unable to prepare the base worktree for integrate: automatic repo-local runtime refresh failed (bootstrap exit 1). Run `bun run framework:dev:bootstrap` in /repo and retry integrate.",
+    );
+    expect(mocks.runSquashMerge).not.toHaveBeenCalled();
+    expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
   });
 
   it("auto-bootstraps after integrate when watched runtime sources changed", async () => {

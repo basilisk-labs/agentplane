@@ -26,7 +26,17 @@ async function exists(p) {
 async function maybeWarnGlobalBinaryInRepoCheckout() {
   const thisBin = fileURLToPath(import.meta.url);
   const context = resolveFrameworkBinaryContext({ cwd: process.cwd(), thisBin });
-  if (!context.inFrameworkCheckout || context.isRepoLocalBinary) return;
+  const currentBinaryContext = resolveFrameworkBinaryContext({
+    cwd: path.dirname(thisBin),
+    thisBin,
+  });
+  if (
+    !context.inFrameworkCheckout ||
+    context.isRepoLocalBinary ||
+    context.isRepoLocalRuntime ||
+    currentBinaryContext.isRepoLocalRuntime
+  )
+    return;
 
   const normalizedThis = path.resolve(thisBin);
   const normalizedRepo = path.resolve(context.checkout.repoBin);
@@ -102,7 +112,21 @@ function handoffToRepoLocalBinary(context) {
   return true;
 }
 
-function maybeHandoffToRepoLocalBinary() {
+async function repoLocalRuntimeReady(repoBin) {
+  if (!repoBin) return false;
+  const agentplaneRoot = path.resolve(path.dirname(repoBin), "..");
+  if (!(await distExists(agentplaneRoot))) return false;
+  return missingRepoRuntimeDependencies(agentplaneRoot).length === 0;
+}
+
+function resolveCurrentBinaryFrameworkContext(thisBin) {
+  return resolveFrameworkBinaryContext({
+    cwd: path.dirname(thisBin),
+    thisBin,
+  });
+}
+
+async function maybeHandoffToRepoLocalBinary() {
   if (shouldUseGlobalBinaryInFramework() || isRepoLocalHandoffInvocation()) return false;
 
   const context = resolveFrameworkBinaryContext({
@@ -110,6 +134,37 @@ function maybeHandoffToRepoLocalBinary() {
     thisBin: fileURLToPath(import.meta.url),
   });
   if (!context.inFrameworkCheckout || context.isRepoLocalBinary) return false;
+
+  if (!(await repoLocalRuntimeReady(context.checkout?.repoBin ?? ""))) {
+    const currentBinaryContext = resolveCurrentBinaryFrameworkContext(context.thisBin);
+    const canStayOnCurrentRepoLocalBinary =
+      currentBinaryContext.inFrameworkCheckout &&
+      currentBinaryContext.isRepoLocalRuntime &&
+      currentBinaryContext.checkout?.repoRoot !== context.checkout?.repoRoot;
+    if (canStayOnCurrentRepoLocalBinary) {
+      process.stderr.write(
+        "warning: target framework checkout repo-local runtime is not bootstrapped; " +
+          `staying on current repo-local binary: ${context.thisBin}\n` +
+          `unbootstrapped checkout binary: ${context.checkout?.repoBin ?? "<missing>"}\n` +
+          `fix target checkout with: ${FRAMEWORK_DEV_BOOTSTRAP_COMMAND}\n`,
+      );
+      return false;
+    }
+
+    const canStayOnCurrentInstalledBinary =
+      !currentBinaryContext.inFrameworkCheckout &&
+      !currentBinaryContext.isRepoLocalBinary &&
+      !currentBinaryContext.isRepoLocalRuntime;
+    if (canStayOnCurrentInstalledBinary) {
+      process.stderr.write(
+        "warning: target framework checkout repo-local runtime is not bootstrapped; " +
+          `staying on current installed binary: ${context.thisBin}\n` +
+          `unbootstrapped checkout binary: ${context.checkout?.repoBin ?? "<missing>"}\n` +
+          `fix target checkout with: ${FRAMEWORK_DEV_BOOTSTRAP_COMMAND}\n`,
+      );
+      return false;
+    }
+  }
 
   return handoffToRepoLocalBinary(context);
 }
@@ -279,7 +334,7 @@ const runtimeContext = resolveFrameworkBinaryContext({
 });
 primeRuntimeEnv(runtimeContext);
 
-if (!maybeHandoffToRepoLocalBinary()) {
+if (!(await maybeHandoffToRepoLocalBinary())) {
   await maybeWarnGlobalBinaryInRepoCheckout();
   const ok = isHooksRunCommitMsgInvocation(process.argv) ? true : await assertDistUpToDate();
   if (ok) await import("../dist/cli.js");

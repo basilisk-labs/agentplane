@@ -554,6 +554,7 @@ export async function syncPrArtifacts(opts: {
         (await isTaskLocalOnlyAdvance({
           gitRoot: resolved.gitRoot,
           workflowDir: config.paths.workflow_dir,
+          tasksPath: config.paths.tasks_path,
           taskId: task.id,
           fromRef: existingMeta?.head_sha ?? null,
           toRef: headSha!,
