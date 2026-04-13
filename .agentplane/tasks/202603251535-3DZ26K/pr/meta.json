@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603251535-3DZ26K/workflow-transition-service",
   "created_at": "2026-03-26T18:57:16.972Z",
+  "head_sha": "035858b8170fdc4c802ab501fcb00f6f81584563",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "035858b8170fdc4c802ab501fcb00f6f81584563",
+  "merged_at": "2026-04-13T11:13:47.527Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603251535-3DZ26K",
-  "updated_at": "2026-03-26T18:57:16.972Z",
+  "updated_at": "2026-04-13T11:13:47.527Z",
   "verify": {
     "status": "skipped"
   }

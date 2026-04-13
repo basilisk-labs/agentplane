@@ -289,6 +289,7 @@ export async function createTaskCloseCommit(opts: {
   quiet: boolean;
   closeUnstageOthers?: boolean;
   allowPolicy?: boolean;
+  closeRefreshTaskArtifacts?: boolean;
 }): Promise<void> {
   await cmdCommit({
     ctx: opts.ctx,
@@ -311,5 +312,6 @@ export async function createTaskCloseCommit(opts: {
     closeUnstageOthers: opts.closeUnstageOthers === true,
     closeCheckOnly: false,
     closeStageTaskArtifacts: opts.ctx.config.workflow_mode === "branch_pr",
+    closeRefreshTaskArtifacts: opts.closeRefreshTaskArtifacts,
   });
 }

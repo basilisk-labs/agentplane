@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604131045-RRD2AC/README.md    | 124 ++++++++++++++++++
+ .../run-cli.core.tasks.normalize-migrate.test.ts   | 139 +++++++++++++++++++++
+ .../agentplane/src/commands/doctor.command.test.ts |   4 +-
+ .../agentplane/src/commands/doctor/branch-pr.ts    |   4 +-
+ .../agentplane/src/commands/guard/impl/commands.ts |  19 +--
+ .../src/commands/guard/impl/commands.unit.test.ts  |  49 ++++++++
+ .../pr/integrate/internal/finalize.test.ts         |   1 +
+ .../src/commands/pr/integrate/internal/finalize.ts |   3 +
+ .../agentplane/src/commands/task/finish-shared.ts  |   2 +
+ .../src/commands/task/hosted-merge-sync.ts         |  58 +++++++--
+ 10 files changed, 381 insertions(+), 22 deletions(-)

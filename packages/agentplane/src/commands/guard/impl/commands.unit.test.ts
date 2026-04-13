@@ -5,6 +5,7 @@ import { readDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
+  extractTaskSuffix: vi.fn(),
   mapCoreError: vi.fn(),
   ensureReconciledBeforeMutation: vi.fn(),
   execFileAsync: vi.fn(),
@@ -18,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   guardCommitCheck: vi.fn(),
 }));
 
+vi.mock("@agentplaneorg/core", () => ({ extractTaskSuffix: mocks.extractTaskSuffix }));
 vi.mock("../../../cli/error-map.js", () => ({ mapCoreError: mocks.mapCoreError }));
 vi.mock("../../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
@@ -58,6 +60,7 @@ function mkCtx() {
 describe("guard/impl/commands", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    mocks.extractTaskSuffix.mockReturnValue("7SRWEX");
     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
     mocks.execFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
     mocks.gitEnv.mockReturnValue({});
@@ -198,6 +201,64 @@ describe("guard/impl/commands", () => {
     expect(ctx.git.commit).toHaveBeenCalledWith({
       message: "✅ ABC123 task: message",
       env: { AGENTPLANE_TASK_ID: "T-1" },
+    });
+  });
+
+  it("cmdCommit creates a follow-up task-artifact commit when PR refresh leaves task-local drift", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    ctx.git.statusChangedPaths.mockResolvedValue([
+      ".agentplane/tasks/202604130818-7SRWEX/pr/meta.json",
+      ".agentplane/tasks/202604130818-7SRWEX/pr/review.md",
+    ]);
+    ctx.git.headHashSubject.mockResolvedValue({
+      hash: "feedfacecafebeef",
+      subject: "📝 7SRWEX task: refresh PR artifacts",
+    });
+    mocks.buildGitCommitEnv
+      .mockReturnValueOnce({ AGENTPLANE_TASK_ID: "202604130818-7SRWEX" })
+      .mockReturnValueOnce({
+        AGENTPLANE_TASK_ID: "202604130818-7SRWEX",
+        AGENTPLANE_ALLOW_TASKS: "1",
+      });
+
+    const rc = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "202604130818-7SRWEX",
+      message: "🧩 7SRWEX workflow: implementation body",
+      close: false,
+      allow: ["src"],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(mocks.refreshBranchPrArtifactsAfterTaskCommit).toHaveBeenCalledTimes(1);
+    expect(ctx.git.invalidateStatus).toHaveBeenCalledTimes(1);
+    expect(ctx.git.stage).toHaveBeenCalledWith([
+      ".agentplane/tasks/202604130818-7SRWEX/pr/meta.json",
+      ".agentplane/tasks/202604130818-7SRWEX/pr/review.md",
+    ]);
+    expect(mocks.guardCommitCheck).toHaveBeenCalledTimes(2);
+    expect(ctx.git.commit).toHaveBeenNthCalledWith(1, {
+      message: "🧩 7SRWEX workflow: implementation body",
+      env: { AGENTPLANE_TASK_ID: "202604130818-7SRWEX" },
+    });
+    expect(ctx.git.commit).toHaveBeenNthCalledWith(2, {
+      message: "📝 7SRWEX task: refresh PR artifacts",
+      env: {
+        AGENTPLANE_TASK_ID: "202604130818-7SRWEX",
+        AGENTPLANE_ALLOW_TASKS: "1",
+      },
     });
   });
 
@@ -470,6 +531,55 @@ describe("guard/impl/commands", () => {
       lastInvalidateOrder,
     );
     expect(lastInvalidateOrder).toBeLessThan(
+      ctx.git.stage.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
+    );
+  });
+
+  it("cmdCommit close can skip PR artifact refresh while still staging task artifact scope", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusChangedPaths.mockResolvedValue([
+      ".agentplane/tasks/T-12/pr/meta.json",
+      ".agentplane/tasks/T-12/pr/review.md",
+    ]);
+    mocks.loadTaskFromContext.mockResolvedValue({ id: "T-12" });
+    mocks.buildCloseCommitMessage.mockResolvedValue({
+      subject: "✅ ABC123 close: done",
+      body: "body",
+    });
+    mocks.taskReadmePathForTask.mockReturnValue("/repo/.agentplane/tasks/T-12/README.md");
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-12" });
+
+    const rc = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-12",
+      message: "",
+      close: true,
+      allow: [],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+      closeStageTaskArtifacts: true,
+      closeRefreshTaskArtifacts: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(mocks.refreshBranchPrArtifactsAfterTaskCommit).not.toHaveBeenCalled();
+    expect(ctx.git.invalidateStatus).toHaveBeenCalled();
+    expect(ctx.git.stage).toHaveBeenCalledWith([
+      ".agentplane/tasks/T-12/pr/meta.json",
+      ".agentplane/tasks/T-12/pr/review.md",
+    ]);
+    const invalidateOrder =
+      ctx.git.invalidateStatus.mock.invocationCallOrder.at(-1) ?? Number.POSITIVE_INFINITY;
+    expect(invalidateOrder).toBeLessThan(
       ctx.git.stage.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
     );
   });

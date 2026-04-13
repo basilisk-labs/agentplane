@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603300819-WKK8C5/framework-worktree-runtime",
   "created_at": "2026-03-30T08:55:58.189Z",
+  "head_sha": "365fa16df391fec0a839de451507bf465cda59b2",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "365fa16df391fec0a839de451507bf465cda59b2",
+  "merged_at": "2026-04-13T11:13:47.550Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603300819-WKK8C5",
-  "updated_at": "2026-03-30T08:56:32.526Z",
+  "updated_at": "2026-04-13T11:13:47.550Z",
   "verify": {
     "status": "skipped"
   }

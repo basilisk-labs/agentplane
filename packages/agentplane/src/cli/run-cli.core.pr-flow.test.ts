@@ -108,6 +108,12 @@ async function seedRepoLocalCorePackage(root: string): Promise<void> {
   );
 }
 
+async function seedFrameworkCheckoutMarker(root: string): Promise<void> {
+  const cliPath = path.join(root, "packages", "agentplane", "src", "cli.ts");
+  await mkdir(path.dirname(cliPath), { recursive: true });
+  await writeFile(cliPath, "export const cli = true;\n", "utf8");
+}
+
 describe("runCli", () => {
   it("work start requires task id and flags", async () => {
     const root = await mkGitRepoRoot();
@@ -728,6 +734,117 @@ describe("runCli", () => {
       expect(await pathExists(path.join(worktreePath, "agentplane-recipes", "index.json"))).toBe(
         true,
       );
+
+      const runtime = await execFileAsync(
+        process.execPath,
+        [
+          path.join(worktreePath, "packages", "agentplane", "bin", "agentplane.js"),
+          "runtime",
+          "explain",
+        ],
+        {
+          cwd: worktreePath,
+          env: cleanGitEnv({ PATH: process.env.PATH ?? "" }),
+          encoding: "utf8",
+        },
+      );
+      expect(runtime.stdout).toContain("Mode: repo-local");
+      expect(runtime.stdout).toContain("Framework checkout: yes");
+    },
+    WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
+  );
+
+  it(
+    "work start reuses the active repo-local binary to bootstrap a fresh task worktree from an unbootstrapped base checkout",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      await seedRepoLocalBinArtifacts(root);
+      await seedFrameworkCheckoutMarker(root);
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "."], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      const ioTask = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Unbootstrapped base worktree runtime bootstrap",
+          "--description",
+          "work start should seed runtime assets from the active repo-local binary when the base checkout lacks dist.",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await approveTaskPlan(root, taskId);
+
+      const worktreePath = path.join(
+        root,
+        ".agentplane",
+        "worktrees",
+        `${taskId}-runtime-from-active`,
+      );
+      const runtimeBinary = path.join(
+        workspaceRoot,
+        "packages",
+        "agentplane",
+        "bin",
+        "agentplane.js",
+      );
+      const result = await execFileAsync(
+        process.execPath,
+        [
+          runtimeBinary,
+          "work",
+          "start",
+          taskId,
+          "--agent",
+          "CODER",
+          "--slug",
+          "runtime-from-active",
+          "--worktree",
+          "--root",
+          root,
+        ],
+        {
+          cwd: root,
+          env: cleanGitEnv({ PATH: process.env.PATH ?? "" }),
+          encoding: "utf8",
+        },
+      );
+
+      expect(result.stdout).toContain("✅ work start");
+      expect(result.stderr).toContain("staying on current repo-local binary");
+      expect(result.stderr).not.toContain(
+        "running global agentplane binary inside repository checkout",
+      );
+      expect(
+        await pathExists(path.join(worktreePath, "packages", "agentplane", "dist", "cli.js")),
+      ).toBe(true);
+      expect(await pathExists(path.join(worktreePath, "node_modules"))).toBe(true);
+      expect(
+        await pathExists(path.join(worktreePath, "packages", "agentplane", "node_modules")),
+      ).toBe(true);
 
       const runtime = await execFileAsync(
         process.execPath,

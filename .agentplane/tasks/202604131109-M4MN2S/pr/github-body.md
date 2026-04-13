@@ -1,0 +1,84 @@
+## Summary
+
+Suppress non-actionable DONE branch_pr PR artifact warnings
+
+Persist reconciled branch_pr PR artifact metadata on base and stop doctor from warning on stacked/duplicate DONE tasks that never own a distinct mergeable PR.
+
+## Scope
+
+- In scope: Persist reconciled branch_pr PR artifact metadata on base and stop doctor from warning on stacked/duplicate DONE tasks that never own a distinct mergeable PR.
+- Out of scope: unrelated refactors not required for "Suppress non-actionable DONE branch_pr PR artifact warnings".
+
+## Verification
+
+- State: ok
+- Note: Doctor no longer warns on non-actionable DONE branch_pr duplicate/stacked records, and historical PR artifact drift was reconciled on the release branch.
+- Full verification checklist lives in local review.md.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-04-13T11:16:13.179Z
+- Branch: task/202604131109-M4MN2S/suppress-false-pr-drift
+- Head: 3413a05ba1da
+
+```text
+ .agentplane/tasks/202603251535-3DZ26K/pr/meta.json |   7 +-
+ .agentplane/tasks/202603251535-DNNMD4/pr/meta.json |   7 +-
+ .agentplane/tasks/202603251535-H2EGEM/pr/meta.json |   7 +-
+ .agentplane/tasks/202603251538-CZ19GT/pr/meta.json |   7 +-
+ .agentplane/tasks/202603251538-NQSPGC/pr/meta.json |   7 +-
+ .agentplane/tasks/202603251538-VJ5GHJ/pr/meta.json |   7 +-
+ .agentplane/tasks/202603251538-Y8DE9D/pr/meta.json |   7 +-
+ .agentplane/tasks/202603251539-1WNAZX/pr/meta.json |   7 +-
+ .agentplane/tasks/202603251539-YTQX10/pr/meta.json |   7 +-
+ .agentplane/tasks/202603261739-GWD3WX/pr/meta.json |   7 +-
+ .agentplane/tasks/202603261754-VG6FTM/pr/meta.json |   7 +-
+ .agentplane/tasks/202603261911-KAR6C2/pr/meta.json |   7 +-
+ .agentplane/tasks/202603271156-EAMB43/pr/meta.json |   7 +-
+ .agentplane/tasks/202603300819-5NMDDW/pr/meta.json |   7 +-
+ .agentplane/tasks/202603300819-WKK8C5/pr/meta.json |   7 +-
+ .agentplane/tasks/202603301639-X82Y1W/pr/meta.json |   7 +-
+ .agentplane/tasks/202604011037-P771ZK/pr/meta.json |   7 +-
+ .agentplane/tasks/202604030441-AQRVW4/pr/meta.json |   5 +-
+ .agentplane/tasks/202604030442-WARBCX/pr/meta.json |   5 +-
+ .agentplane/tasks/202604070755-2FD0T4/pr/meta.json |   5 +-
+ .agentplane/tasks/202604070755-FXWXDS/pr/meta.json |   5 +-
+ .agentplane/tasks/202604070912-5TKNV6/pr/meta.json |   5 +-
+ .agentplane/tasks/202604070912-WV9YHM/pr/meta.json |   5 +-
+ .agentplane/tasks/202604081906-PCGZN7/pr/meta.json |   6 +-
+ .agentplane/tasks/202604090933-SXRWRM/README.md    |  16 ++-
+ .agentplane/tasks/202604090933-SXRWRM/pr/meta.json |   8 +-
+ .agentplane/tasks/202604091444-9ZDH3E/pr/meta.json |   6 +-
+ .agentplane/tasks/202604091444-DWESME/pr/meta.json |   6 +-
+ .agentplane/tasks/202604091444-NS0RG8/pr/meta.json |   6 +-
+ .agentplane/tasks/202604091945-6WQGXP/pr/meta.json |   5 +-
+ .agentplane/tasks/202604091956-BKQG36/pr/meta.json |   5 +-
+ .agentplane/tasks/202604092339-NFXA6G/pr/meta.json |   6 +-
+ .agentplane/tasks/202604092339-VSV0CZ/pr/meta.json |   6 +-
+ .agentplane/tasks/202604092339-Z755FH/pr/meta.json |   6 +-
+ .agentplane/tasks/202604100023-EVJWDM/pr/meta.json |   6 +-
+ .agentplane/tasks/202604100023-MFGFK9/pr/meta.json |   6 +-
+ .agentplane/tasks/202604100054-BJ7V3H/pr/meta.json |   6 +-
+ .agentplane/tasks/202604100054-REVRR6/pr/meta.json |   6 +-
+ .agentplane/tasks/202604100054-RQH3ZW/pr/meta.json |   6 +-
+ .agentplane/tasks/202604100123-YSM0S2/pr/meta.json |   5 +-
+ .agentplane/tasks/202604100138-87X9YD/pr/meta.json |   6 +-
+ .agentplane/tasks/202604100138-J2KYSX/pr/meta.json |   6 +-
+ .agentplane/tasks/202604100213-1AAPW1/pr/meta.json |   6 +-
+ .agentplane/tasks/202604100213-MVAGSD/pr/meta.json |   6 +-
+ .agentplane/tasks/202604100318-2Z6N94/pr/meta.json |   6 +-
+ .agentplane/tasks/202604100827-QG5AN4/pr/meta.json |   6 +-
+ .agentplane/tasks/202604101009-36KKA9/pr/meta.json |   6 +-
+ .agentplane/tasks/202604130818-7SRWEX/pr/meta.json |   6 +-
+ .agentplane/tasks/202604131109-M4MN2S/README.md    |  94 ++++++++++++++
+ .../agentplane/src/commands/doctor.command.test.ts | 141 +++++++++++++++++++++
+ .../src/commands/task/hosted-merge-sync.ts         |  16 ++-
+ 51 files changed, 488 insertions(+), 71 deletions(-)
+```
+
+</details>

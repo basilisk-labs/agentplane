@@ -85,8 +85,10 @@ async function setupFrameworkCheckout() {
   const repoRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-framework-checkout-"));
   tempRoots.push(repoRoot);
   const binDir = path.join(repoRoot, "packages", "agentplane", "bin");
+  const distDir = path.join(repoRoot, "packages", "agentplane", "dist");
   const srcDir = path.join(repoRoot, "packages", "agentplane", "src", "nested");
   await mkdir(binDir, { recursive: true });
+  await mkdir(distDir, { recursive: true });
   await mkdir(srcDir, { recursive: true });
   const repoBin = path.join(binDir, "agentplane.js");
   await writeFile(
@@ -102,6 +104,11 @@ async function setupFrameworkCheckout() {
   await writeFile(
     path.join(repoRoot, "packages", "agentplane", "src", "cli.ts"),
     "export const cli = true;\n",
+    "utf8",
+  );
+  await writeFile(
+    path.join(distDir, "cli.js"),
+    ["#!/usr/bin/env node", String.raw`process.stdout.write("DIST_READY\n");`, ""].join("\n"),
     "utf8",
   );
 
@@ -296,54 +303,51 @@ describe("repo-local handoff wrapper", () => {
     expect(local.args).toEqual(["help", "help", "--compact"]);
   });
 
-  it("reports bootstrap guidance when repo-local dist is missing", async () => {
+  it("stays on the global binary when repo-local dist is missing", async () => {
     const globalInstall = await setupGlobalInstall();
     const framework = await setupFrameworkCheckoutWithoutDist();
 
-    try {
-      await execFileAsync(process.execPath, [globalInstall.binPath, "help"], {
+    const { stdout, stderr } = await execFileAsync(
+      process.execPath,
+      [globalInstall.binPath, "help"],
+      {
         cwd: framework.nestedCwd,
         encoding: "utf8",
         env: buildChildEnv(),
-      });
-      throw new Error("expected command to fail");
-    } catch (error) {
-      const err = error as { stderr?: string; stdout?: string };
-      expect(err.stderr ?? "").toContain("agentplane dist is missing for this framework checkout");
-      expect(err.stderr ?? "").toContain("This worktree is not bootstrapped yet.");
-      expect(err.stderr ?? "").toContain("bun run framework:dev:bootstrap");
-      expect(err.stderr ?? "").toContain(
-        "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>",
-      );
-      expect(err.stdout ?? "").toBe("");
-    }
+      },
+    );
+
+    const global = parsePayload(stdout, "GLOBAL");
+    expect(global.args).toEqual(["help"]);
+    expect(path.normalize(global.cwd).endsWith(nestedSuffix)).toBe(true);
+    expect(stderr).toContain("staying on current installed binary");
+    expect(stderr).toContain("target framework checkout repo-local runtime is not bootstrapped");
+    expect(stderr).toContain("bun run framework:dev:bootstrap");
+    expect(stderr).not.toContain("delegating to repo-local binary");
   });
 
-  it("reports bootstrap guidance when repo-local install layout is missing", async () => {
+  it("stays on the global binary when repo-local install layout is missing", async () => {
     const globalInstall = await setupGlobalInstall();
     const framework = await setupFrameworkCheckoutWithoutInstallLayout();
 
-    try {
-      await execFileAsync(process.execPath, [globalInstall.binPath, "help"], {
+    const { stdout, stderr } = await execFileAsync(
+      process.execPath,
+      [globalInstall.binPath, "help"],
+      {
         cwd: framework.nestedCwd,
         encoding: "utf8",
         env: buildChildEnv(),
-      });
-      throw new Error("expected command to fail");
-    } catch (error) {
-      const err = error as { stderr?: string; stdout?: string };
-      expect(err.stderr ?? "").toContain(
-        "repo-local runtime dependencies are missing for this framework checkout",
-      );
-      expect(err.stderr ?? "").toContain("This worktree is not bootstrapped yet.");
-      expect(err.stderr ?? "").toContain("@agentplaneorg/core");
-      expect(err.stderr ?? "").toContain("bun run framework:dev:bootstrap");
-      expect(err.stderr ?? "").toContain(
-        "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>",
-      );
-      expect(err.stderr ?? "").not.toContain("ERR_MODULE_NOT_FOUND");
-      expect(err.stdout ?? "").not.toContain("SHOULD_NOT_RUN");
-      expect(err.stdout ?? "").toBe("");
-    }
+      },
+    );
+
+    const global = parsePayload(stdout, "GLOBAL");
+    expect(global.args).toEqual(["help"]);
+    expect(path.normalize(global.cwd).endsWith(nestedSuffix)).toBe(true);
+    expect(stderr).toContain("staying on current installed binary");
+    expect(stderr).toContain("target framework checkout repo-local runtime is not bootstrapped");
+    expect(stderr).toContain("bun run framework:dev:bootstrap");
+    expect(stderr).not.toContain("delegating to repo-local binary");
+    expect(stderr).not.toContain("ERR_MODULE_NOT_FOUND");
+    expect(stdout).not.toContain("SHOULD_NOT_RUN");
   });
 });

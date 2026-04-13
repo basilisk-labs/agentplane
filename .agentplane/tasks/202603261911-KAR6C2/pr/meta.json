@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603261911-KAR6C2/presentation-route-recursion",
   "created_at": "2026-03-26T19:13:30.164Z",
+  "head_sha": "87b87cc6895fa411fff946763d5cda48c2120fa9",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "87b87cc6895fa411fff946763d5cda48c2120fa9",
+  "merged_at": "2026-04-13T11:13:47.545Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603261911-KAR6C2",
-  "updated_at": "2026-03-26T19:13:30.164Z",
+  "updated_at": "2026-04-13T11:13:47.545Z",
   "verify": {
     "status": "skipped"
   }

@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603251539-YTQX10/tooling-generators",
   "created_at": "2026-03-27T18:42:09.482Z",
+  "head_sha": "ee0e7698eb5cf8fa567b68090d22a80f61a388a4",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "ee0e7698eb5cf8fa567b68090d22a80f61a388a4",
+  "merged_at": "2026-04-13T11:13:47.543Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603251539-YTQX10",
-  "updated_at": "2026-03-27T18:42:09.482Z",
+  "updated_at": "2026-04-13T11:13:47.543Z",
   "verify": {
     "status": "skipped"
   }

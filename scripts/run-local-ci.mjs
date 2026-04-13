@@ -26,6 +26,10 @@ const testEnv = {
   GIT_COMMITTER_NAME: "agentplane-ci",
   GIT_COMMITTER_EMAIL: "agentplane-ci@example.com",
 };
+const VITEST_TIMEOUT_MS = "60000";
+const LOCAL_FAST_VITEST_MAX_WORKERS =
+  String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "4";
+const FAST_TEST_EXCLUDES = ["**/cli-smoke.test.ts", "**/run-cli*.test.ts"];
 
 function run(cmd, args, env = baseEnv) {
   execFileSync(cmd, args, { stdio: "inherit", env });
@@ -38,6 +42,34 @@ function runStep(label, fn) {
 
 function runCommand(cmd, args, env = baseEnv) {
   run(cmd, args, env);
+}
+
+function buildVitestRunArgs({
+  testFiles = [],
+  pool,
+  excludes = [],
+  maxWorkers = LOCAL_FAST_VITEST_MAX_WORKERS,
+}) {
+  const args = ["vitest", "run"];
+  if (testFiles.length > 0) {
+    args.push(...testFiles);
+  } else {
+    for (const pattern of excludes) {
+      args.push("--exclude", pattern);
+    }
+  }
+  if (pool) {
+    args.push(`--pool=${pool}`);
+  }
+  if (maxWorkers) {
+    args.push("--maxWorkers", maxWorkers);
+  }
+  args.push("--testTimeout", VITEST_TIMEOUT_MS, "--hookTimeout", VITEST_TIMEOUT_MS);
+  return args;
+}
+
+function runVitestSuite(options, env = baseEnv) {
+  runCommand("bunx", buildVitestRunArgs(options), env);
 }
 
 function createBaselineStepEntries({ includeBuild }) {
@@ -89,7 +121,10 @@ if (mode !== "fast" && mode !== "full") {
 const fastSteps = [
   ...createBaselineStepEntries({ includeBuild: true }),
   ["Lint (core)", () => run("bun", ["run", "lint:core"])],
-  ["Unit tests (fast)", () => run("bun", ["run", "test:fast"], testEnv)],
+  [
+    "Unit tests (fast)",
+    () => runVitestSuite({ excludes: FAST_TEST_EXCLUDES, pool: "forks" }, testEnv),
+  ],
   ["CLI E2E (critical)", () => run("bun", ["run", "test:critical"], testEnv)],
 ];
 
@@ -154,20 +189,7 @@ function runTargetedFastPath(plan) {
     runCommand("bun", ["run", "lint:core", "--", ...plan.lintTargets]),
   );
   runStep(`Unit tests (targeted:${plan.bucket})`, () =>
-    runCommand(
-      "bunx",
-      [
-        "vitest",
-        "run",
-        ...plan.testFiles,
-        `--pool=${plan.vitestPool}`,
-        "--testTimeout",
-        "60000",
-        "--hookTimeout",
-        "60000",
-      ],
-      testEnv,
-    ),
+    runVitestSuite({ testFiles: plan.testFiles, pool: plan.vitestPool }, testEnv),
   );
 }
 

@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603251535-DNNMD4/task-doc-contract",
   "created_at": "2026-03-26T15:59:20.469Z",
+  "head_sha": "5980bbae43e6ff287924125fa439c1b9639ab84f",
   "last_verified_at": "2026-03-26T17:08:05.094Z",
   "last_verified_sha": "4fa486e5efec4e5d595252c2c8169f74540234eb",
+  "merge_commit": "5980bbae43e6ff287924125fa439c1b9639ab84f",
+  "merged_at": "2026-04-13T11:13:47.532Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603251535-DNNMD4",
-  "updated_at": "2026-03-26T17:10:00.216Z",
+  "updated_at": "2026-04-13T11:13:47.532Z",
   "verify": {
     "status": "pass"
   }

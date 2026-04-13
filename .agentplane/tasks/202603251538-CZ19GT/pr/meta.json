@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603251538-CZ19GT/task-backend-ports",
   "created_at": "2026-03-27T09:20:20.333Z",
+  "head_sha": "1c2939524795a0649e9e4a45c44067fae9e46cf1",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "1c2939524795a0649e9e4a45c44067fae9e46cf1",
+  "merged_at": "2026-04-13T11:13:47.536Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603251538-CZ19GT",
-  "updated_at": "2026-03-27T09:20:20.333Z",
+  "updated_at": "2026-04-13T11:13:47.536Z",
   "verify": {
     "status": "skipped"
   }

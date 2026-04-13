@@ -5,9 +5,12 @@
   "head_sha": "9e5682149369d654e7970484faa86f229df28c5b",
   "last_verified_at": "2026-04-03T16:57:40.194Z",
   "last_verified_sha": "9e5682149369d654e7970484faa86f229df28c5b",
+  "merge_commit": "add4d7927505d07744a044fa1ea3acd57b2d907a",
+  "merged_at": "2026-04-13T11:13:47.557Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604030442-WARBCX",
-  "updated_at": "2026-04-03T16:16:43Z",
+  "updated_at": "2026-04-13T11:13:47.557Z",
   "verify": {
     "status": "pass"
   }

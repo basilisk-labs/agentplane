@@ -125,6 +125,7 @@ async function evaluateSnapshotFreshness(opts: {
   snapshot: PrArtifactSnapshot;
   gitRoot: string;
   workflowDir: string;
+  tasksPath?: string;
   taskId: string;
   branchHeadSha: string | null;
   taskVerificationState: unknown;
@@ -134,6 +135,7 @@ async function evaluateSnapshotFreshness(opts: {
   const freshness = await assessPrArtifactFreshness({
     gitRoot: opts.gitRoot,
     workflowDir: opts.workflowDir,
+    tasksPath: opts.tasksPath,
     taskId: opts.taskId,
     branchHeadSha: opts.branchHeadSha,
     metaHeadSha: opts.snapshot.meta.head_sha ?? null,
@@ -295,6 +297,7 @@ export async function cmdPrCheck(opts: {
       snapshot: localSnapshot,
       gitRoot: resolved.gitRoot,
       workflowDir: config.paths.workflow_dir,
+      tasksPath: config.paths.tasks_path,
       taskId: task.id,
       branchHeadSha,
       taskVerificationState: task.verification?.state ?? null,
@@ -380,6 +383,7 @@ export async function cmdPrCheck(opts: {
         snapshot: branchSnapshot,
         gitRoot: resolved.gitRoot,
         workflowDir: config.paths.workflow_dir,
+        tasksPath: config.paths.tasks_path,
         taskId: task.id,
         branchHeadSha,
         taskVerificationState: task.verification?.state ?? null,

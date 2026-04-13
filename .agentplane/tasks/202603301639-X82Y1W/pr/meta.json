@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603301639-X82Y1W/resolve-legacy-prs",
   "created_at": "2026-03-30T16:43:14.725Z",
+  "head_sha": "6b0a364df3f9b3a5634f18a6d5d49a5148f45d8f",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "6b0a364df3f9b3a5634f18a6d5d49a5148f45d8f",
+  "merged_at": "2026-04-13T11:13:47.552Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603301639-X82Y1W",
-  "updated_at": "2026-03-30T16:51:15.654Z",
+  "updated_at": "2026-04-13T11:13:47.552Z",
   "verify": {
     "status": "skipped"
   }

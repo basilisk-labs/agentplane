@@ -1,0 +1,19 @@
+{
+  "base": "main",
+  "branch": "task/202604130818-7SRWEX/release-hardening",
+  "created_at": "2026-04-13T09:02:37.644Z",
+  "head_sha": "1eb1a5e99b4742ff1c9fd8874aa100057b93a43b",
+  "last_verified_at": "2026-04-13T09:02:37.408Z",
+  "last_verified_sha": "d5d99da3dbf4e8bc0b833e0396e427351b8a7c2f",
+  "merge_commit": "7f58fec4d747c130efbec8c7cb20b7f773130d8b",
+  "merged_at": "2026-04-13T11:13:47.582Z",
+  "pr_number": 271,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/271",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604130818-7SRWEX",
+  "updated_at": "2026-04-13T11:13:47.582Z",
+  "verify": {
+    "status": "pass"
+  }
+}

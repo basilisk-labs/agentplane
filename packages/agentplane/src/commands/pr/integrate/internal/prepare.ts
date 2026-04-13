@@ -210,6 +210,7 @@ export async function prepareIntegrate(opts: {
   let freshness = await assessPrArtifactFreshness({
     gitRoot: resolved.gitRoot,
     workflowDir: loadedConfig.paths.workflow_dir,
+    tasksPath: loadedConfig.paths.tasks_path,
     taskId: opts.taskId,
     branchHeadSha,
     metaHeadSha: metaSource.head_sha ?? null,
@@ -246,6 +247,7 @@ export async function prepareIntegrate(opts: {
       freshness = await assessPrArtifactFreshness({
         gitRoot: resolved.gitRoot,
         workflowDir: loadedConfig.paths.workflow_dir,
+        tasksPath: loadedConfig.paths.tasks_path,
         taskId: opts.taskId,
         branchHeadSha,
         metaHeadSha: repairedMetaSource.head_sha ?? null,
