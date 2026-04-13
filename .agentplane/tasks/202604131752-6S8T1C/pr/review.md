@@ -45,9 +45,9 @@ Make Task Hosted Close delete merged task-close branches automatically after fol
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-13T17:59:39.680Z
+- Updated: 2026-04-13T18:06:39.104Z
 - Branch: task/202604131752-6S8T1C/hosted-close-delete-branch-karpathy
-- Head: ce84058cf787
+- Head: 539c77a96591
 
 ```text
  .agentplane/agents/CODER.json                      |  4 +
@@ -72,8 +72,9 @@ Make Task Hosted Close delete merged task-close branches automatically after fol
  packages/agentplane/assets/agents/TESTER.json      |  4 +-
  packages/agentplane/assets/agents/UPDATER.json     |  1 +
  packages/agentplane/assets/agents/UPGRADER.json    |  2 +-
+ .../src/cli/wait-remote-pr-checks-script.test.ts   |  1 +
  .../task/hosted-close-workflow-contract.test.ts    |  2 +-
- 23 files changed, 139 insertions(+), 14 deletions(-)
+ 24 files changed, 140 insertions(+), 14 deletions(-)
 ```
 
 </details>

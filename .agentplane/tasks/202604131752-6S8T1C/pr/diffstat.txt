@@ -20,5 +20,6 @@
  packages/agentplane/assets/agents/TESTER.json      |  4 +-
  packages/agentplane/assets/agents/UPDATER.json     |  1 +
  packages/agentplane/assets/agents/UPGRADER.json    |  2 +-
+ .../src/cli/wait-remote-pr-checks-script.test.ts   |  1 +
  .../task/hosted-close-workflow-contract.test.ts    |  2 +-
- 23 files changed, 139 insertions(+), 14 deletions(-)
+ 24 files changed, 140 insertions(+), 14 deletions(-)
