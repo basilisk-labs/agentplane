@@ -1,10 +1,11 @@
 ---
 id: "202604130818-7SRWEX"
 title: "Harden branch_pr publish friction around PR artifacts and bootstrap"
-status: "DOING"
+result_summary: "integrate: squash task/202604130818-7SRWEX/release-hardening"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-13T09:02:37.408Z"
   updated_by: "CODER"
   note: "Verified locally: bun vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts --no-file-parallelism --maxWorkers=1 --hookTimeout 60000 --testTimeout 60000; bun vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --no-file-parallelism --maxWorkers=1 --hookTimeout 60000 --testTimeout 60000; node packages/agentplane/bin/agentplane.js pr check 202604130750-E2J835 --root ../../..; legacy AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 path still passes."
-commit: null
+commit:
+  hash: "7f58fec4d747c130efbec8c7cb20b7f773130d8b"
+  message: "🧩 7SRWEX integrate: workflow: Harden branch_pr publish friction around PR artifacts and bootstrap"
 comments:
   -
     author: "CODER"
     body: "Start: inspect PR self-reference dirt and framework checkout bootstrap gaps, then harden branch_pr release flow so normal repo-local push/workflow works without bypasses."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604130818-7SRWEX/pr."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified locally: bun vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts --no-file-parallelism --maxWorkers=1 --hookTimeout 60000 --testTimeout 60000; bun vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --no-file-parallelism --maxWorkers=1 --hookTimeout 60000 --testTimeout 60000; node packages/agentplane/bin/agentplane.js pr check 202604130750-E2J835 --root ../../..; legacy AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 path still passes."
+  -
+    type: "status"
+    at: "2026-04-13T10:40:30.491Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604130818-7SRWEX/pr."
 doc_version: 3
-doc_updated_at: "2026-04-13T09:02:37.494Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T10:40:30.500Z"
+doc_updated_by: "INTEGRATOR"
 description: "Eliminate two confirmed release-path blockers: (1) PR artifact self-reference that leaves tracked changes after task commits and causes normal pre-push to fail, and (2) unbootstrapped framework/base worktrees that force global agentplane override or manual bootstrap during branch_pr/release execution."
 sections:
   Summary: |-

@@ -46,9 +46,9 @@ Eliminate two confirmed release-path blockers: (1) PR artifact self-reference th
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-13T10:30:00.122Z
+- Updated: 2026-04-13T10:40:31.307Z
 - Branch: task/202604130818-7SRWEX/release-hardening
-- Head: c66f535f9d0f
+- Head: 1eb1a5e99b47
 
 ```text
  .agentplane/tasks/202604130818-7SRWEX/README.md    | 118 +++++++++++++++++
