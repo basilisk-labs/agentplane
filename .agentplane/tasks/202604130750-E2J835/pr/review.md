@@ -45,17 +45,19 @@ When release apply runs with --push on a non-base branch in branch_pr mode, publ
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-13T11:48:56.228Z
+- Updated: 2026-04-13T12:07:52.198Z
 - Branch: task/202604130750-E2J835/release-apply-branch-pr-safe
-- Head: 053e1a2fad04
+- Head: 7484ab42b6fc
 
 ```text
- .agentplane/tasks/202604130750-E2J835/README.md    | 142 ++++++++++++++++
+ .agentplane/tasks/202604130750-E2J835/README.md    | 186 ++++++++++++++++++++
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  84 +++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |  27 ++-
  .../src/commands/release/apply.command.ts          | 151 +++++++++++++++--
  .../src/commands/release/apply.reporting.ts        |  26 ++-
  .../agentplane/src/commands/release/apply.test.ts  | 187 +++++++++++++++++++++
  .../agentplane/src/commands/release/apply.types.ts |  12 +-
- 5 files changed, 495 insertions(+), 23 deletions(-)
+ 7 files changed, 648 insertions(+), 25 deletions(-)
 ```
 
 </details>

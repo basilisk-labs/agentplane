@@ -1,6 +1,8 @@
- .agentplane/tasks/202604130750-E2J835/README.md    | 142 ++++++++++++++++
+ .agentplane/tasks/202604130750-E2J835/README.md    | 186 ++++++++++++++++++++
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  84 +++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |  27 ++-
  .../src/commands/release/apply.command.ts          | 151 +++++++++++++++--
  .../src/commands/release/apply.reporting.ts        |  26 ++-
  .../agentplane/src/commands/release/apply.test.ts  | 187 +++++++++++++++++++++
  .../agentplane/src/commands/release/apply.types.ts |  12 +-
- 5 files changed, 495 insertions(+), 23 deletions(-)
+ 7 files changed, 648 insertions(+), 25 deletions(-)
