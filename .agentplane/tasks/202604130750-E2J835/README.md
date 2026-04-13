@@ -4,7 +4,7 @@ title: "Make release apply branch_pr-aware for protected-main publish"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-13T08:11:41.771Z"
+  updated_at: "2026-04-13T12:07:16.764Z"
   updated_by: "CODER"
-  note: "Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass on commit 209c5644f91c107a503f5c5e69b4410651dfa592. Evidence: 12/12 tests passed, including branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: committed release apply routing/reporting/tests for protected-main publication."
+  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000; bunx prettier --check packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts .agentplane/tasks/202604130750-E2J835/README.md .agentplane/tasks/202604130750-E2J835/pr/diffstat.txt .agentplane/tasks/202604130750-E2J835/pr/github-body.md .agentplane/tasks/202604130750-E2J835/pr/meta.json .agentplane/tasks/202604130750-E2J835/pr/review.md; bun run framework:dev:bootstrap; agentplane pr update 202604130750-E2J835 | Result: pass | Evidence: 63/63 tests passed; targeted prettier check passed; repo-local runtime rebuilt cleanly; E2J835 pr artifacts regenerated without merged-stack refs from 7SRWEX/RRD2AC/M4MN2S/S42Z30 | Scope: packages/agentplane/src/commands/pr/internal/sync.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts, .agentplane/tasks/202604130750-E2J835/**"
 commit: null
 comments:
   -
@@ -48,8 +48,20 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass on commit 209c5644f91c107a503f5c5e69b4410651dfa592. Evidence: 12/12 tests passed, including branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: committed release apply routing/reporting/tests for protected-main publication."
+  -
+    type: "verify"
+    at: "2026-04-13T11:49:30.087Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000; bun run format:check | Result: pass | Evidence: release/apply.test.ts passed 12/12, including branch_pr candidate routing and candidate push cases; Prettier reported all matched files use code style | Scope: packages/agentplane/src/commands/release/apply.command.ts, apply.reporting.ts, apply.types.ts, apply.test.ts"
+  -
+    type: "verify"
+    at: "2026-04-13T12:07:16.764Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000; bunx prettier --check packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts .agentplane/tasks/202604130750-E2J835/README.md .agentplane/tasks/202604130750-E2J835/pr/diffstat.txt .agentplane/tasks/202604130750-E2J835/pr/github-body.md .agentplane/tasks/202604130750-E2J835/pr/meta.json .agentplane/tasks/202604130750-E2J835/pr/review.md; bun run framework:dev:bootstrap; agentplane pr update 202604130750-E2J835 | Result: pass | Evidence: 63/63 tests passed; targeted prettier check passed; repo-local runtime rebuilt cleanly; E2J835 pr artifacts regenerated without merged-stack refs from 7SRWEX/RRD2AC/M4MN2S/S42Z30 | Scope: packages/agentplane/src/commands/pr/internal/sync.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts, .agentplane/tasks/202604130750-E2J835/**"
 doc_version: 3
-doc_updated_at: "2026-04-13T08:11:41.825Z"
+doc_updated_at: "2026-04-13T12:07:16.769Z"
 doc_updated_by: "CODER"
 description: "When release apply runs with --push on a non-base branch in branch_pr mode, publish the release candidate by pushing the current task branch without creating or pushing a local release tag, and record that final publish is deferred to the main-driven workflow after merge."
 sections:
@@ -82,6 +94,22 @@ sections:
     Note: Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass on commit 209c5644f91c107a503f5c5e69b4410651dfa592. Evidence: 12/12 tests passed, including branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: committed release apply routing/reporting/tests for protected-main publication.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T08:07:19.268Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-04-13T11:49:30.087Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000; bun run format:check | Result: pass | Evidence: release/apply.test.ts passed 12/12, including branch_pr candidate routing and candidate push cases; Prettier reported all matched files use code style | Scope: packages/agentplane/src/commands/release/apply.command.ts, apply.reporting.ts, apply.types.ts, apply.test.ts
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T08:11:41.825Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-04-13T12:07:16.764Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000; bunx prettier --check packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts .agentplane/tasks/202604130750-E2J835/README.md .agentplane/tasks/202604130750-E2J835/pr/diffstat.txt .agentplane/tasks/202604130750-E2J835/pr/github-body.md .agentplane/tasks/202604130750-E2J835/pr/meta.json .agentplane/tasks/202604130750-E2J835/pr/review.md; bun run framework:dev:bootstrap; agentplane pr update 202604130750-E2J835 | Result: pass | Evidence: 63/63 tests passed; targeted prettier check passed; repo-local runtime rebuilt cleanly; E2J835 pr artifacts regenerated without merged-stack refs from 7SRWEX/RRD2AC/M4MN2S/S42Z30 | Scope: packages/agentplane/src/commands/pr/internal/sync.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts, .agentplane/tasks/202604130750-E2J835/**
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T11:49:30.099Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -129,6 +157,22 @@ By: CODER
 Note: Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass on commit 209c5644f91c107a503f5c5e69b4410651dfa592. Evidence: 12/12 tests passed, including branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: committed release apply routing/reporting/tests for protected-main publication.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T08:07:19.268Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+### 2026-04-13T11:49:30.087Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000; bun run format:check | Result: pass | Evidence: release/apply.test.ts passed 12/12, including branch_pr candidate routing and candidate push cases; Prettier reported all matched files use code style | Scope: packages/agentplane/src/commands/release/apply.command.ts, apply.reporting.ts, apply.types.ts, apply.test.ts
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T08:11:41.825Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+### 2026-04-13T12:07:16.764Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000; bunx prettier --check packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts .agentplane/tasks/202604130750-E2J835/README.md .agentplane/tasks/202604130750-E2J835/pr/diffstat.txt .agentplane/tasks/202604130750-E2J835/pr/github-body.md .agentplane/tasks/202604130750-E2J835/pr/meta.json .agentplane/tasks/202604130750-E2J835/pr/review.md; bun run framework:dev:bootstrap; agentplane pr update 202604130750-E2J835 | Result: pass | Evidence: 63/63 tests passed; targeted prettier check passed; repo-local runtime rebuilt cleanly; E2J835 pr artifacts regenerated without merged-stack refs from 7SRWEX/RRD2AC/M4MN2S/S42Z30 | Scope: packages/agentplane/src/commands/pr/internal/sync.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts, .agentplane/tasks/202604130750-E2J835/**
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T11:49:30.099Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 <!-- END VERIFICATION RESULTS -->
 

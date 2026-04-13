@@ -25,7 +25,7 @@ When release apply runs with --push on a non-base branch in branch_pr mode, publ
 ### Current Status
 
 - State: ok
-- Note: Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass on commit 209c5644f91c107a503f5c5e69b4410651dfa592. Evidence: 12/12 tests passed, including branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: committed release apply routing/reporting/tests for protected-main publication.
+- Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000; bunx prettier --check packages/agentplane/src/commands/pr/internal/sync.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts .agentplane/tasks/202604130750-E2J835/README.md .agentplane/tasks/202604130750-E2J835/pr/diffstat.txt .agentplane/tasks/202604130750-E2J835/pr/github-body.md .agentplane/tasks/202604130750-E2J835/pr/meta.json .agentplane/tasks/202604130750-E2J835/pr/review.md; bun run framework:dev:bootstrap; agentplane pr update 202604130750-E2J835 | Result: pass | Evidence: 63/63 tests passed; targeted prettier check passed; repo-local runtime rebuilt cleanly; E2J835 pr artifacts regenerated without merged-stack refs from 7SRWEX/RRD2AC/M4MN2S/S42Z30 | Scope: packages/agentplane/src/commands/pr/internal/sync.ts, packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts, .agentplane/tasks/202604130750-E2J835/**
 
 ## Risks
 
@@ -45,24 +45,17 @@ When release apply runs with --push on a non-base branch in branch_pr mode, publ
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-13T08:10:24.546Z
+- Updated: 2026-04-13T11:48:56.228Z
 - Branch: task/202604130750-E2J835/release-apply-branch-pr-safe
-- Head: 209c5644f91c
+- Head: 053e1a2fad04
 
 ```text
- .agentplane/tasks/202604130750-E2J835/README.md    | 120 +++++++++++++
- .../tasks/202604130750-E2J835/pr/diffstat.txt      |   0
- .../tasks/202604130750-E2J835/pr/github-body.md    |  50 ++++++
- .../tasks/202604130750-E2J835/pr/github-title.txt  |   1 +
- .agentplane/tasks/202604130750-E2J835/pr/meta.json |  14 ++
- .../tasks/202604130750-E2J835/pr/notes.jsonl       |   0
- .agentplane/tasks/202604130750-E2J835/pr/review.md |  57 +++++++
- .../tasks/202604130750-E2J835/pr/verify.log        |   0
+ .agentplane/tasks/202604130750-E2J835/README.md    | 142 ++++++++++++++++
  .../src/commands/release/apply.command.ts          | 151 +++++++++++++++--
  .../src/commands/release/apply.reporting.ts        |  26 ++-
  .../agentplane/src/commands/release/apply.test.ts  | 187 +++++++++++++++++++++
  .../agentplane/src/commands/release/apply.types.ts |  12 +-
- 12 files changed, 595 insertions(+), 23 deletions(-)
+ 5 files changed, 495 insertions(+), 23 deletions(-)
 ```
 
 </details>
