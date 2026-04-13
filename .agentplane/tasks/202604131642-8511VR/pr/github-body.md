@@ -25,19 +25,19 @@ Scope: branch_pr active README handoff, live worktree fallback, and base-without
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-13T17:13:54.644Z
+- Updated: 2026-04-13T17:22:17.848Z
 - Branch: task/202604131642-8511VR/no-base-readme-mirror
-- Head: 6b6c6120aab2
+- Head: de132ca65e71
 
 ```text
  .agentplane/tasks/202604131642-8511VR/README.md    | 135 +++++++++++++++++++++
  .../src/cli/run-cli.core.pr-flow.integrate.test.ts |   2 +
  .../src/cli/run-cli.core.pr-flow.test.ts           |  45 +++----
  .../agentplane/src/commands/branch/work-start.ts   |  14 +++
- .../src/commands/shared/task-backend.test.ts       |  66 ++++++++++
+ .../src/commands/shared/task-backend.test.ts       |  62 ++++++++++
  .../agentplane/src/commands/shared/task-backend.ts |  36 +++++-
  .../agentplane/src/commands/task/start-ready.ts    | 105 ----------------
- 7 files changed, 270 insertions(+), 133 deletions(-)
+ 7 files changed, 266 insertions(+), 133 deletions(-)
 ```
 
 </details>
