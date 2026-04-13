@@ -1,0 +1,13 @@
+ .agentplane/tasks/202604130750-E2J835/README.md    | 120 +++++++++++++
+ .../tasks/202604130750-E2J835/pr/diffstat.txt      |   0
+ .../tasks/202604130750-E2J835/pr/github-body.md    |  50 ++++++
+ .../tasks/202604130750-E2J835/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604130750-E2J835/pr/meta.json |  14 ++
+ .../tasks/202604130750-E2J835/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604130750-E2J835/pr/review.md |  57 +++++++
+ .../tasks/202604130750-E2J835/pr/verify.log        |   0
+ .../src/commands/release/apply.command.ts          | 151 +++++++++++++++--
+ .../src/commands/release/apply.reporting.ts        |  26 ++-
+ .../agentplane/src/commands/release/apply.test.ts  | 187 +++++++++++++++++++++
+ .../agentplane/src/commands/release/apply.types.ts |  12 +-
+ 12 files changed, 595 insertions(+), 23 deletions(-)

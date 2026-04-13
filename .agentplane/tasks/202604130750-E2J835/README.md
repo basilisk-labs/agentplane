@@ -4,7 +4,7 @@ title: "Make release apply branch_pr-aware for protected-main publish"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-13T08:07:19.262Z"
+  updated_at: "2026-04-13T08:11:41.771Z"
   updated_by: "CODER"
-  note: "Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass. Evidence: 12/12 tests passed, including new branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: release apply routing/reporting/tests for protected-main publication."
+  note: "Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass on commit 209c5644f91c107a503f5c5e69b4410651dfa592. Evidence: 12/12 tests passed, including branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: committed release apply routing/reporting/tests for protected-main publication."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass. Evidence: 12/12 tests passed, including new branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: release apply routing/reporting/tests for protected-main publication."
+  -
+    type: "verify"
+    at: "2026-04-13T08:11:41.771Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass on commit 209c5644f91c107a503f5c5e69b4410651dfa592. Evidence: 12/12 tests passed, including branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: committed release apply routing/reporting/tests for protected-main publication."
 doc_version: 3
-doc_updated_at: "2026-04-13T08:07:19.268Z"
+doc_updated_at: "2026-04-13T08:11:41.825Z"
 doc_updated_by: "CODER"
 description: "When release apply runs with --push on a non-base branch in branch_pr mode, publish the release candidate by pushing the current task branch without creating or pushing a local release tag, and record that final publish is deferred to the main-driven workflow after merge."
 sections:
@@ -68,6 +74,14 @@ sections:
     Note: Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass. Evidence: 12/12 tests passed, including new branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: release apply routing/reporting/tests for protected-main publication.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T07:55:31.266Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-04-13T08:11:41.771Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass on commit 209c5644f91c107a503f5c5e69b4410651dfa592. Evidence: 12/12 tests passed, including branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: committed release apply routing/reporting/tests for protected-main publication.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T08:07:19.268Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -107,6 +121,14 @@ By: CODER
 Note: Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass. Evidence: 12/12 tests passed, including new branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: release apply routing/reporting/tests for protected-main publication.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T07:55:31.266Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+### 2026-04-13T08:11:41.771Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass on commit 209c5644f91c107a503f5c5e69b4410651dfa592. Evidence: 12/12 tests passed, including branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: committed release apply routing/reporting/tests for protected-main publication.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T08:07:19.268Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 <!-- END VERIFICATION RESULTS -->
 

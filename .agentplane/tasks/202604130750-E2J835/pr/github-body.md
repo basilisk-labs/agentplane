@@ -20,7 +20,7 @@ When release apply runs with --push on a non-base branch in branch_pr mode, publ
 ### Current Status
 
 - State: ok
-- Note: Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass. Evidence: 12/12 tests passed, including new branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: release apply routing/reporting/tests for protected-main publication.
+- Note: Command: bun x vitest run packages/agentplane/src/commands/release/apply.test.ts. Result: pass on commit 209c5644f91c107a503f5c5e69b4410651dfa592. Evidence: 12/12 tests passed, including branch_pr candidate regressions that skip local tag creation and push only HEAD on task branches. Scope: committed release apply routing/reporting/tests for protected-main publication.
 
 ## Risks
 
@@ -39,12 +39,24 @@ When release apply runs with --push on a non-base branch in branch_pr mode, publ
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-13T07:55:31.342Z
+- Updated: 2026-04-13T08:10:24.546Z
 - Branch: task/202604130750-E2J835/release-apply-branch-pr-safe
-- Head: d5d99da3dbf4
+- Head: 209c5644f91c
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604130750-E2J835/README.md    | 120 +++++++++++++
+ .../tasks/202604130750-E2J835/pr/diffstat.txt      |   0
+ .../tasks/202604130750-E2J835/pr/github-body.md    |  50 ++++++
+ .../tasks/202604130750-E2J835/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604130750-E2J835/pr/meta.json |  14 ++
+ .../tasks/202604130750-E2J835/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604130750-E2J835/pr/review.md |  57 +++++++
+ .../tasks/202604130750-E2J835/pr/verify.log        |   0
+ .../src/commands/release/apply.command.ts          | 151 +++++++++++++++--
+ .../src/commands/release/apply.reporting.ts        |  26 ++-
+ .../agentplane/src/commands/release/apply.test.ts  | 187 +++++++++++++++++++++
+ .../agentplane/src/commands/release/apply.types.ts |  12 +-
+ 12 files changed, 595 insertions(+), 23 deletions(-)
 ```
 
 </details>
