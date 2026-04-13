@@ -112,6 +112,8 @@ describe("bootstrap-framework-dev script", () => {
       "bun run --filter=agentplane build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
+    const shim = await readFile(path.join(repoRoot, ".agentplane", "bin", "agentplane"), "utf8");
+    expect(shim).toContain("agentplane-hook-shim");
   });
 
   it("reuses common-root dependencies and recipes for a fresh worktree checkout", async () => {

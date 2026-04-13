@@ -11,7 +11,7 @@ import { CliError } from "../../../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/write-if-changed.js";
 import { execFileAsync, gitEnv } from "../../shared/git.js";
 import { gitDiffStat } from "../../shared/git-diff.js";
-import { gitCurrentBranch } from "../../shared/git-ops.js";
+import { gitBranchUpstream, gitCurrentBranch } from "../../shared/git-ops.js";
 import { parseTaskIdFromBranch } from "../../shared/git-worktree.js";
 import {
   isTransientGhTransportError,
@@ -345,13 +345,36 @@ async function computePrDiffstat(opts: {
   branch: string;
   prDir: string;
 }): Promise<string> {
+  const diffBaseRef = await resolvePrDiffBaseRef({
+    gitRoot: opts.gitRoot,
+    baseBranch: opts.baseBranch,
+  });
   try {
-    return await gitDiffStat(opts.gitRoot, opts.baseBranch, opts.branch, {
+    return await gitDiffStat(opts.gitRoot, diffBaseRef, opts.branch, {
       excludePaths: [path.relative(opts.gitRoot, opts.prDir)],
     });
   } catch (err) {
     if (!isUnknownRevisionError(err)) throw err;
     return "";
+  }
+}
+
+async function resolvePrDiffBaseRef(opts: {
+  gitRoot: string;
+  baseBranch: string;
+}): Promise<string> {
+  const upstreamRef = await gitBranchUpstream(opts.gitRoot, opts.baseBranch);
+  const candidate = upstreamRef?.trim() ?? "";
+  if (!candidate) return opts.baseBranch;
+  try {
+    const { stdout } = await execFileAsync("git", ["rev-parse", "--verify", candidate], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    });
+    return stdout.trim() ? candidate : opts.baseBranch;
+  } catch (err) {
+    if (!isUnknownRevisionError(err)) throw err;
+    return opts.baseBranch;
   }
 }
 

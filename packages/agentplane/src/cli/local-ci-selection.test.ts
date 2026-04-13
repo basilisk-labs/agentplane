@@ -16,6 +16,7 @@ type FastCiPlan =
         | "workflow"
         | "cli-help"
         | "cli-core"
+        | "pr"
         | "cli-runtime"
         | "release"
         | "upgrade"
@@ -198,6 +199,33 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts",
     );
+  });
+
+  it("routes isolated PR command paths to the pr bucket", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/src/commands/pr/internal/sync.ts"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("pr");
+    expect(plan.reason).toBe("pr_paths_only");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/commands/pr/input-validation.test.ts",
+    );
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts");
+  });
+
+  it("ignores task artifacts when routing PR bucket changes", () => {
+    const plan = selectFastCiPlan([
+      ".agentplane/tasks/202604130750-E2J835/README.md",
+      ".agentplane/tasks/202604130750-E2J835/pr/meta.json",
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts",
+      "packages/agentplane/src/commands/pr/internal/sync.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("pr");
+    expect(plan.reason).toBe("pr_paths_only");
+    expect(plan.lintTargets).toEqual([
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts",
+      "packages/agentplane/src/commands/pr/internal/sync.ts",
+    ]);
   });
 
   it("routes split branch-meta suites to the cli-core bucket", () => {

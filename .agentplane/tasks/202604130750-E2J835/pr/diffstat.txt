@@ -1,0 +1,17 @@
+ .agentplane/tasks/202604130750-E2J835/README.md    | 252 +++++++++++++++++++++
+ .../src/cli/bootstrap-framework-dev-script.test.ts |   2 +
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  28 +++
+ .../cli/run-cli.core.guard.commit-wrapper.test.ts  |  15 +-
+ .../agentplane/src/cli/run-cli.core.hooks.test.ts  |   4 -
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  84 +++++++
+ .../src/cli/run-cli.core.pr-flow.test.ts           |  15 ++
+ .../agentplane/src/commands/branch/work-start.ts   |  50 +++-
+ packages/agentplane/src/commands/hooks/index.ts    |  16 +-
+ .../agentplane/src/commands/pr/internal/sync.ts    |  27 ++-
+ .../src/commands/release/apply.command.ts          | 151 ++++++++++--
+ .../src/commands/release/apply.reporting.ts        |  26 ++-
+ .../agentplane/src/commands/release/apply.test.ts  | 187 +++++++++++++++
+ .../agentplane/src/commands/release/apply.types.ts |  12 +-
+ scripts/bootstrap-framework-dev.mjs                |   9 +-
+ scripts/lib/local-ci-selection.mjs                 |  81 +++++--
+ 16 files changed, 887 insertions(+), 72 deletions(-)

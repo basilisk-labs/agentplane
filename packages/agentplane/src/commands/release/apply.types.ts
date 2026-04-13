@@ -17,6 +17,14 @@ export type ReleaseVersionPlan = {
   bump: BumpKind;
 };
 
+export type ReleaseApplyRoute = {
+  kind: "direct_release" | "branch_pr_candidate";
+  workflow_mode: "direct" | "branch_pr";
+  current_branch: string;
+  base_branch: string | null;
+  final_publish_deferred: boolean;
+};
+
 export type PlanChange = {
   hash: string;
   authorDateIso: string;
@@ -39,5 +47,7 @@ export type ReleaseApplyReport = {
     npm_version_available_checked: boolean;
   };
   commit: { hash: string; subject: string } | null;
-  push: { requested: boolean; remote: string; performed: boolean };
+  route: ReleaseApplyRoute;
+  tag: { name: string; created: boolean; pushed: boolean };
+  push: { requested: boolean; remote: string; performed: boolean; refs: string[] };
 };
