@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604130750-E2J835/release-apply-branch-pr-safe",
   "created_at": "2026-04-13T07:55:31.342Z",
-  "head_sha": "e63e329df6da4fa3da5073591a9672ce9cd9fe2c",
+  "head_sha": "1db933dc86fd8b8280cfa51c651a7c70b22ffc1e",
   "last_verified_at": "2026-04-13T12:50:25.535Z",
   "last_verified_sha": "efd6a93cc7cb5fac548b8772249af4f56889c48e",
+  "merge_commit": "b8846bc0527954ea11327294896317471444bb81",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-13T13:00:02.873Z",
   "pr_number": 270,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/270",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604130750-E2J835",
-  "updated_at": "2026-04-13T12:50:42.953Z",
+  "updated_at": "2026-04-13T13:00:02.873Z",
   "verify": {
     "status": "pass"
   }

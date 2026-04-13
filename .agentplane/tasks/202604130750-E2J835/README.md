@@ -1,10 +1,11 @@
 ---
 id: "202604130750-E2J835"
 title: "Make release apply branch_pr-aware for protected-main publish"
-status: "DOING"
+result_summary: "integrate: squash task/202604130750-E2J835/release-apply-branch-pr-safe"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-13T12:50:25.535Z"
   updated_by: "CODER"
   note: "- Fixed the hosted Significant File Coverage regression by updating commit-wrapper coverage expectations for the artifact follow-up commit produced by agentplane commit. - Verified with: bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts -t \"commit wrapper lets --allow-tasks cover a non-README active task artifact without a duplicate explicit prefix\" --hookTimeout 60000 --testTimeout 60000 - Verified with: bun run test:significant-coverage"
-commit: null
+commit:
+  hash: "b8846bc0527954ea11327294896317471444bb81"
+  message: "🧩 E2J835 integrate: release/workflow: Make release apply branch_pr-aware for protected-main publish"
 comments:
   -
     author: "CODER"
     body: "Start: implement branch_pr-safe release apply behavior for non-base branches, keep final publish deferred to main automation after merge, and validate the new candidate push/reporting path with focused release tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604130750-E2J835/pr."
 events:
   -
     type: "status"
@@ -78,9 +84,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "- Fixed the hosted Significant File Coverage regression by updating commit-wrapper coverage expectations for the artifact follow-up commit produced by agentplane commit. - Verified with: bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts -t \"commit wrapper lets --allow-tasks cover a non-README active task artifact without a duplicate explicit prefix\" --hookTimeout 60000 --testTimeout 60000 - Verified with: bun run test:significant-coverage"
+  -
+    type: "status"
+    at: "2026-04-13T13:00:03.074Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604130750-E2J835/pr."
 doc_version: 3
-doc_updated_at: "2026-04-13T12:50:25.569Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T13:00:03.086Z"
+doc_updated_by: "INTEGRATOR"
 description: "When release apply runs with --push on a non-base branch in branch_pr mode, publish the release candidate by pushing the current task branch without creating or pushing a local release tag, and record that final publish is deferred to the main-driven workflow after merge."
 sections:
   Summary: |-
