@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604131109-M4MN2S/suppress-false-pr-drift",
   "created_at": "2026-04-13T11:09:50.405Z",
-  "head_sha": "3413a05ba1da8aa531767fe239ecf8274d97a2f1",
+  "head_sha": "b9ccf8c19b6995f01aa327a477e4eb25c9fe388f",
   "last_verified_at": "2026-04-13T11:16:42.372Z",
   "last_verified_sha": "3413a05ba1da8aa531767fe239ecf8274d97a2f1",
+  "merge_commit": "d26bcdd86e48903ecdb1f778ff2c7ea7720cdb7b",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-13T11:18:10.635Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604131109-M4MN2S",
-  "updated_at": "2026-04-13T11:16:13.179Z",
+  "updated_at": "2026-04-13T11:18:10.635Z",
   "verify": {
     "status": "pass"
   }

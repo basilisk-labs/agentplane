@@ -1,10 +1,11 @@
 ---
 id: "202604131109-M4MN2S"
 title: "Suppress non-actionable DONE branch_pr PR artifact warnings"
-status: "DOING"
+result_summary: "integrate: squash task/202604131109-M4MN2S/suppress-false-pr-drift"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-13T11:16:42.372Z"
   updated_by: "CODER"
   note: "Doctor no longer warns on non-actionable DONE branch_pr duplicate/stacked records, and historical PR artifact drift was reconciled on the release branch."
-commit: null
+commit:
+  hash: "d26bcdd86e48903ecdb1f778ff2c7ea7720cdb7b"
+  message: "🧩 M4MN2S integrate: workflow: Suppress non-actionable DONE branch_pr PR artifact warnings"
 comments:
   -
     author: "CODER"
     body: "Start: classify the four remaining DONE branch_pr PR-artifact warnings, patch doctor to ignore non-actionable duplicate/stacked records, then persist normalized history so doctor is quiet for the next release."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604131109-M4MN2S/pr."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Doctor no longer warns on non-actionable DONE branch_pr duplicate/stacked records, and historical PR artifact drift was reconciled on the release branch."
+  -
+    type: "status"
+    at: "2026-04-13T11:18:10.703Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604131109-M4MN2S/pr."
 doc_version: 3
-doc_updated_at: "2026-04-13T11:16:42.391Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T11:18:10.709Z"
+doc_updated_by: "INTEGRATOR"
 description: "Persist reconciled branch_pr PR artifact metadata on base and stop doctor from warning on stacked/duplicate DONE tasks that never own a distinct mergeable PR."
 sections:
   Summary: |-

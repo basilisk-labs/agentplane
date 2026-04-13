@@ -46,7 +46,14 @@
  .agentplane/tasks/202604100827-QG5AN4/pr/meta.json |   6 +-
  .agentplane/tasks/202604101009-36KKA9/pr/meta.json |   6 +-
  .agentplane/tasks/202604130818-7SRWEX/pr/meta.json |   6 +-
- .agentplane/tasks/202604131109-M4MN2S/README.md    |  94 ++++++++++++++
+ .agentplane/tasks/202604131109-M4MN2S/README.md    | 124 ++++++++++++++++++
+ .../tasks/202604131109-M4MN2S/pr/diffstat.txt      |  52 ++++++++
+ .../tasks/202604131109-M4MN2S/pr/github-body.md    |  84 ++++++++++++
+ .../tasks/202604131109-M4MN2S/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604131109-M4MN2S/pr/meta.json |  14 ++
+ .../tasks/202604131109-M4MN2S/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604131109-M4MN2S/pr/review.md | 108 ++++++++++++++++
+ .../tasks/202604131109-M4MN2S/pr/verify.log        |   0
  .../agentplane/src/commands/doctor.command.test.ts | 141 +++++++++++++++++++++
  .../src/commands/task/hosted-merge-sync.ts         |  16 ++-
- 51 files changed, 488 insertions(+), 71 deletions(-)
+ 58 files changed, 777 insertions(+), 71 deletions(-)
