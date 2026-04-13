@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604131456-JEQT5N/auto-prune-task-worktree",
   "created_at": "2026-04-13T14:57:20.049Z",
-  "head_sha": "a2a6f4a56b50d54e2ff0c018fa07e275aa4cfdf0",
+  "head_sha": "9fadf8f3405030f793bcc8275c8902585b48802c",
   "last_verified_at": "2026-04-13T15:06:38.910Z",
   "last_verified_sha": "8f96bf8fa03e19e94651ac290468626e06f30573",
+  "merge_commit": "3a2343a10f6cd122314efcf59cef1c8efb459f34",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-13T15:12:14Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604131456-JEQT5N",
-  "updated_at": "2026-04-13T15:07:30.556Z",
+  "updated_at": "2026-04-13T15:12:14Z",
   "verify": {
     "status": "pass"
   }

@@ -1,10 +1,11 @@
 ---
 id: "202604131456-JEQT5N"
 title: "Auto-prune merged task worktrees and branches after integrate"
-status: "DOING"
+result_summary: "Merged via PR #281."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-13T15:06:38.910Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts; bunx eslint packages/agentplane/src/commands/shared/merged-branch-cleanup.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/internal/cleanup.ts packages/agentplane/src/commands/task/hosted-close-pr.command.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts; bunx prettier --check packages/agentplane/src/commands/shared/merged-branch-cleanup.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/internal/cleanup.ts packages/agentplane/src/commands/task/hosted-close-pr.command.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts. Result: pass. Evidence: integrate still delegates through the cleanup hook, hosted-close-pr now auto-prunes the merged local task branch/worktree when safe, and the hosted-close integration regression confirms the branch disappears without breaking PR reuse/fallback flows. Scope: packages/agentplane/src/commands/shared/merged-branch-cleanup.ts, packages/agentplane/src/commands/pr/integrate/internal/cleanup.ts, packages/agentplane/src/commands/task/hosted-close-pr.command.ts, packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts"
-commit: null
+commit:
+  hash: "3a2343a10f6cd122314efcf59cef1c8efb459f34"
+  message: "git/workflow: Auto-prune merged task worktrees and branches after integrate (JEQT5N)"
 comments:
   -
     author: "CODER"
     body: "Start: inspect branch_pr integrate and finish lifecycle to auto-prune merged task worktrees and stale local task branches without touching active checkouts or detached external worktrees."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #281 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts; bunx eslint packages/agentplane/src/commands/shared/merged-branch-cleanup.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/internal/cleanup.ts packages/agentplane/src/commands/task/hosted-close-pr.command.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts; bunx prettier --check packages/agentplane/src/commands/shared/merged-branch-cleanup.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts packages/agentplane/src/commands/pr/integrate/internal/cleanup.ts packages/agentplane/src/commands/task/hosted-close-pr.command.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts. Result: pass. Evidence: integrate still delegates through the cleanup hook, hosted-close-pr now auto-prunes the merged local task branch/worktree when safe, and the hosted-close integration regression confirms the branch disappears without breaking PR reuse/fallback flows. Scope: packages/agentplane/src/commands/shared/merged-branch-cleanup.ts, packages/agentplane/src/commands/pr/integrate/internal/cleanup.ts, packages/agentplane/src/commands/task/hosted-close-pr.command.ts, packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts"
+  -
+    type: "status"
+    at: "2026-04-13T15:12:57.465Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #281 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-13T15:06:38.914Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T15:12:57.471Z"
+doc_updated_by: "INTEGRATOR"
 description: "After successful branch_pr integration and closure, automatically remove the task worktree and stale local task branch when safe, so release waves do not require manual local cleanup."
 sections:
   Summary: |-
