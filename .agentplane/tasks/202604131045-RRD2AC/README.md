@@ -1,10 +1,11 @@
 ---
 id: "202604131045-RRD2AC"
 title: "Reconcile local integrate PR artifacts to MERGED on base"
-status: "DOING"
+result_summary: "integrate: squash task/202604131045-RRD2AC/local-pr-meta-reconcile"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-13T11:00:01.301Z"
   updated_by: "CODER"
   note: "Focused integrate/normalize/doctor regressions passed after reconciling local MERGED PR artifact flow."
-commit: null
+commit:
+  hash: "5ad10f62c746d8a01add7227130695a613e8db1e"
+  message: "🧩 RRD2AC integrate: workflow: Reconcile local integrate PR artifacts to MERGED on base"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the remaining local integrate PR artifact drift, then patch integrate/reconcile so local branch_pr shipment lands in canonical MERGED PR state without manual normalize recovery."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604131045-RRD2AC/pr."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused integrate/normalize/doctor regressions passed after reconciling local MERGED PR artifact flow."
+  -
+    type: "status"
+    at: "2026-04-13T11:03:06.246Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604131045-RRD2AC/pr."
 doc_version: 3
-doc_updated_at: "2026-04-13T11:00:01.328Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T11:03:06.258Z"
+doc_updated_by: "INTEGRATOR"
 description: "Eliminate remaining branch_pr release friction where local integrate leaves DONE tasks with OPEN or unmerged pr/meta state, causing doctor warnings and manual reconciliation before the next release."
 sections:
   Summary: |-

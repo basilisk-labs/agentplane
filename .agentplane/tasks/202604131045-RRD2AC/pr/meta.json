@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604131045-RRD2AC/local-pr-meta-reconcile",
   "created_at": "2026-04-13T10:46:31.996Z",
-  "head_sha": "ae4734bcb82e3dc562c628f4f3332c4a5b4d5a42",
+  "head_sha": "8d1247bbda3e0d8885fd145c610d20a2dddbf6be",
   "last_verified_at": "2026-04-13T11:00:01.301Z",
   "last_verified_sha": "ae4734bcb82e3dc562c628f4f3332c4a5b4d5a42",
+  "merge_commit": "5ad10f62c746d8a01add7227130695a613e8db1e",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-13T11:03:06.116Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604131045-RRD2AC",
-  "updated_at": "2026-04-13T10:59:22.562Z",
+  "updated_at": "2026-04-13T11:03:06.116Z",
   "verify": {
     "status": "pass"
   }
