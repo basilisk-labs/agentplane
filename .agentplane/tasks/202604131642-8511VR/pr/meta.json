@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604131642-8511VR/no-base-readme-mirror",
   "created_at": "2026-04-13T17:10:05.869Z",
-  "head_sha": "de132ca65e71d315d93b417985f071d8b22ddd2d",
+  "head_sha": "c32e50688a0f6401bb98fd917dcefbfe98750849",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "70116b09bce23aa9626b0781151f21957376f53f",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-13T17:44:39Z",
   "pr_number": 286,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/286",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604131642-8511VR",
-  "updated_at": "2026-04-13T17:32:13.310Z",
+  "updated_at": "2026-04-13T17:44:39Z",
   "verify": {
     "status": "skipped"
   }

@@ -1,10 +1,11 @@
 ---
 id: "202604131642-8511VR"
 title: "Stop mirroring active task README into base checkout"
-status: "DOING"
+result_summary: "Merged via PR #286."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
     Result: pass
     Evidence: 44 tests passed across task-backend, branch_pr work-start, start-ready, and integrate flows after framework:dev:bootstrap.
     Scope: branch_pr active README handoff, live worktree fallback, and base-without-readme integrate resolution.
-commit: null
+commit:
+  hash: "70116b09bce23aa9626b0781151f21957376f53f"
+  message: "Stop mirroring active task README into base checkout (8511VR) (#286)"
 comments:
   -
     author: "CODER"
     body: "Start: remove branch_pr base-side README mirroring for active tasks, rely on branch snapshots instead, and verify that worktree execution no longer leaves pull-blocking README collisions on main."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #286 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
       Result: pass
       Evidence: 44 tests passed across task-backend, branch_pr work-start, start-ready, and integrate flows after framework:dev:bootstrap.
       Scope: branch_pr active README handoff, live worktree fallback, and base-without-readme integrate resolution.
+  -
+    type: "status"
+    at: "2026-04-13T17:45:09.677Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #286 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-13T17:09:06.037Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T17:45:09.682Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove branch_pr base-side README mirroring for active tasks so worktree execution does not leave untracked task snapshots on main that later block git pull after merge."
 sections:
   Summary: |-
