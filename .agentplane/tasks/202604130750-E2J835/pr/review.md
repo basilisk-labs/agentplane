@@ -45,27 +45,28 @@ When release apply runs with --push on a non-base branch in branch_pr mode, publ
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-13T12:40:12.133Z
+- Updated: 2026-04-13T12:50:42.953Z
 - Branch: task/202604130750-E2J835/release-apply-branch-pr-safe
-- Head: efd6a93cc7cb
+- Head: e63e329df6da
 
 ```text
- .agentplane/tasks/202604130750-E2J835/README.md    | 230 +++++++++++++++++++++
+ .agentplane/tasks/202604130750-E2J835/README.md    | 252 +++++++++++++++++++++
  .../src/cli/bootstrap-framework-dev-script.test.ts |   2 +
  .../agentplane/src/cli/local-ci-selection.test.ts  |  28 +++
+ .../cli/run-cli.core.guard.commit-wrapper.test.ts  |  15 +-
  .../agentplane/src/cli/run-cli.core.hooks.test.ts  |   4 -
- .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  84 ++++++++
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  84 +++++++
  .../src/cli/run-cli.core.pr-flow.test.ts           |  15 ++
- .../agentplane/src/commands/branch/work-start.ts   |  50 ++++-
+ .../agentplane/src/commands/branch/work-start.ts   |  50 +++-
  packages/agentplane/src/commands/hooks/index.ts    |  16 +-
  .../agentplane/src/commands/pr/internal/sync.ts    |  27 ++-
- .../src/commands/release/apply.command.ts          | 151 ++++++++++++--
+ .../src/commands/release/apply.command.ts          | 151 ++++++++++--
  .../src/commands/release/apply.reporting.ts        |  26 ++-
- .../agentplane/src/commands/release/apply.test.ts  | 187 +++++++++++++++++
+ .../agentplane/src/commands/release/apply.test.ts  | 187 +++++++++++++++
  .../agentplane/src/commands/release/apply.types.ts |  12 +-
  scripts/bootstrap-framework-dev.mjs                |   9 +-
- scripts/lib/local-ci-selection.mjs                 |  81 +++++---
- 15 files changed, 853 insertions(+), 69 deletions(-)
+ scripts/lib/local-ci-selection.mjs                 |  81 +++++--
+ 16 files changed, 887 insertions(+), 72 deletions(-)
 ```
 
 </details>
