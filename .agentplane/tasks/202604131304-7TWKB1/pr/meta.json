@@ -1,0 +1,19 @@
+{
+  "base": "main",
+  "branch": "task/202604131304-7TWKB1/publish-april13-release-hardening-wave",
+  "created_at": "2026-04-13T13:10:26.384Z",
+  "head_sha": "9c33eda496031f9cd6511e6e8abfa13e9e53e716",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "dd9fac1a3bb38dcdbcfef0823507713f0a66f191",
+  "merged_at": "2026-04-13T13:18:18Z",
+  "pr_number": 273,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/273",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604131304-7TWKB1",
+  "updated_at": "2026-04-13T13:19:44.924Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
