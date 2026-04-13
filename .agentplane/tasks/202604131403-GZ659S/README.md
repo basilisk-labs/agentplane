@@ -1,10 +1,11 @@
 ---
 id: "202604131403-GZ659S"
 title: "Skip Core CI for task-artifact-only hosted closure PRs"
-status: "DOING"
+result_summary: "Merged via PR #277."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
     Command: bunx vitest run packages/agentplane/src/commands/release/ci-workflow-contract.test.ts packages/agentplane/src/cli/check-github-protection-contract-script.test.ts | Result: pass | Evidence: 2 test files passed, 6 tests passed. | Scope: verifies CI/release contract coverage and GitHub protection expectations still hold.
     Command: bunx eslint packages/agentplane/src/commands/release/ci-workflow-contract.test.ts | Result: pass | Evidence: exited clean with no findings. | Scope: verifies the touched TypeScript contract test stays lint-clean.
     Command: git worktree list --porcelain && git branch -r --list 'origin/task/202604131329-KHYHBT*' 'origin/task-close/202604131329-KHYHBT*' | Result: pass | Evidence: obsolete KHYHBT task worktree removed locally and no matching remote hosted-close branches remain. | Scope: verifies the stale release-hardening cleanup tail for the already-merged hosted-close task.
-commit: null
+commit:
+  hash: "0d853ff39b9044e5bed68ba1d9fe8011c9df6a4c"
+  message: "release: Skip Core CI for task-artifact-only hosted closure PRs (GZ659S) (#277)"
 comments:
   -
     author: "CODER"
     body: "Start: narrow Core CI so task-artifact-only hosted closure PRs do not pay the full test and test-windows cost, then clean the obsolete local release-hardening branches/worktrees left behind by the hosted-close rollout."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #277 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
       Command: bunx vitest run packages/agentplane/src/commands/release/ci-workflow-contract.test.ts packages/agentplane/src/cli/check-github-protection-contract-script.test.ts | Result: pass | Evidence: 2 test files passed, 6 tests passed. | Scope: verifies CI/release contract coverage and GitHub protection expectations still hold.
       Command: bunx eslint packages/agentplane/src/commands/release/ci-workflow-contract.test.ts | Result: pass | Evidence: exited clean with no findings. | Scope: verifies the touched TypeScript contract test stays lint-clean.
       Command: git worktree list --porcelain && git branch -r --list 'origin/task/202604131329-KHYHBT*' 'origin/task-close/202604131329-KHYHBT*' | Result: pass | Evidence: obsolete KHYHBT task worktree removed locally and no matching remote hosted-close branches remain. | Scope: verifies the stale release-hardening cleanup tail for the already-merged hosted-close task.
+  -
+    type: "status"
+    at: "2026-04-13T14:27:00.640Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #277 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-13T14:09:38.883Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T14:27:00.645Z"
+doc_updated_by: "INTEGRATOR"
 description: "Closure PRs produced by hosted branch_pr closeout currently touch only tracked task artifacts, but Core CI still classifies .agentplane task changes as core and reruns the full test/test-windows gate. Exclude task-artifact-only close PRs from heavy Core CI while keeping protection contracts intact, then reconcile the local release-hardening worktrees/branches that are now obsolete after the hosted-close fix landed."
 sections:
   Summary: |-
