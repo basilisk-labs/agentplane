@@ -59,6 +59,7 @@ async function warnOnStaleVerifyAfterUpdate(opts: {
   const freshness = await assessPrArtifactFreshness({
     gitRoot: opts.resolved.gitRoot,
     workflowDir: path.join(opts.resolved.gitRoot, config.paths.workflow_dir),
+    tasksPath: config.paths.tasks_path,
     taskId: opts.taskId,
     branchHeadSha,
     metaHeadSha: opts.meta.head_sha ?? null,

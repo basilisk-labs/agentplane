@@ -1,7 +1,32 @@
 import { warnMessage } from "../../cli/output.js";
 import { normalizeGhTransportError } from "../shared/gh-transport.js";
+import { execFileAsync, gitEnv } from "../shared/git.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
+import { isTaskLocalOnlyAdvance } from "./task-local-freshness.js";
+
+function isUnknownRevisionError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
+  return (
+    /unknown revision or path not in the working tree/i.test(message) ||
+    /bad revision/i.test(message) ||
+    /ambiguous argument/i.test(message)
+  );
+}
+
+async function resolveHeadParent(gitRoot: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD^"], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    const parent = stdout.trim();
+    return parent.length > 0 ? parent : null;
+  } catch (err) {
+    if (!isUnknownRevisionError(err)) throw err;
+    return null;
+  }
+}
 
 export async function refreshBranchPrArtifactsAfterTaskCommit(opts: {
   ctx: CommandContext;
@@ -13,6 +38,21 @@ export async function refreshBranchPrArtifactsAfterTaskCommit(opts: {
   if (opts.ctx.config.workflow_mode !== "branch_pr") return;
 
   try {
+    const gitRoot = opts.ctx.resolvedProject.gitRoot;
+    const headParent = await resolveHeadParent(gitRoot);
+    if (
+      await isTaskLocalOnlyAdvance({
+        gitRoot,
+        workflowDir: opts.ctx.config.paths.workflow_dir,
+        tasksPath: opts.ctx.config.paths.tasks_path,
+        taskId: opts.taskId,
+        fromRef: headParent,
+        toRef: "HEAD",
+      })
+    ) {
+      return;
+    }
+
     await ensurePrArtifactsSynced({
       ctx: opts.ctx,
       cwd: opts.cwd,

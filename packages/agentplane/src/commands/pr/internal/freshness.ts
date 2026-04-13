@@ -18,6 +18,7 @@ export type PrArtifactFreshness = {
 export async function assessPrArtifactFreshness(opts: {
   gitRoot: string;
   workflowDir: string;
+  tasksPath?: string;
   taskId: string;
   branchHeadSha: string;
   metaHeadSha: unknown;
@@ -37,6 +38,7 @@ export async function assessPrArtifactFreshness(opts: {
     (await isTaskLocalOnlyAdvance({
       gitRoot: opts.gitRoot,
       workflowDir: opts.workflowDir,
+      tasksPath: opts.tasksPath,
       taskId: opts.taskId,
       fromRef: metaHeadSha,
       toRef: opts.branchHeadSha,
@@ -58,6 +60,7 @@ export async function assessPrArtifactFreshness(opts: {
       (await isTaskLocalOnlyAdvance({
         gitRoot: opts.gitRoot,
         workflowDir: opts.workflowDir,
+        tasksPath: opts.tasksPath,
         taskId: opts.taskId,
         fromRef: metaLastVerifiedSha,
         toRef: opts.branchHeadSha,

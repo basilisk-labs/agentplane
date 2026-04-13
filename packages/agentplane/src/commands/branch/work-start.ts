@@ -13,11 +13,16 @@ import { execFileAsync, gitEnv } from "../shared/git.js";
 import { gitAheadBehind } from "../shared/git-diff.js";
 import { gitBranchExists, gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
 import { isPathWithin } from "../shared/path.js";
+import { resolveRuntimeSourceInfo } from "../../shared/runtime-source.js";
 import {
   loadBackendTask,
   loadCommandContext,
   type CommandContext,
 } from "../shared/task-backend.js";
+
+function isPresentString(value: string | null): value is string {
+  return value !== null;
+}
 import { ensurePlanApprovedIfRequired } from "../task/shared.js";
 
 import { validateWorkAgent, validateWorkSlug } from "./internal/work-validate.js";
@@ -91,7 +96,18 @@ async function materializeRepoLocalDistForWorktree(opts: {
   repoRoot: string;
   worktreePath: string;
 }): Promise<void> {
-  const sourceRoots = [path.resolve(opts.repoRoot), path.resolve(process.cwd())];
+  const runtimeSource = resolveRuntimeSourceInfo({ cwd: process.cwd() });
+  const sourceRoots = [
+    ...new Set(
+      [
+        path.resolve(opts.repoRoot),
+        path.resolve(process.cwd()),
+        runtimeSource.agentplane.packageRoot
+          ? path.resolve(runtimeSource.agentplane.packageRoot, "..", "..")
+          : null,
+      ].filter((value): value is string => isPresentString(value)),
+    ),
+  ];
   const copyTargets = [
     ["packages/core/dist", "packages/core/dist"],
     ["packages/agentplane/dist", "packages/agentplane/dist"],
@@ -118,12 +134,19 @@ async function materializeRepoLocalDistForWorktree(opts: {
 }
 
 async function linkDirectoryIntoWorktree(opts: {
-  repoRoot: string;
+  sourceRoots: string[];
   worktreePath: string;
   relativePath: string;
 }): Promise<boolean> {
-  const sourcePath = path.join(opts.repoRoot, opts.relativePath);
-  if (!(await fileExists(sourcePath))) return false;
+  let sourcePath = "";
+  for (const sourceRoot of opts.sourceRoots) {
+    const candidate = path.join(sourceRoot, opts.relativePath);
+    if (await fileExists(candidate)) {
+      sourcePath = candidate;
+      break;
+    }
+  }
+  if (!sourcePath) return false;
 
   const targetPath = path.join(opts.worktreePath, opts.relativePath);
   if (await fileExists(targetPath)) return false;
@@ -137,6 +160,18 @@ async function materializeRepoLocalInstallLayoutForWorktree(opts: {
   repoRoot: string;
   worktreePath: string;
 }): Promise<void> {
+  const runtimeSource = resolveRuntimeSourceInfo({ cwd: process.cwd() });
+  const sourceRoots = [
+    ...new Set(
+      [
+        path.resolve(opts.repoRoot),
+        path.resolve(process.cwd()),
+        runtimeSource.agentplane.packageRoot
+          ? path.resolve(runtimeSource.agentplane.packageRoot, "..", "..")
+          : null,
+      ].filter((value): value is string => isPresentString(value)),
+    ),
+  ];
   const linkTargets = [
     "node_modules",
     path.join("packages", "core", "node_modules"),
@@ -145,7 +180,7 @@ async function materializeRepoLocalInstallLayoutForWorktree(opts: {
   ];
   for (const relativePath of linkTargets) {
     await linkDirectoryIntoWorktree({
-      repoRoot: opts.repoRoot,
+      sourceRoots,
       worktreePath: opts.worktreePath,
       relativePath,
     });
