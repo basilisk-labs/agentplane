@@ -32,9 +32,9 @@ describe("Core CI workflow contract", () => {
   it("keeps task-artifact-only diffs out of the heavy core gate", async () => {
     const filters = await readFile(PATH_FILTERS_PATH, "utf8");
 
-    expect(filters).toContain('.agentplane/**');
-    expect(filters).toContain('!.agentplane/tasks/**');
-    expect(filters).toContain('.github/workflows/**');
-    expect(filters).toContain('.github/path-filters.yml');
+    expect(filters).toContain(".agentplane/**");
+    expect(filters).toContain("!.agentplane/tasks/**");
+    expect(filters).toContain(".github/workflows/**");
+    expect(filters).toContain(".github/path-filters.yml");
   });
 });
