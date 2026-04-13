@@ -1,0 +1,1 @@
+release: Skip Core CI for task-artifact-only hosted closure PRs (GZ659S)

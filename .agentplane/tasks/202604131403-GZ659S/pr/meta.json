@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604131403-GZ659S/hosted-close-ci-skip",
+  "created_at": "2026-04-13T14:06:53.021Z",
+  "head_sha": "eeab0b9be107c61300279a50cc5856c0287a0c1e",
+  "last_verified_at": "2026-04-13T14:09:38.880Z",
+  "last_verified_sha": "eeab0b9be107c61300279a50cc5856c0287a0c1e",
+  "schema_version": 1,
+  "task_id": "202604131403-GZ659S",
+  "updated_at": "2026-04-13T14:06:53.021Z",
+  "verify": {
+    "status": "pass"
+  }
+}

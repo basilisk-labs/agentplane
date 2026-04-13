@@ -5,6 +5,7 @@ core:
   - "!scripts/generate-website-docs.mjs"
   - "!scripts/check-design-language.mjs"
   - ".agentplane/**"
+  - "!.agentplane/tasks/**"
   - "package.json"
   - "bun.lock"
   - "tsconfig*.json"

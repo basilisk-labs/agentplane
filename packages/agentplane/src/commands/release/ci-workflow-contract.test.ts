@@ -4,6 +4,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const CI_WORKFLOW_PATH = path.resolve(process.cwd(), ".github/workflows/ci.yml");
+const PATH_FILTERS_PATH = path.resolve(process.cwd(), ".github/path-filters.yml");
 
 describe("Core CI workflow contract", () => {
   it("keeps the release-ready manifest job wired to the green release-relevant gates", async () => {
@@ -26,5 +27,14 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("actions/upload-artifact@v4");
     expect(workflow).toContain("name: release-ready");
     expect(workflow).toContain("path: .agentplane/.release/ready/release-ready.json");
+  });
+
+  it("keeps task-artifact-only diffs out of the heavy core gate", async () => {
+    const filters = await readFile(PATH_FILTERS_PATH, "utf8");
+
+    expect(filters).toContain('.agentplane/**');
+    expect(filters).toContain('!.agentplane/tasks/**');
+    expect(filters).toContain('.github/workflows/**');
+    expect(filters).toContain('.github/path-filters.yml');
   });
 });
