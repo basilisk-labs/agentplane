@@ -94,6 +94,13 @@ describe("commands/shared/task-backend CommandContext", () => {
     await writeLocalBackendConfig(root);
 
     const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "seed.txt", ".agentplane/config.json"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+    const { stdout: baseShaText } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const baseSha = baseShaText.trim();
     const created = await createTask({
       cwd: root,
       rootOverride: root,
@@ -123,6 +130,58 @@ describe("commands/shared/task-backend CommandContext", () => {
     const task = await loadTaskFromContext({ ctx, taskId: created.id });
     expect(task.id).toBe(created.id);
     expect(task.title).toBe("Context branch fallback");
+  });
+
+  it("loadTaskFromContext can read the active task README from a live branch_pr worktree", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await writeLocalBackendConfig(root);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "seed.txt", ".agentplane/config.json"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+    const { stdout: baseShaText } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const baseSha = baseShaText.trim();
+    const created = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "Context live worktree fallback",
+      description: "Load task README from the live task worktree when base no longer keeps a local copy",
+      owner: "TESTER",
+      priority: "med",
+      tags: ["testing"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    const baseReadmePath = path.join(root, ".agentplane", "tasks", created.id, "README.md");
+    const worktreePath = path.join(root, ".agentplane", "worktrees", `${created.id}-live-context`);
+    const branch = `task/${created.id}/live-context`;
+    await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, baseSha], {
+      cwd: root,
+    });
+
+    const worktreeReadmePath = path.join(worktreePath, ".agentplane", "tasks", created.id, "README.md");
+    await mkdir(path.dirname(worktreeReadmePath), { recursive: true });
+    const baseReadme = await readFile(baseReadmePath, "utf8");
+    await writeFile(
+      worktreeReadmePath,
+      baseReadme.replace('status: "TODO"', 'status: "DOING"'),
+      "utf8",
+    );
+    await rm(path.join(root, ".agentplane", "tasks", created.id), { recursive: true, force: true });
+
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await loadTaskFromContext({ ctx, taskId: created.id });
+    expect(task.id).toBe(created.id);
+    expect(task.title).toBe("Context live worktree fallback");
+    expect(task.status).toBe("DOING");
   });
 
   it("loadTaskFromContext can prefer an explicit branch snapshot over a stale base task copy", async () => {

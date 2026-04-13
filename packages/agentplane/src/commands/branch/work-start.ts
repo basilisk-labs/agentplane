@@ -5,6 +5,7 @@ import {
   mkdir,
   readFile,
   readdir,
+  rm,
   symlink,
   writeFile,
 } from "node:fs/promises";
@@ -108,6 +109,7 @@ async function materializeLocalBackendReadmesForWorktree(opts: {
   backend: CommandContext["taskBackend"];
   repoRoot: string;
   worktreePath: string;
+  taskId: string;
 }): Promise<void> {
   if (!(opts.backend instanceof LocalBackend)) return;
 
@@ -121,12 +123,23 @@ async function materializeLocalBackendReadmesForWorktree(opts: {
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
 
+    const sourceTaskRoot = path.join(sourceRoot, entry.name);
     const sourceReadme = path.join(sourceRoot, entry.name, "README.md");
     if (!(await fileExists(sourceReadme))) continue;
 
     const targetReadme = path.join(targetRoot, entry.name, "README.md");
     await mkdir(path.dirname(targetReadme), { recursive: true });
     await copyFile(sourceReadme, targetReadme);
+
+    if (entry.name !== opts.taskId) continue;
+
+    // Hand off ownership of the active task README to the task worktree so
+    // later merges cannot collide with a stale untracked copy on the base checkout.
+    await rm(sourceReadme, { force: true });
+    const remainingEntries = await readdir(sourceTaskRoot).catch(() => []);
+    if (remainingEntries.length === 0) {
+      await rm(sourceTaskRoot, { recursive: true, force: true });
+    }
   }
 }
 
@@ -423,6 +436,7 @@ export async function cmdWorkStart(opts: {
         backend: ctx.taskBackend,
         repoRoot: resolved.gitRoot,
         worktreePath,
+        taskId: opts.taskId,
       });
       await materializeRepoLocalDistForWorktree({
         repoRoot: resolved.gitRoot,
