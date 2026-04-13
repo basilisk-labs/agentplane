@@ -16,6 +16,7 @@ import type { CommandContext } from "../../shared/task-backend.js";
 
 import { finalizeIntegrate } from "./internal/finalize.js";
 import { runMergeCommit, runRebaseFastForward, runSquashMerge } from "./internal/merge.js";
+import { maybeRunPreIntegrateBootstrap } from "./internal/pre-integrate-bootstrap.js";
 import { maybeRunPostIntegrateBootstrap } from "./internal/post-integrate-bootstrap.js";
 import { prepareIntegrate } from "./internal/prepare.js";
 import { resolveWorktreeForIntegrate } from "./internal/worktree.js";
@@ -109,6 +110,20 @@ export async function cmdIntegrate(opts: {
           taskId: task.id,
         })),
       );
+    }
+
+    const preBootstrapResult = await maybeRunPreIntegrateBootstrap({
+      gitRoot: resolved.gitRoot,
+      changedPaths,
+    });
+    if (preBootstrapResult.status === "failed") {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_RUNTIME",
+        message:
+          "Unable to prepare the base worktree for integrate: automatic repo-local runtime refresh " +
+          `failed (${preBootstrapResult.error}). Run \`bun run framework:dev:bootstrap\` in ${resolved.gitRoot} and retry integrate.`,
+      });
     }
 
     const baseShaBeforeMerge = await gitRevParse(resolved.gitRoot, [base]);

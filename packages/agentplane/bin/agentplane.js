@@ -150,6 +150,20 @@ async function maybeHandoffToRepoLocalBinary() {
       );
       return false;
     }
+
+    const canStayOnCurrentInstalledBinary =
+      !currentBinaryContext.inFrameworkCheckout &&
+      !currentBinaryContext.isRepoLocalBinary &&
+      !currentBinaryContext.isRepoLocalRuntime;
+    if (canStayOnCurrentInstalledBinary) {
+      process.stderr.write(
+        "warning: target framework checkout repo-local runtime is not bootstrapped; " +
+          `staying on current installed binary: ${context.thisBin}\n` +
+          `unbootstrapped checkout binary: ${context.checkout?.repoBin ?? "<missing>"}\n` +
+          `fix target checkout with: ${FRAMEWORK_DEV_BOOTSTRAP_COMMAND}\n`,
+      );
+      return false;
+    }
   }
 
   return handoffToRepoLocalBinary(context);
