@@ -1,0 +1,5 @@
+ .agentplane/tasks/202604131433-5NX3AW/README.md    | 99 ++++++++++++++++++++++
+ .github/workflows/ci.yml                           |  1 +
+ .github/workflows/prepublish.yml                   |  1 +
+ .../commands/release/ci-workflow-contract.test.ts  |  7 ++
+ 4 files changed, 108 insertions(+)
