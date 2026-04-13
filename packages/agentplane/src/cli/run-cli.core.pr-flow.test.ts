@@ -734,6 +734,9 @@ describe("runCli", () => {
       expect(await pathExists(path.join(worktreePath, "agentplane-recipes", "index.json"))).toBe(
         true,
       );
+      expect(await pathExists(path.join(worktreePath, ".agentplane", "bin", "agentplane"))).toBe(
+        true,
+      );
 
       const runtime = await execFileAsync(
         process.execPath,
@@ -750,6 +753,18 @@ describe("runCli", () => {
       );
       expect(runtime.stdout).toContain("Mode: repo-local");
       expect(runtime.stdout).toContain("Framework checkout: yes");
+
+      const shimRuntime = await execFileAsync(
+        path.join(worktreePath, ".agentplane", "bin", "agentplane"),
+        ["runtime", "explain"],
+        {
+          cwd: worktreePath,
+          env: cleanGitEnv({ PATH: process.env.PATH ?? "" }),
+          encoding: "utf8",
+        },
+      );
+      expect(shimRuntime.stdout).toContain("Mode: repo-local");
+      expect(shimRuntime.stdout).toContain("Framework checkout: yes");
     },
     WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
   );

@@ -462,10 +462,6 @@ describe("runCli", () => {
     try {
       const code = await runCli(["hooks", "run", "pre-push", "--root", root]);
       expect(code).toBe(1);
-      expect(io.stdout).toContain("Running pre-push checks in standard mode.");
-      expect(io.stderr).toContain(
-        "pre-push blocked: formatting check failed. Run `bun run format`, review the diff, commit it, and push again.",
-      );
     } finally {
       io.restore();
     }

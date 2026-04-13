@@ -12,6 +12,8 @@ const DOCS_ONLY_PATTERNS = [
   /^DESIGN\.md$/,
 ];
 
+const NEUTRAL_TASK_ARTIFACT_PATTERNS = [/^\.agentplane\/tasks\//];
+
 const TASK_BUCKET_PATTERNS = [/^packages\/agentplane\/src\/commands\/task\//];
 
 const DOCTOR_BUCKET_PATTERNS = [/^packages\/agentplane\/src\/commands\/doctor(?:\/|\.|$)/];
@@ -77,11 +79,18 @@ const CLI_CORE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.tasks(?:\..+)?\.test\.ts$/,
 ];
+const PR_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/commands\/pr(?:\/|\.|$)/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.pr-flow(?:\..+)?\.test\.ts$/,
+];
 const CLI_CORE_DISCOVERY_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta(?:\..+)?|misc|pr-flow(?:\..+)?)\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.tasks(?:\..+)?\.test\.ts$/,
+];
+const PR_FLOW_DISCOVERY_PATTERNS = [
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.pr-flow(?:\..+)?\.test\.ts$/,
 ];
 
 const CLI_RUNTIME_BUCKET_PATTERNS = [
@@ -222,6 +231,10 @@ const CLI_CORE_TEST_FILES = [
   ...discoverTestFiles(["packages/agentplane/src/cli"], CLI_CORE_DISCOVERY_PATTERNS),
   "packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts",
 ];
+const PR_TEST_FILES = [
+  "packages/agentplane/src/commands/pr/input-validation.test.ts",
+  ...discoverTestFiles(["packages/agentplane/src/cli"], PR_FLOW_DISCOVERY_PATTERNS),
+];
 const CLI_RUNTIME_TEST_FILES = [
   "packages/agentplane/src/cli/runtime-context.test.ts",
   "packages/agentplane/src/cli/runtime-watch.test.ts",
@@ -280,149 +293,169 @@ function anyPathMatches(paths, patterns) {
   return paths.some((filePath) => patterns.some((pattern) => pattern.test(filePath)));
 }
 
+function stripNeutralPaths(paths, neutralPatterns) {
+  const filtered = paths.filter(
+    (filePath) => !neutralPatterns.some((pattern) => pattern.test(filePath)),
+  );
+  return filtered.length > 0 ? filtered : paths;
+}
+
 export function selectFastCiPlan(changedFiles) {
   const files = [...new Set(changedFiles.map((value) => value.trim()).filter(Boolean))];
   if (files.length === 0) {
     return { kind: "full-fast", reason: "no_changed_file_scope" };
   }
+  const effectiveFiles = stripNeutralPaths(files, NEUTRAL_TASK_ARTIFACT_PATTERNS);
 
-  if (everyPathMatches(files, DOCS_ONLY_PATTERNS)) {
+  if (everyPathMatches(effectiveFiles, DOCS_ONLY_PATTERNS)) {
     return { kind: "docs-only", reason: "docs_policy_website_only", files };
   }
 
-  if (everyPathMatches(files, TASK_BUCKET_PATTERNS)) {
+  if (everyPathMatches(effectiveFiles, TASK_BUCKET_PATTERNS)) {
     return {
       kind: "targeted",
       bucket: "task",
       reason: "task_command_paths_only",
       files,
-      lintTargets: files,
+      lintTargets: effectiveFiles,
       testFiles: TASK_TEST_FILES,
       vitestPool: "threads",
     };
   }
 
-  if (everyPathMatches(files, DOCTOR_BUCKET_PATTERNS)) {
+  if (everyPathMatches(effectiveFiles, DOCTOR_BUCKET_PATTERNS)) {
     return {
       kind: "targeted",
       bucket: "doctor",
       reason: "doctor_command_paths_only",
       files,
-      lintTargets: files,
+      lintTargets: effectiveFiles,
       testFiles: DOCTOR_TEST_FILES,
       vitestPool: "threads",
     };
   }
 
-  if (everyPathMatches(files, BACKEND_BUCKET_PATTERNS)) {
+  if (everyPathMatches(effectiveFiles, BACKEND_BUCKET_PATTERNS)) {
     return {
       kind: "targeted",
       bucket: "backend",
       reason: "backend_projection_paths_only",
       files,
-      lintTargets: files,
+      lintTargets: effectiveFiles,
       testFiles: BACKEND_TEST_FILES,
       vitestPool: "forks",
     };
   }
 
-  if (everyPathMatches(files, HOOKS_BUCKET_PATTERNS)) {
+  if (everyPathMatches(effectiveFiles, HOOKS_BUCKET_PATTERNS)) {
     return {
       kind: "targeted",
       bucket: "hooks",
       reason: "hook_and_ci_routing_paths_only",
       files,
-      lintTargets: files,
+      lintTargets: effectiveFiles,
       testFiles: HOOKS_TEST_FILES,
       vitestPool: "threads",
     };
   }
 
-  if (everyPathMatches(files, WORKFLOW_BUCKET_PATTERNS)) {
+  if (everyPathMatches(effectiveFiles, WORKFLOW_BUCKET_PATTERNS)) {
     return {
       kind: "targeted",
       bucket: "workflow",
       reason: "workflow_contract_paths_only",
       files,
-      lintTargets: files,
+      lintTargets: effectiveFiles,
       testFiles: WORKFLOW_TEST_FILES,
       vitestPool: "threads",
     };
   }
 
-  if (everyPathMatches(files, CLI_HELP_BUCKET_PATTERNS)) {
+  if (everyPathMatches(effectiveFiles, CLI_HELP_BUCKET_PATTERNS)) {
     return {
       kind: "targeted",
       bucket: "cli-help",
       reason: "cli_help_and_spec_paths_only",
       files,
-      lintTargets: files,
+      lintTargets: effectiveFiles,
       testFiles: CLI_HELP_TEST_FILES,
       vitestPool: "threads",
     };
   }
 
-  if (everyPathMatches(files, CLI_CORE_BUCKET_PATTERNS)) {
+  if (everyPathMatches(effectiveFiles, CLI_CORE_BUCKET_PATTERNS)) {
     return {
       kind: "targeted",
       bucket: "cli-core",
       reason: "cli_core_execution_paths_only",
       files,
-      lintTargets: files,
+      lintTargets: effectiveFiles,
       testFiles: CLI_CORE_TEST_FILES,
       vitestPool: "threads",
     };
   }
 
-  if (everyPathMatches(files, CLI_RUNTIME_BUCKET_PATTERNS)) {
+  if (everyPathMatches(effectiveFiles, PR_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "pr",
+      reason: "pr_paths_only",
+      files,
+      lintTargets: effectiveFiles,
+      testFiles: PR_TEST_FILES,
+      vitestPool: "threads",
+    };
+  }
+
+  if (everyPathMatches(effectiveFiles, CLI_RUNTIME_BUCKET_PATTERNS)) {
     return {
       kind: "targeted",
       bucket: "cli-runtime",
       reason: "cli_runtime_handoff_paths_only",
       files,
-      lintTargets: files,
+      lintTargets: effectiveFiles,
       testFiles: CLI_RUNTIME_TEST_FILES,
       vitestPool: "threads",
     };
   }
 
-  if (everyPathMatches(files, RELEASE_BUCKET_PATTERNS)) {
+  if (everyPathMatches(effectiveFiles, RELEASE_BUCKET_PATTERNS)) {
     return {
       kind: "targeted",
       bucket: "release",
       reason: "release_paths_only",
       files,
-      lintTargets: files,
+      lintTargets: effectiveFiles,
       testFiles: RELEASE_TEST_FILES,
       vitestPool: "threads",
     };
   }
 
-  if (everyPathMatches(files, UPGRADE_BUCKET_PATTERNS)) {
+  if (everyPathMatches(effectiveFiles, UPGRADE_BUCKET_PATTERNS)) {
     return {
       kind: "targeted",
       bucket: "upgrade",
       reason: "upgrade_paths_only",
       files,
-      lintTargets: files,
+      lintTargets: effectiveFiles,
       testFiles: UPGRADE_TEST_FILES,
       vitestPool: "threads",
     };
   }
 
-  if (everyPathMatches(files, GUARD_BUCKET_PATTERNS)) {
+  if (everyPathMatches(effectiveFiles, GUARD_BUCKET_PATTERNS)) {
     return {
       kind: "targeted",
       bucket: "guard",
       reason: "guard_paths_only",
       files,
-      lintTargets: files,
+      lintTargets: effectiveFiles,
       testFiles: GUARD_TEST_FILES,
       vitestPool: "threads",
     };
   }
 
-  if (anyPathMatches(files, BROAD_FALLBACK_PATTERNS)) {
+  if (anyPathMatches(effectiveFiles, BROAD_FALLBACK_PATTERNS)) {
     return { kind: "full-fast", reason: "broad_or_infra_sensitive_change", files };
   }
 

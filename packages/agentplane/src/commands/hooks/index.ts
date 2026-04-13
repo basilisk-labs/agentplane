@@ -99,13 +99,13 @@ function shimScriptText(): string {
     "set -e",
     'SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"',
     'REPO_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"',
-    'ENV_BIN="${AGENTPLANE_HOOK_RUNNER:-}"',
-    'if [ -n "$ENV_BIN" ] && command -v node >/dev/null 2>&1 && [ -f "$ENV_BIN" ]; then',
-    '  exec node "$ENV_BIN" "$@"',
-    "fi",
     'LOCAL_BIN="$REPO_ROOT/packages/agentplane/bin/agentplane.js"',
     'if command -v node >/dev/null 2>&1 && [ -f "$LOCAL_BIN" ]; then',
     '  exec node "$LOCAL_BIN" "$@"',
+    "fi",
+    'ENV_BIN="${AGENTPLANE_HOOK_RUNNER:-}"',
+    'if [ -n "$ENV_BIN" ] && command -v node >/dev/null 2>&1 && [ -f "$ENV_BIN" ]; then',
+    '  exec node "$ENV_BIN" "$@"',
     "fi",
     "if command -v agentplane >/dev/null 2>&1; then",
     '  exec agentplane "$@"',
@@ -389,14 +389,8 @@ export async function cmdHooksRun(opts: {
         env: process.env,
         encoding: "utf8",
         input: await readHookStdinUtf8(),
-        stdio: "pipe",
+        stdio: ["pipe", "inherit", "inherit"],
       });
-      if (typeof result.stdout === "string" && result.stdout.length > 0) {
-        process.stdout.write(result.stdout);
-      }
-      if (typeof result.stderr === "string" && result.stderr.length > 0) {
-        process.stderr.write(result.stderr);
-      }
       if (result.error) throw result.error;
       return result.status ?? (result.signal ? 1 : 0);
     }
