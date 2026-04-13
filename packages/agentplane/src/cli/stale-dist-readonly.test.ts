@@ -201,6 +201,27 @@ describe("stale-dist warn-and-run command policy", () => {
     expect(stderr).toContain("bun run framework:dev:bootstrap");
   });
 
+  it("warns but runs hooks run post-merge when watched runtime paths are dirty", async () => {
+    const { repoRoot, repoBin } = await setupFrameworkCheckout();
+
+    const { stdout, stderr } = await execFileAsync(
+      process.execPath,
+      [repoBin, "hooks", "run", "post-merge"],
+      {
+        cwd: repoRoot,
+        encoding: "utf8",
+      },
+    );
+
+    expect(stdout).toContain("DIST");
+    expect(stdout).toContain('"args":["hooks","run","post-merge"]');
+    expect(stderr).toContain(
+      "allowing read-only diagnostic command to run with a stale repo build",
+    );
+    expect(stderr).toContain("command: hooks run post-merge");
+    expect(stderr).toContain("bun run framework:dev:bootstrap");
+  });
+
   it("warns but runs task plan set when watched runtime paths are dirty", async () => {
     const { repoRoot, repoBin } = await setupFrameworkCheckout();
 

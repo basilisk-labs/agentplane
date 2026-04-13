@@ -1,0 +1,1 @@
+Allow post-merge cleanup under stale-dist guard (V0H90T)
