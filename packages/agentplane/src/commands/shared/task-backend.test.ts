@@ -97,10 +97,6 @@ describe("commands/shared/task-backend CommandContext", () => {
     await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
     await execFileAsync("git", ["add", "seed.txt", ".agentplane/config.json"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
-    const { stdout: baseShaText } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: root,
-    });
-    const baseSha = baseShaText.trim();
     const created = await createTask({
       cwd: root,
       rootOverride: root,
