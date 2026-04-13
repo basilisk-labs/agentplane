@@ -38,6 +38,10 @@ function isPreflightCommand(args) {
   return args[0] === "preflight";
 }
 
+function isPostMergeHookCommand(args) {
+  return args[0] === "hooks" && args[1] === "run" && args[2] === "post-merge";
+}
+
 function isTaskArtifactMutationCommand(args) {
   if (args[0] === "verify") return true;
   if (args[0] === "finish") return true;
@@ -58,7 +62,8 @@ export function classifyStaleDistPolicy(argv = process.argv) {
     isConfigInspectionCommand(args) ||
     isTaskInspectionCommand(args) ||
     isReadyInspectionCommand(args) ||
-    isPreflightCommand(args)
+    isPreflightCommand(args) ||
+    isPostMergeHookCommand(args)
   ) {
     return { mode: "warn_and_run", reason: "read_only_diagnostic" };
   }

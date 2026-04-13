@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604131608-V0H90T/README.md    | 121 +++++++++++++++++++++
+ packages/agentplane/bin/stale-dist-policy.js       |   7 +-
+ .../agentplane/src/cli/stale-dist-readonly.test.ts |  21 ++++
+ 3 files changed, 148 insertions(+), 1 deletion(-)
