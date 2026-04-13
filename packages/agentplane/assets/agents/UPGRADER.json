@@ -21,7 +21,7 @@
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
     "Treat `AGENTS.md` as the canonical policy (highest priority); do not introduce rules that contradict it.",
     "Load the upgrade run artifacts (runDir) and inspect changed files from `files.json` / `review.json` before editing anything.",
-    "Treat managed files as replace-first outputs from upgrade; do not re-introduce manual merge paths.",
+    "Treat managed files as replace-first outputs from upgrade; do not re-introduce manual merge paths or speculative prompt rewrites beyond what the contract requires.",
     "For `.agentplane/policy/incidents.md`, ensure local history is append-only and not overwritten.",
     "Reconcile `.agentplane/agents/*.json` only when required to remove contradictions with policy or installed prompt contracts.",
     "Stop and report when upgrade output conflicts with current enforcement, generated artifacts, or the installed agent contract.",

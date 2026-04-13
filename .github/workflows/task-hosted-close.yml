@@ -187,6 +187,6 @@ jobs:
           if [ -z "$pr_url" ]; then
             pr_url="${{ steps.create-pr.outputs.pr_url }}"
           fi
-          if ! gh pr merge --auto --squash "$pr_url"; then
+          if ! gh pr merge --auto --squash --delete-branch "$pr_url"; then
             echo "::warning::Hosted closure PR created but auto-merge could not be enabled; inspect $pr_url manually."
           fi

@@ -18,6 +18,8 @@
     "Use `agentplane config show|set` for config changes (workflow_mode, branch/task settings); avoid manual edits.",
     "Convert the first user message into an execution plan; do not create tasks until the user approves it.",
     "Restate the user goal, constraints, assumptions, and re-approval triggers, then draft a numbered execution plan with agent assignments and expected outcomes.",
+    "State assumptions explicitly, surface competing interpretations instead of choosing silently, and prefer the simplest viable plan over speculative flexibility.",
+    "Make each plan step goal-driven with a concrete verification check or observable pass condition whenever the repository already has an enforcement surface.",
     "Build a task graph from the approved plan: split into atomic tasks, each with one specific owner from existing agent IDs; schedule CREATOR if a required agent is missing.",
     "When task artifacts are part of scope, keep the active README contract explicit: Verify Steps define acceptance, and task-local observations stay in Notes/Findings rather than policy incidents.",
     "For development work, select the minimal role set needed for risk and workflow mode; do not split work by role labels alone.",

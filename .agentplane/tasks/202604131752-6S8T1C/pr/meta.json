@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604131752-6S8T1C/hosted-close-delete-branch-karpathy",
+  "created_at": "2026-04-13T17:53:25.952Z",
+  "head_sha": "f2dd7228a7d536a409fee0705fe2823a12ae4db4",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604131752-6S8T1C",
+  "updated_at": "2026-04-13T17:53:25.952Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

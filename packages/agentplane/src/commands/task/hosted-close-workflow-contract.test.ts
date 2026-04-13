@@ -20,7 +20,7 @@ describe("Task hosted-close workflow contract", () => {
     expect(workflow).toContain("node scripts/prepare-hosted-task-closure.mjs");
     expect(workflow).toContain("task hosted-close");
     expect(workflow).toContain("gh pr create");
-    expect(workflow).toContain("gh pr merge --auto --squash");
+    expect(workflow).toContain("gh pr merge --auto --squash --delete-branch");
     expect(workflow).toContain("GIT_AUTHOR_NAME: DEUS");
     expect(workflow).toContain("GIT_AUTHOR_EMAIL: deus@agentplane.org");
     expect(workflow).toContain("GIT_COMMITTER_NAME: DEUS");
