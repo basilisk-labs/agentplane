@@ -884,9 +884,10 @@ describe("runCli", () => {
       ioShow.restore();
     }
 
-    const syncedMeta = JSON.parse(
-      await readFile(path.join(prDir, "meta.json"), "utf8"),
-    ) as Record<string, unknown>;
+    const syncedMeta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as Record<
+      string,
+      unknown
+    >;
     expect(syncedMeta.status).toBe("MERGED");
     expect(syncedMeta.base).toBe("main");
     expect(syncedMeta.merge_commit).toBe(shippedHash);
@@ -1022,9 +1023,10 @@ describe("runCli", () => {
       ioShow.restore();
     }
 
-    const syncedMeta = JSON.parse(
-      await readFile(path.join(prDir, "meta.json"), "utf8"),
-    ) as Record<string, unknown>;
+    const syncedMeta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as Record<
+      string,
+      unknown
+    >;
     expect(syncedMeta.status).toBe("MERGED");
     expect(syncedMeta.base).toBe("main");
     expect(syncedMeta.merge_commit).toBe(shippedHash);

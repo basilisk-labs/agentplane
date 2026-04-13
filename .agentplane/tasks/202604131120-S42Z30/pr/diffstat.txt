@@ -1,0 +1,5 @@
+ .agentplane/tasks/202604131120-S42Z30/README.md    | 94 ++++++++++++++++++++++
+ .../run-cli.core.tasks.normalize-migrate.test.ts   | 14 ++--
+ .../agentplane/src/commands/doctor.command.test.ts |  3 +-
+ .../src/commands/task/hosted-merge-sync.ts         |  5 +-
+ 4 files changed, 105 insertions(+), 11 deletions(-)

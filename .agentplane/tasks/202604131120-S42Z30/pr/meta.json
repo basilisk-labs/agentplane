@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604131120-S42Z30/format-prepush-blockers",
+  "created_at": "2026-04-13T11:21:14.226Z",
+  "head_sha": "095510aedc6a0a0a2bfa0ad094eed53f9f564e2d",
+  "last_verified_at": "2026-04-13T11:22:42.468Z",
+  "last_verified_sha": "095510aedc6a0a0a2bfa0ad094eed53f9f564e2d",
+  "schema_version": 1,
+  "task_id": "202604131120-S42Z30",
+  "updated_at": "2026-04-13T11:22:20.606Z",
+  "verify": {
+    "status": "pass"
+  }
+}

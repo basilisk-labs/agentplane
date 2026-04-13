@@ -834,7 +834,8 @@ describe("doctor.command", () => {
               Plan: "1. Run doctor.",
               "Verify Steps":
                 "1. Run agentplane doctor. Expected: duplicate/no-op and stacked-root alias records do not produce open-PR drift warnings.",
-              Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+              Verification:
+                "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
               "Rollback Plan": "- Revert.",
               Findings: "",
             },

@@ -404,10 +404,7 @@ function buildLocallySyncedPrMeta(opts: {
   };
 }
 
-function isStackedBranchAliasDoneTask(opts: {
-  task: TaskData;
-  branch: string;
-}): boolean {
+function isStackedBranchAliasDoneTask(opts: { task: TaskData; branch: string }): boolean {
   const branchTaskId = parseTaskIdFromBranch("task", opts.branch);
   if (!branchTaskId || branchTaskId === opts.task.id) return false;
   const summary = opts.task.result_summary?.trim().toLowerCase() ?? "";
