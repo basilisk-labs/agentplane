@@ -152,7 +152,8 @@ describe("commands/shared/task-backend CommandContext", () => {
       cwd: root,
       rootOverride: root,
       title: "Context live worktree fallback",
-      description: "Load task README from the live task worktree when base no longer keeps a local copy",
+      description:
+        "Load task README from the live task worktree when base no longer keeps a local copy",
       owner: "TESTER",
       priority: "med",
       tags: ["testing"],
@@ -167,7 +168,13 @@ describe("commands/shared/task-backend CommandContext", () => {
       cwd: root,
     });
 
-    const worktreeReadmePath = path.join(worktreePath, ".agentplane", "tasks", created.id, "README.md");
+    const worktreeReadmePath = path.join(
+      worktreePath,
+      ".agentplane",
+      "tasks",
+      created.id,
+      "README.md",
+    );
     await mkdir(path.dirname(worktreeReadmePath), { recursive: true });
     const baseReadme = await readFile(baseReadmePath, "utf8");
     await writeFile(
