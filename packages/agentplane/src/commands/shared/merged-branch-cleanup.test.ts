@@ -6,29 +6,29 @@ const mocks = vi.hoisted(() => ({
   findWorktreeForBranch: vi.fn(),
 }));
 
-vi.mock("../../../shared/git.js", () => ({
+vi.mock("./git.js", () => ({
   execFileAsync: mocks.execFileAsync,
   gitEnv: () => ({}),
 }));
-vi.mock("../../../shared/git-ops.js", () => ({
+vi.mock("./git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
 }));
-vi.mock("../../../shared/git-worktree.js", () => ({
+vi.mock("./git-worktree.js", () => ({
   findWorktreeForBranch: mocks.findWorktreeForBranch,
 }));
 
-describe("pr/integrate/internal/cleanup", () => {
+describe("commands/shared/merged-branch-cleanup", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.findWorktreeForBranch.mockResolvedValue(null);
     mocks.gitBranchExists.mockResolvedValue(true);
   });
 
-  it("removes a repo-local worktree and then deletes the integrated branch", async () => {
-    const { cleanupIntegratedBranch } = await import("./cleanup.js");
+  it("removes a repo-local worktree and then deletes the merged branch", async () => {
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
     mocks.findWorktreeForBranch.mockResolvedValue("/repo/.agentplane/worktrees/task-T1");
 
-    const result = await cleanupIntegratedBranch({
+    const result = await cleanupMergedLocalBranch({
       gitRoot: "/repo",
       branch: "task/T-1",
     });
@@ -54,9 +54,9 @@ describe("pr/integrate/internal/cleanup", () => {
   });
 
   it("removes the branch when no worktree is registered", async () => {
-    const { cleanupIntegratedBranch } = await import("./cleanup.js");
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
 
-    const result = await cleanupIntegratedBranch({
+    const result = await cleanupMergedLocalBranch({
       gitRoot: "/repo",
       branch: "task/T-2",
     });
@@ -75,11 +75,11 @@ describe("pr/integrate/internal/cleanup", () => {
     );
   });
 
-  it("skips auto-cleanup when the branch worktree lives outside the repo", async () => {
-    const { cleanupIntegratedBranch } = await import("./cleanup.js");
+  it("skips cleanup when the branch worktree lives outside the repo", async () => {
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
     mocks.findWorktreeForBranch.mockResolvedValue("/tmp/agentplane-external-worktree");
 
-    const result = await cleanupIntegratedBranch({
+    const result = await cleanupMergedLocalBranch({
       gitRoot: "/repo",
       branch: "task/T-3",
     });
@@ -89,6 +89,24 @@ describe("pr/integrate/internal/cleanup", () => {
       removedWorktree: false,
       worktreePath: "/tmp/agentplane-external-worktree",
       skippedReason: "outside_repo",
+    });
+    expect(mocks.execFileAsync).not.toHaveBeenCalled();
+  });
+
+  it("skips cleanup when the merged branch is the current checkout", async () => {
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
+    mocks.findWorktreeForBranch.mockResolvedValue("/repo");
+
+    const result = await cleanupMergedLocalBranch({
+      gitRoot: "/repo",
+      branch: "task/T-4",
+    });
+
+    expect(result).toEqual({
+      removedBranch: false,
+      removedWorktree: false,
+      worktreePath: "/repo",
+      skippedReason: "current_worktree",
     });
     expect(mocks.execFileAsync).not.toHaveBeenCalled();
   });

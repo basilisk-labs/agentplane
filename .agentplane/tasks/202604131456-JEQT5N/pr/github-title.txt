@@ -1,0 +1,1 @@
+git/workflow: Auto-prune merged task worktrees and branches after integrate (JEQT5N)

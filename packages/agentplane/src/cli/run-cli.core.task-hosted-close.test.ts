@@ -910,11 +910,17 @@ describe("runCli", () => {
       expect(code).toBe(0);
       expect(ioCreate.stdout).toContain("created GitHub PR #902");
       expect(ioCreate.stdout).toContain("https://github.com/example/repo/pull/902");
+      expect(ioCreate.stdout).toContain(`deleted branch ${branch}`);
     } finally {
       ioCreate.restore();
       process.env.PATH = originalPath;
       delete process.env.AGENTPLANE_GH_LOG;
     }
+
+    const { stdout: localBranchStdout } = await execFileAsync("git", ["branch", "--list", branch], {
+      cwd: root,
+    });
+    expect(localBranchStdout.trim()).toBe("");
 
     const secondGh = await installFakeGhHostedClosePr({
       scenarioName: "reuse",
