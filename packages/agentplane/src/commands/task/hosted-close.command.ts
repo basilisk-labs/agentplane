@@ -9,10 +9,10 @@ import { fileExists } from "../../cli/fs-utils.js";
 import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { execFileAsync } from "../shared/git.js";
-import { buildIntegratedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
+import { buildIntegratedPrMeta, parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { createTaskCloseCommit, writeFinishedTasks } from "./finish-shared.js";
-import { resolveHostedMergeTargetFromEvent } from "./hosted-merge-sync.js";
+import { resolveHostedMergeTargetFromEvent, type HostedMergeTarget } from "./hosted-merge-sync.js";
 import { readCommitInfo } from "./shared.js";
 import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
 
@@ -112,6 +112,54 @@ async function hasTaskArtifactChanges(opts: {
   return stdout.trim().length > 0;
 }
 
+function buildFallbackPrMeta(opts: {
+  taskId: string;
+  branch: string;
+  mergedPr: HostedMergeTarget["mergedPr"];
+}): PrMeta {
+  const at = opts.mergedPr.mergedAt ?? new Date().toISOString();
+  const headSha = opts.mergedPr.headRefOid?.trim() || undefined;
+  const prUrl = opts.mergedPr.url?.trim() || undefined;
+  return {
+    schema_version: 1,
+    task_id: opts.taskId,
+    branch: opts.branch,
+    ...(opts.mergedPr.baseRefName ? { base: opts.mergedPr.baseRefName } : {}),
+    pr_number: opts.mergedPr.number,
+    ...(prUrl ? { pr_url: prUrl } : {}),
+    created_at: at,
+    updated_at: at,
+    status: "OPEN",
+    ...(headSha ? { head_sha: headSha } : {}),
+    last_verified_sha: null,
+    last_verified_at: null,
+    verify: { status: "skipped" },
+  };
+}
+
+async function readHostedPrMetaOrFallback(opts: {
+  gitRoot: string;
+  taskDirRelative: string;
+  target: HostedMergeTarget;
+}): Promise<{ metaPath: string; meta: PrMeta }> {
+  const metaPath = path.join(opts.gitRoot, opts.taskDirRelative, "pr", "meta.json");
+  if (!(await fileExists(metaPath))) {
+    return {
+      metaPath,
+      meta: buildFallbackPrMeta({
+        taskId: opts.target.taskId,
+        branch: opts.target.branch,
+        mergedPr: opts.target.mergedPr,
+      }),
+    };
+  }
+  const rawMeta = await readFile(metaPath, "utf8");
+  return {
+    metaPath,
+    meta: parsePrMeta(rawMeta, opts.target.taskId),
+  };
+}
+
 async function closeHostedTask(opts: {
   ctx: CommandContext;
   cwd: string;
@@ -132,26 +180,18 @@ async function closeHostedTask(opts: {
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const taskDirRelative = path.join(opts.ctx.config.paths.workflow_dir, target.taskId);
   const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: target.taskId });
-  const metaPath = path.join(gitRoot, taskDirRelative, "pr", "meta.json");
-  if (!(await fileExists(metaPath))) {
-    throw new CliError({
-      exitCode: 3,
-      code: "E_VALIDATION",
-      message: `Hosted task closure could not find pr/meta.json for ${target.taskId}`,
-    });
-  }
-
-  const rawMeta = await readFile(metaPath, "utf8");
-  const meta = parsePrMeta(rawMeta, target.taskId);
-  const alreadyClosed =
-    String(task.status || "TODO").toUpperCase() === "DONE" &&
-    (task.commit?.hash ?? "") === target.mergedPr.mergeCommit.oid &&
-    meta.status === "MERGED" &&
-    (meta.merge_commit ?? "") === target.mergedPr.mergeCommit.oid;
+  const { metaPath, meta } = await readHostedPrMetaOrFallback({
+    gitRoot,
+    taskDirRelative,
+    target,
+  });
+  const taskStatus = String(task.status || "TODO").toUpperCase();
+  const taskCommitHash = task.commit?.hash ?? "";
+  const alreadyClosed = taskStatus === "DONE" && taskCommitHash === target.mergedPr.mergeCommit.oid;
   if (
-    String(task.status || "TODO").toUpperCase() === "DONE" &&
-    (task.commit?.hash ?? "") !== "" &&
-    (task.commit?.hash ?? "") !== target.mergedPr.mergeCommit.oid
+    taskStatus === "DONE" &&
+    taskCommitHash !== "" &&
+    taskCommitHash !== target.mergedPr.mergeCommit.oid
   ) {
     throw new CliError({
       exitCode: 3,
@@ -188,7 +228,7 @@ async function closeHostedTask(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: target.taskId,
-      baseBranchOverride: target.mergedPr.baseRefName ?? meta.base ?? "main",
+      baseBranchOverride: nextMeta.base ?? "main",
       quiet: opts.quiet,
     });
     return {
@@ -247,7 +287,7 @@ async function closeHostedTask(opts: {
     cwd: opts.cwd,
     rootOverride: opts.rootOverride,
     taskId: target.taskId,
-    baseBranchOverride: target.mergedPr.baseRefName ?? meta.base ?? "main",
+    baseBranchOverride: nextMeta.base ?? "main",
     quiet: opts.quiet,
     allowPolicy: collectedIncidents.wrote,
   });

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604131329-KHYHBT/hosted-close-pr-meta-fallback",
+  "created_at": "2026-04-13T13:37:53.837Z",
+  "head_sha": "a59a3ea045092a7cbe179e76503e112065003189",
+  "last_verified_at": "2026-04-13T13:37:53.783Z",
+  "last_verified_sha": "a59a3ea045092a7cbe179e76503e112065003189",
+  "schema_version": 1,
+  "task_id": "202604131329-KHYHBT",
+  "updated_at": "2026-04-13T13:37:53.837Z",
+  "verify": {
+    "status": "pass"
+  }
+}

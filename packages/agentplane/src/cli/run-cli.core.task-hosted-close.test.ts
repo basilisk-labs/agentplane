@@ -518,6 +518,192 @@ describe("runCli", () => {
     expect(metaRaw).toContain(`"merge_commit": "${mergeSha}"`);
   }, 120_000);
 
+  it("task hosted-close recreates missing base pr metadata from the merged event", async () => {
+    const root = await writeAndConfigureRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+    const { stdout: baseBranchStdout } = await execFileAsync(
+      "git",
+      ["rev-parse", "--abbrev-ref", "HEAD"],
+      { cwd: root },
+    );
+    const baseBranch = baseBranchStdout.trim();
+
+    const taskId = "202604131329-KHYHBT";
+    const branch = `task/${taskId}/missing-base-pr-meta`;
+    expect(
+      await runCliSilent([
+        "task",
+        "add",
+        taskId,
+        "--title",
+        "Hosted close missing pr meta task",
+        "--description",
+        "Recover hosted-close when base-side PR metadata is missing",
+        "--priority",
+        "high",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    expect(
+      await runCliSilent([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        "1. Run task hosted-close after deleting base-side pr/meta.json for a merged branch_pr task.",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    await approveTaskPlan(root, taskId);
+    expect(
+      await runCliSilent([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: recover hosted-close when base-side pr metadata is missing after merge.",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    await recordVerificationOk(root, taskId);
+
+    expect(
+      await runCliSilent([
+        "pr",
+        "open",
+        taskId,
+        "--branch",
+        branch,
+        "--author",
+        "CODER",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    const touchedFile = path.join(root, "src", "missing-base-pr-meta.ts");
+    await mkdir(path.dirname(touchedFile), { recursive: true });
+    await writeFile(touchedFile, "export const missingBasePrMeta = true;\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: missing base pr meta fixture"], {
+      cwd: root,
+    });
+    const { stdout: branchHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const branchHead = branchHeadStdout.trim();
+
+    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", branch, "-m", "Merge missing pr meta task"], {
+      cwd: root,
+    });
+    const { stdout: mergeHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const mergeSha = mergeHeadStdout.trim();
+
+    await rm(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"), { force: true });
+
+    const eventDir = await mkdtemp(
+      path.join(tmpdir(), "agentplane-hosted-close-missing-base-pr-meta-"),
+    );
+    const eventPath = path.join(eventDir, "event.json");
+    await writeFile(
+      eventPath,
+      `${JSON.stringify(
+        {
+          pull_request: {
+            merged: true,
+            number: 92,
+            title: "Hosted close missing pr meta task",
+            html_url: "https://example.test/pr/92",
+            merge_commit_sha: mergeSha,
+            merged_at: "2026-04-13T13:35:00.000Z",
+            head: { ref: branch, sha: branchHead },
+            base: { ref: baseBranch },
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "hosted-close",
+        "--event-json",
+        eventPath,
+        "--root",
+        root,
+      ]);
+      if (code !== 0) {
+        const { stdout: statusStdout } = await execFileAsync("git", ["status", "--short"], {
+          cwd: root,
+        });
+        throw new Error(
+          `hosted-close missing-pr-meta failed: code=${code} stderr=${io.stderr} status=${statusStdout}`,
+        );
+      }
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`task hosted close ${taskId}`);
+    } finally {
+      io.restore();
+    }
+
+    const taskShow = captureStdIO();
+    try {
+      const code = await runCli(["task", "show", taskId, "--root", root]);
+      expect(code).toBe(0);
+      const task = JSON.parse(taskShow.stdout) as {
+        status?: string;
+        result_summary?: string;
+        commit?: { hash?: string } | null;
+      };
+      expect(task.status).toBe("DONE");
+      expect(task.result_summary).toBe("Merged via PR #92.");
+      expect(task.commit?.hash).toBe(mergeSha);
+    } finally {
+      taskShow.restore();
+    }
+
+    const metaRaw = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"),
+      "utf8",
+    );
+    expect(metaRaw).toContain('"status": "MERGED"');
+    expect(metaRaw).toContain(`"merge_commit": "${mergeSha}"`);
+    expect(metaRaw).toContain('"pr_number": 92');
+    expect(metaRaw).toContain(`"branch": "${branch}"`);
+    expect(metaRaw).toContain('"pr_url": "https://example.test/pr/92"');
+  }, 120_000);
+
   it("task hosted-close-pr opens the remote task-close branch and reuses an existing PR", async () => {
     const root = await writeAndConfigureRoot();
     const config = defaultConfig();
