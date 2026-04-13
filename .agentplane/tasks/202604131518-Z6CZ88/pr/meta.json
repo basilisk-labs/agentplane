@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604131518-Z6CZ88/post-merge-prune-hook",
+  "created_at": "2026-04-13T15:25:36.747Z",
+  "head_sha": "61794f8dae4cbb85a01f31e29fed174d6c256ad0",
+  "last_verified_at": "2026-04-13T15:25:36.712Z",
+  "last_verified_sha": "c7f8014828cf4becd15c0e71162507c81083018a",
+  "pr_number": 283,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/283",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604131518-Z6CZ88",
+  "updated_at": "2026-04-13T15:34:36.998Z",
+  "verify": {
+    "status": "pass"
+  }
+}

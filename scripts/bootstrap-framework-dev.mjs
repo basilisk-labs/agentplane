@@ -106,7 +106,7 @@ function isLegacyLefthookHook(text) {
 
 const HOOK_MARKER = "agentplane-hook";
 const SHIM_MARKER = "agentplane-hook-shim";
-const HOOK_NAMES = ["commit-msg", "pre-commit", "pre-push"];
+const HOOK_NAMES = ["commit-msg", "pre-commit", "pre-push", "post-merge"];
 
 function hookScriptText(hook) {
   return [
@@ -176,17 +176,32 @@ function listLegacyLefthookHooks(repoRoot) {
   });
 }
 
-function repairLegacyLefthookHooks(repoRoot) {
+function listManagedAgentplaneHooks(repoRoot) {
   const hooksDir = resolveGitHooksDir(repoRoot);
+  return HOOK_NAMES.filter((hookName) => {
+    const hookText = readHookIfPresent(path.join(hooksDir, hookName));
+    return Boolean(hookText) && isManagedAgentplaneHook(hookText);
+  });
+}
+
+function reconcileManagedHooks(repoRoot) {
+  const hooksDir = resolveGitHooksDir(repoRoot);
+  const managedHooks = listManagedAgentplaneHooks(repoRoot);
   const legacyHooks = listLegacyLefthookHooks(repoRoot);
-  if (legacyHooks.length === 0) return [];
+  if (managedHooks.length === 0 && legacyHooks.length === 0) return [];
   ensureManagedShim(repoRoot);
-  for (const hookName of legacyHooks) {
+  const updatedHooks = [];
+  for (const hookName of HOOK_NAMES) {
     const hookPath = path.join(hooksDir, hookName);
+    const hookText = readHookIfPresent(hookPath);
+    if (hookText && !isManagedAgentplaneHook(hookText) && !isLegacyLefthookHook(hookText)) {
+      continue;
+    }
     fs.writeFileSync(hookPath, hookScriptText(hookName), "utf8");
     fs.chmodSync(hookPath, 0o755);
+    updatedHooks.push(hookName);
   }
-  return legacyHooks;
+  return updatedHooks;
 }
 
 function linkDirectoryFromCommonRoot(repoRoot, commonRepoRoot, relativePath) {
@@ -285,11 +300,9 @@ export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec
   exec(repoRoot, "bun", ["run", "--filter=agentplane", "build"]);
 
   ensureManagedShim(repoRoot);
-  const repairedLegacyHooks = repairLegacyLefthookHooks(repoRoot);
-  if (repairedLegacyHooks.length > 0) {
-    process.stdout.write(
-      `==> Repairing legacy lefthook-generated git hooks: ${repairedLegacyHooks.join(", ")}\n`,
-    );
+  const reconciledHooks = reconcileManagedHooks(repoRoot);
+  if (reconciledHooks.length > 0) {
+    process.stdout.write(`==> Reconciling managed git hooks: ${reconciledHooks.join(", ")}\n`);
   }
 
   process.stdout.write("==> Verifying repo-local runtime\n");

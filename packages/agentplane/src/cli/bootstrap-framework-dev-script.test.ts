@@ -116,6 +116,39 @@ describe("bootstrap-framework-dev script", () => {
     expect(shim).toContain("agentplane-hook-shim");
   });
 
+  it("reconciles the managed hook set and adds a missing post-merge hook", async () => {
+    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
+    const repoRoot = await mkFrameworkRepo();
+    await mkdir(path.join(repoRoot, "node_modules"), { recursive: true });
+    await mkdir(path.join(repoRoot, "packages", "core", "node_modules"), { recursive: true });
+    await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
+      recursive: true,
+    });
+    await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
+    await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
+    await writeFile(
+      path.join(repoRoot, ".git", "hooks", "pre-push"),
+      '#!/usr/bin/env sh\n# agentplane-hook (do not edit)\nexec agentplane hooks run pre-push "$@"\n',
+      "utf8",
+    );
+    const calls: string[] = [];
+    const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
+      recordCallExec(currentRepoRoot, cmd, args, calls);
+
+    runFrameworkDevBootstrap(repoRoot, exec, {
+      resolveCommonRepoRoot: () => repoRoot,
+    });
+
+    expect(calls).toEqual([
+      "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=agentplane build",
+      "node packages/agentplane/bin/agentplane.js runtime explain",
+    ]);
+    const postMerge = await readFile(path.join(repoRoot, ".git", "hooks", "post-merge"), "utf8");
+    expect(postMerge).toContain("agentplane-hook");
+    expect(postMerge).toContain("hooks run post-merge");
+  });
+
   it("reuses common-root dependencies and recipes for a fresh worktree checkout", async () => {
     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
     const commonRepoRoot = await mkFrameworkRepo();

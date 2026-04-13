@@ -61,6 +61,16 @@ const PRE_PUSH_HOOK_SCRIPT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../../../../scripts/run-pre-push-hook.mjs",
 );
+const TEST_WORKFLOW_GITIGNORE = ".agentplane/worktrees\n.agentplane/cache\n";
+
+function markTaskDoneWithCommit(readmeText: string, hash: string, message: string): string {
+  const commitBlock = `commit:\n  hash: "${hash}"\n  message: "${message}"`;
+  const withDoneStatus = readmeText.replace('status: "TODO"', 'status: "DONE"');
+  if (withDoneStatus.includes("commit: null")) {
+    return withDoneStatus.replace("commit: null", commitBlock);
+  }
+  return withDoneStatus.replace("comments:", `${commitBlock}\ncomments:`);
+}
 
 describe("runCli", () => {
   it("hooks install writes managed hooks and shim", async () => {
@@ -78,10 +88,13 @@ describe("runCli", () => {
     const hooksDir = path.join(root, ".git", "hooks");
     const commitMsg = await readFile(path.join(hooksDir, "commit-msg"), "utf8");
     const preCommit = await readFile(path.join(hooksDir, "pre-commit"), "utf8");
+    const postMerge = await readFile(path.join(hooksDir, "post-merge"), "utf8");
     const shim = await readFile(path.join(root, ".agentplane", "bin", "agentplane"), "utf8");
 
     expect(commitMsg).toContain("agentplane-hook");
     expect(preCommit).toContain("agentplane-hook");
+    expect(postMerge).toContain("agentplane-hook");
+    expect(postMerge).toContain("hooks run post-merge");
     expect(shim).toContain("agentplane-hook-shim");
     expect(shim).toContain("AGENTPLANE_HOOK_RUNNER");
   });
@@ -466,6 +479,80 @@ describe("runCli", () => {
       io.restore();
     }
   });
+
+  it("hooks run post-merge prunes merged local task worktrees on the base branch", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+    await commitAll(root, "chore base");
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Post-merge hook prune",
+        "--description",
+        "cleanup candidate",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await commitAll(root, `chore ${taskId} scaffold`);
+
+    const integratedRev = await promisify(execFile)("git", ["rev-parse", "HEAD"], { cwd: root });
+    const integratedHash = integratedRev.stdout.trim();
+    const task = await readTask({ cwd: root, taskId });
+    const readmeText = await readFile(task.readmePath, "utf8");
+    await writeFile(
+      task.readmePath,
+      markTaskDoneWithCommit(readmeText, integratedHash, "integrated on main"),
+      "utf8",
+    );
+    await commitAll(root, `chore ${taskId} done`);
+
+    const branch = `task/${taskId}/post-merge-prune`;
+    const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-post-merge-prune`);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const prDir = path.join(worktreePath, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(path.join(prDir, "review.md"), "stale task tail\n", "utf8");
+    await commitAll(worktreePath, `chore ${taskId} stale pr tail`);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "post-merge", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stderr).not.toContain("post-merge cleanup skipped");
+    } finally {
+      io.restore();
+    }
+
+    expect(await gitBranchExists(root, branch)).toBe(false);
+    expect(await pathExists(worktreePath)).toBe(false);
+  }, 120_000);
 
   it("pre-push hook blocks formatting drift without mutating tracked files", async () => {
     const root = await mkGitRepoRoot();

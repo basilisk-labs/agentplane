@@ -1,0 +1,7 @@
+ .agentplane/tasks/202604131518-Z6CZ88/README.md    | 118 +++++++++++++++++++++
+ .gitignore                                         |   1 +
+ .../src/cli/bootstrap-framework-dev-script.test.ts |  33 ++++++
+ .../agentplane/src/cli/run-cli.core.hooks.test.ts  |  87 +++++++++++++++
+ packages/agentplane/src/commands/hooks/index.ts    |  44 +++++++-
+ scripts/bootstrap-framework-dev.mjs                |  33 ++++--
+ 6 files changed, 305 insertions(+), 11 deletions(-)
