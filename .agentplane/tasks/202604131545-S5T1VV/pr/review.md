@@ -45,12 +45,16 @@ Make automated post-merge cleanup skip outside-repo/current worktrees instead of
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-13T15:48:44.429Z
+- Updated: 2026-04-13T15:49:28.896Z
 - Branch: task/202604131545-S5T1VV/skip-unsafe-post-merge-cleanup
-- Head: 464f660b3f28
+- Head: 3a8673431ffd
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604131545-S5T1VV/README.md    | 116 +++++++++++++++++
+ .../agentplane/src/cli/run-cli.core.hooks.test.ts  | 145 +++++++++++++++++++++
+ .../src/commands/branch/cleanup-merged.ts          |  32 +++--
+ packages/agentplane/src/commands/hooks/index.ts    |   1 +
+ 4 files changed, 285 insertions(+), 9 deletions(-)
 ```
 
 </details>
