@@ -12,7 +12,7 @@ When release apply runs with --push on a non-base branch in branch_pr mode, publ
 ## Verification
 
 - State: ok
-- Note: - Fixed repo-local hook shim precedence so fresh worktrees prefer local packages/agentplane/bin/agentplane.js before AGENTPLANE_HOOK_RUNNER. - Ensured framework bootstrap always materializes the managed .agentplane/bin/agentplane shim and work start seeds the same shim into fresh worktrees. - Verified with: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000
+- Note: - Fixed the hosted Significant File Coverage regression by updating commit-wrapper coverage expectations for the artifact follow-up commit produced by agentplane commit. - Verified with: bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts -t "commit wrapper lets --allow-tasks cover a non-README active task artifact without a duplicate explicit prefix" --hookTimeout 60000 --testTimeout 60000 - Verified with: bun run test:significant-coverage
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes

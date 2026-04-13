@@ -4,7 +4,7 @@ title: "Make release apply branch_pr-aware for protected-main publish"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-13T12:39:17.722Z"
+  updated_at: "2026-04-13T12:50:25.535Z"
   updated_by: "CODER"
-  note: "- Fixed repo-local hook shim precedence so fresh worktrees prefer local packages/agentplane/bin/agentplane.js before AGENTPLANE_HOOK_RUNNER. - Ensured framework bootstrap always materializes the managed .agentplane/bin/agentplane shim and work start seeds the same shim into fresh worktrees. - Verified with: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000"
+  note: "- Fixed the hosted Significant File Coverage regression by updating commit-wrapper coverage expectations for the artifact follow-up commit produced by agentplane commit. - Verified with: bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts -t \"commit wrapper lets --allow-tasks cover a non-README active task artifact without a duplicate explicit prefix\" --hookTimeout 60000 --testTimeout 60000 - Verified with: bun run test:significant-coverage"
 commit: null
 comments:
   -
@@ -72,8 +72,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "- Fixed repo-local hook shim precedence so fresh worktrees prefer local packages/agentplane/bin/agentplane.js before AGENTPLANE_HOOK_RUNNER. - Ensured framework bootstrap always materializes the managed .agentplane/bin/agentplane shim and work start seeds the same shim into fresh worktrees. - Verified with: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000"
+  -
+    type: "verify"
+    at: "2026-04-13T12:50:25.535Z"
+    author: "CODER"
+    state: "ok"
+    note: "- Fixed the hosted Significant File Coverage regression by updating commit-wrapper coverage expectations for the artifact follow-up commit produced by agentplane commit. - Verified with: bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts -t \"commit wrapper lets --allow-tasks cover a non-README active task artifact without a duplicate explicit prefix\" --hookTimeout 60000 --testTimeout 60000 - Verified with: bun run test:significant-coverage"
 doc_version: 3
-doc_updated_at: "2026-04-13T12:39:17.732Z"
+doc_updated_at: "2026-04-13T12:50:25.569Z"
 doc_updated_by: "CODER"
 description: "When release apply runs with --push on a non-base branch in branch_pr mode, publish the release candidate by pushing the current task branch without creating or pushing a local release tag, and record that final publish is deferred to the main-driven workflow after merge."
 sections:
@@ -138,6 +144,14 @@ sections:
     Note: - Fixed repo-local hook shim precedence so fresh worktrees prefer local packages/agentplane/bin/agentplane.js before AGENTPLANE_HOOK_RUNNER. - Ensured framework bootstrap always materializes the managed .agentplane/bin/agentplane shim and work start seeds the same shim into fresh worktrees. - Verified with: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T12:26:41.424Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-04-13T12:50:25.535Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: - Fixed the hosted Significant File Coverage regression by updating commit-wrapper coverage expectations for the artifact follow-up commit produced by agentplane commit. - Verified with: bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts -t "commit wrapper lets --allow-tasks cover a non-README active task artifact without a duplicate explicit prefix" --hookTimeout 60000 --testTimeout 60000 - Verified with: bun run test:significant-coverage
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T12:39:17.732Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -217,6 +231,14 @@ By: CODER
 Note: - Fixed repo-local hook shim precedence so fresh worktrees prefer local packages/agentplane/bin/agentplane.js before AGENTPLANE_HOOK_RUNNER. - Ensured framework bootstrap always materializes the managed .agentplane/bin/agentplane shim and work start seeds the same shim into fresh worktrees. - Verified with: bunx vitest run packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts packages/agentplane/src/commands/release/apply.test.ts --hookTimeout 60000 --testTimeout 60000
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T12:26:41.424Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+### 2026-04-13T12:50:25.535Z — VERIFY — ok
+
+By: CODER
+
+Note: - Fixed the hosted Significant File Coverage regression by updating commit-wrapper coverage expectations for the artifact follow-up commit produced by agentplane commit. - Verified with: bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts -t "commit wrapper lets --allow-tasks cover a non-README active task artifact without a duplicate explicit prefix" --hookTimeout 60000 --testTimeout 60000 - Verified with: bun run test:significant-coverage
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-13T12:39:17.732Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 <!-- END VERIFICATION RESULTS -->
 

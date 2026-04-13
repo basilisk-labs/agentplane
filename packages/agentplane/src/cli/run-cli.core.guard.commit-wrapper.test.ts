@@ -621,14 +621,23 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const showRes = await execFileAsync("git", ["show", "--name-only", "--format="], {
+    const headRes = await execFileAsync("git", ["show", "--name-only", "--format="], {
       cwd: root,
     });
-    const changed = showRes.stdout
+    const headChanged = headRes.stdout
       .split("\n")
       .map((s) => s.trim())
       .filter(Boolean);
-    expect(changed).toEqual([`.agentplane/tasks/${taskId}/evidence.txt`, "src/app.ts"]);
+    expect(headChanged).toEqual([`.agentplane/tasks/${taskId}/README.md`]);
+
+    const codeRes = await execFileAsync("git", ["show", "--name-only", "--format=", "HEAD~1"], {
+      cwd: root,
+    });
+    const codeChanged = codeRes.stdout
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    expect(codeChanged).toEqual([`.agentplane/tasks/${taskId}/evidence.txt`, "src/app.ts"]);
   });
 
   it("commit wrapper surfaces invalid task README frontmatter as the concrete reconcile failure", async () => {
