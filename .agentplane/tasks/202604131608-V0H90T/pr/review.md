@@ -45,12 +45,15 @@ Let repo-local post-merge hooks run in warn-and-run mode under stale-dist so mer
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-13T16:09:25.111Z
+- Updated: 2026-04-13T16:12:03.417Z
 - Branch: task/202604131608-V0H90T/stale-post-merge-allowlist
-- Head: da3c9773871c
+- Head: 591a613ca522
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604131608-V0H90T/README.md    | 121 +++++++++++++++++++++
+ packages/agentplane/bin/stale-dist-policy.js       |   7 +-
+ .../agentplane/src/cli/stale-dist-readonly.test.ts |  21 ++++
+ 3 files changed, 148 insertions(+), 1 deletion(-)
 ```
 
 </details>
