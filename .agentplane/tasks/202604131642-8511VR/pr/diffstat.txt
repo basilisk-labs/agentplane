@@ -1,0 +1,8 @@
+ .agentplane/tasks/202604131642-8511VR/README.md    | 135 +++++++++++++++++++++
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts |   2 +
+ .../src/cli/run-cli.core.pr-flow.test.ts           |  45 +++----
+ .../agentplane/src/commands/branch/work-start.ts   |  14 +++
+ .../src/commands/shared/task-backend.test.ts       |  59 +++++++++
+ .../agentplane/src/commands/shared/task-backend.ts |  36 +++++-
+ .../agentplane/src/commands/task/start-ready.ts    | 105 ----------------
+ 7 files changed, 263 insertions(+), 133 deletions(-)
