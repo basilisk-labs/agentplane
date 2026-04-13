@@ -17,4 +17,5 @@
  packages/agentplane/src/commands/pr/update.ts      |   1 +
  .../commands/shared/post-commit-pr-artifacts.ts    |  40 ++++++
  .../src/commands/shared/task-local-freshness.ts    |  10 +-
- 19 files changed, 861 insertions(+), 67 deletions(-)
+ scripts/run-local-ci.mjs                           |  52 +++++---
+ 20 files changed, 898 insertions(+), 82 deletions(-)

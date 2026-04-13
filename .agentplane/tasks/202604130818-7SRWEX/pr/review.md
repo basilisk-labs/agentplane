@@ -46,9 +46,9 @@ Eliminate two confirmed release-path blockers: (1) PR artifact self-reference th
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-13T10:05:02.541Z
+- Updated: 2026-04-13T10:30:00.122Z
 - Branch: task/202604130818-7SRWEX/release-hardening
-- Head: d8e3ea934200
+- Head: c66f535f9d0f
 
 ```text
  .agentplane/tasks/202604130818-7SRWEX/README.md    | 118 +++++++++++++++++
@@ -70,7 +70,8 @@ Eliminate two confirmed release-path blockers: (1) PR artifact self-reference th
  packages/agentplane/src/commands/pr/update.ts      |   1 +
  .../commands/shared/post-commit-pr-artifacts.ts    |  40 ++++++
  .../src/commands/shared/task-local-freshness.ts    |  10 +-
- 19 files changed, 861 insertions(+), 67 deletions(-)
+ scripts/run-local-ci.mjs                           |  52 +++++---
+ 20 files changed, 898 insertions(+), 82 deletions(-)
 ```
 
 </details>
