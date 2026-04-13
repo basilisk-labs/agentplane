@@ -1,10 +1,11 @@
 ---
 id: "202604131329-KHYHBT"
 title: "Recover task hosted-close when base-side pr meta is missing"
-status: "DOING"
+result_summary: "Merged via PR #275."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-13T13:37:53.783Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass. Evidence: 6/6 hosted-close and hosted-close-pr tests passed, including the missing base-side pr/meta.json regression. Scope: hosted-close merge-event fallback and adjacent closure recovery paths. Command: bun run framework:dev:bootstrap; Result: pass. Evidence: core build, agentplane build, and repo-local runtime verification completed without stale-snapshot warnings afterward. Scope: repo-local CLI runtime aligned with the patched hosted-close implementation."
-commit: null
+commit:
+  hash: "5e7ce06aa66bdf5880d223bd753850b246e302cc"
+  message: "workflow: Recover task hosted-close when base-side pr meta is missing (KHYHBT) (#275)"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the merged-hosted-close failure when base-side pr/meta.json is absent, add a fallback that recovers required metadata from the merge event or GitHub lookup, and verify the fix with focused hosted-close coverage so future protected-main release waves do not require a manual closure PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #275 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass. Evidence: 6/6 hosted-close and hosted-close-pr tests passed, including the missing base-side pr/meta.json regression. Scope: hosted-close merge-event fallback and adjacent closure recovery paths. Command: bun run framework:dev:bootstrap; Result: pass. Evidence: core build, agentplane build, and repo-local runtime verification completed without stale-snapshot warnings afterward. Scope: repo-local CLI runtime aligned with the patched hosted-close implementation."
+  -
+    type: "status"
+    at: "2026-04-13T13:51:12.389Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #275 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-13T13:37:53.788Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T13:51:12.396Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make the hosted task closure command recover the merged PR/task metadata from the GitHub event or remote metadata when .agentplane/tasks/<task-id>/pr/meta.json is absent on the base checkout, so protected-main release waves do not require a manual closure PR."
 sections:
   Summary: |-
