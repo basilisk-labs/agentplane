@@ -1,0 +1,5 @@
+ .agentplane/tasks/202604131545-S5T1VV/README.md    | 116 +++++++++++++++++
+ .../agentplane/src/cli/run-cli.core.hooks.test.ts  | 145 +++++++++++++++++++++
+ .../src/commands/branch/cleanup-merged.ts          |  32 +++--
+ packages/agentplane/src/commands/hooks/index.ts    |   1 +
+ 4 files changed, 285 insertions(+), 9 deletions(-)
