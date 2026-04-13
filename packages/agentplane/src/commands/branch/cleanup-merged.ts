@@ -161,6 +161,7 @@ export async function cmdCleanupMerged(opts: {
   deleteRemoteBranches: boolean;
   fetch: boolean;
   quiet: boolean;
+  skipUnsafeWorktrees?: boolean;
 }): Promise<number> {
   try {
     const ctx =
@@ -246,18 +247,26 @@ export async function cmdCleanupMerged(opts: {
       return 0;
     }
 
+    const skipUnsafeWorktrees = opts.skipUnsafeWorktrees === true;
     let deletedRemoteBranches = 0;
+    let skippedUnsafe = 0;
     for (const item of sortedCandidates) {
       const worktreePath = item.worktreePath ? await resolvePathFallback(item.worktreePath) : null;
       if (worktreePath) {
-        if (!isPathWithin(repoRoot, worktreePath)) {
-          throw new CliError({
-            exitCode: 5,
-            code: "E_GIT",
-            message: `Refusing to remove worktree outside repo: ${worktreePath}`,
-          });
-        }
-        if (worktreePath === repoRoot) {
+        const outsideRepo = !isPathWithin(repoRoot, worktreePath);
+        const currentWorktree = worktreePath === repoRoot;
+        if (outsideRepo || currentWorktree) {
+          if (skipUnsafeWorktrees) {
+            skippedUnsafe += 1;
+            continue;
+          }
+          if (outsideRepo) {
+            throw new CliError({
+              exitCode: 5,
+              code: "E_GIT",
+              message: `Refusing to remove worktree outside repo: ${worktreePath}`,
+            });
+          }
           throw new CliError({
             exitCode: 5,
             code: "E_GIT",
@@ -299,7 +308,12 @@ export async function cmdCleanupMerged(opts: {
       const remoteDetail = opts.deleteRemoteBranches
         ? ` remote_deleted=${deletedRemoteBranches}`
         : "";
-      output.success("cleanup merged", undefined, `deleted=${candidates.length}${remoteDetail}`);
+      const skippedDetail = skipUnsafeWorktrees ? ` skipped_unsafe=${skippedUnsafe}` : "";
+      output.success(
+        "cleanup merged",
+        undefined,
+        `deleted=${candidates.length - skippedUnsafe}${remoteDetail}${skippedDetail}`,
+      );
     }
     return 0;
   } catch (err) {

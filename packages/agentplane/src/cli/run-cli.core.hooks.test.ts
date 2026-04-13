@@ -554,6 +554,151 @@ describe("runCli", () => {
     expect(await pathExists(worktreePath)).toBe(false);
   }, 120_000);
 
+  it("hooks run post-merge skips unsafe outside-root worktrees while pruning safe merged tails", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+    await commitAll(root, "chore base");
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const execFileAsync = promisify(execFile);
+
+    let safeTaskId = "";
+    const safeIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Post-merge hook safe prune",
+        "--description",
+        "cleanup candidate",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      safeTaskId = safeIo.stdout.trim();
+    } finally {
+      safeIo.restore();
+    }
+    await commitAll(root, `chore ${safeTaskId} scaffold`);
+    const integratedRev = await promisify(execFile)("git", ["rev-parse", "HEAD"], { cwd: root });
+    const integratedHash = integratedRev.stdout.trim();
+    const safeTask = await readTask({ cwd: root, taskId: safeTaskId });
+    const safeReadmeText = await readFile(safeTask.readmePath, "utf8");
+    await writeFile(
+      safeTask.readmePath,
+      markTaskDoneWithCommit(safeReadmeText, integratedHash, "integrated on main"),
+      "utf8",
+    );
+    await commitAll(root, `chore ${safeTaskId} done`);
+
+    const safeBranch = `task/${safeTaskId}/post-merge-prune-safe`;
+    const safeWorktreePath = path.join(
+      root,
+      ".agentplane",
+      "worktrees",
+      `${safeTaskId}-post-merge-prune-safe`,
+    );
+    await execFileAsync("git", ["worktree", "add", "-b", safeBranch, safeWorktreePath, "main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const safePrDir = path.join(safeWorktreePath, ".agentplane", "tasks", safeTaskId, "pr");
+    await mkdir(safePrDir, { recursive: true });
+    await writeFile(path.join(safePrDir, "review.md"), "stale task tail\n", "utf8");
+    await commitAll(safeWorktreePath, `chore ${safeTaskId} stale pr tail`);
+
+    let outsideTaskId = "";
+    const outsideIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Post-merge hook unsafe skip",
+        "--description",
+        "cleanup candidate",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      outsideTaskId = outsideIo.stdout.trim();
+    } finally {
+      outsideIo.restore();
+    }
+    await commitAll(root, `chore ${outsideTaskId} scaffold`);
+    const outsideTask = await readTask({ cwd: root, taskId: outsideTaskId });
+    const outsideReadmeText = await readFile(outsideTask.readmePath, "utf8");
+    await writeFile(
+      outsideTask.readmePath,
+      markTaskDoneWithCommit(outsideReadmeText, integratedHash, "integrated on main"),
+      "utf8",
+    );
+    await commitAll(root, `chore ${outsideTaskId} done`);
+
+    const outsideBranch = `task/${outsideTaskId}/post-merge-prune-outside`;
+    const outsideWorktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-"));
+    await execFileAsync(
+      "git",
+      ["worktree", "add", "-b", outsideBranch, outsideWorktreePath, "main"],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    const outsidePrDir = path.join(
+      outsideWorktreePath,
+      ".agentplane",
+      "tasks",
+      outsideTaskId,
+      "pr",
+    );
+    await mkdir(outsidePrDir, { recursive: true });
+    await writeFile(path.join(outsidePrDir, "review.md"), "outside task tail\n", "utf8");
+    await commitAll(outsideWorktreePath, `chore ${outsideTaskId} outside pr tail`);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "post-merge", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stderr).not.toContain("post-merge cleanup skipped");
+    } finally {
+      io.restore();
+    }
+
+    expect(await gitBranchExists(root, safeBranch)).toBe(false);
+    expect(await pathExists(safeWorktreePath)).toBe(false);
+    expect(await gitBranchExists(root, outsideBranch)).toBe(true);
+    expect(await pathExists(outsideWorktreePath)).toBe(true);
+
+    await execFileAsync("git", ["worktree", "remove", "--force", outsideWorktreePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["branch", "-D", outsideBranch], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+  }, 120_000);
+
   it("pre-push hook blocks formatting drift without mutating tracked files", async () => {
     const root = await mkGitRepoRoot();
     await writeFile(

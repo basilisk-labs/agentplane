@@ -426,6 +426,7 @@ export async function cmdHooksRun(opts: {
           deleteRemoteBranches: false,
           fetch: false,
           quiet: true,
+          skipUnsafeWorktrees: true,
         });
       } catch (error) {
         const message =
