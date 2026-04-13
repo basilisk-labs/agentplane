@@ -404,6 +404,17 @@ function buildLocallySyncedPrMeta(opts: {
   };
 }
 
+function isStackedBranchAliasDoneTask(opts: {
+  task: TaskData;
+  branch: string;
+}): boolean {
+  const branchTaskId = parseTaskIdFromBranch("task", opts.branch);
+  if (!branchTaskId || branchTaskId === opts.task.id) return false;
+  const summary = opts.task.result_summary?.trim().toLowerCase() ?? "";
+  if (!summary.includes("stacked branch_pr merge rooted at")) return false;
+  return summary.includes(branchTaskId.toLowerCase());
+}
+
 async function readPrMetaIfPresent(opts: {
   ctx: CommandContext;
   taskId: string;
@@ -585,8 +596,11 @@ export async function findDoneBranchPrTasksWithOpenPrArtifacts(opts: {
 
     const branch = meta.branch?.trim() ?? "";
     if (!branch) continue;
+    if (isStackedBranchAliasDoneTask({ task, branch })) continue;
 
-    const commitHash = task.commit?.hash?.trim() ?? meta.head_sha?.trim() ?? "";
+    // Missing implementation commits are handled by a dedicated doctor check, and duplicate/no-op
+    // tasks should not also surface as stale mergeable PR drift just because meta.head_sha exists.
+    const commitHash = task.commit?.hash?.trim() ?? "";
     if (!commitHash) continue;
 
     const base = await resolveSyncBaseBranch({

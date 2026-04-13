@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603261754-VG6FTM/stale-base-guard",
   "created_at": "2026-03-26T18:02:56.990Z",
+  "head_sha": "ef8bacdbde11a1fee971d4d1eb4932a91092b85c",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "ef8bacdbde11a1fee971d4d1eb4932a91092b85c",
+  "merged_at": "2026-04-13T11:13:47.544Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603261754-VG6FTM",
-  "updated_at": "2026-03-26T18:02:56.990Z",
+  "updated_at": "2026-04-13T11:13:47.544Z",
   "verify": {
     "status": "skipped"
   }

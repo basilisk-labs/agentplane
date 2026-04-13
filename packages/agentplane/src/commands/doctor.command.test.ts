@@ -751,6 +751,147 @@ describe("doctor.command", () => {
     expect(findings[0]).toContain(taskId);
   });
 
+  it("ignores duplicate no-op and stacked-root DONE branch_pr records in open-PR drift checks", async () => {
+    const ws = await mkWorkspace();
+    const shippedHash = await gitInitWithCommit(ws.root, "feat: stacked root shipped payload");
+    await writeFile(
+      path.join(ws.root, ".agentplane", "config.json"),
+      '{\n  "version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+      "utf8",
+    );
+    const branchPrWorkflow = VALID_WORKFLOW.replace("mode: direct", 'mode: "branch_pr"');
+    await writeFile(path.join(ws.root, ".agentplane", "WORKFLOW.md"), branchPrWorkflow, "utf8");
+    await writeFile(
+      path.join(ws.root, ".agentplane", "workflows", "last-known-good.md"),
+      branchPrWorkflow,
+      "utf8",
+    );
+
+    const duplicateTaskId = "202604051000-DUPENO";
+    const stackedTaskId = "202604051010-STAKED";
+    const stackedRootTaskId = "202604051020-ROOTED";
+    for (const [taskId, payload] of [
+      [
+        duplicateTaskId,
+        {
+          title: "Duplicate no-op task",
+          result_summary: "Closed as duplicate of 202604051111-CANON1.",
+          commit: null,
+          branch: `task/${duplicateTaskId}/duplicate-noop`,
+        },
+      ],
+      [
+        stackedTaskId,
+        {
+          title: "Stacked task aliasing root branch",
+          result_summary: `Integrated on main with the stacked branch_pr merge rooted at ${stackedRootTaskId}.`,
+          commit: {
+            hash: shippedHash,
+            message: `🧩 ${stackedRootTaskId} integrate: squash task/${stackedRootTaskId}/stacked-root`,
+          },
+          branch: `task/${stackedRootTaskId}/stacked-root`,
+        },
+      ],
+    ] as const) {
+      const taskDir = path.join(ws.root, ".agentplane", "tasks", taskId);
+      await mkdir(path.join(taskDir, "pr"), { recursive: true });
+      await writeFile(
+        path.join(taskDir, "README.md"),
+        renderTaskReadme(
+          {
+            id: taskId,
+            title: payload.title,
+            description: payload.title,
+            status: "DONE",
+            priority: "med",
+            owner: "CODER",
+            depends_on: [],
+            tags: ["workflow"],
+            verify: [],
+            plan_approval: {
+              state: "approved",
+              updated_at: "2026-04-05T10:00:00.000Z",
+              updated_by: "ORCHESTRATOR",
+              note: null,
+            },
+            verification: {
+              state: "ok",
+              updated_at: "2026-04-05T10:10:00.000Z",
+              updated_by: "CODER",
+              note: "verified",
+            },
+            commit: payload.commit,
+            result_summary: payload.result_summary,
+            comments: [],
+            events: [],
+            revision: 1,
+            doc_version: 3,
+            doc_updated_at: "2026-04-05T10:10:00.000Z",
+            doc_updated_by: "CODER",
+            sections: {
+              Summary: payload.title,
+              Scope: "- In scope: keep doctor quiet for non-actionable DONE branch_pr records.",
+              Plan: "1. Run doctor.",
+              "Verify Steps":
+                "1. Run agentplane doctor. Expected: duplicate/no-op and stacked-root alias records do not produce open-PR drift warnings.",
+              Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+              "Rollback Plan": "- Revert.",
+              Findings: "",
+            },
+          },
+          "",
+        ),
+        "utf8",
+      );
+      await writeFile(
+        path.join(taskDir, "pr", "meta.json"),
+        JSON.stringify(
+          {
+            schema_version: 1,
+            task_id: taskId,
+            branch: payload.branch,
+            base: "main",
+            created_at: "2026-04-05T10:00:00.000Z",
+            updated_at: "2026-04-05T10:00:00.000Z",
+            head_sha: shippedHash,
+            last_verified_sha: null,
+            last_verified_at: null,
+            verify: { status: "pass" },
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+    }
+
+    const ctx = {
+      backendId: "local",
+      config: {
+        workflow_mode: "branch_pr",
+        paths: { workflow_dir: ".agentplane/tasks" },
+      },
+      resolvedProject: { gitRoot: ws.root },
+      taskBackend: {
+        listTasks: vi.fn().mockResolvedValue([
+          { id: duplicateTaskId, status: "DONE", commit: null },
+          {
+            id: stackedTaskId,
+            status: "DONE",
+            commit: {
+              hash: shippedHash,
+              message: `🧩 ${stackedRootTaskId} integrate: squash task/${stackedRootTaskId}/stacked-root`,
+            },
+            result_summary: `Integrated on main with the stacked branch_pr merge rooted at ${stackedRootTaskId}.`,
+          },
+        ]),
+      },
+    } as unknown as Parameters<typeof checkBranchPrDoneTaskOpenPrDrift>[0];
+
+    const findings = await checkBranchPrDoneTaskOpenPrDrift(ctx);
+    expect(findings).toHaveLength(0);
+  });
+
   it("warns when a Redmine backend is configured without canonical_state readiness", async () => {
     const ws = await mkWorkspace();
     await configureRedmineBackend(ws.root);

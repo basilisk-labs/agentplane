@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603251539-1WNAZX/operator-pipeline",
   "created_at": "2026-03-27T18:18:22.437Z",
+  "head_sha": "fcdacf8d387309457d3bbf2790c58f0524cedba4",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "fcdacf8d387309457d3bbf2790c58f0524cedba4",
+  "merged_at": "2026-04-13T11:13:47.542Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603251539-1WNAZX",
-  "updated_at": "2026-03-27T18:18:22.437Z",
+  "updated_at": "2026-04-13T11:13:47.542Z",
   "verify": {
     "status": "skipped"
   }

@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202604011037-P771ZK/release-prepublish-tail",
   "created_at": "2026-04-02T15:08:33.896Z",
+  "head_sha": "1baffa489e2d4f01c27e06e05f05a0586a51115c",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "1baffa489e2d4f01c27e06e05f05a0586a51115c",
+  "merged_at": "2026-04-13T11:13:47.554Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604011037-P771ZK",
-  "updated_at": "2026-04-02T15:08:33.896Z",
+  "updated_at": "2026-04-13T11:13:47.554Z",
   "verify": {
     "status": "skipped"
   }

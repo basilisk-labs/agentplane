@@ -53,8 +53,22 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: repaired stale shipped task artifacts for P5XKNF and 59ERCT so main now matches merged GitHub history and local projection state."
+  -
+    type: "status"
+    at: "2026-04-09T09:55:09Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Hosted PR #164 merged on GitHub main; task projection reconciled from hosted PR artifacts."
+  -
+    type: "status"
+    at: "2026-04-09T09:55:09Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Hosted PR #164 merged on GitHub main; task projection reconciled from hosted PR artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-09T09:43:37.232Z"
+doc_updated_at: "2026-04-09T09:55:09Z"
 doc_updated_by: "INTEGRATOR"
 description: "Repair task artifacts for 202604081931-P5XKNF and 202604081956-59ERCT so local backend state matches merged GitHub history and both tasks are marked DONE with traceable result metadata on main."
 sections:

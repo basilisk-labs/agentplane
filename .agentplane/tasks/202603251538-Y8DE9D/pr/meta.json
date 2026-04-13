@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603251538-Y8DE9D/runner-run-repository",
   "created_at": "2026-03-27T10:11:39.115Z",
+  "head_sha": "df97183086761dce47b51908c0d1f2f8ea608a13",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "df97183086761dce47b51908c0d1f2f8ea608a13",
+  "merged_at": "2026-04-13T11:13:47.541Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603251538-Y8DE9D",
-  "updated_at": "2026-03-27T10:11:39.115Z",
+  "updated_at": "2026-04-13T11:13:47.541Z",
   "verify": {
     "status": "skipped"
   }

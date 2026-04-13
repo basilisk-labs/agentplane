@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603261739-GWD3WX/github-flow-audit",
   "created_at": "2026-03-26T17:50:30.817Z",
+  "head_sha": "b653bdeb8f31745c126d775eda078a83b316f073",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "b653bdeb8f31745c126d775eda078a83b316f073",
+  "merged_at": "2026-04-13T11:13:47.544Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603261739-GWD3WX",
-  "updated_at": "2026-03-26T17:50:30.817Z",
+  "updated_at": "2026-04-13T11:13:47.544Z",
   "verify": {
     "status": "skipped"
   }

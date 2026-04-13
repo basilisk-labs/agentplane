@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603251538-VJ5GHJ/cli-registry",
   "created_at": "2026-03-27T10:52:08.712Z",
+  "head_sha": "8c9bb5a56ac94438b573dbcc3625c247d89fe433",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "8c9bb5a56ac94438b573dbcc3625c247d89fe433",
+  "merged_at": "2026-04-13T11:13:47.540Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603251538-VJ5GHJ",
-  "updated_at": "2026-03-27T10:52:08.712Z",
+  "updated_at": "2026-04-13T11:13:47.540Z",
   "verify": {
     "status": "skipped"
   }

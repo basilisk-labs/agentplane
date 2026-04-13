@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603251535-H2EGEM/pr-artifact-state",
   "created_at": "2026-03-26T19:40:10.943Z",
+  "head_sha": "c53b7024b92fc489ee6e8aa7a4f1fccf20c6d57e",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "c53b7024b92fc489ee6e8aa7a4f1fccf20c6d57e",
+  "merged_at": "2026-04-13T11:13:47.534Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603251535-H2EGEM",
-  "updated_at": "2026-03-26T19:40:16.297Z",
+  "updated_at": "2026-04-13T11:13:47.534Z",
   "verify": {
     "status": "skipped"
   }

@@ -5,12 +5,14 @@
   "head_sha": "6321abe29f6043ac52d858f5820ecc44bd45cc89",
   "last_verified_at": "2026-04-10T00:30:41.131Z",
   "last_verified_sha": "029ab8e346d88647acc761f89aa7ddba7f91e72c",
+  "merge_commit": "0f4d2f9a92e09a540103867b212e458fc8569529",
+  "merged_at": "2026-04-13T11:13:47.569Z",
   "pr_number": 249,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/249",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604100023-EVJWDM",
-  "updated_at": "2026-04-10T00:37:13.668Z",
+  "updated_at": "2026-04-13T11:13:47.569Z",
   "verify": {
     "status": "pass"
   }

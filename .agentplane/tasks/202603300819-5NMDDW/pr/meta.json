@@ -1,11 +1,16 @@
 {
+  "base": "main",
   "branch": "task/202603300819-5NMDDW/workflow-branch-pr-artifact",
   "created_at": "2026-03-30T08:55:58.175Z",
+  "head_sha": "f25e68dc65d83103bed33c3c989e8961853645f8",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "f25e68dc65d83103bed33c3c989e8961853645f8",
+  "merged_at": "2026-04-13T11:13:47.548Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202603300819-5NMDDW",
-  "updated_at": "2026-03-30T08:56:32.527Z",
+  "updated_at": "2026-04-13T11:13:47.548Z",
   "verify": {
     "status": "skipped"
   }
