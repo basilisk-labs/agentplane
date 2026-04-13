@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604131120-S42Z30/format-prepush-blockers",
   "created_at": "2026-04-13T11:21:14.226Z",
-  "head_sha": "095510aedc6a0a0a2bfa0ad094eed53f9f564e2d",
+  "head_sha": "0f13ddbd2c94f63524322a1ef31e8dca6da918db",
   "last_verified_at": "2026-04-13T11:22:42.468Z",
   "last_verified_sha": "095510aedc6a0a0a2bfa0ad094eed53f9f564e2d",
+  "merge_commit": "c325ff98b35cbb282c4b4a9dedb4840cf8481dd0",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-13T11:23:08.084Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604131120-S42Z30",
-  "updated_at": "2026-04-13T11:22:20.606Z",
+  "updated_at": "2026-04-13T11:23:08.084Z",
   "verify": {
     "status": "pass"
   }

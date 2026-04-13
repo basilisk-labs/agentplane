@@ -1,10 +1,11 @@
 ---
 id: "202604131120-S42Z30"
 title: "Format release hardening files blocked by pre-push"
-status: "DOING"
+result_summary: "integrate: squash task/202604131120-S42Z30/format-prepush-blockers"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-13T11:22:42.468Z"
   updated_by: "CODER"
   note: "Pre-push formatting blockers were rewritten and format:check now passes."
-commit: null
+commit:
+  hash: "c325ff98b35cbb282c4b4a9dedb4840cf8481dd0"
+  message: "🧩 S42Z30 integrate: workflow: Format release hardening files blocked by pre-push"
 comments:
   -
     author: "CODER"
     body: "Start: format the three files currently failing pre-push, verify format:check passes, then hand the cleanup back to base for final push."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604131120-S42Z30/pr."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pre-push formatting blockers were rewritten and format:check now passes."
+  -
+    type: "status"
+    at: "2026-04-13T11:23:08.204Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via squash; verify=skipped(no commands); pr=.agentplane/tasks/202604131120-S42Z30/pr."
 doc_version: 3
-doc_updated_at: "2026-04-13T11:22:42.494Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T11:23:08.213Z"
+doc_updated_by: "INTEGRATOR"
 description: "Apply required Prettier formatting to the release-hardening files that currently block git push origin main after the branch_pr reconciliation fixes."
 sections:
   Summary: |-
