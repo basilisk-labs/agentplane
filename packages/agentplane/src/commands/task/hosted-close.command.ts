@@ -118,8 +118,10 @@ function buildFallbackPrMeta(opts: {
   mergedPr: HostedMergeTarget["mergedPr"];
 }): PrMeta {
   const at = opts.mergedPr.mergedAt ?? new Date().toISOString();
-  const headSha = opts.mergedPr.headRefOid?.trim() || undefined;
-  const prUrl = opts.mergedPr.url?.trim() || undefined;
+  const headShaRaw = opts.mergedPr.headRefOid?.trim();
+  const headSha = headShaRaw && headShaRaw.length > 0 ? headShaRaw : undefined;
+  const prUrlRaw = opts.mergedPr.url?.trim();
+  const prUrl = prUrlRaw && prUrlRaw.length > 0 ? prUrlRaw : undefined;
   return {
     schema_version: 1,
     task_id: opts.taskId,
