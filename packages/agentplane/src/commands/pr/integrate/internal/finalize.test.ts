@@ -155,6 +155,7 @@ describe("pr/integrate/internal/finalize", () => {
         taskId: "T-1",
         baseBranchOverride: "main",
         allowPolicy: false,
+        closeRefreshTaskArtifacts: false,
       }),
     );
     expect(mocks.collectTaskIncidents).toHaveBeenNthCalledWith(

@@ -152,6 +152,9 @@ export async function finalizeIntegrate(opts: {
     baseBranchOverride: opts.base,
     quiet: opts.quiet,
     allowPolicy: collectedIncidents.wrote,
+    // finalizeIntegrate already wrote the canonical MERGED task packet on the base checkout.
+    // Re-running branch-side PR artifact refresh here can regress pr/meta.json back to OPEN.
+    closeRefreshTaskArtifacts: false,
   });
 
   if (!opts.quiet) {

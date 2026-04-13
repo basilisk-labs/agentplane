@@ -884,12 +884,151 @@ describe("runCli", () => {
       ioShow.restore();
     }
 
+    const syncedMeta = JSON.parse(
+      await readFile(path.join(prDir, "meta.json"), "utf8"),
+    ) as Record<string, unknown>;
+    expect(syncedMeta.status).toBe("MERGED");
+    expect(syncedMeta.base).toBe("main");
+    expect(syncedMeta.merge_commit).toBe(shippedHash);
+
     const incidents = await readFile(
       path.join(root, ".agentplane", "policy", "incidents.md"),
       "utf8",
     );
     expect(incidents).toContain(`source_task: ${taskId}`);
     expect(incidents).toContain("fixability: external");
+  }, 20_000);
+
+  it("task normalize --sync-branch-pr-state reconciles DONE branch_pr tasks with OPEN PR artifacts already shipped on base", async () => {
+    const root = await writeAndConfigureRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root, env: cleanGitEnv() });
+    await writeFile(path.join(root, "feature.txt"), "shipped payload\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt", ".agentplane/config.json"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["commit", "--no-verify", "-m", "feat: shipped payload"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const shippedHash = stdout.trim();
+
+    const taskId = "202604050900-SYNC03";
+    const addCode = await runCliSilent([
+      "task",
+      "add",
+      taskId,
+      "--title",
+      "Done local branch_pr reconcile task",
+      "--description",
+      "Sync done local branch_pr task state",
+      "--priority",
+      "med",
+      "--owner",
+      "CODER",
+      "--tag",
+      "workflow",
+      "--root",
+      root,
+    ]);
+    expect(addCode).toBe(0);
+    await runCliSilent([
+      "task",
+      "set-status",
+      taskId,
+      "DOING",
+      "--commit",
+      shippedHash,
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "CODER",
+      "--note",
+      "verified shipped state",
+      "--quiet",
+      "--root",
+      root,
+    ]);
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readmeText = await readFile(readmePath, "utf8");
+    await writeFile(readmePath, readmeText.replace('status: "DOING"', 'status: "DONE"'), "utf8");
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          branch: `task/${taskId}/sync-local-done`,
+          base: "main",
+          created_at: "2026-04-05T09:00:00.000Z",
+          updated_at: "2026-04-05T09:00:00.000Z",
+          status: "OPEN",
+          head_sha: "branch-head-sha",
+          last_verified_sha: shippedHash,
+          last_verified_at: "2026-04-05T09:10:00.000Z",
+          verify: { status: "pass" },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const ioNormalize = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "normalize",
+        "--sync-branch-pr-state",
+        "--task-id",
+        taskId,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(ioNormalize.stdout).toContain("synced_branch_pr_state=1");
+    } finally {
+      ioNormalize.restore();
+    }
+
+    const ioShow = captureStdIO();
+    try {
+      const showCode = await runCli(["task", "show", taskId, "--root", root]);
+      expect(showCode).toBe(0);
+      const task = JSON.parse(ioShow.stdout) as {
+        status?: string;
+        commit?: { hash?: string } | null;
+      };
+      expect(task.status).toBe("DONE");
+      expect(task.commit?.hash).toBe(shippedHash);
+    } finally {
+      ioShow.restore();
+    }
+
+    const syncedMeta = JSON.parse(
+      await readFile(path.join(prDir, "meta.json"), "utf8"),
+    ) as Record<string, unknown>;
+    expect(syncedMeta.status).toBe("MERGED");
+    expect(syncedMeta.base).toBe("main");
+    expect(syncedMeta.merge_commit).toBe(shippedHash);
+    expect(syncedMeta.head_sha).toBe("branch-head-sha");
   }, 20_000);
 
   it("task normalize --sync-branch-pr-state scopes reconcile to selected task ids", async () => {

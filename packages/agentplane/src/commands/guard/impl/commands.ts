@@ -416,6 +416,7 @@ export async function cmdCommit(opts: {
   closeUnstageOthers: boolean;
   closeCheckOnly: boolean;
   closeStageTaskArtifacts?: boolean;
+  closeRefreshTaskArtifacts?: boolean;
 }): Promise<number> {
   try {
     const ctx =
@@ -485,15 +486,17 @@ export async function cmdCommit(opts: {
         return 0;
       }
       if (opts.closeStageTaskArtifacts === true) {
-        await refreshBranchPrArtifactsAfterTaskCommit({
-          ctx,
-          cwd: opts.cwd,
-          rootOverride: opts.rootOverride,
-          taskId: opts.taskId,
-          quiet: opts.quiet,
-        });
+        if (opts.closeRefreshTaskArtifacts !== false) {
+          await refreshBranchPrArtifactsAfterTaskCommit({
+            ctx,
+            cwd: opts.cwd,
+            rootOverride: opts.rootOverride,
+            taskId: opts.taskId,
+            quiet: opts.quiet,
+          });
+        }
         // Artifact refresh writes tracked task files on disk; invalidate the memoized
-        // porcelain snapshot so staging/cleanliness checks see the refreshed state.
+        // porcelain snapshot so staging/cleanliness checks see the current task artifact state.
         ctx.git.invalidateStatus();
       }
       await (opts.closeStageTaskArtifacts === true

@@ -74,9 +74,9 @@ export async function checkBranchPrDoneTaskOpenPrDrift(ctx?: CommandContext): Pr
       likelyCause:
         "the task was marked DONE, but its branch_pr PR artifacts were never reconciled to MERGED and the task branch still exists",
       nextAction: {
-        command: "agentplane task normalize --sync-hosted-merges --task-id <task-id>",
+        command: "agentplane task normalize --sync-branch-pr-state --task-id <task-id>",
         reason:
-          "reconcile the shipped task's branch_pr PR artifacts to MERGED without scanning unrelated task history",
+          "reconcile the shipped task's local branch_pr state and PR artifacts to MERGED without scanning unrelated task history",
       },
       details: [
         `Affected tasks: ${matches.length}`,

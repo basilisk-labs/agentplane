@@ -535,6 +535,55 @@ describe("guard/impl/commands", () => {
     );
   });
 
+  it("cmdCommit close can skip PR artifact refresh while still staging task artifact scope", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusChangedPaths.mockResolvedValue([
+      ".agentplane/tasks/T-12/pr/meta.json",
+      ".agentplane/tasks/T-12/pr/review.md",
+    ]);
+    mocks.loadTaskFromContext.mockResolvedValue({ id: "T-12" });
+    mocks.buildCloseCommitMessage.mockResolvedValue({
+      subject: "✅ ABC123 close: done",
+      body: "body",
+    });
+    mocks.taskReadmePathForTask.mockReturnValue("/repo/.agentplane/tasks/T-12/README.md");
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-12" });
+
+    const rc = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-12",
+      message: "",
+      close: true,
+      allow: [],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+      closeStageTaskArtifacts: true,
+      closeRefreshTaskArtifacts: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(mocks.refreshBranchPrArtifactsAfterTaskCommit).not.toHaveBeenCalled();
+    expect(ctx.git.invalidateStatus).toHaveBeenCalled();
+    expect(ctx.git.stage).toHaveBeenCalledWith([
+      ".agentplane/tasks/T-12/pr/meta.json",
+      ".agentplane/tasks/T-12/pr/review.md",
+    ]);
+    const invalidateOrder =
+      ctx.git.invalidateStatus.mock.invocationCallOrder.at(-1) ?? Number.POSITIVE_INFINITY;
+    expect(invalidateOrder).toBeLessThan(
+      ctx.git.stage.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
+    );
+  });
+
   it("cmdCommit non-close path does not opt into stale-dist bypass", async () => {
     const { cmdCommit } = await import("./commands.js");
     const ctx = mkCtx();
