@@ -1,6 +1,8 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { extractTaskSuffix } from "@agentplaneorg/core";
+
 import { resolveTaskIndexPath } from "../../../backends/task-index.js";
 import { mapCoreError } from "../../../cli/error-map.js";
 import { infoMessage, successMessage } from "../../../cli/output.js";
@@ -8,6 +10,7 @@ import { stripAnsi } from "../../../cli/shared/ansi.js";
 import { withDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commit-pr-artifacts.js";
+import { isTaskLocalAdvancePath } from "../../shared/task-local-freshness.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
 import { loadTaskFromContext } from "../../shared/task-backend.js";
 import { execFileAsync, gitEnv } from "../../shared/git.js";
@@ -124,6 +127,78 @@ function detectCommitFailureSignal(output: string): CommitFailureSignal {
     return "eslint";
   }
   return null;
+}
+
+function taskArtifactRefreshCommitMessage(taskId: string): string {
+  return `📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`;
+}
+
+async function commitRefreshedTaskArtifacts(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  quiet: boolean;
+}): Promise<boolean> {
+  const changedPaths = await opts.ctx.git.statusChangedPaths();
+  const taskArtifactPaths = changedPaths.filter((relPath) =>
+    isTaskLocalAdvancePath({
+      workflowDir: opts.ctx.config.paths.workflow_dir,
+      taskId: opts.taskId,
+      tasksPath: opts.ctx.config.paths.tasks_path,
+      relPath,
+    }),
+  );
+  if (taskArtifactPaths.length === 0) return false;
+
+  await stageAllowlist({
+    ctx: opts.ctx,
+    allow: [],
+    allowTasks: true,
+    allowPolicy: false,
+    allowConfig: false,
+    allowHooks: false,
+    allowCI: false,
+    tasksPath: opts.ctx.config.paths.tasks_path,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
+    taskId: opts.taskId,
+    allowTaskOnly: true,
+    emptyAllowMessage:
+      "PR artifact refresh produced no task-local files to stage for the follow-up commit.",
+    noMatchMessage:
+      "PR artifact refresh produced changes outside the active task artifact scope; inspect the working tree before retrying the commit flow.",
+  });
+
+  const message = taskArtifactRefreshCommitMessage(opts.taskId);
+  await guardCommitCheck({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    baseBranchOverride: null,
+    taskId: opts.taskId,
+    message,
+    allow: [],
+    allowBase: false,
+    allowTasks: true,
+    allowPolicy: false,
+    allowConfig: false,
+    allowHooks: false,
+    allowCI: false,
+    requireClean: true,
+    quiet: opts.quiet,
+  });
+
+  const env = buildGitCommitEnv({
+    taskId: opts.taskId,
+    allowTasks: true,
+    allowBase: false,
+    allowPolicy: false,
+    allowConfig: false,
+    allowHooks: false,
+    allowCI: false,
+  });
+  await opts.ctx.git.commit({ message, env });
+  return true;
 }
 
 function commitFailureDiagnostic(
@@ -553,6 +628,14 @@ export async function cmdCommit(opts: {
     });
     await ctx.git.commit({ message: opts.message, env });
     await refreshBranchPrArtifactsAfterTaskCommit({
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: opts.taskId,
+      quiet: opts.quiet,
+    });
+    ctx.git.invalidateStatus();
+    await commitRefreshedTaskArtifacts({
       ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,

@@ -887,7 +887,7 @@ describe("runCli", () => {
     expect(after.head_sha).not.toBe(before.head_sha);
   });
 
-  it("commit refreshes branch_pr PR head_sha after a task-scoped commit", async () => {
+  it("commit creates a clean artifact follow-up commit after a task-scoped branch_pr change", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -964,9 +964,41 @@ describe("runCli", () => {
 
     const after = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
     const { stdout: headStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const { stdout: parentStdout } = await execFileAsync("git", ["rev-parse", "HEAD^"], {
+      cwd: root,
+    });
     const headSha = headStdout.trim();
-    expect(after.head_sha).toBe(headSha);
+    const parentSha = parentStdout.trim();
+    expect(headSha).toMatch(/^[0-9a-f]{40}$/u);
+    expect(after.head_sha).toBe(parentSha);
     expect(after.head_sha).not.toBe(before.head_sha);
+
+    const { stdout: subjectsStdout } = await execFileAsync("git", ["log", "-2", "--pretty=%s"], {
+      cwd: root,
+    });
+    const subjects = subjectsStdout
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    expect(subjects[0]).toBe(`📝 ${suffix} task: refresh PR artifacts`);
+    expect(subjects[1]).toBe(
+      `🧩 ${suffix} workflow: refresh branch_pr artifacts after guard commit`,
+    );
+
+    const { stdout: statusStdout } = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=no"],
+      { cwd: root },
+    );
+    expect(statusStdout.trim()).toBe("");
+
+    const ioCheck = captureStdIO();
+    try {
+      const code = await runCli(["pr", "check", taskId, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      ioCheck.restore();
+    }
   });
 
   it("task-only branch_pr commits skip PR self-refresh and leave the tree clean", async () => {
