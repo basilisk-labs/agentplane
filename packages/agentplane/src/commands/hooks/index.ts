@@ -10,15 +10,17 @@ import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { infoMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { cmdCleanupMerged } from "../branch/index.js";
 import { GitContext } from "../shared/git-context.js";
 import { throwIfPolicyDenied } from "../shared/policy-deny.js";
 import { gitCurrentBranch, gitRevParse } from "../shared/git-ops.js";
 import { parseTaskIdFromBranch, parseTaskIdFromCloseBranch } from "../shared/git-worktree.js";
 import { isPathWithin } from "../shared/path.js";
+import { loadCommandContext } from "../shared/task-backend.js";
 
 const HOOK_MARKER = "agentplane-hook";
 const SHIM_MARKER = "agentplane-hook-shim";
-export const HOOK_NAMES = ["commit-msg", "pre-commit", "pre-push"] as const;
+export const HOOK_NAMES = ["commit-msg", "pre-commit", "pre-push", "post-merge"] as const;
 
 async function inferTaskIdFromBranchContext(opts: {
   gitRoot: string;
@@ -393,6 +395,46 @@ export async function cmdHooksRun(opts: {
       });
       if (result.error) throw result.error;
       return result.status ?? (result.signal ? 1 : 0);
+    }
+
+    if (opts.hook === "post-merge") {
+      try {
+        const ctx = await loadCommandContext({
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride ?? null,
+        });
+        if (ctx.config.workflow_mode !== "branch_pr") return 0;
+
+        const baseBranch = await resolveBaseBranch({
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride ?? null,
+          cliBaseOpt: null,
+          mode: ctx.config.workflow_mode,
+        });
+        if (!baseBranch) return 0;
+
+        const currentBranch = await gitCurrentBranch(ctx.resolvedProject.gitRoot);
+        if (currentBranch !== baseBranch) return 0;
+
+        return await cmdCleanupMerged({
+          ctx,
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride,
+          base: baseBranch,
+          yes: true,
+          archive: false,
+          deleteRemoteBranches: false,
+          fetch: false,
+          quiet: true,
+        });
+      } catch (error) {
+        const message =
+          error instanceof Error && error.message.trim().length > 0
+            ? error.message.trim()
+            : String(error);
+        process.stderr.write(`warning: post-merge cleanup skipped: ${message}\n`);
+        return 0;
+      }
     }
 
     return 0;

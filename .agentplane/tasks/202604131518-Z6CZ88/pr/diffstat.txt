@@ -1,0 +1,14 @@
+ .agentplane/tasks/202604131518-Z6CZ88/README.md    | 118 +++++++++++++++++++++
+ .../tasks/202604131518-Z6CZ88/pr/diffstat.txt      |   7 ++
+ .../tasks/202604131518-Z6CZ88/pr/github-body.md    |  39 +++++++
+ .../tasks/202604131518-Z6CZ88/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604131518-Z6CZ88/pr/meta.json |  17 +++
+ .../tasks/202604131518-Z6CZ88/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604131518-Z6CZ88/pr/review.md |  63 +++++++++++
+ .../tasks/202604131518-Z6CZ88/pr/verify.log        |   0
+ .gitignore                                         |   1 +
+ .../src/cli/bootstrap-framework-dev-script.test.ts |  33 ++++++
+ .../agentplane/src/cli/run-cli.core.hooks.test.ts  |  87 +++++++++++++++
+ packages/agentplane/src/commands/hooks/index.ts    |  44 +++++++-
+ scripts/bootstrap-framework-dev.mjs                |  33 ++++--
+ 13 files changed, 432 insertions(+), 11 deletions(-)
