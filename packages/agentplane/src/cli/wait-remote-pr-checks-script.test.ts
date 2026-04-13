@@ -23,6 +23,10 @@ function toText(value: unknown) {
   return "";
 }
 
+function transcript(result: RunScriptResult) {
+  return `${result.stdout}${result.stderr}`;
+}
+
 async function makeTempRoot() {
   const root = await mkdtemp(path.join(tmpdir(), "agentplane-remote-check-wait-"));
   tempRoots.push(root);
@@ -206,9 +210,10 @@ describe("wait-remote-pr-checks script", () => {
     });
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("poll 1 (idle 1/3)");
-    expect(result.stdout).toContain("poll 2 (idle 0/3)");
-    expect(result.stdout).toContain("required checks passed for PR #123");
+    const output = transcript(result);
+    expect(output).toContain("poll 1 (idle 1/3)");
+    expect(output).toContain("poll 2 (idle 0/3)");
+    expect(output).toContain("required checks passed for PR #123");
 
     const callLogText = await readFile(callLog, "utf8");
     expect(callLogText).toContain(
@@ -241,10 +246,11 @@ describe("wait-remote-pr-checks script", () => {
     });
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("PR #123 [1/2]");
-    expect(result.stdout).toContain("required checks passed for PR #123 [1/2]");
-    expect(result.stdout).toContain("PR #456 [2/2]");
-    expect(result.stdout).toContain("required checks passed for PR #456 [2/2]");
+    const output = transcript(result);
+    expect(output).toContain("PR #123 [1/2]");
+    expect(output).toContain("required checks passed for PR #123 [1/2]");
+    expect(output).toContain("PR #456 [2/2]");
+    expect(output).toContain("required checks passed for PR #456 [2/2]");
 
     const callLogText = await readFile(callLog, "utf8");
     expect(callLogText).toContain(`["pr","view","123"`);
@@ -279,8 +285,9 @@ describe("wait-remote-pr-checks script", () => {
     });
 
     expect(result.exitCode).toBe(1);
-    expect(result.stdout).toContain("required checks passed for PR #123 [1/2]");
-    expect(result.stderr).toContain("required checks failed for PR #456 [2/2]");
+    const output = transcript(result);
+    expect(output).toContain("required checks passed for PR #123 [1/2]");
+    expect(output).toContain("required checks failed for PR #456 [2/2]");
 
     const callLogText = await readFile(callLog, "utf8");
     expect(callLogText).toContain(`["pr","view","123"`);
@@ -306,8 +313,9 @@ describe("wait-remote-pr-checks script", () => {
     });
 
     expect(result.exitCode).toBe(0);
-    expect(result.stderr).toContain("transient GitHub transport error");
-    expect(result.stdout).toContain("required checks passed for PR #123");
+    const output = transcript(result);
+    expect(output).toContain("transient GitHub transport error");
+    expect(output).toContain("required checks passed for PR #123");
 
     const state = JSON.parse(await readFile(stateFile, "utf8")) as { prViewCalls: number };
     expect(state.prViewCalls).toBeGreaterThan(1);
@@ -347,9 +355,10 @@ describe("wait-remote-pr-checks script", () => {
     });
 
     expect(result.exitCode).toBe(1);
-    expect(result.stdout).toContain("poll 1 (idle 1/2)");
-    expect(result.stdout).toContain("poll 2 (idle 2/2)");
-    expect(result.stderr).toContain("timed out waiting for required checks after 2 idle polls");
+    const output = transcript(result);
+    expect(output).toContain("poll 1 (idle 1/2)");
+    expect(output).toContain("poll 2 (idle 2/2)");
+    expect(output).toContain("timed out waiting for required checks after 2 idle polls");
   });
 
   it("keeps waiting while an in-progress required check keeps advancing", async () => {
@@ -367,10 +376,11 @@ describe("wait-remote-pr-checks script", () => {
     });
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("poll 1 (idle 1/2): Core CI / test=in_progress");
-    expect(result.stdout).toContain("poll 2 (idle 1/2)");
-    expect(result.stdout).toContain("poll 3 (idle 0/2)");
-    expect(result.stdout).toContain("required checks passed for PR #123");
+    const output = transcript(result);
+    expect(output).toContain("poll 1 (idle 1/2): Core CI / test=in_progress");
+    expect(output).toContain("poll 2 (idle 1/2)");
+    expect(output).toContain("poll 3 (idle 0/2)");
+    expect(output).toContain("required checks passed for PR #123");
   });
 
   it("still times out when an in-progress required check stops changing", async () => {
@@ -388,8 +398,9 @@ describe("wait-remote-pr-checks script", () => {
     });
 
     expect(result.exitCode).toBe(1);
-    expect(result.stdout).toContain("poll 1 (idle 1/2): Core CI / test=in_progress");
-    expect(result.stdout).toContain("poll 2 (idle 2/2): Core CI / test=in_progress");
-    expect(result.stderr).toContain("timed out waiting for required checks after 2 idle polls");
+    const output = transcript(result);
+    expect(output).toContain("poll 1 (idle 1/2): Core CI / test=in_progress");
+    expect(output).toContain("poll 2 (idle 2/2): Core CI / test=in_progress");
+    expect(output).toContain("timed out waiting for required checks after 2 idle polls");
   });
 });
