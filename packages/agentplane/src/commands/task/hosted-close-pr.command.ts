@@ -7,6 +7,7 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
+import { cleanupMergedLocalBranch } from "../shared/merged-branch-cleanup.js";
 import {
   loadTaskFromContext,
   resolveTaskBranchFromContext,
@@ -350,6 +351,42 @@ function normalizeGithubPrLink(
     : `${verb} GitHub PR #${prNumber}`;
 }
 
+async function maybeCleanupMergedTaskBranch(opts: {
+  output: ReturnType<typeof createCliEmitter>;
+  gitRoot: string;
+  branch: string;
+}): Promise<void> {
+  try {
+    const cleanup = await cleanupMergedLocalBranch({
+      gitRoot: opts.gitRoot,
+      branch: opts.branch,
+    });
+    if (!cleanup.removedBranch && !cleanup.removedWorktree) {
+      if (cleanup.skippedReason === "current_worktree") {
+        opts.output.info(
+          `local merged branch cleanup skipped: ${opts.branch} is the current checkout`,
+        );
+      } else if (cleanup.skippedReason === "outside_repo") {
+        opts.output.info(
+          `local merged branch cleanup skipped: ${opts.branch} is attached to a worktree outside the current checkout root`,
+        );
+      }
+      return;
+    }
+    const details: string[] = [];
+    if (cleanup.removedWorktree && cleanup.worktreePath) {
+      details.push(`removed worktree ${cleanup.worktreePath}`);
+    }
+    if (cleanup.removedBranch) {
+      details.push(`deleted branch ${opts.branch}`);
+    }
+    opts.output.info(`local merged branch cleanup: ${details.join("; ")}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    opts.output.warn(`local merged branch cleanup failed for ${opts.branch}: ${message}`);
+  }
+}
+
 async function openHostedClosePr(opts: {
   ctx: CommandContext;
   cwd: string;
@@ -435,6 +472,11 @@ async function openHostedClosePr(opts: {
     taskId: opts.taskId,
     explicitBranch: opts.branch ?? null,
     mergeCommit,
+  });
+  await maybeCleanupMergedTaskBranch({
+    output,
+    gitRoot,
+    branch: sourceBranch,
   });
   const owner = repo.split("/")[0]?.trim() ?? "";
   const existingQuery = new URLSearchParams({
