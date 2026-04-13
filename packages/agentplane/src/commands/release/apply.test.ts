@@ -70,6 +70,13 @@ async function writeReleasePushScripts(opts: {
   );
 }
 
+async function writeWorkflowMode(root: string, mode: "direct" | "branch_pr"): Promise<void> {
+  const configPath = path.join(root, ".agentplane", "config.json");
+  const raw = JSON.parse(await readFile(configPath, "utf8")) as Record<string, unknown>;
+  raw.workflow_mode = mode;
+  await writeFile(configPath, JSON.stringify(raw, null, 2) + "\n", "utf8");
+}
+
 describeWhenNotHook("release apply", () => {
   it("bumps versions, commits, and tags using the latest plan", async () => {
     const root = await mkGitRepoRoot();
@@ -541,6 +548,186 @@ describeWhenNotHook("release apply", () => {
         cwd: root,
       });
       expect(remoteTag.trim()).toBe(localTag.trim());
+    },
+    RELEASE_APPLY_LONG_TIMEOUT_MS,
+  );
+
+  it(
+    "skips local tag creation on branch_pr task branches when preparing a local release candidate",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await writeWorkflowMode(root, "branch_pr");
+
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.6",
+        cliVersion: "0.2.6",
+        dependencyVersion: "0.2.6",
+      });
+      await commitAll(root, "seed");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+      await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", "main"], {
+        cwd: root,
+      });
+      await execFileAsync("git", ["checkout", "-b", "task/202604130750-E2J835/release-candidate"], {
+        cwd: root,
+      });
+
+      await writeFile(path.join(root, "file.txt"), "x", "utf8");
+      await commitAll(root, "feat: add file");
+
+      const rcPlan = await runReleasePlan(
+        { cwd: root, rootOverride: root },
+        { bump: "patch", yes: false },
+      );
+      expect(rcPlan).toBe(0);
+      await writeReleaseNotes(
+        root,
+        "0.2.7",
+        ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+      );
+
+      const rcApply = await withDryRunReleaseMode(async () =>
+        runReleaseApply(
+          { cwd: root, rootOverride: root },
+          { plan: undefined, yes: false, push: false, remote: "origin" },
+        ),
+      );
+      expect(rcApply).toBe(0);
+
+      const { stdout: tagOut } = await execFileAsync("git", ["tag", "--list", "v0.2.7"], {
+        cwd: root,
+      });
+      expect(tagOut.trim()).toBe("");
+
+      const reportPath = path.join(root, ".agentplane", ".release", "apply", "latest.json");
+      const report = JSON.parse(await readFile(reportPath, "utf8")) as {
+        route?: {
+          kind?: string;
+          current_branch?: string;
+          base_branch?: string | null;
+          final_publish_deferred?: boolean;
+        };
+        tag?: { created?: boolean; pushed?: boolean };
+        push?: { performed?: boolean; refs?: string[] };
+      };
+      expect(report.route?.kind).toBe("branch_pr_candidate");
+      expect(report.route?.current_branch).toBe("task/202604130750-E2J835/release-candidate");
+      expect(report.route?.base_branch).toBe("main");
+      expect(report.route?.final_publish_deferred).toBe(true);
+      expect(report.tag?.created).toBe(false);
+      expect(report.tag?.pushed).toBe(false);
+      expect(report.push?.performed).toBe(false);
+      expect(report.push?.refs).toEqual([]);
+    },
+    RELEASE_APPLY_LONG_TIMEOUT_MS,
+  );
+
+  it(
+    "pushes only the task branch for branch_pr release candidates and keeps the tag unpublished",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await writeWorkflowMode(root, "branch_pr");
+
+      const remoteRoot = path.join(root, "remote.git");
+      await execFileAsync("git", ["init", "--bare", remoteRoot], { cwd: root });
+      await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
+
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.6",
+        cliVersion: "0.2.6",
+        dependencyVersion: "0.2.6",
+      });
+      await commitAll(root, "seed");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+      await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", "main"], {
+        cwd: root,
+      });
+      await execFileAsync(
+        "git",
+        ["checkout", "-b", "task/202604130750-E2J835/release-candidate-push"],
+        { cwd: root },
+      );
+
+      await writeReleasePushScripts({
+        root,
+        prepublishBody: [
+          "import { writeFile } from 'node:fs/promises';",
+          String.raw`await writeFile('prepublish.marker', 'ran\n', 'utf8');`,
+        ].join("\n"),
+        registryBody: `${String.raw`process.stdout.write('npm version availability check passed\n');`}\n`,
+      });
+
+      await writeFile(path.join(root, "file.txt"), "x", "utf8");
+      await commitAll(root, "feat: add file");
+
+      await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
+      await writeReleaseNotes(
+        root,
+        "0.2.7",
+        ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+      );
+
+      const hookPath = path.join(root, ".git", "hooks", "pre-push");
+      const markerPath = path.join(root, "pre-push.marker");
+      await writeFile(
+        hookPath,
+        [
+          "#!/bin/sh",
+          String.raw`printf 'hook-ran\n' >> '${markerPath}'`,
+          "echo 'pre-push hook should have been skipped' >&2",
+          "exit 1",
+          "",
+        ].join("\n"),
+        "utf8",
+      );
+      await execFileAsync("chmod", ["+x", hookPath], { cwd: root });
+
+      const rcApply = await withDryRunReleaseMode(async () =>
+        runReleaseApply(
+          { cwd: root, rootOverride: root },
+          { plan: undefined, yes: true, push: true, remote: "origin" },
+        ),
+      );
+      expect(rcApply).toBe(0);
+
+      await expect(readFile(markerPath, "utf8")).rejects.toThrow();
+
+      const { stdout: localTagOut } = await execFileAsync("git", ["tag", "--list", "v0.2.7"], {
+        cwd: root,
+      });
+      expect(localTagOut.trim()).toBe("");
+
+      const { stdout: localBranch } = await execFileAsync(
+        "git",
+        ["symbolic-ref", "--short", "HEAD"],
+        { cwd: root },
+      );
+      const branchRef = `refs/heads/${localBranch.trim()}`;
+      const { stdout: remoteHead } = await execFileAsync("git", ["rev-parse", branchRef], {
+        cwd: remoteRoot,
+      });
+      const { stdout: localHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
+      expect(remoteHead.trim()).toBe(localHead.trim());
+      await expect(
+        execFileAsync("git", ["rev-parse", "refs/tags/v0.2.7"], { cwd: remoteRoot }),
+      ).rejects.toBeTruthy();
+
+      const reportPath = path.join(root, ".agentplane", ".release", "apply", "latest.json");
+      const report = JSON.parse(await readFile(reportPath, "utf8")) as {
+        route?: { kind?: string; final_publish_deferred?: boolean };
+        tag?: { created?: boolean; pushed?: boolean };
+        push?: { performed?: boolean; refs?: string[] };
+      };
+      expect(report.route?.kind).toBe("branch_pr_candidate");
+      expect(report.route?.final_publish_deferred).toBe(true);
+      expect(report.tag?.created).toBe(false);
+      expect(report.tag?.pushed).toBe(false);
+      expect(report.push?.performed).toBe(true);
+      expect(report.push?.refs).toEqual(["HEAD"]);
     },
     RELEASE_APPLY_LONG_TIMEOUT_MS,
   );

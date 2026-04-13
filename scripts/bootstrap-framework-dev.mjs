@@ -134,13 +134,13 @@ function shimScriptText() {
     "set -e",
     'SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"',
     'REPO_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"',
-    'ENV_BIN="${AGENTPLANE_HOOK_RUNNER:-}"',
-    'if [ -n "$ENV_BIN" ] && command -v node >/dev/null 2>&1 && [ -f "$ENV_BIN" ]; then',
-    '  exec node "$ENV_BIN" "$@"',
-    "fi",
     'LOCAL_BIN="$REPO_ROOT/packages/agentplane/bin/agentplane.js"',
     'if command -v node >/dev/null 2>&1 && [ -f "$LOCAL_BIN" ]; then',
     '  exec node "$LOCAL_BIN" "$@"',
+    "fi",
+    'ENV_BIN="${AGENTPLANE_HOOK_RUNNER:-}"',
+    'if [ -n "$ENV_BIN" ] && command -v node >/dev/null 2>&1 && [ -f "$ENV_BIN" ]; then',
+    '  exec node "$ENV_BIN" "$@"',
     "fi",
     "if command -v agentplane >/dev/null 2>&1; then",
     '  exec agentplane "$@"',
@@ -284,6 +284,7 @@ export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec
   process.stdout.write("==> Building agentplane\n");
   exec(repoRoot, "bun", ["run", "--filter=agentplane", "build"]);
 
+  ensureManagedShim(repoRoot);
   const repairedLegacyHooks = repairLegacyLefthookHooks(repoRoot);
   if (repairedLegacyHooks.length > 0) {
     process.stdout.write(

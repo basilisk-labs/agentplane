@@ -1265,6 +1265,90 @@ describe("runCli", () => {
     expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(firstGithubBody);
   });
 
+  it("pr update prefers the base upstream ref for diffstat when local base lags", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await execFileAsync("git", ["remote", "add", "origin", "."], { cwd: root });
+    await execFileAsync("git", ["config", "branch.main.remote", "origin"], { cwd: root });
+    await execFileAsync("git", ["config", "branch.main.merge", "refs/heads/main"], {
+      cwd: root,
+    });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR update upstream diffstat task",
+        "--description",
+        "PR update should diff against the base upstream when local main lags",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/pr-update-upstream-base`;
+    await execFileAsync("git", ["branch", "upstream-main"], { cwd: root });
+    await execFileAsync("git", ["checkout", "upstream-main"], { cwd: root });
+    await writeFile(path.join(root, "upstream.txt"), "upstream", "utf8");
+    await execFileAsync("git", ["add", "upstream.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "upstream"], { cwd: root });
+    const { stdout: upstreamShaOut } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["checkout", "-b", branch, upstreamShaOut.trim()], { cwd: root });
+    await execFileAsync("git", ["update-ref", "refs/remotes/origin/main", upstreamShaOut.trim()], {
+      cwd: root,
+    });
+
+    await writeFile(path.join(root, "change.txt"), "change", "utf8");
+    await execFileAsync("git", ["add", "change.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "change"], { cwd: root });
+
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      branch,
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["pr", "update", taskId, "--root", root]);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    const diffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
+    const githubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
+    expect(diffstat).toContain("change.txt");
+    expect(diffstat).not.toContain("upstream.txt");
+    expect(githubBody).toContain("change.txt");
+    expect(githubBody).not.toContain("upstream.txt");
+  });
+
   it("pr note appends to the note store and rerenders handoff notes", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
