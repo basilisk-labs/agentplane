@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import {
   resolveTaskDocUpdatedBy,
@@ -22,7 +23,11 @@ import {
 } from "../../backends/task-backend.js";
 import { gitShowFile, toGitPath } from "./git-diff.js";
 import { GitContext } from "./git-context.js";
-import { gitListTaskBranches, parseTaskIdFromBranch } from "./git-worktree.js";
+import {
+  findWorktreeForBranch,
+  gitListTaskBranches,
+  parseTaskIdFromBranch,
+} from "./git-worktree.js";
 
 export type CommandMemo = {
   taskProjection?: Promise<TaskSummary[]>;
@@ -205,6 +210,35 @@ export async function loadTaskFromBranchSnapshot(opts: {
       ? opts.branch.trim()
       : await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   if (!branch) return null;
+
+  const liveWorktreePath = await findWorktreeForBranch(opts.ctx.resolvedProject.gitRoot, branch);
+  if (liveWorktreePath) {
+    const liveReadmePath = path.join(
+      liveWorktreePath,
+      path.relative(opts.ctx.resolvedProject.gitRoot, opts.readmePath),
+    );
+    try {
+      const liveText = await readFile(liveReadmePath, "utf8");
+      const parsed = parseTaskReadme(liveText);
+      const frontmatter = validateTaskReadmeFrontmatter(
+        withTaskReadmeFrontmatterDefaults({
+          ...parsed.frontmatter,
+          id:
+            typeof parsed.frontmatter.id === "string" && parsed.frontmatter.id.trim().length > 0
+              ? parsed.frontmatter.id
+              : opts.taskId,
+        }),
+      );
+      return taskRecordToData({
+        id: opts.taskId,
+        frontmatter: frontmatter as unknown as TaskRecord["frontmatter"],
+        body: parsed.body,
+        readmePath: opts.readmePath,
+      });
+    } catch {
+      // Fall back to the committed branch snapshot when the live worktree lacks the README.
+    }
+  }
 
   const relReadmePath = toGitPath(path.relative(opts.ctx.resolvedProject.gitRoot, opts.readmePath));
 

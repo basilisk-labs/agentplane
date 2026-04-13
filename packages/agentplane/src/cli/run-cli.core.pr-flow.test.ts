@@ -570,12 +570,6 @@ describe("runCli", () => {
       );
       await approveTaskPlan(root, taskId);
       await approveTaskPlan(root, siblingTaskId);
-      const { stdout: baseTaskStatusBefore } = await execFileAsync(
-        "git",
-        ["status", "--short", "--untracked-files=all", "--", ".agentplane/tasks"],
-        { cwd: root },
-      );
-
       const worktreeIo = captureStdIO();
       const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-seed-readmes`);
       try {
@@ -607,7 +601,7 @@ describe("runCli", () => {
       expect(await pathExists(taskReadmePath)).toBe(true);
       expect(await pathExists(siblingReadmePath)).toBe(true);
       expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
-        true,
+        false,
       );
       expect(
         await pathExists(path.join(root, ".agentplane", "tasks", siblingTaskId, "README.md")),
@@ -622,20 +616,12 @@ describe("runCli", () => {
         await pathExists(path.join(worktreePath, "packages", "core", "dist", "index.js")),
       ).toBe(true);
 
-      const { stdout: baseTaskStatusAfter } = await execFileAsync(
-        "git",
-        ["status", "--short", "--untracked-files=all", "--", ".agentplane/tasks"],
-        {
-          cwd: root,
-        },
-      );
-      expect(baseTaskStatusAfter).toBe(baseTaskStatusBefore);
-
       const baseShowIo = captureStdIO();
       try {
         const code = await runCli(["task", "show", taskId, "--root", root]);
         expect(code).toBe(0);
         expect(baseShowIo.stdout).toContain(taskId);
+        expect(baseShowIo.stdout).toContain('"status": "TODO"');
       } finally {
         baseShowIo.restore();
       }
@@ -1103,7 +1089,7 @@ describe("runCli", () => {
   );
 
   it(
-    "task start-ready keeps the active task README synchronized between base and task worktree",
+    "task start-ready updates the task worktree README without recreating a base checkout copy",
     { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
@@ -1128,7 +1114,7 @@ describe("runCli", () => {
           "--title",
           "Start ready worktree sync",
           "--description",
-          "Branch_pr start-ready should keep base and worktree task README state aligned.",
+          "Branch_pr start-ready should keep the active README in the task worktree only.",
           "--priority",
           "med",
           "--owner",
@@ -1168,7 +1154,7 @@ describe("runCli", () => {
           "--author",
           "CODER",
           "--body",
-          "Start: synchronize the task README state between base and task worktree.",
+          "Start: keep the active task README in the task worktree only.",
           "--root",
           worktreePath,
         ]);
@@ -1185,15 +1171,20 @@ describe("runCli", () => {
         taskId,
         "README.md",
       );
-      const [baseReadme, worktreeReadme] = await Promise.all([
-        readFile(baseReadmePath, "utf8"),
-        readFile(worktreeReadmePath, "utf8"),
-      ]);
-
-      expect(baseReadme).toContain('status: "DOING"');
+      const worktreeReadme = await readFile(worktreeReadmePath, "utf8");
+      expect(await pathExists(baseReadmePath)).toBe(false);
       expect(worktreeReadme).toContain('status: "DOING"');
-      expect(baseReadme).toContain("Start: synchronize the task README state");
-      expect(baseReadme).toBe(worktreeReadme);
+      expect(worktreeReadme).toContain("Start: keep the active task README in the task worktree");
+
+      const baseShowIo = captureStdIO();
+      try {
+        const code = await runCli(["task", "show", taskId, "--root", root]);
+        expect(code).toBe(0);
+        expect(baseShowIo.stdout).toContain(`"id": "${taskId}"`);
+        expect(baseShowIo.stdout).toContain('"status": "DOING"');
+      } finally {
+        baseShowIo.restore();
+      }
     },
   );
 });

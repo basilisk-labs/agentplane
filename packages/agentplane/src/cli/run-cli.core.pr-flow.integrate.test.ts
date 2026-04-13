@@ -339,6 +339,8 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
     const prMetaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
     expect(await pathExists(prMetaPath)).toBe(true);
