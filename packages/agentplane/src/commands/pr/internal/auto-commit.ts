@@ -12,7 +12,11 @@ function taskPrDirPrefix(workflowDir: string, taskId: string): string {
   return `${toGitPath(path.join(workflowDir, taskId, "pr"))}/`;
 }
 
-function isTaskPrArtifactPath(opts: { workflowDir: string; taskId: string; relPath: string }): boolean {
+function isTaskPrArtifactPath(opts: {
+  workflowDir: string;
+  taskId: string;
+  relPath: string;
+}): boolean {
   return toGitPath(opts.relPath).startsWith(taskPrDirPrefix(opts.workflowDir, opts.taskId));
 }
 

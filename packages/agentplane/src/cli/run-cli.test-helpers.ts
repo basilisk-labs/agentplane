@@ -890,10 +890,14 @@ export async function commitPathsIfChanged(
   message: string,
 ): Promise<boolean> {
   await execFileAsync("git", ["add", "--", ...paths], { cwd: root, env: cleanGitEnv() });
-  const { stdout } = await execFileAsync("git", ["diff", "--cached", "--name-only", "--", ...paths], {
-    cwd: root,
-    env: cleanGitEnv(),
-  });
+  const { stdout } = await execFileAsync(
+    "git",
+    ["diff", "--cached", "--name-only", "--", ...paths],
+    {
+      cwd: root,
+      env: cleanGitEnv(),
+    },
+  );
   if (!stdout.trim()) return false;
   await execFileAsync("git", ["commit", "--no-verify", "-m", message], {
     cwd: root,

@@ -82,7 +82,7 @@ async function installFakeGhProtection(opts: { scenarioName: string; protectedBr
       'if (args[0] !== "api") { console.error("unexpected gh command"); process.exit(90); }',
       `const expected = ${JSON.stringify(`repos/example/repo/branches/${protectedBranch}/protection`)};`,
       'if ((args[1] ?? "") === expected) {',
-      '  console.log(JSON.stringify({ required_pull_request_reviews: { required_approving_review_count: 0 } }));',
+      "  console.log(JSON.stringify({ required_pull_request_reviews: { required_approving_review_count: 0 } }));",
       "  process.exit(0);",
       "}",
       'console.error("unexpected gh api endpoint");',
@@ -824,11 +824,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-    await commitPathsIfChanged(
-      root,
-      [`.agentplane/tasks/${taskId}`],
-      `${taskId} add pr artifacts`,
-    );
+    await commitPathsIfChanged(root, [`.agentplane/tasks/${taskId}`], `${taskId} add pr artifacts`);
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -1509,7 +1505,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-      await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+    await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
