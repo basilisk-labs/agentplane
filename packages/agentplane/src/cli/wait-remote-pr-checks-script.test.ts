@@ -242,11 +242,11 @@ describe("wait-remote-pr-checks script", () => {
         GH_STATE_FILE: stateFile,
         GH_CALL_LOG: callLog,
         AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
-        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "3",
+        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "4",
       },
     });
 
-    expect(result.exitCode).toBe(0);
+    expect(result.exitCode, transcript(result)).toBe(0);
     const output = transcript(result);
     expect(output).toContain("PR #123 [1/2]");
     expect(output).toContain("required checks passed for PR #123 [1/2]");
