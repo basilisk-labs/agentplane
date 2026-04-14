@@ -155,7 +155,7 @@ async function writeApplyReport(root: string, commitHash: string) {
         bump: "patch",
         commit: {
           hash: commitHash,
-          subject: "✨ release: v0.2.7",
+          subject: "✨ release: publish v0.2.7",
         },
         push: {
           requested: true,

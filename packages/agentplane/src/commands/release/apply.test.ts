@@ -170,7 +170,7 @@ describeWhenNotHook("release apply", () => {
     expect(report.next_tag).toBe("v0.2.7");
     expect(report.next_version).toBe("0.2.7");
     expect(report.checks?.notes_validated).toBe(true);
-    expect(report.commit?.subject).toContain("release: v0.2.7");
+    expect(report.commit?.subject).toContain("release: publish v0.2.7");
   }, 90_000);
 
   it(

@@ -289,7 +289,7 @@ async function applyReleaseMutation(opts: {
     return { releaseCommit };
   }
 
-  const subject = `✨ release: ${opts.nextTag}`;
+  const subject = `✨ release: publish ${opts.nextTag}`;
   await opts.git.commit({ message: subject, env: cleanHookEnv() });
   const { stdout: headHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {
     cwd: opts.gitRoot,
