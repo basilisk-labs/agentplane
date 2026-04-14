@@ -1,6 +1,7 @@
 import path from "node:path";
 
 import { mapBackendError } from "../../../cli/error-map.js";
+import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { createCliEmitter } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
 
@@ -61,6 +62,7 @@ export async function cmdIntegrate(opts: {
       branch,
       base,
       verifyLogText,
+      protectedBaseRequiresPrMerge,
     } = prepared;
 
     const verifyCommands = prepared.verifyCommands;
@@ -74,10 +76,24 @@ export async function cmdIntegrate(opts: {
         output.success(
           "integrate dry-run",
           task.id,
-          `base=${base} branch=${branch} verify=${shouldRunVerify ? "yes" : "no"}`,
+          `base=${base} branch=${branch} verify=${shouldRunVerify ? "yes" : "no"} route=${protectedBaseRequiresPrMerge ? "github-pr" : "local"}`,
         );
       }
       return 0;
+    }
+
+    if (protectedBaseRequiresPrMerge) {
+      const prHint =
+        typeof metaSource.pr_number === "number" && metaSource.pr_number > 0
+          ? `GitHub PR #${metaSource.pr_number}`
+          : `the GitHub PR for branch ${branch}`;
+      throw new CliError({
+        exitCode: exitCodeForError("E_GIT"),
+        code: "E_GIT",
+        message:
+          `Base branch ${base} requires GitHub pull-request merges; integrate will not mutate it locally. ` +
+          `Merge ${prHint} on GitHub, let Task Hosted Close finish the closure tail, then pull ${base}.`,
+      });
     }
 
     const wt = await resolveWorktreeForIntegrate({

@@ -30,6 +30,7 @@ import { readAndValidatePrArtifacts, ensureCommittedPrArtifactsOnBranch } from "
 import { computeVerifyState } from "../verify.js";
 import { parsePrMetaForwardCompatible, type PrMeta } from "../../../shared/pr-meta.js";
 import { assessPrArtifactFreshness } from "../../internal/freshness.js";
+import { requiresPullRequestMergePath } from "./github-protection.js";
 
 export type PreparedIntegrate = {
   ctx: CommandContext;
@@ -39,6 +40,7 @@ export type PreparedIntegrate = {
 
   baseBranch: string;
   currentBranch: string;
+  protectedBaseRequiresPrMerge: boolean;
 
   prDir: string;
   metaPath: string;
@@ -195,6 +197,10 @@ export async function prepareIntegrate(opts: {
     preferBranchSnapshot: true,
     branchSnapshotBranch: branch,
   });
+  const protectedBaseRequiresPrMerge = await requiresPullRequestMergePath({
+    gitRoot: resolved.gitRoot,
+    baseBranch: base,
+  });
 
   const changedPaths = await gitDiffNames(resolved.gitRoot, base, branch);
   const tasksPath = loadedConfig.paths.tasks_path;
@@ -287,6 +293,7 @@ export async function prepareIntegrate(opts: {
     task,
     baseBranch,
     currentBranch,
+    protectedBaseRequiresPrMerge,
     prDir,
     metaPath,
     diffstatPath,

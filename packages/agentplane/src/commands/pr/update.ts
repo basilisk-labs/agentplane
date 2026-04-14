@@ -11,6 +11,7 @@ import {
   type CommandContext,
 } from "../shared/task-backend.js";
 
+import { maybeAutoCommitTaskPrArtifacts } from "./internal/auto-commit.js";
 import { assessPrArtifactFreshness } from "./internal/freshness.js";
 import { syncPrArtifacts } from "./internal/sync.js";
 
@@ -85,17 +86,27 @@ export async function cmdPrUpdate(opts: {
 }): Promise<number> {
   try {
     const output = createCliEmitter();
+    const commandCtx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const { meta, prDir, resolved } = await syncPrArtifacts({
-      ctx: opts.ctx,
+      ctx: commandCtx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
       mode: "update",
     });
+    if (meta.branch) {
+      await maybeAutoCommitTaskPrArtifacts({
+        ctx: commandCtx,
+        taskId: opts.taskId,
+        branch: meta.branch,
+      });
+    }
 
     await warnOnStaleVerifyAfterUpdate({
       output,
-      ctx: opts.ctx,
+      ctx: commandCtx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,

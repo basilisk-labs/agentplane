@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604131826-PRNBPW/branch-pr-friction",
+  "created_at": "2026-04-13T18:26:54.534Z",
+  "head_sha": "7c0b8fc1005e69f82a11137bba5512ed7a22e37f",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604131826-PRNBPW",
+  "updated_at": "2026-04-13T18:26:54.534Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
