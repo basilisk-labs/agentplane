@@ -42,7 +42,8 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
 }): Promise<boolean> {
   if (opts.ctx.config.workflow_mode !== "branch_pr") return false;
 
-  const currentBranch = (await gitCurrentBranch(opts.ctx.resolvedProject.gitRoot)).trim();
+  const branchText = await gitCurrentBranch(opts.ctx.resolvedProject.gitRoot);
+  const currentBranch = branchText.trim();
   if (!currentBranch || currentBranch !== opts.branch.trim()) return false;
 
   const changedPaths = await opts.ctx.git.statusChangedPaths();
