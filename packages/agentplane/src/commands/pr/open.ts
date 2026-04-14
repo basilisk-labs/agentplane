@@ -4,8 +4,9 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { type CommandContext } from "../shared/task-backend.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
+import { maybeAutoCommitTaskPrArtifacts } from "./internal/auto-commit.js";
 import { type PrOpenOutcome, syncPrArtifacts } from "./internal/sync.js";
 
 function prOpenOutcomeDetails(
@@ -51,6 +52,16 @@ export async function cmdPrOpen(opts: {
       branch: opts.branch,
       remoteMode: opts.syncOnly ? "sync-only" : "auto",
     });
+    const commandCtx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    if (meta.branch) {
+      await maybeAutoCommitTaskPrArtifacts({
+        ctx: commandCtx,
+        taskId: opts.taskId,
+        branch: meta.branch,
+      });
+    }
 
     output.success(
       "pr open",

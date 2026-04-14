@@ -1,0 +1,11 @@
+ .agentplane/tasks/202604131826-PRNBPW/README.md    | 123 ++++++++++++
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 215 +++++++++++++++++----
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 192 +++++++++++++++++-
+ .../agentplane/src/cli/run-cli.test-helpers.ts     |  22 +++
+ .../agentplane/src/commands/pr/integrate/cmd.ts    |  18 +-
+ .../pr/integrate/internal/github-protection.ts     |  20 ++
+ .../src/commands/pr/integrate/internal/prepare.ts  |   7 +
+ .../src/commands/pr/internal/auto-commit.ts        |  88 +++++++++
+ packages/agentplane/src/commands/pr/open.ts        |  13 +-
+ packages/agentplane/src/commands/pr/update.ts      |  15 +-
+ 10 files changed, 659 insertions(+), 54 deletions(-)

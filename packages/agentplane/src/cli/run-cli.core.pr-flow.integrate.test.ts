@@ -37,6 +37,7 @@ import {
   approveTaskPlan,
   captureStdIO,
   cleanGitEnv,
+  commitPathsIfChanged,
   commitAll,
   configureGitUser,
   createUpgradeBundle,
@@ -61,6 +62,43 @@ installRunCliIntegrationHarness();
 
 const INTEGRATE_REBASE_TIMEOUT_MS = 180_000;
 const TEST_WORKFLOW_GITIGNORE = ".agentplane/worktrees\n.agentplane/cache\n";
+
+async function installFakeGhProtection(opts: { scenarioName: string; protectedBranch?: string }) {
+  const fakeBin = path.join(
+    os.tmpdir(),
+    `agentplane-gh-protection-${Date.now()}-${opts.scenarioName}`,
+  );
+  await mkdir(fakeBin, { recursive: true });
+  const scriptPath = path.join(fakeBin, "fake-gh.mjs");
+  const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
+  const protectedBranch = opts.protectedBranch ?? "main";
+  await writeFile(
+    scriptPath,
+    [
+      'import fs from "node:fs";',
+      "const args = process.argv.slice(2);",
+      "const logPath = process.env.AGENTPLANE_GH_LOG;",
+      "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
+      'if (args[0] !== "api") { console.error("unexpected gh command"); process.exit(90); }',
+      `const expected = ${JSON.stringify(`repos/example/repo/branches/${protectedBranch}/protection`)};`,
+      'if ((args[1] ?? "") === expected) {',
+      "  console.log(JSON.stringify({ required_pull_request_reviews: { required_approving_review_count: 0 } }));",
+      "  process.exit(0);",
+      "}",
+      'console.error("unexpected gh api endpoint");',
+      "process.exit(91);",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  if (process.platform === "win32") {
+    await writeFile(ghPath, '@echo off\r\nnode "%~dp0\\fake-gh.mjs" %*\r\n', "utf8");
+  } else {
+    await writeFile(ghPath, '#!/bin/sh\nnode "$(dirname "$0")/fake-gh.mjs" "$@"\n', "utf8");
+    await chmod(ghPath, 0o755);
+  }
+  return { fakeBin, logPath: path.join(fakeBin, "gh.log") };
+}
 
 describe("runCli", () => {
   it("integrate requires a task id", async () => {
@@ -198,6 +236,106 @@ describe("runCli", () => {
     }
   });
 
+  it("integrate refuses local mutation when the base branch requires pull-request merges", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+    await stageGitignoreIfPresent(root);
+    await execFileAsync("git", ["add", "README.md", ".agentplane/config.json"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Protected main integrate guard",
+        "--description",
+        "Integrate should fail before mutating main when the base branch requires PR merges.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/protected-main`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feature"], { cwd: root });
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      branch,
+      "--sync-only",
+      "--root",
+      root,
+    ]);
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const { fakeBin, logPath } = await installFakeGhProtection({
+      scenarioName: "integrate-protected-main",
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+
+    const { stdout: beforeMainHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("requires GitHub pull-request merges");
+      expect(io.stderr).toContain("Task Hosted Close");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    const { stdout: afterMainHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    expect(afterMainHead.trim()).toBe(beforeMainHead.trim());
+  });
+
   it("integrate merges branch and marks task done", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
@@ -256,8 +394,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+    await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -339,8 +476,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+    await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
     const prMetaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
     expect(await pathExists(prMetaPath)).toBe(true);
@@ -415,12 +551,11 @@ describe("runCli", () => {
       cwd: root,
     });
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], {
-      cwd: root,
-    });
-    await execFileAsync("git", ["commit", "-m", `${taskId} add task artifacts`], {
-      cwd: root,
-    });
+    await commitPathsIfChanged(
+      root,
+      [`.agentplane/tasks/${taskId}`],
+      `${taskId} add task artifacts`,
+    );
 
     const taskReadmeText = await readFile(
       path.join(root, ".agentplane", "tasks", taskId, "README.md"),
@@ -560,8 +695,11 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await runCliSilent(["pr", "update", taskId, "--root", root]);
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/pr`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `${taskId} add task artifacts`], { cwd: root });
+    await commitPathsIfChanged(
+      root,
+      [`.agentplane/tasks/${taskId}/pr`],
+      `${taskId} add task artifacts`,
+    );
 
     const branchMetaText = await readFile(
       path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"),
@@ -686,8 +824,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+    await commitPathsIfChanged(root, [`.agentplane/tasks/${taskId}`], `${taskId} add pr artifacts`);
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -761,8 +898,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", "wip"], { cwd: root });
 
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+    await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -854,13 +990,10 @@ describe("runCli", () => {
     );
 
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
-    await execFileAsync(
-      "git",
-      ["commit", "-m", `📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`],
-      {
-        cwd: root,
-      },
+    await commitPathsIfChanged(
+      root,
+      [`.agentplane/tasks/${taskId}`],
+      `📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`,
     );
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
@@ -941,8 +1074,7 @@ describe("runCli", () => {
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-      await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
-      await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+      await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -1028,8 +1160,7 @@ describe("runCli", () => {
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-      await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
-      await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+      await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -1109,8 +1240,7 @@ describe("runCli", () => {
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-      await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
-      await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+      await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -1204,8 +1334,7 @@ describe("runCli", () => {
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-      await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
-      await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+      await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
@@ -1295,8 +1424,7 @@ describe("runCli", () => {
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-      await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
-      await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+      await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-rebase-"));
@@ -1377,8 +1505,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+    await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -1456,15 +1583,24 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
-    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      branch,
+      "--root",
+      root,
+    ]);
     const statusAfterPrOpen = await execFileAsync(
       "git",
       ["status", "--short", "--untracked-files=all", `.agentplane/tasks/${taskId}`],
       { cwd: root },
     );
     expect(statusAfterPrOpen.stdout).toContain(`?? .agentplane/tasks/${taskId}/pr/meta.json`);
-
-    await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     const baseHeadBeforeResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,
@@ -1549,8 +1685,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
-    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+    await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
 

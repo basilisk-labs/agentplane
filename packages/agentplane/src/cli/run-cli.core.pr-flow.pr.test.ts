@@ -36,6 +36,7 @@ import {
   approveTaskPlan,
   captureStdIO,
   cleanGitEnv,
+  commitPathsIfChanged,
   commitAll,
   configureGitUser,
   createUpgradeBundle,
@@ -1265,6 +1266,172 @@ describe("runCli", () => {
     expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(firstGithubBody);
   });
 
+  it("pr open auto-commits task PR artifacts on the task branch", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open auto-commits artifacts",
+        "--description",
+        "Opening PR artifacts on the task branch should not leave tracked dirt behind.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const branch = `task/${taskId}/open-auto-commit`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--sync-only",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const { stdout: subjectOut } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+      cwd: root,
+    });
+    expect(subjectOut.trim()).toBe(`📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`);
+
+    const { stdout: statusOut } = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=no"],
+      { cwd: root },
+    );
+    expect(statusOut.trim()).toBe("");
+  });
+
+  it("pr update auto-commits refreshed PR artifacts on the task branch", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR update auto-commits artifacts",
+        "--description",
+        "Refreshing PR artifacts after a code commit should not require a manual artifact-only commit.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    const branch = `task/${taskId}/update-auto-commit`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      branch,
+      "--sync-only",
+      "--root",
+      root,
+    ]);
+
+    await writeFile(path.join(root, "change.txt"), "change", "utf8");
+    await execFileAsync("git", ["add", "change.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "change"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "update", taskId, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const { stdout: headOut } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const { stdout: parentOut } = await execFileAsync("git", ["rev-parse", "HEAD^"], {
+      cwd: root,
+    });
+    const { stdout: subjectOut } = await execFileAsync("git", ["log", "-2", "--pretty=%s"], {
+      cwd: root,
+    });
+    const subjects = subjectOut
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    expect(subjects[0]).toBe(`📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`);
+    expect(subjects[1]).toBe("change");
+
+    const meta = JSON.parse(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"), "utf8"),
+    ) as { head_sha?: string | null };
+    expect(meta.head_sha).toBe(parentOut.trim());
+    expect(meta.head_sha).not.toBe(headOut.trim());
+
+    const { stdout: statusOut } = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=no"],
+      { cwd: root },
+    );
+    expect(statusOut.trim()).toBe("");
+  });
+
   it("pr update prefers the base upstream ref for diffstat when local base lags", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -2285,8 +2452,11 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
-      await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
-      await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+      await commitPathsIfChanged(
+        root,
+        [`.agentplane/tasks/${taskId}`],
+        `${taskId} add pr artifacts`,
+      );
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await rm(path.join(root, ".agentplane", "tasks", taskId), { recursive: true, force: true });
@@ -2429,10 +2599,11 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
-      await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
-      await execFileAsync("git", ["commit", "-m", `${taskId} add initial pr artifacts`], {
-        cwd: root,
-      });
+      await commitPathsIfChanged(
+        root,
+        [`.agentplane/tasks/${taskId}`],
+        `${taskId} add initial pr artifacts`,
+      );
 
       const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
       const staleMeta = await readFile(path.join(prDir, "meta.json"), "utf8");
@@ -2446,10 +2617,11 @@ describe("runCli", () => {
       await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "feature"], { cwd: root });
       await runCliSilent(["pr", "update", taskId, "--root", root]);
-      await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
-      await execFileAsync("git", ["commit", "-m", `${taskId} refresh pr artifacts`], {
-        cwd: root,
-      });
+      await commitPathsIfChanged(
+        root,
+        [`.agentplane/tasks/${taskId}`],
+        `${taskId} refresh pr artifacts`,
+      );
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await mkdir(prDir, { recursive: true });

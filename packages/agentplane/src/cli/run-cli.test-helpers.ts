@@ -884,6 +884,28 @@ export async function commitAll(root: string, message: string): Promise<void> {
   });
 }
 
+export async function commitPathsIfChanged(
+  root: string,
+  paths: string[],
+  message: string,
+): Promise<boolean> {
+  await execFileAsync("git", ["add", "--", ...paths], { cwd: root, env: cleanGitEnv() });
+  const { stdout } = await execFileAsync(
+    "git",
+    ["diff", "--cached", "--name-only", "--", ...paths],
+    {
+      cwd: root,
+      env: cleanGitEnv(),
+    },
+  );
+  if (!stdout.trim()) return false;
+  await execFileAsync("git", ["commit", "--no-verify", "-m", message], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
+  return true;
+}
+
 export async function stageGitignoreIfPresent(root: string): Promise<void> {
   const gitignorePath = path.join(root, ".gitignore");
   if (!(await pathExists(gitignorePath))) return;
