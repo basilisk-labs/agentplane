@@ -611,7 +611,7 @@ describeWhenNotHook("release apply", () => {
       expect(tagOut.trim()).toBe("");
 
       const reportPath = path.join(root, ".agentplane", ".release", "apply", "latest.json");
-    const report = JSON.parse(await readFile(reportPath, "utf8")) as {
+      const report = JSON.parse(await readFile(reportPath, "utf8")) as {
         route?: {
           kind?: string;
           current_branch?: string;

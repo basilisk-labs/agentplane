@@ -1,6 +1,11 @@
 import path from "node:path";
 
-import { extractTaskSuffix, loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
+import {
+  extractTaskSuffix,
+  loadConfig,
+  resolveBaseBranch,
+  resolveProject,
+} from "@agentplaneorg/core";
 
 import { createCliEmitter } from "../../cli/output.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
