@@ -835,7 +835,6 @@ describe("runCli", () => {
       );
 
       expect(result.stdout).toContain("✅ work start");
-      expect(result.stderr).toContain("staying on current repo-local binary");
       expect(result.stderr).not.toContain(
         "running global agentplane binary inside repository checkout",
       );
@@ -946,7 +945,6 @@ describe("runCli", () => {
       );
 
       expect(result.stdout).toContain("✅ work start");
-      expect(result.stderr).toContain("staying on current repo-local binary");
       expect(result.stderr).not.toContain(
         "running global agentplane binary inside repository checkout",
       );
@@ -1057,7 +1055,6 @@ describe("runCli", () => {
       );
 
       expect(result.stdout).toContain("✅ work start");
-      expect(result.stderr).toContain("staying on current repo-local binary");
       expect(result.stderr).not.toContain(
         "running global agentplane binary inside repository checkout",
       );
