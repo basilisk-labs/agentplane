@@ -20,7 +20,7 @@ describe("Task hosted-close workflow contract", () => {
     expect(workflow).toContain("node scripts/prepare-hosted-task-closure.mjs");
     expect(workflow).toContain("git fetch --no-tags origin");
     expect(workflow).toContain(
-      "steps.prepare.outputs.source_branch }}:${{ steps.prepare.outputs.source_branch",
+      "pull/${{ steps.prepare.outputs.pr_number }}/head:${{ steps.prepare.outputs.source_branch",
     );
     expect(workflow).toContain("task hosted-close");
     expect(workflow).toContain("gh pr create");
