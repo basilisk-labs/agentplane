@@ -202,7 +202,8 @@ async function buildHostedTaskFromTrackedPrArtifacts(opts: {
     `Recovered hosted-close state from tracked PR artifacts for merged PR #${opts.mergedPr.number}.`;
   const scopeText =
     scope || `- In scope: record canonical task closure for merged PR #${opts.mergedPr.number}.`;
-  const verificationText = verification || "- State: pending\n- Note: Recovered during hosted-close.";
+  const verificationText =
+    verification || "- State: pending\n- Note: Recovered during hosted-close.";
   const handoffText = handoff || "- No handoff notes recorded.";
   const planText = `Recovered hosted-close state from tracked PR artifacts for merged PR #${opts.mergedPr.number}.`;
   const rollbackText = [
