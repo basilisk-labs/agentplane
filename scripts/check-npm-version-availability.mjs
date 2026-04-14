@@ -5,6 +5,10 @@ import { promisify } from "node:util";
 import { assertReleaseParity } from "./lib/release-version-parity.mjs";
 
 const execFileAsync = promisify(execFile);
+const NPM_VIEW_TIMEOUT_MS = Number.parseInt(
+  process.env.AGENTPLANE_NPM_VIEW_TIMEOUT_MS ?? "15000",
+  10,
+);
 
 function parseArgs(argv) {
   const out = { version: "" };
@@ -33,6 +37,7 @@ async function assertVersionAvailable(pkgName, version, cwd) {
       cwd,
       env: process.env,
       maxBuffer: 10 * 1024 * 1024,
+      timeout: NPM_VIEW_TIMEOUT_MS,
     });
     const published = String(stdout ?? "").trim();
     if (published === version) {
@@ -45,6 +50,11 @@ async function assertVersionAvailable(pkgName, version, cwd) {
     }
   } catch (error) {
     const err = error;
+    if (err?.code === "ETIMEDOUT" || err?.killed === true) {
+      throw new Error(
+        `npm view timed out for ${pkgName}@${version} after ${NPM_VIEW_TIMEOUT_MS}ms`,
+      );
+    }
     const text = `${String(err?.stdout ?? "")}\n${String(err?.stderr ?? "")}\n${String(err?.message ?? "")}`;
     if (/E404|404 Not Found|No match found for version|not in this registry/i.test(text)) {
       return;
