@@ -627,6 +627,7 @@ describe("runCli", () => {
     const mergeSha = mergeHeadStdout.trim();
 
     await rm(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"), { force: true });
+    await rm(path.join(root, ".agentplane", "tasks", taskId, "README.md"), { force: true });
 
     const eventDir = await mkdtemp(
       path.join(tmpdir(), "agentplane-hosted-close-missing-base-pr-meta-"),

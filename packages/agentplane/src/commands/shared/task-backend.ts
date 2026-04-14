@@ -242,12 +242,22 @@ export async function loadTaskFromBranchSnapshot(opts: {
 
   const relReadmePath = toGitPath(path.relative(opts.ctx.resolvedProject.gitRoot, opts.readmePath));
 
+  const refsToTry = [branch, branch.startsWith("origin/") ? null : `origin/${branch}`].filter(
+    (ref): ref is string => Boolean(ref && ref.trim().length > 0),
+  );
+
   let text = "";
-  try {
-    text = await gitShowFile(opts.ctx.resolvedProject.gitRoot, branch, relReadmePath);
-  } catch {
-    return null;
+  let loaded = false;
+  for (const ref of refsToTry) {
+    try {
+      text = await gitShowFile(opts.ctx.resolvedProject.gitRoot, ref, relReadmePath);
+      loaded = true;
+      break;
+    } catch {
+      // Try the next candidate ref.
+    }
   }
+  if (!loaded) return null;
 
   const parsed = parseTaskReadme(text);
   const frontmatter = validateTaskReadmeFrontmatter(
