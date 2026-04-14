@@ -626,6 +626,7 @@ describe("runCli", () => {
     });
     const mergeSha = mergeHeadStdout.trim();
 
+    await execFileAsync("git", ["branch", "-D", branch], { cwd: root });
     await rm(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"), { force: true });
     await rm(path.join(root, ".agentplane", "tasks", taskId, "README.md"), { force: true });
 
