@@ -41,7 +41,7 @@ When a repository is intentionally configured for direct mode, use one short rou
 - `agentplane task plan approve <task-id> --by ORCHESTRATOR`
 - `agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."`
 - `agentplane task verify-show <task-id>`
-- `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`
+- `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]`
 - `agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>`
 
 - Use `agentplane role ORCHESTRATOR` during planning, then switch to `agentplane role <OWNER>` before owner-scoped execution.
@@ -56,7 +56,7 @@ When a repository is intentionally configured for direct mode, use one short rou
 Reuse historical incident advice only through targeted lookup, and validate promotable resolved external findings before `finish`.
 
 - `agentplane task verify-show <task-id>`
-- `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`
+- `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]`
 - `agentplane incidents advise <task-id>`
 - `agentplane incidents collect <task-id> --check`
 - `agentplane doctor`

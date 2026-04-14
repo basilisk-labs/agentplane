@@ -1,6 +1,5 @@
 import { execFile } from "node:child_process";
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
-import { createServer } from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -194,34 +193,39 @@ function makeWorkflowRun({
   };
 }
 
-async function withGithubServer(
+async function withGithubFixtures(
   responder: (
     pathname: string,
     searchParams: URLSearchParams,
   ) => { status?: number; body: unknown },
-  fn: (baseUrl: string) => Promise<void>,
+  fn: (baseUrl: string, fixturePath: string) => Promise<void>,
 ) {
-  const server = createServer((req, res) => {
-    const parsed = new URL(req.url ?? "/", "http://127.0.0.1");
-    const payload = responder(parsed.pathname, parsed.searchParams);
-    res.statusCode = payload.status ?? 200;
-    res.setHeader("content-type", "application/json");
-    res.end(JSON.stringify(payload.body));
-  });
+  const baseUrl = "https://fixtures.invalid";
+  const fixtureDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-release-recovery-fixtures-"));
+  workspaces.push(fixtureDir);
+  const fixturePath = path.join(fixtureDir, "github-api.json");
+  const fixtures = new Map<string, { status?: number; body: unknown }>();
 
-  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", () => resolve()));
-  const address = server.address();
-  if (!address || typeof address === "string") {
-    throw new Error("failed to bind GitHub stub server");
-  }
-
-  try {
-    await fn(`http://127.0.0.1:${address.port}`);
-  } finally {
-    await new Promise<void>((resolve, reject) =>
-      server.close((error) => (error ? reject(error) : resolve())),
+  const register = (pathname: string, search = "") => {
+    const searchParams = new URLSearchParams(search);
+    fixtures.set(
+      `${baseUrl}${pathname}${search ? `?${search}` : ""}`,
+      responder(pathname, searchParams),
     );
-  }
+  };
+
+  register(
+    "/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs",
+    "head_sha=release-sha-123&per_page=20",
+  );
+  register(
+    "/repos/basilisk-labs/agentplane/actions/workflows/publish.yml/runs",
+    "head_sha=release-sha-123&per_page=20",
+  );
+  register("/repos/basilisk-labs/agentplane/actions/runs/123/artifacts", "per_page=100");
+
+  await writeFile(fixturePath, JSON.stringify(Object.fromEntries(fixtures)), "utf8");
+  await fn(baseUrl, fixturePath);
 }
 
 afterEach(async () => {
@@ -367,7 +371,7 @@ describe("release recovery script", () => {
     await execFileAsync("git", ["tag", "v0.2.7"], { cwd: root });
     await writeApplyReport(root, "release-sha-123");
 
-    await withGithubServer(
+    await withGithubFixtures(
       (pathname, searchParams) => {
         if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
           expect(searchParams.get("head_sha")).toBe("release-sha-123");
@@ -398,13 +402,14 @@ describe("release recovery script", () => {
         }
         return { status: 404, body: { message: "not found" } };
       },
-      async (baseUrl) => {
+      async (baseUrl, fixturePath) => {
         const { stdout } = await runScript(
           root,
           ["--json", "--check-github", "--github-repo", "basilisk-labs/agentplane"],
           {
             GITHUB_TOKEN: "test-token",
             AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+            AGENTPLANE_GITHUB_API_FIXTURES: fixturePath,
           },
         );
         const payload = JSON.parse(stdout) as {
@@ -448,7 +453,7 @@ describe("release recovery script", () => {
     const binDir = await installGhStub(root);
     await writeApplyReport(root, "release-sha-123");
 
-    await withGithubServer(
+    await withGithubFixtures(
       (pathname, searchParams) => {
         if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
           expect(searchParams.get("head_sha")).toBe("release-sha-123");
@@ -480,7 +485,7 @@ describe("release recovery script", () => {
         }
         return { status: 404, body: { message: "not found" } };
       },
-      async (baseUrl) => {
+      async (baseUrl, fixturePath) => {
         const { stdout } = await runScript(
           root,
           ["--json", "--check-github", "--github-repo", "basilisk-labs/agentplane"],
@@ -488,6 +493,7 @@ describe("release recovery script", () => {
             PATH: `${binDir}:${process.env.PATH ?? ""}`,
             GITHUB_TOKEN: "test-token",
             AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+            AGENTPLANE_GITHUB_API_FIXTURES: fixturePath,
             AGENTPLANE_TEST_PUBLISH_RESULT_PATH: publishResultPath,
           },
         );
@@ -525,7 +531,7 @@ describe("release recovery script", () => {
     const binDir = await installGhStub(root);
     await writeApplyReport(root, "release-sha-123");
 
-    await withGithubServer(
+    await withGithubFixtures(
       (pathname, searchParams) => {
         if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
           expect(searchParams.get("head_sha")).toBe("release-sha-123");
@@ -574,7 +580,7 @@ describe("release recovery script", () => {
         }
         return { status: 404, body: { message: "not found" } };
       },
-      async (baseUrl) => {
+      async (baseUrl, fixturePath) => {
         const { stdout } = await runScript(
           root,
           ["--json", "--check-github", "--github-repo", "basilisk-labs/agentplane"],
@@ -582,6 +588,7 @@ describe("release recovery script", () => {
             PATH: `${binDir}:${process.env.PATH ?? ""}`,
             GITHUB_TOKEN: "test-token",
             AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+            AGENTPLANE_GITHUB_API_FIXTURES: fixturePath,
             AGENTPLANE_TEST_PUBLISH_RESULT_PATH: publishResultPath,
           },
         );
@@ -621,7 +628,7 @@ describe("release recovery script", () => {
     );
     await writeApplyReport(root, "release-sha-123");
 
-    await withGithubServer(
+    await withGithubFixtures(
       (pathname) => {
         if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
           return {
@@ -652,13 +659,14 @@ describe("release recovery script", () => {
         }
         return { status: 404, body: { message: "not found" } };
       },
-      async (baseUrl) => {
+      async (baseUrl, fixturePath) => {
         const { stdout } = await runScript(
           root,
           ["--json", "--check-github", "--github-repo", "basilisk-labs/agentplane"],
           {
             GITHUB_TOKEN: "test-token",
             AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+            AGENTPLANE_GITHUB_API_FIXTURES: fixturePath,
           },
         );
         const payload = JSON.parse(stdout) as {
@@ -692,7 +700,7 @@ describe("release recovery script", () => {
     );
     await writeApplyReport(root, "release-sha-123");
 
-    await withGithubServer(
+    await withGithubFixtures(
       (pathname) => {
         if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
           return {
@@ -733,13 +741,14 @@ describe("release recovery script", () => {
         }
         return { status: 404, body: { message: "not found" } };
       },
-      async (baseUrl) => {
+      async (baseUrl, fixturePath) => {
         const { stdout } = await runScript(
           root,
           ["--json", "--check-github", "--github-repo", "basilisk-labs/agentplane"],
           {
             GITHUB_TOKEN: "test-token",
             AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+            AGENTPLANE_GITHUB_API_FIXTURES: fixturePath,
           },
         );
         const payload = JSON.parse(stdout) as {
@@ -774,7 +783,7 @@ describe("release recovery script", () => {
     );
     await writeApplyReport(root, "release-sha-123");
 
-    await withGithubServer(
+    await withGithubFixtures(
       (pathname) => {
         if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
           return {
@@ -804,13 +813,14 @@ describe("release recovery script", () => {
         }
         return { status: 404, body: { message: "not found" } };
       },
-      async (baseUrl) => {
+      async (baseUrl, fixturePath) => {
         const { stdout } = await runScript(
           root,
           ["--check-github", "--github-repo", "basilisk-labs/agentplane"],
           {
             GITHUB_TOKEN: "test-token",
             AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+            AGENTPLANE_GITHUB_API_FIXTURES: fixturePath,
           },
         );
         expect(stdout).toContain("State: release_already_published_with_red_core_ci");

@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core";
 
@@ -14,6 +14,7 @@ import {
 } from "../../cli/run-cli.test-helpers.js";
 import { runCli } from "../../cli/run-cli.js";
 import { evolveRunnerRunState, readRunnerRunState, writeRunnerRunState } from "../artifacts.js";
+import * as processSupervision from "../process-supervision.js";
 
 import {
   cancelTaskRunnerExecution,
@@ -28,6 +29,7 @@ const originalPath = process.env.PATH;
 
 afterEach(() => {
   process.env.PATH = originalPath;
+  vi.restoreAllMocks();
 });
 
 async function createDoingTask(root: string, title: string): Promise<string> {
@@ -177,6 +179,11 @@ describe("task-run lifecycle usecases", () => {
     expect(runningState?.supervision?.pid).toBeGreaterThan(0);
     expect(runningState?.supervision?.command).toContain("custom-runner");
     expect(runningState?.supervision?.started_at).toMatch(/T/);
+    vi.spyOn(processSupervision, "readObservedProcessIdentity").mockResolvedValue({
+      pid: runningState!.supervision!.pid!,
+      command: runningState!.supervision!.command ?? null,
+      started_at: runningState!.supervision!.started_at ?? null,
+    });
 
     const cancelled = await cancelTaskRunnerExecution({
       ctx,
@@ -237,6 +244,11 @@ describe("task-run lifecycle usecases", () => {
       (state) => state?.status === "running" && typeof state.supervision?.pid === "number",
     );
     expect(runningState?.status).toBe("running");
+    vi.spyOn(processSupervision, "readObservedProcessIdentity").mockResolvedValue({
+      pid: runningState!.supervision!.pid!,
+      command: runningState!.supervision!.command ?? null,
+      started_at: runningState!.supervision!.started_at ?? null,
+    });
 
     const cancelled = await cancelTaskRunnerExecution({
       ctx,
@@ -308,6 +320,11 @@ describe("task-run lifecycle usecases", () => {
     );
     const pid = runningState?.supervision?.pid;
     expect(pid).toBeGreaterThan(0);
+    vi.spyOn(processSupervision, "readObservedProcessIdentity").mockResolvedValue({
+      pid: pid!,
+      command: runningState?.supervision?.command ?? null,
+      started_at: runningState?.supervision?.started_at ?? null,
+    });
     await writeRunnerRunState({
       state_path: statePath,
       state: evolveRunnerRunState({

@@ -1,4 +1,3 @@
-import { createServer } from "node:http";
 import { execFile } from "node:child_process";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -119,34 +118,16 @@ function makeArtifact() {
   };
 }
 
-async function withServer(
-  responder: (
-    pathname: string,
-    searchParams: URLSearchParams,
-  ) => { status?: number; body: unknown },
-  fn: (baseUrl: string) => Promise<void>,
+async function withFixtures(
+  fixtures: Record<string, { status?: number; body: unknown }>,
+  fn: (baseUrl: string, fixturePath: string) => Promise<void>,
 ) {
-  const server = createServer((req, res) => {
-    const parsed = new URL(req.url ?? "/", "http://127.0.0.1");
-    const payload = responder(parsed.pathname, parsed.searchParams);
-    res.statusCode = payload.status ?? 200;
-    res.setHeader("content-type", "application/json");
-    res.end(JSON.stringify(payload.body));
-  });
-
-  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", () => resolve()));
-  const address = server.address();
-  if (!address || typeof address === "string") {
-    throw new Error("failed to bind test server");
-  }
-
-  try {
-    await fn(`http://127.0.0.1:${address.port}`);
-  } finally {
-    await new Promise<void>((resolve, reject) =>
-      server.close((error) => (error ? reject(error) : resolve())),
-    );
-  }
+  const baseUrl = "https://fixtures.invalid";
+  const fixtureDir = await mkdtemp(path.join(tmpdir(), "agentplane-local-release-fixtures-"));
+  roots.push(fixtureDir);
+  const fixturePath = path.join(fixtureDir, "github-api.json");
+  await writeFile(fixturePath, JSON.stringify(fixtures), "utf8");
+  await fn(baseUrl, fixturePath);
 }
 
 async function runScript(
@@ -182,26 +163,22 @@ describe("local release E2E script", () => {
     async () => {
       const { root, sha, binDir } = await initWorkspace();
 
-      await withServer(
-        (pathname, searchParams) => {
-          if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
-            expect(searchParams.get("head_sha")).toBe(sha);
-            return {
+      await withFixtures(
+        {
+          [`https://fixtures.invalid/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs?head_sha=${sha}&per_page=20`]:
+            {
               body: {
                 workflow_runs: [makeRun({ headSha: sha })],
               },
-            };
-          }
-          if (pathname.endsWith("/actions/runs/123/artifacts")) {
-            return {
+            },
+          "https://fixtures.invalid/repos/basilisk-labs/agentplane/actions/runs/123/artifacts?per_page=100":
+            {
               body: {
                 artifacts: [makeArtifact()],
               },
-            };
-          }
-          return { status: 404, body: { message: "not found" } };
+            },
         },
-        async (baseUrl) => {
+        async (baseUrl, fixturePath) => {
           const result = await runScript(
             root,
             ["--skip-prepublish", "--json", "--repo", "basilisk-labs/agentplane"],
@@ -209,6 +186,7 @@ describe("local release E2E script", () => {
               PATH: `${binDir}:${process.env.PATH ?? ""}`,
               GITHUB_TOKEN: "test-token",
               AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+              AGENTPLANE_GITHUB_API_FIXTURES: fixturePath,
               AGENTPLANE_TEST_GH_SHA: sha,
             },
           );
@@ -305,25 +283,22 @@ describe("local release E2E script", () => {
     async () => {
       const { root, sha, binDir } = await initWorkspace();
 
-      await withServer(
-        (pathname) => {
-          if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
-            return {
+      await withFixtures(
+        {
+          [`https://fixtures.invalid/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs?head_sha=${sha}&per_page=20`]:
+            {
               body: {
                 workflow_runs: [makeRun({ headSha: sha })],
               },
-            };
-          }
-          if (pathname.endsWith("/actions/runs/123/artifacts")) {
-            return {
+            },
+          "https://fixtures.invalid/repos/basilisk-labs/agentplane/actions/runs/123/artifacts?per_page=100":
+            {
               body: {
                 artifacts: [makeArtifact()],
               },
-            };
-          }
-          return { status: 404, body: { message: "not found" } };
+            },
         },
-        async (baseUrl) => {
+        async (baseUrl, fixturePath) => {
           const result = await runScript(
             root,
             ["--skip-prepublish", "--repo", "basilisk-labs/agentplane"],
@@ -331,6 +306,7 @@ describe("local release E2E script", () => {
               PATH: `${binDir}:${process.env.PATH ?? ""}`,
               GITHUB_TOKEN: "test-token",
               AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+              AGENTPLANE_GITHUB_API_FIXTURES: fixturePath,
               AGENTPLANE_TEST_GH_SHA: "different-sha",
             },
           ).then(
