@@ -1,10 +1,11 @@
 ---
 id: "202604131826-PRNBPW"
 title: "Reduce branch_pr release friction"
-status: "DOING"
+result_summary: "Merged via PR #290."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-14T09:38:14.010Z"
   updated_by: "CODER"
   note: "Verified: targeted branch_pr suites pass (75/75); pr check passes; protected-main integrate now fails fast and pr open/update auto-commit task PR artifacts."
-commit: null
+commit:
+  hash: "b0b2df18c7b1e001e83f2ad298800661252d3ec3"
+  message: "Reduce branch_pr release friction (PRNBPW) (#290)"
 comments:
   -
     author: "CODER"
     body: "Start: inspect protected-main integrate behavior and PR artifact refresh churn, then implement the smallest safe fixes with targeted verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #290 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: targeted branch_pr suites pass (75/75); pr check passes; protected-main integrate now fails fast and pr open/update auto-commit task PR artifacts."
+  -
+    type: "status"
+    at: "2026-04-14T10:00:21.358Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #290 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-14T09:38:14.025Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-14T10:00:21.364Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent local integrate from mutating protected main, reduce tracked PR artifact churn, and then prepare the next patch release."
 sections:
   Summary: |-
