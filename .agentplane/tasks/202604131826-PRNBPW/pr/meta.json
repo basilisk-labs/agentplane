@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604131826-PRNBPW/branch-pr-friction",
   "created_at": "2026-04-13T18:26:54.534Z",
-  "head_sha": "00bdf2008b6048ed85f477bbf447a48f75c0d281",
+  "head_sha": "f647c1936881ea1f9ba6b6d09d4d98656f18b8aa",
   "last_verified_at": "2026-04-14T09:38:14.010Z",
   "last_verified_sha": "a6172f36899a2e12fe28529441ad4fc38a813dc4",
+  "merge_commit": "b0b2df18c7b1e001e83f2ad298800661252d3ec3",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-14T09:59:53Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604131826-PRNBPW",
-  "updated_at": "2026-04-14T09:49:48.765Z",
+  "updated_at": "2026-04-14T09:59:53Z",
   "verify": {
     "status": "pass"
   }
