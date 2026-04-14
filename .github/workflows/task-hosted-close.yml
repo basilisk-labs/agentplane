@@ -98,7 +98,7 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --no-tags origin \
-            "${{ steps.prepare.outputs.source_branch }}:${{ steps.prepare.outputs.source_branch }}"
+            "pull/${{ steps.prepare.outputs.pr_number }}/head:${{ steps.prepare.outputs.source_branch }}"
       - name: Apply hosted task closure on a local base checkout
         if: |
           steps.prepare.outputs.actionable == 'true' &&
