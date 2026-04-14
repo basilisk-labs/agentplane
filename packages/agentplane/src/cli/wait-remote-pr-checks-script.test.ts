@@ -258,16 +258,17 @@ describe("wait-remote-pr-checks script", () => {
     expect(callLogText).toContain(`["pr","view","456"`);
     expect(callLogText.match(/branches\/main\/protection/g)?.length).toBe(1);
 
-    const state = JSON.parse(await readFile(stateFile, "utf8")) as {
-      prViewCallsByTarget: Record<string, number>;
-      statusCallsByHead: Record<string, number>;
-      protectionCalls: number;
-    };
-    expect(state.prViewCallsByTarget["123"]).toBeGreaterThan(0);
-    expect(state.prViewCallsByTarget["456"]).toBeGreaterThan(0);
-    expect(state.statusCallsByHead["head-sha-1"]).toBeGreaterThan(1);
-    expect(state.statusCallsByHead["head-sha-2"]).toBeGreaterThan(1);
-    expect(state.protectionCalls).toBe(1);
+    expect(callLogText.match(/"pr","view","123"/g)?.length ?? 0).toBeGreaterThan(0);
+    expect(callLogText.match(/"pr","view","456"/g)?.length ?? 0).toBeGreaterThan(0);
+    expect(
+      callLogText.match(/"api","repos\/basilisk-labs\/agentplane\/commits\/head-sha-1\/status"/g)
+        ?.length ?? 0,
+    ).toBeGreaterThan(1);
+    expect(
+      callLogText.match(/"api","repos\/basilisk-labs\/agentplane\/commits\/head-sha-2\/status"/g)
+        ?.length ?? 0,
+    ).toBeGreaterThan(1);
+    expect(callLogText.match(/branches\/main\/protection/g)?.length ?? 0).toBe(1);
   });
 
   it("fails on the first failing PR and stops before later targets", async () => {
