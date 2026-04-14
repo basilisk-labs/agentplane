@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
+import { extractTaskSuffix, loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
 
 import { createCliEmitter } from "../../cli/output.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
@@ -11,6 +11,7 @@ import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { GitContext } from "../shared/git-context.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
+import { parseTaskIdFromBranch } from "../shared/git-worktree.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureNetworkApproved } from "../shared/network-approval.js";
 import { runOperatorPipeline } from "../shared/operator-pipeline.js";
@@ -253,6 +254,8 @@ async function applyReleaseMutation(opts: {
   agentplanePkgPath: string;
   nextTag: string;
   nextVersion: string;
+  route: ReleaseApplyRoute;
+  taskBranchPrefix: string;
 }): Promise<{ releaseCommit: { hash: string; subject: string } | null }> {
   let releaseCommit: { hash: string; subject: string } | null = null;
   await Promise.all([
@@ -289,7 +292,13 @@ async function applyReleaseMutation(opts: {
     return { releaseCommit };
   }
 
-  const subject = `✨ release: publish ${opts.nextTag}`;
+  const taskId =
+    opts.route.kind === "branch_pr_candidate"
+      ? parseTaskIdFromBranch(opts.taskBranchPrefix, opts.route.current_branch)
+      : null;
+  const subject = taskId
+    ? `✨ ${extractTaskSuffix(taskId)} release: publish ${opts.nextTag}`
+    : `✨ release: publish ${opts.nextTag}`;
   await opts.git.commit({ message: subject, env: cleanHookEnv() });
   const { stdout: headHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {
     cwd: opts.gitRoot,
@@ -464,12 +473,14 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
         gitRoot,
         planOverride: flags.plan,
       });
+      const loaded = await loadConfig(resolved.agentplaneDir);
       return {
         resolved,
         gitRoot,
         planDir,
         plan,
         notesPath,
+        taskBranchPrefix: loaded.config.branch.task_prefix,
         route: await resolveReleaseApplyRoute({
           cwd: ctx.cwd,
           rootOverride: ctx.rootOverride ?? null,
@@ -520,6 +531,8 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
         agentplanePkgPath: state.agentplanePkgPath,
         nextTag: state.plan.nextTag,
         nextVersion: state.plan.nextVersion,
+        route: state.route,
+        taskBranchPrefix: state.taskBranchPrefix,
       });
     },
     finalize: async (state, mutation) =>

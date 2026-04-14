@@ -611,13 +611,14 @@ describeWhenNotHook("release apply", () => {
       expect(tagOut.trim()).toBe("");
 
       const reportPath = path.join(root, ".agentplane", ".release", "apply", "latest.json");
-      const report = JSON.parse(await readFile(reportPath, "utf8")) as {
+    const report = JSON.parse(await readFile(reportPath, "utf8")) as {
         route?: {
           kind?: string;
           current_branch?: string;
           base_branch?: string | null;
           final_publish_deferred?: boolean;
         };
+        commit?: { subject?: string } | null;
         tag?: { created?: boolean; pushed?: boolean };
         push?: { performed?: boolean; refs?: string[] };
       };
@@ -625,6 +626,7 @@ describeWhenNotHook("release apply", () => {
       expect(report.route?.current_branch).toBe("task/202604130750-E2J835/release-candidate");
       expect(report.route?.base_branch).toBe("main");
       expect(report.route?.final_publish_deferred).toBe(true);
+      expect(report.commit?.subject).toBe("✨ E2J835 release: publish v0.2.7");
       expect(report.tag?.created).toBe(false);
       expect(report.tag?.pushed).toBe(false);
       expect(report.push?.performed).toBe(false);
