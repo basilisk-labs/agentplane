@@ -8,6 +8,7 @@ import { commitAll, mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.
 import { seedReleaseWorkspace, writeReleaseNotes } from "../release.test-helpers.js";
 import { runReleasePlan } from "./plan.command.js";
 import { pushReleaseRefs, runReleaseApply } from "./apply.command.js";
+import { cleanHookEnv } from "./apply.mutation.js";
 
 const execFileAsync = promisify(execFile);
 const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
@@ -78,6 +79,15 @@ async function writeWorkflowMode(root: string, mode: "direct" | "branch_pr"): Pr
 }
 
 describeWhenNotHook("release apply", () => {
+  it("allows the release commit to stage protected config updates", () => {
+    const env = cleanHookEnv();
+
+    expect(env.AGENTPLANE_ALLOW_CONFIG).toBe("1");
+    expect(env.AGENTPLANE_TASK_ID).toBeUndefined();
+    expect(env.AGENTPLANE_STATUS_TO).toBeUndefined();
+    expect(env.AGENTPLANE_AGENT_ID).toBeUndefined();
+  });
+
   it("bumps versions, commits, and tags using the latest plan", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

@@ -130,5 +130,6 @@ export function cleanHookEnv(): NodeJS.ProcessEnv {
   delete env.AGENTPLANE_TASK_ID;
   delete env.AGENTPLANE_STATUS_TO;
   delete env.AGENTPLANE_AGENT_ID;
+  env.AGENTPLANE_ALLOW_CONFIG = "1";
   return env;
 }
