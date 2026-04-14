@@ -65,7 +65,7 @@ agentplane task new --title "..." --description "..." --priority med --owner <RO
 agentplane task plan set <task-id> --text "..." --updated-by <ROLE>
 agentplane task plan approve <task-id> --by ORCHESTRATOR
 agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
-agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
 agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>
 ```
 
@@ -83,7 +83,7 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 
 ```bash
 agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
 agentplane incidents advise <task-id>
 agentplane incidents collect <task-id> --check
 agentplane doctor

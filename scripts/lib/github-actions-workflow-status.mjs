@@ -1,5 +1,6 @@
 import http from "node:http";
 import https from "node:https";
+import { readFile } from "node:fs/promises";
 
 function assertNonEmpty(value, label) {
   const text = typeof value === "string" ? value.trim() : "";
@@ -39,6 +40,10 @@ export function resolveGithubRepo(repo = process.env.GITHUB_REPOSITORY) {
 }
 
 function requestJson(url, token) {
+  const fixturePath = process.env.AGENTPLANE_GITHUB_API_FIXTURES;
+  if (typeof fixturePath === "string" && fixturePath.trim()) {
+    return readGithubApiFixture(fixturePath, url);
+  }
   return new Promise((resolve, reject) => {
     const targetUrl = new URL(url);
     const transport = targetUrl.protocol === "http:" ? http : https;
@@ -73,6 +78,21 @@ function requestJson(url, token) {
     );
     request.on("error", reject);
   });
+}
+
+async function readGithubApiFixture(fixturePath, url) {
+  const raw = await readFile(fixturePath, "utf8");
+  const fixtures = JSON.parse(raw);
+  const entry = fixtures?.[url];
+  if (!entry) {
+    throw new Error(`Missing GitHub API fixture for ${url}`);
+  }
+  const statusCode =
+    typeof entry.status === "number" && Number.isFinite(entry.status) ? entry.status : 200;
+  if (statusCode < 200 || statusCode >= 300) {
+    throw new Error(`GitHub API request failed (${statusCode}): ${JSON.stringify(entry.body)}`);
+  }
+  return entry.body;
 }
 
 export async function listWorkflowRuns({

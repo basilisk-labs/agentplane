@@ -1,5 +1,4 @@
-import { createServer } from "node:http";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { execFile } from "node:child_process";
@@ -56,37 +55,40 @@ function makeArtifact({
   };
 }
 
-async function withServer(
+async function withFixtures(
   responder: (
     pathname: string,
     searchParams: URLSearchParams,
   ) => { status?: number; body: unknown },
-  fn: (baseUrl: string) => Promise<void>,
+  fn: (baseUrl: string, fixturePath: string) => Promise<void>,
 ) {
-  const server = createServer((req, res) => {
-    const parsed = new URL(req.url ?? "/", "http://127.0.0.1");
-    const payload = responder(parsed.pathname, parsed.searchParams);
-    res.statusCode = payload.status ?? 200;
-    res.setHeader("content-type", "application/json");
-    res.end(JSON.stringify(payload.body));
-  });
+  const baseUrl = "https://fixtures.invalid";
+  const fixtureDir = await mkdtemp(path.join(tmpdir(), "agentplane-release-ready-fixtures-"));
+  temps.push(fixtureDir);
+  const fixturePath = path.join(fixtureDir, "github-api.json");
+  const fixtures = new Map<string, { status?: number; body: unknown }>();
 
-  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", () => resolve()));
-  const address = server.address();
-  if (!address || typeof address === "string") {
-    throw new Error("failed to bind test server");
-  }
-
-  try {
-    await fn(`http://127.0.0.1:${address.port}`);
-  } finally {
-    await new Promise<void>((resolve, reject) =>
-      server.close((error) => (error ? reject(error) : resolve())),
+  const register = (pathname: string, search = "") => {
+    const searchParams = new URLSearchParams(search);
+    fixtures.set(
+      `${baseUrl}${pathname}${search ? `?${search}` : ""}`,
+      responder(pathname, searchParams),
     );
-  }
+  };
+
+  register(
+    "/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs",
+    "head_sha=abc123&per_page=20",
+  );
+  register("/repos/basilisk-labs/agentplane/actions/runs/123/artifacts", "per_page=100");
+  register("/repos/basilisk-labs/agentplane/actions/runs/789");
+  register("/repos/basilisk-labs/agentplane/actions/runs/789/artifacts", "per_page=100");
+
+  await writeFile(fixturePath, JSON.stringify(Object.fromEntries(fixtures)), "utf8");
+  await fn(baseUrl, fixturePath);
 }
 
-async function runScript(baseUrl: string, args: string[] = []) {
+async function runScript(baseUrl: string, fixturePath: string, args: string[] = []) {
   const cwd = await mkdtemp(path.join(tmpdir(), "agentplane-release-ready-source-"));
   temps.push(cwd);
   return execFileAsync("node", [SCRIPT_PATH, "--repo", "basilisk-labs/agentplane", ...args], {
@@ -95,6 +97,7 @@ async function runScript(baseUrl: string, args: string[] = []) {
       ...process.env,
       GITHUB_TOKEN: "test-token",
       AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+      AGENTPLANE_GITHUB_API_FIXTURES: fixturePath,
     },
   });
 }
@@ -109,7 +112,7 @@ afterEach(async () => {
 
 describe("resolve-release-ready-source script", () => {
   it("passes when a successful Core CI run has the release-ready artifact", async () => {
-    await withServer(
+    await withFixtures(
       (pathname) => {
         if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
           return {
@@ -127,8 +130,8 @@ describe("resolve-release-ready-source script", () => {
         }
         return { status: 404, body: { message: "not found" } };
       },
-      async (baseUrl) => {
-        const result = await runScript(baseUrl, ["--sha", "abc123", "--json"]);
+      async (baseUrl, fixturePath) => {
+        const result = await runScript(baseUrl, fixturePath, ["--sha", "abc123", "--json"]);
         const payload = JSON.parse(String(result.stdout ?? "")) as {
           ok: boolean;
           state: string;
@@ -144,7 +147,7 @@ describe("resolve-release-ready-source script", () => {
   });
 
   it("fails when the successful run is missing the release-ready artifact", async () => {
-    await withServer(
+    await withFixtures(
       (pathname) => {
         if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
           return {
@@ -162,8 +165,8 @@ describe("resolve-release-ready-source script", () => {
         }
         return { status: 404, body: { message: "not found" } };
       },
-      async (baseUrl) => {
-        const result = await runScript(baseUrl, ["--sha", "abc123"]).then(
+      async (baseUrl, fixturePath) => {
+        const result = await runScript(baseUrl, fixturePath, ["--sha", "abc123"]).then(
           () => ({ ok: true as const, stdout: "" }),
           (error: unknown) => {
             const stdout =
@@ -183,7 +186,7 @@ describe("resolve-release-ready-source script", () => {
   });
 
   it("fails when Core CI is not successful for the requested SHA", async () => {
-    await withServer(
+    await withFixtures(
       (pathname) => {
         if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
           return {
@@ -194,8 +197,8 @@ describe("resolve-release-ready-source script", () => {
         }
         return { status: 404, body: { message: "not found" } };
       },
-      async (baseUrl) => {
-        const result = await runScript(baseUrl, ["--sha", "abc123"]).then(
+      async (baseUrl, fixturePath) => {
+        const result = await runScript(baseUrl, fixturePath, ["--sha", "abc123"]).then(
           () => ({ ok: true as const, stdout: "" }),
           (error: unknown) => {
             const stdout =
@@ -215,7 +218,7 @@ describe("resolve-release-ready-source script", () => {
   });
 
   it("passes when an explicit run-id belongs to the requested SHA and succeeded", async () => {
-    await withServer(
+    await withFixtures(
       (pathname) => {
         if (pathname.endsWith("/actions/runs/789")) {
           return {
@@ -231,8 +234,14 @@ describe("resolve-release-ready-source script", () => {
         }
         return { status: 404, body: { message: "not found" } };
       },
-      async (baseUrl) => {
-        const result = await runScript(baseUrl, ["--sha", "abc123", "--run-id", "789", "--json"]);
+      async (baseUrl, fixturePath) => {
+        const result = await runScript(baseUrl, fixturePath, [
+          "--sha",
+          "abc123",
+          "--run-id",
+          "789",
+          "--json",
+        ]);
         const payload = JSON.parse(String(result.stdout ?? "")) as {
           ok: boolean;
           state: string;
@@ -249,7 +258,7 @@ describe("resolve-release-ready-source script", () => {
   });
 
   it("fails when an explicit run-id belongs to a different SHA", async () => {
-    await withServer(
+    await withFixtures(
       (pathname) => {
         if (pathname.endsWith("/actions/runs/789")) {
           return {
@@ -263,8 +272,13 @@ describe("resolve-release-ready-source script", () => {
         }
         return { status: 404, body: { message: "not found" } };
       },
-      async (baseUrl) => {
-        const result = await runScript(baseUrl, ["--sha", "abc123", "--run-id", "789"]).then(
+      async (baseUrl, fixturePath) => {
+        const result = await runScript(baseUrl, fixturePath, [
+          "--sha",
+          "abc123",
+          "--run-id",
+          "789",
+        ]).then(
           () => ({ ok: true as const, stdout: "" }),
           (error: unknown) => {
             const stdout =
@@ -284,7 +298,7 @@ describe("resolve-release-ready-source script", () => {
   });
 
   it("fails when an explicit run-id is not successful", async () => {
-    await withServer(
+    await withFixtures(
       (pathname) => {
         if (pathname.endsWith("/actions/runs/789")) {
           return {
@@ -293,8 +307,13 @@ describe("resolve-release-ready-source script", () => {
         }
         return { status: 404, body: { message: "not found" } };
       },
-      async (baseUrl) => {
-        const result = await runScript(baseUrl, ["--sha", "abc123", "--run-id", "789"]).then(
+      async (baseUrl, fixturePath) => {
+        const result = await runScript(baseUrl, fixturePath, [
+          "--sha",
+          "abc123",
+          "--run-id",
+          "789",
+        ]).then(
           () => ({ ok: true as const, stdout: "" }),
           (error: unknown) => {
             const stdout =

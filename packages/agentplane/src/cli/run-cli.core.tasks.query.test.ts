@@ -21,7 +21,6 @@ import {
   extractTaskSuffix,
   readTask,
   renderTaskDocFromSections,
-  renderTaskReadme,
   taskDocToSectionMap,
   type ResolvedProject,
 } from "@agentplaneorg/core";
@@ -64,8 +63,10 @@ import {
   formatRunnerPolicyFieldSummaryLines,
 } from "../runner/policy-display.js";
 import { prepareTaskRunnerExecution } from "../runner/usecases/task-run.js";
+import * as processSupervision from "../runner/process-supervision.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
+import { VERIFY_STEPS_PLACEHOLDER } from "../commands/task/shared/docs.js";
 
 installRunCliIntegrationHarness();
 
@@ -2121,6 +2122,14 @@ describe("runCli", () => {
           return status === "running" && typeof supervision?.pid === "number";
         },
       });
+      const supervision = liveRun.state.supervision as
+        | { pid?: number; command?: string | null; started_at?: string | null }
+        | undefined;
+      vi.spyOn(processSupervision, "readObservedProcessIdentity").mockResolvedValue({
+        pid: supervision?.pid ?? 0,
+        command: supervision?.command ?? null,
+        started_at: supervision?.started_at ?? null,
+      });
       const cancelCode = await runCli([
         "task",
         "run",
@@ -2524,6 +2533,14 @@ describe("runCli", () => {
               : null;
           return status === "running" && typeof supervision?.pid === "number";
         },
+      });
+      const supervision = liveRun.state.supervision as
+        | { pid?: number; command?: string | null; started_at?: string | null }
+        | undefined;
+      vi.spyOn(processSupervision, "readObservedProcessIdentity").mockResolvedValue({
+        pid: supervision?.pid ?? 0,
+        command: supervision?.command ?? null,
+        started_at: supervision?.started_at ?? null,
       });
       expect(await runCli(["task", "run", "cancel", taskId, liveRun.runId, "--root", root])).toBe(
         0,
@@ -3251,6 +3268,18 @@ describe("runCli", () => {
         io.restore();
       }
     }
+
+    const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await commandCtx.taskBackend.getTask(taskId);
+    expect(task).toBeTruthy();
+    const sections = taskDocToSectionMap(task?.doc ?? "");
+    sections["Verify Steps"] = VERIFY_STEPS_PLACEHOLDER;
+    const doc = renderTaskDocFromSections(sections);
+    await commandCtx.taskBackend.writeTask({
+      ...task!,
+      doc,
+      sections: taskDocToSectionMap(doc),
+    });
 
     {
       const io = captureStdIO();
