@@ -232,6 +232,71 @@ describe("commands/shared/task-backend CommandContext", () => {
     expect(task.title).toBe("Branch task title");
   });
 
+  it("loadTaskFromContext can fall back to origin/<branch> when the local task branch is gone", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await writeLocalBackendConfig(root);
+
+    const execFileAsync = promisify(execFile);
+    const remoteRoot = path.join(root, "origin.git");
+    await execFileAsync("git", ["init", "--bare", remoteRoot], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
+
+    const created = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "Base task title",
+      description: "Prefer the task README from the remote branch snapshot",
+      owner: "TESTER",
+      priority: "med",
+      tags: ["testing"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${created.id} scaffold`], { cwd: root });
+    const { stdout: baseBranchStdout } = await execFileAsync(
+      "git",
+      ["rev-parse", "--abbrev-ref", "HEAD"],
+      { cwd: root },
+    );
+    const baseBranch = baseBranchStdout.trim();
+    await execFileAsync("git", ["push", "-u", "origin", baseBranch], { cwd: root });
+    await execFileAsync("git", ["push"], { cwd: root });
+
+    const branch = `task/${created.id}/remote-snapshot`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    const readmePath = path.join(root, ".agentplane", "tasks", created.id, "README.md");
+    const original = await readFile(readmePath, "utf8");
+    await writeFile(
+      readmePath,
+      original.replace("Base task title", "Remote branch task title"),
+      "utf8",
+    );
+    await execFileAsync("git", ["add", readmePath], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `docs ${created.id} remote branch title`], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["push", "-u", "origin", branch], { cwd: root });
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await execFileAsync("git", ["branch", "-D", branch], { cwd: root });
+
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await loadTaskFromContext({
+      ctx,
+      taskId: created.id,
+      preferBranchSnapshot: true,
+      branchSnapshotBranch: branch,
+    });
+
+    expect(task.id).toBe(created.id);
+    expect(task.title).toBe("Remote branch task title");
+  });
+
   it("listTaskSummariesMemo falls back to summary projection when the backend has no explicit projection read", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

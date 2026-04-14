@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202604141003-TTYK1C/patch-release-v0-3-12",
+  "created_at": "2026-04-14T13:42:41.079Z",
+  "head_sha": "03dfafa5654de40bd35faffb3d6c445b286957c8",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "pr_number": 292,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/292",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202604141003-TTYK1C",
+  "updated_at": "2026-04-14T13:42:41.079Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

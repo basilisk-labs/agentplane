@@ -181,7 +181,16 @@ async function closeHostedTask(opts: {
 
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const taskDirRelative = path.join(opts.ctx.config.paths.workflow_dir, target.taskId);
-  const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: target.taskId });
+  const taskReadmePath = path.join(gitRoot, taskDirRelative, "README.md");
+  const task = await loadTaskFromContext({
+    ctx: opts.ctx,
+    taskId: target.taskId,
+    preferBranchSnapshot: true,
+    branchSnapshotBranch: target.branch,
+  });
+  if (!(await fileExists(taskReadmePath))) {
+    await opts.ctx.taskBackend.writeTask(task);
+  }
   const { metaPath, meta } = await readHostedPrMetaOrFallback({
     gitRoot,
     taskDirRelative,
