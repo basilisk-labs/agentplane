@@ -57,7 +57,7 @@ describe("check-npm-version-availability script", () => {
       [
         "#!/usr/bin/env node",
         "setTimeout(() => {",
-        "  process.stdout.write('late registry response\\n');",
+        String.raw`  process.stdout.write('late registry response\n');`,
         "}, 1_000);",
       ].join("\n"),
     );
@@ -72,11 +72,14 @@ describe("check-npm-version-availability script", () => {
         },
         maxBuffer: 10 * 1024 * 1024,
       }),
-    ).rejects.toMatchObject({
-      code: 1,
-      stderr: expect.stringContaining(
-        "npm view timed out for @agentplaneorg/core@0.2.7 after 50ms",
-      ),
+    ).rejects.toSatisfy((error: unknown) => {
+      const execError = error as { code?: number; stderr?: string };
+      return (
+        execError.code === 1 &&
+        String(execError.stderr ?? "").includes(
+          "npm view timed out for @agentplaneorg/core@0.2.7 after 50ms",
+        )
+      );
     });
   });
 });
