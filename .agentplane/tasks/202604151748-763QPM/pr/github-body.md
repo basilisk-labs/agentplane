@@ -11,8 +11,8 @@ Publish detect resolves the correct release SHA but publish still downloads the 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Targeted release workflow checks passed: bun vitest run packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/resolve-release-ready-source-script.test.ts. The publish workflow now carries release_ready_artifact_name from source.json and downloads the exact detected artifact instead of hard-coding the generic release-ready name.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
