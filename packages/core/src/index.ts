@@ -59,6 +59,7 @@ export {
   validateTasksExportSnapshot,
   withTaskReadmeFrontmatterDefaults,
   type TaskHandoff,
+  type TaskHandoffRoute,
   type TaskHandoffRunnerNextAction,
   type TaskHandoffRunnerState,
   type TaskPrMeta,

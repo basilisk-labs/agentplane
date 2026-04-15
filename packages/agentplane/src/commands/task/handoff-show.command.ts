@@ -59,6 +59,27 @@ export const runTaskHandoffShow = async (ctx: CommandCtx, parsed: TaskHandoffSho
   if (handoff.base_branch) entries.push({ label: "base_branch", value: handoff.base_branch });
   if (handoff.head_sha) entries.push({ label: "head_sha", value: handoff.head_sha });
   if (handoff.pr_branch) entries.push({ label: "pr_branch", value: handoff.pr_branch });
+  if (handoff.route?.kind) entries.push({ label: "route_kind", value: handoff.route.kind });
+  if (handoff.route?.status) entries.push({ label: "route_status", value: handoff.route.status });
+  if (handoff.route?.local_mutation) {
+    entries.push({ label: "route_local_mutation", value: handoff.route.local_mutation });
+  }
+  if (handoff.route?.finalize_via) {
+    entries.push({ label: "route_finalize_via", value: handoff.route.finalize_via });
+  }
+  if (typeof handoff.route?.pr_number === "number") {
+    entries.push({ label: "route_pr_number", value: String(handoff.route.pr_number) });
+  }
+  if (handoff.route?.pr_url) entries.push({ label: "route_pr_url", value: handoff.route.pr_url });
+  if (handoff.route?.handoff_show_command) {
+    entries.push({
+      label: "route_handoff_show_command",
+      value: handoff.route.handoff_show_command,
+    });
+  }
+  if (handoff.route?.base_pull_command) {
+    entries.push({ label: "route_base_pull_command", value: handoff.route.base_pull_command });
+  }
   if (handoff.runner?.run_id) {
     entries.push(
       { label: "run_id", value: handoff.runner.run_id },

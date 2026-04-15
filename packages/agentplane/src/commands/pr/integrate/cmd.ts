@@ -3,6 +3,7 @@ import path from "node:path";
 import { mapBackendError } from "../../../cli/error-map.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { createCliEmitter } from "../../../cli/output.js";
+import { withDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 
 import { cleanupIntegratedBranch } from "./internal/cleanup.js";
@@ -42,6 +43,7 @@ async function recordProtectedBaseIntegrateHandoff(opts: {
     workflow_dir: opts.ctx.config.paths.workflow_dir,
     task_id: opts.taskId,
   });
+  const handoffShowCommand = `agentplane task handoff show ${opts.taskId}`;
   const prLabel =
     typeof opts.prNumber === "number" && opts.prNumber > 0
       ? `GitHub PR #${opts.prNumber}`
@@ -65,10 +67,21 @@ async function recordProtectedBaseIntegrateHandoff(opts: {
       head_sha: opts.branchHeadSha,
       workspace_root: opts.ctx.resolvedProject.gitRoot,
       pr_branch: opts.branch,
+      route: {
+        kind: "protected_base_integrate",
+        status: "awaiting_github_merge",
+        local_mutation: "not_performed",
+        finalize_via: "github_pr_merge_then_hosted_close",
+        pr_number: opts.prNumber,
+        pr_url: prUrl.length > 0 ? prUrl : null,
+        handoff_show_command: handoffShowCommand,
+        base_pull_command: "git pull --ff-only",
+      },
       next_actions: [
+        handoffShowCommand,
         prUrl.length > 0 ? `Merge ${prLabel}: ${prUrl}` : `Merge ${prLabel} on GitHub`,
         `Wait for Task Hosted Close to finish`,
-        `Pull ${opts.base} into the base checkout`,
+        `git pull --ff-only`,
       ],
       evidence_paths: [taskReadmePath, prMetaPath],
     }),
@@ -157,6 +170,23 @@ export async function cmdIntegrate(opts: {
         message:
           `Base branch ${base} requires GitHub pull-request merges; integrate will not mutate it locally. ` +
           `Merge ${prHint} on GitHub, let Task Hosted Close finish the closure tail, then pull ${base}.`,
+        context: withDiagnosticContext(
+          {
+            task_id: task.id,
+            branch,
+            base_branch: base,
+          },
+          {
+            state: `protected-base integrate routed to GitHub merge handoff for ${task.id}`,
+            likelyCause: `base branch ${base} is protected by a GitHub pull-request merge policy, so local integrate must stop before mutating ${base}`,
+            hint: "Inspect the persisted handoff artifact for the canonical finalize route, then merge the PR on GitHub and let Task Hosted Close finish the close tail.",
+            nextAction: {
+              command: `agentplane task handoff show ${task.id}`,
+              reason: "inspect the persisted protected-base finalize route before continuing",
+              reasonCode: "protected_base_integrate_handoff",
+            },
+          },
+        ),
       });
     }
 

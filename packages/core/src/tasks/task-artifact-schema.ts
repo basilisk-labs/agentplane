@@ -47,6 +47,17 @@ export type TaskHandoffRunnerState = {
   trace_path?: string | null;
 };
 
+export type TaskHandoffRoute = {
+  kind: "protected_base_integrate";
+  status?: "awaiting_github_merge" | null;
+  local_mutation?: "not_performed" | null;
+  finalize_via?: "github_pr_merge_then_hosted_close" | null;
+  pr_number?: number | null;
+  pr_url?: string | null;
+  handoff_show_command?: string | null;
+  base_pull_command?: string | null;
+};
+
 export type TaskHandoff = {
   schema_version: 1;
   task_id: string;
@@ -61,6 +72,7 @@ export type TaskHandoff = {
   workspace_root?: string | null;
   pr_branch?: string | null;
   runner?: TaskHandoffRunnerState;
+  route?: TaskHandoffRoute;
   next_actions?: string[];
   risks?: string[];
   open_questions?: string[];
@@ -505,6 +517,24 @@ export const TASK_HANDOFF_SCHEMA = {
         retry_command: { type: ["string", "null"] },
         state_path: { type: ["string", "null"] },
         trace_path: { type: ["string", "null"] },
+      },
+    },
+    route: {
+      type: "object",
+      additionalProperties: true,
+      required: ["kind"],
+      properties: {
+        kind: { type: "string", enum: ["protected_base_integrate"] },
+        status: { type: ["string", "null"], enum: ["awaiting_github_merge", null] },
+        local_mutation: { type: ["string", "null"], enum: ["not_performed", null] },
+        finalize_via: {
+          type: ["string", "null"],
+          enum: ["github_pr_merge_then_hosted_close", null],
+        },
+        pr_number: { type: ["integer", "null"], minimum: 1 },
+        pr_url: { type: ["string", "null"], minLength: 1 },
+        handoff_show_command: { type: ["string", "null"] },
+        base_pull_command: { type: ["string", "null"] },
       },
     },
     next_actions: {
