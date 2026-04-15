@@ -1,0 +1,20 @@
+{
+  "base": "main",
+  "branch": "task/202604151513-9H8FF8/publish-runtime-checkout-order",
+  "created_at": "2026-04-15T15:18:12Z",
+  "head_sha": "5c711c11771285f7a55d6228d0e030a8e374e3f4",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "8b9debf9bf403c3da1cc2b63811095f1b50c41b6",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T15:18:12Z",
+  "pr_number": 313,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/313",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604151513-9H8FF8",
+  "updated_at": "2026-04-15T15:18:12Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

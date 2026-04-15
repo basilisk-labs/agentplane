@@ -1,10 +1,11 @@
 ---
 id: "202604151513-9H8FF8"
 title: "Preserve current runtime checkout in publish recovery"
-status: "DOING"
+result_summary: "Merged via PR #313."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T15:14:58.611Z"
   updated_by: "CODER"
   note: "Verified: publish workflow exact-SHA recovery now preserves the current-runtime resolver checkout by ordering checkouts safely; publish-workflow-contract.test.ts passes locally."
-commit: null
+commit:
+  hash: "8b9debf9bf403c3da1cc2b63811095f1b50c41b6"
+  message: "🚧 9H8FF8 task: preserve publish recovery runtime checkout (#313)"
 comments:
   -
     author: "CODER"
     body: "Start: reorder publish recovery checkouts so the current-runtime resolver survives exact-SHA workflow_dispatch, then rerun the 0.3.11 publish recovery."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #313 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: publish workflow exact-SHA recovery now preserves the current-runtime resolver checkout by ordering checkouts safely; publish-workflow-contract.test.ts passes locally."
+  -
+    type: "status"
+    at: "2026-04-15T15:18:45.533Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #313 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T15:14:58.615Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T15:18:45.539Z"
+doc_updated_by: "INTEGRATOR"
 description: "Keep the current-workflow runtime checkout alive for workflow_dispatch publish recovery by ordering checkouts safely, then publish v0.3.11 from d95b2762f78815b60407a62f2227136c85cae5ee."
 sections:
   Summary: |-
