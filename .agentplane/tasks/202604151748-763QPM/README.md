@@ -1,10 +1,11 @@
 ---
 id: "202604151748-763QPM"
 title: "Fix publish exact artifact selection for release-ready recovery"
-status: "DOING"
+result_summary: "Merged via PR #325."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T17:50:46.156Z"
   updated_by: "CODER"
   note: "Targeted release workflow checks passed: bun vitest run packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/resolve-release-ready-source-script.test.ts. The publish workflow now carries release_ready_artifact_name from source.json and downloads the exact detected artifact instead of hard-coding the generic release-ready name."
-commit: null
+commit:
+  hash: "39eeab1e86a8bdab5cbbc0c1d516fc86ac19e4c3"
+  message: "release: Fix publish exact artifact selection for release-ready recovery (763QPM) (#325)"
 comments:
   -
     author: "CODER"
     body: "Start: fix publish exact artifact selection so detect carries the selected release-ready artifact identity into publish, cover it with minimal release tests, then replay the protected-main publish path for v0.3.12."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #325 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted release workflow checks passed: bun vitest run packages/agentplane/src/commands/release/publish-workflow-contract.test.ts packages/agentplane/src/commands/release/resolve-release-ready-source-script.test.ts. The publish workflow now carries release_ready_artifact_name from source.json and downloads the exact detected artifact instead of hard-coding the generic release-ready name."
+  -
+    type: "status"
+    at: "2026-04-15T17:59:31.699Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #325 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T17:50:46.165Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T17:59:31.705Z"
+doc_updated_by: "INTEGRATOR"
 description: "Publish detect resolves the correct release SHA but publish still downloads the generic release-ready artifact by run id. Carry the exact artifact identity from resolver through publish so workflow_dispatch recovery and first-parent publish both consume the exact release-ready payload."
 sections:
   Summary: |-
