@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604151423-EPXV54/release-recovery-dispatch-path",
+  "created_at": "2026-04-15T14:25:42.036Z",
+  "head_sha": "6efbcd221ec98880a1f4c430a9505d9b0b6bec1a",
+  "last_verified_at": "2026-04-15T14:25:41.963Z",
+  "last_verified_sha": "6efbcd221ec98880a1f4c430a9505d9b0b6bec1a",
+  "schema_version": 1,
+  "task_id": "202604151423-EPXV54",
+  "updated_at": "2026-04-15T14:25:42.036Z",
+  "verify": {
+    "status": "pass"
+  }
+}

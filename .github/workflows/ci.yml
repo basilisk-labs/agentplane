@@ -24,12 +24,13 @@ concurrency:
 
 env:
   AGENTPLANE_CI_REF: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '' && github.event.inputs.sha || github.event_name == 'workflow_dispatch' && github.event.inputs.ref || github.sha }}
+  AGENTPLANE_RELEASE_RECOVERY_SHA: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '' && github.event.inputs.sha || '' }}
 
 jobs:
   changes:
     runs-on: ubuntu-24.04
     outputs:
-      core: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.core }}
+      core: ${{ steps.filter.outputs.core }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,7 +43,7 @@ jobs:
 
   test:
     needs: changes
-    if: needs.changes.outputs.core == 'true'
+    if: needs.changes.outputs.core == 'true' && env.AGENTPLANE_RELEASE_RECOVERY_SHA == ''
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -112,7 +113,7 @@ jobs:
 
   test-windows:
     needs: changes
-    if: needs.changes.outputs.core == 'true'
+    if: needs.changes.outputs.core == 'true' && env.AGENTPLANE_RELEASE_RECOVERY_SHA == ''
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
@@ -146,13 +147,60 @@ jobs:
           GIT_COMMITTER_NAME: agentplane-ci
           GIT_COMMITTER_EMAIL: agentplane-ci@example.com
 
+  recovery-validate:
+    needs: changes
+    if: env.AGENTPLANE_RELEASE_RECOVERY_SHA != ''
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.AGENTPLANE_CI_REF }}
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.6"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Cache Bun artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/bun
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Release parity (check)
+        run: bun run release:parity
+      - name: Build packages (dist + manifests)
+        run: |
+          bun run --filter=@agentplaneorg/core build
+          bun run --filter=agentplane build
+
   release-ready:
     name: Release-ready manifest
     needs:
       - changes
       - test
       - test-windows
-    if: needs.changes.outputs.core == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
+      - recovery-validate
+    if: >-
+      always() &&
+      (
+        (
+          env.AGENTPLANE_RELEASE_RECOVERY_SHA != '' &&
+          needs.recovery-validate.result == 'success'
+        ) ||
+        (
+          env.AGENTPLANE_RELEASE_RECOVERY_SHA == '' &&
+          needs.changes.outputs.core == 'true' &&
+          github.event_name == 'push' &&
+          github.ref == 'refs/heads/main' &&
+          needs.test.result == 'success' &&
+          needs.test-windows.result == 'success'
+        )
+      )
     runs-on: ubuntu-24.04
     permissions:
       contents: read

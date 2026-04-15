@@ -17,20 +17,28 @@ describe("Core CI workflow contract", () => {
     );
     expect(workflow).toContain('default: "main"');
     expect(workflow).toContain("AGENTPLANE_CI_REF:");
-    expect(workflow).toContain(
-      "core: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.core }}",
-    );
+    expect(workflow).toContain("AGENTPLANE_RELEASE_RECOVERY_SHA:");
     expect(workflow).toContain("ref: ${{ env.AGENTPLANE_CI_REF }}");
+    expect(workflow).toContain("if: needs.changes.outputs.core == 'true' && env.AGENTPLANE_RELEASE_RECOVERY_SHA == ''");
+    expect(workflow).toContain("recovery-validate:");
+    expect(workflow).toContain("if: env.AGENTPLANE_RELEASE_RECOVERY_SHA != ''");
+    expect(workflow).toContain("Release parity (check)");
+    expect(workflow).toContain("Build packages (dist + manifests)");
     expect(workflow).toContain("release-ready:");
     expect(workflow).toContain("name: Release-ready manifest");
     expect(workflow).toContain("needs:");
     expect(workflow).toContain("- changes");
     expect(workflow).toContain("- test");
     expect(workflow).toContain("- test-windows");
+    expect(workflow).toContain("- recovery-validate");
     expect(workflow).toContain("Resolve release-ready target");
     expect(workflow).toContain(
-      "if: needs.changes.outputs.core == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')",
+      "env.AGENTPLANE_RELEASE_RECOVERY_SHA != '' &&",
     );
+    expect(workflow).toContain("needs.recovery-validate.result == 'success'");
+    expect(workflow).toContain("env.AGENTPLANE_RELEASE_RECOVERY_SHA == '' &&");
+    expect(workflow).toContain("needs.test.result == 'success' &&");
+    expect(workflow).toContain("needs.test-windows.result == 'success'");
     expect(workflow).toContain("node scripts/write-release-ready-manifest.mjs");
     expect(workflow).toContain("--out .agentplane/.release/ready/release-ready.json");
     expect(workflow).toContain('--sha "${{ steps.target.outputs.sha }}"');
