@@ -389,9 +389,13 @@ async function computePrDiffstat(opts: {
     gitRoot: opts.gitRoot,
     baseBranch: opts.baseBranch,
   });
+  const taskDir = path.dirname(opts.prDir);
   try {
     return await gitDiffStat(opts.gitRoot, diffBaseRef, opts.branch, {
-      excludePaths: [path.relative(opts.gitRoot, opts.prDir)],
+      excludePaths: [
+        path.relative(opts.gitRoot, opts.prDir),
+        path.relative(opts.gitRoot, path.join(taskDir, "README.md")),
+      ],
     });
   } catch (err) {
     if (!isUnknownRevisionError(err)) throw err;
