@@ -1,10 +1,11 @@
 ---
 id: "202604151942-K2CDHC"
 title: "Record protected-main integrate handoff"
-status: "DOING"
+result_summary: "Merged via PR #338."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T19:45:22.105Z"
   updated_by: "CODER"
   note: "Protected-base integrate refusal now persists a deterministic handoff artifact before returning E_GIT; targeted integrate regression test passes and still proves main HEAD is unchanged."
-commit: null
+commit:
+  hash: "6eacbd66810732d295bd758c2364801e06cad15c"
+  message: "workflow: Record protected-main integrate handoff (K2CDHC) (#338)"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the protected-main integrate refusal, then persist a deterministic task handoff snapshot with the next action before returning the existing no-local-mutation error."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #338 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Protected-base integrate refusal now persists a deterministic handoff artifact before returning E_GIT; targeted integrate regression test passes and still proves main HEAD is unchanged."
+  -
+    type: "status"
+    at: "2026-04-15T19:54:30.743Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #338 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T19:45:22.113Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T19:54:30.749Z"
+doc_updated_by: "INTEGRATOR"
 description: "When branch_pr integrate refuses local mutation because the base branch requires GitHub pull-request merges, persist a deterministic task handoff snapshot with the next action instead of only printing an error message."
 sections:
   Summary: |-

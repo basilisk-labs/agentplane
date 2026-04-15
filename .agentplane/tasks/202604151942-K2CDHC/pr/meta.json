@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604151942-K2CDHC/protected-main-integrate-handoff",
   "created_at": "2026-04-15T19:42:47.435Z",
-  "head_sha": "85e91d559a0f7e9f199573ff2173d81a839d938a",
+  "head_sha": "e009dd69a98da51238ff7b51459846cbd865da96",
   "last_verified_at": "2026-04-15T19:45:22.105Z",
   "last_verified_sha": "b9da13b388b23bcd384a40f81910dc1f5a88b51c",
+  "merge_commit": "6eacbd66810732d295bd758c2364801e06cad15c",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T19:54:07Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604151942-K2CDHC",
-  "updated_at": "2026-04-15T19:46:54.712Z",
+  "updated_at": "2026-04-15T19:54:07Z",
   "verify": {
     "status": "pass"
   }
