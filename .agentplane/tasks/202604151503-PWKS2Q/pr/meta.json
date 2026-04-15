@@ -1,0 +1,20 @@
+{
+  "base": "main",
+  "branch": "task/202604151503-PWKS2Q/publish-recovery-current-runtime",
+  "created_at": "2026-04-15T15:11:10Z",
+  "head_sha": "e7ec2de706e9641aab4b6dc2f83eb029c77701ad",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "d0c83c802d7912ddb4a7ba61d221aa39e6b825e2",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T15:11:10Z",
+  "pr_number": 311,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/311",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604151503-PWKS2Q",
+  "updated_at": "2026-04-15T15:11:10Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
