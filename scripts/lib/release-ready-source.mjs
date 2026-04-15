@@ -6,6 +6,15 @@ import {
   selectLatestRun,
 } from "./github-actions-workflow-status.mjs";
 
+function releaseReadyArtifactAlias(headSha) {
+  return `release-ready-${headSha}`;
+}
+
+function findReleaseReadyArtifact(artifacts, artifactName, headSha) {
+  const alias = releaseReadyArtifactAlias(headSha);
+  return artifacts.find((item) => item.name === artifactName || item.name === alias) ?? null;
+}
+
 function buildOutcome({ state, workflow, headSha, artifactName, repo, run, artifact }) {
   switch (state) {
     case "ready_artifact_available": {
@@ -73,6 +82,20 @@ async function resolveRun({ apiBase, repo, workflow, headSha, runId, token }) {
       token,
     });
     if (run.headSha !== headSha) {
+      const artifacts = await listWorkflowRunArtifacts({
+        apiBase,
+        repo,
+        runId: run.id,
+        token,
+      });
+      const artifact = findReleaseReadyArtifact(artifacts, "release-ready", headSha);
+      if (artifact) {
+        return {
+          state: "success",
+          run,
+          artifact,
+        };
+      }
       return {
         state: "workflow_run_sha_mismatch",
         run,
@@ -93,32 +116,67 @@ async function resolveRun({ apiBase, repo, workflow, headSha, runId, token }) {
     };
   }
 
-  const runs = await listWorkflowRuns({
+  const directRuns = await listWorkflowRuns({
     apiBase,
     repo,
     workflow,
     headSha,
     token,
   });
-  const latestRun = selectLatestRun(runs);
-  if (!latestRun) {
+  const latestDirectRun = selectLatestRun(directRuns);
+  if (latestDirectRun) {
+    const state = classifyWorkflowState(latestDirectRun);
+    if (state === "success") {
+      return {
+        state: "success",
+        run: latestDirectRun,
+      };
+    }
     return {
-      state: "workflow_missing",
-      run: null,
+      state: "workflow_not_success",
+      run: latestDirectRun,
     };
   }
 
-  const state = classifyWorkflowState(latestRun);
-  if (state !== "success") {
+  const dispatchRuns = await listWorkflowRuns({
+    apiBase,
+    repo,
+    workflow,
+    event: "workflow_dispatch",
+    token,
+  });
+
+  const matches = [];
+  for (const run of dispatchRuns) {
+    if (classifyWorkflowState(run) !== "success") continue;
+    const artifacts = await listWorkflowRunArtifacts({
+      apiBase,
+      repo,
+      runId: run.id,
+      token,
+    });
+    const artifact = findReleaseReadyArtifact(artifacts, "release-ready", headSha);
+    if (!artifact) continue;
+    matches.push({ run, artifact });
+  }
+
+  const latestDispatchMatch =
+    [...matches].toSorted((left, right) => {
+      const leftTime = Date.parse(left.run.createdAt ?? "") || 0;
+      const rightTime = Date.parse(right.run.createdAt ?? "") || 0;
+      return rightTime - leftTime;
+    })[0] ?? null;
+  if (latestDispatchMatch) {
     return {
-      state: "workflow_not_success",
-      run: latestRun,
+      state: "success",
+      run: latestDispatchMatch.run,
+      artifact: latestDispatchMatch.artifact,
     };
   }
 
   return {
-    state: "success",
-    run: latestRun,
+    state: "workflow_missing",
+    run: null,
   };
 }
 
@@ -152,13 +210,18 @@ export async function resolveReleaseReadySource({
     });
   }
 
-  const artifacts = await listWorkflowRunArtifacts({
-    apiBase,
-    repo,
-    runId: runResult.run.id,
-    token,
-  });
-  const artifact = artifacts.find((item) => item.name === artifactName) ?? null;
+  const artifact =
+    runResult.artifact ??
+    findReleaseReadyArtifact(
+      await listWorkflowRunArtifacts({
+        apiBase,
+        repo,
+        runId: runResult.run.id,
+        token,
+      }),
+      artifactName,
+      headSha,
+    );
   return buildOutcome({
     state: artifact ? "ready_artifact_available" : "ready_artifact_missing",
     workflow,

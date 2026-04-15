@@ -100,11 +100,18 @@ export async function listWorkflowRuns({
   repo = resolveGithubRepo(),
   workflow,
   headSha,
+  event,
   token = resolveGithubToken(),
 }) {
   const workflowId = encodeURIComponent(assertNonEmpty(workflow, "workflow file or id"));
-  const sha = assertNonEmpty(headSha, "head SHA");
-  const url = `${apiBase}/repos/${repo}/actions/workflows/${workflowId}/runs?head_sha=${sha}&per_page=20`;
+  const params = new URLSearchParams({ per_page: "20" });
+  if (typeof headSha === "string" && headSha.trim()) {
+    params.set("head_sha", headSha.trim());
+  }
+  if (typeof event === "string" && event.trim()) {
+    params.set("event", event.trim());
+  }
+  const url = `${apiBase}/repos/${repo}/actions/workflows/${workflowId}/runs?${params.toString()}`;
   const payload = await requestJson(url, token);
   const runs = Array.isArray(payload?.workflow_runs) ? payload.workflow_runs : [];
   return runs.map((run) => normalizeWorkflowRun(run));

@@ -24,17 +24,20 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("- changes");
     expect(workflow).toContain("- test");
     expect(workflow).toContain("- test-windows");
+    expect(workflow).toContain("Resolve release-ready target");
     expect(workflow).toContain(
       "if: needs.changes.outputs.core == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')",
     );
     expect(workflow).toContain("node scripts/write-release-ready-manifest.mjs");
     expect(workflow).toContain("--out .agentplane/.release/ready/release-ready.json");
-    expect(workflow).toContain('--sha "${GITHUB_SHA}"');
+    expect(workflow).toContain('--sha "${{ steps.target.outputs.sha }}"');
+    expect(workflow).toContain('--ref "${AGENTPLANE_CI_REF}"');
     expect(workflow).toContain("--check-registry");
     expect(workflow).toContain("if: steps.manifest.outputs.ready == 'true'");
     expect(workflow).toContain("actions/upload-artifact@v4");
     expect(workflow).toContain("name: release-ready");
     expect(workflow).toContain("path: .agentplane/.release/ready/release-ready.json");
+    expect(workflow).toContain("name: release-ready-${{ steps.target.outputs.sha }}");
   });
 
   it("keeps task-artifact-only diffs out of the heavy core gate", async () => {

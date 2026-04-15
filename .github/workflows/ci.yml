@@ -160,6 +160,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
+      - name: Resolve release-ready target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -171,8 +177,8 @@ jobs:
           mkdir -p .agentplane/.release/ready
           node scripts/write-release-ready-manifest.mjs \
             --out .agentplane/.release/ready/release-ready.json \
-            --sha "${GITHUB_SHA}" \
-            --ref "${GITHUB_REF}" \
+            --sha "${{ steps.target.outputs.sha }}" \
+            --ref "${AGENTPLANE_CI_REF}" \
             --check-registry
           READY="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/release-ready.json','utf8')); process.stdout.write(payload.ready ? 'true' : 'false');")"
           echo "ready=${READY}" >> "$GITHUB_OUTPUT"
@@ -182,5 +188,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-ready
+          path: .agentplane/.release/ready/release-ready.json
+          if-no-files-found: error
+      - name: Upload exact-sha release-ready artifact
+        if: steps.manifest.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-ready-${{ steps.target.outputs.sha }}
           path: .agentplane/.release/ready/release-ready.json
           if-no-files-found: error
