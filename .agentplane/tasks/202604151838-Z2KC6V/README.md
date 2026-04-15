@@ -4,7 +4,7 @@ title: "Prefer artifact-bearing recovery run over artifact-missing direct Core C
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-15T18:42:51.968Z"
+  updated_by: "CODER"
+  note: "Targeted resolver regression tests passed; live exact-sha resolution now selects recovery run 24464054933 with artifact release-ready-ceaa8754... instead of stopping at direct artifact-missing run 24402404778."
 commit: null
 comments:
   -
@@ -34,8 +34,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: update release-ready resolver fallback to continue past artifact-missing direct success runs and prefer later exact artifact-bearing recovery runs for canonical publish."
+  -
+    type: "verify"
+    at: "2026-04-15T18:42:51.968Z"
+    author: "CODER"
+    state: "ok"
+    note: "Targeted resolver regression tests passed; live exact-sha resolution now selects recovery run 24464054933 with artifact release-ready-ceaa8754... instead of stopping at direct artifact-missing run 24402404778."
 doc_version: 3
-doc_updated_at: "2026-04-15T18:40:37.922Z"
+doc_updated_at: "2026-04-15T18:42:51.987Z"
 doc_updated_by: "CODER"
 description: "When resolving release-ready source for a canonical release SHA, continue past a successful direct Core CI run that lacks release-ready artifacts and prefer a later successful recovery run that actually carries the exact release-ready artifact."
 sections:
@@ -56,6 +62,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-15T18:42:51.968Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Targeted resolver regression tests passed; live exact-sha resolution now selects recovery run 24464054933 with artifact release-ready-ceaa8754... instead of stopping at direct artifact-missing run 24402404778.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-15T18:40:37.922Z, excerpt_hash=sha256:fc28c8a70402f7ee600e1a8854856086d5ca2284d9717c7a8e047a16a8fe6537
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -89,6 +103,14 @@ When resolving release-ready source for a canonical release SHA, continue past a
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-15T18:42:51.968Z — VERIFY — ok
+
+By: CODER
+
+Note: Targeted resolver regression tests passed; live exact-sha resolution now selects recovery run 24464054933 with artifact release-ready-ceaa8754... instead of stopping at direct artifact-missing run 24402404778.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-15T18:40:37.922Z, excerpt_hash=sha256:fc28c8a70402f7ee600e1a8854856086d5ca2284d9717c7a8e047a16a8fe6537
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
