@@ -2,12 +2,12 @@
   "base": "main",
   "branch": "task/202604151838-Z2KC6V/prefer-artifact-bearing-recovery-run",
   "created_at": "2026-04-15T18:40:37.959Z",
-  "head_sha": "4115f9e24f21dc1ed5171a8e8cd0b6789385c503",
+  "head_sha": "ae22254c3737134b1ed91419c4e0c2aa5d36081b",
   "last_verified_at": null,
   "last_verified_sha": null,
   "schema_version": 1,
   "task_id": "202604151838-Z2KC6V",
-  "updated_at": "2026-04-15T18:40:37.959Z",
+  "updated_at": "2026-04-15T18:42:38.531Z",
   "verify": {
     "status": "skipped"
   }

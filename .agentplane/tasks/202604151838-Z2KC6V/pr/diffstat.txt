@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604151838-Z2KC6V/README.md    | 99 ++++++++++++++++++++++
+ .../resolve-release-ready-source-script.test.ts    | 68 +++++++++++++++
+ scripts/lib/release-ready-source.mjs               | 33 ++++++--
+ 3 files changed, 195 insertions(+), 5 deletions(-)
