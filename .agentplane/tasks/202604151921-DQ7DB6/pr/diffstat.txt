@@ -1,4 +1,4 @@
  .agentplane/tasks/202604151921-DQ7DB6/README.md    | 121 +++++++++++++++++++++
  .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  22 +++-
- .../src/commands/pr/internal/auto-commit.ts        |  22 ++--
- 3 files changed, 154 insertions(+), 11 deletions(-)
+ .../src/commands/pr/internal/auto-commit.ts        |  26 +++--
+ 3 files changed, 154 insertions(+), 15 deletions(-)
