@@ -1,0 +1,20 @@
+{
+  "base": "main",
+  "branch": "task/202604151451-X154XQ/publish-exact-sha-identity",
+  "created_at": "2026-04-15T14:59:12Z",
+  "head_sha": "2f254fc334604d1f2c5aa3a5ea7227ca91564cd9",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "5c4dd82cba16fa3872a6b1aef82d4c0b7e82e9ee",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T14:59:12Z",
+  "pr_number": 309,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/309",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604151451-X154XQ",
+  "updated_at": "2026-04-15T14:59:12Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
