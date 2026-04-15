@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604151748-763QPM/publish-exact-artifact-selection",
+  "created_at": "2026-04-15T17:50:32.117Z",
+  "head_sha": "3eacf6566b14b2525a05be997451cc69525e3171",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604151748-763QPM",
+  "updated_at": "2026-04-15T17:50:32.117Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
