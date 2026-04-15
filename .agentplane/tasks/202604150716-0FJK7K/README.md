@@ -1,10 +1,11 @@
 ---
 id: "202604150716-0FJK7K"
 title: "Fix exact-sha workflow-dispatch identity for release recovery"
-status: "DOING"
+result_summary: "Merged via PR #303."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-15T07:59:39.594Z"
   updated_by: "CODER"
   note: "Command: bun vitest run packages/agentplane/src/commands/release/ci-workflow-contract.test.ts packages/agentplane/src/commands/release/resolve-release-ready-source-script.test.ts. Result: pass. Evidence: 10 targeted tests passed, including workflow_dispatch recovery alias and explicit run-id mismatch coverage. Scope: Core CI exact-sha artifact identity and release-ready source resolution for historical recovery."
-commit: null
+commit:
+  hash: "046c70325ccc468cd168a5c8f0be5cdf4d91c4b8"
+  message: "release/workflow: Fix exact-sha workflow-dispatch identity for release recovery (0FJK7K) (#303)"
 comments:
   -
     author: "CODER"
     body: "Start: Fix workflow-dispatch exact-SHA recovery so historical release candidates can mint and resolve release-ready artifacts by the requested commit instead of the dispatch branch head, then use that exact path to publish v0.3.11."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #303 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun vitest run packages/agentplane/src/commands/release/ci-workflow-contract.test.ts packages/agentplane/src/commands/release/resolve-release-ready-source-script.test.ts. Result: pass. Evidence: 10 targeted tests passed, including workflow_dispatch recovery alias and explicit run-id mismatch coverage. Scope: Core CI exact-sha artifact identity and release-ready source resolution for historical recovery."
+  -
+    type: "status"
+    at: "2026-04-15T14:03:12.670Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #303 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T07:59:39.597Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T14:03:12.676Z"
+doc_updated_by: "INTEGRATOR"
 description: "Workflow-dispatch Core CI currently checks out a historical SHA but still records GitHub run/head metadata and release-ready identity against the dispatch branch head, so release recovery for d95b2762... remains blocked. Align workflow, manifest, and resolver logic so exact-SHA recovery is real, then use it to publish v0.3.11."
 sections:
   Summary: |-
