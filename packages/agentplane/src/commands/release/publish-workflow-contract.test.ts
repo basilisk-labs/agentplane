@@ -41,6 +41,11 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain('if [ -n "${{ github.event.inputs.sha }}" ]; then');
     expect(workflow).toContain('echo "ref=${{ github.event.inputs.sha }}" >> "$GITHUB_OUTPUT"');
     expect(workflow).toContain(
+      'if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then',
+    );
+    expect(workflow).toContain('SHA="${{ github.event.inputs.sha }}"');
+    expect(workflow).toContain('SHA="$(git rev-parse HEAD)"');
+    expect(workflow).toContain(
       'description: "Git ref to evaluate only when sha is omitted (default: main)"',
     );
   });

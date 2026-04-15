@@ -71,7 +71,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .agentplane/.release/ready
-          SHA="$(git rev-parse HEAD)"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then
+            SHA="${{ github.event.inputs.sha }}"
+          else
+            SHA="$(git rev-parse HEAD)"
+          fi
           SOURCE_STATUS=0
           if [ "${{ github.event_name }}" = "workflow_run" ]; then
             if node scripts/resolve-release-ready-source.mjs \
