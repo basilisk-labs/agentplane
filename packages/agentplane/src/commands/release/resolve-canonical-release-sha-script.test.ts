@@ -11,6 +11,13 @@ const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/resolve-canonical-relea
 
 const roots: string[] = [];
 
+function readErrorStdout(error: unknown) {
+  if (error && typeof error === "object" && "stdout" in error && typeof error.stdout === "string") {
+    return error.stdout;
+  }
+  return "";
+}
+
 async function git(cwd: string, args: string[]) {
   await execFileAsync("git", args, {
     cwd,
@@ -123,10 +130,12 @@ describe("resolve-canonical-release-sha script", () => {
       writeNotes: false,
     });
 
-    const result = await execFileAsync("node", [SCRIPT_PATH, "--json"], { cwd: root }).catch(
-      (error) => error,
-    );
-    const stdout = String(result.stdout ?? "");
+    let stdout = "";
+    try {
+      await execFileAsync("node", [SCRIPT_PATH, "--json"], { cwd: root });
+    } catch (error) {
+      stdout = readErrorStdout(error);
+    }
     const payload = JSON.parse(stdout) as {
       ok: boolean;
       message: string;
