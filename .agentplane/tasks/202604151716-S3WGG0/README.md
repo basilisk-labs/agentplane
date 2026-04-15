@@ -1,10 +1,11 @@
 ---
 id: "202604151716-S3WGG0"
 title: "Resolve workflow_dispatch publish target from latest release-ready SHA"
-status: "DOING"
+result_summary: "Merged via PR #321."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T17:21:10.260Z"
   updated_by: "CODER"
   note: "Verified publish target selection workflow change locally."
-commit: null
+commit:
+  hash: "32f55252660e038e87310f4889520e371dbb5e96"
+  message: "release: Resolve workflow_dispatch publish target from latest release-ready SHA (S3WGG0) (#321)"
 comments:
   -
     author: "CODER"
     body: "Start: fixing workflow_dispatch publish target selection so branch_pr main resolves the latest reachable release-ready candidate instead of raw HEAD, while preserving explicit historical-sha recovery semantics and keeping the change limited to publish-resolution codepaths."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #321 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified publish target selection workflow change locally."
+  -
+    type: "status"
+    at: "2026-04-15T17:29:26.993Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #321 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T17:21:10.275Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T17:29:26.999Z"
+doc_updated_by: "INTEGRATOR"
 description: "Manual publish on branch_pr main should resolve the latest reachable release-ready candidate instead of raw HEAD when closure/task-artifact commits sit on top of the code merge."
 sections:
   Summary: |-
