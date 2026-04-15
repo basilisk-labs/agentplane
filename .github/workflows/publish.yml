@@ -41,6 +41,7 @@ jobs:
       core_published: ${{ steps.detect.outputs.core_published }}
       cli_published: ${{ steps.detect.outputs.cli_published }}
       release_ready_run_id: ${{ steps.source.outputs.release_ready_run_id }}
+      release_ready_artifact_name: ${{ steps.source.outputs.release_ready_artifact_name }}
       release_ready_state: ${{ steps.source.outputs.release_ready_state }}
     steps:
       - name: Resolve publish target
@@ -120,11 +121,13 @@ jobs:
           RELEASE_READY_OK="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/source.json','utf8')); process.stdout.write(payload.ok ? 'true' : 'false');")"
           RELEASE_READY_STATE="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/source.json','utf8')); process.stdout.write(String(payload.state || 'unknown'));")"
           RELEASE_READY_RUN_ID="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/source.json','utf8')); process.stdout.write(String(payload.run?.id || ''));")"
+          RELEASE_READY_ARTIFACT_NAME="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/source.json','utf8')); process.stdout.write(String(payload.artifact?.name || ''));")"
           {
             echo "sha=${SHA}"
             echo "release_ready_ok=${RELEASE_READY_OK}"
             echo "release_ready_state=${RELEASE_READY_STATE}"
             echo "release_ready_run_id=${RELEASE_READY_RUN_ID}"
+            echo "release_ready_artifact_name=${RELEASE_READY_ARTIFACT_NAME}"
           } >> "$GITHUB_OUTPUT"
           node -e 'const fs=require("node:fs"); const payload=JSON.parse(fs.readFileSync(".agentplane/.release/ready/source.json","utf8")); console.log(payload.message); if (payload.nextAction) console.log("Next action: " + payload.nextAction);'
       - name: Detect publish target
@@ -195,7 +198,7 @@ jobs:
       - name: Download release-ready artifact
         uses: actions/download-artifact@v4
         with:
-          name: release-ready
+          name: ${{ needs.detect.outputs.release_ready_artifact_name }}
           path: .agentplane/.release/ready
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
