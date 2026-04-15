@@ -1,10 +1,11 @@
 ---
 id: "202604151503-PWKS2Q"
 title: "Decouple publish recovery resolver from historical checkout"
-status: "DOING"
+result_summary: "Merged via PR #311."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T15:06:31.304Z"
   updated_by: "CODER"
   note: "Verified: publish workflow_dispatch now resolves release-ready source via the current workflow runtime while preserving the requested historical publish target; publish-workflow-contract.test.ts passes locally."
-commit: null
+commit:
+  hash: "d0c83c802d7912ddb4a7ba61d221aa39e6b825e2"
+  message: "🚧 PWKS2Q task: decouple publish recovery runtime (#311)"
 comments:
   -
     author: "CODER"
     body: "Start: decouple publish recovery resolver from the historical checkout, then rerun the d95b2762 publish recovery."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #311 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: publish workflow_dispatch now resolves release-ready source via the current workflow runtime while preserving the requested historical publish target; publish-workflow-contract.test.ts passes locally."
+  -
+    type: "status"
+    at: "2026-04-15T15:11:38.247Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #311 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T15:06:31.308Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T15:11:38.253Z"
+doc_updated_by: "INTEGRATOR"
 description: "Run publish workflow_dispatch recovery using the current resolver/runtime while keeping the requested historical SHA only as the publish target, then publish v0.3.11 from d95b2762f78815b60407a62f2227136c85cae5ee."
 sections:
   Summary: |-
