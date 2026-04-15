@@ -1,10 +1,11 @@
 ---
 id: "202604151921-DQ7DB6"
 title: "Commit task README with branch_pr PR packet artifacts"
-status: "DOING"
+result_summary: "Merged via PR #336."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T19:25:46.638Z"
   updated_by: "CODER"
   note: "Auto-commit now stages the task README together with the same task's PR packet; targeted PR flow tests pass, and a live pr open --sync-only probe leaves the task path fully clean with README tracked."
-commit: null
+commit:
+  hash: "8780c336a65b07e7bcdb4891afa92af845daa487"
+  message: "workflow: Commit task README with branch_pr PR packet artifacts (DQ7DB6) (#336)"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the branch_pr path where pr open commits pr/** but leaves the task README untracked, then make the auto-commit path include the same task README so task branches stay self-contained for closeout."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #336 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Auto-commit now stages the task README together with the same task's PR packet; targeted PR flow tests pass, and a live pr open --sync-only probe leaves the task path fully clean with README tracked."
+  -
+    type: "status"
+    at: "2026-04-15T19:37:57.052Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #336 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T19:25:46.642Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T19:37:57.058Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reproduce the branch_pr path where pr open auto-commits .agentplane/tasks/<task-id>/pr/** but leaves the active task README untracked on the task branch, then make the task packet self-contained so task branches carry the README needed for closeout without relying on fallback recovery."
 sections:
   Summary: |-
