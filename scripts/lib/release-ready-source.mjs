@@ -15,6 +15,11 @@ function findReleaseReadyArtifact(artifacts, artifactName, headSha) {
   return artifacts.find((item) => item.name === artifactName || item.name === alias) ?? null;
 }
 
+function findReleaseReadyArtifactAlias(artifacts, headSha) {
+  const alias = releaseReadyArtifactAlias(headSha);
+  return artifacts.find((item) => item.name === alias) ?? null;
+}
+
 function buildOutcome({ state, workflow, headSha, artifactName, repo, run, artifact }) {
   switch (state) {
     case "ready_artifact_available": {
@@ -88,7 +93,7 @@ async function resolveRun({ apiBase, repo, workflow, headSha, runId, token }) {
         runId: run.id,
         token,
       });
-      const artifact = findReleaseReadyArtifact(artifacts, "release-ready", headSha);
+      const artifact = findReleaseReadyArtifactAlias(artifacts, headSha);
       if (artifact) {
         return {
           state: "success",
@@ -155,7 +160,7 @@ async function resolveRun({ apiBase, repo, workflow, headSha, runId, token }) {
       runId: run.id,
       token,
     });
-    const artifact = findReleaseReadyArtifact(artifacts, "release-ready", headSha);
+    const artifact = findReleaseReadyArtifactAlias(artifacts, headSha);
     if (!artifact) continue;
     matches.push({ run, artifact });
   }
