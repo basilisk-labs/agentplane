@@ -1,10 +1,11 @@
 ---
 id: "202604151423-EPXV54"
 title: "Split exact-sha release recovery from broad Core CI test surface"
-status: "DOING"
+result_summary: "Merged via PR #307."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T14:25:41.963Z"
   updated_by: "CODER"
   note: "Verified: exact-sha workflow_dispatch recovery now uses a publishability-only validation path; ci-workflow-contract.test.ts passes locally."
-commit: null
+commit:
+  hash: "015e648b7472ded369f6b7d05a88c8f810cba4aa"
+  message: "release: Split exact-sha release recovery from broad Core CI test surface (EPXV54) (#307)"
 comments:
   -
     author: "CODER"
     body: "Start: split exact-sha workflow_dispatch release recovery into a publishability-only path, then rerun 0.3.11 recovery and publish."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #307 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: exact-sha workflow_dispatch recovery now uses a publishability-only validation path; ci-workflow-contract.test.ts passes locally."
+  -
+    type: "status"
+    at: "2026-04-15T14:47:35.647Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #307 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T14:25:41.970Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T14:47:35.652Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a workflow_dispatch release-recovery validation path that proves exact historical SHA publishability and emits release-ready artifacts without requiring the full evolving Core CI suite to pass on old commits."
 sections:
   Summary: |-

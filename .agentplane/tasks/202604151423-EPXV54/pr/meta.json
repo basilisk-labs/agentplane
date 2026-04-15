@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604151423-EPXV54/release-recovery-dispatch-path",
   "created_at": "2026-04-15T14:25:42.036Z",
-  "head_sha": "4731c5b89baeee0a7d669aa643bac0868a47a32f",
+  "head_sha": "8b87c1c7d739bbe39cdf0f099f24ad433b5c93f3",
   "last_verified_at": "2026-04-15T14:25:41.963Z",
   "last_verified_sha": "6efbcd221ec98880a1f4c430a9505d9b0b6bec1a",
+  "merge_commit": "015e648b7472ded369f6b7d05a88c8f810cba4aa",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T14:47:04Z",
   "pr_number": 307,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/307",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604151423-EPXV54",
-  "updated_at": "2026-04-15T14:32:15.945Z",
+  "updated_at": "2026-04-15T14:47:04Z",
   "verify": {
     "status": "pass"
   }
