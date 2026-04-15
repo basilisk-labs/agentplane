@@ -1,3 +1,3 @@
- .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 34 +++++++++++
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 27 +++++++++
  .../agentplane/src/commands/pr/integrate/cmd.ts    | 70 +++++++++++++++++++++-
- 2 files changed, 102 insertions(+), 2 deletions(-)
+ 2 files changed, 94 insertions(+), 3 deletions(-)

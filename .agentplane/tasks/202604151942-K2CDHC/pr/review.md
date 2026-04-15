@@ -45,14 +45,14 @@ When branch_pr integrate refuses local mutation because the base branch requires
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T19:45:43.918Z
+- Updated: 2026-04-15T19:46:54.712Z
 - Branch: task/202604151942-K2CDHC/protected-main-integrate-handoff
-- Head: a5920f38996e
+- Head: 85e91d559a0f
 
 ```text
- .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 34 +++++++++++
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 27 +++++++++
  .../agentplane/src/commands/pr/integrate/cmd.ts    | 70 +++++++++++++++++++++-
- 2 files changed, 102 insertions(+), 2 deletions(-)
+ 2 files changed, 94 insertions(+), 3 deletions(-)
 ```
 
 </details>
