@@ -12,7 +12,11 @@ function releaseReadyArtifactAlias(headSha) {
 
 function findReleaseReadyArtifact(artifacts, artifactName, headSha) {
   const alias = releaseReadyArtifactAlias(headSha);
-  return artifacts.find((item) => item.name === artifactName || item.name === alias) ?? null;
+  return (
+    artifacts.find((item) => item.name === alias) ??
+    artifacts.find((item) => item.name === artifactName) ??
+    null
+  );
 }
 
 function findReleaseReadyArtifactAlias(artifacts, headSha) {
