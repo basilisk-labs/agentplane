@@ -1,10 +1,11 @@
 ---
 id: "202604151406-EX4FE7"
 title: "Run full Core CI on workflow_dispatch release recovery"
-status: "DOING"
+result_summary: "Merged via PR #305."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T14:09:10.049Z"
   updated_by: "CODER"
   note: "Verified: workflow_dispatch now forces core=true in Core CI changes gating; ci-workflow-contract.test.ts passes locally."
-commit: null
+commit:
+  hash: "e859ce5c7bb07d32342c4fb44f96bee9d3059d89"
+  message: "🚧 EX4FE7 task: run full Core CI for workflow dispatch recovery (#305)"
 comments:
   -
     author: "CODER"
     body: "Start: force workflow_dispatch release-recovery runs through the full Core CI path and then re-run the 0.3.11 recovery publish flow."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #305 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: workflow_dispatch now forces core=true in Core CI changes gating; ci-workflow-contract.test.ts passes locally."
+  -
+    type: "status"
+    at: "2026-04-15T14:17:23.567Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #305 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T14:09:10.054Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T14:17:23.573Z"
+doc_updated_by: "INTEGRATOR"
 description: "Force Core CI workflow_dispatch runs to treat release-recovery dispatches as core-bearing so test and release-ready jobs execute for exact historical SHAs."
 sections:
   Summary: |-
