@@ -24,8 +24,8 @@ Write a standalone docs spec for the ideal release process in local and branch_p
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Docs validation passed: release architecture doc added, docs navigation updated, format and policy-routing checks passed.
 
 ## Risks
 
@@ -45,7 +45,7 @@ Write a standalone docs spec for the ideal release process in local and branch_p
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T15:57:39.583Z
+- Updated: 2026-04-15T15:57:40.983Z
 - Branch: task/202604151552-62W1RT/release-process-architecture
 - Head: 1e849ae1f077
 

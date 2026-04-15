@@ -4,7 +4,7 @@ title: "Design target release process and improvement plan"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-15T15:57:40.951Z"
+  updated_by: "DOCS"
+  note: "Docs validation passed: release architecture doc added, docs navigation updated, format and policy-routing checks passed."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: drafting a standalone target release-process architecture for local and branch_pr modes, then mapping concrete gaps and an atomic improvement plan against current release workflows and commands."
+  -
+    type: "verify"
+    at: "2026-04-15T15:57:40.951Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Docs validation passed: release architecture doc added, docs navigation updated, format and policy-routing checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-15T15:56:39.909Z"
+doc_updated_at: "2026-04-15T15:57:40.957Z"
 doc_updated_by: "DOCS"
 description: "Write a standalone docs spec for the ideal release process in local and branch_pr modes, compare it with the current implementation, and prepare an atomic improvement plan."
 sections:
@@ -61,6 +67,17 @@ sections:
     - node .agentplane/policy/check-routing.mjs -> policy routing OK
     - bun run format:check -> passed
     - Reviewed current release docs, branch_pr policy, Core CI, Publish to npm, Task Hosted Close, and release CLI command surfaces before writing the target architecture and gap analysis.
+    
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-15T15:57:40.951Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Docs validation passed: release architecture doc added, docs navigation updated, format and policy-routing checks passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-15T15:56:39.909Z, excerpt_hash=sha256:c81ec77f42ea07fec30a76a3a6fc31185695f3ba3d3624464fc5de4481c612ba
+    
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
@@ -99,6 +116,17 @@ Validated:
 - node .agentplane/policy/check-routing.mjs -> policy routing OK
 - bun run format:check -> passed
 - Reviewed current release docs, branch_pr policy, Core CI, Publish to npm, Task Hosted Close, and release CLI command surfaces before writing the target architecture and gap analysis.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-15T15:57:40.951Z — VERIFY — ok
+
+By: DOCS
+
+Note: Docs validation passed: release architecture doc added, docs navigation updated, format and policy-routing checks passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-15T15:56:39.909Z, excerpt_hash=sha256:c81ec77f42ea07fec30a76a3a6fc31185695f3ba3d3624464fc5de4481c612ba
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
