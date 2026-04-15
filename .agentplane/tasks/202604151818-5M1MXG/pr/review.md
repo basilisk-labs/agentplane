@@ -45,12 +45,17 @@ Make publish workflow_dispatch without explicit --sha resolve the exact release-
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T18:20:03.389Z
+- Updated: 2026-04-15T18:25:11.164Z
 - Branch: task/202604151818-5M1MXG/canonical-publish-release-sha
-- Head: 8504a2828312
+- Head: 123502a48a64
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604151818-5M1MXG/README.md    |  99 +++++++++
+ .github/workflows/publish.yml                      |  21 +-
+ .../release/publish-workflow-contract.test.ts      |  14 +-
+ .../resolve-canonical-release-sha-script.test.ts   | 140 ++++++++++++
+ scripts/resolve-canonical-release-sha.mjs          | 244 +++++++++++++++++++++
+ 5 files changed, 498 insertions(+), 20 deletions(-)
 ```
 
 </details>
