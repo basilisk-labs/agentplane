@@ -1,10 +1,11 @@
 ---
 id: "202604151904-BZQE85"
 title: "Fix workflow:wait-remote-checks wrapper argument forwarding"
-status: "DOING"
+result_summary: "Merged via PR #333."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T19:06:45.252Z"
   updated_by: "CODER"
   note: "Wrapper and parser now treat --pr as a PR target alias; targeted script tests pass and live bun run workflow:wait-remote-checks -- --pr 331 succeeds."
-commit: null
+commit:
+  hash: "7b5049813cc224f846741b870161ebcd43836609"
+  message: "workflow: Fix workflow:wait-remote-checks wrapper argument forwarding (BZQE85) (#333)"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the broken workflow:wait-remote-checks wrapper path, then fix only argument forwarding and add a targeted regression test."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #333 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Wrapper and parser now treat --pr as a PR target alias; targeted script tests pass and live bun run workflow:wait-remote-checks -- --pr 331 succeeds."
+  -
+    type: "status"
+    at: "2026-04-15T19:12:47.322Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #333 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T19:06:45.256Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T19:12:47.328Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make bun run workflow:wait-remote-checks -- --pr <id> call the underlying wait script correctly instead of passing an invalid --pr flag into gh pr view. Keep the fix limited to wrapper/CLI argument forwarding and add targeted regression coverage."
 sections:
   Summary: |-
