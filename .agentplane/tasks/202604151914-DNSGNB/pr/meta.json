@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604151914-DNSGNB/idempotent-pr-packet-refresh",
+  "created_at": "2026-04-15T19:14:56.555Z",
+  "head_sha": "a8fb1eb9022580309710667137de166e74378c08",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604151914-DNSGNB",
+  "updated_at": "2026-04-15T19:14:56.555Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
