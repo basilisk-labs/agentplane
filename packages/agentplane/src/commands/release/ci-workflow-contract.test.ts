@@ -19,7 +19,9 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("AGENTPLANE_CI_REF:");
     expect(workflow).toContain("AGENTPLANE_RELEASE_RECOVERY_SHA:");
     expect(workflow).toContain("ref: ${{ env.AGENTPLANE_CI_REF }}");
-    expect(workflow).toContain("if: needs.changes.outputs.core == 'true' && env.AGENTPLANE_RELEASE_RECOVERY_SHA == ''");
+    expect(workflow).toContain(
+      "if: needs.changes.outputs.core == 'true' && env.AGENTPLANE_RELEASE_RECOVERY_SHA == ''",
+    );
     expect(workflow).toContain("recovery-validate:");
     expect(workflow).toContain("if: env.AGENTPLANE_RELEASE_RECOVERY_SHA != ''");
     expect(workflow).toContain("Release parity (check)");
@@ -32,9 +34,7 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("- test-windows");
     expect(workflow).toContain("- recovery-validate");
     expect(workflow).toContain("Resolve release-ready target");
-    expect(workflow).toContain(
-      "env.AGENTPLANE_RELEASE_RECOVERY_SHA != '' &&",
-    );
+    expect(workflow).toContain("env.AGENTPLANE_RELEASE_RECOVERY_SHA != '' &&");
     expect(workflow).toContain("needs.recovery-validate.result == 'success'");
     expect(workflow).toContain("env.AGENTPLANE_RELEASE_RECOVERY_SHA == '' &&");
     expect(workflow).toContain("needs.test.result == 'success' &&");
