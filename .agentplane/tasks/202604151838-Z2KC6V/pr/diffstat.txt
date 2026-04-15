@@ -1,4 +1,5 @@
- .agentplane/tasks/202604151838-Z2KC6V/README.md    | 99 ++++++++++++++++++++++
- .../resolve-release-ready-source-script.test.ts    | 68 +++++++++++++++
- scripts/lib/release-ready-source.mjs               | 33 ++++++--
- 3 files changed, 195 insertions(+), 5 deletions(-)
+ .agentplane/tasks/202604151838-Z2KC6V/README.md    | 121 +++++++++++++++++++++
+ .../src/cli/release-recovery-script.test.ts        |   8 ++
+ .../resolve-release-ready-source-script.test.ts    |  68 ++++++++++++
+ scripts/lib/release-ready-source.mjs               |  33 +++++-
+ 4 files changed, 225 insertions(+), 5 deletions(-)

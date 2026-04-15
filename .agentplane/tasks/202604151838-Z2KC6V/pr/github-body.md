@@ -22,15 +22,16 @@ When resolving release-ready source for a canonical release SHA, continue past a
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T18:42:38.531Z
+- Updated: 2026-04-15T18:48:55.569Z
 - Branch: task/202604151838-Z2KC6V/prefer-artifact-bearing-recovery-run
-- Head: ae22254c3737
+- Head: 51ff51de5cb1
 
 ```text
- .agentplane/tasks/202604151838-Z2KC6V/README.md    | 99 ++++++++++++++++++++++
- .../resolve-release-ready-source-script.test.ts    | 68 +++++++++++++++
- scripts/lib/release-ready-source.mjs               | 33 ++++++--
- 3 files changed, 195 insertions(+), 5 deletions(-)
+ .agentplane/tasks/202604151838-Z2KC6V/README.md    | 121 +++++++++++++++++++++
+ .../src/cli/release-recovery-script.test.ts        |   8 ++
+ .../resolve-release-ready-source-script.test.ts    |  68 ++++++++++++
+ scripts/lib/release-ready-source.mjs               |  33 +++++-
+ 4 files changed, 225 insertions(+), 5 deletions(-)
 ```
 
 </details>
