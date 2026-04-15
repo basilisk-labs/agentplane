@@ -334,6 +334,33 @@ describe("runCli", () => {
       env: cleanGitEnv(),
     });
     expect(afterMainHead.trim()).toBe(beforeMainHead.trim());
+
+    const handoffPath = path.join(root, ".agentplane", "tasks", taskId, "handoff", "latest.json");
+    const handoff = JSON.parse(await readFile(handoffPath, "utf8")) as {
+      from_role?: string;
+      reason?: string;
+      branch?: string;
+      base_branch?: string;
+      head_sha?: string | null;
+      pr_branch?: string;
+      next_actions?: string[];
+      evidence_paths?: string[];
+      note?: string;
+    };
+    expect(handoff.from_role).toBe("INTEGRATOR");
+    expect(handoff.reason).toBe("Protected base main requires GitHub pull-request merges.");
+    expect(handoff.branch).toBe(branch);
+    expect(handoff.base_branch).toBe("main");
+    expect(handoff.pr_branch).toBe(branch);
+    expect(handoff.head_sha).toBeTruthy();
+    expect(handoff.note).toContain("Task Hosted Close");
+    expect(handoff.next_actions).toEqual([
+      "Merge the GitHub PR for branch " + branch + " on GitHub",
+      "Wait for Task Hosted Close to finish",
+      "Pull main into the base checkout",
+    ]);
+    expect(handoff.evidence_paths).toContain(`.agentplane/tasks/${taskId}/README.md`);
+    expect(handoff.evidence_paths).toContain(`.agentplane/tasks/${taskId}/pr/meta.json`);
   });
 
   it("integrate merges branch and marks task done", async () => {
