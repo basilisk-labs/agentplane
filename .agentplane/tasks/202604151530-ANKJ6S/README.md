@@ -1,10 +1,11 @@
 ---
 id: "202604151530-ANKJ6S"
 title: "Let exact-sha publish recovery bypass bootstrap-doc stale-dist guard"
-status: "DOING"
+result_summary: "Merged via PR #315."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T15:34:48.084Z"
   updated_by: "CODER"
   note: "Verified: historical publish recovery now validates only the exact publish payload in publish.yml, keeps the release-ready artifact as the CI readiness source, and publish-workflow-contract.test.ts plus format:check pass locally."
-commit: null
+commit:
+  hash: "d32f08ffaf989230f4c1dc7291d96792612f143d"
+  message: "release: Let exact-sha publish recovery bypass bootstrap-doc stale-dist guard (ANKJ6S) (#315)"
 comments:
   -
     author: "CODER"
     body: "Start: isolate the exact historical release-prepublish guard, patch the smallest safe recovery path, and verify it by replaying publish for d95b2762f78815b60407a62f2227136c85cae5ee."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #315 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: historical publish recovery now validates only the exact publish payload in publish.yml, keeps the release-ready artifact as the CI readiness source, and publish-workflow-contract.test.ts plus format:check pass locally."
+  -
+    type: "status"
+    at: "2026-04-15T15:40:44.674Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #315 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T15:34:48.088Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T15:40:44.680Z"
+doc_updated_by: "INTEGRATOR"
 description: "Historical publish recovery should not fail release:prepublish on bootstrap-doc freshness checks that require current local dist manifests unavailable in exact historical checkout paths."
 sections:
   Summary: |-

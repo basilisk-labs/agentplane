@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604151530-ANKJ6S/exact-sha-prepublish-gate",
   "created_at": "2026-04-15T15:34:48.125Z",
-  "head_sha": "80991fc42051cac836d5c7436567f53676c96f81",
+  "head_sha": "12f074a63cc4ab95d6ad72c93a19e7682d3da909",
   "last_verified_at": "2026-04-15T15:34:48.084Z",
   "last_verified_sha": "4f28be2fca71449d19f752c0016a4bed8b46f9f8",
+  "merge_commit": "d32f08ffaf989230f4c1dc7291d96792612f143d",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T15:40:18Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604151530-ANKJ6S",
-  "updated_at": "2026-04-15T15:35:09.929Z",
+  "updated_at": "2026-04-15T15:40:18Z",
   "verify": {
     "status": "pass"
   }
