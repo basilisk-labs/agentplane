@@ -216,11 +216,11 @@ async function withGithubFixtures(
 
   register(
     "/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs",
-    "head_sha=release-sha-123&per_page=20",
+    "per_page=20&head_sha=release-sha-123",
   );
   register(
     "/repos/basilisk-labs/agentplane/actions/workflows/publish.yml/runs",
-    "head_sha=release-sha-123&per_page=20",
+    "per_page=20&head_sha=release-sha-123",
   );
   register("/repos/basilisk-labs/agentplane/actions/runs/123/artifacts", "per_page=100");
 

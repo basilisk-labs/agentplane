@@ -78,7 +78,11 @@ async function withFixtures(
 
   register(
     "/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs",
-    "head_sha=abc123&per_page=20",
+    "per_page=20&head_sha=abc123",
+  );
+  register(
+    "/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs",
+    "per_page=20&event=workflow_dispatch",
   );
   register("/repos/basilisk-labs/agentplane/actions/runs/123/artifacts", "per_page=100");
   register("/repos/basilisk-labs/agentplane/actions/runs/789");
@@ -270,6 +274,13 @@ describe("resolve-release-ready-source script", () => {
             }),
           };
         }
+        if (pathname.endsWith("/actions/runs/789/artifacts")) {
+          return {
+            body: {
+              artifacts: [],
+            },
+          };
+        }
         return { status: 404, body: { message: "not found" } };
       },
       async (baseUrl, fixturePath) => {
@@ -293,6 +304,103 @@ describe("resolve-release-ready-source script", () => {
         );
         expect(result.ok).toBe(false);
         expect(result.stdout).toContain("run 789 belongs to def456, not requested abc123");
+      },
+    );
+  });
+
+  it("accepts a workflow_dispatch run-id when it carries an exact-sha release-ready alias artifact", async () => {
+    await withFixtures(
+      (pathname) => {
+        if (pathname.endsWith("/actions/runs/789")) {
+          return {
+            body: makeRun({
+              id: 789,
+              status: "completed",
+              conclusion: "success",
+              headSha: "def456",
+            }),
+          };
+        }
+        if (pathname.endsWith("/actions/runs/789/artifacts")) {
+          return {
+            body: {
+              artifacts: [makeArtifact({ name: "release-ready-abc123" })],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl, fixturePath) => {
+        const result = await runScript(baseUrl, fixturePath, [
+          "--sha",
+          "abc123",
+          "--run-id",
+          "789",
+          "--json",
+        ]);
+        const payload = JSON.parse(String(result.stdout ?? "")) as {
+          ok: boolean;
+          state: string;
+          run: { id: number; headSha: string };
+          artifact: { name: string };
+        };
+        expect(payload.ok).toBe(true);
+        expect(payload.state).toBe("ready_artifact_available");
+        expect(payload.run.id).toBe(789);
+        expect(payload.run.headSha).toBe("def456");
+        expect(payload.artifact.name).toBe("release-ready-abc123");
+      },
+    );
+  });
+
+  it("finds a workflow_dispatch recovery run by the exact-sha alias artifact when no head_sha run exists", async () => {
+    await withFixtures(
+      (pathname, searchParams) => {
+        if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+          if (searchParams.get("head_sha") === "abc123") {
+            return {
+              body: {
+                workflow_runs: [],
+              },
+            };
+          }
+          if (searchParams.get("event") === "workflow_dispatch") {
+            return {
+              body: {
+                workflow_runs: [
+                  makeRun({
+                    id: 789,
+                    status: "completed",
+                    conclusion: "success",
+                    headSha: "def456",
+                    createdAt: "2026-03-14T00:00:00Z",
+                  }),
+                ],
+              },
+            };
+          }
+        }
+        if (pathname.endsWith("/actions/runs/789/artifacts")) {
+          return {
+            body: {
+              artifacts: [makeArtifact({ name: "release-ready-abc123" })],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl, fixturePath) => {
+        const result = await runScript(baseUrl, fixturePath, ["--sha", "abc123", "--json"]);
+        const payload = JSON.parse(String(result.stdout ?? "")) as {
+          ok: boolean;
+          state: string;
+          run: { id: number; headSha: string };
+          artifact: { name: string };
+        };
+        expect(payload.ok).toBe(true);
+        expect(payload.state).toBe("ready_artifact_available");
+        expect(payload.run.id).toBe(789);
+        expect(payload.artifact.name).toBe("release-ready-abc123");
       },
     );
   });

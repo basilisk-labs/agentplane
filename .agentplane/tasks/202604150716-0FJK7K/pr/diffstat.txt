@@ -1,0 +1,7 @@
+ .agentplane/tasks/202604150716-0FJK7K/README.md    | 118 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |  17 ++-
+ .../commands/release/ci-workflow-contract.test.ts  |   5 +-
+ .../resolve-release-ready-source-script.test.ts    | 110 ++++++++++++++++++-
+ scripts/lib/github-actions-workflow-status.mjs     |  11 +-
+ scripts/lib/release-ready-source.mjs               |  99 +++++++++++++----
+ 6 files changed, 336 insertions(+), 24 deletions(-)
