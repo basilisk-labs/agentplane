@@ -17,6 +17,9 @@ describe("Core CI workflow contract", () => {
     );
     expect(workflow).toContain('default: "main"');
     expect(workflow).toContain("AGENTPLANE_CI_REF:");
+    expect(workflow).toContain(
+      "core: ${{ github.event_name == 'workflow_dispatch' && 'true' || steps.filter.outputs.core }}",
+    );
     expect(workflow).toContain("ref: ${{ env.AGENTPLANE_CI_REF }}");
     expect(workflow).toContain("release-ready:");
     expect(workflow).toContain("name: Release-ready manifest");
