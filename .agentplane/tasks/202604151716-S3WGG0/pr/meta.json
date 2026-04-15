@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604151716-S3WGG0/publish-target-latest-release-ready",
   "created_at": "2026-04-15T17:18:03.556Z",
-  "head_sha": "031a5a8a3b0951f0ceb07ea5233b04e7e2ec574c",
+  "head_sha": "885698db1b685c88dd8fc3d0a87431f4b7704cc2",
   "last_verified_at": "2026-04-15T17:21:10.260Z",
   "last_verified_sha": "457123043e29c0c687bff9ea8e25aad49ab95190",
+  "merge_commit": "32f55252660e038e87310f4889520e371dbb5e96",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T17:29:02Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604151716-S3WGG0",
-  "updated_at": "2026-04-15T17:22:05.659Z",
+  "updated_at": "2026-04-15T17:29:02Z",
   "verify": {
     "status": "pass"
   }
