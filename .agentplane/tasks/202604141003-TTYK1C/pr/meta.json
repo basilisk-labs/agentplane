@@ -1,16 +1,19 @@
 {
   "base": "main",
-  "branch": "task/202604141003-TTYK1C/patch-release-v0-3-12",
+  "branch": "task/202604141003-TTYK1C/artifact-doc-recovery",
   "created_at": "2026-04-14T13:42:41.079Z",
-  "head_sha": "03dfafa5654de40bd35faffb3d6c445b286957c8",
+  "head_sha": "22178f77149dfb8a87cc0698a7f52cfe84dd22e7",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "7622108923565c4ae6b6562c7dd71bcdce454a03",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T05:31:42Z",
   "pr_number": 292,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/292",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604141003-TTYK1C",
-  "updated_at": "2026-04-14T13:42:41.079Z",
+  "updated_at": "2026-04-15T05:31:42Z",
   "verify": {
     "status": "skipped"
   }
