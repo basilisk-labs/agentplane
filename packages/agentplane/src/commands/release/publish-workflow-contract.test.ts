@@ -17,7 +17,7 @@ describe("publish workflow contract", () => {
     );
     expect(workflow).toContain("actions/download-artifact@v4");
     expect(workflow).toContain("RELEASE_READY_ARTIFACT_NAME=");
-    expect(workflow).toContain("echo \"release_ready_artifact_name=${RELEASE_READY_ARTIFACT_NAME}\"");
+    expect(workflow).toContain('echo "release_ready_artifact_name=${RELEASE_READY_ARTIFACT_NAME}"');
     expect(workflow).toContain("name: ${{ needs.detect.outputs.release_ready_artifact_name }}");
     expect(workflow).toContain("run-id: ${{ needs.detect.outputs.release_ready_run_id }}");
     expect(workflow).toContain("name: Checkout current workflow runtime");
