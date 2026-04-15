@@ -47,10 +47,17 @@ Optional fast parity check before the full gate:
 bun run release:parity
 ```
 
-4. Apply release and publish (mandatory):
+4. Prepare the release commit:
 
 ```bash
 AGENTPLANE_RELEASE_DRY_RUN=1 agentplane release apply
+```
+
+In `branch_pr` mode, do not use `release apply` as the candidate route. Prepare the release
+candidate on a dedicated non-base branch instead:
+
+```bash
+AGENTPLANE_RELEASE_DRY_RUN=1 agentplane release candidate
 ```
 
 5. Real release:
@@ -60,6 +67,15 @@ agentplane release apply --push --yes
 ```
 
 `release apply --push --yes` now fails in an immutable preflight stage if the working tree is dirty, the local or remote release tag already exists, the target npm version is already burned, the configured remote is missing, or package versions drifted away from the prepared plan baseline. Only after that preflight passes does it run the release gate, bump versions, refresh generated package-reference docs, and push with `git push --no-verify`, so it does not recursively re-enter the local `pre-push` hook after the release gate already passed.
+
+In `branch_pr` repositories, the explicit candidate route is:
+
+```bash
+agentplane release candidate --push --yes
+```
+
+That command prepares and optionally pushes only the candidate branch. Final publication remains
+gated on merge to the protected base branch and hosted publish from `main`.
 
 ## What `release:prepublish` covers
 
