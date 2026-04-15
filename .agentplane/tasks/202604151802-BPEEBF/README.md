@@ -1,10 +1,11 @@
 ---
 id: "202604151802-BPEEBF"
 title: "Prefer exact release-ready alias over generic artifact"
-status: "DOING"
+result_summary: "Merged via PR #327."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T18:05:33.489Z"
   updated_by: "CODER"
   note: "Targeted resolver regression passed: bun vitest run packages/agentplane/src/commands/release/resolve-release-ready-source-script.test.ts. The resolver now prefers release-ready-<sha> over the generic release-ready artifact when both exist on the selected exact-SHA run."
-commit: null
+commit:
+  hash: "0b2aec4ba0d1c7642e9d3228322394fd1ebca6d3"
+  message: "release: Prefer exact release-ready alias over generic artifact (BPEEBF) (#327)"
 comments:
   -
     author: "CODER"
     body: "Start: prefer exact release-ready alias over the generic artifact on the selected exact-SHA run, add the minimal same-sha dual-artifact regression test, then replay the protected-main publish path for v0.3.12."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #327 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted resolver regression passed: bun vitest run packages/agentplane/src/commands/release/resolve-release-ready-source-script.test.ts. The resolver now prefers release-ready-<sha> over the generic release-ready artifact when both exist on the selected exact-SHA run."
+  -
+    type: "status"
+    at: "2026-04-15T18:12:44.829Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #327 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T18:05:33.493Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T18:12:44.834Z"
+doc_updated_by: "INTEGRATOR"
 description: "Publish now carries artifact identity through the workflow, but resolver still prefers the generic release-ready artifact over release-ready-<sha> when both exist on the selected run. Prefer the exact alias for exact-sha publish and recovery so publish consumes the canonical payload."
 sections:
   Summary: |-
