@@ -218,6 +218,14 @@ async function withGithubFixtures(
     "/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs",
     "per_page=20&head_sha=release-sha-123",
   );
+  fixtures.set(
+    `${baseUrl}/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs?per_page=20&event=workflow_dispatch`,
+    {
+      body: {
+        workflow_runs: [],
+      },
+    },
+  );
   register(
     "/repos/basilisk-labs/agentplane/actions/workflows/publish.yml/runs",
     "per_page=20&head_sha=release-sha-123",
