@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604150615-8HM62H/README.md    | 89 ++++++++++++++++++++++
+ .github/workflows/task-hosted-close.yml            |  6 +-
+ .../task/hosted-close-workflow-contract.test.ts    |  4 +
+ 3 files changed, 97 insertions(+), 2 deletions(-)
