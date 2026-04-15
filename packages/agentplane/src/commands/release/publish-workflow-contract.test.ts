@@ -15,7 +15,13 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("actions/download-artifact@v4");
     expect(workflow).toContain("name: release-ready");
     expect(workflow).toContain("run-id: ${{ needs.detect.outputs.release_ready_run_id }}");
-    expect(workflow).toContain("node scripts/resolve-release-ready-source.mjs");
+    expect(workflow).toContain("name: Checkout current workflow runtime");
+    expect(workflow).toContain("path: .agentplane/.release/runtime");
+    expect(workflow).toContain('RUNTIME_SCRIPT="scripts/resolve-release-ready-source.mjs"');
+    expect(workflow).toContain(
+      'RUNTIME_SCRIPT=".agentplane/.release/runtime/scripts/resolve-release-ready-source.mjs"',
+    );
+    expect(workflow).toContain('node "${RUNTIME_SCRIPT}" \\');
     expect(workflow).toContain("node scripts/write-publish-result-manifest.mjs");
     expect(workflow).toContain("name: publish-result");
     expect(workflow).toContain("path: .agentplane/.release/publish/publish-result.json");

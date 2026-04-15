@@ -56,6 +56,11 @@ jobs:
           else
             echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           fi
+      - name: Checkout current workflow runtime
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.sha != ''
+        uses: actions/checkout@v4
+        with:
+          path: .agentplane/.release/runtime
       - uses: actions/checkout@v4
         with:
           ref: ${{ steps.ref.outputs.ref }}
@@ -71,14 +76,16 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .agentplane/.release/ready
+          RUNTIME_SCRIPT="scripts/resolve-release-ready-source.mjs"
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then
             SHA="${{ github.event.inputs.sha }}"
+            RUNTIME_SCRIPT=".agentplane/.release/runtime/scripts/resolve-release-ready-source.mjs"
           else
             SHA="$(git rev-parse HEAD)"
           fi
           SOURCE_STATUS=0
           if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            if node scripts/resolve-release-ready-source.mjs \
+            if node "${RUNTIME_SCRIPT}" \
               --workflow ci.yml \
               --sha "${SHA}" \
               --run-id "${{ github.event.workflow_run.id }}" \
@@ -88,7 +95,7 @@ jobs:
               SOURCE_STATUS=$?
             fi
           else
-            node scripts/resolve-release-ready-source.mjs \
+            node "${RUNTIME_SCRIPT}" \
               --workflow ci.yml \
               --sha "${SHA}" \
               --json > .agentplane/.release/ready/source.json
