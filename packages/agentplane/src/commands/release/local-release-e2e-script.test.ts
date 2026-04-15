@@ -165,7 +165,7 @@ describe("local release E2E script", () => {
 
       await withFixtures(
         {
-          [`https://fixtures.invalid/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs?head_sha=${sha}&per_page=20`]:
+          [`https://fixtures.invalid/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs?per_page=20&head_sha=${sha}`]:
             {
               body: {
                 workflow_runs: [makeRun({ headSha: sha })],
@@ -285,7 +285,7 @@ describe("local release E2E script", () => {
 
       await withFixtures(
         {
-          [`https://fixtures.invalid/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs?head_sha=${sha}&per_page=20`]:
+          [`https://fixtures.invalid/repos/basilisk-labs/agentplane/actions/workflows/ci.yml/runs?per_page=20&head_sha=${sha}`]:
             {
               body: {
                 workflow_runs: [makeRun({ headSha: sha })],
