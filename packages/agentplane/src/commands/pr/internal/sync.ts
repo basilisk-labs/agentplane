@@ -652,7 +652,9 @@ export async function syncPrArtifacts(opts: {
               prDir,
             })
           : "";
-        const renderedSummaryHeadSha = artifactRefresh ? renderedHeadSha : (renderedHeadSha ?? headSha);
+        const renderedSummaryHeadSha = artifactRefresh
+          ? renderedHeadSha
+          : (renderedHeadSha ?? headSha);
         let nextMeta: PrMeta = buildOpenedPrMeta({
           taskId: task.id,
           branch,
@@ -810,10 +812,9 @@ export async function syncPrArtifacts(opts: {
       const nextAutoSummary = renderPrAutoSummary({
         updatedAt: nextMeta.updated_at,
         branch,
-        headSha:
-          artifactRefresh
-            ? (nextMeta.head_sha ?? renderedHeadSha ?? null)
-            : (nextMeta.head_sha ?? renderedHeadSha ?? headSha ?? null),
+        headSha: artifactRefresh
+          ? (nextMeta.head_sha ?? renderedHeadSha ?? null)
+          : (nextMeta.head_sha ?? renderedHeadSha ?? headSha ?? null),
         diffstat,
       });
       const nextReview = renderPrReviewDocument({
