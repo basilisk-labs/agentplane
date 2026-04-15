@@ -323,6 +323,7 @@ describe("runCli", () => {
       expect(code).toBe(5);
       expect(io.stderr).toContain("requires GitHub pull-request merges");
       expect(io.stderr).toContain("Task Hosted Close");
+      expect(io.stderr).toContain(`next_action: agentplane task handoff show ${taskId}`);
     } finally {
       io.restore();
       process.env.PATH = originalPath;
@@ -346,6 +347,16 @@ describe("runCli", () => {
       next_actions?: string[];
       evidence_paths?: string[];
       note?: string;
+      route?: {
+        kind?: string;
+        status?: string;
+        local_mutation?: string;
+        finalize_via?: string;
+        pr_number?: number | null;
+        pr_url?: string | null;
+        handoff_show_command?: string | null;
+        base_pull_command?: string | null;
+      };
     };
     expect(handoff.from_role).toBe("INTEGRATOR");
     expect(handoff.reason).toBe("Protected base main requires GitHub pull-request merges.");
@@ -354,10 +365,20 @@ describe("runCli", () => {
     expect(handoff.pr_branch).toBe(branch);
     expect(handoff.head_sha).toBeTruthy();
     expect(handoff.note).toContain("Task Hosted Close");
+    expect(handoff.route).toEqual({
+      kind: "protected_base_integrate",
+      status: "awaiting_github_merge",
+      local_mutation: "not_performed",
+      finalize_via: "github_pr_merge_then_hosted_close",
+      pr_number: null,
+      handoff_show_command: `agentplane task handoff show ${taskId}`,
+      base_pull_command: "git pull --ff-only",
+    });
     expect(handoff.next_actions).toEqual([
+      `agentplane task handoff show ${taskId}`,
       "Merge the GitHub PR for branch " + branch + " on GitHub",
       "Wait for Task Hosted Close to finish",
-      "Pull main into the base checkout",
+      "git pull --ff-only",
     ]);
     expect(handoff.evidence_paths).toContain(`.agentplane/tasks/${taskId}/README.md`);
     expect(handoff.evidence_paths).toContain(`.agentplane/tasks/${taskId}/pr/meta.json`);

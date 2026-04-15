@@ -3,6 +3,7 @@ import { findDriftedRenderedArtifacts, syncRenderedArtifacts } from "./lib/sync-
 
 import { renderAgentplaneConfigSchemaJson } from "../packages/core/src/config/config-schema.ts";
 import {
+  renderTaskHandoffSchemaJson,
   renderTaskPrMetaSchemaJson,
   renderTaskReadmeFrontmatterSchemaJson,
   renderTasksExportSchemaJson,
@@ -49,6 +50,14 @@ function main() {
       targets: [
         path.join(repoRoot, "packages", "spec", "schemas", "pr-meta.schema.json"),
         path.join(repoRoot, "packages", "core", "schemas", "pr-meta.schema.json"),
+      ],
+    },
+    {
+      label: "task handoff schema",
+      rendered: renderTaskHandoffSchemaJson(),
+      targets: [
+        path.join(repoRoot, "packages", "spec", "schemas", "task-handoff.schema.json"),
+        path.join(repoRoot, "packages", "core", "schemas", "task-handoff.schema.json"),
       ],
     },
   ];

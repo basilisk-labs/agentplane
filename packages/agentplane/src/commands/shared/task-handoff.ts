@@ -4,6 +4,7 @@ import path from "node:path";
 import {
   validateTaskHandoff,
   type TaskHandoff,
+  type TaskHandoffRoute,
   type TaskHandoffRunnerNextAction,
   type TaskHandoffRunnerState,
 } from "@agentplaneorg/core";
@@ -31,6 +32,20 @@ function normalizeStringList(values: string[] | undefined): string[] | undefined
   if (!values?.length) return undefined;
   const normalized = values.map((value) => value.trim()).filter((value) => value.length > 0);
   return normalized.length > 0 ? normalized : undefined;
+}
+
+function normalizeRoute(route: TaskHandoffRoute | undefined): TaskHandoffRoute | undefined {
+  if (!route) return undefined;
+  return {
+    kind: route.kind,
+    status: route.status ?? undefined,
+    local_mutation: route.local_mutation ?? undefined,
+    finalize_via: route.finalize_via ?? undefined,
+    pr_number: typeof route.pr_number === "number" && route.pr_number > 0 ? route.pr_number : null,
+    pr_url: trimOrNull(route.pr_url) ?? undefined,
+    handoff_show_command: trimOrNull(route.handoff_show_command) ?? undefined,
+    base_pull_command: trimOrNull(route.base_pull_command) ?? undefined,
+  };
 }
 
 export function resolveTaskHandoffPaths(opts: {
@@ -141,6 +156,7 @@ export function buildTaskHandoffArtifact(opts: {
   workspace_root?: string | null;
   pr_branch?: string | null;
   runner?: TaskHandoffRunnerHint | undefined;
+  route?: TaskHandoffRoute | undefined;
   next_actions?: string[] | undefined;
   risks?: string[] | undefined;
   open_questions?: string[] | undefined;
@@ -160,6 +176,7 @@ export function buildTaskHandoffArtifact(opts: {
     workspace_root: trimOrNull(opts.workspace_root),
     pr_branch: trimOrNull(opts.pr_branch),
     runner: opts.runner,
+    route: normalizeRoute(opts.route),
     next_actions: normalizeStringList(opts.next_actions),
     risks: normalizeStringList(opts.risks),
     open_questions: normalizeStringList(opts.open_questions),
