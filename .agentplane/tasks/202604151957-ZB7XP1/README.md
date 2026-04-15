@@ -1,10 +1,11 @@
 ---
 id: "202604151957-ZB7XP1"
 title: "Make protected-main integrate a first-class handoff route"
-status: "DOING"
+result_summary: "Merged via PR #340."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T20:06:35.077Z"
   updated_by: "CODER"
   note: "Protected-base integrate now persists a first-class route block and structured next-action diagnostics; schema/runtime validator, integrate cmd unit route, and live protected-main refusal regression all pass."
-commit: null
+commit:
+  hash: "f23084366d49d166a730ca76c9e37e54687ff3cb"
+  message: "🚧 ZB7XP1 task: make protected-main integrate a first-class handoff route (#340)"
 comments:
   -
     author: "CODER"
     body: "Start: turn the protected-main branch_pr integrate path into an explicit handoff/finalize route with canonical machine-readable state while preserving the no-local-mutation guarantee on the base branch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #340 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Protected-base integrate now persists a first-class route block and structured next-action diagnostics; schema/runtime validator, integrate cmd unit route, and live protected-main refusal regression all pass."
+  -
+    type: "status"
+    at: "2026-04-15T20:10:59.872Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #340 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T20:06:35.080Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T20:10:59.878Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace the current protected-base integrate refusal semantics with an explicit handoff/finalize route model so branch_pr integrate records canonical state transitions, operator next steps, and machine-readable finalize metadata instead of behaving like a near-merge that only errors."
 sections:
   Summary: |-

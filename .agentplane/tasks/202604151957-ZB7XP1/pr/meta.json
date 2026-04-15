@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604151957-ZB7XP1/protected-main-integrate-route",
   "created_at": "2026-04-15T19:58:14.485Z",
-  "head_sha": "b6a5355d60ffbe6919e463714c92eea14040cd16",
+  "head_sha": "498813cdaa876490db3a6122c75f08002fbaaceb",
   "last_verified_at": "2026-04-15T20:06:35.077Z",
   "last_verified_sha": "b6a5355d60ffbe6919e463714c92eea14040cd16",
+  "merge_commit": "f23084366d49d166a730ca76c9e37e54687ff3cb",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T20:10:28Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604151957-ZB7XP1",
-  "updated_at": "2026-04-15T19:58:14.485Z",
+  "updated_at": "2026-04-15T20:10:28Z",
   "verify": {
     "status": "pass"
   }
