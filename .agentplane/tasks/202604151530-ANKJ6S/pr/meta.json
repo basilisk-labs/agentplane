@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604151530-ANKJ6S/exact-sha-prepublish-gate",
+  "created_at": "2026-04-15T15:34:48.125Z",
+  "head_sha": "80991fc42051cac836d5c7436567f53676c96f81",
+  "last_verified_at": "2026-04-15T15:34:48.084Z",
+  "last_verified_sha": "4f28be2fca71449d19f752c0016a4bed8b46f9f8",
+  "schema_version": 1,
+  "task_id": "202604151530-ANKJ6S",
+  "updated_at": "2026-04-15T15:35:09.929Z",
+  "verify": {
+    "status": "pass"
+  }
+}

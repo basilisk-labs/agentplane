@@ -28,12 +28,16 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("if: always()");
   });
 
-  it("checks out recursive submodules before running the exact-ref release prepublish gate", async () => {
+  it("checks out recursive submodules before validating the exact-ref publish payload", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain("fetch-depth: 0");
     expect(workflow).toContain("submodules: recursive");
-    expect(workflow).toContain("Run exact-ref release prepublish gate");
+    expect(workflow).toContain("Validate exact-ref publish payload");
+    expect(workflow).toContain("run: bun run release:check");
+    expect(workflow).not.toContain("Run exact-ref release prepublish gate");
+    expect(workflow).not.toContain("run: bun run release:prepublish");
+    expect(workflow).not.toContain("name: Build release packages");
   });
 
   it("prefers an explicit workflow_dispatch sha over a mutable ref", async () => {
