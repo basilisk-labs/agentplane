@@ -335,14 +335,7 @@ describe("runCli", () => {
     });
     expect(afterMainHead.trim()).toBe(beforeMainHead.trim());
 
-    const handoffPath = path.join(
-      root,
-      ".agentplane",
-      "tasks",
-      taskId,
-      "handoff",
-      "latest.json",
-    );
+    const handoffPath = path.join(root, ".agentplane", "tasks", taskId, "handoff", "latest.json");
     const handoff = JSON.parse(await readFile(handoffPath, "utf8")) as {
       from_role?: string;
       reason?: string;

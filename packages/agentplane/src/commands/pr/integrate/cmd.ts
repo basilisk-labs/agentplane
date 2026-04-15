@@ -141,9 +141,7 @@ export async function cmdIntegrate(opts: {
           : null;
       const prUrl = typeof metaSource.pr_url === "string" ? metaSource.pr_url : null;
       const prHint =
-        prNumber !== null
-          ? `GitHub PR #${prNumber}`
-          : `the GitHub PR for branch ${branch}`;
+        prNumber !== null ? `GitHub PR #${prNumber}` : `the GitHub PR for branch ${branch}`;
       await recordProtectedBaseIntegrateHandoff({
         ctx: prepared.ctx,
         taskId: task.id,
