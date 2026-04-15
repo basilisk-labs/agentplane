@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604151921-DQ7DB6/commit-task-readme-with-packet",
   "created_at": "2026-04-15T19:22:29.143Z",
-  "head_sha": "0654b4688721a22838a4c9be202a0ba86fb3a2e7",
+  "head_sha": "0ed5de10f08b262293619cf31cfad12caad6ed22",
   "last_verified_at": "2026-04-15T19:25:46.638Z",
   "last_verified_sha": "a8fb1eb9022580309710667137de166e74378c08",
+  "merge_commit": "8780c336a65b07e7bcdb4891afa92af845daa487",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T19:37:20Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604151921-DQ7DB6",
-  "updated_at": "2026-04-15T19:32:31.229Z",
+  "updated_at": "2026-04-15T19:37:20Z",
   "verify": {
     "status": "pass"
   }
