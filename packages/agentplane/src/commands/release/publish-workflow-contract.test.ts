@@ -54,7 +54,10 @@ describe("publish workflow contract", () => {
       'if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then',
     );
     expect(workflow).toContain('SHA="${{ github.event.inputs.sha }}"');
-    expect(workflow).toContain('SHA="$(git rev-parse HEAD)"');
+    expect(workflow).toContain("git rev-list --first-parent --max-count=64 HEAD");
+    expect(workflow).toContain(
+      'echo "No reachable release-ready candidate found from $(git rev-parse HEAD)." >&2',
+    );
     expect(workflow).toContain(
       'description: "Git ref to evaluate only when sha is omitted (default: main)"',
     );
@@ -68,5 +71,16 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("github.event.inputs.sha");
     expect(workflow).toContain("cancel-in-progress: false");
     expect(workflow).not.toContain("${{ github.workflow }}-${{ github.ref }}");
+  });
+
+  it("walks first-parent history for workflow_dispatch ref publishes before picking a release-ready sha", async () => {
+    const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+
+    expect(workflow).toContain("fetch-depth: 0");
+    expect(workflow).toContain('elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then');
+    expect(workflow).toContain("FOUND=false");
+    expect(workflow).toContain("while IFS= read -r candidate; do");
+    expect(workflow).toContain('SHA="${candidate}"');
+    expect(workflow).toContain("done < <(git rev-list --first-parent --max-count=64 HEAD)");
   });
 });
