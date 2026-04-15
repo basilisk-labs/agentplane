@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604151423-EPXV54/README.md    | 121 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |  56 +++++++++-
+ .../commands/release/ci-workflow-contract.test.ts  |  18 ++-
+ 3 files changed, 186 insertions(+), 9 deletions(-)
