@@ -16,11 +16,7 @@ function taskReadmePath(workflowDir: string, taskId: string): string {
   return toGitPath(path.join(workflowDir, taskId, "README.md"));
 }
 
-function isTaskPacketPath(opts: {
-  workflowDir: string;
-  taskId: string;
-  relPath: string;
-}): boolean {
+function isTaskPacketPath(opts: { workflowDir: string; taskId: string; relPath: string }): boolean {
   const normalized = toGitPath(opts.relPath);
   return (
     normalized === taskReadmePath(opts.workflowDir, opts.taskId) ||
