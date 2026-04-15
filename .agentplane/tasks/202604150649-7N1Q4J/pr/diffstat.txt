@@ -1,0 +1,7 @@
+ .agentplane/tasks/202604150649-7N1Q4J/README.md    | 121 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |  22 +++-
+ docs/developer/release-and-publishing.mdx          |  14 +++
+ .../commands/release/ci-workflow-contract.test.ts  |   9 +-
+ .../src/commands/release/plan.command.ts           |  50 +++++++++
+ .../agentplane/src/commands/release/plan.test.ts   |  19 ++++
+ 6 files changed, 233 insertions(+), 2 deletions(-)

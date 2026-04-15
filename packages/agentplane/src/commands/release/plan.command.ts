@@ -36,6 +36,44 @@ function parseSemver(version: string): { major: number; minor: number; patch: nu
   return { major, minor, patch };
 }
 
+function compareSemver(left: string, right: string): number {
+  const leftParsed = parseSemver(left);
+  const rightParsed = parseSemver(right);
+  if (!leftParsed || !rightParsed) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Invalid semver comparison: ${left} vs ${right}`,
+    });
+  }
+  if (leftParsed.major !== rightParsed.major) return leftParsed.major - rightParsed.major;
+  if (leftParsed.minor !== rightParsed.minor) return leftParsed.minor - rightParsed.minor;
+  return leftParsed.patch - rightParsed.patch;
+}
+
+function normalizeTagVersion(tag: string | null): string | null {
+  if (!tag) return null;
+  return tag.startsWith("v") ? tag.slice(1) : tag;
+}
+
+function listMissingPatchTags(fromVersion: string, toVersion: string): string[] {
+  const fromParsed = parseSemver(fromVersion);
+  const toParsed = parseSemver(toVersion);
+  if (!fromParsed || !toParsed) return [];
+  if (
+    fromParsed.major !== toParsed.major ||
+    fromParsed.minor !== toParsed.minor ||
+    toParsed.patch <= fromParsed.patch
+  ) {
+    return [];
+  }
+  const out: string[] = [];
+  for (let patch = fromParsed.patch + 1; patch <= toParsed.patch; patch += 1) {
+    out.push(`v${fromParsed.major}.${fromParsed.minor}.${patch}`);
+  }
+  return out;
+}
+
 function bumpVersion(version: string, bump: BumpKind): string {
   const parsed = parseSemver(version);
   if (!parsed) {
@@ -268,6 +306,18 @@ export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, fla
   }
 
   const prevTag = flags.since ?? (await getLatestSemverTag(gitRoot));
+  const latestPublishedVersion = normalizeTagVersion(prevTag);
+  if (latestPublishedVersion && compareSemver(coreVersion, latestPublishedVersion) > 0) {
+    const missingTags = listMissingPatchTags(latestPublishedVersion, coreVersion);
+    const missingText = missingTags.length > 0 ? missingTags.join(", ") : coreVersion;
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Release planning blocked: workspace version is already ${coreVersion} while the latest published/tagged release is ${prevTag}. ` +
+        `Publish or recover the missing release sequence first: ${missingText}.`,
+    });
+  }
   const nextVersion = bumpVersion(coreVersion, flags.bump);
   const nextTag = `v${nextVersion}`;
   const changes = await listChanges(gitRoot, prevTag);

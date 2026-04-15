@@ -5,6 +5,15 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Exact Git commit SHA to validate for release recovery (preferred over ref)"
+        required: false
+      ref:
+        description: "Git ref to validate only when sha is omitted"
+        required: false
+        default: "main"
 
 permissions:
   contents: read
@@ -13,6 +22,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  AGENTPLANE_CI_REF: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '' && github.event.inputs.sha || github.event_name == 'workflow_dispatch' && github.event.inputs.ref || github.sha }}
+
 jobs:
   changes:
     runs-on: ubuntu-24.04
@@ -20,6 +32,8 @@ jobs:
       core: ${{ steps.filter.outputs.core }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -32,6 +46,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.3.6"
@@ -101,6 +117,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.3.6"
@@ -134,12 +152,14 @@ jobs:
       - changes
       - test
       - test-windows
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.core == 'true'
+    if: needs.changes.outputs.core == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: actions/setup-node@v4
         with:
           node-version: "24"

@@ -11,6 +11,13 @@ describe("Core CI workflow contract", () => {
   it("keeps the release-ready manifest job wired to the green release-relevant gates", async () => {
     const workflow = await readFile(CI_WORKFLOW_PATH, "utf8");
 
+    expect(workflow).toContain("workflow_dispatch:");
+    expect(workflow).toContain(
+      'description: "Exact Git commit SHA to validate for release recovery (preferred over ref)"',
+    );
+    expect(workflow).toContain('default: "main"');
+    expect(workflow).toContain("AGENTPLANE_CI_REF:");
+    expect(workflow).toContain("ref: ${{ env.AGENTPLANE_CI_REF }}");
     expect(workflow).toContain("release-ready:");
     expect(workflow).toContain("name: Release-ready manifest");
     expect(workflow).toContain("needs:");
@@ -18,7 +25,7 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("- test");
     expect(workflow).toContain("- test-windows");
     expect(workflow).toContain(
-      "if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.core == 'true'",
+      "if: needs.changes.outputs.core == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')",
     );
     expect(workflow).toContain("node scripts/write-release-ready-manifest.mjs");
     expect(workflow).toContain("--out .agentplane/.release/ready/release-ready.json");
