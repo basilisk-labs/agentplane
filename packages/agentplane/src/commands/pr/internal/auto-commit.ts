@@ -12,12 +12,16 @@ function taskPrDirPrefix(workflowDir: string, taskId: string): string {
   return `${toGitPath(path.join(workflowDir, taskId, "pr"))}/`;
 }
 
-function isTaskPrArtifactPath(opts: {
-  workflowDir: string;
-  taskId: string;
-  relPath: string;
-}): boolean {
-  return toGitPath(opts.relPath).startsWith(taskPrDirPrefix(opts.workflowDir, opts.taskId));
+function taskReadmePath(workflowDir: string, taskId: string): string {
+  return toGitPath(path.join(workflowDir, taskId, "README.md"));
+}
+
+function isTaskPacketPath(opts: { workflowDir: string; taskId: string; relPath: string }): boolean {
+  const normalized = toGitPath(opts.relPath);
+  return (
+    normalized === taskReadmePath(opts.workflowDir, opts.taskId) ||
+    normalized.startsWith(taskPrDirPrefix(opts.workflowDir, opts.taskId))
+  );
 }
 
 async function readCachedPaths(gitRoot: string): Promise<string[]> {
@@ -47,20 +51,20 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
   if (!currentBranch || currentBranch !== opts.branch.trim()) return false;
 
   const changedPaths = await opts.ctx.git.statusChangedPaths();
-  const prArtifactPaths = changedPaths.filter((relPath) =>
-    isTaskPrArtifactPath({
+  const taskPacketPaths = changedPaths.filter((relPath) =>
+    isTaskPacketPath({
       workflowDir: opts.ctx.config.paths.workflow_dir,
       taskId: opts.taskId,
       relPath,
     }),
   );
-  if (prArtifactPaths.length === 0) return false;
+  if (taskPacketPaths.length === 0) return false;
 
   const cachedPaths = await readCachedPaths(opts.ctx.resolvedProject.gitRoot);
   if (
     cachedPaths.some(
       (relPath) =>
-        !isTaskPrArtifactPath({
+        !isTaskPacketPath({
           workflowDir: opts.ctx.config.paths.workflow_dir,
           taskId: opts.taskId,
           relPath,
@@ -70,7 +74,7 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
     return false;
   }
 
-  await opts.ctx.git.stage(prArtifactPaths);
+  await opts.ctx.git.stage(taskPacketPaths);
   await opts.ctx.git.commit({
     message: taskPrArtifactRefreshMessage(opts.taskId),
     env: buildGitCommitEnv({
