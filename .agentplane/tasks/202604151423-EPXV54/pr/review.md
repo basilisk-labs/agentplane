@@ -45,12 +45,15 @@ Add a workflow_dispatch release-recovery validation path that proves exact histo
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T14:25:42.036Z
+- Updated: 2026-04-15T14:32:15.945Z
 - Branch: task/202604151423-EPXV54/release-recovery-dispatch-path
-- Head: 6efbcd221ec9
+- Head: 4731c5b89bae
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604151423-EPXV54/README.md    | 121 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |  56 +++++++++-
+ .../commands/release/ci-workflow-contract.test.ts  |  18 ++-
+ 3 files changed, 186 insertions(+), 9 deletions(-)
 ```
 
 </details>
