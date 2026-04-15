@@ -15,6 +15,7 @@ import { createTaskCloseCommit, writeFinishedTasks } from "./finish-shared.js";
 import { resolveHostedMergeTargetFromEvent, type HostedMergeTarget } from "./hosted-merge-sync.js";
 import { readCommitInfo } from "./shared.js";
 import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
+import type { TaskData } from "../../backends/task-backend.js";
 
 export type TaskHostedCloseParsed = {
   eventJson: string;
@@ -139,6 +140,129 @@ function buildFallbackPrMeta(opts: {
   };
 }
 
+function escapeRegExp(value: string): string {
+  return value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}
+
+function extractMarkdownSection(markdown: string, heading: string): string {
+  const pattern = new RegExp(
+    String.raw`^## ${escapeRegExp(heading)}\n\n([\s\S]*?)(?=\n## [^\n]+\n|$)`,
+    "m",
+  );
+  const match = pattern.exec(markdown);
+  return match?.[1]?.trim() ?? "";
+}
+
+function fallbackTaskTitleFromPrTitle(taskId: string, prTitle?: string | null): string {
+  const trimmed = prTitle?.trim() ?? "";
+  if (!trimmed) return `Hosted close recovery for ${taskId}`;
+  const suffix = taskId.split("-").at(-1)?.trim();
+  if (suffix) {
+    const stripped = trimmed.replace(
+      new RegExp(String.raw`\s*\(${escapeRegExp(suffix)}\)\s*$`),
+      "",
+    );
+    if (stripped.trim().length > 0) return stripped.trim();
+  }
+  return trimmed;
+}
+
+function isMissingTaskReadmeError(err: unknown, readmePath: string): boolean {
+  if (!(err instanceof CliError)) return false;
+  return err.code === "E_IO" && err.message.includes(readmePath);
+}
+
+async function buildHostedTaskFromTrackedPrArtifacts(opts: {
+  gitRoot: string;
+  taskDirRelative: string;
+  taskId: string;
+  mergedPr: HostedMergeTarget["mergedPr"];
+}): Promise<TaskData | null> {
+  const bodyPath = path.join(opts.gitRoot, opts.taskDirRelative, "pr", "github-body.md");
+  let bodyText = "";
+  try {
+    bodyText = await readFile(bodyPath, "utf8");
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code === "ENOENT") return null;
+    throw err;
+  }
+
+  const summary = extractMarkdownSection(bodyText, "Summary");
+  const scope = extractMarkdownSection(bodyText, "Scope");
+  const verification = extractMarkdownSection(bodyText, "Verification");
+  const handoff = extractMarkdownSection(bodyText, "Handoff Notes");
+  const summaryLines = summary
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+  const title = summaryLines[0] || fallbackTaskTitleFromPrTitle(opts.taskId, opts.mergedPr.title);
+  const description =
+    summaryLines.slice(1).join("\n").trim() ||
+    `Recovered hosted-close state from tracked PR artifacts for merged PR #${opts.mergedPr.number}.`;
+  const scopeText =
+    scope || `- In scope: record canonical task closure for merged PR #${opts.mergedPr.number}.`;
+  const verificationText =
+    verification || "- State: pending\n- Note: Recovered during hosted-close.";
+  const handoffText = handoff || "- No handoff notes recorded.";
+  const planText = `Recovered hosted-close state from tracked PR artifacts for merged PR #${opts.mergedPr.number}.`;
+  const rollbackText = [
+    "- Revert the hosted closure commit if the merged PR metadata was recorded incorrectly.",
+    "- Re-run the required checks after rollback.",
+  ].join("\n");
+  const doc = [
+    "## Summary",
+    "",
+    title,
+    "",
+    description,
+    "",
+    "## Scope",
+    "",
+    scopeText,
+    "",
+    "## Plan",
+    "",
+    planText,
+    "",
+    "## Verification",
+    "",
+    verificationText,
+    "",
+    "## Rollback Plan",
+    "",
+    rollbackText,
+    "",
+    "## Handoff Notes",
+    "",
+    handoffText,
+    "",
+    "## Findings",
+    "",
+  ].join("\n");
+  return {
+    id: opts.taskId,
+    title,
+    description,
+    status: "DOING",
+    priority: "med",
+    owner: "INTEGRATOR",
+    revision: 1,
+    origin: { system: "manual" },
+    depends_on: [],
+    tags: [],
+    verify: [],
+    plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+    verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+    commit: null,
+    doc,
+    doc_version: 3,
+    doc_updated_at: opts.mergedPr.mergedAt ?? new Date().toISOString(),
+    doc_updated_by: "INTEGRATOR",
+    id_source: "generated",
+  };
+}
+
 async function readHostedPrMetaOrFallback(opts: {
   gitRoot: string;
   taskDirRelative: string;
@@ -182,12 +306,25 @@ async function closeHostedTask(opts: {
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const taskDirRelative = path.join(opts.ctx.config.paths.workflow_dir, target.taskId);
   const taskReadmePath = path.join(gitRoot, taskDirRelative, "README.md");
-  const task = await loadTaskFromContext({
-    ctx: opts.ctx,
-    taskId: target.taskId,
-    preferBranchSnapshot: true,
-    branchSnapshotBranch: target.branch,
-  });
+  let task: TaskData;
+  try {
+    task = await loadTaskFromContext({
+      ctx: opts.ctx,
+      taskId: target.taskId,
+      preferBranchSnapshot: true,
+      branchSnapshotBranch: target.branch,
+    });
+  } catch (err) {
+    if (!isMissingTaskReadmeError(err, taskReadmePath)) throw err;
+    const recovered = await buildHostedTaskFromTrackedPrArtifacts({
+      gitRoot,
+      taskDirRelative,
+      taskId: target.taskId,
+      mergedPr: target.mergedPr,
+    });
+    if (!recovered) throw err;
+    task = recovered;
+  }
   if (!(await fileExists(taskReadmePath))) {
     await opts.ctx.taskBackend.writeTask(task);
   }
