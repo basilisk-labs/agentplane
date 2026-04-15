@@ -67,4 +67,23 @@ describeWhenNotHook("release plan", () => {
       releasePlanSpec.validate?.({ bump: "major", yes: false, since: undefined }),
     ).toThrow(/requires explicit approval/i);
   });
+
+  it("fails when workspace version is already ahead of the latest published patch tag", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await seedReleaseWorkspace(root, {
+      coreVersion: "0.2.8",
+      cliVersion: "0.2.8",
+      dependencyVersion: "0.2.8",
+    });
+    await commitAll(root, "seed");
+    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+
+    await expect(
+      runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false }),
+    ).rejects.toThrow(/latest published\/tagged release is v0\.2\.6/i);
+    await expect(
+      runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false }),
+    ).rejects.toThrow(/v0\.2\.7, v0\.2\.8/i);
+  }, 60_000);
 });

@@ -30,6 +30,10 @@ Requirements:
 agentplane release plan
 ```
 
+If the workspace version is already ahead of the latest published/tagged patch release, the planner
+now fails instead of proposing a skipped future patch. Recover and publish the missing patch chain
+first, then plan the next release.
+
 2. Draft notes from plan artifacts.
 3. Run local release gate (must match publish prerequisites):
 
@@ -103,6 +107,13 @@ GitHub workflow `Publish to npm`:
 
 `Pre-publish Checks` workflow remains available as a manual matrix gate (`workflow_dispatch`) for explicit validation runs.
 
+GitHub workflow `Core CI` also supports `workflow_dispatch` recovery:
+
+- prefer `sha=<release commit>` to validate the exact historical release candidate
+- use `ref` only when `sha` is omitted
+- the dispatched run checks out that exact target and can mint the canonical `release-ready` artifact
+  for the same commit, which `Publish to npm` then consumes
+
 ## Provenance requirements
 
 Both packages set:
@@ -125,6 +136,9 @@ Trusted publishing must be configured in npm for repository workflow identity.
 - Manual publish/recovery needs an exact commit:
 - prefer `workflow_dispatch` with `sha=<release commit>` so the workflow resolves a fixed `release-ready`
   artifact source instead of following a moving branch ref
+- If the exact release SHA never produced `release-ready` historically:
+- first dispatch `Core CI` for that same `sha`
+- then dispatch `Publish to npm` for that same `sha`
 
 ## Recovery tool
 
