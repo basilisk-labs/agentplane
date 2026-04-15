@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604151818-5M1MXG/canonical-publish-release-sha",
   "created_at": "2026-04-15T18:20:03.389Z",
-  "head_sha": "761b0d9627d39d85089dbeabb6c9676de5af7f4a",
+  "head_sha": "68b0998a5664dff557292403f5b1be0dae724800",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "07c073f8b635af719873c77d09565c2d6ec04290",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T18:33:04Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604151818-5M1MXG",
-  "updated_at": "2026-04-15T18:28:51.650Z",
+  "updated_at": "2026-04-15T18:33:04Z",
   "verify": {
     "status": "skipped"
   }

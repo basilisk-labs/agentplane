@@ -1,10 +1,11 @@
 ---
 id: "202604151818-5M1MXG"
 title: "Select canonical release commit for workflow_dispatch publish"
-status: "DOING"
+result_summary: "Merged via PR #329."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "07c073f8b635af719873c77d09565c2d6ec04290"
+  message: "release: Select canonical release commit for workflow_dispatch publish (5M1MXG) (#329)"
 comments:
   -
     author: "CODER"
     body: "Start: replacing workflow_dispatch no-sha publish target selection with a canonical release-commit resolver so manual publish recovers the exact unpublished release commit instead of later closure or recovery commits on main."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #329 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -34,9 +40,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: replacing workflow_dispatch no-sha publish target selection with a canonical release-commit resolver so manual publish recovers the exact unpublished release commit instead of later closure or recovery commits on main."
+  -
+    type: "status"
+    at: "2026-04-15T18:34:01.081Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #329 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T18:20:03.357Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T18:34:01.086Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make publish workflow_dispatch without explicit --sha resolve the exact release-preparation commit for the target unpublished version instead of later closure or recovery commits on first-parent history."
 sections:
   Summary: |-
