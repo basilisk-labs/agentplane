@@ -56,14 +56,14 @@ jobs:
           else
             echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           fi
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.ref.outputs.ref }}
       - name: Checkout current workflow runtime
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.sha != ''
         uses: actions/checkout@v4
         with:
           path: .agentplane/.release/runtime
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.ref.outputs.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
