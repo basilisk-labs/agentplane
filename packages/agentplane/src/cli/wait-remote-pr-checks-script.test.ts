@@ -233,6 +233,29 @@ describe("wait-remote-pr-checks script", () => {
     );
   });
 
+  it("accepts --pr as an alias for a positional PR target", async () => {
+    const root = await makeTempRoot();
+    const { stateFile, callLog } = await writeGhMock(root);
+
+    const result = await runScript(["--pr", "123"], {
+      env: {
+        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+        GH_SCENARIO: "success",
+        GH_STATE_FILE: stateFile,
+        GH_CALL_LOG: callLog,
+        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "3",
+      },
+    });
+
+    expect(result.exitCode, transcript(result)).toBe(0);
+    const callLogText = await readFile(callLog, "utf8");
+    expect(callLogText).toContain(
+      `["pr","view","123","--repo","basilisk-labs/agentplane","--json","number,headRefOid,baseRefName,url,title"]`,
+    );
+    expect(callLogText).not.toContain(`["pr","view","--pr"`);
+  });
+
   it("waits for multiple PRs in input order and caches shared protection lookups", async () => {
     const root = await makeTempRoot();
     const { stateFile, callLog } = await writeGhMock(root);

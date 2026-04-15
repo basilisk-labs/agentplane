@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604151904-BZQE85/fix-wait-remote-checks-wrapper",
+  "created_at": "2026-04-15T19:05:12.225Z",
+  "head_sha": "586564df6bfbed3836810ff3ae2f340744d0d9f5",
+  "last_verified_at": "2026-04-15T19:06:45.252Z",
+  "last_verified_sha": "6ddbb9afff915d350dbeb84d4524ada57166f459",
+  "schema_version": 1,
+  "task_id": "202604151904-BZQE85",
+  "updated_at": "2026-04-15T19:07:04.214Z",
+  "verify": {
+    "status": "pass"
+  }
+}
