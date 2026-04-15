@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604150615-8HM62H/hosted-close-direct-merge",
+  "created_at": "2026-04-15T06:22:24.200Z",
+  "head_sha": "de7287d248b71ee83c88a8a0a94ae7b21dba486e",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604150615-8HM62H",
+  "updated_at": "2026-04-15T06:22:24.200Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
