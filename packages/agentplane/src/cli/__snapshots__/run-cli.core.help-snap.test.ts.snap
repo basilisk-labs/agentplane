@@ -83,7 +83,8 @@ Commands:
     recipes remove  Remove an installed recipe.
   Release:
     release  Prepare a release (agent-assisted notes + version bump workflow).
-    release apply  Apply a prepared release: bump versions, validate notes, commit, and tag.
+    release apply  Apply a prepared direct-mode release: bump versions, validate notes, commit, and tag.
+    release candidate  Prepare a branch_pr release candidate: bump versions, validate notes, commit, and optionally push the candidate branch.
     release plan  Generate an agent-assisted release plan (changes list + next patch version).
   Scenario:
     scenario  Recipe scenario commands.

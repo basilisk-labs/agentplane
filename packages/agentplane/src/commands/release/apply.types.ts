@@ -18,11 +18,10 @@ export type ReleaseVersionPlan = {
 };
 
 export type ReleaseApplyRoute = {
-  kind: "direct_release" | "branch_pr_candidate";
+  kind: "direct_release" | "release_candidate";
   workflow_mode: "direct" | "branch_pr";
   current_branch: string;
   base_branch: string | null;
-  final_publish_deferred: boolean;
 };
 
 export type PlanChange = {

@@ -12,7 +12,7 @@ import { workflowRestoreSpec } from "../../../commands/workflow-restore.command.
 import { incidentsAdviseSpec } from "../../../commands/incidents/advise.command.js";
 import { incidentsCollectSpec } from "../../../commands/incidents/collect.command.js";
 import { incidentsSpec } from "../../../commands/incidents/incidents.command.js";
-import { releaseApplySpec } from "../../../commands/release/apply.command.js";
+import { releaseApplySpec, releaseCandidateSpec } from "../../../commands/release/apply.command.js";
 import { releasePlanSpec } from "../../../commands/release/plan.command.js";
 import { releaseSpec } from "../../../commands/release/release.command.js";
 import {
@@ -69,6 +69,15 @@ export const CORE_COMMANDS = [
   entry(
     releaseApplySpec,
     () => import("../../../commands/release/apply.command.js").then((m) => m.runReleaseApply),
+    {
+      needsProject: true,
+      needsLoadedConfig: false,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
+    releaseCandidateSpec,
+    () => import("../../../commands/release/apply.command.js").then((m) => m.runReleaseCandidate),
     {
       needsProject: true,
       needsLoadedConfig: false,
