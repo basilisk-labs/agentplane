@@ -97,7 +97,8 @@ GitHub workflow `Publish to npm`:
 - sets provenance
 - consumes the `release-ready` artifact from the exact `Core CI` run as the only readiness source
 - emits a `publish-result` artifact from the publish job as the canonical post-publish outcome record
-- validates the exact publish ref with `bun run release:prepublish` inside the workflow itself
+- validates the exact publish payload with `bun run release:check` inside the workflow itself after
+  the matching `release-ready` artifact already proved CI readiness for that SHA
 - validates notes and version/tag parity
 - validates workspace parity (`core`, `agentplane`, and `@agentplaneorg/core` dependency)
 - runs release-specific checks (`release:check`, release notes/version validation, origin tag existence)

@@ -227,11 +227,11 @@ jobs:
         run: node scripts/check-release-notes.mjs --tag "${{ needs.detect.outputs.tag }}"
       - name: Validate release versions
         run: node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}"
-      - name: Run exact-ref release prepublish gate
-        # Validate the checked-out publish ref directly. Waiting for external
-        # push workflows by exact SHA deadlocks on workflow_dispatch recovery
-        # when the release tag points to a non-tip commit.
-        run: bun run release:prepublish
+      - name: Validate exact-ref publish payload
+        # The exact-SHA release-ready artifact already proves release-critical CI
+        # readiness for this historical commit. The publish job only needs to
+        # validate the checked-out payload it is about to tag and publish.
+        run: bun run release:check
       - name: Validate origin tag state
         id: tag_state
         shell: bash
@@ -249,8 +249,6 @@ jobs:
           else
             echo "tag_exists=false" >> "$GITHUB_OUTPUT"
           fi
-      - name: Build release packages
-        run: bun run release:check
       - name: Build upgrade bundle assets
         shell: bash
         run: |
