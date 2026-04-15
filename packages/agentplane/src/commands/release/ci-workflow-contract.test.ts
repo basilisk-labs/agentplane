@@ -19,11 +19,14 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("AGENTPLANE_CI_REF:");
     expect(workflow).toContain("AGENTPLANE_RELEASE_RECOVERY_SHA:");
     expect(workflow).toContain("ref: ${{ env.AGENTPLANE_CI_REF }}");
+    expect(workflow).toContain("needs.changes.outputs.core == 'true' &&");
     expect(workflow).toContain(
-      "if: needs.changes.outputs.core == 'true' && env.AGENTPLANE_RELEASE_RECOVERY_SHA == ''",
+      "!(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '')",
     );
     expect(workflow).toContain("recovery-validate:");
-    expect(workflow).toContain("if: env.AGENTPLANE_RELEASE_RECOVERY_SHA != ''");
+    expect(workflow).toContain(
+      "if: github.event_name == 'workflow_dispatch' && github.event.inputs.sha != ''",
+    );
     expect(workflow).toContain("Release parity (check)");
     expect(workflow).toContain("Build packages (dist + manifests)");
     expect(workflow).toContain("release-ready:");
@@ -34,9 +37,12 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("- test-windows");
     expect(workflow).toContain("- recovery-validate");
     expect(workflow).toContain("Resolve release-ready target");
-    expect(workflow).toContain("env.AGENTPLANE_RELEASE_RECOVERY_SHA != '' &&");
+    expect(workflow).toContain("github.event_name == 'workflow_dispatch' &&");
+    expect(workflow).toContain("github.event.inputs.sha != '' &&");
     expect(workflow).toContain("needs.recovery-validate.result == 'success'");
-    expect(workflow).toContain("env.AGENTPLANE_RELEASE_RECOVERY_SHA == '' &&");
+    expect(workflow).toContain(
+      "!(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&",
+    );
     expect(workflow).toContain("needs.test.result == 'success' &&");
     expect(workflow).toContain("needs.test-windows.result == 'success'");
     expect(workflow).toContain("node scripts/write-release-ready-manifest.mjs");
