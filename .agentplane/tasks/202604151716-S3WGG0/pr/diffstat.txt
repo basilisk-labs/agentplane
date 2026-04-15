@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604151716-S3WGG0/README.md    | 155 +++++++++++++++++++++
+ .github/workflows/publish.yml                      |  36 +++--
+ .../release/publish-workflow-contract.test.ts      |  14 +-
+ 3 files changed, 193 insertions(+), 12 deletions(-)
