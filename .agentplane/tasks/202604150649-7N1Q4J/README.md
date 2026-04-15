@@ -1,10 +1,11 @@
 ---
 id: "202604150649-7N1Q4J"
 title: "Enable exact-sha release recovery and block skipped patch planning"
-status: "DOING"
+result_summary: "Merged via PR #301."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T07:00:56.638Z"
   updated_by: "CODER"
   note: "Command: bun vitest run packages/agentplane/src/commands/release/ci-workflow-contract.test.ts packages/agentplane/src/commands/release/plan.test.ts; bun run framework:dev:bootstrap; agentplane doctor. Result: pass. Evidence: 5 targeted tests passed, framework bootstrap rebuilt repo-local runtime, doctor returned OK. Scope: .github/workflows/ci.yml, release planner guard, release workflow documentation."
-commit: null
+commit:
+  hash: "3f7791a57c59e49b2d46de5838c04001cb43d3e4"
+  message: "release: Enable exact-sha release recovery and block skipped patch planning (7N1Q4J) (#301)"
 comments:
   -
     author: "CODER"
     body: "Start: add exact-sha Core CI recovery support and stop release planning from skipping unpublished patch versions, then use the new path to restore v0.3.11."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #301 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun vitest run packages/agentplane/src/commands/release/ci-workflow-contract.test.ts packages/agentplane/src/commands/release/plan.test.ts; bun run framework:dev:bootstrap; agentplane doctor. Result: pass. Evidence: 5 targeted tests passed, framework bootstrap rebuilt repo-local runtime, doctor returned OK. Scope: .github/workflows/ci.yml, release planner guard, release workflow documentation."
+  -
+    type: "status"
+    at: "2026-04-15T07:12:52.921Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #301 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T07:00:56.651Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T07:12:52.928Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add Core CI workflow_dispatch support for exact release SHA recovery, make release-ready available for recovery runs, and make release planning stop when unpublished patch versions exist instead of skipping ahead."
 sections:
   Summary: |-
