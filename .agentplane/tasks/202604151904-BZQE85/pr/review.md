@@ -45,12 +45,15 @@ Make bun run workflow:wait-remote-checks -- --pr <id> call the underlying wait s
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T19:05:12.225Z
+- Updated: 2026-04-15T19:07:04.214Z
 - Branch: task/202604151904-BZQE85/fix-wait-remote-checks-wrapper
-- Head: 6ddbb9afff91
+- Head: 586564df6bfb
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604151904-BZQE85/README.md    | 121 +++++++++++++++++++++
+ .../src/cli/wait-remote-pr-checks-script.test.ts   |  23 ++++
+ scripts/wait-remote-pr-checks.mjs                  |  13 +++
+ 3 files changed, 157 insertions(+)
 ```
 
 </details>
