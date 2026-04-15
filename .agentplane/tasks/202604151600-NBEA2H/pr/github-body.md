@@ -22,19 +22,20 @@ Add a first-class release candidate route for branch_pr mode so release preparat
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T16:13:42.495Z
+- Updated: 2026-04-15T16:23:09.062Z
 - Branch: task/202604151600-NBEA2H/branch-pr-release-candidate-route
-- Head: d4e33e465158
+- Head: 0524758d9023
 
 ```text
- .agentplane/tasks/202604151600-NBEA2H/README.md    | 124 +++++++++
+ .agentplane/tasks/202604151600-NBEA2H/README.md    | 124 ++++++++
  docs/developer/release-and-publishing.mdx          |  18 +-
+ docs/user/cli-reference.generated.mdx              |  46 ++-
  .../run-cli.core.help-snap.test.ts.snap            |   3 +-
  .../src/cli/run-cli/command-catalog/core.ts        |  11 +-
- .../src/commands/release/apply.command.ts          | 303 +++++++++++++++++++--
- .../agentplane/src/commands/release/apply.test.ts  | 156 ++++++++++-
+ .../src/commands/release/apply.command.ts          | 333 +++++++++++++++++++--
+ .../agentplane/src/commands/release/apply.test.ts  | 156 +++++++++-
  .../agentplane/src/commands/release/apply.types.ts |   3 +-
- 7 files changed, 578 insertions(+), 40 deletions(-)
+ 8 files changed, 651 insertions(+), 43 deletions(-)
 ```
 
 </details>
