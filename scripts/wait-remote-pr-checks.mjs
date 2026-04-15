@@ -94,10 +94,23 @@ function parseArgs(argv) {
       index += 1;
       continue;
     }
+    if (arg === "--pr") {
+      const value = argv[index + 1];
+      if (!value) throw new Error("Missing value for --pr");
+      options.targetArgs.push(value);
+      index += 1;
+      continue;
+    }
     if (arg.startsWith("--repo=")) {
       const value = arg.slice("--repo=".length);
       if (!value) throw new Error("Missing value for --repo");
       options.repo = value;
+      continue;
+    }
+    if (arg.startsWith("--pr=")) {
+      const value = arg.slice("--pr=".length);
+      if (!value) throw new Error("Missing value for --pr");
+      options.targetArgs.push(value);
       continue;
     }
     if (IGNORED_LEGACY_FLAGS.has(arg)) {
