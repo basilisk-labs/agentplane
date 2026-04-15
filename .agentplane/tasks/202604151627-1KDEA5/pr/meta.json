@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604151627-1KDEA5/pr-packet-idempotent",
+  "created_at": "2026-04-15T16:59:33.658Z",
+  "head_sha": "27682cab4f94b85b051021d74471cb76519d57da",
+  "last_verified_at": "2026-04-15T16:59:33.614Z",
+  "last_verified_sha": "ec423be77f058a79d09dc1dd2f02436a445f72a1",
+  "schema_version": 1,
+  "task_id": "202604151627-1KDEA5",
+  "updated_at": "2026-04-15T17:03:47.499Z",
+  "verify": {
+    "status": "pass"
+  }
+}
