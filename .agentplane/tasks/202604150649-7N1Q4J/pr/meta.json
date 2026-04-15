@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604150649-7N1Q4J/exact-sha-release-recovery",
   "created_at": "2026-04-15T07:00:56.698Z",
-  "head_sha": "73e5f09bd00fa5969f293e36266daa26f369d31e",
+  "head_sha": "b6b02520d9e28f57adf6a9e54229411c0634e394",
   "last_verified_at": "2026-04-15T07:00:56.638Z",
   "last_verified_sha": "e10800464e2b7f6d474df681b1c947a68483e5fd",
+  "merge_commit": "3f7791a57c59e49b2d46de5838c04001cb43d3e4",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T07:12:25Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604150649-7N1Q4J",
-  "updated_at": "2026-04-15T07:01:30.966Z",
+  "updated_at": "2026-04-15T07:12:25Z",
   "verify": {
     "status": "pass"
   }
