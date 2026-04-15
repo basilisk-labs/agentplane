@@ -1,10 +1,11 @@
 ---
 id: "202604151732-WWEAS8"
 title: "Require exact artifact identity for workflow_dispatch release-ready resolution"
-status: "DOING"
+result_summary: "Merged via PR #323."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T17:36:36.265Z"
   updated_by: "CODER"
   note: "Verified exact artifact identity tightening locally."
-commit: null
+commit:
+  hash: "d7d52f7bbfe3e5fc4ccf51c74eecafc3744de9d6"
+  message: "release: Require exact artifact identity for workflow_dispatch release-ready r... (WWEAS8) (#323)"
 comments:
   -
     author: "CODER"
     body: "Start: tightening workflow_dispatch release-ready resolution so mismatched runs only satisfy requested SHAs through exact alias artifacts, then replaying manual publish on main to verify that publish consumes the resolved release candidate instead of the dispatch head."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #323 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified exact artifact identity tightening locally."
+  -
+    type: "status"
+    at: "2026-04-15T17:43:34.896Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #323 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T17:36:36.278Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T17:43:34.902Z"
+doc_updated_by: "INTEGRATOR"
 description: "workflow_dispatch publish currently accepts a generic release-ready artifact from a mismatched run, which lets detect resolve the dispatch head instead of the true release candidate and makes publish fail on manifest sha mismatch."
 sections:
   Summary: |-

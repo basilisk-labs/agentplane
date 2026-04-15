@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604151732-WWEAS8/exact-artifact-identity",
   "created_at": "2026-04-15T17:34:16.300Z",
-  "head_sha": "0ecf40b3aecb52d25848fb060d8f96938734c58f",
+  "head_sha": "3b8a564031288056c9a48fd58a9e688d1b076c95",
   "last_verified_at": "2026-04-15T17:36:36.265Z",
   "last_verified_sha": "8566687a2ff9bb433d6887eb955e04bef0f785df",
+  "merge_commit": "d7d52f7bbfe3e5fc4ccf51c74eecafc3744de9d6",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T17:43:03Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604151732-WWEAS8",
-  "updated_at": "2026-04-15T17:37:15.102Z",
+  "updated_at": "2026-04-15T17:43:03Z",
   "verify": {
     "status": "pass"
   }
