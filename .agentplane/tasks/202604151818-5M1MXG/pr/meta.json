@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604151818-5M1MXG/canonical-publish-release-sha",
+  "created_at": "2026-04-15T18:20:03.389Z",
+  "head_sha": "8504a282831206383300e60ec7e3c4041b6cafdf",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604151818-5M1MXG",
+  "updated_at": "2026-04-15T18:20:03.389Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

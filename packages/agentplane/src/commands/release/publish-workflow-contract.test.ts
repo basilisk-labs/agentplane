@@ -59,9 +59,9 @@ describe("publish workflow contract", () => {
       'if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.sha }}" ]; then',
     );
     expect(workflow).toContain('SHA="${{ github.event.inputs.sha }}"');
-    expect(workflow).toContain("git rev-list --first-parent --max-count=64 HEAD");
+    expect(workflow).toContain("node scripts/resolve-canonical-release-sha.mjs --json");
     expect(workflow).toContain(
-      'echo "No reachable release-ready candidate found from $(git rev-parse HEAD)." >&2',
+      'echo "No canonical release candidate resolved from $(git rev-parse HEAD)." >&2',
     );
     expect(workflow).toContain(
       'description: "Git ref to evaluate only when sha is omitted (default: main)"',
@@ -78,14 +78,14 @@ describe("publish workflow contract", () => {
     expect(workflow).not.toContain("${{ github.workflow }}-${{ github.ref }}");
   });
 
-  it("walks first-parent history for workflow_dispatch ref publishes before picking a release-ready sha", async () => {
+  it("resolves a canonical release commit for workflow_dispatch ref publishes before picking a release-ready sha", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain("fetch-depth: 0");
     expect(workflow).toContain('elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then');
-    expect(workflow).toContain("FOUND=false");
-    expect(workflow).toContain("while IFS= read -r candidate; do");
-    expect(workflow).toContain('SHA="${candidate}"');
-    expect(workflow).toContain("done < <(git rev-list --first-parent --max-count=64 HEAD)");
+    expect(workflow).toContain(".agentplane/.release/ready/canonical.json");
+    expect(workflow).toContain(
+      "SHA=\"$(node -e \"const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/canonical.json','utf8')); process.stdout.write(String(payload.sha || ''));\")\"",
+    );
   });
 });
