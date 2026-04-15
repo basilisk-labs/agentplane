@@ -1,7 +1,7 @@
 import { mkdir, readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { resolveBaseBranch } from "@agentplaneorg/core";
+import { extractTaskSuffix, resolveBaseBranch } from "@agentplaneorg/core";
 
 import { mapBackendError } from "../../../cli/error-map.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
@@ -22,18 +22,17 @@ import { INCIDENTS_POLICY_PATH } from "../../incidents/shared.js";
 import {
   buildObservedGithubPrMeta,
   buildOpenedPrMeta,
-  resolvePrArtifactHeadSha,
   buildUpdatedPrMeta,
+  resolvePrArtifactHeadSha,
   parsePrMeta,
   type PrMeta,
 } from "../../shared/pr-meta.js";
+import { isTaskLocalOnlyAdvance } from "../../shared/task-local-freshness.js";
 import {
   loadBackendTask,
   loadCommandContext,
   type CommandContext,
 } from "../../shared/task-backend.js";
-import { isTaskLocalOnlyAdvance } from "../../shared/task-local-freshness.js";
-
 import { resolvePrPaths } from "./pr-paths.js";
 import { readPrHandoffNotes } from "./note-store.js";
 import { ghEnv } from "./gh-api.js";
@@ -210,6 +209,47 @@ function formatGithubPrLink(
   return prUrl?.trim()
     ? `${verb} GitHub PR #${prNumber}: ${prUrl.trim()}`
     : `${verb} GitHub PR #${prNumber}`;
+}
+
+function shouldPersistObservedGithubPrMeta(
+  observed: ReturnType<typeof normalizeObservedGithubPr>,
+): boolean {
+  if (!observed) return false;
+  return observed.status === "MERGED";
+}
+
+function taskPrArtifactRefreshMessage(taskId: string): string {
+  return `📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`;
+}
+
+async function resolveRenderableBranchHead(opts: {
+  gitRoot: string;
+  taskId: string;
+  branch: string;
+}): Promise<{ headSha: string | null; artifactRefresh: boolean }> {
+  const branchHeadSha = await resolveBranchHeadSha({
+    gitRoot: opts.gitRoot,
+    branch: opts.branch,
+  });
+  if (!branchHeadSha) return { headSha: null, artifactRefresh: false };
+
+  try {
+    const { stdout: subjectStdout } = await execFileAsync(
+      "git",
+      ["log", "-1", "--pretty=%s", branchHeadSha],
+      {
+        cwd: opts.gitRoot,
+        env: gitEnv(),
+      },
+    );
+    const subject = subjectStdout.trim();
+    return {
+      headSha: branchHeadSha,
+      artifactRefresh: subject === taskPrArtifactRefreshMessage(opts.taskId),
+    };
+  } catch {
+    return { headSha: branchHeadSha, artifactRefresh: false };
+  }
 }
 
 function formatUnpublishedRemoteHeadReason(branch: string): string {
@@ -570,7 +610,11 @@ export async function syncPrArtifacts(opts: {
         cliBaseOpt: null,
         mode: config.workflow_mode,
       });
-      const headSha = await resolveBranchHeadSha({ gitRoot: resolved.gitRoot, branch });
+      const { headSha, artifactRefresh } = await resolveRenderableBranchHead({
+        gitRoot: resolved.gitRoot,
+        taskId: task.id,
+        branch,
+      });
       const preservePreviousHead =
         Boolean(existingMeta?.head_sha) &&
         Boolean(headSha) &&
@@ -582,11 +626,13 @@ export async function syncPrArtifacts(opts: {
           fromRef: existingMeta?.head_sha ?? null,
           toRef: headSha!,
         }));
-      const renderedHeadSha = resolvePrArtifactHeadSha({
-        previousHeadSha: existingMeta?.head_sha ?? null,
-        currentHeadSha: headSha,
-        preservePrevious: preservePreviousHead,
-      });
+      const renderedHeadSha = artifactRefresh
+        ? (existingMeta?.head_sha ?? undefined)
+        : resolvePrArtifactHeadSha({
+            previousHeadSha: existingMeta?.head_sha ?? null,
+            currentHeadSha: headSha,
+            preservePrevious: preservePreviousHead,
+          });
       const preservedRenderUpdatedAt =
         existingMeta &&
         (existingMeta.branch ?? null) === branch &&
@@ -606,7 +652,7 @@ export async function syncPrArtifacts(opts: {
               prDir,
             })
           : "";
-        const renderedSummaryHeadSha = renderedHeadSha ?? headSha;
+        const renderedSummaryHeadSha = artifactRefresh ? renderedHeadSha : (renderedHeadSha ?? headSha);
         let nextMeta: PrMeta = buildOpenedPrMeta({
           taskId: task.id,
           branch,
@@ -634,7 +680,7 @@ export async function syncPrArtifacts(opts: {
           autoSummary: renderPrAutoSummary({
             updatedAt: renderUpdatedAt,
             branch,
-            headSha: renderedSummaryHeadSha,
+            headSha: renderedSummaryHeadSha ?? null,
             diffstat,
           }),
         });
@@ -644,11 +690,13 @@ export async function syncPrArtifacts(opts: {
           baseBranch,
         });
         if (observedGithubPr) {
-          nextMeta = buildObservedGithubPrMeta({
-            meta: nextMeta,
-            observed: observedGithubPr,
-            at: now,
-          });
+          if (shouldPersistObservedGithubPrMeta(observedGithubPr)) {
+            nextMeta = buildObservedGithubPrMeta({
+              meta: nextMeta,
+              observed: observedGithubPr,
+              at: now,
+            });
+          }
           openOutcome = {
             action: "linked-existing",
             message: formatGithubPrLink(
@@ -671,11 +719,13 @@ export async function syncPrArtifacts(opts: {
             body: githubBody,
           });
           if (createdGithubPr.observed) {
-            nextMeta = buildObservedGithubPrMeta({
-              meta: nextMeta,
-              observed: createdGithubPr.observed,
-              at: now,
-            });
+            if (shouldPersistObservedGithubPrMeta(createdGithubPr.observed)) {
+              nextMeta = buildObservedGithubPrMeta({
+                meta: nextMeta,
+                observed: createdGithubPr.observed,
+                at: now,
+              });
+            }
             openOutcome = {
               action: "created",
               message: formatGithubPrLink(
@@ -694,7 +744,7 @@ export async function syncPrArtifacts(opts: {
         const nextAutoSummary = renderPrAutoSummary({
           updatedAt: renderUpdatedAt,
           branch,
-          headSha: renderedSummaryHeadSha,
+          headSha: renderedSummaryHeadSha ?? null,
           diffstat,
         });
         const nextReview = renderPrReviewDocument({
@@ -750,17 +800,20 @@ export async function syncPrArtifacts(opts: {
         branch,
         baseBranch,
       });
-      if (observedGithubPr) {
+      if (shouldPersistObservedGithubPrMeta(observedGithubPr)) {
         nextMeta = buildObservedGithubPrMeta({
           meta: nextMeta,
-          observed: observedGithubPr,
+          observed: observedGithubPr!,
           at: now,
         });
       }
       const nextAutoSummary = renderPrAutoSummary({
         updatedAt: nextMeta.updated_at,
         branch,
-        headSha: nextMeta.head_sha ?? renderedHeadSha ?? headSha,
+        headSha:
+          artifactRefresh
+            ? (nextMeta.head_sha ?? renderedHeadSha ?? null)
+            : (nextMeta.head_sha ?? renderedHeadSha ?? headSha ?? null),
         diffstat,
       });
       const nextReview = renderPrReviewDocument({
