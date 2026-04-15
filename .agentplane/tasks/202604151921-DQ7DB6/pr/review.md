@@ -24,8 +24,8 @@ Reproduce the branch_pr path where pr open auto-commits .agentplane/tasks/<task-
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Auto-commit now stages the task README together with the same task's PR packet; targeted PR flow tests pass, and a live pr open --sync-only probe leaves the task path fully clean with README tracked.
 
 ## Risks
 
@@ -50,7 +50,8 @@ Reproduce the branch_pr path where pr open auto-commits .agentplane/tasks/<task-
 - Head: a8fb1eb90225
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604151921-DQ7DB6/README.md | 99 +++++++++++++++++++++++++
+ 1 file changed, 99 insertions(+)
 ```
 
 </details>

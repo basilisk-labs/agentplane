@@ -1270,7 +1270,7 @@ describe("runCli", () => {
     expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(firstGithubBody);
   });
 
-  it("pr open auto-commits task PR artifacts on the task branch", async () => {
+  it("pr open auto-commits the task README and PR artifacts on the task branch", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -1335,15 +1335,22 @@ describe("runCli", () => {
     });
     expect(subjectOut.trim()).toBe(`📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`);
 
+    const { stdout: readmeTrackedOut } = await execFileAsync(
+      "git",
+      ["ls-files", "--error-unmatch", `.agentplane/tasks/${taskId}/README.md`],
+      { cwd: root },
+    );
+    expect(readmeTrackedOut.trim()).toBe(`.agentplane/tasks/${taskId}/README.md`);
+
     const { stdout: statusOut } = await execFileAsync(
       "git",
-      ["status", "--short", "--untracked-files=no"],
+      ["status", "--short", "--untracked-files=all", "--", `.agentplane/tasks/${taskId}`],
       { cwd: root },
     );
     expect(statusOut.trim()).toBe("");
   });
 
-  it("pr update auto-commits refreshed PR artifacts on the task branch", async () => {
+  it("pr update auto-commits the task README and refreshed PR artifacts on the task branch", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -1428,9 +1435,16 @@ describe("runCli", () => {
     expect(meta.head_sha).toBe(parentOut.trim());
     expect(meta.head_sha).not.toBe(headOut.trim());
 
+    const { stdout: readmeTrackedOut } = await execFileAsync(
+      "git",
+      ["ls-files", "--error-unmatch", `.agentplane/tasks/${taskId}/README.md`],
+      { cwd: root },
+    );
+    expect(readmeTrackedOut.trim()).toBe(`.agentplane/tasks/${taskId}/README.md`);
+
     const { stdout: statusOut } = await execFileAsync(
       "git",
-      ["status", "--short", "--untracked-files=no"],
+      ["status", "--short", "--untracked-files=all", "--", `.agentplane/tasks/${taskId}`],
       { cwd: root },
     );
     expect(statusOut.trim()).toBe("");
