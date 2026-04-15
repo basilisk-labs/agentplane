@@ -22,12 +22,18 @@ Add Core CI workflow_dispatch support for exact release SHA recovery, make relea
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T07:00:56.698Z
+- Updated: 2026-04-15T07:01:30.966Z
 - Branch: task/202604150649-7N1Q4J/exact-sha-release-recovery
-- Head: e10800464e2b
+- Head: 73e5f09bd00f
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604150649-7N1Q4J/README.md    | 121 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |  22 +++-
+ docs/developer/release-and-publishing.mdx          |  14 +++
+ .../commands/release/ci-workflow-contract.test.ts  |   9 +-
+ .../src/commands/release/plan.command.ts           |  50 +++++++++
+ .../agentplane/src/commands/release/plan.test.ts   |  19 ++++
+ 6 files changed, 233 insertions(+), 2 deletions(-)
 ```
 
 </details>
