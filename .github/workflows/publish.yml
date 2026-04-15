@@ -87,21 +87,16 @@ jobs:
               --sha "${SHA}" \
               --json > .agentplane/.release/ready/source.json
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            FOUND=false
-            while IFS= read -r candidate; do
-              if node "${RUNTIME_SCRIPT}" \
-                --workflow ci.yml \
-                --sha "${candidate}" \
-                --json > .agentplane/.release/ready/source.json; then
-                SHA="${candidate}"
-                FOUND=true
-                break
-              fi
-            done < <(git rev-list --first-parent --max-count=64 HEAD)
-            if [ "${FOUND}" != "true" ]; then
-              echo "No reachable release-ready candidate found from $(git rev-parse HEAD)." >&2
+            node scripts/resolve-canonical-release-sha.mjs --json > .agentplane/.release/ready/canonical.json
+            SHA="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/canonical.json','utf8')); process.stdout.write(String(payload.sha || ''));")"
+            if [ -z "${SHA}" ]; then
+              echo "No canonical release candidate resolved from $(git rev-parse HEAD)." >&2
               exit 1
             fi
+            node "${RUNTIME_SCRIPT}" \
+              --workflow ci.yml \
+              --sha "${SHA}" \
+              --json > .agentplane/.release/ready/source.json
           else
             SHA="$(git rev-parse HEAD)"
             SOURCE_STATUS=0
