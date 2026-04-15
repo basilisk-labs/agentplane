@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604150615-8HM62H/hosted-close-direct-merge",
   "created_at": "2026-04-15T06:22:24.200Z",
-  "head_sha": "de7287d248b71ee83c88a8a0a94ae7b21dba486e",
+  "head_sha": "745f10c06c2814efc91384cf6c32cc6462fe9a45",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "9540544e1422b5c23f067ea4f83c80ddd16f2723",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T06:25:20Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604150615-8HM62H",
-  "updated_at": "2026-04-15T06:22:24.200Z",
+  "updated_at": "2026-04-15T06:25:20Z",
   "verify": {
     "status": "skipped"
   }

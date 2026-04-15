@@ -1,10 +1,11 @@
 ---
 id: "202604150615-8HM62H"
 title: "Eliminate hosted-close zero-check auto-merge lag"
-status: "TODO"
+result_summary: "Merged via PR #299."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 2
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -21,12 +22,24 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
-comments: []
-events: []
+commit:
+  hash: "9540544e1422b5c23f067ea4f83c80ddd16f2723"
+  message: "workflow: Eliminate hosted-close zero-check auto-merge lag (8HM62H) (#299)"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #299 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+events:
+  -
+    type: "status"
+    at: "2026-04-15T06:25:51.990Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #299 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T06:15:50.924Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T06:25:51.995Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make hosted-close closure PRs merge immediately when GitHub already reports them mergeable, instead of relying only on delayed auto-merge behavior."
 sections:
   Summary: |-
