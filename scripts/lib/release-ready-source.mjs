@@ -133,18 +133,34 @@ async function resolveRun({ apiBase, repo, workflow, headSha, runId, token }) {
     token,
   });
   const latestDirectRun = selectLatestRun(directRuns);
+  let artifactMissingDirectRun = null;
   if (latestDirectRun) {
     const state = classifyWorkflowState(latestDirectRun);
     if (state === "success") {
+      const directArtifact = findReleaseReadyArtifact(
+        await listWorkflowRunArtifacts({
+          apiBase,
+          repo,
+          runId: latestDirectRun.id,
+          token,
+        }),
+        "release-ready",
+        headSha,
+      );
+      if (directArtifact) {
+        return {
+          state: "success",
+          run: latestDirectRun,
+          artifact: directArtifact,
+        };
+      }
+      artifactMissingDirectRun = latestDirectRun;
+    } else {
       return {
-        state: "success",
+        state: "workflow_not_success",
         run: latestDirectRun,
       };
     }
-    return {
-      state: "workflow_not_success",
-      run: latestDirectRun,
-    };
   }
 
   const dispatchRuns = await listWorkflowRuns({
@@ -180,6 +196,13 @@ async function resolveRun({ apiBase, repo, workflow, headSha, runId, token }) {
       state: "success",
       run: latestDispatchMatch.run,
       artifact: latestDispatchMatch.artifact,
+    };
+  }
+
+  if (artifactMissingDirectRun) {
+    return {
+      state: "ready_artifact_missing",
+      run: artifactMissingDirectRun,
     };
   }
 
