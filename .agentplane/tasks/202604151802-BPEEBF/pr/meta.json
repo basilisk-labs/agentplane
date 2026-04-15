@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604151802-BPEEBF/prefer-exact-release-ready-alias",
   "created_at": "2026-04-15T18:05:33.531Z",
-  "head_sha": "01a241504695adad5b39ebb9e714cd37fa35b79c",
+  "head_sha": "7485988115612f3cff41fc8a09473a76454b5022",
   "last_verified_at": "2026-04-15T18:05:33.489Z",
   "last_verified_sha": "8744bae58845bdba667a5880c6767fb88acff2da",
+  "merge_commit": "0b2aec4ba0d1c7642e9d3228322394fd1ebca6d3",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T18:11:44Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604151802-BPEEBF",
-  "updated_at": "2026-04-15T18:05:52.862Z",
+  "updated_at": "2026-04-15T18:11:44Z",
   "verify": {
     "status": "pass"
   }
