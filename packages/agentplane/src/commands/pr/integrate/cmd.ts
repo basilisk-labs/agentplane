@@ -14,6 +14,11 @@ import {
 import { execFileAsync, gitEnv } from "../../shared/git.js";
 import { gitRevParse } from "../../shared/git-ops.js";
 import type { CommandContext } from "../../shared/task-backend.js";
+import {
+  buildTaskHandoffArtifact,
+  resolveTaskHandoffPaths,
+  writeTaskHandoff,
+} from "../../shared/task-handoff.js";
 
 import { finalizeIntegrate } from "./internal/finalize.js";
 import { runMergeCommit, runRebaseFastForward, runSquashMerge } from "./internal/merge.js";
@@ -22,6 +27,53 @@ import { maybeRunPostIntegrateBootstrap } from "./internal/post-integrate-bootst
 import { prepareIntegrate } from "./internal/prepare.js";
 import { resolveWorktreeForIntegrate } from "./internal/worktree.js";
 import { runVerifyCommands } from "./verify.js";
+
+async function recordProtectedBaseIntegrateHandoff(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  branch: string;
+  base: string;
+  branchHeadSha: string | null;
+  prNumber: number | null;
+  prUrl: string | null;
+}): Promise<void> {
+  const paths = resolveTaskHandoffPaths({
+    git_root: opts.ctx.resolvedProject.gitRoot,
+    workflow_dir: opts.ctx.config.paths.workflow_dir,
+    task_id: opts.taskId,
+  });
+  const prLabel =
+    typeof opts.prNumber === "number" && opts.prNumber > 0
+      ? `GitHub PR #${opts.prNumber}`
+      : `the GitHub PR for branch ${opts.branch}`;
+  const prUrl = opts.prUrl?.trim() ?? "";
+  const prMetaPath = path.join(opts.ctx.config.paths.workflow_dir, opts.taskId, "pr", "meta.json");
+  const taskReadmePath = path.join(opts.ctx.config.paths.workflow_dir, opts.taskId, "README.md");
+  await writeTaskHandoff({
+    paths,
+    handoff: buildTaskHandoffArtifact({
+      task_id: opts.taskId,
+      created_at: new Date().toISOString(),
+      from_role: "INTEGRATOR",
+      reason: `Protected base ${opts.base} requires GitHub pull-request merges.`,
+      note:
+        prUrl.length > 0
+          ? `Merge ${prLabel}: ${prUrl}. After GitHub merge, wait for Task Hosted Close, then pull ${opts.base}.`
+          : `Merge ${prLabel} on GitHub. After GitHub merge, wait for Task Hosted Close, then pull ${opts.base}.`,
+      branch: opts.branch,
+      base_branch: opts.base,
+      head_sha: opts.branchHeadSha,
+      workspace_root: opts.ctx.resolvedProject.gitRoot,
+      pr_branch: opts.branch,
+      next_actions: [
+        prUrl.length > 0 ? `Merge ${prLabel}: ${prUrl}` : `Merge ${prLabel} on GitHub`,
+        `Wait for Task Hosted Close to finish`,
+        `Pull ${opts.base} into the base checkout`,
+      ],
+      evidence_paths: [taskReadmePath, prMetaPath],
+    }),
+  });
+}
 
 export async function cmdIntegrate(opts: {
   ctx?: CommandContext;
@@ -83,10 +135,24 @@ export async function cmdIntegrate(opts: {
     }
 
     if (protectedBaseRequiresPrMerge) {
-      const prHint =
+      const prNumber =
         typeof metaSource.pr_number === "number" && metaSource.pr_number > 0
-          ? `GitHub PR #${metaSource.pr_number}`
+          ? metaSource.pr_number
+          : null;
+      const prUrl = typeof metaSource.pr_url === "string" ? metaSource.pr_url : null;
+      const prHint =
+        prNumber !== null
+          ? `GitHub PR #${prNumber}`
           : `the GitHub PR for branch ${branch}`;
+      await recordProtectedBaseIntegrateHandoff({
+        ctx: prepared.ctx,
+        taskId: task.id,
+        branch,
+        base,
+        branchHeadSha,
+        prNumber,
+        prUrl,
+      });
       throw new CliError({
         exitCode: exitCodeForError("E_GIT"),
         code: "E_GIT",
