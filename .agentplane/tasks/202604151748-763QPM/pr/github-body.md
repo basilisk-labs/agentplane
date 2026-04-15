@@ -22,15 +22,15 @@ Publish detect resolves the correct release SHA but publish still downloads the 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T17:50:32.117Z
+- Updated: 2026-04-15T17:53:09.431Z
 - Branch: task/202604151748-763QPM/publish-exact-artifact-selection
-- Head: 3eacf6566b14
+- Head: 121d136d037e
 
 ```text
- .agentplane/tasks/202604151748-763QPM/README.md    | 99 ++++++++++++++++++++++
- .github/workflows/publish.yml                      |  5 +-
- .../release/publish-workflow-contract.test.ts      |  9 +-
- 3 files changed, 110 insertions(+), 3 deletions(-)
+ .agentplane/tasks/202604151748-763QPM/README.md    | 121 +++++++++++++++++++++
+ .github/workflows/publish.yml                      |   5 +-
+ .../release/publish-workflow-contract.test.ts      |   9 +-
+ 3 files changed, 132 insertions(+), 3 deletions(-)
 ```
 
 </details>
