@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604151802-BPEEBF/README.md    | 121 +++++++++++++++++++++
+ .../resolve-release-ready-source-script.test.ts    |  43 ++++++++
+ scripts/lib/release-ready-source.mjs               |   6 +-
+ 3 files changed, 169 insertions(+), 1 deletion(-)

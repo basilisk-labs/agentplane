@@ -261,6 +261,49 @@ describe("resolve-release-ready-source script", () => {
     );
   });
 
+  it("prefers the exact-sha alias artifact over the generic release-ready artifact on the selected run", async () => {
+    await withFixtures(
+      (pathname) => {
+        if (pathname.endsWith("/actions/runs/789")) {
+          return {
+            body: makeRun({ id: 789, status: "completed", conclusion: "success" }),
+          };
+        }
+        if (pathname.endsWith("/actions/runs/789/artifacts")) {
+          return {
+            body: {
+              artifacts: [
+                makeArtifact({ name: "release-ready" }),
+                makeArtifact({ name: "release-ready-abc123" }),
+              ],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl, fixturePath) => {
+        const result = await runScript(baseUrl, fixturePath, [
+          "--sha",
+          "abc123",
+          "--run-id",
+          "789",
+          "--json",
+        ]);
+        const payload = JSON.parse(String(result.stdout ?? "")) as {
+          ok: boolean;
+          state: string;
+          run: { id: number; headSha: string };
+          artifact: { name: string };
+        };
+        expect(payload.ok).toBe(true);
+        expect(payload.state).toBe("ready_artifact_available");
+        expect(payload.run.id).toBe(789);
+        expect(payload.run.headSha).toBe("abc123");
+        expect(payload.artifact.name).toBe("release-ready-abc123");
+      },
+    );
+  });
+
   it("fails when an explicit run-id belongs to a different SHA", async () => {
     await withFixtures(
       (pathname) => {
