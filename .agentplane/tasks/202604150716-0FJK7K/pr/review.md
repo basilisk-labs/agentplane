@@ -45,12 +45,18 @@ Workflow-dispatch Core CI currently checks out a historical SHA but still record
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T07:17:49.256Z
+- Updated: 2026-04-15T08:55:18.442Z
 - Branch: task/202604150716-0FJK7K/exact-sha-dispatch-identity
-- Head: b12af6535591
+- Head: ecf90d594592
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604150716-0FJK7K/README.md    | 118 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |  17 ++-
+ .../commands/release/ci-workflow-contract.test.ts  |   5 +-
+ .../resolve-release-ready-source-script.test.ts    | 110 ++++++++++++++++++-
+ scripts/lib/github-actions-workflow-status.mjs     |  11 +-
+ scripts/lib/release-ready-source.mjs               |  99 +++++++++++++----
+ 6 files changed, 336 insertions(+), 24 deletions(-)
 ```
 
 </details>
