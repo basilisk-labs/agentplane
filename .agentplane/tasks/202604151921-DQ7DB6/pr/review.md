@@ -45,15 +45,15 @@ Reproduce the branch_pr path where pr open auto-commits .agentplane/tasks/<task-
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T19:28:25.786Z
+- Updated: 2026-04-15T19:32:31.229Z
 - Branch: task/202604151921-DQ7DB6/commit-task-readme-with-packet
-- Head: 2d7b620fe1bd
+- Head: 0654b4688721
 
 ```text
- .agentplane/tasks/202604151921-DQ7DB6/README.md    | 121 +++++++++++++++++++++
- .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  22 +++-
- .../src/commands/pr/internal/auto-commit.ts        |  26 +++--
- 3 files changed, 154 insertions(+), 15 deletions(-)
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 22 ++++++++++++++----
+ .../src/commands/pr/internal/auto-commit.ts        | 26 +++++++++++++---------
+ .../agentplane/src/commands/pr/internal/sync.ts    |  6 ++++-
+ 3 files changed, 38 insertions(+), 16 deletions(-)
 ```
 
 </details>
