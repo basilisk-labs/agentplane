@@ -45,12 +45,15 @@ Publish now carries artifact identity through the workflow, but resolver still p
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T18:05:33.531Z
+- Updated: 2026-04-15T18:05:52.862Z
 - Branch: task/202604151802-BPEEBF/prefer-exact-release-ready-alias
-- Head: 8744bae58845
+- Head: 01a241504695
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604151802-BPEEBF/README.md    | 121 +++++++++++++++++++++
+ .../resolve-release-ready-source-script.test.ts    |  43 ++++++++
+ scripts/lib/release-ready-source.mjs               |   6 +-
+ 3 files changed, 169 insertions(+), 1 deletion(-)
 ```
 
 </details>
