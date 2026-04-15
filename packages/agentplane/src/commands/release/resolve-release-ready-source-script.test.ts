@@ -353,6 +353,53 @@ describe("resolve-release-ready-source script", () => {
     );
   });
 
+  it("rejects a mismatched workflow_dispatch run-id when it only carries the generic release-ready artifact", async () => {
+    await withFixtures(
+      (pathname) => {
+        if (pathname.endsWith("/actions/runs/789")) {
+          return {
+            body: makeRun({
+              id: 789,
+              status: "completed",
+              conclusion: "success",
+              headSha: "def456",
+            }),
+          };
+        }
+        if (pathname.endsWith("/actions/runs/789/artifacts")) {
+          return {
+            body: {
+              artifacts: [makeArtifact({ name: "release-ready" })],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl, fixturePath) => {
+        const result = await runScript(baseUrl, fixturePath, [
+          "--sha",
+          "abc123",
+          "--run-id",
+          "789",
+        ]).then(
+          () => ({ ok: true as const, stdout: "" }),
+          (error: unknown) => {
+            const stdout =
+              typeof error === "object" &&
+              error !== null &&
+              "stdout" in error &&
+              typeof (error as { stdout?: unknown }).stdout === "string"
+                ? (error as { stdout: string }).stdout
+                : "";
+            return { ok: false as const, stdout };
+          },
+        );
+        expect(result.ok).toBe(false);
+        expect(result.stdout).toContain("run 789 belongs to def456, not requested abc123");
+      },
+    );
+  });
+
   it("finds a workflow_dispatch recovery run by the exact-sha alias artifact when no head_sha run exists", async () => {
     await withFixtures(
       (pathname, searchParams) => {
@@ -401,6 +448,62 @@ describe("resolve-release-ready-source script", () => {
         expect(payload.state).toBe("ready_artifact_available");
         expect(payload.run.id).toBe(789);
         expect(payload.artifact.name).toBe("release-ready-abc123");
+      },
+    );
+  });
+
+  it("ignores generic release-ready artifacts from mismatched workflow_dispatch recovery runs", async () => {
+    await withFixtures(
+      (pathname, searchParams) => {
+        if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+          if (searchParams.get("head_sha") === "abc123") {
+            return {
+              body: {
+                workflow_runs: [],
+              },
+            };
+          }
+          if (searchParams.get("event") === "workflow_dispatch") {
+            return {
+              body: {
+                workflow_runs: [
+                  makeRun({
+                    id: 789,
+                    status: "completed",
+                    conclusion: "success",
+                    headSha: "def456",
+                    createdAt: "2026-03-14T00:00:00Z",
+                  }),
+                ],
+              },
+            };
+          }
+        }
+        if (pathname.endsWith("/actions/runs/789/artifacts")) {
+          return {
+            body: {
+              artifacts: [makeArtifact({ name: "release-ready" })],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl, fixturePath) => {
+        const result = await runScript(baseUrl, fixturePath, ["--sha", "abc123"]).then(
+          () => ({ ok: true as const, stdout: "" }),
+          (error: unknown) => {
+            const stdout =
+              typeof error === "object" &&
+              error !== null &&
+              "stdout" in error &&
+              typeof (error as { stdout?: unknown }).stdout === "string"
+                ? (error as { stdout: string }).stdout
+                : "";
+            return { ok: false as const, stdout };
+          },
+        );
+        expect(result.ok).toBe(false);
+        expect(result.stdout).toContain("No workflow ci.yml run was found for abc123");
       },
     );
   });

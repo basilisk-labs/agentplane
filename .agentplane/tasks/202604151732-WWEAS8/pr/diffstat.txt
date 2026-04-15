@@ -1,0 +1,4 @@
+ .agentplane/tasks/202604151732-WWEAS8/README.md    | 150 +++++++++++++++++++++
+ .../resolve-release-ready-source-script.test.ts    | 103 ++++++++++++++
+ scripts/lib/release-ready-source.mjs               |   9 +-
+ 3 files changed, 260 insertions(+), 2 deletions(-)

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604151732-WWEAS8/exact-artifact-identity",
+  "created_at": "2026-04-15T17:34:16.300Z",
+  "head_sha": "0ecf40b3aecb52d25848fb060d8f96938734c58f",
+  "last_verified_at": "2026-04-15T17:36:36.265Z",
+  "last_verified_sha": "8566687a2ff9bb433d6887eb955e04bef0f785df",
+  "schema_version": 1,
+  "task_id": "202604151732-WWEAS8",
+  "updated_at": "2026-04-15T17:37:15.102Z",
+  "verify": {
+    "status": "pass"
+  }
+}
