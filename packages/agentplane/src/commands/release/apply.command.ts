@@ -589,6 +589,36 @@ export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
   ],
 };
 
+const releaseCandidateOptions: CommandSpec<ReleaseApplyParsed>["options"] = [
+  {
+    kind: "string",
+    name: "plan",
+    valueHint: "<path>",
+    description:
+      "Path to a release plan directory (defaults to the latest under .agentplane/.release/plan/).",
+  },
+  {
+    kind: "boolean",
+    name: "push",
+    default: false,
+    description:
+      "Optional candidate-push mode: push only the release candidate branch for hosted review and merge (requires --yes). The release tag is not created or pushed here.",
+  },
+  {
+    kind: "string",
+    name: "remote",
+    valueHint: "<name>",
+    description: "Git remote to push to (default: origin).",
+  },
+  {
+    kind: "boolean",
+    name: "yes",
+    default: false,
+    description:
+      "Approve minor/major bumps and allow pushing. Patch bumps can be applied without this flag.",
+  },
+];
+
 export const releaseCandidateSpec: CommandSpec<ReleaseApplyParsed> = {
   id: ["release", "candidate"],
   group: "Release",
@@ -596,7 +626,7 @@ export const releaseCandidateSpec: CommandSpec<ReleaseApplyParsed> = {
     "Prepare a branch_pr release candidate: bump versions, validate notes, commit, and optionally push the candidate branch.",
   description:
     "Prepares a release candidate from a generated release plan on a dedicated non-base branch in branch_pr mode. This command creates the candidate commit but intentionally does not create or push the release tag; final publication remains gated on merge to the protected base branch and hosted publish from main.",
-  options: releaseApplySpec.options,
+  options: releaseCandidateOptions,
   parse: releaseApplySpec.parse,
   validate: (p) => {
     if (p.push && p.yes !== true) {

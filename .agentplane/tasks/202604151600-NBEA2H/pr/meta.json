@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604151600-NBEA2H/branch-pr-release-candidate-route",
+  "created_at": "2026-04-15T16:01:04.563Z",
+  "head_sha": "d4e33e4651586990544436272b0502a24dad58ee",
+  "last_verified_at": "2026-04-15T16:11:08.948Z",
+  "last_verified_sha": "ec423be77f058a79d09dc1dd2f02436a445f72a1",
+  "schema_version": 1,
+  "task_id": "202604151600-NBEA2H",
+  "updated_at": "2026-04-15T16:13:42.495Z",
+  "verify": {
+    "status": "pass"
+  }
+}
