@@ -2,15 +2,18 @@
   "base": "main",
   "branch": "task/202604151600-NBEA2H/branch-pr-release-candidate-route",
   "created_at": "2026-04-15T16:01:04.563Z",
-  "head_sha": "0524758d902303617a95348e1cddbb9bba9740ef",
+  "head_sha": "fc269a7fc41fc42ae9c238ee6ac64ce615f5d4d1",
   "last_verified_at": "2026-04-15T16:11:08.948Z",
   "last_verified_sha": "ec423be77f058a79d09dc1dd2f02436a445f72a1",
+  "merge_commit": "bbd21880d17a7fd9598e4d9211ff63cbe8a2af98",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-15T17:06:25Z",
   "pr_number": 317,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/317",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604151600-NBEA2H",
-  "updated_at": "2026-04-15T16:23:09.062Z",
+  "updated_at": "2026-04-15T17:06:25Z",
   "verify": {
     "status": "pass"
   }
