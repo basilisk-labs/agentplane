@@ -24,8 +24,8 @@ When resolving release-ready source for a canonical release SHA, continue past a
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Targeted resolver regression tests passed; live exact-sha resolution now selects recovery run 24464054933 with artifact release-ready-ceaa8754... instead of stopping at direct artifact-missing run 24402404778.
 
 ## Risks
 
