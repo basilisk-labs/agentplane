@@ -1,10 +1,11 @@
 ---
 id: "202604151838-Z2KC6V"
 title: "Prefer artifact-bearing recovery run over artifact-missing direct Core CI run"
-status: "DOING"
+result_summary: "Merged via PR #331."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T18:42:51.968Z"
   updated_by: "CODER"
   note: "Targeted resolver regression tests passed; live exact-sha resolution now selects recovery run 24464054933 with artifact release-ready-ceaa8754... instead of stopping at direct artifact-missing run 24402404778."
-commit: null
+commit:
+  hash: "83e2ca50dcd6d485aadc5c60bbd3846a5744260e"
+  message: "release: Prefer artifact-bearing recovery run over artifact-missing direct Cor... (Z2KC6V) (#331)"
 comments:
   -
     author: "CODER"
     body: "Start: update release-ready resolver fallback to continue past artifact-missing direct success runs and prefer later exact artifact-bearing recovery runs for canonical publish."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #331 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted resolver regression tests passed; live exact-sha resolution now selects recovery run 24464054933 with artifact release-ready-ceaa8754... instead of stopping at direct artifact-missing run 24402404778."
+  -
+    type: "status"
+    at: "2026-04-15T18:56:49.434Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #331 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T18:42:51.987Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T18:56:49.440Z"
+doc_updated_by: "INTEGRATOR"
 description: "When resolving release-ready source for a canonical release SHA, continue past a successful direct Core CI run that lacks release-ready artifacts and prefer a later successful recovery run that actually carries the exact release-ready artifact."
 sections:
   Summary: |-
