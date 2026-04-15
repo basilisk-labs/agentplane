@@ -1,0 +1,5 @@
+ .agentplane/tasks/202604151530-ANKJ6S/README.md    | 121 +++++++++++++++++++++
+ .github/workflows/publish.yml                      |  12 +-
+ docs/developer/release-and-publishing.mdx          |   3 +-
+ .../release/publish-workflow-contract.test.ts      |   8 +-
+ 4 files changed, 134 insertions(+), 10 deletions(-)

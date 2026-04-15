@@ -45,12 +45,16 @@ Historical publish recovery should not fail release:prepublish on bootstrap-doc 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-15T15:34:48.125Z
+- Updated: 2026-04-15T15:35:09.929Z
 - Branch: task/202604151530-ANKJ6S/exact-sha-prepublish-gate
-- Head: 4f28be2fca71
+- Head: 80991fc42051
 
 ```text
-No changes detected.
+ .agentplane/tasks/202604151530-ANKJ6S/README.md    | 121 +++++++++++++++++++++
+ .github/workflows/publish.yml                      |  12 +-
+ docs/developer/release-and-publishing.mdx          |   3 +-
+ .../release/publish-workflow-contract.test.ts      |   8 +-
+ 4 files changed, 134 insertions(+), 10 deletions(-)
 ```
 
 </details>
