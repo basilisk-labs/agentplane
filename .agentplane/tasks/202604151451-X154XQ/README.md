@@ -1,10 +1,11 @@
 ---
 id: "202604151451-X154XQ"
 title: "Fix publish workflow exact-sha identity for release recovery"
-status: "DOING"
+result_summary: "Merged via PR #309."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-15T14:54:29.059Z"
   updated_by: "CODER"
   note: "Verified: publish workflow_dispatch now keeps an explicit input sha when resolving release-ready source; publish-workflow-contract.test.ts passes locally."
-commit: null
+commit:
+  hash: "5c4dd82cba16fa3872a6b1aef82d4c0b7e82e9ee"
+  message: "🚧 X154XQ task: fix publish workflow exact-sha identity (#309)"
 comments:
   -
     author: "CODER"
     body: "Start: fix publish workflow_dispatch exact-SHA identity, then rerun publish recovery for d95b2762f78815b60407a62f2227136c85cae5ee."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #309 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: publish workflow_dispatch now keeps an explicit input sha when resolving release-ready source; publish-workflow-contract.test.ts passes locally."
+  -
+    type: "status"
+    at: "2026-04-15T14:59:43.293Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #309 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T14:54:29.063Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-15T14:59:43.299Z"
+doc_updated_by: "INTEGRATOR"
 description: "Keep workflow_dispatch publish recovery bound to the requested exact SHA instead of mutable main HEAD, then verify by publishing v0.3.11 from d95b2762f78815b60407a62f2227136c85cae5ee."
 sections:
   Summary: |-
