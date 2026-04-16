@@ -151,7 +151,8 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
         hint: "This is an intentional handoff route, not a local mutation failure.",
         nextAction: {
           command: command === "integrate" ? "agentplane task handoff show <task-id>" : usage,
-          reason: "inspect the persisted finalize route and continue through the external handoff path",
+          reason:
+            "inspect the persisted finalize route and continue through the external handoff path",
           reasonCode: "protected_base_integrate_handoff",
         },
       });

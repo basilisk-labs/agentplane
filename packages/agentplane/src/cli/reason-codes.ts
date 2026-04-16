@@ -97,7 +97,8 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
     code: "protected_base_integrate_handoff",
     category: "handoff",
     summary: "integrate intentionally stopped before mutating a protected base branch",
-    action: "inspect the persisted handoff route, merge the GitHub PR, then pull the base branch after hosted close finishes",
+    action:
+      "inspect the persisted handoff route, merge the GitHub PR, then pull the base branch after hosted close finishes",
   },
   network_gate: {
     code: "network_gate",
