@@ -7,7 +7,7 @@ import {
   type CompiledOverlayBundle,
   type ProjectOverlayManifestV2,
   type ProjectRecipesLockFile,
-} from "@agentplane/recipes";
+} from "@agentplaneorg/recipes";
 import { loadConfig, saveConfig } from "@agentplaneorg/core";
 
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";

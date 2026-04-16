@@ -3,7 +3,7 @@ import type {
   RunnerTimeoutReason,
   RunnerTraceConfig,
 } from "@agentplaneorg/core";
-import type { OverlayStrength, OverlaySurface } from "@agentplane/recipes";
+import type { OverlayStrength, OverlaySurface } from "@agentplaneorg/recipes";
 export type { RunnerTimeoutReason } from "@agentplaneorg/core";
 
 import type { BehaviorResolutionTrace } from "../runtime/behavior/index.js";

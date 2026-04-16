@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { RECIPES_SCENARIOS_DIR_NAME, RECIPES_VERSION, normalizeRecipeId } from "./index.js";
 
-describe("@agentplane/recipes", () => {
+describe("@agentplaneorg/recipes", () => {
   it("exports version", () => {
     expect(RECIPES_VERSION).toBeTypeOf("string");
   });

@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { matchOverlayWhen, type CompiledOverlayBundle } from "@agentplane/recipes";
+import { matchOverlayWhen, type CompiledOverlayBundle } from "@agentplaneorg/recipes";
 
 import { loadAgentTemplates, loadPolicyGatewayTemplate } from "../../agents/agents-template.js";
 import { fileExists } from "../../cli/fs-utils.js";

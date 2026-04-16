@@ -38,7 +38,7 @@ export type {
   ResolvedRecipeScenarioSelection,
   ScenarioDefinition,
   ScenarioPackManifest,
-} from "@agentplane/recipes";
+} from "@agentplaneorg/recipes";
 
 export type RecipeCachePruneFlags = {
   dryRun: boolean;

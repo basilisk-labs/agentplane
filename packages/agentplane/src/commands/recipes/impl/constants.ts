@@ -13,4 +13,4 @@ export {
   RECIPE_RUNS_DIR_NAME,
   RECIPES_SCENARIOS_DIR_NAME,
   RECIPES_SCENARIOS_INDEX_NAME,
-} from "@agentplane/recipes";
+} from "@agentplaneorg/recipes";

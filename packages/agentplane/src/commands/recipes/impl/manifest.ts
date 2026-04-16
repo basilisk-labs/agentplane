@@ -2,7 +2,7 @@ import {
   readRecipeManifest as readRecipeManifestBase,
   validateRecipeManifest as validateRecipeManifestBase,
   type RecipeManifest,
-} from "@agentplane/recipes";
+} from "@agentplaneorg/recipes";
 
 function normalizeManifestKind(manifest: RecipeManifest): RecipeManifest {
   const legacyManifest = manifest as Record<string, unknown> & {
