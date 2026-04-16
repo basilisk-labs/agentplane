@@ -45,9 +45,9 @@ INC-20260407-01 remains open: GitHub-dependent branch_pr helpers still need one 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-16T13:36:42.080Z
+- Updated: 2026-04-16T13:50:06.929Z
 - Branch: task/202604161300-HA439T/github-retry-contract
-- Head: a3b5514da7ce
+- Head: ba9d0386623b
 
 ```text
  .../src/cli/wait-remote-pr-checks-script.test.ts   | 36 ++++++++++
