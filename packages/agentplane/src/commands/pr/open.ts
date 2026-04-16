@@ -4,6 +4,8 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { execFileAsync, gitEnv } from "../shared/git.js";
+import { gitBranchUpstream } from "../shared/git-ops.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import { maybeAutoCommitTaskPrArtifacts } from "./internal/auto-commit.js";
@@ -20,6 +22,27 @@ function prOpenOutcomeDetails(
       : `linked to GitHub PR #${meta.pr_number}`;
   }
   return "local PR artifacts synced; remote PR creation staged";
+}
+
+async function pushTaskBranchUpstreamIfConfigured(opts: {
+  gitRoot: string;
+  branch: string;
+}): Promise<boolean> {
+  const upstream = await gitBranchUpstream(opts.gitRoot, opts.branch);
+  const trimmed = upstream?.trim() ?? "";
+  if (!trimmed) return false;
+
+  const slashIndex = trimmed.indexOf("/");
+  if (slashIndex <= 0 || slashIndex === trimmed.length - 1) return false;
+  const remote = trimmed.slice(0, slashIndex);
+  const upstreamBranch = trimmed.slice(slashIndex + 1);
+  if (!remote || !upstreamBranch) return false;
+
+  await execFileAsync("git", ["push", remote, `HEAD:${upstreamBranch}`], {
+    cwd: opts.gitRoot,
+    env: gitEnv(),
+  });
+  return true;
 }
 
 export async function cmdPrOpen(opts: {
@@ -42,26 +65,47 @@ export async function cmdPrOpen(opts: {
       });
     }
 
-    const { meta, prDir, resolved, openOutcome } = await syncPrArtifacts({
-      ctx: opts.ctx,
+    const commandCtx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+
+    const initialSync = await syncPrArtifacts({
+      ctx: commandCtx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
       mode: "open",
       author,
       branch: opts.branch,
-      remoteMode: opts.syncOnly ? "sync-only" : "auto",
+      remoteMode: "sync-only",
     });
-    const commandCtx =
-      opts.ctx ??
-      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    if (meta.branch) {
-      await maybeAutoCommitTaskPrArtifacts({
-        ctx: commandCtx,
-        taskId: opts.taskId,
-        branch: meta.branch,
+    const didAutoCommit = initialSync.meta.branch
+      ? await maybeAutoCommitTaskPrArtifacts({
+          ctx: commandCtx,
+          taskId: opts.taskId,
+          branch: initialSync.meta.branch,
+        })
+      : false;
+
+    if (didAutoCommit && !opts.syncOnly && initialSync.meta.branch) {
+      await pushTaskBranchUpstreamIfConfigured({
+        gitRoot: commandCtx.resolvedProject.gitRoot,
+        branch: initialSync.meta.branch,
       });
     }
+
+    const { meta, prDir, resolved, openOutcome } = opts.syncOnly
+      ? initialSync
+      : await syncPrArtifacts({
+          ctx: commandCtx,
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride,
+          taskId: opts.taskId,
+          mode: "open",
+          author,
+          branch: opts.branch,
+          remoteMode: "auto",
+        });
 
     output.success(
       "pr open",
