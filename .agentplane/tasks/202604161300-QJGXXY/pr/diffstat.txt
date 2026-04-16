@@ -1,0 +1,7 @@
+ .agentplane/policy/governance.md                |  6 ++++--
+ .agentplane/policy/incidents.md                 | 21 +++----------------
+ docs/developer/incident-archive.mdx             | 28 +++++++++++++++++++++++++
+ docs/docs.json                                  |  1 +
+ packages/agentplane/assets/policy/governance.md |  6 ++++--
+ packages/agentplane/assets/policy/incidents.md  | 21 +++----------------
+ 6 files changed, 43 insertions(+), 40 deletions(-)

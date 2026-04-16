@@ -51,6 +51,7 @@
           "architecture",
           "release-process-architecture",
           "release-and-publishing",
+          "incident-archive",
           "cli-contract",
           "cli-bug-ledger-v0-3-x",
           "harness-engeneering",

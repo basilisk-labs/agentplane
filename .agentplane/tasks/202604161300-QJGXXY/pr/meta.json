@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604161300-QJGXXY/incident-reclassification",
+  "created_at": "2026-04-16T13:17:13.613Z",
+  "head_sha": "6ec803bcfccdc7c74f896424b03cb03acf9a7074",
+  "last_verified_at": "2026-04-16T13:17:13.581Z",
+  "last_verified_sha": "48228e02e2529acdec7a0a39a3ba0b2df7666fdd",
+  "schema_version": 1,
+  "task_id": "202604161300-QJGXXY",
+  "updated_at": "2026-04-16T13:22:08.593Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -2,12 +2,14 @@
 
 ## Incident source of truth
 
-- `.agentplane/policy/incidents.md` is the single incident registry.
-- Incident-derived and situational rules MUST be added only to `incidents.md`.
+- `.agentplane/policy/incidents.md` is the active incident registry for unresolved incidents that still need operator attention or follow-up engineering work.
+- `docs/developer/incident-archive.mdx` is the historical archive for stabilized or externally mitigated incidents that no longer belong in the active registry.
+- Incident-derived and situational rules MUST be added to `incidents.md` first while the incident remains active; once it is no longer active, move the entry to the archive instead of keeping it in the active file.
 - MUST NOT create additional incident policy files under `.agentplane/policy/`.
 - New reusable operational incidents SHOULD be promoted from task `Findings` via `agentplane finish` or `agentplane incidents collect <task-id>`.
 - Auto-promotion is reserved for resolved reusable findings marked `Fixability: external` or `Fixability: repo-fixable` (or the compatibility markers `IncidentExternal: true` / `IncidentInternal: true`); optional `IncidentScope`, `IncidentAdvice`, `IncidentRule`, `IncidentTags`, and `IncidentMatch` fields override the inferred registry entry when needed.
 - Normal startup MUST NOT bulk-load `incidents.md`; targeted lookup for analogous work is allowed through `task start-ready` and `agentplane incidents advise`.
+- Closed incidents MAY be removed from `.agentplane/policy/incidents.md`, but only after their final state and evidence have been preserved in `docs/developer/incident-archive.mdx`.
 
 ## Stabilization criteria
 
