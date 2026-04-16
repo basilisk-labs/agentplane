@@ -1,10 +1,11 @@
 ---
 id: "202604161300-AFF20S"
 title: "Finish reconciling release apply with protected-main publish authority"
-status: "DOING"
+result_summary: "Merged via PR #364."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-16T14:14:22.076Z"
   updated_by: "CODER"
   note: "Verified: release policy and troubleshooting now match the enforced branch_pr route; branch_pr release candidate tests still pass and INC-20260410-05 is no longer active."
-commit: null
+commit:
+  hash: "009f59f4861f04d3097d46e5aca5b7c40e15190d"
+  message: "release/workflow: Finish reconciling release apply with protected-main publish authority (AFF20S) (#364)"
 comments:
   -
     author: "CODER"
     body: "Start: isolate the remaining protected-main mismatch in the branch_pr release route, then implement the smallest coherent fix so release apply/candidate semantics match the actual publish authority."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #364 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: release policy and troubleshooting now match the enforced branch_pr route; branch_pr release candidate tests still pass and INC-20260410-05 is no longer active."
+  -
+    type: "status"
+    at: "2026-04-16T14:25:19.393Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #364 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T14:14:22.083Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-16T14:25:19.399Z"
+doc_updated_by: "INTEGRATOR"
 description: "INC-20260410-05 remains open until the release CLI has a fully coherent protected-main route. Complete the branch_pr release/apply/finalize model so release apply no longer encodes a direct-push assumption where this repository publishes through main-driven automation."
 sections:
   Summary: |-
