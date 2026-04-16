@@ -198,7 +198,14 @@
         "trace": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["mode", "max_tail_bytes", "capture_stderr", "retention", "compression", "redact_patterns"],
+          "required": [
+            "mode",
+            "max_tail_bytes",
+            "capture_stderr",
+            "retention",
+            "compression",
+            "redact_patterns"
+          ],
           "default": {
             "mode": "raw",
             "max_tail_bytes": 65536,
