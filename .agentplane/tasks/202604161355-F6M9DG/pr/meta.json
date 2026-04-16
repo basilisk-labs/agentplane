@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604161355-F6M9DG/archive-inc-20260407-01",
   "created_at": "2026-04-16T13:58:14.828Z",
-  "head_sha": "c99564a06aab9cce5900d2aaf0581c09810eab6b",
+  "head_sha": "18b80d27cbbb262056936e545fceb52f93bc63f5",
   "last_verified_at": "2026-04-16T14:00:50.964Z",
   "last_verified_sha": "c84d381a016af964717e7ea8ef83ed1aba914390",
+  "merge_commit": "78668668303d4206a739671f18f1484679c27261",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-16T14:07:38Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604161355-F6M9DG",
-  "updated_at": "2026-04-16T14:01:34.314Z",
+  "updated_at": "2026-04-16T14:07:38Z",
   "verify": {
     "status": "pass"
   }
