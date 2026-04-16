@@ -1,10 +1,11 @@
 ---
 id: "202604160713-2MVFXY"
 title: "Clarify integrate route when run from a task worktree"
-status: "DOING"
+result_summary: "Merged via PR #344."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-16T07:20:35.216Z"
   updated_by: "CODER"
   note: "Verified integrate wrong-branch diagnostics with focused coverage: bun vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/shared/errors.test.ts packages/agentplane/src/cli/run-cli.core.test.ts"
-commit: null
+commit:
+  hash: "69ba5697a6d8223a2e24b5bdbb5db81485ae08c1"
+  message: "workflow: Clarify integrate route when run from a task worktree (2MVFXY) (#344)"
 comments:
   -
     author: "CODER"
     body: "Start: refining branch_pr integrate wrong-branch diagnostics so task-worktree misuse points explicitly to the base checkout route."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #344 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified integrate wrong-branch diagnostics with focused coverage: bun vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts packages/agentplane/src/shared/errors.test.ts packages/agentplane/src/cli/run-cli.core.test.ts"
+  -
+    type: "status"
+    at: "2026-04-16T07:42:56.707Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #344 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T07:20:35.221Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-16T07:42:56.711Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make branch_pr integrate report an explicit base-checkout route when the operator runs it from a task branch worktree instead of the base branch checkout."
 sections:
   Summary: |-
