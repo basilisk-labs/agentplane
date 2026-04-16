@@ -2,6 +2,7 @@ export type ReasonCodeCategory =
   | "usage"
   | "reconcile"
   | "git"
+  | "handoff"
   | "network"
   | "backend"
   | "validation";
@@ -91,6 +92,13 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
     category: "git",
     summary: "a lint check in the pre-commit path blocked the commit",
     action: "run lint, fix the reported errors, and retry the commit",
+  },
+  protected_base_integrate_handoff: {
+    code: "protected_base_integrate_handoff",
+    category: "handoff",
+    summary: "integrate intentionally stopped before mutating a protected base branch",
+    action:
+      "inspect the persisted handoff route, merge the GitHub PR, then pull the base branch after hosted close finishes",
   },
   network_gate: {
     code: "network_gate",

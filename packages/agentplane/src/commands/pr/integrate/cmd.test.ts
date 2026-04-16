@@ -278,7 +278,7 @@ describe("pr/integrate/cmd", () => {
     expect(emitter.warn).not.toHaveBeenCalled();
   });
 
-  it("records a first-class protected-base handoff route before raising E_GIT", async () => {
+  it("records a first-class protected-base handoff route before raising E_HANDOFF", async () => {
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: {
         config: { paths: { workflow_dir: ".agentplane/tasks" } },
@@ -329,7 +329,7 @@ describe("pr/integrate/cmd", () => {
     }).catch((err: unknown) => err);
 
     expect(caught).toMatchObject({
-      code: "E_GIT",
+      code: "E_HANDOFF",
     });
     expect(caught).toBeTruthy();
     const cliError = caught as { context?: Record<string, unknown> };

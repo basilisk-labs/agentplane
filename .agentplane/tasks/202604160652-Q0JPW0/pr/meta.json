@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604160652-Q0JPW0/explicit-handoff-result",
+  "created_at": "2026-04-16T06:53:13.999Z",
+  "head_sha": "406c35929671f0b6f4b8714c3f3a25adda98cba8",
+  "last_verified_at": "2026-04-16T06:57:45.997Z",
+  "last_verified_sha": "4fc96f4cf04261900d54cbd7032b1e89ccfa3cb8",
+  "schema_version": 1,
+  "task_id": "202604160652-Q0JPW0",
+  "updated_at": "2026-04-16T07:01:11.921Z",
+  "verify": {
+    "status": "pass"
+  }
+}

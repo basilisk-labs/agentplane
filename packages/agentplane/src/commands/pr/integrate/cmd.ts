@@ -165,8 +165,8 @@ export async function cmdIntegrate(opts: {
         prUrl,
       });
       throw new CliError({
-        exitCode: exitCodeForError("E_GIT"),
-        code: "E_GIT",
+        exitCode: exitCodeForError("E_HANDOFF"),
+        code: "E_HANDOFF",
         message:
           `Base branch ${base} requires GitHub pull-request merges; integrate will not mutate it locally. ` +
           `Merge ${prHint} on GitHub, let Task Hosted Close finish the closure tail, then pull ${base}.`,
@@ -175,6 +175,7 @@ export async function cmdIntegrate(opts: {
             task_id: task.id,
             branch,
             base_branch: base,
+            reason_code: "protected_base_integrate_handoff",
           },
           {
             state: `protected-base integrate routed to GitHub merge handoff for ${task.id}`,
