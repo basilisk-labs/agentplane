@@ -1,7 +1,8 @@
 ---
 id: "202604131608-V0H90T"
 title: "Allow post-merge cleanup under stale-dist guard"
-status: "DOING"
+result_summary: "Merged via PR #285."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 5
@@ -21,7 +22,9 @@ verification:
   updated_at: "2026-04-13T16:11:39.238Z"
   updated_by: "CODER"
   note: "Verified: stale-dist policy now allows hooks run post-merge in warn-and-run mode, targeted stale-dist and hook cleanup suites pass, and manual cleanup semantics stay unchanged outside the managed hook path."
-commit: null
+commit:
+  hash: "aad7ccac4cbdeafe497f6d5521f6b3ea7cf59b31"
+  message: "Allow post-merge cleanup under stale-dist guard (V0H90T)"
 comments:
   -
     author: "CODER"
@@ -40,9 +43,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: stale-dist policy now allows hooks run post-merge in warn-and-run mode, targeted stale-dist and hook cleanup suites pass, and manual cleanup semantics stay unchanged outside the managed hook path."
+  -
+    type: "status"
+    at: "2026-04-13T16:16:30Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Hosted PR #285 merged on GitHub main; task projection reconciled from hosted PR artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-13T16:11:39.243Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T16:16:30Z"
+doc_updated_by: "INTEGRATOR"
 description: "Let repo-local post-merge hooks run in warn-and-run mode under stale-dist so merged task branches/worktrees are pruned automatically after base sync."
 sections:
   Summary: |-

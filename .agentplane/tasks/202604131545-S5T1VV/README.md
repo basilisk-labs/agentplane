@@ -1,7 +1,8 @@
 ---
 id: "202604131545-S5T1VV"
 title: "Skip unsafe worktrees in post-merge cleanup"
-status: "DOING"
+result_summary: "Merged via PR #284."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 5
@@ -21,7 +22,9 @@ verification:
   updated_at: "2026-04-13T15:48:44.379Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts --hookTimeout 60000 --testTimeout 120000; bunx eslint packages/agentplane/src/commands/branch/cleanup-merged.ts packages/agentplane/src/commands/hooks/index.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; bunx prettier --check packages/agentplane/src/commands/branch/cleanup-merged.ts packages/agentplane/src/commands/hooks/index.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts. Result: pass. Evidence: automated post-merge cleanup now skips unsafe outside-root/current worktrees, still prunes safe merged task tails, and manual cleanup merged outside-repo semantics remain strict."
-commit: null
+commit:
+  hash: "da3c9773871c21ba8bcffbee51339e7b3f0b6ca5"
+  message: "workflow: Skip unsafe worktrees in post-merge cleanup (S5T1VV)"
 comments:
   -
     author: "CODER"
@@ -40,9 +43,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts --hookTimeout 60000 --testTimeout 120000; bunx eslint packages/agentplane/src/commands/branch/cleanup-merged.ts packages/agentplane/src/commands/hooks/index.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; bunx prettier --check packages/agentplane/src/commands/branch/cleanup-merged.ts packages/agentplane/src/commands/hooks/index.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts. Result: pass. Evidence: automated post-merge cleanup now skips unsafe outside-root/current worktrees, still prunes safe merged task tails, and manual cleanup merged outside-repo semantics remain strict."
+  -
+    type: "status"
+    at: "2026-04-13T15:52:13Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Hosted PR #284 merged on GitHub main; task projection reconciled from hosted PR artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-13T15:48:44.384Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-13T15:52:13Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make automated post-merge cleanup skip outside-repo/current worktrees instead of warning-aborting, so merged task tails are pruned without trying to remove the user root checkout."
 sections:
   Summary: |-
