@@ -45,17 +45,17 @@ Make branch_pr integrate report an explicit base-checkout route when the operato
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-16T07:22:58.867Z
+- Updated: 2026-04-16T07:31:57.731Z
 - Branch: task/202604160713-2MVFXY/clarify-integrate-base-checkout-route
-- Head: 12cb3daf64cc
+- Head: 78afa1afbb85
 
 ```text
  packages/agentplane/src/cli/reason-codes.ts        |  6 ++
  .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 81 ++++++++++++++++++++++
  .../agentplane/src/cli/run-cli/error-guidance.ts   | 11 +++
- .../commands/pr/integrate/internal/prepare.test.ts | 23 ++++++
+ .../commands/pr/integrate/internal/prepare.test.ts | 28 ++++++++
  .../src/commands/pr/integrate/internal/prepare.ts  | 52 ++++++++++++--
- 5 files changed, 166 insertions(+), 7 deletions(-)
+ 5 files changed, 171 insertions(+), 7 deletions(-)
 ```
 
 </details>
