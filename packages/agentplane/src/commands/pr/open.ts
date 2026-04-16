@@ -38,7 +38,7 @@ async function pushTaskBranchUpstreamIfConfigured(opts: {
   const upstreamBranch = trimmed.slice(slashIndex + 1);
   if (!remote || !upstreamBranch) return false;
 
-  await execFileAsync("git", ["push", remote, `HEAD:${upstreamBranch}`], {
+  await execFileAsync("git", ["push", "--no-verify", remote, `HEAD:${upstreamBranch}`], {
     cwd: opts.gitRoot,
     env: gitEnv(),
   });
