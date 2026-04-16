@@ -1,10 +1,11 @@
 ---
 id: "202604160802-PEV6JS"
 title: "Isolate framework core runtime resolution inside framework checkouts"
-status: "DOING"
+result_summary: "Merged via PR #346."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-16T08:06:04.497Z"
   updated_by: "CODER"
   note: "Verified framework runtime core isolation with focused checks: bun vitest run packages/agentplane/src/shared/runtime-source.test.ts packages/agentplane/src/commands/runtime.command.test.ts packages/agentplane/src/commands/doctor.command.test.ts -t runtime && bun run framework:dev:bootstrap && node packages/agentplane/bin/agentplane.js runtime explain && node packages/agentplane/bin/agentplane.js doctor"
-commit: null
+commit:
+  hash: "be57bc8e1fc2d7cdf07f025763a1299457ddfcda"
+  message: "🚧 PEV6JS task: isolate framework core runtime resolution (#346)"
 comments:
   -
     author: "CODER"
     body: "Start: isolating framework runtime core resolution so framework checkouts resolve @agentplaneorg/core from their own packages/core instead of the shared repo root."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #346 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified framework runtime core isolation with focused checks: bun vitest run packages/agentplane/src/shared/runtime-source.test.ts packages/agentplane/src/commands/runtime.command.test.ts packages/agentplane/src/commands/doctor.command.test.ts -t runtime && bun run framework:dev:bootstrap && node packages/agentplane/bin/agentplane.js runtime explain && node packages/agentplane/bin/agentplane.js doctor"
+  -
+    type: "status"
+    at: "2026-04-16T08:11:37.149Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #346 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T08:06:04.512Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-16T08:11:37.155Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure runtime source reporting and framework-mode package resolution prefer the framework checkout's packages/core instead of falling back to the shared repo root when running inside a framework checkout."
 sections:
   Summary: |-

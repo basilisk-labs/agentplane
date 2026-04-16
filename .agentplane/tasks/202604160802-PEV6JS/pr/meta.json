@@ -1,0 +1,20 @@
+{
+  "base": "main",
+  "branch": "task/202604160802-PEV6JS/isolate-framework-core-resolution",
+  "created_at": "2026-04-16T08:11:06Z",
+  "head_sha": "f87d2e703f9190c28a7cdada15d0f56a04e0a7e2",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "be57bc8e1fc2d7cdf07f025763a1299457ddfcda",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-16T08:11:06Z",
+  "pr_number": 346,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/346",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202604160802-PEV6JS",
+  "updated_at": "2026-04-16T08:11:06Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
