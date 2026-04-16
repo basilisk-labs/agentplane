@@ -4,7 +4,7 @@ title: "Audit remaining local and remote branches"
 status: "DOING"
 priority: "med"
 owner: "INTEGRATOR"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-16T10:00:14.096Z"
+  updated_by: "INTEGRATOR"
+  note: "Verified branch audit cleanup: merged-but-unclosed task projections S5T1VV and V0H90T are canonicalized, superseded release task 4G7YPZ is closed, stale local/remote task refs are removed, and policy routing still passes."
 commit: null
 comments:
   -
@@ -34,14 +34,20 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: auditing the remaining local and remote task branches, reconciling merged-but-unclosed task lifecycles, and deleting only refs that no longer carry unique work beyond main."
+  -
+    type: "verify"
+    at: "2026-04-16T10:00:14.096Z"
+    author: "INTEGRATOR"
+    state: "ok"
+    note: "Verified branch audit cleanup: merged-but-unclosed task projections S5T1VV and V0H90T are canonicalized, superseded release task 4G7YPZ is closed, stale local/remote task refs are removed, and policy routing still passes."
 doc_version: 3
-doc_updated_at: "2026-04-16T09:01:00.944Z"
+doc_updated_at: "2026-04-16T10:00:14.098Z"
 doc_updated_by: "INTEGRATOR"
 description: "Classify the remaining local task/backup branches and remote task/task-close refs, integrate any still-relevant work through the canonical branch_pr route, and remove branches that are stale or already represented on main."
 sections:
   Summary: |-
     Audit remaining local and remote branches
-
+    
     Classify the remaining local task/backup branches and remote task/task-close refs, integrate any still-relevant work through the canonical branch_pr route, and remove branches that are stale or already represented on main.
   Scope: |-
     - In scope: Classify the remaining local task/backup branches and remote task/task-close refs, integrate any still-relevant work through the canonical branch_pr route, and remove branches that are stale or already represented on main.
@@ -56,6 +62,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-16T10:00:14.096Z — VERIFY — ok
+    
+    By: INTEGRATOR
+    
+    Note: Verified branch audit cleanup: merged-but-unclosed task projections S5T1VV and V0H90T are canonicalized, superseded release task 4G7YPZ is closed, stale local/remote task refs are removed, and policy routing still passes.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-16T09:01:00.944Z, excerpt_hash=sha256:10ee2837c8ce46e147ba8ac8d5966cd94928802e9fa24cc9c4f1e4d9d67d696d
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -89,6 +103,14 @@ Classify the remaining local task/backup branches and remote task/task-close ref
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-16T10:00:14.096Z — VERIFY — ok
+
+By: INTEGRATOR
+
+Note: Verified branch audit cleanup: merged-but-unclosed task projections S5T1VV and V0H90T are canonicalized, superseded release task 4G7YPZ is closed, stale local/remote task refs are removed, and policy routing still passes.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-16T09:01:00.944Z, excerpt_hash=sha256:10ee2837c8ce46e147ba8ac8d5966cd94928802e9fa24cc9c4f1e4d9d67d696d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
