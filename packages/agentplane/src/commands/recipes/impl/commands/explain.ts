@@ -36,7 +36,9 @@ export async function cmdRecipeExplainParsed(opts: {
     const manifest = entry.manifest;
     const recipeDir = resolveProjectInstalledRecipeDir(resolved, entry.id);
     const scenarioDetails =
-      manifest.kind === "scenario_pack" ? await collectRecipeScenarioDetails(recipeDir, manifest) : [];
+      manifest.kind === "scenario_pack"
+        ? await collectRecipeScenarioDetails(recipeDir, manifest)
+        : [];
 
     process.stdout.write(`Recipe: ${manifest.id}@${manifest.version}\n`);
     process.stdout.write(`Kind: ${manifest.kind}\n`);

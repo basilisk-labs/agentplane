@@ -50,9 +50,9 @@ export async function cmdRecipeInfoParsed(opts: {
     const skills = manifest.skills ?? [];
     const agents = manifest.agents ?? [];
     const tools = manifest.tools ?? [];
-    const scenarios = manifest.kind === "scenario_pack" ? manifest.scenarios ?? [] : [];
+    const scenarios = manifest.kind === "scenario_pack" ? (manifest.scenarios ?? []) : [];
     const prompts = manifest.kind === "project_overlay" ? manifest.prompts : [];
-    const validators = manifest.kind === "project_overlay" ? manifest.validators ?? [] : [];
+    const validators = manifest.kind === "project_overlay" ? (manifest.validators ?? []) : [];
 
     if (skills.length > 0) {
       process.stdout.write("Skills:\n");
@@ -84,7 +84,9 @@ export async function cmdRecipeInfoParsed(opts: {
     if (validators.length > 0) {
       process.stdout.write("Validators:\n");
       for (const validator of validators) {
-        process.stdout.write(`  - ${validator.id} [kind=${validator.kind}, phase=${validator.phase}]\n`);
+        process.stdout.write(
+          `  - ${validator.id} [kind=${validator.kind}, phase=${validator.phase}]\n`,
+        );
       }
     }
     if (scenarios.length > 0) {

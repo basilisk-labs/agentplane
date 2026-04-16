@@ -19,8 +19,9 @@ const ALL_OVERLAY_SURFACES: OverlaySurface[] = [
 ];
 
 export function createEmptyOverlayBundle(): CompiledOverlayBundle {
-  const surfaces = Object.fromEntries(ALL_OVERLAY_SURFACES.map((surface) => [surface, []])) as
-    unknown as Record<OverlaySurface, CompiledOverlayBundle["surfaces"][OverlaySurface]>;
+  const surfaces = Object.fromEntries(
+    ALL_OVERLAY_SURFACES.map((surface) => [surface, []]),
+  ) as unknown as Record<OverlaySurface, CompiledOverlayBundle["surfaces"][OverlaySurface]>;
   return {
     schema_version: 1,
     kind: "overlay_bundle",

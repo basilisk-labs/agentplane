@@ -8,7 +8,9 @@ export const recipesActiveSpec: CommandSpec<RecipesActiveParsed> = {
   id: ["recipes", "active"],
   group: "Recipes",
   summary: "List active project overlays.",
-  options: [{ kind: "boolean", name: "full", default: false, description: "Print full JSON payload." }],
+  options: [
+    { kind: "boolean", name: "full", default: false, description: "Print full JSON payload." },
+  ],
   examples: [{ cmd: "agentplane recipes active", why: "Show overlays active for the project." }],
   parse: (raw) => ({ full: raw.opts.full === true }),
 };

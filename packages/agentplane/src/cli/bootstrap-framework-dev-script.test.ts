@@ -241,7 +241,9 @@ describe("bootstrap-framework-dev script", () => {
     ]);
     await expect(lstat(path.join(repoRoot, "node_modules"))).rejects.toThrow();
     await expect(lstat(path.join(repoRoot, "packages", "core", "node_modules"))).rejects.toThrow();
-    await expect(lstat(path.join(repoRoot, "packages", "agentplane", "node_modules"))).rejects.toThrow();
+    await expect(
+      lstat(path.join(repoRoot, "packages", "agentplane", "node_modules")),
+    ).rejects.toThrow();
   });
 
   it("repairs legacy lefthook-generated hooks after building the repo-local runtime", async () => {

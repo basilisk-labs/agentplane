@@ -68,7 +68,9 @@ export async function setRecipeActive(opts: {
   else current.delete(opts.recipeId);
 
   raw.recipes = {
-    ...(typeof raw.recipes === "object" && raw.recipes ? (raw.recipes as Record<string, unknown>) : {}),
+    ...(typeof raw.recipes === "object" && raw.recipes
+      ? (raw.recipes as Record<string, unknown>)
+      : {}),
     storage_default: loaded.config.recipes?.storage_default ?? "link",
     active: [...current].sort(),
   };
@@ -108,7 +110,9 @@ export async function compileProjectOverlayArtifacts(project: {
     if (manifest.conflicts) {
       for (const conflict of manifest.conflicts) {
         if (activeIds.includes(conflict.recipe_id)) {
-          throw new Error(`Overlay ${manifest.id} conflicts with ${conflict.recipe_id}: ${conflict.reason}`);
+          throw new Error(
+            `Overlay ${manifest.id} conflicts with ${conflict.recipe_id}: ${conflict.reason}`,
+          );
         }
       }
     }
@@ -201,7 +205,9 @@ export async function readProjectOverlayBundle(project: {
   agentplaneDir: string;
 }): Promise<CompiledOverlayBundle | null> {
   try {
-    return JSON.parse(await readFile(resolveProjectOverlayBundlePath(project), "utf8")) as CompiledOverlayBundle;
+    return JSON.parse(
+      await readFile(resolveProjectOverlayBundlePath(project), "utf8"),
+    ) as CompiledOverlayBundle;
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ENOENT") return null;

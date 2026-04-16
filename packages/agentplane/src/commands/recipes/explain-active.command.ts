@@ -8,7 +8,9 @@ export const recipesExplainActiveSpec: CommandSpec<RecipesExplainActiveParsed> =
   id: ["recipes", "explain-active"],
   group: "Recipes",
   summary: "Print the compiled active overlay bundle.",
-  examples: [{ cmd: "agentplane recipes explain-active", why: "Inspect compiled overlay runtime data." }],
+  examples: [
+    { cmd: "agentplane recipes explain-active", why: "Inspect compiled overlay runtime data." },
+  ],
   parse: () => ({}),
 };
 

@@ -289,7 +289,8 @@ function normalizePrompts(raw: unknown): OverlayPromptFragment[] {
     throw new Error(invalidFieldMessage("manifest.prompts", "non-empty array"));
   }
   return raw.map((entry, index) => {
-    if (!isRecord(entry)) throw new Error(invalidFieldMessage(`manifest.prompts[${index}]`, "object"));
+    if (!isRecord(entry))
+      throw new Error(invalidFieldMessage(`manifest.prompts[${index}]`, "object"));
     return {
       id: normalizeRequiredString(entry.id, `manifest.prompts[${index}].id`),
       surface: normalizeOverlaySurface(entry.surface, `manifest.prompts[${index}].surface`),
@@ -360,7 +361,9 @@ function normalizeValidators(raw: unknown): OverlayValidator[] | undefined {
         when,
       };
     }
-    throw new Error(invalidFieldMessage(`manifest.validators[${index}].kind`, "known validator kind"));
+    throw new Error(
+      invalidFieldMessage(`manifest.validators[${index}].kind`, "known validator kind"),
+    );
   });
 }
 
@@ -398,7 +401,10 @@ function assertKnownReferences(
   }
 }
 
-function normalizeScenarioPack(raw: Record<string, unknown>, schemaVersion: "1" | "2"): ScenarioPackManifest {
+function normalizeScenarioPack(
+  raw: Record<string, unknown>,
+  schemaVersion: "1" | "2",
+): ScenarioPackManifest {
   const id = normalizeRecipeId(normalizeRequiredString(raw.id, "manifest.id"));
   const version = normalizeRequiredString(raw.version, "manifest.version");
   const tags = normalizeRecipeTags(raw.tags);
@@ -507,9 +513,7 @@ export function validateRecipeManifest(raw: unknown): RecipeManifest {
     throw new Error(invalidFieldMessage("manifest.schema_version", '"1" | "2"'));
   }
   const kind =
-    schemaVersion === "1"
-      ? "scenario_pack"
-      : normalizeRequiredString(raw.kind, "manifest.kind");
+    schemaVersion === "1" ? "scenario_pack" : normalizeRequiredString(raw.kind, "manifest.kind");
   if (kind === "project_overlay") return normalizeProjectOverlay(raw);
   if (kind === "scenario_pack") return normalizeScenarioPack(raw, schemaVersion);
   throw new Error(invalidFieldMessage("manifest.kind", '"project_overlay" | "scenario_pack"'));
