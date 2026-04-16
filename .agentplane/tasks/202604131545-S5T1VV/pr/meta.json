@@ -2,15 +2,17 @@
   "base": "main",
   "branch": "task/202604131545-S5T1VV/skip-unsafe-post-merge-cleanup",
   "created_at": "2026-04-13T15:48:44.429Z",
-  "head_sha": "3a8673431ffd098dec6b980f044ccd66301346fd",
+  "head_sha": "20121a27a5027608da18c50d73530b3e1111de93",
   "last_verified_at": "2026-04-13T15:48:44.379Z",
   "last_verified_sha": "464f660b3f28ad0e6edb0bd8ed5909d1b08bdb44",
+  "merge_commit": "da3c9773871c21ba8bcffbee51339e7b3f0b6ca5",
+  "merged_at": "2026-04-13T15:52:13Z",
   "pr_number": 284,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/284",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202604131545-S5T1VV",
-  "updated_at": "2026-04-13T15:49:42.963Z",
+  "updated_at": "2026-04-13T15:52:13Z",
   "verify": {
     "status": "pass"
   }

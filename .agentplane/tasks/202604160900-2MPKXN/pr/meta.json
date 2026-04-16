@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604160900-2MPKXN/finalize-task-state-cleanup",
+  "created_at": "2026-04-16T10:00:14.118Z",
+  "head_sha": "843cc1c4e572d0fa31db4301d41affe4826e284e",
+  "last_verified_at": "2026-04-16T10:00:14.096Z",
+  "last_verified_sha": "5cc1f9140e433cc6db23f9b25c392fe8579f4e51",
+  "schema_version": 1,
+  "task_id": "202604160900-2MPKXN",
+  "updated_at": "2026-04-16T10:01:34.081Z",
+  "verify": {
+    "status": "pass"
+  }
+}
