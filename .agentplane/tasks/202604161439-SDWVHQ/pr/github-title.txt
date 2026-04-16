@@ -1,0 +1,1 @@
+workflow: Realign root checkout incidents registry with canonical main (SDWVHQ)
