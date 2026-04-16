@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604161300-QJGXXY/incident-reclassification",
   "created_at": "2026-04-16T13:17:13.613Z",
-  "head_sha": "6ec803bcfccdc7c74f896424b03cb03acf9a7074",
+  "head_sha": "59d5d630803fd3c75df2cb2f9b42c0a303e6c2c4",
   "last_verified_at": "2026-04-16T13:17:13.581Z",
   "last_verified_sha": "48228e02e2529acdec7a0a39a3ba0b2df7666fdd",
+  "merge_commit": "664425fbd5453066d9c33f631c1ead764877d5fd",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-16T13:27:43Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604161300-QJGXXY",
-  "updated_at": "2026-04-16T13:22:08.593Z",
+  "updated_at": "2026-04-16T13:27:43Z",
   "verify": {
     "status": "pass"
   }
