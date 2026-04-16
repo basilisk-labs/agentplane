@@ -8,6 +8,7 @@ const EXIT_CODE_BY_ERROR: Record<ErrorCode, number> = {
   E_BACKEND: 6,
   E_NETWORK: 7,
   E_RUNTIME: 8,
+  E_HANDOFF: 9,
   E_INTERNAL: 1,
 };
 

@@ -3,6 +3,7 @@ export type ErrorCode =
   | "E_VALIDATION"
   | "E_IO"
   | "E_GIT"
+  | "E_HANDOFF"
   | "E_BACKEND"
   | "E_NETWORK"
   | "E_RUNTIME"

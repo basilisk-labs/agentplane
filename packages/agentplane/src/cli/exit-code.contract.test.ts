@@ -11,6 +11,7 @@ const EXIT_CODE_BY_ERROR: Record<string, number> = {
   E_BACKEND: 6,
   E_NETWORK: 7,
   E_RUNTIME: 8,
+  E_HANDOFF: 9,
 };
 
 async function listTsFiles(root: string): Promise<string[]> {

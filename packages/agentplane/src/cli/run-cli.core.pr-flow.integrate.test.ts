@@ -320,10 +320,14 @@ describe("runCli", () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
-      expect(code).toBe(5);
+      expect(code).toBe(9);
+      expect(io.stderr).toContain("error [E_HANDOFF]");
       expect(io.stderr).toContain("requires GitHub pull-request merges");
       expect(io.stderr).toContain("Task Hosted Close");
       expect(io.stderr).toContain(`next_action: agentplane task handoff show ${taskId}`);
+      expect(io.stderr).toContain(
+        "reason_code: protected_base_integrate_handoff [handoff] integrate intentionally stopped before mutating a protected base branch",
+      );
     } finally {
       io.restore();
       process.env.PATH = originalPath;

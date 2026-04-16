@@ -146,6 +146,16 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
         },
       });
     }
+    case "E_HANDOFF": {
+      return withExplicit({
+        hint: "This is an intentional handoff route, not a local mutation failure.",
+        nextAction: {
+          command: command === "integrate" ? "agentplane task handoff show <task-id>" : usage,
+          reason: "inspect the persisted finalize route and continue through the external handoff path",
+          reasonCode: "protected_base_integrate_handoff",
+        },
+      });
+    }
     case "E_NETWORK": {
       return withExplicit({
         hint: "Check network access and credentials.",

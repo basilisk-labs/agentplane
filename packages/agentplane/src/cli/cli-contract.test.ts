@@ -11,6 +11,7 @@ describe("cli contract exit codes", () => {
     expect(exitCodeForError("E_BACKEND")).toBe(6);
     expect(exitCodeForError("E_NETWORK")).toBe(7);
     expect(exitCodeForError("E_RUNTIME")).toBe(8);
+    expect(exitCodeForError("E_HANDOFF")).toBe(9);
     expect(exitCodeForError("E_INTERNAL")).toBe(1);
   });
 });
