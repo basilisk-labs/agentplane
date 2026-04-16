@@ -246,7 +246,7 @@ async function loadRequiredContexts(repoSlug, baseBranch) {
       .filter((value) => value.length > 0);
     return explicit.length > 0 ? explicit : fallback;
   } catch (error) {
-    const text = normalizeErrorText(error);
+    const text = normalizeGhTransportError(error);
     if (/\b404\b|\b451\b/i.test(text)) return [];
     throw error;
   }

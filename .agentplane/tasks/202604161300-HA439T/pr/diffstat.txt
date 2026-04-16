@@ -1,0 +1,4 @@
+ .../src/cli/wait-remote-pr-checks-script.test.ts   | 32 +++++++++
+ scripts/lib/gh-transport.mjs                       | 72 ++++++++++++++++++++
+ scripts/wait-remote-pr-checks.mjs                  | 77 +++++-----------------
+ 3 files changed, 120 insertions(+), 61 deletions(-)

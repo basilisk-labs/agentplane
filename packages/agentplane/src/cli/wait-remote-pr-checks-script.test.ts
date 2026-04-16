@@ -23,6 +23,9 @@ const SCRIPT_PATH = path.resolve(process.cwd(), "scripts", "wait-remote-pr-check
 const explicitNodeBinary = process.env.NODE_BINARY?.trim();
 const SCRIPT_RUNTIME =
   explicitNodeBinary && explicitNodeBinary.length > 0 ? explicitNodeBinary : "node";
+const isScriptTransientGhTransportErrorTyped = isScriptTransientGhTransportError as unknown as (
+  err: unknown,
+) => boolean;
 
 const tempRoots: string[] = [];
 type RunScriptResult = { exitCode: number; stdout: string; stderr: string };
@@ -213,8 +216,9 @@ describe("wait-remote-pr-checks script", () => {
     ];
 
     for (const testCase of cases) {
-      const error = Object.assign(new Error(testCase.text), { stderr: testCase.text });
-      expect(isScriptTransientGhTransportError(error)).toBe(testCase.transient);
+      const error = new Error(testCase.text) as Error & { stderr?: string };
+      error.stderr = testCase.text;
+      expect(isScriptTransientGhTransportErrorTyped(error)).toBe(testCase.transient);
       expect(isSharedTransientGhTransportError(error)).toBe(testCase.transient);
     }
   });

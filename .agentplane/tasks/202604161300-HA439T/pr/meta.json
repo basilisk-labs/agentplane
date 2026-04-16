@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604161300-HA439T/github-retry-contract",
+  "created_at": "2026-04-16T13:35:46.789Z",
+  "head_sha": "a3b5514da7ceb2cf274ce9ef101a6dac25eecdba",
+  "last_verified_at": "2026-04-16T13:35:46.765Z",
+  "last_verified_sha": "05c937dac36c05507cf8c937886ea392a8116c3b",
+  "schema_version": 1,
+  "task_id": "202604161300-HA439T",
+  "updated_at": "2026-04-16T13:36:42.080Z",
+  "verify": {
+    "status": "pass"
+  }
+}
