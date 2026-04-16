@@ -1,10 +1,11 @@
 ---
 id: "202604160813-1VQV8P"
 title: "Clean stale merged local task branches and worktrees"
-status: "DOING"
+result_summary: "Merged via PR #348."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-16T08:15:09.620Z"
   updated_by: "CODER"
   note: "Verified stale remote-tracking cleanup by comparing git remote prune origin --dry-run with the actual prune result; only stale origin/task refs were removed and active local task worktrees remained intact."
-commit: null
+commit:
+  hash: "0c721de62b8854f22f49ae87372c67053deb6fa3"
+  message: "📝 1VQV8P task: refresh PR artifacts (#348)"
 comments:
   -
     author: "CODER"
     body: "Start: auditing local task branches and worktrees to remove only stale merged refs while preserving active or unmerged work."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #348 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified stale remote-tracking cleanup by comparing git remote prune origin --dry-run with the actual prune result; only stale origin/task refs were removed and active local task worktrees remained intact."
+  -
+    type: "status"
+    at: "2026-04-16T08:21:40.753Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #348 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T08:15:09.626Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-16T08:21:40.760Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove only local task/task-close branches and task worktrees that are already merged into main and no longer needed, while preserving active or unmerged worktrees."
 sections:
   Summary: |-

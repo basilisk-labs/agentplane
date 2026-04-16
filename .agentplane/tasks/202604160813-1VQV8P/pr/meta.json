@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604160813-1VQV8P/cleanup-stale-local-branches",
   "created_at": "2026-04-16T08:14:04.305Z",
-  "head_sha": "51d078d20b2aedd220a9b4cb5b56d41493380ecc",
+  "head_sha": "d07e57019dea438433a42cd6b7366c2a14b45a43",
   "last_verified_at": "2026-04-16T08:15:09.620Z",
   "last_verified_sha": "51d078d20b2aedd220a9b4cb5b56d41493380ecc",
+  "merge_commit": "0c721de62b8854f22f49ae87372c67053deb6fa3",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-16T08:21:07Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604160813-1VQV8P",
-  "updated_at": "2026-04-16T08:14:04.305Z",
+  "updated_at": "2026-04-16T08:21:07Z",
   "verify": {
     "status": "pass"
   }
