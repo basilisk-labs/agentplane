@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604161712-0N90F5/recipes-overlays",
   "created_at": "2026-04-16T17:13:21.608Z",
-  "head_sha": "80c6dce91ba9097b0b63484d07384e86e4efa444",
+  "head_sha": "a88e021a7a1b5c7900e2389ef0d0c58cae13d7c3",
   "last_verified_at": "2026-04-16T19:07:15.290Z",
   "last_verified_sha": "c37b1b85f371004c2d006dad0cb602051e8e2500",
+  "merge_commit": "22344199daf48e293d6f0da750f4beaeaab8e3ab",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-16T19:30:45Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604161712-0N90F5",
-  "updated_at": "2026-04-16T19:28:12.742Z",
+  "updated_at": "2026-04-16T19:30:45Z",
   "verify": {
     "status": "pass"
   }
