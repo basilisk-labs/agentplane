@@ -63,6 +63,12 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
     summary: "command requires valid git repository context",
     action: "confirm repository root and tracked changes",
   },
+  integrate_base_checkout_required: {
+    code: "integrate_base_checkout_required",
+    category: "git",
+    summary: "integrate was launched from a task worktree instead of the registered base checkout",
+    action: "rerun integrate against the base checkout/worktree for the resolved base branch",
+  },
   git_task_commit_blocked: {
     code: "git_task_commit_blocked",
     category: "git",

@@ -138,6 +138,29 @@ describe("pr/integrate/internal/prepare", () => {
     ).rejects.toMatchObject<CliError>({ code: "E_USAGE", message: "Invalid value for --base." });
   });
 
+  it("explains the base-checkout rerun route when integrate is invoked from the task branch worktree", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.gitCurrentBranch.mockResolvedValue("task/T-1");
+    mocks.findWorktreeForBranch
+      .mockResolvedValueOnce("/repo-base")
+      .mockResolvedValueOnce("/repo-task");
+
+    await expect(
+      prepareIntegrate({ cwd: "/repo-task", taskId: "T-1", runVerify: false }),
+    ).rejects.toMatchObject<CliError>({
+      code: "E_GIT",
+      message:
+        "integrate must run from the main base checkout, not from task branch task/T-1. Rerun it against the base checkout after leaving this task worktree.",
+      context: expect.objectContaining({
+        reason_code: "integrate_base_checkout_required",
+        diagnostic_next_action_command:
+          "agentplane integrate T-1 --branch task/T-1 --root /repo-base",
+      }),
+    });
+  });
+
   it("rejects when base branch cannot be resolved", async () => {
     const { prepareIntegrate } = await import("./prepare.js");
     seedCommon();
