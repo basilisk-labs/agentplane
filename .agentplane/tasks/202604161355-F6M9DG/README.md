@@ -1,10 +1,11 @@
 ---
 id: "202604161355-F6M9DG"
 title: "Archive stabilized INC-20260407-01 after HA439T"
-status: "DOING"
+result_summary: "Merged via PR #362."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -21,7 +22,9 @@ verification:
   updated_at: "2026-04-16T14:00:50.964Z"
   updated_by: "CODER"
   note: "Verified: active incidents registry removes INC-20260407-01, archive records it as stabilized after HA439T, and policy/docs checks pass."
-commit: null
+commit:
+  hash: "78668668303d4206a739671f18f1484679c27261"
+  message: "policy: Archive stabilized INC-20260407-01 after HA439T (F6M9DG) (#362)"
 comments:
   -
     author: "CODER"
@@ -29,6 +32,9 @@ comments:
   -
     author: "CODER"
     body: "Start: archive stabilized INC-20260407-01 out of the active registry, keep the archive/history coherent, and verify that only genuinely unresolved incidents remain active."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #362 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: active incidents registry removes INC-20260407-01, archive records it as stabilized after HA439T, and policy/docs checks pass."
+  -
+    type: "status"
+    at: "2026-04-16T14:08:12.577Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #362 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T14:00:50.970Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-16T14:08:12.583Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move INC-20260407-01 out of the active incidents registry now that HA439T landed and the remaining branch_pr GitHub transport helpers share the bounded transient retry contract."
 sections:
   Summary: |-
