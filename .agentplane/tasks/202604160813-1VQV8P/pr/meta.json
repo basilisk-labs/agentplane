@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604160813-1VQV8P/cleanup-stale-local-branches",
+  "created_at": "2026-04-16T08:14:04.305Z",
+  "head_sha": "51d078d20b2aedd220a9b4cb5b56d41493380ecc",
+  "last_verified_at": "2026-04-16T08:15:09.620Z",
+  "last_verified_sha": "51d078d20b2aedd220a9b4cb5b56d41493380ecc",
+  "schema_version": 1,
+  "task_id": "202604160813-1VQV8P",
+  "updated_at": "2026-04-16T08:14:04.305Z",
+  "verify": {
+    "status": "pass"
+  }
+}
