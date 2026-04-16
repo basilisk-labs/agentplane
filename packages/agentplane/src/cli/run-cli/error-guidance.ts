@@ -112,7 +112,8 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
           hint: "Integrate must run from the base checkout, not from the task branch worktree.",
           nextAction: {
             command: "git worktree list",
-            reason: "locate the registered base checkout if the rerun command is not already provided",
+            reason:
+              "locate the registered base checkout if the rerun command is not already provided",
             reasonCode,
           },
         });
