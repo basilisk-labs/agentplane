@@ -50,10 +50,10 @@ INC-20260407-01 remains open: GitHub-dependent branch_pr helpers still need one 
 - Head: a3b5514da7ce
 
 ```text
- .../src/cli/wait-remote-pr-checks-script.test.ts   | 32 +++++++++
+ .../src/cli/wait-remote-pr-checks-script.test.ts   | 36 ++++++++++
  scripts/lib/gh-transport.mjs                       | 72 ++++++++++++++++++++
- scripts/wait-remote-pr-checks.mjs                  | 77 +++++-----------------
- 3 files changed, 120 insertions(+), 61 deletions(-)
+ scripts/wait-remote-pr-checks.mjs                  | 79 +++++-----------------
+ 3 files changed, 125 insertions(+), 62 deletions(-)
 ```
 
 </details>
