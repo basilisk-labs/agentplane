@@ -1,10 +1,11 @@
 ---
 id: "202604161253-9XFZ92"
 title: "Publish local 2231RH close commit to protected main"
-status: "DOING"
+result_summary: "Merged via PR #356."
+status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "c720ed0709b80d667dbbe6d56c49e986783a662d"
+  message: "workflow: Publish local 2231RH close commit to protected main (9XFZ92) (#356)"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: publish the single local 2231RH close commit through the normal protected-main PR route, then restore base main to a synchronized clean state."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #356 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -34,8 +40,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: publish the single local 2231RH close commit through the normal protected-main PR route, then restore base main to a synchronized clean state."
+  -
+    type: "status"
+    at: "2026-04-16T12:56:49.891Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #356 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T12:54:05.083Z"
+doc_updated_at: "2026-04-16T12:56:49.896Z"
 doc_updated_by: "INTEGRATOR"
 description: "The base checkout main is ahead of origin/main by the local close commit for task 202604161234-2231RH. Publish that single close commit through the normal protected-main branch_pr route and restore a clean synchronized base state."
 sections:
