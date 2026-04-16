@@ -22,21 +22,21 @@ Replace generic git-failure semantics for protected-base branch_pr integrate wit
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-16T06:58:12.190Z
+- Updated: 2026-04-16T07:01:11.921Z
 - Branch: task/202604160652-Q0JPW0/explicit-handoff-result
-- Head: 6061daf2241d
+- Head: 406c35929671
 
 ```text
- packages/agentplane/src/cli/cli-contract.test.ts               |  1 +
- packages/agentplane/src/cli/exit-code.contract.test.ts         |  1 +
- packages/agentplane/src/cli/exit-codes.ts                      |  1 +
- packages/agentplane/src/cli/reason-codes.ts                    |  7 +++++++
- .../agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts  |  6 +++++-
- packages/agentplane/src/cli/run-cli/error-guidance.ts          | 10 ++++++++++
- packages/agentplane/src/commands/pr/integrate/cmd.test.ts      |  4 ++--
- packages/agentplane/src/commands/pr/integrate/cmd.ts           |  5 +++--
- packages/agentplane/src/shared/errors.ts                       |  1 +
- 9 files changed, 31 insertions(+), 5 deletions(-)
+ packages/agentplane/src/cli/cli-contract.test.ts              |  1 +
+ packages/agentplane/src/cli/exit-code.contract.test.ts        |  1 +
+ packages/agentplane/src/cli/exit-codes.ts                     |  1 +
+ packages/agentplane/src/cli/reason-codes.ts                   |  8 ++++++++
+ .../agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts |  6 +++++-
+ packages/agentplane/src/cli/run-cli/error-guidance.ts         | 11 +++++++++++
+ packages/agentplane/src/commands/pr/integrate/cmd.test.ts     |  4 ++--
+ packages/agentplane/src/commands/pr/integrate/cmd.ts          |  5 +++--
+ packages/agentplane/src/shared/errors.ts                      |  1 +
+ 9 files changed, 33 insertions(+), 5 deletions(-)
 ```
 
 </details>

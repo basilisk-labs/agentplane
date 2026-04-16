@@ -1,10 +1,10 @@
- packages/agentplane/src/cli/cli-contract.test.ts               |  1 +
- packages/agentplane/src/cli/exit-code.contract.test.ts         |  1 +
- packages/agentplane/src/cli/exit-codes.ts                      |  1 +
- packages/agentplane/src/cli/reason-codes.ts                    |  7 +++++++
- .../agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts  |  6 +++++-
- packages/agentplane/src/cli/run-cli/error-guidance.ts          | 10 ++++++++++
- packages/agentplane/src/commands/pr/integrate/cmd.test.ts      |  4 ++--
- packages/agentplane/src/commands/pr/integrate/cmd.ts           |  5 +++--
- packages/agentplane/src/shared/errors.ts                       |  1 +
- 9 files changed, 31 insertions(+), 5 deletions(-)
+ packages/agentplane/src/cli/cli-contract.test.ts              |  1 +
+ packages/agentplane/src/cli/exit-code.contract.test.ts        |  1 +
+ packages/agentplane/src/cli/exit-codes.ts                     |  1 +
+ packages/agentplane/src/cli/reason-codes.ts                   |  8 ++++++++
+ .../agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts |  6 +++++-
+ packages/agentplane/src/cli/run-cli/error-guidance.ts         | 11 +++++++++++
+ packages/agentplane/src/commands/pr/integrate/cmd.test.ts     |  4 ++--
+ packages/agentplane/src/commands/pr/integrate/cmd.ts          |  5 +++--
+ packages/agentplane/src/shared/errors.ts                      |  1 +
+ 9 files changed, 33 insertions(+), 5 deletions(-)
