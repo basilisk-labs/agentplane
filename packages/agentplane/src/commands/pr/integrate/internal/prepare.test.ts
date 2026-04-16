@@ -147,17 +147,22 @@ describe("pr/integrate/internal/prepare", () => {
       .mockResolvedValueOnce("/repo-base")
       .mockResolvedValueOnce("/repo-task");
 
-    await expect(
-      prepareIntegrate({ cwd: "/repo-task", taskId: "T-1", runVerify: false }),
-    ).rejects.toMatchObject<CliError>({
+    const caught = await prepareIntegrate({
+      cwd: "/repo-task",
+      taskId: "T-1",
+      runVerify: false,
+    }).catch((err: unknown) => err);
+
+    expect(caught).toMatchObject<CliError>({
       code: "E_GIT",
       message:
         "integrate must run from the main base checkout, not from task branch task/T-1. Rerun it against the base checkout after leaving this task worktree.",
-      context: expect.objectContaining({
-        reason_code: "integrate_base_checkout_required",
-        diagnostic_next_action_command:
-          "agentplane integrate T-1 --branch task/T-1 --root /repo-base",
-      }),
+    });
+    const cliError = caught as CliError;
+    expect(cliError.context).toMatchObject({
+      reason_code: "integrate_base_checkout_required",
+      diagnostic_next_action_command:
+        "agentplane integrate T-1 --branch task/T-1 --root /repo-base",
     });
   });
 
