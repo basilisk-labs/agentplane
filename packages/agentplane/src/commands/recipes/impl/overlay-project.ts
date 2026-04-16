@@ -47,7 +47,9 @@ function uniqueById<T extends { id: string }>(items: T[]): T[] {
 export async function readActiveRecipeIds(project: { agentplaneDir: string }): Promise<string[]> {
   const loaded = await loadConfig(project.agentplaneDir);
   return Array.isArray(loaded.config.recipes?.active)
-    ? [...new Set(loaded.config.recipes.active.map((value) => value.trim()).filter(Boolean))].toSorted()
+    ? [
+        ...new Set(loaded.config.recipes.active.map((value) => value.trim()).filter(Boolean)),
+      ].toSorted()
     : [];
 }
 
@@ -204,7 +206,9 @@ export async function readProjectOverlayBundle(project: {
   agentplaneDir: string;
 }): Promise<CompiledOverlayBundle | null> {
   try {
-    return JSON.parse(await readFile(resolveProjectOverlayBundlePath(project), "utf8")) as CompiledOverlayBundle;
+    return JSON.parse(
+      await readFile(resolveProjectOverlayBundlePath(project), "utf8"),
+    ) as CompiledOverlayBundle;
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ENOENT") return null;
