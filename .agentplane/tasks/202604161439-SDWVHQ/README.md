@@ -1,10 +1,11 @@
 ---
 id: "202604161439-SDWVHQ"
 title: "Realign root checkout incidents registry with canonical main"
-status: "DOING"
+result_summary: "Merged via PR #366."
+status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-16T14:42:02.146Z"
   updated_by: "INTEGRATOR"
   note: "Verified: the root checkout now points at canonical origin/main and .agentplane/policy/incidents.md matches the active-only registry from current main."
-commit: null
+commit:
+  hash: "f6c05848d34aed4f81eccac205eb2da1897c8bc4"
+  message: "📝 SDWVHQ task: refresh PR artifacts (#366)"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: realign the stale detached root checkout to canonical main so incidents.md reflects the active-only registry instead of the historical append-only snapshot."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #366 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "Verified: the root checkout now points at canonical origin/main and .agentplane/policy/incidents.md matches the active-only registry from current main."
+  -
+    type: "status"
+    at: "2026-04-16T14:45:41.871Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #366 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T14:42:02.154Z"
+doc_updated_at: "2026-04-16T14:45:41.877Z"
 doc_updated_by: "INTEGRATOR"
 description: "Update the stale detached root checkout to the current canonical main so .agentplane/policy/incidents.md no longer shows already-processed incidents."
 sections:
