@@ -1,38 +1,17 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
+import {
+  GH_LOOKUP_BASE_DELAY_MS,
+  GH_LOOKUP_MAX_ATTEMPTS,
+  normalizeGhTransportError,
+  withGhTransportRetry,
+} from "./lib/gh-transport.mjs";
+
 const execFileAsync = promisify(execFile);
 
 const DEFAULT_MAX_ATTEMPTS = 60;
 const DEFAULT_INTERVAL_MS = 5000;
-const GH_LOOKUP_MAX_ATTEMPTS = 3;
-const GH_LOOKUP_BASE_DELAY_MS = 250;
-
-const GH_TRANSIENT_ERROR_PATTERNS = [
-  /eof\b/i,
-  /tls handshake timeout/i,
-  /ssl_error_syscall/i,
-  /connection reset by peer/i,
-  /\beconnreset\b/i,
-  /\betimedout\b/i,
-  /socket hang up/i,
-  /temporary failure in name resolution/i,
-  /network is unreachable/i,
-  /server closed the connection/i,
-];
-
-const GH_PERMANENT_ERROR_PATTERNS = [
-  /authentication required/i,
-  /not logged into github/i,
-  /could not resolve to a pull request/i,
-  /graphql: field/i,
-  /bad credentials/i,
-  /permission denied/i,
-  /\b403\b/i,
-  /\b401\b/i,
-  /unknown command/i,
-  /usage:/i,
-];
 
 const IGNORED_LEGACY_FLAGS = new Set(["--watch", "--required", "--fail-fast"]);
 
@@ -122,26 +101,8 @@ function parseArgs(argv) {
   return options;
 }
 
-function normalizeErrorText(err) {
-  if (err instanceof Error) {
-    const parts = [err.name, err.message];
-    const stderr = err.stderr;
-    const stdout = err.stdout;
-    if (typeof stderr === "string" && stderr.trim()) parts.push(stderr);
-    if (typeof stdout === "string" && stdout.trim()) parts.push(stdout);
-    return parts.filter((part) => part.trim().length > 0).join("\n");
-  }
-  return String(err);
-}
-
 function compactText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function isTransientGhTransportError(err) {
-  const text = normalizeErrorText(err);
-  if (GH_PERMANENT_ERROR_PATTERNS.some((pattern) => pattern.test(text))) return false;
-  return GH_TRANSIENT_ERROR_PATTERNS.some((pattern) => pattern.test(text));
 }
 
 async function sleep(ms) {
@@ -150,22 +111,16 @@ async function sleep(ms) {
 }
 
 async function withGhLookupRetry(operation, label) {
-  let lastError = null;
-  for (let attempt = 1; attempt <= GH_LOOKUP_MAX_ATTEMPTS; attempt += 1) {
-    try {
-      return await operation();
-    } catch (error) {
-      lastError = error;
-      if (!isTransientGhTransportError(error) || attempt === GH_LOOKUP_MAX_ATTEMPTS) {
-        throw error;
-      }
+  return withGhTransportRetry(operation, {
+    label,
+    maxAttempts: GH_LOOKUP_MAX_ATTEMPTS,
+    baseDelayMs: GH_LOOKUP_BASE_DELAY_MS,
+    onRetry: ({ attempt, maxAttempts, error, label: retryLabel }) => {
       process.stderr.write(
-        `warning: transient GitHub transport error while ${label} (attempt ${attempt}/${GH_LOOKUP_MAX_ATTEMPTS}): ${normalizeErrorText(error)}\n`,
+        `warning: transient GitHub transport error while ${retryLabel} (attempt ${attempt}/${maxAttempts}): ${normalizeGhTransportError(error)}\n`,
       );
-      await sleep(GH_LOOKUP_BASE_DELAY_MS * attempt);
-    }
-  }
-  throw lastError instanceof Error ? lastError : new Error(String(lastError));
+    },
+  });
 }
 
 async function runGh(args) {
@@ -291,7 +246,7 @@ async function loadRequiredContexts(repoSlug, baseBranch) {
       .filter((value) => value.length > 0);
     return explicit.length > 0 ? explicit : fallback;
   } catch (error) {
-    const text = normalizeErrorText(error);
+    const text = normalizeGhTransportError(error);
     if (/\b404\b|\b451\b/i.test(text)) return [];
     throw error;
   }
@@ -562,7 +517,7 @@ async function main() {
 try {
   await main();
 } catch (error) {
-  const text = normalizeErrorText(error);
+  const text = normalizeGhTransportError(error);
   if (/ENOENT/.test(text)) {
     process.stderr.write(
       [

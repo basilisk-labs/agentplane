@@ -6,11 +6,26 @@ import { promisify } from "node:util";
 
 import { afterEach, describe, expect, it } from "vitest";
 
+import {
+  GH_LOOKUP_BASE_DELAY_MS as SHARED_GH_LOOKUP_BASE_DELAY_MS,
+  GH_LOOKUP_MAX_ATTEMPTS as SHARED_GH_LOOKUP_MAX_ATTEMPTS,
+  isTransientGhTransportError as isSharedTransientGhTransportError,
+} from "../commands/shared/gh-transport.js";
+
+import {
+  GH_LOOKUP_BASE_DELAY_MS as SCRIPT_GH_LOOKUP_BASE_DELAY_MS,
+  GH_LOOKUP_MAX_ATTEMPTS as SCRIPT_GH_LOOKUP_MAX_ATTEMPTS,
+  isTransientGhTransportError as isScriptTransientGhTransportError,
+} from "../../../../scripts/lib/gh-transport.mjs";
+
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts", "wait-remote-pr-checks.mjs");
 const explicitNodeBinary = process.env.NODE_BINARY?.trim();
 const SCRIPT_RUNTIME =
   explicitNodeBinary && explicitNodeBinary.length > 0 ? explicitNodeBinary : "node";
+const isScriptTransientGhTransportErrorTyped = isScriptTransientGhTransportError as unknown as (
+  err: unknown,
+) => boolean;
 
 const tempRoots: string[] = [];
 type RunScriptResult = { exitCode: number; stdout: string; stderr: string };
@@ -187,6 +202,27 @@ afterEach(async () => {
 });
 
 describe("wait-remote-pr-checks script", () => {
+  it("keeps script-side GitHub transport retry defaults and classification aligned with the shared helper", () => {
+    expect(SCRIPT_GH_LOOKUP_MAX_ATTEMPTS).toBe(SHARED_GH_LOOKUP_MAX_ATTEMPTS);
+    expect(SCRIPT_GH_LOOKUP_BASE_DELAY_MS).toBe(SHARED_GH_LOOKUP_BASE_DELAY_MS);
+
+    const cases = [
+      { text: 'gh: Post "https://api.github.com/graphql": EOF', transient: true },
+      { text: "gh: tls handshake timeout", transient: true },
+      { text: "gh: Authentication required", transient: false },
+      { text: "gh: HTTP 404 Not Found", transient: false },
+      { text: "gh: HTTP 422 Unprocessable Entity", transient: false },
+      { text: "gh: unknown command foo", transient: false },
+    ];
+
+    for (const testCase of cases) {
+      const error = new Error(testCase.text) as Error & { stderr?: string };
+      error.stderr = testCase.text;
+      expect(isScriptTransientGhTransportErrorTyped(error)).toBe(testCase.transient);
+      expect(isSharedTransientGhTransportError(error)).toBe(testCase.transient);
+    }
+  });
+
   it("prints help without invoking gh", async () => {
     const result = await runScript(["--help"]);
 
