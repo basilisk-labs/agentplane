@@ -1,10 +1,11 @@
 ---
 id: "202604161712-0N90F5"
 title: "Cut over recipes to project overlays"
-status: "DOING"
+result_summary: "Merged via PR #368."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-16T19:07:15.290Z"
   updated_by: "CODER"
   note: "Overlay cutover and framework runtime bootstrap checks passed."
-commit: null
+commit:
+  hash: "22344199daf48e293d6f0da750f4beaeaab8e3ab"
+  message: "recipes/workflow: Cut over recipes to project overlays (0N90F5) (#368)"
 comments:
   -
     author: "CODER"
     body: "Start: replace scenario-centric recipes with project overlays, route recipes-domain authority through packages/recipes, and rewire runtime prompt assembly onto compiled overlay bundles."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #368 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Overlay cutover and framework runtime bootstrap checks passed."
+  -
+    type: "status"
+    at: "2026-04-16T19:31:20.688Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #368 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T19:07:15.303Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-16T19:31:20.694Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace scenario-centric recipes with project overlays, activation state, and compiled runtime bundle."
 sections:
   Summary: |-
