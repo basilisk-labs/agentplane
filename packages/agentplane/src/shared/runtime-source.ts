@@ -125,9 +125,15 @@ function resolveAgentplanePackageInfo(
   return resolvePackageInfo(path.join(inferredRoot, "package.json"));
 }
 
-function resolveCorePackageInfo(options: ResolveRuntimeSourceInfoOptions): ResolvedPackageInfo {
+function resolveCorePackageInfo(
+  options: ResolveRuntimeSourceInfoOptions,
+  frameworkCoreRoot: string | null,
+): ResolvedPackageInfo {
   if (options.corePackageJsonPath) {
     return resolvePackageInfo(path.resolve(options.corePackageJsonPath));
+  }
+  if (frameworkCoreRoot) {
+    return resolvePackageInfo(path.join(frameworkCoreRoot, "package.json"));
   }
   try {
     const req = createRequire(options.entryModuleUrl ?? import.meta.url);
@@ -184,7 +190,6 @@ export function resolveRuntimeSourceInfo(
   const cwd = path.resolve(options.cwd ?? process.cwd());
   const env = options.env ?? process.env;
   const agentplane = resolveAgentplanePackageInfo(options);
-  const core = resolveCorePackageInfo(options);
   const fallbackBin =
     agentplane.packageRoot === null
       ? null
@@ -198,6 +203,10 @@ export function resolveRuntimeSourceInfo(
     cwd,
     thisBin: activeBinaryPath ?? fallbackBin ?? cwd,
   });
+  const frameworkCoreRoot = resolveFrameworkCoreRoot(framework.checkout?.repoRoot ?? null);
+  const preferredFrameworkCoreRoot =
+    framework.inFrameworkCheckout && framework.isRepoLocalRuntime ? frameworkCoreRoot : null;
+  const core = resolveCorePackageInfo(options, preferredFrameworkCoreRoot);
 
   return {
     cwd,
@@ -208,7 +217,7 @@ export function resolveRuntimeSourceInfo(
     frameworkSources: {
       repoRoot: framework.checkout?.repoRoot ?? null,
       agentplaneRoot: framework.checkout?.packageRoot ?? agentplane.packageRoot,
-      coreRoot: resolveFrameworkCoreRoot(framework.checkout?.repoRoot ?? null),
+      coreRoot: frameworkCoreRoot,
     },
     agentplane,
     core,
