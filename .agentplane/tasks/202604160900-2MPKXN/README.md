@@ -1,10 +1,11 @@
 ---
 id: "202604160900-2MPKXN"
 title: "Audit remaining local and remote branches"
-status: "DOING"
+result_summary: "Merged via PR #354."
+status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-16T10:00:14.096Z"
   updated_by: "INTEGRATOR"
   note: "Verified branch audit cleanup: merged-but-unclosed task projections S5T1VV and V0H90T are canonicalized, superseded release task 4G7YPZ is closed, stale local/remote task refs are removed, and policy routing still passes."
-commit: null
+commit:
+  hash: "57d2a8fd1cab66264642b929c3c11b5672b7501a"
+  message: "workflow: Audit remaining local and remote branches (2MPKXN) (#354)"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: auditing the remaining local and remote task branches, reconciling merged-but-unclosed task lifecycles, and deleting only refs that no longer carry unique work beyond main."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #354 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "Verified branch audit cleanup: merged-but-unclosed task projections S5T1VV and V0H90T are canonicalized, superseded release task 4G7YPZ is closed, stale local/remote task refs are removed, and policy routing still passes."
+  -
+    type: "status"
+    at: "2026-04-16T10:02:47.352Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #354 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T10:00:14.098Z"
+doc_updated_at: "2026-04-16T10:02:47.358Z"
 doc_updated_by: "INTEGRATOR"
 description: "Classify the remaining local task/backup branches and remote task/task-close refs, integrate any still-relevant work through the canonical branch_pr route, and remove branches that are stale or already represented on main."
 sections:
