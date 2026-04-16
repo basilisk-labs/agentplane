@@ -1,0 +1,8 @@
+ .agentplane/policy/incidents.md                       | 1 -
+ .agentplane/policy/workflow.release.md                | 7 +++++--
+ docs/developer/incident-archive.mdx                   | 1 +
+ docs/help/troubleshooting-by-symptom.mdx              | 4 +++-
+ docs/help/troubleshooting.mdx                         | 4 +++-
+ packages/agentplane/assets/policy/incidents.md        | 1 -
+ packages/agentplane/assets/policy/workflow.release.md | 7 +++++--
+ 7 files changed, 17 insertions(+), 8 deletions(-)
