@@ -25,7 +25,7 @@ import { resolveProjectInstalledRecipeDir } from "./paths.js";
 import { readProjectInstalledRecipes } from "./project-installed-recipes.js";
 import { readScenarioDefinition } from "./scenario.js";
 
-const SUPPORTED_MANIFEST_API_VERSION = "2" as const;
+const SUPPORTED_MANIFEST_API_VERSION = "1" as const;
 const SUPPORTED_SCENARIO_API_VERSION = "1" as const;
 const SUPPORTED_RUNTIME_API_VERSION = "1" as const;
 

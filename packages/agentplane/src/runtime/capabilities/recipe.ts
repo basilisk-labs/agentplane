@@ -13,6 +13,19 @@ type RecipeSelection = Pick<
 
 type RecipeEntry = Pick<InstalledRecipeEntry, "id" | "version" | "manifest">;
 
+function normalizeRecipeManifest(entry: RecipeEntry): RecipeEntry["manifest"] {
+  if (entry.manifest.kind === "scenario_pack" || entry.manifest.kind === "project_overlay") {
+    return entry.manifest;
+  }
+  const legacyManifest = entry.manifest as RecipeEntry["manifest"] & {
+    schema_version?: "1" | "2";
+  };
+  if (legacyManifest.schema_version === "1") {
+    return { ...legacyManifest, kind: "scenario_pack" } as RecipeEntry["manifest"];
+  }
+  return { ...legacyManifest, kind: "project_overlay" } as RecipeEntry["manifest"];
+}
+
 function source(entry: RecipeEntry) {
   return {
     id: "recipe_manifest" as const,
@@ -58,7 +71,8 @@ export function resolveRecipeCapabilityRegistry(opts: {
   entry: RecipeEntry;
   selection?: RecipeSelection | null;
 }): AgentplaneCapabilityRegistry {
-  if (opts.entry.manifest.kind !== "scenario_pack") {
+  const manifest = normalizeRecipeManifest(opts.entry);
+  if (manifest.kind !== "scenario_pack") {
     return createCapabilityRegistry([]);
   }
   const gate = opts.selection
@@ -66,7 +80,7 @@ export function resolveRecipeCapabilityRegistry(opts: {
     : null;
   const entries: AgentplaneCapabilityEntry[] = [];
 
-  for (const scenario of opts.entry.manifest.scenarios) {
+  for (const scenario of manifest.scenarios) {
     const selected = opts.selection ? scenario.id === opts.selection.scenario_id : true;
     entries.push({
       id: scenarioCapabilityId(opts.entry.id, scenario.id),
@@ -88,7 +102,7 @@ export function resolveRecipeCapabilityRegistry(opts: {
     });
   }
 
-  for (const agent of opts.entry.manifest.agents ?? []) {
+  for (const agent of manifest.agents ?? []) {
     const selected = opts.selection ? opts.selection.agents_involved.includes(agent.id) : true;
     entries.push({
       id: agentCapabilityId(opts.entry.id, agent.id),
@@ -110,7 +124,7 @@ export function resolveRecipeCapabilityRegistry(opts: {
     });
   }
 
-  for (const skill of opts.entry.manifest.skills ?? []) {
+  for (const skill of manifest.skills ?? []) {
     const selected = opts.selection ? opts.selection.skills_used.includes(skill.id) : true;
     entries.push({
       id: skillCapabilityId(opts.entry.id, skill.id),
@@ -132,7 +146,7 @@ export function resolveRecipeCapabilityRegistry(opts: {
     });
   }
 
-  for (const tool of opts.entry.manifest.tools ?? []) {
+  for (const tool of manifest.tools ?? []) {
     const selected = opts.selection ? opts.selection.tools_used.includes(tool.id) : true;
     entries.push({
       id: toolCapabilityId(opts.entry.id, tool.id),
