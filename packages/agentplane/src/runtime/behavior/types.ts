@@ -8,6 +8,8 @@ export type BehaviorCandidate<TValue, TMetadata = Record<string, unknown>> = {
   metadata?: TMetadata;
 };
 
+export type BehaviorMergeMode = "pick_one" | "stack" | "union";
+
 export type BehaviorResolutionEntry<TMetadata = Record<string, unknown>> = {
   layer: BehaviorLayer;
   source: string;

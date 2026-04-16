@@ -58,6 +58,9 @@ export function resolveRecipeCapabilityRegistry(opts: {
   entry: RecipeEntry;
   selection?: RecipeSelection | null;
 }): AgentplaneCapabilityRegistry {
+  if (opts.entry.manifest.kind !== "scenario_pack") {
+    return createCapabilityRegistry([]);
+  }
   const gate = opts.selection
     ? scenarioCapabilityId(opts.entry.id, opts.selection.scenario_id)
     : null;

@@ -1,5 +1,6 @@
-import { lstat, mkdtemp, mkdir, readFile, readlink, rm, writeFile } from "node:fs/promises";
+import { lstat, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
+import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
@@ -81,7 +82,7 @@ describe("bootstrap-framework-dev script", () => {
     });
 
     expect(calls).toEqual([
-      "bun install",
+      "bun install --ignore-scripts",
       "git submodule update --init --recursive agentplane-recipes",
       "bun run --filter=@agentplaneorg/core build",
       "bun run --filter=agentplane build",
@@ -149,7 +150,7 @@ describe("bootstrap-framework-dev script", () => {
     expect(postMerge).toContain("hooks run post-merge");
   });
 
-  it("reuses common-root dependencies and recipes for a fresh worktree checkout", async () => {
+  it("reuses only recipes metadata from the common root for a fresh worktree checkout", async () => {
     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
     const commonRepoRoot = await mkFrameworkRepo();
     const repoRoot = await mkFrameworkRepo();
@@ -171,21 +172,11 @@ describe("bootstrap-framework-dev script", () => {
     });
 
     expect(calls).toEqual([
+      "bun install --ignore-scripts",
       "bun run --filter=@agentplaneorg/core build",
       "bun run --filter=agentplane build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
-    const nodeModulesStat = await lstat(path.join(repoRoot, "node_modules"));
-    expect(nodeModulesStat.isSymbolicLink()).toBe(true);
-    expect(await readlink(path.join(repoRoot, "node_modules"))).toBe(
-      path.join(commonRepoRoot, "node_modules"),
-    );
-    expect(await readlink(path.join(repoRoot, "packages", "core", "node_modules"))).toBe(
-      path.join(commonRepoRoot, "packages", "core", "node_modules"),
-    );
-    expect(await readlink(path.join(repoRoot, "packages", "agentplane", "node_modules"))).toBe(
-      path.join(commonRepoRoot, "packages", "agentplane", "node_modules"),
-    );
   });
 
   it("runs bun install when the shared root lacks package-local build layout", async () => {
@@ -204,11 +195,53 @@ describe("bootstrap-framework-dev script", () => {
     });
 
     expect(calls).toEqual([
-      "bun install",
+      "bun install --ignore-scripts",
       "bun run --filter=@agentplaneorg/core build",
       "bun run --filter=agentplane build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
+  });
+
+  it("removes foreign package-local install layout before rebuilding the worktree runtime", async () => {
+    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
+    const commonRepoRoot = await mkFrameworkRepo();
+    const repoRoot = await mkFrameworkRepo();
+    await mkdir(path.join(commonRepoRoot, "node_modules"), { recursive: true });
+    await mkdir(path.join(commonRepoRoot, "packages", "core", "node_modules"), {
+      recursive: true,
+    });
+    await mkdir(path.join(commonRepoRoot, "packages", "agentplane", "node_modules"), {
+      recursive: true,
+    });
+    await mkdir(path.join(commonRepoRoot, "agentplane-recipes"), { recursive: true });
+    await writeFile(path.join(commonRepoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
+    await fs.promises.symlink(
+      path.join(commonRepoRoot, "packages", "core", "node_modules"),
+      path.join(repoRoot, "packages", "core", "node_modules"),
+      "dir",
+    );
+    await fs.promises.symlink(
+      path.join(commonRepoRoot, "packages", "agentplane", "node_modules"),
+      path.join(repoRoot, "packages", "agentplane", "node_modules"),
+      "dir",
+    );
+    const calls: string[] = [];
+    const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
+      recordCallExec(currentRepoRoot, cmd, args, calls);
+
+    runFrameworkDevBootstrap(repoRoot, exec, {
+      resolveCommonRepoRoot: () => commonRepoRoot,
+    });
+
+    expect(calls).toEqual([
+      "bun install --ignore-scripts",
+      "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=agentplane build",
+      "node packages/agentplane/bin/agentplane.js runtime explain",
+    ]);
+    await expect(lstat(path.join(repoRoot, "node_modules"))).rejects.toThrow();
+    await expect(lstat(path.join(repoRoot, "packages", "core", "node_modules"))).rejects.toThrow();
+    await expect(lstat(path.join(repoRoot, "packages", "agentplane", "node_modules"))).rejects.toThrow();
   });
 
   it("repairs legacy lefthook-generated hooks after building the repo-local runtime", async () => {

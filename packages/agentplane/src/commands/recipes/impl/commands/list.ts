@@ -4,6 +4,7 @@ import { mapCoreError } from "../../../../cli/error-map.js";
 import { emptyStateMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 
+import { readActiveRecipeIds } from "../overlay-project.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
 import type { RecipeListFlags } from "../types.js";
 
@@ -18,7 +19,10 @@ export async function cmdRecipeListParsed(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const installed = await readProjectInstalledRecipes(resolved);
+    const [installed, activeIds] = await Promise.all([
+      readProjectInstalledRecipes(resolved),
+      readActiveRecipeIds(resolved),
+    ]);
 
     let recipes = installed.recipes;
     if (flags.tag) {
@@ -43,7 +47,14 @@ export async function cmdRecipeListParsed(opts: {
     if (flags.full) {
       process.stdout.write(
         `${JSON.stringify(
-          { schema_version: 1, updated_at: installed.updated_at, recipes },
+          {
+            schema_version: 1,
+            updated_at: installed.updated_at,
+            recipes: recipes.map((entry) => ({
+              ...entry,
+              active: activeIds.includes(entry.id),
+            })),
+          },
           null,
           2,
         )}\n`,
@@ -53,7 +64,7 @@ export async function cmdRecipeListParsed(opts: {
 
     for (const entry of recipes) {
       process.stdout.write(
-        `${entry.id}@${entry.version} - ${entry.manifest.summary || "No summary"}\n`,
+        `${entry.id}@${entry.version} [${entry.manifest.kind}${activeIds.includes(entry.id) ? ",active" : ""}] - ${entry.manifest.summary || "No summary"}\n`,
       );
     }
     return 0;

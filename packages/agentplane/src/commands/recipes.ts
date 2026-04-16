@@ -6,14 +6,17 @@ export {
 } from "./recipes/impl/constants.js";
 
 export type {
+  CompiledOverlayBundle,
   RecipeCachePruneFlags,
   RecipeConflictMode,
   RecipeInstallSource,
+  RecipeKind,
   RecipeListFlags,
   RecipeListRemoteFlags,
   RecipeResolverCompatibility,
   RecipeResolverCompatibilityFailure,
   RecipeResolverContext,
+  ProjectOverlayManifestV2,
   ResolveRecipeScenarioSelectionFlags,
   ResolvedRecipeRunProfile,
   ResolvedRecipeScenario,
@@ -30,10 +33,20 @@ export {
 } from "./recipes/impl/project-installed-recipes.js";
 
 export {
+  compileProjectOverlayArtifacts,
+  readActiveRecipeIds,
+  readProjectOverlayBundle,
+  refreshProjectOverlayArtifacts,
+  setRecipeActive,
+} from "./recipes/impl/overlay-project.js";
+
+export {
   resolveInstalledRecipeDir,
   resolveInstalledRecipesPath,
   resolveProjectInstalledRecipeDir,
+  resolveProjectOverlayBundlePath,
   resolveProjectRecipeInstallMetaPath,
+  resolveProjectRecipesLockPath,
   resolveProjectRecipesDir,
   resolveProjectRecipesCacheDir,
 } from "./recipes/impl/paths.js";
@@ -54,7 +67,11 @@ export {
 } from "./recipes/impl/resolver.js";
 
 export {
+  cmdRecipeActiveParsed,
   cmdRecipeCachePruneParsed,
+  cmdRecipeDisableParsed,
+  cmdRecipeEnableParsed,
+  cmdRecipeExplainActiveParsed,
   cmdRecipeExplainParsed,
   cmdRecipeInfoParsed,
   cmdRecipeInstall,

@@ -25,7 +25,7 @@ import { resolveProjectInstalledRecipeDir } from "./paths.js";
 import { readProjectInstalledRecipes } from "./project-installed-recipes.js";
 import { readScenarioDefinition } from "./scenario.js";
 
-const SUPPORTED_MANIFEST_API_VERSION = "1" as const;
+const SUPPORTED_MANIFEST_API_VERSION = "2" as const;
 const SUPPORTED_SCENARIO_API_VERSION = "1" as const;
 const SUPPORTED_RUNTIME_API_VERSION = "1" as const;
 
@@ -188,6 +188,7 @@ function toResolvedRecipeScenarios(opts: {
   compatibility: RecipeResolverCompatibility;
 }): ResolvedRecipeScenario[] {
   const recipeDir = resolveProjectInstalledRecipeDir(opts.project, opts.entry.id);
+  if (opts.entry.manifest.kind !== "scenario_pack") return [];
   return opts.entry.manifest.scenarios
     .map<ResolvedRecipeScenario>((scenario) => ({
       recipe_id: opts.entry.id,

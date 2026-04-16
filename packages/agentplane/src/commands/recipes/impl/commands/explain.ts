@@ -5,6 +5,7 @@ import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
 import { formatJsonBlock } from "../format.js";
+import { readActiveRecipeIds } from "../overlay-project.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
 import { resolveProjectInstalledRecipeDir } from "../paths.js";
 import { collectRecipeScenarioDetails } from "../scenario.js";
@@ -19,7 +20,10 @@ export async function cmdRecipeExplainParsed(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const installed = await readProjectInstalledRecipes(resolved);
+    const [installed, activeIds] = await Promise.all([
+      readProjectInstalledRecipes(resolved),
+      readActiveRecipeIds(resolved),
+    ]);
     const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
     if (!entry) {
       throw new CliError({
@@ -31,9 +35,13 @@ export async function cmdRecipeExplainParsed(opts: {
 
     const manifest = entry.manifest;
     const recipeDir = resolveProjectInstalledRecipeDir(resolved, entry.id);
-    const scenarioDetails = await collectRecipeScenarioDetails(recipeDir, manifest);
+    const scenarioDetails =
+      manifest.kind === "scenario_pack" ? await collectRecipeScenarioDetails(recipeDir, manifest) : [];
 
     process.stdout.write(`Recipe: ${manifest.id}@${manifest.version}\n`);
+    process.stdout.write(`Kind: ${manifest.kind}\n`);
+    process.stdout.write(`Schema: ${manifest.schema_version}\n`);
+    process.stdout.write(`Active: ${activeIds.includes(entry.id) ? "yes" : "no"}\n`);
     process.stdout.write(`Name: ${manifest.name}\n`);
     process.stdout.write(`Summary: ${manifest.summary}\n`);
     process.stdout.write(`Description: ${manifest.description}\n`);
@@ -68,6 +76,30 @@ export async function cmdRecipeExplainParsed(opts: {
       for (const tool of tools) {
         process.stdout.write(`  - ${tool.id} - ${tool.summary}\n`);
       }
+    }
+
+    if (manifest.kind === "project_overlay") {
+      if (manifest.prompts.length > 0) {
+        process.stdout.write("Overlay prompts:\n");
+        for (const prompt of manifest.prompts) {
+          process.stdout.write(
+            `  - ${prompt.id} [surface=${prompt.surface}, strength=${prompt.strength ?? "default"}, file=${prompt.file}]\n`,
+          );
+        }
+      }
+      if ((manifest.validators ?? []).length > 0) {
+        process.stdout.write("Overlay validators:\n");
+        for (const validator of manifest.validators ?? []) {
+          process.stdout.write(
+            `  - ${validator.id} [kind=${validator.kind}, phase=${validator.phase}]\n`,
+          );
+        }
+      }
+      if (manifest.templates && Object.keys(manifest.templates).length > 0) {
+        const payload = formatJsonBlock(manifest.templates, "  ");
+        if (payload) process.stdout.write(`Templates:\n${payload}\n`);
+      }
+      return 0;
     }
 
     if (scenarioDetails.length > 0) {

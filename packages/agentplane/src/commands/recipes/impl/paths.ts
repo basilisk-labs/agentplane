@@ -59,3 +59,15 @@ export function resolveProjectRecipeInstallMetaPath(
 export function resolveProjectRecipesCacheDir(resolved: { agentplaneDir: string }): string {
   return path.join(resolved.agentplaneDir, PROJECT_RECIPES_CACHE_DIR_NAME);
 }
+
+export function resolveProjectRecipesLockPath(resolved: { agentplaneDir: string }): string {
+  return path.join(resolved.agentplaneDir, "recipes.lock.json");
+}
+
+export function resolveProjectGeneratedDir(resolved: { agentplaneDir: string }): string {
+  return path.join(resolved.agentplaneDir, "generated");
+}
+
+export function resolveProjectOverlayBundlePath(resolved: { agentplaneDir: string }): string {
+  return path.join(resolveProjectGeneratedDir(resolved), "overlay-bundle.json");
+}

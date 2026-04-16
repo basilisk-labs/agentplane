@@ -5,6 +5,7 @@ import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
 import { formatJsonBlock } from "../format.js";
+import { readActiveRecipeIds } from "../overlay-project.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
 
 export async function cmdRecipeInfoParsed(opts: {
@@ -17,7 +18,10 @@ export async function cmdRecipeInfoParsed(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const installed = await readProjectInstalledRecipes(resolved);
+    const [installed, activeIds] = await Promise.all([
+      readProjectInstalledRecipes(resolved),
+      readActiveRecipeIds(resolved),
+    ]);
     const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
     if (!entry) {
       throw new CliError({
@@ -29,6 +33,9 @@ export async function cmdRecipeInfoParsed(opts: {
     const manifest = entry.manifest;
 
     process.stdout.write(`Recipe: ${manifest.id}@${manifest.version}\n`);
+    process.stdout.write(`Kind: ${manifest.kind}\n`);
+    process.stdout.write(`Schema: ${manifest.schema_version}\n`);
+    process.stdout.write(`Active: ${activeIds.includes(entry.id) ? "yes" : "no"}\n`);
     process.stdout.write(`Name: ${manifest.name}\n`);
     process.stdout.write(`Summary: ${manifest.summary}\n`);
     process.stdout.write(`Description: ${manifest.description}\n`);
@@ -43,7 +50,9 @@ export async function cmdRecipeInfoParsed(opts: {
     const skills = manifest.skills ?? [];
     const agents = manifest.agents ?? [];
     const tools = manifest.tools ?? [];
-    const scenarios = manifest.scenarios ?? [];
+    const scenarios = manifest.kind === "scenario_pack" ? manifest.scenarios ?? [] : [];
+    const prompts = manifest.kind === "project_overlay" ? manifest.prompts : [];
+    const validators = manifest.kind === "project_overlay" ? manifest.validators ?? [] : [];
 
     if (skills.length > 0) {
       process.stdout.write("Skills:\n");
@@ -62,6 +71,20 @@ export async function cmdRecipeInfoParsed(opts: {
       process.stdout.write("Tools:\n");
       for (const tool of tools) {
         process.stdout.write(`  - ${tool.id} - ${tool.summary}\n`);
+      }
+    }
+    if (prompts.length > 0) {
+      process.stdout.write("Prompts:\n");
+      for (const prompt of prompts) {
+        process.stdout.write(
+          `  - ${prompt.id} [surface=${prompt.surface}, strength=${prompt.strength ?? "default"}]\n`,
+        );
+      }
+    }
+    if (validators.length > 0) {
+      process.stdout.write("Validators:\n");
+      for (const validator of validators) {
+        process.stdout.write(`  - ${validator.id} [kind=${validator.kind}, phase=${validator.phase}]\n`);
       }
     }
     if (scenarios.length > 0) {

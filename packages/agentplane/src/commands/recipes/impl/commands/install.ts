@@ -24,6 +24,7 @@ import { DEFAULT_RECIPES_INDEX_URL, RECIPE_RUNS_DIR_NAME } from "../constants.js
 import { loadRecipesRemoteIndex, willFetchRemoteRecipesIndex } from "../index.js";
 import { readRecipeManifest } from "../manifest.js";
 import { normalizeRecipeTags } from "../normalize.js";
+import { readActiveRecipeIds, refreshProjectOverlayArtifacts } from "../overlay-project.js";
 import { writeRecipeInstallMetadata } from "../project-installed-recipes.js";
 import {
   resolveProjectInstalledRecipeDir,
@@ -257,6 +258,10 @@ export async function cmdRecipeInstall(opts: {
       }
 
       process.stdout.write(`Installed recipe ${manifestWithTags.id}@${manifestWithTags.version}\n`);
+      const activeIds = await readActiveRecipeIds(project);
+      if (activeIds.includes(manifestWithTags.id)) {
+        await refreshProjectOverlayArtifacts(project);
+      }
       return 0;
     } finally {
       await rm(tempRoot, { recursive: true, force: true });
