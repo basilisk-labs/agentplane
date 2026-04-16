@@ -236,6 +236,87 @@ describe("runCli", () => {
     }
   });
 
+  it("integrate points task-worktree operators back to the base checkout route", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
+    await stageGitignoreIfPresent(root);
+    await execFileAsync("git", ["add", "README.md", ".agentplane/config.json"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate base checkout route",
+        "--description",
+        "Integrate should explain the base checkout rerun path when launched from the task worktree.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const branch = `task/${taskId}/base-route`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feature"], { cwd: root });
+    await runCliSilent([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      branch,
+      "--sync-only",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain(
+        `integrate must run from the main base checkout, not from task branch ${branch}`,
+      );
+      expect(io.stderr).toContain(
+        `next_action: git checkout main && agentplane integrate ${taskId} --branch ${branch}`,
+      );
+      expect(io.stderr).toContain(
+        "reason_code: integrate_base_checkout_required [git] integrate was launched from a task worktree instead of the registered base checkout",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
   it("integrate refuses local mutation when the base branch requires pull-request merges", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);

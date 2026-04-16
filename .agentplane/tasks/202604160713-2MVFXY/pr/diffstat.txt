@@ -1,0 +1,6 @@
+ packages/agentplane/src/cli/reason-codes.ts        |  6 ++
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts | 81 ++++++++++++++++++++++
+ .../agentplane/src/cli/run-cli/error-guidance.ts   | 11 +++
+ .../commands/pr/integrate/internal/prepare.test.ts | 28 ++++++++
+ .../src/commands/pr/integrate/internal/prepare.ts  | 52 ++++++++++++--
+ 5 files changed, 171 insertions(+), 7 deletions(-)

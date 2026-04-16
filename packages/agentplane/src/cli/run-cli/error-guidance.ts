@@ -107,6 +107,17 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
       });
     }
     case "E_GIT": {
+      if (reasonCode === "integrate_base_checkout_required") {
+        return withExplicit({
+          hint: "Integrate must run from the base checkout, not from the task branch worktree.",
+          nextAction: {
+            command: "git worktree list",
+            reason:
+              "locate the registered base checkout if the rerun command is not already provided",
+            reasonCode,
+          },
+        });
+      }
       if (reasonCode === "reconcile_git_state_unreadable") {
         return withExplicit({
           hint: "Reconcile check could not read git state.",

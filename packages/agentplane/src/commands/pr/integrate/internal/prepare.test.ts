@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { CliError } from "../../../../../shared/errors.js";
+import { CliError } from "../../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
   resolveBaseBranch: vi.fn(),
@@ -136,6 +136,37 @@ describe("pr/integrate/internal/prepare", () => {
     await expect(
       prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false, base: "   " }),
     ).rejects.toMatchObject<CliError>({ code: "E_USAGE", message: "Invalid value for --base." });
+  });
+
+  it("explains the base-checkout rerun route when integrate is invoked from the task branch worktree", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.gitCurrentBranch.mockResolvedValue("task/T-1");
+    mocks.findWorktreeForBranch
+      .mockResolvedValueOnce("/repo-base")
+      .mockResolvedValueOnce("/repo-task");
+
+    const caught = await prepareIntegrate({
+      cwd: "/repo-task",
+      taskId: "T-1",
+      runVerify: false,
+    }).catch((err: unknown) => err);
+
+    expect(caught).toBeInstanceOf(CliError);
+    expect(caught).toMatchObject<CliError>({
+      code: "E_GIT",
+      message:
+        "integrate must run from the main base checkout, not from task branch task/T-1. Rerun it against the base checkout after leaving this task worktree.",
+    });
+    if (!(caught instanceof CliError)) {
+      throw new Error("expected CliError");
+    }
+    expect(caught.context).toMatchObject({
+      reason_code: "integrate_base_checkout_required",
+      diagnostic_next_action_command:
+        "agentplane integrate T-1 --branch task/T-1 --root /repo-base",
+    });
   });
 
   it("rejects when base branch cannot be resolved", async () => {

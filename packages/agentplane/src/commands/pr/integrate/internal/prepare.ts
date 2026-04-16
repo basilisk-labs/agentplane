@@ -7,6 +7,7 @@ import type { TaskData } from "../../../../backends/task-backend.js";
 import { fileExists } from "../../../../cli/fs-utils.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { unknownEntityMessage, workflowModeMessage } from "../../../../cli/output.js";
+import { withDiagnosticContext } from "../../../../shared/diagnostics.js";
 import { CliError } from "../../../../shared/errors.js";
 import { ensureGitClean } from "../../../guard/index.js";
 import { gitDiffNames } from "../../../shared/git-diff.js";
@@ -110,13 +111,6 @@ export async function prepareIntegrate(opts: {
   }
 
   const currentBranch = await gitCurrentBranch(resolved.gitRoot);
-  if (currentBranch !== baseBranch) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_GIT"),
-      code: "E_GIT",
-      message: `integrate must run on base branch ${baseBranch} (current: ${currentBranch})`,
-    });
-  }
 
   const { prDir, metaPath, diffstatPath, verifyLogPath } = await resolvePrPaths({
     ctx,
@@ -149,6 +143,50 @@ export async function prepareIntegrate(opts: {
       exitCode: 2,
       code: "E_USAGE",
       message: unknownEntityMessage("branch", branch),
+    });
+  }
+
+  if (currentBranch !== baseBranch) {
+    if (currentBranch === branch) {
+      const baseWorktreePath = await findWorktreeForBranch(resolved.gitRoot, baseBranch);
+      const rerunCommand =
+        baseWorktreePath && baseWorktreePath.trim().length > 0
+          ? `agentplane integrate ${opts.taskId} --branch ${branch} --root ${baseWorktreePath}`
+          : `git checkout ${baseBranch} && agentplane integrate ${opts.taskId} --branch ${branch}`;
+      throw new CliError({
+        exitCode: exitCodeForError("E_GIT"),
+        code: "E_GIT",
+        message:
+          `integrate must run from the ${baseBranch} base checkout, not from task branch ${branch}. ` +
+          `Rerun it against the base checkout after leaving this task worktree.`,
+        context: withDiagnosticContext(
+          {
+            command: "integrate",
+            task_id: opts.taskId,
+            branch,
+            base_branch: baseBranch,
+            current_branch: currentBranch,
+            ...(baseWorktreePath ? { base_worktree_path: baseWorktreePath } : {}),
+            reason_code: "integrate_base_checkout_required",
+          },
+          {
+            state: `integrate was invoked from task branch ${branch} instead of base branch ${baseBranch}`,
+            likelyCause:
+              "the operator is inside the task worktree, but branch_pr integrate is only valid from the registered base checkout",
+            hint: "Use the base checkout/worktree for the resolved base branch, not the task branch worktree, when running integrate.",
+            nextAction: {
+              command: rerunCommand,
+              reason: "rerun integrate against the base checkout route",
+              reasonCode: "integrate_base_checkout_required",
+            },
+          },
+        ),
+      });
+    }
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message: `integrate must run on base branch ${baseBranch} (current: ${currentBranch})`,
     });
   }
 
