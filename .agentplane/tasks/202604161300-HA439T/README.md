@@ -1,10 +1,11 @@
 ---
 id: "202604161300-HA439T"
 title: "Unify transient GitHub transport retry coverage across workflow helpers"
-status: "DOING"
+result_summary: "Merged via PR #360."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-16T13:35:46.765Z"
   updated_by: "CODER"
   note: "Verified: wait-remote-pr-checks now uses the shared GitHub transport retry contract via scripts/lib/gh-transport.mjs, and wait-remote-pr-checks-script.test.ts passes with parity coverage for defaults and transient/permanent classification."
-commit: null
+commit:
+  hash: "01dcce7010e3ef861401ca22f2af81d82d12a9c3"
+  message: "github/workflow: Unify transient GitHub transport retry coverage across workflow helpers (HA439T) (#360)"
 comments:
   -
     author: "CODER"
     body: "Start: audit the remaining GitHub helper paths against the current retry contract, extract the smallest shared transient transport retry boundary, and close INC-20260407-01 without broad GitHub workflow refactors."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #360 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: wait-remote-pr-checks now uses the shared GitHub transport retry contract via scripts/lib/gh-transport.mjs, and wait-remote-pr-checks-script.test.ts passes with parity coverage for defaults and transient/permanent classification."
+  -
+    type: "status"
+    at: "2026-04-16T13:54:07.090Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #360 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T13:35:46.769Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-16T13:54:07.096Z"
+doc_updated_by: "INTEGRATOR"
 description: "INC-20260407-01 remains open: GitHub-dependent branch_pr helpers still need one explicit contract for classifying EOF/TLS/SSL transport failures as transient, retrying them with bounded backoff, and surfacing auth/usage failures immediately across PR creation, reconcile, and remote-check paths."
 sections:
   Summary: |-
