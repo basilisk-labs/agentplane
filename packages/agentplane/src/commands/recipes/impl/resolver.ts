@@ -188,6 +188,7 @@ function toResolvedRecipeScenarios(opts: {
   compatibility: RecipeResolverCompatibility;
 }): ResolvedRecipeScenario[] {
   const recipeDir = resolveProjectInstalledRecipeDir(opts.project, opts.entry.id);
+  if (opts.entry.manifest.kind !== "scenario_pack") return [];
   return opts.entry.manifest.scenarios
     .map<ResolvedRecipeScenario>((scenario) => ({
       recipe_id: opts.entry.id,

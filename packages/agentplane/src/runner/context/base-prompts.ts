@@ -1,6 +1,8 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { matchOverlayWhen, type CompiledOverlayBundle } from "@agentplaneorg/recipes";
+
 import { loadAgentTemplates, loadPolicyGatewayTemplate } from "../../agents/agents-template.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import {
@@ -15,7 +17,12 @@ import {
 } from "../../shared/policy-gateway.js";
 import type { ResolvedExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
 import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
-import type { RunnerPromptBlock, RunnerPromptRole, RunnerRecipeContext } from "../types.js";
+import type {
+  RunnerPromptBlock,
+  RunnerPromptRole,
+  RunnerRecipeContext,
+  RunnerTaskContext,
+} from "../types.js";
 
 const FRAMEWORK_RUNNER_PROMPT_URL = new URL("../../../assets/RUNNER.md", import.meta.url);
 
@@ -30,6 +37,17 @@ const BASE_PROMPT_PRIORITIES = {
   recipe_tools_context: 700,
 } as const;
 
+const OVERLAY_PROMPT_PRIORITIES = {
+  planning: 410,
+  execution: 420,
+  coding: 430,
+  debugging: 440,
+  review: 450,
+  verification: 460,
+  docs: 470,
+  finish: 480,
+} as const;
+
 function ensureTrailingNewline(text: string): string {
   return text.endsWith("\n") ? text : `${text}\n`;
 }
@@ -42,6 +60,32 @@ function normalizeOwnerId(ownerIdRaw: string): string {
 
 function normalizeText(text: string): string {
   return ensureTrailingNewline(text.trimEnd());
+}
+
+async function detectRepoTypes(gitRoot: string): Promise<string[]> {
+  const repoTypes = ["generic"];
+  const checks: [string, string][] = [
+    ["package.json", "node"],
+    ["pyproject.toml", "python"],
+    ["go.mod", "go"],
+    ["Cargo.toml", "rust"],
+  ];
+  for (const [relativePath, repoType] of checks) {
+    if (await fileExists(path.join(gitRoot, relativePath))) repoTypes.push(repoType);
+  }
+  return [...new Set(repoTypes)].toSorted();
+}
+
+function inferTaskKind(task: RunnerTaskContext | undefined): string | undefined {
+  const tags = Array.isArray(task?.data.tags)
+    ? task?.data.tags.filter((tag): tag is string => typeof tag === "string")
+    : [];
+  if (tags.includes("docs")) return "docs";
+  if (tags.includes("refactor")) return "refactor";
+  if (tags.includes("research")) return "research";
+  if (tags.includes("bug") || tags.includes("bugfix")) return "bugfix";
+  if (tags.length > 0) return "feature";
+  return undefined;
 }
 
 function validateJsonPrompt(source: string, text: string): string {
@@ -61,6 +105,49 @@ function renderRecipePromptJson(
   value: Record<string, unknown> | Record<string, unknown>[],
 ): string {
   return normalizeText(JSON.stringify(value, null, 2));
+}
+
+async function collectOverlayPromptBlocks(opts: {
+  git_root: string;
+  task?: RunnerTaskContext;
+}): Promise<RunnerPromptBlock[]> {
+  const bundlePath = path.join(opts.git_root, ".agentplane", "generated", "overlay-bundle.json");
+  if (!(await fileExists(bundlePath))) return [];
+
+  const bundle = JSON.parse(await readFile(bundlePath, "utf8")) as CompiledOverlayBundle;
+  const repoTypes = await detectRepoTypes(opts.git_root);
+  const tags = Array.isArray(opts.task?.data.tags)
+    ? opts.task?.data.tags.filter((tag): tag is string => typeof tag === "string")
+    : [];
+  const taskKind = inferTaskKind(opts.task);
+  const blocks: RunnerPromptBlock[] = [];
+
+  for (const [surface, fragments] of Object.entries(bundle.surfaces)) {
+    for (const fragment of fragments) {
+      if (
+        !matchOverlayWhen(fragment.when, {
+          task_kind: taskKind,
+          tags,
+          repo_types: repoTypes,
+        })
+      ) {
+        continue;
+      }
+      blocks.push({
+        id: `overlay.${fragment.recipe_id}.${fragment.id}`,
+        role: fragment.strength === "required" ? "policy" : "context",
+        title: `${fragment.recipe_name}: ${fragment.id}`,
+        source: fragment.source,
+        priority:
+          OVERLAY_PROMPT_PRIORITIES[surface as keyof typeof OVERLAY_PROMPT_PRIORITIES] +
+          (fragment.order ?? 0),
+        surface: surface as keyof typeof OVERLAY_PROMPT_PRIORITIES,
+        strength: fragment.strength,
+        content: normalizeText(fragment.content),
+      });
+    }
+  }
+  return blocks;
 }
 
 function toPromptSource(gitRoot: string, absPath: string): string {
@@ -481,6 +568,7 @@ export async function collectRunnerBasePrompts(opts: {
   owner_id: string;
   agents_dir?: string;
   fallback_policy_gateway_flavor?: PolicyGatewayFlavor;
+  task?: RunnerTaskContext;
   recipe?: RunnerRecipeContext;
   harness?: ResolvedHarnessContract;
   execution_profile?: ResolvedExecutionProfileRuntime;
@@ -507,6 +595,10 @@ export async function collectRunnerBasePrompts(opts: {
 
   const prompts = [
     ...basePrompts,
+    ...(await collectOverlayPromptBlocks({
+      git_root: opts.git_root,
+      task: opts.task,
+    })),
     ...(await collectRecipePromptBlocks({
       git_root: opts.git_root,
       recipe: opts.recipe ?? { recipe_id: "", scenario_id: "" },

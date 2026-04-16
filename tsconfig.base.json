@@ -7,8 +7,8 @@
     "paths": {
       "@agentplaneorg/core": ["packages/core/src/index.ts"],
       "@agentplaneorg/core/*": ["packages/core/src/*"],
-      "@agentplane/recipes": ["packages/recipes/src/index.ts"],
-      "@agentplane/recipes/*": ["packages/recipes/src/*"]
+      "@agentplaneorg/recipes": ["packages/recipes/src/index.ts"],
+      "@agentplaneorg/recipes/*": ["packages/recipes/src/*"]
     },
     "module": "NodeNext",
     "moduleResolution": "NodeNext",

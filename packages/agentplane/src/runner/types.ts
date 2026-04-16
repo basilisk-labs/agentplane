@@ -3,6 +3,7 @@ import type {
   RunnerTimeoutReason,
   RunnerTraceConfig,
 } from "@agentplaneorg/core";
+import type { OverlayStrength, OverlaySurface } from "@agentplaneorg/recipes";
 export type { RunnerTimeoutReason } from "@agentplaneorg/core";
 
 import type { BehaviorResolutionTrace } from "../runtime/behavior/index.js";
@@ -30,6 +31,8 @@ export type RunnerTarget =
 
 export type RunnerPromptRole = "system" | "policy" | "profile" | "task" | "context";
 
+export type RunnerPromptSurface = "base" | OverlaySurface;
+
 export type RunnerPromptBlock = {
   id: string;
   role: RunnerPromptRole;
@@ -37,6 +40,8 @@ export type RunnerPromptBlock = {
   title?: string;
   source?: string;
   priority: number;
+  surface?: RunnerPromptSurface;
+  strength?: OverlayStrength;
   resolution?: BehaviorResolutionTrace<Record<string, unknown>>;
 };
 

@@ -1,5 +1,6 @@
 import type {
   BehaviorCandidate,
+  BehaviorMergeMode,
   BehaviorLayer,
   BehaviorResolutionEntry,
   BehaviorResolutionTrace,
@@ -64,6 +65,7 @@ function toTraceEntry<TValue, TMetadata>(
 export function resolveBehavior<TValue, TMetadata = Record<string, unknown>>(opts: {
   key: string;
   candidates: readonly BehaviorCandidate<TValue, TMetadata>[];
+  merge_mode?: BehaviorMergeMode;
 }): ResolvedBehavior<TValue, TMetadata> {
   const key = normalizeKey(opts.key);
   if (opts.candidates.length === 0) {
@@ -71,20 +73,51 @@ export function resolveBehavior<TValue, TMetadata = Record<string, unknown>>(opt
   }
 
   const ranked = rankCandidates(opts.candidates).toSorted(compareCandidates);
-  const winner = ranked[0];
-  if (!winner) {
-    throw new Error(`Behavior resolution lost its winner unexpectedly: ${key}`);
+  const mergeMode = opts.merge_mode ?? "pick_one";
+
+  if (mergeMode === "pick_one") {
+    const winner = ranked[0];
+    if (!winner) {
+      throw new Error(`Behavior resolution lost its winner unexpectedly: ${key}`);
+    }
+
+    const trace = ranked.map((candidate, index) => toTraceEntry(candidate, index === 0));
+    const [winnerTrace, ...conflicts] = trace;
+    if (!winnerTrace) {
+      throw new Error(`Behavior resolution trace is unexpectedly empty: ${key}`);
+    }
+
+    return {
+      key,
+      value: winner.value,
+      winner: winnerTrace,
+      conflicts,
+      trace,
+    };
   }
 
-  const trace = ranked.map((candidate, index) => toTraceEntry(candidate, index === 0));
+  const trace = ranked.map((candidate) => toTraceEntry(candidate, true));
   const [winnerTrace, ...conflicts] = trace;
   if (!winnerTrace) {
     throw new Error(`Behavior resolution trace is unexpectedly empty: ${key}`);
   }
 
+  const mergedValue =
+    mergeMode === "union"
+      ? ([
+          ...new Set(
+            new Set(
+              ranked.flatMap((candidate) =>
+                Array.isArray(candidate.value) ? candidate.value : [candidate.value],
+              ),
+            ),
+          ),
+        ] as TValue)
+      : (ranked.map((candidate) => candidate.value) as TValue);
+
   return {
     key,
-    value: winner.value,
+    value: mergedValue,
     winner: winnerTrace,
     conflicts,
     trace,

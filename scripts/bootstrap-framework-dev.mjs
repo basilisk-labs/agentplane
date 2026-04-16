@@ -61,14 +61,43 @@ function defaultExec(repoRoot, cmd, args) {
 }
 
 function hasWorkspaceNodeModules(repoRoot) {
-  return fs.existsSync(path.join(repoRoot, "node_modules"));
+  return pathResolvesWithinRepo(repoRoot, path.join(repoRoot, "node_modules"));
+}
+
+function resolveRealPathIfPresent(targetPath) {
+  try {
+    return fs.realpathSync(targetPath);
+  } catch {
+    return null;
+  }
+}
+
+function pathResolvesWithinRepo(repoRoot, targetPath) {
+  const normalizedRepoRoot = resolveRealPathIfPresent(repoRoot) ?? path.resolve(repoRoot);
+  const realPath = resolveRealPathIfPresent(targetPath);
+  if (!realPath) return false;
+  const relative = path.relative(normalizedRepoRoot, realPath);
+  return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
+}
+
+function removeForeignInstallLayouts(repoRoot) {
+  const installLayoutPaths = [
+    path.join(repoRoot, "node_modules"),
+    path.join(repoRoot, "packages", "core", "node_modules"),
+    path.join(repoRoot, "packages", "agentplane", "node_modules"),
+  ];
+  for (const targetPath of installLayoutPaths) {
+    if (!fs.existsSync(targetPath)) continue;
+    if (pathResolvesWithinRepo(repoRoot, targetPath)) continue;
+    fs.rmSync(targetPath, { recursive: true, force: true });
+  }
 }
 
 function hasBootstrapBuildInstallLayout(repoRoot) {
   return (
     hasWorkspaceNodeModules(repoRoot) &&
-    fs.existsSync(path.join(repoRoot, "packages", "core", "node_modules")) &&
-    fs.existsSync(path.join(repoRoot, "packages", "agentplane", "node_modules"))
+    pathResolvesWithinRepo(repoRoot, path.join(repoRoot, "packages", "core", "node_modules")) &&
+    pathResolvesWithinRepo(repoRoot, path.join(repoRoot, "packages", "agentplane", "node_modules"))
   );
 }
 
@@ -204,25 +233,10 @@ function reconcileManagedHooks(repoRoot) {
   return updatedHooks;
 }
 
-function linkDirectoryFromCommonRoot(repoRoot, commonRepoRoot, relativePath) {
-  if (repoRoot === commonRepoRoot) return false;
-  const localPath = path.join(repoRoot, relativePath);
-  if (fs.existsSync(localPath)) return false;
-
-  const commonPath = path.join(commonRepoRoot, relativePath);
-  if (!fs.existsSync(commonPath)) return false;
-
-  const symlinkType = process.platform === "win32" ? "junction" : "dir";
-  fs.symlinkSync(commonPath, localPath, symlinkType);
-  return true;
-}
-
 function linkBootstrapBuildInstallLayoutFromCommonRoot(repoRoot, commonRepoRoot) {
-  return [
-    "node_modules",
-    path.join("packages", "core", "node_modules"),
-    path.join("packages", "agentplane", "node_modules"),
-  ].filter((relativePath) => linkDirectoryFromCommonRoot(repoRoot, commonRepoRoot, relativePath));
+  void repoRoot;
+  void commonRepoRoot;
+  return [];
 }
 
 function printFooter() {
@@ -252,6 +266,8 @@ export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec
 
   process.stdout.write(`==> Framework repo: ${repoRoot}\n`);
 
+  removeForeignInstallLayouts(repoRoot);
+
   const linkedInstallLayout = linkBootstrapBuildInstallLayoutFromCommonRoot(
     repoRoot,
     commonRepoRoot,
@@ -271,7 +287,7 @@ export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec
     process.stdout.write("==> Bootstrap install layout already present; skipping bun install\n");
   } else {
     process.stdout.write("==> Installing workspace dependencies\n");
-    exec(repoRoot, "bun", ["install"]);
+    exec(repoRoot, "bun", ["install", "--ignore-scripts"]);
   }
 
   if (hasRecipesIndex(repoRoot)) {

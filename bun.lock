@@ -32,6 +32,7 @@
       },
       "dependencies": {
         "@agentplaneorg/core": "0.3.12",
+        "@agentplaneorg/recipes": "0.3.12",
         "yauzl": "^2.10.0",
       },
       "devDependencies": {
@@ -48,8 +49,8 @@
       },
     },
     "packages/recipes": {
-      "name": "@agentplane/recipes",
-      "version": "0.0.0",
+      "name": "@agentplaneorg/recipes",
+      "version": "0.3.12",
     },
     "packages/spec": {
       "name": "@agentplane/spec",
@@ -82,13 +83,13 @@
     },
   },
   "packages": {
-    "@agentplane/recipes": ["@agentplane/recipes@workspace:packages/recipes"],
-
     "@agentplane/spec": ["@agentplane/spec@workspace:packages/spec"],
 
     "@agentplane/testkit": ["@agentplane/testkit@workspace:packages/testkit"],
 
     "@agentplaneorg/core": ["@agentplaneorg/core@workspace:packages/core"],
+
+    "@agentplaneorg/recipes": ["@agentplaneorg/recipes@workspace:packages/recipes"],
 
     "@algolia/abtesting": ["@algolia/abtesting@1.15.0", "", { "dependencies": { "@algolia/client-common": "5.49.0", "@algolia/requester-browser-xhr": "5.49.0", "@algolia/requester-fetch": "5.49.0", "@algolia/requester-node-http": "5.49.0" } }, "sha512-D1QZ8dQx5zC9yrxNao9ER9bojmmzUdL1i2P9waIRiwnZ5fI26YswcCd6VHR/Q4W3PASfVf2My4YQ2FhGGDewTQ=="],
 

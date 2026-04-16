@@ -1,4 +1,4 @@
-import { cmdRecipeInstall } from "../../../../commands/recipes.js";
+import { cmdRecipeEnableParsed, cmdRecipeInstall } from "../../../../commands/recipes.js";
 import { infoMessage } from "../../../output.js";
 import { getBundledRecipeSourcePath, listBundledRecipes } from "../../../recipes-bundled.js";
 import { CliError } from "../../../../shared/errors.js";
@@ -32,6 +32,11 @@ export async function maybeInstallBundledRecipes(opts: {
       refresh: false,
       onConflict: "overwrite",
       yes: true,
+    });
+    await cmdRecipeEnableParsed({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      id: recipeId,
     });
   }
 }

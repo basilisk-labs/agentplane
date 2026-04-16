@@ -6,7 +6,6 @@ import {
   isRecord,
   requiredFieldMessage,
 } from "./internal-utils.js";
-
 import {
   normalizeAgentId,
   normalizeRecipeId,
@@ -17,6 +16,12 @@ import {
   normalizeToolId,
 } from "./normalize.js";
 import type {
+  OverlayPromptFragment,
+  OverlayStrength,
+  OverlaySurface,
+  OverlayValidator,
+  OverlayWhen,
+  ProjectOverlayManifestV2,
   RecipeAgentDefinition,
   RecipeCompatibility,
   RecipeManifest,
@@ -24,6 +29,7 @@ import type {
   RecipeScenarioDescriptor,
   RecipeSkillDefinition,
   RecipeToolDefinition,
+  ScenarioPackManifest,
 } from "./types.js";
 
 function normalizeRequiredString(raw: unknown, field: string): string {
@@ -109,8 +115,9 @@ function normalizeSkills(raw: unknown): RecipeSkillDefinition[] | undefined {
   if (raw === undefined) return undefined;
   if (!Array.isArray(raw)) throw new Error(invalidFieldMessage("manifest.skills", "array"));
   return raw.map((entry, index) => {
-    if (!isRecord(entry))
+    if (!isRecord(entry)) {
       throw new Error(invalidFieldMessage(`manifest.skills[${index}]`, "object"));
+    }
     return {
       id: normalizeSkillId(normalizeRequiredString(entry.id, `manifest.skills[${index}].id`)),
       summary: normalizeRequiredString(entry.summary, `manifest.skills[${index}].summary`),
@@ -127,8 +134,9 @@ function normalizeTools(raw: unknown): RecipeToolDefinition[] | undefined {
   if (raw === undefined) return undefined;
   if (!Array.isArray(raw)) throw new Error(invalidFieldMessage("manifest.tools", "array"));
   return raw.map((entry, index) => {
-    if (!isRecord(entry))
+    if (!isRecord(entry)) {
       throw new Error(invalidFieldMessage(`manifest.tools[${index}]`, "object"));
+    }
     const runtime = normalizeRequiredString(entry.runtime, `manifest.tools[${index}].runtime`);
     if (runtime !== "node" && runtime !== "bash") {
       throw new Error(invalidFieldMessage(`manifest.tools[${index}].runtime`, '"node" | "bash"'));
@@ -155,8 +163,9 @@ function normalizeAgents(raw: unknown): RecipeAgentDefinition[] | undefined {
   if (raw === undefined) return undefined;
   if (!Array.isArray(raw)) throw new Error(invalidFieldMessage("manifest.agents", "array"));
   return raw.map((entry, index) => {
-    if (!isRecord(entry))
+    if (!isRecord(entry)) {
       throw new Error(invalidFieldMessage(`manifest.agents[${index}]`, "object"));
+    }
     return {
       id: normalizeAgentId(normalizeRequiredString(entry.id, `manifest.agents[${index}].id`)),
       display_name: normalizeRequiredString(
@@ -236,6 +245,140 @@ function normalizeScenarios(raw: unknown): RecipeScenarioDescriptor[] {
   });
 }
 
+function normalizeOverlaySurface(raw: unknown, field: string): OverlaySurface {
+  const surface = normalizeRequiredString(raw, field);
+  if (
+    surface !== "planning" &&
+    surface !== "execution" &&
+    surface !== "coding" &&
+    surface !== "debugging" &&
+    surface !== "review" &&
+    surface !== "verification" &&
+    surface !== "docs" &&
+    surface !== "finish"
+  ) {
+    throw new Error(invalidFieldMessage(field, "valid overlay surface"));
+  }
+  return surface;
+}
+
+function normalizeOverlayStrength(raw: unknown, field: string): OverlayStrength | undefined {
+  if (raw === undefined) return undefined;
+  const strength = normalizeRequiredString(raw, field);
+  if (strength !== "required" && strength !== "default" && strength !== "advisory") {
+    throw new Error(invalidFieldMessage(field, '"required" | "default" | "advisory"'));
+  }
+  return strength;
+}
+
+function normalizeOverlayWhen(raw: unknown, field: string): OverlayWhen | undefined {
+  if (raw === undefined) return undefined;
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage(field, "object"));
+  return {
+    task_kinds: normalizeOptionalStringList(raw.task_kinds, `${field}.task_kinds`) as
+      | OverlayWhen["task_kinds"]
+      | undefined,
+    commands: normalizeOptionalStringList(raw.commands, `${field}.commands`),
+    tags_any: normalizeOptionalStringList(raw.tags_any, `${field}.tags_any`),
+    repo_types: normalizeOptionalStringList(raw.repo_types, `${field}.repo_types`),
+  };
+}
+
+function normalizePrompts(raw: unknown): OverlayPromptFragment[] {
+  if (!Array.isArray(raw) || raw.length === 0) {
+    throw new Error(invalidFieldMessage("manifest.prompts", "non-empty array"));
+  }
+  return raw.map((entry, index) => {
+    if (!isRecord(entry))
+      throw new Error(invalidFieldMessage(`manifest.prompts[${index}]`, "object"));
+    return {
+      id: normalizeRequiredString(entry.id, `manifest.prompts[${index}].id`),
+      surface: normalizeOverlaySurface(entry.surface, `manifest.prompts[${index}].surface`),
+      strength: normalizeOverlayStrength(entry.strength, `manifest.prompts[${index}].strength`),
+      file: normalizeRecipeRelativePath(
+        `manifest.prompts[${index}].file`,
+        normalizeRequiredString(entry.file, `manifest.prompts[${index}].file`),
+      ),
+      order: normalizeNumber(entry.order, `manifest.prompts[${index}].order`),
+      when: normalizeOverlayWhen(entry.when, `manifest.prompts[${index}].when`),
+    };
+  });
+}
+
+function normalizeValidators(raw: unknown): OverlayValidator[] | undefined {
+  if (raw === undefined) return undefined;
+  if (!Array.isArray(raw)) throw new Error(invalidFieldMessage("manifest.validators", "array"));
+  return raw.map((entry, index) => {
+    if (!isRecord(entry)) {
+      throw new Error(invalidFieldMessage(`manifest.validators[${index}]`, "object"));
+    }
+    const id = normalizeRequiredString(entry.id, `manifest.validators[${index}].id`);
+    const phase = normalizeRequiredString(entry.phase, `manifest.validators[${index}].phase`);
+    const kind = normalizeRequiredString(entry.kind, `manifest.validators[${index}].kind`);
+    const when = normalizeOverlayWhen(entry.when, `manifest.validators[${index}].when`);
+    if (kind === "required_evidence") {
+      return {
+        id,
+        phase: phase as "coding" | "verification" | "review" | "finish" | "debugging",
+        kind,
+        required: true,
+        evidence: normalizeStringList(entry.evidence, `manifest.validators[${index}].evidence`, {
+          minLength: 1,
+        }),
+        when,
+      };
+    }
+    if (kind === "required_command") {
+      return {
+        id,
+        phase: phase as "verification" | "finish" | "docs",
+        kind,
+        command: normalizeRequiredString(entry.command, `manifest.validators[${index}].command`),
+        required: entry.required !== false,
+        when,
+      };
+    }
+    if (kind === "check_script") {
+      const runtime = normalizeRequiredString(
+        entry.runtime,
+        `manifest.validators[${index}].runtime`,
+      );
+      if (runtime !== "bash" && runtime !== "node") {
+        throw new Error(
+          invalidFieldMessage(`manifest.validators[${index}].runtime`, '"bash" | "node"'),
+        );
+      }
+      return {
+        id,
+        phase: phase as "verification" | "docs",
+        kind,
+        runtime,
+        entrypoint: normalizeRecipeRelativePath(
+          `manifest.validators[${index}].entrypoint`,
+          normalizeRequiredString(entry.entrypoint, `manifest.validators[${index}].entrypoint`),
+        ),
+        required: entry.required !== false,
+        when,
+      };
+    }
+    throw new Error(
+      invalidFieldMessage(`manifest.validators[${index}].kind`, "known validator kind"),
+    );
+  });
+}
+
+function normalizeTemplates(raw: unknown): Record<string, string> | undefined {
+  if (raw === undefined) return undefined;
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("manifest.templates", "object"));
+  const entries = Object.entries(raw).map(([key, value]) => [key.trim(), value] as const);
+  const normalized: Record<string, string> = {};
+  for (const [key, value] of entries) {
+    if (!key) throw new Error(invalidFieldMessage("manifest.templates", "non-empty keys"));
+    normalized[key] = normalizeRequiredString(value, `manifest.templates.${key}`);
+  }
+  return normalized;
+}
+
 function assertUniqueIds(field: string, items: { id: string }[]): void {
   const seen = new Set<string>();
   for (const item of items) {
@@ -258,10 +401,10 @@ function assertKnownReferences(
   }
 }
 
-export function validateRecipeManifest(raw: unknown): RecipeManifest {
-  if (!isRecord(raw)) throw new Error(invalidFieldMessage("manifest", "object"));
-  if (raw.schema_version !== "1")
-    throw new Error(invalidFieldMessage("manifest.schema_version", '"1"'));
+function normalizeScenarioPack(
+  raw: Record<string, unknown>,
+  schemaVersion: "1" | "2",
+): ScenarioPackManifest {
   const id = normalizeRecipeId(normalizeRequiredString(raw.id, "manifest.id"));
   const version = normalizeRequiredString(raw.version, "manifest.version");
   const tags = normalizeRecipeTags(raw.tags);
@@ -299,7 +442,8 @@ export function validateRecipeManifest(raw: unknown): RecipeManifest {
   }
 
   return {
-    schema_version: "1",
+    schema_version: schemaVersion,
+    kind: "scenario_pack",
     id,
     version,
     name: normalizeRequiredString(raw.name, "manifest.name"),
@@ -312,6 +456,67 @@ export function validateRecipeManifest(raw: unknown): RecipeManifest {
     tools,
     scenarios,
   };
+}
+
+function normalizeProjectOverlay(raw: Record<string, unknown>): ProjectOverlayManifestV2 {
+  const prompts = normalizePrompts(raw.prompts);
+  const validators = normalizeValidators(raw.validators);
+  const skills = normalizeSkills(raw.skills);
+  const agents = normalizeAgents(raw.agents);
+  const tools = normalizeTools(raw.tools);
+  const tags = normalizeRecipeTags(raw.tags);
+
+  assertUniqueIds("manifest.prompts", prompts);
+  if (skills) assertUniqueIds("manifest.skills", skills);
+  if (validators) assertUniqueIds("manifest.validators", validators);
+  if (agents) assertUniqueIds("manifest.agents", agents);
+  if (tools) assertUniqueIds("manifest.tools", tools);
+
+  return {
+    schema_version: "2",
+    kind: "project_overlay",
+    id: normalizeRecipeId(normalizeRequiredString(raw.id, "manifest.id")),
+    version: normalizeRequiredString(raw.version, "manifest.version"),
+    name: normalizeRequiredString(raw.name, "manifest.name"),
+    summary: normalizeRequiredString(raw.summary, "manifest.summary"),
+    description: normalizeOptionalString(raw.description, "manifest.description"),
+    tags: tags.length > 0 ? tags : undefined,
+    compatibility: normalizeCompatibility(raw.compatibility),
+    requires: normalizeOptionalStringList(raw.requires, "manifest.requires"),
+    conflicts: Array.isArray(raw.conflicts)
+      ? raw.conflicts.map((entry, index) => {
+          if (!isRecord(entry)) {
+            throw new Error(invalidFieldMessage(`manifest.conflicts[${index}]`, "object"));
+          }
+          return {
+            recipe_id: normalizeRecipeId(
+              normalizeRequiredString(entry.recipe_id, `manifest.conflicts[${index}].recipe_id`),
+            ),
+            reason: normalizeRequiredString(entry.reason, `manifest.conflicts[${index}].reason`),
+          };
+        })
+      : undefined,
+    prompts,
+    validators,
+    templates: normalizeTemplates(raw.templates),
+    skills,
+    agents,
+    tools,
+  };
+}
+
+export function validateRecipeManifest(raw: unknown): RecipeManifest {
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("manifest", "object"));
+  const schemaVersion =
+    raw.schema_version === "1" || raw.schema_version === "2" ? raw.schema_version : null;
+  if (!schemaVersion) {
+    throw new Error(invalidFieldMessage("manifest.schema_version", '"1" | "2"'));
+  }
+  const kind =
+    schemaVersion === "1" ? "scenario_pack" : normalizeRequiredString(raw.kind, "manifest.kind");
+  if (kind === "project_overlay") return normalizeProjectOverlay(raw);
+  if (kind === "scenario_pack") return normalizeScenarioPack(raw, schemaVersion);
+  throw new Error(invalidFieldMessage("manifest.kind", '"project_overlay" | "scenario_pack"'));
 }
 
 export async function readRecipeManifest(manifestPath: string): Promise<RecipeManifest> {

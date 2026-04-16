@@ -245,6 +245,7 @@ export async function prepareTaskRunnerExecution(opts: {
     git_root: executionContext.repo.git_root,
     owner_id: taskEnvelope.task.data.owner,
     agents_dir: executionContext.harness.workflow.paths.agents_dir,
+    task: taskEnvelope.task,
     recipe: opts.recipe,
     harness: executionContext.harness,
     execution_profile: executionProfile,

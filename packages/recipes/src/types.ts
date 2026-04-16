@@ -1,3 +1,5 @@
+export type RecipeKind = "project_overlay" | "scenario_pack";
+
 export type RecipeCompatibility = {
   min_agentplane_version?: string;
   manifest_api_version?: string;
@@ -77,9 +79,64 @@ export type RecipeScenarioDescriptor = {
   file: string;
 };
 
+export type OverlaySurface =
+  | "planning"
+  | "execution"
+  | "coding"
+  | "debugging"
+  | "review"
+  | "verification"
+  | "docs"
+  | "finish";
+
+export type OverlayStrength = "required" | "default" | "advisory";
+
+export type OverlayWhen = {
+  task_kinds?: ("feature" | "bugfix" | "refactor" | "docs" | "research")[];
+  commands?: string[];
+  tags_any?: string[];
+  repo_types?: string[];
+};
+
+export type OverlayPromptFragment = {
+  id: string;
+  surface: OverlaySurface;
+  strength?: OverlayStrength;
+  file: string;
+  order?: number;
+  when?: OverlayWhen;
+};
+
+export type OverlayValidator =
+  | {
+      id: string;
+      phase: "coding" | "verification" | "review" | "finish" | "debugging";
+      kind: "required_evidence";
+      required: true;
+      evidence: string[];
+      when?: OverlayWhen;
+    }
+  | {
+      id: string;
+      phase: "verification" | "finish" | "docs";
+      kind: "required_command";
+      command: string;
+      required: boolean;
+      when?: OverlayWhen;
+    }
+  | {
+      id: string;
+      phase: "verification" | "docs";
+      kind: "check_script";
+      runtime: "bash" | "node";
+      entrypoint: string;
+      required: boolean;
+      when?: OverlayWhen;
+    };
+
 export type RecipeResolverContext = {
   agentplane_version: string;
-  manifest_api_version: "1";
+  manifest_api_version: "1" | "2";
   scenario_api_version: "1";
   runtime_api_version: "1";
   platform: string;
@@ -110,6 +167,44 @@ export type ResolvedRecipeRunProfile = {
   sandbox?: string;
   writes_artifacts_to: string[];
 };
+
+export type ScenarioPackManifest = {
+  schema_version: "1" | "2";
+  kind: "scenario_pack";
+  id: string;
+  version: string;
+  name: string;
+  summary: string;
+  description: string;
+  tags?: string[];
+  compatibility?: RecipeCompatibility;
+  skills?: RecipeSkillDefinition[];
+  agents?: RecipeAgentDefinition[];
+  tools?: RecipeToolDefinition[];
+  scenarios: RecipeScenarioDescriptor[];
+};
+
+export type ProjectOverlayManifestV2 = {
+  schema_version: "2";
+  kind: "project_overlay";
+  id: string;
+  version: string;
+  name: string;
+  summary: string;
+  description?: string;
+  tags?: string[];
+  compatibility?: RecipeCompatibility;
+  requires?: string[];
+  conflicts?: { recipe_id: string; reason: string }[];
+  prompts: OverlayPromptFragment[];
+  validators?: OverlayValidator[];
+  templates?: Record<string, string>;
+  skills?: RecipeSkillDefinition[];
+  agents?: RecipeAgentDefinition[];
+  tools?: RecipeToolDefinition[];
+};
+
+export type RecipeManifest = ScenarioPackManifest | ProjectOverlayManifestV2;
 
 export type ResolvedRecipeScenario = {
   recipe_id: string;
@@ -148,21 +243,6 @@ export type ResolveRecipeScenarioSelectionFlags = {
 
 export type ResolvedRecipeScenarioSelection = ResolvedRecipeScenario & {
   selection_reasons: string[];
-};
-
-export type RecipeManifest = {
-  schema_version: "1";
-  id: string;
-  version: string;
-  name: string;
-  summary: string;
-  description: string;
-  tags?: string[];
-  compatibility?: RecipeCompatibility;
-  skills?: RecipeSkillDefinition[];
-  agents?: RecipeAgentDefinition[];
-  tools?: RecipeToolDefinition[];
-  scenarios: RecipeScenarioDescriptor[];
 };
 
 export type RecipeConflictMode = "fail" | "rename" | "overwrite";
@@ -260,6 +340,56 @@ export type RecipeInstallSource =
   | { type: "path"; value: string }
   | { type: "url"; value: string }
   | { type: "auto"; value: string };
+
+export type ProjectRecipesLockEntry = {
+  id: string;
+  version: string;
+  kind: RecipeKind;
+  source: string;
+  hash: string;
+};
+
+export type ProjectRecipesLockFile = {
+  schema_version: 1;
+  active: ProjectRecipesLockEntry[];
+};
+
+export type CompiledOverlayPromptFragment = OverlayPromptFragment & {
+  recipe_id: string;
+  recipe_version: string;
+  recipe_name: string;
+  summary?: string;
+  content: string;
+  source: string;
+};
+
+export type CompiledOverlayValidator = OverlayValidator & {
+  recipe_id: string;
+  recipe_version: string;
+};
+
+export type CompiledOverlayTraceEntry = {
+  recipe_id: string;
+  recipe_version: string;
+  accepted: boolean;
+  reason: string;
+  source?: string;
+  surface?: OverlaySurface;
+  fragment_id?: string;
+  validator_id?: string;
+};
+
+export type CompiledOverlayBundle = {
+  schema_version: 1;
+  kind: "overlay_bundle";
+  active: { id: string; version: string; name: string; summary: string }[];
+  surfaces: Record<OverlaySurface, CompiledOverlayPromptFragment[]>;
+  validators: CompiledOverlayValidator[];
+  templates: Record<string, string>;
+  agents: RecipeAgentDefinition[];
+  tools: RecipeToolDefinition[];
+  trace: CompiledOverlayTraceEntry[];
+};
 
 export type RecipeCachePruneFlags = {
   dryRun: boolean;

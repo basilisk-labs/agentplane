@@ -1,7 +1,8 @@
-export const RECIPES_VERSION = "0.0.0";
+export const RECIPES_VERSION = "0.3.12";
 
 export * from "./constants.js";
 export * from "./manifest.js";
 export * from "./normalize.js";
+export * from "./overlay.js";
 export * from "./scenario.js";
 export * from "./types.js";

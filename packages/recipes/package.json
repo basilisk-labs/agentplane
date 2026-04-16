@@ -1,7 +1,7 @@
 {
-  "name": "@agentplane/recipes",
-  "version": "0.0.0",
-  "description": "Recipe runtime helpers for Agent Plane (internal package).",
+  "name": "@agentplaneorg/recipes",
+  "version": "0.3.12",
+  "description": "Recipe runtime helpers for the Agent Plane CLI.",
   "keywords": [
     "agentplane",
     "agentplane-framework",
@@ -19,15 +19,29 @@
   "bugs": {
     "url": "https://github.com/basilisk-labs/agentplane/issues"
   },
-  "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "exports": {
     ".": "./dist/index.js"
   },
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
+    "build": "tsc -b && node ../../scripts/write-build-manifest.mjs .",
+    "typecheck": "tsc -b",
+    "prepack": "bun run clean && bun run build",
+    "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack",
     "test": "node --test"
   }
 }
