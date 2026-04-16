@@ -62,12 +62,20 @@
       "type": "object",
       "additionalProperties": true,
       "required": ["storage_default"],
-      "default": { "storage_default": "link" },
+      "default": { "storage_default": "link", "active": [] },
       "properties": {
         "storage_default": {
           "type": "string",
           "enum": ["link", "copy", "global"],
           "default": "link"
+        },
+        "active": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
@@ -190,14 +198,7 @@
         "trace": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "mode",
-            "max_tail_bytes",
-            "capture_stderr",
-            "retention",
-            "compression",
-            "redact_patterns"
-          ],
+          "required": ["mode", "max_tail_bytes", "capture_stderr", "retention", "compression", "redact_patterns"],
           "default": {
             "mode": "raw",
             "max_tail_bytes": 65536,
