@@ -22,9 +22,9 @@ Ensure the first branch_pr pr open after branch publication does not leave a loc
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-16T08:45:03.270Z
+- Updated: 2026-04-16T08:51:35.868Z
 - Branch: task/202604160827-448YM9/first-pr-open-final-head
-- Head: 0a222a3e38d9
+- Head: f53c99f16441
 
 ```text
  .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 192 +++++++++++++++++++++
