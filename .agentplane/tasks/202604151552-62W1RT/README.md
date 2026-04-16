@@ -1,10 +1,11 @@
 ---
 id: "202604151552-62W1RT"
 title: "Design target release process and improvement plan"
-status: "DOING"
+result_summary: "Merged via PR #352."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-15T15:57:40.951Z"
   updated_by: "DOCS"
   note: "Docs validation passed: release architecture doc added, docs navigation updated, format and policy-routing checks passed."
-commit: null
+commit:
+  hash: "a0da681be1cc5d5aedcf19e89847b828dd18511e"
+  message: "docs/release: Design target release process and improvement plan (62W1RT) (#352)"
 comments:
   -
     author: "DOCS"
     body: "Start: drafting a standalone target release-process architecture for local and branch_pr modes, then mapping concrete gaps and an atomic improvement plan against current release workflows and commands."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #352 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Docs validation passed: release architecture doc added, docs navigation updated, format and policy-routing checks passed."
+  -
+    type: "status"
+    at: "2026-04-16T09:09:16.918Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #352 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-15T15:57:40.957Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-04-16T09:09:16.924Z"
+doc_updated_by: "INTEGRATOR"
 description: "Write a standalone docs spec for the ideal release process in local and branch_pr modes, compare it with the current implementation, and prepare an atomic improvement plan."
 sections:
   Summary: |-

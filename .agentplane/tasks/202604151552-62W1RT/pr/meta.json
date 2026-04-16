@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604151552-62W1RT/release-process-architecture",
   "created_at": "2026-04-15T15:52:49.195Z",
-  "head_sha": "1e849ae1f0778bbfc5902689008bc60176542844",
+  "head_sha": "ab10be0ca7f0f464040cb73182ce11bc169608a6",
   "last_verified_at": "2026-04-15T15:57:40.951Z",
   "last_verified_sha": "1e849ae1f0778bbfc5902689008bc60176542844",
+  "merge_commit": "a0da681be1cc5d5aedcf19e89847b828dd18511e",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-16T09:08:40Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604151552-62W1RT",
-  "updated_at": "2026-04-15T15:57:40.983Z",
+  "updated_at": "2026-04-16T09:08:40Z",
   "verify": {
     "status": "pass"
   }
