@@ -1,10 +1,11 @@
 ---
 id: "202604160652-Q0JPW0"
 title: "Make protected-base integrate use explicit handoff result"
-status: "DOING"
+result_summary: "Merged via PR #342."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-16T06:57:45.997Z"
   updated_by: "CODER"
   note: "Verified targeted exit-code and integrate regression coverage: bun vitest run packages/agentplane/src/cli/cli-contract.test.ts packages/agentplane/src/cli/exit-code.contract.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts"
-commit: null
+commit:
+  hash: "4ce1b7abe89f5673bc5b8251ea56fd3aed055eec"
+  message: "workflow: Make protected-base integrate use explicit handoff result (Q0JPW0) (#342)"
 comments:
   -
     author: "CODER"
     body: "Start: auditing protected-base integrate result semantics and implementing an explicit handoff-required outcome without changing the existing handoff artifact contract."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #342 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified targeted exit-code and integrate regression coverage: bun vitest run packages/agentplane/src/cli/cli-contract.test.ts packages/agentplane/src/cli/exit-code.contract.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts"
+  -
+    type: "status"
+    at: "2026-04-16T07:06:40.706Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #342 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T06:57:46.001Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-16T07:06:40.713Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace generic git-failure semantics for protected-base branch_pr integrate with an explicit handoff-required outcome while preserving existing handoff artifacts and operator route."
 sections:
   Summary: |-
