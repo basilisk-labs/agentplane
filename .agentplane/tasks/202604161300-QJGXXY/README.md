@@ -1,10 +1,11 @@
 ---
 id: "202604161300-QJGXXY"
 title: "Audit and reclassify stale open workflow incidents"
-status: "DOING"
+result_summary: "Merged via PR #358."
+status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-16T13:17:13.581Z"
   updated_by: "INTEGRATOR"
   note: "Verified: active registry reduced to genuinely open incidents only; archived stabilized and externally mitigated entries; node .agentplane/policy/check-routing.mjs; bun run format:check."
-commit: null
+commit:
+  hash: "664425fbd5453066d9c33f631c1ead764877d5fd"
+  message: "incidents/workflow: Audit and reclassify stale open workflow incidents (QJGXXY) (#358)"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: audit the open incident registry against current main, reclassify stale entries instead of deleting them, and leave only genuinely unresolved incidents open."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #358 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "Verified: active registry reduced to genuinely open incidents only; archived stabilized and externally mitigated entries; node .agentplane/policy/check-routing.mjs; bun run format:check."
+  -
+    type: "status"
+    at: "2026-04-16T13:28:11.609Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #358 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T13:17:13.594Z"
+doc_updated_at: "2026-04-16T13:28:11.616Z"
 doc_updated_by: "INTEGRATOR"
 description: "Review the incidents registry entries that still say state=open even though later work appears to have implemented the required behavior. Verify each open incident against current main, then reclassify stale entries to stabilized or externally mitigated and leave only genuinely unresolved incidents open."
 sections:
