@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604160827-448YM9/first-pr-open-final-head",
   "created_at": "2026-04-16T08:27:44.885Z",
-  "head_sha": "f53c99f1644172be0af13a94cb317918e13f043f",
+  "head_sha": "540bd79c96e992eac27a2df1597b8959e2836a97",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "2e22d4d6fa5c72c927b73ad46e4e2dbf64459d9c",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-16T08:53:35Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604160827-448YM9",
-  "updated_at": "2026-04-16T08:51:35.868Z",
+  "updated_at": "2026-04-16T08:53:35Z",
   "verify": {
     "status": "skipped"
   }
