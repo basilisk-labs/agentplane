@@ -92,7 +92,7 @@ export type OverlaySurface =
 export type OverlayStrength = "required" | "default" | "advisory";
 
 export type OverlayWhen = {
-  task_kinds?: Array<"feature" | "bugfix" | "refactor" | "docs" | "research">;
+  task_kinds?: ("feature" | "bugfix" | "refactor" | "docs" | "research")[];
   commands?: string[];
   tags_any?: string[];
   repo_types?: string[];
@@ -195,7 +195,7 @@ export type ProjectOverlayManifestV2 = {
   tags?: string[];
   compatibility?: RecipeCompatibility;
   requires?: string[];
-  conflicts?: Array<{ recipe_id: string; reason: string }>;
+  conflicts?: { recipe_id: string; reason: string }[];
   prompts: OverlayPromptFragment[];
   validators?: OverlayValidator[];
   templates?: Record<string, string>;
@@ -382,7 +382,7 @@ export type CompiledOverlayTraceEntry = {
 export type CompiledOverlayBundle = {
   schema_version: 1;
   kind: "overlay_bundle";
-  active: Array<{ id: string; version: string; name: string; summary: string }>;
+  active: { id: string; version: string; name: string; summary: string }[];
   surfaces: Record<OverlaySurface, CompiledOverlayPromptFragment[]>;
   validators: CompiledOverlayValidator[];
   templates: Record<string, string>;

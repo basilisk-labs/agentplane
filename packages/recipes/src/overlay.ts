@@ -47,16 +47,13 @@ export function matchOverlayWhen(
   if (!when) return true;
   if (when.task_kinds && when.task_kinds.length > 0) {
     if (!runtime.task_kind || !when.task_kinds.includes(runtime.task_kind as never)) return false;
-  }
-  if (when.commands && when.commands.length > 0) {
+  } else if (when.commands && when.commands.length > 0) {
     if (!runtime.command || !when.commands.includes(runtime.command)) return false;
-  }
-  if (when.tags_any && when.tags_any.length > 0) {
-    const tags = new Set(runtime.tags ?? []);
+  } else if (when.tags_any && when.tags_any.length > 0) {
+    const tags = new Set(runtime.tags);
     if (!when.tags_any.some((tag) => tags.has(tag))) return false;
-  }
-  if (when.repo_types && when.repo_types.length > 0) {
-    const repoTypes = new Set(runtime.repo_types ?? []);
+  } else if (when.repo_types && when.repo_types.length > 0) {
+    const repoTypes = new Set(runtime.repo_types);
     if (!when.repo_types.some((repoType) => repoTypes.has(repoType))) return false;
   }
   return true;
@@ -64,7 +61,7 @@ export function matchOverlayWhen(
 
 export function hashOverlayInputs(opts: {
   manifest: ProjectOverlayManifestV2;
-  prompts: Array<{ id: string; content: string }>;
+  prompts: { id: string; content: string }[];
 }): string {
   const hash = createHash("sha256");
   hash.update(JSON.stringify(opts.manifest));

@@ -5,7 +5,6 @@ import {
   createEmptyOverlayBundle,
   hashOverlayInputs,
   type CompiledOverlayBundle,
-  type ProjectOverlayManifestV2,
   type ProjectRecipesLockFile,
 } from "@agentplaneorg/recipes";
 import { loadConfig, saveConfig } from "@agentplaneorg/core";
@@ -26,7 +25,7 @@ function ensureTrailingNewline(text: string): string {
 function stripMarkdownFrontmatter(text: string): string {
   if (!text.startsWith("---\n")) return text;
   const end = text.indexOf("\n---\n", 4);
-  if (end < 0) return text;
+  if (end === -1) return text;
   return text.slice(end + 5);
 }
 
@@ -48,7 +47,7 @@ function uniqueById<T extends { id: string }>(items: T[]): T[] {
 export async function readActiveRecipeIds(project: { agentplaneDir: string }): Promise<string[]> {
   const loaded = await loadConfig(project.agentplaneDir);
   return Array.isArray(loaded.config.recipes?.active)
-    ? [...new Set(loaded.config.recipes.active.map((value) => value.trim()).filter(Boolean))].sort()
+    ? [...new Set(loaded.config.recipes.active.map((value) => value.trim()).filter(Boolean))].toSorted()
     : [];
 }
 
@@ -72,10 +71,10 @@ export async function setRecipeActive(opts: {
       ? (raw.recipes as Record<string, unknown>)
       : {}),
     storage_default: loaded.config.recipes?.storage_default ?? "link",
-    active: [...current].sort(),
+    active: [...current].toSorted(),
   };
   await saveConfig(opts.project.agentplaneDir, raw);
-  return [...current].sort();
+  return [...current].toSorted();
 }
 
 export async function compileProjectOverlayArtifacts(project: {
@@ -96,9 +95,9 @@ export async function compileProjectOverlayArtifacts(project: {
     if (entry.manifest.kind !== "project_overlay") {
       throw new Error(`Active recipe ${recipeId} is not a project overlay`);
     }
-    const manifest = entry.manifest as ProjectOverlayManifestV2;
+    const manifest = entry.manifest;
     const recipeDir = resolveProjectInstalledRecipeDir(project, entry.id);
-    const promptInputs: Array<{ id: string; content: string }> = [];
+    const promptInputs: { id: string; content: string }[] = [];
 
     if (manifest.requires) {
       for (const required of manifest.requires) {
@@ -177,7 +176,7 @@ export async function compileProjectOverlayArtifacts(project: {
 
   bundle.agents = uniqueById(bundle.agents);
   bundle.tools = uniqueById(bundle.tools);
-  for (const surface of Object.keys(bundle.surfaces) as Array<keyof typeof bundle.surfaces>) {
+  for (const surface of Object.keys(bundle.surfaces) as (keyof typeof bundle.surfaces)[]) {
     bundle.surfaces[surface] = bundle.surfaces[surface].toSorted(
       (left, right) =>
         (left.order ?? 0) - (right.order ?? 0) ||
@@ -205,9 +204,7 @@ export async function readProjectOverlayBundle(project: {
   agentplaneDir: string;
 }): Promise<CompiledOverlayBundle | null> {
   try {
-    return JSON.parse(
-      await readFile(resolveProjectOverlayBundlePath(project), "utf8"),
-    ) as CompiledOverlayBundle;
+    return JSON.parse(await readFile(resolveProjectOverlayBundlePath(project), "utf8")) as CompiledOverlayBundle;
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ENOENT") return null;

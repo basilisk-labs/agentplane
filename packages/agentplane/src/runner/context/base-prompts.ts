@@ -64,7 +64,7 @@ function normalizeText(text: string): string {
 
 async function detectRepoTypes(gitRoot: string): Promise<string[]> {
   const repoTypes = ["generic"];
-  const checks: Array<[string, string]> = [
+  const checks: [string, string][] = [
     ["package.json", "node"],
     ["pyproject.toml", "python"],
     ["go.mod", "go"],
@@ -73,7 +73,7 @@ async function detectRepoTypes(gitRoot: string): Promise<string[]> {
   for (const [relativePath, repoType] of checks) {
     if (await fileExists(path.join(gitRoot, relativePath))) repoTypes.push(repoType);
   }
-  return [...new Set(repoTypes)].sort();
+  return [...new Set(repoTypes)].toSorted();
 }
 
 function inferTaskKind(task: RunnerTaskContext | undefined): string | undefined {

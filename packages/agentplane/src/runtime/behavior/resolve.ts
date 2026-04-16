@@ -104,13 +104,13 @@ export function resolveBehavior<TValue, TMetadata = Record<string, unknown>>(opt
 
   const mergedValue =
     mergeMode === "union"
-      ? (Array.from(
+      ? ([...new Set(
           new Set(
             ranked.flatMap((candidate) =>
               Array.isArray(candidate.value) ? candidate.value : [candidate.value],
             ),
           ),
-        ) as TValue)
+        )] as TValue)
       : (ranked.map((candidate) => candidate.value) as TValue);
 
   return {

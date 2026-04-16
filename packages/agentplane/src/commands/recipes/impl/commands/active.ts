@@ -23,7 +23,7 @@ export async function cmdRecipeActiveParsed(opts: {
     ]);
     const active = activeIds
       .map((id) => installed.recipes.find((entry) => entry.id === id))
-      .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+      .filter(Boolean) as NonNullable<(typeof installed.recipes)[number]>[];
     if (active.length === 0) {
       process.stdout.write(`${emptyStateMessage("active overlays")}\n`);
       return 0;
