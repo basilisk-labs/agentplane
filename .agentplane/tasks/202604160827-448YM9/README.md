@@ -1,10 +1,11 @@
 ---
 id: "202604160827-448YM9"
 title: "Make first pr open publish the final packet head"
-status: "DOING"
+result_summary: "Merged via PR #350."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "2e22d4d6fa5c72c927b73ad46e4e2dbf64459d9c"
+  message: "workflow: Make first pr open publish the final packet head (448YM9) (#350)"
 comments:
   -
     author: "CODER"
     body: "Start: isolating the pr-open packet tail so the first remote publish/open path does not require a second push just to carry refreshed PR artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #350 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -34,9 +40,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: isolating the pr-open packet tail so the first remote publish/open path does not require a second push just to carry refreshed PR artifacts."
+  -
+    type: "status"
+    at: "2026-04-16T08:53:59.600Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #350 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-16T08:27:44.844Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-16T08:53:59.604Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure the first branch_pr pr open after branch publication does not leave a local packet-only commit ahead of origin that requires a second push before the remote PR can be created."
 sections:
   Summary: |-
