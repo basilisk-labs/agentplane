@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { CliError } from "../../../../../shared/errors.js";
+import { CliError } from "../../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
   resolveBaseBranch: vi.fn(),
@@ -153,13 +153,16 @@ describe("pr/integrate/internal/prepare", () => {
       runVerify: false,
     }).catch((err: unknown) => err);
 
+    expect(caught).toBeInstanceOf(CliError);
     expect(caught).toMatchObject<CliError>({
       code: "E_GIT",
       message:
         "integrate must run from the main base checkout, not from task branch task/T-1. Rerun it against the base checkout after leaving this task worktree.",
     });
-    const cliError = caught as CliError;
-    expect(cliError.context).toMatchObject({
+    if (!(caught instanceof CliError)) {
+      throw new Error("expected CliError");
+    }
+    expect(caught.context).toMatchObject({
       reason_code: "integrate_base_checkout_required",
       diagnostic_next_action_command:
         "agentplane integrate T-1 --branch task/T-1 --root /repo-base",
