@@ -1,0 +1,4 @@
+ .agentplane/policy/incidents.md                | 1 -
+ docs/developer/incident-archive.mdx            | 1 +
+ packages/agentplane/assets/policy/incidents.md | 1 -
+ 3 files changed, 1 insertion(+), 2 deletions(-)
