@@ -22,12 +22,21 @@ Replace generic git-failure semantics for protected-base branch_pr integrate wit
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-16T06:53:13.999Z
+- Updated: 2026-04-16T06:58:12.190Z
 - Branch: task/202604160652-Q0JPW0/explicit-handoff-result
-- Head: 4fc96f4cf042
+- Head: 6061daf2241d
 
 ```text
-No changes detected.
+ packages/agentplane/src/cli/cli-contract.test.ts               |  1 +
+ packages/agentplane/src/cli/exit-code.contract.test.ts         |  1 +
+ packages/agentplane/src/cli/exit-codes.ts                      |  1 +
+ packages/agentplane/src/cli/reason-codes.ts                    |  7 +++++++
+ .../agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts  |  6 +++++-
+ packages/agentplane/src/cli/run-cli/error-guidance.ts          | 10 ++++++++++
+ packages/agentplane/src/commands/pr/integrate/cmd.test.ts      |  4 ++--
+ packages/agentplane/src/commands/pr/integrate/cmd.ts           |  5 +++--
+ packages/agentplane/src/shared/errors.ts                       |  1 +
+ 9 files changed, 31 insertions(+), 5 deletions(-)
 ```
 
 </details>
