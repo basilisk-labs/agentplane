@@ -195,6 +195,81 @@ async function installFakeGhPrApi(opts: {
   return { fakeBin, logPath: path.join(fakeBin, "gh.log") };
 }
 
+async function installFakeGhPrApiRequiringPublishedPacketHead(opts: {
+  scenarioName: string;
+  branch: string;
+  packetCommitSubject: string;
+  publishRemote: string;
+}) {
+  const fakeBin = path.join(
+    os.tmpdir(),
+    `agentplane-gh-pr-api-head-${Date.now()}-${opts.scenarioName}`,
+  );
+  await mkdir(fakeBin, { recursive: true });
+  const scriptPath = path.join(fakeBin, "fake-gh.mjs");
+  const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
+  await writeFile(
+    scriptPath,
+    [
+      'import fs from "node:fs";',
+      'import { execFileSync } from "node:child_process";',
+      "const args = process.argv.slice(2);",
+      "const logPath = process.env.AGENTPLANE_GH_LOG;",
+      "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
+      'if (args[0] !== "api") { console.error("unexpected gh command"); process.exit(90); }',
+      'const endpoint = args[1] ?? "";',
+      'const [route, query = ""] = endpoint.split("?", 2);',
+      "const params = new URLSearchParams(query);",
+      `const expectedHead = ${JSON.stringify(`example:${opts.branch}`)};`,
+      `const requiredSubject = ${JSON.stringify(opts.packetCommitSubject)};`,
+      `const publishRemote = ${JSON.stringify(opts.publishRemote)};`,
+      'let method = "GET";',
+      "for (let i = 2; i < args.length; i += 1) {",
+      '  if (args[i] === "-X" && typeof args[i + 1] === "string") method = String(args[i + 1]).toUpperCase();',
+      "}",
+      'if (route === "repos/example/repo/pulls" && method === "GET" && params.get("head") === expectedHead) {',
+      '  console.log("[]");',
+      "  process.exit(0);",
+      "}",
+      'if (route === "repos/example/repo/pulls" && method === "POST") {',
+      '  const subject = execFileSync("git", ["log", "-1", "--pretty=%s"], { cwd: process.cwd(), encoding: "utf8" }).trim();',
+      '  const localHead = execFileSync("git", ["rev-parse", "HEAD"], { cwd: process.cwd(), encoding: "utf8" }).trim();',
+      '  const publishBranch = expectedHead.split(":", 2)[1];',
+      '  const remoteHeadRaw = execFileSync("git", ["ls-remote", "--heads", publishRemote, `refs/heads/${publishBranch}`], { cwd: process.cwd(), encoding: "utf8" }).trim();',
+      String.raw`  const remoteHead = remoteHeadRaw.length > 0 ? remoteHeadRaw.split(/\s+/, 1)[0] : "";`,
+      "  if (logPath) fs.appendFileSync(logPath, `${JSON.stringify({ subject, localHead, remoteHead, publishBranch })}\\n`);",
+      "  if (subject !== requiredSubject || remoteHead !== localHead) {",
+      `    console.error(${JSON.stringify('gh: HTTP 422: Validation Failed ({"message":"Validation Failed","errors":[{"resource":"PullRequest","field":"head","code":"invalid","message":"Head sha can\'t be blank"}]})')});`,
+      "    process.exit(1);",
+      "  }",
+      `  console.log(${JSON.stringify(
+        JSON.stringify({
+          number: 888,
+          html_url: "https://github.com/example/repo/pull/888",
+          state: "open",
+          merged_at: null,
+          merge_commit_sha: null,
+          head: { sha: "remote-head-sha" },
+          base: { ref: "main" },
+        }),
+      )});`,
+      "  process.exit(0);",
+      "}",
+      'console.log("[]");',
+      "process.exit(0);",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  if (process.platform === "win32") {
+    await writeFile(ghPath, '@echo off\r\nnode "%~dp0\\fake-gh.mjs" %*\r\n', "utf8");
+  } else {
+    await writeFile(ghPath, '#!/bin/sh\nnode "$(dirname "$0")/fake-gh.mjs" "$@"\n', "utf8");
+    await chmod(ghPath, 0o755);
+  }
+  return { fakeBin, logPath: path.join(fakeBin, "gh.log") };
+}
+
 describe("runCli", () => {
   it("pr open creates PR artifacts", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -353,6 +428,10 @@ describe("runCli", () => {
       env: cleanGitEnv(),
     });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore test setup"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
 
     let taskId = "";
     const ioTask = captureStdIO();
@@ -430,6 +509,119 @@ describe("runCli", () => {
     expect(meta.pr_url).toBeUndefined();
     expect(meta.status).toBeUndefined();
     expect(meta.head_sha).toBeUndefined();
+
+    const logText = await readFile(logPath, "utf8");
+    const log = logText
+      .trim()
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => JSON.parse(line) as string[]);
+    expect(
+      log.some(
+        (args) =>
+          args[0] === "api" &&
+          args[1] === "repos/example/repo/pulls" &&
+          args.includes("-X") &&
+          args.includes("POST"),
+      ),
+    ).toBe(true);
+  });
+
+  it("pr open creates a remote GitHub PR on the first pass after packet materialization", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open first pass final head",
+        "--description",
+        "The first pr open pass should materialize the packet commit before remote PR creation.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/first-pass-final-head`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore branch publish seed"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const publishRemotePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-pr-open-publish-"));
+    await execFileAsync("git", ["init", "--bare", publishRemotePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["remote", "add", "publish", publishRemotePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["push", "-u", "publish", `HEAD:refs/heads/${branch}`], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const packetCommitSubject = `📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`;
+    const { fakeBin, logPath } = await installFakeGhPrApiRequiringPublishedPacketHead({
+      scenarioName: "open-first-pass-final-head",
+      branch,
+      packetCommitSubject,
+      publishRemote: "publish",
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = logPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("created GitHub PR #888");
+      expect(io.stdout).not.toContain("remote PR creation staged");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    const { stdout: headSubjectStdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    expect(headSubjectStdout.trim()).toBe(packetCommitSubject);
 
     const logText = await readFile(logPath, "utf8");
     const log = logText

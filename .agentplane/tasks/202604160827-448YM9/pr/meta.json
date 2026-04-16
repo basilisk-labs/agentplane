@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604160827-448YM9/first-pr-open-final-head",
+  "created_at": "2026-04-16T08:27:44.885Z",
+  "head_sha": "f53c99f1644172be0af13a94cb317918e13f043f",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604160827-448YM9",
+  "updated_at": "2026-04-16T08:51:35.868Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
