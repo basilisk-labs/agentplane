@@ -104,6 +104,24 @@ describe("runtime-source", () => {
     expect(report.frameworkSources.agentplaneRoot).toBe(fixture.agentplaneRoot);
   });
 
+  it("prefers the framework checkout core root for repo-local runtime when no explicit core path is provided", async () => {
+    const fixture = await createFrameworkFixture();
+
+    const report = resolveRuntimeSourceInfo({
+      cwd: fixture.nestedCwd,
+      activeBinaryPath: fixture.agentplaneBin,
+      env: { ...process.env },
+      agentplanePackageRoot: fixture.agentplaneRoot,
+    });
+
+    expect(report.mode).toBe("repo-local");
+    expect(report.framework.inFrameworkCheckout).toBe(true);
+    expect(report.framework.isRepoLocalRuntime).toBe(true);
+    expect(report.frameworkSources.coreRoot).toBe(path.join(fixture.repoRoot, "packages", "core"));
+    expect(report.core.packageRoot).toBe(path.join(fixture.repoRoot, "packages", "core"));
+    expect(report.core.version).toBe("0.3.3-beta.0");
+  });
+
   it("reports a normal global install outside the framework checkout", async () => {
     const fixture = await createFrameworkFixture();
     const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-runtime-source-outside-"));
