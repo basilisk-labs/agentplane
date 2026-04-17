@@ -1,0 +1,10 @@
+ .../src/commands/recipes.catalog-install.test.ts   |   2 +
+ packages/agentplane/src/commands/recipes.ts        |   1 -
+ .../commands/recipes/impl/overlay-project.test.ts  |  58 ++++++++
+ .../src/commands/recipes/impl/overlay-project.ts   |  32 ++---
+ .../agentplane/src/commands/recipes/impl/paths.ts  |   4 -
+ .../agentplane/src/commands/recipes/impl/types.ts  |   2 -
+ .../agentplane/src/runner/context/base-prompts.ts  |  11 +-
+ packages/recipes/src/overlay.ts                    | 148 +++++++++++++++++++++
+ packages/recipes/src/types.ts                      |  13 --
+ 9 files changed, 223 insertions(+), 48 deletions(-)
