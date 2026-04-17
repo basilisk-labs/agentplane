@@ -1,10 +1,11 @@
 ---
 id: "202604170905-XSJXC0"
 title: "Add vendored recipe provenance and safe update policy"
-status: "DOING"
+result_summary: "Added vendored recipe provenance and safe update policy."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-17T09:25:53.506Z"
   updated_by: "CODER"
   note: "Added project recipe provenance, vendored state inspection, and safe update/detach flows."
-commit: null
+commit:
+  hash: "e67fe17e23810763a8ad858e126113595c2b2f82"
+  message: "📝 XSJXC0 task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: add vendored recipe provenance, dirty/diverged state detection, and safe update/detach flows without widening beyond project-local recipe maintenance."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: vendored recipe provenance and guarded update flows are merged and recorded on main."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added project recipe provenance, vendored state inspection, and safe update/detach flows."
+  -
+    type: "status"
+    at: "2026-04-17T10:39:11.298Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: vendored recipe provenance and guarded update flows are merged and recorded on main."
 doc_version: 3
-doc_updated_at: "2026-04-17T09:25:53.511Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T10:39:11.298Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add source provenance, dirty/diverged detection, and safe update/detach flows for vendored project recipes so updates never silently overwrite local edits."
 sections:
   Summary: |-

@@ -1,10 +1,11 @@
 ---
 id: "202604170648-5NSJPA"
 title: "Move recipe assets to markdown-first loading"
-status: "DOING"
+result_summary: "Moved recipe assets to markdown-first loading."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-17T09:41:55.051Z"
   updated_by: "CODER"
   note: "Moved vendored recipe agents and skills to markdown-first loading and propagated text content through compiled recipe assets."
-commit: null
+commit:
+  hash: "ae9c833ba30195b78c61e5132fa249c9b581be30"
+  message: "📝 5NSJPA task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: move vendored recipe agents and skills to markdown-first loading while preserving structured manifests only where schema is required."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: markdown-first recipe asset loading is merged and recorded on main."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Moved vendored recipe agents and skills to markdown-first loading and propagated text content through compiled recipe assets."
+  -
+    type: "status"
+    at: "2026-04-17T10:39:11.298Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: markdown-first recipe asset loading is merged and recorded on main."
 doc_version: 3
-doc_updated_at: "2026-04-17T09:41:55.093Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T10:39:11.298Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prefer markdown-first loading for recipe-owned agents and skills while keeping structured manifests only where schema is required."
 sections:
   Summary: |-
