@@ -60,7 +60,10 @@ function validateCompiledOverlayFragment(
   const entry = requireRecord(raw, `overlay bundle.surfaces.${surface}[${index}]`);
   requireString(entry.id, `overlay bundle.surfaces.${surface}[${index}].id`);
   requireString(entry.recipe_id, `overlay bundle.surfaces.${surface}[${index}].recipe_id`);
-  requireString(entry.recipe_version, `overlay bundle.surfaces.${surface}[${index}].recipe_version`);
+  requireString(
+    entry.recipe_version,
+    `overlay bundle.surfaces.${surface}[${index}].recipe_version`,
+  );
   requireString(entry.recipe_name, `overlay bundle.surfaces.${surface}[${index}].recipe_name`);
   requireString(entry.surface, `overlay bundle.surfaces.${surface}[${index}].surface`);
   requireString(entry.file, `overlay bundle.surfaces.${surface}[${index}].file`);
