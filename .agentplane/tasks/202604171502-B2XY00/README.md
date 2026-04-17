@@ -1,10 +1,11 @@
 ---
 id: "202604171502-B2XY00"
 title: "Unify manifest writer scripts behind scripts/manifest.mjs"
-status: "DOING"
+result_summary: "Merged via PR #403."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-17T15:25:47.625Z"
   updated_by: "CODER"
   note: "Verified: manifest generation now runs through scripts/manifest.mjs and the declared lint plus release-manifest tests pass."
-commit: null
+commit:
+  hash: "849aba0a719e1103f57703bd480e7b3493ae7bff"
+  message: "release/scripts: Unify manifest writer scripts behind scripts/manifest.mjs (B2XY00) (#403)"
 comments:
   -
     author: "CODER"
     body: "Start: unifying build, publish-result, and release-ready manifest writer scripts behind one manifest subcommand entrypoint while preserving existing release contracts and tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #403 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: manifest generation now runs through scripts/manifest.mjs and the declared lint plus release-manifest tests pass."
+  -
+    type: "status"
+    at: "2026-04-17T18:59:52.706Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #403 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T15:25:47.628Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T18:59:52.713Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace the standalone write-build-manifest, write-publish-result-manifest, and write-release-ready-manifest scripts with one subcommand-driven manifest CLI while preserving existing release contracts."
 sections:
   Summary: |-
