@@ -1,10 +1,11 @@
 ---
 id: "202604170852-ZE2GGY"
 title: "Remove top-level scenario CLI domain"
-status: "DOING"
+result_summary: "Removed the top-level scenario CLI domain."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-17T09:03:44.665Z"
   updated_by: "CODER"
   note: "Removed the top-level scenario CLI namespace; scenario commands now live under recipes scenario, and help/runtime prompts were updated to match."
-commit: null
+commit:
+  hash: "281e0dbab7a4964d4efcd507a1ad2eea0c6a9304"
+  message: "📝 ZE2GGY task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: remove the standalone scenario CLI domain and keep scenario execution reachable only through recipe-owned paths."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: top-level scenario CLI drift is removed and the recipes-scoped surface is merged on main."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed the top-level scenario CLI namespace; scenario commands now live under recipes scenario, and help/runtime prompts were updated to match."
+  -
+    type: "status"
+    at: "2026-04-17T10:39:11.298Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: top-level scenario CLI drift is removed and the recipes-scoped surface is merged on main."
 doc_version: 3
-doc_updated_at: "2026-04-17T09:03:44.689Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T10:39:11.298Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove the standalone scenario command surface and route recipe scenarios through recipe-owned assets instead of a framework-level domain."
 sections:
   Summary: |-
