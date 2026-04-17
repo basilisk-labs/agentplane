@@ -237,4 +237,102 @@ describe("collectRunnerBasePrompts", () => {
     expect(prompts[5]?.resolution?.winner.layer).toBe("extension");
     expect(prompts[6]?.content).toContain('"entrypoint": "tools/run.js"');
   });
+
+  it("filters overlay prompt fragments by conjunctive when predicates including command", async () => {
+    const root = await makeTempRepo();
+    await mkdir(path.join(root, ".agentplane", "generated"), { recursive: true });
+    await writeFile(path.join(root, "package.json"), '{"name":"repo"}\n');
+    await writeFile(
+      path.join(root, ".agentplane", "generated", "overlay-bundle.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          kind: "overlay_bundle",
+          active: ["viewer"],
+          surfaces: {
+            planning: [
+              {
+                recipe_id: "viewer",
+                recipe_name: "Viewer",
+                id: "task-run",
+                source: "recipes/viewer/prompts/task-run.md",
+                order: 0,
+                strength: "required",
+                content: "Task run overlay",
+                when: {
+                  task_kinds: ["bugfix"],
+                  commands: ["task run"],
+                  tags_any: ["bug"],
+                  repo_types: ["node"],
+                },
+              },
+              {
+                recipe_id: "viewer",
+                recipe_name: "Viewer",
+                id: "scenario-run",
+                source: "recipes/viewer/prompts/scenario-run.md",
+                order: 1,
+                strength: "required",
+                content: "Scenario overlay",
+                when: {
+                  task_kinds: ["bugfix"],
+                  commands: ["recipes scenario execute"],
+                  tags_any: ["bug"],
+                  repo_types: ["node"],
+                },
+              },
+            ],
+            execution: [],
+            coding: [],
+            debugging: [],
+            review: [],
+            verification: [],
+            docs: [],
+            finish: [],
+          },
+          validators: [],
+          templates: {},
+          agents: [],
+          tools: [],
+          trace: [],
+        },
+        null,
+        2,
+      ),
+    );
+
+    const task = {
+      task_id: "TASK-1",
+      data: {
+        id: "TASK-1",
+        title: "Fix runner",
+        status: "DOING",
+        owner: "CODER",
+        tags: ["bug"],
+      },
+      frontmatter: {},
+      doc: "",
+      sections: {},
+      comments: [],
+      events: [],
+    };
+
+    const taskRunPrompts = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+      task,
+      command: "task run",
+    });
+    const scenarioPrompts = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+      task,
+      command: "recipes scenario execute",
+    });
+
+    expect(taskRunPrompts.map((prompt) => prompt.id)).toContain("overlay.viewer.task-run");
+    expect(taskRunPrompts.map((prompt) => prompt.id)).not.toContain("overlay.viewer.scenario-run");
+    expect(scenarioPrompts.map((prompt) => prompt.id)).toContain("overlay.viewer.scenario-run");
+    expect(scenarioPrompts.map((prompt) => prompt.id)).not.toContain("overlay.viewer.task-run");
+  });
 });
