@@ -1,10 +1,11 @@
 ---
 id: "202604171457-P64DMQ"
 title: "Repair DONE branch_pr artifact reconciliation after head-branch deletion"
-status: "DOING"
+result_summary: "Merged via PR #400."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-17T15:04:58.101Z"
   updated_by: "CODER"
   note: "Doctor no longer flags DONE branch_pr drift once the task branch is gone; added regression coverage for deleted-branch artifacts."
-commit: null
+commit:
+  hash: "ffa9b8748fa65267ab751a80df1c0bfe4ccbc822"
+  message: "Repair DONE branch_pr artifact reconciliation after head-branch deletion (P64DMQ) (#400)"
 comments:
   -
     author: "CODER"
     body: "Start: repair branch_pr merge reconciliation for DONE tasks whose merged PR head branches were already deleted, then reconcile the stale archive tasks and clear doctor."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #400 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Doctor no longer flags DONE branch_pr drift once the task branch is gone; added regression coverage for deleted-branch artifacts."
+  -
+    type: "status"
+    at: "2026-04-17T15:07:01.214Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #400 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T15:04:58.109Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T15:07:01.220Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make branch_pr normalization and doctor stop flagging shipped DONE tasks when the GitHub PR is merged but the head branch has already been deleted, and reconcile the three stale archive tasks."
 sections:
   Summary: |-
