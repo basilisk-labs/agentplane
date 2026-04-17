@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604171155-V21N6H/deprecate-scenario-surface",
+  "created_at": "2026-04-17T12:36:39.967Z",
+  "head_sha": "8ad365f8e94fc362f51a8b4bcae7394b1b6f0220",
+  "last_verified_at": "2026-04-17T12:43:32.476Z",
+  "last_verified_sha": "0117987c40f2490a7c584f02d09be61b61c1398b",
+  "schema_version": 1,
+  "task_id": "202604171155-V21N6H",
+  "updated_at": "2026-04-17T12:48:35.954Z",
+  "verify": {
+    "status": "pass"
+  }
+}
