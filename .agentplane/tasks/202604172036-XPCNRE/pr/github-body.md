@@ -37,12 +37,15 @@ Observation: the first full test:fast run exposed a regression in createUpgradeB
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-17T20:56:34.564Z
+- Updated: 2026-04-17T21:05:32.645Z
 - Branch: task/202604172036-XPCNRE/cli-harness-modules
-- Head: 94366eade38f
+- Head: 032e3a0c91e1
 
 ```text
-No changes detected.
+ packages/agentplane/src/testing/cli-harness.ts     | 571 +--------------------
+ .../src/testing/cli-harness/recipe-archives.ts     | 450 ++++++++++++++++
+ .../agentplane/src/testing/cli-harness/stdio.ts    | 115 +++++
+ 3 files changed, 571 insertions(+), 565 deletions(-)
 ```
 
 </details>
