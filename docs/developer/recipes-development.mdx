@@ -6,29 +6,34 @@ description: "Practical workflow for authoring and validating recipes."
 ## Authoring checklist
 
 1. Create recipe directory with `manifest.json`.
-2. Add `tools/` and `scenarios/` only when needed.
-3. Keep ids stable (`recipe id`, `tool id`, `scenario id`).
-4. Document required env keys in recipe README.
-5. Keep outputs deterministic and machine-readable.
+2. Add `agents/` and `skills/` as markdown-first assets; keep JSON only where structure is required.
+3. Add `tools/` and `scenarios/` only when needed.
+4. Keep ids stable (`recipe id`, `tool id`, `scenario id`).
+5. Document required env keys in recipe README.
+6. Keep outputs deterministic and machine-readable.
 
 ## Minimal local validation
 
 1. Build archive (`.tar.gz` or `.zip`).
-2. Install locally:
+2. Cache locally:
    - `agentplane recipes install --path <archive>`
-3. Verify visibility:
+3. Verify cache visibility:
    - `agentplane recipes list`
-   - `agentplane scenario list`
-4. Inspect target scenario:
-   - `agentplane scenario info <recipe:scenario>`
-5. Validate the preview contract:
-   - `agentplane scenario run <recipe:scenario>`
-6. Validate the execution contract:
-   - `agentplane scenario execute <recipe:scenario>`
-7. If the created task must be debugged independently, inspect the shared runner contract:
+4. Vendor the recipe into a project:
+   - `agentplane recipes add <id>`
+5. Inspect project-local state:
+   - `agentplane recipes active`
+   - `agentplane recipes explain <id>`
+6. Inspect target scenario:
+   - `agentplane recipes scenario info <recipe:scenario>`
+7. Validate the preview contract:
+   - `agentplane recipes scenario run <recipe:scenario>`
+8. Validate the execution contract:
+   - `agentplane recipes scenario execute <recipe:scenario>`
+9. If the created task must be debugged independently, inspect the shared runner contract:
    - `agentplane task run <task-id> --dry-run`
-8. Confirm no additional runtime assumptions leaked into docs or tests.
-9. Regenerate the published recipes inventory if recipe manifests changed:
+10. Confirm no additional runtime assumptions leaked into docs or tests.
+11. Regenerate the published recipes inventory if recipe manifests changed:
    - `node scripts/generate-recipes-inventory.mjs`
 
 ## Designing scenarios
@@ -47,7 +52,7 @@ description: "Practical workflow for authoring and validating recipes."
 - Keep tool side effects inside project-local directories when possible.
 - Prefer stable stdout/stderr output formats for downstream automation.
 - Exit non-zero on failures and include actionable error text.
-- Assume live execution happens only through `scenario execute` and the shared runner contract.
+- Assume live execution happens only through `recipes scenario execute` and the shared runner contract.
 - Do not rely on CLI-side interpretation of recipe `steps`; the runner receives them as context, not as an imperative DSL.
 
 ## Distribution and upgrades
@@ -58,8 +63,10 @@ description: "Practical workflow for authoring and validating recipes."
 
 ## Integration notes
 
-- Recipe-local agents stay inside `.agentplane/recipes/<id>/agents/`; they are not installed into `.agentplane/agents`.
-- Treat `scenario` as the only public recipe capability surface.
-- `scenario execute` creates a normal task with recipe provenance and then reuses the same runner path as `task run`.
-- Validate both local archive installs and remote index installs before release.
+- `recipes install` populates only the global cache; it does not make a recipe active for a project.
+- `recipes add` vendors a cached recipe into `.agentplane/recipes/packages/<id>/` and records authority in `.agentplane/recipes/registry.json`.
+- Recipe-local agents stay inside `.agentplane/recipes/packages/<id>/agents/`; they are not installed into `.agentplane/agents`.
+- Runtime reads vendored project-local recipes only; generated overlay/assets files are derived from the project registry.
+- `recipes scenario execute` creates a normal task with recipe provenance and then reuses the same runner path as `task run`.
+- Validate both cache install and project vendoring flows before release.
 - Use extension recipes for non-core integrations (for example Dokploy or custom external APIs).

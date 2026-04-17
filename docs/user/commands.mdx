@@ -117,7 +117,7 @@ agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
 
-`task run` and `scenario execute` both create run artifacts under
+`task run` and `recipes scenario execute` both create run artifacts under
 `.agentplane/tasks/<task-id>/runs/<run-id>/`.
 
 - Start with `task run show`: it prints the selected run, status, adapter, effective policy,
@@ -271,14 +271,27 @@ agentplane branch base explain
 ```bash
 agentplane recipes list
 agentplane recipes info <id>
+agentplane recipes add <id|id@version>
+agentplane recipes active
 agentplane recipes explain <id>
-agentplane scenario info <recipe:scenario>
-agentplane scenario list
-agentplane scenario run <recipe:scenario>
-agentplane scenario execute <recipe:scenario>
+agentplane recipes update <id>
+agentplane recipes detach <id>
+agentplane recipes scenario info <recipe:scenario>
+agentplane recipes scenario list
+agentplane recipes scenario run <recipe:scenario>
+agentplane recipes scenario execute <recipe:scenario>
 ```
 
-`scenario run` is preview-only. `scenario execute` materializes a recipe-backed task and runs it through the shared runner flow.
+`recipes list` and `recipes info` inspect the global cache. `recipes add` vendors a cached recipe
+into the current project, and `recipes active` / `recipes explain` inspect the project-local
+runtime surface.
+
+`recipes scenario run` is preview-only. `recipes scenario execute` materializes a recipe-backed task
+and runs it through the shared runner flow.
+
+After a recipe is vendored, runtime reads project-local packages from `.agentplane/recipes/` rather
+than from the global cache.
+
 Use `task run show <task-id>` after execution when you need the persisted capability and policy
 surface for that scenario-backed run.
 

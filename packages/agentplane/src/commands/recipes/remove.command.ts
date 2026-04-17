@@ -6,9 +6,11 @@ export type RecipesRemoveParsed = { id: string };
 export const recipesRemoveSpec: CommandSpec<RecipesRemoveParsed> = {
   id: ["recipes", "remove"],
   group: "Recipes",
-  summary: "Remove an installed recipe.",
+  summary: "Remove a vendored recipe from the current project.",
   args: [{ name: "id", required: true, valueHint: "<id>" }],
-  examples: [{ cmd: "agentplane recipes remove viewer", why: "Remove a recipe by id." }],
+  examples: [
+    { cmd: "agentplane recipes remove viewer", why: "Remove a vendored recipe by id." },
+  ],
   parse: (raw) => ({ id: String(raw.args.id ?? "") }),
 };
 

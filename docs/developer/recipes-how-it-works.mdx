@@ -1,30 +1,42 @@
 ---
 title: "How recipes work"
-description: "Install, inspect, preview, and execute self-contained recipes in the current CLI runtime."
+description: "Cache, vendor, inspect, preview, and execute recipes in the current CLI runtime."
 ---
 
-This page describes runtime behavior behind `recipes` and `scenario` commands.
+This page describes runtime behavior behind `recipes` and `recipes scenario` commands.
 
-## Install flow
+## Cache flow
 
 1. Resolve source (`--name`, `--path`, or `--url`).
 2. Download when source is remote.
 3. Extract archive and locate `manifest.json`.
 4. Validate manifest, recipe-local file references, and scenario definitions.
-5. Copy the self-contained recipe bundle into `.agentplane/recipes/<recipe-id>/`.
-6. Write project-local install metadata and preserve existing `runs/` artifacts.
-7. Keep recipe-local `agents/`, `skills/`, `tools/`, and `scenarios/` inside the recipe directory.
+5. Copy the recipe archive contents into the global cache under `~/.agentplane/recipes-store/<recipe-id>/<version>/`.
+6. Update the global cache inventory (`recipes-installed.json`) and preserve the global remote index cache.
+
+`recipes install` stops here. It does not make the recipe active for any project.
+
+## Vendoring flow
+
+`recipes add`:
+
+1. Resolves `<id|id@version>` from the global cache.
+2. Materializes the cached package into `.agentplane/recipes/packages/<recipe-id>/` using `copy` by default or `link` when requested.
+3. Writes or updates `.agentplane/recipes/registry.json` as the sole project authority for vendored recipes.
+4. Recompiles `.agentplane/generated/overlay-bundle.json` and `.agentplane/generated/recipe-assets.json`.
+5. Leaves runtime pointed at the vendored project-local package, not at the global cache.
 
 ## Listing and inspection
 
-- `recipes list` scans project-local installed recipes and prints short entries.
-- `recipes info` and `recipes explain` read manifest-backed details.
-- `scenario list` enumerates resolver-backed scenario descriptors from installed recipes.
-- `scenario info` prints manifest-backed scenario details, normalized `run_profile`, and the explicit `task_template` for one `<recipe:scenario>`.
+- `recipes list` scans the global cache and prints cached entries.
+- `recipes info` reads cached recipe metadata.
+- `recipes active` and `recipes explain` read project-local vendored state from `registry.json`.
+- `recipes scenario list` enumerates resolver-backed scenario descriptors from active vendored recipes.
+- `recipes scenario info` prints manifest-backed scenario details, normalized `run_profile`, and the explicit `task_template` for one `<recipe:scenario>`.
 
 ## Scenario preview flow
 
-`scenario run`:
+`recipes scenario run`:
 
 1. Parses `<recipe:scenario>` id.
 2. Resolves the scenario through the deterministic recipe resolver.
@@ -34,10 +46,10 @@ This page describes runtime behavior behind `recipes` and `scenario` commands.
 
 ## Scenario execution flow
 
-`scenario execute`:
+`recipes scenario execute`:
 
 1. Parses `<recipe:scenario>` id.
-2. Resolves and validates the scenario through the same deterministic resolver used by `scenario run`.
+2. Resolves and validates the scenario through the same deterministic resolver used by `recipes scenario run`.
 3. Materializes a task from the scenario's explicit `task_template` and records recipe provenance on that task.
 4. Assembles the shared runner bundle from base prompts, repository context, task context, and recipe context.
 5. Creates task-local run artifacts under `.agentplane/tasks/<task-id>/runs/<run-id>/`.
@@ -68,9 +80,12 @@ normalized relative-path checks. The check only applies to recipe-controlled man
 `artifacts[].path` and `evidence.evidence_paths[]`; traversal forms and absolute paths are rejected,
 while runner-owned control artifacts and preserved source manifests are exempt.
 
-## Caching behavior
+## Cache and runtime behavior
 
-- Remote index cache is stored globally, but installed recipes are project-local.
+- Remote index cache and recipe archives are stored globally under `AGENTPLANE_HOME` (default `~/.agentplane`).
+- Vendored project packages live under `.agentplane/recipes/packages/` and are tracked by `.agentplane/recipes/registry.json`.
+- Generated recipe runtime artifacts live under `.agentplane/generated/`.
+- After vendoring, runtime reads only project-local recipes; deleting the global cache does not break execution for already vendored recipes.
 - `recipes list-remote --refresh` forces index refresh.
 - `recipes cache prune` removes stale cached entries and supports `--dry-run`.
 
@@ -80,6 +95,7 @@ Common hard failures:
 
 - missing or invalid manifest
 - unsupported archive structure
+- cache miss during `recipes add`, `recipes update`, or `recipes detach`
 - unknown scenario id
 - missing recipe-local files referenced by manifest
 - incompatible runtime context for the selected scenario

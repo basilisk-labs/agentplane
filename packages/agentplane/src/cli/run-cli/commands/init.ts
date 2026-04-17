@@ -235,7 +235,7 @@ export const initSpec: CommandSpec<InitParsed> = {
       kind: "string",
       name: "recipes",
       valueHint: "<none|id1,id2,...>",
-      description: "Optional cached recipes selection (comma-separated), or 'none'.",
+      description: "Optional cached recipes to vendor during init (comma-separated), or 'none'.",
     },
     {
       kind: "boolean",

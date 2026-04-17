@@ -77,12 +77,12 @@ Commands:
     recipes cache  Manage recipes cache.
     recipes cache prune  Prune global recipe cache entries.
     recipes detach  Convert a linked vendored recipe into a project-local copy.
-    recipes explain  Show detailed info for an installed recipe.
+    recipes explain  Show detailed info for a vendored recipe.
     recipes info  Show cached recipe metadata.
     recipes install  Install a recipe into the global cache from remote index, local archive, or URL.
     recipes list  List cached recipes.
     recipes list-remote  List recipes from the remote index (or cache).
-    recipes remove  Remove an installed recipe.
+    recipes remove  Remove a vendored recipe from the current project.
     recipes scenario  Recipe scenario commands.
     recipes scenario execute  Materialize a recipe-backed task and execute it through the shared runner flow.
     recipes scenario info  Show manifest-backed scenario details and normalized run profile.
