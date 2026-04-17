@@ -1,14 +1,9 @@
 import path from "node:path";
 import { compareDirectoryTrees, syncDirectoryTree } from "./lib/sync-artifacts.mjs";
-
-function usage() {
-  console.log("Usage: node scripts/sync-agent-templates.mjs <check|sync>");
-  throw new Error("Invalid usage");
-}
+import { parseCheckSyncMode } from "./lib/script-runtime.mjs";
 
 function main() {
-  const mode = process.argv[2];
-  if (mode !== "check" && mode !== "sync") usage();
+  const mode = parseCheckSyncMode(process.argv.slice(2), "scripts/sync-agent-templates.mjs");
 
   const repoRoot = process.cwd();
   const canonicalAgentsDir = path.join(repoRoot, "packages", "agentplane", "assets", "agents");

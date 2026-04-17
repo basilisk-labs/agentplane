@@ -1,5 +1,6 @@
 import path from "node:path";
 import { findDriftedRenderedArtifacts, syncRenderedArtifacts } from "./lib/sync-artifacts.mjs";
+import { parseCheckSyncMode } from "./lib/script-runtime.mjs";
 
 import { renderAgentplaneConfigSchemaJson } from "../packages/core/src/config/config-schema.ts";
 import {
@@ -9,14 +10,8 @@ import {
   renderTasksExportSchemaJson,
 } from "../packages/core/src/tasks/task-artifact-schema.ts";
 
-function usage() {
-  console.log("Usage: bun scripts/sync-schemas.mjs <check|sync>");
-  throw new Error("Invalid usage");
-}
-
 function main() {
-  const mode = process.argv[2];
-  if (mode !== "check" && mode !== "sync") usage();
+  const mode = parseCheckSyncMode(process.argv.slice(2), "scripts/sync-schemas.mjs");
 
   const repoRoot = process.cwd();
   const artifacts = [
