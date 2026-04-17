@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, readdir, rename, rm } from "node:fs/promises";
+import { cp, mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
@@ -28,7 +28,12 @@ export async function moveRecipeDir(opts: { from: string; to: string }): Promise
   }
 }
 
-async function readRecipeJsonObject(
+function isMarkdownAssetPath(relativePath: string): boolean {
+  const normalized = relativePath.trim().toLowerCase();
+  return normalized.endsWith(".md") || normalized.endsWith(".markdown");
+}
+
+async function readRecipeMarkdownAsset(
   recipeDir: string,
   relativePath: string,
   label: string,
@@ -37,10 +42,12 @@ async function readRecipeJsonObject(
   if (!(await fileExists(sourcePath))) {
     throw new Error(missingFileMessage(label, relativePath));
   }
-
-  const raw = JSON.parse(await readFile(sourcePath, "utf8")) as unknown;
-  if (!isRecord(raw)) {
-    throw new Error(invalidFieldMessage(label, "JSON object", relativePath));
+  if (!isMarkdownAssetPath(relativePath)) {
+    throw new Error(invalidFieldMessage(label, "markdown file (*.md)", relativePath));
+  }
+  const raw = await readFile(sourcePath, "utf8");
+  if (!raw.trim()) {
+    throw new Error(invalidFieldMessage(label, "non-empty markdown document", relativePath));
   }
 }
 
@@ -49,11 +56,11 @@ export async function validateRecipeAssets(opts: {
   recipeDir: string;
 }): Promise<void> {
   for (const skill of opts.manifest.skills ?? []) {
-    await readRecipeJsonObject(opts.recipeDir, skill.file, "recipe skill file");
+    await readRecipeMarkdownAsset(opts.recipeDir, skill.file, "recipe skill file");
   }
 
   for (const agent of opts.manifest.agents ?? []) {
-    await readRecipeJsonObject(opts.recipeDir, agent.file, "recipe agent file");
+    await readRecipeMarkdownAsset(opts.recipeDir, agent.file, "recipe agent file");
   }
 
   for (const tool of opts.manifest.tools ?? []) {
@@ -107,15 +114,17 @@ export async function applyRecipeAgents(opts: {
     if (!(await fileExists(sourcePath))) {
       throw new Error(missingFileMessage("recipe agent file", rawFile));
     }
-
-    const rawAgent = JSON.parse(await readFile(sourcePath, "utf8")) as unknown;
-    if (!isRecord(rawAgent)) {
-      throw new Error(invalidFieldMessage("recipe agent file", "JSON object", rawFile));
+    if (!isMarkdownAssetPath(rawFile)) {
+      throw new Error(invalidFieldMessage("recipe agent file", "markdown file (*.md)", rawFile));
+    }
+    const rawAgent = await readFile(sourcePath, "utf8");
+    if (!rawAgent.trim()) {
+      throw new Error(invalidFieldMessage("recipe agent file", "non-empty markdown document", rawFile));
     }
 
     const baseId = `${opts.manifest.id}__${agentId}`;
     let targetId = baseId;
-    let targetPath = path.join(agentsDir, `${targetId}.json`);
+    let targetPath = path.join(agentsDir, `${targetId}.md`);
     if (await getPathKind(targetPath)) {
       if (opts.onConflict === "fail") {
         throw new CliError({
@@ -128,14 +137,17 @@ export async function applyRecipeAgents(opts: {
         let counter = 1;
         while (await getPathKind(targetPath)) {
           targetId = `${baseId}__${counter}`;
-          targetPath = path.join(agentsDir, `${targetId}.json`);
+          targetPath = path.join(agentsDir, `${targetId}.md`);
           counter += 1;
         }
       }
     }
 
-    rawAgent.id = targetId;
-    await writeJsonStableIfChanged(targetPath, rawAgent);
+    const namespacedHeader = `# Agent: ${targetId}\n\n`;
+    const content = rawAgent.startsWith("# Agent:")
+      ? rawAgent
+      : `${namespacedHeader}${rawAgent.trimStart()}`;
+    await writeFile(targetPath, content, "utf8");
   }
 }
 

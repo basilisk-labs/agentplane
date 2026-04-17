@@ -145,13 +145,13 @@ describe("commands/recipes catalog/install", () => {
       "utf8",
     );
     await writeFile(
-      path.join(recipeDir, "agents", "recipe.json"),
-      JSON.stringify({ id: "RECIPE_AGENT", role: "Recipe agent" }, null, 2),
+      path.join(recipeDir, "agents", "recipe.md"),
+      "# Recipe Agent\n\nFollow the fixture execution path.\n",
       "utf8",
     );
     await writeFile(
-      path.join(recipeDir, "skills", "recipe.json"),
-      JSON.stringify({ id: "RECIPE_SKILL", kind: "agent-skill" }, null, 2),
+      path.join(recipeDir, "skills", "recipe.md"),
+      "# Recipe Skill\n\nInspect the fixture bundle.\n",
       "utf8",
     );
     await writeFile(

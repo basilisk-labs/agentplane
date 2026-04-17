@@ -56,7 +56,7 @@ describe("resolveBehavior", () => {
         },
         {
           layer: "extension",
-          source: ".agentplane/recipes/viewer/agents/recipe.json",
+          source: ".agentplane/recipes/viewer/agents/recipe.md",
           order: 0,
           value: "file",
           metadata: { kind: "file" },
@@ -69,7 +69,7 @@ describe("resolveBehavior", () => {
       key: "recipe.agent.RECIPE_AGENT",
       winner: {
         layer: "extension",
-        source: ".agentplane/recipes/viewer/agents/recipe.json",
+        source: ".agentplane/recipes/viewer/agents/recipe.md",
         order: 0,
         selected: true,
         metadata: { kind: "file" },
@@ -86,7 +86,7 @@ describe("resolveBehavior", () => {
       trace: [
         {
           layer: "extension",
-          source: ".agentplane/recipes/viewer/agents/recipe.json",
+          source: ".agentplane/recipes/viewer/agents/recipe.md",
           order: 0,
           selected: true,
           metadata: { kind: "file" },

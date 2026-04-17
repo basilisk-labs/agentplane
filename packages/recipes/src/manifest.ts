@@ -120,7 +120,6 @@ function normalizeSkills(raw: unknown): RecipeSkillDefinition[] | undefined {
     return {
       id: normalizeSkillId(normalizeRequiredString(entry.id, `manifest.skills[${index}].id`)),
       summary: normalizeRequiredString(entry.summary, `manifest.skills[${index}].summary`),
-      kind: normalizeRequiredString(entry.kind, `manifest.skills[${index}].kind`),
       file: normalizeRecipeRelativePath(
         `manifest.skills[${index}].file`,
         normalizeRequiredString(entry.file, `manifest.skills[${index}].file`),

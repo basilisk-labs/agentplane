@@ -35,7 +35,11 @@ function toRecipeContext(opts: {
       ? recipeAssets
           .filter((asset) => asset.kind === "agent")
           .filter((asset) => opts.selection.agents_involved.includes(asset.asset_id))
-          .map((asset) => asset.definition as unknown as Record<string, unknown>)
+          .map((asset) => ({
+            ...(asset.definition as Record<string, unknown>),
+            content: asset.content,
+            source: asset.source,
+          }))
       : (opts.entry.manifest.agents ?? [])
           .filter((agent) => opts.selection.agents_involved.includes(agent.id))
           .map((agent) => agent as unknown as Record<string, unknown>);
@@ -44,7 +48,11 @@ function toRecipeContext(opts: {
       ? recipeAssets
           .filter((asset) => asset.kind === "skill")
           .filter((asset) => opts.selection.skills_used.includes(asset.asset_id))
-          .map((asset) => asset.definition as unknown as Record<string, unknown>)
+          .map((asset) => ({
+            ...(asset.definition as Record<string, unknown>),
+            content: asset.content,
+            source: asset.source,
+          }))
       : (opts.entry.manifest.skills ?? [])
           .filter((skill) => opts.selection.skills_used.includes(skill.id))
           .map((skill) => skill as unknown as Record<string, unknown>);

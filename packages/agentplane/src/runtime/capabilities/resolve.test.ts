@@ -74,7 +74,6 @@ describe("runtime capability registry", () => {
             {
               id: "fs.read",
               summary: "Read files",
-              kind: "builtin",
               file: "skills/fs-read.md",
             },
           ],

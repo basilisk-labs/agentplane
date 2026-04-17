@@ -37,6 +37,10 @@ function normalizePromptContent(text: string): string {
   return ensureTrailingNewline(stripMarkdownFrontmatter(text).trim());
 }
 
+function normalizeRecipeAssetContent(text: string): string {
+  return ensureTrailingNewline(text.trimEnd());
+}
+
 function uniqueById<T extends { id: string }>(items: T[]): T[] {
   const seen = new Set<string>();
   const result: T[] = [];
@@ -56,10 +60,10 @@ function relativeSource(project: { agentplaneDir: string }, absolutePath: string
   return path.relative(project.agentplaneDir, absolutePath).replaceAll("\\", "/");
 }
 
-function compileProjectRecipeAssets(opts: {
+async function compileProjectRecipeAssets(opts: {
   project: { agentplaneDir: string };
   installed: Awaited<ReturnType<typeof readProjectInstalledRecipes>>;
-}): CompiledRecipeAssetRegistry {
+}): Promise<CompiledRecipeAssetRegistry> {
   const entries: CompiledRecipeAssetEntry[] = [];
 
   for (const recipe of opts.installed.recipes) {
@@ -69,6 +73,7 @@ function compileProjectRecipeAssets(opts: {
     const manifest = recipe.manifest;
 
     for (const agent of manifest.agents ?? []) {
+      const sourcePath = path.join(recipeDir, agent.file);
       entries.push({
         id: recipeAssetId(recipe.id, "agent", agent.id),
         kind: "agent",
@@ -76,13 +81,15 @@ function compileProjectRecipeAssets(opts: {
         recipe_version: recipe.version,
         recipe_name: manifest.name,
         asset_id: agent.id,
-        source: relativeSource(opts.project, path.join(recipeDir, agent.file)),
+        source: relativeSource(opts.project, sourcePath),
         summary: agent.summary,
         definition: agent,
+        content: normalizeRecipeAssetContent(await readFile(sourcePath, "utf8")),
       });
     }
 
     for (const skill of manifest.skills ?? []) {
+      const sourcePath = path.join(recipeDir, skill.file);
       entries.push({
         id: recipeAssetId(recipe.id, "skill", skill.id),
         kind: "skill",
@@ -90,9 +97,10 @@ function compileProjectRecipeAssets(opts: {
         recipe_version: recipe.version,
         recipe_name: manifest.name,
         asset_id: skill.id,
-        source: relativeSource(opts.project, path.join(recipeDir, skill.file)),
+        source: relativeSource(opts.project, sourcePath),
         summary: skill.summary,
         definition: skill,
+        content: normalizeRecipeAssetContent(await readFile(sourcePath, "utf8")),
       });
     }
 
@@ -291,7 +299,7 @@ export async function compileProjectOverlayArtifacts(project: {
   return {
     bundle,
     lock,
-    assets: compileProjectRecipeAssets({ project, installed }),
+    assets: await compileProjectRecipeAssets({ project, installed }),
   };
 }
 

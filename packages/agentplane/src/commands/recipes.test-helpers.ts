@@ -280,8 +280,7 @@ export function skillEntry(overrides?: Partial<Record<string, unknown>>) {
   return {
     id: "RECIPE_SKILL",
     summary: "Recipe skill",
-    kind: "agent-skill",
-    file: "skills/recipe.json",
+    file: "skills/recipe.md",
     ...overrides,
   };
 }
@@ -304,7 +303,7 @@ export function agentEntry(overrides?: Partial<Record<string, unknown>>) {
     summary: "Recipe agent",
     skills: ["RECIPE_SKILL"],
     tools: ["RECIPE_TOOL"],
-    file: "agents/recipe.json",
+    file: "agents/recipe.md",
     ...overrides,
   };
 }

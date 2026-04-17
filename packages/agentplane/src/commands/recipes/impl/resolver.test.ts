@@ -34,7 +34,7 @@ async function createRecipeProject(opts?: {
             display_name: "Recipe Agent",
             role: "executor",
             summary: "Recipe agent",
-            file: "agents/recipe.json",
+            file: "agents/recipe.md",
           },
         ],
         scenarios: [

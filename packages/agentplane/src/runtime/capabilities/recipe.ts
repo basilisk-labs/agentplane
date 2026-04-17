@@ -63,6 +63,7 @@ function toFallbackAssets(entry: RecipeEntry): CompiledRecipeAssetEntry[] {
       source: agent.file,
       summary: agent.summary,
       definition: agent,
+      content: "",
     });
   }
   for (const skill of entry.manifest.skills ?? []) {
@@ -76,6 +77,7 @@ function toFallbackAssets(entry: RecipeEntry): CompiledRecipeAssetEntry[] {
       source: skill.file,
       summary: skill.summary,
       definition: skill,
+      content: "",
     });
   }
   for (const tool of entry.manifest.tools ?? []) {
@@ -183,7 +185,6 @@ export function resolveRecipeCapabilityRegistry(opts: {
         recipe_id: opts.entry.id,
         recipe_version: opts.entry.version,
         skill_id: skill.asset_id,
-        kind: skill.definition.kind,
         file: skill.definition.file,
       },
     });

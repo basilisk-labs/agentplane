@@ -37,7 +37,6 @@ export type RecipeTaskTemplate = {
 export type RecipeSkillDefinition = {
   id: string;
   summary: string;
-  kind: string;
   file: string;
 };
 
@@ -429,11 +428,13 @@ export type CompiledRecipeAssetBase = {
 export type CompiledRecipeAgentAsset = CompiledRecipeAssetBase & {
   kind: "agent";
   definition: RecipeAgentDefinition;
+  content: string;
 };
 
 export type CompiledRecipeSkillAsset = CompiledRecipeAssetBase & {
   kind: "skill";
   definition: RecipeSkillDefinition;
+  content: string;
 };
 
 export type CompiledRecipeToolAsset = CompiledRecipeAssetBase & {

@@ -434,7 +434,7 @@ describe("runCli recipes", () => {
             display_name: "Full Agent",
             role: "executor",
             summary: "Full agent",
-            file: "agents/full.json",
+            file: "agents/full.md",
           },
         ],
         scenarios: [
@@ -456,7 +456,7 @@ describe("runCli recipes", () => {
         ],
       },
       files: {
-        "agents/full.json": '{"id":"FULL_AGENT"}',
+        "agents/full.md": "# Full Agent\n\nUse the full recipe fixture.\n",
         "scenarios/full.json": JSON.stringify(
           {
             schema_version: "1",
@@ -598,7 +598,7 @@ describe("runCli recipes", () => {
               display_name: "Bad Agent",
               role: "executor",
               summary: "Bad",
-              file: "agents/bad.json",
+              file: "agents/bad.md",
             },
           ],
           scenarios: [
@@ -619,7 +619,7 @@ describe("runCli recipes", () => {
             },
           ],
         },
-        files: { "agents/bad.json": '{"id":"X"}' },
+        files: { "agents/bad.md": "# Bad Agent\n\nBroken id fixture.\n" },
         pattern: /Invalid agent\.id: must not contain path separators/,
       },
       {
@@ -636,7 +636,7 @@ describe("runCli recipes", () => {
               display_name: "Agent",
               role: "executor",
               summary: "Agent",
-              file: "agents/missing.json",
+              file: "agents/missing.md",
             },
           ],
           scenarios: [
@@ -662,25 +662,25 @@ describe("runCli recipes", () => {
       {
         manifest: {
           schema_version: "1",
-          id: "bad-agent-json",
+          id: "bad-agent-markdown",
           version: "1.0.0",
-          name: "Bad Agent Json",
-          summary: "Bad Agent Json",
-          description: "Bad Agent Json",
+          name: "Bad Agent Markdown",
+          summary: "Bad Agent Markdown",
+          description: "Bad Agent Markdown",
           agents: [
             {
               id: "AGENT",
               display_name: "Agent",
               role: "executor",
               summary: "Agent",
-              file: "agents/bad.json",
+              file: "agents/bad.md",
             },
           ],
           scenarios: [
             {
-              id: "BAD_AGENT_JSON_SCENARIO",
-              name: "Bad Agent Json Scenario",
-              summary: "Bad agent json scenario",
+              id: "BAD_AGENT_MARKDOWN_SCENARIO",
+              name: "Bad Agent Markdown Scenario",
+              summary: "Bad agent markdown scenario",
               use_when: ["Validation fixture"],
               required_inputs: [],
               outputs: [],
@@ -694,8 +694,57 @@ describe("runCli recipes", () => {
             },
           ],
         },
-        files: { "agents/bad.json": "[]" },
-        pattern: /Invalid field recipe agent file: expected JSON object/,
+        files: { "agents/bad.md": "   \n" },
+        pattern: /Invalid field recipe agent file: expected non-empty markdown document/,
+      },
+      {
+        manifest: {
+          schema_version: "1",
+          id: "bad-skill-markdown",
+          version: "1.0.0",
+          name: "Bad Skill Markdown",
+          summary: "Bad Skill Markdown",
+          description: "Bad Skill Markdown",
+          agents: [
+            {
+              id: "AGENT",
+              display_name: "Agent",
+              role: "executor",
+              summary: "Agent",
+              skills: ["SKILL"],
+              file: "agents/agent.md",
+            },
+          ],
+          skills: [
+            {
+              id: "SKILL",
+              summary: "Skill",
+              file: "skills/bad.md",
+            },
+          ],
+          scenarios: [
+            {
+              id: "BAD_SKILL_SCENARIO",
+              name: "Bad Skill Scenario",
+              summary: "Bad skill scenario",
+              use_when: ["Validation fixture"],
+              required_inputs: [],
+              outputs: [],
+              permissions: [],
+              artifacts: [],
+              agents_involved: ["AGENT"],
+              skills_used: ["SKILL"],
+              tools_used: [],
+              run_profile: { mode: "analysis" },
+              file: "scenarios/bad-skill.json",
+            },
+          ],
+        },
+        files: {
+          "agents/agent.md": "# Agent\n\nExercise skill validation.\n",
+          "skills/bad.md": "",
+        },
+        pattern: /Invalid field recipe skill file: expected non-empty markdown document/,
       },
       {
         manifest: {
@@ -712,7 +761,7 @@ describe("runCli recipes", () => {
               role: "executor",
               summary: "Agent",
               tools: ["TOOL"],
-              file: "agents/agent.json",
+              file: "agents/agent.md",
             },
           ],
           tools: [{ id: "TOOL", summary: "Tool", runtime: "bash", entrypoint: "tools/run.sh" }],
@@ -735,7 +784,7 @@ describe("runCli recipes", () => {
           ],
         },
         files: {
-          "agents/agent.json": '{"id":"AGENT"}',
+          "agents/agent.md": "# Agent\n\nRun the scenario validation fixture.\n",
           "tools/run.sh": "#!/usr/bin/env bash\n",
           "scenarios/bad.json": JSON.stringify(
             {

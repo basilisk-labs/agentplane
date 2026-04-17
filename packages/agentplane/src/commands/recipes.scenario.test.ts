@@ -355,7 +355,7 @@ describe("commands/recipes scenario", () => {
     await writeDefaultConfig(projectDir);
     await installRecipe({ projectDir });
 
-    await rm(path.join(resolveProjectRecipeDir(projectDir, "viewer"), "agents", "recipe.json"), {
+    await rm(path.join(resolveProjectRecipeDir(projectDir, "viewer"), "agents", "recipe.md"), {
       force: true,
     });
     await expect(

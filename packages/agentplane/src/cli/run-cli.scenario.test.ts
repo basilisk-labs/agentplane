@@ -274,7 +274,7 @@ describe("runCli recipes scenario", () => {
       );
       expect(
         bundle.base_prompts?.find((prompt) => prompt.id === "recipe.agent.RECIPE_AGENT")?.source,
-      ).toBe(`.agentplane/recipes/packages/${manifestId}/agents/recipe.json`);
+      ).toBe(`.agentplane/recipes/packages/${manifestId}/agents/recipe.md`);
       expect(bundle.framework_explain).toMatchObject({
         schema_version: 1,
         runtime: {
