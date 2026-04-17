@@ -32,7 +32,7 @@
       },
       "dependencies": {
         "@agentplaneorg/core": "0.3.13",
-        "@agentplaneorg/recipes": "0.3.12",
+        "@agentplaneorg/recipes": "0.3.13",
         "yauzl": "^2.10.0",
       },
       "devDependencies": {
@@ -50,7 +50,7 @@
     },
     "packages/recipes": {
       "name": "@agentplaneorg/recipes",
-      "version": "0.3.12",
+      "version": "0.3.13",
     },
     "packages/spec": {
       "name": "@agentplane/spec",

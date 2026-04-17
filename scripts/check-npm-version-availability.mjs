@@ -73,7 +73,7 @@ async function main() {
   // Enforce local parity consistency, but do not require package.json to
   // already match the target release version.
   await assertReleaseParity(root);
-  const pkgs = ["@agentplaneorg/core", "agentplane"];
+  const pkgs = ["@agentplaneorg/core", "agentplane", "@agentplaneorg/recipes"];
 
   for (const name of pkgs) {
     await assertVersionAvailable(name, version, root);

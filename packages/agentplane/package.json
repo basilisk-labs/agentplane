@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@agentplaneorg/core": "0.3.13",
-    "@agentplaneorg/recipes": "0.3.12",
+    "@agentplaneorg/recipes": "0.3.13",
     "yauzl": "^2.10.0"
   },
   "devDependencies": {

@@ -27,7 +27,9 @@ export async function seedReleaseWorkspace(
   opts: {
     coreVersion?: string;
     cliVersion?: string;
+    recipesVersion?: string;
     dependencyVersion?: string;
+    recipesDependencyVersion?: string;
     extraDependencies?: Record<string, string>;
     extraWorkspacePackages?: {
       relDir: string;
@@ -42,9 +44,12 @@ export async function seedReleaseWorkspace(
 ): Promise<void> {
   const coreVersion = opts.coreVersion ?? "1.2.3";
   const cliVersion = opts.cliVersion ?? coreVersion;
+  const recipesVersion = opts.recipesVersion ?? cliVersion;
   const dependencyVersion = opts.dependencyVersion ?? coreVersion;
+  const recipesDependencyVersion = opts.recipesDependencyVersion ?? recipesVersion;
   const dependencies: Record<string, string> = {
     "@agentplaneorg/core": dependencyVersion,
+    "@agentplaneorg/recipes": recipesDependencyVersion,
   };
   if (opts.extraDependencies) {
     Object.assign(dependencies, opts.extraDependencies);
@@ -57,6 +62,10 @@ export async function seedReleaseWorkspace(
     name: "agentplane",
     version: cliVersion,
     dependencies,
+  });
+  await writePackageJson(root, "packages/recipes", {
+    name: "@agentplaneorg/recipes",
+    version: recipesVersion,
   });
   for (const pkg of opts.extraWorkspacePackages ?? []) {
     await writePackageJson(root, pkg.relDir, {
@@ -75,7 +84,9 @@ export async function initReleaseWorkspace(
     prefix?: string;
     coreVersion?: string;
     cliVersion?: string;
+    recipesVersion?: string;
     dependencyVersion?: string;
+    recipesDependencyVersion?: string;
     extraDependencies?: Record<string, string>;
     extraWorkspacePackages?: {
       relDir: string;
