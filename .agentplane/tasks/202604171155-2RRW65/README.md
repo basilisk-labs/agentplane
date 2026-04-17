@@ -1,10 +1,11 @@
 ---
 id: "202604171155-2RRW65"
 title: "Collapse recipes transition wrappers"
-status: "DOING"
+result_summary: "Merged via PR #385."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-17T12:52:51.424Z"
   updated_by: "TESTER"
   note: "Verified: recipe-domain transition wrappers were removed and CLI/runtime consumers now import domain helpers directly from @agentplaneorg/recipes."
-commit: null
+commit:
+  hash: "c8a70a147c5552bde497ffe3e4fb1281450ca564"
+  message: "recipes/workflow: Collapse recipes transition wrappers (2RRW65) (#385)"
 comments:
   -
     author: "CODER"
     body: "Start: collapse recipe-domain transition wrappers and switch CLI/runtime imports to @agentplaneorg/recipes where direct exports already exist."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #385 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: recipe-domain transition wrappers were removed and CLI/runtime consumers now import domain helpers directly from @agentplaneorg/recipes."
+  -
+    type: "status"
+    at: "2026-04-17T14:25:43.798Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #385 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T12:52:51.426Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T14:25:43.804Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove duplicated normalize/manifest/scenario transition layers under commands/recipes/impl and import recipe-domain logic directly from @agentplaneorg/recipes where the CLI no longer needs a boundary shim."
 sections:
   Summary: |-
