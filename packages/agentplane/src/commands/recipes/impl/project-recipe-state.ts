@@ -12,9 +12,8 @@ async function hashTreeEntry(
   hash: ReturnType<typeof createHash>,
 ): Promise<void> {
   const directoryPath = relativeDir ? path.join(rootDir, relativeDir) : rootDir;
-  const entries = (await readdir(directoryPath, { withFileTypes: true })).toSorted((left, right) =>
-    left.name.localeCompare(right.name),
-  );
+  const directoryEntries = await readdir(directoryPath, { withFileTypes: true });
+  const entries = directoryEntries.toSorted((left, right) => left.name.localeCompare(right.name));
   for (const entry of entries) {
     const relativePath = relativeDir ? path.posix.join(relativeDir, entry.name) : entry.name;
     const absolutePath = path.join(rootDir, relativePath);

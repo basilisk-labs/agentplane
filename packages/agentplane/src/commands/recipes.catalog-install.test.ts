@@ -97,7 +97,7 @@ describe("commands/recipes catalog/install", () => {
 
     const registry = JSON.parse(
       await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
-    ) as { recipes: Array<{ id: string; version: string }> };
+    ) as { recipes: { id: string; version: string }[] };
     expect(registry.recipes).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "viewer", version: "1.2.3" })]),
     );
@@ -196,7 +196,7 @@ describe("commands/recipes catalog/install", () => {
 
     const registry = JSON.parse(
       await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
-    ) as { recipes: Array<{ id: string; version: string }> };
+    ) as { recipes: { id: string; version: string }[] };
     expect(registry.recipes).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "local-viewer", version: "0.1.0" })]),
     );
@@ -218,15 +218,18 @@ describe("commands/recipes catalog/install", () => {
     const manifestPath = path.join(resolveProjectRecipeDir(projectDir, "viewer"), "manifest.json");
     const registryPath = resolveProjectRecipesRegistryPath(projectDir);
     expect(JSON.parse(await readFile(manifestPath, "utf8"))).toMatchObject({ id: "viewer" });
-    expect(JSON.parse(await readFile(registryPath, "utf8"))).toMatchObject({
+    const projectRegistry = JSON.parse(await readFile(registryPath, "utf8")) as {
+      recipes: unknown[];
+    };
+    expect(projectRegistry).toMatchObject({
       recipes: [
         expect.objectContaining({
           id: "viewer",
           path: "packages/viewer",
           active: false,
           materialization: "copy",
-          source_sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
-          vendored_sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
+          source_sha256: expect.stringMatching(/^[0-9a-f]{64}$/) as unknown,
+          vendored_sha256: expect.stringMatching(/^[0-9a-f]{64}$/) as unknown,
         }),
       ],
     });

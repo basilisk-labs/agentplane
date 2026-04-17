@@ -100,7 +100,7 @@ describe("runCli recipes", () => {
         path.join(process.env.AGENTPLANE_HOME ?? agentplaneHomePath(), "recipes.json"),
         "utf8",
       ),
-    ) as { recipes: Array<{ id: string; version: string }> };
+    ) as { recipes: { id: string; version: string }[] };
     expect(registry.recipes).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "viewer", version: "1.2.3" })]),
     );
@@ -129,7 +129,7 @@ describe("runCli recipes", () => {
         path.join(process.env.AGENTPLANE_HOME ?? agentplaneHomePath(), "recipes.json"),
         "utf8",
       ),
-    ) as { recipes: Array<{ id: string; version: string }> };
+    ) as { recipes: { id: string; version: string }[] };
     expect(registry.recipes).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: String(manifest.id), version: String(manifest.version) }),
@@ -144,6 +144,7 @@ describe("runCli recipes", () => {
       id: "vendored",
       version: "0.4.0",
     });
+    const manifestRef = `${String(manifest.id)}@${String(manifest.version)}`;
 
     expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(
       0,
@@ -154,7 +155,7 @@ describe("runCli recipes", () => {
       const code = await runCli([
         "recipes",
         "add",
-        `${manifest.id}@${manifest.version}`,
+        manifestRef,
         "--root",
         root,
       ]);
@@ -175,7 +176,10 @@ describe("runCli recipes", () => {
     const registryPath = path.join(root, ".agentplane", "recipes", "registry.json");
     const assetRegistryPath = path.join(root, ".agentplane", "generated", "recipe-assets.json");
     expect(await pathExists(manifestPath)).toBe(true);
-    expect(JSON.parse(await readFile(registryPath, "utf8"))).toMatchObject({
+    const projectRegistry = JSON.parse(await readFile(registryPath, "utf8")) as {
+      recipes: unknown[];
+    };
+    expect(projectRegistry).toMatchObject({
       recipes: [
         expect.objectContaining({
           id: "vendored",
@@ -183,8 +187,8 @@ describe("runCli recipes", () => {
           active: false,
           materialization: "copy",
           source_ref: "vendored@0.4.0",
-          source_sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
-          vendored_sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
+          source_sha256: expect.stringMatching(/^[0-9a-f]{64}$/) as unknown,
+          vendored_sha256: expect.stringMatching(/^[0-9a-f]{64}$/) as unknown,
         }),
       ],
     });
@@ -193,7 +197,11 @@ describe("runCli recipes", () => {
         path.join(root, ".agentplane", "recipes", "packages", "vendored", ".install.json"),
       ),
     ).toBe(false);
-    expect(JSON.parse(await readFile(assetRegistryPath, "utf8"))).toMatchObject({
+    const assetRegistry = JSON.parse(await readFile(assetRegistryPath, "utf8")) as {
+      kind: string;
+      entries: unknown[];
+    };
+    expect(assetRegistry).toMatchObject({
       kind: "recipe_asset_registry",
       entries: expect.arrayContaining([
         expect.objectContaining({
@@ -220,7 +228,7 @@ describe("runCli recipes", () => {
           recipe_id: "vendored",
           asset_id: "RECIPE_SCENARIO",
         }),
-      ]),
+      ]) as unknown,
     });
 
     const ioExplain = captureStdIO();
@@ -242,20 +250,19 @@ describe("runCli recipes", () => {
       id: "vendored",
       version: "0.4.0",
     });
+    const manifestRef = `${String(manifest.id)}@${String(manifest.version)}`;
 
     expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(
       0,
     );
-    expect(
-      await runCliSilent(["recipes", "add", `${manifest.id}@${manifest.version}`, "--root", root]),
-    ).toBe(0);
+    expect(await runCliSilent(["recipes", "add", manifestRef, "--root", root])).toBe(0);
 
     const io = captureStdIO();
     try {
       const code = await runCli([
         "recipes",
         "add",
-        `${manifest.id}@${manifest.version}`,
+        manifestRef,
         "--root",
         root,
       ]);
@@ -274,13 +281,12 @@ describe("runCli recipes", () => {
       id: "syncable",
       version: "0.5.0",
     });
+    const manifestRef = `${String(manifest.id)}@${String(manifest.version)}`;
 
     expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(
       0,
     );
-    expect(
-      await runCliSilent(["recipes", "add", `${manifest.id}@${manifest.version}`, "--root", root]),
-    ).toBe(0);
+    expect(await runCliSilent(["recipes", "add", manifestRef, "--root", root])).toBe(0);
 
     const cachedManifestPath = path.join(
       agentplaneHomePath(),
@@ -360,6 +366,7 @@ describe("runCli recipes", () => {
       id: "linked",
       version: "0.6.0",
     });
+    const manifestRef = `${String(manifest.id)}@${String(manifest.version)}`;
 
     expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(
       0,
@@ -370,7 +377,7 @@ describe("runCli recipes", () => {
       const code = await runCli([
         "recipes",
         "add",
-        `${manifest.id}@${manifest.version}`,
+        manifestRef,
         "--mode",
         "link",
         "--root",
@@ -390,7 +397,8 @@ describe("runCli recipes", () => {
       "0.6.0",
       "manifest.json",
     );
-    expect((await lstat(vendoredDir)).isSymbolicLink()).toBe(true);
+    const vendoredLinkStat = await lstat(vendoredDir);
+    expect(vendoredLinkStat.isSymbolicLink()).toBe(true);
     expect(
       await pathExists(
         path.join(agentplaneHomePath(), "recipes-store", "linked", "0.6.0", ".install.json"),
@@ -406,7 +414,8 @@ describe("runCli recipes", () => {
       ioDetach.restore();
     }
 
-    expect((await lstat(vendoredDir)).isSymbolicLink()).toBe(false);
+    const vendoredDetachedStat = await lstat(vendoredDir);
+    expect(vendoredDetachedStat.isSymbolicLink()).toBe(false);
     const vendoredManifestPath = path.join(vendoredDir, "manifest.json");
     const vendoredManifest = JSON.parse(await readFile(vendoredManifestPath, "utf8")) as Record<
       string,
@@ -417,17 +426,16 @@ describe("runCli recipes", () => {
     expect(JSON.parse(await readFile(cachedManifestPath, "utf8"))).not.toMatchObject({
       summary: "Detached project copy",
     });
-    expect(
-      JSON.parse(
-        await readFile(path.join(root, ".agentplane", "recipes", "registry.json"), "utf8"),
-      ),
-    ).toMatchObject({
+    const detachedRegistry = JSON.parse(
+      await readFile(path.join(root, ".agentplane", "recipes", "registry.json"), "utf8"),
+    ) as { recipes: unknown[] };
+    expect(detachedRegistry).toMatchObject({
       recipes: [
         expect.objectContaining({
           id: "linked",
           materialization: "copy",
-          source_sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
-          vendored_sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
+          source_sha256: expect.stringMatching(/^[0-9a-f]{64}$/) as unknown,
+          vendored_sha256: expect.stringMatching(/^[0-9a-f]{64}$/) as unknown,
         }),
       ],
     });
@@ -1141,7 +1149,7 @@ describe("runCli recipes", () => {
         path.join(process.env.AGENTPLANE_HOME ?? agentplaneHomePath(), "recipes.json"),
         "utf8",
       ),
-    ) as { recipes: Array<{ id: string; version: string }> };
+    ) as { recipes: { id: string; version: string }[] };
     expect(registry.recipes).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: String(manifest.id), version: String(manifest.version) }),

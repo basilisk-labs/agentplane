@@ -30,8 +30,8 @@ export function renderCachedRecipesHint(recipes: CachedRecipeInfo[]): string {
 export async function validateCachedRecipesSelection(recipes: string[]): Promise<void> {
   if (recipes.length === 0) return;
   const cached = await listCachedRecipes();
-  const available = cached.map((entry) => entry.id);
-  const missing = recipes.filter((recipe) => !available.includes(recipe));
+  const available = new Set(cached.map((entry) => entry.id));
+  const missing = recipes.filter((recipe) => !available.has(recipe));
   if (missing.length === 0) return;
   throw new CliError({
     exitCode: 2,

@@ -385,10 +385,10 @@ export async function installRecipe(opts: {
       args: ["--path", archivePath],
     });
     if (opts.vendor ?? true) {
-      const recipesHome = process.env.AGENTPLANE_HOME?.trim() || requireRecipesTempHome();
+      const recipesHome = process.env.AGENTPLANE_HOME?.trim() ?? requireRecipesTempHome();
       const installed = JSON.parse(
         await readFile(path.join(recipesHome, "recipes.json"), "utf8"),
-      ) as { recipes?: Array<{ id: string; version: string }> };
+      ) as { recipes?: { id: string; version: string }[] };
       const latest = installed.recipes?.at(-1);
       if (!latest) throw new Error("cached recipe registry unexpectedly empty after install");
       await runRecipesTest({
