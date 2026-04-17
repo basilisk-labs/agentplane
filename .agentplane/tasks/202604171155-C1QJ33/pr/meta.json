@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171155-C1QJ33/normalize-recipes-authority",
   "created_at": "2026-04-17T12:54:59.902Z",
-  "head_sha": "55af0bc69fcd5f03579085a5eb6c59a4bdf64933",
+  "head_sha": "a86ad6a2b24bcd18fa46ef4aba7f446a85074f77",
   "last_verified_at": "2026-04-17T12:59:13.254Z",
   "last_verified_sha": "0117987c40f2490a7c584f02d09be61b61c1398b",
+  "merge_commit": "4e38c54668c613182482f8063aefd97f4ac0a6df",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T14:35:52Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171155-C1QJ33",
-  "updated_at": "2026-04-17T13:02:58.729Z",
+  "updated_at": "2026-04-17T14:35:52Z",
   "verify": {
     "status": "pass"
   }
