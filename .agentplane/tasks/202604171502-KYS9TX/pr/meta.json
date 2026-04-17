@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171502-KYS9TX/schema-validation-baseline",
   "created_at": "2026-04-17T18:54:51.044Z",
-  "head_sha": "57acd4f5d37fc79ea519e9260af0657f4d2421c6",
+  "head_sha": "9c27a7b9c06c0b7b0e9e34b148e0db91483d41de",
   "last_verified_at": "2026-04-17T18:57:02.363Z",
   "last_verified_sha": "b0c53c8aae1a7e985ed3734ab3a02380b62e0d0e",
+  "merge_commit": "5f9e054d2ea83f8bf77715b9faf77853ce128c02",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T19:01:02Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171502-KYS9TX",
-  "updated_at": "2026-04-17T18:57:13.831Z",
+  "updated_at": "2026-04-17T19:01:02Z",
   "verify": {
     "status": "pass"
   }
