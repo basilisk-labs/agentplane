@@ -1,0 +1,1 @@
+cli/refactor: Refactor command catalog dispatch metadata into needs union (TZMHEY)
