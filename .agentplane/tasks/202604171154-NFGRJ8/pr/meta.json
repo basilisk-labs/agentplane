@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604171154-NFGRJ8/semver-recipe-resolution",
+  "created_at": "2026-04-17T12:10:36.880Z",
+  "head_sha": "47a60df5874ef18c75a36942adab038279a46c81",
+  "last_verified_at": "2026-04-17T12:14:20.382Z",
+  "last_verified_sha": "0117987c40f2490a7c584f02d09be61b61c1398b",
+  "schema_version": 1,
+  "task_id": "202604171154-NFGRJ8",
+  "updated_at": "2026-04-17T12:22:59.661Z",
+  "verify": {
+    "status": "pass"
+  }
+}

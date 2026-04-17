@@ -1,0 +1,1 @@
+recipes/workflow: Replace localeCompare recipe version resolution (NFGRJ8)
