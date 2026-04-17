@@ -1,0 +1,1 @@
+recipes: Remove top-level scenario CLI domain (ZE2GGY)

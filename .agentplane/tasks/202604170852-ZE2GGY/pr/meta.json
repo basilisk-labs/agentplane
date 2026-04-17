@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604170852-ZE2GGY/remove-scenario-domain",
+  "created_at": "2026-04-17T08:53:54.266Z",
+  "head_sha": "2a55ee5d8275a94927019cda5412cd5024a2166c",
+  "last_verified_at": "2026-04-17T09:03:44.665Z",
+  "last_verified_sha": "4785f4a5d5c389255afa55b7f385de38d7e25f1f",
+  "schema_version": 1,
+  "task_id": "202604170852-ZE2GGY",
+  "updated_at": "2026-04-17T09:04:27.482Z",
+  "verify": {
+    "status": "pass"
+  }
+}
