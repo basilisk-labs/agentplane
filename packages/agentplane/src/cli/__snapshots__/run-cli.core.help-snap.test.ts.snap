@@ -73,6 +73,7 @@ Commands:
     doctor  Check workspace invariants for a normal agentplane installation (with optional dev source checks).
   Recipes:
     recipes  Recipe management commands.
+    recipes add  Vendor a cached recipe into the current project.
     recipes cache  Manage recipes cache.
     recipes cache prune  Prune global recipe cache entries.
     recipes explain  Show detailed info for an installed recipe.

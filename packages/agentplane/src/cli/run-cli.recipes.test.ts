@@ -131,6 +131,29 @@ describe("runCli recipes", () => {
     );
   });
 
+  it("recipes add vendors a cached recipe into the project", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive({
+      id: "vendored",
+      version: "0.4.0",
+    });
+
+    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(0);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "add", `${manifest.id}@${manifest.version}`, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Vendored recipe vendored@0.4.0 into project (copy)");
+    } finally {
+      io.restore();
+    }
+
+    const manifestPath = path.join(root, ".agentplane", "recipes", "packages", "vendored", "manifest.json");
+    expect(await pathExists(manifestPath)).toBe(true);
+  });
+
   it("rejects tar archives with path traversal entries", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

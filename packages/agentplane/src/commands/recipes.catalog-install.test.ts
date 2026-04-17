@@ -90,18 +90,14 @@ describe("commands/recipes catalog/install", () => {
     await writeDefaultConfig(projectDir);
     const { archivePath } = await createRecipeArchive();
 
-    await expect(installRecipe({ projectDir, archivePath })).resolves.toBeUndefined();
+    await expect(installRecipe({ projectDir, archivePath, vendor: false })).resolves.toBeUndefined();
 
-    const manifestPath = path.join(resolveProjectRecipeDir(projectDir, "viewer"), "manifest.json");
-    const installMetaPath = path.join(
-      resolveProjectRecipeDir(projectDir, "viewer"),
-      ".install.json",
+    const registry = JSON.parse(
+      await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
+    ) as { recipes: Array<{ id: string; version: string }> };
+    expect(registry.recipes).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "viewer", version: "1.2.3" })]),
     );
-    expect(JSON.parse(await readFile(manifestPath, "utf8"))).toMatchObject({ id: "viewer" });
-    expect(JSON.parse(await readFile(installMetaPath, "utf8"))).toMatchObject({
-      id: "viewer",
-      install_mode: "project-local",
-    });
   });
 
   it("installs a recipe from a local directory path", async () => {
@@ -195,14 +191,34 @@ describe("commands/recipes catalog/install", () => {
       await rm(fixtureRoot, { recursive: true, force: true });
     }
 
-    expect(
-      JSON.parse(
-        await readFile(
-          path.join(resolveProjectRecipeDir(projectDir, "local-viewer"), "manifest.json"),
-          "utf8",
-        ),
-      ),
-    ).toMatchObject({ id: "local-viewer" });
+    const registry = JSON.parse(
+      await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
+    ) as { recipes: Array<{ id: string; version: string }> };
+    expect(registry.recipes).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "local-viewer", version: "0.1.0" })]),
+    );
+  });
+
+  it("vendors a cached recipe into the project", async () => {
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    await installRecipe({ projectDir, vendor: false });
+
+    await expect(
+      runRecipesTest({
+        cwd: projectDir,
+        args: ["viewer"],
+        command: "add",
+      }),
+    ).resolves.toBe(0);
+
+    const manifestPath = path.join(resolveProjectRecipeDir(projectDir, "viewer"), "manifest.json");
+    const installMetaPath = path.join(resolveProjectRecipeDir(projectDir, "viewer"), ".install.json");
+    expect(JSON.parse(await readFile(manifestPath, "utf8"))).toMatchObject({ id: "viewer" });
+    expect(JSON.parse(await readFile(installMetaPath, "utf8"))).toMatchObject({
+      id: "viewer",
+      install_mode: "project-copy",
+    });
   });
 
   it("prints recipe info details", async () => {

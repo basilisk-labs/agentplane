@@ -254,7 +254,7 @@ export type RecipeInstallMetadata = {
   source: string;
   installed_at: string;
   tags?: string[];
-  install_mode?: "project-local";
+  install_mode?: "cache" | "project-copy" | "project-link";
 };
 
 export type InstalledRecipeEntry = {

@@ -72,7 +72,7 @@ export async function setRecipeActive(opts: {
     ...(typeof raw.recipes === "object" && raw.recipes
       ? (raw.recipes as Record<string, unknown>)
       : {}),
-    storage_default: loaded.config.recipes?.storage_default ?? "link",
+    storage_default: loaded.config.recipes?.storage_default ?? "copy",
     active: [...current].toSorted(),
   };
   await saveConfig(opts.project.agentplaneDir, raw);

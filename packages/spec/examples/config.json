@@ -11,7 +11,7 @@
     }
   },
   "recipes": {
-    "storage_default": "link"
+    "storage_default": "copy"
   },
   "runner": {
     "default_adapter": "codex"

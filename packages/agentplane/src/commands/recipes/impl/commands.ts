@@ -1,3 +1,4 @@
+export { cmdRecipeAddParsed } from "./commands/add.js";
 export { cmdRecipeListParsed } from "./commands/list.js";
 export { cmdRecipeListRemoteParsed } from "./commands/list-remote.js";
 export { cmdRecipeInfoParsed } from "./commands/info.js";

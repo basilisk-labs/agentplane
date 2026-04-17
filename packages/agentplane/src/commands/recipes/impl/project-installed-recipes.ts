@@ -8,7 +8,7 @@ import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 import {
   resolveProjectInstalledRecipeDir,
   resolveProjectRecipeInstallMetaPath,
-  resolveProjectRecipesDir,
+  resolveProjectRecipesPackagesDir,
 } from "./paths.js";
 import { readRecipeManifest } from "./manifest.js";
 import { normalizeRecipeTags } from "./normalize.js";
@@ -21,7 +21,9 @@ function validateRecipeInstallMetadata(raw: unknown): RecipeInstallMetadata {
   const source = typeof raw.source === "string" ? raw.source.trim() : "";
   const installedAt = typeof raw.installed_at === "string" ? raw.installed_at.trim() : "";
   const installMode =
-    raw.install_mode === undefined || raw.install_mode === "project-local"
+    raw.install_mode === undefined ||
+    raw.install_mode === "project-copy" ||
+    raw.install_mode === "project-link"
       ? raw.install_mode
       : null;
   if (raw.schema_version !== 1) {
@@ -33,7 +35,9 @@ function validateRecipeInstallMetadata(raw: unknown): RecipeInstallMetadata {
     );
   }
   if (installMode === null) {
-    throw new Error(invalidFieldMessage("recipe install metadata.install_mode", '"project-local"'));
+    throw new Error(
+      invalidFieldMessage("recipe install metadata.install_mode", '"project-copy" | "project-link"'),
+    );
   }
   const tags = normalizeRecipeTags(raw.tags ?? []);
   return {
@@ -75,7 +79,7 @@ export async function writeRecipeInstallMetadata(
 export async function readProjectInstalledRecipes(opts: {
   agentplaneDir: string;
 }): Promise<InstalledRecipesFile> {
-  const recipesDir = resolveProjectRecipesDir(opts);
+  const recipesDir = resolveProjectRecipesPackagesDir(opts);
   if ((await getPathKind(recipesDir)) !== "dir") {
     return { schema_version: 1, updated_at: "", recipes: [] };
   }
@@ -114,7 +118,7 @@ export async function readProjectInstalledRecipes(opts: {
     entries.push({
       id: manifest.id,
       version: manifest.version,
-      source: metadata?.source ?? "project-local",
+      source: metadata?.source ?? `${manifest.id}@${manifest.version}`,
       installed_at: metadata?.installed_at ?? "",
       tags: normalizeRecipeTags(metadata?.tags ?? manifest.tags ?? []),
       manifest,

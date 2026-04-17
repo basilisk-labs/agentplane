@@ -41,6 +41,7 @@ export {
 } from "./recipes/impl/overlay-project.js";
 
 export {
+  resolveProjectRecipesPackagesDir,
   resolveInstalledRecipeDir,
   resolveInstalledRecipesPath,
   resolveProjectInstalledRecipeDir,
@@ -49,6 +50,7 @@ export {
   resolveProjectRecipesLockPath,
   resolveProjectRecipesDir,
   resolveProjectRecipesCacheDir,
+  resolveProjectVendoredRecipeDir,
 } from "./recipes/impl/paths.js";
 
 export {
@@ -67,6 +69,7 @@ export {
 } from "./recipes/impl/resolver.js";
 
 export {
+  cmdRecipeAddParsed,
   cmdRecipeActiveParsed,
   cmdRecipeCachePruneParsed,
   cmdRecipeDisableParsed,

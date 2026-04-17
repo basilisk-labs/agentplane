@@ -25,6 +25,7 @@ import {
   prSpec,
   prUpdateSpec,
 } from "../../../commands/pr/pr.command.js";
+import { recipesAddSpec } from "../../../commands/recipes/add.command.js";
 import { recipesCachePruneSpec } from "../../../commands/recipes/cache-prune.command.js";
 import { recipesCacheSpec } from "../../../commands/recipes/cache.command.js";
 import { recipesExplainSpec } from "../../../commands/recipes/explain.command.js";
@@ -65,6 +66,9 @@ export const PROJECT_COMMANDS = [
       needsLoadedConfig: false,
       needsTaskContext: false,
     },
+  ),
+  entry(recipesAddSpec, () =>
+    import("../../../commands/recipes/add.command.js").then((m) => m.runRecipesAdd),
   ),
   entry(
     recipesListSpec,

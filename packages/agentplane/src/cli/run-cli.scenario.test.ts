@@ -269,7 +269,7 @@ describe("runCli scenario", () => {
       );
       expect(
         bundle.base_prompts?.find((prompt) => prompt.id === "recipe.agent.RECIPE_AGENT")?.source,
-      ).toBe(`.agentplane/recipes/${manifestId}/agents/recipe.json`);
+      ).toBe(`.agentplane/recipes/packages/${manifestId}/agents/recipe.json`);
       expect(bundle.framework_explain).toMatchObject({
         schema_version: 1,
         runtime: {
@@ -421,7 +421,14 @@ describe("runCli scenario", () => {
   it("scenario execute fails before spawn when adapter capabilities cannot enforce declared policy", async () => {
     const { projectDir: root, manifestId } = await createInstalledRecipeProject();
 
-    const manifestPath = path.join(root, ".agentplane", "recipes", manifestId, "manifest.json");
+    const manifestPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      "packages",
+      manifestId,
+      "manifest.json",
+    );
     const manifestData = JSON.parse(await readFile(manifestPath, "utf8")) as {
       scenarios?: {
         id?: string;
@@ -498,7 +505,14 @@ describe("runCli scenario", () => {
     await writeConfig(root, config);
     const { manifestId } = await installRecipeFixture({ projectDir: root });
 
-    const manifestPath = path.join(root, ".agentplane", "recipes", manifestId, "manifest.json");
+    const manifestPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      "packages",
+      manifestId,
+      "manifest.json",
+    );
     const manifestData = JSON.parse(await readFile(manifestPath, "utf8")) as {
       scenarios?: {
         id?: string;
