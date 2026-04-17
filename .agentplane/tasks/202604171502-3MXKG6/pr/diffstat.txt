@@ -1,0 +1,10 @@
+ packages/agentplane/src/runner/adapters/codex.ts   |  39 +-
+ packages/agentplane/src/runner/adapters/custom.ts  |  35 +-
+ .../src/runner/adapters/runtime-shared.ts          |  54 ++
+ .../src/runner/context/base-prompt-sources.ts      | 215 ++++++++
+ .../src/runner/context/base-prompts.test.ts        |   8 +-
+ .../agentplane/src/runner/context/base-prompts.ts  | 598 +--------------------
+ .../src/runner/context/overlay-prompt-blocks.ts    |  79 +++
+ .../src/runner/context/prompt-block-shared.ts      | 153 ++++++
+ .../src/runner/context/recipe-prompt-blocks.ts     | 187 +++++++
+ 9 files changed, 714 insertions(+), 654 deletions(-)
