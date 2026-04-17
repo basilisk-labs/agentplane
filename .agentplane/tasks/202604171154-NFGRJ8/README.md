@@ -1,10 +1,11 @@
 ---
 id: "202604171154-NFGRJ8"
 title: "Replace localeCompare recipe version resolution"
-status: "DOING"
+result_summary: "Merged via PR #381."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +28,16 @@ verification:
     Result: pass
     Evidence: semver-sensitive flows now select 1.10.0 over 1.2.10 and 1.2.0 in list-remote, install-by-name, and add-without-version; 56 focused recipe tests passed across CLI and command layers.
     Scope: recipe latest-version resolution for cached and indexed recipes via list-remote, install, and add.
-commit: null
+commit:
+  hash: "143edd169e8ac333011715dc9d097eb32db7ee6d"
+  message: "recipes/workflow: Replace localeCompare recipe version resolution (NFGRJ8) (#381)"
 comments:
   -
     author: "CODER"
     body: "Start: replace localeCompare-based recipe version selection with one shared semver-aware resolver."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #381 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
       Result: pass
       Evidence: semver-sensitive flows now select 1.10.0 over 1.2.10 and 1.2.0 in list-remote, install-by-name, and add-without-version; 56 focused recipe tests passed across CLI and command layers.
       Scope: recipe latest-version resolution for cached and indexed recipes via list-remote, install, and add.
+  -
+    type: "status"
+    at: "2026-04-17T14:42:23.191Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #381 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T12:14:20.386Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T14:42:23.196Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce a single semver-aware version resolver for recipes install/list-remote/add so latest version selection is numerically correct."
 sections:
   Summary: |-
