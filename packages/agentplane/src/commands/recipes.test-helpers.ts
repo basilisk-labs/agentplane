@@ -113,9 +113,13 @@ function readStringFixtureValue(
 }
 
 export async function writeInstalledRecipes(projectDir: string, recipes: unknown[]): Promise<void> {
-  const recipesDir = path.join(projectDir, ".agentplane", "recipes");
+  void projectDir;
+  const recipesHome = requireRecipesTempHome();
+  const recipesDir = path.join(recipesHome, "recipes-store");
   await rm(recipesDir, { recursive: true, force: true });
   await mkdir(recipesDir, { recursive: true });
+
+  const registryEntries: Record<string, unknown>[] = [];
 
   for (const entry of recipes) {
     const record = entry as Record<string, unknown>;
@@ -137,30 +141,21 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
       : Array.isArray(manifest.tags)
         ? manifest.tags
         : [];
-    const recipeDir = resolveProjectRecipeDir(projectDir, recipeId);
+    const recipeDir = path.join(recipesDir, recipeId, recipeVersion);
     await mkdir(recipeDir, { recursive: true });
     await writeFile(
       path.join(recipeDir, "manifest.json"),
       JSON.stringify(manifest, null, 2),
       "utf8",
     );
-    await writeFile(
-      path.join(recipeDir, ".install.json"),
-      JSON.stringify(
-        {
-          schema_version: 1,
-          id: recipeId,
-          version: recipeVersion,
-          source,
-          installed_at: installedAt,
-          tags,
-          install_mode: "project-local",
-        },
-        null,
-        2,
-      ),
-      "utf8",
-    );
+    registryEntries.push({
+      id: recipeId,
+      version: recipeVersion,
+      source,
+      installed_at: installedAt,
+      tags,
+      manifest,
+    });
 
     const scenarios = Array.isArray(manifest.scenarios)
       ? manifest.scenarios.filter(
@@ -206,6 +201,8 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
       );
     }
   }
+
+  await writeInstalledRecipesRegistry(registryEntries);
 }
 
 export async function writeInstalledRecipesRegistry(recipes: unknown[]): Promise<void> {

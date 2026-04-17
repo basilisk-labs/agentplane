@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
@@ -9,7 +9,7 @@ import {
   captureStdIO,
   installRecipesCommandHarness,
   mkGitRepoRoot,
-  resolveProjectRecipeDir,
+  requireRecipesTempHome,
   runRecipesTest,
   signIndexPayload,
   writeDefaultConfig,
@@ -41,26 +41,17 @@ describe("commands/recipes list", () => {
   it("rejects invalid recipes list payloads", async () => {
     const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
-    const recipeDir = resolveProjectRecipeDir(projectDir, "bad");
-    await mkdir(recipeDir, { recursive: true });
     await writeFile(
-      path.join(recipeDir, "manifest.json"),
+      path.join(requireRecipesTempHome(), "recipes.json"),
       JSON.stringify(
-        baseRecipeManifest({
-          id: "bad",
-          version: "1.0.0",
-          name: "Bad",
-          summary: "Bad",
-          description: "Bad",
-        }),
+        {
+          schema_version: 1,
+          updated_at: "2026-02-05T00:00:00Z",
+          recipes: [{ id: "bad" }],
+        },
         null,
         2,
       ),
-      "utf8",
-    );
-    await writeFile(
-      path.join(recipeDir, ".install.json"),
-      JSON.stringify({ schema_version: 2, id: "bad", version: "1.0.0" }, null, 2),
       "utf8",
     );
 
@@ -70,7 +61,7 @@ describe("commands/recipes list", () => {
         args: [],
         command: "list",
       }),
-    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+    ).rejects.toMatchObject({ code: "E_IO" });
   });
 
   it("rejects invalid recipes index data", async () => {
@@ -119,7 +110,7 @@ describe("commands/recipes list", () => {
     ).resolves.toBe(0);
 
     io.restore();
-    expect(io.stdout).toContain("No installed recipes found");
+    expect(io.stdout).toContain("No cached recipes found");
   });
 
   it("lists empty recipes for a tag", async () => {
@@ -136,7 +127,7 @@ describe("commands/recipes list", () => {
     ).resolves.toBe(0);
 
     io.restore();
-    expect(io.stdout).toContain("installed recipes for tag docs");
+    expect(io.stdout).toContain("cached recipes for tag docs");
   });
 
   it("lists recipes in full JSON output", async () => {
