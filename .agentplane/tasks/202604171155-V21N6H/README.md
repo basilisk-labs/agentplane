@@ -1,10 +1,11 @@
 ---
 id: "202604171155-V21N6H"
 title: "Deprecate public recipes scenario surface"
-status: "DOING"
+result_summary: "Merged via PR #384."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-17T12:43:32.476Z"
   updated_by: "CODER"
   note: "Verified removal of the public recipes scenario CLI surface."
-commit: null
+commit:
+  hash: "e6b8c732614a5a235ab79e7f24b2fe752a98611d"
+  message: "recipes/workflow: Deprecate public recipes scenario surface (V21N6H) (#384)"
 comments:
   -
     author: "CODER"
     body: "Start: remove the public recipes scenario surface from CLI/help/docs while preserving recipe-owned scenario assets internally."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #384 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified removal of the public recipes scenario CLI surface."
+  -
+    type: "status"
+    at: "2026-04-17T14:25:32.753Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #384 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T12:43:32.478Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T14:25:32.758Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove scenario-centric commands and help from the public recipes product surface so recipes stop presenting a second parallel runtime model."
 sections:
   Summary: |-
