@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171154-BS5TMS/recipes-cli-surface",
   "created_at": "2026-04-17T11:55:56.903Z",
-  "head_sha": "c0ff27a8c7442afc37e9934b4f5b1de96a34b33c",
+  "head_sha": "6fd844830bca26cefcf1897e8111bb563ca87de5",
   "last_verified_at": "2026-04-17T12:02:13.147Z",
   "last_verified_sha": "c0ff27a8c7442afc37e9934b4f5b1de96a34b33c",
+  "merge_commit": "6aead092d18a98c8aa8c511c6421df56c3760493",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T14:22:13Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171154-BS5TMS",
-  "updated_at": "2026-04-17T12:02:13.166Z",
+  "updated_at": "2026-04-17T14:22:13Z",
   "verify": {
     "status": "pass"
   }
