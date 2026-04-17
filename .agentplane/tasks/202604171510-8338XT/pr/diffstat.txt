@@ -57,11 +57,11 @@
  .../src/commands/runtime.command.test.ts           |   2 +-
  .../src/commands/shared/task-backend.test.ts       |   2 +-
  .../src/commands/task/migrate-doc.test.ts          |   2 +-
- .../src/commands/upgrade.agent-mode.test.ts        |   2 +-
- .../src/commands/upgrade.cleanup.test.ts           |   2 +-
+ .../src/commands/upgrade.agent-mode.test.ts        |   6 +-
+ .../src/commands/upgrade.cleanup.test.ts           |   6 +-
  .../commands/upgrade.json-merge.stability.test.ts  |   2 +-
- .../agentplane/src/commands/upgrade.merge.test.ts  |   2 +-
- .../agentplane/src/commands/upgrade.safety.test.ts |   2 +-
+ .../agentplane/src/commands/upgrade.merge.test.ts  |   6 +-
+ .../agentplane/src/commands/upgrade.safety.test.ts |   6 +-
  .../src/commands/workflow.maintenance.test.ts      |   2 +-
  .../src/commands/workflow.task-doc.test.ts         |   2 +-
  packages/agentplane/src/commands/workflow.test.ts  |   2 +-
@@ -77,4 +77,4 @@
  packages/testkit/tsconfig.json                     |   3 +-
  tsconfig.base.json                                 |   5 +-
  vitest.config.ts                                   |   5 +
- 79 files changed, 1011 insertions(+), 979 deletions(-)
+ 79 files changed, 1011 insertions(+), 995 deletions(-)

@@ -22,9 +22,9 @@ Move the CLI test helper implementation out of the old src/cli path, expose @age
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-17T18:43:02.149Z
+- Updated: 2026-04-17T19:58:49.249Z
 - Branch: task/202604171510-8338XT/testkit-facade
-- Head: 35c63b7a1dcb
+- Head: 6065d173a9cf
 
 ```text
  bun.lock                                           |   3 +
@@ -86,11 +86,11 @@ Move the CLI test helper implementation out of the old src/cli path, expose @age
  .../src/commands/runtime.command.test.ts           |   2 +-
  .../src/commands/shared/task-backend.test.ts       |   2 +-
  .../src/commands/task/migrate-doc.test.ts          |   2 +-
- .../src/commands/upgrade.agent-mode.test.ts        |   2 +-
- .../src/commands/upgrade.cleanup.test.ts           |   2 +-
+ .../src/commands/upgrade.agent-mode.test.ts        |   6 +-
+ .../src/commands/upgrade.cleanup.test.ts           |   6 +-
  .../commands/upgrade.json-merge.stability.test.ts  |   2 +-
- .../agentplane/src/commands/upgrade.merge.test.ts  |   2 +-
- .../agentplane/src/commands/upgrade.safety.test.ts |   2 +-
+ .../agentplane/src/commands/upgrade.merge.test.ts  |   6 +-
+ .../agentplane/src/commands/upgrade.safety.test.ts |   6 +-
  .../src/commands/workflow.maintenance.test.ts      |   2 +-
  .../src/commands/workflow.task-doc.test.ts         |   2 +-
  packages/agentplane/src/commands/workflow.test.ts  |   2 +-
@@ -106,7 +106,7 @@ Move the CLI test helper implementation out of the old src/cli path, expose @age
  packages/testkit/tsconfig.json                     |   3 +-
  tsconfig.base.json                                 |   5 +-
  vitest.config.ts                                   |   5 +
- 79 files changed, 1011 insertions(+), 979 deletions(-)
+ 79 files changed, 1011 insertions(+), 995 deletions(-)
 ```
 
 </details>
