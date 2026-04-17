@@ -76,11 +76,15 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [doctor](#doctor)
 - Recipes
   - [recipes](#recipes)
+  - [recipes active](#recipes-active)
   - [recipes add](#recipes-add)
   - [recipes cache](#recipes-cache)
   - [recipes cache prune](#recipes-cache-prune)
   - [recipes detach](#recipes-detach)
+  - [recipes disable](#recipes-disable)
+  - [recipes enable](#recipes-enable)
   - [recipes explain](#recipes-explain)
+  - [recipes explain-active](#recipes-explain-active)
   - [recipes info](#recipes-info)
   - [recipes install](#recipes-install)
   - [recipes list](#recipes-list)
@@ -1693,6 +1697,28 @@ Usage:
 agentplane recipes <subcommand> [options]
 ```
 
+### recipes active
+
+List active project overlays.
+
+Usage:
+
+```text
+agentplane recipes active [options]
+```
+
+Options:
+
+- `--full`: Print full JSON payload. (default=false)
+
+Examples:
+
+```sh
+agentplane recipes active
+```
+
+- Show overlays active for the project.
+
 ### recipes add
 
 Vendor a cached recipe into the current project.
@@ -1784,6 +1810,42 @@ agentplane recipes detach tdd
 
 - Freeze a linked recipe into a portable project copy before sharing the repo.
 
+### recipes disable
+
+Disable an active project overlay for the current project.
+
+Usage:
+
+```text
+agentplane recipes disable <recipe-id>
+```
+
+Examples:
+
+```sh
+agentplane recipes disable tdd
+```
+
+- Deactivate an overlay.
+
+### recipes enable
+
+Enable an installed project overlay for the current project.
+
+Usage:
+
+```text
+agentplane recipes enable <recipe-id>
+```
+
+Examples:
+
+```sh
+agentplane recipes enable tdd
+```
+
+- Activate an installed overlay.
+
 ### recipes explain
 
 Show detailed info for a vendored recipe.
@@ -1801,6 +1863,24 @@ agentplane recipes explain viewer
 ```
 
 - Show detailed project-local recipe info.
+
+### recipes explain-active
+
+Print the compiled active overlay bundle.
+
+Usage:
+
+```text
+agentplane recipes explain-active
+```
+
+Examples:
+
+```sh
+agentplane recipes explain-active
+```
+
+- Inspect compiled overlay runtime data.
 
 ### recipes info
 
