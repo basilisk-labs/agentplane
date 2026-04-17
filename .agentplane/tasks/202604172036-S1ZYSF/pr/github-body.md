@@ -40,12 +40,16 @@ Scope: targeted hotspot removal.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-17T20:38:05.332Z
+- Updated: 2026-04-17T20:52:52.877Z
 - Branch: task/202604172036-S1ZYSF/output-writer-hotspots
-- Head: 94366eade38f
+- Head: 9f96cd16e8dd
 
 ```text
-No changes detected.
+ .../src/commands/recipes/impl/commands/active.ts   |  32 +++---
+ .../src/commands/recipes/impl/commands/explain.ts  | 113 ++++++++++++---------
+ .../src/commands/recipes/impl/commands/info.ts     |  53 +++++-----
+ .../src/commands/recipes/impl/commands/list.ts     |  32 +++---
+ 4 files changed, 121 insertions(+), 109 deletions(-)
 ```
 
 </details>
