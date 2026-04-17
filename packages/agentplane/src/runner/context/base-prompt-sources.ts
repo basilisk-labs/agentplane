@@ -3,10 +3,7 @@ import path from "node:path";
 
 import { loadAgentTemplates, loadPolicyGatewayTemplate } from "../../agents/agents-template.js";
 import { fileExists } from "../../cli/fs-utils.js";
-import {
-  resolveBehavior,
-  type BehaviorCandidate,
-} from "../../runtime/behavior/index.js";
+import { resolveBehavior, type BehaviorCandidate } from "../../runtime/behavior/index.js";
 import type { ResolvedExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
 import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
 import {

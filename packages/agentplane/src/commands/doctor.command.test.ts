@@ -831,7 +831,8 @@ describe("doctor.command", () => {
           doc_updated_by: "CODER",
           sections: {
             Summary: "DONE task with deleted branch_pr artifacts",
-            Scope: "- In scope: keep doctor quiet when only stale PR metadata remains after branch deletion.",
+            Scope:
+              "- In scope: keep doctor quiet when only stale PR metadata remains after branch deletion.",
             Plan: "1. Run doctor.",
             "Verify Steps":
               "1. Run agentplane doctor. Expected: deleted task branches do not produce open-PR drift warnings.",

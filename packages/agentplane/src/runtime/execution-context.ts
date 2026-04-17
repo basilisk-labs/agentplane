@@ -12,14 +12,8 @@ import {
   resolveExecutionProfileRuntime,
   type ResolvedExecutionProfileRuntime,
 } from "./execution-profile/index.js";
-import {
-  buildFrameworkExplainPayload,
-  type FrameworkExplainPayload,
-} from "./explain/index.js";
-import {
-  resolveHarnessFromCommandContext,
-  type ResolvedHarnessContract,
-} from "./harness/index.js";
+import { buildFrameworkExplainPayload, type FrameworkExplainPayload } from "./explain/index.js";
+import { resolveHarnessFromCommandContext, type ResolvedHarnessContract } from "./harness/index.js";
 import { buildFrameworkProtocolSurface, type FrameworkProtocolSurface } from "./protocol/index.js";
 import { createTaskIntakeRuntime, type TaskIntakeRuntime } from "./task-intake/index.js";
 

@@ -10,11 +10,7 @@ import { workflowModeMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
 import type { TaskData } from "../../../backends/task-backend.js";
 import { INCIDENTS_POLICY_PATH } from "../../incidents/shared.js";
-import {
-  resolvePrArtifactHeadSha,
-  parsePrMeta,
-  type PrMeta,
-} from "../../shared/pr-meta.js";
+import { resolvePrArtifactHeadSha, parsePrMeta, type PrMeta } from "../../shared/pr-meta.js";
 import { isTaskLocalOnlyAdvance } from "../../shared/task-local-freshness.js";
 import {
   loadBackendTask,
@@ -28,7 +24,12 @@ import {
   resolvePrSyncBranch,
   resolveRenderableBranchHead,
 } from "./sync-branch.js";
-import type { PrOpenOutcome, PrRemoteMode, PrSyncCommonState, PrSyncResolved } from "./sync-model.js";
+import type {
+  PrOpenOutcome,
+  PrRemoteMode,
+  PrSyncCommonState,
+  PrSyncResolved,
+} from "./sync-model.js";
 import { runPrOpenSync } from "./sync-open-step.js";
 import { nowIso, readTextIfExists, restoreIncidentRegistryIfNeeded } from "./sync-support.js";
 import { runPrUpdateSync } from "./sync-update-step.js";

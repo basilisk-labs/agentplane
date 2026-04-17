@@ -1,10 +1,6 @@
 import { fileExists } from "../../../cli/fs-utils.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/write-if-changed.js";
-import {
-  buildObservedGithubPrMeta,
-  buildOpenedPrMeta,
-  type PrMeta,
-} from "../../shared/pr-meta.js";
+import { buildObservedGithubPrMeta, buildOpenedPrMeta, type PrMeta } from "../../shared/pr-meta.js";
 import {
   buildGithubPrTitle,
   renderGithubPrBody,

@@ -51,7 +51,16 @@ describe("manifest script release-ready command", () => {
 
     const result = await execFileAsync(
       "node",
-      [SCRIPT_PATH, "release-ready", "--json", "--check-registry", "--sha", "abc123", "--out", outPath],
+      [
+        SCRIPT_PATH,
+        "release-ready",
+        "--json",
+        "--check-registry",
+        "--sha",
+        "abc123",
+        "--out",
+        outPath,
+      ],
       {
         cwd: root,
         env: {
@@ -96,7 +105,9 @@ describe("manifest script release-ready command", () => {
       writeNotes: false,
     });
     roots.push(root);
-    const result = await execFileAsync("node", [SCRIPT_PATH, "release-ready", "--json"], { cwd: root });
+    const result = await execFileAsync("node", [SCRIPT_PATH, "release-ready", "--json"], {
+      cwd: root,
+    });
     const payload = JSON.parse(String(result.stdout ?? "")) as {
       ready: boolean;
       reasonCode: string;
@@ -116,7 +127,9 @@ describe("manifest script release-ready command", () => {
       dependencyVersion: "1.2.2",
     });
     roots.push(root);
-    const result = await execFileAsync("node", [SCRIPT_PATH, "release-ready", "--json"], { cwd: root });
+    const result = await execFileAsync("node", [SCRIPT_PATH, "release-ready", "--json"], {
+      cwd: root,
+    });
     const payload = JSON.parse(String(result.stdout ?? "")) as {
       ready: boolean;
       reasonCode: string;
