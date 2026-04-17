@@ -1,10 +1,11 @@
 ---
 id: "202604171502-509WF4"
 title: "Consolidate freshness and generator scripts under scripts/lib"
-status: "DOING"
+result_summary: "Merged via PR #404."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-04-17T15:30:27.611Z"
   updated_by: "CODER"
   note: "Verified: shared script-runtime helpers now cover repeated bunx, out-path, and check-sync parsing across freshness and generator scripts; declared checks pass."
-commit: null
+commit:
+  hash: "2a4eac95e7f4a77c6a7464e70b3c4a6d966eed61"
+  message: "scripts/tooling: Consolidate freshness and generator scripts under scripts/lib (509WF4) (#404)"
 comments:
   -
     author: "CODER"
     body: "Start: consolidating freshness and generator script helpers under scripts/lib while preserving current docs, recipe, lint, and schema command contracts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #404 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: shared script-runtime helpers now cover repeated bunx, out-path, and check-sync parsing across freshness and generator scripts; declared checks pass."
+  -
+    type: "status"
+    at: "2026-04-17T19:00:17.439Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #404 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T15:30:27.614Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T19:00:17.448Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract shared argv, generation, and freshness-comparison helpers for schema, CLI docs, recipes inventory, and related scripts so scripts stop reimplementing the same control flow."
 sections:
   Summary: |-

@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171502-509WF4/consolidate-script-libs",
   "created_at": "2026-04-17T15:26:51.425Z",
-  "head_sha": "b8ae339afbf28853b18e63f7d6f4b91622b5b35d",
+  "head_sha": "a41ad43bcdb4df174351125214c6a65696ae1d5d",
   "last_verified_at": "2026-04-17T15:30:27.611Z",
   "last_verified_sha": "b0c53c8aae1a7e985ed3734ab3a02380b62e0d0e",
+  "merge_commit": "2a4eac95e7f4a77c6a7464e70b3c4a6d966eed61",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T18:59:52Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171502-509WF4",
-  "updated_at": "2026-04-17T15:30:37.920Z",
+  "updated_at": "2026-04-17T18:59:52Z",
   "verify": {
     "status": "pass"
   }
