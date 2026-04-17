@@ -84,7 +84,9 @@ export async function cmdRecipeAddParsed(opts: {
 
     await mkdir(resolveProjectRecipesPackagesDir(project), { recursive: true });
     await rm(targetDir, { recursive: true, force: true });
-    await (materialization === "link" ? symlink(sourceDir, targetDir, "dir") : cp(sourceDir, targetDir, { recursive: true }));
+    await (materialization === "link"
+      ? symlink(sourceDir, targetDir, "dir")
+      : cp(sourceDir, targetDir, { recursive: true }));
 
     const installedAt = new Date().toISOString();
     const tags = normalizeRecipeTags(cached.tags ?? cached.manifest.tags ?? []);

@@ -80,7 +80,9 @@ export async function cmdRecipeUpdateParsed(opts: {
 
     const targetDir = resolveProjectVendoredRecipeDir(project, inspection.entry.id);
     await rm(targetDir, { recursive: true, force: true });
-    await (inspection.entry.materialization === "link" ? symlink(inspection.source_dir, targetDir, "dir") : cp(inspection.source_dir, targetDir, { recursive: true }));
+    await (inspection.entry.materialization === "link"
+      ? symlink(inspection.source_dir, targetDir, "dir")
+      : cp(inspection.source_dir, targetDir, { recursive: true }));
 
     const vendoredSha256 = await hashRecipeTree(targetDir);
     await upsertProjectRecipeRegistryEntry({

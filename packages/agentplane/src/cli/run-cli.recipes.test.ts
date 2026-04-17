@@ -152,13 +152,7 @@ describe("runCli recipes", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli([
-        "recipes",
-        "add",
-        manifestRef,
-        "--root",
-        root,
-      ]);
+      const code = await runCli(["recipes", "add", manifestRef, "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("Vendored recipe vendored@0.4.0 into project (copy)");
     } finally {
@@ -259,13 +253,7 @@ describe("runCli recipes", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli([
-        "recipes",
-        "add",
-        manifestRef,
-        "--root",
-        root,
-      ]);
+      const code = await runCli(["recipes", "add", manifestRef, "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Recipe already vendored");
       expect(io.stderr).toContain("agentplane recipes update vendored");
@@ -374,15 +362,7 @@ describe("runCli recipes", () => {
 
     const ioAdd = captureStdIO();
     try {
-      const code = await runCli([
-        "recipes",
-        "add",
-        manifestRef,
-        "--mode",
-        "link",
-        "--root",
-        root,
-      ]);
+      const code = await runCli(["recipes", "add", manifestRef, "--mode", "link", "--root", root]);
       expect(code).toBe(0);
       expect(ioAdd.stdout).toContain("Warning: link mode is not portable");
     } finally {
