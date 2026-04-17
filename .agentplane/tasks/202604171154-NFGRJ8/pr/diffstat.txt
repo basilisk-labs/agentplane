@@ -1,0 +1,6 @@
+ .../agentplane/src/cli/run-cli.recipes.test.ts     | 87 +++++++++++++++++-----
+ .../src/commands/recipes/impl/commands/add.ts      |  7 +-
+ .../src/commands/recipes/impl/commands/install.ts  |  5 +-
+ .../commands/recipes/impl/commands/list-remote.ts  |  5 +-
+ .../src/commands/recipes/impl/version.ts           | 13 ++++
+ 5 files changed, 88 insertions(+), 29 deletions(-)

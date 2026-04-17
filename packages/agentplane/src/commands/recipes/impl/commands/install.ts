@@ -31,6 +31,7 @@ import {
   resolveInstalledRecipesPath,
   resolveRecipesIndexCachePath,
 } from "../paths.js";
+import { pickLatestRecipeVersion } from "../version.js";
 
 function isHttpUrl(value: string): boolean {
   return value.startsWith("http://") || value.startsWith("https://");
@@ -97,9 +98,7 @@ export async function cmdRecipeInstall(opts: {
             message: `Recipe not found in remote index: ${recipeId}`,
           });
         }
-        const latest = [...entry.versions]
-          .toSorted((a, b) => a.version.localeCompare(b.version))
-          .at(-1);
+        const latest = pickLatestRecipeVersion(entry.versions);
         if (!latest) {
           throw new CliError({
             exitCode: 3,

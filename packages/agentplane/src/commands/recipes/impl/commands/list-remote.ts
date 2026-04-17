@@ -10,6 +10,7 @@ import { loadRecipesRemoteIndex, willFetchRemoteRecipesIndex } from "../index.js
 import { maybeResolveProject } from "../project.js";
 import { resolveRecipesIndexCachePath } from "../paths.js";
 import type { RecipeListRemoteFlags } from "../types.js";
+import { pickLatestRecipeVersion } from "../version.js";
 
 export async function cmdRecipeListRemoteParsed(opts: {
   cwd: string;
@@ -45,9 +46,7 @@ export async function cmdRecipeListRemoteParsed(opts: {
       refresh: flags.refresh,
     });
     for (const recipe of index.recipes) {
-      const latest = [...recipe.versions]
-        .toSorted((a, b) => a.version.localeCompare(b.version))
-        .at(-1);
+      const latest = pickLatestRecipeVersion(recipe.versions);
       if (!latest) continue;
       process.stdout.write(`${recipe.id}@${latest.version} - ${recipe.summary}\n`);
     }
