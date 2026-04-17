@@ -25,7 +25,6 @@ import {
 } from "@agentplaneorg/core";
 
 import { runCli } from "./run-cli.js";
-import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
 import { getVersion } from "../meta/version.js";
 import {
   filterAgentsByWorkflow,
@@ -39,6 +38,7 @@ import {
   cleanGitEnv,
   commitAll,
   configureGitUser,
+  createRecipeArchive,
   createUpgradeBundle,
   getAgentplaneHome,
   gitBranchExists,
@@ -1113,27 +1113,36 @@ describe("runCli", () => {
     }
   });
 
-  it("init fails when selected bundled recipe has no source_path", async () => {
+  it("init vendors selected cached recipes into the project", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
-    const original = [...BUNDLED_RECIPES_CATALOG.recipes];
-    BUNDLED_RECIPES_CATALOG.recipes.length = 0;
-    BUNDLED_RECIPES_CATALOG.recipes.push({
-      id: "viewer",
-      summary: "Viewer recipe",
-      versions: [{ version: "1.0.0" }],
-    });
+    const { archivePath } = await createRecipeArchive({ id: "viewer", version: "1.2.3" });
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
 
     const io = captureStdIO();
     try {
       const code = await runCli(["init", "--yes", "--recipes", "viewer", "--root", root]);
-      expect(code).toBe(3);
-      expect(io.stderr).toContain("missing source_path");
+      expect(code).toBe(0);
     } finally {
-      BUNDLED_RECIPES_CATALOG.recipes.length = 0;
-      BUNDLED_RECIPES_CATALOG.recipes.push(...original);
       io.restore();
     }
+
+    expect(
+      await pathExists(path.join(root, ".agentplane", "recipes", "packages", "viewer", "manifest.json")),
+    ).toBe(true);
+    expect(
+      JSON.parse(
+        await readFile(path.join(root, ".agentplane", "recipes", "registry.json"), "utf8"),
+      ),
+    ).toMatchObject({
+      recipes: [
+        expect.objectContaining({
+          id: "viewer",
+          path: "packages/viewer",
+          active: false,
+        }),
+      ],
+    });
   });
 
   it("init lists conflicts for existing files by default", async () => {
