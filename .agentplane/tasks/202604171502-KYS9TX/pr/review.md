@@ -46,12 +46,17 @@ Audit the remaining AJV plus manual type drift, decide the target validation arc
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-17T18:54:51.044Z
+- Updated: 2026-04-17T18:57:13.831Z
 - Branch: task/202604171502-KYS9TX/schema-validation-baseline
-- Head: b0c53c8aae1a
+- Head: 57acd4f5d37f
 
 ```text
-No changes detected.
+ docs/developer/architecture.mdx               |   6 +-
+ docs/developer/framework-refactor-program.mdx |   4 +-
+ docs/developer/project-layout.mdx             |   7 +-
+ docs/developer/schema-validation-strategy.mdx | 181 ++++++++++++++++++++++++++
+ docs/docs.json                                |   1 +
+ 5 files changed, 193 insertions(+), 6 deletions(-)
 ```
 
 </details>
