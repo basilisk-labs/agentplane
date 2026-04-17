@@ -73,12 +73,11 @@ export async function readReleaseParityState(rootDir) {
     { absPath: corePath, raw: corePkg },
     { absPath: agentplanePath, raw: agentplanePkg },
     { absPath: recipesPath, raw: recipesPkg },
-  ] =
-    await Promise.all([
-      readPackageJson(rootDir, "packages/core/package.json"),
-      readPackageJson(rootDir, "packages/agentplane/package.json"),
-      readPackageJson(rootDir, "packages/recipes/package.json"),
-    ]);
+  ] = await Promise.all([
+    readPackageJson(rootDir, "packages/core/package.json"),
+    readPackageJson(rootDir, "packages/agentplane/package.json"),
+    readPackageJson(rootDir, "packages/recipes/package.json"),
+  ]);
   const privateWorkspacePackageNames = await readWorkspacePrivatePackageNames(rootDir);
 
   const coreVersion = readVersion(corePkg, corePath);
