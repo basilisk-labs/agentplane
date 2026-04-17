@@ -1,10 +1,11 @@
 ---
 id: "202604171154-4ASRJG"
 title: "Activate init-selected recipes"
-status: "DOING"
+result_summary: "Merged via PR #388."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +28,16 @@ verification:
     Result: pass
     Evidence: 3 test files, 83 tests passed; init-selected recipe now lands in registry as active=true and is visible through recipes active plus recipes explain-active.
     Scope: init recipe selection flow, recipe add activation path, and focused CLI acceptance around active overlay state.
-commit: null
+commit:
+  hash: "6c57f3fafe7522692030bac807f1a5c33d8f03b6"
+  message: "recipes/workflow: Activate init-selected recipes (4ASRJG) (#388)"
 comments:
   -
     author: "CODER"
     body: "Start: auto-activate recipes selected during init while keeping plain recipes add behavior explicit."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #388 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
       Result: pass
       Evidence: 3 test files, 83 tests passed; init-selected recipe now lands in registry as active=true and is visible through recipes active plus recipes explain-active.
       Scope: init recipe selection flow, recipe add activation path, and focused CLI acceptance around active overlay state.
+  -
+    type: "status"
+    at: "2026-04-17T14:37:18.900Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #388 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T12:08:17.117Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T14:37:18.906Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make init activate recipes selected from the cache-backed picker so init produces active overlays instead of inert vendored packages."
 sections:
   Summary: |-
