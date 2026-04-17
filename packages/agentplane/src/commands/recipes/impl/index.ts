@@ -2,6 +2,8 @@ import { createPublicKey, verify } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
+import type { RecipesIndex, RecipesIndexSignature } from "@agentplaneorg/recipes";
+
 import { fetchJson, fetchText } from "../../../cli/http.js";
 import { fileExists } from "../../../cli/fs-utils.js";
 import { invalidFieldMessage } from "../../../cli/output.js";
@@ -14,7 +16,6 @@ import {
   RECIPES_INDEX_PUBLIC_KEYS_ENV,
 } from "./constants.js";
 import { resolveRecipesIndexCachePath, resolveRecipesIndexCacheSigPath } from "./paths.js";
-import type { RecipesIndex, RecipesIndexSignature } from "./types.js";
 
 function loadRecipesIndexPublicKeys(): Record<string, string> {
   const raw = process.env[RECIPES_INDEX_PUBLIC_KEYS_ENV];

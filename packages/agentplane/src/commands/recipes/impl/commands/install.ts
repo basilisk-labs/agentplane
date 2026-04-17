@@ -2,6 +2,12 @@ import { cp, mkdir, mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
+import {
+  normalizeRecipeTags,
+  readRecipeManifest,
+  type RecipeConflictMode,
+  type RecipeInstallSource,
+} from "@agentplaneorg/recipes";
 import { defaultConfig, loadConfig, resolveProject } from "@agentplaneorg/core";
 
 import { extractArchive } from "../../../../cli/archive.js";
@@ -23,15 +29,12 @@ import { resolveRecipeRoot } from "../archive.js";
 import { DEFAULT_RECIPES_INDEX_URL } from "../constants.js";
 import { loadRecipesRemoteIndex, willFetchRemoteRecipesIndex } from "../index.js";
 import { readInstalledRecipesFile, writeInstalledRecipesFile } from "../installed-recipes.js";
-import { readRecipeManifest } from "../manifest.js";
-import { normalizeRecipeTags } from "../normalize.js";
 import {
   resolveGlobalRecipesDir,
   resolveInstalledRecipeDir,
   resolveInstalledRecipesPath,
   resolveRecipesIndexCachePath,
 } from "../paths.js";
-import type { RecipeConflictMode, RecipeInstallSource } from "../types.js";
 
 function isHttpUrl(value: string): boolean {
   return value.startsWith("http://") || value.startsWith("https://");

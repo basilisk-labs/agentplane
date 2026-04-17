@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { lstat, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
-import type { ProjectInstalledRecipeEntry, ProjectRecipeState } from "./types.js";
+import type { ProjectInstalledRecipeEntry, ProjectRecipeState } from "@agentplaneorg/recipes";
 import { readProjectInstalledRecipes } from "./project-installed-recipes.js";
 import { resolveInstalledRecipeDir, resolveProjectVendoredRecipeDir } from "./paths.js";
 

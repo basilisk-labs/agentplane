@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604171155-2RRW65/collapse-recipe-wrappers",
+  "created_at": "2026-04-17T12:44:27.988Z",
+  "head_sha": "47ad2e773850c32bf1a481f918ff187c318b2d23",
+  "last_verified_at": "2026-04-17T12:52:51.424Z",
+  "last_verified_sha": "0117987c40f2490a7c584f02d09be61b61c1398b",
+  "schema_version": 1,
+  "task_id": "202604171155-2RRW65",
+  "updated_at": "2026-04-17T12:54:22.885Z",
+  "verify": {
+    "status": "pass"
+  }
+}
