@@ -1,0 +1,7 @@
+ .agentplane/config.json                |  2 +-
+ bun.lock                               |  6 +--
+ docs/reference/generated-reference.mdx | 14 +++----
+ docs/releases/v0.3.13.md               | 70 ++++++++++++++++++++++++++++++++++
+ packages/agentplane/package.json       |  4 +-
+ packages/core/package.json             |  2 +-
+ 6 files changed, 84 insertions(+), 14 deletions(-)
