@@ -1,10 +1,11 @@
 ---
 id: "202604171329-2MMNWG"
 title: "Remove bundled recipes fallback path"
-status: "DOING"
+result_summary: "Merged via PR #389."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-17T14:16:01.551Z"
   updated_by: "CODER"
   note: "Removed bundled recipes fallback resolution from recipes install and deleted the empty bundled-catalog compatibility surface from runtime-facing core CLI tests."
-commit: null
+commit:
+  hash: "13de95b9592b516fa408cd6d3a9c1dd0c8de9f06"
+  message: "Remove bundled recipes fallback path (2MMNWG) (#389)"
 comments:
   -
     author: "CODER"
     body: "Start: remove the remaining bundled recipes fallback path from install and runtime-facing tests so recipes distribution is remote-index plus cache only."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #389 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed bundled recipes fallback resolution from recipes install and deleted the empty bundled-catalog compatibility surface from runtime-facing core CLI tests."
+  -
+    type: "status"
+    at: "2026-04-17T14:25:49.371Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #389 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T14:16:01.554Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T14:25:49.377Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove remaining bundled recipe fallback usage from recipes install and runtime-facing tests so remote catalog + global cache remain the only distribution path for recipes before 0.4."
 sections:
   Summary: |-
