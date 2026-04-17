@@ -2,7 +2,7 @@ import type {
   CompiledRecipeAssetEntry,
   InstalledRecipeEntry,
   ResolvedRecipeScenarioSelection,
-} from "../../commands/recipes/impl/types.js";
+} from "@agentplaneorg/recipes";
 
 import { createCapabilityRegistry } from "./registry.js";
 import type { AgentplaneCapabilityEntry, AgentplaneCapabilityRegistry } from "./types.js";

@@ -1,5 +1,6 @@
 import { cp, rm, symlink } from "node:fs/promises";
 
+import { normalizeRecipeTags } from "@agentplaneorg/recipes";
 import { loadConfig, resolveProject } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../../../cli/error-map.js";
@@ -8,7 +9,6 @@ import { CliError } from "../../../../shared/errors.js";
 import { ensureActionApproved } from "../../../shared/approval-requirements.js";
 
 import { readInstalledRecipesFile } from "../installed-recipes.js";
-import { normalizeRecipeTags } from "../normalize.js";
 import { readActiveRecipeIds, refreshProjectOverlayArtifacts } from "../overlay-project.js";
 import { hashRecipeTree, inspectProjectRecipe } from "../project-recipe-state.js";
 import { upsertProjectRecipeRegistryEntry } from "../project-registry.js";

@@ -9,12 +9,9 @@ export type {
   CompiledRecipeAssetEntry,
   CompiledRecipeAssetRegistry,
   CompiledOverlayBundle,
-  RecipeCachePruneFlags,
   RecipeConflictMode,
   RecipeInstallSource,
   RecipeKind,
-  RecipeListFlags,
-  RecipeListRemoteFlags,
   RecipeResolverCompatibility,
   RecipeResolverCompatibilityFailure,
   RecipeResolverContext,
@@ -24,8 +21,13 @@ export type {
   ResolvedRecipeScenario,
   ResolvedRecipeScenarioSelection,
   ScenarioDefinition,
+} from "@agentplaneorg/recipes";
+export type {
+  RecipeCachePruneFlags,
+  RecipeListFlags,
+  RecipeListRemoteFlags,
 } from "./recipes/impl/types.js";
-export { readRecipeManifest } from "./recipes/impl/manifest.js";
+export { readRecipeManifest, validateRecipeManifest } from "@agentplaneorg/recipes";
 
 export { readInstalledRecipesFile } from "./recipes/impl/installed-recipes.js";
 export { readProjectInstalledRecipes } from "./recipes/impl/project-installed-recipes.js";
@@ -65,7 +67,7 @@ export {
   normalizeScenarioToolStep,
   readScenarioDefinition,
   readScenarioIndex,
-} from "./recipes/impl/scenario.js";
+} from "@agentplaneorg/recipes";
 
 export {
   buildRecipeResolverContext,

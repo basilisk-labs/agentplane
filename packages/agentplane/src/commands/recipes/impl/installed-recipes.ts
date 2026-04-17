@@ -1,13 +1,15 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
+import {
+  normalizeRecipeTags,
+  validateRecipeManifest,
+  type InstalledRecipesFile,
+} from "@agentplaneorg/recipes";
+
 import { invalidFieldMessage } from "../../../cli/output.js";
 import { isRecord } from "../../../shared/guards.js";
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
-
-import { validateRecipeManifest } from "./manifest.js";
-import { normalizeRecipeTags } from "./normalize.js";
-import type { InstalledRecipesFile } from "./types.js";
 
 function validateInstalledRecipesFile(raw: unknown): InstalledRecipesFile {
   if (!isRecord(raw)) throw new Error(invalidFieldMessage("recipes.json", "object"));

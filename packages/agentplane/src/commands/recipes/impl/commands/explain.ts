@@ -1,5 +1,6 @@
 import path from "node:path";
 
+import { collectRecipeScenarioDetails } from "@agentplaneorg/recipes";
 import { resolveProject } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../../../cli/error-map.js";
@@ -11,7 +12,6 @@ import { readActiveRecipeIds } from "../overlay-project.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
 import { inspectProjectRecipe } from "../project-recipe-state.js";
 import { resolveProjectRecipesDir, resolveProjectInstalledRecipeDir } from "../paths.js";
-import { collectRecipeScenarioDetails } from "../scenario.js";
 
 export async function cmdRecipeExplainParsed(opts: {
   cwd: string;

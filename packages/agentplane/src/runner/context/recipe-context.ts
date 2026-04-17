@@ -1,12 +1,14 @@
 import type { ResolvedProject } from "@agentplaneorg/core";
+import {
+  readScenarioDefinition,
+  type ResolvedRecipeScenarioSelection,
+  type ScenarioDefinition,
+} from "@agentplaneorg/recipes";
 
 import {
   readProjectRecipeAssetRegistry,
   readProjectInstalledRecipes,
-  readScenarioDefinition,
   resolveRecipeScenarioSelection,
-  type ResolvedRecipeScenarioSelection,
-  type ScenarioDefinition,
 } from "../../commands/recipes.js";
 import { resolveRecipeCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import { CliError } from "../../shared/errors.js";

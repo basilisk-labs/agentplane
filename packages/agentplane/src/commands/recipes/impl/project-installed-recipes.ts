@@ -1,12 +1,16 @@
 import { stat } from "node:fs/promises";
 import path from "node:path";
 
+import {
+  normalizeRecipeTags,
+  readRecipeManifest,
+  type ProjectInstalledRecipeEntry,
+  type ProjectInstalledRecipesFile,
+} from "@agentplaneorg/recipes";
+
 import { invalidFieldMessage, missingFileMessage } from "../../../cli/output.js";
-import { normalizeRecipeTags } from "./normalize.js";
 import { readProjectRecipesRegistry } from "./project-registry.js";
-import { readRecipeManifest } from "./manifest.js";
 import { resolveProjectRecipesDir } from "./paths.js";
-import type { ProjectInstalledRecipeEntry, ProjectInstalledRecipesFile } from "./types.js";
 
 function sortInstalledRecipes(
   entries: ProjectInstalledRecipeEntry[],

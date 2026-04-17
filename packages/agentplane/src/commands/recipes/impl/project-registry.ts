@@ -1,17 +1,18 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
+import {
+  normalizeRecipeId,
+  normalizeRecipeTags,
+  type ProjectRecipeMaterialization,
+  type ProjectRecipeRegistryEntry,
+  type ProjectRecipesRegistryFile,
+} from "@agentplaneorg/recipes";
+
 import { invalidFieldMessage } from "../../../cli/output.js";
 import { isRecord } from "../../../shared/guards.js";
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
-
-import { normalizeRecipeId, normalizeRecipeTags } from "./normalize.js";
 import { resolveProjectRecipesRegistryPath } from "./paths.js";
-import type {
-  ProjectRecipeMaterialization,
-  ProjectRecipeRegistryEntry,
-  ProjectRecipesRegistryFile,
-} from "./types.js";
 
 function validateMaterialization(raw: unknown): ProjectRecipeMaterialization {
   if (raw === "copy" || raw === "link") return raw;

@@ -2,9 +2,8 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
+import { readScenarioDefinition } from "@agentplaneorg/recipes";
 import { describe, expect, it } from "vitest";
-
-import { readScenarioDefinition } from "./scenario.js";
 
 describe("readScenarioDefinition", () => {
   it("normalizes required task_template data from scenario files", async () => {

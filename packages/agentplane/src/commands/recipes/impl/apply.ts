@@ -1,6 +1,13 @@
 import { cp, mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import {
+  normalizeAgentId,
+  readScenarioDefinition,
+  type RecipeConflictMode,
+  type RecipeManifest,
+} from "@agentplaneorg/recipes";
+
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { fileExists, getPathKind } from "../../../cli/fs-utils.js";
 import { invalidFieldMessage, missingFileMessage } from "../../../cli/output.js";
@@ -9,9 +16,6 @@ import { isRecord } from "../../../shared/guards.js";
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 
 import { RECIPES_SCENARIOS_DIR_NAME, RECIPES_SCENARIOS_INDEX_NAME } from "./constants.js";
-import { readScenarioDefinition } from "./scenario.js";
-import { normalizeAgentId } from "./normalize.js";
-import type { RecipeConflictMode, RecipeManifest } from "./types.js";
 
 export async function moveRecipeDir(opts: { from: string; to: string }): Promise<void> {
   await mkdir(path.dirname(opts.to), { recursive: true });
