@@ -69,16 +69,23 @@ function readVersion(raw, absPath) {
 }
 
 export async function readReleaseParityState(rootDir) {
-  const [{ absPath: corePath, raw: corePkg }, { absPath: agentplanePath, raw: agentplanePkg }] =
+  const [
+    { absPath: corePath, raw: corePkg },
+    { absPath: agentplanePath, raw: agentplanePkg },
+    { absPath: recipesPath, raw: recipesPkg },
+  ] =
     await Promise.all([
       readPackageJson(rootDir, "packages/core/package.json"),
       readPackageJson(rootDir, "packages/agentplane/package.json"),
+      readPackageJson(rootDir, "packages/recipes/package.json"),
     ]);
   const privateWorkspacePackageNames = await readWorkspacePrivatePackageNames(rootDir);
 
   const coreVersion = readVersion(corePkg, corePath);
   const agentplaneVersion = readVersion(agentplanePkg, agentplanePath);
+  const recipesVersion = readVersion(recipesPkg, recipesPath);
   const coreDependency = agentplanePkg.dependencies?.["@agentplaneorg/core"] ?? null;
+  const recipesDependency = agentplanePkg.dependencies?.["@agentplaneorg/recipes"] ?? null;
   const publishDependencyErrors = collectUnsupportedDependencyErrors(
     agentplanePkg,
     privateWorkspacePackageNames,
@@ -87,7 +94,9 @@ export async function readReleaseParityState(rootDir) {
   return {
     coreVersion,
     agentplaneVersion,
+    recipesVersion,
     coreDependency,
+    recipesDependency,
     publishDependencyErrors,
   };
 }
@@ -104,6 +113,11 @@ export function collectReleaseParityErrors(state, opts = {}) {
       `Package versions must match. packages/core=${state.coreVersion} packages/agentplane=${state.agentplaneVersion}.`,
     );
   }
+  if (state.recipesVersion !== state.agentplaneVersion) {
+    errors.push(
+      `Package versions must match. packages/recipes=${state.recipesVersion} packages/agentplane=${state.agentplaneVersion}.`,
+    );
+  }
 
   const expectedCoreDependency = requiredVersion ?? state.coreVersion;
   if (state.coreDependency !== expectedCoreDependency) {
@@ -111,6 +125,14 @@ export function collectReleaseParityErrors(state, opts = {}) {
       `packages/agentplane dependency @agentplaneorg/core=${String(
         state.coreDependency,
       )} does not match required version ${expectedCoreDependency}.`,
+    );
+  }
+  const expectedRecipesDependency = requiredVersion ?? state.recipesVersion;
+  if (state.recipesDependency !== expectedRecipesDependency) {
+    errors.push(
+      `packages/agentplane dependency @agentplaneorg/recipes=${String(
+        state.recipesDependency,
+      )} does not match required version ${expectedRecipesDependency}.`,
     );
   }
 
@@ -123,6 +145,11 @@ export function collectReleaseParityErrors(state, opts = {}) {
     if (state.agentplaneVersion !== requiredVersion) {
       errors.push(
         `packages/agentplane version ${state.agentplaneVersion} does not match required version ${requiredVersion}.`,
+      );
+    }
+    if (state.recipesVersion !== requiredVersion) {
+      errors.push(
+        `packages/recipes version ${state.recipesVersion} does not match required version ${requiredVersion}.`,
       );
     }
   }

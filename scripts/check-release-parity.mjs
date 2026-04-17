@@ -17,9 +17,9 @@ async function main() {
   const requiredVersion = args.version || undefined;
   const state = await assertReleaseParity(process.cwd(), { requiredVersion });
   process.stdout.write(
-    `Release parity check passed (core=${state.coreVersion}, agentplane=${state.agentplaneVersion}, dep=${String(
+    `Release parity check passed (core=${state.coreVersion}, agentplane=${state.agentplaneVersion}, recipes=${state.recipesVersion}, coreDep=${String(
       state.coreDependency,
-    )}).\n`,
+    )}, recipesDep=${String(state.recipesDependency)}).\n`,
   );
 }
 
