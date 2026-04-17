@@ -1,10 +1,11 @@
 ---
 id: "202604170838-73XAXT"
 title: "Add Codex plugin installer and metadata"
-status: "DOING"
+result_summary: "Merged via PR #370."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-17T08:53:27.873Z"
   updated_by: "CODER"
   note: "Codex plugin installer, manifest metadata, and help surfaces verified with typecheck, targeted Vitest, and targeted ESLint."
-commit: null
+commit:
+  hash: "c3035e89913732d580f6d346a378a25444be9e25"
+  message: "Add Codex plugin installer and metadata (73XAXT) (#370)"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the bundled Codex plugin installer, metadata generation, and targeted verification inside the dedicated task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #370 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Codex plugin installer, manifest metadata, and help surfaces verified with typecheck, targeted Vitest, and targeted ESLint."
+  -
+    type: "status"
+    at: "2026-04-17T10:18:20.592Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #370 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T08:53:27.893Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T10:18:20.599Z"
+doc_updated_by: "INTEGRATOR"
 description: "Bundle a Codex plugin install flow, manifest metadata, and a Codex skill so AgentPlane can appear in the Codex plugins UI via a local marketplace."
 sections:
   Summary: |-

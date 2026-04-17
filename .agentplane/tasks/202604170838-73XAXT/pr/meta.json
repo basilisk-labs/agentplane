@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604170838-73XAXT/codex-plugin-install",
   "created_at": "2026-04-17T08:40:01.645Z",
-  "head_sha": "fe5c9371f8cdbbd5223a12f0e695356f8e11889c",
+  "head_sha": "9e0a52a21142586748d640cbb108129cc105b102",
   "last_verified_at": "2026-04-17T08:53:27.873Z",
   "last_verified_sha": "2b037eb350ccb42b67e21f9a79dece7e4469532b",
+  "merge_commit": "c3035e89913732d580f6d346a378a25444be9e25",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T10:17:52Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604170838-73XAXT",
-  "updated_at": "2026-04-17T10:12:44.274Z",
+  "updated_at": "2026-04-17T10:17:52Z",
   "verify": {
     "status": "pass"
   }
