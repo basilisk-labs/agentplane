@@ -22,12 +22,20 @@ Replace the AJV-backed config runtime contract with a Zod-first schema, keep gen
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-17T21:09:21.876Z
+- Updated: 2026-04-17T21:23:05.129Z
 - Branch: task/202604172108-3ZC8NA/zod-config-ssot
-- Head: 94366eade38f
+- Head: de8e1625834f
 
 ```text
-No changes detected.
+ bun.lock                                           |   6 +
+ .../agentplane/src/commands/task/shared/tags.ts    |   2 +-
+ packages/core/package.json                         |   4 +-
+ packages/core/schemas/config.schema.json           | 681 ++++++++++++---------
+ packages/core/src/config/config-schema.ts          | 596 +-----------------
+ packages/core/src/config/config-zod.ts             | 402 ++++++++++++
+ packages/core/src/config/config.ts                 | 200 ++----
+ packages/spec/schemas/config.schema.json           | 681 ++++++++++++---------
+ 8 files changed, 1287 insertions(+), 1285 deletions(-)
 ```
 
 </details>
