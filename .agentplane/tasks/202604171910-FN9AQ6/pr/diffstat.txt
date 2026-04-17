@@ -1,5 +1,6 @@
  .agentplane/policy/incidents.md                       |  1 +
  packages/agentplane/assets/policy/incidents.md        |  1 +
+ .../src/architecture/layering.imports.test.ts         | 10 ++++++++++
  .../agentplane/src/commands/doctor.command.test.ts    |  3 ++-
  .../src/commands/pr/internal/sync-branch.ts           |  9 +++++++--
  .../src/commands/pr/internal/sync-open-step.ts        |  6 +-----
@@ -14,4 +15,4 @@
  .../src/runner/context/recipe-prompt-blocks.ts        |  5 +----
  packages/agentplane/src/runtime/execution-context.ts  | 10 ++--------
  scripts/lib/script-runtime.mjs                        |  4 +++-
- 16 files changed, 63 insertions(+), 50 deletions(-)
+ 17 files changed, 73 insertions(+), 50 deletions(-)
