@@ -1,0 +1,3 @@
+ .../agentplane/src/commands/doctor.command.test.ts | 140 ++++++++++++++++++++-
+ .../src/commands/task/hosted-merge-sync.ts         |   4 +
+ 2 files changed, 143 insertions(+), 1 deletion(-)

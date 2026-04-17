@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604171457-P64DMQ/repair-done-branch-pr-artifacts",
+  "created_at": "2026-04-17T14:58:31.938Z",
+  "head_sha": "c2a855d08dd7c412f2742c325e05f8f100d97fc1",
+  "last_verified_at": "2026-04-17T15:04:58.101Z",
+  "last_verified_sha": "6e19e345a7e2fb5fa8b3ee687fd5c155aaf930bc",
+  "schema_version": 1,
+  "task_id": "202604171457-P64DMQ",
+  "updated_at": "2026-04-17T15:05:21.018Z",
+  "verify": {
+    "status": "pass"
+  }
+}

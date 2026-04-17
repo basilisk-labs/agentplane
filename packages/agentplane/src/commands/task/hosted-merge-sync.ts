@@ -593,6 +593,10 @@ export async function findDoneBranchPrTasksWithOpenPrArtifacts(opts: {
 
     const branch = meta.branch?.trim() ?? "";
     if (!branch) continue;
+    const branchStillExists =
+      (await gitRefExists({ cwd: opts.ctx.resolvedProject.gitRoot, ref: branch })) ||
+      (await gitRefExists({ cwd: opts.ctx.resolvedProject.gitRoot, ref: `origin/${branch}` }));
+    if (!branchStillExists) continue;
     if (isStackedBranchAliasDoneTask({ task, branch })) continue;
 
     // Missing implementation commits are handled by a dedicated doctor check, and duplicate/no-op

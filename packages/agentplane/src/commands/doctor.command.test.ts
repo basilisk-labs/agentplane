@@ -312,6 +312,7 @@ describe("doctor.command", () => {
     );
 
     const taskId = "202604050900-DRGFT1";
+    const branchName = `task/${taskId}/sync-local`;
     await writeFile(
       path.join(ws.root, ".agentplane", "tasks.json"),
       JSON.stringify(
@@ -413,7 +414,7 @@ describe("doctor.command", () => {
         {
           schema_version: 1,
           task_id: taskId,
-          branch: `task/${taskId}/sync-local`,
+          branch: branchName,
           base: "main",
           created_at: "2026-04-05T09:00:00.000Z",
           updated_at: "2026-04-05T09:00:00.000Z",
@@ -722,6 +723,7 @@ describe("doctor.command", () => {
       ),
       "utf8",
     );
+    await execFileAsync("git", ["branch", branchName, shippedHash], { cwd: ws.root });
     const ctx = {
       backendId: "local",
       config: {
@@ -749,6 +751,142 @@ describe("doctor.command", () => {
       "agentplane task normalize --sync-branch-pr-state --task-id <task-id>",
     );
     expect(findings[0]).toContain(taskId);
+  });
+
+  it("ignores DONE branch_pr PR artifacts when the task branch was already deleted", async () => {
+    const ws = await mkWorkspace();
+    const shippedHash = await gitInitWithCommit(ws.root, "feat: already-shipped payload");
+    await writeFile(
+      path.join(ws.root, ".agentplane", "config.json"),
+      '{\n  "version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+      "utf8",
+    );
+    const branchPrWorkflow = VALID_WORKFLOW.replace("mode: direct", 'mode: "branch_pr"');
+    await writeFile(path.join(ws.root, ".agentplane", "WORKFLOW.md"), branchPrWorkflow, "utf8");
+    await writeFile(
+      path.join(ws.root, ".agentplane", "workflows", "last-known-good.md"),
+      branchPrWorkflow,
+      "utf8",
+    );
+
+    const taskId = "202604050905-GONEBR";
+    const branchName = `task/${taskId}/deleted-head`;
+    await writeFile(
+      path.join(ws.root, ".agentplane", "tasks.json"),
+      JSON.stringify(
+        {
+          tasks: [
+            {
+              id: taskId,
+              status: "DONE",
+              commit: {
+                hash: shippedHash,
+                message: "feat: already-shipped payload",
+              },
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    const taskDir = path.join(ws.root, ".agentplane", "tasks", taskId);
+    await mkdir(path.join(taskDir, "pr"), { recursive: true });
+    await writeFile(
+      path.join(taskDir, "README.md"),
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "DONE task with deleted branch_pr artifacts",
+          description:
+            "Doctor should stay quiet once the task branch has already been deleted and only stale PR metadata remains.",
+          status: "DONE",
+          priority: "med",
+          owner: "CODER",
+          depends_on: [],
+          tags: ["workflow"],
+          verify: [],
+          plan_approval: {
+            state: "approved",
+            updated_at: "2026-04-05T09:00:00.000Z",
+            updated_by: "ORCHESTRATOR",
+            note: null,
+          },
+          verification: {
+            state: "ok",
+            updated_at: "2026-04-05T09:10:00.000Z",
+            updated_by: "CODER",
+            note: "verified",
+          },
+          commit: {
+            hash: shippedHash,
+            message: "feat: already-shipped payload",
+          },
+          comments: [],
+          events: [],
+          revision: 1,
+          doc_version: 3,
+          doc_updated_at: "2026-04-05T09:10:00.000Z",
+          doc_updated_by: "CODER",
+          sections: {
+            Summary: "DONE task with deleted branch_pr artifacts",
+            Scope: "- In scope: keep doctor quiet when only stale PR metadata remains after branch deletion.",
+            Plan: "1. Run doctor.",
+            "Verify Steps":
+              "1. Run agentplane doctor. Expected: deleted task branches do not produce open-PR drift warnings.",
+            Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+            "Rollback Plan": "- Revert.",
+            Findings: "",
+          },
+        },
+        "",
+      ),
+      "utf8",
+    );
+    await writeFile(
+      path.join(taskDir, "pr", "meta.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          branch: branchName,
+          base: "main",
+          created_at: "2026-04-05T09:00:00.000Z",
+          updated_at: "2026-04-05T09:00:00.000Z",
+          last_verified_sha: null,
+          last_verified_at: null,
+          verify: { status: "skipped" },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const ctx = {
+      backendId: "local",
+      config: {
+        workflow_mode: "branch_pr",
+        paths: { workflow_dir: ".agentplane/tasks" },
+      },
+      resolvedProject: { gitRoot: ws.root },
+      taskBackend: {
+        listTasks: vi.fn().mockResolvedValue([
+          {
+            id: taskId,
+            status: "DONE",
+            commit: {
+              hash: shippedHash,
+              message: "feat: already-shipped payload",
+            },
+          },
+        ]),
+      },
+    } as unknown as Parameters<typeof checkBranchPrDoneTaskOpenPrDrift>[0];
+
+    const findings = await checkBranchPrDoneTaskOpenPrDrift(ctx);
+    expect(findings).toHaveLength(0);
   });
 
   it("ignores duplicate no-op and stacked-root DONE branch_pr records in open-PR drift checks", async () => {
