@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { TESTKIT_VERSION } from "./index.js";
+import { splitOutputLines } from "./index.js";
 
 describe("@agentplane/testkit", () => {
-  it("exports version", () => {
-    expect(TESTKIT_VERSION).toBeTypeOf("string");
+  it("re-exports CLI helpers from the package root", () => {
+    expect(splitOutputLines("a\nb\n")).toEqual(["a", "b"]);
   });
 });

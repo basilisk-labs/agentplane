@@ -1,0 +1,14 @@
+ bun.lock                                           |   3 +
+ packages/agentplane/package.json                   |   3 +
+ .../agentplane/src/cli/run-cli.test-helpers.ts     | 909 +--------------------
+ packages/agentplane/src/testing/cli-harness.ts     | 908 ++++++++++++++++++++
+ packages/agentplane/src/testing/index.ts           |   1 +
+ packages/testkit/package.json                      |   6 +-
+ packages/testkit/src/cli.test.ts                   |  10 +
+ packages/testkit/src/cli.ts                        |   1 +
+ packages/testkit/src/index.test.ts                 |   6 +-
+ packages/testkit/src/index.ts                      |   2 +-
+ packages/testkit/tsconfig.json                     |   3 +-
+ tsconfig.base.json                                 |   5 +-
+ vitest.config.ts                                   |   5 +
+ 13 files changed, 947 insertions(+), 915 deletions(-)
