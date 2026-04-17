@@ -1,10 +1,11 @@
 ---
 id: "202604171155-C1QJ33"
 title: "Normalize recipes authority chain"
-status: "DOING"
+result_summary: "Merged via PR #386."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-17T12:59:13.254Z"
   updated_by: "TESTER"
   note: "Verified: recipes authority now flows through registry.json and vendored manifests, while generated overlay and asset artifacts are validated derived state without a separate lock-file authority path."
-commit: null
+commit:
+  hash: "4e38c54668c613182482f8063aefd97f4ac0a6df"
+  message: "recipes/workflow: Normalize recipes authority chain (C1QJ33) (#386)"
 comments:
   -
     author: "CODER"
     body: "Start: normalize recipes authority to registry -> vendored manifests -> generated artifacts and remove the unused lock-file authority path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #386 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: recipes authority now flows through registry.json and vendored manifests, while generated overlay and asset artifacts are validated derived state without a separate lock-file authority path."
+  -
+    type: "status"
+    at: "2026-04-17T14:36:17.799Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #386 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T12:59:13.257Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T14:36:17.805Z"
+doc_updated_by: "INTEGRATOR"
 description: "Decide and enforce the authority chain between registry.json, vendored manifests, generated artifacts, and recipes.lock.json so recipes have one consistent project-local truth model."
 sections:
   Summary: |-
