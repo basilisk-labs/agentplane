@@ -4,11 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import {
-  createUpgradeBundle,
-  mkGitRepoRoot,
-  writeDefaultConfig,
-} from "@agentplane/testkit/cli";
+import { createUpgradeBundle, mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit/cli";
 import { cmdUpgradeParsed } from "./upgrade.js";
 
 const execFileAsync = promisify(execFile);
