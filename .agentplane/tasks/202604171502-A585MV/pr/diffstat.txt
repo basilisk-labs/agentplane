@@ -1,0 +1,8 @@
+ .../src/commands/pr/internal/sync-branch.ts        | 149 ++++
+ .../src/commands/pr/internal/sync-github.ts        | 237 +++++++
+ .../src/commands/pr/internal/sync-model.ts         |  37 +
+ .../src/commands/pr/internal/sync-open-step.ts     | 152 +++++
+ .../src/commands/pr/internal/sync-support.ts       |  33 +
+ .../src/commands/pr/internal/sync-update-step.ts   |  80 +++
+ .../agentplane/src/commands/pr/internal/sync.ts    | 760 +++------------------
+ 7 files changed, 795 insertions(+), 653 deletions(-)

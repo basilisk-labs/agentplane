@@ -1,0 +1,37 @@
+import type { TaskData } from "../../../backends/task-backend.js";
+import type { PrMeta } from "../../shared/pr-meta.js";
+import type { readPrHandoffNotes } from "./note-store.js";
+
+export type PrRemoteMode = "auto" | "sync-only";
+
+export type PrOpenOutcome = {
+  action: "linked-existing" | "created" | "sync-only" | "staged";
+  message: string;
+};
+
+export type PrSyncResolved = { gitRoot: string };
+
+export type PrSyncCommonState = {
+  task: TaskData;
+  resolved: PrSyncResolved;
+  workflowDir: string;
+  tasksPath: string;
+  prDir: string;
+  metaPath: string;
+  diffstatPath: string;
+  notesPath: string;
+  verifyLogPath: string;
+  reviewPath: string;
+  githubTitlePath: string;
+  githubBodyPath: string;
+  existingMeta: PrMeta | null;
+  handoffNotes: Awaited<ReturnType<typeof readPrHandoffNotes>>;
+  now: string;
+  createdAt: string;
+  branch: string;
+  baseBranch: string | null;
+  headSha: string | null;
+  artifactRefresh: boolean;
+  renderedHeadSha: string | undefined;
+  renderUpdatedAt: string;
+};
