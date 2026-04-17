@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171154-4ASRJG/init-activate-recipes",
   "created_at": "2026-04-17T12:05:04.977Z",
-  "head_sha": "f21546a308479466050f7b0ae37c345ebadea0cf",
+  "head_sha": "03bf43d9fd5a39913fab23009a71d4420ea6a7b8",
   "last_verified_at": "2026-04-17T12:08:17.113Z",
   "last_verified_sha": "f21546a308479466050f7b0ae37c345ebadea0cf",
+  "merge_commit": "6c57f3fafe7522692030bac807f1a5c33d8f03b6",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T14:36:48Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171154-4ASRJG",
-  "updated_at": "2026-04-17T12:08:17.142Z",
+  "updated_at": "2026-04-17T14:36:48Z",
   "verify": {
     "status": "pass"
   }
