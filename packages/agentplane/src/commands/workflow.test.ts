@@ -34,7 +34,7 @@ import {
   mkGitRepoRoot,
   silenceStdIO,
   writeDefaultConfig,
-} from "../cli/run-cli.test-helpers.js";
+} from "@agentplane/testkit/cli";
 import { taskNewSpec } from "./task/new.command.js";
 import { runTaskNewParsed } from "./task/new.js";
 import { loadCommandContext } from "./shared/task-backend.js";

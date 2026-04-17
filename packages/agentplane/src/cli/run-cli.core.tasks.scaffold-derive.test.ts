@@ -7,7 +7,7 @@ import {
   captureStdIO,
   installRunCliIntegrationHarness,
   writeAndConfigureRoot,
-} from "./run-cli.test-helpers.js";
+} from "@agentplane/testkit/cli";
 
 installRunCliIntegrationHarness();
 

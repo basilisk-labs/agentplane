@@ -12,7 +12,7 @@ import {
   pathExists,
   registerAgentplaneHome,
   silenceStdIO,
-} from "./run-cli.test-helpers.js";
+} from "@agentplane/testkit/cli";
 
 registerAgentplaneHome();
 let restoreStdIO: (() => void) | null = null;

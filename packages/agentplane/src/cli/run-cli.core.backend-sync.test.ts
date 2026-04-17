@@ -52,7 +52,7 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
-} from "./run-cli.test-helpers.js";
+} from "@agentplane/testkit/cli";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 

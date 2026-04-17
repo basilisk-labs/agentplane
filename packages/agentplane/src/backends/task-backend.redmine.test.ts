@@ -10,7 +10,7 @@ import {
   RedmineUnavailable,
   type TaskData,
 } from "./task-backend.js";
-import { mkTempDir, silenceStdIO } from "../cli/run-cli.test-helpers.js";
+import { mkTempDir, silenceStdIO } from "@agentplane/testkit/cli";
 
 function makeIssue(priorityName?: string): Record<string, unknown> {
   return {

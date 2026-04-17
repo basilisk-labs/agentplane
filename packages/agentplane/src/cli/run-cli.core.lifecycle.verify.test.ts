@@ -9,7 +9,7 @@ import {
   registerAgentplaneHome,
   silenceStdIO,
   writeDefaultConfig,
-} from "./run-cli.test-helpers.js";
+} from "@agentplane/testkit/cli";
 
 registerAgentplaneHome();
 let restoreStdIO: (() => void) | null = null;

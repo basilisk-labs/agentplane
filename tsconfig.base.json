@@ -5,10 +5,13 @@
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
+      "@agentplane/testkit": ["packages/testkit/src/index.ts"],
+      "@agentplane/testkit/*": ["packages/testkit/src/*"],
       "@agentplaneorg/core": ["packages/core/src/index.ts"],
       "@agentplaneorg/core/*": ["packages/core/src/*"],
       "@agentplaneorg/recipes": ["packages/recipes/src/index.ts"],
-      "@agentplaneorg/recipes/*": ["packages/recipes/src/*"]
+      "@agentplaneorg/recipes/*": ["packages/recipes/src/*"],
+      "agentplane/internal/testing": ["packages/agentplane/src/testing/index.ts"]
     },
     "module": "NodeNext",
     "moduleResolution": "NodeNext",

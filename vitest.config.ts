@@ -7,8 +7,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   resolve: {
     alias: {
+      "@agentplane/testkit/cli": path.join(__dirname, "packages/testkit/src/cli.ts"),
       // In-repo tests should run against source, not stale built artifacts.
       "@agentplaneorg/core": path.join(__dirname, "packages/core/src/index.ts"),
+      "agentplane/internal/testing": path.join(
+        __dirname,
+        "packages/agentplane/src/testing/index.ts",
+      ),
     },
   },
   test: {

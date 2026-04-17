@@ -7,7 +7,7 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
-import { createRecipeArchive } from "./run-cli.test-helpers.js";
+import { createRecipeArchive } from "@agentplane/testkit/cli";
 
 const execFileAsync = promisify(execFile);
 

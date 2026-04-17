@@ -14,7 +14,7 @@ import {
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
   writeConfig,
-} from "./run-cli.test-helpers.js";
+} from "@agentplane/testkit/cli";
 
 installRunCliIntegrationHarness();
 

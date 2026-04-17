@@ -11,7 +11,7 @@ import {
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
   writeConfig,
-} from "../../cli/run-cli.test-helpers.js";
+} from "@agentplane/testkit/cli";
 import { runCli } from "../../cli/run-cli.js";
 import { evolveRunnerRunState, readRunnerRunState, writeRunnerRunState } from "../artifacts.js";
 import * as processSupervision from "../process-supervision.js";

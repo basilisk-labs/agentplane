@@ -55,7 +55,7 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
-} from "./run-cli.test-helpers.js";
+} from "@agentplane/testkit/cli";
 import { evolveRunnerRunState, writeRunnerRunState } from "../runner/artifacts.js";
 import {
   formatRunnerCapabilitySummaryLines,

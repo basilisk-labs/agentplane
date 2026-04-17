@@ -7,7 +7,7 @@ import {
   createUpgradeBundle,
   mkGitRepoRoot,
   writeDefaultConfig,
-} from "../cli/run-cli.test-helpers.js";
+} from "@agentplane/testkit/cli";
 import { cmdUpgradeParsed } from "./upgrade.js";
 const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 

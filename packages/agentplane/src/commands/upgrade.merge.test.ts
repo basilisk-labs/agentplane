@@ -8,7 +8,7 @@ import {
   createUpgradeBundle,
   mkGitRepoRoot,
   writeDefaultConfig,
-} from "../cli/run-cli.test-helpers.js";
+} from "@agentplane/testkit/cli";
 import { cmdUpgradeParsed } from "./upgrade.js";
 
 const execFileAsync = promisify(execFile);
