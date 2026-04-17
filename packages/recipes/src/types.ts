@@ -259,6 +259,7 @@ export type InstalledRecipesFile = {
 };
 
 export type ProjectRecipeMaterialization = "copy" | "link";
+export type ProjectRecipeState = "clean" | "modified" | "diverged_from_cache";
 
 export type ProjectRecipeRegistryEntry = {
   id: string;
@@ -267,8 +268,8 @@ export type ProjectRecipeRegistryEntry = {
   active: boolean;
   materialization: ProjectRecipeMaterialization;
   source_ref: string;
-  source_sha256?: string;
-  vendored_sha256?: string;
+  source_sha256: string;
+  vendored_sha256: string;
   installed_at: string;
   tags?: string[];
 };
@@ -277,6 +278,20 @@ export type ProjectRecipesRegistryFile = {
   schema_version: 1;
   updated_at: string;
   recipes: ProjectRecipeRegistryEntry[];
+};
+
+export type ProjectInstalledRecipeEntry = InstalledRecipeEntry & {
+  project_path: string;
+  materialization: ProjectRecipeMaterialization;
+  source_ref: string;
+  source_sha256: string;
+  vendored_sha256: string;
+};
+
+export type ProjectInstalledRecipesFile = {
+  schema_version: 1;
+  updated_at: string;
+  recipes: ProjectInstalledRecipeEntry[];
 };
 
 export type ScenarioDefinition = {

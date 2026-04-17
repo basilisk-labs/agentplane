@@ -76,6 +76,7 @@ Commands:
     recipes add  Vendor a cached recipe into the current project.
     recipes cache  Manage recipes cache.
     recipes cache prune  Prune global recipe cache entries.
+    recipes detach  Convert a linked vendored recipe into a project-local copy.
     recipes explain  Show detailed info for an installed recipe.
     recipes info  Show cached recipe metadata.
     recipes install  Install a recipe into the global cache from remote index, local archive, or URL.
@@ -87,6 +88,7 @@ Commands:
     recipes scenario info  Show manifest-backed scenario details and normalized run profile.
     recipes scenario list  List resolver-backed scenario descriptors from installed recipes.
     recipes scenario run  Preview a validated scenario plan without creating a task or running a runner.
+    recipes update  Refresh a vendored recipe from the cached source.
   Release:
     release  Prepare a release (agent-assisted notes + version bump workflow).
     release apply  Apply a prepared direct-mode release: bump versions, validate notes, commit, and tag.

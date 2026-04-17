@@ -1,4 +1,5 @@
 export { cmdRecipeAddParsed } from "./commands/add.js";
+export { cmdRecipeDetachParsed } from "./commands/detach.js";
 export { cmdRecipeListParsed } from "./commands/list.js";
 export { cmdRecipeListRemoteParsed } from "./commands/list-remote.js";
 export { cmdRecipeInfoParsed } from "./commands/info.js";
@@ -9,4 +10,5 @@ export { cmdRecipeEnableParsed } from "./commands/enable.js";
 export { cmdRecipeDisableParsed } from "./commands/disable.js";
 export { cmdRecipeInstall } from "./commands/install.js";
 export { cmdRecipeRemoveParsed } from "./commands/remove.js";
+export { cmdRecipeUpdateParsed } from "./commands/update.js";
 export { cmdRecipeCachePruneParsed } from "./commands/cache-prune.js";

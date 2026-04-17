@@ -7,7 +7,6 @@ import {
   INSTALLED_RECIPES_NAME,
   PROJECT_RECIPES_PACKAGES_DIR_NAME,
   PROJECT_RECIPES_REGISTRY_NAME,
-  RECIPE_INSTALL_META_NAME,
   PROJECT_RECIPES_CACHE_DIR_NAME,
   RECIPES_DIR_NAME,
   RECIPES_REMOTE_INDEX_NAME,
@@ -64,13 +63,6 @@ export function resolveProjectInstalledRecipeDir(
   recipeId: string,
 ): string {
   return resolveProjectVendoredRecipeDir(resolved, recipeId);
-}
-
-export function resolveProjectRecipeInstallMetaPath(
-  resolved: { agentplaneDir: string },
-  recipeId: string,
-): string {
-  return path.join(resolveProjectInstalledRecipeDir(resolved, recipeId), RECIPE_INSTALL_META_NAME);
 }
 
 export function resolveProjectRecipesCacheDir(resolved: { agentplaneDir: string }): string {

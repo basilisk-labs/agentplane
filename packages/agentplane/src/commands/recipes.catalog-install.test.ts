@@ -214,13 +214,8 @@ describe("commands/recipes catalog/install", () => {
     ).resolves.toBe(0);
 
     const manifestPath = path.join(resolveProjectRecipeDir(projectDir, "viewer"), "manifest.json");
-    const installMetaPath = path.join(resolveProjectRecipeDir(projectDir, "viewer"), ".install.json");
     const registryPath = resolveProjectRecipesRegistryPath(projectDir);
     expect(JSON.parse(await readFile(manifestPath, "utf8"))).toMatchObject({ id: "viewer" });
-    expect(JSON.parse(await readFile(installMetaPath, "utf8"))).toMatchObject({
-      id: "viewer",
-      install_mode: "project-copy",
-    });
     expect(JSON.parse(await readFile(registryPath, "utf8"))).toMatchObject({
       recipes: [
         expect.objectContaining({
@@ -228,6 +223,8 @@ describe("commands/recipes catalog/install", () => {
           path: "packages/viewer",
           active: false,
           materialization: "copy",
+          source_sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
+          vendored_sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
         }),
       ],
     });

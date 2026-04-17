@@ -9,6 +9,7 @@ import { CliError } from "../../../../shared/errors.js";
 import { formatJsonBlock } from "../format.js";
 import { readActiveRecipeIds } from "../overlay-project.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
+import { inspectProjectRecipe } from "../project-recipe-state.js";
 import { resolveProjectRecipesDir, resolveProjectInstalledRecipeDir } from "../paths.js";
 import { collectRecipeScenarioDetails } from "../scenario.js";
 
@@ -34,6 +35,7 @@ export async function cmdRecipeExplainParsed(opts: {
         message: `Recipe not installed: ${opts.id}`,
       });
     }
+    const inspection = await inspectProjectRecipe({ project: resolved, recipeId: opts.id });
 
     const manifest = entry.manifest;
     const recipeDir = entry.project_path
@@ -45,6 +47,12 @@ export async function cmdRecipeExplainParsed(opts: {
     process.stdout.write(`Kind: ${manifest.kind}\n`);
     process.stdout.write(`Schema: ${manifest.schema_version}\n`);
     process.stdout.write(`Active: ${activeIds.includes(entry.id) ? "yes" : "no"}\n`);
+    process.stdout.write(`Materialization: ${entry.materialization}\n`);
+    process.stdout.write(`State: ${inspection.state}\n`);
+    process.stdout.write(`Source ref: ${entry.source_ref}\n`);
+    process.stdout.write(`Cache source: ${inspection.cache_present ? "present" : "missing"}\n`);
+    process.stdout.write(`Source sha256: ${entry.source_sha256}\n`);
+    process.stdout.write(`Vendored sha256: ${inspection.current_vendored_sha256}\n`);
     process.stdout.write(`Name: ${manifest.name}\n`);
     process.stdout.write(`Summary: ${manifest.summary}\n`);
     process.stdout.write(`Description: ${manifest.description}\n`);

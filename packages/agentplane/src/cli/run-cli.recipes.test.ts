@@ -1,5 +1,5 @@
 import { createHash, generateKeyPairSync, sign } from "node:crypto";
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { lstat, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -161,9 +161,13 @@ describe("runCli recipes", () => {
           path: "packages/vendored",
           active: false,
           materialization: "copy",
+          source_ref: "vendored@0.4.0",
+          source_sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
+          vendored_sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
         }),
       ],
     });
+    expect(await pathExists(path.join(root, ".agentplane", "recipes", "packages", "vendored", ".install.json"))).toBe(false);
     expect(JSON.parse(await readFile(assetRegistryPath, "utf8"))).toMatchObject({
       kind: "recipe_asset_registry",
       entries: expect.arrayContaining([
@@ -192,6 +196,179 @@ describe("runCli recipes", () => {
           asset_id: "RECIPE_SCENARIO",
         }),
       ]),
+    });
+
+    const ioExplain = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "explain", "vendored", "--root", root]);
+      expect(code).toBe(0);
+      expect(ioExplain.stdout).toContain("Materialization: copy");
+      expect(ioExplain.stdout).toContain("State: clean");
+      expect(ioExplain.stdout).toContain("Source ref: vendored@0.4.0");
+    } finally {
+      ioExplain.restore();
+    }
+  });
+
+  it("recipes add refuses to overwrite an already vendored recipe", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive({
+      id: "vendored",
+      version: "0.4.0",
+    });
+
+    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(0);
+    expect(await runCliSilent(["recipes", "add", `${manifest.id}@${manifest.version}`, "--root", root])).toBe(0);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "add", `${manifest.id}@${manifest.version}`, "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Recipe already vendored");
+      expect(io.stderr).toContain("agentplane recipes update vendored");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipes update refreshes a cached copy and refuses local vendored edits without --force", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive({
+      id: "syncable",
+      version: "0.5.0",
+    });
+
+    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(0);
+    expect(await runCliSilent(["recipes", "add", `${manifest.id}@${manifest.version}`, "--root", root])).toBe(0);
+
+    const cachedManifestPath = path.join(
+      agentplaneHomePath(),
+      "recipes-store",
+      "syncable",
+      "0.5.0",
+      "manifest.json",
+    );
+    const vendoredManifestPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      "packages",
+      "syncable",
+      "manifest.json",
+    );
+
+    const cachedManifest = JSON.parse(await readFile(cachedManifestPath, "utf8")) as Record<string, unknown>;
+    cachedManifest.summary = "Updated from cache";
+    await writeFile(cachedManifestPath, JSON.stringify(cachedManifest, null, 2), "utf8");
+
+    const ioUpdated = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "update", "syncable", "--root", root]);
+      expect(code).toBe(0);
+      expect(ioUpdated.stdout).toContain("Updated vendored recipe syncable@0.5.0 from cache.");
+    } finally {
+      ioUpdated.restore();
+    }
+    expect(JSON.parse(await readFile(vendoredManifestPath, "utf8"))).toMatchObject({
+      summary: "Updated from cache",
+    });
+
+    const locallyModified = JSON.parse(await readFile(vendoredManifestPath, "utf8")) as Record<string, unknown>;
+    locallyModified.summary = "Locally modified";
+    await writeFile(vendoredManifestPath, JSON.stringify(locallyModified, null, 2), "utf8");
+
+    const ioRefused = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "update", "syncable", "--root", root]);
+      expect(code).toBe(2);
+      expect(ioRefused.stderr).toContain("has local project edits");
+    } finally {
+      ioRefused.restore();
+    }
+
+    const cachedManifestForce = JSON.parse(await readFile(cachedManifestPath, "utf8")) as Record<string, unknown>;
+    cachedManifestForce.summary = "Forced from cache";
+    await writeFile(cachedManifestPath, JSON.stringify(cachedManifestForce, null, 2), "utf8");
+
+    const ioForced = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "update", "syncable", "--force", "--root", root]);
+      expect(code).toBe(0);
+      expect(ioForced.stdout).toContain("Updated vendored recipe syncable@0.5.0 from cache.");
+    } finally {
+      ioForced.restore();
+    }
+    expect(JSON.parse(await readFile(vendoredManifestPath, "utf8"))).toMatchObject({
+      summary: "Forced from cache",
+    });
+  });
+
+  it("recipes detach converts a linked recipe into a portable project copy", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive({
+      id: "linked",
+      version: "0.6.0",
+    });
+
+    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(0);
+
+    const ioAdd = captureStdIO();
+    try {
+      const code = await runCli([
+        "recipes",
+        "add",
+        `${manifest.id}@${manifest.version}`,
+        "--mode",
+        "link",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(ioAdd.stdout).toContain("Warning: link mode is not portable");
+    } finally {
+      ioAdd.restore();
+    }
+
+    const vendoredDir = path.join(root, ".agentplane", "recipes", "packages", "linked");
+    const cachedManifestPath = path.join(
+      agentplaneHomePath(),
+      "recipes-store",
+      "linked",
+      "0.6.0",
+      "manifest.json",
+    );
+    expect((await lstat(vendoredDir)).isSymbolicLink()).toBe(true);
+    expect(await pathExists(path.join(agentplaneHomePath(), "recipes-store", "linked", "0.6.0", ".install.json"))).toBe(false);
+
+    const ioDetach = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "detach", "linked", "--root", root]);
+      expect(code).toBe(0);
+      expect(ioDetach.stdout).toContain("Detached recipe linked@0.6.0 into a project-local copy.");
+    } finally {
+      ioDetach.restore();
+    }
+
+    expect((await lstat(vendoredDir)).isSymbolicLink()).toBe(false);
+    const vendoredManifestPath = path.join(vendoredDir, "manifest.json");
+    const vendoredManifest = JSON.parse(await readFile(vendoredManifestPath, "utf8")) as Record<string, unknown>;
+    vendoredManifest.summary = "Detached project copy";
+    await writeFile(vendoredManifestPath, JSON.stringify(vendoredManifest, null, 2), "utf8");
+    expect(JSON.parse(await readFile(cachedManifestPath, "utf8"))).not.toMatchObject({
+      summary: "Detached project copy",
+    });
+    expect(JSON.parse(await readFile(path.join(root, ".agentplane", "recipes", "registry.json"), "utf8"))).toMatchObject({
+      recipes: [
+        expect.objectContaining({
+          id: "linked",
+          materialization: "copy",
+          source_sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
+          vendored_sha256: expect.stringMatching(/^[0-9a-f]{64}$/),
+        }),
+      ],
     });
   });
 

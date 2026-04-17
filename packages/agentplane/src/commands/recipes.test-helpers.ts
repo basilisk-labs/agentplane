@@ -7,12 +7,15 @@ import { afterEach, beforeEach, vi } from "vitest";
 import {
   cmdRecipeAddParsed,
   cmdRecipeCachePruneParsed,
+  cmdRecipeDetachParsed,
   cmdRecipeExplainParsed,
   cmdRecipeInfoParsed,
   cmdRecipeInstall,
   cmdRecipeListParsed,
   cmdRecipeListRemoteParsed,
   cmdRecipeRemoveParsed,
+  cmdRecipeUpdateParsed,
+  hashRecipeTree,
 } from "./recipes.js";
 import { cmdScenarioInfoParsed, cmdScenarioListParsed, cmdScenarioRunParsed } from "./scenario.js";
 import { exitCodeForError } from "../cli/exit-codes.js";
@@ -31,7 +34,9 @@ import { recipesInfoSpec } from "./recipes/info.command.js";
 import { recipesInstallSpec } from "./recipes/install.spec.js";
 import { recipesListRemoteSpec } from "./recipes/list-remote.command.js";
 import { recipesListSpec } from "./recipes/list.command.js";
+import { recipesDetachSpec } from "./recipes/detach.command.js";
 import { recipesRemoveSpec } from "./recipes/remove.command.js";
+import { recipesUpdateSpec } from "./recipes/update.command.js";
 import { scenarioInfoSpec } from "./scenario/info.command.js";
 import { scenarioListSpec } from "./scenario/list.command.js";
 import { scenarioRunSpec } from "./scenario/run.command.js";
@@ -164,23 +169,6 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
       JSON.stringify(manifest, null, 2),
       "utf8",
     );
-    await writeFile(
-      path.join(vendoredRecipeDir, ".install.json"),
-      JSON.stringify(
-        {
-          schema_version: 1,
-          id: recipeId,
-          version: recipeVersion,
-          source,
-          installed_at: installedAt,
-          tags,
-          install_mode: "project-copy",
-        },
-        null,
-        2,
-      ),
-      "utf8",
-    );
     cachedEntries.push({
       id: recipeId,
       version: recipeVersion,
@@ -189,17 +177,6 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
       tags,
       manifest,
     });
-    registryEntries.push({
-      id: recipeId,
-      version: recipeVersion,
-      path: `packages/${recipeId}`,
-      active: false,
-      materialization: "copy",
-      source_ref: source,
-      installed_at: installedAt,
-      tags,
-    });
-
     const scenarios = Array.isArray(manifest.scenarios)
       ? manifest.scenarios.filter(
           (scenario): scenario is Record<string, unknown> =>
@@ -258,6 +235,19 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
       await writeFile(toolPath, toolSource, "utf8");
       await writeFile(vendoredToolPath, toolSource, "utf8");
     }
+
+    registryEntries.push({
+      id: recipeId,
+      version: recipeVersion,
+      path: `packages/${recipeId}`,
+      active: false,
+      materialization: "copy",
+      source_ref: source,
+      source_sha256: await hashRecipeTree(recipeDir),
+      vendored_sha256: await hashRecipeTree(vendoredRecipeDir),
+      installed_at: installedAt,
+      tags,
+    });
   }
 
   await writeInstalledRecipesRegistry(cachedEntries);
@@ -517,6 +507,23 @@ export async function runRecipesTest(opts: {
     case "remove": {
       const parsed = parseCommandArgv(recipesRemoveSpec, opts.args).parsed;
       return await cmdRecipeRemoveParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        id: parsed.id,
+      });
+    }
+    case "update": {
+      const parsed = parseCommandArgv(recipesUpdateSpec, opts.args).parsed;
+      return await cmdRecipeUpdateParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        id: parsed.id,
+        force: parsed.force,
+      });
+    }
+    case "detach": {
+      const parsed = parseCommandArgv(recipesDetachSpec, opts.args).parsed;
+      return await cmdRecipeDetachParsed({
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         id: parsed.id,

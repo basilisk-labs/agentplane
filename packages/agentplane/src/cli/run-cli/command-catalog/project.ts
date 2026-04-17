@@ -28,6 +28,7 @@ import {
 import { recipesAddSpec } from "../../../commands/recipes/add.command.js";
 import { recipesCachePruneSpec } from "../../../commands/recipes/cache-prune.command.js";
 import { recipesCacheSpec } from "../../../commands/recipes/cache.command.js";
+import { recipesDetachSpec } from "../../../commands/recipes/detach.command.js";
 import { recipesExplainSpec } from "../../../commands/recipes/explain.command.js";
 import { recipesInfoSpec } from "../../../commands/recipes/info.command.js";
 import { recipesInstallSpec } from "../../../commands/recipes/install.spec.js";
@@ -35,6 +36,7 @@ import { recipesListRemoteSpec } from "../../../commands/recipes/list-remote.com
 import { recipesListSpec } from "../../../commands/recipes/list.command.js";
 import { recipesRemoveSpec } from "../../../commands/recipes/remove.command.js";
 import { recipesSpec } from "../../../commands/recipes/recipes.command.js";
+import { recipesUpdateSpec } from "../../../commands/recipes/update.command.js";
 import { scenarioExecuteSpec } from "../../../commands/scenario/execute.command.js";
 import { scenarioInfoSpec } from "../../../commands/scenario/info.command.js";
 import { scenarioListSpec } from "../../../commands/scenario/list.command.js";
@@ -96,6 +98,12 @@ export const PROJECT_COMMANDS = [
   ),
   entry(recipesRemoveSpec, () =>
     import("../../../commands/recipes/remove.command.js").then((m) => m.runRecipesRemove),
+  ),
+  entry(recipesUpdateSpec, () =>
+    import("../../../commands/recipes/update.command.js").then((m) => m.runRecipesUpdate),
+  ),
+  entry(recipesDetachSpec, () =>
+    import("../../../commands/recipes/detach.command.js").then((m) => m.runRecipesDetach),
   ),
   entry(recipesCachePruneSpec, () =>
     import("../../../commands/recipes/cache-prune.command.js").then((m) => m.runRecipesCachePrune),

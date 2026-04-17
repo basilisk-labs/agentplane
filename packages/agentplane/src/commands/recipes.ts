@@ -28,17 +28,14 @@ export type {
 export { readRecipeManifest } from "./recipes/impl/manifest.js";
 
 export { readInstalledRecipesFile } from "./recipes/impl/installed-recipes.js";
-export {
-  readProjectInstalledRecipes,
-  readRecipeInstallMetadata,
-  writeRecipeInstallMetadata,
-} from "./recipes/impl/project-installed-recipes.js";
+export { readProjectInstalledRecipes } from "./recipes/impl/project-installed-recipes.js";
 export {
   readProjectRecipesRegistry,
   removeProjectRecipeRegistryEntry,
   upsertProjectRecipeRegistryEntry,
   writeProjectRecipesRegistry,
 } from "./recipes/impl/project-registry.js";
+export { hashRecipeTree, inspectProjectRecipe } from "./recipes/impl/project-recipe-state.js";
 
 export {
   compileProjectOverlayArtifacts,
@@ -56,7 +53,6 @@ export {
   resolveProjectInstalledRecipeDir,
   resolveProjectOverlayBundlePath,
   resolveProjectRecipeAssetsPath,
-  resolveProjectRecipeInstallMetaPath,
   resolveProjectRecipesLockPath,
   resolveProjectRecipesDir,
   resolveProjectRecipesCacheDir,
@@ -91,5 +87,7 @@ export {
   cmdRecipeInstall,
   cmdRecipeListParsed,
   cmdRecipeListRemoteParsed,
+  cmdRecipeDetachParsed,
   cmdRecipeRemoveParsed,
+  cmdRecipeUpdateParsed,
 } from "./recipes/impl/commands.js";
