@@ -277,7 +277,8 @@ async function main() {
   await mkdir(localDir, { recursive: true });
 
   await run("node", [
-    path.join(SCRIPT_DIR, "write-release-ready-manifest.mjs"),
+    path.join(SCRIPT_DIR, "manifest.mjs"),
+    "release-ready",
     "--out",
     localManifestPath,
     "--sha",

@@ -27,7 +27,7 @@ describe("publish workflow contract", () => {
       'RUNTIME_SCRIPT=".agentplane/.release/runtime/scripts/resolve-release-ready-source.mjs"',
     );
     expect(workflow).toContain('node "${RUNTIME_SCRIPT}" \\');
-    expect(workflow).toContain("node scripts/write-publish-result-manifest.mjs");
+    expect(workflow).toContain("node scripts/manifest.mjs publish-result");
     expect(workflow).toContain("name: publish-result");
     expect(workflow).toContain("path: .agentplane/.release/publish/publish-result.json");
     expect(workflow).toContain("if: always()");

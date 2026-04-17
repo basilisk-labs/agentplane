@@ -45,7 +45,7 @@ describe("Core CI workflow contract", () => {
     );
     expect(workflow).toContain("needs.test.result == 'success' &&");
     expect(workflow).toContain("needs.test-windows.result == 'success'");
-    expect(workflow).toContain("node scripts/write-release-ready-manifest.mjs");
+    expect(workflow).toContain("node scripts/manifest.mjs release-ready");
     expect(workflow).toContain("--out .agentplane/.release/ready/release-ready.json");
     expect(workflow).toContain('--sha "${{ steps.target.outputs.sha }}"');
     expect(workflow).toContain('--ref "${AGENTPLANE_CI_REF}"');

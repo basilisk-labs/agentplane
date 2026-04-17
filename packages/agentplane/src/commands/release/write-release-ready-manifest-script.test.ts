@@ -9,7 +9,7 @@ import { initReleaseWorkspace } from "../release.test-helpers.js";
 import { writeExecutableFile } from "../../test-helpers/fs.js";
 
 const execFileAsync = promisify(execFile);
-const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/write-release-ready-manifest.mjs");
+const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/manifest.mjs");
 
 const roots: string[] = [];
 
@@ -26,7 +26,7 @@ afterEach(async () => {
   }
 });
 
-describe("write-release-ready-manifest script", () => {
+describe("manifest script release-ready command", () => {
   it("emits a ready manifest with registry snapshot metadata", async () => {
     const root = await initReleaseWorkspace({
       prefix: "agentplane-release-ready-",
@@ -51,7 +51,7 @@ describe("write-release-ready-manifest script", () => {
 
     const result = await execFileAsync(
       "node",
-      [SCRIPT_PATH, "--json", "--check-registry", "--sha", "abc123", "--out", outPath],
+      [SCRIPT_PATH, "release-ready", "--json", "--check-registry", "--sha", "abc123", "--out", outPath],
       {
         cwd: root,
         env: {
@@ -96,7 +96,7 @@ describe("write-release-ready-manifest script", () => {
       writeNotes: false,
     });
     roots.push(root);
-    const result = await execFileAsync("node", [SCRIPT_PATH, "--json"], { cwd: root });
+    const result = await execFileAsync("node", [SCRIPT_PATH, "release-ready", "--json"], { cwd: root });
     const payload = JSON.parse(String(result.stdout ?? "")) as {
       ready: boolean;
       reasonCode: string;
@@ -116,7 +116,7 @@ describe("write-release-ready-manifest script", () => {
       dependencyVersion: "1.2.2",
     });
     roots.push(root);
-    const result = await execFileAsync("node", [SCRIPT_PATH, "--json"], { cwd: root });
+    const result = await execFileAsync("node", [SCRIPT_PATH, "release-ready", "--json"], { cwd: root });
     const payload = JSON.parse(String(result.stdout ?? "")) as {
       ready: boolean;
       reasonCode: string;

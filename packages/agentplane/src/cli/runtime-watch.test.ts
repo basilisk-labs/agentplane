@@ -151,9 +151,9 @@ describe("runtime-watch", () => {
 
   it("writes watched runtime snapshots into build manifests for agentplane", async () => {
     const { packageDir } = await setupPackageFixture("agentplane");
-    const scriptPath = path.join(workspaceRoot, "scripts", "write-build-manifest.mjs");
+    const scriptPath = path.join(workspaceRoot, "scripts", "manifest.mjs");
 
-    await execFileAsync("node", [scriptPath, packageDir], { cwd: workspaceRoot });
+    await execFileAsync("node", [scriptPath, "build", packageDir], { cwd: workspaceRoot });
     const manifest = await readManifest(packageDir);
 
     expect(manifest.schema_version).toBe(1);
@@ -172,9 +172,9 @@ describe("runtime-watch", () => {
 
   it("limits core snapshots to src files", async () => {
     const { packageDir } = await setupPackageFixture("@agentplaneorg/core");
-    const scriptPath = path.join(workspaceRoot, "scripts", "write-build-manifest.mjs");
+    const scriptPath = path.join(workspaceRoot, "scripts", "manifest.mjs");
 
-    await execFileAsync("node", [scriptPath, packageDir], { cwd: workspaceRoot });
+    await execFileAsync("node", [scriptPath, "build", packageDir], { cwd: workspaceRoot });
     const manifest = await readManifest(packageDir);
 
     expect(manifest.watched_runtime_paths).toEqual(["src"]);
