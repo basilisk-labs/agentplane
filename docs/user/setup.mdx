@@ -284,14 +284,11 @@ Each command writes evidence to `.agentplane/workflows/evidence/`.
 agentplane recipes install --name viewer
 agentplane recipes add viewer
 agentplane recipes active
-agentplane recipes scenario list
-agentplane recipes scenario run viewer:viewer
-agentplane recipes scenario execute viewer:viewer
+agentplane recipes explain viewer
 ```
 
 `recipes install` fills the global cache. `recipes add` vendors the selected package into the current
 repository, after which runtime reads only `.agentplane/recipes/` from the project.
 
-Use `recipes scenario run` when you only need validation and the prepared run plan. Use
-`recipes scenario execute` when the recipe should create a task from its template and run through
-the shared runner.
+Recipe packages may still carry scenario assets for recipe-owned automation, but they are no longer
+part of the public CLI surface.

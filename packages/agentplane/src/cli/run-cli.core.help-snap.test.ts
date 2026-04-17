@@ -202,28 +202,6 @@ describe("runCli help snapshots (cli2)", () => {
     }
   });
 
-  it("help recipes scenario run --compact snapshot", async () => {
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["help", "recipes", "scenario", "run", "--compact"]);
-      expect(code).toBe(0);
-      expect(io.stdout).toMatchSnapshot();
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("help recipes scenario execute --compact snapshot", async () => {
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["help", "recipes", "scenario", "execute", "--compact"]);
-      expect(code).toBe(0);
-      expect(io.stdout).toMatchSnapshot();
-    } finally {
-      io.restore();
-    }
-  });
-
   it("help work start --json snapshot", async () => {
     const io = captureStdIO();
     try {

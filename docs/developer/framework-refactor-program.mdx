@@ -208,7 +208,7 @@ Facts:
 - The runner is a substantial orchestration-heavy subsystem with a shared prepare/execute/lifecycle flow.
 - Run artifacts are file-based and explicit: bundle, bootstrap, state, events, result, trace, stderr.
 - `codex` and `custom` adapters share most execution/supervision machinery.
-- `recipes scenario execute` is a task materialization wrapper around the same runner flow.
+- Recipe-owned scenario materialization is a task wrapper around the same runner flow.
 
 Weak seams:
 
@@ -231,14 +231,14 @@ Refactor opportunities:
 Facts:
 
 - Recipes already behave like a domain, but most of that domain still lives under CLI command implementation paths.
-- `recipes scenario execute` crosses from recipe selection into task materialization and runner execution.
+- Recipe-owned scenario materialization crosses from recipe selection into task materialization and runner execution.
 - `release` is more modular than `upgrade`, but both still implement similar operator pipelines independently.
 - `packages/recipes` exists but is effectively empty compared with the real recipe runtime code in `packages/agentplane`.
 
 Weak seams:
 
 - Recipe/scenario selection logic is split across recipes command internals, scenario commands, and runner context assembly.
-- `recipes scenario execute` mixes delivery concerns with workflow/runtime concerns.
+- Recipe-owned scenario materialization mixes delivery concerns with workflow/runtime concerns.
 - `release apply` and `upgrade` duplicate high-level operator phases.
 - Thin CLI wrapper commands add low-signal boilerplate around subcommand groups.
 
