@@ -1,10 +1,11 @@
 ---
 id: "202604171154-4M51J8"
 title: "Fix overlay when matching semantics"
-status: "DOING"
+result_summary: "Merged via PR #383."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-17T12:23:30.298Z"
   updated_by: "CODER"
   note: "Verified conjunctive overlay when matching and command-aware runner prompt filtering."
-commit: null
+commit:
+  hash: "b09dcb42e0d3cf915bc8bdaae7f3a6e29c343e2d"
+  message: "recipes/workflow: Fix overlay when matching semantics (4M51J8) (#383)"
 comments:
   -
     author: "CODER"
     body: "Start: make overlay when matching conjunctive and carry command context into overlay resolution."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #383 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified conjunctive overlay when matching and command-aware runner prompt filtering."
+  -
+    type: "status"
+    at: "2026-04-17T14:25:34.323Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #383 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T12:23:30.303Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T14:25:34.328Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make overlay when matching conjunctive, propagate command context into runtime matching, and either fully support or remove dead command matching fields."
 sections:
   Summary: |-
