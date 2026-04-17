@@ -16,14 +16,12 @@ const SUPPORTED_RUN_PROFILE_FIELDS = [
 
 const RUNTIME_CONTRACT = {
   install_root: ".agentplane/recipes/<recipe-id>/",
-  public_entrypoint: "scenario",
-  scenario_run: "preview-only",
-  scenario_execute: "materialize-task-and-runner-execution",
+  public_entrypoint: "recipes add / recipes active / recipes explain",
   task_run: "shared-runner-task-entrypoint",
   notes: [
     "Recipe-local agents, skills, tools, and scenarios stay inside the recipe bundle.",
-    "scenario run validates compatibility and file references and prints a prepared plan without creating run artifacts.",
-    "scenario execute materializes a task from the scenario task_template and runs it through the shared runner contract.",
+    "Scenario assets remain recipe-owned internals rather than a first-class public CLI domain.",
+    "Task materialization and execution stay on the shared runner contract instead of a parallel public scenario runtime.",
   ],
 };
 

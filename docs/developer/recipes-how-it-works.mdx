@@ -1,9 +1,10 @@
 ---
 title: "How recipes work"
-description: "Cache, vendor, inspect, preview, and execute recipes in the current CLI runtime."
+description: "Cache, vendor, and inspect recipes in the current CLI runtime."
 ---
 
-This page describes runtime behavior behind `recipes` and `recipes scenario` commands.
+This page describes runtime behavior behind the public `recipes` surface and the internal
+recipe-owned scenario assets it still compiles.
 
 ## Cache flow
 
@@ -31,12 +32,12 @@ This page describes runtime behavior behind `recipes` and `recipes scenario` com
 - `recipes list` scans the global cache and prints cached entries.
 - `recipes info` reads cached recipe metadata.
 - `recipes active` and `recipes explain` read project-local vendored state from `registry.json`.
-- `recipes scenario list` enumerates resolver-backed scenario descriptors from active vendored recipes.
-- `recipes scenario info` prints manifest-backed scenario details, normalized `run_profile`, and the explicit `task_template` for one `<recipe:scenario>`.
+- Recipe-owned scenario assets still live in vendored packages, but they are no longer exposed as a
+  first-class public CLI namespace.
 
-## Scenario preview flow
+## Scenario asset preparation
 
-`recipes scenario run`:
+Internal scenario preparation still:
 
 1. Parses `<recipe:scenario>` id.
 2. Resolves the scenario through the deterministic recipe resolver.
@@ -44,12 +45,13 @@ This page describes runtime behavior behind `recipes` and `recipes scenario` com
 4. Prints a prepared run plan with selection reasons, normalized `run_profile`, and task-template data.
 5. Stops without executing tools or creating `runs/` artifacts.
 
-## Scenario execution flow
+## Scenario asset materialization
 
-`recipes scenario execute`:
+Internal scenario materialization still:
 
 1. Parses `<recipe:scenario>` id.
-2. Resolves and validates the scenario through the same deterministic resolver used by `recipes scenario run`.
+2. Resolves and validates the scenario through the same deterministic resolver used during internal
+   scenario preparation.
 3. Materializes a task from the scenario's explicit `task_template` and records recipe provenance on that task.
 4. Assembles the shared runner bundle from base prompts, repository context, task context, and recipe context.
 5. Creates task-local run artifacts under `.agentplane/tasks/<task-id>/runs/<run-id>/`.

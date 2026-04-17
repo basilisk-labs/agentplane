@@ -37,11 +37,6 @@ import { recipesListSpec } from "../../../commands/recipes/list.command.js";
 import { recipesRemoveSpec } from "../../../commands/recipes/remove.command.js";
 import { recipesSpec } from "../../../commands/recipes/recipes.command.js";
 import { recipesUpdateSpec } from "../../../commands/recipes/update.command.js";
-import { scenarioExecuteSpec } from "../../../commands/scenario/execute.command.js";
-import { scenarioInfoSpec } from "../../../commands/scenario/info.command.js";
-import { scenarioListSpec } from "../../../commands/scenario/list.command.js";
-import { scenarioRunSpec } from "../../../commands/scenario/run.command.js";
-import { scenarioSpec } from "../../../commands/scenario/scenario.command.js";
 
 import { entry, type CommandEntry } from "./shared.js";
 
@@ -116,27 +111,6 @@ export const PROJECT_COMMANDS = [
       needsLoadedConfig: false,
       needsTaskContext: false,
     },
-  ),
-  entry(
-    scenarioSpec,
-    () => import("../../../commands/scenario/scenario.command.js").then((m) => m.runScenario),
-    {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
-    },
-  ),
-  entry(scenarioListSpec, () =>
-    import("../../../commands/scenario/list.command.js").then((m) => m.runScenarioList),
-  ),
-  entry(scenarioInfoSpec, () =>
-    import("../../../commands/scenario/info.command.js").then((m) => m.runScenarioInfo),
-  ),
-  entry(scenarioExecuteSpec, () =>
-    import("../../../commands/scenario/execute.command.js").then((m) => m.runScenarioExecute),
-  ),
-  entry(scenarioRunSpec, () =>
-    import("../../../commands/scenario/run.command.js").then((m) => m.runScenarioRun),
   ),
   entry(
     branchBaseSpec,

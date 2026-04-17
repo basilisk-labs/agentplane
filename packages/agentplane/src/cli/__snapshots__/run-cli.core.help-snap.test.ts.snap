@@ -87,11 +87,6 @@ Commands:
     recipes list  List cached recipes.
     recipes list-remote  List recipes from the remote index (or cache).
     recipes remove  Remove a vendored recipe from the current project.
-    recipes scenario  Recipe scenario commands.
-    recipes scenario execute  Materialize a recipe-backed task and execute it through the shared runner flow.
-    recipes scenario info  Show manifest-backed scenario details and normalized run profile.
-    recipes scenario list  List resolver-backed scenario descriptors from installed recipes.
-    recipes scenario run  Preview a validated scenario plan without creating a task or running a runner.
     recipes update  Refresh a vendored recipe from the cached source.
   Release:
     release  Prepare a release (agent-assisted notes + version bump workflow).
@@ -192,22 +187,6 @@ Options:
   --refresh  Refresh remote index cache before installing. (default=false)
   --yes  Auto-approve network prompts when allowed by config. (default=false)
   --on-conflict <fail|rename|overwrite>  Deprecated compatibility no-op; recipe installs stay self-contained. (choices=fail|rename|overwrite, default=fail)
-"
-`;
-
-exports[`runCli help snapshots (cli2) > help recipes scenario execute --compact snapshot 1`] = `
-"recipes scenario execute - Materialize a recipe-backed task and execute it through the shared runner flow.
-
-Usage:
-  agentplane recipes scenario execute <recipe:scenario>
-"
-`;
-
-exports[`runCli help snapshots (cli2) > help recipes scenario run --compact snapshot 1`] = `
-"recipes scenario run - Preview a validated scenario plan without creating a task or running a runner.
-
-Usage:
-  agentplane recipes scenario run <recipe:scenario>
 "
 `;
 

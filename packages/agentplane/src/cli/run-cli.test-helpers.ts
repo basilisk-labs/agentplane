@@ -511,7 +511,7 @@ export async function createRecipeArchive(opts?: {
           owner: "CODER",
           priority: "med",
           tags: ["code", "recipes"],
-          verify: ["bunx vitest run packages/agentplane/src/cli/run-cli.scenario.test.ts"],
+          verify: ["bunx vitest run packages/agentplane/src/commands/recipes.scenario.test.ts"],
           doc: {
             summary: "Recipe-backed task execution.",
             scope: "Run the scenario without task materialization heuristics.",
