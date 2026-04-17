@@ -20,6 +20,10 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [branch status](#branch-status)
   - [cleanup](#cleanup)
   - [cleanup merged](#cleanup-merged)
+- Codex
+  - [codex](#codex)
+  - [codex plugin](#codex-plugin)
+  - [codex plugin install](#codex-plugin-install)
 - Config
   - [config set](#config-set)
   - [config show](#config-show)
@@ -512,6 +516,62 @@ agentplane cleanup merged --fetch
 ```
 
 - Refresh origin before evaluating cleanup candidates.
+
+## Codex
+
+### codex
+
+Codex integration commands.
+
+Usage:
+
+```text
+agentplane codex <subcommand> [options]
+```
+
+### codex plugin
+
+Install and inspect bundled Codex plugin integrations.
+
+Usage:
+
+```text
+agentplane codex plugin <subcommand> [options]
+```
+
+### codex plugin install
+
+Install the bundled AgentPlane plugin into a local Codex marketplace.
+
+Usage:
+
+```text
+agentplane codex plugin install [options]
+```
+
+Options:
+
+- `--scope <user|repo>`: Install to the user home marketplace or the current repository marketplace. (choices=user|repo, default=user)
+
+Notes:
+
+- User scope writes \`~/plugins/agentplane\` plus \`~/.agents/plugins/marketplace.json\` by default.
+- Repo scope writes \`&lt;repo&gt;/plugins/agentplane\` plus \`&lt;repo&gt;/.agents/plugins/marketplace.json\`.
+- OpenAI's public self-serve Plugin Directory is not available yet; local marketplaces are the supported route today.
+
+Examples:
+
+```sh
+agentplane codex plugin install
+```
+
+- Install AgentPlane into the user-local Codex marketplace under ~/.agents/plugins.
+
+```sh
+agentplane codex plugin install --scope repo
+```
+
+- Install AgentPlane into the current repository marketplace for local testing.
 
 ## Config
 
