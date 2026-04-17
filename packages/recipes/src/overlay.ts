@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 
 import { invalidFieldMessage, isRecord } from "./internal-utils.js";
 import type {
-  CompiledRecipeAssetEntry,
   CompiledRecipeAssetRegistry,
   CompiledOverlayBundle,
   OverlaySurface,
@@ -109,7 +108,9 @@ export function validateCompiledOverlayBundle(raw: unknown): CompiledOverlayBund
   if (!Array.isArray(bundle.active)) {
     throw new Error(invalidFieldMessage("overlay bundle.active", "array"));
   }
-  bundle.active.forEach((entry, index) => validateCompiledOverlayBundleActive(entry, index));
+  for (const [index, entry] of bundle.active.entries()) {
+    validateCompiledOverlayBundleActive(entry, index);
+  }
 
   const surfaces = requireRecord(bundle.surfaces, "overlay bundle.surfaces");
   for (const surface of ALL_OVERLAY_SURFACES) {
@@ -117,13 +118,17 @@ export function validateCompiledOverlayBundle(raw: unknown): CompiledOverlayBund
     if (!Array.isArray(fragments)) {
       throw new Error(invalidFieldMessage(`overlay bundle.surfaces.${surface}`, "array"));
     }
-    fragments.forEach((entry, index) => validateCompiledOverlayFragment(entry, surface, index));
+    for (const [index, entry] of fragments.entries()) {
+      validateCompiledOverlayFragment(entry, surface, index);
+    }
   }
 
   if (!Array.isArray(bundle.validators)) {
     throw new Error(invalidFieldMessage("overlay bundle.validators", "array"));
   }
-  bundle.validators.forEach((entry, index) => validateCompiledOverlayValidator(entry, index));
+  for (const [index, entry] of bundle.validators.entries()) {
+    validateCompiledOverlayValidator(entry, index);
+  }
   if (!isRecord(bundle.templates)) {
     throw new Error(invalidFieldMessage("overlay bundle.templates", "object"));
   }
@@ -136,7 +141,9 @@ export function validateCompiledOverlayBundle(raw: unknown): CompiledOverlayBund
   if (!Array.isArray(bundle.trace)) {
     throw new Error(invalidFieldMessage("overlay bundle.trace", "array"));
   }
-  bundle.trace.forEach((entry, index) => validateCompiledOverlayTraceEntry(entry, index));
+  for (const [index, entry] of bundle.trace.entries()) {
+    validateCompiledOverlayTraceEntry(entry, index);
+  }
   return bundle as CompiledOverlayBundle;
 }
 
@@ -170,7 +177,9 @@ export function validateCompiledRecipeAssetRegistry(raw: unknown): CompiledRecip
   if (!Array.isArray(registry.entries)) {
     throw new Error(invalidFieldMessage("recipe asset registry.entries", "array"));
   }
-  registry.entries.forEach((entry, index) => validateCompiledRecipeAssetEntry(entry, index));
+  for (const [index, entry] of registry.entries.entries()) {
+    validateCompiledRecipeAssetEntry(entry, index);
+  }
   return registry as CompiledRecipeAssetRegistry;
 }
 

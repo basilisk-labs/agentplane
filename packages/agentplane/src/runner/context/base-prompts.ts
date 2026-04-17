@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { matchOverlayWhen, type CompiledOverlayBundle } from "@agentplaneorg/recipes";
+import { matchOverlayWhen } from "@agentplaneorg/recipes";
 
 import { loadAgentTemplates, loadPolicyGatewayTemplate } from "../../agents/agents-template.js";
 import { fileExists } from "../../cli/fs-utils.js";
@@ -113,9 +113,9 @@ async function collectOverlayPromptBlocks(opts: {
   task?: RunnerTaskContext;
   command?: string;
 }): Promise<RunnerPromptBlock[]> {
-  const bundle = (await readProjectOverlayBundle({
+  const bundle = await readProjectOverlayBundle({
     agentplaneDir: path.join(opts.git_root, ".agentplane"),
-  })) as CompiledOverlayBundle | null;
+  });
   if (!bundle) return [];
   const repoTypes = await detectRepoTypes(opts.git_root);
   const tags = Array.isArray(opts.task?.data.tags)
