@@ -17,6 +17,7 @@ import {
   runnerAdapterSuccessResult,
   type RunnerAdapter,
 } from "./shared.js";
+import { buildInvocationEventData, buildRunnerExecutionArtifacts, durationMs } from "./runtime-shared.js";
 import {
   exitCodeForSignal,
   runSupervisedProcess,
@@ -62,29 +63,6 @@ function byteLength(text: string | null | undefined): number {
   return Buffer.byteLength(text ?? "", "utf8");
 }
 
-function durationMs(startedAt: string, endedAt: string): number | undefined {
-  const started = Date.parse(startedAt);
-  const ended = Date.parse(endedAt);
-  if (Number.isNaN(started) || Number.isNaN(ended)) return undefined;
-  return Math.max(0, ended - started);
-}
-
-function buildInvocationEventData(invocation: RunnerInvocation): Record<string, unknown> {
-  return {
-    executable: invocation.argv[0] ?? null,
-    argv_count: invocation.argv.length,
-    cwd: invocation.run_dir,
-    env_keys: Object.keys(invocation.env).toSorted(),
-    trace_policy: invocation.trace_policy,
-    timeout_policy: invocation.timeout_policy,
-    has_bootstrap_path:
-      typeof invocation.bootstrap_path === "string" && invocation.bootstrap_path.trim().length > 0,
-    has_output_last_message_path:
-      typeof invocation.output_last_message_path === "string" &&
-      invocation.output_last_message_path.trim().length > 0,
-  };
-}
-
 async function readOptionalText(filePath?: string | null): Promise<string | null> {
   if (!filePath?.trim()) return null;
   try {
@@ -103,20 +81,7 @@ function buildCodexArtifacts(opts: {
   source_manifest_path?: string | null;
   invalid_manifest_path?: string | null;
 }): NonNullable<RunnerResult["artifacts"]> {
-  return (
-    runnerArtifactsFromSpecs([
-      { path: opts.invocation.bundle_path, label: "bundle" },
-      { path: opts.invocation.bootstrap_path, label: "bootstrap" },
-      { path: opts.trace_artifact_path, label: "raw-trace" },
-      { path: opts.trace_archive_path, label: "raw-trace-gzip" },
-      { path: opts.stderr_artifact_path, label: "stderr-log" },
-      { path: opts.stderr_archive_path, label: "stderr-log-gzip" },
-      { path: opts.source_manifest_path, label: "source-result-manifest" },
-      { path: opts.invocation.output_last_message_path, label: "assistant-last-message" },
-      { path: opts.invalid_manifest_path, label: "invalid-result-manifest" },
-      { path: opts.invocation.result_path, label: "result-manifest" },
-    ]) ?? []
-  );
+  return buildRunnerExecutionArtifacts({ ...opts, include_output_last_message: true });
 }
 
 function assertCodexBundle(bundle: RunnerContextBundle): void {

@@ -248,13 +248,16 @@ describe("collectRunnerBasePrompts", () => {
         {
           schema_version: 1,
           kind: "overlay_bundle",
-          active: ["viewer"],
+          active: [{ id: "viewer", version: "1.0.0", name: "Viewer", summary: "Viewer overlay" }],
           surfaces: {
             planning: [
               {
                 recipe_id: "viewer",
                 recipe_name: "Viewer",
+                recipe_version: "1.0.0",
+                surface: "planning",
                 id: "task-run",
+                file: "prompts/task-run.md",
                 source: "recipes/viewer/prompts/task-run.md",
                 order: 0,
                 strength: "required",
@@ -269,7 +272,10 @@ describe("collectRunnerBasePrompts", () => {
               {
                 recipe_id: "viewer",
                 recipe_name: "Viewer",
+                recipe_version: "1.0.0",
+                surface: "planning",
                 id: "scenario-run",
+                file: "prompts/scenario-run.md",
                 source: "recipes/viewer/prompts/scenario-run.md",
                 order: 1,
                 strength: "required",
