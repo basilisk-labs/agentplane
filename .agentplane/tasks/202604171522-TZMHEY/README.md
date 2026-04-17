@@ -1,10 +1,11 @@
 ---
 id: "202604171522-TZMHEY"
 title: "Refactor command catalog dispatch metadata into needs union"
-status: "DOING"
+result_summary: "Merged via PR #420."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-17T20:05:03.512Z"
   updated_by: "CODER"
   note: "Local verification passed after rebase to main: targeted cli-core lint/tests and pre-push gates are green; branch pushed to origin."
-commit: null
+commit:
+  hash: "fcf136eb812737bb8df2d1414c5b1cc6f02a81e9"
+  message: "cli/refactor: Refactor command catalog dispatch metadata into needs union (TZMHEY) (#420)"
 comments:
   -
     author: "CODER"
     body: "Start: replace repeated command-catalog dispatch booleans with a single needs union and keep dispatch behavior unchanged."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #420 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local verification passed after rebase to main: targeted cli-core lint/tests and pre-push gates are green; branch pushed to origin."
+  -
+    type: "status"
+    at: "2026-04-17T20:17:15.189Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #420 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T20:05:03.554Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T20:17:15.195Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace repeated needsProject/needsLoadedConfig/needsTaskContext metadata in the CLI command catalog with a single declared needs union while preserving dispatch behavior and help/lookup contracts."
 sections:
   Summary: |-
