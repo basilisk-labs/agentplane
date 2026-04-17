@@ -1,10 +1,11 @@
 ---
 id: "202604171100-E5MZBW"
 title: "Release patch v0.3.13"
-status: "DOING"
+result_summary: "Merged via PR #376."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-17T11:03:50.483Z"
   updated_by: "INTEGRATOR"
   note: "Release candidate prepared locally for v0.3.13: release notes validated, version bump committed on the candidate branch, and the branch_pr route intentionally deferred tag creation and publication until merge to main."
-commit: null
+commit:
+  hash: "768f43895b3f167604d18c7717a7d63492486bc7"
+  message: "release: Release patch v0.3.13 (E5MZBW) (#376)"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: prepare a patch release candidate for v0.3.13 from current main, generate notes and version bump via the branch_pr release flow, and stop only if gates prove the current diff is not patch-safe."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #376 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "Release candidate prepared locally for v0.3.13: release notes validated, version bump committed on the candidate branch, and the branch_pr route intentionally deferred tag creation and publication until merge to main."
+  -
+    type: "status"
+    at: "2026-04-17T11:08:47.377Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #376 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T11:03:50.486Z"
+doc_updated_at: "2026-04-17T11:08:47.383Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare and publish patch release v0.3.13 from current main via branch_pr release-candidate flow, covering post-v0.3.12 changes while preserving patch semantics during the current refactor phase."
 sections:
