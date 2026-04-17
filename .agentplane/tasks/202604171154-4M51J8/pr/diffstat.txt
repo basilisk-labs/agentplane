@@ -1,0 +1,6 @@
+ .../src/runner/context/base-prompts.test.ts        | 98 ++++++++++++++++++++++
+ .../agentplane/src/runner/context/base-prompts.ts  |  4 +
+ .../agentplane/src/runner/usecases/task-run.ts     |  2 +
+ packages/recipes/src/overlay.test.ts               | 58 +++++++++++++
+ packages/recipes/src/overlay.ts                    | 35 +++++---
+ 5 files changed, 186 insertions(+), 11 deletions(-)

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604171154-4M51J8/overlay-when-matching",
+  "created_at": "2026-04-17T12:15:12.910Z",
+  "head_sha": "7f81293f116f846ca967f26b77129c43c6cbc30b",
+  "last_verified_at": "2026-04-17T12:23:30.298Z",
+  "last_verified_sha": "0117987c40f2490a7c584f02d09be61b61c1398b",
+  "schema_version": 1,
+  "task_id": "202604171154-4M51J8",
+  "updated_at": "2026-04-17T12:37:15.433Z",
+  "verify": {
+    "status": "pass"
+  }
+}
