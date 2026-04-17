@@ -1,0 +1,15 @@
+ eslint.config.cjs                                  |  32 ++
+ packages/agentplane/src/cli/run-cli.ts             |   2 +-
+ packages/agentplane/src/commands/task/list.run.ts  |  20 +-
+ .../agentplane/src/commands/task/new.command.ts    |  19 +-
+ packages/agentplane/src/commands/task/new.ts       |   4 +-
+ .../runner/usecases/scenario-materialize-task.ts   |   4 +-
+ .../src/runner/usecases/task-run-inspect.ts        |   4 +-
+ .../runner/usecases/task-run-lifecycle-shared.ts   |   4 +-
+ .../agentplane/src/runner/usecases/task-run.ts     |   4 +-
+ .../execution-context.ts}                          |  78 ++---
+ .../usecases/context/resolve-context.unit.test.ts  | 329 ---------------------
+ .../src/usecases/task/task-list-usecase.ts         |  26 --
+ .../usecases/task/task-list-usecase.unit.test.ts   |  52 ----
+ .../src/usecases/task/task-new-usecase.ts          |  27 --
+ 14 files changed, 106 insertions(+), 499 deletions(-)

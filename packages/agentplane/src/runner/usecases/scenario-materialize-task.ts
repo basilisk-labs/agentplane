@@ -17,7 +17,7 @@ import {
 } from "../../runtime/task-intake/index.js";
 import { buildTaskDocState } from "../../shared/task-doc-state.js";
 import { dedupeStrings } from "../../shared/strings.js";
-import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
+import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import { createRunnerRunId } from "../run-id.js";
 import type { RunnerRecipeContext } from "../types.js";
 import {
@@ -169,7 +169,7 @@ export async function materializeRecipeScenarioTask(opts: {
   const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const executionContext = await makeReadOnlyUsecaseContext(command);
+  const executionContext = await makeReadOnlyExecutionContext(command);
   if (!executionContext.backend.task_backend.generateTaskId) {
     throw new Error("Backend does not support task materialization: missing generateTaskId()");
   }

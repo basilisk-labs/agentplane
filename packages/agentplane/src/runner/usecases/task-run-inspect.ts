@@ -1,6 +1,6 @@
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
-import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
+import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import { resolveLatestRunnerRunId, RunnerRunRepository } from "../run-repository.js";
 import { resolveTaskRunnerPaths, type TaskRunnerPaths } from "../task-run-paths.js";
 import type { RunnerContextBundle, RunnerEvent, RunnerRunState } from "../types.js";
@@ -27,7 +27,7 @@ export async function loadTaskRunnerInspection(opts: {
   const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const executionContext = await makeReadOnlyUsecaseContext(command);
+  const executionContext = await makeReadOnlyExecutionContext(command);
   const task = await executionContext.backend.task_backend.getTask(opts.task_id);
   if (!task) {
     throw new CliError({

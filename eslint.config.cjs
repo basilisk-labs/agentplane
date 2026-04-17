@@ -133,6 +133,38 @@ module.exports = [
     },
   },
 
+  {
+    files: [
+      "packages/core/src/**/*.{ts,tsx}",
+      "packages/agentplane/src/shared/**/*.{ts,tsx}",
+      "packages/agentplane/src/commands/**/*.{ts,tsx}",
+    ],
+    rules: {
+      "import/no-restricted-paths": [
+        "error",
+        {
+          zones: [
+            {
+              target: "./packages/core/src",
+              from: "./packages/agentplane/src",
+              message: "Core package must stay independent from agentplane package internals.",
+            },
+            {
+              target: "./packages/agentplane/src/shared",
+              from: "./packages/agentplane/src/commands",
+              message: "Shared helpers must not depend on command-layer modules.",
+            },
+            {
+              target: "./packages/agentplane/src/commands",
+              from: "./packages/agentplane/src/usecases",
+              message: "Commands must not depend on usecase-layer modules.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   // Policy code must be pure: facts are injected via contexts.
   {
     files: ["packages/agentplane/src/policy/**/*.{ts,tsx}"],

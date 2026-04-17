@@ -3,7 +3,7 @@ import path from "node:path";
 import type { TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
-import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
+import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import { createRunnerAdapter } from "../adapters/index.js";
 import { runnerAdapterCancelledResult } from "../adapters/shared.js";
 import { evolveRunnerRunState } from "../artifacts.js";
@@ -212,7 +212,7 @@ export async function loadExistingRunnerExecution(opts: {
   const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const executionContext = await makeReadOnlyUsecaseContext(command);
+  const executionContext = await makeReadOnlyExecutionContext(command);
   if (opts.require_task_doing !== false) {
     assertCurrentTaskDoing(
       opts.task_id,

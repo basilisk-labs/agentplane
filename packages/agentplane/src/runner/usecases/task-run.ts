@@ -8,7 +8,7 @@ import {
   type ExplainBehaviorInput,
 } from "../../runtime/explain/index.js";
 import { buildFrameworkProtocolSurface } from "../../runtime/protocol/index.js";
-import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
+import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 
 import type { RunnerAdapter } from "../adapters/shared.js";
 import { evolveRunnerRunState } from "../artifacts.js";
@@ -223,7 +223,7 @@ export async function prepareTaskRunnerExecution(opts: {
   const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const executionContext = await makeReadOnlyUsecaseContext(command);
+  const executionContext = await makeReadOnlyExecutionContext(command);
   const target = opts.target ?? { kind: "task", task_id: opts.task_id };
   void executionContext.policy.evaluate({
     action: target.kind === "recipe_scenario" ? "scenario_execute" : "task_run",
