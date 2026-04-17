@@ -1,10 +1,11 @@
 ---
 id: "202604171910-FN9AQ6"
 title: "Unblock refactor pushes by formatting global pre-push offenders"
-status: "DOING"
+result_summary: "Merged via PR #416."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-17T19:46:17.218Z"
   updated_by: "CODER"
   note: "Local verification passed: format, lint, and full fast pre-push gates are green; unblock branch pushed to origin."
-commit: null
+commit:
+  hash: "fb4bf6f3c538d174df177473de8ed0bb7ce84061"
+  message: "format/tooling: Unblock refactor pushes by formatting global pre-push offenders (FN9AQ6) (#416)"
 comments:
   -
     author: "CODER"
     body: "Start: format the current pre-push offenders only, keep the diff whitespace-only, and publish the unblock branch so the remaining refactor work can be pushed."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #416 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local verification passed: format, lint, and full fast pre-push gates are green; unblock branch pushed to origin."
+  -
+    type: "status"
+    at: "2026-04-17T19:47:24.769Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #416 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T19:46:17.229Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T19:47:24.774Z"
+doc_updated_by: "INTEGRATOR"
 description: "Format the repository files currently failing the shared pre-push formatter so the remaining refactor task branches can be pushed and merged without unrelated hook failures."
 sections:
   Summary: |-

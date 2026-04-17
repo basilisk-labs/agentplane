@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171910-FN9AQ6/format-unblock",
   "created_at": "2026-04-17T19:11:46.086Z",
-  "head_sha": "a999a5985725e65a47432d712245feeadc4b4d75",
+  "head_sha": "9d5b2396b038487a39467745875046ccc7e369cf",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "fb4bf6f3c538d174df177473de8ed0bb7ce84061",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T19:46:50Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171910-FN9AQ6",
-  "updated_at": "2026-04-17T19:40:07.297Z",
+  "updated_at": "2026-04-17T19:46:50Z",
   "verify": {
     "status": "skipped"
   }
