@@ -22,27 +22,28 @@ Bundle a Codex plugin install flow, manifest metadata, and a Codex skill so Agen
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-17T10:06:22.517Z
+- Updated: 2026-04-17T10:12:44.274Z
 - Branch: task/202604170838-73XAXT/codex-plugin-install
-- Head: 76f15ff54931
+- Head: fe5c9371f8cd
 
 ```text
+ docs/user/cli-reference.generated.mdx              |  60 +++++
  .../assets/codex-plugin/assets/header.png          | Bin 0 -> 25895 bytes
  .../agentplane/assets/codex-plugin/assets/icon.svg |   1 +
  .../agentplane/assets/codex-plugin/assets/logo.svg |   1 +
  .../assets/codex-plugin/skills/agentplane/SKILL.md |  35 +++
  .../run-cli.core.help-snap.test.ts.snap            |  15 ++
- .../src/cli/run-cli.core.codex-plugin.test.ts      |  83 +++++++
+ .../src/cli/run-cli.core.codex-plugin.test.ts      |  75 ++++++
  .../src/cli/run-cli.core.group-root-usage.test.ts  |  12 +
  .../src/cli/run-cli.core.help-contract.test.ts     |   3 +
  .../src/cli/run-cli.core.help-snap.test.ts         |  11 +
  .../src/cli/run-cli/command-catalog.test.ts        |   2 +
- .../src/cli/run-cli/command-catalog/core.ts        |  24 ++
+ .../src/cli/run-cli/command-catalog/core.ts        |  20 ++
  .../agentplane/src/cli/run-cli/commands/codex.ts   | 134 +++++++++++
  .../agentplane/src/cli/run-cli/commands/core.ts    |   8 +
- .../src/commands/codex/plugin-install.test.ts      | 158 ++++++++++++
- .../src/commands/codex/plugin-install.ts           | 266 +++++++++++++++++++++
- 15 files changed, 753 insertions(+)
+ .../src/commands/codex/plugin-install.test.ts      | 158 +++++++++++++
+ .../src/commands/codex/plugin-install.ts           | 262 +++++++++++++++++++++
+ 16 files changed, 797 insertions(+)
 ```
 
 </details>
