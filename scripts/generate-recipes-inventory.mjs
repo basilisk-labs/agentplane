@@ -1,9 +1,9 @@
-import { execFileSync, spawn } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
-import { fileURLToPath } from "node:url";
+import { isDirectRun, resolveOutPathArg, runBunx } from "./lib/script-runtime.mjs";
 
 const ROOT = process.cwd();
 const SUPPORTED_RUN_PROFILE_FIELDS = [
@@ -89,21 +89,6 @@ function pickRunProfile(value) {
   return output;
 }
 
-function runBunx(args) {
-  return new Promise((resolve, reject) => {
-    const child = spawn("bunx", args, {
-      cwd: ROOT,
-      stdio: "inherit",
-      env: process.env,
-    });
-    child.on("error", reject);
-    child.on("exit", (code) => {
-      if (code === 0) return resolve();
-      reject(new Error(`bunx ${args.join(" ")} failed with exit code ${code ?? "unknown"}`));
-    });
-  });
-}
-
 async function readJson(filePath) {
   return JSON.parse(await readFile(filePath, "utf8"));
 }
@@ -160,19 +145,14 @@ async function buildInventory(cwd = ROOT, options = {}) {
 
 async function main(cwd = ROOT) {
   const { outputPath: defaultOutputPath } = resolveInventoryPaths(cwd);
-  const outputPath = process.argv.includes("--out")
-    ? path.resolve(cwd, process.argv[process.argv.indexOf("--out") + 1] ?? "")
-    : defaultOutputPath;
+  const outputPath = resolveOutPathArg(process.argv.slice(2), cwd, defaultOutputPath);
   const payload = await buildInventory(cwd);
   await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
-  await runBunx(["prettier", "--write", outputPath]);
+  await runBunx(["prettier", "--write", outputPath], { cwd });
   process.stdout.write(`generated ${path.relative(cwd, outputPath)}\n`);
 }
 
-const isDirectRun =
-  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
-
-if (isDirectRun) {
+if (isDirectRun(import.meta.url)) {
   main().catch((error) => {
     process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
     process.exitCode = 1;
