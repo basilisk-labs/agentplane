@@ -36,6 +36,7 @@ describe("check-npm-version-availability script", () => {
     const root = await makeTempRoot();
     await mkdir(path.join(root, "packages", "core"), { recursive: true });
     await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
+    await mkdir(path.join(root, "packages", "recipes"), { recursive: true });
     await writeFile(
       path.join(root, "packages", "core", "package.json"),
       JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.7" }, null, 2) + "\n",
@@ -44,10 +45,22 @@ describe("check-npm-version-availability script", () => {
     await writeFile(
       path.join(root, "packages", "agentplane", "package.json"),
       JSON.stringify(
-        { name: "agentplane", version: "0.2.7", dependencies: { "@agentplaneorg/core": "0.2.7" } },
+        {
+          name: "agentplane",
+          version: "0.2.7",
+          dependencies: {
+            "@agentplaneorg/core": "0.2.7",
+            "@agentplaneorg/recipes": "0.2.7",
+          },
+        },
         null,
         2,
       ) + "\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "packages", "recipes", "package.json"),
+      JSON.stringify({ name: "@agentplaneorg/recipes", version: "0.2.7" }, null, 2) + "\n",
       "utf8",
     );
 
