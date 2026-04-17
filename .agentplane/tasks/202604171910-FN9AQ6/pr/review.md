@@ -45,9 +45,9 @@ Format the repository files currently failing the shared pre-push formatter so t
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-17T19:15:07.497Z
+- Updated: 2026-04-17T19:28:02.378Z
 - Branch: task/202604171910-FN9AQ6/format-unblock
-- Head: 8d58f05e1f39
+- Head: addf69db9042
 
 ```text
  .agentplane/policy/incidents.md                       |  1 +
@@ -58,14 +58,15 @@ Format the repository files currently failing the shared pre-push formatter so t
  .../src/commands/pr/internal/sync-update-step.ts      |  5 ++++-
  packages/agentplane/src/commands/pr/internal/sync.ts  | 13 +++++++------
  .../write-release-ready-manifest-script.test.ts       | 19 ++++++++++++++++---
- packages/agentplane/src/runner/adapters/codex.ts      |  6 +++++-
- packages/agentplane/src/runner/adapters/custom.ts     |  6 +++++-
- .../src/runner/context/base-prompt-sources.ts         |  5 +----
+ packages/agentplane/src/runner/adapters/codex.ts      |  7 +++++--
+ packages/agentplane/src/runner/adapters/custom.ts     |  7 +++++--
+ .../src/runner/context/base-prompt-sources.ts         |  8 ++------
+ .../agentplane/src/runner/context/base-prompts.ts     | 10 +++++-----
  .../src/runner/context/prompt-block-shared.ts         |  5 +----
  .../src/runner/context/recipe-prompt-blocks.ts        |  5 +----
  packages/agentplane/src/runtime/execution-context.ts  | 10 ++--------
  scripts/lib/script-runtime.mjs                        |  4 +++-
- 15 files changed, 57 insertions(+), 41 deletions(-)
+ 16 files changed, 63 insertions(+), 50 deletions(-)
 ```
 
 </details>
