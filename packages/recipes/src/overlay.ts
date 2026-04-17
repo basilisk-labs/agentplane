@@ -45,20 +45,28 @@ export function matchOverlayWhen(
   },
 ): boolean {
   if (!when) return true;
-  if (when.task_kinds && when.task_kinds.length > 0) {
-    if (!runtime.task_kind || !when.task_kinds.includes(runtime.task_kind as never)) return false;
-  }
-  if (when.commands && when.commands.length > 0) {
-    if (!runtime.command || !when.commands.includes(runtime.command)) return false;
-  }
-  if (when.tags_any && when.tags_any.length > 0) {
-    const tags = new Set(runtime.tags);
-    if (!when.tags_any.some((tag) => tags.has(tag))) return false;
-  }
-  if (when.repo_types && when.repo_types.length > 0) {
-    const repoTypes = new Set(runtime.repo_types);
-    if (!when.repo_types.some((repoType) => repoTypes.has(repoType))) return false;
-  }
+  const matchesTaskKinds =
+    !when.task_kinds ||
+    when.task_kinds.length === 0 ||
+    Boolean(runtime.task_kind && when.task_kinds.includes(runtime.task_kind as never));
+  if (!matchesTaskKinds) return false;
+
+  const matchesCommands =
+    !when.commands || when.commands.length === 0 || Boolean(runtime.command && when.commands.includes(runtime.command));
+  if (!matchesCommands) return false;
+
+  const tags = new Set(runtime.tags);
+  const matchesTags =
+    !when.tags_any || when.tags_any.length === 0 || when.tags_any.some((tag) => tags.has(tag));
+  if (!matchesTags) return false;
+
+  const repoTypes = new Set(runtime.repo_types);
+  const matchesRepoTypes =
+    !when.repo_types ||
+    when.repo_types.length === 0 ||
+    when.repo_types.some((repoType) => repoTypes.has(repoType));
+  if (!matchesRepoTypes) return false;
+
   return true;
 }
 
