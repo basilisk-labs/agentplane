@@ -1,0 +1,1 @@
+docs/recipes: Refresh recipes tests and documentation for vendor flow (NRV3V2)

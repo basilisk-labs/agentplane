@@ -12,8 +12,10 @@ async function createRecipeProject(opts?: {
 }): Promise<{ project: ResolvedProject; tempDir: string }> {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-resolver-"));
   const agentplaneDir = path.join(tempDir, ".agentplane");
-  const recipeDir = path.join(agentplaneDir, "recipes", "viewer");
+  const recipesDir = path.join(agentplaneDir, "recipes");
+  const recipeDir = path.join(recipesDir, "packages", "viewer");
   const scenariosDir = path.join(recipeDir, "scenarios");
+  const registryPath = path.join(recipesDir, "registry.json");
 
   await mkdir(path.join(tempDir, ".git"), { recursive: true });
   await mkdir(scenariosDir, { recursive: true });
@@ -34,7 +36,7 @@ async function createRecipeProject(opts?: {
             display_name: "Recipe Agent",
             role: "executor",
             summary: "Recipe agent",
-            file: "agents/recipe.json",
+            file: "agents/recipe.md",
           },
         ],
         scenarios: [
@@ -88,6 +90,33 @@ async function createRecipeProject(opts?: {
         inputs: [],
         outputs: [],
         steps: [],
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+
+  await writeFile(
+    registryPath,
+    JSON.stringify(
+      {
+        schema_version: 1,
+        updated_at: "2026-04-17T00:00:00.000Z",
+        recipes: [
+          {
+            id: "viewer",
+            version: "1.0.0",
+            path: "packages/viewer",
+            active: true,
+            materialization: "copy",
+            source_ref: "viewer@1.0.0",
+            source_sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            vendored_sha256: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            installed_at: "2026-04-17T00:00:00.000Z",
+            tags: [],
+          },
+        ],
       },
       null,
       2,

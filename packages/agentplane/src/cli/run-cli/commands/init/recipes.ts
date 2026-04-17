@@ -1,42 +1,57 @@
-import { cmdRecipeEnableParsed, cmdRecipeInstall } from "../../../../commands/recipes.js";
-import { infoMessage } from "../../../output.js";
-import { getBundledRecipeSourcePath, listBundledRecipes } from "../../../recipes-bundled.js";
+import {
+  cmdRecipeAddParsed,
+  readInstalledRecipesFile,
+  resolveInstalledRecipesPath,
+} from "../../../../commands/recipes.js";
 import { CliError } from "../../../../shared/errors.js";
 
-export async function maybeInstallBundledRecipes(opts: {
+export type CachedRecipeInfo = {
+  id: string;
+  summary: string;
+  version: string;
+};
+
+export async function listCachedRecipes(): Promise<CachedRecipeInfo[]> {
+  const cached = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+  return cached.recipes.map((recipe) => ({
+    id: recipe.id,
+    summary: recipe.manifest.summary,
+    version: recipe.version,
+  }));
+}
+
+export function renderCachedRecipesHint(recipes: CachedRecipeInfo[]): string {
+  if (recipes.length === 0) {
+    return "Cached recipes: none. Use `agentplane recipes install <id>` before selecting recipes during init.";
+  }
+  return `Cached recipes: ${recipes.map((entry) => entry.id).join(", ")}`;
+}
+
+export async function validateCachedRecipesSelection(recipes: string[]): Promise<void> {
+  if (recipes.length === 0) return;
+  const cached = await listCachedRecipes();
+  const available = new Set(cached.map((entry) => entry.id));
+  const missing = recipes.filter((recipe) => !available.has(recipe));
+  if (missing.length === 0) return;
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message: `Unknown cached recipe id(s): ${missing.join(", ")}. ${renderCachedRecipesHint(cached)}`,
+  });
+}
+
+export async function maybeAddCachedRecipes(opts: {
   recipes: string[];
   cwd: string;
   rootOverride?: string;
 }): Promise<void> {
   if (opts.recipes.length === 0) return;
 
-  if (listBundledRecipes().length === 0) {
-    process.stdout.write(`${infoMessage("bundled recipes are empty; nothing to install")}\n`);
-    return;
-  }
-
   for (const recipeId of opts.recipes) {
-    const sourcePath = getBundledRecipeSourcePath(recipeId);
-    if (!sourcePath) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: `Bundled recipe ${recipeId} is missing source_path in bundled catalog`,
-      });
-    }
-    await cmdRecipeInstall({
+    await cmdRecipeAddParsed({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
-      source: { type: "path", value: sourcePath },
-      index: undefined,
-      refresh: false,
-      onConflict: "overwrite",
-      yes: true,
-    });
-    await cmdRecipeEnableParsed({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      id: recipeId,
+      recipeRef: recipeId,
     });
   }
 }

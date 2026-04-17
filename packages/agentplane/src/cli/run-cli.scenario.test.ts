@@ -33,13 +33,13 @@ afterEach(() => {
   restoreStdIO = null;
 });
 
-describe("runCli scenario", () => {
+describe("runCli recipes scenario", () => {
   it("scenario list and info use resolver-backed manifest descriptors", async () => {
     const { projectDir: root, manifestId } = await createInstalledRecipeProject();
 
     const ioList = captureStdIO();
     try {
-      const code = await runCli(["scenario", "list", "--root", root]);
+      const code = await runCli(["recipes", "scenario", "list", "--root", root]);
       expect(code).toBe(0);
       expect(ioList.stdout).toContain(`${manifestId}:RECIPE_SCENARIO`);
       expect(ioList.stdout).toContain("[mode=analysis] [compatible]");
@@ -50,6 +50,7 @@ describe("runCli scenario", () => {
     const ioInfo = captureStdIO();
     try {
       const code = await runCli([
+        "recipes",
         "scenario",
         "info",
         `${manifestId}:RECIPE_SCENARIO`,
@@ -78,6 +79,7 @@ describe("runCli scenario", () => {
     const io = captureStdIO();
     try {
       const code = await runCli([
+        "recipes",
         "scenario",
         "run",
         `${manifestId}:RECIPE_SCENARIO`,
@@ -105,6 +107,7 @@ describe("runCli scenario", () => {
     const io = captureStdIO();
     try {
       const code = await runCli([
+        "recipes",
         "scenario",
         "info",
         `${manifestId}:RECIPE_SCENARIO`,
@@ -124,6 +127,7 @@ describe("runCli scenario", () => {
     const io = captureStdIO();
     try {
       const code = await runCli([
+        "recipes",
         "scenario",
         "run",
         `${manifestId}:RECIPE_SCENARIO`,
@@ -135,7 +139,7 @@ describe("runCli scenario", () => {
       expect(io.stdout).toContain("Selection reasons:");
       expect(io.stdout).toContain("Status: preview only; no task created and no runner executed.");
       expect(io.stdout).toContain(
-        `Next: use \`agentplane scenario execute ${manifestId}:RECIPE_SCENARIO\` to materialize and run this scenario.`,
+        `Next: use \`agentplane recipes scenario execute ${manifestId}:RECIPE_SCENARIO\` to materialize and run this scenario.`,
       );
     } finally {
       io.restore();
@@ -182,6 +186,7 @@ describe("runCli scenario", () => {
     try {
       process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
       const code = await runCli([
+        "recipes",
         "scenario",
         "execute",
         `${manifestId}:RECIPE_SCENARIO`,
@@ -269,7 +274,7 @@ describe("runCli scenario", () => {
       );
       expect(
         bundle.base_prompts?.find((prompt) => prompt.id === "recipe.agent.RECIPE_AGENT")?.source,
-      ).toBe(`.agentplane/recipes/${manifestId}/agents/recipe.json`);
+      ).toBe(`.agentplane/recipes/packages/${manifestId}/agents/recipe.md`);
       expect(bundle.framework_explain).toMatchObject({
         schema_version: 1,
         runtime: {
@@ -374,6 +379,7 @@ describe("runCli scenario", () => {
     try {
       process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
       const code = await runCli([
+        "recipes",
         "scenario",
         "execute",
         `${manifestId}:RECIPE_SCENARIO`,
@@ -421,7 +427,14 @@ describe("runCli scenario", () => {
   it("scenario execute fails before spawn when adapter capabilities cannot enforce declared policy", async () => {
     const { projectDir: root, manifestId } = await createInstalledRecipeProject();
 
-    const manifestPath = path.join(root, ".agentplane", "recipes", manifestId, "manifest.json");
+    const manifestPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      "packages",
+      manifestId,
+      "manifest.json",
+    );
     const manifestData = JSON.parse(await readFile(manifestPath, "utf8")) as {
       scenarios?: {
         id?: string;
@@ -442,6 +455,7 @@ describe("runCli scenario", () => {
     const io = captureStdIO();
     try {
       const code = await runCli([
+        "recipes",
         "scenario",
         "execute",
         `${manifestId}:RECIPE_SCENARIO`,
@@ -498,7 +512,14 @@ describe("runCli scenario", () => {
     await writeConfig(root, config);
     const { manifestId } = await installRecipeFixture({ projectDir: root });
 
-    const manifestPath = path.join(root, ".agentplane", "recipes", manifestId, "manifest.json");
+    const manifestPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      "packages",
+      manifestId,
+      "manifest.json",
+    );
     const manifestData = JSON.parse(await readFile(manifestPath, "utf8")) as {
       scenarios?: {
         id?: string;
@@ -518,6 +539,7 @@ describe("runCli scenario", () => {
     const io = captureStdIO();
     try {
       const code = await runCli([
+        "recipes",
         "scenario",
         "execute",
         `${manifestId}:RECIPE_SCENARIO`,
@@ -567,6 +589,7 @@ describe("runCli scenario", () => {
     try {
       process.env.PATH = `${fakeBinDir}${path.delimiter}${originalPath ?? ""}`;
       const code = await runCli([
+        "recipes",
         "scenario",
         "execute",
         `${manifestId}:RECIPE_SCENARIO`,
@@ -610,6 +633,7 @@ describe("runCli scenario", () => {
     const io = captureStdIO();
     try {
       const code = await runCli([
+        "recipes",
         "scenario",
         "run",
         `${manifestId}:RECIPE_SCENARIO`,
@@ -623,43 +647,43 @@ describe("runCli scenario", () => {
     }
   });
 
-  it("scenario rejects unknown subcommands", async () => {
+  it("recipes scenario rejects unknown subcommands", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const io = captureStdIO();
     try {
-      const code = await runCli(["scenario", "nope", "--root", root]);
+      const code = await runCli(["recipes", "scenario", "nope", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Unknown scenario subcommand");
+      expect(io.stderr).toContain("Unknown recipes scenario subcommand");
       expect(io.stderr).toContain("Usage:");
-      expect(io.stderr).toContain("agentplane scenario");
-      expect(io.stderr).toContain("agentplane help scenario --compact");
+      expect(io.stderr).toContain("agentplane recipes scenario");
+      expect(io.stderr).toContain("agentplane help recipes scenario --compact");
     } finally {
       io.restore();
     }
   });
 
-  it("scenario rejects missing subcommand and extra args", async () => {
+  it("recipes scenario rejects missing subcommand and extra args", async () => {
     const ioMissing = captureStdIO();
     try {
-      const code = await runCli(["scenario"]);
+      const code = await runCli(["recipes", "scenario"]);
       expect(code).toBe(2);
-      expect(ioMissing.stderr).toContain("Missing scenario subcommand");
+      expect(ioMissing.stderr).toContain("Missing recipes scenario subcommand");
       expect(ioMissing.stderr).toContain("Usage:");
-      expect(ioMissing.stderr).toContain("agentplane scenario");
-      expect(ioMissing.stderr).toContain("agentplane help scenario --compact");
+      expect(ioMissing.stderr).toContain("agentplane recipes scenario");
+      expect(ioMissing.stderr).toContain("agentplane help recipes scenario --compact");
     } finally {
       ioMissing.restore();
     }
 
     const ioExtra = captureStdIO();
     try {
-      const code = await runCli(["scenario", "list", "extra"]);
+      const code = await runCli(["recipes", "scenario", "list", "extra"]);
       expect(code).toBe(2);
       expect(ioExtra.stderr).toContain("Unexpected argument: extra");
       expect(ioExtra.stderr).toContain("Usage:");
-      expect(ioExtra.stderr).toContain("agentplane scenario list");
-      expect(ioExtra.stderr).toContain("agentplane help scenario list --compact");
+      expect(ioExtra.stderr).toContain("agentplane recipes scenario list");
+      expect(ioExtra.stderr).toContain("agentplane help recipes scenario list --compact");
     } finally {
       ioExtra.restore();
     }
@@ -670,24 +694,24 @@ describe("runCli scenario", () => {
     await writeDefaultConfig(root);
     const ioInfo = captureStdIO();
     try {
-      const code = await runCli(["scenario", "info", "--root", root]);
+      const code = await runCli(["recipes", "scenario", "info", "--root", root]);
       expect(code).toBe(2);
       expect(ioInfo.stderr).toContain("Missing required argument");
       expect(ioInfo.stderr).toContain("Usage:");
-      expect(ioInfo.stderr).toContain("agentplane scenario info");
-      expect(ioInfo.stderr).toContain("agentplane help scenario info --compact");
+      expect(ioInfo.stderr).toContain("agentplane recipes scenario info");
+      expect(ioInfo.stderr).toContain("agentplane help recipes scenario info --compact");
     } finally {
       ioInfo.restore();
     }
 
     const ioRun = captureStdIO();
     try {
-      const code = await runCli(["scenario", "run", "--root", root]);
+      const code = await runCli(["recipes", "scenario", "run", "--root", root]);
       expect(code).toBe(2);
       expect(ioRun.stderr).toContain("Missing required argument");
       expect(ioRun.stderr).toContain("Usage:");
-      expect(ioRun.stderr).toContain("agentplane scenario run");
-      expect(ioRun.stderr).toContain("agentplane help scenario run --compact");
+      expect(ioRun.stderr).toContain("agentplane recipes scenario run");
+      expect(ioRun.stderr).toContain("agentplane help recipes scenario run --compact");
     } finally {
       ioRun.restore();
     }

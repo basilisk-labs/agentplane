@@ -58,8 +58,7 @@ export type AgentplaneConfig = {
     };
   };
   recipes?: {
-    storage_default: "link" | "copy" | "global";
-    active?: string[];
+    storage_default: "link" | "copy";
   };
   execution: {
     profile: ExecutionProfile;

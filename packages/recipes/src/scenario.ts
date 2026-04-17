@@ -230,7 +230,6 @@ export async function collectRecipeScenarioDetails(
   recipeDir: string,
   manifest: RecipeManifest,
 ): Promise<RecipeScenarioDetail[]> {
-  if (manifest.kind !== "scenario_pack") return [];
   const manifestScenarios = manifest.scenarios ?? [];
   const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
   if (manifestScenarios.length > 0) {

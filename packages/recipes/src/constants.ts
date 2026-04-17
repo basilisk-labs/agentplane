@@ -1,13 +1,14 @@
 export const INSTALLED_RECIPES_NAME = "recipes.json";
 export const RECIPES_DIR_NAME = "recipes";
+export const PROJECT_RECIPES_REGISTRY_NAME = "registry.json";
 export const RECIPES_SCENARIOS_DIR_NAME = "scenarios";
 export const RECIPES_SCENARIOS_INDEX_NAME = "scenarios.json";
-export const RECIPE_INSTALL_META_NAME = ".install.json";
 export const RECIPE_RUNS_DIR_NAME = "runs";
 
 export const AGENTPLANE_HOME_ENV = "AGENTPLANE_HOME";
 
-export const GLOBAL_RECIPES_DIR_NAME = "recipes";
+export const GLOBAL_RECIPES_DIR_NAME = "recipes-store";
+export const PROJECT_RECIPES_PACKAGES_DIR_NAME = "packages";
 export const PROJECT_RECIPES_CACHE_DIR_NAME = "recipes-cache";
 
 export const RECIPES_REMOTE_INDEX_NAME = "recipes-index.json";

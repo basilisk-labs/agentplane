@@ -1,4 +1,4 @@
-export type RecipeKind = "project_overlay" | "scenario_pack";
+export type RecipeKind = "project_overlay";
 
 export type RecipeCompatibility = {
   min_agentplane_version?: string;
@@ -37,7 +37,6 @@ export type RecipeTaskTemplate = {
 export type RecipeSkillDefinition = {
   id: string;
   summary: string;
-  kind: string;
   file: string;
 };
 
@@ -168,24 +167,8 @@ export type ResolvedRecipeRunProfile = {
   writes_artifacts_to: string[];
 };
 
-export type ScenarioPackManifest = {
-  schema_version: "1" | "2";
-  kind: "scenario_pack";
-  id: string;
-  version: string;
-  name: string;
-  summary: string;
-  description: string;
-  tags?: string[];
-  compatibility?: RecipeCompatibility;
-  skills?: RecipeSkillDefinition[];
-  agents?: RecipeAgentDefinition[];
-  tools?: RecipeToolDefinition[];
-  scenarios: RecipeScenarioDescriptor[];
-};
-
 export type ProjectOverlayManifestV2 = {
-  schema_version: "2";
+  schema_version: "1" | "2";
   kind: "project_overlay";
   id: string;
   version: string;
@@ -196,15 +179,16 @@ export type ProjectOverlayManifestV2 = {
   compatibility?: RecipeCompatibility;
   requires?: string[];
   conflicts?: { recipe_id: string; reason: string }[];
-  prompts: OverlayPromptFragment[];
+  prompts?: OverlayPromptFragment[];
   validators?: OverlayValidator[];
   templates?: Record<string, string>;
   skills?: RecipeSkillDefinition[];
   agents?: RecipeAgentDefinition[];
   tools?: RecipeToolDefinition[];
+  scenarios?: RecipeScenarioDescriptor[];
 };
 
-export type RecipeManifest = ScenarioPackManifest | ProjectOverlayManifestV2;
+export type RecipeManifest = ProjectOverlayManifestV2;
 
 export type ResolvedRecipeScenario = {
   recipe_id: string;
@@ -254,7 +238,7 @@ export type RecipeInstallMetadata = {
   source: string;
   installed_at: string;
   tags?: string[];
-  install_mode?: "project-local";
+  install_mode?: "cache" | "project-copy" | "project-link";
 };
 
 export type InstalledRecipeEntry = {
@@ -262,6 +246,7 @@ export type InstalledRecipeEntry = {
   version: string;
   source: string;
   installed_at: string;
+  project_path?: string;
   tags: string[];
   manifest: RecipeManifest;
 };
@@ -270,6 +255,42 @@ export type InstalledRecipesFile = {
   schema_version: 1;
   updated_at: string;
   recipes: InstalledRecipeEntry[];
+};
+
+export type ProjectRecipeMaterialization = "copy" | "link";
+export type ProjectRecipeState = "clean" | "modified" | "diverged_from_cache";
+
+export type ProjectRecipeRegistryEntry = {
+  id: string;
+  version: string;
+  path: string;
+  active: boolean;
+  materialization: ProjectRecipeMaterialization;
+  source_ref: string;
+  source_sha256: string;
+  vendored_sha256: string;
+  installed_at: string;
+  tags?: string[];
+};
+
+export type ProjectRecipesRegistryFile = {
+  schema_version: 1;
+  updated_at: string;
+  recipes: ProjectRecipeRegistryEntry[];
+};
+
+export type ProjectInstalledRecipeEntry = InstalledRecipeEntry & {
+  project_path: string;
+  materialization: ProjectRecipeMaterialization;
+  source_ref: string;
+  source_sha256: string;
+  vendored_sha256: string;
+};
+
+export type ProjectInstalledRecipesFile = {
+  schema_version: 1;
+  updated_at: string;
+  recipes: ProjectInstalledRecipeEntry[];
 };
 
 export type ScenarioDefinition = {
@@ -389,6 +410,59 @@ export type CompiledOverlayBundle = {
   agents: RecipeAgentDefinition[];
   tools: RecipeToolDefinition[];
   trace: CompiledOverlayTraceEntry[];
+};
+
+export type CompiledRecipeAssetKind = "agent" | "skill" | "tool" | "scenario" | "template";
+
+export type CompiledRecipeAssetBase = {
+  id: string;
+  kind: CompiledRecipeAssetKind;
+  recipe_id: string;
+  recipe_version: string;
+  recipe_name: string;
+  asset_id: string;
+  source: string;
+  summary?: string;
+};
+
+export type CompiledRecipeAgentAsset = CompiledRecipeAssetBase & {
+  kind: "agent";
+  definition: RecipeAgentDefinition;
+  content: string;
+};
+
+export type CompiledRecipeSkillAsset = CompiledRecipeAssetBase & {
+  kind: "skill";
+  definition: RecipeSkillDefinition;
+  content: string;
+};
+
+export type CompiledRecipeToolAsset = CompiledRecipeAssetBase & {
+  kind: "tool";
+  definition: RecipeToolDefinition;
+};
+
+export type CompiledRecipeScenarioAsset = CompiledRecipeAssetBase & {
+  kind: "scenario";
+  definition: RecipeScenarioDescriptor;
+};
+
+export type CompiledRecipeTemplateAsset = CompiledRecipeAssetBase & {
+  kind: "template";
+  content: string;
+};
+
+export type CompiledRecipeAssetEntry =
+  | CompiledRecipeAgentAsset
+  | CompiledRecipeSkillAsset
+  | CompiledRecipeToolAsset
+  | CompiledRecipeScenarioAsset
+  | CompiledRecipeTemplateAsset;
+
+export type CompiledRecipeAssetRegistry = {
+  schema_version: 1;
+  kind: "recipe_asset_registry";
+  entries: CompiledRecipeAssetEntry[];
 };
 
 export type RecipeCachePruneFlags = {

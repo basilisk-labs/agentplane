@@ -3,23 +3,37 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
+import { runCliSilent } from "../../cli/run-cli.test-helpers.js";
 import {
   createRecipeArchive,
+  installRecipesCommandHarness,
   mkGitRepoRoot,
-  runCliSilent,
   writeDefaultConfig,
-} from "../../cli/run-cli.test-helpers.js";
+} from "../../commands/recipes.test-helpers.js";
 import {
   materializeRecipeScenarioTask,
   buildMaterializedRecipeTask,
 } from "./scenario-materialize-task.js";
+
+installRecipesCommandHarness();
 
 describe("materializeRecipeScenarioTask", () => {
   it("materializes a task with recipe provenance and seeded README sections", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const { archivePath, manifest } = await createRecipeArchive();
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(
+      0,
+    );
+    expect(
+      await runCliSilent([
+        "recipes",
+        "add",
+        `${String(manifest.id)}@${String(manifest.version)}`,
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
 
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
     const materialized = await materializeRecipeScenarioTask({
@@ -45,19 +59,19 @@ describe("materializeRecipeScenarioTask", () => {
     expect(materialized.recipe_context.capabilities?.entries).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          id: `recipe.${String(manifest.id)}.scenario.RECIPE_SCENARIO`,
+          id: `recipe:${String(manifest.id)}/scenario:RECIPE_SCENARIO`,
           availability: "available",
         }),
         expect.objectContaining({
-          id: `recipe.${String(manifest.id)}.agent.RECIPE_AGENT`,
+          id: `recipe:${String(manifest.id)}/agent:RECIPE_AGENT`,
           availability: "available",
         }),
         expect.objectContaining({
-          id: `recipe.${String(manifest.id)}.skill.RECIPE_SKILL`,
+          id: `recipe:${String(manifest.id)}/skill:RECIPE_SKILL`,
           availability: "available",
         }),
         expect.objectContaining({
-          id: `recipe.${String(manifest.id)}.tool.RECIPE_TOOL`,
+          id: `recipe:${String(manifest.id)}/tool:RECIPE_TOOL`,
           availability: "available",
         }),
       ]),
@@ -74,7 +88,18 @@ describe("materializeRecipeScenarioTask", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const { archivePath, manifest } = await createRecipeArchive();
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(
+      0,
+    );
+    expect(
+      await runCliSilent([
+        "recipes",
+        "add",
+        `${String(manifest.id)}@${String(manifest.version)}`,
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
 
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
     const materialized = await materializeRecipeScenarioTask({

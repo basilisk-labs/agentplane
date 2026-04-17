@@ -5,8 +5,14 @@ description: "Contract for recipe archives, manifests, and CLI behavior."
 
 Recipes are optional extensions. Core workflow must remain usable with zero installed recipes.
 
-Recipes v1 are self-contained project-local capability bundles. The only public recipe entrypoint is a
-scenario descriptor exposed through `manifest.json`.
+Recipes v1 use a vendor-based lifecycle:
+
+1. remote catalog for discovery and distribution;
+2. global cache for download and import;
+3. project vendor store for runtime authority;
+4. generated overlay and asset bundles as derived artifacts only.
+
+After vendoring, runtime reads recipes only from the project-local vendor store.
 
 The repository-level docs inventory (`docs/recipes-inventory.json`) is a generated projection sourced
 from `agentplane-recipes/index.json` plus the checked-in recipe manifests under
@@ -18,12 +24,12 @@ A recipe archive (`.zip` or `.tar.gz`) must include `manifest.json` at archive r
 
 Optional directories:
 
+- `agents/`
+- `assets/`
+- `README.md`
+- `scenarios/`
 - `skills/`
 - `tools/`
-- `scenarios/`
-- `assets/`
-- `agents/`
-- `README.md`
 
 ## Manifest contract
 
@@ -38,28 +44,41 @@ Minimum required fields:
 - `summary`
 - `description`
 
-First-class sections include `compatibility`, `skills`, `tools`, `agents`, and `scenarios`.
-Each public scenario descriptor must be sufficient for resolver-driven selection without reading internal
-files.
+First-class sections include `compatibility`, `overlay`, `skills`, `tools`, `agents`, and `scenarios`.
+
+Contract notes:
+
+- `agents/` and `skills/` are markdown-first assets. Their content must survive compilation without being reduced to legacy JSON stubs.
+- `tools/` remain structured manifests plus executable content where required.
+- `scenarios/` are recipe-owned assets, not a separate top-level package kind.
+- Public scenario descriptors must be sufficient for resolver-driven selection without reading unrelated internal files.
 
 ## CLI surface
 
-Recipe commands:
+Global cache commands:
 
+- `agentplane recipes list-remote`
 - `agentplane recipes list`
 - `agentplane recipes info <id>`
-- `agentplane recipes explain <id>`
 - `agentplane recipes install ...`
-- `agentplane recipes remove <id>`
-- `agentplane recipes list-remote`
 - `agentplane recipes cache prune`
 
-Scenario commands:
+Project vendoring commands:
 
-- `agentplane scenario list`
-- `agentplane scenario info <recipe:scenario>`
-- `agentplane scenario run <recipe:scenario>`
-- `agentplane scenario execute <recipe:scenario>`
+- `agentplane recipes add <id|id@version>`
+- `agentplane recipes remove <id>`
+- `agentplane recipes active`
+- `agentplane recipes explain <id>`
+- `agentplane recipes explain-active`
+- `agentplane recipes update <id>`
+- `agentplane recipes detach <id>`
+
+Recipe scenario commands:
+
+- `agentplane recipes scenario list`
+- `agentplane recipes scenario info <recipe:scenario>`
+- `agentplane recipes scenario run <recipe:scenario>`
+- `agentplane recipes scenario execute <recipe:scenario>`
 
 Shared runner entrypoint:
 
@@ -82,22 +101,24 @@ Legacy conflict flag for export-oriented installs:
 The flag is retained as a compatibility no-op. Self-contained recipes are not exported into
 `.agentplane/agents`.
 
-## Runtime storage
+## Storage layout
 
-Global cache only:
+Global cache:
 
 - `~/.agentplane/recipes-index.json`
-- `~/.agentplane/recipes/<id>/<version>/...`
+- `~/.agentplane/recipes-installed.json`
+- `~/.agentplane/recipes-store/<id>/<version>/...`
 
-Project-local install/runtime state:
+Project-local vendor store and derived artifacts:
 
-- `.agentplane/recipes/<id>/manifest.json`
-- `.agentplane/recipes/<id>/.install.json`
-- `.agentplane/recipes/<id>/agents/...`
-- `.agentplane/recipes/<id>/skills/...`
-- `.agentplane/recipes/<id>/tools/...`
-- `.agentplane/recipes/<id>/scenarios/...`
-- `.agentplane/recipes-cache/`
+- `.agentplane/recipes/registry.json`
+- `.agentplane/recipes/packages/<id>/manifest.json`
+- `.agentplane/recipes/packages/<id>/agents/...`
+- `.agentplane/recipes/packages/<id>/skills/...`
+- `.agentplane/recipes/packages/<id>/tools/...`
+- `.agentplane/recipes/packages/<id>/scenarios/...`
+- `.agentplane/generated/overlay-bundle.json`
+- `.agentplane/generated/recipe-assets.json`
 - `.agentplane/tasks/<task-id>/runs/<run-id>/bundle.json`
 - `.agentplane/tasks/<task-id>/runs/<run-id>/bootstrap.md`
 - `.agentplane/tasks/<task-id>/runs/<run-id>/run-state.json`
@@ -108,6 +129,12 @@ Project-local install/runtime state:
 - `.agentplane/tasks/<task-id>/runs/<run-id>/codex-last-message.md` when the selected adapter emits a side artifact for the final assistant message
 
 `AGENTPLANE_HOME` can override the global storage root.
+
+Authority rules:
+
+- `.agentplane/recipes/registry.json` is the only project authority for vendored recipes.
+- `.agentplane/generated/*` are derived outputs; they must not carry independent authority.
+- Runtime reads vendored packages from `.agentplane/recipes/packages/*`, not from the global cache.
 
 Runner artifacts are layered deliberately:
 
@@ -190,12 +217,12 @@ Runner-owned control artifacts such as `bundle.json`, `result.json`, trace files
 source manifests are outside that prefix check because they are emitted by the framework itself, not
 by the recipe-controlled runner payload.
 
-## Scenario preview and execution contract
+## Recipe scenario preview and execution contract
 
-`scenario run` resolves a scenario definition, validates recipe-local file references, and prints a
-prepared run plan. It is preview-only: no task is created and no runner artifacts are written.
+`recipes scenario run` resolves a scenario definition, validates recipe-local file references, and
+prints a prepared run plan. It is preview-only: no task is created and no runner artifacts are written.
 
-`scenario execute` uses the same resolver and validation path, then:
+`recipes scenario execute` uses the same resolver and validation path, then:
 
 1. materializes a normal task from the scenario's explicit `task_template`;
 2. records recipe provenance on that task (`recipe_id`, `scenario_id`, `recipe_version`, `run_id`);
@@ -240,9 +267,9 @@ Current support matrix:
   `result.json` and trace artifacts in `run_dir`, while the default codex sandbox blocks writes to
   `cwd` and `TMPDIR`
 
-`task run` and `scenario execute` share the same projection rule: runner completion may update task-facing
-state, but only through the sanitized runner outcome layer, never by copying assistant prose from raw trace
-artifacts into task README sections.
+`task run` and `recipes scenario execute` share the same projection rule: runner completion may update
+task-facing state, but only through the sanitized runner outcome layer, never by copying assistant
+prose from raw trace artifacts into task README sections.
 
 Scenario definitions can declare evidence requirements:
 
@@ -256,6 +283,9 @@ but they are not a separate CLI orchestration DSL.
 
 Recipe permission declarations are explicit and visible, but they are not a full sandbox.
 Treat recipes as executable code and review source and manifest before install.
+
+For shared repositories, `copy` is the safe default. `link` is a development mode and should be
+considered non-portable until detached back into a project-local copy.
 
 ## Compatibility guidance
 

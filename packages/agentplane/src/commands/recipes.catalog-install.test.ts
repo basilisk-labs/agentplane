@@ -14,6 +14,7 @@ import {
   installRecipesCommandHarness,
   mkGitRepoRoot,
   resolveProjectRecipeDir,
+  resolveProjectRecipesRegistryPath,
   runRecipesTest,
   scenarioDescriptor,
   toolEntry,
@@ -90,18 +91,16 @@ describe("commands/recipes catalog/install", () => {
     await writeDefaultConfig(projectDir);
     const { archivePath } = await createRecipeArchive();
 
-    await expect(installRecipe({ projectDir, archivePath })).resolves.toBeUndefined();
+    await expect(
+      installRecipe({ projectDir, archivePath, vendor: false }),
+    ).resolves.toBeUndefined();
 
-    const manifestPath = path.join(resolveProjectRecipeDir(projectDir, "viewer"), "manifest.json");
-    const installMetaPath = path.join(
-      resolveProjectRecipeDir(projectDir, "viewer"),
-      ".install.json",
+    const registry = JSON.parse(
+      await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
+    ) as { recipes: { id: string; version: string }[] };
+    expect(registry.recipes).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "viewer", version: "1.2.3" })]),
     );
-    expect(JSON.parse(await readFile(manifestPath, "utf8"))).toMatchObject({ id: "viewer" });
-    expect(JSON.parse(await readFile(installMetaPath, "utf8"))).toMatchObject({
-      id: "viewer",
-      install_mode: "project-local",
-    });
   });
 
   it("installs a recipe from a local directory path", async () => {
@@ -148,13 +147,13 @@ describe("commands/recipes catalog/install", () => {
       "utf8",
     );
     await writeFile(
-      path.join(recipeDir, "agents", "recipe.json"),
-      JSON.stringify({ id: "RECIPE_AGENT", role: "Recipe agent" }, null, 2),
+      path.join(recipeDir, "agents", "recipe.md"),
+      "# Recipe Agent\n\nFollow the fixture execution path.\n",
       "utf8",
     );
     await writeFile(
-      path.join(recipeDir, "skills", "recipe.json"),
-      JSON.stringify({ id: "RECIPE_SKILL", kind: "agent-skill" }, null, 2),
+      path.join(recipeDir, "skills", "recipe.md"),
+      "# Recipe Skill\n\nInspect the fixture bundle.\n",
       "utf8",
     );
     await writeFile(
@@ -195,14 +194,45 @@ describe("commands/recipes catalog/install", () => {
       await rm(fixtureRoot, { recursive: true, force: true });
     }
 
-    expect(
-      JSON.parse(
-        await readFile(
-          path.join(resolveProjectRecipeDir(projectDir, "local-viewer"), "manifest.json"),
-          "utf8",
-        ),
-      ),
-    ).toMatchObject({ id: "local-viewer" });
+    const registry = JSON.parse(
+      await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
+    ) as { recipes: { id: string; version: string }[] };
+    expect(registry.recipes).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "local-viewer", version: "0.1.0" })]),
+    );
+  });
+
+  it("vendors a cached recipe into the project", async () => {
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    await installRecipe({ projectDir, vendor: false });
+
+    await expect(
+      runRecipesTest({
+        cwd: projectDir,
+        args: ["viewer"],
+        command: "add",
+      }),
+    ).resolves.toBe(0);
+
+    const manifestPath = path.join(resolveProjectRecipeDir(projectDir, "viewer"), "manifest.json");
+    const registryPath = resolveProjectRecipesRegistryPath(projectDir);
+    expect(JSON.parse(await readFile(manifestPath, "utf8"))).toMatchObject({ id: "viewer" });
+    const projectRegistry = JSON.parse(await readFile(registryPath, "utf8")) as {
+      recipes: unknown[];
+    };
+    expect(projectRegistry).toMatchObject({
+      recipes: [
+        expect.objectContaining({
+          id: "viewer",
+          path: "packages/viewer",
+          active: false,
+          materialization: "copy",
+          source_sha256: expect.stringMatching(/^[0-9a-f]{64}$/) as unknown,
+          vendored_sha256: expect.stringMatching(/^[0-9a-f]{64}$/) as unknown,
+        }),
+      ],
+    });
   });
 
   it("prints recipe info details", async () => {

@@ -1,6 +1,7 @@
 import type { ResolvedProject } from "@agentplaneorg/core";
 
 import {
+  readProjectRecipeAssetRegistry,
   readProjectInstalledRecipes,
   readScenarioDefinition,
   resolveRecipeScenarioSelection,
@@ -26,16 +27,45 @@ function toRecipeContext(opts: {
   entry: InstalledRecipeEntry;
   selection: ResolvedRecipeScenarioSelection;
   scenario: ScenarioDefinition;
+  assets?: Awaited<ReturnType<typeof readProjectRecipeAssetRegistry>>;
 }): RunnerRecipeContext {
-  const agents = (opts.entry.manifest.agents ?? []).filter((agent) =>
-    opts.selection.agents_involved.includes(agent.id),
-  );
-  const skills = (opts.entry.manifest.skills ?? []).filter((skill) =>
-    opts.selection.skills_used.includes(skill.id),
-  );
-  const tools = (opts.entry.manifest.tools ?? []).filter((tool) =>
-    opts.selection.tools_used.includes(tool.id),
-  );
+  const recipeAssets =
+    opts.assets?.entries.filter((asset) => asset.recipe_id === opts.entry.id) ?? [];
+  const agents =
+    recipeAssets.length > 0
+      ? recipeAssets
+          .filter((asset) => asset.kind === "agent")
+          .filter((asset) => opts.selection.agents_involved.includes(asset.asset_id))
+          .map((asset) => ({
+            ...(asset.definition as Record<string, unknown>),
+            content: asset.content,
+            source: asset.source,
+          }))
+      : (opts.entry.manifest.agents ?? [])
+          .filter((agent) => opts.selection.agents_involved.includes(agent.id))
+          .map((agent) => agent as unknown as Record<string, unknown>);
+  const skills =
+    recipeAssets.length > 0
+      ? recipeAssets
+          .filter((asset) => asset.kind === "skill")
+          .filter((asset) => opts.selection.skills_used.includes(asset.asset_id))
+          .map((asset) => ({
+            ...(asset.definition as Record<string, unknown>),
+            content: asset.content,
+            source: asset.source,
+          }))
+      : (opts.entry.manifest.skills ?? [])
+          .filter((skill) => opts.selection.skills_used.includes(skill.id))
+          .map((skill) => skill as unknown as Record<string, unknown>);
+  const tools =
+    recipeAssets.length > 0
+      ? recipeAssets
+          .filter((asset) => asset.kind === "tool")
+          .filter((asset) => opts.selection.tools_used.includes(asset.asset_id))
+          .map((asset) => asset.definition as unknown as Record<string, unknown>)
+      : (opts.entry.manifest.tools ?? [])
+          .filter((tool) => opts.selection.tools_used.includes(tool.id))
+          .map((tool) => tool as unknown as Record<string, unknown>);
 
   return {
     recipe_id: opts.entry.id,
@@ -48,11 +78,12 @@ function toRecipeContext(opts: {
     selection_reasons: [...opts.selection.selection_reasons],
     manifest: opts.entry.manifest as unknown as Record<string, unknown>,
     scenario: opts.scenario as unknown as Record<string, unknown>,
-    agents: agents as unknown as Record<string, unknown>[],
-    skills: skills as unknown as Record<string, unknown>[],
-    tools: tools as unknown as Record<string, unknown>[],
+    agents,
+    skills,
+    tools,
     capabilities: resolveRecipeCapabilityRegistry({
       entry: opts.entry,
+      assets: recipeAssets,
       selection: opts.selection,
     }),
   };
@@ -82,11 +113,12 @@ export async function assembleRunnerRecipeContext(opts: {
     },
   });
   const scenario = await readScenarioDefinition(selection.scenario_file);
+  const assets = await readProjectRecipeAssetRegistry(opts.project);
 
   return {
     entry,
     selection,
     scenario,
-    recipe: toRecipeContext({ entry, selection, scenario }),
+    recipe: toRecipeContext({ entry, selection, scenario, assets }),
   };
 }

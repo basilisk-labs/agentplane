@@ -414,7 +414,7 @@ function loadExecutionProfilePrompt(opts: {
   });
 }
 
-async function loadRecipePromptJsonBlock(opts: {
+async function loadRecipePromptTextBlock(opts: {
   git_root: string;
   recipe_dir: string;
   prompt_id: string;
@@ -422,7 +422,8 @@ async function loadRecipePromptJsonBlock(opts: {
   title: string;
   relative_file?: string;
   fallback_source: string;
-  fallback_payload: Record<string, unknown>;
+  fallback_content?: string;
+  fallback_payload?: Record<string, unknown>;
   priority: number;
 }): Promise<RunnerPromptBlock> {
   const candidates: BehaviorCandidate<PromptSourcePayload, PromptSourceTraceMetadata>[] = [];
@@ -438,24 +439,39 @@ async function loadRecipePromptJsonBlock(opts: {
           value: {
             source,
             title: opts.title,
-            content: validateJsonPrompt(source, await readFile(absPath, "utf8")),
+            content: normalizeText(await readFile(absPath, "utf8")),
           },
         }),
       );
     }
   }
-  candidates.push(
-    promptCandidate({
-      layer: "extension",
-      source: opts.fallback_source,
-      value: {
+  if (typeof opts.fallback_content === "string" && opts.fallback_content.trim().length > 0) {
+    candidates.push(
+      promptCandidate({
+        layer: "extension",
         source: opts.fallback_source,
-        title: opts.title,
-        content: renderRecipePromptJson(opts.fallback_payload),
-      },
-      order: 10,
-    }),
-  );
+        value: {
+          source: opts.fallback_source,
+          title: opts.title,
+          content: normalizeText(opts.fallback_content),
+        },
+        order: 10,
+      }),
+    );
+  } else if (opts.fallback_payload) {
+    candidates.push(
+      promptCandidate({
+        layer: "extension",
+        source: opts.fallback_source,
+        value: {
+          source: opts.fallback_source,
+          title: opts.title,
+          content: renderRecipePromptJson(opts.fallback_payload),
+        },
+        order: 10,
+      }),
+    );
+  }
   const resolved = resolveBehavior({
     key: opts.prompt_id,
     candidates,
@@ -507,7 +523,7 @@ async function collectRecipePromptBlocks(opts: {
   const agentBlocks = await Promise.all(
     (opts.recipe.agents ?? []).map(async (agent, index) => {
       const agentId = typeof agent.id === "string" ? agent.id : `agent_${index + 1}`;
-      return loadRecipePromptJsonBlock({
+      return loadRecipePromptTextBlock({
         git_root: opts.git_root,
         recipe_dir: recipeDir,
         prompt_id: `recipe.agent.${agentId}`,
@@ -515,6 +531,7 @@ async function collectRecipePromptBlocks(opts: {
         title: `Recipe Agent Prompt (${agentId})`,
         relative_file: typeof agent.file === "string" ? agent.file : undefined,
         fallback_source: `recipe:${opts.recipe.recipe_id}:agent:${agentId}`,
+        fallback_content: typeof agent.content === "string" ? agent.content : undefined,
         fallback_payload: agent,
         priority: BASE_PROMPT_PRIORITIES.recipe_agent_profile + index,
       });
@@ -525,7 +542,7 @@ async function collectRecipePromptBlocks(opts: {
   const skillBlocks = await Promise.all(
     (opts.recipe.skills ?? []).map(async (skill, index) => {
       const skillId = typeof skill.id === "string" ? skill.id : `skill_${index + 1}`;
-      return loadRecipePromptJsonBlock({
+      return loadRecipePromptTextBlock({
         git_root: opts.git_root,
         recipe_dir: recipeDir,
         prompt_id: `recipe.skill.${skillId}`,
@@ -533,6 +550,7 @@ async function collectRecipePromptBlocks(opts: {
         title: `Recipe Skill Prompt (${skillId})`,
         relative_file: typeof skill.file === "string" ? skill.file : undefined,
         fallback_source: `recipe:${opts.recipe.recipe_id}:skill:${skillId}`,
+        fallback_content: typeof skill.content === "string" ? skill.content : undefined,
         fallback_payload: skill,
         priority: BASE_PROMPT_PRIORITIES.recipe_skill_context + index,
       });

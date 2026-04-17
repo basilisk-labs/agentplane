@@ -77,25 +77,27 @@ Commands:
     doctor  Check workspace invariants for a normal agentplane installation (with optional dev source checks).
   Recipes:
     recipes  Recipe management commands.
+    recipes add  Vendor a cached recipe into the current project.
     recipes cache  Manage recipes cache.
     recipes cache prune  Prune global recipe cache entries.
-    recipes explain  Show detailed info for an installed recipe.
-    recipes info  Show installed recipe metadata.
-    recipes install  Install a recipe from remote index, local archive, or URL.
-    recipes list  List installed recipes.
+    recipes detach  Convert a linked vendored recipe into a project-local copy.
+    recipes explain  Show detailed info for a vendored recipe.
+    recipes info  Show cached recipe metadata.
+    recipes install  Install a recipe into the global cache from remote index, local archive, or URL.
+    recipes list  List cached recipes.
     recipes list-remote  List recipes from the remote index (or cache).
-    recipes remove  Remove an installed recipe.
+    recipes remove  Remove a vendored recipe from the current project.
+    recipes scenario  Recipe scenario commands.
+    recipes scenario execute  Materialize a recipe-backed task and execute it through the shared runner flow.
+    recipes scenario info  Show manifest-backed scenario details and normalized run profile.
+    recipes scenario list  List resolver-backed scenario descriptors from installed recipes.
+    recipes scenario run  Preview a validated scenario plan without creating a task or running a runner.
+    recipes update  Refresh a vendored recipe from the cached source.
   Release:
     release  Prepare a release (agent-assisted notes + version bump workflow).
     release apply  Apply a prepared direct-mode release: bump versions, validate notes, commit, and tag.
     release candidate  Prepare a branch_pr release candidate: bump versions, validate notes, commit, and optionally push the candidate branch.
     release plan  Generate an agent-assisted release plan (changes list + next patch version).
-  Scenario:
-    scenario  Recipe scenario commands.
-    scenario execute  Materialize a recipe-backed task and execute it through the shared runner flow.
-    scenario info  Show manifest-backed scenario details and normalized run profile.
-    scenario list  List resolver-backed scenario descriptors from installed recipes.
-    scenario run  Preview a validated scenario plan without creating a task or running a runner.
   Setup:
     init  Initialize agentplane project files under .agentplane/.
     upgrade  Upgrade the local agentplane framework bundle in the repo.
@@ -174,7 +176,7 @@ Options:
 `;
 
 exports[`runCli help snapshots (cli2) > help recipes install --compact snapshot 1`] = `
-"recipes install - Install a recipe from remote index, local archive, or URL.
+"recipes install - Install a recipe into the global cache from remote index, local archive, or URL.
 
 Usage:
   agentplane recipes install <id|path|url> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
@@ -183,9 +185,9 @@ Usage:
   agentplane recipes install --url <url> [--yes] [--on-conflict <fail|rename|overwrite>]
 
 Options:
-  --name <id>  Install from remote index by recipe id.
-  --path <path>  Install from local recipe archive path.
-  --url <url>  Install from recipe archive URL.
+  --name <id>  Cache from remote index by recipe id.
+  --path <path>  Cache from local recipe archive path.
+  --url <url>  Cache from recipe archive URL.
   --index <path|url>  Override recipes index location (used when installing by name / auto-name).
   --refresh  Refresh remote index cache before installing. (default=false)
   --yes  Auto-approve network prompts when allowed by config. (default=false)
@@ -193,19 +195,19 @@ Options:
 "
 `;
 
-exports[`runCli help snapshots (cli2) > help scenario execute --compact snapshot 1`] = `
-"scenario execute - Materialize a recipe-backed task and execute it through the shared runner flow.
+exports[`runCli help snapshots (cli2) > help recipes scenario execute --compact snapshot 1`] = `
+"recipes scenario execute - Materialize a recipe-backed task and execute it through the shared runner flow.
 
 Usage:
-  agentplane scenario execute <recipe:scenario>
+  agentplane recipes scenario execute <recipe:scenario>
 "
 `;
 
-exports[`runCli help snapshots (cli2) > help scenario run --compact snapshot 1`] = `
-"scenario run - Preview a validated scenario plan without creating a task or running a runner.
+exports[`runCli help snapshots (cli2) > help recipes scenario run --compact snapshot 1`] = `
+"recipes scenario run - Preview a validated scenario plan without creating a task or running a runner.
 
 Usage:
-  agentplane scenario run <recipe:scenario>
+  agentplane recipes scenario run <recipe:scenario>
 "
 `;
 

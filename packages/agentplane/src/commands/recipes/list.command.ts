@@ -7,19 +7,19 @@ export type RecipesListParsed = RecipeListFlags;
 export const recipesListSpec: CommandSpec<RecipesListParsed> = {
   id: ["recipes", "list"],
   group: "Recipes",
-  summary: "List installed recipes.",
+  summary: "List cached recipes.",
   options: [
     { kind: "boolean", name: "full", default: false, description: "Print full JSON payload." },
     {
       kind: "string",
       name: "tag",
       valueHint: "<tag>",
-      description: "Filter installed recipes by tag.",
+      description: "Filter cached recipes by tag.",
     },
   ],
   examples: [
-    { cmd: "agentplane recipes list", why: "List installed recipes." },
-    { cmd: "agentplane recipes list --tag cli", why: "List installed recipes with a tag." },
+    { cmd: "agentplane recipes list", why: "List cached recipes." },
+    { cmd: "agentplane recipes list --tag cli", why: "List cached recipes with a tag." },
     { cmd: "agentplane recipes list --full", why: "Print full JSON payload." },
   ],
   parse: (raw) => ({

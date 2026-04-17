@@ -25,8 +25,10 @@ import {
   prSpec,
   prUpdateSpec,
 } from "../../../commands/pr/pr.command.js";
+import { recipesAddSpec } from "../../../commands/recipes/add.command.js";
 import { recipesCachePruneSpec } from "../../../commands/recipes/cache-prune.command.js";
 import { recipesCacheSpec } from "../../../commands/recipes/cache.command.js";
+import { recipesDetachSpec } from "../../../commands/recipes/detach.command.js";
 import { recipesExplainSpec } from "../../../commands/recipes/explain.command.js";
 import { recipesInfoSpec } from "../../../commands/recipes/info.command.js";
 import { recipesInstallSpec } from "../../../commands/recipes/install.spec.js";
@@ -34,6 +36,7 @@ import { recipesListRemoteSpec } from "../../../commands/recipes/list-remote.com
 import { recipesListSpec } from "../../../commands/recipes/list.command.js";
 import { recipesRemoveSpec } from "../../../commands/recipes/remove.command.js";
 import { recipesSpec } from "../../../commands/recipes/recipes.command.js";
+import { recipesUpdateSpec } from "../../../commands/recipes/update.command.js";
 import { scenarioExecuteSpec } from "../../../commands/scenario/execute.command.js";
 import { scenarioInfoSpec } from "../../../commands/scenario/info.command.js";
 import { scenarioListSpec } from "../../../commands/scenario/list.command.js";
@@ -66,14 +69,29 @@ export const PROJECT_COMMANDS = [
       needsTaskContext: false,
     },
   ),
-  entry(recipesListSpec, () =>
-    import("../../../commands/recipes/list.command.js").then((m) => m.runRecipesList),
+  entry(recipesAddSpec, () =>
+    import("../../../commands/recipes/add.command.js").then((m) => m.runRecipesAdd),
+  ),
+  entry(
+    recipesListSpec,
+    () => import("../../../commands/recipes/list.command.js").then((m) => m.runRecipesList),
+    {
+      needsProject: false,
+      needsLoadedConfig: false,
+      needsTaskContext: false,
+    },
   ),
   entry(recipesListRemoteSpec, () =>
     import("../../../commands/recipes/list-remote.command.js").then((m) => m.runRecipesListRemote),
   ),
-  entry(recipesInfoSpec, () =>
-    import("../../../commands/recipes/info.command.js").then((m) => m.runRecipesInfo),
+  entry(
+    recipesInfoSpec,
+    () => import("../../../commands/recipes/info.command.js").then((m) => m.runRecipesInfo),
+    {
+      needsProject: false,
+      needsLoadedConfig: false,
+      needsTaskContext: false,
+    },
   ),
   entry(recipesExplainSpec, () =>
     import("../../../commands/recipes/explain.command.js").then((m) => m.runRecipesExplain),
@@ -81,11 +99,23 @@ export const PROJECT_COMMANDS = [
   entry(recipesRemoveSpec, () =>
     import("../../../commands/recipes/remove.command.js").then((m) => m.runRecipesRemove),
   ),
+  entry(recipesUpdateSpec, () =>
+    import("../../../commands/recipes/update.command.js").then((m) => m.runRecipesUpdate),
+  ),
+  entry(recipesDetachSpec, () =>
+    import("../../../commands/recipes/detach.command.js").then((m) => m.runRecipesDetach),
+  ),
   entry(recipesCachePruneSpec, () =>
     import("../../../commands/recipes/cache-prune.command.js").then((m) => m.runRecipesCachePrune),
   ),
-  entry(recipesInstallSpec, () =>
-    import("../../../commands/recipes/install.run.js").then((m) => m.runRecipesInstall),
+  entry(
+    recipesInstallSpec,
+    () => import("../../../commands/recipes/install.run.js").then((m) => m.runRecipesInstall),
+    {
+      needsProject: false,
+      needsLoadedConfig: false,
+      needsTaskContext: false,
+    },
   ),
   entry(
     scenarioSpec,

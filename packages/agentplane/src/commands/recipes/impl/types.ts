@@ -1,4 +1,6 @@
 export type {
+  CompiledRecipeAssetEntry,
+  CompiledRecipeAssetRegistry,
   CompiledOverlayBundle,
   CompiledOverlayPromptFragment,
   CompiledOverlayTraceEntry,
@@ -11,12 +13,17 @@ export type {
   OverlayValidator,
   OverlayWhen,
   ProjectOverlayManifestV2,
+  ProjectInstalledRecipeEntry,
+  ProjectInstalledRecipesFile,
+  ProjectRecipeMaterialization,
+  ProjectRecipeRegistryEntry,
+  ProjectRecipesRegistryFile,
+  ProjectRecipeState,
   ProjectRecipesLockEntry,
   ProjectRecipesLockFile,
   RecipeAgentDefinition,
   RecipeCompatibility,
   RecipeConflictMode,
-  RecipeInstallMetadata,
   RecipeInstallSource,
   RecipeKind,
   RecipeManifest,
@@ -37,7 +44,6 @@ export type {
   ResolvedRecipeScenario,
   ResolvedRecipeScenarioSelection,
   ScenarioDefinition,
-  ScenarioPackManifest,
 } from "@agentplaneorg/recipes";
 
 export type RecipeCachePruneFlags = {

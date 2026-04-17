@@ -10,6 +10,7 @@ import { ensureActionApproved } from "../../../shared/approval-requirements.js";
 
 import { refreshProjectOverlayArtifacts, setRecipeActive } from "../overlay-project.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
+import { removeProjectRecipeRegistryEntry } from "../project-registry.js";
 import { resolveProjectInstalledRecipeDir } from "../paths.js";
 
 export async function cmdRecipeRemoveParsed(opts: {
@@ -41,6 +42,7 @@ export async function cmdRecipeRemoveParsed(opts: {
     });
     await rm(recipeDir, { recursive: true, force: true });
     await setRecipeActive({ project: resolved, recipeId: entry.id, active: false });
+    await removeProjectRecipeRegistryEntry({ project: resolved, recipeId: entry.id });
     await refreshProjectOverlayArtifacts(resolved);
 
     process.stdout.write(`${successMessage("removed recipe", `${entry.id}@${entry.version}`)}\n`);

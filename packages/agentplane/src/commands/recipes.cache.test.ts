@@ -61,7 +61,7 @@ describe("commands/recipes cache", () => {
 
   it("reports empty recipe cache directory", async () => {
     const tempHome = requireRecipesTempHome();
-    await mkdir(path.join(tempHome, "recipes"), { recursive: true });
+    await mkdir(path.join(tempHome, "recipes-store"), { recursive: true });
 
     const io = captureStdIO();
 
@@ -79,7 +79,7 @@ describe("commands/recipes cache", () => {
 
   it("reports dry-run cache prune with --all", async () => {
     const tempHome = requireRecipesTempHome();
-    const cacheDir = path.join(tempHome, "recipes", "viewer", "1.2.3");
+    const cacheDir = path.join(tempHome, "recipes-store", "viewer", "1.2.3");
     await mkdir(cacheDir, { recursive: true });
 
     const io = captureStdIO();
@@ -98,7 +98,7 @@ describe("commands/recipes cache", () => {
 
   it("reports clean cache when all cached recipes are installed", async () => {
     const tempHome = requireRecipesTempHome();
-    const cacheDir = path.join(tempHome, "recipes", "viewer", "1.2.3");
+    const cacheDir = path.join(tempHome, "recipes-store", "viewer", "1.2.3");
     await mkdir(cacheDir, { recursive: true });
     await writeInstalledRecipesRegistry([baseRecipeEntry()]);
 
@@ -118,7 +118,7 @@ describe("commands/recipes cache", () => {
 
   it("prunes uninstalled cached recipes", async () => {
     const tempHome = requireRecipesTempHome();
-    const cacheDir = path.join(tempHome, "recipes", "viewer", "1.2.3");
+    const cacheDir = path.join(tempHome, "recipes-store", "viewer", "1.2.3");
     await mkdir(cacheDir, { recursive: true });
     await writeInstalledRecipesRegistry([]);
 
@@ -138,7 +138,7 @@ describe("commands/recipes cache", () => {
 
   it("removes all cached recipes with --all", async () => {
     const tempHome = requireRecipesTempHome();
-    const cacheDir = path.join(tempHome, "recipes", "viewer", "1.2.3");
+    const cacheDir = path.join(tempHome, "recipes-store", "viewer", "1.2.3");
     await mkdir(cacheDir, { recursive: true });
 
     const io = captureStdIO();

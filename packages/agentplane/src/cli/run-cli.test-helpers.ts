@@ -364,7 +364,7 @@ export async function writeConfig(
 
 export async function resetAgentplaneHomeRecipes(): Promise<void> {
   if (!agentplaneHome) return;
-  await rm(path.join(agentplaneHome, "recipes"), { recursive: true, force: true });
+  await rm(path.join(agentplaneHome, "recipes-store"), { recursive: true, force: true });
   await rm(path.join(agentplaneHome, "recipes.json"), { force: true });
   await rm(path.join(agentplaneHome, "recipes-index.json"), { force: true });
 }
@@ -415,8 +415,7 @@ export async function createRecipeArchive(opts?: {
       {
         id: "RECIPE_SKILL",
         summary: "Recipe analysis skill",
-        kind: "agent-skill",
-        file: "skills/analysis.json",
+        file: "skills/analysis.md",
       },
     ],
     agents: [
@@ -427,7 +426,7 @@ export async function createRecipeArchive(opts?: {
         summary: "Recipe agent",
         skills: ["RECIPE_SKILL"],
         tools: ["RECIPE_TOOL"],
-        file: "agents/recipe.json",
+        file: "agents/recipe.md",
       },
     ],
     tools: [
@@ -462,31 +461,28 @@ export async function createRecipeArchive(opts?: {
   const agentsDir = path.join(recipeDir, "agents");
   await mkdir(agentsDir, { recursive: true });
   await writeFile(
-    path.join(agentsDir, "recipe.json"),
-    JSON.stringify(
-      {
-        id: "RECIPE_AGENT",
-        role: "Recipe agent",
-        description: "Example agent installed from a recipe.",
-      },
-      null,
-      2,
-    ),
+    path.join(agentsDir, "recipe.md"),
+    [
+      "# Recipe Agent",
+      "",
+      "Role: executor",
+      "",
+      "Instructions:",
+      "- Use recipe local policy.",
+      "- Materialize the declared scenario artifacts.",
+    ].join("\n"),
     "utf8",
   );
   const skillsDir = path.join(recipeDir, "skills");
   await mkdir(skillsDir, { recursive: true });
   await writeFile(
-    path.join(skillsDir, "analysis.json"),
-    JSON.stringify(
-      {
-        id: "RECIPE_SKILL",
-        summary: "Recipe analysis skill",
-        kind: "agent-skill",
-      },
-      null,
-      2,
-    ),
+    path.join(skillsDir, "analysis.md"),
+    [
+      "# Recipe Skill",
+      "",
+      "- Inspect the generated bundle before acting.",
+      "- Keep recipe-owned artifacts inside the declared output paths.",
+    ].join("\n"),
     "utf8",
   );
   const toolsDir = path.join(recipeDir, "tools");
@@ -600,8 +596,7 @@ export async function createUnsafeRecipeArchive(opts: {
       {
         id: "RECIPE_SKILL",
         summary: "Recipe skill",
-        kind: "agent-skill",
-        file: "skills/recipe.json",
+        file: "skills/recipe.md",
       },
     ],
     agents: [
@@ -612,7 +607,7 @@ export async function createUnsafeRecipeArchive(opts: {
         summary: "Recipe agent",
         skills: ["RECIPE_SKILL"],
         tools: ["RECIPE_TOOL"],
-        file: "agents/recipe.json",
+        file: "agents/recipe.md",
       },
     ],
     tools: [
@@ -640,15 +635,15 @@ export async function createUnsafeRecipeArchive(opts: {
   const agentsDir = path.join(recipeDir, "agents");
   await mkdir(agentsDir, { recursive: true });
   await writeFile(
-    path.join(agentsDir, "recipe.json"),
-    JSON.stringify({ id: "RECIPE_AGENT", role: "Recipe agent" }, null, 2),
+    path.join(agentsDir, "recipe.md"),
+    "# Recipe Agent\n\nFollow the unsafe archive validation path.\n",
     "utf8",
   );
   const skillsDir = path.join(recipeDir, "skills");
   await mkdir(skillsDir, { recursive: true });
   await writeFile(
-    path.join(skillsDir, "recipe.json"),
-    JSON.stringify({ id: "RECIPE_SKILL" }),
+    path.join(skillsDir, "recipe.md"),
+    "# Recipe Skill\n\nInspect archive contents before materialization.\n",
     "utf8",
   );
   const toolsDir = path.join(recipeDir, "tools");

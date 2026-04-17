@@ -29,7 +29,6 @@ import type {
   RecipeScenarioDescriptor,
   RecipeSkillDefinition,
   RecipeToolDefinition,
-  ScenarioPackManifest,
 } from "./types.js";
 
 function normalizeRequiredString(raw: unknown, field: string): string {
@@ -121,7 +120,6 @@ function normalizeSkills(raw: unknown): RecipeSkillDefinition[] | undefined {
     return {
       id: normalizeSkillId(normalizeRequiredString(entry.id, `manifest.skills[${index}].id`)),
       summary: normalizeRequiredString(entry.summary, `manifest.skills[${index}].summary`),
-      kind: normalizeRequiredString(entry.kind, `manifest.skills[${index}].kind`),
       file: normalizeRecipeRelativePath(
         `manifest.skills[${index}].file`,
         normalizeRequiredString(entry.file, `manifest.skills[${index}].file`),
@@ -305,6 +303,16 @@ function normalizePrompts(raw: unknown): OverlayPromptFragment[] {
   });
 }
 
+function normalizeOptionalPrompts(raw: unknown): OverlayPromptFragment[] | undefined {
+  if (raw === undefined) return undefined;
+  return normalizePrompts(raw);
+}
+
+function normalizeOptionalScenarios(raw: unknown): RecipeScenarioDescriptor[] | undefined {
+  if (raw === undefined) return undefined;
+  return normalizeScenarios(raw);
+}
+
 function normalizeValidators(raw: unknown): OverlayValidator[] | undefined {
   if (raw === undefined) return undefined;
   if (!Array.isArray(raw)) throw new Error(invalidFieldMessage("manifest.validators", "array"));
@@ -401,23 +409,28 @@ function assertKnownReferences(
   }
 }
 
-function normalizeScenarioPack(
-  raw: Record<string, unknown>,
-  schemaVersion: "1" | "2",
-): ScenarioPackManifest {
+function normalizeProjectOverlay(raw: Record<string, unknown>): ProjectOverlayManifestV2 {
   const id = normalizeRecipeId(normalizeRequiredString(raw.id, "manifest.id"));
   const version = normalizeRequiredString(raw.version, "manifest.version");
-  const tags = normalizeRecipeTags(raw.tags);
-  const compatibility = normalizeCompatibility(raw.compatibility);
+  const name = normalizeRequiredString(raw.name, "manifest.name");
+  const summary = normalizeRequiredString(raw.summary, "manifest.summary");
+  const description = normalizeOptionalString(raw.description, "manifest.description");
+  const prompts = normalizeOptionalPrompts(raw.prompts);
+  const validators = normalizeValidators(raw.validators);
   const skills = normalizeSkills(raw.skills);
-  const tools = normalizeTools(raw.tools);
   const agents = normalizeAgents(raw.agents);
-  const scenarios = normalizeScenarios(raw.scenarios);
-
+  const tools = normalizeTools(raw.tools);
+  const scenarios = normalizeOptionalScenarios(raw.scenarios);
+  const tags = normalizeRecipeTags(raw.tags);
+  if (!prompts?.length && !scenarios?.length) {
+    throw new Error(invalidFieldMessage("manifest", "prompts or scenarios"));
+  }
+  if (prompts) assertUniqueIds("manifest.prompts", prompts);
   if (skills) assertUniqueIds("manifest.skills", skills);
-  if (tools) assertUniqueIds("manifest.tools", tools);
+  if (validators) assertUniqueIds("manifest.validators", validators);
   if (agents) assertUniqueIds("manifest.agents", agents);
-  assertUniqueIds("manifest.scenarios", scenarios);
+  if (tools) assertUniqueIds("manifest.tools", tools);
+  if (scenarios) assertUniqueIds("manifest.scenarios", scenarios);
 
   const skillIds = new Set((skills ?? []).map((skill) => skill.id));
   const toolIds = new Set((tools ?? []).map((tool) => tool.id));
@@ -427,7 +440,7 @@ function normalizeScenarioPack(
     assertKnownReferences(`manifest.agents[${index}].skills`, agent.skills, skillIds);
     assertKnownReferences(`manifest.agents[${index}].tools`, agent.tools, toolIds);
   }
-  for (const [index, scenario] of scenarios.entries()) {
+  for (const [index, scenario] of (scenarios ?? []).entries()) {
     assertKnownReferences(
       `manifest.scenarios[${index}].agents_involved`,
       scenario.agents_involved,
@@ -442,44 +455,14 @@ function normalizeScenarioPack(
   }
 
   return {
-    schema_version: schemaVersion,
-    kind: "scenario_pack",
+    schema_version:
+      raw.schema_version === "1" || raw.schema_version === "2" ? raw.schema_version : "2",
+    kind: "project_overlay",
     id,
     version,
-    name: normalizeRequiredString(raw.name, "manifest.name"),
-    summary: normalizeRequiredString(raw.summary, "manifest.summary"),
-    description: normalizeRequiredString(raw.description, "manifest.description"),
-    tags: tags.length > 0 ? tags : undefined,
-    compatibility,
-    skills,
-    agents,
-    tools,
-    scenarios,
-  };
-}
-
-function normalizeProjectOverlay(raw: Record<string, unknown>): ProjectOverlayManifestV2 {
-  const prompts = normalizePrompts(raw.prompts);
-  const validators = normalizeValidators(raw.validators);
-  const skills = normalizeSkills(raw.skills);
-  const agents = normalizeAgents(raw.agents);
-  const tools = normalizeTools(raw.tools);
-  const tags = normalizeRecipeTags(raw.tags);
-
-  assertUniqueIds("manifest.prompts", prompts);
-  if (skills) assertUniqueIds("manifest.skills", skills);
-  if (validators) assertUniqueIds("manifest.validators", validators);
-  if (agents) assertUniqueIds("manifest.agents", agents);
-  if (tools) assertUniqueIds("manifest.tools", tools);
-
-  return {
-    schema_version: "2",
-    kind: "project_overlay",
-    id: normalizeRecipeId(normalizeRequiredString(raw.id, "manifest.id")),
-    version: normalizeRequiredString(raw.version, "manifest.version"),
-    name: normalizeRequiredString(raw.name, "manifest.name"),
-    summary: normalizeRequiredString(raw.summary, "manifest.summary"),
-    description: normalizeOptionalString(raw.description, "manifest.description"),
+    name,
+    summary,
+    description,
     tags: tags.length > 0 ? tags : undefined,
     compatibility: normalizeCompatibility(raw.compatibility),
     requires: normalizeOptionalStringList(raw.requires, "manifest.requires"),
@@ -502,6 +485,7 @@ function normalizeProjectOverlay(raw: Record<string, unknown>): ProjectOverlayMa
     skills,
     agents,
     tools,
+    scenarios,
   };
 }
 
@@ -513,10 +497,13 @@ export function validateRecipeManifest(raw: unknown): RecipeManifest {
     throw new Error(invalidFieldMessage("manifest.schema_version", '"1" | "2"'));
   }
   const kind =
-    schemaVersion === "1" ? "scenario_pack" : normalizeRequiredString(raw.kind, "manifest.kind");
-  if (kind === "project_overlay") return normalizeProjectOverlay(raw);
-  if (kind === "scenario_pack") return normalizeScenarioPack(raw, schemaVersion);
-  throw new Error(invalidFieldMessage("manifest.kind", '"project_overlay" | "scenario_pack"'));
+    raw.kind === undefined && schemaVersion === "1"
+      ? "project_overlay"
+      : normalizeRequiredString(raw.kind, "manifest.kind");
+  if (kind !== "project_overlay") {
+    throw new Error(invalidFieldMessage("manifest.kind", '"project_overlay"'));
+  }
+  return normalizeProjectOverlay(raw);
 }
 
 export async function readRecipeManifest(manifestPath: string): Promise<RecipeManifest> {

@@ -5,9 +5,11 @@ import { mapCoreError } from "../../error-map.js";
 import { promptChoice, promptInput, promptYesNo } from "../../prompts.js";
 import { invalidValueForFlag } from "../../output.js";
 import {
-  renderBundledRecipesHint,
-  validateBundledRecipesSelection,
-} from "../../recipes-bundled.js";
+  listCachedRecipes,
+  maybeAddCachedRecipes,
+  renderCachedRecipesHint,
+  validateCachedRecipesSelection,
+} from "./init/recipes.js";
 import { usageError } from "../../spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { CliError } from "../../../shared/errors.js";
@@ -23,7 +25,6 @@ import { resolveInitBaseBranchForInit } from "./init/base-branch.js";
 import { collectInitConflicts, handleInitConflicts } from "./init/conflicts.js";
 import { ensureGitRoot } from "./init/git.js";
 import { maybeSyncIde } from "./init/ide-sync.js";
-import { maybeInstallBundledRecipes } from "./init/recipes.js";
 import { ensureInitWorkflow } from "./init/write-workflow.js";
 import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./init/write-config.js";
 import { ensureAgentsFiles } from "./init/write-agents.js";
@@ -234,7 +235,7 @@ export const initSpec: CommandSpec<InitParsed> = {
       kind: "string",
       name: "recipes",
       valueHint: "<none|id1,id2,...>",
-      description: "Optional bundled recipes selection (comma-separated), or 'none'.",
+      description: "Optional cached recipes to vendor during init (comma-separated), or 'none'.",
     },
     {
       kind: "boolean",
@@ -548,28 +549,33 @@ async function cmdInit(opts: {
       process.stdout.write(
         renderInitSection(
           "Recipes",
-          "Optional: install recipe packs now (comma-separated IDs) or choose none.",
+          "Optional: materialize cached recipes now (comma-separated IDs) or choose none.",
         ),
       );
       if (!flags.recipes) {
-        process.stdout.write(`${renderBundledRecipesHint()}\n`);
-        const defaultRecipesLabel =
-          selectedPreset.defaultRecipes.length > 0
-            ? selectedPreset.defaultRecipes.join(", ")
-            : "none";
-        const answer = await askInput(
-          `Install optional recipes (comma separated, or none) [default: ${defaultRecipesLabel}]: `,
-        );
-        const normalized = answer.trim().toLowerCase();
-        if (normalized === "") {
-          recipes = [...selectedPreset.defaultRecipes];
-        } else if (normalized === "none") {
+        const cachedRecipes = await listCachedRecipes();
+        process.stdout.write(`${renderCachedRecipesHint(cachedRecipes)}\n`);
+        if (cachedRecipes.length === 0) {
           recipes = [];
         } else {
-          recipes = answer
-            .split(",")
-            .map((item) => item.trim())
-            .filter(Boolean);
+          const defaultRecipesLabel =
+            selectedPreset.defaultRecipes.length > 0
+              ? selectedPreset.defaultRecipes.join(", ")
+              : "none";
+          const answer = await askInput(
+            `Materialize cached recipes (comma separated, or none) [default: ${defaultRecipesLabel}]: `,
+          );
+          const normalized = answer.trim().toLowerCase();
+          if (normalized === "") {
+            recipes = [...selectedPreset.defaultRecipes];
+          } else if (normalized === "none") {
+            recipes = [];
+          } else {
+            recipes = answer
+              .split(",")
+              .map((item) => item.trim())
+              .filter(Boolean);
+          }
         }
       }
     } else {
@@ -584,7 +590,7 @@ async function cmdInit(opts: {
       process.stdout.write(
         renderInitSection(
           "Defaults Applied",
-          `Using compact ${setupProfilePreset} defaults for approvals, execution profile, and recipes. Hooks: ${hooks ? "enabled" : "disabled"}.`,
+          `Using compact ${setupProfilePreset} defaults for approvals, execution profile, and cached recipe selection. Hooks: ${hooks ? "enabled" : "disabled"}.`,
         ),
       );
     }
@@ -606,7 +612,7 @@ async function cmdInit(opts: {
     strictUnsafeConfirm = flags.strictUnsafeConfirm ?? yesPreset.defaultStrictUnsafeConfirm;
   }
 
-  validateBundledRecipesSelection(recipes);
+  await validateCachedRecipesSelection(recipes);
 
   try {
     const initRoot = path.resolve(opts.rootOverride ?? opts.cwd);
@@ -731,7 +737,7 @@ async function cmdInit(opts: {
     });
     installPaths.push(...ideRes.installPaths);
 
-    await maybeInstallBundledRecipes({
+    await maybeAddCachedRecipes({
       recipes,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,

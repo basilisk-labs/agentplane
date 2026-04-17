@@ -1,11 +1,9 @@
-import { resolveProject } from "@agentplaneorg/core";
-
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { emptyStateMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 
-import { readActiveRecipeIds } from "../overlay-project.js";
-import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
+import { readInstalledRecipesFile } from "../installed-recipes.js";
+import { resolveInstalledRecipesPath } from "../paths.js";
 import type { RecipeListFlags } from "../types.js";
 
 export async function cmdRecipeListParsed(opts: {
@@ -15,14 +13,7 @@ export async function cmdRecipeListParsed(opts: {
 }): Promise<number> {
   const flags = opts.flags;
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const [installed, activeIds] = await Promise.all([
-      readProjectInstalledRecipes(resolved),
-      readActiveRecipeIds(resolved),
-    ]);
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
 
     let recipes = installed.recipes;
     if (flags.tag) {
@@ -32,12 +23,12 @@ export async function cmdRecipeListParsed(opts: {
 
     if (recipes.length === 0) {
       if (flags.tag) {
-        process.stdout.write(`${emptyStateMessage(`installed recipes for tag ${flags.tag}`)}\n`);
+        process.stdout.write(`${emptyStateMessage(`cached recipes for tag ${flags.tag}`)}\n`);
         return 0;
       }
       process.stdout.write(
         `${emptyStateMessage(
-          "installed recipes",
+          "cached recipes",
           "Use `agentplane recipes list-remote` or `agentplane recipes install <id>`.",
         )}\n`,
       );
@@ -50,10 +41,7 @@ export async function cmdRecipeListParsed(opts: {
           {
             schema_version: 1,
             updated_at: installed.updated_at,
-            recipes: recipes.map((entry) => ({
-              ...entry,
-              active: activeIds.includes(entry.id),
-            })),
+            recipes,
           },
           null,
           2,
@@ -64,7 +52,7 @@ export async function cmdRecipeListParsed(opts: {
 
     for (const entry of recipes) {
       process.stdout.write(
-        `${entry.id}@${entry.version} [${entry.manifest.kind}${activeIds.includes(entry.id) ? ",active" : ""}] - ${entry.manifest.summary || "No summary"}\n`,
+        `${entry.id}@${entry.version} [${entry.manifest.kind}] - ${entry.manifest.summary || "No summary"}\n`,
       );
     }
     return 0;

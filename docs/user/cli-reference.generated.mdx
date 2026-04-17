@@ -76,25 +76,27 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [doctor](#doctor)
 - Recipes
   - [recipes](#recipes)
+  - [recipes add](#recipes-add)
   - [recipes cache](#recipes-cache)
   - [recipes cache prune](#recipes-cache-prune)
+  - [recipes detach](#recipes-detach)
   - [recipes explain](#recipes-explain)
   - [recipes info](#recipes-info)
   - [recipes install](#recipes-install)
   - [recipes list](#recipes-list)
   - [recipes list-remote](#recipes-list-remote)
   - [recipes remove](#recipes-remove)
+  - [recipes scenario](#recipes-scenario)
+  - [recipes scenario execute](#recipes-scenario-execute)
+  - [recipes scenario info](#recipes-scenario-info)
+  - [recipes scenario list](#recipes-scenario-list)
+  - [recipes scenario run](#recipes-scenario-run)
+  - [recipes update](#recipes-update)
 - Release
   - [release](#release)
   - [release apply](#release-apply)
   - [release candidate](#release-candidate)
   - [release plan](#release-plan)
-- Scenario
-  - [scenario](#scenario)
-  - [scenario execute](#scenario-execute)
-  - [scenario info](#scenario-info)
-  - [scenario list](#scenario-list)
-  - [scenario run](#scenario-run)
 - Setup
   - [init](#init)
   - [upgrade](#upgrade)
@@ -1691,6 +1693,34 @@ Usage:
 agentplane recipes <subcommand> [options]
 ```
 
+### recipes add
+
+Vendor a cached recipe into the current project.
+
+Usage:
+
+```text
+agentplane recipes add <id|id@version> [options]
+```
+
+Options:
+
+- `--mode <copy|link>`: Materialization mode for the project-local package. (choices=copy|link)
+
+Examples:
+
+```sh
+agentplane recipes add tdd
+```
+
+- Vendor the latest cached recipe into the project.
+
+```sh
+agentplane recipes add tdd@1.2.0 --mode link
+```
+
+- Link a cached recipe into the project for local recipe development.
+
 ### recipes cache
 
 Manage recipes cache.
@@ -1736,9 +1766,27 @@ agentplane recipes cache prune --all
 
 - Remove everything.
 
+### recipes detach
+
+Convert a linked vendored recipe into a project-local copy.
+
+Usage:
+
+```text
+agentplane recipes detach <id>
+```
+
+Examples:
+
+```sh
+agentplane recipes detach tdd
+```
+
+- Freeze a linked recipe into a portable project copy before sharing the repo.
+
 ### recipes explain
 
-Show detailed info for an installed recipe.
+Show detailed info for a vendored recipe.
 
 Usage:
 
@@ -1752,11 +1800,11 @@ Examples:
 agentplane recipes explain viewer
 ```
 
-- Show detailed recipe info.
+- Show detailed project-local recipe info.
 
 ### recipes info
 
-Show installed recipe metadata.
+Show cached recipe metadata.
 
 Usage:
 
@@ -1770,11 +1818,11 @@ Examples:
 agentplane recipes info viewer
 ```
 
-- Show recipe metadata.
+- Show cached recipe metadata.
 
 ### recipes install
 
-Install a recipe from remote index, local archive, or URL.
+Install a recipe into the global cache from remote index, local archive, or URL.
 
 Usage:
 
@@ -1787,9 +1835,9 @@ agentplane recipes install --url <url> [--yes] [--on-conflict <fail|rename|overw
 
 Options:
 
-- `--name <id>`: Install from remote index by recipe id.
-- `--path <path>`: Install from local recipe archive path.
-- `--url <url>`: Install from recipe archive URL.
+- `--name <id>`: Cache from remote index by recipe id.
+- `--path <path>`: Cache from local recipe archive path.
+- `--url <url>`: Cache from recipe archive URL.
 - `--index <path|url>`: Override recipes index location (used when installing by name / auto-name).
 - `--refresh`: Refresh remote index cache before installing. (default=false)
 - `--yes`: Auto-approve network prompts when allowed by config. (default=false)
@@ -1823,7 +1871,7 @@ agentplane recipes install viewer --on-conflict overwrite
 
 ### recipes list
 
-List installed recipes.
+List cached recipes.
 
 Usage:
 
@@ -1834,7 +1882,7 @@ agentplane recipes list [options]
 Options:
 
 - `--full`: Print full JSON payload. (default=false)
-- `--tag <tag>`: Filter installed recipes by tag.
+- `--tag <tag>`: Filter cached recipes by tag.
 
 Examples:
 
@@ -1842,13 +1890,13 @@ Examples:
 agentplane recipes list
 ```
 
-- List installed recipes.
+- List cached recipes.
 
 ```sh
 agentplane recipes list --tag cli
 ```
 
-- List installed recipes with a tag.
+- List cached recipes with a tag.
 
 ```sh
 agentplane recipes list --full
@@ -1894,7 +1942,7 @@ agentplane recipes list-remote --index ./index.json --refresh
 
 ### recipes remove
 
-Remove an installed recipe.
+Remove a vendored recipe from the current project.
 
 Usage:
 
@@ -1908,7 +1956,119 @@ Examples:
 agentplane recipes remove viewer
 ```
 
-- Remove a recipe by id.
+- Remove a vendored recipe by id.
+
+### recipes scenario
+
+Recipe scenario commands.
+
+Usage:
+
+```text
+agentplane recipes scenario <subcommand> [options]
+```
+
+### recipes scenario execute
+
+Materialize a recipe-backed task and execute it through the shared runner flow.
+
+Resolves a recipe scenario, materializes a task from its explicit task_template, and executes the shared runner with recipe context bundled alongside the created task.
+
+Usage:
+
+```text
+agentplane recipes scenario execute <recipe:scenario>
+```
+
+Examples:
+
+```sh
+agentplane recipes scenario execute viewer:demo
+```
+
+- Create a task from the scenario template and execute it through the configured runner.
+
+### recipes scenario info
+
+Show manifest-backed scenario details and normalized run profile.
+
+Usage:
+
+```text
+agentplane recipes scenario info <recipe:scenario>
+```
+
+Examples:
+
+```sh
+agentplane recipes scenario info viewer:demo
+```
+
+- Inspect resolver-backed scenario metadata before execution.
+
+### recipes scenario list
+
+List resolver-backed scenario descriptors from installed recipes.
+
+Usage:
+
+```text
+agentplane recipes scenario list
+```
+
+Examples:
+
+```sh
+agentplane recipes scenario list
+```
+
+- List available recipe scenarios.
+
+### recipes scenario run
+
+Preview a validated scenario plan without creating a task or running a runner.
+
+Usage:
+
+```text
+agentplane recipes scenario run <recipe:scenario>
+```
+
+Examples:
+
+```sh
+agentplane recipes scenario run viewer:demo
+```
+
+- Validate a scenario and inspect the preview plan before \`recipes scenario execute\`.
+
+### recipes update
+
+Refresh a vendored recipe from the cached source.
+
+Usage:
+
+```text
+agentplane recipes update <id> [options]
+```
+
+Options:
+
+- `--force`: Overwrite local project edits in the vendored recipe. (default=false)
+
+Examples:
+
+```sh
+agentplane recipes update tdd
+```
+
+- Sync a clean vendored recipe to the current cached source.
+
+```sh
+agentplane recipes update tdd --force
+```
+
+- Overwrite local vendored edits with the cached source.
 
 ## Release
 
@@ -2034,92 +2194,6 @@ agentplane release plan --minor --yes
 
 - Generate a plan for the next minor release (explicit approval required).
 
-## Scenario
-
-### scenario
-
-Recipe scenario commands.
-
-Usage:
-
-```text
-agentplane scenario <subcommand> [options]
-```
-
-### scenario execute
-
-Materialize a recipe-backed task and execute it through the shared runner flow.
-
-Resolves a recipe scenario, materializes a task from its explicit task_template, and executes the shared runner with recipe context bundled alongside the created task.
-
-Usage:
-
-```text
-agentplane scenario execute <recipe:scenario>
-```
-
-Examples:
-
-```sh
-agentplane scenario execute viewer:demo
-```
-
-- Create a task from the scenario template and execute it through the configured runner.
-
-### scenario info
-
-Show manifest-backed scenario details and normalized run profile.
-
-Usage:
-
-```text
-agentplane scenario info <recipe:scenario>
-```
-
-Examples:
-
-```sh
-agentplane scenario info viewer:demo
-```
-
-- Inspect resolver-backed scenario metadata before execution.
-
-### scenario list
-
-List resolver-backed scenario descriptors from installed recipes.
-
-Usage:
-
-```text
-agentplane scenario list
-```
-
-Examples:
-
-```sh
-agentplane scenario list
-```
-
-- List available recipe scenarios.
-
-### scenario run
-
-Preview a validated scenario plan without creating a task or running a runner.
-
-Usage:
-
-```text
-agentplane scenario run <recipe:scenario>
-```
-
-Examples:
-
-```sh
-agentplane scenario run viewer:demo
-```
-
-- Validate a scenario and inspect the preview plan before \`scenario execute\`.
-
 ## Setup
 
 ### init
@@ -2147,7 +2221,7 @@ Options:
 - `--require-verify-approval <true|false>`: Require explicit approval before recording verification.
 - `--execution-profile <conservative|balanced|aggressive>`: Execution profile preset controlling autonomy, reasoning, and tool budgets. (choices=conservative|balanced|aggressive)
 - `--strict-unsafe-confirm <true|false>`: Require strict explicit confirmations for additional unsafe actions.
-- `--recipes <none|id1,id2,...>`: Optional bundled recipes selection (comma-separated), or 'none'.
+- `--recipes <none|id1,id2,...>`: Optional cached recipes to vendor during init (comma-separated), or 'none'.
 - `--force`: Overwrite init conflicts by deleting existing paths. (default=false)
 - `--backup`: Backup init conflicts before overwriting. (default=false)
 - `--yes`: Non-interactive mode (do not prompt; use defaults for missing flags). (default=false)

@@ -1,17 +1,21 @@
 import { generateKeyPairSync, sign, type KeyObject } from "node:crypto";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, vi } from "vitest";
 
 import {
+  cmdRecipeAddParsed,
   cmdRecipeCachePruneParsed,
+  cmdRecipeDetachParsed,
   cmdRecipeExplainParsed,
   cmdRecipeInfoParsed,
   cmdRecipeInstall,
   cmdRecipeListParsed,
   cmdRecipeListRemoteParsed,
   cmdRecipeRemoveParsed,
+  cmdRecipeUpdateParsed,
+  hashRecipeTree,
 } from "./recipes.js";
 import { cmdScenarioInfoParsed, cmdScenarioListParsed, cmdScenarioRunParsed } from "./scenario.js";
 import { exitCodeForError } from "../cli/exit-codes.js";
@@ -24,12 +28,15 @@ import {
 } from "../cli/run-cli.test-helpers.js";
 import { CliError } from "../shared/errors.js";
 import { recipesCachePruneSpec } from "./recipes/cache-prune.command.js";
+import { recipesAddSpec } from "./recipes/add.command.js";
 import { recipesExplainSpec } from "./recipes/explain.command.js";
 import { recipesInfoSpec } from "./recipes/info.command.js";
 import { recipesInstallSpec } from "./recipes/install.spec.js";
 import { recipesListRemoteSpec } from "./recipes/list-remote.command.js";
 import { recipesListSpec } from "./recipes/list.command.js";
+import { recipesDetachSpec } from "./recipes/detach.command.js";
 import { recipesRemoveSpec } from "./recipes/remove.command.js";
+import { recipesUpdateSpec } from "./recipes/update.command.js";
 import { scenarioInfoSpec } from "./scenario/info.command.js";
 import { scenarioListSpec } from "./scenario/list.command.js";
 import { scenarioRunSpec } from "./scenario/run.command.js";
@@ -100,7 +107,11 @@ export async function writeSignedIndex(indexPath: string, payload: unknown): Pro
 }
 
 export function resolveProjectRecipeDir(projectDir: string, recipeId: string): string {
-  return path.join(projectDir, ".agentplane", "recipes", recipeId);
+  return path.join(projectDir, ".agentplane", "recipes", "packages", recipeId);
+}
+
+export function resolveProjectRecipesRegistryPath(projectDir: string): string {
+  return path.join(projectDir, ".agentplane", "recipes", "registry.json");
 }
 
 function readStringFixtureValue(
@@ -113,9 +124,16 @@ function readStringFixtureValue(
 }
 
 export async function writeInstalledRecipes(projectDir: string, recipes: unknown[]): Promise<void> {
-  const recipesDir = path.join(projectDir, ".agentplane", "recipes");
+  const recipesHome = requireRecipesTempHome();
+  const recipesDir = path.join(recipesHome, "recipes-store");
   await rm(recipesDir, { recursive: true, force: true });
   await mkdir(recipesDir, { recursive: true });
+  const vendoredRecipesDir = path.join(projectDir, ".agentplane", "recipes", "packages");
+  await rm(vendoredRecipesDir, { recursive: true, force: true });
+  await mkdir(vendoredRecipesDir, { recursive: true });
+
+  const cachedEntries: Record<string, unknown>[] = [];
+  const registryEntries: Record<string, unknown>[] = [];
 
   for (const entry of recipes) {
     const record = entry as Record<string, unknown>;
@@ -137,31 +155,28 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
       : Array.isArray(manifest.tags)
         ? manifest.tags
         : [];
-    const recipeDir = resolveProjectRecipeDir(projectDir, recipeId);
+    const recipeDir = path.join(recipesDir, recipeId, recipeVersion);
     await mkdir(recipeDir, { recursive: true });
     await writeFile(
       path.join(recipeDir, "manifest.json"),
       JSON.stringify(manifest, null, 2),
       "utf8",
     );
+    const vendoredRecipeDir = resolveProjectRecipeDir(projectDir, recipeId);
+    await mkdir(vendoredRecipeDir, { recursive: true });
     await writeFile(
-      path.join(recipeDir, ".install.json"),
-      JSON.stringify(
-        {
-          schema_version: 1,
-          id: recipeId,
-          version: recipeVersion,
-          source,
-          installed_at: installedAt,
-          tags,
-          install_mode: "project-local",
-        },
-        null,
-        2,
-      ),
+      path.join(vendoredRecipeDir, "manifest.json"),
+      JSON.stringify(manifest, null, 2),
       "utf8",
     );
-
+    cachedEntries.push({
+      id: recipeId,
+      version: recipeVersion,
+      source,
+      installed_at: installedAt,
+      tags,
+      manifest,
+    });
     const scenarios = Array.isArray(manifest.scenarios)
       ? manifest.scenarios.filter(
           (scenario): scenario is Record<string, unknown> =>
@@ -181,31 +196,76 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
         ? scenario.required_inputs.filter((entry): entry is string => typeof entry === "string")
         : [];
       const scenarioPath = path.join(recipeDir, scenarioFile);
+      const vendoredScenarioPath = path.join(vendoredRecipeDir, scenarioFile);
       await mkdir(path.dirname(scenarioPath), { recursive: true });
-      await writeFile(
-        scenarioPath,
-        JSON.stringify(
-          {
-            schema_version: "1",
-            id: scenarioId,
-            summary: scenarioSummary,
-            goal: scenarioSummary,
-            task_template: {
-              title: `${scenarioName} task`,
-              description: scenarioSummary,
-              owner: "CODER",
-            },
-            inputs: scenarioInputs.map((name) => ({ name, type: "string" })),
-            outputs: scenarioOutputs.map((name) => ({ name, type: "string" })),
-            steps: [],
+      await mkdir(path.dirname(vendoredScenarioPath), { recursive: true });
+      const scenarioPayload = JSON.stringify(
+        {
+          schema_version: "1",
+          id: scenarioId,
+          summary: scenarioSummary,
+          goal: scenarioSummary,
+          task_template: {
+            title: `${scenarioName} task`,
+            description: scenarioSummary,
+            owner: "CODER",
           },
-          null,
-          2,
-        ),
-        "utf8",
+          inputs: scenarioInputs.map((name) => ({ name, type: "string" })),
+          outputs: scenarioOutputs.map((name) => ({ name, type: "string" })),
+          steps: [],
+        },
+        null,
+        2,
       );
+      await writeFile(scenarioPath, scenarioPayload, "utf8");
+      await writeFile(vendoredScenarioPath, scenarioPayload, "utf8");
     }
+
+    const tools = Array.isArray(manifest.tools)
+      ? manifest.tools.filter(
+          (tool): tool is Record<string, unknown> => !!tool && typeof tool === "object",
+        )
+      : [];
+    for (const tool of tools) {
+      const entrypoint = readStringFixtureValue(tool, "entrypoint", "").trim();
+      if (!entrypoint) continue;
+      const toolSource = "console.log('ok');\n";
+      const toolPath = path.join(recipeDir, entrypoint);
+      const vendoredToolPath = path.join(vendoredRecipeDir, entrypoint);
+      await mkdir(path.dirname(toolPath), { recursive: true });
+      await mkdir(path.dirname(vendoredToolPath), { recursive: true });
+      await writeFile(toolPath, toolSource, "utf8");
+      await writeFile(vendoredToolPath, toolSource, "utf8");
+    }
+
+    registryEntries.push({
+      id: recipeId,
+      version: recipeVersion,
+      path: `packages/${recipeId}`,
+      active: false,
+      materialization: "copy",
+      source_ref: source,
+      source_sha256: await hashRecipeTree(recipeDir),
+      vendored_sha256: await hashRecipeTree(vendoredRecipeDir),
+      installed_at: installedAt,
+      tags,
+    });
   }
+
+  await writeInstalledRecipesRegistry(cachedEntries);
+  await writeFile(
+    resolveProjectRecipesRegistryPath(projectDir),
+    JSON.stringify(
+      {
+        schema_version: 1,
+        updated_at: "2026-02-05T00:00:00Z",
+        recipes: registryEntries,
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
 }
 
 export async function writeInstalledRecipesRegistry(recipes: unknown[]): Promise<void> {
@@ -222,8 +282,7 @@ export function skillEntry(overrides?: Partial<Record<string, unknown>>) {
   return {
     id: "RECIPE_SKILL",
     summary: "Recipe skill",
-    kind: "agent-skill",
-    file: "skills/recipe.json",
+    file: "skills/recipe.md",
     ...overrides,
   };
 }
@@ -246,7 +305,7 @@ export function agentEntry(overrides?: Partial<Record<string, unknown>>) {
     summary: "Recipe agent",
     skills: ["RECIPE_SKILL"],
     tools: ["RECIPE_TOOL"],
-    file: "agents/recipe.json",
+    file: "agents/recipe.md",
     ...overrides,
   };
 }
@@ -312,6 +371,8 @@ export async function installRecipe(opts: {
   projectDir: string;
   archivePath?: string;
   tags?: string[];
+  vendor?: boolean;
+  mode?: "copy" | "link";
 }): Promise<void> {
   const { archivePath } = opts.archivePath
     ? { archivePath: opts.archivePath }
@@ -323,6 +384,21 @@ export async function installRecipe(opts: {
       command: "install",
       args: ["--path", archivePath],
     });
+    if (opts.vendor ?? true) {
+      const recipesHome = process.env.AGENTPLANE_HOME?.trim() ?? requireRecipesTempHome();
+      const installed = JSON.parse(
+        await readFile(path.join(recipesHome, "recipes.json"), "utf8"),
+      ) as { recipes?: { id: string; version: string }[] };
+      const latest = installed.recipes?.at(-1);
+      if (!latest) throw new Error("cached recipe registry unexpectedly empty after install");
+      await runRecipesTest({
+        cwd: opts.projectDir,
+        command: "add",
+        args: opts.mode
+          ? [`${latest.id}@${latest.version}`, "--mode", opts.mode]
+          : [`${latest.id}@${latest.version}`],
+      });
+    }
   } finally {
     io.restore();
   }
@@ -366,7 +442,7 @@ export function resolveInstalledScenarioPath(
   recipeId: string,
   scenarioFile = path.join("scenarios", "recipe-scenario.json"),
 ): string {
-  return path.join(projectDir, ".agentplane", "recipes", recipeId, scenarioFile);
+  return path.join(projectDir, ".agentplane", "recipes", "packages", recipeId, scenarioFile);
 }
 
 export async function runRecipesTest(opts: {
@@ -420,9 +496,35 @@ export async function runRecipesTest(opts: {
       const parsed = parseCommandArgv(recipesInstallSpec, opts.args).parsed;
       return await cmdRecipeInstall({ cwd: opts.cwd, rootOverride: opts.rootOverride, ...parsed });
     }
+    case "add": {
+      const parsed = parseCommandArgv(recipesAddSpec, opts.args).parsed;
+      return await cmdRecipeAddParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        recipeRef: parsed.recipeRef,
+        mode: parsed.mode,
+      });
+    }
     case "remove": {
       const parsed = parseCommandArgv(recipesRemoveSpec, opts.args).parsed;
       return await cmdRecipeRemoveParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        id: parsed.id,
+      });
+    }
+    case "update": {
+      const parsed = parseCommandArgv(recipesUpdateSpec, opts.args).parsed;
+      return await cmdRecipeUpdateParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        id: parsed.id,
+        force: parsed.force,
+      });
+    }
+    case "detach": {
+      const parsed = parseCommandArgv(recipesDetachSpec, opts.args).parsed;
+      return await cmdRecipeDetachParsed({
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         id: parsed.id,

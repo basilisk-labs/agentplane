@@ -5,7 +5,8 @@ import {
   AGENTPLANE_HOME_ENV,
   GLOBAL_RECIPES_DIR_NAME,
   INSTALLED_RECIPES_NAME,
-  RECIPE_INSTALL_META_NAME,
+  PROJECT_RECIPES_PACKAGES_DIR_NAME,
+  PROJECT_RECIPES_REGISTRY_NAME,
   PROJECT_RECIPES_CACHE_DIR_NAME,
   RECIPES_DIR_NAME,
   RECIPES_REMOTE_INDEX_NAME,
@@ -42,18 +43,26 @@ export function resolveProjectRecipesDir(resolved: { agentplaneDir: string }): s
   return path.join(resolved.agentplaneDir, RECIPES_DIR_NAME);
 }
 
+export function resolveProjectRecipesPackagesDir(resolved: { agentplaneDir: string }): string {
+  return path.join(resolveProjectRecipesDir(resolved), PROJECT_RECIPES_PACKAGES_DIR_NAME);
+}
+
+export function resolveProjectRecipesRegistryPath(resolved: { agentplaneDir: string }): string {
+  return path.join(resolveProjectRecipesDir(resolved), PROJECT_RECIPES_REGISTRY_NAME);
+}
+
+export function resolveProjectVendoredRecipeDir(
+  resolved: { agentplaneDir: string },
+  recipeId: string,
+): string {
+  return path.join(resolveProjectRecipesPackagesDir(resolved), recipeId);
+}
+
 export function resolveProjectInstalledRecipeDir(
   resolved: { agentplaneDir: string },
   recipeId: string,
 ): string {
-  return path.join(resolveProjectRecipesDir(resolved), recipeId);
-}
-
-export function resolveProjectRecipeInstallMetaPath(
-  resolved: { agentplaneDir: string },
-  recipeId: string,
-): string {
-  return path.join(resolveProjectInstalledRecipeDir(resolved, recipeId), RECIPE_INSTALL_META_NAME);
+  return resolveProjectVendoredRecipeDir(resolved, recipeId);
 }
 
 export function resolveProjectRecipesCacheDir(resolved: { agentplaneDir: string }): string {
@@ -70,4 +79,8 @@ export function resolveProjectGeneratedDir(resolved: { agentplaneDir: string }):
 
 export function resolveProjectOverlayBundlePath(resolved: { agentplaneDir: string }): string {
   return path.join(resolveProjectGeneratedDir(resolved), "overlay-bundle.json");
+}
+
+export function resolveProjectRecipeAssetsPath(resolved: { agentplaneDir: string }): string {
+  return path.join(resolveProjectGeneratedDir(resolved), "recipe-assets.json");
 }

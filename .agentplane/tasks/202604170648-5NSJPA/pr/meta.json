@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604170648-5NSJPA/markdown-first-assets",
+  "created_at": "2026-04-17T09:28:18.874Z",
+  "head_sha": "1420142651ea2d57ebc5062f57cfcef27e8db132",
+  "last_verified_at": "2026-04-17T09:41:55.051Z",
+  "last_verified_sha": "e67fe17e23810763a8ad858e126113595c2b2f82",
+  "schema_version": 1,
+  "task_id": "202604170648-5NSJPA",
+  "updated_at": "2026-04-17T09:42:38.542Z",
+  "verify": {
+    "status": "pass"
+  }
+}

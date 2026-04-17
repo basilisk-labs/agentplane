@@ -239,7 +239,7 @@ export async function cmdScenarioListParsed(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "scenario list", root: opts.rootOverride ?? null });
+    throw mapCoreError(err, { command: "recipes scenario list", root: opts.rootOverride ?? null });
   }
 }
 
@@ -283,7 +283,7 @@ export async function cmdScenarioInfoParsed(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "scenario info", root: opts.rootOverride ?? null });
+    throw mapCoreError(err, { command: "recipes scenario info", root: opts.rootOverride ?? null });
   }
 }
 
@@ -375,12 +375,12 @@ export async function cmdScenarioRunParsed(opts: {
     ]);
     output.line("Status: preview only; no task created and no runner executed.");
     output.line(
-      `Next: use \`agentplane scenario execute ${selection.recipe_id}:${selection.scenario_id}\` ` +
+      `Next: use \`agentplane recipes scenario execute ${selection.recipe_id}:${selection.scenario_id}\` ` +
         "to materialize and run this scenario.",
     );
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "scenario run", root: opts.rootOverride ?? null });
+    throw mapCoreError(err, { command: "recipes scenario run", root: opts.rootOverride ?? null });
   }
 }

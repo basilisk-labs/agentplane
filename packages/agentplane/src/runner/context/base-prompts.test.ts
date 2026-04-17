@@ -180,20 +180,12 @@ describe("collectRunnerBasePrompts", () => {
       JSON.stringify({ id: "CODER", role: "Repo-local coder profile" }, null, 2),
     );
     await writeFile(
-      path.join(recipeDir, "agents", "recipe.json"),
-      JSON.stringify(
-        { id: "RECIPE_AGENT", role: "Recipe agent", prompt: "Use recipe local policy." },
-        null,
-        2,
-      ),
+      path.join(recipeDir, "agents", "recipe.md"),
+      "# Recipe Agent\n\nUse recipe local policy.\n",
     );
     await writeFile(
-      path.join(recipeDir, "skills", "analysis.json"),
-      JSON.stringify(
-        { id: "RECIPE_SKILL", summary: "Recipe skill prompt", instructions: ["Inspect bundle"] },
-        null,
-        2,
-      ),
+      path.join(recipeDir, "skills", "analysis.md"),
+      "# Recipe Skill\n\nInspect bundle.\n",
     );
 
     const prompts = await collectRunnerBasePrompts({
@@ -212,8 +204,8 @@ describe("collectRunnerBasePrompts", () => {
           goal: "Preview installed tasks.",
           summary: "Recipe scenario",
         },
-        agents: [{ id: "RECIPE_AGENT", file: "agents/recipe.json", summary: "Recipe agent" }],
-        skills: [{ id: "RECIPE_SKILL", file: "skills/analysis.json", summary: "Recipe skill" }],
+        agents: [{ id: "RECIPE_AGENT", file: "agents/recipe.md", summary: "Recipe agent" }],
+        skills: [{ id: "RECIPE_SKILL", file: "skills/analysis.md", summary: "Recipe skill" }],
         tools: [
           {
             id: "RECIPE_TOOL",
@@ -236,11 +228,12 @@ describe("collectRunnerBasePrompts", () => {
       "recipe.tools_summary",
     ]);
     expect(prompts[3]?.content).toContain('"goal": "Preview installed tasks."');
-    expect(prompts[4]?.source).toBe(".agentplane/recipes/viewer/agents/recipe.json");
-    expect(prompts[4]?.content).toContain('"prompt": "Use recipe local policy."');
+    expect(prompts[4]?.source).toBe(".agentplane/recipes/viewer/agents/recipe.md");
+    expect(prompts[4]?.content).toContain("Use recipe local policy.");
     expect(prompts[4]?.resolution?.winner.layer).toBe("extension");
     expect(prompts[4]?.resolution?.conflicts[0]?.source).toBe("recipe:viewer:agent:RECIPE_AGENT");
-    expect(prompts[5]?.source).toBe(".agentplane/recipes/viewer/skills/analysis.json");
+    expect(prompts[5]?.source).toBe(".agentplane/recipes/viewer/skills/analysis.md");
+    expect(prompts[5]?.content).toContain("Inspect bundle.");
     expect(prompts[5]?.resolution?.winner.layer).toBe("extension");
     expect(prompts[6]?.content).toContain('"entrypoint": "tools/run.js"');
   });
