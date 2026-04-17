@@ -313,7 +313,7 @@ jobs:
           AGENTPLANE_PUBLISH_JOB_STATUS: ${{ job.status }}
         run: |
           set -euo pipefail
-          node scripts/write-publish-result-manifest.mjs \
+          node scripts/manifest.mjs publish-result \
             --out .agentplane/.release/publish/publish-result.json \
             --sha "${{ needs.detect.outputs.sha }}" \
             --version "${{ needs.detect.outputs.version }}" \

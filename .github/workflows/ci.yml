@@ -228,7 +228,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .agentplane/.release/ready
-          node scripts/write-release-ready-manifest.mjs \
+          node scripts/manifest.mjs release-ready \
             --out .agentplane/.release/ready/release-ready.json \
             --sha "${{ steps.target.outputs.sha }}" \
             --ref "${AGENTPLANE_CI_REF}" \

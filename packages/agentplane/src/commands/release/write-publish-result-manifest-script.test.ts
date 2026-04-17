@@ -7,7 +7,7 @@ import { promisify } from "node:util";
 import { afterEach, describe, expect, it } from "vitest";
 
 const execFileAsync = promisify(execFile);
-const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/write-publish-result-manifest.mjs");
+const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/manifest.mjs");
 
 const roots: string[] = [];
 
@@ -18,7 +18,7 @@ async function makeRoot() {
 }
 
 async function runScript(root: string, args: string[] = [], env: Record<string, string> = {}) {
-  return execFileAsync("node", [SCRIPT_PATH, ...args], {
+  return execFileAsync("node", [SCRIPT_PATH, "publish-result", ...args], {
     cwd: root,
     env: {
       ...process.env,
@@ -35,7 +35,7 @@ afterEach(async () => {
   }
 });
 
-describe("write-publish-result-manifest script", () => {
+describe("manifest script publish-result command", () => {
   it("emits a successful publish-result manifest when publish completed cleanly", async () => {
     const root = await makeRoot();
     const outPath = path.join(root, ".agentplane", ".release", "publish", "publish-result.json");

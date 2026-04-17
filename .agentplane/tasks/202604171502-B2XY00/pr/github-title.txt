@@ -1,0 +1,1 @@
+release/scripts: Unify manifest writer scripts behind scripts/manifest.mjs (B2XY00)
