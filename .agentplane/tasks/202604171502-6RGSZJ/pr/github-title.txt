@@ -1,0 +1,1 @@
+architecture/lint: Add ESLint import boundaries for core shared and commands layers (6RGSZJ)
