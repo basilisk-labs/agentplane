@@ -1,10 +1,11 @@
 ---
 id: "202604171510-8338XT"
 title: "Expose CLI harness via @agentplane/testkit facade"
-status: "DOING"
+result_summary: "Merged via PR #422."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-17T20:21:58.689Z"
   updated_by: "CODER"
   note: "Local verification passed after rebase to main: testkit facade branch keeps the package external, full fast pre-push CI is green, and branch pushed to origin."
-commit: null
+commit:
+  hash: "65e600c606da19353a85dbc437ef72cad414a9a7"
+  message: "cli/tests: Expose CLI harness via @agentplane/testkit facade (8338XT) (#422)"
 comments:
   -
     author: "CODER"
     body: "Start: move the CLI test-helper implementation out of the old cli path, expose @agentplane/testkit/cli as the canonical import surface, and keep only the minimum compatibility shim needed for remaining in-package helpers."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #422 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -51,9 +57,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local verification passed after rebase to main: testkit facade branch keeps the package external, full fast pre-push CI is green, and branch pushed to origin."
+  -
+    type: "status"
+    at: "2026-04-17T20:22:45.320Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #422 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T20:21:58.719Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T20:22:45.326Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move the CLI test helper implementation out of the old src/cli path, expose @agentplane/testkit/cli as the canonical import surface, and keep legacy agentplane-only imports working through a compatibility shim."
 sections:
   Summary: |-
