@@ -9,7 +9,7 @@ import { exitCodeForError } from "./exit-codes.js";
 import { loadDotEnv } from "../shared/env.js";
 import { CliError } from "../shared/errors.js";
 import type { CommandContext } from "../commands/shared/task-backend.js";
-import { resolveCommandContext } from "../usecases/context/resolve-context.js";
+import { resolveCommandContext } from "../runtime/execution-context.js";
 import { getVersion } from "../meta/version.js";
 import { getApprovalRequirements } from "../commands/shared/approval-requirements.js";
 import { parseCommandArgv } from "./spec/parse.js";

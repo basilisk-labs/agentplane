@@ -8,9 +8,9 @@ import {
   createTaskIntakeContext,
   materializeTaskGraphDraft,
 } from "../../runtime/task-intake/index.js";
+import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import { CliError } from "../../shared/errors.js";
 import { buildTaskDocState } from "../../shared/task-doc-state.js";
-import { makeReadOnlyUsecaseContext } from "../../usecases/context/resolve-context.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import type { TaskData } from "../../backends/task-backend/shared/types.js";
 import {
@@ -195,7 +195,7 @@ export async function runTaskNewParsed(opts: {
       });
     }
     const taskId = await ctx.taskBackend.generateTaskId({ length: suffixLength, attempts: 1000 });
-    const executionContext = await makeReadOnlyUsecaseContext(ctx);
+    const executionContext = await makeReadOnlyExecutionContext(ctx);
     const createdAt = nowIso();
     const docState = buildTaskDocState({
       doc: defaultTaskDocV3({ title: p.title, description: p.description }),

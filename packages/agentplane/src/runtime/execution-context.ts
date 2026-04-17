@@ -1,33 +1,27 @@
 import type { AgentplaneConfig, ResolvedProject } from "@agentplaneorg/core";
-import type { Adapters } from "../../adapters/index.js";
-import { buildAdapters } from "../../adapters/index.js";
-import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
-import { PolicyEngine } from "../../policy/engine.js";
-import { createApprovalRuntime, type ApprovalRuntime } from "../../runtime/approvals/index.js";
+import type { Adapters } from "../adapters/index.js";
+import { buildAdapters } from "../adapters/index.js";
+import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
+import { PolicyEngine } from "../policy/engine.js";
+import { createApprovalRuntime, type ApprovalRuntime } from "./approvals/index.js";
 import {
   resolveTaskBackendCapabilityRegistry,
   type AgentplaneCapabilityRegistry,
-} from "../../runtime/capabilities/index.js";
+} from "./capabilities/index.js";
 import {
   resolveExecutionProfileRuntime,
   type ResolvedExecutionProfileRuntime,
-} from "../../runtime/execution-profile/index.js";
+} from "./execution-profile/index.js";
 import {
   buildFrameworkExplainPayload,
   type FrameworkExplainPayload,
-} from "../../runtime/explain/index.js";
+} from "./explain/index.js";
 import {
   resolveHarnessFromCommandContext,
   type ResolvedHarnessContract,
-} from "../../runtime/harness/index.js";
-import {
-  buildFrameworkProtocolSurface,
-  type FrameworkProtocolSurface,
-} from "../../runtime/protocol/index.js";
-import {
-  createTaskIntakeRuntime,
-  type TaskIntakeRuntime,
-} from "../../runtime/task-intake/index.js";
+} from "./harness/index.js";
+import { buildFrameworkProtocolSurface, type FrameworkProtocolSurface } from "./protocol/index.js";
+import { createTaskIntakeRuntime, type TaskIntakeRuntime } from "./task-intake/index.js";
 
 export type AgentplaneRepositoryContext = {
   git_root: string;
@@ -42,7 +36,7 @@ export type AgentplaneBackendContext = {
   task_backend: CommandContext["taskBackend"];
 };
 
-export type ReadOnlyUsecaseContext = {
+export type ReadOnlyExecutionContext = {
   command: CommandContext;
   project: CommandContext["resolvedProject"];
   repo: AgentplaneRepositoryContext;
@@ -60,16 +54,12 @@ export type ReadOnlyUsecaseContext = {
   approvalRuntime: ApprovalRuntime;
 };
 
-export type UsecaseContext = ReadOnlyUsecaseContext & {
+export type ExecutionContext = ReadOnlyExecutionContext & {
   adapters: Adapters;
 };
 
-export type AgentplaneReadOnlyExecutionContext = ReadOnlyUsecaseContext;
-
-export type AgentplaneExecutionContext = UsecaseContext;
-
-const READ_ONLY_CONTEXT_CACHE = new WeakMap<CommandContext, Promise<ReadOnlyUsecaseContext>>();
-const USECASE_CONTEXT_CACHE = new WeakMap<CommandContext, Promise<UsecaseContext>>();
+const READ_ONLY_CONTEXT_CACHE = new WeakMap<CommandContext, Promise<ReadOnlyExecutionContext>>();
+const CONTEXT_CACHE = new WeakMap<CommandContext, Promise<ExecutionContext>>();
 
 export async function resolveCommandContext(opts: {
   cwd: string;
@@ -85,55 +75,49 @@ export async function resolveCommandContext(opts: {
   });
 }
 
-export async function resolveContext(opts: {
+export async function resolveReadOnlyExecutionContext(opts: {
   cwd: string;
   rootOverride?: string | null;
   resolvedProject?: ResolvedProject;
   config?: AgentplaneConfig;
-}): Promise<ReadOnlyUsecaseContext> {
+}): Promise<ReadOnlyExecutionContext> {
   const command = await resolveCommandContext(opts);
-  return await makeReadOnlyUsecaseContext(command);
+  return await makeReadOnlyExecutionContext(command);
 }
-
-export const resolveReadOnlyExecutionContext = resolveContext;
 
 export async function resolveExecutionContext(opts: {
   cwd: string;
   rootOverride?: string | null;
   resolvedProject?: ResolvedProject;
   config?: AgentplaneConfig;
-}): Promise<AgentplaneExecutionContext> {
+}): Promise<ExecutionContext> {
   const command = await resolveCommandContext(opts);
-  return await makeUsecaseContext(command);
+  return await makeExecutionContext(command);
 }
 
-export async function makeReadOnlyUsecaseContext(
+export async function makeReadOnlyExecutionContext(
   command: CommandContext,
-): Promise<ReadOnlyUsecaseContext> {
+): Promise<ReadOnlyExecutionContext> {
   let cached = READ_ONLY_CONTEXT_CACHE.get(command);
   if (!cached) {
-    cached = buildReadOnlyUsecaseContext(command);
+    cached = buildReadOnlyExecutionContext(command);
     READ_ONLY_CONTEXT_CACHE.set(command, cached);
   }
   return await cached;
 }
 
-export async function makeUsecaseContext(command: CommandContext): Promise<UsecaseContext> {
-  let cached = USECASE_CONTEXT_CACHE.get(command);
+export async function makeExecutionContext(command: CommandContext): Promise<ExecutionContext> {
+  let cached = CONTEXT_CACHE.get(command);
   if (!cached) {
-    cached = buildUsecaseContext(command);
-    USECASE_CONTEXT_CACHE.set(command, cached);
+    cached = buildExecutionContext(command);
+    CONTEXT_CACHE.set(command, cached);
   }
   return await cached;
 }
 
-export const makeReadOnlyExecutionContext = makeReadOnlyUsecaseContext;
-
-export const makeExecutionContext = makeUsecaseContext;
-
-async function buildReadOnlyUsecaseContext(
+async function buildReadOnlyExecutionContext(
   command: CommandContext,
-): Promise<ReadOnlyUsecaseContext> {
+): Promise<ReadOnlyExecutionContext> {
   const harness = await resolveHarnessFromCommandContext(command);
   const policy = new PolicyEngine();
   const executionProfile = resolveExecutionProfileRuntime(command.config);
@@ -192,9 +176,9 @@ async function buildReadOnlyUsecaseContext(
   };
 }
 
-async function buildUsecaseContext(command: CommandContext): Promise<UsecaseContext> {
+async function buildExecutionContext(command: CommandContext): Promise<ExecutionContext> {
   return {
-    ...(await makeReadOnlyUsecaseContext(command)),
+    ...(await makeReadOnlyExecutionContext(command)),
     adapters: buildAdapters(command),
   };
 }
