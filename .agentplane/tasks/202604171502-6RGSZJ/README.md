@@ -1,10 +1,11 @@
 ---
 id: "202604171502-6RGSZJ"
 title: "Add ESLint import boundaries for core shared and commands layers"
-status: "DOING"
+result_summary: "Merged via PR #402."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-17T15:21:22.266Z"
   updated_by: "CODER"
   note: "Verified: lint and typecheck pass for the new import-boundary policy."
-commit: null
+commit:
+  hash: "194016bdb24ff1024e8da0fbeaf79ed1b1d0d14d"
+  message: "architecture/lint: Add ESLint import boundaries for core shared and commands layers (6RGSZJ) (#402)"
 comments:
   -
     author: "CODER"
     body: "Start: implementing explicit ESLint import boundaries for core shared and commands layers in an isolated task worktree after inspecting current lint config and cross-layer imports."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #402 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: lint and typecheck pass for the new import-boundary policy."
+  -
+    type: "status"
+    at: "2026-04-17T18:59:18.957Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #402 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T15:21:22.268Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T18:59:18.962Z"
+doc_updated_by: "INTEGRATOR"
 description: "Enforce package and layer boundaries for core, shared, and commands code so future refactors cannot reintroduce cross-layer imports."
 sections:
   Summary: |-
