@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171154-1WZZJK/recipes-version-parity",
   "created_at": "2026-04-17T12:25:09.953Z",
-  "head_sha": "1e209ccc1929378efb6d2d8c24efc5ade49d1300",
+  "head_sha": "4999d4b4eb44550f1dfffe33c3c647b8d20cde59",
   "last_verified_at": "2026-04-17T12:34:35.820Z",
   "last_verified_sha": "a21606d354a3dbe985c9efe6a1bd4bcedda2976e",
+  "merge_commit": "45ed50d51883aa3f62ac79d625c00e46c7230426",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T14:24:39Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171154-1WZZJK",
-  "updated_at": "2026-04-17T12:37:15.432Z",
+  "updated_at": "2026-04-17T14:24:39Z",
   "verify": {
     "status": "pass"
   }
