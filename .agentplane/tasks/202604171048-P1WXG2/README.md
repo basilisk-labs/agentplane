@@ -1,10 +1,11 @@
 ---
 id: "202604171048-P1WXG2"
 title: "Publish recipes closure-state cleanup to protected main"
-status: "DOING"
+result_summary: "Merged via PR #374."
+status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-17T10:49:37.091Z"
   updated_by: "INTEGRATOR"
   note: "Published diff is limited to recipes cleanup task-state artifacts already prepared on local main; no product code or 73XAXT paths are included."
-commit: null
+commit:
+  hash: "0c1094a90b2ea2ee351350a182f213dac8a4e65a"
+  message: "tasks/workflow: Publish recipes closure-state cleanup to protected main (P1WXG2) (#374)"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: publish the existing local recipes closure-state commit through the protected-main branch_pr route without widening scope beyond task artifacts and without touching 73XAXT."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #374 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "Published diff is limited to recipes cleanup task-state artifacts already prepared on local main; no product code or 73XAXT paths are included."
+  -
+    type: "status"
+    at: "2026-04-17T10:53:41.286Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #374 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T10:49:37.099Z"
+doc_updated_at: "2026-04-17T10:53:41.291Z"
 doc_updated_by: "INTEGRATOR"
 description: "Publish the local state-only recipes cleanup commit d057b0a3 through the protected-main branch_pr flow without touching 73XAXT."
 sections:
