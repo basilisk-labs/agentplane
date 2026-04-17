@@ -2,10 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { fileExists } from "../../cli/fs-utils.js";
-import {
-  resolveBehavior,
-  type BehaviorCandidate,
-} from "../../runtime/behavior/index.js";
+import { resolveBehavior, type BehaviorCandidate } from "../../runtime/behavior/index.js";
 import type { RunnerPromptBlock, RunnerPromptRole, RunnerRecipeContext } from "../types.js";
 import {
   BASE_PROMPT_PRIORITIES,

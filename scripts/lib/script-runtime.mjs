@@ -37,5 +37,7 @@ export function parseCheckSyncMode(argv, scriptName) {
 }
 
 export function isDirectRun(importMetaUrl, argvEntry = process.argv[1]) {
-  return Boolean(argvEntry) && path.resolve(argvEntry) === path.resolve(fileURLToPath(importMetaUrl));
+  return (
+    Boolean(argvEntry) && path.resolve(argvEntry) === path.resolve(fileURLToPath(importMetaUrl))
+  );
 }

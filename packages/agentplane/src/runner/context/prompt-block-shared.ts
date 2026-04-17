@@ -89,10 +89,7 @@ export type PromptSourceTraceMetadata = {
   title: string;
 };
 
-export type ResolvedPromptSource = ResolvedBehavior<
-  PromptSourcePayload,
-  PromptSourceTraceMetadata
->;
+export type ResolvedPromptSource = ResolvedBehavior<PromptSourcePayload, PromptSourceTraceMetadata>;
 
 export function promptCandidate(opts: {
   layer: BehaviorCandidate<PromptSourcePayload, PromptSourceTraceMetadata>["layer"];

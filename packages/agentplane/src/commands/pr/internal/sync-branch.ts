@@ -129,7 +129,8 @@ export async function resolvePrSyncBranch(opts: {
   }
 
   if (await fileExists(opts.metaPath)) {
-    const metaBranch = parsePrMeta(await readFile(opts.metaPath, "utf8"), opts.taskId).branch?.trim() ?? "";
+    const metaBranch =
+      parsePrMeta(await readFile(opts.metaPath, "utf8"), opts.taskId).branch?.trim() ?? "";
     if (metaBranch) {
       return { branch: metaBranch, source: "meta" };
     }
@@ -144,6 +145,10 @@ export async function resolvePrSyncBranch(opts: {
   return { branch: null, source: "none" };
 }
 
-export function currentBranchMatchesTask(taskPrefix: string, branch: string, taskId: string): boolean {
+export function currentBranchMatchesTask(
+  taskPrefix: string,
+  branch: string,
+  taskId: string,
+): boolean {
   return parseTaskIdFromBranch(taskPrefix, branch) === taskId;
 }
