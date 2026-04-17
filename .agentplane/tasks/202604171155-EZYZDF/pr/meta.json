@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171155-EZYZDF/transactional-recipe-mutations",
   "created_at": "2026-04-17T13:03:42.727Z",
-  "head_sha": "cd42dd9166e52802df7bc84f45c715bd3fcaabb2",
+  "head_sha": "dc998c170635628122865832857d7bc791b34a6b",
   "last_verified_at": "2026-04-17T13:21:00.162Z",
   "last_verified_sha": "0117987c40f2490a7c584f02d09be61b61c1398b",
+  "merge_commit": "182b9d1ee6a5fd64f6dc72be470ed748f5700d7e",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T14:42:28Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171155-EZYZDF",
-  "updated_at": "2026-04-17T13:28:13.136Z",
+  "updated_at": "2026-04-17T14:42:28Z",
   "verify": {
     "status": "pass"
   }

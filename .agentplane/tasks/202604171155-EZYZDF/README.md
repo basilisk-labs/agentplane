@@ -1,10 +1,11 @@
 ---
 id: "202604171155-EZYZDF"
 title: "Make recipe mutations transactional"
-status: "DOING"
+result_summary: "Merged via PR #387."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-17T13:21:00.162Z"
   updated_by: "TESTER"
   note: "Verified: recipes mutations now publish registry and derived artifacts from a validated candidate state, with rollback restoring vendored trees and active state when compilation fails."
-commit: null
+commit:
+  hash: "182b9d1ee6a5fd64f6dc72be470ed748f5700d7e"
+  message: "recipes/workflow: Make recipe mutations transactional (EZYZDF) (#387)"
 comments:
   -
     author: "CODER"
     body: "Start: make recipes mutations publish registry and derived artifacts from a single validated candidate state, with rollback on failed writes where possible."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #387 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: recipes mutations now publish registry and derived artifacts from a validated candidate state, with rollback restoring vendored trees and active state when compilation fails."
+  -
+    type: "status"
+    at: "2026-04-17T14:43:01.744Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #387 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T13:21:00.165Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T14:43:01.751Z"
+doc_updated_by: "INTEGRATOR"
 description: "Apply add/enable/disable/update/detach through candidate state and atomic artifact writes so recipe operations cannot leave partial registry or generated outputs behind."
 sections:
   Summary: |-
