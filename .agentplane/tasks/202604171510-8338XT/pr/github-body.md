@@ -22,9 +22,9 @@ Move the CLI test helper implementation out of the old src/cli path, expose @age
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-17T20:16:04.925Z
+- Updated: 2026-04-17T20:16:26.334Z
 - Branch: task/202604171510-8338XT/testkit-facade
-- Head: 1c5641e35566
+- Head: ff5ae36de67f
 
 ```text
  bun.lock                                           |   3 +
@@ -35,10 +35,12 @@ Move the CLI test helper implementation out of the old src/cli path, expose @age
  packages/testkit/package.json                      |   6 +-
  packages/testkit/src/cli.test.ts                   |  10 +
  packages/testkit/src/cli.ts                        |   1 +
+ packages/testkit/src/index.test.ts                 |   6 +-
+ packages/testkit/src/index.ts                      |   2 +-
  packages/testkit/tsconfig.json                     |   3 +-
  tsconfig.base.json                                 |   5 +-
  vitest.config.ts                                   |   5 +
- 11 files changed, 943 insertions(+), 911 deletions(-)
+ 13 files changed, 947 insertions(+), 915 deletions(-)
 ```
 
 </details>

@@ -6,7 +6,9 @@
  packages/testkit/package.json                      |   6 +-
  packages/testkit/src/cli.test.ts                   |  10 +
  packages/testkit/src/cli.ts                        |   1 +
+ packages/testkit/src/index.test.ts                 |   6 +-
+ packages/testkit/src/index.ts                      |   2 +-
  packages/testkit/tsconfig.json                     |   3 +-
  tsconfig.base.json                                 |   5 +-
  vitest.config.ts                                   |   5 +
- 11 files changed, 943 insertions(+), 911 deletions(-)
+ 13 files changed, 947 insertions(+), 915 deletions(-)
