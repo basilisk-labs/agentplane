@@ -34,14 +34,18 @@ type CommandMeta = {
 
 function normalizeDispatchNeeds(needs: CommandNeeds): DispatchNeeds {
   switch (needs) {
-    case "none":
+    case "none": {
       return { project: false, loadedConfig: false, taskContext: false };
-    case "project":
+    }
+    case "project": {
       return { project: true, loadedConfig: false, taskContext: false };
-    case "project+config":
+    }
+    case "project+config": {
       return { project: true, loadedConfig: true, taskContext: false };
-    case "project+config+task":
+    }
+    case "project+config+task": {
       return { project: true, loadedConfig: true, taskContext: true };
+    }
   }
 }
 
