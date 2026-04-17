@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { fileExists, getPathKind } from "../../../cli/fs-utils.js";
@@ -6,12 +6,12 @@ import { invalidFieldMessage, missingFileMessage } from "../../../cli/output.js"
 import { isRecord } from "../../../shared/guards.js";
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 import {
-  resolveProjectInstalledRecipeDir,
   resolveProjectRecipeInstallMetaPath,
-  resolveProjectRecipesPackagesDir,
+  resolveProjectRecipesDir,
 } from "./paths.js";
 import { readRecipeManifest } from "./manifest.js";
 import { normalizeRecipeTags } from "./normalize.js";
+import { readProjectRecipesRegistry } from "./project-registry.js";
 import type { InstalledRecipeEntry, InstalledRecipesFile, RecipeInstallMetadata } from "./types.js";
 
 function validateRecipeInstallMetadata(raw: unknown): RecipeInstallMetadata {
@@ -79,37 +79,38 @@ export async function writeRecipeInstallMetadata(
 export async function readProjectInstalledRecipes(opts: {
   agentplaneDir: string;
 }): Promise<InstalledRecipesFile> {
-  const recipesDir = resolveProjectRecipesPackagesDir(opts);
-  if ((await getPathKind(recipesDir)) !== "dir") {
+  const registry = await readProjectRecipesRegistry(opts);
+  if (registry.recipes.length === 0) {
     return { schema_version: 1, updated_at: "", recipes: [] };
   }
 
   const entries: InstalledRecipeEntry[] = [];
-  const dirs = await readdir(recipesDir, { withFileTypes: true });
-  for (const dirent of dirs) {
-    if (!dirent.isDirectory()) continue;
-    const recipeDir = resolveProjectInstalledRecipeDir(opts, dirent.name);
+  for (const registryEntry of registry.recipes) {
+    const recipeDir = path.join(resolveProjectRecipesDir(opts), registryEntry.path);
+    if ((await getPathKind(recipeDir)) !== "dir") {
+      throw new Error(missingFileMessage("vendored recipe directory", recipeDir));
+    }
     const manifestPath = path.join(recipeDir, "manifest.json");
     if (!(await fileExists(manifestPath))) {
       throw new Error(missingFileMessage("installed recipe manifest", manifestPath));
     }
     const manifest = await readRecipeManifest(manifestPath);
-    if (manifest.id !== dirent.name) {
+    if (manifest.id !== registryEntry.id) {
       throw new Error(
         invalidFieldMessage(
-          `installed recipe directory ${dirent.name}`,
-          `manifest.id=${dirent.name}`,
+          `installed recipe directory ${registryEntry.id}`,
+          `manifest.id=${registryEntry.id}`,
         ),
       );
     }
 
     const metadata = await readRecipeInstallMetadata(
-      resolveProjectRecipeInstallMetaPath(opts, dirent.name),
+      resolveProjectRecipeInstallMetaPath(opts, registryEntry.id),
     );
     if (metadata && (metadata.id !== manifest.id || metadata.version !== manifest.version)) {
       throw new Error(
         invalidFieldMessage(
-          `recipe install metadata ${dirent.name}`,
+          `recipe install metadata ${registryEntry.id}`,
           "id/version matching manifest",
         ),
       );
@@ -118,22 +119,18 @@ export async function readProjectInstalledRecipes(opts: {
     entries.push({
       id: manifest.id,
       version: manifest.version,
-      source: metadata?.source ?? `${manifest.id}@${manifest.version}`,
-      installed_at: metadata?.installed_at ?? "",
-      tags: normalizeRecipeTags(metadata?.tags ?? manifest.tags ?? []),
+      source: metadata?.source ?? registryEntry.source_ref,
+      installed_at: metadata?.installed_at ?? registryEntry.installed_at,
+      project_path: registryEntry.path,
+      tags: normalizeRecipeTags(metadata?.tags ?? registryEntry.tags ?? manifest.tags ?? []),
       manifest,
     });
   }
 
   const sorted = sortInstalledRecipes(entries);
-  const updatedAt = sorted
-    .map((entry) => entry.installed_at)
-    .filter(Boolean)
-    .toSorted()
-    .at(-1);
   return {
     schema_version: 1,
-    updated_at: updatedAt ?? "",
+    updated_at: registry.updated_at,
     recipes: sorted,
   };
 }

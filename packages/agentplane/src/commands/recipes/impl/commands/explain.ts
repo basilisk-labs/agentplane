@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import { resolveProject } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../../../cli/error-map.js";
@@ -7,7 +9,7 @@ import { CliError } from "../../../../shared/errors.js";
 import { formatJsonBlock } from "../format.js";
 import { readActiveRecipeIds } from "../overlay-project.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
-import { resolveProjectInstalledRecipeDir } from "../paths.js";
+import { resolveProjectRecipesDir, resolveProjectInstalledRecipeDir } from "../paths.js";
 import { collectRecipeScenarioDetails } from "../scenario.js";
 
 export async function cmdRecipeExplainParsed(opts: {
@@ -34,7 +36,9 @@ export async function cmdRecipeExplainParsed(opts: {
     }
 
     const manifest = entry.manifest;
-    const recipeDir = resolveProjectInstalledRecipeDir(resolved, entry.id);
+    const recipeDir = entry.project_path
+      ? path.join(resolveProjectRecipesDir(resolved), entry.project_path)
+      : resolveProjectInstalledRecipeDir(resolved, entry.id);
     const scenarioDetails =
       manifest.kind === "scenario_pack"
         ? await collectRecipeScenarioDetails(recipeDir, manifest)

@@ -7,14 +7,15 @@ import {
   type CompiledOverlayBundle,
   type ProjectRecipesLockFile,
 } from "@agentplaneorg/recipes";
-import { loadConfig, saveConfig } from "@agentplaneorg/core";
 
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 
 import { readProjectInstalledRecipes } from "./project-installed-recipes.js";
+import { readProjectRecipesRegistry, writeProjectRecipesRegistry } from "./project-registry.js";
 import {
   resolveProjectInstalledRecipeDir,
   resolveProjectOverlayBundlePath,
+  resolveProjectRecipesDir,
   resolveProjectRecipesLockPath,
 } from "./paths.js";
 
@@ -45,12 +46,11 @@ function uniqueById<T extends { id: string }>(items: T[]): T[] {
 }
 
 export async function readActiveRecipeIds(project: { agentplaneDir: string }): Promise<string[]> {
-  const loaded = await loadConfig(project.agentplaneDir);
-  return Array.isArray(loaded.config.recipes?.active)
-    ? [
-        ...new Set(loaded.config.recipes.active.map((value) => value.trim()).filter(Boolean)),
-      ].toSorted()
-    : [];
+  const registry = await readProjectRecipesRegistry(project);
+  return registry.recipes
+    .filter((entry) => entry.active)
+    .map((entry) => entry.id)
+    .toSorted();
 }
 
 export async function setRecipeActive(opts: {
@@ -58,24 +58,19 @@ export async function setRecipeActive(opts: {
   recipeId: string;
   active: boolean;
 }): Promise<string[]> {
-  const loaded = await loadConfig(opts.project.agentplaneDir);
-  const raw = { ...loaded.raw };
-  const current = new Set(
-    Array.isArray(loaded.config.recipes?.active)
-      ? loaded.config.recipes.active.map((value) => value.trim()).filter(Boolean)
-      : [],
-  );
-  if (opts.active) current.add(opts.recipeId);
-  else current.delete(opts.recipeId);
-
-  raw.recipes = {
-    ...(typeof raw.recipes === "object" && raw.recipes
-      ? (raw.recipes as Record<string, unknown>)
-      : {}),
-    storage_default: loaded.config.recipes?.storage_default ?? "copy",
-    active: [...current].toSorted(),
-  };
-  await saveConfig(opts.project.agentplaneDir, raw);
+  const registry = await readProjectRecipesRegistry(opts.project);
+  const current = new Set<string>();
+  const recipes = registry.recipes.map((entry) => {
+    const isTarget = entry.id === opts.recipeId;
+    const active = isTarget ? opts.active : entry.active;
+    if (active) current.add(entry.id);
+    return isTarget ? { ...entry, active } : entry;
+  });
+  await writeProjectRecipesRegistry(opts.project, {
+    schema_version: 1,
+    updated_at: registry.updated_at,
+    recipes,
+  });
   return [...current].toSorted();
 }
 
@@ -98,7 +93,9 @@ export async function compileProjectOverlayArtifacts(project: {
       throw new Error(`Active recipe ${recipeId} is not a project overlay`);
     }
     const manifest = entry.manifest;
-    const recipeDir = resolveProjectInstalledRecipeDir(project, entry.id);
+    const recipeDir = entry.project_path
+      ? path.join(resolveProjectRecipesDir(project), entry.project_path)
+      : resolveProjectInstalledRecipeDir(project, entry.id);
     const promptInputs: { id: string; content: string }[] = [];
 
     if (manifest.requires) {

@@ -62,20 +62,12 @@ const AGENTPLANE_CONFIG_SCHEMA_JSON = String.raw`{
       "type": "object",
       "additionalProperties": true,
       "required": ["storage_default"],
-      "default": { "storage_default": "copy", "active": [] },
+      "default": { "storage_default": "copy" },
       "properties": {
         "storage_default": {
           "type": "string",
           "enum": ["link", "copy"],
           "default": "copy"
-        },
-        "active": {
-          "type": "array",
-          "default": [],
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
         }
       }
     },

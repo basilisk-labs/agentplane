@@ -21,7 +21,7 @@ import { getVersion } from "../../../meta/version.js";
 import { dedupeStrings } from "../../../shared/strings.js";
 import { compareVersions } from "../../../shared/version-compare.js";
 
-import { resolveProjectInstalledRecipeDir } from "./paths.js";
+import { resolveProjectRecipesDir, resolveProjectInstalledRecipeDir } from "./paths.js";
 import { readProjectInstalledRecipes } from "./project-installed-recipes.js";
 import { readScenarioDefinition } from "./scenario.js";
 
@@ -187,7 +187,9 @@ function toResolvedRecipeScenarios(opts: {
   entry: InstalledRecipeEntry;
   compatibility: RecipeResolverCompatibility;
 }): ResolvedRecipeScenario[] {
-  const recipeDir = resolveProjectInstalledRecipeDir(opts.project, opts.entry.id);
+  const recipeDir = opts.entry.project_path
+    ? path.join(resolveProjectRecipesDir(opts.project), opts.entry.project_path)
+    : resolveProjectInstalledRecipeDir(opts.project, opts.entry.id);
   if (opts.entry.manifest.kind !== "scenario_pack") return [];
   return opts.entry.manifest.scenarios
     .map<ResolvedRecipeScenario>((scenario) => ({

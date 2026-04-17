@@ -1,5 +1,6 @@
 export const INSTALLED_RECIPES_NAME = "recipes.json";
 export const RECIPES_DIR_NAME = "recipes";
+export const PROJECT_RECIPES_REGISTRY_NAME = "registry.json";
 export const RECIPES_SCENARIOS_DIR_NAME = "scenarios";
 export const RECIPES_SCENARIOS_INDEX_NAME = "scenarios.json";
 export const RECIPE_INSTALL_META_NAME = ".install.json";

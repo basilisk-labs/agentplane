@@ -31,6 +31,12 @@ export {
   readRecipeInstallMetadata,
   writeRecipeInstallMetadata,
 } from "./recipes/impl/project-installed-recipes.js";
+export {
+  readProjectRecipesRegistry,
+  removeProjectRecipeRegistryEntry,
+  upsertProjectRecipeRegistryEntry,
+  writeProjectRecipesRegistry,
+} from "./recipes/impl/project-registry.js";
 
 export {
   compileProjectOverlayArtifacts,
@@ -50,6 +56,7 @@ export {
   resolveProjectRecipesLockPath,
   resolveProjectRecipesDir,
   resolveProjectRecipesCacheDir,
+  resolveProjectRecipesRegistryPath,
   resolveProjectVendoredRecipeDir,
 } from "./recipes/impl/paths.js";
 

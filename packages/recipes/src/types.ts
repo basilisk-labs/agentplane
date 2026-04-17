@@ -262,6 +262,7 @@ export type InstalledRecipeEntry = {
   version: string;
   source: string;
   installed_at: string;
+  project_path?: string;
   tags: string[];
   manifest: RecipeManifest;
 };
@@ -270,6 +271,27 @@ export type InstalledRecipesFile = {
   schema_version: 1;
   updated_at: string;
   recipes: InstalledRecipeEntry[];
+};
+
+export type ProjectRecipeMaterialization = "copy" | "link";
+
+export type ProjectRecipeRegistryEntry = {
+  id: string;
+  version: string;
+  path: string;
+  active: boolean;
+  materialization: ProjectRecipeMaterialization;
+  source_ref: string;
+  source_sha256?: string;
+  vendored_sha256?: string;
+  installed_at: string;
+  tags?: string[];
+};
+
+export type ProjectRecipesRegistryFile = {
+  schema_version: 1;
+  updated_at: string;
+  recipes: ProjectRecipeRegistryEntry[];
 };
 
 export type ScenarioDefinition = {

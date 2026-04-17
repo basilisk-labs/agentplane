@@ -6,6 +6,7 @@ import {
   GLOBAL_RECIPES_DIR_NAME,
   INSTALLED_RECIPES_NAME,
   PROJECT_RECIPES_PACKAGES_DIR_NAME,
+  PROJECT_RECIPES_REGISTRY_NAME,
   RECIPE_INSTALL_META_NAME,
   PROJECT_RECIPES_CACHE_DIR_NAME,
   RECIPES_DIR_NAME,
@@ -45,6 +46,10 @@ export function resolveProjectRecipesDir(resolved: { agentplaneDir: string }): s
 
 export function resolveProjectRecipesPackagesDir(resolved: { agentplaneDir: string }): string {
   return path.join(resolveProjectRecipesDir(resolved), PROJECT_RECIPES_PACKAGES_DIR_NAME);
+}
+
+export function resolveProjectRecipesRegistryPath(resolved: { agentplaneDir: string }): string {
+  return path.join(resolveProjectRecipesDir(resolved), PROJECT_RECIPES_REGISTRY_NAME);
 }
 
 export function resolveProjectVendoredRecipeDir(

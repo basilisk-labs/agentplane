@@ -105,6 +105,10 @@ export function resolveProjectRecipeDir(projectDir: string, recipeId: string): s
   return path.join(projectDir, ".agentplane", "recipes", "packages", recipeId);
 }
 
+export function resolveProjectRecipesRegistryPath(projectDir: string): string {
+  return path.join(projectDir, ".agentplane", "recipes", "registry.json");
+}
+
 function readStringFixtureValue(
   record: Record<string, unknown>,
   key: string,
@@ -123,6 +127,7 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
   await rm(vendoredRecipesDir, { recursive: true, force: true });
   await mkdir(vendoredRecipesDir, { recursive: true });
 
+  const cachedEntries: Record<string, unknown>[] = [];
   const registryEntries: Record<string, unknown>[] = [];
 
   for (const entry of recipes) {
@@ -176,13 +181,23 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
       ),
       "utf8",
     );
-    registryEntries.push({
+    cachedEntries.push({
       id: recipeId,
       version: recipeVersion,
       source,
       installed_at: installedAt,
       tags,
       manifest,
+    });
+    registryEntries.push({
+      id: recipeId,
+      version: recipeVersion,
+      path: `packages/${recipeId}`,
+      active: false,
+      materialization: "copy",
+      source_ref: source,
+      installed_at: installedAt,
+      tags,
     });
 
     const scenarios = Array.isArray(manifest.scenarios)
@@ -245,7 +260,20 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
     }
   }
 
-  await writeInstalledRecipesRegistry(registryEntries);
+  await writeInstalledRecipesRegistry(cachedEntries);
+  await writeFile(
+    resolveProjectRecipesRegistryPath(projectDir),
+    JSON.stringify(
+      {
+        schema_version: 1,
+        updated_at: "2026-02-05T00:00:00Z",
+        recipes: registryEntries,
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
 }
 
 export async function writeInstalledRecipesRegistry(recipes: unknown[]): Promise<void> {

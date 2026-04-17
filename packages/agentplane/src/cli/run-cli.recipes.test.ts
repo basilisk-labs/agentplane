@@ -151,7 +151,18 @@ describe("runCli recipes", () => {
     }
 
     const manifestPath = path.join(root, ".agentplane", "recipes", "packages", "vendored", "manifest.json");
+    const registryPath = path.join(root, ".agentplane", "recipes", "registry.json");
     expect(await pathExists(manifestPath)).toBe(true);
+    expect(JSON.parse(await readFile(registryPath, "utf8"))).toMatchObject({
+      recipes: [
+        expect.objectContaining({
+          id: "vendored",
+          path: "packages/vendored",
+          active: false,
+          materialization: "copy",
+        }),
+      ],
+    });
   });
 
   it("rejects tar archives with path traversal entries", async () => {

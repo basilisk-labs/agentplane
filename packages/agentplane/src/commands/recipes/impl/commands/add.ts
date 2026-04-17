@@ -10,6 +10,7 @@ import { refreshProjectOverlayArtifacts } from "../overlay-project.js";
 import { readInstalledRecipesFile } from "../installed-recipes.js";
 import { normalizeRecipeTags } from "../normalize.js";
 import { writeRecipeInstallMetadata } from "../project-installed-recipes.js";
+import { upsertProjectRecipeRegistryEntry } from "../project-registry.js";
 import {
   resolveInstalledRecipeDir,
   resolveInstalledRecipesPath,
@@ -75,14 +76,29 @@ export async function cmdRecipeAddParsed(opts: {
       await cp(sourceDir, targetDir, { recursive: true });
     }
 
+    const installedAt = new Date().toISOString();
+    const tags = normalizeRecipeTags(cached.tags ?? cached.manifest.tags ?? []);
     await writeRecipeInstallMetadata(resolveProjectRecipeInstallMetaPath(project, cached.id), {
       schema_version: 1,
       id: cached.id,
       version: cached.version,
       source: `${cached.id}@${cached.version}`,
-      installed_at: new Date().toISOString(),
-      tags: normalizeRecipeTags(cached.tags ?? cached.manifest.tags ?? []),
+      installed_at: installedAt,
+      tags,
       install_mode: materialization === "link" ? "project-link" : "project-copy",
+    });
+    await upsertProjectRecipeRegistryEntry({
+      project,
+      entry: {
+        id: cached.id,
+        version: cached.version,
+        path: `packages/${cached.id}`,
+        active: false,
+        materialization,
+        source_ref: `${cached.id}@${cached.version}`,
+        installed_at: installedAt,
+        tags,
+      },
     });
 
     await refreshProjectOverlayArtifacts(project);

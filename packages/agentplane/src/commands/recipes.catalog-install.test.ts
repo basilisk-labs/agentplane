@@ -14,6 +14,7 @@ import {
   installRecipesCommandHarness,
   mkGitRepoRoot,
   resolveProjectRecipeDir,
+  resolveProjectRecipesRegistryPath,
   runRecipesTest,
   scenarioDescriptor,
   toolEntry,
@@ -214,10 +215,21 @@ describe("commands/recipes catalog/install", () => {
 
     const manifestPath = path.join(resolveProjectRecipeDir(projectDir, "viewer"), "manifest.json");
     const installMetaPath = path.join(resolveProjectRecipeDir(projectDir, "viewer"), ".install.json");
+    const registryPath = resolveProjectRecipesRegistryPath(projectDir);
     expect(JSON.parse(await readFile(manifestPath, "utf8"))).toMatchObject({ id: "viewer" });
     expect(JSON.parse(await readFile(installMetaPath, "utf8"))).toMatchObject({
       id: "viewer",
       install_mode: "project-copy",
+    });
+    expect(JSON.parse(await readFile(registryPath, "utf8"))).toMatchObject({
+      recipes: [
+        expect.objectContaining({
+          id: "viewer",
+          path: "packages/viewer",
+          active: false,
+          materialization: "copy",
+        }),
+      ],
     });
   });
 

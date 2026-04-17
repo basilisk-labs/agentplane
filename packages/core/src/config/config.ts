@@ -59,7 +59,6 @@ export type AgentplaneConfig = {
   };
   recipes?: {
     storage_default: "link" | "copy";
-    active?: string[];
   };
   execution: {
     profile: ExecutionProfile;
