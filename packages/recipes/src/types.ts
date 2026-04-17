@@ -362,19 +362,6 @@ export type RecipeInstallSource =
   | { type: "url"; value: string }
   | { type: "auto"; value: string };
 
-export type ProjectRecipesLockEntry = {
-  id: string;
-  version: string;
-  kind: RecipeKind;
-  source: string;
-  hash: string;
-};
-
-export type ProjectRecipesLockFile = {
-  schema_version: 1;
-  active: ProjectRecipesLockEntry[];
-};
-
 export type CompiledOverlayPromptFragment = OverlayPromptFragment & {
   recipe_id: string;
   recipe_version: string;

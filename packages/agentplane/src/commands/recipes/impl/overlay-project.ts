@@ -7,7 +7,8 @@ import {
   type CompiledRecipeAssetEntry,
   type CompiledRecipeAssetRegistry,
   type CompiledOverlayBundle,
-  type ProjectRecipesLockFile,
+  validateCompiledOverlayBundle,
+  validateCompiledRecipeAssetRegistry,
 } from "@agentplaneorg/recipes";
 
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
@@ -19,7 +20,6 @@ import {
   resolveProjectOverlayBundlePath,
   resolveProjectRecipeAssetsPath,
   resolveProjectRecipesDir,
-  resolveProjectRecipesLockPath,
 } from "./paths.js";
 
 function ensureTrailingNewline(text: string): string {
@@ -184,7 +184,6 @@ export async function setRecipeActive(opts: {
 
 export async function compileProjectOverlayArtifacts(project: { agentplaneDir: string }): Promise<{
   bundle: CompiledOverlayBundle;
-  lock: ProjectRecipesLockFile;
   assets: CompiledRecipeAssetRegistry;
 }> {
   const [activeIds, installed] = await Promise.all([
@@ -192,7 +191,6 @@ export async function compileProjectOverlayArtifacts(project: { agentplaneDir: s
     readProjectInstalledRecipes(project),
   ]);
   const bundle = createEmptyOverlayBundle();
-  const lock: ProjectRecipesLockFile = { schema_version: 1, active: [] };
 
   for (const recipeId of activeIds) {
     const entry = installed.recipes.find((candidate) => candidate.id === recipeId);
@@ -273,14 +271,7 @@ export async function compileProjectOverlayArtifacts(project: { agentplaneDir: s
     bundle.agents.push(...(manifest.agents ?? []));
     bundle.tools.push(...(manifest.tools ?? []));
     Object.assign(bundle.templates, manifest.templates ?? {});
-
-    lock.active.push({
-      id: manifest.id,
-      version: manifest.version,
-      kind: manifest.kind,
-      source: entry.source,
-      hash: hashOverlayInputs({ manifest, prompts: promptInputs }),
-    });
+    void hashOverlayInputs({ manifest, prompts: promptInputs });
   }
 
   bundle.agents = uniqueById(bundle.agents);
@@ -293,26 +284,21 @@ export async function compileProjectOverlayArtifacts(project: { agentplaneDir: s
         left.id.localeCompare(right.id),
     );
   }
-  lock.active = lock.active.toSorted((left, right) => left.id.localeCompare(right.id));
   return {
     bundle,
-    lock,
     assets: await compileProjectRecipeAssets({ project, installed }),
   };
 }
 
 export async function refreshProjectOverlayArtifacts(project: { agentplaneDir: string }): Promise<{
   bundle: CompiledOverlayBundle;
-  lock: ProjectRecipesLockFile;
   assets: CompiledRecipeAssetRegistry;
 }> {
   const compiled = await compileProjectOverlayArtifacts(project);
   const bundlePath = resolveProjectOverlayBundlePath(project);
-  const lockPath = resolveProjectRecipesLockPath(project);
   const assetsPath = resolveProjectRecipeAssetsPath(project);
   await mkdir(path.dirname(bundlePath), { recursive: true });
   await writeJsonStableIfChanged(bundlePath, compiled.bundle);
-  await writeJsonStableIfChanged(lockPath, compiled.lock);
   await writeJsonStableIfChanged(assetsPath, compiled.assets);
   return compiled;
 }
@@ -321,9 +307,9 @@ export async function readProjectOverlayBundle(project: {
   agentplaneDir: string;
 }): Promise<CompiledOverlayBundle | null> {
   try {
-    return JSON.parse(
-      await readFile(resolveProjectOverlayBundlePath(project), "utf8"),
-    ) as CompiledOverlayBundle;
+    return validateCompiledOverlayBundle(
+      JSON.parse(await readFile(resolveProjectOverlayBundlePath(project), "utf8")) as unknown,
+    );
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ENOENT") return null;
@@ -335,9 +321,9 @@ export async function readProjectRecipeAssetRegistry(project: {
   agentplaneDir: string;
 }): Promise<CompiledRecipeAssetRegistry | null> {
   try {
-    return JSON.parse(
-      await readFile(resolveProjectRecipeAssetsPath(project), "utf8"),
-    ) as CompiledRecipeAssetRegistry;
+    return validateCompiledRecipeAssetRegistry(
+      JSON.parse(await readFile(resolveProjectRecipeAssetsPath(project), "utf8")) as unknown,
+    );
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ENOENT") return null;

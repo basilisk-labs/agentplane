@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604171155-C1QJ33/normalize-recipes-authority",
+  "created_at": "2026-04-17T12:54:59.902Z",
+  "head_sha": "55af0bc69fcd5f03579085a5eb6c59a4bdf64933",
+  "last_verified_at": "2026-04-17T12:59:13.254Z",
+  "last_verified_sha": "0117987c40f2490a7c584f02d09be61b61c1398b",
+  "schema_version": 1,
+  "task_id": "202604171155-C1QJ33",
+  "updated_at": "2026-04-17T13:02:58.729Z",
+  "verify": {
+    "status": "pass"
+  }
+}

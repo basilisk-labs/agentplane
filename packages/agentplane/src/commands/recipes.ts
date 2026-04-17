@@ -55,7 +55,6 @@ export {
   resolveProjectInstalledRecipeDir,
   resolveProjectOverlayBundlePath,
   resolveProjectRecipeAssetsPath,
-  resolveProjectRecipesLockPath,
   resolveProjectRecipesDir,
   resolveProjectRecipesCacheDir,
   resolveProjectRecipesRegistryPath,
