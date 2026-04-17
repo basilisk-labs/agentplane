@@ -1,10 +1,11 @@
 ---
 id: "202604171519-MQ7NQ5"
 title: "Drop redundant platform-critical init-upgrade alias"
-status: "DOING"
+result_summary: "Merged via PR #418."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-17T15:20:29.016Z"
   updated_by: "CODER"
   note: "Verified: rg -n 'test:platform-critical:init-upgrade-backend' -S . returned no matches, the package.json presence check passed, and bun run test:platform-critical:init-upgrade passed with 49 tests after removing the redundant alias from package scripts."
-commit: null
+commit:
+  hash: "f5a4cf30b5cf9dee8135cf0be7c27bf8326eedf5"
+  message: "cli/tooling: Drop redundant platform-critical init-upgrade alias (MQ7NQ5) (#418)"
 comments:
   -
     author: "CODER"
     body: "Start: remove the duplicate platform-critical init-upgrade alias, confirm there are no direct references left, and keep the canonical script entrypoint unchanged otherwise."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #418 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: rg -n 'test:platform-critical:init-upgrade-backend' -S . returned no matches, the package.json presence check passed, and bun run test:platform-critical:init-upgrade passed with 49 tests after removing the redundant alias from package scripts."
+  -
+    type: "status"
+    at: "2026-04-17T20:00:14.252Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #418 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T15:20:29.019Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T20:00:14.257Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove the duplicate test:platform-critical:init-upgrade-backend script entry and keep test:platform-critical:init-upgrade as the single canonical platform-critical entrypoint."
 sections:
   Summary: |-
