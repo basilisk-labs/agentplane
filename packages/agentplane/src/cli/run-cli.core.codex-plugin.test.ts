@@ -57,15 +57,7 @@ describe("runCli codex plugin install", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli([
-        "codex",
-        "plugin",
-        "install",
-        "--scope",
-        "repo",
-        "--root",
-        root,
-      ]);
+      const code = await runCli(["codex", "plugin", "install", "--scope", "repo", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain(`Install root: ${root}`);
       expect(io.stdout).toContain(

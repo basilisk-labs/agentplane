@@ -23,11 +23,7 @@ import {
   profileSetSpec,
 } from "../commands/config.js";
 import { agentsSpec } from "../commands/core/agents.js";
-import {
-  codexPluginInstallSpec,
-  codexPluginSpec,
-  codexSpec,
-} from "../commands/codex.js";
+import { codexPluginInstallSpec, codexPluginSpec, codexSpec } from "../commands/codex.js";
 import { preflightSpec } from "../commands/core/preflight.js";
 import { quickstartSpec } from "../commands/core/quickstart.js";
 import { roleSpec } from "../commands/core/role.js";

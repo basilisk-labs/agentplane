@@ -97,11 +97,7 @@ function parseMarketplaceDocument(text: string | null): JsonObject {
   if ("plugins" in parsed && !Array.isArray(parsed.plugins)) {
     throw invalidMarketplaceError("Invalid Codex marketplace JSON: `plugins` must be an array.");
   }
-  if (
-    "interface" in parsed &&
-    parsed.interface !== undefined &&
-    !isJsonObject(parsed.interface)
-  ) {
+  if ("interface" in parsed && parsed.interface !== undefined && !isJsonObject(parsed.interface)) {
     throw invalidMarketplaceError(
       "Invalid Codex marketplace JSON: `interface` must be an object when present.",
     );
