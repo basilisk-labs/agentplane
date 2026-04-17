@@ -95,9 +95,12 @@ describe("runCli recipes", () => {
     }
 
     expect(await pathExists(path.join(agentsDir, "viewer__RECIPE_AGENT__1.json"))).toBe(false);
-    expect(
-      await pathExists(path.join(root, ".agentplane", "recipes", "viewer", "manifest.json")),
-    ).toBe(true);
+    const registry = JSON.parse(
+      await readFile(path.join(process.env.AGENTPLANE_HOME ?? agentplaneHomePath(), "recipes.json"), "utf8"),
+    ) as { recipes: Array<{ id: string; version: string }> };
+    expect(registry.recipes).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "viewer", version: "1.2.3" })]),
+    );
   });
 
   it("recipes install accepts zip archives with a top-level folder", async () => {
@@ -118,14 +121,14 @@ describe("runCli recipes", () => {
       io.restore();
     }
 
-    const manifestPath = path.join(
-      root,
-      ".agentplane",
-      "recipes",
-      String(manifest.id),
-      "manifest.json",
+    const registry = JSON.parse(
+      await readFile(path.join(process.env.AGENTPLANE_HOME ?? agentplaneHomePath(), "recipes.json"), "utf8"),
+    ) as { recipes: Array<{ id: string; version: string }> };
+    expect(registry.recipes).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: String(manifest.id), version: String(manifest.version) }),
+      ]),
     );
-    expect(await pathExists(manifestPath)).toBe(true);
   });
 
   it("rejects tar archives with path traversal entries", async () => {
@@ -158,7 +161,7 @@ describe("runCli recipes", () => {
     }
   });
 
-  it("recipes list reports when no recipes are installed", async () => {
+  it("recipes list reports when no recipes are cached", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await resetAgentplaneHomeRecipes();
@@ -166,7 +169,7 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "list", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("No installed recipes found.");
+      expect(io.stdout).toContain("No cached recipes found.");
     } finally {
       io.restore();
     }
@@ -261,56 +264,12 @@ describe("runCli recipes", () => {
     }
   });
 
-  it("recipes list rejects invalid recipe install metadata", async () => {
+  it("recipes list rejects invalid cached recipes payloads", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    const recipeDir = path.join(root, ".agentplane", "recipes", "bad");
-    await mkdir(recipeDir, { recursive: true });
     await writeFile(
-      path.join(recipeDir, "manifest.json"),
-      JSON.stringify(
-        {
-          schema_version: "1",
-          id: "bad",
-          version: "1.0.0",
-          name: "Bad",
-          summary: "Bad",
-          description: "Bad",
-          agents: [
-            {
-              id: "BAD_AGENT",
-              display_name: "Bad Agent",
-              role: "executor",
-              summary: "Bad agent",
-              file: "agents/bad.json",
-            },
-          ],
-          scenarios: [
-            {
-              id: "BAD_SCENARIO",
-              name: "Bad Scenario",
-              summary: "Bad scenario",
-              use_when: ["Bad entry fixture"],
-              required_inputs: [],
-              outputs: [],
-              permissions: [],
-              artifacts: [],
-              agents_involved: ["BAD_AGENT"],
-              skills_used: [],
-              tools_used: [],
-              run_profile: { mode: "analysis" },
-              file: "scenarios/bad.json",
-            },
-          ],
-        },
-        null,
-        2,
-      ),
-      "utf8",
-    );
-    await writeFile(
-      path.join(recipeDir, ".install.json"),
-      JSON.stringify({ schema_version: 1, id: "bad", version: "1.0.0" }, null, 2),
+      path.join(agentplaneHomePath(), "recipes.json"),
+      JSON.stringify({ schema_version: 1, updated_at: "2026-02-05T00:00:00Z", recipes: [{ id: "bad" }] }, null, 2),
       "utf8",
     );
 
@@ -318,9 +277,7 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "list", "--root", root]);
       expect(code).toBe(4);
-      expect(io.stderr).toContain(
-        "Invalid field recipe install metadata: expected id, version, source, installed_at",
-      );
+      expect(io.stderr).toContain("Invalid field manifest: expected object");
     } finally {
       io.restore();
     }
@@ -824,14 +781,14 @@ describe("runCli recipes", () => {
       io.restore();
     }
 
-    const manifestPath = path.join(
-      root,
-      ".agentplane",
-      "recipes",
-      String(manifest.id),
-      "manifest.json",
+    const registry = JSON.parse(
+      await readFile(path.join(process.env.AGENTPLANE_HOME ?? agentplaneHomePath(), "recipes.json"), "utf8"),
+    ) as { recipes: Array<{ id: string; version: string }> };
+    expect(registry.recipes).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: String(manifest.id), version: String(manifest.version) }),
+      ]),
     );
-    expect(await pathExists(manifestPath)).toBe(true);
   });
 
   it("recipes install rejects unsupported archives", async () => {

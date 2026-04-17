@@ -7,7 +7,7 @@ export const RECIPE_RUNS_DIR_NAME = "runs";
 
 export const AGENTPLANE_HOME_ENV = "AGENTPLANE_HOME";
 
-export const GLOBAL_RECIPES_DIR_NAME = "recipes";
+export const GLOBAL_RECIPES_DIR_NAME = "recipes-store";
 export const PROJECT_RECIPES_CACHE_DIR_NAME = "recipes-cache";
 
 export const RECIPES_REMOTE_INDEX_NAME = "recipes-index.json";

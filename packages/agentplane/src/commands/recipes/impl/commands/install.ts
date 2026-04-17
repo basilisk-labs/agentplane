@@ -20,16 +20,15 @@ import { resolvePathFallback } from "../../../shared/path.js";
 
 import { moveRecipeDir, validateRecipeAssets } from "../apply.js";
 import { resolveRecipeRoot } from "../archive.js";
-import { DEFAULT_RECIPES_INDEX_URL, RECIPE_RUNS_DIR_NAME } from "../constants.js";
+import { DEFAULT_RECIPES_INDEX_URL } from "../constants.js";
 import { loadRecipesRemoteIndex, willFetchRemoteRecipesIndex } from "../index.js";
+import { readInstalledRecipesFile, writeInstalledRecipesFile } from "../installed-recipes.js";
 import { readRecipeManifest } from "../manifest.js";
 import { normalizeRecipeTags } from "../normalize.js";
-import { readActiveRecipeIds, refreshProjectOverlayArtifacts } from "../overlay-project.js";
-import { writeRecipeInstallMetadata } from "../project-installed-recipes.js";
 import {
-  resolveProjectInstalledRecipeDir,
-  resolveProjectRecipeInstallMetaPath,
-  resolveProjectRecipesDir,
+  resolveGlobalRecipesDir,
+  resolveInstalledRecipeDir,
+  resolveInstalledRecipesPath,
   resolveRecipesIndexCachePath,
 } from "../paths.js";
 import type { RecipeConflictMode, RecipeInstallSource } from "../types.js";
@@ -49,13 +48,17 @@ export async function cmdRecipeInstall(opts: {
 }): Promise<number> {
   void opts.onConflict;
   try {
-    const project = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
     let config = defaultConfig();
-    const loaded = await loadConfig(project.agentplaneDir);
-    config = loaded.config;
+    try {
+      const project = await resolveProject({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+      });
+      const loaded = await loadConfig(project.agentplaneDir);
+      config = loaded.config;
+    } catch {
+      config = defaultConfig();
+    }
     let networkApproved = false;
     const ensureApproved = async (reason: string): Promise<void> => {
       if (networkApproved) return;
@@ -210,7 +213,10 @@ export async function cmdRecipeInstall(opts: {
         resolvedTags.length > 0 ? { ...manifest, tags: resolvedTags } : manifest;
       await validateRecipeAssets({ manifest: manifestWithTags, recipeDir: recipeRoot });
 
-      const installDir = resolveProjectInstalledRecipeDir(project, manifestWithTags.id);
+      const installDir = resolveInstalledRecipeDir({
+        id: manifestWithTags.id,
+        version: manifestWithTags.version,
+      });
       const installKind = await getPathKind(installDir);
       if (installKind && installKind !== "dir") {
         throw new CliError({
@@ -220,48 +226,43 @@ export async function cmdRecipeInstall(opts: {
         });
       }
 
-      const hadExisting = Boolean(installKind);
-      const existingRunsDir = path.join(installDir, RECIPE_RUNS_DIR_NAME);
-      const preservedRunsDir = path.join(tempRoot, RECIPE_RUNS_DIR_NAME);
       if (installKind) {
-        if ((await getPathKind(existingRunsDir)) === "dir") {
-          await cp(existingRunsDir, preservedRunsDir, { recursive: true });
-        }
         await rm(installDir, { recursive: true, force: true });
       }
-      await mkdir(resolveProjectRecipesDir(project), { recursive: true });
+      await mkdir(resolveGlobalRecipesDir(), { recursive: true });
       await moveRecipeDir({ from: recipeRoot, to: installDir });
 
       try {
-        if ((await getPathKind(preservedRunsDir)) === "dir") {
-          await cp(preservedRunsDir, path.join(installDir, RECIPE_RUNS_DIR_NAME), {
-            recursive: true,
-          });
-        }
-        await writeRecipeInstallMetadata(
-          resolveProjectRecipeInstallMetaPath(project, manifestWithTags.id),
-          {
-            schema_version: 1,
-            id: manifestWithTags.id,
-            version: manifestWithTags.version,
-            source: sourceLabel,
-            installed_at: new Date().toISOString(),
-            tags: resolvedTags,
-            install_mode: "project-local",
-          },
-        );
+        const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+        const entry = {
+          id: manifestWithTags.id,
+          version: manifestWithTags.version,
+          source: sourceLabel,
+          installed_at: new Date().toISOString(),
+          tags: resolvedTags,
+          manifest: manifestWithTags,
+        };
+        await writeInstalledRecipesFile(resolveInstalledRecipesPath(), {
+          schema_version: 1,
+          updated_at: installed.updated_at,
+          recipes: [
+            ...installed.recipes.filter(
+              (installedEntry) =>
+                !(
+                  installedEntry.id === entry.id && installedEntry.version === entry.version
+                ),
+            ),
+            entry,
+          ],
+        });
       } catch (err) {
-        if (!hadExisting) {
-          await rm(installDir, { recursive: true, force: true });
-        }
+        await rm(installDir, { recursive: true, force: true });
         throw err;
       }
 
-      process.stdout.write(`Installed recipe ${manifestWithTags.id}@${manifestWithTags.version}\n`);
-      const activeIds = await readActiveRecipeIds(project);
-      if (activeIds.includes(manifestWithTags.id)) {
-        await refreshProjectOverlayArtifacts(project);
-      }
+      process.stdout.write(
+        `Installed recipe ${manifestWithTags.id}@${manifestWithTags.version} to global cache\n`,
+      );
       return 0;
     } finally {
       await rm(tempRoot, { recursive: true, force: true });

@@ -76,9 +76,9 @@ Commands:
     recipes cache  Manage recipes cache.
     recipes cache prune  Prune global recipe cache entries.
     recipes explain  Show detailed info for an installed recipe.
-    recipes info  Show installed recipe metadata.
-    recipes install  Install a recipe from remote index, local archive, or URL.
-    recipes list  List installed recipes.
+    recipes info  Show cached recipe metadata.
+    recipes install  Install a recipe into the global cache from remote index, local archive, or URL.
+    recipes list  List cached recipes.
     recipes list-remote  List recipes from the remote index (or cache).
     recipes remove  Remove an installed recipe.
   Release:
@@ -159,7 +159,7 @@ Commands:
 `;
 
 exports[`runCli help snapshots (cli2) > help recipes install --compact snapshot 1`] = `
-"recipes install - Install a recipe from remote index, local archive, or URL.
+"recipes install - Install a recipe into the global cache from remote index, local archive, or URL.
 
 Usage:
   agentplane recipes install <id|path|url> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
@@ -168,9 +168,9 @@ Usage:
   agentplane recipes install --url <url> [--yes] [--on-conflict <fail|rename|overwrite>]
 
 Options:
-  --name <id>  Install from remote index by recipe id.
-  --path <path>  Install from local recipe archive path.
-  --url <url>  Install from recipe archive URL.
+  --name <id>  Cache from remote index by recipe id.
+  --path <path>  Cache from local recipe archive path.
+  --url <url>  Cache from recipe archive URL.
   --index <path|url>  Override recipes index location (used when installing by name / auto-name).
   --refresh  Refresh remote index cache before installing. (default=false)
   --yes  Auto-approve network prompts when allowed by config. (default=false)

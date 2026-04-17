@@ -1,12 +1,10 @@
-import { resolveProject } from "@agentplaneorg/core";
-
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
 import { formatJsonBlock } from "../format.js";
-import { readActiveRecipeIds } from "../overlay-project.js";
-import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
+import { readInstalledRecipesFile } from "../installed-recipes.js";
+import { resolveInstalledRecipesPath } from "../paths.js";
 
 export async function cmdRecipeInfoParsed(opts: {
   cwd: string;
@@ -14,20 +12,13 @@ export async function cmdRecipeInfoParsed(opts: {
   id: string;
 }): Promise<number> {
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const [installed, activeIds] = await Promise.all([
-      readProjectInstalledRecipes(resolved),
-      readActiveRecipeIds(resolved),
-    ]);
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
     const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
     if (!entry) {
       throw new CliError({
         exitCode: exitCodeForError("E_IO"),
         code: "E_IO",
-        message: `Recipe not installed: ${opts.id}`,
+        message: `Recipe not cached: ${opts.id}`,
       });
     }
     const manifest = entry.manifest;
@@ -35,7 +26,7 @@ export async function cmdRecipeInfoParsed(opts: {
     process.stdout.write(`Recipe: ${manifest.id}@${manifest.version}\n`);
     process.stdout.write(`Kind: ${manifest.kind}\n`);
     process.stdout.write(`Schema: ${manifest.schema_version}\n`);
-    process.stdout.write(`Active: ${activeIds.includes(entry.id) ? "yes" : "no"}\n`);
+    process.stdout.write("Cached: yes\n");
     process.stdout.write(`Name: ${manifest.name}\n`);
     process.stdout.write(`Summary: ${manifest.summary}\n`);
     process.stdout.write(`Description: ${manifest.description}\n`);

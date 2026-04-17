@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604170647-AXJYWC/split-recipe-stores",
+  "created_at": "2026-04-17T06:49:10.581Z",
+  "head_sha": "2b037eb350ccb42b67e21f9a79dece7e4469532b",
+  "last_verified_at": "2026-04-17T07:24:23.337Z",
+  "last_verified_sha": "2b037eb350ccb42b67e21f9a79dece7e4469532b",
+  "schema_version": 1,
+  "task_id": "202604170647-AXJYWC",
+  "updated_at": "2026-04-17T06:49:10.581Z",
+  "verify": {
+    "status": "pass"
+  }
+}

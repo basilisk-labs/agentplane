@@ -14,7 +14,7 @@ export type RecipesInstallParsed = {
 export const recipesInstallSpec: CommandSpec<RecipesInstallParsed> = {
   id: ["recipes", "install"],
   group: "Recipes",
-  summary: "Install a recipe from remote index, local archive, or URL.",
+  summary: "Install a recipe into the global cache from remote index, local archive, or URL.",
   synopsis: [
     "agentplane recipes install <id|path|url> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]",
     "agentplane recipes install --name <id> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]",
@@ -35,19 +35,19 @@ export const recipesInstallSpec: CommandSpec<RecipesInstallParsed> = {
       kind: "string",
       name: "name",
       valueHint: "<id>",
-      description: "Install from remote index by recipe id.",
+      description: "Cache from remote index by recipe id.",
     },
     {
       kind: "string",
       name: "path",
       valueHint: "<path>",
-      description: "Install from local recipe archive path.",
+      description: "Cache from local recipe archive path.",
     },
     {
       kind: "string",
       name: "url",
       valueHint: "<url>",
-      description: "Install from recipe archive URL.",
+      description: "Cache from recipe archive URL.",
     },
     {
       kind: "string",

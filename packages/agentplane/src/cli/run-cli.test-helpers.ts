@@ -364,7 +364,7 @@ export async function writeConfig(
 
 export async function resetAgentplaneHomeRecipes(): Promise<void> {
   if (!agentplaneHome) return;
-  await rm(path.join(agentplaneHome, "recipes"), { recursive: true, force: true });
+  await rm(path.join(agentplaneHome, "recipes-store"), { recursive: true, force: true });
   await rm(path.join(agentplaneHome, "recipes.json"), { force: true });
   await rm(path.join(agentplaneHome, "recipes-index.json"), { force: true });
 }
