@@ -1,10 +1,11 @@
 ---
 id: "202604171121-2FF00N"
 title: "Add SKILL_EXTRACTOR agent"
-status: "DOING"
+result_summary: "Merged via PR #378."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-17T11:24:53.985Z"
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/agents/agents-template.test.ts; Result: pass; Evidence: 11 tests passed and the repo .agentplane/agents copy stayed in sync with bundled assets after adding SKILL_EXTRACTOR. Scope: bundled/install agent parity and manifest coverage. Command: node packages/agentplane/bin/agentplane.js agents; Result: pass; Evidence: the CLI table now lists SKILL_EXTRACTOR with the expected role text. Scope: installed-agent discovery. Command: node packages/agentplane/bin/agentplane.js role SKILL_EXTRACTOR; Result: pass; Evidence: role output renders the new profile, permissions, and workflow contract without extra CLI code changes. Scope: role guidance usability."
-commit: null
+commit:
+  hash: "5e7b67e85b8bc9b4ceb519926718714ca7c4acfa"
+  message: "agents/workflow: Add SKILL_EXTRACTOR agent (2FF00N) (#378)"
 comments:
   -
     author: "CODER"
     body: "Start: add a new bundled SKILL_EXTRACTOR agent that turns completed-task evidence into reusable repo-local skills, wire it into the shipped agent set, and verify the new profile is discoverable and sync-safe."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #378 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/agents/agents-template.test.ts; Result: pass; Evidence: 11 tests passed and the repo .agentplane/agents copy stayed in sync with bundled assets after adding SKILL_EXTRACTOR. Scope: bundled/install agent parity and manifest coverage. Command: node packages/agentplane/bin/agentplane.js agents; Result: pass; Evidence: the CLI table now lists SKILL_EXTRACTOR with the expected role text. Scope: installed-agent discovery. Command: node packages/agentplane/bin/agentplane.js role SKILL_EXTRACTOR; Result: pass; Evidence: role output renders the new profile, permissions, and workflow contract without extra CLI code changes. Scope: role guidance usability."
+  -
+    type: "status"
+    at: "2026-04-17T11:32:30.556Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #378 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T11:24:53.996Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T11:32:30.561Z"
+doc_updated_by: "INTEGRATOR"
 description: "Create a new agent profile that mines completed tasks, commits, and incidents into reusable repo-local skills under skills/, then wire it into the bundled agent set and any required guidance surfaces."
 sections:
   Summary: |-
