@@ -7,7 +7,7 @@ description: "How the repository is structured and where key components live."
 
 - `packages/agentplane/`: published `agentplane` CLI package
 - `packages/core/`: published `@agentplaneorg/core` package
-- `packages/spec/`: canonical schemas and examples
+- `packages/spec/`: generated schema mirrors and examples
 - `packages/recipes/`: recipe runtime helpers
 - `packages/testkit/`: shared test helpers
 - `docs/`: user and developer documentation
@@ -24,8 +24,9 @@ description: "How the repository is structured and where key components live."
 
 ## Core and spec layout
 
-- `packages/spec/schemas/*.schema.json`: canonical schema source
-- `packages/core/schemas/*.schema.json`: synchronized mirror for runtime package
+- `packages/core/src/config/**` and `packages/core/src/tasks/**`: canonical durable contract renderers and validators
+- `packages/spec/schemas/*.schema.json`: generated schema mirrors for tooling and published distribution
+- `packages/core/schemas/*.schema.json`: synchronized runtime-package mirrors
 - `scripts/sync-schemas.mjs`: sync/check tool for schema parity
 - `scripts/sync-agent-templates.mjs`: sync/check tool for agent profile parity (`assets/agents` vs `.agentplane/agents` in this repository)
 

@@ -107,7 +107,7 @@ Facts:
 - `packages/core` is the effective shared runtime contract layer for config, task documents, exports, and some git/policy primitives.
 - `config` is already close to a single-source-of-truth model: schema is rendered from runtime code, validated through AJV, mirrored into `packages/spec` and `packages/core/schemas`, and checked by sync tooling.
 - `task` contracts are weaker: task README frontmatter and `tasks.json` are parsed permissively and then cast into runtime types, without full schema validation on read/write.
-- `packages/spec` only mirrors `config.schema.json` in a reliable way. It does not act as an enforced canonical source for task/PR artifacts despite several docs implying a broader role.
+- `packages/spec` only mirrors runtime-defined schemas. It does not act as an enforced canonical source for task/PR artifacts despite several docs having implied a broader role.
 
 Weak seams:
 
@@ -123,6 +123,8 @@ Refactor opportunities:
 3. Collapse parallel task models into one domain entity plus explicit projections.
 4. Introduce one `TaskDocContract` module for section set, ordering, versioning, and projection rules.
 5. Either raise `packages/spec` to a fully enforced contract layer or narrow its documented role.
+
+Baseline chosen later: the repository now narrows the documented role of `packages/spec` to generated mirrors and keeps durable contract authority in `packages/core/src/**`. See [Schema validation strategy](schema-validation-strategy).
 
 ### 2. CLI surface
 
