@@ -7,12 +7,13 @@ import { mapCoreError } from "../../../../cli/error-map.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
-import { refreshProjectOverlayArtifacts } from "../overlay-project.js";
+import { runVendoredRecipeMutation } from "../mutation-transaction.js";
+import { publishProjectRecipesState } from "../overlay-project.js";
 import { readInstalledRecipesFile } from "../installed-recipes.js";
 import { hashRecipeTree } from "../project-recipe-state.js";
 import {
   readProjectRecipesRegistry,
-  upsertProjectRecipeRegistryEntry,
+  replaceProjectRecipeRegistryEntry,
 } from "../project-registry.js";
 import {
   resolveInstalledRecipeDir,
@@ -83,33 +84,36 @@ export async function cmdRecipeAddParsed(opts: {
       });
     }
 
-    await mkdir(resolveProjectRecipesPackagesDir(project), { recursive: true });
-    await rm(targetDir, { recursive: true, force: true });
-    await (materialization === "link"
-      ? symlink(sourceDir, targetDir, "dir")
-      : cp(sourceDir, targetDir, { recursive: true }));
-
     const installedAt = new Date().toISOString();
     const tags = normalizeRecipeTags(cached.tags ?? cached.manifest.tags ?? []);
     const sourceSha256 = await hashRecipeTree(sourceDir);
-    const vendoredSha256 = await hashRecipeTree(targetDir);
-    await upsertProjectRecipeRegistryEntry({
-      project,
-      entry: {
-        id: cached.id,
-        version: cached.version,
-        path: `packages/${cached.id}`,
-        active: opts.activate === true,
-        materialization,
-        source_ref: `${cached.id}@${cached.version}`,
-        source_sha256: sourceSha256,
-        vendored_sha256: vendoredSha256,
-        installed_at: installedAt,
-        tags,
+    await mkdir(resolveProjectRecipesPackagesDir(project), { recursive: true });
+    await runVendoredRecipeMutation({
+      targetDir,
+      mode: "create",
+      materialize: async (nextTargetDir) => {
+        await rm(nextTargetDir, { recursive: true, force: true });
+        await (materialization === "link"
+          ? symlink(sourceDir, nextTargetDir, "dir")
+          : cp(sourceDir, nextTargetDir, { recursive: true }));
+      },
+      commit: async () => {
+        const vendoredSha256 = await hashRecipeTree(targetDir);
+        const nextRegistry = replaceProjectRecipeRegistryEntry(registry, {
+          id: cached.id,
+          version: cached.version,
+          path: `packages/${cached.id}`,
+          active: opts.activate === true,
+          materialization,
+          source_ref: `${cached.id}@${cached.version}`,
+          source_sha256: sourceSha256,
+          vendored_sha256: vendoredSha256,
+          installed_at: installedAt,
+          tags,
+        });
+        await publishProjectRecipesState({ project, registry: nextRegistry });
       },
     });
-
-    await refreshProjectOverlayArtifacts(project);
     process.stdout.write(
       `Vendored recipe ${cached.id}@${cached.version} into project (${materialization})\n`,
     );

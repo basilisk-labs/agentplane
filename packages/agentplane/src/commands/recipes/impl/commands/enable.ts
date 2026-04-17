@@ -4,8 +4,12 @@ import { mapCoreError } from "../../../../cli/error-map.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
-import { refreshProjectOverlayArtifacts, setRecipeActive } from "../overlay-project.js";
+import { publishProjectRecipesState } from "../overlay-project.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
+import {
+  readProjectRecipesRegistry,
+  setProjectRecipeActiveInFile,
+} from "../project-registry.js";
 
 export async function cmdRecipeEnableParsed(opts: {
   cwd: string;
@@ -33,8 +37,9 @@ export async function cmdRecipeEnableParsed(opts: {
         message: `Recipe ${opts.id} is not a project overlay`,
       });
     }
-    await setRecipeActive({ project, recipeId: opts.id, active: true });
-    const { bundle } = await refreshProjectOverlayArtifacts(project);
+    const registry = await readProjectRecipesRegistry(project);
+    const nextRegistry = setProjectRecipeActiveInFile(registry, opts.id, true);
+    const { bundle } = await publishProjectRecipesState({ project, registry: nextRegistry });
     process.stdout.write(`Enabled overlay ${opts.id} (${bundle.active.length} active)\n`);
     return 0;
   } catch (err) {

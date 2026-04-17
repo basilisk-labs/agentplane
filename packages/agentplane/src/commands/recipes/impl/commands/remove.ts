@@ -8,9 +8,13 @@ import { successMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 import { ensureActionApproved } from "../../../shared/approval-requirements.js";
 
-import { refreshProjectOverlayArtifacts, setRecipeActive } from "../overlay-project.js";
+import { runVendoredRecipeMutation } from "../mutation-transaction.js";
+import { publishProjectRecipesState } from "../overlay-project.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
-import { removeProjectRecipeRegistryEntry } from "../project-registry.js";
+import {
+  readProjectRecipesRegistry,
+  removeProjectRecipeRegistryEntryFromFile,
+} from "../project-registry.js";
 import { resolveProjectInstalledRecipeDir } from "../paths.js";
 
 export async function cmdRecipeRemoveParsed(opts: {
@@ -25,6 +29,7 @@ export async function cmdRecipeRemoveParsed(opts: {
     });
     const loaded = await loadConfig(resolved.agentplaneDir);
     const installed = await readProjectInstalledRecipes(resolved);
+    const registry = await readProjectRecipesRegistry(resolved);
     const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
     if (!entry) {
       throw new CliError({
@@ -40,10 +45,14 @@ export async function cmdRecipeRemoveParsed(opts: {
       yes: false,
       reason: `recipes remove ${entry.id}@${entry.version}`,
     });
-    await rm(recipeDir, { recursive: true, force: true });
-    await setRecipeActive({ project: resolved, recipeId: entry.id, active: false });
-    await removeProjectRecipeRegistryEntry({ project: resolved, recipeId: entry.id });
-    await refreshProjectOverlayArtifacts(resolved);
+    await runVendoredRecipeMutation({
+      targetDir: recipeDir,
+      mode: "remove",
+      commit: async () => {
+        const nextRegistry = removeProjectRecipeRegistryEntryFromFile(registry, entry.id);
+        await publishProjectRecipesState({ project: resolved, registry: nextRegistry });
+      },
+    });
 
     process.stdout.write(`${successMessage("removed recipe", `${entry.id}@${entry.version}`)}\n`);
     return 0;

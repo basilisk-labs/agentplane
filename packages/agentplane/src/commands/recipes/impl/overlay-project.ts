@@ -1,4 +1,4 @@
-import { mkdir, readFile } from "node:fs/promises";
+import { lstat, mkdir, readFile, rename, rm } from "node:fs/promises";
 import path from "node:path";
 
 import {
@@ -10,17 +10,30 @@ import {
   validateCompiledOverlayBundle,
   validateCompiledRecipeAssetRegistry,
 } from "@agentplaneorg/recipes";
+import { atomicWriteFile, canonicalizeJson } from "@agentplaneorg/core";
 
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 
-import { readProjectInstalledRecipes } from "./project-installed-recipes.js";
-import { readProjectRecipesRegistry, writeProjectRecipesRegistry } from "./project-registry.js";
+import {
+  readProjectInstalledRecipes,
+  readProjectInstalledRecipesFromRegistry,
+} from "./project-installed-recipes.js";
+import {
+  readProjectRecipesRegistry,
+  setProjectRecipeActiveInFile,
+  stampProjectRecipesRegistry,
+  writeProjectRecipesRegistry,
+} from "./project-registry.js";
 import {
   resolveProjectInstalledRecipeDir,
   resolveProjectOverlayBundlePath,
   resolveProjectRecipeAssetsPath,
   resolveProjectRecipesDir,
+  resolveProjectRecipesRegistryPath,
 } from "./paths.js";
+import type { ProjectRecipesRegistryFile } from "./types.js";
+
+let projectRecipePublishNonce = 0;
 
 function ensureTrailingNewline(text: string): string {
   return text.endsWith("\n") ? text : `${text}\n`;
@@ -50,6 +63,50 @@ function uniqueById<T extends { id: string }>(items: T[]): T[] {
     result.push(item);
   }
   return result;
+}
+
+function jsonText(value: unknown): string {
+  return `${JSON.stringify(canonicalizeJson(value), null, 2)}\n`;
+}
+
+async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await lstat(filePath);
+    return true;
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException | null)?.code;
+    if (code === "ENOENT") return false;
+    throw err;
+  }
+}
+
+async function publishJsonFilesTransactional(
+  files: Array<{ path: string; value: unknown }>,
+): Promise<void> {
+  const backups: Array<{ path: string; backup: string }> = [];
+  try {
+    for (const file of files) {
+      if (!(await pathExists(file.path))) continue;
+      const backup = `${file.path}.bak-${process.pid}-${Date.now()}-${projectRecipePublishNonce++}`;
+      await rename(file.path, backup);
+      backups.push({ path: file.path, backup });
+    }
+    for (const file of files) {
+      await mkdir(path.dirname(file.path), { recursive: true });
+      await atomicWriteFile(file.path, jsonText(file.value), "utf8");
+    }
+    for (const entry of backups) {
+      await rm(entry.backup, { recursive: true, force: true });
+    }
+  } catch (err) {
+    for (const file of files) {
+      await rm(file.path, { recursive: true, force: true }).catch(() => undefined);
+    }
+    for (const entry of backups.toReversed()) {
+      await rename(entry.backup, entry.path).catch(() => undefined);
+    }
+    throw err;
+  }
 }
 
 function recipeAssetId(recipeId: string, kind: string, assetId: string): string {
@@ -155,6 +212,10 @@ async function compileProjectRecipeAssets(opts: {
 
 export async function readActiveRecipeIds(project: { agentplaneDir: string }): Promise<string[]> {
   const registry = await readProjectRecipesRegistry(project);
+  return readActiveRecipeIdsFromRegistry(registry);
+}
+
+export function readActiveRecipeIdsFromRegistry(registry: ProjectRecipesRegistryFile): string[] {
   return registry.recipes
     .filter((entry) => entry.active)
     .map((entry) => entry.id)
@@ -167,28 +228,21 @@ export async function setRecipeActive(opts: {
   active: boolean;
 }): Promise<string[]> {
   const registry = await readProjectRecipesRegistry(opts.project);
-  const current = new Set<string>();
-  const recipes = registry.recipes.map((entry) => {
-    const isTarget = entry.id === opts.recipeId;
-    const active = isTarget ? opts.active : entry.active;
-    if (active) current.add(entry.id);
-    return isTarget ? { ...entry, active } : entry;
-  });
-  await writeProjectRecipesRegistry(opts.project, {
-    schema_version: 1,
-    updated_at: registry.updated_at,
-    recipes,
-  });
-  return [...current].toSorted();
+  const next = setProjectRecipeActiveInFile(registry, opts.recipeId, opts.active);
+  await writeProjectRecipesRegistry(opts.project, next);
+  return readActiveRecipeIdsFromRegistry(next);
 }
 
-export async function compileProjectOverlayArtifacts(project: { agentplaneDir: string }): Promise<{
+export async function compileProjectOverlayArtifactsFromRegistry(
+  project: { agentplaneDir: string },
+  registry: ProjectRecipesRegistryFile,
+): Promise<{
   bundle: CompiledOverlayBundle;
   assets: CompiledRecipeAssetRegistry;
 }> {
   const [activeIds, installed] = await Promise.all([
-    readActiveRecipeIds(project),
-    readProjectInstalledRecipes(project),
+    readActiveRecipeIdsFromRegistry(registry),
+    readProjectInstalledRecipesFromRegistry(project, registry),
   ]);
   const bundle = createEmptyOverlayBundle();
 
@@ -288,6 +342,32 @@ export async function compileProjectOverlayArtifacts(project: { agentplaneDir: s
     bundle,
     assets: await compileProjectRecipeAssets({ project, installed }),
   };
+}
+
+export async function compileProjectOverlayArtifacts(project: { agentplaneDir: string }): Promise<{
+  bundle: CompiledOverlayBundle;
+  assets: CompiledRecipeAssetRegistry;
+}> {
+  const registry = await readProjectRecipesRegistry(project);
+  return await compileProjectOverlayArtifactsFromRegistry(project, registry);
+}
+
+export async function publishProjectRecipesState(opts: {
+  project: { agentplaneDir: string };
+  registry: ProjectRecipesRegistryFile;
+}): Promise<{
+  registry: ProjectRecipesRegistryFile;
+  bundle: CompiledOverlayBundle;
+  assets: CompiledRecipeAssetRegistry;
+}> {
+  const registry = stampProjectRecipesRegistry(opts.registry);
+  const compiled = await compileProjectOverlayArtifactsFromRegistry(opts.project, registry);
+  await publishJsonFilesTransactional([
+    { path: resolveProjectOverlayBundlePath(opts.project), value: compiled.bundle },
+    { path: resolveProjectRecipeAssetsPath(opts.project), value: compiled.assets },
+    { path: resolveProjectRecipesRegistryPath(opts.project), value: registry },
+  ]);
+  return { registry, ...compiled };
 }
 
 export async function refreshProjectOverlayArtifacts(project: { agentplaneDir: string }): Promise<{

@@ -6,6 +6,7 @@ import {
   readRecipeManifest,
   type ProjectInstalledRecipeEntry,
   type ProjectInstalledRecipesFile,
+  type ProjectRecipesRegistryFile,
 } from "@agentplaneorg/recipes";
 
 import { invalidFieldMessage, missingFileMessage } from "../../../cli/output.js";
@@ -27,10 +28,10 @@ async function pathExistsAsKind(filePath: string, kind: "file" | "dir"): Promise
   }
 }
 
-export async function readProjectInstalledRecipes(opts: {
-  agentplaneDir: string;
-}): Promise<ProjectInstalledRecipesFile> {
-  const registry = await readProjectRecipesRegistry(opts);
+export async function readProjectInstalledRecipesFromRegistry(
+  opts: { agentplaneDir: string },
+  registry: ProjectRecipesRegistryFile,
+): Promise<ProjectInstalledRecipesFile> {
   if (registry.recipes.length === 0) {
     return { schema_version: 1, updated_at: "", recipes: [] };
   }
@@ -75,4 +76,11 @@ export async function readProjectInstalledRecipes(opts: {
     updated_at: registry.updated_at,
     recipes: sortInstalledRecipes(entries),
   };
+}
+
+export async function readProjectInstalledRecipes(opts: {
+  agentplaneDir: string;
+}): Promise<ProjectInstalledRecipesFile> {
+  const registry = await readProjectRecipesRegistry(opts);
+  return await readProjectInstalledRecipesFromRegistry(opts, registry);
 }
