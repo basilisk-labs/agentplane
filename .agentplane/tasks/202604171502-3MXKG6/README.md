@@ -1,10 +1,11 @@
 ---
 id: "202604171502-3MXKG6"
 title: "Decompose runner prompt and adapter hotspots"
-status: "DOING"
+result_summary: "Merged via PR #406."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-17T18:43:55.123Z"
   updated_by: "CODER"
   note: "Verified: split runner prompt assembly into shared base-source, overlay, and recipe collectors; extracted shared adapter runtime helpers for custom and codex; bun run typecheck passed; runner prompt/custom/codex adapter tests passed."
-commit: null
+commit:
+  hash: "e4814169aa38e22baf48c81fceab2b9417869fb8"
+  message: "refactor/runner: Decompose runner prompt and adapter hotspots (3MXKG6) (#406)"
 comments:
   -
     author: "CODER"
     body: "Start: split runner prompt assembly and adapter hotspots into smaller modules with shared primitives while preserving runner behavior under the declared adapter and prompt tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #406 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: split runner prompt assembly into shared base-source, overlay, and recipe collectors; extracted shared adapter runtime helpers for custom and codex; bun run typecheck passed; runner prompt/custom/codex adapter tests passed."
+  -
+    type: "status"
+    at: "2026-04-17T19:00:44.592Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #406 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T18:43:55.128Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T19:00:44.597Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split runner/context/base-prompts.ts and the custom plus codex adapters into smaller modules with shared adapter primitives while preserving runner behavior."
 sections:
   Summary: |-
