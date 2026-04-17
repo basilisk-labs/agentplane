@@ -4,6 +4,7 @@ import { collectRecipeScenarioDetails } from "@agentplaneorg/recipes";
 import { resolveProject } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../../../cli/error-map.js";
+import { createCliEmitter } from "../../../../cli/output.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
@@ -12,6 +13,8 @@ import { readActiveRecipeIds } from "../overlay-project.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
 import { inspectProjectRecipe } from "../project-recipe-state.js";
 import { resolveProjectRecipesDir, resolveProjectInstalledRecipeDir } from "../paths.js";
+
+const output = createCliEmitter();
 
 export async function cmdRecipeExplainParsed(opts: {
   cwd: string;
@@ -43,25 +46,27 @@ export async function cmdRecipeExplainParsed(opts: {
       : resolveProjectInstalledRecipeDir(resolved, entry.id);
     const scenarioDetails = await collectRecipeScenarioDetails(recipeDir, manifest);
 
-    process.stdout.write(`Recipe: ${manifest.id}@${manifest.version}\n`);
-    process.stdout.write(`Kind: ${manifest.kind}\n`);
-    process.stdout.write(`Schema: ${manifest.schema_version}\n`);
-    process.stdout.write(`Active: ${activeIds.includes(entry.id) ? "yes" : "no"}\n`);
-    process.stdout.write(`Materialization: ${entry.materialization}\n`);
-    process.stdout.write(`State: ${inspection.state}\n`);
-    process.stdout.write(`Source ref: ${entry.source_ref}\n`);
-    process.stdout.write(`Cache source: ${inspection.cache_present ? "present" : "missing"}\n`);
-    process.stdout.write(`Source sha256: ${entry.source_sha256}\n`);
-    process.stdout.write(`Vendored sha256: ${inspection.current_vendored_sha256}\n`);
-    process.stdout.write(`Name: ${manifest.name}\n`);
-    process.stdout.write(`Summary: ${manifest.summary}\n`);
-    process.stdout.write(`Description: ${manifest.description}\n`);
+    output.lines([
+      `Recipe: ${manifest.id}@${manifest.version}`,
+      `Kind: ${manifest.kind}`,
+      `Schema: ${manifest.schema_version}`,
+      `Active: ${activeIds.includes(entry.id) ? "yes" : "no"}`,
+      `Materialization: ${entry.materialization}`,
+      `State: ${inspection.state}`,
+      `Source ref: ${entry.source_ref}`,
+      `Cache source: ${inspection.cache_present ? "present" : "missing"}`,
+      `Source sha256: ${entry.source_sha256}`,
+      `Vendored sha256: ${inspection.current_vendored_sha256}`,
+      `Name: ${manifest.name}`,
+      `Summary: ${manifest.summary}`,
+      `Description: ${manifest.description}`,
+    ]);
     if (manifest.tags && manifest.tags.length > 0) {
-      process.stdout.write(`Tags: ${manifest.tags.join(", ")}\n`);
+      output.line(`Tags: ${manifest.tags.join(", ")}`);
     }
     if (manifest.compatibility) {
       const payload = formatJsonBlock(manifest.compatibility, "  ");
-      if (payload) process.stdout.write(`Compatibility:\n${payload}\n`);
+      if (payload) output.jsonSection("Compatibility", manifest.compatibility);
     }
 
     const skills = manifest.skills ?? [];
@@ -69,23 +74,23 @@ export async function cmdRecipeExplainParsed(opts: {
     const tools = manifest.tools ?? [];
 
     if (skills.length > 0) {
-      process.stdout.write("Skills:\n");
+      output.line("Skills:");
       for (const skill of skills) {
-        process.stdout.write(`  - ${skill.id} - ${skill.summary}\n`);
+        output.line(`  - ${skill.id} - ${skill.summary}`);
       }
     }
     if (agents.length > 0) {
-      process.stdout.write("Agents:\n");
+      output.line("Agents:");
       for (const agent of agents) {
-        process.stdout.write(
-          `  - ${agent.display_name} (${agent.id}) - ${agent.summary} [role=${agent.role}]\n`,
+        output.line(
+          `  - ${agent.display_name} (${agent.id}) - ${agent.summary} [role=${agent.role}]`,
         );
       }
     }
     if (tools.length > 0) {
-      process.stdout.write("Tools:\n");
+      output.line("Tools:");
       for (const tool of tools) {
-        process.stdout.write(`  - ${tool.id} - ${tool.summary}\n`);
+        output.line(`  - ${tool.id} - ${tool.summary}`);
       }
     }
 
@@ -93,93 +98,105 @@ export async function cmdRecipeExplainParsed(opts: {
     const validators = manifest.validators ?? [];
 
     if (prompts.length > 0) {
-      process.stdout.write("Overlay prompts:\n");
+      output.line("Overlay prompts:");
       for (const prompt of prompts) {
-        process.stdout.write(
-          `  - ${prompt.id} [surface=${prompt.surface}, strength=${prompt.strength ?? "default"}, file=${prompt.file}]\n`,
+        output.line(
+          `  - ${prompt.id} [surface=${prompt.surface}, strength=${prompt.strength ?? "default"}, file=${prompt.file}]`,
         );
       }
     }
     if (validators.length > 0) {
-      process.stdout.write("Overlay validators:\n");
+      output.line("Overlay validators:");
       for (const validator of validators) {
-        process.stdout.write(
-          `  - ${validator.id} [kind=${validator.kind}, phase=${validator.phase}]\n`,
-        );
+        output.line(`  - ${validator.id} [kind=${validator.kind}, phase=${validator.phase}]`);
       }
     }
     if (manifest.templates && Object.keys(manifest.templates).length > 0) {
       const payload = formatJsonBlock(manifest.templates, "  ");
-      if (payload) process.stdout.write(`Templates:\n${payload}\n`);
+      if (payload) output.jsonSection("Templates", manifest.templates);
     }
 
     if (scenarioDetails.length > 0) {
-      process.stdout.write("Scenarios:\n");
+      output.line("Scenarios:");
       for (const scenario of scenarioDetails) {
         const title = scenario.name ? `${scenario.name} (${scenario.id})` : scenario.id;
         const summary = scenario.summary ? ` - ${scenario.summary}` : "";
-        process.stdout.write(`  - ${title}${summary}\n`);
+        output.line(`  - ${title}${summary}`);
         if (scenario.description) {
-          process.stdout.write(`    Description: ${scenario.description}\n`);
+          output.line(`    Description: ${scenario.description}`);
         }
         if (scenario.goal) {
-          process.stdout.write(`    Goal: ${scenario.goal}\n`);
+          output.line(`    Goal: ${scenario.goal}`);
         }
         if (scenario.use_when && scenario.use_when.length > 0) {
           const payload = formatJsonBlock(scenario.use_when, "      ");
-          if (payload) process.stdout.write(`    Use when:\n${payload}\n`);
+          if (payload) output.jsonSection("    Use when", scenario.use_when, { indent: "      " });
         }
         if (scenario.avoid_when && scenario.avoid_when.length > 0) {
           const payload = formatJsonBlock(scenario.avoid_when, "      ");
-          if (payload) process.stdout.write(`    Avoid when:\n${payload}\n`);
+          if (payload)
+            output.jsonSection("    Avoid when", scenario.avoid_when, { indent: "      " });
         }
         if (scenario.required_inputs && scenario.required_inputs.length > 0) {
           const payload = formatJsonBlock(scenario.required_inputs, "      ");
-          if (payload) process.stdout.write(`    Required inputs:\n${payload}\n`);
+          if (payload) {
+            output.jsonSection("    Required inputs", scenario.required_inputs, {
+              indent: "      ",
+            });
+          }
         }
         if (scenario.inputs !== undefined) {
           const payload = formatJsonBlock(scenario.inputs, "      ");
-          if (payload) process.stdout.write(`    Inputs:\n${payload}\n`);
+          if (payload) output.jsonSection("    Inputs", scenario.inputs, { indent: "      " });
         }
         if (scenario.outputs !== undefined) {
           const payload = formatJsonBlock(scenario.outputs, "      ");
-          if (payload) process.stdout.write(`    Outputs:\n${payload}\n`);
+          if (payload) output.jsonSection("    Outputs", scenario.outputs, { indent: "      " });
         }
         if (scenario.permissions && scenario.permissions.length > 0) {
           const payload = formatJsonBlock(scenario.permissions, "      ");
-          if (payload) process.stdout.write(`    Permissions:\n${payload}\n`);
+          if (payload)
+            output.jsonSection("    Permissions", scenario.permissions, { indent: "      " });
         }
         if (scenario.artifacts && scenario.artifacts.length > 0) {
           const payload = formatJsonBlock(scenario.artifacts, "      ");
-          if (payload) process.stdout.write(`    Artifacts:\n${payload}\n`);
+          if (payload)
+            output.jsonSection("    Artifacts", scenario.artifacts, { indent: "      " });
         }
         if (scenario.agents_involved && scenario.agents_involved.length > 0) {
           const payload = formatJsonBlock(scenario.agents_involved, "      ");
-          if (payload) process.stdout.write(`    Agents involved:\n${payload}\n`);
+          if (payload) {
+            output.jsonSection("    Agents involved", scenario.agents_involved, {
+              indent: "      ",
+            });
+          }
         }
         if (scenario.skills_used && scenario.skills_used.length > 0) {
           const payload = formatJsonBlock(scenario.skills_used, "      ");
-          if (payload) process.stdout.write(`    Skills used:\n${payload}\n`);
+          if (payload)
+            output.jsonSection("    Skills used", scenario.skills_used, { indent: "      " });
         }
         if (scenario.tools_used && scenario.tools_used.length > 0) {
           const payload = formatJsonBlock(scenario.tools_used, "      ");
-          if (payload) process.stdout.write(`    Tools used:\n${payload}\n`);
+          if (payload)
+            output.jsonSection("    Tools used", scenario.tools_used, { indent: "      " });
         }
         if (scenario.run_profile) {
           const payload = formatJsonBlock(scenario.run_profile, "      ");
-          if (payload) process.stdout.write(`    Run profile:\n${payload}\n`);
+          if (payload)
+            output.jsonSection("    Run profile", scenario.run_profile, { indent: "      " });
         }
         if (scenario.steps && scenario.steps.length > 0) {
-          process.stdout.write("    Steps:\n");
+          output.line("    Steps:");
           let stepIndex = 1;
           for (const step of scenario.steps) {
-            process.stdout.write(`      ${stepIndex}. ${JSON.stringify(step)}\n`);
+            output.line(`      ${stepIndex}. ${JSON.stringify(step)}`);
             stepIndex += 1;
           }
           continue;
         }
         if (scenario.source !== "definition") {
-          process.stdout.write("    Details: Scenario definition not found in recipe.\n");
+          output.line("    Details: Scenario definition not found in recipe.");
         }
       }
     }

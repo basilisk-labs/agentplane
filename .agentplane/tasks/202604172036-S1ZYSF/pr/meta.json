@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604172036-S1ZYSF/output-writer-hotspots",
+  "created_at": "2026-04-17T20:38:05.332Z",
+  "head_sha": "94366eade38fb0c4b6ff36a4f525972bc12c91e0",
+  "last_verified_at": "2026-04-17T20:52:34.681Z",
+  "last_verified_sha": "94366eade38fb0c4b6ff36a4f525972bc12c91e0",
+  "schema_version": 1,
+  "task_id": "202604172036-S1ZYSF",
+  "updated_at": "2026-04-17T20:38:05.332Z",
+  "verify": {
+    "status": "pass"
+  }
+}
