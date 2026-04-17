@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171048-P1WXG2/publish-recipes-closure-state",
   "created_at": "2026-04-17T10:49:02.902Z",
-  "head_sha": "d057b0a3fed058dfaa05f598cbedbee30b5c7a90",
+  "head_sha": "a46f6a340f4f04ffcf2784aa14b02efe0eeea081",
   "last_verified_at": "2026-04-17T10:49:37.091Z",
   "last_verified_sha": "d057b0a3fed058dfaa05f598cbedbee30b5c7a90",
+  "merge_commit": "0c1094a90b2ea2ee351350a182f213dac8a4e65a",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T10:53:16Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171048-P1WXG2",
-  "updated_at": "2026-04-17T10:49:02.902Z",
+  "updated_at": "2026-04-17T10:53:16Z",
   "verify": {
     "status": "pass"
   }
