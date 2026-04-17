@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604171502-A585MV/pr-sync-steps",
+  "created_at": "2026-04-17T18:27:13.263Z",
+  "head_sha": "dd94c59ffe02d9e0df8c77b4615c12338831faa8",
+  "last_verified_at": "2026-04-17T18:36:45.542Z",
+  "last_verified_sha": "b0c53c8aae1a7e985ed3734ab3a02380b62e0d0e",
+  "schema_version": 1,
+  "task_id": "202604171502-A585MV",
+  "updated_at": "2026-04-17T18:37:19.555Z",
+  "verify": {
+    "status": "pass"
+  }
+}
