@@ -26,7 +26,6 @@ import {
 
 import { runCli } from "./run-cli.js";
 import { runWithOutputMode } from "./run-cli/globals.js";
-import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
 import {
   filterAgentsByWorkflow,
   loadAgentTemplates,
