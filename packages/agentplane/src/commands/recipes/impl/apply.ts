@@ -63,27 +63,23 @@ export async function validateRecipeAssets(opts: {
     }
   }
 
-  if (opts.manifest.kind === "project_overlay") {
-    for (const prompt of opts.manifest.prompts) {
-      const sourcePath = path.join(opts.recipeDir, prompt.file);
-      if (!(await fileExists(sourcePath))) {
-        throw new Error(missingFileMessage("overlay prompt file", prompt.file));
-      }
+  for (const prompt of opts.manifest.prompts ?? []) {
+    const sourcePath = path.join(opts.recipeDir, prompt.file);
+    if (!(await fileExists(sourcePath))) {
+      throw new Error(missingFileMessage("overlay prompt file", prompt.file));
     }
   }
 
-  if (opts.manifest.kind === "scenario_pack") {
-    for (const scenario of opts.manifest.scenarios ?? []) {
-      const sourcePath = path.join(opts.recipeDir, scenario.file);
-      if (!(await fileExists(sourcePath))) {
-        throw new Error(missingFileMessage("recipe scenario file", scenario.file));
-      }
-      const definition = await readScenarioDefinition(sourcePath);
-      if (definition.id !== scenario.id) {
-        throw new Error(
-          invalidFieldMessage("recipe scenario file", `scenario.id=${scenario.id}`, scenario.file),
-        );
-      }
+  for (const scenario of opts.manifest.scenarios ?? []) {
+    const sourcePath = path.join(opts.recipeDir, scenario.file);
+    if (!(await fileExists(sourcePath))) {
+      throw new Error(missingFileMessage("recipe scenario file", scenario.file));
+    }
+    const definition = await readScenarioDefinition(sourcePath);
+    if (definition.id !== scenario.id) {
+      throw new Error(
+        invalidFieldMessage("recipe scenario file", `scenario.id=${scenario.id}`, scenario.file),
+      );
     }
   }
 }
@@ -147,7 +143,6 @@ export async function applyRecipeScenarios(opts: {
   manifest: RecipeManifest;
   recipeDir: string;
 }): Promise<void> {
-  if (opts.manifest.kind !== "scenario_pack") return;
   const scenariosDir = path.join(opts.recipeDir, RECIPES_SCENARIOS_DIR_NAME);
   const scenariosIndexPath = path.join(opts.recipeDir, RECIPES_SCENARIOS_INDEX_NAME);
   const payload = { schema_version: 1, scenarios: [] as { id: string; summary?: string }[] };

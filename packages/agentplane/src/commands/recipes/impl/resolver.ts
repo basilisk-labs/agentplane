@@ -190,8 +190,7 @@ function toResolvedRecipeScenarios(opts: {
   const recipeDir = opts.entry.project_path
     ? path.join(resolveProjectRecipesDir(opts.project), opts.entry.project_path)
     : resolveProjectInstalledRecipeDir(opts.project, opts.entry.id);
-  if (opts.entry.manifest.kind !== "scenario_pack") return [];
-  return opts.entry.manifest.scenarios
+  return (opts.entry.manifest.scenarios ?? [])
     .map<ResolvedRecipeScenario>((scenario) => ({
       recipe_id: opts.entry.id,
       recipe_version: opts.entry.version,

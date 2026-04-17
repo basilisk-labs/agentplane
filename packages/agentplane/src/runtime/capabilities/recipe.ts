@@ -13,19 +13,6 @@ type RecipeSelection = Pick<
 
 type RecipeEntry = Pick<InstalledRecipeEntry, "id" | "version" | "manifest">;
 
-function normalizeRecipeManifest(entry: RecipeEntry): RecipeEntry["manifest"] {
-  if (entry.manifest.kind === "scenario_pack" || entry.manifest.kind === "project_overlay") {
-    return entry.manifest;
-  }
-  const legacyManifest = entry.manifest as RecipeEntry["manifest"] & {
-    schema_version?: "1" | "2";
-  };
-  if (legacyManifest.schema_version === "1") {
-    return { ...legacyManifest, kind: "scenario_pack" } as RecipeEntry["manifest"];
-  }
-  return { ...legacyManifest, kind: "project_overlay" } as RecipeEntry["manifest"];
-}
-
 function source(entry: RecipeEntry) {
   return {
     id: "recipe_manifest" as const,
@@ -71,16 +58,13 @@ export function resolveRecipeCapabilityRegistry(opts: {
   entry: RecipeEntry;
   selection?: RecipeSelection | null;
 }): AgentplaneCapabilityRegistry {
-  const manifest = normalizeRecipeManifest(opts.entry);
-  if (manifest.kind !== "scenario_pack") {
-    return createCapabilityRegistry([]);
-  }
+  const manifest = opts.entry.manifest;
   const gate = opts.selection
     ? scenarioCapabilityId(opts.entry.id, opts.selection.scenario_id)
     : null;
   const entries: AgentplaneCapabilityEntry[] = [];
 
-  for (const scenario of manifest.scenarios) {
+  for (const scenario of manifest.scenarios ?? []) {
     const selected = opts.selection ? scenario.id === opts.selection.scenario_id : true;
     entries.push({
       id: scenarioCapabilityId(opts.entry.id, scenario.id),

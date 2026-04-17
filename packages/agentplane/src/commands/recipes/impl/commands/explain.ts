@@ -39,10 +39,7 @@ export async function cmdRecipeExplainParsed(opts: {
     const recipeDir = entry.project_path
       ? path.join(resolveProjectRecipesDir(resolved), entry.project_path)
       : resolveProjectInstalledRecipeDir(resolved, entry.id);
-    const scenarioDetails =
-      manifest.kind === "scenario_pack"
-        ? await collectRecipeScenarioDetails(recipeDir, manifest)
-        : [];
+    const scenarioDetails = await collectRecipeScenarioDetails(recipeDir, manifest);
 
     process.stdout.write(`Recipe: ${manifest.id}@${manifest.version}\n`);
     process.stdout.write(`Kind: ${manifest.kind}\n`);
@@ -84,28 +81,28 @@ export async function cmdRecipeExplainParsed(opts: {
       }
     }
 
-    if (manifest.kind === "project_overlay") {
-      if (manifest.prompts.length > 0) {
-        process.stdout.write("Overlay prompts:\n");
-        for (const prompt of manifest.prompts) {
-          process.stdout.write(
-            `  - ${prompt.id} [surface=${prompt.surface}, strength=${prompt.strength ?? "default"}, file=${prompt.file}]\n`,
-          );
-        }
+    const prompts = manifest.prompts ?? [];
+    const validators = manifest.validators ?? [];
+
+    if (prompts.length > 0) {
+      process.stdout.write("Overlay prompts:\n");
+      for (const prompt of prompts) {
+        process.stdout.write(
+          `  - ${prompt.id} [surface=${prompt.surface}, strength=${prompt.strength ?? "default"}, file=${prompt.file}]\n`,
+        );
       }
-      if ((manifest.validators ?? []).length > 0) {
-        process.stdout.write("Overlay validators:\n");
-        for (const validator of manifest.validators ?? []) {
-          process.stdout.write(
-            `  - ${validator.id} [kind=${validator.kind}, phase=${validator.phase}]\n`,
-          );
-        }
+    }
+    if (validators.length > 0) {
+      process.stdout.write("Overlay validators:\n");
+      for (const validator of validators) {
+        process.stdout.write(
+          `  - ${validator.id} [kind=${validator.kind}, phase=${validator.phase}]\n`,
+        );
       }
-      if (manifest.templates && Object.keys(manifest.templates).length > 0) {
-        const payload = formatJsonBlock(manifest.templates, "  ");
-        if (payload) process.stdout.write(`Templates:\n${payload}\n`);
-      }
-      return 0;
+    }
+    if (manifest.templates && Object.keys(manifest.templates).length > 0) {
+      const payload = formatJsonBlock(manifest.templates, "  ");
+      if (payload) process.stdout.write(`Templates:\n${payload}\n`);
     }
 
     if (scenarioDetails.length > 0) {

@@ -1,4 +1,4 @@
-export type RecipeKind = "project_overlay" | "scenario_pack";
+export type RecipeKind = "project_overlay";
 
 export type RecipeCompatibility = {
   min_agentplane_version?: string;
@@ -168,24 +168,8 @@ export type ResolvedRecipeRunProfile = {
   writes_artifacts_to: string[];
 };
 
-export type ScenarioPackManifest = {
-  schema_version: "1" | "2";
-  kind: "scenario_pack";
-  id: string;
-  version: string;
-  name: string;
-  summary: string;
-  description: string;
-  tags?: string[];
-  compatibility?: RecipeCompatibility;
-  skills?: RecipeSkillDefinition[];
-  agents?: RecipeAgentDefinition[];
-  tools?: RecipeToolDefinition[];
-  scenarios: RecipeScenarioDescriptor[];
-};
-
 export type ProjectOverlayManifestV2 = {
-  schema_version: "2";
+  schema_version: "1" | "2";
   kind: "project_overlay";
   id: string;
   version: string;
@@ -196,15 +180,16 @@ export type ProjectOverlayManifestV2 = {
   compatibility?: RecipeCompatibility;
   requires?: string[];
   conflicts?: { recipe_id: string; reason: string }[];
-  prompts: OverlayPromptFragment[];
+  prompts?: OverlayPromptFragment[];
   validators?: OverlayValidator[];
   templates?: Record<string, string>;
   skills?: RecipeSkillDefinition[];
   agents?: RecipeAgentDefinition[];
   tools?: RecipeToolDefinition[];
+  scenarios?: RecipeScenarioDescriptor[];
 };
 
-export type RecipeManifest = ScenarioPackManifest | ProjectOverlayManifestV2;
+export type RecipeManifest = ProjectOverlayManifestV2;
 
 export type ResolvedRecipeScenario = {
   recipe_id: string;

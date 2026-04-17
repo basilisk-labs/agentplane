@@ -40,7 +40,6 @@ export type {
   ResolvedRecipeScenario,
   ResolvedRecipeScenarioSelection,
   ScenarioDefinition,
-  ScenarioPackManifest,
 } from "@agentplaneorg/recipes";
 
 export type RecipeCachePruneFlags = {

@@ -41,9 +41,9 @@ export async function cmdRecipeInfoParsed(opts: {
     const skills = manifest.skills ?? [];
     const agents = manifest.agents ?? [];
     const tools = manifest.tools ?? [];
-    const scenarios = manifest.kind === "scenario_pack" ? (manifest.scenarios ?? []) : [];
-    const prompts = manifest.kind === "project_overlay" ? manifest.prompts : [];
-    const validators = manifest.kind === "project_overlay" ? (manifest.validators ?? []) : [];
+    const scenarios = manifest.scenarios ?? [];
+    const prompts = manifest.prompts ?? [];
+    const validators = manifest.validators ?? [];
 
     if (skills.length > 0) {
       process.stdout.write("Skills:\n");

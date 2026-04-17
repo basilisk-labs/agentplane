@@ -115,7 +115,7 @@ export async function compileProjectOverlayArtifacts(project: {
       }
     }
 
-    for (const fragment of manifest.prompts) {
+    for (const fragment of manifest.prompts ?? []) {
       const absPath = path.join(recipeDir, fragment.file);
       const content = normalizePromptContent(await readFile(absPath, "utf8"));
       promptInputs.push({ id: fragment.id, content });
