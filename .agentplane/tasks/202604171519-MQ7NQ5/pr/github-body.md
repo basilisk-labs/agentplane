@@ -22,12 +22,13 @@ Remove the duplicate test:platform-critical:init-upgrade-backend script entry an
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-17T15:19:51.955Z
+- Updated: 2026-04-17T18:41:56.578Z
 - Branch: task/202604171519-MQ7NQ5/remove-init-upgrade-alias
-- Head: b0c53c8aae1a
+- Head: d0d4ad29e94e
 
 ```text
-No changes detected.
+ package.json | 1 -
+ 1 file changed, 1 deletion(-)
 ```
 
 </details>
