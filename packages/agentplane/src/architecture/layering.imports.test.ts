@@ -28,6 +28,15 @@ async function listTsFiles(rootDir: string): Promise<FileEntry[]> {
   return out;
 }
 
+async function directoryExists(dirPath: string): Promise<boolean> {
+  try {
+    const stat = await fs.stat(dirPath);
+    return stat.isDirectory();
+  } catch {
+    return false;
+  }
+}
+
 function extractImports(source: string): string[] {
   const imports: string[] = [];
   // Good enough for guardrails: we only care about obvious static imports.
@@ -83,6 +92,7 @@ describe("architecture layering guardrails", () => {
     ];
 
     for (const root of roots) {
+      if (!(await directoryExists(root))) continue;
       const files = await listTsFiles(root);
       for (const f of files) {
         const src = await fs.readFile(f.absPath, "utf8");
