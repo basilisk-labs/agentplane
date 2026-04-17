@@ -40,6 +40,7 @@ export async function cmdRecipeAddParsed(opts: {
   rootOverride?: string;
   recipeRef: string;
   mode?: "copy" | "link";
+  activate?: boolean;
 }): Promise<number> {
   try {
     const project = await resolveProject({
@@ -98,7 +99,7 @@ export async function cmdRecipeAddParsed(opts: {
         id: cached.id,
         version: cached.version,
         path: `packages/${cached.id}`,
-        active: false,
+        active: opts.activate === true,
         materialization,
         source_ref: `${cached.id}@${cached.version}`,
         source_sha256: sourceSha256,
