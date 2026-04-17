@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171522-TZMHEY/command-catalog-needs-union",
   "created_at": "2026-04-17T15:23:32.504Z",
-  "head_sha": "3ca5957bc56e417735fa2b7df16e88167f65410d",
+  "head_sha": "dd493d60d563491e73738e7250900d2c3cbd9a87",
   "last_verified_at": "2026-04-17T15:31:02.263Z",
   "last_verified_sha": "b0c53c8aae1a7e985ed3734ab3a02380b62e0d0e",
+  "merge_commit": "fcf136eb812737bb8df2d1414c5b1cc6f02a81e9",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T20:16:47Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171522-TZMHEY",
-  "updated_at": "2026-04-17T19:59:25.133Z",
+  "updated_at": "2026-04-17T20:16:47Z",
   "verify": {
     "status": "pass"
   }
