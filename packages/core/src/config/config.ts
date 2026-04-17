@@ -1,34 +1,30 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { ErrorObject, Options, ValidateFunction } from "ajv";
-import AjvModule from "ajv";
-import AjvFormatsModule from "ajv-formats";
+import type { ZodIssue } from "zod";
 
 import { atomicWriteFile } from "../fs/atomic-write.js";
-import { AGENTPLANE_CONFIG_SCHEMA } from "./config-schema.js";
+import {
+  AgentplaneConfigSchema,
+  type AgentplaneConfig as AgentplaneConfigShape,
+} from "./config-schema.js";
 
-export type WorkflowMode = "direct" | "branch_pr";
-export type StatusCommitPolicy = "off" | "warn" | "confirm";
-export type CommitAutomation = "manual" | "finish_only";
-export type ExecutionProfile = "conservative" | "balanced" | "aggressive";
-export type ReasoningEffort = "low" | "medium" | "high";
-export type RunnerAdapterId = "codex" | "custom";
-export type RunnerTraceMode = "raw" | "off";
-export type RunnerTraceRetention = "keep" | "remove_on_success" | "remove_always";
-export type RunnerTraceCompression = "none" | "gzip";
+export type AgentplaneConfig = AgentplaneConfigShape;
+
+export type WorkflowMode = AgentplaneConfig["workflow_mode"];
+export type StatusCommitPolicy = AgentplaneConfig["status_commit_policy"];
+export type CommitAutomation = AgentplaneConfig["commit_automation"];
+export type ExecutionProfile = AgentplaneConfig["execution"]["profile"];
+export type ReasoningEffort = AgentplaneConfig["execution"]["reasoning_effort"];
+export type RunnerAdapterId = AgentplaneConfig["runner"]["default_adapter"];
+export type RunnerTraceMode = AgentplaneConfig["runner"]["trace"]["mode"];
+export type RunnerTraceRetention = AgentplaneConfig["runner"]["trace"]["retention"];
+export type RunnerTraceCompression = AgentplaneConfig["runner"]["trace"]["compression"];
 export type RunnerTimeoutReason = "idle" | "wall_clock";
-export type RunnerCustomEnforcementMode = "none" | "codex_sandbox_full_auto";
-export type RunnerCustomSandboxPlatform = "auto" | "macos" | "linux" | "windows";
-export type RunnerCustomEnforcementConfig = {
-  mode?: RunnerCustomEnforcementMode;
-  platform?: RunnerCustomSandboxPlatform;
-};
-export type RunnerCustomConfig = {
-  command: string[];
-  env?: Record<string, string>;
-  enforcement?: RunnerCustomEnforcementConfig;
-};
+export type RunnerCustomEnforcementConfig = NonNullable<
+  NonNullable<AgentplaneConfig["runner"]["custom"]>["enforcement"]
+>;
+export type RunnerCustomConfig = NonNullable<AgentplaneConfig["runner"]["custom"]>;
 export type RunnerTraceConfig = {
   mode: RunnerTraceMode;
   max_tail_bytes: number;
@@ -37,89 +33,7 @@ export type RunnerTraceConfig = {
   compression?: RunnerTraceCompression;
   redact_patterns?: string[];
 };
-export type RunnerTimeoutConfig = {
-  wall_clock_ms: number;
-  idle_ms: number;
-  terminate_grace_ms: number;
-};
-
-export type AgentplaneConfig = {
-  schema_version: 1;
-  workflow_mode: WorkflowMode;
-  status_commit_policy: StatusCommitPolicy;
-  commit_automation: CommitAutomation;
-  finish_auto_status_commit: boolean;
-  agents?: {
-    approvals: {
-      require_plan: boolean;
-      require_network: boolean;
-      require_verify: boolean;
-      require_force?: boolean;
-    };
-  };
-  recipes?: {
-    storage_default: "link" | "copy";
-  };
-  execution: {
-    profile: ExecutionProfile;
-    reasoning_effort: ReasoningEffort;
-    tool_budget: {
-      discovery: number;
-      implementation: number;
-      verification: number;
-    };
-    stop_conditions: string[];
-    handoff_conditions: string[];
-    unsafe_actions_requiring_explicit_user_ok: string[];
-  };
-  runner: {
-    default_adapter: RunnerAdapterId;
-    trace: RunnerTraceConfig;
-    timeouts: RunnerTimeoutConfig;
-    custom?: RunnerCustomConfig;
-  };
-  paths: {
-    agents_dir: string;
-    tasks_path: string;
-    workflow_dir: string;
-    worktrees_dir: string;
-  };
-  branch: { task_prefix: string };
-  framework: {
-    source: string;
-    last_update: string | null;
-    cli: {
-      expected_version: string | null;
-    };
-  };
-  tasks: {
-    id_suffix_length_default: number;
-    verify: {
-      required_tags: string[];
-      require_steps_for_tags?: string[];
-      require_steps_for_primary?: string[];
-      require_verification_for_primary?: string[];
-      spike_tag: string;
-      enforce_on_plan_approve: boolean;
-      enforce_on_start_when_no_plan: boolean;
-    };
-    tags: {
-      primary_allowlist: string[];
-      strict_primary: boolean;
-      fallback_primary: string;
-      lock_primary_on_update: boolean;
-    };
-    doc: { sections: string[]; required_sections: string[] };
-    comments: {
-      start: { prefix: string; min_chars: number };
-      blocked: { prefix: string; min_chars: number };
-      verified: { prefix: string; min_chars: number };
-    };
-  };
-  commit: { generic_tokens: string[] };
-  tasks_backend: { config_path: string };
-  closure_commit_requires_approval: boolean;
-};
+export type RunnerTimeoutConfig = AgentplaneConfig["runner"]["timeouts"];
 
 export function defaultConfig(): AgentplaneConfig {
   return structuredClone(DEFAULT_CONFIG);
@@ -129,35 +43,39 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
-type AjvInstance = {
-  compile: <T>(schema: unknown) => ValidateFunction<T>;
-  errorsText: (errors?: ErrorObject[] | null, opts?: { dataVar?: string }) => string;
-};
+function formatIssuePath(issue: ZodIssue): string {
+  if (issue.path.length === 0) return "config";
+  return `config/${issue.path.map(String).join("/")}`;
+}
 
-type AjvConstructor = new (opts?: Options) => AjvInstance;
-type AjvFormats = (ajv: AjvInstance) => void;
+function formatIssue(issue: ZodIssue): string {
+  const pathLabel = formatIssuePath(issue);
 
-const Ajv =
-  (AjvModule as unknown as { default?: AjvConstructor }).default ??
-  (AjvModule as unknown as AjvConstructor);
+  switch (issue.code) {
+    case "invalid_type": {
+      if (issue.expected === "object") return `${pathLabel} must be object`;
+      if (issue.expected === "boolean") return `${pathLabel} must be boolean`;
+      if (issue.expected === "array") return `${pathLabel} must be array`;
+      if (issue.expected === "string") return `${pathLabel} must be string`;
+      if (issue.expected === "number") return `${pathLabel} must be number`;
+      return `${pathLabel} has invalid type`;
+    }
+    case "invalid_literal":
+    case "invalid_enum_value":
+    case "too_small":
+    case "too_big":
+    case "invalid_string": {
+      return pathLabel;
+    }
+    default: {
+      return issue.message ? `${pathLabel}: ${issue.message}` : pathLabel;
+    }
+  }
+}
 
-const addFormats =
-  (AjvFormatsModule as unknown as { default?: AjvFormats }).default ??
-  (AjvFormatsModule as unknown as AjvFormats);
-
-const AJV = new Ajv({
-  allErrors: true,
-  allowUnionTypes: true,
-  useDefaults: true,
-  strict: false,
-});
-addFormats(AJV);
-
-const validateSchema = AJV.compile<AgentplaneConfig>(AGENTPLANE_CONFIG_SCHEMA);
-
-function formatSchemaErrors(errors: ErrorObject[] | null | undefined): string {
-  if (!errors || errors.length === 0) return "config schema validation failed";
-  return AJV.errorsText(errors, { dataVar: "config" });
+function formatSchemaErrors(issues: ZodIssue[]): string {
+  if (issues.length === 0) return "config schema validation failed";
+  return issues.map((issue) => formatIssue(issue)).join("; ");
 }
 
 const DEPRECATED_CONFIG_KEYS = ["base_branch"];
@@ -189,13 +107,17 @@ export function validateConfig(raw: unknown): AgentplaneConfig {
   if (isRecord(candidate)) {
     candidate = stripDeprecatedConfigKeys(candidate).sanitized;
   }
-  if (!validateSchema(candidate)) {
-    throw new Error(formatSchemaErrors(validateSchema.errors));
+
+  const parsed = AgentplaneConfigSchema.safeParse(candidate);
+  if (!parsed.success) {
+    throw new Error(formatSchemaErrors(parsed.error.issues));
   }
-  if (!isRecord(candidate)) {
+
+  if (!isRecord(parsed.data)) {
     throw new Error("config must be an object");
   }
-  return candidate;
+
+  return parsed.data;
 }
 
 const DEFAULT_CONFIG = validateConfig({});
