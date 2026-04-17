@@ -191,10 +191,10 @@ describe("runCli help snapshots (cli2)", () => {
     }
   });
 
-  it("help scenario run --compact snapshot", async () => {
+  it("help recipes scenario run --compact snapshot", async () => {
     const io = captureStdIO();
     try {
-      const code = await runCli(["help", "scenario", "run", "--compact"]);
+      const code = await runCli(["help", "recipes", "scenario", "run", "--compact"]);
       expect(code).toBe(0);
       expect(io.stdout).toMatchSnapshot();
     } finally {
@@ -202,10 +202,10 @@ describe("runCli help snapshots (cli2)", () => {
     }
   });
 
-  it("help scenario execute --compact snapshot", async () => {
+  it("help recipes scenario execute --compact snapshot", async () => {
     const io = captureStdIO();
     try {
-      const code = await runCli(["help", "scenario", "execute", "--compact"]);
+      const code = await runCli(["help", "recipes", "scenario", "execute", "--compact"]);
       expect(code).toBe(0);
       expect(io.stdout).toMatchSnapshot();
     } finally {

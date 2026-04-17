@@ -15,15 +15,15 @@ export type ScenarioExecuteParsed = { recipeId: string; scenarioId: string };
 const output = createCliEmitter();
 
 export const scenarioExecuteSpec: CommandSpec<ScenarioExecuteParsed> = {
-  id: ["scenario", "execute"],
-  group: "Scenario",
+  id: ["recipes", "scenario", "execute"],
+  group: "Recipes",
   summary: "Materialize a recipe-backed task and execute it through the shared runner flow.",
   description:
     "Resolves a recipe scenario, materializes a task from its explicit task_template, and executes the shared runner with recipe context bundled alongside the created task.",
   args: [{ name: "id", required: true, valueHint: "<recipe:scenario>" }],
   examples: [
     {
-      cmd: "agentplane scenario execute viewer:demo",
+      cmd: "agentplane recipes scenario execute viewer:demo",
       why: "Create a task from the scenario template and execute it through the configured runner.",
     },
   ],
@@ -33,7 +33,7 @@ export const scenarioExecuteSpec: CommandSpec<ScenarioExecuteParsed> = {
     if (!recipeId || !scenarioId) {
       throw usageError({
         spec: scenarioExecuteSpec,
-        command: "scenario execute",
+        command: "recipes scenario execute",
         message: `Invalid scenario id: ${id} (expected: <recipe:scenario>)`,
       });
     }

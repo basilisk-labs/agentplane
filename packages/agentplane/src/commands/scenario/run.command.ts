@@ -5,14 +5,14 @@ import { cmdScenarioRunParsed } from "../scenario.js";
 export type ScenarioRunParsed = { recipeId: string; scenarioId: string };
 
 export const scenarioRunSpec: CommandSpec<ScenarioRunParsed> = {
-  id: ["scenario", "run"],
-  group: "Scenario",
+  id: ["recipes", "scenario", "run"],
+  group: "Recipes",
   summary: "Preview a validated scenario plan without creating a task or running a runner.",
   args: [{ name: "id", required: true, valueHint: "<recipe:scenario>" }],
   examples: [
     {
-      cmd: "agentplane scenario run viewer:demo",
-      why: "Validate a scenario and inspect the preview plan before `scenario execute`.",
+      cmd: "agentplane recipes scenario run viewer:demo",
+      why: "Validate a scenario and inspect the preview plan before `recipes scenario execute`.",
     },
   ],
   parse: (raw) => {
@@ -21,7 +21,7 @@ export const scenarioRunSpec: CommandSpec<ScenarioRunParsed> = {
     if (!recipeId || !scenarioId) {
       throw usageError({
         spec: scenarioRunSpec,
-        command: "scenario run",
+        command: "recipes scenario run",
         message: `Invalid scenario id: ${id} (expected: <recipe:scenario>)`,
       });
     }

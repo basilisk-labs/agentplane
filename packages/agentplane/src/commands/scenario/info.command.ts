@@ -5,13 +5,13 @@ import { cmdScenarioInfoParsed } from "../scenario.js";
 export type ScenarioInfoParsed = { recipeId: string; scenarioId: string };
 
 export const scenarioInfoSpec: CommandSpec<ScenarioInfoParsed> = {
-  id: ["scenario", "info"],
-  group: "Scenario",
+  id: ["recipes", "scenario", "info"],
+  group: "Recipes",
   summary: "Show manifest-backed scenario details and normalized run profile.",
   args: [{ name: "id", required: true, valueHint: "<recipe:scenario>" }],
   examples: [
     {
-      cmd: "agentplane scenario info viewer:demo",
+      cmd: "agentplane recipes scenario info viewer:demo",
       why: "Inspect resolver-backed scenario metadata before execution.",
     },
   ],
@@ -21,7 +21,7 @@ export const scenarioInfoSpec: CommandSpec<ScenarioInfoParsed> = {
     if (!recipeId || !scenarioId) {
       throw usageError({
         spec: scenarioInfoSpec,
-        command: "scenario info",
+        command: "recipes scenario info",
         message: `Invalid scenario id: ${id} (expected: <recipe:scenario>)`,
       });
     }

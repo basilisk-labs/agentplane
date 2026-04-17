@@ -186,7 +186,7 @@ export function renderTaskRunnerBootstrap(
     "This invocation is already inside an approved runner execution.",
     "- Do not run repository startup commands such as `agentplane config show`, `agentplane quickstart`, `agentplane task list`, `git status`, or `git rev-parse` unless the bundle explicitly requires them as task work.",
     "- Do not create, approve, start, verify, finish, block, or rerun tasks unless the bundle explicitly requires task metadata edits.",
-    "- Do not recursively invoke runner entrypoints such as `agentplane task run` or `agentplane scenario execute` from inside this run.",
+    "- Do not recursively invoke runner entrypoints such as `agentplane task run` or `agentplane recipes scenario execute` from inside this run.",
     "- Open bundle.json immediately, execute the requested work directly, and stop when the requested outcome is satisfied.",
     "",
     `- target: ${targetLabel}`,

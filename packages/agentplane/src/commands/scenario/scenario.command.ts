@@ -7,10 +7,10 @@ import {
 } from "../../cli/group-command.js";
 
 export const scenarioSpec: CommandSpec<GroupCommandParsed> = {
-  id: ["scenario"],
-  group: "Scenario",
+  id: ["recipes", "scenario"],
+  group: "Recipes",
   summary: "Recipe scenario commands.",
-  synopsis: ["agentplane scenario <subcommand> [options]"],
+  synopsis: ["agentplane recipes scenario <subcommand> [options]"],
   args: [{ name: "subcommand", required: false, variadic: true, valueHint: "<subcommand>" }],
   parse: (raw) => parseGroupCommand(raw, "subcommand"),
 };
@@ -22,9 +22,9 @@ export const runScenario: CommandHandler<GroupCommandParsed> = async (
   throwGroupCommandUsage({
     spec: scenarioSpec,
     cmd: p.cmd,
-    subcommands: await loadDirectSubcommandNames(["scenario"]),
-    command: "scenario",
-    missingMessage: "Missing scenario subcommand.",
-    unknownMessage: (subcommand) => `Unknown scenario subcommand: ${subcommand}.`,
+    subcommands: await loadDirectSubcommandNames(["recipes", "scenario"]),
+    command: "recipes scenario",
+    missingMessage: "Missing recipes scenario subcommand.",
+    unknownMessage: (subcommand) => `Unknown recipes scenario subcommand: ${subcommand}.`,
   });
 };

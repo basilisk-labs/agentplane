@@ -324,7 +324,7 @@ describe("commands/recipes scenario", () => {
       expect(io.stdout).toContain("Selection reasons:");
       expect(io.stdout).toContain("Status: preview only; no task created and no runner executed.");
       expect(io.stdout).toContain(
-        "Next: use `agentplane scenario execute viewer:RECIPE_SCENARIO` to materialize and run this scenario.",
+        "Next: use `agentplane recipes scenario execute viewer:RECIPE_SCENARIO` to materialize and run this scenario.",
       );
     } finally {
       io.restore();
