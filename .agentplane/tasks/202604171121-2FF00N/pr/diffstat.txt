@@ -1,0 +1,4 @@
+ .agentplane/agents/SKILL_EXTRACTOR.json            | 31 ++++++++++++++++++++++
+ .../agentplane/assets/agents/SKILL_EXTRACTOR.json  | 31 ++++++++++++++++++++++
+ packages/agentplane/assets/framework.manifest.json |  7 +++++
+ 3 files changed, 69 insertions(+)
