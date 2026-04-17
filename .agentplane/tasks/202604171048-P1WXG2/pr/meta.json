@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604171048-P1WXG2/publish-recipes-closure-state",
+  "created_at": "2026-04-17T10:49:02.902Z",
+  "head_sha": "d057b0a3fed058dfaa05f598cbedbee30b5c7a90",
+  "last_verified_at": "2026-04-17T10:49:37.091Z",
+  "last_verified_sha": "d057b0a3fed058dfaa05f598cbedbee30b5c7a90",
+  "schema_version": 1,
+  "task_id": "202604171048-P1WXG2",
+  "updated_at": "2026-04-17T10:49:02.902Z",
+  "verify": {
+    "status": "pass"
+  }
+}
