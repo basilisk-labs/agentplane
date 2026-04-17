@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604171100-E5MZBW/release-v0-3-13",
+  "created_at": "2026-04-17T11:00:48.975Z",
+  "head_sha": "327ddbc499dbc2a677cc1b22fccff441aa9900a7",
+  "last_verified_at": "2026-04-17T11:03:50.483Z",
+  "last_verified_sha": "327ddbc499dbc2a677cc1b22fccff441aa9900a7",
+  "schema_version": 1,
+  "task_id": "202604171100-E5MZBW",
+  "updated_at": "2026-04-17T11:03:50.503Z",
+  "verify": {
+    "status": "pass"
+  }
+}
