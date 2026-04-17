@@ -217,6 +217,7 @@ describe("commands/recipes catalog/install", () => {
 
     const manifestPath = path.join(resolveProjectRecipeDir(projectDir, "viewer"), "manifest.json");
     const registryPath = resolveProjectRecipesRegistryPath(projectDir);
+    const lockPath = path.join(projectDir, ".agentplane", "recipes.lock.json");
     expect(JSON.parse(await readFile(manifestPath, "utf8"))).toMatchObject({ id: "viewer" });
     const projectRegistry = JSON.parse(await readFile(registryPath, "utf8")) as {
       recipes: unknown[];
@@ -233,6 +234,7 @@ describe("commands/recipes catalog/install", () => {
         }),
       ],
     });
+    await expect(readFile(lockPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
   });
 
   it("prints recipe info details", async () => {

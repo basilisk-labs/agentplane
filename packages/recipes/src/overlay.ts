@@ -1,6 +1,9 @@
 import { createHash } from "node:crypto";
 
+import { invalidFieldMessage, isRecord } from "./internal-utils.js";
 import type {
+  CompiledRecipeAssetEntry,
+  CompiledRecipeAssetRegistry,
   CompiledOverlayBundle,
   OverlaySurface,
   OverlayWhen,
@@ -33,6 +36,139 @@ export function createEmptyOverlayBundle(): CompiledOverlayBundle {
     tools: [],
     trace: [],
   };
+}
+
+function requireString(raw: unknown, field: string): string {
+  if (typeof raw !== "string" || !raw.trim()) {
+    throw new Error(invalidFieldMessage(field, "non-empty string"));
+  }
+  return raw.trim();
+}
+
+function requireRecord(raw: unknown, field: string): Record<string, unknown> {
+  if (!isRecord(raw)) {
+    throw new Error(invalidFieldMessage(field, "object"));
+  }
+  return raw;
+}
+
+function validateCompiledOverlayFragment(
+  raw: unknown,
+  surface: OverlaySurface,
+  index: number,
+): void {
+  const entry = requireRecord(raw, `overlay bundle.surfaces.${surface}[${index}]`);
+  requireString(entry.id, `overlay bundle.surfaces.${surface}[${index}].id`);
+  requireString(entry.recipe_id, `overlay bundle.surfaces.${surface}[${index}].recipe_id`);
+  requireString(entry.recipe_version, `overlay bundle.surfaces.${surface}[${index}].recipe_version`);
+  requireString(entry.recipe_name, `overlay bundle.surfaces.${surface}[${index}].recipe_name`);
+  requireString(entry.surface, `overlay bundle.surfaces.${surface}[${index}].surface`);
+  requireString(entry.file, `overlay bundle.surfaces.${surface}[${index}].file`);
+  requireString(entry.source, `overlay bundle.surfaces.${surface}[${index}].source`);
+  requireString(entry.content, `overlay bundle.surfaces.${surface}[${index}].content`);
+}
+
+function validateCompiledOverlayBundleActive(raw: unknown, index: number): void {
+  const entry = requireRecord(raw, `overlay bundle.active[${index}]`);
+  requireString(entry.id, `overlay bundle.active[${index}].id`);
+  requireString(entry.version, `overlay bundle.active[${index}].version`);
+  requireString(entry.name, `overlay bundle.active[${index}].name`);
+  requireString(entry.summary, `overlay bundle.active[${index}].summary`);
+}
+
+function validateCompiledOverlayValidator(raw: unknown, index: number): void {
+  const entry = requireRecord(raw, `overlay bundle.validators[${index}]`);
+  requireString(entry.id, `overlay bundle.validators[${index}].id`);
+  requireString(entry.kind, `overlay bundle.validators[${index}].kind`);
+  requireString(entry.phase, `overlay bundle.validators[${index}].phase`);
+  requireString(entry.recipe_id, `overlay bundle.validators[${index}].recipe_id`);
+  requireString(entry.recipe_version, `overlay bundle.validators[${index}].recipe_version`);
+}
+
+function validateCompiledOverlayTraceEntry(raw: unknown, index: number): void {
+  const entry = requireRecord(raw, `overlay bundle.trace[${index}]`);
+  requireString(entry.recipe_id, `overlay bundle.trace[${index}].recipe_id`);
+  requireString(entry.recipe_version, `overlay bundle.trace[${index}].recipe_version`);
+  if (typeof entry.accepted !== "boolean") {
+    throw new Error(invalidFieldMessage(`overlay bundle.trace[${index}].accepted`, "boolean"));
+  }
+  requireString(entry.reason, `overlay bundle.trace[${index}].reason`);
+}
+
+export function validateCompiledOverlayBundle(raw: unknown): CompiledOverlayBundle {
+  const bundle = requireRecord(raw, "overlay bundle");
+  if (bundle.schema_version !== 1) {
+    throw new Error(invalidFieldMessage("overlay bundle.schema_version", "1"));
+  }
+  if (bundle.kind !== "overlay_bundle") {
+    throw new Error(invalidFieldMessage("overlay bundle.kind", '"overlay_bundle"'));
+  }
+  if (!Array.isArray(bundle.active)) {
+    throw new Error(invalidFieldMessage("overlay bundle.active", "array"));
+  }
+  bundle.active.forEach((entry, index) => validateCompiledOverlayBundleActive(entry, index));
+
+  const surfaces = requireRecord(bundle.surfaces, "overlay bundle.surfaces");
+  for (const surface of ALL_OVERLAY_SURFACES) {
+    const fragments = surfaces[surface];
+    if (!Array.isArray(fragments)) {
+      throw new Error(invalidFieldMessage(`overlay bundle.surfaces.${surface}`, "array"));
+    }
+    fragments.forEach((entry, index) => validateCompiledOverlayFragment(entry, surface, index));
+  }
+
+  if (!Array.isArray(bundle.validators)) {
+    throw new Error(invalidFieldMessage("overlay bundle.validators", "array"));
+  }
+  bundle.validators.forEach((entry, index) => validateCompiledOverlayValidator(entry, index));
+  if (!isRecord(bundle.templates)) {
+    throw new Error(invalidFieldMessage("overlay bundle.templates", "object"));
+  }
+  if (!Array.isArray(bundle.agents)) {
+    throw new Error(invalidFieldMessage("overlay bundle.agents", "array"));
+  }
+  if (!Array.isArray(bundle.tools)) {
+    throw new Error(invalidFieldMessage("overlay bundle.tools", "array"));
+  }
+  if (!Array.isArray(bundle.trace)) {
+    throw new Error(invalidFieldMessage("overlay bundle.trace", "array"));
+  }
+  bundle.trace.forEach((entry, index) => validateCompiledOverlayTraceEntry(entry, index));
+  return bundle as CompiledOverlayBundle;
+}
+
+function validateCompiledRecipeAssetEntry(raw: unknown, index: number): void {
+  const entry = requireRecord(raw, `recipe asset registry.entries[${index}]`);
+  requireString(entry.id, `recipe asset registry.entries[${index}].id`);
+  const kind = requireString(entry.kind, `recipe asset registry.entries[${index}].kind`);
+  if (!["agent", "skill", "tool", "scenario", "template"].includes(kind)) {
+    throw new Error(
+      invalidFieldMessage(
+        `recipe asset registry.entries[${index}].kind`,
+        '"agent" | "skill" | "tool" | "scenario" | "template"',
+      ),
+    );
+  }
+  requireString(entry.recipe_id, `recipe asset registry.entries[${index}].recipe_id`);
+  requireString(entry.recipe_version, `recipe asset registry.entries[${index}].recipe_version`);
+  requireString(entry.recipe_name, `recipe asset registry.entries[${index}].recipe_name`);
+  requireString(entry.asset_id, `recipe asset registry.entries[${index}].asset_id`);
+  requireString(entry.source, `recipe asset registry.entries[${index}].source`);
+}
+
+export function validateCompiledRecipeAssetRegistry(raw: unknown): CompiledRecipeAssetRegistry {
+  const registry = requireRecord(raw, "recipe asset registry");
+  if (registry.schema_version !== 1) {
+    throw new Error(invalidFieldMessage("recipe asset registry.schema_version", "1"));
+  }
+  if (registry.kind !== "recipe_asset_registry") {
+    throw new Error(invalidFieldMessage("recipe asset registry.kind", '"recipe_asset_registry"'));
+  }
+  if (!Array.isArray(registry.entries)) {
+    throw new Error(invalidFieldMessage("recipe asset registry.entries", "array"));
+  }
+  registry.entries.forEach((entry, index) => validateCompiledRecipeAssetEntry(entry, index));
+  return registry as CompiledRecipeAssetRegistry;
 }
 
 export function matchOverlayWhen(

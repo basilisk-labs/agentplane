@@ -5,6 +5,7 @@ import { matchOverlayWhen, type CompiledOverlayBundle } from "@agentplaneorg/rec
 
 import { loadAgentTemplates, loadPolicyGatewayTemplate } from "../../agents/agents-template.js";
 import { fileExists } from "../../cli/fs-utils.js";
+import { readProjectOverlayBundle } from "../../commands/recipes.js";
 import {
   resolveBehavior,
   stripBehaviorValue,
@@ -112,10 +113,10 @@ async function collectOverlayPromptBlocks(opts: {
   task?: RunnerTaskContext;
   command?: string;
 }): Promise<RunnerPromptBlock[]> {
-  const bundlePath = path.join(opts.git_root, ".agentplane", "generated", "overlay-bundle.json");
-  if (!(await fileExists(bundlePath))) return [];
-
-  const bundle = JSON.parse(await readFile(bundlePath, "utf8")) as CompiledOverlayBundle;
+  const bundle = (await readProjectOverlayBundle({
+    agentplaneDir: path.join(opts.git_root, ".agentplane"),
+  })) as CompiledOverlayBundle | null;
+  if (!bundle) return [];
   const repoTypes = await detectRepoTypes(opts.git_root);
   const tags = Array.isArray(opts.task?.data.tags)
     ? opts.task?.data.tags.filter((tag): tag is string => typeof tag === "string")
