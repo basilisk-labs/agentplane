@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171502-B2XY00/manifest-cli-unification",
   "created_at": "2026-04-17T15:22:20.793Z",
-  "head_sha": "82601d2c9a6ffadb887370f15bb5bcf1eff45368",
+  "head_sha": "0242606e577483f8eab99f895d751400fcc4ddcd",
   "last_verified_at": "2026-04-17T15:25:47.625Z",
   "last_verified_sha": "b0c53c8aae1a7e985ed3734ab3a02380b62e0d0e",
+  "merge_commit": "849aba0a719e1103f57703bd480e7b3493ae7bff",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T18:59:25Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171502-B2XY00",
-  "updated_at": "2026-04-17T15:26:31.846Z",
+  "updated_at": "2026-04-17T18:59:25Z",
   "verify": {
     "status": "pass"
   }
