@@ -1,10 +1,11 @@
 ---
 id: "202604171154-BS5TMS"
 title: "Wire recipes active commands into public CLI"
-status: "DOING"
+result_summary: "Merged via PR #380."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +28,16 @@ verification:
     Result: pass
     Evidence: 46 focused CLI tests passed; help snapshot and generated CLI reference now include recipes active/enable/disable/explain-active; docs freshness check passed.
     Scope: public recipes CLI catalog, help/reference surfaces, and focused run-cli coverage for overlay lifecycle commands.
-commit: null
+commit:
+  hash: "6aead092d18a98c8aa8c511c6421df56c3760493"
+  message: "recipes/workflow: Wire recipes active commands into public CLI (BS5TMS) (#380)"
 comments:
   -
     author: "CODER"
     body: "Start: expose recipes active/enable/disable/explain-active in the public CLI surface, update derived help/tests, and verify that the overlay lifecycle is reachable from the shipped command catalog."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #380 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
       Result: pass
       Evidence: 46 focused CLI tests passed; help snapshot and generated CLI reference now include recipes active/enable/disable/explain-active; docs freshness check passed.
       Scope: public recipes CLI catalog, help/reference surfaces, and focused run-cli coverage for overlay lifecycle commands.
+  -
+    type: "status"
+    at: "2026-04-17T14:22:44.622Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #380 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T12:02:13.151Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T14:22:44.629Z"
+doc_updated_by: "INTEGRATOR"
 description: "Expose recipes active, enable, disable, and explain-active in the public command catalog, help surfaces, and run-cli coverage so the project-local overlay lifecycle is actually reachable."
 sections:
   Summary: |-
