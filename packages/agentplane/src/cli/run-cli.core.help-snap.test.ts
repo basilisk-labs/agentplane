@@ -191,6 +191,17 @@ describe("runCli help snapshots (cli2)", () => {
     }
   });
 
+  it("help codex plugin install --compact snapshot", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help", "codex", "plugin", "install", "--compact"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toMatchSnapshot();
+    } finally {
+      io.restore();
+    }
+  });
+
   it("help scenario run --compact snapshot", async () => {
     const io = captureStdIO();
     try {
