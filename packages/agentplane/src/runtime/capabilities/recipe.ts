@@ -148,7 +148,9 @@ export function resolveRecipeCapabilityRegistry(opts: {
   }
 
   for (const agent of assets.filter((asset) => asset.kind === "agent")) {
-    const selected = opts.selection ? opts.selection.agents_involved.includes(agent.asset_id) : true;
+    const selected = opts.selection
+      ? opts.selection.agents_involved.includes(agent.asset_id)
+      : true;
     entries.push({
       id: agent.id,
       kind: "agent",

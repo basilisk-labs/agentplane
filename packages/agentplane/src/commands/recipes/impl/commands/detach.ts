@@ -44,16 +44,14 @@ export async function cmdRecipeDetachParsed(opts: {
       throw new CliError({
         exitCode: exitCodeForError("E_USAGE"),
         code: "E_USAGE",
-        message:
-          `Recipe ${inspection.entry.id} is no longer a clean project link. Restore it with agentplane recipes update ${inspection.entry.id} --force before detaching.`,
+        message: `Recipe ${inspection.entry.id} is no longer a clean project link. Restore it with agentplane recipes update ${inspection.entry.id} --force before detaching.`,
       });
     }
 
     const cache = await readInstalledRecipesFile(resolveInstalledRecipesPath());
     const activeIds = await readActiveRecipeIds(project);
     const cached = cache.recipes.find(
-      (entry) =>
-        entry.id === inspection.entry.id && entry.version === inspection.entry.version,
+      (entry) => entry.id === inspection.entry.id && entry.version === inspection.entry.version,
     );
     if (!cached) {
       throw new CliError({

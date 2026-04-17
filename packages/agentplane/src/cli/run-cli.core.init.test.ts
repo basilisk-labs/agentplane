@@ -1128,7 +1128,9 @@ describe("runCli", () => {
     }
 
     expect(
-      await pathExists(path.join(root, ".agentplane", "recipes", "packages", "viewer", "manifest.json")),
+      await pathExists(
+        path.join(root, ".agentplane", "recipes", "packages", "viewer", "manifest.json"),
+      ),
     ).toBe(true);
     expect(
       JSON.parse(

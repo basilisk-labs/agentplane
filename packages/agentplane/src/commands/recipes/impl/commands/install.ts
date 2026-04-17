@@ -248,9 +248,7 @@ export async function cmdRecipeInstall(opts: {
           recipes: [
             ...installed.recipes.filter(
               (installedEntry) =>
-                !(
-                  installedEntry.id === entry.id && installedEntry.version === entry.version
-                ),
+                !(installedEntry.id === entry.id && installedEntry.version === entry.version),
             ),
             entry,
           ],

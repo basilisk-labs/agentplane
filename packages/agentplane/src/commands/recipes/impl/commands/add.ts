@@ -10,7 +10,10 @@ import { refreshProjectOverlayArtifacts } from "../overlay-project.js";
 import { readInstalledRecipesFile } from "../installed-recipes.js";
 import { normalizeRecipeTags } from "../normalize.js";
 import { hashRecipeTree } from "../project-recipe-state.js";
-import { readProjectRecipesRegistry, upsertProjectRecipeRegistryEntry } from "../project-registry.js";
+import {
+  readProjectRecipesRegistry,
+  upsertProjectRecipeRegistryEntry,
+} from "../project-registry.js";
 import {
   resolveInstalledRecipeDir,
   resolveInstalledRecipesPath,
@@ -112,7 +115,9 @@ export async function cmdRecipeAddParsed(opts: {
       `Vendored recipe ${cached.id}@${cached.version} into project (${materialization})\n`,
     );
     if (materialization === "link") {
-      process.stdout.write("Warning: link mode is not portable; use `agentplane recipes detach` before sharing the repo.\n");
+      process.stdout.write(
+        "Warning: link mode is not portable; use `agentplane recipes detach` before sharing the repo.\n",
+      );
     }
     return 0;
   } catch (err) {

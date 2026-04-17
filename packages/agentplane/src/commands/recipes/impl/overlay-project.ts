@@ -182,9 +182,7 @@ export async function setRecipeActive(opts: {
   return [...current].toSorted();
 }
 
-export async function compileProjectOverlayArtifacts(project: {
-  agentplaneDir: string;
-}): Promise<{
+export async function compileProjectOverlayArtifacts(project: { agentplaneDir: string }): Promise<{
   bundle: CompiledOverlayBundle;
   lock: ProjectRecipesLockFile;
   assets: CompiledRecipeAssetRegistry;
@@ -303,9 +301,7 @@ export async function compileProjectOverlayArtifacts(project: {
   };
 }
 
-export async function refreshProjectOverlayArtifacts(project: {
-  agentplaneDir: string;
-}): Promise<{
+export async function refreshProjectOverlayArtifacts(project: { agentplaneDir: string }): Promise<{
   bundle: CompiledOverlayBundle;
   lock: ProjectRecipesLockFile;
   assets: CompiledRecipeAssetRegistry;

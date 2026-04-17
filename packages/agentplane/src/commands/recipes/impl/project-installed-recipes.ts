@@ -8,7 +8,9 @@ import { readRecipeManifest } from "./manifest.js";
 import { resolveProjectRecipesDir } from "./paths.js";
 import type { ProjectInstalledRecipeEntry, ProjectInstalledRecipesFile } from "./types.js";
 
-function sortInstalledRecipes(entries: ProjectInstalledRecipeEntry[]): ProjectInstalledRecipeEntry[] {
+function sortInstalledRecipes(
+  entries: ProjectInstalledRecipeEntry[],
+): ProjectInstalledRecipeEntry[] {
   return [...entries].toSorted((left, right) => left.id.localeCompare(right.id));
 }
 

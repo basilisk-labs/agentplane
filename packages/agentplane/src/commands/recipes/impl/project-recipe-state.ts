@@ -2,14 +2,15 @@ import { createHash } from "node:crypto";
 import { lstat, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
-import type {
-  ProjectInstalledRecipeEntry,
-  ProjectRecipeState,
-} from "./types.js";
+import type { ProjectInstalledRecipeEntry, ProjectRecipeState } from "./types.js";
 import { readProjectInstalledRecipes } from "./project-installed-recipes.js";
 import { resolveInstalledRecipeDir, resolveProjectVendoredRecipeDir } from "./paths.js";
 
-async function hashTreeEntry(rootDir: string, relativeDir: string, hash: ReturnType<typeof createHash>): Promise<void> {
+async function hashTreeEntry(
+  rootDir: string,
+  relativeDir: string,
+  hash: ReturnType<typeof createHash>,
+): Promise<void> {
   const directoryPath = relativeDir ? path.join(rootDir, relativeDir) : rootDir;
   const entries = (await readdir(directoryPath, { withFileTypes: true })).toSorted((left, right) =>
     left.name.localeCompare(right.name),

@@ -96,7 +96,10 @@ describe("runCli recipes", () => {
 
     expect(await pathExists(path.join(agentsDir, "viewer__RECIPE_AGENT__1.json"))).toBe(false);
     const registry = JSON.parse(
-      await readFile(path.join(process.env.AGENTPLANE_HOME ?? agentplaneHomePath(), "recipes.json"), "utf8"),
+      await readFile(
+        path.join(process.env.AGENTPLANE_HOME ?? agentplaneHomePath(), "recipes.json"),
+        "utf8",
+      ),
     ) as { recipes: Array<{ id: string; version: string }> };
     expect(registry.recipes).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "viewer", version: "1.2.3" })]),
@@ -122,7 +125,10 @@ describe("runCli recipes", () => {
     }
 
     const registry = JSON.parse(
-      await readFile(path.join(process.env.AGENTPLANE_HOME ?? agentplaneHomePath(), "recipes.json"), "utf8"),
+      await readFile(
+        path.join(process.env.AGENTPLANE_HOME ?? agentplaneHomePath(), "recipes.json"),
+        "utf8",
+      ),
     ) as { recipes: Array<{ id: string; version: string }> };
     expect(registry.recipes).toEqual(
       expect.arrayContaining([
@@ -139,18 +145,33 @@ describe("runCli recipes", () => {
       version: "0.4.0",
     });
 
-    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(0);
+    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(
+      0,
+    );
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipes", "add", `${manifest.id}@${manifest.version}`, "--root", root]);
+      const code = await runCli([
+        "recipes",
+        "add",
+        `${manifest.id}@${manifest.version}`,
+        "--root",
+        root,
+      ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("Vendored recipe vendored@0.4.0 into project (copy)");
     } finally {
       io.restore();
     }
 
-    const manifestPath = path.join(root, ".agentplane", "recipes", "packages", "vendored", "manifest.json");
+    const manifestPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      "packages",
+      "vendored",
+      "manifest.json",
+    );
     const registryPath = path.join(root, ".agentplane", "recipes", "registry.json");
     const assetRegistryPath = path.join(root, ".agentplane", "generated", "recipe-assets.json");
     expect(await pathExists(manifestPath)).toBe(true);
@@ -167,7 +188,11 @@ describe("runCli recipes", () => {
         }),
       ],
     });
-    expect(await pathExists(path.join(root, ".agentplane", "recipes", "packages", "vendored", ".install.json"))).toBe(false);
+    expect(
+      await pathExists(
+        path.join(root, ".agentplane", "recipes", "packages", "vendored", ".install.json"),
+      ),
+    ).toBe(false);
     expect(JSON.parse(await readFile(assetRegistryPath, "utf8"))).toMatchObject({
       kind: "recipe_asset_registry",
       entries: expect.arrayContaining([
@@ -218,12 +243,22 @@ describe("runCli recipes", () => {
       version: "0.4.0",
     });
 
-    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(0);
-    expect(await runCliSilent(["recipes", "add", `${manifest.id}@${manifest.version}`, "--root", root])).toBe(0);
+    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(
+      0,
+    );
+    expect(
+      await runCliSilent(["recipes", "add", `${manifest.id}@${manifest.version}`, "--root", root]),
+    ).toBe(0);
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipes", "add", `${manifest.id}@${manifest.version}`, "--root", root]);
+      const code = await runCli([
+        "recipes",
+        "add",
+        `${manifest.id}@${manifest.version}`,
+        "--root",
+        root,
+      ]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Recipe already vendored");
       expect(io.stderr).toContain("agentplane recipes update vendored");
@@ -240,8 +275,12 @@ describe("runCli recipes", () => {
       version: "0.5.0",
     });
 
-    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(0);
-    expect(await runCliSilent(["recipes", "add", `${manifest.id}@${manifest.version}`, "--root", root])).toBe(0);
+    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(
+      0,
+    );
+    expect(
+      await runCliSilent(["recipes", "add", `${manifest.id}@${manifest.version}`, "--root", root]),
+    ).toBe(0);
 
     const cachedManifestPath = path.join(
       agentplaneHomePath(),
@@ -259,7 +298,10 @@ describe("runCli recipes", () => {
       "manifest.json",
     );
 
-    const cachedManifest = JSON.parse(await readFile(cachedManifestPath, "utf8")) as Record<string, unknown>;
+    const cachedManifest = JSON.parse(await readFile(cachedManifestPath, "utf8")) as Record<
+      string,
+      unknown
+    >;
     cachedManifest.summary = "Updated from cache";
     await writeFile(cachedManifestPath, JSON.stringify(cachedManifest, null, 2), "utf8");
 
@@ -275,7 +317,10 @@ describe("runCli recipes", () => {
       summary: "Updated from cache",
     });
 
-    const locallyModified = JSON.parse(await readFile(vendoredManifestPath, "utf8")) as Record<string, unknown>;
+    const locallyModified = JSON.parse(await readFile(vendoredManifestPath, "utf8")) as Record<
+      string,
+      unknown
+    >;
     locallyModified.summary = "Locally modified";
     await writeFile(vendoredManifestPath, JSON.stringify(locallyModified, null, 2), "utf8");
 
@@ -288,7 +333,10 @@ describe("runCli recipes", () => {
       ioRefused.restore();
     }
 
-    const cachedManifestForce = JSON.parse(await readFile(cachedManifestPath, "utf8")) as Record<string, unknown>;
+    const cachedManifestForce = JSON.parse(await readFile(cachedManifestPath, "utf8")) as Record<
+      string,
+      unknown
+    >;
     cachedManifestForce.summary = "Forced from cache";
     await writeFile(cachedManifestPath, JSON.stringify(cachedManifestForce, null, 2), "utf8");
 
@@ -313,7 +361,9 @@ describe("runCli recipes", () => {
       version: "0.6.0",
     });
 
-    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(0);
+    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(
+      0,
+    );
 
     const ioAdd = captureStdIO();
     try {
@@ -341,7 +391,11 @@ describe("runCli recipes", () => {
       "manifest.json",
     );
     expect((await lstat(vendoredDir)).isSymbolicLink()).toBe(true);
-    expect(await pathExists(path.join(agentplaneHomePath(), "recipes-store", "linked", "0.6.0", ".install.json"))).toBe(false);
+    expect(
+      await pathExists(
+        path.join(agentplaneHomePath(), "recipes-store", "linked", "0.6.0", ".install.json"),
+      ),
+    ).toBe(false);
 
     const ioDetach = captureStdIO();
     try {
@@ -354,13 +408,20 @@ describe("runCli recipes", () => {
 
     expect((await lstat(vendoredDir)).isSymbolicLink()).toBe(false);
     const vendoredManifestPath = path.join(vendoredDir, "manifest.json");
-    const vendoredManifest = JSON.parse(await readFile(vendoredManifestPath, "utf8")) as Record<string, unknown>;
+    const vendoredManifest = JSON.parse(await readFile(vendoredManifestPath, "utf8")) as Record<
+      string,
+      unknown
+    >;
     vendoredManifest.summary = "Detached project copy";
     await writeFile(vendoredManifestPath, JSON.stringify(vendoredManifest, null, 2), "utf8");
     expect(JSON.parse(await readFile(cachedManifestPath, "utf8"))).not.toMatchObject({
       summary: "Detached project copy",
     });
-    expect(JSON.parse(await readFile(path.join(root, ".agentplane", "recipes", "registry.json"), "utf8"))).toMatchObject({
+    expect(
+      JSON.parse(
+        await readFile(path.join(root, ".agentplane", "recipes", "registry.json"), "utf8"),
+      ),
+    ).toMatchObject({
       recipes: [
         expect.objectContaining({
           id: "linked",
@@ -510,7 +571,11 @@ describe("runCli recipes", () => {
     await writeDefaultConfig(root);
     await writeFile(
       path.join(agentplaneHomePath(), "recipes.json"),
-      JSON.stringify({ schema_version: 1, updated_at: "2026-02-05T00:00:00Z", recipes: [{ id: "bad" }] }, null, 2),
+      JSON.stringify(
+        { schema_version: 1, updated_at: "2026-02-05T00:00:00Z", recipes: [{ id: "bad" }] },
+        null,
+        2,
+      ),
       "utf8",
     );
 
@@ -1072,7 +1137,10 @@ describe("runCli recipes", () => {
     }
 
     const registry = JSON.parse(
-      await readFile(path.join(process.env.AGENTPLANE_HOME ?? agentplaneHomePath(), "recipes.json"), "utf8"),
+      await readFile(
+        path.join(process.env.AGENTPLANE_HOME ?? agentplaneHomePath(), "recipes.json"),
+        "utf8",
+      ),
     ) as { recipes: Array<{ id: string; version: string }> };
     expect(registry.recipes).toEqual(
       expect.arrayContaining([

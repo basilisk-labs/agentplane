@@ -25,10 +25,17 @@ function validateRegistryEntry(raw: unknown): ProjectRecipeRegistryEntry {
   const entryPath = typeof raw.path === "string" ? raw.path.trim() : "";
   const sourceRef = typeof raw.source_ref === "string" ? raw.source_ref.trim() : "";
   const sourceSha256 = typeof raw.source_sha256 === "string" ? raw.source_sha256.trim() : "";
-  const vendoredSha256 =
-    typeof raw.vendored_sha256 === "string" ? raw.vendored_sha256.trim() : "";
+  const vendoredSha256 = typeof raw.vendored_sha256 === "string" ? raw.vendored_sha256.trim() : "";
   const installedAt = typeof raw.installed_at === "string" ? raw.installed_at.trim() : "";
-  if (!id || !version || !entryPath || !sourceRef || !sourceSha256 || !vendoredSha256 || !installedAt) {
+  if (
+    !id ||
+    !version ||
+    !entryPath ||
+    !sourceRef ||
+    !sourceSha256 ||
+    !vendoredSha256 ||
+    !installedAt
+  ) {
     throw new Error(
       invalidFieldMessage(
         "recipes registry entry",

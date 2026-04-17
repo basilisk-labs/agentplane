@@ -222,7 +222,9 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
     }
 
     const tools = Array.isArray(manifest.tools)
-      ? manifest.tools.filter((tool): tool is Record<string, unknown> => !!tool && typeof tool === "object")
+      ? manifest.tools.filter(
+          (tool): tool is Record<string, unknown> => !!tool && typeof tool === "object",
+        )
       : [];
     for (const tool of tools) {
       const entrypoint = readStringFixtureValue(tool, "entrypoint", "").trim();

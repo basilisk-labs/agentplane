@@ -12,17 +12,13 @@ import { normalizeRecipeTags } from "../normalize.js";
 import { readActiveRecipeIds, refreshProjectOverlayArtifacts } from "../overlay-project.js";
 import { hashRecipeTree, inspectProjectRecipe } from "../project-recipe-state.js";
 import { upsertProjectRecipeRegistryEntry } from "../project-registry.js";
-import {
-  resolveInstalledRecipesPath,
-  resolveProjectVendoredRecipeDir,
-} from "../paths.js";
+import { resolveInstalledRecipesPath, resolveProjectVendoredRecipeDir } from "../paths.js";
 
 function buildModifiedRecipeError(id: string): CliError {
   return new CliError({
     exitCode: exitCodeForError("E_USAGE"),
     code: "E_USAGE",
-    message:
-      `Recipe ${id} has local project edits. Re-run with --force to overwrite the vendored copy from cache.`,
+    message: `Recipe ${id} has local project edits. Re-run with --force to overwrite the vendored copy from cache.`,
   });
 }
 
@@ -52,8 +48,7 @@ export async function cmdRecipeUpdateParsed(opts: {
 
     const cache = await readInstalledRecipesFile(resolveInstalledRecipesPath());
     const cached = cache.recipes.find(
-      (entry) =>
-        entry.id === inspection.entry.id && entry.version === inspection.entry.version,
+      (entry) => entry.id === inspection.entry.id && entry.version === inspection.entry.version,
     );
     if (!cached) {
       throw new CliError({
@@ -70,7 +65,9 @@ export async function cmdRecipeUpdateParsed(opts: {
       inspection.state === "clean" &&
       inspection.current_source_sha256 === inspection.entry.source_sha256
     ) {
-      process.stdout.write(`Recipe ${inspection.entry.id}@${inspection.entry.version} is already up to date.\n`);
+      process.stdout.write(
+        `Recipe ${inspection.entry.id}@${inspection.entry.version} is already up to date.\n`,
+      );
       return 0;
     }
 

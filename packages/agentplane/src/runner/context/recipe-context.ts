@@ -29,7 +29,8 @@ function toRecipeContext(opts: {
   scenario: ScenarioDefinition;
   assets?: Awaited<ReturnType<typeof readProjectRecipeAssetRegistry>>;
 }): RunnerRecipeContext {
-  const recipeAssets = opts.assets?.entries.filter((asset) => asset.recipe_id === opts.entry.id) ?? [];
+  const recipeAssets =
+    opts.assets?.entries.filter((asset) => asset.recipe_id === opts.entry.id) ?? [];
   const agents =
     recipeAssets.length > 0
       ? recipeAssets

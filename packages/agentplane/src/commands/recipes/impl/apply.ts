@@ -119,7 +119,9 @@ export async function applyRecipeAgents(opts: {
     }
     const rawAgent = await readFile(sourcePath, "utf8");
     if (!rawAgent.trim()) {
-      throw new Error(invalidFieldMessage("recipe agent file", "non-empty markdown document", rawFile));
+      throw new Error(
+        invalidFieldMessage("recipe agent file", "non-empty markdown document", rawFile),
+      );
     }
 
     const baseId = `${opts.manifest.id}__${agentId}`;

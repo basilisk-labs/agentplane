@@ -91,7 +91,9 @@ describe("commands/recipes catalog/install", () => {
     await writeDefaultConfig(projectDir);
     const { archivePath } = await createRecipeArchive();
 
-    await expect(installRecipe({ projectDir, archivePath, vendor: false })).resolves.toBeUndefined();
+    await expect(
+      installRecipe({ projectDir, archivePath, vendor: false }),
+    ).resolves.toBeUndefined();
 
     const registry = JSON.parse(
       await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
