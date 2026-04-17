@@ -93,7 +93,8 @@ export async function cmdRecipeDetachParsed(opts: {
           id: inspection.entry.id,
           version: inspection.entry.version,
           path: inspection.entry.project_path,
-          active: registry.recipes.find((entry) => entry.id === inspection.entry.id)?.active === true,
+          active:
+            registry.recipes.find((entry) => entry.id === inspection.entry.id)?.active === true,
           materialization: "copy",
           source_ref: inspection.entry.source_ref,
           source_sha256: currentSourceSha256,

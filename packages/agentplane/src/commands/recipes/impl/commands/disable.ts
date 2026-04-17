@@ -4,10 +4,7 @@ import { mapCoreError } from "../../../../cli/error-map.js";
 import { CliError } from "../../../../shared/errors.js";
 
 import { publishProjectRecipesState } from "../overlay-project.js";
-import {
-  readProjectRecipesRegistry,
-  setProjectRecipeActiveInFile,
-} from "../project-registry.js";
+import { readProjectRecipesRegistry, setProjectRecipeActiveInFile } from "../project-registry.js";
 
 export async function cmdRecipeDisableParsed(opts: {
   cwd: string;

@@ -6,10 +6,7 @@ import { CliError } from "../../../../shared/errors.js";
 
 import { publishProjectRecipesState } from "../overlay-project.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
-import {
-  readProjectRecipesRegistry,
-  setProjectRecipeActiveInFile,
-} from "../project-registry.js";
+import { readProjectRecipesRegistry, setProjectRecipeActiveInFile } from "../project-registry.js";
 
 export async function cmdRecipeEnableParsed(opts: {
   cwd: string;

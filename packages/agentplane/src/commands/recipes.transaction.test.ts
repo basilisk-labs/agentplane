@@ -20,10 +20,7 @@ import {
   resolveProjectRecipesRegistryPath,
   writeDefaultConfig,
 } from "./recipes.test-helpers.js";
-import {
-  createRecipeArchiveWithManifest,
-  pathExists,
-} from "../cli/run-cli.test-helpers.js";
+import { createRecipeArchiveWithManifest, pathExists } from "../cli/run-cli.test-helpers.js";
 
 installRecipesCommandHarness();
 
@@ -115,7 +112,9 @@ describe("recipes transactional mutations", () => {
     const archivePath = await createOverlayArchive({ id: "broken-add", version: "1.0.0" });
     await installRecipe({ projectDir: root, archivePath, vendor: false });
 
-    const cachedManifest = JSON.parse(await readFile(cachedManifestPath("broken-add", "1.0.0"), "utf8")) as Record<string, unknown>;
+    const cachedManifest = JSON.parse(
+      await readFile(cachedManifestPath("broken-add", "1.0.0"), "utf8"),
+    ) as Record<string, unknown>;
     cachedManifest.agents = [
       {
         id: "BROKEN_AGENT",
@@ -149,10 +148,17 @@ describe("recipes transactional mutations", () => {
     await installRecipe({ projectDir: root, archivePath, vendor: true });
 
     const registryBefore = await readRegistry(root);
-    const vendoredManifestPath = path.join(resolveProjectRecipeDir(root, "broken-update"), "manifest.json");
-    const vendoredManifestBefore = JSON.parse(await readFile(vendoredManifestPath, "utf8")) as Record<string, unknown>;
+    const vendoredManifestPath = path.join(
+      resolveProjectRecipeDir(root, "broken-update"),
+      "manifest.json",
+    );
+    const vendoredManifestBefore = JSON.parse(
+      await readFile(vendoredManifestPath, "utf8"),
+    ) as Record<string, unknown>;
 
-    const cachedManifest = JSON.parse(await readFile(cachedManifestPath("broken-update", "1.0.0"), "utf8")) as Record<string, unknown>;
+    const cachedManifest = JSON.parse(
+      await readFile(cachedManifestPath("broken-update", "1.0.0"), "utf8"),
+    ) as Record<string, unknown>;
     cachedManifest.summary = "Broken from cache";
     cachedManifest.skills = [
       {
@@ -167,9 +173,13 @@ describe("recipes transactional mutations", () => {
       "utf8",
     );
 
-    await expect(cmdRecipeUpdateParsed({ cwd: root, id: "broken-update", force: true })).rejects.toBeTruthy();
+    await expect(
+      cmdRecipeUpdateParsed({ cwd: root, id: "broken-update", force: true }),
+    ).rejects.toBeTruthy();
 
-    expect(JSON.parse(await readFile(vendoredManifestPath, "utf8"))).toMatchObject(vendoredManifestBefore);
+    expect(JSON.parse(await readFile(vendoredManifestPath, "utf8"))).toMatchObject(
+      vendoredManifestBefore,
+    );
     const registryAfter = await readRegistry(root);
     expect(registryAfter.recipes).toEqual(registryBefore.recipes);
   });
@@ -218,7 +228,10 @@ describe("recipes transactional mutations", () => {
     });
 
     await writeRegistry(root, (recipes) =>
-      recipes.map((entry) => ({ ...entry, active: entry.id === "base" || entry.id === "dependent" })),
+      recipes.map((entry) => ({
+        ...entry,
+        active: entry.id === "base" || entry.id === "dependent",
+      })),
     );
     await refreshProjectOverlayArtifacts({ agentplaneDir: path.join(root, ".agentplane") });
     const registryBefore = await readRegistry(root);
@@ -248,7 +261,10 @@ describe("recipes transactional mutations", () => {
     });
 
     await writeRegistry(root, (recipes) =>
-      recipes.map((entry) => ({ ...entry, active: entry.id === "base" || entry.id === "dependent" })),
+      recipes.map((entry) => ({
+        ...entry,
+        active: entry.id === "base" || entry.id === "dependent",
+      })),
     );
     await refreshProjectOverlayArtifacts({ agentplaneDir: path.join(root, ".agentplane") });
 
