@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171519-MQ7NQ5/remove-init-upgrade-alias",
   "created_at": "2026-04-17T15:19:51.955Z",
-  "head_sha": "d0d4ad29e94ef2b913f63b8a9542eca494372fca",
+  "head_sha": "9dc226706dcf98e7950dd00fea13de264d7fa6c2",
   "last_verified_at": "2026-04-17T15:20:29.016Z",
   "last_verified_sha": "b0c53c8aae1a7e985ed3734ab3a02380b62e0d0e",
+  "merge_commit": "f5a4cf30b5cf9dee8135cf0be7c27bf8326eedf5",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T19:59:46Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171519-MQ7NQ5",
-  "updated_at": "2026-04-17T18:41:56.578Z",
+  "updated_at": "2026-04-17T19:59:46Z",
   "verify": {
     "status": "pass"
   }
