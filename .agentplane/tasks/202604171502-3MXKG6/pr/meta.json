@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604171502-3MXKG6/runner-adapter-hotspots",
+  "created_at": "2026-04-17T18:37:54.548Z",
+  "head_sha": "76cd053338e83b4fa2fc7eec880873cc599d2efa",
+  "last_verified_at": "2026-04-17T18:43:55.123Z",
+  "last_verified_sha": "b0c53c8aae1a7e985ed3734ab3a02380b62e0d0e",
+  "schema_version": 1,
+  "task_id": "202604171502-3MXKG6",
+  "updated_at": "2026-04-17T18:44:01.945Z",
+  "verify": {
+    "status": "pass"
+  }
+}
