@@ -4,7 +4,7 @@ title: "Refactor command catalog dispatch metadata into needs union"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-17T15:31:02.263Z"
+  updated_at: "2026-04-17T20:05:03.512Z"
   updated_by: "CODER"
-  note: "Command catalog metadata now uses a canonical needs union; focused command-catalog tests and repository typecheck passed."
+  note: "Local verification passed after rebase to main: targeted cli-core lint/tests and pre-push gates are green; branch pushed to origin."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command catalog metadata now uses a canonical needs union; focused command-catalog tests and repository typecheck passed."
+  -
+    type: "verify"
+    at: "2026-04-17T20:05:03.512Z"
+    author: "CODER"
+    state: "ok"
+    note: "Local verification passed after rebase to main: targeted cli-core lint/tests and pre-push gates are green; branch pushed to origin."
 doc_version: 3
-doc_updated_at: "2026-04-17T15:31:02.266Z"
+doc_updated_at: "2026-04-17T20:05:03.554Z"
 doc_updated_by: "CODER"
 description: "Replace repeated needsProject/needsLoadedConfig/needsTaskContext metadata in the CLI command catalog with a single declared needs union while preserving dispatch behavior and help/lookup contracts."
 sections:
@@ -71,6 +77,14 @@ sections:
     Note: Command catalog metadata now uses a canonical needs union; focused command-catalog tests and repository typecheck passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-17T15:23:32.482Z, excerpt_hash=sha256:b8a85ab7c63f26b58ec08ba909f2ef57a2cd9edc12a98a5be0c0cfa093a74902
+    
+    ### 2026-04-17T20:05:03.512Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Local verification passed after rebase to main: targeted cli-core lint/tests and pre-push gates are green; branch pushed to origin.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-17T15:31:02.266Z, excerpt_hash=sha256:b8a85ab7c63f26b58ec08ba909f2ef57a2cd9edc12a98a5be0c0cfa093a74902
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -112,6 +126,14 @@ By: CODER
 Note: Command catalog metadata now uses a canonical needs union; focused command-catalog tests and repository typecheck passed.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-17T15:23:32.482Z, excerpt_hash=sha256:b8a85ab7c63f26b58ec08ba909f2ef57a2cd9edc12a98a5be0c0cfa093a74902
+
+### 2026-04-17T20:05:03.512Z — VERIFY — ok
+
+By: CODER
+
+Note: Local verification passed after rebase to main: targeted cli-core lint/tests and pre-push gates are green; branch pushed to origin.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-17T15:31:02.266Z, excerpt_hash=sha256:b8a85ab7c63f26b58ec08ba909f2ef57a2cd9edc12a98a5be0c0cfa093a74902
 
 <!-- END VERIFICATION RESULTS -->
 
