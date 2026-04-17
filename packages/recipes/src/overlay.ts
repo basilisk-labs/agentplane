@@ -52,7 +52,9 @@ export function matchOverlayWhen(
   if (!matchesTaskKinds) return false;
 
   const matchesCommands =
-    !when.commands || when.commands.length === 0 || Boolean(runtime.command && when.commands.includes(runtime.command));
+    !when.commands ||
+    when.commands.length === 0 ||
+    Boolean(runtime.command && when.commands.includes(runtime.command));
   if (!matchesCommands) return false;
 
   const tags = new Set(runtime.tags);
