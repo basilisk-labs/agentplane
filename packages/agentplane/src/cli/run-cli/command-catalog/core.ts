@@ -23,6 +23,11 @@ import {
   profileSetSpec,
 } from "../commands/config.js";
 import { agentsSpec } from "../commands/core/agents.js";
+import {
+  codexPluginInstallSpec,
+  codexPluginSpec,
+  codexSpec,
+} from "../commands/codex.js";
 import { preflightSpec } from "../commands/core/preflight.js";
 import { quickstartSpec } from "../commands/core/quickstart.js";
 import { roleSpec } from "../commands/core/role.js";
@@ -100,6 +105,25 @@ export const CORE_COMMANDS = [
     needsTaskContext: false,
     invocation: requireCanonicalCommandInvocation(["preflight"]),
   }),
+  entry(codexSpec, () => import("../commands/codex.js").then((m) => m.runCodex), {
+    needsProject: false,
+    needsLoadedConfig: false,
+    needsTaskContext: false,
+  }),
+  entry(codexPluginSpec, () => import("../commands/codex.js").then((m) => m.runCodexPlugin), {
+    needsProject: false,
+    needsLoadedConfig: false,
+    needsTaskContext: false,
+  }),
+  entry(
+    codexPluginInstallSpec,
+    (deps) => import("../commands/codex.js").then((m) => m.makeRunCodexPluginInstallHandler(deps)),
+    {
+      needsProject: false,
+      needsLoadedConfig: false,
+      needsTaskContext: false,
+    },
+  ),
   entry(
     runtimeSpec,
     () => import("../../../commands/runtime.command.js").then((m) => m.runRuntime),

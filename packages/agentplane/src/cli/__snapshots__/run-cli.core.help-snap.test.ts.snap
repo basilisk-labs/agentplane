@@ -21,6 +21,10 @@ Commands:
     branch status  Show ahead/behind status for a branch relative to a base branch.
     cleanup  Clean up local branches/worktrees.
     cleanup merged  Delete merged task branches/worktrees (branch_pr workflow).
+  Codex:
+    codex  Codex integration commands.
+    codex plugin  Install and inspect bundled Codex plugin integrations.
+    codex plugin install  Install the bundled AgentPlane plugin into a local Codex marketplace.
   Config:
     config set  Update project config (dotted keys).
     config show  Print resolved config JSON.
@@ -155,6 +159,17 @@ Commands:
     workflow land  Run built-in pre-land checks and capture workflow evidence.
     workflow restore  Restore WORKFLOW.md from last-known-good snapshot.
     workflow sync  Run built-in sync checks and capture workflow evidence.
+"
+`;
+
+exports[`runCli help snapshots (cli2) > help codex plugin install --compact snapshot 1`] = `
+"codex plugin install - Install the bundled AgentPlane plugin into a local Codex marketplace.
+
+Usage:
+  agentplane codex plugin install [options]
+
+Options:
+  --scope <user|repo>  Install to the user home marketplace or the current repository marketplace. (choices=user|repo, default=user)
 "
 `;
 

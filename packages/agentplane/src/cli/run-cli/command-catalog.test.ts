@@ -42,6 +42,8 @@ describe("command catalog graph", () => {
 
   it("derives direct child names from the canonical graph", () => {
     expect(getDirectChildCommandNames(["task", "plan"])).toEqual(["approve", "reject", "set"]);
+    expect(getDirectChildCommandNames(["codex"])).toEqual(["plugin"]);
+    expect(getDirectChildCommandNames(["codex", "plugin"])).toEqual(["install"]);
     expect(getDirectChildCommandNames(["missing", "command"])).toEqual([]);
   });
 
