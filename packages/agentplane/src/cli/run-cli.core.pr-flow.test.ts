@@ -28,7 +28,6 @@ import {
 } from "@agentplaneorg/core";
 
 import { runCli } from "./run-cli.js";
-import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
 import {
   filterAgentsByWorkflow,
   loadAgentTemplates,

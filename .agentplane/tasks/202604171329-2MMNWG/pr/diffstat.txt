@@ -1,0 +1,22 @@
+ .../src/cli/run-cli.core.backend-sync.test.ts      |  1 -
+ .../cli/run-cli.core.branch-meta.readiness.test.ts |  1 -
+ ...n-cli.core.branch-meta.sync-maintenance.test.ts |  1 -
+ .../src/cli/run-cli.core.branch-meta.test.ts       |  1 -
+ ...n-cli.core.branch-meta.workflow-profile.test.ts |  1 -
+ .../cli/run-cli.core.guard.commit-wrapper.test.ts  |  1 -
+ .../agentplane/src/cli/run-cli.core.guard.test.ts  |  1 -
+ .../agentplane/src/cli/run-cli.core.hooks.test.ts  |  1 -
+ .../src/cli/run-cli.core.lifecycle.test.ts         |  1 -
+ .../agentplane/src/cli/run-cli.core.misc.test.ts   |  1 -
+ .../run-cli.core.pr-flow.cleanup-merged.test.ts    |  1 -
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts |  1 -
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  1 -
+ .../src/cli/run-cli.core.pr-flow.test.ts           |  1 -
+ .../src/cli/run-cli.core.tasks.export.test.ts      |  1 -
+ .../src/cli/run-cli.core.tasks.query.test.ts       |  1 -
+ .../agentplane/src/cli/run-cli.core.tasks.test.ts  |  1 -
+ packages/agentplane/src/cli/run-cli.core.test.ts   |  1 -
+ .../src/cli/run-cli.core.upgrade.test.ts           |  1 -
+ .../src/commands/recipes/impl/commands/install.ts  | 11 --------
+ packages/agentplane/src/recipes/bundled-recipes.ts | 30 ----------------------
+ 21 files changed, 60 deletions(-)

@@ -27,7 +27,6 @@ import {
 
 import { runCli } from "./run-cli.js";
 import { infoMessage } from "./output.js";
-import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
 import {
   filterAgentsByWorkflow,
   loadAgentTemplates,
