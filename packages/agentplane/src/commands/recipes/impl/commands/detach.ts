@@ -1,4 +1,4 @@
-import { cp, rm } from "node:fs/promises";
+import { cp } from "node:fs/promises";
 
 import { normalizeRecipeTags } from "@agentplaneorg/recipes";
 import { loadConfig, resolveProject } from "@agentplaneorg/core";
@@ -9,9 +9,13 @@ import { CliError } from "../../../../shared/errors.js";
 import { ensureActionApproved } from "../../../shared/approval-requirements.js";
 
 import { readInstalledRecipesFile } from "../installed-recipes.js";
-import { readActiveRecipeIds, refreshProjectOverlayArtifacts } from "../overlay-project.js";
+import { runVendoredRecipeMutation } from "../mutation-transaction.js";
+import { publishProjectRecipesState } from "../overlay-project.js";
 import { hashRecipeTree, inspectProjectRecipe } from "../project-recipe-state.js";
-import { upsertProjectRecipeRegistryEntry } from "../project-registry.js";
+import {
+  readProjectRecipesRegistry,
+  replaceProjectRecipeRegistryEntry,
+} from "../project-registry.js";
 import { resolveInstalledRecipesPath, resolveProjectVendoredRecipeDir } from "../paths.js";
 
 export async function cmdRecipeDetachParsed(opts: {
@@ -40,6 +44,14 @@ export async function cmdRecipeDetachParsed(opts: {
         message: `Cached source is missing for ${inspection.entry.id}@${inspection.entry.version}. Re-install it before detaching.`,
       });
     }
+    const currentSourceSha256 = inspection.current_source_sha256;
+    if (!currentSourceSha256) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_IO"),
+        code: "E_IO",
+        message: `Cached source hash is missing for ${inspection.entry.id}@${inspection.entry.version}`,
+      });
+    }
     if (inspection.state === "modified") {
       throw new CliError({
         exitCode: exitCodeForError("E_USAGE"),
@@ -49,7 +61,7 @@ export async function cmdRecipeDetachParsed(opts: {
     }
 
     const cache = await readInstalledRecipesFile(resolveInstalledRecipesPath());
-    const activeIds = await readActiveRecipeIds(project);
+    const registry = await readProjectRecipesRegistry(project);
     const cached = cache.recipes.find(
       (entry) => entry.id === inspection.entry.id && entry.version === inspection.entry.version,
     );
@@ -69,26 +81,30 @@ export async function cmdRecipeDetachParsed(opts: {
     });
 
     const targetDir = resolveProjectVendoredRecipeDir(project, inspection.entry.id);
-    await rm(targetDir, { recursive: true, force: true });
-    await cp(inspection.source_dir, targetDir, { recursive: true });
-
-    await upsertProjectRecipeRegistryEntry({
-      project,
-      entry: {
-        id: inspection.entry.id,
-        version: inspection.entry.version,
-        path: inspection.entry.project_path,
-        active: activeIds.includes(inspection.entry.id),
-        materialization: "copy",
-        source_ref: inspection.entry.source_ref,
-        source_sha256: inspection.current_source_sha256,
-        vendored_sha256: await hashRecipeTree(targetDir),
-        installed_at: inspection.entry.installed_at,
-        tags: normalizeRecipeTags(cached.tags ?? cached.manifest.tags ?? []),
+    await runVendoredRecipeMutation({
+      targetDir,
+      mode: "replace",
+      materialize: async (nextTargetDir) => {
+        await cp(inspection.source_dir, nextTargetDir, { recursive: true });
+      },
+      commit: async () => {
+        const vendoredSha256 = await hashRecipeTree(targetDir);
+        const nextRegistry = replaceProjectRecipeRegistryEntry(registry, {
+          id: inspection.entry.id,
+          version: inspection.entry.version,
+          path: inspection.entry.project_path,
+          active:
+            registry.recipes.find((entry) => entry.id === inspection.entry.id)?.active === true,
+          materialization: "copy",
+          source_ref: inspection.entry.source_ref,
+          source_sha256: currentSourceSha256,
+          vendored_sha256: vendoredSha256,
+          installed_at: inspection.entry.installed_at,
+          tags: normalizeRecipeTags(cached.tags ?? cached.manifest.tags ?? []),
+        });
+        await publishProjectRecipesState({ project, registry: nextRegistry });
       },
     });
-
-    await refreshProjectOverlayArtifacts(project);
     process.stdout.write(
       `Detached recipe ${inspection.entry.id}@${inspection.entry.version} into a project-local copy.\n`,
     );

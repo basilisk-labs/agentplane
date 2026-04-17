@@ -3,7 +3,8 @@ import { resolveProject } from "@agentplaneorg/core";
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { CliError } from "../../../../shared/errors.js";
 
-import { refreshProjectOverlayArtifacts, setRecipeActive } from "../overlay-project.js";
+import { publishProjectRecipesState } from "../overlay-project.js";
+import { readProjectRecipesRegistry, setProjectRecipeActiveInFile } from "../project-registry.js";
 
 export async function cmdRecipeDisableParsed(opts: {
   cwd: string;
@@ -15,8 +16,9 @@ export async function cmdRecipeDisableParsed(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    await setRecipeActive({ project, recipeId: opts.id, active: false });
-    const { bundle } = await refreshProjectOverlayArtifacts(project);
+    const registry = await readProjectRecipesRegistry(project);
+    const nextRegistry = setProjectRecipeActiveInFile(registry, opts.id, false);
+    const { bundle } = await publishProjectRecipesState({ project, registry: nextRegistry });
     process.stdout.write(`Disabled overlay ${opts.id} (${bundle.active.length} active)\n`);
     return 0;
   } catch (err) {

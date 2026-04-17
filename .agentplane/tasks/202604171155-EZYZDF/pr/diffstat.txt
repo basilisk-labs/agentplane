@@ -1,0 +1,12 @@
+ .../src/commands/recipes.transaction.test.ts       | 279 +++++++++++++++++++++
+ .../src/commands/recipes/impl/commands/add.ts      |  52 ++--
+ .../src/commands/recipes/impl/commands/detach.ts   |  60 +++--
+ .../src/commands/recipes/impl/commands/disable.ts  |   8 +-
+ .../src/commands/recipes/impl/commands/enable.ts   |   8 +-
+ .../src/commands/recipes/impl/commands/remove.ts   |  23 +-
+ .../src/commands/recipes/impl/commands/update.ts   |  65 +++--
+ .../commands/recipes/impl/mutation-transaction.ts  |  55 ++++
+ .../src/commands/recipes/impl/overlay-project.ts   | 121 +++++++--
+ .../recipes/impl/project-installed-recipes.ts      |  21 +-
+ .../src/commands/recipes/impl/project-registry.ts  |  65 ++++-
+ 11 files changed, 633 insertions(+), 124 deletions(-)

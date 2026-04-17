@@ -66,6 +66,55 @@ function sortRegistry(file: ProjectRecipesRegistryFile): ProjectRecipesRegistryF
   };
 }
 
+export function stampProjectRecipesRegistry(
+  file: ProjectRecipesRegistryFile,
+  updatedAt = new Date().toISOString(),
+): ProjectRecipesRegistryFile {
+  return sortRegistry({
+    schema_version: 1,
+    updated_at: updatedAt,
+    recipes: file.recipes,
+  });
+}
+
+export function replaceProjectRecipeRegistryEntry(
+  registry: ProjectRecipesRegistryFile,
+  entry: ProjectRecipeRegistryEntry,
+): ProjectRecipesRegistryFile {
+  const recipes = registry.recipes.filter((candidate) => candidate.id !== entry.id);
+  recipes.push(entry);
+  return sortRegistry({
+    schema_version: 1,
+    updated_at: registry.updated_at,
+    recipes,
+  });
+}
+
+export function removeProjectRecipeRegistryEntryFromFile(
+  registry: ProjectRecipesRegistryFile,
+  recipeId: string,
+): ProjectRecipesRegistryFile {
+  return sortRegistry({
+    schema_version: 1,
+    updated_at: registry.updated_at,
+    recipes: registry.recipes.filter((entry) => entry.id !== recipeId),
+  });
+}
+
+export function setProjectRecipeActiveInFile(
+  registry: ProjectRecipesRegistryFile,
+  recipeId: string,
+  active: boolean,
+): ProjectRecipesRegistryFile {
+  return sortRegistry({
+    schema_version: 1,
+    updated_at: registry.updated_at,
+    recipes: registry.recipes.map((entry) =>
+      entry.id === recipeId ? { ...entry, active } : entry,
+    ),
+  });
+}
+
 export async function readProjectRecipesRegistry(opts: {
   agentplaneDir: string;
 }): Promise<ProjectRecipesRegistryFile> {
@@ -98,11 +147,7 @@ export async function writeProjectRecipesRegistry(
   opts: { agentplaneDir: string },
   file: ProjectRecipesRegistryFile,
 ): Promise<void> {
-  const sorted = sortRegistry({
-    schema_version: 1,
-    updated_at: new Date().toISOString(),
-    recipes: file.recipes,
-  });
+  const sorted = stampProjectRecipesRegistry(file);
   const filePath = resolveProjectRecipesRegistryPath(opts);
   await mkdir(path.dirname(filePath), { recursive: true });
   await writeJsonStableIfChanged(filePath, sorted);
@@ -113,9 +158,7 @@ export async function upsertProjectRecipeRegistryEntry(opts: {
   entry: ProjectRecipeRegistryEntry;
 }): Promise<ProjectRecipesRegistryFile> {
   const registry = await readProjectRecipesRegistry(opts.project);
-  const recipes = registry.recipes.filter((entry) => entry.id !== opts.entry.id);
-  recipes.push(opts.entry);
-  const next = { schema_version: 1 as const, updated_at: registry.updated_at, recipes };
+  const next = replaceProjectRecipeRegistryEntry(registry, opts.entry);
   await writeProjectRecipesRegistry(opts.project, next);
   return readProjectRecipesRegistry(opts.project);
 }
@@ -125,11 +168,7 @@ export async function removeProjectRecipeRegistryEntry(opts: {
   recipeId: string;
 }): Promise<ProjectRecipesRegistryFile> {
   const registry = await readProjectRecipesRegistry(opts.project);
-  const next = {
-    schema_version: 1 as const,
-    updated_at: registry.updated_at,
-    recipes: registry.recipes.filter((entry) => entry.id !== opts.recipeId),
-  };
+  const next = removeProjectRecipeRegistryEntryFromFile(registry, opts.recipeId);
   await writeProjectRecipesRegistry(opts.project, next);
   return readProjectRecipesRegistry(opts.project);
 }
