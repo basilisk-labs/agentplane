@@ -35,116 +35,88 @@ import { entry, type CommandEntry } from "./shared.js";
 
 export const CORE_COMMANDS = [
   entry(initSpec, () => import("../commands/init.js").then((m) => m.runInit), {
-    needsProject: false,
-    needsLoadedConfig: false,
-    needsTaskContext: false,
+    needs: "none",
     invocation: requireCanonicalCommandInvocation(["init"]),
   }),
   entry(
     upgradeSpec,
     () => import("../../../commands/upgrade.command.js").then((m) => m.runUpgrade),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(
     releaseSpec,
     () => import("../../../commands/release/release.command.js").then((m) => m.runRelease),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(
     releasePlanSpec,
     () => import("../../../commands/release/plan.command.js").then((m) => m.runReleasePlan),
     {
-      needsProject: true,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "project",
     },
   ),
   entry(
     releaseApplySpec,
     () => import("../../../commands/release/apply.command.js").then((m) => m.runReleaseApply),
     {
-      needsProject: true,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "project",
     },
   ),
   entry(
     releaseCandidateSpec,
     () => import("../../../commands/release/apply.command.js").then((m) => m.runReleaseCandidate),
     {
-      needsProject: true,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "project",
     },
   ),
   entry(
     quickstartSpec,
     () => import("../commands/core/quickstart.js").then((m) => m.runQuickstart),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
       invocation: requireCanonicalCommandInvocation(["quickstart"]),
     },
   ),
   entry(preflightSpec, () => import("../commands/core/preflight.js").then((m) => m.runPreflight), {
-    needsProject: false,
-    needsLoadedConfig: false,
-    needsTaskContext: false,
+    needs: "none",
     invocation: requireCanonicalCommandInvocation(["preflight"]),
   }),
   entry(codexSpec, () => import("../commands/codex.js").then((m) => m.runCodex), {
-    needsProject: false,
-    needsLoadedConfig: false,
-    needsTaskContext: false,
+    needs: "none",
   }),
   entry(codexPluginSpec, () => import("../commands/codex.js").then((m) => m.runCodexPlugin), {
-    needsProject: false,
-    needsLoadedConfig: false,
-    needsTaskContext: false,
+    needs: "none",
   }),
   entry(
     codexPluginInstallSpec,
     (deps) => import("../commands/codex.js").then((m) => m.makeRunCodexPluginInstallHandler(deps)),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(
     runtimeSpec,
     () => import("../../../commands/runtime.command.js").then((m) => m.runRuntime),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(
     runtimeExplainSpec,
     () => import("../../../commands/runtime.command.js").then((m) => m.runRuntimeExplain),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(
     incidentsSpec,
     () => import("../../../commands/incidents/incidents.command.js").then((m) => m.runIncidents),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(incidentsCollectSpec, (deps) =>
@@ -158,27 +130,21 @@ export const CORE_COMMANDS = [
     ),
   ),
   entry(roleSpec, () => import("../commands/core/role.js").then((m) => m.runRole), {
-    needsProject: false,
-    needsLoadedConfig: false,
-    needsTaskContext: false,
+    needs: "none",
     invocation: requireCanonicalCommandInvocation(["role"]),
   }),
   entry(
     agentsSpec,
     (deps) => import("../commands/core/agents.js").then((m) => m.makeRunAgentsHandler(deps)),
     {
-      needsProject: true,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "project",
     },
   ),
   entry(
     configShowSpec,
     (deps) => import("../commands/config.js").then((m) => m.makeRunConfigShowHandler(deps)),
     {
-      needsProject: true,
-      needsLoadedConfig: true,
-      needsTaskContext: false,
+      needs: "project+config",
       invocation: requireCanonicalCommandInvocation(["config", "show"]),
     },
   ),
@@ -186,104 +152,80 @@ export const CORE_COMMANDS = [
     configSetSpec,
     (deps) => import("../commands/config.js").then((m) => m.makeRunConfigSetHandler(deps)),
     {
-      needsProject: true,
-      needsLoadedConfig: true,
-      needsTaskContext: false,
+      needs: "project+config",
     },
   ),
   entry(
     modeGetSpec,
     (deps) => import("../commands/config.js").then((m) => m.makeRunModeGetHandler(deps)),
     {
-      needsProject: true,
-      needsLoadedConfig: true,
-      needsTaskContext: false,
+      needs: "project+config",
     },
   ),
   entry(
     modeSetSpec,
     (deps) => import("../commands/config.js").then((m) => m.makeRunModeSetHandler(deps)),
     {
-      needsProject: true,
-      needsLoadedConfig: true,
-      needsTaskContext: false,
+      needs: "project+config",
     },
   ),
   entry(
     profileSetSpec,
     (deps) => import("../commands/config.js").then((m) => m.makeRunProfileSetHandler(deps)),
     {
-      needsProject: true,
-      needsLoadedConfig: true,
-      needsTaskContext: false,
+      needs: "project+config",
     },
   ),
   entry(
     ideSyncSpec,
     (deps) => import("../commands/ide.js").then((m) => m.makeRunIdeSyncHandler(deps)),
     {
-      needsProject: true,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "project",
     },
   ),
   entry(doctorSpec, () => import("../../../commands/doctor.run.js").then((m) => m.runDoctor), {
-    needsProject: true,
-    needsLoadedConfig: false,
-    needsTaskContext: false,
+    needs: "project",
   }),
   entry(
     workflowSpec,
     () => import("../../../commands/workflow.command.js").then((m) => m.runWorkflow),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(
     workflowBuildSpec,
     () => import("../../../commands/workflow-build.command.js").then((m) => m.runWorkflowBuild),
     {
-      needsProject: true,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "project",
     },
   ),
   entry(
     workflowRestoreSpec,
     () => import("../../../commands/workflow-restore.command.js").then((m) => m.runWorkflowRestore),
     {
-      needsProject: true,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "project",
     },
   ),
   entry(
     workflowDebugSpec,
     () => import("../../../commands/workflow-playbook.command.js").then((m) => m.runWorkflowDebug),
     {
-      needsProject: true,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "project",
     },
   ),
   entry(
     workflowSyncSpec,
     () => import("../../../commands/workflow-playbook.command.js").then((m) => m.runWorkflowSync),
     {
-      needsProject: true,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "project",
     },
   ),
   entry(
     workflowLandSpec,
     () => import("../../../commands/workflow-playbook.command.js").then((m) => m.runWorkflowLand),
     {
-      needsProject: true,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "project",
     },
   ),
 ] as const satisfies readonly CommandEntry[];
