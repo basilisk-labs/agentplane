@@ -1,10 +1,11 @@
 ---
 id: "202604171502-A585MV"
 title: "Decompose PR sync hotspot into explicit step modules"
-status: "DOING"
+result_summary: "Merged via PR #405."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-17T18:36:45.542Z"
   updated_by: "CODER"
   note: "Verified: split PR sync into explicit support, branch, open, and update step modules; bun run typecheck passed; targeted PR-flow tests passed (82 tests); task verify contract still points at removed packages/agentplane/src/commands/pr/check.test.ts, so equivalent current coverage came from run-cli.core.pr-flow.pr.test.ts and commands/pr/input-validation.test.ts."
-commit: null
+commit:
+  hash: "ebbd5a90b3f6f4519dfb1a35bfca66bdc10cc7e0"
+  message: "cli/refactor: Decompose PR sync hotspot into explicit step modules (A585MV) (#405)"
 comments:
   -
     author: "CODER"
     body: "Start: decompose the PR sync hotspot into explicit step modules, keep sync.ts as the coordinator, and preserve existing PR flow behavior under targeted tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #405 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: split PR sync into explicit support, branch, open, and update step modules; bun run typecheck passed; targeted PR-flow tests passed (82 tests); task verify contract still points at removed packages/agentplane/src/commands/pr/check.test.ts, so equivalent current coverage came from run-cli.core.pr-flow.pr.test.ts and commands/pr/input-validation.test.ts."
+  -
+    type: "status"
+    at: "2026-04-17T19:00:30.578Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #405 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T18:36:45.546Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T19:00:30.583Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split commands/pr/internal/sync.ts into step-focused modules so the orchestration path stays small and PR sync behavior remains stable."
 sections:
   Summary: |-

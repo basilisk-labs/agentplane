@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604171502-A585MV/pr-sync-steps",
   "created_at": "2026-04-17T18:27:13.263Z",
-  "head_sha": "dd94c59ffe02d9e0df8c77b4615c12338831faa8",
+  "head_sha": "0722bbc1963b7bbbee17c86d8bf9e8bd9395355a",
   "last_verified_at": "2026-04-17T18:36:45.542Z",
   "last_verified_sha": "b0c53c8aae1a7e985ed3734ab3a02380b62e0d0e",
+  "merge_commit": "ebbd5a90b3f6f4519dfb1a35bfca66bdc10cc7e0",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T19:00:06Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604171502-A585MV",
-  "updated_at": "2026-04-17T18:37:19.555Z",
+  "updated_at": "2026-04-17T19:00:06Z",
   "verify": {
     "status": "pass"
   }
