@@ -14,6 +14,7 @@ import {
   readProjectRecipesRegistry,
   upsertProjectRecipeRegistryEntry,
 } from "../project-registry.js";
+import { pickLatestRecipeVersion } from "../version.js";
 import {
   resolveInstalledRecipeDir,
   resolveInstalledRecipesPath,
@@ -50,12 +51,10 @@ export async function cmdRecipeAddParsed(opts: {
     const loaded = await loadConfig(project.agentplaneDir);
     const requested = parseRecipeRef(opts.recipeRef);
     const cache = await readInstalledRecipesFile(resolveInstalledRecipesPath());
-    const cachedEntries = cache.recipes
-      .filter((entry) => entry.id === requested.id)
-      .toSorted((left, right) => left.version.localeCompare(right.version));
+    const cachedEntries = cache.recipes.filter((entry) => entry.id === requested.id);
     const cached = requested.version
       ? cachedEntries.find((entry) => entry.version === requested.version)
-      : cachedEntries.at(-1);
+      : pickLatestRecipeVersion(cachedEntries);
     if (!cached) {
       throw new CliError({
         exitCode: exitCodeForError("E_IO"),

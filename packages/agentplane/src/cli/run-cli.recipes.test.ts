@@ -290,6 +290,31 @@ describe("runCli recipes", () => {
     }
   });
 
+  it("recipes add picks the latest cached recipe by semver order", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const archives = await Promise.all([
+      createRecipeArchive({ id: "semver-pick", version: "1.2.0" }),
+      createRecipeArchive({ id: "semver-pick", version: "1.10.0" }),
+      createRecipeArchive({ id: "semver-pick", version: "1.2.10" }),
+    ]);
+
+    for (const fixture of archives) {
+      expect(
+        await runCliSilent(["recipes", "install", "--path", fixture.archivePath, "--root", root]),
+      ).toBe(0);
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "add", "semver-pick", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Vendored recipe semver-pick@1.10.0 into project (copy)");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("recipes add refuses to overwrite an already vendored recipe", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -944,8 +969,23 @@ describe("runCli recipes", () => {
           summary: "Viewer recipe",
           versions: [
             {
+              version: "1.2.0",
+              url: "https://example.com/viewer-1.2.0.tar.gz",
+              sha256: "abc120",
+            },
+            {
+              version: "1.10.0",
+              url: "https://example.com/viewer-1.10.0.tar.gz",
+              sha256: "abc1100",
+            },
+            {
+              version: "1.2.10",
+              url: "https://example.com/viewer-1.2.10.tar.gz",
+              sha256: "abc1210",
+            },
+            {
               version: "1.2.3",
-              url: "https://example.com/viewer.tar.gz",
+              url: "https://example.com/viewer-1.2.3.tar.gz",
               sha256: "abc123",
             },
           ],
@@ -958,7 +998,7 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "list-remote"]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("viewer@1.2.3 - Viewer recipe");
+      expect(io.stdout).toContain("viewer@1.10.0 - Viewer recipe");
     } finally {
       io.restore();
     }
@@ -1131,27 +1171,36 @@ describe("runCli recipes", () => {
   it("recipes install supports id from indexed catalog", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    const { archivePath, manifest } = await createRecipeArchive({
-      id: "viewer",
-      version: "1.0.0",
-      summary: "Viewer recipe",
-    });
-    const sha256 = createHash("sha256")
-      .update(await readFile(archivePath))
-      .digest("hex");
+    const fixtures = await Promise.all([
+      createRecipeArchive({
+        id: "viewer",
+        version: "1.2.0",
+        summary: "Viewer recipe",
+      }),
+      createRecipeArchive({
+        id: "viewer",
+        version: "1.10.0",
+        summary: "Viewer recipe",
+      }),
+      createRecipeArchive({
+        id: "viewer",
+        version: "1.2.10",
+        summary: "Viewer recipe",
+      }),
+    ]);
     const index = {
       schema_version: 1,
       recipes: [
         {
-          id: String(manifest.id),
+          id: "viewer",
           summary: "Viewer recipe",
-          versions: [
-            {
+          versions: await Promise.all(
+            fixtures.map(async ({ archivePath, manifest }) => ({
               version: String(manifest.version),
               url: archivePath,
-              sha256,
-            },
-          ],
+              sha256: createHash("sha256").update(await readFile(archivePath)).digest("hex"),
+            })),
+          ),
         },
       ],
     };
@@ -1184,9 +1233,7 @@ describe("runCli recipes", () => {
       ),
     ) as { recipes: { id: string; version: string }[] };
     expect(registry.recipes).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ id: String(manifest.id), version: String(manifest.version) }),
-      ]),
+      expect.arrayContaining([expect.objectContaining({ id: "viewer", version: "1.10.0" })]),
     );
   });
 
