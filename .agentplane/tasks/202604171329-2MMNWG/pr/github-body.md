@@ -22,12 +22,33 @@ Remove remaining bundled recipe fallback usage from recipes install and runtime-
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-17T13:30:22.922Z
+- Updated: 2026-04-17T14:17:08.661Z
 - Branch: task/202604171329-2MMNWG/remove-bundled-recipes-path
-- Head: 0117987c40f2
+- Head: b4adbcc272ea
 
 ```text
-No changes detected.
+ .../src/cli/run-cli.core.backend-sync.test.ts      |  1 -
+ .../cli/run-cli.core.branch-meta.readiness.test.ts |  1 -
+ ...n-cli.core.branch-meta.sync-maintenance.test.ts |  1 -
+ .../src/cli/run-cli.core.branch-meta.test.ts       |  1 -
+ ...n-cli.core.branch-meta.workflow-profile.test.ts |  1 -
+ .../cli/run-cli.core.guard.commit-wrapper.test.ts  |  1 -
+ .../agentplane/src/cli/run-cli.core.guard.test.ts  |  1 -
+ .../agentplane/src/cli/run-cli.core.hooks.test.ts  |  1 -
+ .../src/cli/run-cli.core.lifecycle.test.ts         |  1 -
+ .../agentplane/src/cli/run-cli.core.misc.test.ts   |  1 -
+ .../run-cli.core.pr-flow.cleanup-merged.test.ts    |  1 -
+ .../src/cli/run-cli.core.pr-flow.integrate.test.ts |  1 -
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        |  1 -
+ .../src/cli/run-cli.core.pr-flow.test.ts           |  1 -
+ .../src/cli/run-cli.core.tasks.export.test.ts      |  1 -
+ .../src/cli/run-cli.core.tasks.query.test.ts       |  1 -
+ .../agentplane/src/cli/run-cli.core.tasks.test.ts  |  1 -
+ packages/agentplane/src/cli/run-cli.core.test.ts   |  1 -
+ .../src/cli/run-cli.core.upgrade.test.ts           |  1 -
+ .../src/commands/recipes/impl/commands/install.ts  | 11 --------
+ packages/agentplane/src/recipes/bundled-recipes.ts | 30 ----------------------
+ 21 files changed, 60 deletions(-)
 ```
 
 </details>
