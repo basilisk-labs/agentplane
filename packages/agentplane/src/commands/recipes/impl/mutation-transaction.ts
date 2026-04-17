@@ -45,10 +45,10 @@ export async function runVendoredRecipeMutation<T>(opts: {
     return result;
   } catch (err) {
     if (opts.mode !== "remove") {
-      await rm(opts.targetDir, { recursive: true, force: true }).catch(() => undefined);
+      await rm(opts.targetDir, { recursive: true, force: true }).catch((_error) => null);
     }
     if (backupDir) {
-      await rename(backupDir, opts.targetDir).catch(() => undefined);
+      await rename(backupDir, opts.targetDir).catch((_error) => null);
     }
     throw err;
   }

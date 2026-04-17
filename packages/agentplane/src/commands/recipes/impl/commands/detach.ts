@@ -1,4 +1,4 @@
-import { cp, rm } from "node:fs/promises";
+import { cp } from "node:fs/promises";
 
 import { normalizeRecipeTags } from "@agentplaneorg/recipes";
 import { loadConfig, resolveProject } from "@agentplaneorg/core";

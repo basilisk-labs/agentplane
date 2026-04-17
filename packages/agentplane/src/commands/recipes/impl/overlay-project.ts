@@ -14,10 +14,8 @@ import { atomicWriteFile, canonicalizeJson } from "@agentplaneorg/core";
 
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 
-import {
-  readProjectInstalledRecipes,
-  readProjectInstalledRecipesFromRegistry,
-} from "./project-installed-recipes.js";
+import { readProjectInstalledRecipesFromRegistry } from "./project-installed-recipes.js";
+import type { readProjectInstalledRecipes } from "./project-installed-recipes.js";
 import {
   readProjectRecipesRegistry,
   setProjectRecipeActiveInFile,
@@ -81,9 +79,9 @@ async function pathExists(filePath: string): Promise<boolean> {
 }
 
 async function publishJsonFilesTransactional(
-  files: Array<{ path: string; value: unknown }>,
+  files: { path: string; value: unknown }[],
 ): Promise<void> {
-  const backups: Array<{ path: string; backup: string }> = [];
+  const backups: { path: string; backup: string }[] = [];
   try {
     for (const file of files) {
       if (!(await pathExists(file.path))) continue;
@@ -100,10 +98,10 @@ async function publishJsonFilesTransactional(
     }
   } catch (err) {
     for (const file of files) {
-      await rm(file.path, { recursive: true, force: true }).catch(() => undefined);
+      await rm(file.path, { recursive: true, force: true }).catch((_error) => null);
     }
     for (const entry of backups.toReversed()) {
-      await rename(entry.backup, entry.path).catch(() => undefined);
+      await rename(entry.backup, entry.path).catch((_error) => null);
     }
     throw err;
   }
@@ -240,10 +238,8 @@ export async function compileProjectOverlayArtifactsFromRegistry(
   bundle: CompiledOverlayBundle;
   assets: CompiledRecipeAssetRegistry;
 }> {
-  const [activeIds, installed] = await Promise.all([
-    readActiveRecipeIdsFromRegistry(registry),
-    readProjectInstalledRecipesFromRegistry(project, registry),
-  ]);
+  const activeIds = readActiveRecipeIdsFromRegistry(registry);
+  const installed = await readProjectInstalledRecipesFromRegistry(project, registry);
   const bundle = createEmptyOverlayBundle();
 
   for (const recipeId of activeIds) {

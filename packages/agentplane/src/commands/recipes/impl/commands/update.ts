@@ -1,4 +1,4 @@
-import { cp, rm, symlink } from "node:fs/promises";
+import { cp, symlink } from "node:fs/promises";
 
 import { normalizeRecipeTags } from "@agentplaneorg/recipes";
 import { loadConfig, resolveProject } from "@agentplaneorg/core";

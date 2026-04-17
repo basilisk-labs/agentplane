@@ -32,23 +32,23 @@ function overlayBundlePath(root: string): string {
   return path.join(root, ".agentplane", "generated", "overlay-bundle.json");
 }
 
-async function readRegistry(root: string): Promise<{ recipes: Array<Record<string, unknown>> }> {
+async function readRegistry(root: string): Promise<{ recipes: Record<string, unknown>[] }> {
   if (!(await pathExists(resolveProjectRecipesRegistryPath(root)))) {
     return { recipes: [] };
   }
   return JSON.parse(await readFile(resolveProjectRecipesRegistryPath(root), "utf8")) as {
-    recipes: Array<Record<string, unknown>>;
+    recipes: Record<string, unknown>[];
   };
 }
 
 async function writeRegistry(
   root: string,
-  update: (recipes: Array<Record<string, unknown>>) => Array<Record<string, unknown>>,
+  update: (recipes: Record<string, unknown>[]) => Record<string, unknown>[],
 ): Promise<void> {
   const current = JSON.parse(await readFile(resolveProjectRecipesRegistryPath(root), "utf8")) as {
     schema_version: number;
     updated_at: string;
-    recipes: Array<Record<string, unknown>>;
+    recipes: Record<string, unknown>[];
   };
   await writeFile(
     resolveProjectRecipesRegistryPath(root),

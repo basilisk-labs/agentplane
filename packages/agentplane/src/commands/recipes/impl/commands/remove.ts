@@ -1,7 +1,5 @@
 import { loadConfig, resolveProject } from "@agentplaneorg/core";
 
-import { rm } from "node:fs/promises";
-
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { successMessage } from "../../../../cli/output.js";
