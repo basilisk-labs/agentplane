@@ -1,10 +1,11 @@
 ---
 id: "202604170648-NRV3V2"
 title: "Refresh recipes tests and documentation for vendor flow"
-status: "DOING"
+result_summary: "Merged via PR #372."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-17T09:53:21.438Z"
   updated_by: "CODER"
   note: "Aligned recipe docs, help text, and generated CLI reference to the cache -> vendor -> project-only runtime model."
-commit: null
+commit:
+  hash: "0c83bcb41496aba04de62215139f6dd2e1cd666d"
+  message: "docs/recipes: Refresh recipes tests and documentation for vendor flow (NRV3V2) (#372)"
 comments:
   -
     author: "CODER"
     body: "Start: refresh recipes docs, help text, and remaining tests to match cache -> vendor -> project-only runtime behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #372 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Aligned recipe docs, help text, and generated CLI reference to the cache -> vendor -> project-only runtime model."
+  -
+    type: "status"
+    at: "2026-04-17T10:36:29.375Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #372 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T09:53:21.446Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T10:36:29.380Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update automated coverage, help text, and docs to reflect cache -> vendor -> project-only runtime recipes behavior."
 sections:
   Summary: |-

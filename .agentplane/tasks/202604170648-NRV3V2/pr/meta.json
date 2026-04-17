@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604170648-NRV3V2/vendor-flow-docs",
   "created_at": "2026-04-17T09:44:29.335Z",
-  "head_sha": "1048e6c44279a887276fd4779e529417bb746844",
+  "head_sha": "949e51400744361da8554cc13230799ab7c79aa0",
   "last_verified_at": "2026-04-17T09:53:21.438Z",
   "last_verified_sha": "ae9c833ba30195b78c61e5132fa249c9b581be30",
+  "merge_commit": "0c83bcb41496aba04de62215139f6dd2e1cd666d",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-17T10:36:00Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604170648-NRV3V2",
-  "updated_at": "2026-04-17T10:29:28.867Z",
+  "updated_at": "2026-04-17T10:36:00Z",
   "verify": {
     "status": "pass"
   }
