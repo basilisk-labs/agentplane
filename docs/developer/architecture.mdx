@@ -9,9 +9,11 @@ Agent Plane has three layers with different responsibilities:
 
 1. CLI runtime (`packages/agentplane/src`)
 2. Shared models and config (`packages/core/src`)
-3. JSON schema/spec layer (`packages/spec/schemas`)
+3. Generated schema/spec layer (`packages/spec/schemas`)
 
-The runtime layer owns command behavior. The core layer owns parsing and shared contracts. The spec layer is the canonical schema source, synchronized into `packages/core/schemas`.
+The runtime layer owns command behavior. The core layer owns parsing, defaults, validators, and shared contracts. The spec layer is a generated mirror for tooling and external consumers, synchronized from runtime code into both `packages/spec/schemas` and `packages/core/schemas`.
+
+For the full validation baseline, see [Schema validation strategy](schema-validation-strategy).
 
 ## Framework control plane
 

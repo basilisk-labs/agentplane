@@ -49,6 +49,7 @@
         "group": "Developer",
         "pages": [
           "architecture",
+          "schema-validation-strategy",
           "release-process-architecture",
           "release-and-publishing",
           "incident-archive",

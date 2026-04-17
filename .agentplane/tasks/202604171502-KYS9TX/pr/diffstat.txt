@@ -1,0 +1,6 @@
+ docs/developer/architecture.mdx               |   6 +-
+ docs/developer/framework-refactor-program.mdx |   4 +-
+ docs/developer/project-layout.mdx             |   7 +-
+ docs/developer/schema-validation-strategy.mdx | 181 ++++++++++++++++++++++++++
+ docs/docs.json                                |   1 +
+ 5 files changed, 193 insertions(+), 6 deletions(-)
