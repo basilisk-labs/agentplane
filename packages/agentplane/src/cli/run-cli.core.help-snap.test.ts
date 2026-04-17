@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
-import { captureStdIO, silenceStdIO } from "@agentplane/testkit/cli";
+import { captureStdIO, silenceStdIO } from "./run-cli.test-helpers.js";
 
 let restoreStdIO: (() => void) | null = null;
 

@@ -7,7 +7,7 @@ import {
   mkGitRepoRoot,
   pathExists,
   writeDefaultConfig,
-} from "@agentplane/testkit/cli";
+} from "../cli/run-cli.test-helpers.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
 
 describe("upgrade agent JSON replacement stability", () => {

@@ -13,7 +13,7 @@ import {
   mkGitRepoRootWithBranch,
   writeConfig,
   writeDefaultConfig,
-} from "@agentplane/testkit/cli";
+} from "../../cli/run-cli.test-helpers.js";
 import { listTaskSummariesMemo, loadCommandContext, loadTaskFromContext } from "./task-backend.js";
 
 async function writeLocalBackendConfig(root: string): Promise<void> {

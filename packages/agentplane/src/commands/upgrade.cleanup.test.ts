@@ -3,7 +3,11 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { createUpgradeBundle, mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit/cli";
+import {
+  createUpgradeBundle,
+  mkGitRepoRoot,
+  writeDefaultConfig,
+} from "../cli/run-cli.test-helpers.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
 const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 

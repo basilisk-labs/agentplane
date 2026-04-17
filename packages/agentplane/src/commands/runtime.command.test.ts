@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { captureStdIO } from "@agentplane/testkit/cli";
+import { captureStdIO } from "../cli/run-cli.test-helpers.js";
 import {
   buildFrameworkDevWorkflow,
   runRuntimeExplain,

@@ -10,7 +10,7 @@ import {
   loadTaskBackend,
   type TaskData,
 } from "./task-backend.js";
-import { mkTempDir, silenceStdIO } from "@agentplane/testkit/cli";
+import { mkTempDir, silenceStdIO } from "../cli/run-cli.test-helpers.js";
 
 describe("loadTaskBackend", () => {
   let tempDir = "";

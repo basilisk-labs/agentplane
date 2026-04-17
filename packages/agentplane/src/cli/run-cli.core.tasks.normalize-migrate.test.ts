@@ -16,7 +16,7 @@ import {
   runCliSilent,
   writeConfig,
   writeAndConfigureRoot,
-} from "@agentplane/testkit/cli";
+} from "./run-cli.test-helpers.js";
 
 installRunCliIntegrationHarness();
 

@@ -51,7 +51,7 @@ import {
   writeConfig,
   writeDefaultConfig,
   recordVerificationOk,
-} from "@agentplane/testkit/cli";
+} from "./run-cli.test-helpers.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 

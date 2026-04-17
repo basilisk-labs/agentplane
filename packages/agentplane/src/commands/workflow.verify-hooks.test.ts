@@ -21,7 +21,7 @@ import {
   mkGitRepoRoot,
   silenceStdIO,
   writeDefaultConfig,
-} from "@agentplane/testkit/cli";
+} from "../cli/run-cli.test-helpers.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import { verifySpec } from "./verify.spec.js";
 import { cmdVerifyParsed } from "./task/verify-record.js";

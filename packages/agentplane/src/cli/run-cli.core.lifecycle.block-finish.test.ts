@@ -17,7 +17,7 @@ import {
   silenceStdIO,
   writeConfig,
   writeDefaultConfig,
-} from "@agentplane/testkit/cli";
+} from "./run-cli.test-helpers.js";
 
 registerAgentplaneHome();
 let restoreStdIO: (() => void) | null = null;

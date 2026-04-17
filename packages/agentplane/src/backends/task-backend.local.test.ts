@@ -5,7 +5,7 @@ import { renderTaskReadme } from "@agentplaneorg/core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { LocalBackend, toTaskSummary, type TaskData, type TaskSummary } from "./task-backend.js";
-import { mkTempDir, silenceStdIO } from "@agentplane/testkit/cli";
+import { mkTempDir, silenceStdIO } from "../cli/run-cli.test-helpers.js";
 
 type QuerySummaryView = Pick<
   TaskSummary,

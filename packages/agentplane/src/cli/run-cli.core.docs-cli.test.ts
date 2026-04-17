@@ -10,7 +10,7 @@ import {
   mkGitRepoRoot,
   silenceStdIO,
   writeDefaultConfig,
-} from "@agentplane/testkit/cli";
+} from "./run-cli.test-helpers.js";
 
 function runBunx(args: string[], cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {

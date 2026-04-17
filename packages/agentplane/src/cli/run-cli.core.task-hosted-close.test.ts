@@ -19,7 +19,7 @@ import {
   runCliSilent,
   writeAndConfigureRoot,
   writeConfig,
-} from "@agentplane/testkit/cli";
+} from "./run-cli.test-helpers.js";
 
 const execFileAsync = promisify(execFile);
 

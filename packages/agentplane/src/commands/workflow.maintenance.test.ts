@@ -11,7 +11,7 @@ import {
   mkGitRepoRoot,
   silenceStdIO,
   writeDefaultConfig,
-} from "@agentplane/testkit/cli";
+} from "../cli/run-cli.test-helpers.js";
 
 function baseTaskBackend(overrides: Partial<taskBackend.TaskBackend>): taskBackend.TaskBackend {
   return {
