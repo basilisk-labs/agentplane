@@ -77,11 +77,15 @@ Commands:
     doctor  Check workspace invariants for a normal agentplane installation (with optional dev source checks).
   Recipes:
     recipes  Recipe management commands.
+    recipes active  List active project overlays.
     recipes add  Vendor a cached recipe into the current project.
     recipes cache  Manage recipes cache.
     recipes cache prune  Prune global recipe cache entries.
     recipes detach  Convert a linked vendored recipe into a project-local copy.
+    recipes disable  Disable an active project overlay for the current project.
+    recipes enable  Enable an installed project overlay for the current project.
     recipes explain  Show detailed info for a vendored recipe.
+    recipes explain-active  Print the compiled active overlay bundle.
     recipes info  Show cached recipe metadata.
     recipes install  Install a recipe into the global cache from remote index, local archive, or URL.
     recipes list  List cached recipes.

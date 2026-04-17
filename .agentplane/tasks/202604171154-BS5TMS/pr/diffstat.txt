@@ -1,0 +1,5 @@
+ docs/user/cli-reference.generated.mdx              | 80 ++++++++++++++++++++++
+ .../run-cli.core.help-snap.test.ts.snap            |  4 ++
+ .../agentplane/src/cli/run-cli.recipes.test.ts     | 53 ++++++++++++++
+ .../src/cli/run-cli/command-catalog/project.ts     | 18 +++++
+ 4 files changed, 155 insertions(+)

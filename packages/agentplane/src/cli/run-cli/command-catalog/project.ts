@@ -26,10 +26,14 @@ import {
   prUpdateSpec,
 } from "../../../commands/pr/pr.command.js";
 import { recipesAddSpec } from "../../../commands/recipes/add.command.js";
+import { recipesActiveSpec } from "../../../commands/recipes/active.command.js";
 import { recipesCachePruneSpec } from "../../../commands/recipes/cache-prune.command.js";
 import { recipesCacheSpec } from "../../../commands/recipes/cache.command.js";
 import { recipesDetachSpec } from "../../../commands/recipes/detach.command.js";
+import { recipesDisableSpec } from "../../../commands/recipes/disable.command.js";
 import { recipesExplainSpec } from "../../../commands/recipes/explain.command.js";
+import { recipesExplainActiveSpec } from "../../../commands/recipes/explain-active.command.js";
+import { recipesEnableSpec } from "../../../commands/recipes/enable.command.js";
 import { recipesInfoSpec } from "../../../commands/recipes/info.command.js";
 import { recipesInstallSpec } from "../../../commands/recipes/install.spec.js";
 import { recipesListRemoteSpec } from "../../../commands/recipes/list-remote.command.js";
@@ -72,6 +76,9 @@ export const PROJECT_COMMANDS = [
   entry(recipesAddSpec, () =>
     import("../../../commands/recipes/add.command.js").then((m) => m.runRecipesAdd),
   ),
+  entry(recipesActiveSpec, () =>
+    import("../../../commands/recipes/active.command.js").then((m) => m.runRecipesActive),
+  ),
   entry(
     recipesListSpec,
     () => import("../../../commands/recipes/list.command.js").then((m) => m.runRecipesList),
@@ -95,6 +102,17 @@ export const PROJECT_COMMANDS = [
   ),
   entry(recipesExplainSpec, () =>
     import("../../../commands/recipes/explain.command.js").then((m) => m.runRecipesExplain),
+  ),
+  entry(recipesExplainActiveSpec, () =>
+    import("../../../commands/recipes/explain-active.command.js").then(
+      (m) => m.runRecipesExplainActive,
+    ),
+  ),
+  entry(recipesEnableSpec, () =>
+    import("../../../commands/recipes/enable.command.js").then((m) => m.runRecipesEnable),
+  ),
+  entry(recipesDisableSpec, () =>
+    import("../../../commands/recipes/disable.command.js").then((m) => m.runRecipesDisable),
   ),
   entry(recipesRemoveSpec, () =>
     import("../../../commands/recipes/remove.command.js").then((m) => m.runRecipesRemove),

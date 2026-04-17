@@ -237,6 +237,59 @@ describe("runCli recipes", () => {
     }
   });
 
+  it("recipes public CLI exposes active overlay lifecycle commands", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive({
+      id: "overlayctl",
+      version: "0.6.0",
+      summary: "Overlay control recipe",
+    });
+    const manifestRef = `${String(manifest.id)}@${String(manifest.version)}`;
+
+    expect(await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root])).toBe(
+      0,
+    );
+    expect(await runCliSilent(["recipes", "add", manifestRef, "--root", root])).toBe(0);
+
+    const ioEnable = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "enable", "overlayctl", "--root", root]);
+      expect(code).toBe(0);
+      expect(ioEnable.stdout).toContain("Enabled overlay overlayctl (1 active)");
+    } finally {
+      ioEnable.restore();
+    }
+
+    const ioActive = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "active", "--root", root]);
+      expect(code).toBe(0);
+      expect(ioActive.stdout).toContain("overlayctl@0.6.0 [project_overlay]");
+    } finally {
+      ioActive.restore();
+    }
+
+    const ioExplainActive = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "explain-active", "--root", root]);
+      expect(code).toBe(0);
+      expect(ioExplainActive.stdout).toContain('"kind": "overlay_bundle"');
+      expect(ioExplainActive.stdout).toContain('"id": "overlayctl"');
+    } finally {
+      ioExplainActive.restore();
+    }
+
+    const ioDisable = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "disable", "overlayctl", "--root", root]);
+      expect(code).toBe(0);
+      expect(ioDisable.stdout).toContain("Disabled overlay overlayctl (0 active)");
+    } finally {
+      ioDisable.restore();
+    }
+  });
+
   it("recipes add refuses to overwrite an already vendored recipe", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
