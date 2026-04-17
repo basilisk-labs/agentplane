@@ -1,0 +1,1 @@
+recipes/workflow: Collapse recipes transition wrappers (2RRW65)

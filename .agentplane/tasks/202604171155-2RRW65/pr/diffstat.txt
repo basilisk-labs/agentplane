@@ -1,0 +1,21 @@
+ packages/agentplane/src/commands/recipes.ts        |  12 +-
+ .../agentplane/src/commands/recipes/impl/apply.ts  |  10 +-
+ .../src/commands/recipes/impl/commands/add.ts      |   2 +-
+ .../src/commands/recipes/impl/commands/detach.ts   |   2 +-
+ .../src/commands/recipes/impl/commands/explain.ts  |   2 +-
+ .../src/commands/recipes/impl/commands/install.ts  |   9 +-
+ .../src/commands/recipes/impl/commands/update.ts   |   2 +-
+ .../agentplane/src/commands/recipes/impl/index.ts  |   3 +-
+ .../src/commands/recipes/impl/installed-recipes.ts |  10 +-
+ .../src/commands/recipes/impl/manifest.ts          |  13 -
+ .../src/commands/recipes/impl/normalize.ts         |  61 ----
+ .../recipes/impl/project-installed-recipes.ts      |  10 +-
+ .../commands/recipes/impl/project-recipe-state.ts  |   2 +-
+ .../src/commands/recipes/impl/project-registry.ts  |  15 +-
+ .../src/commands/recipes/impl/resolver.ts          |   4 +-
+ .../src/commands/recipes/impl/scenario.test.ts     |   3 +-
+ .../src/commands/recipes/impl/scenario.ts          | 319 ---------------------
+ .../agentplane/src/commands/recipes/impl/types.ts  |  48 ----
+ .../src/runner/context/recipe-context.ts           |   8 +-
+ .../agentplane/src/runtime/capabilities/recipe.ts  |   2 +-
+ 20 files changed, 57 insertions(+), 480 deletions(-)
