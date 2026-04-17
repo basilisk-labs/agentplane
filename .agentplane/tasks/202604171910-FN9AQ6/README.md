@@ -4,7 +4,7 @@ title: "Unblock refactor pushes by formatting global pre-push offenders"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-17T19:46:17.218Z"
+  updated_by: "CODER"
+  note: "Local verification passed: format, lint, and full fast pre-push gates are green; unblock branch pushed to origin."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: format the current pre-push offenders only, keep the diff whitespace-only, and publish the unblock branch so the remaining refactor work can be pushed."
+  -
+    type: "verify"
+    at: "2026-04-17T19:46:17.218Z"
+    author: "CODER"
+    state: "ok"
+    note: "Local verification passed: format, lint, and full fast pre-push gates are green; unblock branch pushed to origin."
 doc_version: 3
-doc_updated_at: "2026-04-17T19:11:45.948Z"
+doc_updated_at: "2026-04-17T19:46:17.229Z"
 doc_updated_by: "CODER"
 description: "Format the repository files currently failing the shared pre-push formatter so the remaining refactor task branches can be pushed and merged without unrelated hook failures."
 sections:
@@ -58,6 +64,14 @@ sections:
     3. Push the task branch to origin. Expected: the shared pre-push hook no longer fails on formatting for this branch.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-17T19:46:17.218Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Local verification passed: format, lint, and full fast pre-push gates are green; unblock branch pushed to origin.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-17T19:11:45.948Z, excerpt_hash=sha256:737b3fbbc1e5c435493eb06ab613a60631b86ea863a6fc0bf8158d8ec5b3db94
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -91,6 +105,14 @@ Format the repository files currently failing the shared pre-push formatter so t
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-17T19:46:17.218Z — VERIFY — ok
+
+By: CODER
+
+Note: Local verification passed: format, lint, and full fast pre-push gates are green; unblock branch pushed to origin.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-17T19:11:45.948Z, excerpt_hash=sha256:737b3fbbc1e5c435493eb06ab613a60631b86ea863a6fc0bf8158d8ec5b3db94
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
