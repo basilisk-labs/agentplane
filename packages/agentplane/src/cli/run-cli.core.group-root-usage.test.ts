@@ -41,6 +41,18 @@ const GROUP_USAGE_CASES = [
     help: "agentplane help cleanup --compact",
   },
   {
+    label: "codex",
+    args: ["codex"],
+    message: "Missing Codex subcommand.",
+    help: "agentplane help codex --compact",
+  },
+  {
+    label: "codex plugin",
+    args: ["codex", "plugin"],
+    message: "Missing Codex plugin subcommand.",
+    help: "agentplane help codex plugin --compact",
+  },
+  {
     label: "task verify",
     args: ["task", "verify"],
     message: "Missing subcommand.",

@@ -87,6 +87,9 @@ describe("cli help contract", () => {
       expect(unique.size).toBe(ids.length);
       expect(ids).toEqual(
         expect.arrayContaining([
+          "codex",
+          "codex plugin",
+          "codex plugin install",
           "help",
           "task",
           "task list",
