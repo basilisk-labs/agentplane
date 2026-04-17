@@ -1,0 +1,16 @@
+ .agentplane/tasks/202604171154-BS5TMS/README.md    | 152 +++++++++++++++++++++
+ .../tasks/202604171154-BS5TMS/pr/diffstat.txt      |   5 +
+ .../tasks/202604171154-BS5TMS/pr/github-body.md    |  40 ++++++
+ .../tasks/202604171154-BS5TMS/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202604171154-BS5TMS/pr/meta.json |  14 ++
+ .../tasks/202604171154-BS5TMS/pr/notes.jsonl       |   0
+ .agentplane/tasks/202604171154-BS5TMS/pr/review.md |  64 +++++++++
+ .../tasks/202604171154-BS5TMS/pr/verify.log        |   0
+ docs/user/cli-reference.generated.mdx              |  80 +++++++++++
+ .../run-cli.core.help-snap.test.ts.snap            |   4 +
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |  21 ++-
+ .../agentplane/src/cli/run-cli.recipes.test.ts     |  53 +++++++
+ .../src/cli/run-cli/command-catalog/project.ts     |  18 +++
+ .../src/cli/run-cli/commands/init/recipes.ts       |   1 +
+ .../src/commands/recipes/impl/commands/add.ts      |   3 +-
+ 15 files changed, 454 insertions(+), 2 deletions(-)

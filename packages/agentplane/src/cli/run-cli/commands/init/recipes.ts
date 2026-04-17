@@ -52,6 +52,7 @@ export async function maybeAddCachedRecipes(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       recipeRef: recipeId,
+      activate: true,
     });
   }
 }

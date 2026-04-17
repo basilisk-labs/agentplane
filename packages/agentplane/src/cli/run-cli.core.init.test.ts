@@ -1141,10 +1141,29 @@ describe("runCli", () => {
         expect.objectContaining({
           id: "viewer",
           path: "packages/viewer",
-          active: false,
+          active: true,
         }),
       ],
     });
+
+    const activeIo = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "active", "--root", root]);
+      expect(code).toBe(0);
+      expect(activeIo.stdout).toContain("viewer@1.2.3 [project_overlay]");
+    } finally {
+      activeIo.restore();
+    }
+
+    const explainIo = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "explain-active", "--root", root]);
+      expect(code).toBe(0);
+      expect(explainIo.stdout).toContain('"id": "viewer"');
+      expect(explainIo.stdout).toContain('"kind": "overlay_bundle"');
+    } finally {
+      explainIo.restore();
+    }
   });
 
   it("init lists conflicts for existing files by default", async () => {
