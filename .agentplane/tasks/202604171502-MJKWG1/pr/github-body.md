@@ -22,12 +22,17 @@ Split the runtime incidents resolver hotspot into declarative strategy modules s
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-17T18:44:54.616Z
+- Updated: 2026-04-17T18:53:42.607Z
 - Branch: task/202604171502-MJKWG1/incident-strategies
-- Head: b0c53c8aae1a
+- Head: efd9edc20f7c
 
 ```text
-No changes detected.
+ .../src/runtime/incidents/advice-strategy.ts       |  76 ++
+ .../src/runtime/incidents/plan-strategy.ts         | 267 +++++++
+ .../src/runtime/incidents/registry-strategy.ts     | 325 ++++++++
+ .../agentplane/src/runtime/incidents/resolve.ts    | 827 +--------------------
+ .../agentplane/src/runtime/incidents/shared.ts     | 220 ++++++
+ 5 files changed, 900 insertions(+), 815 deletions(-)
 ```
 
 </details>

@@ -1,0 +1,6 @@
+ .../src/runtime/incidents/advice-strategy.ts       |  76 ++
+ .../src/runtime/incidents/plan-strategy.ts         | 267 +++++++
+ .../src/runtime/incidents/registry-strategy.ts     | 325 ++++++++
+ .../agentplane/src/runtime/incidents/resolve.ts    | 827 +--------------------
+ .../agentplane/src/runtime/incidents/shared.ts     | 220 ++++++
+ 5 files changed, 900 insertions(+), 815 deletions(-)
