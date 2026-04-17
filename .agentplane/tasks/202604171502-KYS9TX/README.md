@@ -1,10 +1,11 @@
 ---
 id: "202604171502-KYS9TX"
 title: "Re-baseline schema validation strategy after generated AJV migration"
-status: "DOING"
+result_summary: "Merged via PR #408."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-17T18:57:02.363Z"
   updated_by: "PLANNER"
   note: "Audited the remaining schema boundary drift, documented the chosen core-first validation architecture, and corrected developer docs that still described packages/spec as the canonical schema authority; verified schemas:check and typecheck."
-commit: null
+commit:
+  hash: "5f9e054d2ea83f8bf77715b9faf77853ce128c02"
+  message: "architecture/schemas: Re-baseline schema validation strategy after generated AJV migration (KYS9TX) (#408)"
 comments:
   -
     author: "PLANNER"
     body: "Start: audit remaining AJV/manual schema drift, select the target validation architecture, and record the migration baseline before any larger rewrite."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #408 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Audited the remaining schema boundary drift, documented the chosen core-first validation architecture, and corrected developer docs that still described packages/spec as the canonical schema authority; verified schemas:check and typecheck."
+  -
+    type: "status"
+    at: "2026-04-17T19:01:30.316Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #408 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T18:57:02.376Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-17T19:01:30.322Z"
+doc_updated_by: "INTEGRATOR"
 description: "Audit the remaining AJV plus manual type drift, decide the target validation architecture, and capture the approved migration path in repository docs before any large schema rewrite."
 sections:
   Summary: |-
