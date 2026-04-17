@@ -11,7 +11,6 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import { evolveRunnerRunState } from "../artifacts.js";
 import {
-  runnerArtifactsFromSpecs,
   runnerAdapterCancelledResult,
   runnerAdapterFailureResult,
   runnerAdapterSuccessResult,

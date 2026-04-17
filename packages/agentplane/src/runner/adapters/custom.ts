@@ -13,7 +13,6 @@ import type {
 } from "../types.js";
 import { evolveRunnerRunState } from "../artifacts.js";
 import {
-  runnerArtifactsFromSpecs,
   runnerAdapterCancelledResult,
   runnerAdapterFailureResult,
   runnerAdapterSuccessResult,

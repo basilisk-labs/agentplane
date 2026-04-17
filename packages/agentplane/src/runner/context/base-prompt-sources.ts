@@ -13,7 +13,6 @@ import {
 import type { RunnerPromptBlock } from "../types.js";
 import {
   BASE_PROMPT_PRIORITIES,
-  loadFrameworkRunnerPrompt,
   normalizeText,
   promptBlockFromResolved,
   promptCandidate,
@@ -209,4 +208,4 @@ export function loadExecutionProfilePrompt(opts: {
   });
 }
 
-export { loadFrameworkRunnerPrompt };
+export { loadFrameworkRunnerPrompt } from "./prompt-block-shared.js";

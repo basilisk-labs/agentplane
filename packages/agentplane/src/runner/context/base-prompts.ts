@@ -2,19 +2,19 @@ import type { ResolvedExecutionProfileRuntime } from "../../runtime/execution-pr
 import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
 import {
   loadExecutionProfilePrompt,
-  loadFrameworkRunnerPrompt,
   loadOwnerProfilePrompt,
   loadPolicyGatewayPrompt,
-  resolveOwnerProfilePromptSource,
-  resolvePolicyGatewayPromptSource,
 } from "./base-prompt-sources.js";
 import { collectOverlayPromptBlocks } from "./overlay-prompt-blocks.js";
-import { normalizeOwnerId } from "./prompt-block-shared.js";
+import { loadFrameworkRunnerPrompt, normalizeOwnerId } from "./prompt-block-shared.js";
 import { collectRecipePromptBlocks } from "./recipe-prompt-blocks.js";
 import type { RunnerPromptBlock, RunnerRecipeContext, RunnerTaskContext } from "../types.js";
 import type { PolicyGatewayFlavor } from "../../shared/policy-gateway.js";
 
-export { resolveOwnerProfilePromptSource, resolvePolicyGatewayPromptSource };
+export {
+  resolveOwnerProfilePromptSource,
+  resolvePolicyGatewayPromptSource,
+} from "./base-prompt-sources.js";
 
 export async function collectRunnerBasePrompts(opts: {
   git_root: string;
