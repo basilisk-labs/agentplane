@@ -1,10 +1,11 @@
 ---
 id: "202604171154-1WZZJK"
 title: "Align package versions after v0.3.13 release"
-status: "DOING"
+result_summary: "Merged via PR #382."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-17T12:34:35.820Z"
   updated_by: "CODER"
   note: "Verified recipes version parity and release availability checks after adding recipes package coverage."
-commit: null
+commit:
+  hash: "45ed50d51883aa3f62ac79d625c00e46c7230426"
+  message: "recipes/workflow: Align package versions after v0.3.13 release (1WZZJK) (#382)"
 comments:
   -
     author: "CODER"
     body: "Start: align recipes package version surfaces and release parity checks with the current 0.3.13 workspace."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #382 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified recipes version parity and release availability checks after adding recipes package coverage."
+  -
+    type: "status"
+    at: "2026-04-17T14:25:13.592Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #382 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T12:34:35.825Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-17T14:25:13.598Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove version drift by updating packages/recipes version surfaces, dependency pins, and generated references to the current 0.3.13 workspace version."
 sections:
   Summary: |-
