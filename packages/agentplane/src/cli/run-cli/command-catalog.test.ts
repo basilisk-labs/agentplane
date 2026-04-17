@@ -48,16 +48,19 @@ describe("command catalog graph", () => {
   });
 
   it("keeps dispatch metadata separate from handler loading", () => {
+    expect(findCommandEntry(["ide", "sync"])?.needs).toBe("project");
     expect(findCommandEntry(["ide", "sync"])?.dispatch).toEqual({
       project: true,
       loadedConfig: false,
       taskContext: false,
     });
+    expect(findCommandEntry(["config", "show"])?.needs).toBe("project+config");
     expect(findCommandEntry(["config", "show"])?.dispatch).toEqual({
       project: true,
       loadedConfig: true,
       taskContext: false,
     });
+    expect(findCommandEntry(["task"])?.needs).toBe("none");
     expect(findCommandEntry(["task"])?.dispatch).toEqual({
       project: false,
       loadedConfig: false,

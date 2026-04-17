@@ -54,18 +54,14 @@ export const PROJECT_COMMANDS = [
     recipesSpec,
     () => import("../../../commands/recipes/recipes.command.js").then((m) => m.runRecipes),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(
     recipesCacheSpec,
     () => import("../../../commands/recipes/cache.command.js").then((m) => m.runRecipesCache),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(recipesAddSpec, () =>
@@ -78,9 +74,7 @@ export const PROJECT_COMMANDS = [
     recipesListSpec,
     () => import("../../../commands/recipes/list.command.js").then((m) => m.runRecipesList),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(recipesListRemoteSpec, () =>
@@ -90,9 +84,7 @@ export const PROJECT_COMMANDS = [
     recipesInfoSpec,
     () => import("../../../commands/recipes/info.command.js").then((m) => m.runRecipesInfo),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(recipesExplainSpec, () =>
@@ -125,18 +117,14 @@ export const PROJECT_COMMANDS = [
     recipesInstallSpec,
     () => import("../../../commands/recipes/install.run.js").then((m) => m.runRecipesInstall),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(
     branchBaseSpec,
     () => import("../../../commands/branch/base.command.js").then((m) => m.runBranchBase),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(branchBaseGetSpec, () =>
@@ -164,9 +152,7 @@ export const PROJECT_COMMANDS = [
         m.makeRunBackendHandler(deps.getCtx),
       ),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(backendSyncSpec, (deps) =>
@@ -192,9 +178,7 @@ export const PROJECT_COMMANDS = [
     (deps) =>
       import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrHandler(deps.getCtx)),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(prOpenSpec, (deps) =>

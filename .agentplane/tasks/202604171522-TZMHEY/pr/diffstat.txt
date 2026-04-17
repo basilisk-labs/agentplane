@@ -1,0 +1,7 @@
+ .../src/cli/run-cli/command-catalog.test.ts        |   3 +
+ .../src/cli/run-cli/command-catalog/core.ts        | 116 ++++++---------------
+ .../src/cli/run-cli/command-catalog/lifecycle.ts   |  16 +--
+ .../src/cli/run-cli/command-catalog/project.ts     |  32 ++----
+ .../src/cli/run-cli/command-catalog/shared.ts      |  50 ++++++---
+ .../src/cli/run-cli/command-catalog/task.ts        |  24 ++---
+ 6 files changed, 88 insertions(+), 153 deletions(-)

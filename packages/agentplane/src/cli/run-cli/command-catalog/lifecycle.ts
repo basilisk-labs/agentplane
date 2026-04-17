@@ -52,18 +52,14 @@ export const LIFECYCLE_COMMANDS = [
         m.makeRunDocsCliHandler(deps.getHelpJsonForDocs),
       ),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(
     hooksSpec,
     () => import("../../../commands/hooks/hooks.command.js").then((m) => m.runHooks),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(hooksInstallSpec, () =>
@@ -79,9 +75,7 @@ export const LIFECYCLE_COMMANDS = [
     cleanupSpec,
     () => import("../../../commands/cleanup/merged.command.js").then((m) => m.runCleanup),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(cleanupMergedSpec, (deps) =>
@@ -93,9 +87,7 @@ export const LIFECYCLE_COMMANDS = [
     guardSpec,
     () => import("../../../commands/guard/guard.command.js").then((m) => m.runGuard),
     {
-      needsProject: false,
-      needsLoadedConfig: false,
-      needsTaskContext: false,
+      needs: "none",
     },
   ),
   entry(guardCleanSpec, () =>
