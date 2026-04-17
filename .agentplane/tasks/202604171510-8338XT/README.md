@@ -4,7 +4,7 @@ title: "Expose CLI harness via @agentplane/testkit facade"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,9 +23,9 @@ plan_approval:
   note: "Approved as the visible replacement for the testkit facade tranche after task-record drift on the earlier ID."
 verification:
   state: "ok"
-  updated_at: "2026-04-17T15:17:55.489Z"
+  updated_at: "2026-04-17T20:21:58.689Z"
   updated_by: "CODER"
-  note: "Verified: bun run test:testkit, bunx vitest run packages/agentplane/src/cli/run-cli.test-helpers.test.ts packages/agentplane/src/cli/help.all-commands.contract.test.ts --hookTimeout 60000 --testTimeout 60000, and bun run typecheck all pass after moving the CLI test helper implementation into packages/agentplane/src/testing, exposing @agentplane/testkit/cli, and rewriting direct test imports to the new facade."
+  note: "Local verification passed after rebase to main: testkit facade branch keeps the package external, full fast pre-push CI is green, and branch pushed to origin."
 commit: null
 comments:
   -
@@ -45,8 +45,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun run test:testkit, bunx vitest run packages/agentplane/src/cli/run-cli.test-helpers.test.ts packages/agentplane/src/cli/help.all-commands.contract.test.ts --hookTimeout 60000 --testTimeout 60000, and bun run typecheck all pass after moving the CLI test helper implementation into packages/agentplane/src/testing, exposing @agentplane/testkit/cli, and rewriting direct test imports to the new facade."
+  -
+    type: "verify"
+    at: "2026-04-17T20:21:58.689Z"
+    author: "CODER"
+    state: "ok"
+    note: "Local verification passed after rebase to main: testkit facade branch keeps the package external, full fast pre-push CI is green, and branch pushed to origin."
 doc_version: 3
-doc_updated_at: "2026-04-17T15:17:55.492Z"
+doc_updated_at: "2026-04-17T20:21:58.719Z"
 doc_updated_by: "CODER"
 description: "Move the CLI test helper implementation out of the old src/cli path, expose @agentplane/testkit/cli as the canonical import surface, and keep legacy agentplane-only imports working through a compatibility shim."
 sections:
@@ -76,6 +82,14 @@ sections:
     Note: Verified: bun run test:testkit, bunx vitest run packages/agentplane/src/cli/run-cli.test-helpers.test.ts packages/agentplane/src/cli/help.all-commands.contract.test.ts --hookTimeout 60000 --testTimeout 60000, and bun run typecheck all pass after moving the CLI test helper implementation into packages/agentplane/src/testing, exposing @agentplane/testkit/cli, and rewriting direct test imports to the new facade.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-17T15:13:35.571Z, excerpt_hash=sha256:7e3d42eb1761598e1cd7faa92dd7b606c6f941a456c3dad9d7fd224cb7c71b78
+    
+    ### 2026-04-17T20:21:58.689Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Local verification passed after rebase to main: testkit facade branch keeps the package external, full fast pre-push CI is green, and branch pushed to origin.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-17T15:17:55.492Z, excerpt_hash=sha256:7e3d42eb1761598e1cd7faa92dd7b606c6f941a456c3dad9d7fd224cb7c71b78
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -122,6 +136,14 @@ By: CODER
 Note: Verified: bun run test:testkit, bunx vitest run packages/agentplane/src/cli/run-cli.test-helpers.test.ts packages/agentplane/src/cli/help.all-commands.contract.test.ts --hookTimeout 60000 --testTimeout 60000, and bun run typecheck all pass after moving the CLI test helper implementation into packages/agentplane/src/testing, exposing @agentplane/testkit/cli, and rewriting direct test imports to the new facade.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-17T15:13:35.571Z, excerpt_hash=sha256:7e3d42eb1761598e1cd7faa92dd7b606c6f941a456c3dad9d7fd224cb7c71b78
+
+### 2026-04-17T20:21:58.689Z — VERIFY — ok
+
+By: CODER
+
+Note: Local verification passed after rebase to main: testkit facade branch keeps the package external, full fast pre-push CI is green, and branch pushed to origin.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-17T15:17:55.492Z, excerpt_hash=sha256:7e3d42eb1761598e1cd7faa92dd7b606c6f941a456c3dad9d7fd224cb7c71b78
 
 <!-- END VERIFICATION RESULTS -->
 
