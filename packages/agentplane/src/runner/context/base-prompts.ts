@@ -110,6 +110,7 @@ function renderRecipePromptJson(
 async function collectOverlayPromptBlocks(opts: {
   git_root: string;
   task?: RunnerTaskContext;
+  command?: string;
 }): Promise<RunnerPromptBlock[]> {
   const bundlePath = path.join(opts.git_root, ".agentplane", "generated", "overlay-bundle.json");
   if (!(await fileExists(bundlePath))) return [];
@@ -127,6 +128,7 @@ async function collectOverlayPromptBlocks(opts: {
       if (
         !matchOverlayWhen(fragment.when, {
           task_kind: taskKind,
+          command: opts.command,
           tags,
           repo_types: repoTypes,
         })
@@ -587,6 +589,7 @@ export async function collectRunnerBasePrompts(opts: {
   agents_dir?: string;
   fallback_policy_gateway_flavor?: PolicyGatewayFlavor;
   task?: RunnerTaskContext;
+  command?: string;
   recipe?: RunnerRecipeContext;
   harness?: ResolvedHarnessContract;
   execution_profile?: ResolvedExecutionProfileRuntime;
@@ -616,6 +619,7 @@ export async function collectRunnerBasePrompts(opts: {
     ...(await collectOverlayPromptBlocks({
       git_root: opts.git_root,
       task: opts.task,
+      command: opts.command,
     })),
     ...(await collectRecipePromptBlocks({
       git_root: opts.git_root,

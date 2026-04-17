@@ -241,11 +241,13 @@ export async function prepareTaskRunnerExecution(opts: {
     rootOverride: opts.rootOverride ?? null,
     task_id: opts.task_id,
   });
+  const runnerCommand = target.kind === "recipe_scenario" ? "recipes scenario execute" : "task run";
   const base_prompts = await collectRunnerBasePrompts({
     git_root: executionContext.repo.git_root,
     owner_id: taskEnvelope.task.data.owner,
     agents_dir: executionContext.harness.workflow.paths.agents_dir,
     task: taskEnvelope.task,
+    command: runnerCommand,
     recipe: opts.recipe,
     harness: executionContext.harness,
     execution_profile: executionProfile,
