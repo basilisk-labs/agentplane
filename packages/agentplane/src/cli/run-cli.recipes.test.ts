@@ -1198,7 +1198,9 @@ describe("runCli recipes", () => {
             fixtures.map(async ({ archivePath, manifest }) => ({
               version: String(manifest.version),
               url: archivePath,
-              sha256: createHash("sha256").update(await readFile(archivePath)).digest("hex"),
+              sha256: createHash("sha256")
+                .update(await readFile(archivePath))
+                .digest("hex"),
             })),
           ),
         },
