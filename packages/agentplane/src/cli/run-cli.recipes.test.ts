@@ -152,6 +152,7 @@ describe("runCli recipes", () => {
 
     const manifestPath = path.join(root, ".agentplane", "recipes", "packages", "vendored", "manifest.json");
     const registryPath = path.join(root, ".agentplane", "recipes", "registry.json");
+    const assetRegistryPath = path.join(root, ".agentplane", "generated", "recipe-assets.json");
     expect(await pathExists(manifestPath)).toBe(true);
     expect(JSON.parse(await readFile(registryPath, "utf8"))).toMatchObject({
       recipes: [
@@ -162,6 +163,35 @@ describe("runCli recipes", () => {
           materialization: "copy",
         }),
       ],
+    });
+    expect(JSON.parse(await readFile(assetRegistryPath, "utf8"))).toMatchObject({
+      kind: "recipe_asset_registry",
+      entries: expect.arrayContaining([
+        expect.objectContaining({
+          id: "recipe:vendored/agent:RECIPE_AGENT",
+          kind: "agent",
+          recipe_id: "vendored",
+          asset_id: "RECIPE_AGENT",
+        }),
+        expect.objectContaining({
+          id: "recipe:vendored/skill:RECIPE_SKILL",
+          kind: "skill",
+          recipe_id: "vendored",
+          asset_id: "RECIPE_SKILL",
+        }),
+        expect.objectContaining({
+          id: "recipe:vendored/tool:RECIPE_TOOL",
+          kind: "tool",
+          recipe_id: "vendored",
+          asset_id: "RECIPE_TOOL",
+        }),
+        expect.objectContaining({
+          id: "recipe:vendored/scenario:RECIPE_SCENARIO",
+          kind: "scenario",
+          recipe_id: "vendored",
+          asset_id: "RECIPE_SCENARIO",
+        }),
+      ]),
     });
   });
 

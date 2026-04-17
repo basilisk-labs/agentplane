@@ -6,6 +6,8 @@ export {
 } from "./recipes/impl/constants.js";
 
 export type {
+  CompiledRecipeAssetEntry,
+  CompiledRecipeAssetRegistry,
   CompiledOverlayBundle,
   RecipeCachePruneFlags,
   RecipeConflictMode,
@@ -42,6 +44,7 @@ export {
   compileProjectOverlayArtifacts,
   readActiveRecipeIds,
   readProjectOverlayBundle,
+  readProjectRecipeAssetRegistry,
   refreshProjectOverlayArtifacts,
   setRecipeActive,
 } from "./recipes/impl/overlay-project.js";
@@ -52,6 +55,7 @@ export {
   resolveInstalledRecipesPath,
   resolveProjectInstalledRecipeDir,
   resolveProjectOverlayBundlePath,
+  resolveProjectRecipeAssetsPath,
   resolveProjectRecipeInstallMetaPath,
   resolveProjectRecipesLockPath,
   resolveProjectRecipesDir,

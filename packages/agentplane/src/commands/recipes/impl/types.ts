@@ -1,4 +1,6 @@
 export type {
+  CompiledRecipeAssetEntry,
+  CompiledRecipeAssetRegistry,
   CompiledOverlayBundle,
   CompiledOverlayPromptFragment,
   CompiledOverlayTraceEntry,

@@ -88,3 +88,7 @@ export function resolveProjectGeneratedDir(resolved: { agentplaneDir: string }):
 export function resolveProjectOverlayBundlePath(resolved: { agentplaneDir: string }): string {
   return path.join(resolveProjectGeneratedDir(resolved), "overlay-bundle.json");
 }
+
+export function resolveProjectRecipeAssetsPath(resolved: { agentplaneDir: string }): string {
+  return path.join(resolveProjectGeneratedDir(resolved), "recipe-assets.json");
+}

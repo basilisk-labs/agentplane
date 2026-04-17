@@ -4,6 +4,8 @@ import path from "node:path";
 import {
   createEmptyOverlayBundle,
   hashOverlayInputs,
+  type CompiledRecipeAssetEntry,
+  type CompiledRecipeAssetRegistry,
   type CompiledOverlayBundle,
   type ProjectRecipesLockFile,
 } from "@agentplaneorg/recipes";
@@ -15,6 +17,7 @@ import { readProjectRecipesRegistry, writeProjectRecipesRegistry } from "./proje
 import {
   resolveProjectInstalledRecipeDir,
   resolveProjectOverlayBundlePath,
+  resolveProjectRecipeAssetsPath,
   resolveProjectRecipesDir,
   resolveProjectRecipesLockPath,
 } from "./paths.js";
@@ -43,6 +46,103 @@ function uniqueById<T extends { id: string }>(items: T[]): T[] {
     result.push(item);
   }
   return result;
+}
+
+function recipeAssetId(recipeId: string, kind: string, assetId: string): string {
+  return `recipe:${recipeId}/${kind}:${assetId}`;
+}
+
+function relativeSource(project: { agentplaneDir: string }, absolutePath: string): string {
+  return path.relative(project.agentplaneDir, absolutePath).replaceAll("\\", "/");
+}
+
+function compileProjectRecipeAssets(opts: {
+  project: { agentplaneDir: string };
+  installed: Awaited<ReturnType<typeof readProjectInstalledRecipes>>;
+}): CompiledRecipeAssetRegistry {
+  const entries: CompiledRecipeAssetEntry[] = [];
+
+  for (const recipe of opts.installed.recipes) {
+    const recipeDir = recipe.project_path
+      ? path.join(resolveProjectRecipesDir(opts.project), recipe.project_path)
+      : resolveProjectInstalledRecipeDir(opts.project, recipe.id);
+    const manifest = recipe.manifest;
+
+    for (const agent of manifest.agents ?? []) {
+      entries.push({
+        id: recipeAssetId(recipe.id, "agent", agent.id),
+        kind: "agent",
+        recipe_id: recipe.id,
+        recipe_version: recipe.version,
+        recipe_name: manifest.name,
+        asset_id: agent.id,
+        source: relativeSource(opts.project, path.join(recipeDir, agent.file)),
+        summary: agent.summary,
+        definition: agent,
+      });
+    }
+
+    for (const skill of manifest.skills ?? []) {
+      entries.push({
+        id: recipeAssetId(recipe.id, "skill", skill.id),
+        kind: "skill",
+        recipe_id: recipe.id,
+        recipe_version: recipe.version,
+        recipe_name: manifest.name,
+        asset_id: skill.id,
+        source: relativeSource(opts.project, path.join(recipeDir, skill.file)),
+        summary: skill.summary,
+        definition: skill,
+      });
+    }
+
+    for (const tool of manifest.tools ?? []) {
+      entries.push({
+        id: recipeAssetId(recipe.id, "tool", tool.id),
+        kind: "tool",
+        recipe_id: recipe.id,
+        recipe_version: recipe.version,
+        recipe_name: manifest.name,
+        asset_id: tool.id,
+        source: relativeSource(opts.project, path.join(recipeDir, tool.entrypoint)),
+        summary: tool.summary,
+        definition: tool,
+      });
+    }
+
+    for (const scenario of manifest.scenarios ?? []) {
+      entries.push({
+        id: recipeAssetId(recipe.id, "scenario", scenario.id),
+        kind: "scenario",
+        recipe_id: recipe.id,
+        recipe_version: recipe.version,
+        recipe_name: manifest.name,
+        asset_id: scenario.id,
+        source: relativeSource(opts.project, path.join(recipeDir, scenario.file)),
+        summary: scenario.summary,
+        definition: scenario,
+      });
+    }
+
+    for (const [templateKey, content] of Object.entries(manifest.templates ?? {})) {
+      entries.push({
+        id: recipeAssetId(recipe.id, "template", templateKey),
+        kind: "template",
+        recipe_id: recipe.id,
+        recipe_version: recipe.version,
+        recipe_name: manifest.name,
+        asset_id: templateKey,
+        source: relativeSource(opts.project, path.join(recipeDir, "manifest.json")),
+        content,
+      });
+    }
+  }
+
+  return {
+    schema_version: 1,
+    kind: "recipe_asset_registry",
+    entries: uniqueById(entries).toSorted((left, right) => left.id.localeCompare(right.id)),
+  };
 }
 
 export async function readActiveRecipeIds(project: { agentplaneDir: string }): Promise<string[]> {
@@ -76,7 +176,11 @@ export async function setRecipeActive(opts: {
 
 export async function compileProjectOverlayArtifacts(project: {
   agentplaneDir: string;
-}): Promise<{ bundle: CompiledOverlayBundle; lock: ProjectRecipesLockFile }> {
+}): Promise<{
+  bundle: CompiledOverlayBundle;
+  lock: ProjectRecipesLockFile;
+  assets: CompiledRecipeAssetRegistry;
+}> {
   const [activeIds, installed] = await Promise.all([
     readActiveRecipeIds(project),
     readProjectInstalledRecipes(project),
@@ -184,18 +288,28 @@ export async function compileProjectOverlayArtifacts(project: {
     );
   }
   lock.active = lock.active.toSorted((left, right) => left.id.localeCompare(right.id));
-  return { bundle, lock };
+  return {
+    bundle,
+    lock,
+    assets: compileProjectRecipeAssets({ project, installed }),
+  };
 }
 
 export async function refreshProjectOverlayArtifacts(project: {
   agentplaneDir: string;
-}): Promise<{ bundle: CompiledOverlayBundle; lock: ProjectRecipesLockFile }> {
+}): Promise<{
+  bundle: CompiledOverlayBundle;
+  lock: ProjectRecipesLockFile;
+  assets: CompiledRecipeAssetRegistry;
+}> {
   const compiled = await compileProjectOverlayArtifacts(project);
   const bundlePath = resolveProjectOverlayBundlePath(project);
   const lockPath = resolveProjectRecipesLockPath(project);
+  const assetsPath = resolveProjectRecipeAssetsPath(project);
   await mkdir(path.dirname(bundlePath), { recursive: true });
   await writeJsonStableIfChanged(bundlePath, compiled.bundle);
   await writeJsonStableIfChanged(lockPath, compiled.lock);
+  await writeJsonStableIfChanged(assetsPath, compiled.assets);
   return compiled;
 }
 
@@ -206,6 +320,20 @@ export async function readProjectOverlayBundle(project: {
     return JSON.parse(
       await readFile(resolveProjectOverlayBundlePath(project), "utf8"),
     ) as CompiledOverlayBundle;
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException | null)?.code;
+    if (code === "ENOENT") return null;
+    throw err;
+  }
+}
+
+export async function readProjectRecipeAssetRegistry(project: {
+  agentplaneDir: string;
+}): Promise<CompiledRecipeAssetRegistry | null> {
+  try {
+    return JSON.parse(
+      await readFile(resolveProjectRecipeAssetsPath(project), "utf8"),
+    ) as CompiledRecipeAssetRegistry;
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ENOENT") return null;

@@ -398,6 +398,57 @@ export type CompiledOverlayBundle = {
   trace: CompiledOverlayTraceEntry[];
 };
 
+export type CompiledRecipeAssetKind = "agent" | "skill" | "tool" | "scenario" | "template";
+
+export type CompiledRecipeAssetBase = {
+  id: string;
+  kind: CompiledRecipeAssetKind;
+  recipe_id: string;
+  recipe_version: string;
+  recipe_name: string;
+  asset_id: string;
+  source: string;
+  summary?: string;
+};
+
+export type CompiledRecipeAgentAsset = CompiledRecipeAssetBase & {
+  kind: "agent";
+  definition: RecipeAgentDefinition;
+};
+
+export type CompiledRecipeSkillAsset = CompiledRecipeAssetBase & {
+  kind: "skill";
+  definition: RecipeSkillDefinition;
+};
+
+export type CompiledRecipeToolAsset = CompiledRecipeAssetBase & {
+  kind: "tool";
+  definition: RecipeToolDefinition;
+};
+
+export type CompiledRecipeScenarioAsset = CompiledRecipeAssetBase & {
+  kind: "scenario";
+  definition: RecipeScenarioDescriptor;
+};
+
+export type CompiledRecipeTemplateAsset = CompiledRecipeAssetBase & {
+  kind: "template";
+  content: string;
+};
+
+export type CompiledRecipeAssetEntry =
+  | CompiledRecipeAgentAsset
+  | CompiledRecipeSkillAsset
+  | CompiledRecipeToolAsset
+  | CompiledRecipeScenarioAsset
+  | CompiledRecipeTemplateAsset;
+
+export type CompiledRecipeAssetRegistry = {
+  schema_version: 1;
+  kind: "recipe_asset_registry";
+  entries: CompiledRecipeAssetEntry[];
+};
+
 export type RecipeCachePruneFlags = {
   dryRun: boolean;
   all: boolean;

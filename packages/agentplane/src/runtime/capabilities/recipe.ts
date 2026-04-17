@@ -1,4 +1,5 @@
 import type {
+  CompiledRecipeAssetEntry,
   InstalledRecipeEntry,
   ResolvedRecipeScenarioSelection,
 } from "../../commands/recipes/impl/types.js";
@@ -21,19 +22,76 @@ function source(entry: RecipeEntry) {
 }
 
 function scenarioCapabilityId(recipeId: string, scenarioId: string): string {
-  return `recipe.${recipeId}.scenario.${scenarioId}`;
+  return `recipe:${recipeId}/scenario:${scenarioId}`;
 }
 
 function agentCapabilityId(recipeId: string, agentId: string): string {
-  return `recipe.${recipeId}.agent.${agentId}`;
+  return `recipe:${recipeId}/agent:${agentId}`;
 }
 
 function skillCapabilityId(recipeId: string, skillId: string): string {
-  return `recipe.${recipeId}.skill.${skillId}`;
+  return `recipe:${recipeId}/skill:${skillId}`;
 }
 
 function toolCapabilityId(recipeId: string, toolId: string): string {
-  return `recipe.${recipeId}.tool.${toolId}`;
+  return `recipe:${recipeId}/tool:${toolId}`;
+}
+
+function toFallbackAssets(entry: RecipeEntry): CompiledRecipeAssetEntry[] {
+  const assets: CompiledRecipeAssetEntry[] = [];
+  for (const scenario of entry.manifest.scenarios ?? []) {
+    assets.push({
+      id: scenarioCapabilityId(entry.id, scenario.id),
+      kind: "scenario",
+      recipe_id: entry.id,
+      recipe_version: entry.version,
+      recipe_name: entry.manifest.name,
+      asset_id: scenario.id,
+      source: scenario.file,
+      summary: scenario.summary,
+      definition: scenario,
+    });
+  }
+  for (const agent of entry.manifest.agents ?? []) {
+    assets.push({
+      id: agentCapabilityId(entry.id, agent.id),
+      kind: "agent",
+      recipe_id: entry.id,
+      recipe_version: entry.version,
+      recipe_name: entry.manifest.name,
+      asset_id: agent.id,
+      source: agent.file,
+      summary: agent.summary,
+      definition: agent,
+    });
+  }
+  for (const skill of entry.manifest.skills ?? []) {
+    assets.push({
+      id: skillCapabilityId(entry.id, skill.id),
+      kind: "skill",
+      recipe_id: entry.id,
+      recipe_version: entry.version,
+      recipe_name: entry.manifest.name,
+      asset_id: skill.id,
+      source: skill.file,
+      summary: skill.summary,
+      definition: skill,
+    });
+  }
+  for (const tool of entry.manifest.tools ?? []) {
+    assets.push({
+      id: toolCapabilityId(entry.id, tool.id),
+      kind: "tool",
+      recipe_id: entry.id,
+      recipe_version: entry.version,
+      recipe_name: entry.manifest.name,
+      asset_id: tool.id,
+      source: tool.entrypoint,
+      summary: tool.summary,
+      definition: tool,
+    });
+  }
+  return assets;
 }
 
 function selectedAvailability(opts: {
@@ -56,18 +114,19 @@ function selectedAvailability(opts: {
 
 export function resolveRecipeCapabilityRegistry(opts: {
   entry: RecipeEntry;
+  assets?: CompiledRecipeAssetEntry[];
   selection?: RecipeSelection | null;
 }): AgentplaneCapabilityRegistry {
-  const manifest = opts.entry.manifest;
+  const assets = opts.assets ?? toFallbackAssets(opts.entry);
   const gate = opts.selection
     ? scenarioCapabilityId(opts.entry.id, opts.selection.scenario_id)
     : null;
   const entries: AgentplaneCapabilityEntry[] = [];
 
-  for (const scenario of manifest.scenarios ?? []) {
-    const selected = opts.selection ? scenario.id === opts.selection.scenario_id : true;
+  for (const scenario of assets.filter((asset) => asset.kind === "scenario")) {
+    const selected = opts.selection ? scenario.asset_id === opts.selection.scenario_id : true;
     entries.push({
-      id: scenarioCapabilityId(opts.entry.id, scenario.id),
+      id: scenario.id,
       kind: "scenario",
       source: source(opts.entry),
       summary: scenario.summary,
@@ -79,17 +138,17 @@ export function resolveRecipeCapabilityRegistry(opts: {
       metadata: {
         recipe_id: opts.entry.id,
         recipe_version: opts.entry.version,
-        scenario_id: scenario.id,
-        scenario_name: scenario.name,
-        file: scenario.file,
+        scenario_id: scenario.asset_id,
+        scenario_name: scenario.definition.name,
+        file: scenario.definition.file,
       },
     });
   }
 
-  for (const agent of manifest.agents ?? []) {
-    const selected = opts.selection ? opts.selection.agents_involved.includes(agent.id) : true;
+  for (const agent of assets.filter((asset) => asset.kind === "agent")) {
+    const selected = opts.selection ? opts.selection.agents_involved.includes(agent.asset_id) : true;
     entries.push({
-      id: agentCapabilityId(opts.entry.id, agent.id),
+      id: agent.id,
       kind: "agent",
       source: source(opts.entry),
       summary: agent.summary,
@@ -101,17 +160,17 @@ export function resolveRecipeCapabilityRegistry(opts: {
       metadata: {
         recipe_id: opts.entry.id,
         recipe_version: opts.entry.version,
-        agent_id: agent.id,
-        role: agent.role,
-        file: agent.file,
+        agent_id: agent.asset_id,
+        role: agent.definition.role,
+        file: agent.definition.file,
       },
     });
   }
 
-  for (const skill of manifest.skills ?? []) {
-    const selected = opts.selection ? opts.selection.skills_used.includes(skill.id) : true;
+  for (const skill of assets.filter((asset) => asset.kind === "skill")) {
+    const selected = opts.selection ? opts.selection.skills_used.includes(skill.asset_id) : true;
     entries.push({
-      id: skillCapabilityId(opts.entry.id, skill.id),
+      id: skill.id,
       kind: "skill",
       source: source(opts.entry),
       summary: skill.summary,
@@ -123,17 +182,17 @@ export function resolveRecipeCapabilityRegistry(opts: {
       metadata: {
         recipe_id: opts.entry.id,
         recipe_version: opts.entry.version,
-        skill_id: skill.id,
-        kind: skill.kind,
-        file: skill.file,
+        skill_id: skill.asset_id,
+        kind: skill.definition.kind,
+        file: skill.definition.file,
       },
     });
   }
 
-  for (const tool of manifest.tools ?? []) {
-    const selected = opts.selection ? opts.selection.tools_used.includes(tool.id) : true;
+  for (const tool of assets.filter((asset) => asset.kind === "tool")) {
+    const selected = opts.selection ? opts.selection.tools_used.includes(tool.asset_id) : true;
     entries.push({
-      id: toolCapabilityId(opts.entry.id, tool.id),
+      id: tool.id,
       kind: "tool",
       source: source(opts.entry),
       summary: tool.summary,
@@ -145,9 +204,9 @@ export function resolveRecipeCapabilityRegistry(opts: {
       metadata: {
         recipe_id: opts.entry.id,
         recipe_version: opts.entry.version,
-        tool_id: tool.id,
-        runtime: tool.runtime,
-        entrypoint: tool.entrypoint,
+        tool_id: tool.asset_id,
+        runtime: tool.definition.runtime,
+        entrypoint: tool.definition.entrypoint,
       },
     });
   }

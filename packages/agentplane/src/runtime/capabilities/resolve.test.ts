@@ -128,16 +128,16 @@ describe("runtime capability registry", () => {
       },
     });
 
-    expect(getCapabilityEntries(registry, "recipe.viewer.scenario.execute")[0]).toMatchObject({
+    expect(getCapabilityEntries(registry, "recipe:viewer/scenario:execute")[0]).toMatchObject({
       availability: "available",
     });
-    expect(getCapabilityEntries(registry, "recipe.viewer.scenario.review")[0]).toMatchObject({
+    expect(getCapabilityEntries(registry, "recipe:viewer/scenario:review")[0]).toMatchObject({
       availability: "blocked",
-      blocked_by: ["recipe.viewer.scenario.execute"],
+      blocked_by: ["recipe:viewer/scenario:execute"],
     });
-    expect(getCapabilityEntries(registry, "recipe.viewer.agent.reviewer")[0]).toMatchObject({
+    expect(getCapabilityEntries(registry, "recipe:viewer/agent:reviewer")[0]).toMatchObject({
       availability: "blocked",
-      blocked_by: ["recipe.viewer.scenario.execute"],
+      blocked_by: ["recipe:viewer/scenario:execute"],
     });
   });
 
