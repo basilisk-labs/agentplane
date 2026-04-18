@@ -22,15 +22,15 @@ Split the release apply command into deterministic planning, validation, mutatio
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-18T05:42:08.678Z
+- Updated: 2026-04-18T05:43:46.144Z
 - Branch: task/202604172036-V15617/release-apply-phases
-- Head: b97ef27e08d8
+- Head: 38a825b2bc9e
 
 ```text
- .../src/commands/release/apply.command.ts          | 500 +--------------------
+ .../src/commands/release/apply.command.ts          | 506 +--------------------
  .../src/commands/release/apply.pipeline.ts         | 490 ++++++++++++++++++++
  .../agentplane/src/commands/release/apply.types.ts |  26 ++
- 3 files changed, 531 insertions(+), 485 deletions(-)
+ 3 files changed, 532 insertions(+), 490 deletions(-)
 ```
 
 </details>
