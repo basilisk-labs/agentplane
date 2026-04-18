@@ -1,10 +1,11 @@
 ---
 id: "202604180838-NS8Y9G"
 title: "Skip full pre-push CI for delete-only remote cleanup pushes"
-status: "DOING"
+result_summary: "Merged via PR #455."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-18T08:41:21.595Z"
   updated_by: "CODER"
   note: "pre-push hook now skips format/local-ci for pure remote branch deletions while preserving normal and release push checks"
-commit: null
+commit:
+  hash: "568990e0ed214f05f8b14b04a5c10be85376b294"
+  message: "refactor/workflow: Skip full pre-push CI for delete-only remote cleanup pushes (NS8Y9G) (#455)"
 comments:
   -
     author: "CODER"
     body: "Start: detect delete-only pre-push updates separately from real branch publication so remote cleanup pushes can skip full local CI without weakening normal push or release gates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #455 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "pre-push hook now skips format/local-ci for pure remote branch deletions while preserving normal and release push checks"
+  -
+    type: "status"
+    at: "2026-04-18T08:43:57.007Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #455 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T08:41:21.598Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T08:43:57.013Z"
+doc_updated_by: "INTEGRATOR"
 description: "Detect git push operations that only delete remote task branches without sending new commits, and bypass the expensive full pre-push CI path for that case while preserving the existing checks for normal branch pushes and release refs."
 sections:
   Summary: |-
