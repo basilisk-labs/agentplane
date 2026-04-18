@@ -4,6 +4,7 @@ import { CliError } from "../../shared/errors.js";
 import path from "node:path";
 
 import {
+  backendUsesLocalTaskStore,
   listTaskSummariesMemo,
   loadTaskFromBranchSnapshot,
   type CommandContext,
@@ -170,7 +171,7 @@ async function filterWarningsResolvedFromTaskBranch(
   ctx: CommandContext,
   warnings: string[],
 ): Promise<string[]> {
-  if (warnings.length === 0 || ctx.backendId !== "local") {
+  if (warnings.length === 0 || !backendUsesLocalTaskStore(ctx)) {
     return warnings;
   }
 

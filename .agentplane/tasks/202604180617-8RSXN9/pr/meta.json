@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604180617-8RSXN9/task-command-capabilities",
+  "created_at": "2026-04-18T07:17:11.025Z",
+  "head_sha": "0554cc19835d373631a0326c7e2b90b74deead12",
+  "last_verified_at": "2026-04-18T07:17:10.966Z",
+  "last_verified_sha": "0554cc19835d373631a0326c7e2b90b74deead12",
+  "schema_version": 1,
+  "task_id": "202604180617-8RSXN9",
+  "updated_at": "2026-04-18T07:17:11.025Z",
+  "verify": {
+    "status": "pass"
+  }
+}
