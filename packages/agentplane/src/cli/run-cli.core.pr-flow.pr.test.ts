@@ -271,7 +271,9 @@ async function installFakeGhPrApiRequiringPublishedPacketHead(opts: {
 
 async function configurePushableOrigin(root: string): Promise<string> {
   const execFileAsync = promisify(execFile);
-  const publishRemotePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-pr-open-origin-push-"));
+  const publishRemotePath = await mkdtemp(
+    path.join(os.tmpdir(), "agentplane-pr-open-origin-push-"),
+  );
   await execFileAsync("git", ["init", "--bare", publishRemotePath], {
     cwd: root,
     env: cleanGitEnv(),
