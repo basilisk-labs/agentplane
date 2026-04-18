@@ -71,7 +71,10 @@ export async function replacePackageDependencyVersion(
   nextVersion: string,
 ): Promise<void> {
   const text = await readFile(pkgJsonPath, "utf8");
-  const pattern = new RegExp(`("${dependencyName.replace("/", "\\/")}"\\s*:\\s*")[^"]*(")`, "u");
+  const pattern = new RegExp(
+    String.raw`("${dependencyName.replace("/", String.raw`\/`)}"\s*:\s*")[^"]*(")`,
+    "u",
+  );
   const replaced = text.replace(pattern, `$1${nextVersion}$2`);
   if (replaced === text) {
     throw new CliError({
