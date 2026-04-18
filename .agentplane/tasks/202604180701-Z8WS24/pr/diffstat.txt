@@ -1,0 +1,6 @@
+ .agentplane/policy/workflow.branch_pr.md                  | 15 ++++++++++-----
+ docs/user/cli-reference.generated.mdx                     |  5 +++--
+ packages/agentplane/assets/policy/workflow.branch_pr.md   | 15 ++++++++++-----
+ .../agentplane/src/commands/branch/work-start.command.ts  |  1 +
+ packages/agentplane/src/commands/pr/pr.command.ts         | 10 ++++++++--
+ 5 files changed, 32 insertions(+), 14 deletions(-)
