@@ -269,6 +269,22 @@ async function installFakeGhPrApiRequiringPublishedPacketHead(opts: {
   return { fakeBin, logPath: path.join(fakeBin, "gh.log") };
 }
 
+async function configurePushableOrigin(root: string): Promise<string> {
+  const execFileAsync = promisify(execFile);
+  const publishRemotePath = await mkdtemp(
+    path.join(os.tmpdir(), "agentplane-pr-open-origin-push-"),
+  );
+  await execFileAsync("git", ["init", "--bare", publishRemotePath], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
+  await execFileAsync("git", ["remote", "set-url", "--push", "origin", publishRemotePath], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
+  return publishRemotePath;
+}
+
 describe("runCli", () => {
   it("pr open creates PR artifacts", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -426,6 +442,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
+    await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore test setup"], {
       cwd: root,
@@ -537,6 +554,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
+    await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
@@ -639,7 +657,7 @@ describe("runCli", () => {
     ).toBe(true);
   });
 
-  it("pr open explains when the task branch is not yet published on origin", async () => {
+  it("pr open auto-publishes an unpublished task branch to origin before creating the GitHub PR", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -650,6 +668,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
+    await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
@@ -678,12 +697,32 @@ describe("runCli", () => {
     }
 
     const branch = `task/${taskId}/unpushed-head`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore branch publish seed"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const publishRemotePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-pr-open-origin-"));
+    await execFileAsync("git", ["init", "--bare", publishRemotePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["remote", "set-url", "--push", "origin", publishRemotePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
     const { fakeBin } = await installFakeGhPrApi({
       scenarioName: "open-unpublished-branch",
       branch,
-      createResponse: {},
-      createError:
-        'gh: HTTP 422: Validation Failed ({"message":"Validation Failed","errors":[{"resource":"PullRequest","field":"head","code":"invalid","message":"Head sha can\'t be blank"}]})',
+      createResponse: {
+        number: 912,
+        html_url: "https://github.com/example/repo/pull/912",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        head: { sha: "remote-head-sha" },
+        base: { ref: "main" },
+      },
     });
     const originalPath = process.env.PATH;
     process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
@@ -702,14 +741,158 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("remote PR creation staged");
-      expect(io.stdout).toContain(`task branch ${branch} is not yet published on origin`);
-      expect(io.stdout).toContain(`git push -u origin ${branch}`);
-      expect(io.stdout).not.toContain("GitHub PR creation failed");
+      expect(io.stdout).toContain("created GitHub PR #912");
+      expect(io.stdout).not.toContain("remote PR creation staged");
+      expect(io.stdout).not.toContain("not yet published on origin");
     } finally {
       io.restore();
       process.env.PATH = originalPath;
     }
+
+    const { stdout: upstreamStdout } = await execFileAsync(
+      "git",
+      ["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    expect(upstreamStdout.trim()).toBe(`origin/${branch}`);
+
+    const { stdout: remoteHeadStdout } = await execFileAsync(
+      "git",
+      ["ls-remote", "--heads", publishRemotePath, `refs/heads/${branch}`],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    expect(remoteHeadStdout.trim()).not.toBe("");
+  });
+
+  it("pr open auto-publishes an unpublished branch even when PR artifacts were already committed locally", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await configurePushableOrigin(root);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open unpublished committed artifacts",
+        "--description",
+        "PR open should publish the branch even when task PR artifacts were already committed locally",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/unpushed-committed-artifacts`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore branch publish seed"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const publishRemotePath = await mkdtemp(
+      path.join(os.tmpdir(), "agentplane-pr-open-origin-committed-"),
+    );
+    await execFileAsync("git", ["init", "--bare", publishRemotePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["remote", "set-url", "--push", "origin", publishRemotePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    const syncOnlyIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--sync-only",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      syncOnlyIo.restore();
+    }
+
+    const { fakeBin } = await installFakeGhPrApi({
+      scenarioName: "open-unpublished-committed-artifacts",
+      branch,
+      createResponse: {
+        number: 913,
+        html_url: "https://github.com/example/repo/pull/913",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        head: { sha: "remote-head-sha" },
+        base: { ref: "main" },
+      },
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("created GitHub PR #913");
+      expect(io.stdout).not.toContain("remote PR creation staged");
+      expect(io.stdout).not.toContain("not yet published on origin");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+    }
+
+    const { stdout: upstreamStdout } = await execFileAsync(
+      "git",
+      ["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    expect(upstreamStdout.trim()).toBe(`origin/${branch}`);
   });
 
   it("pr open ignores dotenv-injected GitHub tokens when gh auth is otherwise available", async () => {
@@ -723,6 +906,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
+    await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
@@ -824,6 +1008,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
+    await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
@@ -3266,6 +3451,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
+    await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
@@ -3350,6 +3536,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
+    await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
@@ -3448,6 +3635,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
+    await configurePushableOrigin(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
