@@ -1,0 +1,4 @@
+ .agentplane/policy/workflow.branch_pr.md                  | 15 ++++++++++-----
+ .../agentplane/src/commands/branch/work-start.command.ts  |  1 +
+ packages/agentplane/src/commands/pr/pr.command.ts         | 10 ++++++++--
+ 3 files changed, 19 insertions(+), 7 deletions(-)
