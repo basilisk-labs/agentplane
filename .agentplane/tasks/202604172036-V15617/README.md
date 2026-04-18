@@ -1,10 +1,11 @@
 ---
 id: "202604172036-V15617"
 title: "Decompose release apply command into explicit phases"
-status: "DOING"
+result_summary: "Merged via PR #436."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-18T05:41:55.812Z"
   updated_by: "CODER"
   note: "Release apply/release candidate now run through a shared pipeline module; lint:core and test:fast are green, and release apply acceptance tests stayed green after the extraction."
-commit: null
+commit:
+  hash: "71c8fe7dc318a562a8b08669be747d28f154b369"
+  message: "refactor/release: Decompose release apply command into explicit phases (V15617) (#436)"
 comments:
   -
     author: "CODER"
     body: "Start: extract shared release-apply pipeline phases so release apply and release candidate stop duplicating init/preflight/execute/finalize orchestration while preserving behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #436 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release apply/release candidate now run through a shared pipeline module; lint:core and test:fast are green, and release apply acceptance tests stayed green after the extraction."
+  -
+    type: "status"
+    at: "2026-04-18T05:49:28.008Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #436 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T05:41:55.824Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T05:49:28.014Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split the release apply command into deterministic planning, validation, mutation, and reporting phases so the release workflow stops relying on one oversized orchestration file."
 sections:
   Summary: |-
