@@ -1,10 +1,11 @@
 ---
 id: "202604180617-SWBDDT"
 title: "Adopt CommandResult for release and task commands"
-status: "DOING"
+result_summary: "Merged via PR #448."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -15,20 +16,25 @@ tags:
   - "refactor"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-18T08:11:35.221Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "ok"
   updated_at: "2026-04-18T07:55:53.750Z"
   updated_by: "CODER"
   note: "Introduced a typed CommandResult contract in cli/output and moved task comment/update/block onto the shared emitter path; typecheck, targeted lint on touched files, and focused unit tests passed."
-commit: null
+commit:
+  hash: "7765778f23878732ec2fea8426b5ff84b5d939d2"
+  message: "cli/output: Adopt CommandResult for release and task commands (SWBDDT) (#448)"
 comments:
   -
     author: "CODER"
     body: "Start: introduce CommandResult contract, move selected release/task commands to renderer-owned output, and verify command-level behavior plus fast CI."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #448 merged on GitHub main; hosted closure automation is no longer needed because the merge commit already records the canonical task result."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Introduced a typed CommandResult contract in cli/output and moved task comment/update/block onto the shared emitter path; typecheck, targeted lint on touched files, and focused unit tests passed."
+  -
+    type: "status"
+    at: "2026-04-18T08:11:41.872Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #448 merged on GitHub main; hosted closure automation is no longer needed because the merge commit already records the canonical task result."
 doc_version: 3
-doc_updated_at: "2026-04-18T07:55:53.755Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T08:11:41.873Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce a typed command result contract and route selected release/task commands through renderer-owned output so command handlers stop writing output ad hoc."
 sections:
   Summary: |-
