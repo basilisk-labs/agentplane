@@ -639,7 +639,7 @@ describe("runCli", () => {
     ).toBe(true);
   });
 
-  it("pr open explains when the task branch is not yet published on origin", async () => {
+  it("pr open auto-publishes an unpublished task branch to origin before creating the GitHub PR", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -678,12 +678,32 @@ describe("runCli", () => {
     }
 
     const branch = `task/${taskId}/unpushed-head`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore branch publish seed"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const publishRemotePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-pr-open-origin-"));
+    await execFileAsync("git", ["init", "--bare", publishRemotePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["remote", "set-url", "--push", "origin", publishRemotePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
     const { fakeBin } = await installFakeGhPrApi({
       scenarioName: "open-unpublished-branch",
       branch,
-      createResponse: {},
-      createError:
-        'gh: HTTP 422: Validation Failed ({"message":"Validation Failed","errors":[{"resource":"PullRequest","field":"head","code":"invalid","message":"Head sha can\'t be blank"}]})',
+      createResponse: {
+        number: 912,
+        html_url: "https://github.com/example/repo/pull/912",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        head: { sha: "remote-head-sha" },
+        base: { ref: "main" },
+      },
     });
     const originalPath = process.env.PATH;
     process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
@@ -702,14 +722,33 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("remote PR creation staged");
-      expect(io.stdout).toContain(`task branch ${branch} is not yet published on origin`);
-      expect(io.stdout).toContain(`git push -u origin ${branch}`);
-      expect(io.stdout).not.toContain("GitHub PR creation failed");
+      expect(io.stdout).toContain("created GitHub PR #912");
+      expect(io.stdout).not.toContain("remote PR creation staged");
+      expect(io.stdout).not.toContain("not yet published on origin");
     } finally {
       io.restore();
       process.env.PATH = originalPath;
     }
+
+    const { stdout: upstreamStdout } = await execFileAsync(
+      "git",
+      ["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    expect(upstreamStdout.trim()).toBe(`origin/${branch}`);
+
+    const { stdout: remoteHeadStdout } = await execFileAsync(
+      "git",
+      ["ls-remote", "--heads", publishRemotePath, `refs/heads/${branch}`],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    expect(remoteHeadStdout.trim()).not.toBe("");
   });
 
   it("pr open ignores dotenv-injected GitHub tokens when gh auth is otherwise available", async () => {

@@ -30,7 +30,21 @@ async function pushTaskBranchUpstreamIfConfigured(opts: {
 }): Promise<boolean> {
   const upstream = await gitBranchUpstream(opts.gitRoot, opts.branch);
   const trimmed = upstream?.trim() ?? "";
-  if (!trimmed) return false;
+  if (!trimmed) {
+    try {
+      await execFileAsync("git", ["remote", "get-url", "origin"], {
+        cwd: opts.gitRoot,
+        env: gitEnv(),
+      });
+    } catch {
+      return false;
+    }
+    await execFileAsync("git", ["push", "--no-verify", "-u", "origin", `HEAD:${opts.branch}`], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    });
+    return true;
+  }
 
   const slashIndex = trimmed.indexOf("/");
   if (slashIndex <= 0 || slashIndex === trimmed.length - 1) return false;
