@@ -22,12 +22,19 @@ Ensure commits use one canonical git author identity sourced from the user's glo
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-18T07:06:33.217Z
+- Updated: 2026-04-18T07:19:21.209Z
 - Branch: task/202604180701-A83DS4/commit-contract-standardization
-- Head: 6cfd5f685792
+- Head: 28fb26e8e8a8
 
 ```text
-No changes detected.
+ packages/agentplane/src/commands/commit.spec.ts    |  2 +
+ .../agentplane/src/commands/guard/impl/commands.ts |  5 +-
+ .../src/commands/guard/impl/commands.unit.test.ts  |  7 +-
+ .../src/commands/guard/impl/comment-commit.ts      |  3 +-
+ .../agentplane/src/commands/guard/impl/env.test.ts | 74 ++++++++++++++++++++++
+ packages/agentplane/src/commands/guard/impl/env.ts | 48 ++++++++++++++
+ .../src/commands/pr/internal/auto-commit.ts        |  3 +-
+ 7 files changed, 138 insertions(+), 4 deletions(-)
 ```
 
 </details>
