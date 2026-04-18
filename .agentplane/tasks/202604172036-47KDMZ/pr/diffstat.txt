@@ -1,0 +1,6 @@
+ .../agentplane/src/commands/shared/task-store.ts   | 779 +--------------------
+ .../src/commands/shared/task-store/intents.ts      | 360 ++++++++++
+ .../src/commands/shared/task-store/readme.ts       | 165 +++++
+ .../src/commands/shared/task-store/store.ts        | 168 +++++
+ .../src/commands/shared/task-store/types.ts        | 124 ++++
+ 5 files changed, 842 insertions(+), 754 deletions(-)
