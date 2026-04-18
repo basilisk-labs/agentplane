@@ -24,6 +24,8 @@ const mocks = vi.hoisted(() => ({
   readCommitInfo: vi.fn(),
   nowIso: vi.fn(),
   resolveBaseBranch: vi.fn(),
+  execFileAsync: vi.fn(),
+  gitBranchExists: vi.fn(),
   gitCurrentBranch: vi.fn(),
 }));
 
@@ -52,7 +54,12 @@ vi.mock("../shared/task-backend.js", () => ({
   loadTaskFromContext: mocks.loadTaskFromContext,
 }));
 vi.mock("../shared/git-ops.js", () => ({
+  gitBranchExists: mocks.gitBranchExists,
   gitCurrentBranch: mocks.gitCurrentBranch,
+}));
+vi.mock("../shared/git.js", () => ({
+  execFileAsync: mocks.execFileAsync,
+  gitEnv: () => ({}),
 }));
 vi.mock("../shared/task-store.js", async (importOriginal) => {
   const actualUnknown: unknown = await importOriginal();
@@ -205,12 +212,22 @@ describe("task finish (unit)", () => {
     mocks.readCommitInfo.mockReset();
     mocks.nowIso.mockReset();
     mocks.resolveBaseBranch.mockReset();
+    mocks.execFileAsync.mockReset();
+    mocks.gitBranchExists.mockReset();
     mocks.gitCurrentBranch.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.readCommitInfo.mockResolvedValue({ hash: "hc", message: "mc" });
     mocks.nowIso.mockReturnValue("2026-02-09T00:00:00.000Z");
     mocks.resolveBaseBranch.mockResolvedValue("main");
+    mocks.execFileAsync.mockImplementation((...args: unknown[]) => {
+      const [, gitArgs] = args as [string, string[]];
+      if (Array.isArray(gitArgs) && gitArgs[0] === "rev-parse" && gitArgs[1] === "HEAD") {
+        return Promise.resolve({ stdout: "base-head-sha\n", stderr: "" });
+      }
+      return Promise.resolve({ stdout: "", stderr: "" });
+    });
+    mocks.gitBranchExists.mockResolvedValue(false);
     mocks.gitCurrentBranch.mockResolvedValue("main");
     mocks.commitFromComment.mockResolvedValue({
       hash: "new-hash",
@@ -598,7 +615,7 @@ describe("task finish (unit)", () => {
     );
   });
 
-  it("does not auto-run close commit outside direct mode", async () => {
+  it("auto-materializes a task-close branch by default in branch_pr mode", async () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "branch_pr";
     const task = mkTask({
@@ -643,7 +660,24 @@ describe("task finish (unit)", () => {
       quiet: true,
     });
 
-    expect(mocks.cmdCommit).not.toHaveBeenCalled();
+    expect(mocks.execFileAsync).toHaveBeenCalledWith(
+      "git",
+      ["checkout", "-b", "task-close/T-1/base-head-sh"],
+      expect.any(Object),
+    );
+    expect(mocks.execFileAsync).toHaveBeenCalledWith(
+      "git",
+      ["checkout", "main"],
+      expect.any(Object),
+    );
+    expect(mocks.cmdCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        close: true,
+        allowBase: true,
+        closeStageTaskArtifacts: true,
+      }),
+    );
   });
 
   it("suppresses default direct close commit with --no-close-commit", async () => {
@@ -1316,7 +1350,7 @@ describe("task finish (unit)", () => {
     );
   });
 
-  it("allows deterministic close commit on the base branch in branch_pr mode", async () => {
+  it("materializes deterministic close commit on a task-close branch in branch_pr mode", async () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "branch_pr";
     mocks.loadTaskFromContext.mockResolvedValue(
@@ -1359,6 +1393,11 @@ describe("task finish (unit)", () => {
     });
 
     expect(rc).toBe(0);
+    expect(mocks.execFileAsync).toHaveBeenCalledWith(
+      "git",
+      ["checkout", "-b", "task-close/T-1/base-head-sh"],
+      expect.any(Object),
+    );
     expect(mocks.cmdCommit).toHaveBeenCalledWith(
       expect.objectContaining({
         taskId: "T-1",
