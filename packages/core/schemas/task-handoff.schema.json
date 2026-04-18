@@ -3,11 +3,9 @@
   "$id": "https://agentplane.dev/schemas/task-handoff.schema.json",
   "title": "Task handoff artifact (v1)",
   "type": "object",
-  "additionalProperties": true,
-  "required": ["schema_version", "task_id", "created_at", "from_role", "reason"],
   "properties": {
     "schema_version": {
-      "type": "integer",
+      "type": "number",
       "const": 1
     },
     "task_id": {
@@ -23,8 +21,15 @@
       "minLength": 1
     },
     "to_role": {
-      "type": ["string", "null"],
-      "minLength": 1
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "reason": {
       "type": "string",
@@ -34,44 +39,106 @@
       "type": "string"
     },
     "branch": {
-      "type": ["string", "null"],
-      "minLength": 1
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "base_branch": {
-      "type": ["string", "null"],
-      "minLength": 1
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "head_sha": {
-      "type": ["string", "null"],
-      "minLength": 7
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 7
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "workspace_root": {
-      "type": ["string", "null"],
-      "minLength": 1
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "pr_branch": {
-      "type": ["string", "null"],
-      "minLength": 1
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "runner": {
       "type": "object",
-      "additionalProperties": true,
       "properties": {
         "run_id": {
-          "type": ["string", "null"],
-          "minLength": 1
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "status": {
-          "type": ["string", "null"],
-          "enum": ["prepared", "running", "success", "failed", "cancelled", null]
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": ["prepared", "running", "success", "failed", "cancelled"]
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "heartbeat_at": {
-          "type": ["string", "null"],
-          "format": "date-time"
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "next_action": {
-          "type": ["string", "null"],
-          "enum": ["run", "resume", "retry", "wait", "cancel_then_resume", "none", null]
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": ["run", "resume", "retry", "wait", "cancel_then_resume", "none"]
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "next_command": {
           "type": ["string", "null"]
@@ -88,36 +155,70 @@
         "trace_path": {
           "type": ["string", "null"]
         }
-      }
+      },
+      "additionalProperties": true
     },
     "route": {
       "type": "object",
-      "additionalProperties": true,
-      "required": ["kind"],
       "properties": {
         "kind": {
           "type": "string",
           "enum": ["protected_base_integrate"]
         },
         "status": {
-          "type": ["string", "null"],
-          "enum": ["awaiting_github_merge", null]
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": ["awaiting_github_merge"]
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "local_mutation": {
-          "type": ["string", "null"],
-          "enum": ["not_performed", null]
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": ["not_performed"]
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "finalize_via": {
-          "type": ["string", "null"],
-          "enum": ["github_pr_merge_then_hosted_close", null]
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": ["github_pr_merge_then_hosted_close"]
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "pr_number": {
-          "type": ["integer", "null"],
-          "minimum": 1
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "pr_url": {
-          "type": ["string", "null"],
-          "minLength": 1
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "handoff_show_command": {
           "type": ["string", "null"]
@@ -125,7 +226,9 @@
         "base_pull_command": {
           "type": ["string", "null"]
         }
-      }
+      },
+      "required": ["kind"],
+      "additionalProperties": true
     },
     "next_actions": {
       "type": "array",
@@ -155,5 +258,7 @@
         "minLength": 1
       }
     }
-  }
+  },
+  "required": ["schema_version", "task_id", "created_at", "from_role", "reason"],
+  "additionalProperties": true
 }

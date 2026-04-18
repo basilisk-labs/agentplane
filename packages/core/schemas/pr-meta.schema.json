@@ -3,11 +3,9 @@
   "$id": "https://agentplane.dev/schemas/pr-meta.schema.json",
   "title": "PR artifact meta.json (v1)",
   "type": "object",
-  "additionalProperties": true,
-  "required": ["schema_version", "task_id", "created_at", "updated_at"],
   "properties": {
     "schema_version": {
-      "type": "integer",
+      "type": "number",
       "const": 1
     },
     "task_id": {
@@ -59,16 +57,29 @@
       "minLength": 1
     },
     "last_verified_sha": {
-      "type": ["string", "null"],
-      "minLength": 7
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 7
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "last_verified_at": {
-      "type": ["string", "null"],
-      "format": "date-time"
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "verify": {
       "type": "object",
-      "additionalProperties": true,
       "properties": {
         "status": {
           "type": "string",
@@ -77,7 +88,10 @@
         "command": {
           "type": "string"
         }
-      }
+      },
+      "additionalProperties": true
     }
-  }
+  },
+  "required": ["schema_version", "task_id", "created_at", "updated_at"],
+  "additionalProperties": true
 }

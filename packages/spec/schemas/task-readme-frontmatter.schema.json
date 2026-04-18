@@ -4,24 +4,6 @@
   "title": "Task README frontmatter (v1)",
   "description": "Task READMEs are Markdown with YAML frontmatter. This schema describes the frontmatter keys.",
   "type": "object",
-  "additionalProperties": true,
-  "required": [
-    "id",
-    "title",
-    "status",
-    "priority",
-    "owner",
-    "depends_on",
-    "tags",
-    "verify",
-    "plan_approval",
-    "verification",
-    "comments",
-    "doc_version",
-    "doc_updated_at",
-    "doc_updated_by",
-    "description"
-  ],
   "properties": {
     "id": {
       "type": "string",
@@ -59,10 +41,6 @@
     },
     "origin": {
       "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      },
-      "required": ["system"],
       "properties": {
         "system": {
           "type": "string",
@@ -92,6 +70,10 @@
           "type": "string",
           "minLength": 1
         }
+      },
+      "required": ["system"],
+      "additionalProperties": {
+        "type": "string"
       }
     },
     "depends_on": {
@@ -117,16 +99,21 @@
     },
     "plan_approval": {
       "type": "object",
-      "additionalProperties": true,
-      "required": ["state", "updated_at", "updated_by", "note"],
       "properties": {
         "state": {
           "type": "string",
           "enum": ["pending", "approved", "rejected"]
         },
         "updated_at": {
-          "type": ["string", "null"],
-          "format": "date-time"
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "updated_by": {
           "type": ["string", "null"]
@@ -134,20 +121,27 @@
         "note": {
           "type": ["string", "null"]
         }
-      }
+      },
+      "required": ["state", "updated_at", "updated_by", "note"],
+      "additionalProperties": true
     },
     "verification": {
       "type": "object",
-      "additionalProperties": true,
-      "required": ["state", "updated_at", "updated_by", "note"],
       "properties": {
         "state": {
           "type": "string",
           "enum": ["pending", "ok", "needs_rework"]
         },
         "updated_at": {
-          "type": ["string", "null"],
-          "format": "date-time"
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "updated_by": {
           "type": ["string", "null"]
@@ -155,12 +149,12 @@
         "note": {
           "type": ["string", "null"]
         }
-      }
+      },
+      "required": ["state", "updated_at", "updated_by", "note"],
+      "additionalProperties": true
     },
     "runner": {
       "type": "object",
-      "additionalProperties": true,
-      "required": ["run_id", "status", "adapter_id", "mode", "updated_at", "exit_code", "target"],
       "properties": {
         "run_id": {
           "type": "string",
@@ -191,12 +185,17 @@
           "format": "date-time"
         },
         "exit_code": {
-          "type": ["integer", "null"]
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "target": {
           "type": "object",
-          "additionalProperties": true,
-          "required": ["kind"],
           "properties": {
             "kind": {
               "type": "string",
@@ -214,7 +213,9 @@
               "type": "string",
               "minLength": 1
             }
-          }
+          },
+          "required": ["kind"],
+          "additionalProperties": true
         },
         "summary": {
           "type": "string"
@@ -234,7 +235,6 @@
         },
         "metrics": {
           "type": "object",
-          "additionalProperties": true,
           "properties": {
             "duration_ms": {
               "type": "number"
@@ -248,11 +248,11 @@
             "output_last_message_bytes": {
               "type": ["number", "null"]
             }
-          }
+          },
+          "additionalProperties": true
         },
         "evidence": {
           "type": "object",
-          "additionalProperties": true,
           "properties": {
             "evidence_paths": {
               "type": "array",
@@ -286,22 +286,13 @@
                 "minLength": 1
               }
             }
-          }
+          },
+          "additionalProperties": true
         },
         "history": {
           "type": "array",
           "items": {
             "type": "object",
-            "additionalProperties": true,
-            "required": [
-              "run_id",
-              "status",
-              "adapter_id",
-              "mode",
-              "updated_at",
-              "exit_code",
-              "target"
-            ],
             "properties": {
               "run_id": {
                 "type": "string",
@@ -332,12 +323,17 @@
                 "format": "date-time"
               },
               "exit_code": {
-                "type": ["integer", "null"]
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "target": {
                 "type": "object",
-                "additionalProperties": true,
-                "required": ["kind"],
                 "properties": {
                   "kind": {
                     "type": "string",
@@ -355,7 +351,9 @@
                     "type": "string",
                     "minLength": 1
                   }
-                }
+                },
+                "required": ["kind"],
+                "additionalProperties": true
               },
               "summary": {
                 "type": "string"
@@ -375,7 +373,6 @@
               },
               "metrics": {
                 "type": "object",
-                "additionalProperties": true,
                 "properties": {
                   "duration_ms": {
                     "type": "number"
@@ -389,11 +386,11 @@
                   "output_last_message_bytes": {
                     "type": ["number", "null"]
                   }
-                }
+                },
+                "additionalProperties": true
               },
               "evidence": {
                 "type": "object",
-                "additionalProperties": true,
                 "properties": {
                   "evidence_paths": {
                     "type": "array",
@@ -427,34 +424,52 @@
                       "minLength": 1
                     }
                   }
-                }
+                },
+                "additionalProperties": true
               }
-            }
+            },
+            "required": [
+              "run_id",
+              "status",
+              "adapter_id",
+              "mode",
+              "updated_at",
+              "exit_code",
+              "target"
+            ],
+            "additionalProperties": true
           }
         }
-      }
+      },
+      "required": ["run_id", "status", "adapter_id", "mode", "updated_at", "exit_code", "target"],
+      "additionalProperties": true
     },
     "commit": {
-      "type": ["object", "null"],
-      "additionalProperties": false,
-      "required": ["hash", "message"],
-      "properties": {
-        "hash": {
-          "type": "string",
-          "minLength": 1
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "hash": {
+              "type": "string",
+              "minLength": 1
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["hash", "message"],
+          "additionalProperties": false
         },
-        "message": {
-          "type": "string",
-          "minLength": 1
+        {
+          "type": "null"
         }
-      }
+      ]
     },
     "comments": {
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": false,
-        "required": ["author", "body"],
         "properties": {
           "author": {
             "type": "string",
@@ -464,15 +479,15 @@
             "type": "string",
             "minLength": 1
           }
-        }
+        },
+        "required": ["author", "body"],
+        "additionalProperties": false
       }
     },
     "events": {
       "type": "array",
       "items": {
         "type": "object",
-        "additionalProperties": true,
-        "required": ["type", "at", "author"],
         "properties": {
           "type": {
             "type": "string",
@@ -501,11 +516,13 @@
           "body": {
             "type": "string"
           }
-        }
+        },
+        "required": ["type", "at", "author"],
+        "additionalProperties": true
       }
     },
     "doc_version": {
-      "type": "integer",
+      "type": "number",
       "enum": [2, 3]
     },
     "doc_updated_at": {
@@ -532,5 +549,23 @@
       "type": "string",
       "minLength": 1
     }
-  }
+  },
+  "required": [
+    "id",
+    "title",
+    "status",
+    "priority",
+    "owner",
+    "depends_on",
+    "tags",
+    "verify",
+    "plan_approval",
+    "verification",
+    "comments",
+    "doc_version",
+    "doc_updated_at",
+    "doc_updated_by",
+    "description"
+  ],
+  "additionalProperties": true
 }
