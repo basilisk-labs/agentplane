@@ -45,12 +45,23 @@ Replace AJV-based task artifact validation in @agentplaneorg/core with a Zod SSO
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-18T04:35:57.907Z
+- Updated: 2026-04-18T04:50:17.507Z
 - Branch: task/202604172123-331HY7/zod-task-artifact-ssot
-- Head: 94366eade38f
+- Head: 98d333de2903
 
 ```text
-No changes detected.
+ bun.lock                                           |   6 +
+ packages/core/package.json                         |   4 +-
+ packages/core/schemas/pr-meta.schema.json          |  34 +-
+ packages/core/schemas/task-handoff.schema.json     | 183 +++-
+ .../schemas/task-readme-frontmatter.schema.json    | 197 +++--
+ packages/core/schemas/tasks-export.schema.json     | 235 +++---
+ packages/core/src/tasks/task-artifact-schema.ts    | 918 ++++++++-------------
+ packages/spec/schemas/pr-meta.schema.json          |  34 +-
+ packages/spec/schemas/task-handoff.schema.json     | 183 +++-
+ .../schemas/task-readme-frontmatter.schema.json    | 197 +++--
+ packages/spec/schemas/tasks-export.schema.json     | 235 +++---
+ 11 files changed, 1212 insertions(+), 1014 deletions(-)
 ```
 
 </details>
