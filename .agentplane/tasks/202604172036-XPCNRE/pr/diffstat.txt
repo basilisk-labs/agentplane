@@ -1,0 +1,4 @@
+ packages/agentplane/src/testing/cli-harness.ts     | 571 +--------------------
+ .../src/testing/cli-harness/recipe-archives.ts     | 450 ++++++++++++++++
+ .../agentplane/src/testing/cli-harness/stdio.ts    | 115 +++++
+ 3 files changed, 571 insertions(+), 565 deletions(-)
