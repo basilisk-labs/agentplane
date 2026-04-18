@@ -109,7 +109,7 @@ function readString(value: unknown, fallback: string): string {
 }
 
 function configFromInput(input: CommandContext | AgentplaneConfig): AgentplaneConfig {
-  return "config" in input ? input.config : input;
+  return "config" in input ? (input.config as AgentplaneConfig) : input;
 }
 
 export function readTaskTagPolicy(input: CommandContext | AgentplaneConfig): TaskTagPolicy {
