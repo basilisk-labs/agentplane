@@ -139,16 +139,10 @@ export async function writeTaskReadme(opts: {
   }
 
   frontmatter.doc_version = normalizeTaskDocVersion(frontmatter.doc_version, requestedDocVersion);
-  if (
-    typeof frontmatter.doc_updated_at !== "string" ||
-    frontmatter.doc_updated_at.trim() === ""
-  ) {
+  if (typeof frontmatter.doc_updated_at !== "string" || frontmatter.doc_updated_at.trim() === "") {
     frontmatter.doc_updated_at = now;
   }
-  if (
-    typeof frontmatter.doc_updated_by !== "string" ||
-    frontmatter.doc_updated_by.trim() === ""
-  ) {
+  if (typeof frontmatter.doc_updated_by !== "string" || frontmatter.doc_updated_by.trim() === "") {
     frontmatter.doc_updated_by = resolveDocUpdatedBy(next);
   }
 
