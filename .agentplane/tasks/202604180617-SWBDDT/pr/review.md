@@ -24,8 +24,8 @@ Introduce a typed command result contract and route selected release/task comman
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Introduced a typed CommandResult contract in cli/output and moved task comment/update/block onto the shared emitter path; typecheck, targeted lint on touched files, and focused unit tests passed.
 
 ## Risks
 

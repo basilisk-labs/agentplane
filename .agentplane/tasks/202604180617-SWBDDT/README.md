@@ -4,7 +4,7 @@ title: "Adopt CommandResult for release and task commands"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,10 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-18T07:55:53.750Z"
+  updated_by: "CODER"
+  note: "Introduced a typed CommandResult contract in cli/output and moved task comment/update/block onto the shared emitter path; typecheck, targeted lint on touched files, and focused unit tests passed."
 commit: null
 comments:
   -
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: introduce CommandResult contract, move selected release/task commands to renderer-owned output, and verify command-level behavior plus fast CI."
+  -
+    type: "verify"
+    at: "2026-04-18T07:55:53.750Z"
+    author: "CODER"
+    state: "ok"
+    note: "Introduced a typed CommandResult contract in cli/output and moved task comment/update/block onto the shared emitter path; typecheck, targeted lint on touched files, and focused unit tests passed."
 doc_version: 3
-doc_updated_at: "2026-04-18T07:43:16.195Z"
+doc_updated_at: "2026-04-18T07:55:53.755Z"
 doc_updated_by: "CODER"
 description: "Introduce a typed command result contract and route selected release/task commands through renderer-owned output so command handlers stop writing output ad hoc."
 sections:
@@ -56,6 +62,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-18T07:55:53.750Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Introduced a typed CommandResult contract in cli/output and moved task comment/update/block onto the shared emitter path; typecheck, targeted lint on touched files, and focused unit tests passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-18T07:43:16.195Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -87,6 +101,14 @@ Introduce a typed command result contract and route selected release/task comman
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-18T07:55:53.750Z — VERIFY — ok
+
+By: CODER
+
+Note: Introduced a typed CommandResult contract in cli/output and moved task comment/update/block onto the shared emitter path; typecheck, targeted lint on touched files, and focused unit tests passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-18T07:43:16.195Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
