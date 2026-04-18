@@ -1,0 +1,3 @@
+ packages/agentplane/src/commands/task/finish.ts    | 134 +++++++++++++++++++--
+ .../src/commands/task/finish.unit.test.ts          |  45 ++++++-
+ 2 files changed, 164 insertions(+), 15 deletions(-)
