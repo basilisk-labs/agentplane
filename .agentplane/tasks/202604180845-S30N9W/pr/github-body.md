@@ -11,8 +11,8 @@ Bring the files changed by NS8Y9G back into Prettier compliance so subsequent ta
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: restored Prettier compliance for the NS8Y9G hook files so subsequent close-tail pushes are no longer blocked by unrelated format drift
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
@@ -22,12 +22,14 @@ Bring the files changed by NS8Y9G back into Prettier compliance so subsequent ta
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-18T08:45:52.420Z
+- Updated: 2026-04-18T08:49:19.828Z
 - Branch: task/202604180845-S30N9W/format-unblock-ns8y9g
 - Head: 568990e0ed21
 
 ```text
-No changes detected.
+ packages/agentplane/src/cli/local-ci-selection.test.ts | 14 +++++++-------
+ scripts/lib/pre-push-scope.mjs                         |  3 ++-
+ 2 files changed, 9 insertions(+), 8 deletions(-)
 ```
 
 </details>
