@@ -22,13 +22,14 @@ Replace escaped regex string usage in packages/agentplane/src/commands/release/a
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-18T17:52:10.945Z
+- Updated: 2026-04-18T17:56:15.100Z
 - Branch: task/202604181745-GWRHN3/lint-unblock-release-regex
-- Head: f6c3b015a61f
+- Head: b036e265349c
 
 ```text
- packages/agentplane/src/commands/release/apply.mutation.ts | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ packages/agentplane/src/commands/release/apply.mutation.ts    |  5 ++++-
+ .../src/commands/release/release-check-script.test.ts         | 11 ++++++++---
+ 2 files changed, 12 insertions(+), 4 deletions(-)
 ```
 
 </details>
