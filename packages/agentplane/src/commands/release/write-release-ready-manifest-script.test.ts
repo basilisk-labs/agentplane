@@ -43,6 +43,10 @@ describe("manifest script release-ready command", () => {
         '  echo "1.2.3"',
         "  exit 0",
         "fi",
+        'if [[ "$2" == "@agentplaneorg/recipes@1.2.3" ]]; then',
+        '  echo "1.2.3"',
+        "  exit 0",
+        "fi",
         "echo 'npm error code E404' >&2",
         "exit 1",
         "",
@@ -80,6 +84,7 @@ describe("manifest script release-ready command", () => {
         checked: boolean;
         status: string;
         corePublished: boolean | null;
+        recipesPublished: boolean | null;
         cliPublished: boolean | null;
       };
       source: { workflow: string | null };
@@ -92,6 +97,7 @@ describe("manifest script release-ready command", () => {
     expect(payload.registry.checked).toBe(true);
     expect(payload.registry.status).toBe("checked");
     expect(payload.registry.corePublished).toBe(true);
+    expect(payload.registry.recipesPublished).toBe(true);
     expect(payload.registry.cliPublished).toBe(false);
     expect(payload.source.workflow).toBe("Core CI");
 
@@ -124,7 +130,9 @@ describe("manifest script release-ready command", () => {
       prefix: "agentplane-release-ready-",
       coreVersion: "1.2.3",
       cliVersion: "1.2.4",
+      recipesVersion: "1.2.3",
       dependencyVersion: "1.2.2",
+      recipesDependencyVersion: "1.2.2",
     });
     roots.push(root);
     const result = await execFileAsync("node", [SCRIPT_PATH, "release-ready", "--json"], {
@@ -139,6 +147,7 @@ describe("manifest script release-ready command", () => {
     expect(payload.ready).toBe(false);
     expect(payload.reasonCode).toBe("release_version_parity_drift");
     expect(payload.message).toContain("core=1.2.3");
+    expect(payload.message).toContain("recipes=1.2.3");
     expect(payload.message).toContain("agentplane=1.2.4");
   });
 });

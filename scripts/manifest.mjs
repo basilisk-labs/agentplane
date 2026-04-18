@@ -98,8 +98,10 @@ function publishResultUsage() {
     "  --release-ready-run-id <id> Core CI run id that produced release-ready",
     "  --job-status <status>       Current GitHub job status",
     "  --core-prepublished <bool>  Whether @agentplaneorg/core was already published before this run",
+    "  --recipes-prepublished <bool> Whether @agentplaneorg/recipes was already published before this run",
     "  --cli-prepublished <bool>   Whether agentplane was already published before this run",
     "  --core-outcome <outcome>    Step outcome for @agentplaneorg/core publish",
+    "  --recipes-outcome <outcome> Step outcome for @agentplaneorg/recipes publish",
     "  --cli-outcome <outcome>     Step outcome for agentplane publish",
     "  --smoke-outcome <outcome>   Step outcome for post-publish npm smoke",
     "  --tag-exists <bool>         Whether the release tag already existed on origin",
@@ -139,8 +141,10 @@ function parsePublishResultArgs(argv) {
     releaseReadyRunId: null,
     jobStatus: process.env.AGENTPLANE_PUBLISH_JOB_STATUS ?? null,
     corePrepublished: false,
+    recipesPrepublished: false,
     cliPrepublished: false,
     coreOutcome: "unknown",
+    recipesOutcome: "unknown",
     cliOutcome: "unknown",
     smokeOutcome: "unknown",
     tagExists: false,
@@ -188,6 +192,11 @@ function parsePublishResultArgs(argv) {
       index += 1;
       continue;
     }
+    if (arg === "--recipes-prepublished") {
+      out.recipesPrepublished = parseBoolean(next, "recipes-prepublished");
+      index += 1;
+      continue;
+    }
     if (arg === "--cli-prepublished") {
       out.cliPrepublished = parseBoolean(next, "cli-prepublished");
       index += 1;
@@ -195,6 +204,11 @@ function parsePublishResultArgs(argv) {
     }
     if (arg === "--core-outcome") {
       out.coreOutcome = next ?? out.coreOutcome;
+      index += 1;
+      continue;
+    }
+    if (arg === "--recipes-outcome") {
+      out.recipesOutcome = next ?? out.recipesOutcome;
       index += 1;
       continue;
     }
@@ -267,6 +281,10 @@ function buildPublishResultManifest(args) {
     prepublished: args.corePrepublished,
     outcome: normalizeOutcome(args.coreOutcome),
   });
+  const recipes = derivePackageResult({
+    prepublished: args.recipesPrepublished,
+    outcome: normalizeOutcome(args.recipesOutcome),
+  });
   const cli = derivePackageResult({
     prepublished: args.cliPrepublished,
     outcome: normalizeOutcome(args.cliOutcome),
@@ -282,6 +300,7 @@ function buildPublishResultManifest(args) {
 
   const failures = [];
   if (!core.published) failures.push("@agentplaneorg/core publish not confirmed");
+  if (!recipes.published) failures.push("@agentplaneorg/recipes publish not confirmed");
   if (!cli.published) failures.push("agentplane publish not confirmed");
   if (!smokePassed) failures.push(`post-publish smoke outcome=${smokeOutcome}`);
   if (!tagEnsured) failures.push(`release tag not ensured (outcome=${tagOutcome})`);
@@ -308,6 +327,7 @@ function buildPublishResultManifest(args) {
     },
     packages: {
       core,
+      recipes,
       cli,
     },
     checks: {
@@ -430,20 +450,28 @@ async function readPackageVersion(filePath) {
 async function readReleaseWorkspace(repoRoot) {
   const corePackagePath = path.join(repoRoot, "packages", "core", "package.json");
   const cliPackagePath = path.join(repoRoot, "packages", "agentplane", "package.json");
+  const recipesPackagePath = path.join(repoRoot, "packages", "recipes", "package.json");
   const cliPackage = await readJson(cliPackagePath);
-  const [coreVersion, cliVersion] = await Promise.all([
+  const [coreVersion, cliVersion, recipesVersion] = await Promise.all([
     readPackageVersion(corePackagePath),
     readPackageVersion(cliPackagePath),
+    readPackageVersion(recipesPackagePath),
   ]);
   const coreDependencyVersion =
     typeof cliPackage.dependencies?.["@agentplaneorg/core"] === "string"
       ? cliPackage.dependencies["@agentplaneorg/core"].trim()
       : "";
+  const recipesDependencyVersion =
+    typeof cliPackage.dependencies?.["@agentplaneorg/recipes"] === "string"
+      ? cliPackage.dependencies["@agentplaneorg/recipes"].trim()
+      : "";
 
   return {
     coreVersion,
     cliVersion,
+    recipesVersion,
     coreDependencyVersion,
+    recipesDependencyVersion,
     tag: `v${cliVersion}`,
     notesPath: path.join(repoRoot, "docs", "releases", `v${cliVersion}.md`),
   };
@@ -492,22 +520,25 @@ async function buildRegistrySnapshot(repoRoot, version, enabled) {
       checked: false,
       status: "skipped",
       corePublished: null,
+      recipesPublished: null,
       cliPublished: null,
       detail: "registry snapshot was not requested",
     };
   }
 
-  const [core, cli] = await Promise.all([
+  const [core, recipes, cli] = await Promise.all([
     probeNpmPublished(`@agentplaneorg/core@${version}`, repoRoot),
+    probeNpmPublished(`@agentplaneorg/recipes@${version}`, repoRoot),
     probeNpmPublished(`agentplane@${version}`, repoRoot),
   ]);
-  if (core.published === null || cli.published === null) {
+  if (core.published === null || recipes.published === null || cli.published === null) {
     return {
       checked: false,
       status: "unavailable",
       corePublished: core.published,
+      recipesPublished: recipes.published,
       cliPublished: cli.published,
-      detail: [core.detail, cli.detail].filter(Boolean).join("\n"),
+      detail: [core.detail, recipes.detail, cli.detail].filter(Boolean).join("\n"),
     };
   }
 
@@ -515,8 +546,9 @@ async function buildRegistrySnapshot(repoRoot, version, enabled) {
     checked: true,
     status: "checked",
     corePublished: core.published,
+    recipesPublished: recipes.published,
     cliPublished: cli.published,
-    detail: [core.detail, cli.detail].filter(Boolean).join("\n"),
+    detail: [core.detail, recipes.detail, cli.detail].filter(Boolean).join("\n"),
   };
 }
 
@@ -525,7 +557,9 @@ async function buildReleaseReadyManifest(repoRoot, args) {
   const notesPresent = await fileExists(workspace.notesPath);
   const parityAligned =
     workspace.coreVersion === workspace.cliVersion &&
-    workspace.coreDependencyVersion === workspace.coreVersion;
+    workspace.recipesVersion === workspace.cliVersion &&
+    workspace.coreDependencyVersion === workspace.coreVersion &&
+    workspace.recipesDependencyVersion === workspace.recipesVersion;
   const ready = parityAligned && notesPresent;
   const reasonCode = parityAligned
     ? notesPresent
@@ -537,7 +571,7 @@ async function buildReleaseReadyManifest(repoRoot, args) {
       ? `Release-ready manifest emitted for ${workspace.tag} at ${workspace.cliVersion}.`
       : reasonCode === "release_notes_missing"
         ? `Release notes are missing for ${workspace.tag}.`
-        : `Release parity drift prevents a release-ready manifest: core=${workspace.coreVersion}, agentplane=${workspace.cliVersion}, dependency=${workspace.coreDependencyVersion || "missing"}.`;
+        : `Release parity drift prevents a release-ready manifest: core=${workspace.coreVersion}, recipes=${workspace.recipesVersion}, agentplane=${workspace.cliVersion}, coreDependency=${workspace.coreDependencyVersion || "missing"}, recipesDependency=${workspace.recipesDependencyVersion || "missing"}.`;
   const nextAction =
     reasonCode === "ready"
       ? "Use this manifest as the only auto-publish input for the exact release SHA."
@@ -558,8 +592,10 @@ async function buildReleaseReadyManifest(repoRoot, args) {
     notesPath: path.relative(repoRoot, workspace.notesPath),
     packages: {
       coreVersion: workspace.coreVersion,
+      recipesVersion: workspace.recipesVersion,
       cliVersion: workspace.cliVersion,
       coreDependencyVersion: workspace.coreDependencyVersion || null,
+      recipesDependencyVersion: workspace.recipesDependencyVersion || null,
     },
     registry: await buildRegistrySnapshot(repoRoot, workspace.cliVersion, args.checkRegistry),
     source: {

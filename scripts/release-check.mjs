@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const defaultCacheDir = path.resolve(__dirname, "..", ".agentplane", ".npm-cache");
 
-const releasePackages = ["core", "agentplane"];
+const releasePackages = ["core", "recipes", "agentplane"];
 const command = "npm";
 const args = ["pack", "--dry-run"];
 

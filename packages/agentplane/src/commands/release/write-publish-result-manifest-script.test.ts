@@ -58,9 +58,13 @@ describe("manifest script publish-result command", () => {
         "success",
         "--core-prepublished",
         "false",
+        "--recipes-prepublished",
+        "false",
         "--cli-prepublished",
         "true",
         "--core-outcome",
+        "success",
+        "--recipes-outcome",
         "success",
         "--cli-outcome",
         "skipped",
@@ -90,6 +94,7 @@ describe("manifest script publish-result command", () => {
       releaseReady: { runId: string | null };
       packages: {
         core: { published: boolean; source: string };
+        recipes: { published: boolean; source: string };
         cli: { published: boolean; source: string };
       };
       checks: {
@@ -109,6 +114,8 @@ describe("manifest script publish-result command", () => {
     expect(payload.releaseReady.runId).toBe("999");
     expect(payload.packages.core.published).toBe(true);
     expect(payload.packages.core.source).toBe("published_in_run");
+    expect(payload.packages.recipes.published).toBe(true);
+    expect(payload.packages.recipes.source).toBe("published_in_run");
     expect(payload.packages.cli.published).toBe(true);
     expect(payload.packages.cli.source).toBe("preexisting");
     expect(payload.checks.npmSmoke.passed).toBe(true);
@@ -136,10 +143,14 @@ describe("manifest script publish-result command", () => {
       "failure",
       "--core-prepublished",
       "false",
+      "--recipes-prepublished",
+      "false",
       "--cli-prepublished",
       "false",
       "--core-outcome",
       "failure",
+      "--recipes-outcome",
+      "skipped",
       "--cli-outcome",
       "skipped",
       "--smoke-outcome",
@@ -167,6 +178,7 @@ describe("manifest script publish-result command", () => {
     expect(payload.reasonCode).toBe("publish_incomplete");
     expect(payload.message).toContain("Publish result for v0.3.6 is incomplete");
     expect(payload.failures).toContain("@agentplaneorg/core publish not confirmed");
+    expect(payload.failures).toContain("@agentplaneorg/recipes publish not confirmed");
     expect(payload.failures).toContain("agentplane publish not confirmed");
     expect(payload.failures).toContain("publish job status=failure");
     expect(payload.checks.npmSmoke.passed).toBe(false);
