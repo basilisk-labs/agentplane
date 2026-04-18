@@ -8,7 +8,7 @@ import {
 } from "../../../shared/comment-format.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
 
-import { buildGitCommitEnv } from "./env.js";
+import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "./env.js";
 import { stageAllowlist } from "./allow.js";
 import { guardCommitCheck } from "./policy.js";
 
@@ -167,6 +167,7 @@ export async function commitFromComment(opts: {
     allowConfig: false,
     allowHooks: false,
     allowCI: false,
+    gitIdentity: await resolveCanonicalGitIdentity(),
   });
   await ctx.git.commit({ message, body, env });
 
