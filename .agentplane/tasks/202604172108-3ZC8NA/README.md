@@ -1,10 +1,11 @@
 ---
 id: "202604172108-3ZC8NA"
 title: "Migrate config schema validation to Zod SSOT"
-status: "DOING"
+result_summary: "Merged via PR #426."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-17T21:20:05.760Z"
   updated_by: "CODER"
   note: "Validated Zod-first config contract migration: config runtime now parses through Zod, generated config schemas are synced, defaults and user-facing validation behavior remain covered by config/execution-profile/upgrade tests; AJV task artifact validation remains intentionally out of scope."
-commit: null
+commit:
+  hash: "988387b2163afc0fbf9bc7e34e82c8978787b73b"
+  message: "refactor/schemas: Migrate config schema validation to Zod SSOT (3ZC8NA) (#426)"
 comments:
   -
     author: "CODER"
     body: "Start: migrate the config runtime contract to a Zod-first schema, keep generated JSON schema artifacts intact, and stop before touching unrelated AJV task schemas."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #426 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Validated Zod-first config contract migration: config runtime now parses through Zod, generated config schemas are synced, defaults and user-facing validation behavior remain covered by config/execution-profile/upgrade tests; AJV task artifact validation remains intentionally out of scope."
+  -
+    type: "status"
+    at: "2026-04-18T04:53:09.907Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #426 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T21:20:05.764Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T04:53:09.912Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace the AJV-backed config runtime contract with a Zod-first schema, keep generated JSON schema artifacts, and preserve existing config behavior and defaults."
 sections:
   Summary: |-
