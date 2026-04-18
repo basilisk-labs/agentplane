@@ -1,10 +1,11 @@
 ---
 id: "202604181532-YX13SX"
 title: "Restore formatting after recipes release workflow fix"
-status: "DOING"
+result_summary: "Merged via PR #462."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-18T15:33:27.543Z"
   updated_by: "CODER"
   note: "restored Prettier compliance for the release workflow contract test so close-tail and cleanup pushes no longer fail after E9FXF3"
-commit: null
+commit:
+  hash: "05eae90f8a6c9f220e318723236ea225b595a734"
+  message: "Restore formatting after recipes release workflow fix (YX13SX) (#462)"
 comments:
   -
     author: "CODER"
     body: "Start: restore Prettier compliance for the release workflow contract test so post-merge close-tail pushes stop failing after E9FXF3."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #462 merged on GitHub main; the release workflow contract test is back in Prettier compliance so release close-tail pushes are no longer blocked by formatting drift."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "restored Prettier compliance for the release workflow contract test so close-tail and cleanup pushes no longer fail after E9FXF3"
+  -
+    type: "status"
+    at: "2026-04-18T15:36:04.653Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #462 merged on GitHub main; the release workflow contract test is back in Prettier compliance so release close-tail pushes are no longer blocked by formatting drift."
 doc_version: 3
-doc_updated_at: "2026-04-18T15:33:27.545Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T15:36:04.653Z"
+doc_updated_by: "INTEGRATOR"
 description: "Bring the release workflow contract test back into Prettier compliance so subsequent branch_pr close-tail and cleanup pushes are not blocked after E9FXF3."
 sections:
   Summary: |-
