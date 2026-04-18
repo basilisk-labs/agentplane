@@ -1,10 +1,12 @@
 import { mapCoreError } from "../../../../cli/error-map.js";
-import { emptyStateMessage } from "../../../../cli/output.js";
+import { createCliEmitter, emptyStateMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 
 import { readInstalledRecipesFile } from "../installed-recipes.js";
 import { resolveInstalledRecipesPath } from "../paths.js";
 import type { RecipeListFlags } from "../types.js";
+
+const output = createCliEmitter();
 
 export async function cmdRecipeListParsed(opts: {
   cwd: string;
@@ -23,36 +25,30 @@ export async function cmdRecipeListParsed(opts: {
 
     if (recipes.length === 0) {
       if (flags.tag) {
-        process.stdout.write(`${emptyStateMessage(`cached recipes for tag ${flags.tag}`)}\n`);
+        output.line(emptyStateMessage(`cached recipes for tag ${flags.tag}`));
         return 0;
       }
-      process.stdout.write(
-        `${emptyStateMessage(
+      output.line(
+        emptyStateMessage(
           "cached recipes",
           "Use `agentplane recipes list-remote` or `agentplane recipes install <id>`.",
-        )}\n`,
+        ),
       );
       return 0;
     }
 
     if (flags.full) {
-      process.stdout.write(
-        `${JSON.stringify(
-          {
-            schema_version: 1,
-            updated_at: installed.updated_at,
-            recipes,
-          },
-          null,
-          2,
-        )}\n`,
-      );
+      output.json({
+        schema_version: 1,
+        updated_at: installed.updated_at,
+        recipes,
+      });
       return 0;
     }
 
     for (const entry of recipes) {
-      process.stdout.write(
-        `${entry.id}@${entry.version} [${entry.manifest.kind}] - ${entry.manifest.summary || "No summary"}\n`,
+      output.line(
+        `${entry.id}@${entry.version} [${entry.manifest.kind}] - ${entry.manifest.summary || "No summary"}`,
       );
     }
     return 0;

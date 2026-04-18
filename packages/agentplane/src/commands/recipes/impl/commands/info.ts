@@ -1,10 +1,13 @@
 import { mapCoreError } from "../../../../cli/error-map.js";
+import { createCliEmitter } from "../../../../cli/output.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
 import { formatJsonBlock } from "../format.js";
 import { readInstalledRecipesFile } from "../installed-recipes.js";
 import { resolveInstalledRecipesPath } from "../paths.js";
+
+const output = createCliEmitter();
 
 export async function cmdRecipeInfoParsed(opts: {
   cwd: string;
@@ -23,19 +26,21 @@ export async function cmdRecipeInfoParsed(opts: {
     }
     const manifest = entry.manifest;
 
-    process.stdout.write(`Recipe: ${manifest.id}@${manifest.version}\n`);
-    process.stdout.write(`Kind: ${manifest.kind}\n`);
-    process.stdout.write(`Schema: ${manifest.schema_version}\n`);
-    process.stdout.write("Cached: yes\n");
-    process.stdout.write(`Name: ${manifest.name}\n`);
-    process.stdout.write(`Summary: ${manifest.summary}\n`);
-    process.stdout.write(`Description: ${manifest.description}\n`);
+    output.lines([
+      `Recipe: ${manifest.id}@${manifest.version}`,
+      `Kind: ${manifest.kind}`,
+      `Schema: ${manifest.schema_version}`,
+      "Cached: yes",
+      `Name: ${manifest.name}`,
+      `Summary: ${manifest.summary}`,
+      `Description: ${manifest.description}`,
+    ]);
     if (manifest.tags && manifest.tags.length > 0) {
-      process.stdout.write(`Tags: ${manifest.tags.join(", ")}\n`);
+      output.line(`Tags: ${manifest.tags.join(", ")}`);
     }
     if (manifest.compatibility) {
       const payload = formatJsonBlock(manifest.compatibility, "  ");
-      if (payload) process.stdout.write(`Compatibility:\n${payload}\n`);
+      if (payload) output.jsonSection("Compatibility", manifest.compatibility);
     }
 
     const skills = manifest.skills ?? [];
@@ -46,45 +51,43 @@ export async function cmdRecipeInfoParsed(opts: {
     const validators = manifest.validators ?? [];
 
     if (skills.length > 0) {
-      process.stdout.write("Skills:\n");
+      output.line("Skills:");
       for (const skill of skills) {
-        process.stdout.write(`  - ${skill.id} - ${skill.summary}\n`);
+        output.line(`  - ${skill.id} - ${skill.summary}`);
       }
     }
     if (agents.length > 0) {
-      process.stdout.write("Agents:\n");
+      output.line("Agents:");
       for (const agent of agents) {
         const label = `${agent.display_name} (${agent.id})`;
-        process.stdout.write(`  - ${label} - ${agent.summary}\n`);
+        output.line(`  - ${label} - ${agent.summary}`);
       }
     }
     if (tools.length > 0) {
-      process.stdout.write("Tools:\n");
+      output.line("Tools:");
       for (const tool of tools) {
-        process.stdout.write(`  - ${tool.id} - ${tool.summary}\n`);
+        output.line(`  - ${tool.id} - ${tool.summary}`);
       }
     }
     if (prompts.length > 0) {
-      process.stdout.write("Prompts:\n");
+      output.line("Prompts:");
       for (const prompt of prompts) {
-        process.stdout.write(
-          `  - ${prompt.id} [surface=${prompt.surface}, strength=${prompt.strength ?? "default"}]\n`,
+        output.line(
+          `  - ${prompt.id} [surface=${prompt.surface}, strength=${prompt.strength ?? "default"}]`,
         );
       }
     }
     if (validators.length > 0) {
-      process.stdout.write("Validators:\n");
+      output.line("Validators:");
       for (const validator of validators) {
-        process.stdout.write(
-          `  - ${validator.id} [kind=${validator.kind}, phase=${validator.phase}]\n`,
-        );
+        output.line(`  - ${validator.id} [kind=${validator.kind}, phase=${validator.phase}]`);
       }
     }
     if (scenarios.length > 0) {
-      process.stdout.write("Scenarios:\n");
+      output.line("Scenarios:");
       for (const scenario of scenarios) {
-        process.stdout.write(
-          `  - ${scenario.name} (${scenario.id}) - ${scenario.summary} [mode=${scenario.run_profile.mode}]\n`,
+        output.line(
+          `  - ${scenario.name} (${scenario.id}) - ${scenario.summary} [mode=${scenario.run_profile.mode}]`,
         );
       }
     }

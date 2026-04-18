@@ -1,11 +1,13 @@
 import { resolveProject } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../../../cli/error-map.js";
-import { emptyStateMessage } from "../../../../cli/output.js";
+import { createCliEmitter, emptyStateMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 
 import { readActiveRecipeIds } from "../overlay-project.js";
 import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
+
+const output = createCliEmitter();
 
 export async function cmdRecipeActiveParsed(opts: {
   cwd: string;
@@ -25,29 +27,23 @@ export async function cmdRecipeActiveParsed(opts: {
       .map((id) => installed.recipes.find((entry) => entry.id === id))
       .filter(Boolean) as NonNullable<(typeof installed.recipes)[number]>[];
     if (active.length === 0) {
-      process.stdout.write(`${emptyStateMessage("active overlays")}\n`);
+      output.line(emptyStateMessage("active overlays"));
       return 0;
     }
     if (opts.full) {
-      process.stdout.write(
-        `${JSON.stringify(
-          {
-            schema_version: 1,
-            active: active.map((entry) => ({
-              id: entry.id,
-              version: entry.version,
-              kind: entry.manifest.kind,
-              summary: entry.manifest.summary,
-            })),
-          },
-          null,
-          2,
-        )}\n`,
-      );
+      output.json({
+        schema_version: 1,
+        active: active.map((entry) => ({
+          id: entry.id,
+          version: entry.version,
+          kind: entry.manifest.kind,
+          summary: entry.manifest.summary,
+        })),
+      });
       return 0;
     }
     for (const entry of active) {
-      process.stdout.write(`${entry.id}@${entry.version} [${entry.manifest.kind}]\n`);
+      output.line(`${entry.id}@${entry.version} [${entry.manifest.kind}]`);
     }
     return 0;
   } catch (err) {
