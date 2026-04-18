@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604181525-E9FXF3/publish-recipes-release-workflow",
   "created_at": "2026-04-18T15:25:35.357Z",
-  "head_sha": "b9273fbdc7ff77af84ef0037646d5489aa41c4a7",
+  "head_sha": "ae12c721c841aba3545b9519d3f53288c519084c",
   "last_verified_at": "2026-04-18T15:29:36.664Z",
   "last_verified_sha": "b9273fbdc7ff77af84ef0037646d5489aa41c4a7",
+  "merge_commit": "e6b1522515caf9647fb8e1627b0c7bb0c41ada66",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-18T15:31:31Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604181525-E9FXF3",
-  "updated_at": "2026-04-18T15:25:35.357Z",
+  "updated_at": "2026-04-18T15:31:31Z",
   "verify": {
     "status": "pass"
   }

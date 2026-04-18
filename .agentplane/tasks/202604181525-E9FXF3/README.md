@@ -1,10 +1,11 @@
 ---
 id: "202604181525-E9FXF3"
 title: "Publish recipes package in npm release workflow"
-status: "DOING"
+result_summary: "Merged via PR #460."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-18T15:29:36.664Z"
   updated_by: "CODER"
   note: "release workflow now treats @agentplaneorg/recipes as a required published package across detect, publish, smoke, and manifest surfaces; separate registry smoke reproduces that the currently published 0.3.13 release is still broken until recipes is actually published or superseded"
-commit: null
+commit:
+  hash: "e6b1522515caf9647fb8e1627b0c7bb0c41ada66"
+  message: "release: Publish recipes package in npm release workflow (E9FXF3) (#460)"
 comments:
   -
     author: "CODER"
     body: "Start: promote @agentplaneorg/recipes into the canonical release workflow so published agentplane builds cannot ship with an unpublished recipes dependency."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #460 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "release workflow now treats @agentplaneorg/recipes as a required published package across detect, publish, smoke, and manifest surfaces; separate registry smoke reproduces that the currently published 0.3.13 release is still broken until recipes is actually published or superseded"
+  -
+    type: "status"
+    at: "2026-04-18T15:32:02.773Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #460 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T15:29:36.667Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T15:32:02.779Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the release workflow, smoke checks, and publish-result accounting so every published agentplane release also publishes and confirms @agentplaneorg/recipes before the CLI package is considered complete."
 sections:
   Summary: |-
