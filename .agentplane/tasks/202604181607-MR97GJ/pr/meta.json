@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604181607-MR97GJ/release-recovery-and-gating-fix",
+  "created_at": "2026-04-18T16:07:49.005Z",
+  "head_sha": "da42a6e040488d0cd984bd5589f989edd2051ce5",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604181607-MR97GJ",
+  "updated_at": "2026-04-18T16:13:58.997Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

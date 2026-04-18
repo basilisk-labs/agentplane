@@ -1,0 +1,6 @@
+ .github/workflows/ci.yml                             | 11 ++++++++---
+ .github/workflows/publish.yml                        | 17 ++++++++++++++---
+ docs/developer/release-and-publishing.mdx            | 20 +++++++++++++-------
+ .../commands/release/ci-workflow-contract.test.ts    | 12 ++++++++++++
+ .../release/publish-workflow-contract.test.ts        |  7 +++++++
+ 5 files changed, 54 insertions(+), 13 deletions(-)

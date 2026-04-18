@@ -38,6 +38,13 @@ describe("publish workflow contract", () => {
 
     expect(workflow).toContain("fetch-depth: 0");
     expect(workflow).toContain("submodules: recursive");
+    expect(workflow).toContain("NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || '' }}");
+    expect(workflow).toContain("NPM_TOKEN: ${{ secrets.NPM_TOKEN || '' }}");
+    expect(workflow).toContain("name: Write npm auth config");
+    expect(workflow).toContain('if [ -n "${NODE_AUTH_TOKEN:-}" ]; then');
+    expect(workflow).toContain(
+      'printf "//registry.npmjs.org/:_authToken=%s\\n" "${NODE_AUTH_TOKEN}"',
+    );
     expect(workflow).toContain("Validate exact-ref publish payload");
     expect(workflow).toContain("run: bun run release:check");
     expect(workflow).toContain("recipes_published: ${{ steps.detect.outputs.recipes_published }}");

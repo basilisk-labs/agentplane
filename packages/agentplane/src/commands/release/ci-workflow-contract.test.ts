@@ -43,8 +43,12 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain(
       "!(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&",
     );
+    expect(workflow).toContain("github.event_name == 'push' &&");
+    expect(workflow).toContain("github.ref == 'refs/heads/main' &&");
+    expect(workflow).toContain("needs.changes.outputs.core == 'true' &&");
     expect(workflow).toContain("needs.test.result == 'success' &&");
     expect(workflow).toContain("needs.test-windows.result == 'success'");
+    expect(workflow).toContain("needs.changes.outputs.core != 'true'");
     expect(workflow).toContain("node scripts/manifest.mjs release-ready");
     expect(workflow).toContain("--out .agentplane/.release/ready/release-ready.json");
     expect(workflow).toContain('--sha "${{ steps.target.outputs.sha }}"');
@@ -70,5 +74,13 @@ describe("Core CI workflow contract", () => {
     expect(filters).toContain("!.agentplane/tasks/**");
     expect(filters).toContain(".github/workflows/**");
     expect(filters).toContain(".github/path-filters.yml");
+  });
+
+  it("still emits a release-ready manifest on push main when heavy gates were skipped", async () => {
+    const workflow = await readFile(CI_WORKFLOW_PATH, "utf8");
+
+    expect(workflow).toContain(
+      "(\n              needs.changes.outputs.core == 'true' &&\n              needs.test.result == 'success' &&\n              needs.test-windows.result == 'success'\n            ) ||\n            needs.changes.outputs.core != 'true'",
+    );
   });
 });
