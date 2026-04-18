@@ -13,7 +13,9 @@ Agent Plane has three layers with different responsibilities:
 
 The runtime layer owns command behavior. The core layer owns parsing, defaults, validators, and shared contracts. The spec layer is a generated mirror for tooling and external consumers, synchronized from runtime code into both `packages/spec/schemas` and `packages/core/schemas`.
 
-For the full validation baseline, see [Schema validation strategy](schema-validation-strategy).
+Durable config and task artifact contracts now use Zod in `packages/core/src/**` as the single source of truth, with generated JSON Schema mirrors emitted for tooling and external consumers.
+
+For the architectural decision and practical boundary guidance, see [ADR: Zod Contract SSOT](schema-runtime-contract-adr) and [Schema validation strategy](schema-validation-strategy).
 
 ## Framework control plane
 
