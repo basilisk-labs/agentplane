@@ -75,6 +75,30 @@ describe("commands/shared/merged-branch-cleanup", () => {
     );
   });
 
+  it("treats a branch that disappears after worktree removal as already cleaned up", async () => {
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
+    mocks.findWorktreeForBranch.mockResolvedValue("/repo/.agentplane/worktrees/task-T5");
+    mocks.gitBranchExists.mockResolvedValue(false);
+
+    const result = await cleanupMergedLocalBranch({
+      gitRoot: "/repo",
+      branch: "task/T-5",
+    });
+
+    expect(result).toEqual({
+      removedBranch: false,
+      removedWorktree: true,
+      worktreePath: "/repo/.agentplane/worktrees/task-T5",
+      skippedReason: null,
+    });
+    expect(mocks.execFileAsync).toHaveBeenCalledTimes(1);
+    expect(mocks.execFileAsync).toHaveBeenCalledWith(
+      "git",
+      ["worktree", "remove", "--force", "/repo/.agentplane/worktrees/task-T5"],
+      expect.objectContaining({ cwd: "/repo" }),
+    );
+  });
+
   it("skips cleanup when the branch worktree lives outside the repo", async () => {
     const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
     mocks.findWorktreeForBranch.mockResolvedValue("/tmp/agentplane-external-worktree");

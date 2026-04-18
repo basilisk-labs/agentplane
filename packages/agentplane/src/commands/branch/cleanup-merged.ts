@@ -11,6 +11,7 @@ import { ensureGitClean } from "../guard/index.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { gitDiffNames } from "../shared/git-diff.js";
 import { gitBranchExists, gitCurrentBranch, gitIsAncestor } from "../shared/git-ops.js";
+import { cleanupMergedLocalBranch } from "../shared/merged-branch-cleanup.js";
 import {
   findWorktreeForBranch,
   gitListBranchesByPrefixes,
@@ -280,15 +281,10 @@ export async function cmdCleanupMerged(opts: {
         await archivePrArtifacts(taskDir);
       }
 
-      if (worktreePath) {
-        await execFileAsync("git", ["worktree", "remove", "--force", worktreePath], {
-          cwd: resolved.gitRoot,
-          env: gitEnv(),
-        });
-      }
-      await execFileAsync("git", ["branch", "-D", item.branch], {
-        cwd: resolved.gitRoot,
-        env: gitEnv(),
+      await cleanupMergedLocalBranch({
+        gitRoot: resolved.gitRoot,
+        branch: item.branch,
+        worktreePathHint: worktreePath,
       });
       if (opts.deleteRemoteBranches) {
         deletedRemoteBranches += (await deleteRemoteBranchIfPresent(resolved.gitRoot, item.branch))

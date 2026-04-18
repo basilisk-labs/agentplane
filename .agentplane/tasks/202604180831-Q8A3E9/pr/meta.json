@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604180831-Q8A3E9/cleanup-merged-idempotent",
+  "created_at": "2026-04-18T08:32:33.833Z",
+  "head_sha": "6ea5b5376aeead99c79faaae1ae24666279a171e",
+  "last_verified_at": "2026-04-18T08:33:54.466Z",
+  "last_verified_sha": "b42026198d6dfc7e37df79d08ea0f083d33de9db",
+  "schema_version": 1,
+  "task_id": "202604180831-Q8A3E9",
+  "updated_at": "2026-04-18T08:34:23.341Z",
+  "verify": {
+    "status": "pass"
+  }
+}
