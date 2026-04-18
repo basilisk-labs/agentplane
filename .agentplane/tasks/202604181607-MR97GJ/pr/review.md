@@ -45,12 +45,17 @@ Recover the exact v0.3.14 release publication from merged SHA 2568c8cffc5363f691
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-18T16:07:49.005Z
+- Updated: 2026-04-18T16:13:58.997Z
 - Branch: task/202604181607-MR97GJ/release-recovery-and-gating-fix
-- Head: d8d3a88487ba
+- Head: da42a6e04048
 
 ```text
-No changes detected.
+ .github/workflows/ci.yml                             | 11 ++++++++---
+ .github/workflows/publish.yml                        | 17 ++++++++++++++---
+ docs/developer/release-and-publishing.mdx            | 20 +++++++++++++-------
+ .../commands/release/ci-workflow-contract.test.ts    | 12 ++++++++++++
+ .../release/publish-workflow-contract.test.ts        |  7 +++++++
+ 5 files changed, 54 insertions(+), 13 deletions(-)
 ```
 
 </details>
