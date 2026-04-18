@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604180617-SWBDDT/command-result-contract",
   "created_at": "2026-04-18T07:43:16.224Z",
-  "head_sha": "2228a79526611e2ea29c0cae86984ea9dde955c9",
+  "head_sha": "48582c21f343196e7ae09a8caf5e45f46ebec6c8",
   "last_verified_at": "2026-04-18T07:55:53.750Z",
   "last_verified_sha": "534b112df55da823370a2612fdbc3a17bfe761df",
+  "merge_commit": "7765778f23878732ec2fea8426b5ff84b5d939d2",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-18T08:09:10Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604180617-SWBDDT",
-  "updated_at": "2026-04-18T07:58:45.607Z",
+  "updated_at": "2026-04-18T08:09:10Z",
   "verify": {
     "status": "pass"
   }
