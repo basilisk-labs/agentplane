@@ -1,10 +1,10 @@
 ---
 id: "202604180617-SWBDDT"
 title: "Adopt CommandResult for release and task commands"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 2
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +25,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: introduce CommandResult contract, move selected release/task commands to renderer-owned output, and verify command-level behavior plus fast CI."
+events:
+  -
+    type: "status"
+    at: "2026-04-18T07:43:16.189Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: introduce CommandResult contract, move selected release/task commands to renderer-owned output, and verify command-level behavior plus fast CI."
 doc_version: 3
-doc_updated_at: "2026-04-18T06:18:07.921Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-18T07:43:16.195Z"
+doc_updated_by: "CODER"
 description: "Introduce a typed command result contract and route selected release/task commands through renderer-owned output so command handlers stop writing output ad hoc."
 sections:
   Summary: |-

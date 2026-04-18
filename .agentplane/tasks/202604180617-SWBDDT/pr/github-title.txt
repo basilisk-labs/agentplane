@@ -1,0 +1,1 @@
+cli/output: Adopt CommandResult for release and task commands (SWBDDT)

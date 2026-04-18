@@ -34,6 +34,40 @@ export type CliEmitter = {
   success: (action: string, target?: string, details?: string, stream?: CliEmitterStream) => void;
 };
 
+export type CommandResult =
+  | {
+      kind: "line";
+      text: string;
+      stream?: CliEmitterStream;
+    }
+  | {
+      kind: "info";
+      message: string;
+      stream?: CliEmitterStream;
+    }
+  | {
+      kind: "warn";
+      message: string;
+      stream?: CliEmitterStream;
+    }
+  | {
+      kind: "success";
+      action: string;
+      target?: string;
+      details?: string;
+      stream?: CliEmitterStream;
+    }
+  | {
+      kind: "json";
+      value: unknown;
+      stream?: CliEmitterStream;
+    }
+  | {
+      kind: "report";
+      entries: Iterable<CliReportEntry>;
+      options?: CliReportOptions;
+    };
+
 function ensureTrailingNewline(text: string): string {
   return text.endsWith("\n") ? text : `${text}\n`;
 }
@@ -204,4 +238,39 @@ export function createCliEmitter(streams?: {
       line(successMessage(action, target, details), stream);
     },
   };
+}
+
+export function emitCommandResult(emitter: CliEmitter, result: CommandResult): void {
+  switch (result.kind) {
+    case "line": {
+      emitter.line(result.text, result.stream);
+      return;
+    }
+    case "info": {
+      emitter.info(result.message, result.stream);
+      return;
+    }
+    case "warn": {
+      emitter.warn(result.message, result.stream);
+      return;
+    }
+    case "success": {
+      emitter.success(result.action, result.target, result.details, result.stream);
+      return;
+    }
+    case "json": {
+      emitter.json(result.value, result.stream);
+      return;
+    }
+    case "report": {
+      emitter.report(result.entries, result.options);
+      return;
+    }
+  }
+}
+
+export function emitCommandResults(emitter: CliEmitter, results: Iterable<CommandResult>): void {
+  for (const result of results) {
+    emitCommandResult(emitter, result);
+  }
 }

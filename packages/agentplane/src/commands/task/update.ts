@@ -1,6 +1,6 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
-import { successMessage, unknownEntityMessage, warnMessage } from "../../cli/output.js";
+import { createCliEmitter, emitCommandResult, unknownEntityMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import {
@@ -12,6 +12,8 @@ import {
   toStringArray,
   warnIfUnknownOwner,
 } from "./shared.js";
+
+const output = createCliEmitter();
 
 export async function cmdTaskUpdate(opts: {
   ctx?: CommandContext;
@@ -75,11 +77,11 @@ export async function cmdTaskUpdate(opts: {
     const hasSpike = mergedTags.some((tag) => tag.trim().toLowerCase() === spikeTag);
     const hasImplementationTags = requiresVerifyStepsByPrimary(mergedTags, ctx.config);
     if (hasSpike && hasImplementationTags) {
-      process.stderr.write(
-        `${warnMessage(
+      emitCommandResult(output, {
+        kind: "warn",
+        message:
           "spike is combined with a primary tag that requires verify steps; consider splitting spike vs implementation tasks",
-        )}\n`,
-      );
+      });
     }
 
     const existingDepends = opts.replaceDependsOn
@@ -98,7 +100,11 @@ export async function cmdTaskUpdate(opts: {
     next.verify = mergedVerify;
 
     await ctx.taskBackend.writeTask(next);
-    process.stdout.write(`${successMessage("updated", opts.taskId)}\n`);
+    emitCommandResult(output, {
+      kind: "success",
+      action: "updated",
+      target: opts.taskId,
+    });
     return 0;
   } catch (err) {
     if (err instanceof CliError) {
