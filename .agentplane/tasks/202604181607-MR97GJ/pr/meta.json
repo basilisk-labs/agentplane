@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604181607-MR97GJ/release-recovery-and-gating-fix",
   "created_at": "2026-04-18T16:07:49.005Z",
-  "head_sha": "da42a6e040488d0cd984bd5589f989edd2051ce5",
+  "head_sha": "1fcb02ea9edf1c0fe99cce1e8111f5676008d03e",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "b3c3741c6e94d279a97e9d95833f569f125492bd",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-18T16:16:00Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604181607-MR97GJ",
-  "updated_at": "2026-04-18T16:13:58.997Z",
+  "updated_at": "2026-04-18T16:16:00Z",
   "verify": {
     "status": "skipped"
   }

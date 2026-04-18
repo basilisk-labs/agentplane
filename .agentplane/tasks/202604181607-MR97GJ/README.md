@@ -1,10 +1,11 @@
 ---
 id: "202604181607-MR97GJ"
 title: "Recover v0.3.14 publish and fix release-ready gating"
-status: "DOING"
+result_summary: "Merged via PR #468."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "b3c3741c6e94d279a97e9d95833f569f125492bd"
+  message: "release: Recover v0.3.14 publish and fix release-ready gating (MR97GJ) (#468)"
 comments:
   -
     author: "CODER"
     body: "Start: recover the exact v0.3.14 publication from merged SHA 2568c8cffc5363f691985c954f3850e6949696ce, then patch CI/publish routing so release merges that include release notes and task artifacts still emit release-ready artifacts and auto-publish."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #468 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -34,9 +40,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: recover the exact v0.3.14 publication from merged SHA 2568c8cffc5363f691985c954f3850e6949696ce, then patch CI/publish routing so release merges that include release notes and task artifacts still emit release-ready artifacts and auto-publish."
+  -
+    type: "status"
+    at: "2026-04-18T16:16:33.329Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #468 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T16:07:48.972Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T16:16:33.335Z"
+doc_updated_by: "INTEGRATOR"
 description: "Recover the exact v0.3.14 release publication from merged SHA 2568c8cffc5363f691985c954f3850e6949696ce, then fix Core CI/publish workflow routing so release merges that include release notes and task artifacts still produce a release-ready artifact and auto-publish without manual recovery."
 sections:
   Summary: |-
