@@ -1,10 +1,11 @@
 ---
 id: "202604180617-MV8SE2"
 title: "Introduce command-layer backend capability helpers"
-status: "DOING"
+result_summary: "Merged via PR #438."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-18T06:39:23.410Z"
   updated_by: "CODER"
   note: "Backend capability facade now drives local-task-store routing in shared task command paths; focused and full fast-suite verification passed."
-commit: null
+commit:
+  hash: "6d15b926baae31371eeea6c409e60e93bbfe0228"
+  message: "architecture/backend: Introduce command-layer backend capability helpers (MV8SE2) (#438)"
 comments:
   -
     author: "CODER"
     body: "Start: add a command/shared backend capability facade so task-store and task-mutation helpers stop branching directly on backendId and local backend type checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #438 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Backend capability facade now drives local-task-store routing in shared task command paths; focused and full fast-suite verification passed."
+  -
+    type: "status"
+    at: "2026-04-18T07:35:54.856Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #438 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T06:39:23.422Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T07:35:54.862Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a command/shared capability facade over task backend traits so command services stop branching on backendId/local-backend checks directly."
 sections:
   Summary: |-

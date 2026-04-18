@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604180617-MV8SE2/backend-capability-facade",
   "created_at": "2026-04-18T06:39:23.537Z",
-  "head_sha": "e7d63f04c6d894177e7fee250fe9f36f25822100",
+  "head_sha": "20ae22c9615928edb0a5797ec5d1acc56b38b9e1",
   "last_verified_at": "2026-04-18T06:39:23.410Z",
   "last_verified_sha": "6cfd5f6857925b1b5ecdfd3594d80f81011bd3b6",
+  "merge_commit": "6d15b926baae31371eeea6c409e60e93bbfe0228",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-18T07:35:28Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604180617-MV8SE2",
-  "updated_at": "2026-04-18T06:42:53.525Z",
+  "updated_at": "2026-04-18T07:35:28Z",
   "verify": {
     "status": "pass"
   }
