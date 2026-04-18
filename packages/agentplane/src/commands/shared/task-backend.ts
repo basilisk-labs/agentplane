@@ -16,6 +16,7 @@ import { CliError } from "../../shared/errors.js";
 import {
   loadTaskBackend,
   taskRecordToData,
+  type TaskBackendCapabilities,
   type TaskBackend,
   toTaskSummary,
   type TaskData,
@@ -114,7 +115,24 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
 }
 
 export function getTaskBackendCapabilities(ctx: CommandContext) {
-  return ctx.taskBackend.capabilities;
+  const capabilities = ctx.taskBackend?.capabilities;
+  if (capabilities) return capabilities;
+
+  const isLocal = ctx.backendId === "local";
+  return {
+    canonical_source: isLocal ? "local" : "remote",
+    projection: isLocal ? "canonical" : "cache",
+    projection_read_mode: "native",
+    reads_from_projection_by_default: !isLocal,
+    writes_task_readmes: isLocal,
+    supports_task_revisions: isLocal,
+    supports_revision_guarded_writes: isLocal,
+    may_access_network_on_read: !isLocal,
+    may_access_network_on_write: !isLocal,
+    supports_projection_refresh: !isLocal,
+    supports_push_sync: !isLocal,
+    supports_snapshot_export: true,
+  } satisfies TaskBackendCapabilities;
 }
 
 export function backendHasLocalCanonicalSource(ctx: CommandContext): boolean {

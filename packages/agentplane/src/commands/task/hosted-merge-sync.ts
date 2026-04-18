@@ -11,6 +11,7 @@ import { withGhTransportRetry } from "../shared/gh-transport.js";
 import { parseTaskIdFromBranch } from "../shared/git-worktree.js";
 import { parsePrMeta } from "../shared/pr-meta.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { backendUsesLocalTaskStore } from "../shared/task-backend.js";
 import { ghEnv } from "../pr/internal/gh-api.js";
 import { appendTaskEvent } from "./shared.js";
 
@@ -458,7 +459,7 @@ export async function syncHostedMergedTask(opts: {
   missingTask?: "noop" | "error";
   missingPrMeta?: "noop" | "error";
 }): Promise<HostedMergeSyncResult> {
-  if (opts.ctx.backendId !== "local" || opts.ctx.config.workflow_mode !== "branch_pr") {
+  if (!backendUsesLocalTaskStore(opts.ctx) || opts.ctx.config.workflow_mode !== "branch_pr") {
     return { tasks: opts.tasks, synced: 0 };
   }
 
@@ -518,7 +519,7 @@ export async function findLocallyShippedBranchPrTasks(opts: {
   ctx: CommandContext;
   tasks: TaskData[];
 }): Promise<LocalBranchPrSyncCandidate[]> {
-  if (opts.ctx.backendId !== "local" || opts.ctx.config.workflow_mode !== "branch_pr") {
+  if (!backendUsesLocalTaskStore(opts.ctx) || opts.ctx.config.workflow_mode !== "branch_pr") {
     return [];
   }
 
@@ -578,7 +579,7 @@ export async function findDoneBranchPrTasksWithOpenPrArtifacts(opts: {
   ctx: CommandContext;
   tasks: TaskData[];
 }): Promise<LocalDoneBranchPrDrift[]> {
-  if (opts.ctx.backendId !== "local" || opts.ctx.config.workflow_mode !== "branch_pr") {
+  if (!backendUsesLocalTaskStore(opts.ctx) || opts.ctx.config.workflow_mode !== "branch_pr") {
     return [];
   }
 
@@ -650,7 +651,7 @@ export async function syncHostedMergedTasks(opts: {
   ctx: CommandContext;
   tasks: TaskData[];
 }): Promise<HostedMergeSyncResult> {
-  if (opts.ctx.backendId !== "local" || opts.ctx.config.workflow_mode !== "branch_pr") {
+  if (!backendUsesLocalTaskStore(opts.ctx) || opts.ctx.config.workflow_mode !== "branch_pr") {
     return { tasks: opts.tasks, synced: 0 };
   }
 

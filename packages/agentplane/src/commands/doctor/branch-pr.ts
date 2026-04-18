@@ -3,14 +3,16 @@ import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../../shared/diagnostics.js";
-import type { CommandContext } from "../shared/task-backend.js";
+import { backendUsesLocalTaskStore, type CommandContext } from "../shared/task-backend.js";
 import {
   findDoneBranchPrTasksWithOpenPrArtifacts,
   findLocallyShippedBranchPrTasks,
 } from "../task/hosted-merge-sync.js";
 
 export async function checkBranchPrShippedTaskDrift(ctx?: CommandContext): Promise<string[]> {
-  if (ctx?.backendId !== "local" || ctx.config.workflow_mode !== "branch_pr") return [];
+  if (!ctx || !backendUsesLocalTaskStore(ctx) || ctx.config.workflow_mode !== "branch_pr") {
+    return [];
+  }
 
   let tasks: TaskData[] = [];
   try {
@@ -51,7 +53,9 @@ export async function checkBranchPrShippedTaskDrift(ctx?: CommandContext): Promi
 }
 
 export async function checkBranchPrDoneTaskOpenPrDrift(ctx?: CommandContext): Promise<string[]> {
-  if (ctx?.backendId !== "local" || ctx.config.workflow_mode !== "branch_pr") return [];
+  if (!ctx || !backendUsesLocalTaskStore(ctx) || ctx.config.workflow_mode !== "branch_pr") {
+    return [];
+  }
 
   const tasks = await readDoneTaskSnapshot(ctx);
   if (tasks.length === 0) return [];
