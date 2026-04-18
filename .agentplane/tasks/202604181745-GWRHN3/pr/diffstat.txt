@@ -1,0 +1,3 @@
+ packages/agentplane/src/commands/release/apply.mutation.ts    |  5 ++++-
+ .../src/commands/release/release-check-script.test.ts         | 11 ++++++++---
+ 2 files changed, 12 insertions(+), 4 deletions(-)
