@@ -94,8 +94,25 @@ describeWhenNotHook("release apply", () => {
     await seedReleaseWorkspace(root, {
       coreVersion: "0.2.6",
       cliVersion: "0.2.6",
+      recipesVersion: "0.2.6",
       dependencyVersion: "0.2.6",
+      recipesDependencyVersion: "0.2.6",
     });
+    await mkdir(path.join(root, "packages", "testkit"), { recursive: true });
+    await writeFile(
+      path.join(root, "packages", "testkit", "package.json"),
+      JSON.stringify(
+        {
+          name: "@agentplane/testkit",
+          version: "0.0.0",
+          private: true,
+          dependencies: { agentplane: "0.2.6" },
+        },
+        null,
+        2,
+      ) + "\n",
+      "utf8",
+    );
     await commitAll(root, "seed");
     await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
@@ -142,6 +159,10 @@ describeWhenNotHook("release apply", () => {
       path.join(root, "packages", "recipes", "package.json"),
       "utf8",
     );
+    const testkitText = await readFile(
+      path.join(root, "packages", "testkit", "package.json"),
+      "utf8",
+    );
     const agentplaneText = await readFile(
       path.join(root, "packages", "agentplane", "package.json"),
       "utf8",
@@ -152,6 +173,7 @@ describeWhenNotHook("release apply", () => {
     expect(agentplaneText).toContain('"version": "0.2.7"');
     expect(agentplaneText).toContain('"@agentplaneorg/core": "0.2.7"');
     expect(agentplaneText).toContain('"@agentplaneorg/recipes": "0.2.7"');
+    expect(testkitText).toContain('"agentplane": "0.2.7"');
     expect(configText).toContain('"expected_version": "0.2.7"');
 
     const { stdout: tagOut } = await execFileAsync("git", ["tag", "--list", "v0.2.7"], {
@@ -166,6 +188,7 @@ describeWhenNotHook("release apply", () => {
     );
     expect(committedFiles).toContain(".agentplane/config.json");
     expect(committedFiles).toContain("packages/recipes/package.json");
+    expect(committedFiles).toContain("packages/testkit/package.json");
 
     const reportPath = path.join(root, ".agentplane", ".release", "apply", "latest.json");
     const report = JSON.parse(await readFile(reportPath, "utf8")) as {

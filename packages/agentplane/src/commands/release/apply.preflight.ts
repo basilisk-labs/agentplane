@@ -115,6 +115,10 @@ export async function readRecipesDependencyVersion(pkgJsonPath: string): Promise
   return await readDependencyVersion(pkgJsonPath, "@agentplaneorg/recipes");
 }
 
+export async function readAgentplaneDependencyVersion(pkgJsonPath: string): Promise<string> {
+  return await readDependencyVersion(pkgJsonPath, "agentplane");
+}
+
 export async function validateReleaseNotes(notesPath: string, minBullets: number): Promise<void> {
   const content = await readFile(notesPath, "utf8");
   if (!/release\s+notes/i.test(content)) {

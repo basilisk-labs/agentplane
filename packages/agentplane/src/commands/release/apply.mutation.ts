@@ -65,6 +65,26 @@ export async function replaceAgentplanePackageMetadata(
   await writeFile(pkgJsonPath, withRecipesDependency, "utf8");
 }
 
+export async function replacePackageDependencyVersion(
+  pkgJsonPath: string,
+  dependencyName: string,
+  nextVersion: string,
+): Promise<void> {
+  const text = await readFile(pkgJsonPath, "utf8");
+  const pattern = new RegExp(`("${dependencyName.replace("/", "\\/")}"\\s*:\\s*")[^"]*(")`, "u");
+  const replaced = text.replace(pattern, `$1${nextVersion}$2`);
+  if (replaced === text) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Failed to update ${dependencyName} dependency in ${pkgJsonPath}. ` +
+        "Ensure the package.json declares this dependency.",
+    });
+  }
+  await writeFile(pkgJsonPath, replaced, "utf8");
+}
+
 export async function maybeUpdateBunLockfile(
   gitRoot: string,
   fileExists: (p: string) => Promise<boolean>,

@@ -25,6 +25,7 @@ import {
   maybeRefreshGeneratedReference,
   maybeUpdateBunLockfile,
   replaceAgentplanePackageMetadata,
+  replacePackageDependencyVersion,
   replacePackageVersionInFile,
 } from "./apply.mutation.js";
 import {
@@ -35,9 +36,10 @@ import {
   ensureTagDoesNotExist,
   fileExists,
   loadReleasePlan,
+  readAgentplaneDependencyVersion,
   readCoreDependencyVersion,
-  readRecipesDependencyVersion,
   readPackageVersion,
+  readRecipesDependencyVersion,
   runReleasePrepublishGate,
   validateReleaseNotes,
 } from "./apply.preflight.js";
@@ -101,6 +103,7 @@ async function ensureReleasePlanMatchesRepoState(opts: {
   corePkgPath: string;
   agentplanePkgPath: string;
   recipesPkgPath: string;
+  testkitPkgPath: string;
 }): Promise<void> {
   const [
     coreVersion,
@@ -143,6 +146,21 @@ async function ensureReleasePlanMatchesRepoState(opts: {
         `packages/agentplane dependency @agentplaneorg/recipes=${recipesDependencyVersion} ` +
         `must match packages/recipes version ${coreVersion}.`,
     });
+  }
+  if (await fileExists(opts.testkitPkgPath)) {
+    const testkitAgentplaneDependencyVersion = await readAgentplaneDependencyVersion(
+      opts.testkitPkgPath,
+    );
+    if (testkitAgentplaneDependencyVersion !== agentplaneVersion) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message:
+          "Release dependency parity check failed before apply. " +
+          `packages/testkit dependency agentplane=${testkitAgentplaneDependencyVersion} ` +
+          `must match packages/agentplane version ${agentplaneVersion}.`,
+      });
+    }
   }
 
   await ensureCleanTrackedTree(opts.gitRoot);
@@ -217,6 +235,7 @@ async function applyReleaseMutation(opts: {
   corePkgPath: string;
   agentplanePkgPath: string;
   recipesPkgPath: string;
+  testkitPkgPath: string;
   nextTag: string;
   nextVersion: string;
   route: ReleaseApplyRoute;
@@ -228,6 +247,9 @@ async function applyReleaseMutation(opts: {
     replacePackageVersionInFile(opts.recipesPkgPath, opts.nextVersion),
     replaceAgentplanePackageMetadata(opts.agentplanePkgPath, opts.nextVersion),
   ]);
+  if (await fileExists(opts.testkitPkgPath)) {
+    await replacePackageDependencyVersion(opts.testkitPkgPath, "agentplane", opts.nextVersion);
+  }
 
   const expectedCliVersionPersisted = await maybePersistExpectedCliVersion(
     opts.agentplaneDir,
@@ -242,6 +264,9 @@ async function applyReleaseMutation(opts: {
     "packages/recipes/package.json",
     path.relative(opts.gitRoot, opts.notesPath),
   ];
+  if (await fileExists(opts.testkitPkgPath)) {
+    stagePaths.push("packages/testkit/package.json");
+  }
   if (expectedCliVersionPersisted) {
     stagePaths.push(".agentplane/config.json");
   }
@@ -385,6 +410,7 @@ async function buildReleaseCommandState(opts: {
     corePkgPath: path.join(gitRoot, "packages", "core", "package.json"),
     agentplanePkgPath: path.join(gitRoot, "packages", "agentplane", "package.json"),
     recipesPkgPath: path.join(gitRoot, "packages", "recipes", "package.json"),
+    testkitPkgPath: path.join(gitRoot, "packages", "testkit", "package.json"),
     npmVersionChecked: false,
   };
 }
@@ -423,6 +449,7 @@ async function runReleaseCommandPreflight(opts: {
     corePkgPath: opts.state.corePkgPath,
     agentplanePkgPath: opts.state.agentplanePkgPath,
     recipesPkgPath: opts.state.recipesPkgPath,
+    testkitPkgPath: opts.state.testkitPkgPath,
   });
 
   if (opts.flags.push) {
@@ -451,6 +478,7 @@ async function runReleaseCommandExecute(
     corePkgPath: state.corePkgPath,
     agentplanePkgPath: state.agentplanePkgPath,
     recipesPkgPath: state.recipesPkgPath,
+    testkitPkgPath: state.testkitPkgPath,
     nextTag: state.plan.nextTag,
     nextVersion: state.plan.nextVersion,
     route: state.route,

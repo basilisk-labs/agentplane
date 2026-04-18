@@ -64,6 +64,7 @@ export type ReleaseCommandState = {
   corePkgPath: string;
   agentplanePkgPath: string;
   recipesPkgPath: string;
+  testkitPkgPath: string;
   npmVersionChecked: boolean;
 };
 
