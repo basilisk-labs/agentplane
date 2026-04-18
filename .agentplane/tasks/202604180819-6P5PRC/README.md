@@ -1,10 +1,11 @@
 ---
 id: "202604180819-6P5PRC"
 title: "Materialize branch_pr close tails without dirtying base"
-status: "DOING"
+result_summary: "Merged via PR #451."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-18T08:23:57.103Z"
   updated_by: "CODER"
   note: "branch_pr finish now materializes a local task-close branch before the deterministic close commit, returns the checkout to the base branch, and keeps hosted-close/cleanup flows intact; typecheck, finish.unit, targeted cleanup-merged, targeted hosted-close-pr, and focused lint passed."
-commit: null
+commit:
+  hash: "13d41f9c3a7b80b0b3707040dc4c3d9caca4bba1"
+  message: "refactor/workflow: Materialize branch_pr close tails without dirtying base (6P5PRC) (#451)"
 comments:
   -
     author: "CODER"
     body: "Start: remove the manual branch_pr close-tail loop by giving finish a deterministic way to materialize tracked closure artifacts without dirtying the base checkout first."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #451 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "branch_pr finish now materializes a local task-close branch before the deterministic close commit, returns the checkout to the base branch, and keeps hosted-close/cleanup flows intact; typecheck, finish.unit, targeted cleanup-merged, targeted hosted-close-pr, and focused lint passed."
+  -
+    type: "status"
+    at: "2026-04-18T08:28:20.534Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #451 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T08:23:57.107Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T08:28:20.540Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove the manual branch_pr finish loop where finish marks a task DONE on base but still leaves tracked task artifact changes that must be hand-packaged into a follow-up task-close branch. Add a canonical helper so the close tail can be materialized deterministically without dirtying the base checkout."
 sections:
   Summary: |-
