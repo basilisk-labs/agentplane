@@ -14,7 +14,7 @@ function writeBinary(filePath: string, content: string) {
 }
 
 describe("release-check script", () => {
-  it("uses explicit NPM_CONFIG_CACHE and both release package dirs", async () => {
+  it("uses explicit NPM_CONFIG_CACHE and all release package dirs", async () => {
     const tmpRoot = mkdtempSync(path.join(tmpdir(), "agentplane-release-check-"));
     const binDir = path.join(tmpRoot, "bin");
     const logPath = path.join(tmpRoot, "npm-call.log");
@@ -63,18 +63,23 @@ describe("release-check script", () => {
           (line) => JSON.parse(line) as { cwd: string; args: string[]; cache: string | undefined },
         );
 
-      expect(lines).toHaveLength(2);
+      expect(lines).toHaveLength(3);
       expect(lines.map((entry) => entry.args)).toEqual([
+        ["pack", "--dry-run"],
         ["pack", "--dry-run"],
         ["pack", "--dry-run"],
       ]);
       expect(lines[0].cache).toBe(cachePath);
       expect(lines[1].cache).toBe(cachePath);
+      expect(lines[2].cache).toBe(cachePath);
       expect(
         path.normalize(lines[0].cwd).includes(path.normalize(path.join("packages", "core"))),
       ).toBe(true);
       expect(
-        path.normalize(lines[1].cwd).includes(path.normalize(path.join("packages", "agentplane"))),
+        path.normalize(lines[1].cwd).includes(path.normalize(path.join("packages", "recipes"))),
+      ).toBe(true);
+      expect(
+        path.normalize(lines[2].cwd).includes(path.normalize(path.join("packages", "agentplane"))),
       ).toBe(true);
     } finally {
       rmSync(tmpRoot, { recursive: true, force: true });
