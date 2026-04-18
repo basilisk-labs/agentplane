@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 
 import {
   hasReleaseTagPush,
+  isDeleteOnlyPush,
   parsePrePushStdin,
   readChangedFilesForRange,
   resolveDefaultBaseRef,
@@ -56,6 +57,10 @@ function main() {
       .trim()
       .toLowerCase() === "1";
   const isReleasePush = envRelease || envFull || hasReleaseTagPush(updates);
+  if (!isReleasePush && isDeleteOnlyPush(updates)) {
+    process.stdout.write("Skipping pre-push checks for delete-only remote branch cleanup.\n");
+    return;
+  }
   const mode = isReleasePush ? "release" : "standard";
   process.stdout.write(`Running pre-push checks in ${mode} mode.\n`);
   const ciScript = envFull ? "ci:local:full" : "ci:local:fast";

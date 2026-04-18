@@ -909,6 +909,49 @@ describe("runCli", () => {
     expect(changedFiles.trim()).toBe(".agentplane/tasks/202604071841-HWNRXM/README.md");
   });
 
+  it("pre-push hook skips format and local ci for delete-only remote branch cleanup", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "hook-test",
+          private: true,
+          scripts: {
+            "format:check": "node scripts/format-check.mjs",
+            "ci:local:fast": "node scripts/ci-fast.mjs",
+            "ci:local:full": "node scripts/ci-fast.mjs",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    await writeFile(
+      path.join(root, "scripts", "format-check.mjs"),
+      'throw new Error("format should not run during delete-only cleanup");\n',
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "scripts", "ci-fast.mjs"),
+      'throw new Error("ci should not run during delete-only cleanup");\n',
+      "utf8",
+    );
+
+    const output = execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
+      cwd: root,
+      stdio: "pipe",
+      input:
+        "(delete) 0000000000000000000000000000000000000000 refs/heads/task-close/202604180819-6P5PRC/base-head-sh abcdef1234567890abcdef1234567890abcdef12\n",
+      encoding: "utf8",
+    });
+
+    expect(output).toContain("Skipping pre-push checks for delete-only remote branch cleanup.");
+    expect(output).not.toContain("Running pre-push checks");
+  });
+
   it("hooks run pre-commit allows tasks.json with env override", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

@@ -42,14 +42,16 @@ const { parseChangedFilesEnv, selectFastCiPlan, shouldRunCliDocsCheck } =
     shouldRunCliDocsCheck: (changedFiles: string[]) => boolean;
   };
 
-const { hasReleaseTagPush, parsePrePushStdin, selectBranchDiffRange } = prePushScopeModule as {
+const { hasReleaseTagPush, isDeleteOnlyPush, parsePrePushStdin, selectBranchDiffRange } =
+  prePushScopeModule as {
   hasReleaseTagPush: (updates: PrePushUpdate[]) => boolean;
+  isDeleteOnlyPush: (updates: PrePushUpdate[]) => boolean;
   parsePrePushStdin: (rawStdin: unknown) => PrePushUpdate[];
   selectBranchDiffRange: (
     updates: PrePushUpdate[],
     opts?: { newBranchFallbackRef?: string | null },
   ) => { from: string; to: string } | null;
-};
+  };
 
 describe("local CI fast selection", () => {
   it("treats docs and policy changes as docs-only", () => {
@@ -383,6 +385,20 @@ describe("pre-push scope selection", () => {
       "refs/heads/main abc refs/heads/main def\nrefs/tags/v0.3.3 abc refs/tags/v0.3.3 def\n",
     );
     expect(hasReleaseTagPush(updates)).toBe(true);
+  });
+
+  it("detects delete-only branch cleanup pushes", () => {
+    const updates = parsePrePushStdin(
+      "(delete) 0000000000000000000000000000000000000000 refs/heads/task-close/T-1/abc def\n",
+    );
+    expect(isDeleteOnlyPush(updates)).toBe(true);
+  });
+
+  it("does not treat normal branch publishes as delete-only pushes", () => {
+    const updates = parsePrePushStdin(
+      "refs/heads/task/T-1 abc refs/heads/task/T-1 0000000000000000000000000000000000000000\n",
+    );
+    expect(isDeleteOnlyPush(updates)).toBe(false);
   });
 
   it("selects a diff range for a single branch update", () => {
