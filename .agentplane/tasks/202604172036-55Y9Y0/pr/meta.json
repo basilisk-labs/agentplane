@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604172036-55Y9Y0/schema-zod-adr",
   "created_at": "2026-04-18T05:28:57.502Z",
-  "head_sha": "cbbb309534ff899622596a95d131c1a77f37dfcb",
+  "head_sha": "07e840b543d6d2f5ba3ba55f4c634b569b144007",
   "last_verified_at": "2026-04-18T05:28:57.442Z",
   "last_verified_sha": "a26f4be516f65a930c215f264f402d156df06383",
+  "merge_commit": "483895a517ddc18682fc5bc62f46799bd407a16c",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-18T05:40:16Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604172036-55Y9Y0",
-  "updated_at": "2026-04-18T05:29:17.104Z",
+  "updated_at": "2026-04-18T05:40:16Z",
   "verify": {
     "status": "pass"
   }

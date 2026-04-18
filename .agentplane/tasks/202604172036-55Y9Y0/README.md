@@ -1,10 +1,11 @@
 ---
 id: "202604172036-55Y9Y0"
 title: "Write ADR for schema runtime contract strategy"
-status: "DOING"
+result_summary: "Merged via PR #434."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-18T05:28:57.442Z"
   updated_by: "PLANNER"
   note: "Validated schema-contract ADR refresh: added a Zod-SSOT ADR, rewrote the practical schema strategy page around durable vs transient boundaries, updated adjacent architecture/project-layout references, and confirmed lint:core plus Prettier checks stayed green."
-commit: null
+commit:
+  hash: "483895a517ddc18682fc5bc62f46799bd407a16c"
+  message: "architecture/docs: Write ADR for schema runtime contract strategy (55Y9Y0) (#434)"
 comments:
   -
     author: "PLANNER"
     body: "Start: replace the stale AJV-first schema strategy doc with a Zod-SSOT ADR, update adjacent developer docs to match the codebase, and keep scope limited to schema-contract documentation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #434 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Validated schema-contract ADR refresh: added a Zod-SSOT ADR, rewrote the practical schema strategy page around durable vs transient boundaries, updated adjacent architecture/project-layout references, and confirmed lint:core plus Prettier checks stayed green."
+  -
+    type: "status"
+    at: "2026-04-18T05:40:44.767Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #434 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T05:28:57.446Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-18T05:40:44.774Z"
+doc_updated_by: "INTEGRATOR"
 description: "Record a concrete architectural decision for the future schema contract stack, comparing AJV-first cleanup versus staged Zod migration, and define the next implementation path for config and task artifact schemas."
 sections:
   Summary: |-
