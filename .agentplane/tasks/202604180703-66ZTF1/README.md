@@ -1,10 +1,11 @@
 ---
 id: "202604180703-66ZTF1"
 title: "Auto-publish unpublished task branches during pr open"
-status: "DOING"
+result_summary: "Merged via PR #439."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-18T07:25:44.345Z"
   updated_by: "CODER"
   note: "pr open now auto-publishes only from the active task branch, including reruns after locally committed PR artifacts; PR-flow coverage, typecheck, and lint passed after the follow-up fix."
-commit: null
+commit:
+  hash: "267a0965d0f08508b522abf6fd8926d9dcb47aac"
+  message: "workflow: Auto-publish unpublished task branches during pr open (66ZTF1) (#439)"
 comments:
   -
     author: "CODER"
     body: "Start: remove the extra manual push plus second pr-open pass by teaching pr open to publish unpublished task branches when remote PR creation is requested."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #439 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "pr open now auto-publishes only from the active task branch, including reruns after locally committed PR artifacts; PR-flow coverage, typecheck, and lint passed after the follow-up fix."
+  -
+    type: "status"
+    at: "2026-04-18T07:36:54.228Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #439 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T07:25:44.348Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T07:36:54.233Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove the redundant manual push plus second pr open pass in branch_pr mode by teaching pr open to publish the task branch to origin when remote PR creation is requested and the branch has no upstream yet."
 sections:
   Summary: |-
