@@ -1,10 +1,11 @@
 ---
 id: "202604180831-Q8A3E9"
 title: "Make cleanup merged idempotent for partially removed task branches"
-status: "DOING"
+result_summary: "Merged via PR #453."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-18T08:33:54.466Z"
   updated_by: "CODER"
   note: "cleanup merged now delegates local branch/worktree teardown to the shared merged-branch helper, so already-removed local branches are treated as idempotent success instead of E_IO; merged-branch-cleanup.unit, targeted cleanup-merged CLI regression, lint, and typecheck passed."
-commit: null
+commit:
+  hash: "6f9148fd10c83260eb4db9aeaeb2e3431341f70f"
+  message: "refactor/workflow: Make cleanup merged idempotent for partially removed task branches (Q8A3E9) (#453)"
 comments:
   -
     author: "CODER"
     body: "Start: make cleanup merged tolerate already-removed local branches after it successfully tears down the corresponding merged worktree, and prove the idempotent path with focused regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #453 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "cleanup merged now delegates local branch/worktree teardown to the shared merged-branch helper, so already-removed local branches are treated as idempotent success instead of E_IO; merged-branch-cleanup.unit, targeted cleanup-merged CLI regression, lint, and typecheck passed."
+  -
+    type: "status"
+    at: "2026-04-18T08:36:39.231Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #453 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T08:33:54.469Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T08:36:39.237Z"
+doc_updated_by: "INTEGRATOR"
 description: "Handle the branch_pr cleanup case where the merged task worktree was already removed or the local branch disappeared before cleanup finishes. cleanup merged should treat already-missing local refs as a no-op success instead of surfacing E_IO."
 sections:
   Summary: |-
