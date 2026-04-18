@@ -136,7 +136,9 @@ describe("cli/output", () => {
       options: { header: "header" },
     });
 
-    expect(stdout.text()).toBe(["plain", "✅ updated T-1", "header", "task_id: T-1"].join("\n") + "\n");
+    expect(stdout.text()).toBe(
+      ["plain", "✅ updated T-1", "header", "task_id: T-1"].join("\n") + "\n",
+    );
     expect(stderr.text()).toBe("⚠️ careful\n");
   });
 });
