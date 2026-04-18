@@ -43,7 +43,9 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("recipes_published: ${{ steps.detect.outputs.recipes_published }}");
     expect(workflow).toContain("Publish @agentplaneorg/recipes");
     expect(workflow).toContain("working-directory: packages/recipes");
-    expect(workflow).toContain('--recipes-prepublished "${{ needs.detect.outputs.recipes_published }}"');
+    expect(workflow).toContain(
+      '--recipes-prepublished "${{ needs.detect.outputs.recipes_published }}"',
+    );
     expect(workflow).toContain('--recipes-outcome "${{ steps.publish_recipes.outcome }}"');
     expect(workflow).not.toContain("Run exact-ref release prepublish gate");
     expect(workflow).not.toContain("run: bun run release:prepublish");
