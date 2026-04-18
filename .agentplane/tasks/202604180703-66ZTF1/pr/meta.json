@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604180703-66ZTF1/pr-open-auto-publish",
   "created_at": "2026-04-18T07:06:55.314Z",
-  "head_sha": "f91cd1fa4070cfb2f6f332e62641ece59a017540",
+  "head_sha": "9d050a2369fab93ce56842e9a220819ae9db906c",
   "last_verified_at": "2026-04-18T07:25:44.345Z",
   "last_verified_sha": "f91cd1fa4070cfb2f6f332e62641ece59a017540",
+  "merge_commit": "267a0965d0f08508b522abf6fd8926d9dcb47aac",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-18T07:36:28Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604180703-66ZTF1",
-  "updated_at": "2026-04-18T07:19:21.184Z",
+  "updated_at": "2026-04-18T07:36:28Z",
   "verify": {
     "status": "pass"
   }
