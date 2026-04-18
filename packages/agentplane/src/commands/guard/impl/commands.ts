@@ -18,7 +18,7 @@ import { ensureReconciledBeforeMutation } from "../../shared/reconcile-check.js"
 
 import { stageAllowlist, suggestAllowPrefixes } from "./allow.js";
 import { buildCloseCommitMessage, taskReadmePathForTask } from "./close-message.js";
-import { buildGitCommitEnv } from "./env.js";
+import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "./env.js";
 import { guardCommitCheck, type GuardCommitOptions } from "./policy.js";
 
 type ExecFileLikeError = Error & {
@@ -196,6 +196,7 @@ async function commitRefreshedTaskArtifacts(opts: {
     allowConfig: false,
     allowHooks: false,
     allowCI: false,
+    gitIdentity: await resolveCanonicalGitIdentity(),
   });
   await opts.ctx.git.commit({ message, env });
   return true;
@@ -545,6 +546,7 @@ export async function cmdCommit(opts: {
         allowHooks: false,
         allowCI: false,
         allowStaleDist: true,
+        gitIdentity: await resolveCanonicalGitIdentity(),
       });
       await ctx.git.commit({ message: msg.subject, body: msg.body, env });
 
@@ -628,6 +630,7 @@ export async function cmdCommit(opts: {
       allowConfig: opts.allowConfig,
       allowHooks: opts.allowHooks,
       allowCI: opts.allowCI,
+      gitIdentity: await resolveCanonicalGitIdentity(),
     });
     await ctx.git.commit({ message: opts.message, env });
     await refreshBranchPrArtifactsAfterTaskCommit({

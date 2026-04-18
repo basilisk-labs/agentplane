@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   buildCloseCommitMessage: vi.fn(),
   taskReadmePathForTask: vi.fn(),
   buildGitCommitEnv: vi.fn(),
+  resolveCanonicalGitIdentity: vi.fn(),
   guardCommitCheck: vi.fn(),
 }));
 
@@ -39,7 +40,10 @@ vi.mock("./close-message.js", () => ({
   buildCloseCommitMessage: mocks.buildCloseCommitMessage,
   taskReadmePathForTask: mocks.taskReadmePathForTask,
 }));
-vi.mock("./env.js", () => ({ buildGitCommitEnv: mocks.buildGitCommitEnv }));
+vi.mock("./env.js", () => ({
+  buildGitCommitEnv: mocks.buildGitCommitEnv,
+  resolveCanonicalGitIdentity: mocks.resolveCanonicalGitIdentity,
+}));
 vi.mock("./policy.js", () => ({ guardCommitCheck: mocks.guardCommitCheck }));
 
 function mkCtx() {
@@ -64,6 +68,7 @@ describe("guard/impl/commands", () => {
     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
     mocks.execFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
     mocks.gitEnv.mockReturnValue({});
+    mocks.resolveCanonicalGitIdentity.mockResolvedValue(null);
   });
 
   it("cmdGuardClean maps non-Cli errors with mapCoreError", async () => {

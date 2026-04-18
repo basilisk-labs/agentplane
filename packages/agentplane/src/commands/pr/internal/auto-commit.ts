@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { extractTaskSuffix } from "@agentplaneorg/core";
 
-import { buildGitCommitEnv } from "../../guard/impl/env.js";
+import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "../../guard/impl/env.js";
 import { toGitPath } from "../../shared/git-diff.js";
 import { execFileAsync, gitEnv } from "../../shared/git.js";
 import { gitCurrentBranch } from "../../shared/git-ops.js";
@@ -85,6 +85,7 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
       allowConfig: false,
       allowHooks: false,
       allowCI: false,
+      gitIdentity: await resolveCanonicalGitIdentity(),
     }),
   });
   opts.ctx.git.invalidateStatus();
