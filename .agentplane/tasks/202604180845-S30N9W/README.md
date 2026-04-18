@@ -4,7 +4,7 @@ title: "Restore formatting drift after delete-only pre-push refactor"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-18T08:46:31.037Z"
+  updated_by: "CODER"
+  note: "restored Prettier compliance for the NS8Y9G hook files so subsequent close-tail pushes are no longer blocked by unrelated format drift"
 commit: null
 comments:
   -
@@ -34,8 +34,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: restore Prettier compliance for the NS8Y9G hook files so close-tail pushes are not blocked by unrelated format drift."
+  -
+    type: "verify"
+    at: "2026-04-18T08:46:31.037Z"
+    author: "CODER"
+    state: "ok"
+    note: "restored Prettier compliance for the NS8Y9G hook files so subsequent close-tail pushes are no longer blocked by unrelated format drift"
 doc_version: 3
-doc_updated_at: "2026-04-18T08:45:52.389Z"
+doc_updated_at: "2026-04-18T08:46:31.040Z"
 doc_updated_by: "CODER"
 description: "Bring the files changed by NS8Y9G back into Prettier compliance so subsequent task-close pushes are not blocked by unrelated format drift."
 sections:
@@ -53,6 +59,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-18T08:46:31.037Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: restored Prettier compliance for the NS8Y9G hook files so subsequent close-tail pushes are no longer blocked by unrelated format drift
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-18T08:45:52.389Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -84,6 +98,14 @@ Bring the files changed by NS8Y9G back into Prettier compliance so subsequent ta
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-18T08:46:31.037Z — VERIFY — ok
+
+By: CODER
+
+Note: restored Prettier compliance for the NS8Y9G hook files so subsequent close-tail pushes are no longer blocked by unrelated format drift
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-18T08:45:52.389Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
