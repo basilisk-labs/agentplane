@@ -34,6 +34,7 @@ vi.mock("node:fs/promises", async (importOriginal) => {
 });
 
 vi.mock("../shared/task-backend.js", () => ({
+  backendUsesLocalTaskStore: mocks.backendIsLocalFileBackend,
   loadCommandContext: mocks.loadCommandContext,
   loadTaskFromContext: mocks.loadTaskFromContext,
 }));

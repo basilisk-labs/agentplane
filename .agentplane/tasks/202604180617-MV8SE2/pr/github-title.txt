@@ -1,0 +1,1 @@
+architecture/backend: Introduce command-layer backend capability helpers (MV8SE2)

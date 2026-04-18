@@ -113,6 +113,26 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
   };
 }
 
+export function getTaskBackendCapabilities(ctx: CommandContext) {
+  return ctx.taskBackend.capabilities;
+}
+
+export function backendHasLocalCanonicalSource(ctx: CommandContext): boolean {
+  return getTaskBackendCapabilities(ctx).canonical_source === "local";
+}
+
+export function backendWritesTaskReadmes(ctx: CommandContext): boolean {
+  return getTaskBackendCapabilities(ctx).writes_task_readmes === true;
+}
+
+export function backendSupportsTaskBranchSnapshots(ctx: CommandContext): boolean {
+  return backendHasLocalCanonicalSource(ctx) && backendWritesTaskReadmes(ctx);
+}
+
+export function backendUsesLocalTaskStore(ctx: CommandContext): boolean {
+  return backendSupportsTaskBranchSnapshots(ctx);
+}
+
 export async function loadCommandContext(opts: {
   cwd: string;
   rootOverride?: string | null;
@@ -175,7 +195,7 @@ export async function resolveTaskBranchFromContext(opts: {
   ctx: CommandContext;
   taskId: string;
 }): Promise<string | null> {
-  if (opts.ctx.backendId !== "local") {
+  if (!backendSupportsTaskBranchSnapshots(opts.ctx)) {
     return null;
   }
 
@@ -201,7 +221,7 @@ export async function loadTaskFromBranchSnapshot(opts: {
   readmePath: string;
   branch?: string | null;
 }): Promise<TaskData | null> {
-  if (opts.ctx.backendId !== "local") {
+  if (!backendSupportsTaskBranchSnapshots(opts.ctx)) {
     return null;
   }
 

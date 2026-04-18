@@ -133,6 +133,7 @@ async function runCommentScenario(mode: BackendMode) {
   const ctx = mkCtx(backend);
 
   vi.doMock("../shared/task-backend.js", () => ({
+    backendUsesLocalTaskStore: () => mode === "local",
     loadCommandContext: vi.fn(),
     loadTaskFromContext,
   }));
@@ -180,6 +181,7 @@ async function runBlockScenario(mode: BackendMode) {
     commitFromComment: vi.fn(),
   }));
   vi.doMock("../shared/task-backend.js", () => ({
+    backendUsesLocalTaskStore: () => mode === "local",
     loadCommandContext: vi.fn(),
     loadTaskFromContext,
   }));
@@ -254,6 +256,7 @@ async function runStartScenario(mode: BackendMode) {
     commitFromComment: vi.fn(),
   }));
   vi.doMock("../shared/task-backend.js", () => ({
+    backendUsesLocalTaskStore: () => mode === "local",
     loadCommandContext: vi.fn(),
     loadTaskFromContext,
   }));
@@ -320,6 +323,7 @@ async function runSetStatusScenario(mode: BackendMode) {
     commitFromComment: vi.fn(),
   }));
   vi.doMock("../shared/task-backend.js", () => ({
+    backendUsesLocalTaskStore: () => mode === "local",
     loadCommandContext: vi.fn(),
     loadTaskFromContext,
     resolveDocUpdatedBy: (task: TaskData, author?: string) =>
@@ -412,6 +416,7 @@ async function runPlanSetScenario(mode: BackendMode) {
   const ctx = mkCtx(backend);
 
   vi.doMock("../shared/task-backend.js", () => ({
+    backendUsesLocalTaskStore: () => mode === "local",
     loadCommandContext: vi.fn(),
     loadTaskFromContext,
   }));
@@ -483,6 +488,7 @@ async function runVerifyRecordScenario(mode: BackendMode) {
     ensureReconciledBeforeMutation: vi.fn(() => Promise.resolve()),
   }));
   vi.doMock("../shared/task-backend.js", () => ({
+    backendUsesLocalTaskStore: () => mode === "local",
     loadCommandContext: vi.fn(),
     loadTaskFromContext,
   }));
@@ -555,6 +561,7 @@ async function runDocSetScenario(mode: BackendMode) {
   const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
 
   vi.doMock("../shared/task-backend.js", () => ({
+    backendUsesLocalTaskStore: () => mode === "local",
     loadCommandContext: vi.fn(),
     loadTaskFromContext,
   }));
@@ -629,6 +636,10 @@ async function runDocShowScenario(mode: BackendMode) {
   });
   const ctx = mkCtx(backend);
 
+  vi.doMock("../shared/task-backend.js", () => ({
+    backendUsesLocalTaskStore: () => mode === "local",
+    loadCommandContext: vi.fn(),
+  }));
   vi.doMock("../shared/task-store.js", async () => {
     const actual = await vi.importActual("../shared/task-store.js");
     return {

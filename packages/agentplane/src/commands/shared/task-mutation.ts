@@ -1,10 +1,14 @@
 import type { TaskData, TaskWriteOptions } from "../../backends/task-backend.js";
 import { PolicyEngine } from "../../policy/engine.js";
 import type { PolicyActionId } from "../../policy/taxonomy.js";
-import { loadTaskFromContext, writeTasksOrFallback, type CommandContext } from "./task-backend.js";
+import {
+  backendUsesLocalTaskStore,
+  loadTaskFromContext,
+  writeTasksOrFallback,
+  type CommandContext,
+} from "./task-backend.js";
 import {
   applyTaskStoreIntentsToTask,
-  backendIsLocalFileBackend,
   getTaskStore,
   type TaskStoreIntentResult,
 } from "./task-store.js";
@@ -26,7 +30,7 @@ export async function withTaskMutationStorage<TResult>(opts: {
   local: (store: ReturnType<typeof getTaskStore>) => Promise<TResult> | TResult;
   remote: (backend: CommandContext["taskBackend"]) => Promise<TResult> | TResult;
 }): Promise<TResult> {
-  if (backendIsLocalFileBackend(opts.ctx)) {
+  if (backendUsesLocalTaskStore(opts.ctx)) {
     return await opts.local(getTaskStore(opts.ctx));
   }
   return await opts.remote(opts.ctx.taskBackend);
@@ -48,7 +52,7 @@ export async function applyTaskMutation(opts: {
     git: { stagedPaths: [] },
   });
 
-  if (backendIsLocalFileBackend(opts.ctx)) {
+  if (backendUsesLocalTaskStore(opts.ctx)) {
     const store = getTaskStore(opts.ctx);
     const result = await store.update(
       opts.taskId,
