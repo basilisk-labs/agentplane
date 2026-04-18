@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604180845-S30N9W/format-unblock-ns8y9g",
   "created_at": "2026-04-18T08:45:52.420Z",
-  "head_sha": "568990e0ed214f05f8b14b04a5c10be85376b294",
+  "head_sha": "7555023b504054aa3bdfb0bb9e5e97c06337e39c",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "e175154edff824d4b4a7fa95b515b8740e7546de",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-18T08:48:22Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604180845-S30N9W",
-  "updated_at": "2026-04-18T08:45:52.420Z",
+  "updated_at": "2026-04-18T08:48:22Z",
   "verify": {
     "status": "skipped"
   }

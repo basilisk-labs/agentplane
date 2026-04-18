@@ -1,10 +1,11 @@
 ---
 id: "202604180845-S30N9W"
 title: "Restore formatting drift after delete-only pre-push refactor"
-status: "DOING"
+result_summary: "Merged via PR #457."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-18T08:46:31.037Z"
   updated_by: "CODER"
   note: "restored Prettier compliance for the NS8Y9G hook files so subsequent close-tail pushes are no longer blocked by unrelated format drift"
-commit: null
+commit:
+  hash: "e175154edff824d4b4a7fa95b515b8740e7546de"
+  message: "Restore formatting drift after delete-only pre-push refactor (S30N9W) (#457)"
 comments:
   -
     author: "CODER"
     body: "Start: restore Prettier compliance for the NS8Y9G hook files so close-tail pushes are not blocked by unrelated format drift."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #457 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "restored Prettier compliance for the NS8Y9G hook files so subsequent close-tail pushes are no longer blocked by unrelated format drift"
+  -
+    type: "status"
+    at: "2026-04-18T08:48:49.721Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #457 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T08:46:31.040Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T08:48:49.726Z"
+doc_updated_by: "INTEGRATOR"
 description: "Bring the files changed by NS8Y9G back into Prettier compliance so subsequent task-close pushes are not blocked by unrelated format drift."
 sections:
   Summary: |-
