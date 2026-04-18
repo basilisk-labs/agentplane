@@ -35,6 +35,15 @@ export function hasReleaseTagPush(updates) {
   return updates.some((update) => String(update.remoteRef ?? "").startsWith("refs/tags/"));
 }
 
+export function isDeleteOnlyPush(updates) {
+  return (
+    updates.length > 0 &&
+    updates.every(
+      (update) => isBranchRef(update.remoteRef) && isAllZeroSha(update.localSha) && update.remoteSha,
+    )
+  );
+}
+
 export function resolveDefaultBaseRef() {
   const remoteHead = readGitText([
     "symbolic-ref",
