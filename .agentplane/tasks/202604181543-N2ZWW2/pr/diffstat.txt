@@ -1,0 +1,14 @@
+ .agentplane/config.json                            |   2 +-
+ bun.lock                                           |  10 +-
+ docs/reference/generated-reference.mdx             |   6 +-
+ docs/releases/v0.3.14.md                           | 125 +++++++++++
+ packages/agentplane/package.json                   |   6 +-
+ .../src/commands/release/apply.mutation.ts         |  35 +++-
+ .../src/commands/release/apply.pipeline.ts         |  60 +++++-
+ .../src/commands/release/apply.preflight.ts        |  20 +-
+ .../agentplane/src/commands/release/apply.test.ts  | 230 ++++++++++-----------
+ .../agentplane/src/commands/release/apply.types.ts |   2 +
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/testkit/package.json                      |   2 +-
+ 13 files changed, 362 insertions(+), 140 deletions(-)

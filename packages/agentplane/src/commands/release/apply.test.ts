@@ -94,8 +94,25 @@ describeWhenNotHook("release apply", () => {
     await seedReleaseWorkspace(root, {
       coreVersion: "0.2.6",
       cliVersion: "0.2.6",
+      recipesVersion: "0.2.6",
       dependencyVersion: "0.2.6",
+      recipesDependencyVersion: "0.2.6",
     });
+    await mkdir(path.join(root, "packages", "testkit"), { recursive: true });
+    await writeFile(
+      path.join(root, "packages", "testkit", "package.json"),
+      JSON.stringify(
+        {
+          name: "@agentplane/testkit",
+          version: "0.0.0",
+          private: true,
+          dependencies: { agentplane: "0.2.6" },
+        },
+        null,
+        2,
+      ) + "\n",
+      "utf8",
+    );
     await commitAll(root, "seed");
     await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
@@ -138,14 +155,25 @@ describeWhenNotHook("release apply", () => {
     expect(rcApply).toBe(0);
 
     const coreText = await readFile(path.join(root, "packages", "core", "package.json"), "utf8");
+    const recipesText = await readFile(
+      path.join(root, "packages", "recipes", "package.json"),
+      "utf8",
+    );
+    const testkitText = await readFile(
+      path.join(root, "packages", "testkit", "package.json"),
+      "utf8",
+    );
     const agentplaneText = await readFile(
       path.join(root, "packages", "agentplane", "package.json"),
       "utf8",
     );
     const configText = await readFile(path.join(root, ".agentplane", "config.json"), "utf8");
     expect(coreText).toContain('"version": "0.2.7"');
+    expect(recipesText).toContain('"version": "0.2.7"');
     expect(agentplaneText).toContain('"version": "0.2.7"');
     expect(agentplaneText).toContain('"@agentplaneorg/core": "0.2.7"');
+    expect(agentplaneText).toContain('"@agentplaneorg/recipes": "0.2.7"');
+    expect(testkitText).toContain('"agentplane": "0.2.7"');
     expect(configText).toContain('"expected_version": "0.2.7"');
 
     const { stdout: tagOut } = await execFileAsync("git", ["tag", "--list", "v0.2.7"], {
@@ -159,6 +187,8 @@ describeWhenNotHook("release apply", () => {
       { cwd: root },
     );
     expect(committedFiles).toContain(".agentplane/config.json");
+    expect(committedFiles).toContain("packages/recipes/package.json");
+    expect(committedFiles).toContain("packages/testkit/package.json");
 
     const reportPath = path.join(root, ".agentplane", ".release", "apply", "latest.json");
     const report = JSON.parse(await readFile(reportPath, "utf8")) as {
@@ -178,29 +208,14 @@ describeWhenNotHook("release apply", () => {
     async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
-
-      await mkdir(path.join(root, "packages", "core"), { recursive: true });
-      await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
       await mkdir(path.join(root, "docs", "releases"), { recursive: true });
-
-      await writeFile(
-        path.join(root, "packages", "core", "package.json"),
-        JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
-        "utf8",
-      );
-      await writeFile(
-        path.join(root, "packages", "agentplane", "package.json"),
-        JSON.stringify(
-          {
-            name: "agentplane",
-            version: "0.2.6",
-            dependencies: { "@agentplaneorg/core": "0.2.6" },
-          },
-          null,
-          2,
-        ) + "\n",
-        "utf8",
-      );
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.6",
+        cliVersion: "0.2.6",
+        recipesVersion: "0.2.6",
+        dependencyVersion: "0.2.6",
+        recipesDependencyVersion: "0.2.6",
+      });
       await commitAll(root, "seed");
       await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
@@ -240,29 +255,14 @@ describeWhenNotHook("release apply", () => {
     async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
-
-      await mkdir(path.join(root, "packages", "core"), { recursive: true });
-      await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
       await mkdir(path.join(root, "docs", "releases"), { recursive: true });
-
-      await writeFile(
-        path.join(root, "packages", "core", "package.json"),
-        JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
-        "utf8",
-      );
-      await writeFile(
-        path.join(root, "packages", "agentplane", "package.json"),
-        JSON.stringify(
-          {
-            name: "agentplane",
-            version: "0.2.6",
-            dependencies: { "@agentplaneorg/core": "0.2.6" },
-          },
-          null,
-          2,
-        ) + "\n",
-        "utf8",
-      );
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.6",
+        cliVersion: "0.2.6",
+        recipesVersion: "0.2.6",
+        dependencyVersion: "0.2.6",
+        recipesDependencyVersion: "0.2.6",
+      });
       await commitAll(root, "seed");
       await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
@@ -304,25 +304,14 @@ describeWhenNotHook("release apply", () => {
   it("fails early when release tag already exists", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-
-    await mkdir(path.join(root, "packages", "core"), { recursive: true });
-    await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
     await mkdir(path.join(root, "docs", "releases"), { recursive: true });
-
-    await writeFile(
-      path.join(root, "packages", "core", "package.json"),
-      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify(
-        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
-        null,
-        2,
-      ) + "\n",
-      "utf8",
-    );
+    await seedReleaseWorkspace(root, {
+      coreVersion: "0.2.6",
+      cliVersion: "0.2.6",
+      recipesVersion: "0.2.6",
+      dependencyVersion: "0.2.6",
+      recipesDependencyVersion: "0.2.6",
+    });
     await commitAll(root, "seed");
     await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
@@ -359,6 +348,7 @@ describeWhenNotHook("release apply", () => {
 
     await mkdir(path.join(root, "packages", "core"), { recursive: true });
     await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
+    await mkdir(path.join(root, "packages", "recipes"), { recursive: true });
     await mkdir(path.join(root, "docs", "releases"), { recursive: true });
 
     await writeFile(
@@ -369,10 +359,22 @@ describeWhenNotHook("release apply", () => {
     await writeFile(
       path.join(root, "packages", "agentplane", "package.json"),
       JSON.stringify(
-        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
+        {
+          name: "agentplane",
+          version: "0.2.6",
+          dependencies: {
+            "@agentplaneorg/core": "0.2.6",
+            "@agentplaneorg/recipes": "0.2.6",
+          },
+        },
         null,
         2,
       ) + "\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "packages", "recipes", "package.json"),
+      JSON.stringify({ name: "@agentplaneorg/recipes", version: "0.2.6" }, null, 2) + "\n",
       "utf8",
     );
     await commitAll(root, "seed");
@@ -406,6 +408,7 @@ describeWhenNotHook("release apply", () => {
 
     await mkdir(path.join(root, "packages", "core"), { recursive: true });
     await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
+    await mkdir(path.join(root, "packages", "recipes"), { recursive: true });
     await mkdir(path.join(root, "docs", "releases"), { recursive: true });
     await mkdir(path.join(root, "docs", "reference"), { recursive: true });
     await mkdir(path.join(root, "scripts"), { recursive: true });
@@ -418,10 +421,22 @@ describeWhenNotHook("release apply", () => {
     await writeFile(
       path.join(root, "packages", "agentplane", "package.json"),
       JSON.stringify(
-        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
+        {
+          name: "agentplane",
+          version: "0.2.6",
+          dependencies: {
+            "@agentplaneorg/core": "0.2.6",
+            "@agentplaneorg/recipes": "0.2.6",
+          },
+        },
         null,
         2,
       ) + "\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "packages", "recipes", "package.json"),
+      JSON.stringify({ name: "@agentplaneorg/recipes", version: "0.2.6" }, null, 2) + "\n",
       "utf8",
     );
     await writeFile(
@@ -433,6 +448,7 @@ describeWhenNotHook("release apply", () => {
         "| --- | --- |",
         "| agentplane | 0.2.6 |",
         "| @agentplaneorg/core | 0.2.6 |",
+        "| @agentplaneorg/recipes | 0.2.6 |",
         "",
       ].join("\n"),
       "utf8",
@@ -446,6 +462,7 @@ describeWhenNotHook("release apply", () => {
         "const root = process.cwd();",
         "const core = JSON.parse(await readFile(path.join(root, 'packages', 'core', 'package.json'), 'utf8'));",
         "const cli = JSON.parse(await readFile(path.join(root, 'packages', 'agentplane', 'package.json'), 'utf8'));",
+        "const recipes = JSON.parse(await readFile(path.join(root, 'packages', 'recipes', 'package.json'), 'utf8'));",
         "const outDir = path.join(root, 'docs', 'reference');",
         "await mkdir(outDir, { recursive: true });",
         "await writeFile(",
@@ -457,6 +474,7 @@ describeWhenNotHook("release apply", () => {
         "    '| --- | --- |',",
         "    `| agentplane | ${cli.version} |`,",
         "    `| @agentplaneorg/core | ${core.version} |`,",
+        "    `| @agentplaneorg/recipes | ${recipes.version} |`,",
         "    '',",
         String.raw`  ].join('\n'),`,
         "  'utf8',",
@@ -492,6 +510,7 @@ describeWhenNotHook("release apply", () => {
     );
     expect(generatedRef).toContain("| agentplane | 0.2.7 |");
     expect(generatedRef).toContain("| @agentplaneorg/core | 0.2.7 |");
+    expect(generatedRef).toContain("| @agentplaneorg/recipes | 0.2.7 |");
 
     const { stdout: committedFiles } = await execFileAsync(
       "git",
@@ -887,7 +906,6 @@ describeWhenNotHook("release apply", () => {
     await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
 
     await mkdir(path.join(root, "packages", "core"), { recursive: true });
-    await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
     await mkdir(path.join(root, "docs", "releases"), { recursive: true });
     await writeReleasePushScripts({
       root,
@@ -901,20 +919,13 @@ describeWhenNotHook("release apply", () => {
       ].join("\n"),
     });
 
-    await writeFile(
-      path.join(root, "packages", "core", "package.json"),
-      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify(
-        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
-        null,
-        2,
-      ) + "\n",
-      "utf8",
-    );
+    await seedReleaseWorkspace(root, {
+      coreVersion: "0.2.6",
+      cliVersion: "0.2.6",
+      recipesVersion: "0.2.6",
+      dependencyVersion: "0.2.6",
+      recipesDependencyVersion: "0.2.6",
+    });
     await commitAll(root, "seed");
     await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
@@ -962,7 +973,6 @@ describeWhenNotHook("release apply", () => {
     await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
 
     await mkdir(path.join(root, "packages", "core"), { recursive: true });
-    await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
     await mkdir(path.join(root, "docs", "releases"), { recursive: true });
     await writeReleasePushScripts({
       root,
@@ -973,20 +983,13 @@ describeWhenNotHook("release apply", () => {
       registryBody: `${String.raw`process.stdout.write('npm version availability check passed\n');`}\n`,
     });
 
-    await writeFile(
-      path.join(root, "packages", "core", "package.json"),
-      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify(
-        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
-        null,
-        2,
-      ) + "\n",
-      "utf8",
-    );
+    await seedReleaseWorkspace(root, {
+      coreVersion: "0.2.6",
+      cliVersion: "0.2.6",
+      recipesVersion: "0.2.6",
+      dependencyVersion: "0.2.6",
+      recipesDependencyVersion: "0.2.6",
+    });
     await commitAll(root, "seed");
     await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
     const { stdout: seedHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
@@ -1034,29 +1037,14 @@ describeWhenNotHook("release apply", () => {
     async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
-
-      await mkdir(path.join(root, "packages", "core"), { recursive: true });
-      await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
       await mkdir(path.join(root, "docs", "releases"), { recursive: true });
-
-      await writeFile(
-        path.join(root, "packages", "core", "package.json"),
-        JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
-        "utf8",
-      );
-      await writeFile(
-        path.join(root, "packages", "agentplane", "package.json"),
-        JSON.stringify(
-          {
-            name: "agentplane",
-            version: "0.2.6",
-            dependencies: { "@agentplaneorg/core": "0.2.6" },
-          },
-          null,
-          2,
-        ) + "\n",
-        "utf8",
-      );
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.6",
+        cliVersion: "0.2.6",
+        recipesVersion: "0.2.6",
+        dependencyVersion: "0.2.6",
+        recipesDependencyVersion: "0.2.6",
+      });
       await commitAll(root, "seed");
       await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
@@ -1076,12 +1064,20 @@ describeWhenNotHook("release apply", () => {
         "utf8",
       );
       await writeFile(
+        path.join(root, "packages", "recipes", "package.json"),
+        JSON.stringify({ name: "@agentplaneorg/recipes", version: "0.2.7" }, null, 2) + "\n",
+        "utf8",
+      );
+      await writeFile(
         path.join(root, "packages", "agentplane", "package.json"),
         JSON.stringify(
           {
             name: "agentplane",
             version: "0.2.7",
-            dependencies: { "@agentplaneorg/core": "0.2.7" },
+            dependencies: {
+              "@agentplaneorg/core": "0.2.7",
+              "@agentplaneorg/recipes": "0.2.7",
+            },
           },
           null,
           2,
