@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604172036-47KDMZ/task-store-services",
   "created_at": "2026-04-18T05:13:39.737Z",
-  "head_sha": "a8b471a65ddf2701d73c60d783b041a46cf831a6",
+  "head_sha": "ef62cafa8cd75fba85b572ff579f39a2fa1ed195",
   "last_verified_at": "2026-04-18T05:13:39.616Z",
   "last_verified_sha": "bdd6e9ee88aa87b648e0e28f22ed4ef2b8c7df92",
+  "merge_commit": "2de4e6995c114e629727c19046183240ecc4e20d",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-18T05:22:43Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604172036-47KDMZ",
-  "updated_at": "2026-04-18T05:15:53.641Z",
+  "updated_at": "2026-04-18T05:22:43Z",
   "verify": {
     "status": "pass"
   }
