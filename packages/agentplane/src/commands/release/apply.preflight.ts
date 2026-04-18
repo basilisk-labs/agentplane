@@ -89,22 +89,30 @@ export async function readPackageVersion(pkgJsonPath: string): Promise<string> {
   return version;
 }
 
-export async function readCoreDependencyVersion(pkgJsonPath: string): Promise<string> {
+async function readDependencyVersion(pkgJsonPath: string, dependencyName: string): Promise<string> {
   const raw = JSON.parse(await readFile(pkgJsonPath, "utf8")) as {
     dependencies?: Record<string, unknown>;
   };
-  const value = raw.dependencies?.["@agentplaneorg/core"];
+  const value = raw.dependencies?.[dependencyName];
   const version = typeof value === "string" ? value.trim() : "";
   if (!version) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message:
-        `Missing dependency @agentplaneorg/core in ${pkgJsonPath}. ` +
-        "Release parity requires packages/agentplane to pin @agentplaneorg/core to the same version.",
+        `Missing dependency ${dependencyName} in ${pkgJsonPath}. ` +
+        `Release parity requires packages/agentplane to pin ${dependencyName} to the same version.`,
     });
   }
   return version;
+}
+
+export async function readCoreDependencyVersion(pkgJsonPath: string): Promise<string> {
+  return await readDependencyVersion(pkgJsonPath, "@agentplaneorg/core");
+}
+
+export async function readRecipesDependencyVersion(pkgJsonPath: string): Promise<string> {
+  return await readDependencyVersion(pkgJsonPath, "@agentplaneorg/recipes");
 }
 
 export async function validateReleaseNotes(notesPath: string, minBullets: number): Promise<void> {

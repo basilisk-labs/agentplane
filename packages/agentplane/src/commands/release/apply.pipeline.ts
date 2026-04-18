@@ -36,6 +36,7 @@ import {
   fileExists,
   loadReleasePlan,
   readCoreDependencyVersion,
+  readRecipesDependencyVersion,
   readPackageVersion,
   runReleasePrepublishGate,
   validateReleaseNotes,
@@ -99,19 +100,28 @@ async function ensureReleasePlanMatchesRepoState(opts: {
   plan: ReleaseVersionPlan;
   corePkgPath: string;
   agentplanePkgPath: string;
+  recipesPkgPath: string;
 }): Promise<void> {
-  const [coreVersion, agentplaneVersion, coreDependencyVersion] = await Promise.all([
+  const [
+    coreVersion,
+    agentplaneVersion,
+    recipesVersion,
+    coreDependencyVersion,
+    recipesDependencyVersion,
+  ] = await Promise.all([
     readPackageVersion(opts.corePkgPath),
     readPackageVersion(opts.agentplanePkgPath),
+    readPackageVersion(opts.recipesPkgPath),
     readCoreDependencyVersion(opts.agentplanePkgPath),
+    readRecipesDependencyVersion(opts.agentplanePkgPath),
   ]);
-  if (coreVersion !== agentplaneVersion) {
+  if (coreVersion !== agentplaneVersion || coreVersion !== recipesVersion) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message:
         `Package versions must match before applying a release. ` +
-        `packages/core=${coreVersion} packages/agentplane=${agentplaneVersion}`,
+        `packages/core=${coreVersion} packages/agentplane=${agentplaneVersion} packages/recipes=${recipesVersion}`,
     });
   }
   if (coreDependencyVersion !== coreVersion) {
@@ -122,6 +132,16 @@ async function ensureReleasePlanMatchesRepoState(opts: {
         "Release dependency parity check failed before apply. " +
         `packages/agentplane dependency @agentplaneorg/core=${coreDependencyVersion} ` +
         `must match packages/core version ${coreVersion}.`,
+    });
+  }
+  if (recipesDependencyVersion !== coreVersion) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        "Release dependency parity check failed before apply. " +
+        `packages/agentplane dependency @agentplaneorg/recipes=${recipesDependencyVersion} ` +
+        `must match packages/recipes version ${coreVersion}.`,
     });
   }
 
@@ -196,6 +216,7 @@ async function applyReleaseMutation(opts: {
   notesPath: string;
   corePkgPath: string;
   agentplanePkgPath: string;
+  recipesPkgPath: string;
   nextTag: string;
   nextVersion: string;
   route: ReleaseApplyRoute;
@@ -204,6 +225,7 @@ async function applyReleaseMutation(opts: {
   let releaseCommit: { hash: string; subject: string } | null = null;
   await Promise.all([
     replacePackageVersionInFile(opts.corePkgPath, opts.nextVersion),
+    replacePackageVersionInFile(opts.recipesPkgPath, opts.nextVersion),
     replaceAgentplanePackageMetadata(opts.agentplanePkgPath, opts.nextVersion),
   ]);
 
@@ -217,6 +239,7 @@ async function applyReleaseMutation(opts: {
   const stagePaths = [
     "packages/core/package.json",
     "packages/agentplane/package.json",
+    "packages/recipes/package.json",
     path.relative(opts.gitRoot, opts.notesPath),
   ];
   if (expectedCliVersionPersisted) {
@@ -361,6 +384,7 @@ async function buildReleaseCommandState(opts: {
     }),
     corePkgPath: path.join(gitRoot, "packages", "core", "package.json"),
     agentplanePkgPath: path.join(gitRoot, "packages", "agentplane", "package.json"),
+    recipesPkgPath: path.join(gitRoot, "packages", "recipes", "package.json"),
     npmVersionChecked: false,
   };
 }
@@ -398,6 +422,7 @@ async function runReleaseCommandPreflight(opts: {
     plan: opts.state.plan,
     corePkgPath: opts.state.corePkgPath,
     agentplanePkgPath: opts.state.agentplanePkgPath,
+    recipesPkgPath: opts.state.recipesPkgPath,
   });
 
   if (opts.flags.push) {
@@ -425,6 +450,7 @@ async function runReleaseCommandExecute(
     notesPath: state.notesPath,
     corePkgPath: state.corePkgPath,
     agentplanePkgPath: state.agentplanePkgPath,
+    recipesPkgPath: state.recipesPkgPath,
     nextTag: state.plan.nextTag,
     nextVersion: state.plan.nextVersion,
     route: state.route,

@@ -49,7 +49,20 @@ export async function replaceAgentplanePackageMetadata(
         "Ensure packages/agentplane/package.json declares this dependency.",
     });
   }
-  await writeFile(pkgJsonPath, withDependency, "utf8");
+  const withRecipesDependency = withDependency.replace(
+    /("@agentplaneorg\/recipes"\s*:\s*")[^"]*(")/u,
+    `$1${nextVersion}$2`,
+  );
+  if (withRecipesDependency === withDependency) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Failed to update @agentplaneorg/recipes dependency in ${pkgJsonPath}. ` +
+        "Ensure packages/agentplane/package.json declares this dependency.",
+    });
+  }
+  await writeFile(pkgJsonPath, withRecipesDependency, "utf8");
 }
 
 export async function maybeUpdateBunLockfile(
