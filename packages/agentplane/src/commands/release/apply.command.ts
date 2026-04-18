@@ -7,10 +7,7 @@ import { withDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
 import { runReleaseCommandPipeline } from "./apply.pipeline.js";
-import type {
-  ReleaseApplyParsed,
-  ReleaseApplyRoute,
-} from "./apply.types.js";
+import type { ReleaseApplyParsed, ReleaseApplyRoute } from "./apply.types.js";
 
 async function resolveDirectReleaseRoute(opts: {
   cwd: string;
@@ -201,7 +198,6 @@ async function resolveReleaseCandidateRoute(opts: {
     base_branch: baseBranch,
   };
 }
-
 
 export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
   id: ["release", "apply"],
