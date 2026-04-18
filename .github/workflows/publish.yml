@@ -181,8 +181,8 @@ jobs:
     timeout-minutes: 60
     env:
       NPM_CONFIG_PROVENANCE: "true"
-      NODE_AUTH_TOKEN: ""
-      NPM_TOKEN: ""
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || '' }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN || '' }}
       NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/.npmrc
     steps:
       - uses: actions/checkout@v4
@@ -273,7 +273,18 @@ jobs:
           set -euo pipefail
           tar -czf agentplane-upgrade.tar.gz -C packages/agentplane/assets .
           sha256sum agentplane-upgrade.tar.gz > agentplane-upgrade.tar.gz.sha256
-      - run: printf "registry=https://registry.npmjs.org/\n" > "$NPM_CONFIG_USERCONFIG"
+      - name: Write npm auth config
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${NODE_AUTH_TOKEN:-}" ]; then
+            {
+              printf "//registry.npmjs.org/:_authToken=%s\n" "${NODE_AUTH_TOKEN}"
+              printf "registry=https://registry.npmjs.org/\n"
+            } > "$NPM_CONFIG_USERCONFIG"
+          else
+            printf "registry=https://registry.npmjs.org/\n" > "$NPM_CONFIG_USERCONFIG"
+          fi
       - name: Publish @agentplaneorg/core
         id: publish_core
         if: needs.detect.outputs.core_published != 'true'

@@ -6,8 +6,8 @@ description: "Patch release flow, CI parity checks, and GitHub-only npm publish 
 ## Release policy
 
 - Versioning follows SemVer.
-- `agentplane` and `@agentplaneorg/core` release together at the same version.
-- `packages/agentplane` dependency `@agentplaneorg/core` must match the same release version exactly.
+- `agentplane`, `@agentplaneorg/core`, and `@agentplaneorg/recipes` release together at the same version.
+- `packages/agentplane` dependencies `@agentplaneorg/core` and `@agentplaneorg/recipes` must match the same release version exactly.
 - Patch bump is default automation path.
 - Minor/major bump requires explicit approval.
 
@@ -110,15 +110,16 @@ GitHub workflow `Publish to npm`:
 - manual recovery should pass an exact `sha` input; `ref` is only a fallback when `sha` is omitted
 - serializes publish runs by release identity (`workflow_run.head_sha` or explicit dispatch `sha`) instead of branch ref, and queues duplicates instead of canceling an in-flight release
 - uses OIDC trusted publishing
+- falls back to `NPM_TOKEN` when a package is not yet configured for npm trusted publishing
 - sets provenance
 - consumes the `release-ready` artifact from the exact `Core CI` run as the only readiness source
 - emits a `publish-result` artifact from the publish job as the canonical post-publish outcome record
 - validates the exact publish payload with `bun run release:check` inside the workflow itself after
   the matching `release-ready` artifact already proved CI readiness for that SHA
 - validates notes and version/tag parity
-- validates workspace parity (`core`, `agentplane`, and `@agentplaneorg/core` dependency)
+- validates workspace parity (`core`, `recipes`, `agentplane`, and both CLI dependency pins)
 - runs release-specific checks (`release:check`, release notes/version validation, origin tag existence)
-- publishes `@agentplaneorg/core` first, then `agentplane`
+- publishes `@agentplaneorg/core` first, then `@agentplaneorg/recipes`, then `agentplane`
 - uses detect-and-skip logic for already-published versions to tolerate reruns and workflow-dispatch recovery
 - resolves the same `release-ready` artifact contract for `workflow_dispatch` recovery instead of deciding release readiness independently
 
@@ -133,12 +134,14 @@ GitHub workflow `Core CI` also supports `workflow_dispatch` recovery:
 
 ## Provenance requirements
 
-Both packages set:
+All published packages set:
 
 - `publishConfig.access = public`
 - `publishConfig.provenance = true`
 
-Trusted publishing must be configured in npm for repository workflow identity.
+Trusted publishing should be configured in npm for repository workflow identity. If a package has not
+been onboarded there yet, provide `NPM_TOKEN` in the `npm` GitHub Actions environment so the same
+workflow can publish it without forking the release route.
 
 ## Failure points and fixes
 
@@ -156,6 +159,9 @@ Trusted publishing must be configured in npm for repository workflow identity.
 - If the exact release SHA never produced `release-ready` historically:
 - first dispatch `Core CI` for that same `sha`
 - then dispatch `Publish to npm` for that same `sha`
+- If only some packages are trusted publishers:
+- keep OIDC enabled and supply `NPM_TOKEN` as fallback for the remaining packages until npm-side
+  trusted publishing is enabled for them too
 
 ## Recovery tool
 
@@ -217,6 +223,6 @@ versions, or release notes for you.
 
 ## Post-release checks
 
-- verify npm versions for both packages
+- verify npm versions for all published packages
 - verify GitHub release body matches `docs/releases/vX.Y.Z.md`
 - verify upgrade bundle artifacts exist in release assets
