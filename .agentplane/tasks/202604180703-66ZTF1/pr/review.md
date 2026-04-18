@@ -25,7 +25,7 @@ Remove the redundant manual push plus second pr open pass in branch_pr mode by t
 ### Current Status
 
 - State: ok
-- Note: pr open now auto-publishes unpublished task branches to origin before remote PR creation; PR-flow acceptance suite, typecheck, and lint passed.
+- Note: pr open now auto-publishes only from the active task branch, including reruns after locally committed PR artifacts; PR-flow coverage, typecheck, and lint passed after the follow-up fix.
 
 ## Risks
 

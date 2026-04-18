@@ -4,7 +4,7 @@ title: "Auto-publish unpublished task branches during pr open"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-18T07:17:11.064Z"
+  updated_at: "2026-04-18T07:25:44.345Z"
   updated_by: "CODER"
-  note: "pr open now auto-publishes unpublished task branches to origin before remote PR creation; PR-flow acceptance suite, typecheck, and lint passed."
+  note: "pr open now auto-publishes only from the active task branch, including reruns after locally committed PR artifacts; PR-flow coverage, typecheck, and lint passed after the follow-up fix."
 commit: null
 comments:
   -
@@ -40,8 +40,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "pr open now auto-publishes unpublished task branches to origin before remote PR creation; PR-flow acceptance suite, typecheck, and lint passed."
+  -
+    type: "verify"
+    at: "2026-04-18T07:25:44.345Z"
+    author: "CODER"
+    state: "ok"
+    note: "pr open now auto-publishes only from the active task branch, including reruns after locally committed PR artifacts; PR-flow coverage, typecheck, and lint passed after the follow-up fix."
 doc_version: 3
-doc_updated_at: "2026-04-18T07:17:11.067Z"
+doc_updated_at: "2026-04-18T07:25:44.348Z"
 doc_updated_by: "CODER"
 description: "Remove the redundant manual push plus second pr open pass in branch_pr mode by teaching pr open to publish the task branch to origin when remote PR creation is requested and the branch has no upstream yet."
 sections:
@@ -66,6 +72,14 @@ sections:
     Note: pr open now auto-publishes unpublished task branches to origin before remote PR creation; PR-flow acceptance suite, typecheck, and lint passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-18T07:06:55.284Z, excerpt_hash=sha256:44db762c3fd9e43a9dc297e1d3c613a61041086a12a4491933f8fd6326b46b0b
+    
+    ### 2026-04-18T07:25:44.345Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: pr open now auto-publishes only from the active task branch, including reruns after locally committed PR artifacts; PR-flow coverage, typecheck, and lint passed after the follow-up fix.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-18T07:17:11.067Z, excerpt_hash=sha256:44db762c3fd9e43a9dc297e1d3c613a61041086a12a4491933f8fd6326b46b0b
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -105,6 +119,14 @@ By: CODER
 Note: pr open now auto-publishes unpublished task branches to origin before remote PR creation; PR-flow acceptance suite, typecheck, and lint passed.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-18T07:06:55.284Z, excerpt_hash=sha256:44db762c3fd9e43a9dc297e1d3c613a61041086a12a4491933f8fd6326b46b0b
+
+### 2026-04-18T07:25:44.345Z — VERIFY — ok
+
+By: CODER
+
+Note: pr open now auto-publishes only from the active task branch, including reruns after locally committed PR artifacts; PR-flow coverage, typecheck, and lint passed after the follow-up fix.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-18T07:17:11.067Z, excerpt_hash=sha256:44db762c3fd9e43a9dc297e1d3c613a61041086a12a4491933f8fd6326b46b0b
 
 <!-- END VERIFICATION RESULTS -->
 

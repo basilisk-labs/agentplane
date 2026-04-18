@@ -5,7 +5,7 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
-import { gitBranchUpstream } from "../shared/git-ops.js";
+import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import { maybeAutoCommitTaskPrArtifacts } from "./internal/auto-commit.js";
@@ -31,6 +31,8 @@ async function pushTaskBranchUpstreamIfConfigured(opts: {
   const upstream = await gitBranchUpstream(opts.gitRoot, opts.branch);
   const trimmed = upstream?.trim() ?? "";
   if (!trimmed) {
+    const currentBranch = await gitCurrentBranch(opts.gitRoot).catch(() => "");
+    if (currentBranch.trim() !== opts.branch.trim()) return false;
     try {
       await execFileAsync("git", ["remote", "get-url", "origin"], {
         cwd: opts.gitRoot,
@@ -93,15 +95,15 @@ export async function cmdPrOpen(opts: {
       branch: opts.branch,
       remoteMode: "sync-only",
     });
-    const didAutoCommit = initialSync.meta.branch
-      ? await maybeAutoCommitTaskPrArtifacts({
-          ctx: commandCtx,
-          taskId: opts.taskId,
-          branch: initialSync.meta.branch,
-        })
-      : false;
+    if (initialSync.meta.branch) {
+      await maybeAutoCommitTaskPrArtifacts({
+        ctx: commandCtx,
+        taskId: opts.taskId,
+        branch: initialSync.meta.branch,
+      });
+    }
 
-    if (didAutoCommit && !opts.syncOnly && initialSync.meta.branch) {
+    if (!opts.syncOnly && initialSync.meta.branch) {
       await pushTaskBranchUpstreamIfConfigured({
         gitRoot: commandCtx.resolvedProject.gitRoot,
         branch: initialSync.meta.branch,
