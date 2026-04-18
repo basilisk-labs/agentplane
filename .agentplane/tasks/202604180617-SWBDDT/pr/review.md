@@ -45,12 +45,18 @@ Introduce a typed command result contract and route selected release/task comman
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-18T07:43:16.224Z
+- Updated: 2026-04-18T07:58:45.607Z
 - Branch: task/202604180617-SWBDDT/command-result-contract
-- Head: 534b112df55d
+- Head: 2228a7952661
 
 ```text
-No changes detected.
+ packages/agentplane/src/cli/output.test.ts         | 24 +++++++
+ packages/agentplane/src/cli/output.ts              | 69 ++++++++++++++++++
+ packages/agentplane/src/commands/task/block.ts     | 10 ++-
+ packages/agentplane/src/commands/task/comment.ts   | 10 ++-
+ packages/agentplane/src/commands/task/update.ts    | 18 +++--
+ .../src/commands/task/update.unit.test.ts          | 83 ++++++++++++++++++++++
+ 6 files changed, 204 insertions(+), 10 deletions(-)
 ```
 
 </details>
