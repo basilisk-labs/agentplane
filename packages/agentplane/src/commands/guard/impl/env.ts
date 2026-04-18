@@ -25,7 +25,10 @@ export async function resolveCanonicalGitIdentity(): Promise<CanonicalGitIdentit
     const globalName = await readGitConfigValue("user.name");
     const globalEmail = await readGitConfigValue("user.email");
     const name =
-      globalName ?? process.env.GIT_AUTHOR_NAME?.trim() ?? process.env.GIT_COMMITTER_NAME?.trim() ?? null;
+      globalName ??
+      process.env.GIT_AUTHOR_NAME?.trim() ??
+      process.env.GIT_COMMITTER_NAME?.trim() ??
+      null;
     const email =
       globalEmail ??
       process.env.GIT_AUTHOR_EMAIL?.trim() ??
