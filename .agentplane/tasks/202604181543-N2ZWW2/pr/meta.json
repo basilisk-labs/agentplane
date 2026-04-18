@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604181543-N2ZWW2/patch-release-v0-3-14",
   "created_at": "2026-04-18T15:46:09.506Z",
-  "head_sha": "1cf43f1c55ab76c8daa4a14df6d004c9675e311c",
+  "head_sha": "0a990f61a9ad2f9d5a40b8444093955cc326c518",
   "last_verified_at": "2026-04-18T16:01:52.900Z",
   "last_verified_sha": "1cf43f1c55ab76c8daa4a14df6d004c9675e311c",
+  "merge_commit": "2568c8cffc5363f691985c954f3850e6949696ce",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-18T16:03:53Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604181543-N2ZWW2",
-  "updated_at": "2026-04-18T16:01:52.932Z",
+  "updated_at": "2026-04-18T16:03:53Z",
   "verify": {
     "status": "pass"
   }

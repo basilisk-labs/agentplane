@@ -1,10 +1,11 @@
 ---
 id: "202604181543-N2ZWW2"
 title: "Prepare and ship patch release v0.3.14"
-status: "DOING"
+result_summary: "Merged via PR #465."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-18T16:01:52.900Z"
   updated_by: "CODER"
   note: "Release checks: local v0.3.14 candidate and release smoke passed."
-commit: null
+commit:
+  hash: "2568c8cffc5363f691985c954f3850e6949696ce"
+  message: "release: Prepare and ship patch release v0.3.14 (N2ZWW2) (#465)"
 comments:
   -
     author: "CODER"
     body: "Start: preparing the v0.3.14 patch release from current main, freezing the release route, and validating the exact publish/install path including @agentplaneorg/recipes before any candidate commit is created."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #465 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release checks: local v0.3.14 candidate and release smoke passed."
+  -
+    type: "status"
+    at: "2026-04-18T16:04:19.892Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #465 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T16:01:52.904Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T16:04:19.898Z"
+doc_updated_by: "INTEGRATOR"
 description: "Generate a fresh release plan from the current 0.3.13 workspace state, apply the next patch bump and release notes, validate the exact release payload including the recipes publish fix, merge it to main, and verify the resulting published install path works end-to-end."
 sections:
   Summary: |-
