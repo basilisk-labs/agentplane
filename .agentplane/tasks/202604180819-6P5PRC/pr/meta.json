@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604180819-6P5PRC/branch-pr-close-tail-helper",
+  "created_at": "2026-04-18T08:19:48.153Z",
+  "head_sha": "a8ed7ef44066b0e45fa7c24ec238243908d879b3",
+  "last_verified_at": "2026-04-18T08:23:57.103Z",
+  "last_verified_sha": "5bc222520a1f722b98c5612416700cf3465c518f",
+  "schema_version": 1,
+  "task_id": "202604180819-6P5PRC",
+  "updated_at": "2026-04-18T08:24:33.798Z",
+  "verify": {
+    "status": "pass"
+  }
+}

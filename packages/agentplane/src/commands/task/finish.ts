@@ -9,7 +9,8 @@ import path from "node:path";
 
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
-import { gitCurrentBranch } from "../shared/git-ops.js";
+import { execFileAsync, gitEnv } from "../shared/git.js";
+import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
 import {
   backendUsesLocalTaskStore,
   loadCommandContext,
@@ -86,6 +87,87 @@ async function ensureFinishRunsOnBaseBranch(opts: {
       `finish must run on base branch ${baseBranch} in branch_pr mode ` +
       `(current: ${currentBranch}); integrate first or reconcile from the base checkout.`,
   });
+}
+
+async function readHeadCommitHash(gitRoot: string): Promise<string> {
+  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: gitRoot,
+    env: gitEnv(),
+  });
+  const hash = stdout.trim();
+  if (!hash) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message: "Failed to resolve HEAD while preparing a branch_pr close tail.",
+    });
+  }
+  return hash;
+}
+
+function branchPrCloseBranchName(taskId: string, headCommitHash: string): string {
+  return `task-close/${taskId}/${headCommitHash.slice(0, 12)}`;
+}
+
+async function materializeBranchPrCloseTail(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  baseBranchOverride?: string;
+  quiet: boolean;
+  closeUnstageOthers?: boolean;
+  allowPolicy?: boolean;
+}): Promise<string> {
+  const gitRoot = opts.ctx.resolvedProject.gitRoot;
+  const baseBranch = await gitCurrentBranch(gitRoot);
+  const headCommitHash = await readHeadCommitHash(gitRoot);
+  const closeBranch = branchPrCloseBranchName(opts.taskId, headCommitHash);
+  const branchExists = await gitBranchExists(gitRoot, closeBranch);
+
+  await execFileAsync(
+    "git",
+    branchExists ? ["checkout", closeBranch] : ["checkout", "-b", closeBranch],
+    {
+      cwd: gitRoot,
+      env: gitEnv(),
+    },
+  );
+
+  let checkoutError: unknown = null;
+  try {
+    await createTaskCloseCommit({
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: opts.taskId,
+      baseBranchOverride: opts.baseBranchOverride,
+      quiet: opts.quiet,
+      closeUnstageOthers: opts.closeUnstageOthers,
+      allowPolicy: opts.allowPolicy,
+    });
+  } finally {
+    try {
+      await execFileAsync("git", ["checkout", baseBranch], {
+        cwd: gitRoot,
+        env: gitEnv(),
+      });
+    } catch (error) {
+      checkoutError = error;
+    }
+  }
+
+  if (checkoutError) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message:
+        `Created ${closeBranch} but failed to return to ${baseBranch}; ` +
+        "inspect the local checkout before continuing.",
+    });
+  }
+
+  return closeBranch;
 }
 
 type FinishStructuredFindingInput = {
@@ -279,6 +361,12 @@ export async function cmdFinish(opts: {
       opts.taskIds.length === 1 &&
       !opts.commitFromComment &&
       !statusCommitRequested;
+    const defaultBranchPrCloseCommit =
+      ctx.config.workflow_mode === "branch_pr" &&
+      backendWritesTaskReadmes &&
+      opts.taskIds.length === 1 &&
+      !opts.commitFromComment &&
+      !statusCommitRequested;
     const statusPathRequiresTrackedTaskCommit =
       backendWritesTaskReadmes &&
       opts.taskIds.length === 1 &&
@@ -286,7 +374,8 @@ export async function cmdFinish(opts: {
     const shouldCloseCommit =
       opts.closeCommit === true ||
       statusPathRequiresTrackedTaskCommit ||
-      (defaultDirectCloseCommit && opts.noCloseCommit !== true);
+      (defaultDirectCloseCommit && opts.noCloseCommit !== true) ||
+      (defaultBranchPrCloseCommit && opts.noCloseCommit !== true);
 
     const metaTaskId = opts.taskIds.length === 1 ? (opts.taskIds[0] ?? "") : "";
     const wantMeta =
@@ -522,16 +611,37 @@ export async function cmdFinish(opts: {
           `${infoMessage("task marked DONE; creating deterministic close commit")}\n`,
         );
       }
-      await createTaskCloseCommit({
-        ctx,
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride,
-        taskId: primaryTaskId,
-        baseBranchOverride: opts.baseBranchOverride,
-        quiet: opts.quiet,
-        closeUnstageOthers: opts.closeCommit === true && opts.closeUnstageOthers === true,
-        allowPolicy: promotedIncidents > 0,
-      });
+      const closeUnstageOthers = opts.closeCommit === true && opts.closeUnstageOthers === true;
+      if (ctx.config.workflow_mode === "branch_pr") {
+        const closeBranch = await materializeBranchPrCloseTail({
+          ctx,
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride,
+          taskId: primaryTaskId,
+          baseBranchOverride: opts.baseBranchOverride,
+          quiet: opts.quiet,
+          closeUnstageOthers,
+          allowPolicy: promotedIncidents > 0,
+        });
+        if (!opts.quiet) {
+          process.stdout.write(
+            `${infoMessage(
+              `branch_pr close tail ready on ${closeBranch}; push that branch and open it with task hosted-close-pr if hosted automation does not create the closure PR for you.`,
+            )}\n`,
+          );
+        }
+      } else {
+        await createTaskCloseCommit({
+          ctx,
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride,
+          taskId: primaryTaskId,
+          baseBranchOverride: opts.baseBranchOverride,
+          quiet: opts.quiet,
+          closeUnstageOthers,
+          allowPolicy: promotedIncidents > 0,
+        });
+      }
     }
 
     if (ctx.config.workflow_mode === "direct") {
