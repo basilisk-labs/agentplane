@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604172036-XPCNRE/cli-harness-modules",
   "created_at": "2026-04-17T20:56:34.564Z",
-  "head_sha": "032e3a0c91e10d052a98ec6fd704a69b0f7b5a38",
+  "head_sha": "78007860316959569d29e2295a49d607ae1a8861",
   "last_verified_at": "2026-04-17T21:05:14.946Z",
   "last_verified_sha": "94366eade38fb0c4b6ff36a4f525972bc12c91e0",
+  "merge_commit": "d89bd16e816363f15562e201a094b876692a7d0f",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-18T04:51:59Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604172036-XPCNRE",
-  "updated_at": "2026-04-17T21:05:32.645Z",
+  "updated_at": "2026-04-18T04:51:59Z",
   "verify": {
     "status": "pass"
   }
