@@ -1,0 +1,4 @@
+ .../src/commands/release/apply.command.ts          | 506 +--------------------
+ .../src/commands/release/apply.pipeline.ts         | 490 ++++++++++++++++++++
+ .../agentplane/src/commands/release/apply.types.ts |  26 ++
+ 3 files changed, 532 insertions(+), 490 deletions(-)

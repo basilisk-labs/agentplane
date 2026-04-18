@@ -1,3 +1,5 @@
+import type { ResolvedProject } from "@agentplaneorg/core";
+
 export type BumpKind = "patch" | "minor" | "major";
 
 export type ReleaseApplyFlags = {
@@ -50,3 +52,27 @@ export type ReleaseApplyReport = {
   tag: { name: string; created: boolean; pushed: boolean };
   push: { requested: boolean; remote: string; performed: boolean; refs: string[] };
 };
+
+export type ReleaseCommandState = {
+  resolved: ResolvedProject;
+  gitRoot: string;
+  planDir: string;
+  plan: ReleaseVersionPlan;
+  notesPath: string;
+  taskBranchPrefix: string;
+  route: ReleaseApplyRoute;
+  corePkgPath: string;
+  agentplanePkgPath: string;
+  npmVersionChecked: boolean;
+};
+
+export type ReleaseCommandMutation = {
+  releaseCommit: { hash: string; subject: string } | null;
+};
+
+export type ReleaseCommandRouteResolver = (opts: {
+  cwd: string;
+  rootOverride?: string | null;
+  gitRoot: string;
+  agentplaneDir: string;
+}) => Promise<ReleaseApplyRoute>;
