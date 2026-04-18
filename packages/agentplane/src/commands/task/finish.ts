@@ -10,8 +10,12 @@ import path from "node:path";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import {
+  backendUsesLocalTaskStore,
+  loadCommandContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
+import { getTaskStore } from "../shared/task-store.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
 import {
@@ -266,7 +270,7 @@ export async function cmdFinish(opts: {
       });
     }
 
-    const useStore = backendIsLocalFileBackend(ctx);
+    const useStore = backendUsesLocalTaskStore(ctx);
     const store = useStore ? getTaskStore(ctx) : null;
     const backendWritesTaskReadmes = ctx.taskBackend.capabilities.writes_task_readmes === true;
     const defaultDirectCloseCommit =

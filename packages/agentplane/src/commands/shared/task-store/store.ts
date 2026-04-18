@@ -1,6 +1,7 @@
-import { LocalBackend, type TaskData } from "../../../backends/task-backend.js";
+import type { TaskData } from "../../../backends/task-backend.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
+import { backendUsesLocalTaskStore } from "../task-backend.js";
 import {
   applyTaskStoreIntents,
   resolveTaskStoreIntents,
@@ -164,5 +165,5 @@ export function getTaskStore(ctx: TaskStoreContext): TaskStore {
 }
 
 export function backendIsLocalFileBackend(ctx: TaskStoreContext): boolean {
-  return ctx.taskBackend instanceof LocalBackend;
+  return backendUsesLocalTaskStore(ctx);
 }

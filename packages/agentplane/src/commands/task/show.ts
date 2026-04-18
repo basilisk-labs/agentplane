@@ -6,6 +6,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
 
 import {
+  backendSupportsTaskBranchSnapshots,
   loadCommandContext,
   loadTaskFromContext,
   taskDataToFrontmatter,
@@ -16,7 +17,7 @@ async function detectLocalTaskMetadataErrors(
   ctx: CommandContext,
   taskId: string,
 ): Promise<string[] | null> {
-  if (ctx.backendId !== "local") return null;
+  if (!backendSupportsTaskBranchSnapshots(ctx)) return null;
   const readmePath = taskReadmePath(
     path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.workflow_dir),
     taskId,
@@ -51,7 +52,7 @@ export async function cmdTaskShow(opts: {
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
     const frontmatter = taskDataToFrontmatter(task);
-    if (ctx.backendId === "local") {
+    if (backendSupportsTaskBranchSnapshots(ctx)) {
       const metadataErrors = validateTaskDocMetadata(frontmatter);
       if (metadataErrors.length > 0) {
         throw new CliError({

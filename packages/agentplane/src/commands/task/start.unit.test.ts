@@ -12,6 +12,7 @@ const mockBackendIsLocalFileBackend = vi.fn<(ctx: CommandContext) => boolean>();
 const mockGetTaskStore = vi.fn();
 
 vi.mock("../shared/task-backend.js", () => ({
+  backendUsesLocalTaskStore: mockBackendIsLocalFileBackend,
   loadCommandContext: mockLoadCommandContext,
   loadTaskFromContext: mockLoadTaskFromContext,
 }));

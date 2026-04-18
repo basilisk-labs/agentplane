@@ -3,8 +3,12 @@ import { ensureDocSections } from "@agentplaneorg/core";
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { cmdCommit } from "../guard/index.js";
-import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore, mutateTaskStore } from "../shared/task-store.js";
+import {
+  backendUsesLocalTaskStore,
+  loadTaskFromContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
+import { getTaskStore, mutateTaskStore } from "../shared/task-store.js";
 
 import {
   ensureAgentFilledRequiredDocSections,
@@ -208,7 +212,7 @@ export async function writeFinishedTasks(opts: {
   breaking: boolean;
   taskCommitInfo: ResolvedCommitInfo | null;
 }): Promise<void> {
-  const useStore = backendIsLocalFileBackend(opts.ctx);
+  const useStore = backendUsesLocalTaskStore(opts.ctx);
   const store = useStore ? getTaskStore(opts.ctx) : null;
   const taskCount = opts.loadedTasks.length;
 

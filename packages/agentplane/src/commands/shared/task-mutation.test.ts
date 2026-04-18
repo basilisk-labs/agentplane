@@ -66,7 +66,11 @@ describe("applyTaskMutation", () => {
 
     vi.doMock("./task-backend.js", async () => {
       const actual = await vi.importActual("./task-backend.js");
-      return { ...actual, loadTaskFromContext };
+      return {
+        ...actual,
+        backendUsesLocalTaskStore: () => true,
+        loadTaskFromContext,
+      };
     });
     vi.doMock("./task-store.js", async () => {
       const actual = await vi.importActual("./task-store.js");
@@ -114,6 +118,13 @@ describe("applyTaskMutation", () => {
         getTaskStore: () => store,
       };
     });
+    vi.doMock("./task-backend.js", async () => {
+      const actual = await vi.importActual("./task-backend.js");
+      return {
+        ...actual,
+        backendUsesLocalTaskStore: () => true,
+      };
+    });
 
     const { applyTaskMutation } = await import("./task-mutation.js");
     const result = await applyTaskMutation({
@@ -136,7 +147,11 @@ describe("applyTaskMutation", () => {
 
     vi.doMock("./task-backend.js", async () => {
       const actual = await vi.importActual("./task-backend.js");
-      return { ...actual, loadTaskFromContext };
+      return {
+        ...actual,
+        backendUsesLocalTaskStore: () => false,
+        loadTaskFromContext,
+      };
     });
     vi.doMock("./task-store.js", async () => {
       const actual = await vi.importActual("./task-store.js");
@@ -196,7 +211,11 @@ describe("applyTaskMutation", () => {
 
     vi.doMock("./task-backend.js", async () => {
       const actual = await vi.importActual("./task-backend.js");
-      return { ...actual, loadTaskFromContext };
+      return {
+        ...actual,
+        backendUsesLocalTaskStore: () => false,
+        loadTaskFromContext,
+      };
     });
     vi.doMock("./task-store.js", async () => {
       const actual = await vi.importActual("./task-store.js");
