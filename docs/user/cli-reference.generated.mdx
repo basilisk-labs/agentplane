@@ -1596,7 +1596,7 @@ agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "LGTM"
 
 ### pr open
 
-Create PR artifacts for a task.
+Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.
 
 Usage:
 
@@ -1616,7 +1616,7 @@ Examples:
 agentplane pr open 202602030608-F1Q8AB --author CODER
 ```
 
-- Open.
+- Sync local artifacts, publish the task branch to origin if needed, and create/link the GitHub PR.
 
 ### pr update
 
@@ -3740,6 +3740,7 @@ Notes:
 
 - When workflow_mode=direct, agentplane does not create task branches; it records a single active task for the workspace.
 - When workflow_mode=branch_pr, --worktree is required and the command must be run on the base branch.
+- After branch_pr work starts, run owner-scoped task commands from the created worktree so task README/PR artifacts stay attached to one checkout.
 
 Examples:
 
