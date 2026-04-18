@@ -1,10 +1,11 @@
 ---
 id: "202604172036-XPCNRE"
 title: "Decompose CLI test harness into focused fixture modules"
-status: "DOING"
+result_summary: "Merged via PR #425."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -42,11 +43,16 @@ verification:
     Result: pass (211 files, 1269 tests, 2 skipped).
     
     Observation: the first full test:fast run exposed a regression in createUpgradeBundle after the module move; the manifest path was corrected in the same task and the failing upgrade tests plus the full suite were re-run successfully.
-commit: null
+commit:
+  hash: "d89bd16e816363f15562e201a094b876692a7d0f"
+  message: "refactor/testkit: Decompose CLI test harness into focused fixture modules (XPCNRE) (#425)"
 comments:
   -
     author: "CODER"
     body: "Start: inspect cli-harness boundaries, extract the first cohesive fixture modules, and keep the public harness contract stable for existing tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #425 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -99,9 +105,16 @@ events:
       Result: pass (211 files, 1269 tests, 2 skipped).
       
       Observation: the first full test:fast run exposed a regression in createUpgradeBundle after the module move; the manifest path was corrected in the same task and the failing upgrade tests plus the full suite were re-run successfully.
+  -
+    type: "status"
+    at: "2026-04-18T04:52:26.209Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #425 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T21:05:14.952Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T04:52:26.214Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split the monolithic CLI harness into focused fixture modules for git repo setup, stdio capture, recipe fixtures, and command execution while preserving the @agentplane/testkit facade and existing test behavior."
 sections:
   Summary: |-
