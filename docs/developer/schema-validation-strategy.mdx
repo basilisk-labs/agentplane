@@ -1,21 +1,23 @@
 ---
 title: "Schema Validation Strategy"
-description: "The validation baseline after moving generated JSON schema artifacts to a core-first rendering model."
+description: "Practical guidance for durable versus transient JSON boundaries after the Zod contract decision."
 ---
 
-## Decision
+For the architectural decision itself, see [ADR: Zod Contract SSOT](schema-runtime-contract-adr).
 
-Agent Plane now treats runtime code in `packages/core/src/**` as the canonical contract source for durable repository artifacts.
+This page describes how to apply that decision in day-to-day repository work.
 
-That means:
+## Current baseline
 
-1. TypeScript renderers and validators in `packages/core/src/config/**` and `packages/core/src/tasks/**` define the real contract.
-2. `packages/spec/schemas/*.schema.json` and `packages/core/schemas/*.schema.json` are generated mirrors for tooling and external consumers.
-3. AJV remains a boundary validator for a small set of durable artifacts, not a repository-wide parsing strategy.
+Agent Plane now uses:
+
+1. Zod contracts in `packages/core/src/config/**` and `packages/core/src/tasks/**` for durable repository artifacts;
+2. generated schema mirrors in `packages/spec/schemas/*.schema.json` and `packages/core/schemas/*.schema.json` for tooling and external consumers;
+3. narrow decoders or guards for transient/internal JSON that is not a durable public contract.
 
 ## Current facts
 
-### Durable artifacts already on the generated path
+### Durable artifacts already on the Zod path
 
 - `.agentplane/config.json`
 - task README frontmatter
@@ -27,38 +29,31 @@ These contracts are rendered from runtime code and synchronized through `bun run
 
 ### Remaining drift
 
-- Some docs still describe `packages/spec` as the canonical schema source.
 - A large part of the repository still uses `JSON.parse(...) as ...` for local files, subprocess JSON, or transient runtime artifacts.
 - Those casts are not all the same class of problem. Some are durable contract boundaries; many are just narrow internal decoding sites.
 
-## Chosen architecture
+## Practical rule
 
-### 1. Core-first contract authority
+### 1. Durable contract artifact
 
-Use `packages/core/src/**` as the only authority for durable artifact schemas and defaults.
+Use this lane when the artifact is:
 
-Implications:
+1. stored durably in the repository or task workspace;
+2. consumed by multiple commands or external tooling;
+3. expected to have a stable schema version.
 
-1. Add or change durable artifact fields in core runtime code first.
-2. Regenerate schema mirrors from core.
-3. Treat `packages/spec` as a published mirror, not as a second hand-maintained model.
+Required approach:
 
-### 2. AJV only for durable boundary validation
+1. define the contract in Zod under `packages/core/src/**`;
+2. infer types from the same Zod contract;
+3. generate synchronized JSON Schema mirrors;
+4. cover parity with `bun run schemas:check`.
 
-Keep AJV where the framework validates durable repository artifacts that need:
+### 2. Internal or transient JSON
 
-1. machine-readable JSON Schema output;
-2. external tooling compatibility;
-3. explicit schema-level error reporting;
-4. synchronized mirrors under `packages/spec` and `packages/core/schemas`.
+Use this lane when the artifact is local implementation data rather than a public framework contract.
 
-Today that means config and task artifact families in `packages/core`.
-
-### 3. Local decoders for transient/internal JSON
-
-Do not expand AJV to every `JSON.parse(...) as T` site.
-
-For internal or transient JSON, prefer:
+Required approach:
 
 1. narrow runtime guards;
 2. small decode helpers;
@@ -72,77 +67,13 @@ Examples:
 3. package metadata reads;
 4. runner-local artifacts that are not exported as public schema contracts.
 
-## Alternatives considered
-
-### Alternative A. `packages/spec` as the canonical source
-
-Rejected.
-
-Why:
-
-1. The repository already renders schemas from runtime code.
-2. Keeping a second handwritten schema authority recreates drift instead of removing it.
-3. Runtime defaults, projection rules, and schema mirrors would keep diverging.
-
-### Alternative B. AJV everywhere
-
-Rejected.
-
-Why:
-
-1. Most remaining `JSON.parse(...) as T` sites are not durable public contracts.
-2. Full AJV coverage would add schema maintenance cost without matching runtime value.
-3. It would create another broad migration before the real architectural hotspots are finished.
-
-### Alternative C. Manual decoders everywhere, no JSON Schema mirrors
-
-Rejected.
-
-Why:
-
-1. Config and task artifact families already benefit from JSON Schema output.
-2. External tooling and docs rely on machine-readable schemas.
-3. Removing schema mirrors would break a useful distribution surface.
-
-## Validation lanes
-
-Any new JSON boundary should choose one of these lanes explicitly.
-
-### Lane 1. Durable contract artifact
-
-Use this lane when the artifact is:
-
-1. stored in the repository or task workspace as a durable framework contract;
-2. consumed by multiple commands or external tooling;
-3. expected to have a stable schema version.
-
-Required approach:
-
-1. define the contract in `packages/core/src/**`;
-2. validate with AJV at the boundary;
-3. render synchronized JSON Schema mirrors;
-4. cover drift with `schemas:check`.
-
-### Lane 2. Internal/transient JSON
-
-Use this lane when the artifact is:
-
-1. local to one subsystem;
-2. derived from subprocess output, cache state, or short-lived runtime files;
-3. not intended as a stable published schema.
-
-Required approach:
-
-1. parse once at the boundary;
-2. validate with a narrow decoder or guard;
-3. avoid adding a new schema mirror unless the artifact becomes durable/public later.
-
 ## Migration path before larger rewrites
 
-### Phase 1. Fix the documented source of truth
+### Phase 1. Keep the docs aligned with the Zod baseline
 
-1. Stop describing `packages/spec` as canonical.
-2. Document `packages/core/src/** -> rendered schema mirrors` as the authoritative flow.
+1. Stop describing AJV as the durable contract source.
+2. Stop describing `packages/spec` as canonical.
+3. Document `packages/core/src/** -> Zod contract -> generated schema mirrors` as the authoritative flow.
 
 ### Phase 2. Audit remaining parse sites by boundary type
 
@@ -160,14 +91,14 @@ Priority targets:
 1. generated recipe artifacts (`overlay-bundle.json`, `recipe-assets.json`) if they remain persisted runtime contracts;
 2. other task/workflow metadata that crosses subsystem boundaries repeatedly.
 
-### Phase 4. Leave broad AJV expansion out of the critical path
+### Phase 4. Leave broad decoder migration out of the critical path
 
-Do not block the rest of the `0.4` cleanup on a repo-wide validation rewrite.
+Do not block the rest of the refactor program on a repo-wide replacement of every parse site.
 
 The near-term win is architectural consistency:
 
 1. one contract authority;
-2. one reason to use AJV;
+2. one durable-contract lane;
 3. one explicit escape hatch for transient JSON.
 
 ## Operational rule
@@ -178,4 +109,4 @@ Before introducing a new schema, decide first:
 2. Does it need a published schema mirror?
 3. Will multiple subsystems depend on its stable shape?
 
-If the answer is not clearly yes, use a local decoder instead of adding another AJV/schema surface.
+If the answer is not clearly yes, use a local decoder instead of adding another durable schema surface.
