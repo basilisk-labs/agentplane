@@ -1,10 +1,11 @@
 ---
 id: "202604172036-S1ZYSF"
 title: "Introduce OutputWriter and migrate direct CLI stdio hotspots"
-status: "DOING"
+result_summary: "Merged via PR #424."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -45,11 +46,16 @@ verification:
     Result: pass
     Evidence: no direct stdio writes remain in the migrated command files.
     Scope: targeted hotspot removal.
-commit: null
+commit:
+  hash: "84f0e489d98ad570f4739cc99d25dd07bcd7c4de"
+  message: "cli/output: Introduce OutputWriter and migrate direct CLI stdio hotspots (S1ZYSF) (#424)"
 comments:
   -
     author: "CODER"
     body: "Start: build a shared output-writer path, migrate the first direct stdio hotspots without changing CLI behavior, and keep the acceptance checks narrow enough for one reviewable PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #424 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -83,9 +89,16 @@ events:
       Result: pass
       Evidence: no direct stdio writes remain in the migrated command files.
       Scope: targeted hotspot removal.
+  -
+    type: "status"
+    at: "2026-04-18T04:52:52.505Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #424 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-17T20:52:34.685Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T04:52:52.512Z"
+doc_updated_by: "INTEGRATOR"
 description: "Create a shared output writer abstraction for command handlers and migrate the highest-volume direct stdout/stderr writers in recipes and task commands to the new reporter path without changing user-visible output."
 sections:
   Summary: |-
