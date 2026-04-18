@@ -39,6 +39,7 @@ jobs:
       ref: ${{ steps.ref.outputs.ref }}
       sha: ${{ steps.source.outputs.sha }}
       core_published: ${{ steps.detect.outputs.core_published }}
+      recipes_published: ${{ steps.detect.outputs.recipes_published }}
       cli_published: ${{ steps.detect.outputs.cli_published }}
       release_ready_run_id: ${{ steps.source.outputs.release_ready_run_id }}
       release_ready_artifact_name: ${{ steps.source.outputs.release_ready_artifact_name }}
@@ -131,10 +132,12 @@ jobs:
         run: |
           set -euo pipefail
           VERSION_CORE=$(node -p "JSON.parse(require('node:fs').readFileSync('packages/core/package.json','utf8')).version")
+          VERSION_RECIPES=$(node -p "JSON.parse(require('node:fs').readFileSync('packages/recipes/package.json','utf8')).version")
           VERSION_CLI=$(node -p "JSON.parse(require('node:fs').readFileSync('packages/agentplane/package.json','utf8')).version")
           CORE_DEP=$(node -p "JSON.parse(require('node:fs').readFileSync('packages/agentplane/package.json','utf8')).dependencies['@agentplaneorg/core']")
-          if [ "$VERSION_CORE" != "$VERSION_CLI" ] || [ "$VERSION_CORE" != "$CORE_DEP" ]; then
-            echo "release parity failed: core=$VERSION_CORE cli=$VERSION_CLI dep=$CORE_DEP" >&2
+          RECIPES_DEP=$(node -p "JSON.parse(require('node:fs').readFileSync('packages/agentplane/package.json','utf8')).dependencies['@agentplaneorg/recipes']")
+          if [ "$VERSION_CORE" != "$VERSION_CLI" ] || [ "$VERSION_RECIPES" != "$VERSION_CLI" ] || [ "$VERSION_CORE" != "$CORE_DEP" ] || [ "$VERSION_RECIPES" != "$RECIPES_DEP" ]; then
+            echo "release parity failed: core=$VERSION_CORE recipes=$VERSION_RECIPES cli=$VERSION_CLI core_dep=$CORE_DEP recipes_dep=$RECIPES_DEP" >&2
             exit 1
           fi
 
@@ -148,14 +151,16 @@ jobs:
           fi
 
           CORE_PUBLISHED=false
+          RECIPES_PUBLISHED=false
           CLI_PUBLISHED=false
           if npm view "@agentplaneorg/core@${VERSION}" version >/dev/null 2>&1; then CORE_PUBLISHED=true; fi
+          if npm view "@agentplaneorg/recipes@${VERSION}" version >/dev/null 2>&1; then RECIPES_PUBLISHED=true; fi
           if npm view "agentplane@${VERSION}" version >/dev/null 2>&1; then CLI_PUBLISHED=true; fi
 
           {
             if [ "${{ steps.source.outputs.release_ready_ok }}" != "true" ]; then
               echo "should_publish=false"
-            elif [ "$CORE_PUBLISHED" = "true" ] && [ "$CLI_PUBLISHED" = "true" ]; then
+            elif [ "$CORE_PUBLISHED" = "true" ] && [ "$RECIPES_PUBLISHED" = "true" ] && [ "$CLI_PUBLISHED" = "true" ]; then
               echo "should_publish=false"
             else
               echo "should_publish=true"
@@ -164,6 +169,7 @@ jobs:
             echo "version=$VERSION"
             echo "tag=$TAG"
             echo "core_published=$CORE_PUBLISHED"
+            echo "recipes_published=$RECIPES_PUBLISHED"
             echo "cli_published=$CLI_PUBLISHED"
           } >> "$GITHUB_OUTPUT"
 
@@ -276,6 +282,14 @@ jobs:
         run: |
           set -euo pipefail
           npm publish --provenance --access public --tag latest
+      - name: Publish @agentplaneorg/recipes
+        id: publish_recipes
+        if: needs.detect.outputs.recipes_published != 'true'
+        working-directory: packages/recipes
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm publish --provenance --access public --tag latest
       - name: Publish agentplane
         id: publish_cli
         if: needs.detect.outputs.cli_published != 'true'
@@ -321,8 +335,10 @@ jobs:
             --release-ready-run-id "${{ needs.detect.outputs.release_ready_run_id }}" \
             --job-status "${{ job.status }}" \
             --core-prepublished "${{ needs.detect.outputs.core_published }}" \
+            --recipes-prepublished "${{ needs.detect.outputs.recipes_published }}" \
             --cli-prepublished "${{ needs.detect.outputs.cli_published }}" \
             --core-outcome "${{ steps.publish_core.outcome }}" \
+            --recipes-outcome "${{ steps.publish_recipes.outcome }}" \
             --cli-outcome "${{ steps.publish_cli.outcome }}" \
             --smoke-outcome "${{ steps.post_publish_smoke.outcome }}" \
             --tag-exists "${{ steps.tag_state.outputs.tag_exists || 'false' }}" \

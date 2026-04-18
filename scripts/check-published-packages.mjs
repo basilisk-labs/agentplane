@@ -97,6 +97,7 @@ async function main() {
       ? specs
       : [
           await readPackageInfo(path.join(ROOT, "packages", "core", "package.json")),
+          await readPackageInfo(path.join(ROOT, "packages", "recipes", "package.json")),
           await readPackageInfo(path.join(ROOT, "packages", "agentplane", "package.json")),
         ];
 
