@@ -1,10 +1,11 @@
 ---
 id: "202604180701-Z8WS24"
 title: "Reduce branch_pr lifecycle redundancy and document the optimized route"
-status: "DOING"
+result_summary: "Merged via PR #444."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-18T07:17:11.027Z"
   updated_by: "PLANNER"
   note: "branch_pr workflow docs and command help now document worktree-local owner commands, one-pass pr open, and merged-branch cleanup expectations; routing check, typecheck, and lint passed."
-commit: null
+commit:
+  hash: "e67afcc5edf3f3caf023ea669bb3e6e3de26bc19"
+  message: "workflow: Reduce branch_pr lifecycle redundancy and document the optimized route (Z8WS24) (#444)"
 comments:
   -
     author: "PLANNER"
     body: "Start: audit the current branch_pr route, document avoidable loops, and codify the optimized branch-based flow without weakening its checkpoints."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #444 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "branch_pr workflow docs and command help now document worktree-local owner commands, one-pass pr open, and merged-branch cleanup expectations; routing check, typecheck, and lint passed."
+  -
+    type: "status"
+    at: "2026-04-18T07:52:41.214Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #444 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T07:17:11.033Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-18T07:52:41.220Z"
+doc_updated_by: "INTEGRATOR"
 description: "Analyze branch_pr workflow for repeated local-only steps, duplicate task/PR artifact churn, and long feedback loops; implement the minimal docs/tooling changes that remove redundant actions without weakening branch-based controls."
 sections:
   Summary: |-
