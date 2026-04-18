@@ -22,6 +22,20 @@ import {
 function baseTaskBackend(overrides: Partial<taskBackend.TaskBackend>): taskBackend.TaskBackend {
   return {
     id: "local",
+    capabilities: {
+      canonical_source: "local",
+      projection: "canonical",
+      projection_read_mode: "native",
+      reads_from_projection_by_default: true,
+      writes_task_readmes: true,
+      supports_task_revisions: true,
+      supports_revision_guarded_writes: true,
+      may_access_network_on_read: false,
+      may_access_network_on_write: false,
+      supports_projection_refresh: false,
+      supports_push_sync: false,
+      supports_snapshot_export: true,
+    },
     listTasks: vi.fn().mockResolvedValue([]),
     getTask: vi.fn().mockResolvedValue(null),
     writeTask: vi.fn().mockImplementation(() => Promise.resolve()),
@@ -248,6 +262,20 @@ describe("commands/workflow", () => {
     const spyEmptySection = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
       backend: baseTaskBackend({
+        capabilities: {
+          canonical_source: "remote",
+          projection: "cache",
+          projection_read_mode: "native",
+          reads_from_projection_by_default: true,
+          writes_task_readmes: true,
+          supports_task_revisions: false,
+          supports_revision_guarded_writes: false,
+          may_access_network_on_read: false,
+          may_access_network_on_write: false,
+          supports_projection_refresh: true,
+          supports_push_sync: false,
+          supports_snapshot_export: true,
+        },
         getTaskDoc: vi.fn().mockResolvedValue("## Summary\n## Scope\n\ncontent"),
       }),
       resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
@@ -271,7 +299,23 @@ describe("commands/workflow", () => {
 
     const spyEmpty = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
-      backend: baseTaskBackend({ getTaskDoc: vi.fn().mockResolvedValue("") }),
+      backend: baseTaskBackend({
+        capabilities: {
+          canonical_source: "remote",
+          projection: "cache",
+          projection_read_mode: "native",
+          reads_from_projection_by_default: true,
+          writes_task_readmes: true,
+          supports_task_revisions: false,
+          supports_revision_guarded_writes: false,
+          may_access_network_on_read: false,
+          may_access_network_on_write: false,
+          supports_projection_refresh: true,
+          supports_push_sync: false,
+          supports_snapshot_export: true,
+        },
+        getTaskDoc: vi.fn().mockResolvedValue(""),
+      }),
       resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
       config: defaultConfig(),
       backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
