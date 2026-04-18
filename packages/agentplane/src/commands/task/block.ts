@@ -1,5 +1,5 @@
 import { mapBackendError } from "../../cli/error-map.js";
-import { successMessage } from "../../cli/output.js";
+import { createCliEmitter, emitCommandResult } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 
 import { ensureActionApproved } from "../shared/approval-requirements.js";
@@ -13,6 +13,8 @@ import {
   requireStructuredComment,
   runTaskTransitionCommentCommit,
 } from "./shared.js";
+
+const output = createCliEmitter();
 
 export async function cmdBlock(opts: {
   ctx?: CommandContext;
@@ -104,7 +106,11 @@ export async function cmdBlock(opts: {
 
     if (!opts.quiet) {
       const suffix = commitInfo ? ` (commit=${commitInfo.hash.slice(0, 12)})` : "";
-      process.stdout.write(`${successMessage("blocked", `${opts.taskId}${suffix}`)}\n`);
+      emitCommandResult(output, {
+        kind: "success",
+        action: "blocked",
+        target: `${opts.taskId}${suffix}`,
+      });
     }
     return 0;
   } catch (err) {

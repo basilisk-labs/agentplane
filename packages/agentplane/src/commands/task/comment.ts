@@ -1,5 +1,5 @@
 import { mapBackendError } from "../../cli/error-map.js";
-import { successMessage } from "../../cli/output.js";
+import { createCliEmitter, emitCommandResult } from "../../cli/output.js";
 
 import { type TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
@@ -10,6 +10,8 @@ import {
   touchTaskDocMetaIntent,
 } from "../shared/task-store.js";
 import { appendTaskEvent, normalizeTaskDocVersion, nowIso } from "./shared.js";
+
+const output = createCliEmitter();
 
 function buildCommentMutation(opts: {
   task: TaskData;
@@ -79,7 +81,11 @@ export async function cmdTaskComment(opts: {
           body: opts.body,
         }),
     });
-    process.stdout.write(`${successMessage("commented", opts.taskId)}\n`);
+    emitCommandResult(output, {
+      kind: "success",
+      action: "commented",
+      target: opts.taskId,
+    });
     return 0;
   } catch (err) {
     throw mapBackendError(err, { command: "task comment", root: opts.rootOverride ?? null });

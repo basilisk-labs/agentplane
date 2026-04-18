@@ -4,6 +4,8 @@ import {
   backendNotSupportedMessage,
   createCliEmitter,
   emptyStateMessage,
+  emitCommandResult,
+  emitCommandResults,
   infoMessage,
   invalidFieldMessage,
   invalidPathMessage,
@@ -116,5 +118,27 @@ describe("cli/output", () => {
       ].join("\n") + "\n",
     );
     expect(stderr.text()).toBe(["⚠️ careful", "ℹ️ secondary"].join("\n") + "\n");
+  });
+
+  it("emits typed command results through the shared emitter contract", () => {
+    const stdout = createMemoryWriter();
+    const stderr = createMemoryWriter();
+    const emitter = createCliEmitter({ stdout, stderr });
+
+    emitCommandResults(emitter, [
+      { kind: "line", text: "plain" },
+      { kind: "success", action: "updated", target: "T-1" },
+      { kind: "warn", message: "careful" },
+    ]);
+    emitCommandResult(emitter, {
+      kind: "report",
+      entries: [{ label: "task_id", value: "T-1" }],
+      options: { header: "header" },
+    });
+
+    expect(stdout.text()).toBe(
+      ["plain", "✅ updated T-1", "header", "task_id: T-1"].join("\n") + "\n",
+    );
+    expect(stderr.text()).toBe("⚠️ careful\n");
   });
 });

@@ -7,7 +7,7 @@ import {
   type ResolvedProject,
 } from "@agentplaneorg/core";
 
-import { createCliEmitter } from "../../cli/output.js";
+import { createCliEmitter, emitCommandResult } from "../../cli/output.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandSpec } from "../../cli/spec/spec.js";
@@ -56,6 +56,10 @@ import type {
 } from "./apply.types.js";
 
 const output = createCliEmitter();
+
+function emitReleaseLine(text: string): void {
+  emitCommandResult(output, { kind: "line", text });
+}
 
 async function resolveReleasePlanInputs(opts: { gitRoot: string; planOverride?: string }): Promise<{
   planDir: string;
@@ -228,7 +232,7 @@ async function applyReleaseMutation(opts: {
 
   const staged = await opts.git.statusStagedPaths();
   if (staged.length === 0) {
-    output.line("No changes to commit.");
+    emitReleaseLine("No changes to commit.");
     return { releaseCommit };
   }
 
@@ -266,9 +270,9 @@ async function finalizeReleaseApply(opts: {
       cwd: opts.gitRoot,
       env: gitEnv(),
     });
-    output.line(`Release tag created: ${opts.plan.nextTag}`);
+    emitReleaseLine(`Release tag created: ${opts.plan.nextTag}`);
   } else {
-    output.line(
+    emitReleaseLine(
       `Release candidate prepared on ${opts.route.current_branch}; skipped local tag creation for ${opts.plan.nextTag} because final publication is deferred until merge to ${opts.route.base_branch}.`,
     );
   }
@@ -276,20 +280,20 @@ async function finalizeReleaseApply(opts: {
     if (opts.route.kind === "release_candidate") {
       await pushReleaseCandidateBranch(opts.gitRoot, opts.remote);
       pushedRefs.push("HEAD");
-      output.line(
+      emitReleaseLine(
         `Pushed: ${opts.remote} ${opts.route.current_branch} (release candidate branch only; no tag pushed)`,
       );
     } else {
       await pushReleaseRefs(opts.gitRoot, opts.remote, opts.plan.nextTag);
       pushedRefs.push("HEAD", opts.plan.nextTag);
-      output.line(`Pushed: ${opts.remote} HEAD + ${opts.plan.nextTag}`);
+      emitReleaseLine(`Pushed: ${opts.remote} HEAD + ${opts.plan.nextTag}`);
     }
   } else if (opts.route.kind === "release_candidate") {
-    output.line(
+    emitReleaseLine(
       `Next: git push <remote> HEAD  # merge ${opts.route.current_branch} into ${opts.route.base_branch} before publishing ${opts.plan.nextTag}`,
     );
   } else {
-    output.line(`Next: git push <remote> HEAD && git push <remote> ${opts.plan.nextTag}`);
+    emitReleaseLine(`Next: git push <remote> HEAD && git push <remote> ${opts.plan.nextTag}`);
   }
 
   const reportPath = await writeReleaseApplyReport(opts.gitRoot, {
@@ -321,7 +325,7 @@ async function finalizeReleaseApply(opts: {
       refs: pushedRefs,
     },
   } satisfies ReleaseApplyReport);
-  output.line(`Release report: ${path.relative(opts.gitRoot, reportPath)}`);
+  emitReleaseLine(`Release report: ${path.relative(opts.gitRoot, reportPath)}`);
   return 0;
 }
 
