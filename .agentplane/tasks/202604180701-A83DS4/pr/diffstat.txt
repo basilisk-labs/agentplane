@@ -1,8 +1,9 @@
+ docs/user/cli-reference.generated.mdx              |  2 +
  packages/agentplane/src/commands/commit.spec.ts    |  2 +
  .../agentplane/src/commands/guard/impl/commands.ts |  5 +-
  .../src/commands/guard/impl/commands.unit.test.ts  |  7 +-
  .../src/commands/guard/impl/comment-commit.ts      |  3 +-
  .../agentplane/src/commands/guard/impl/env.test.ts | 74 ++++++++++++++++++++++
- packages/agentplane/src/commands/guard/impl/env.ts | 48 ++++++++++++++
+ packages/agentplane/src/commands/guard/impl/env.ts | 51 +++++++++++++++
  .../src/commands/pr/internal/auto-commit.ts        |  3 +-
- 7 files changed, 138 insertions(+), 4 deletions(-)
+ 8 files changed, 143 insertions(+), 4 deletions(-)
