@@ -1,10 +1,11 @@
 ---
 id: "202604172036-47KDMZ"
 title: "Extract task-store services from shared monolith"
-status: "DOING"
+result_summary: "Merged via PR #432."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-18T05:13:39.616Z"
   updated_by: "CODER"
   note: "Validated task-store service extraction: public task-store import surface stayed stable while implementation split into intent, README IO, store, and types modules; bun run lint:core and bun run test:fast both passed in the task worktree."
-commit: null
+commit:
+  hash: "2de4e6995c114e629727c19046183240ecc4e20d"
+  message: "architecture/backend: Extract task-store services from shared monolith (47KDMZ) (#432)"
 comments:
   -
     author: "CODER"
     body: "Start: split task-store into smaller read/mutate/doc-state services without changing command behavior, then verify with lint and fast tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #432 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Validated task-store service extraction: public task-store import surface stayed stable while implementation split into intent, README IO, store, and types modules; bun run lint:core and bun run test:fast both passed in the task worktree."
+  -
+    type: "status"
+    at: "2026-04-18T05:23:11.120Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #432 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T05:13:39.626Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T05:23:11.126Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor commands/shared/task-store.ts into smaller read/write/projection services with explicit task backend capability boundaries so command flows stop depending on one large shared module."
 sections:
   Summary: |-
