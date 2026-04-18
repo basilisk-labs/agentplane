@@ -1,10 +1,11 @@
 ---
 id: "202604180701-A83DS4"
 title: "Standardize git identity and commit message contract"
-status: "DOING"
+result_summary: "Merged via PR #441."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-18T07:17:11.042Z"
   updated_by: "CODER"
   note: "Repository-managed commit paths now resolve canonical git identity from global git config and document one commit subject contract; guard tests, typecheck, and lint passed."
-commit: null
+commit:
+  hash: "36969dd7cf280e0816287508d9d3139fb306fd32"
+  message: "git: Standardize git identity and commit message contract (A83DS4) (#441)"
 comments:
   -
     author: "CODER"
     body: "Start: standardize repository-managed commit paths around the global git identity and one enforceable commit subject contract."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #441 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Repository-managed commit paths now resolve canonical git identity from global git config and document one commit subject contract; guard tests, typecheck, and lint passed."
+  -
+    type: "status"
+    at: "2026-04-18T07:40:12.987Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #441 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T07:17:11.045Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T07:40:12.992Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure commits use one canonical git author identity sourced from the user's global git settings and enforce one repository commit subject format through documented policy and tooling."
 sections:
   Summary: |-
