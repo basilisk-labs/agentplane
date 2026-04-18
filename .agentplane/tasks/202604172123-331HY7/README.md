@@ -1,10 +1,11 @@
 ---
 id: "202604172123-331HY7"
 title: "Migrate task artifact schema validation to Zod"
-status: "DOING"
+result_summary: "Merged via PR #427."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-18T04:45:28.663Z"
   updated_by: "CODER"
   note: "Validated Zod-based task artifact contracts end to end: task README frontmatter, tasks export, PR meta, and task handoff schemas now validate through Zod, generated JSON schema artifacts are synced, and focused core/CLI tests plus full typecheck remained green; AJV remains only outside this migrated contract surface."
-commit: null
+commit:
+  hash: "68cbe19669ae2178d11a16a904464fc5a24b0ac1"
+  message: "zod: Migrate task artifact schema validation to Zod (331HY7) (#427)"
 comments:
   -
     author: "CODER"
     body: "Start: migrate the task artifact contract to a Zod source of truth, regenerate canonical schema artifacts, keep exported types/runtime behavior stable, and limit scope to the task artifact validation surface plus strictly necessary downstream type compatibility fixes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #427 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Validated Zod-based task artifact contracts end to end: task README frontmatter, tasks export, PR meta, and task handoff schemas now validate through Zod, generated JSON schema artifacts are synced, and focused core/CLI tests plus full typecheck remained green; AJV remains only outside this migrated contract surface."
+  -
+    type: "status"
+    at: "2026-04-18T04:53:27.959Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #427 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-18T04:45:28.670Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-18T04:53:27.964Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace AJV-based task artifact validation in @agentplaneorg/core with a Zod SSOT, generate JSON schema artifacts from the Zod contract, and preserve task artifact runtime behavior and exported types."
 sections:
   Summary: |-

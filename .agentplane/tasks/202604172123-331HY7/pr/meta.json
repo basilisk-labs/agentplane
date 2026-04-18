@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604172123-331HY7/zod-task-artifact-ssot",
   "created_at": "2026-04-18T04:35:57.907Z",
-  "head_sha": "98d333de29034a04c5768ccbe1a4cee66b1febf0",
+  "head_sha": "456ac28e43f6716b6b16978d18ca983a0a6e6f30",
   "last_verified_at": "2026-04-18T04:45:28.663Z",
   "last_verified_sha": "94366eade38fb0c4b6ff36a4f525972bc12c91e0",
+  "merge_commit": "68cbe19669ae2178d11a16a904464fc5a24b0ac1",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-18T04:53:03Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604172123-331HY7",
-  "updated_at": "2026-04-18T04:50:17.507Z",
+  "updated_at": "2026-04-18T04:53:03Z",
   "verify": {
     "status": "pass"
   }
