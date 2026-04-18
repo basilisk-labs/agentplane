@@ -45,12 +45,14 @@ Remove the redundant manual push plus second pr open pass in branch_pr mode by t
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-18T07:06:55.314Z
+- Updated: 2026-04-18T07:19:21.184Z
 - Branch: task/202604180703-66ZTF1/pr-open-auto-publish
-- Head: 6cfd5f685792
+- Head: f91cd1fa4070
 
 ```text
-No changes detected.
+ .../src/cli/run-cli.core.pr-flow.pr.test.ts        | 55 ++++++++++++++++++----
+ packages/agentplane/src/commands/pr/open.ts        | 16 ++++++-
+ 2 files changed, 62 insertions(+), 9 deletions(-)
 ```
 
 </details>
