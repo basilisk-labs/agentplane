@@ -46,12 +46,17 @@ Refactor commands/shared/task-store.ts into smaller read/write/projection servic
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-18T05:13:39.737Z
+- Updated: 2026-04-18T05:14:16.052Z
 - Branch: task/202604172036-47KDMZ/task-store-services
-- Head: bdd6e9ee88aa
+- Head: 6e8fe55878b7
 
 ```text
-No changes detected.
+ .../agentplane/src/commands/shared/task-store.ts   | 779 +--------------------
+ .../src/commands/shared/task-store/intents.ts      | 360 ++++++++++
+ .../src/commands/shared/task-store/readme.ts       | 171 +++++
+ .../src/commands/shared/task-store/store.ts        | 168 +++++
+ .../src/commands/shared/task-store/types.ts        | 124 ++++
+ 5 files changed, 848 insertions(+), 754 deletions(-)
 ```
 
 </details>
