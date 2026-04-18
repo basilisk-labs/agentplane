@@ -22,15 +22,17 @@ Analyze branch_pr workflow for repeated local-only steps, duplicate task/PR arti
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-18T07:19:21.209Z
+- Updated: 2026-04-18T07:43:49.478Z
 - Branch: task/202604180701-Z8WS24/branch-pr-route-docs
-- Head: 7f2b563a2703
+- Head: 2f83b22f1bd8
 
 ```text
  .agentplane/policy/workflow.branch_pr.md                  | 15 ++++++++++-----
+ docs/user/cli-reference.generated.mdx                     |  5 +++--
+ packages/agentplane/assets/policy/workflow.branch_pr.md   | 15 ++++++++++-----
  .../agentplane/src/commands/branch/work-start.command.ts  |  1 +
  packages/agentplane/src/commands/pr/pr.command.ts         | 10 ++++++++--
- 3 files changed, 19 insertions(+), 7 deletions(-)
+ 5 files changed, 32 insertions(+), 14 deletions(-)
 ```
 
 </details>
