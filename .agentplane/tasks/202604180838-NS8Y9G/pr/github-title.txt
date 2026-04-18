@@ -1,0 +1,1 @@
+refactor/workflow: Skip full pre-push CI for delete-only remote cleanup pushes (NS8Y9G)
