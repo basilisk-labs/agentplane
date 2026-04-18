@@ -39,7 +39,8 @@ export function isDeleteOnlyPush(updates) {
   return (
     updates.length > 0 &&
     updates.every(
-      (update) => isBranchRef(update.remoteRef) && isAllZeroSha(update.localSha) && update.remoteSha,
+      (update) =>
+        isBranchRef(update.remoteRef) && isAllZeroSha(update.localSha) && update.remoteSha,
     )
   );
 }

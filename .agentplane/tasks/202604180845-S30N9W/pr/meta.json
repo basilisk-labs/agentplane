@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604180845-S30N9W/format-unblock-ns8y9g",
+  "created_at": "2026-04-18T08:45:52.420Z",
+  "head_sha": "568990e0ed214f05f8b14b04a5c10be85376b294",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604180845-S30N9W",
+  "updated_at": "2026-04-18T08:45:52.420Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

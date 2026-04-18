@@ -44,13 +44,13 @@ const { parseChangedFilesEnv, selectFastCiPlan, shouldRunCliDocsCheck } =
 
 const { hasReleaseTagPush, isDeleteOnlyPush, parsePrePushStdin, selectBranchDiffRange } =
   prePushScopeModule as {
-  hasReleaseTagPush: (updates: PrePushUpdate[]) => boolean;
-  isDeleteOnlyPush: (updates: PrePushUpdate[]) => boolean;
-  parsePrePushStdin: (rawStdin: unknown) => PrePushUpdate[];
-  selectBranchDiffRange: (
-    updates: PrePushUpdate[],
-    opts?: { newBranchFallbackRef?: string | null },
-  ) => { from: string; to: string } | null;
+    hasReleaseTagPush: (updates: PrePushUpdate[]) => boolean;
+    isDeleteOnlyPush: (updates: PrePushUpdate[]) => boolean;
+    parsePrePushStdin: (rawStdin: unknown) => PrePushUpdate[];
+    selectBranchDiffRange: (
+      updates: PrePushUpdate[],
+      opts?: { newBranchFallbackRef?: string | null },
+    ) => { from: string; to: string } | null;
   };
 
 describe("local CI fast selection", () => {
