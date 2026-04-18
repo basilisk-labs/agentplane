@@ -1,0 +1,1 @@
+workflow: Reduce branch_pr lifecycle redundancy and document the optimized route (Z8WS24)

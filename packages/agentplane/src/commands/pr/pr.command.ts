@@ -61,7 +61,8 @@ export type PrOpenParsed = {
 export const prOpenSpec: CommandSpec<PrOpenParsed> = {
   id: ["pr", "open"],
   group: "PR",
-  summary: "Create PR artifacts for a task.",
+  summary:
+    "Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
@@ -84,7 +85,12 @@ export const prOpenSpec: CommandSpec<PrOpenParsed> = {
       description: "Only write local PR artifacts; do not create a remote GitHub PR.",
     },
   ],
-  examples: [{ cmd: "agentplane pr open 202602030608-F1Q8AB --author CODER", why: "Open." }],
+  examples: [
+    {
+      cmd: "agentplane pr open 202602030608-F1Q8AB --author CODER",
+      why: "Sync local artifacts, publish the task branch to origin if needed, and create/link the GitHub PR.",
+    },
+  ],
   validateRaw: (raw) => {
     const author = typeof raw.opts.author === "string" ? raw.opts.author.trim() : "";
     if (!author) {
