@@ -24,6 +24,89 @@ function prOpenOutcomeDetails(
   return "local PR artifacts synced; remote PR creation staged";
 }
 
+async function gitResolveBranchHead(gitRoot: string, branch: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", ["rev-parse", `refs/heads/${branch}`], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    const trimmed = stdout.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  } catch {
+    return null;
+  }
+}
+
+async function gitResolveRemoteBranchHead(
+  gitRoot: string,
+  remoteTarget: string,
+  branch: string,
+): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync(
+      "git",
+      ["ls-remote", "--heads", remoteTarget, `refs/heads/${branch}`],
+      {
+        cwd: gitRoot,
+        env: gitEnv(),
+      },
+    );
+    const trimmed = stdout.trim();
+    if (!trimmed) return null;
+    const [head] = trimmed.split(/\s+/, 1);
+    return head?.trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+async function gitResolveRemotePushTarget(gitRoot: string, remote: string): Promise<string> {
+  try {
+    const { stdout } = await execFileAsync("git", ["remote", "get-url", "--push", remote], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    const trimmed = stdout.trim();
+    return trimmed.length > 0 ? trimmed : remote;
+  } catch {
+    return remote;
+  }
+}
+
+async function gitSetBranchUpstream(opts: {
+  gitRoot: string;
+  branch: string;
+  remote: string;
+  remoteBranch: string;
+}): Promise<void> {
+  await execFileAsync("git", ["config", `branch.${opts.branch}.remote`, opts.remote], {
+    cwd: opts.gitRoot,
+    env: gitEnv(),
+  });
+  await execFileAsync(
+    "git",
+    ["config", `branch.${opts.branch}.merge`, `refs/heads/${opts.remoteBranch}`],
+    {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    },
+  );
+}
+
+async function canReuseMatchingRemoteHead(opts: {
+  gitRoot: string;
+  branch: string;
+  remote: string;
+  remoteBranch: string;
+}): Promise<boolean> {
+  const remoteTarget = await gitResolveRemotePushTarget(opts.gitRoot, opts.remote);
+  const [localHead, remoteHead] = await Promise.all([
+    gitResolveBranchHead(opts.gitRoot, opts.branch),
+    gitResolveRemoteBranchHead(opts.gitRoot, remoteTarget, opts.remoteBranch),
+  ]);
+  return Boolean(localHead && remoteHead && localHead === remoteHead);
+}
+
 async function pushTaskBranchUpstreamIfConfigured(opts: {
   gitRoot: string;
   branch: string;
@@ -41,10 +124,26 @@ async function pushTaskBranchUpstreamIfConfigured(opts: {
     } catch {
       return false;
     }
-    await execFileAsync("git", ["push", "--no-verify", "-u", "origin", `HEAD:${opts.branch}`], {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
-    });
+    try {
+      await execFileAsync("git", ["push", "--no-verify", "-u", "origin", `HEAD:${opts.branch}`], {
+        cwd: opts.gitRoot,
+        env: gitEnv(),
+      });
+    } catch (err) {
+      const canReuseRemote = await canReuseMatchingRemoteHead({
+        gitRoot: opts.gitRoot,
+        branch: opts.branch,
+        remote: "origin",
+        remoteBranch: opts.branch,
+      });
+      if (!canReuseRemote) throw err;
+      await gitSetBranchUpstream({
+        gitRoot: opts.gitRoot,
+        branch: opts.branch,
+        remote: "origin",
+        remoteBranch: opts.branch,
+      });
+    }
     return true;
   }
 
@@ -54,10 +153,20 @@ async function pushTaskBranchUpstreamIfConfigured(opts: {
   const upstreamBranch = trimmed.slice(slashIndex + 1);
   if (!remote || !upstreamBranch) return false;
 
-  await execFileAsync("git", ["push", "--no-verify", remote, `HEAD:${upstreamBranch}`], {
-    cwd: opts.gitRoot,
-    env: gitEnv(),
-  });
+  try {
+    await execFileAsync("git", ["push", "--no-verify", remote, `HEAD:${upstreamBranch}`], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    });
+  } catch (err) {
+    const canReuseRemote = await canReuseMatchingRemoteHead({
+      gitRoot: opts.gitRoot,
+      branch: opts.branch,
+      remote,
+      remoteBranch: upstreamBranch,
+    });
+    if (!canReuseRemote) throw err;
+  }
   return true;
 }
 
