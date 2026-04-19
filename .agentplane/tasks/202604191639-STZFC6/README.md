@@ -1,10 +1,11 @@
 ---
 id: "202604191639-STZFC6"
 title: "Route config loading through Zod validation"
-status: "DOING"
+result_summary: "Config loading is structurally Zod-first and core exports now publish the canonical config schema surface."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,15 +20,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-19T18:30:55.574Z"
+  updated_by: "CODER"
+  note: "Verified: config loading now resolves its runtime schema directly from config-zod, the intermediate config-schema module is removed, and focused core config validation plus core typecheck/build pass."
+commit:
+  hash: "82a313b2cab199af3218f34a24f56839733f81f3"
+  message: "🔧 STZFC6 schemas: make config zod schema the direct source"
 comments:
   -
     author: "CODER"
     body: "Start: tracing the live loadConfig path so the runtime moves to a Zod-first validation route without widening the config API surface."
+  -
+    author: "CODER"
+    body: "Verified: config loading now uses config-zod as the direct schema source, the shadow config-schema module is gone, and the focused core validation/build checks passed."
 events:
   -
     type: "status"
@@ -36,8 +42,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: tracing the live loadConfig path so the runtime moves to a Zod-first validation route without widening the config API surface."
+  -
+    type: "verify"
+    at: "2026-04-19T18:30:55.574Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: config loading now resolves its runtime schema directly from config-zod, the intermediate config-schema module is removed, and focused core config validation plus core typecheck/build pass."
+  -
+    type: "status"
+    at: "2026-04-19T18:30:55.638Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: config loading now uses config-zod as the direct schema source, the shadow config-schema module is gone, and the focused core validation/build checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-19T18:27:30.643Z"
+doc_updated_at: "2026-04-19T18:30:55.645Z"
 doc_updated_by: "CODER"
 description: "Epic A′. Switch config loading to the canonical Zod validator and keep compare-mode safety where still needed."
 sections:
@@ -55,11 +74,24 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-19T18:30:55.574Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: config loading now resolves its runtime schema directly from config-zod, the intermediate config-schema module is removed, and focused core config validation plus core typecheck/build pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T18:27:30.643Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Focused config tests, core typecheck, and core build all passed after the import and export surface change.
+      Impact: The config runtime path is now explicitly Zod-first and the public core API exposes the canonical schema symbols without a shadow schema module.
+      Resolution: No further action in this atom; remaining A′ work can build on the direct config-zod surface.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -86,6 +118,14 @@ Epic A′. Switch config loading to the canonical Zod validator and keep compare
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-19T18:30:55.574Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: config loading now resolves its runtime schema directly from config-zod, the intermediate config-schema module is removed, and focused core config validation plus core typecheck/build pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T18:27:30.643Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -94,3 +134,9 @@ Epic A′. Switch config loading to the canonical Zod validator and keep compare
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Focused config tests, core typecheck, and core build all passed after the import and export surface change.
+  Impact: The config runtime path is now explicitly Zod-first and the public core API exposes the canonical schema symbols without a shadow schema module.
+  Resolution: No further action in this atom; remaining A′ work can build on the direct config-zod surface.
+  Promotion: incident-candidate
+  Fixability: external
