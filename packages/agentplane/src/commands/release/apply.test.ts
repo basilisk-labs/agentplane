@@ -41,9 +41,15 @@ async function listRuns(root: string): Promise<string[]> {
 
 async function writeReleasePushScripts(opts: {
   root: string;
-  prepublishBody: string;
+  prepublishBody?: string;
+  prepublishFastBody?: string;
+  prepublishHeavyBody?: string;
   registryBody: string;
 }): Promise<void> {
+  const heavyBody = opts.prepublishHeavyBody ?? opts.prepublishBody ?? "";
+  const fastBody =
+    opts.prepublishFastBody ??
+    `${String.raw`process.stdout.write('release prepublish fast ok\n');`}\n`;
   await mkdir(path.join(opts.root, "scripts"), { recursive: true });
   await writeFile(
     path.join(opts.root, "package.json"),
@@ -52,7 +58,10 @@ async function writeReleasePushScripts(opts: {
         name: "release-test-root",
         private: true,
         scripts: {
-          "release:prepublish": "node scripts/prepublish-marker.mjs",
+          "release:prepublish:fast": "node scripts/prepublish-fast.mjs",
+          "release:prepublish:heavy": "node scripts/prepublish-heavy.mjs",
+          "release:prepublish":
+            "node scripts/prepublish-fast.mjs && node scripts/prepublish-heavy.mjs",
         },
       },
       null,
@@ -60,11 +69,8 @@ async function writeReleasePushScripts(opts: {
     ) + "\n",
     "utf8",
   );
-  await writeFile(
-    path.join(opts.root, "scripts", "prepublish-marker.mjs"),
-    opts.prepublishBody,
-    "utf8",
-  );
+  await writeFile(path.join(opts.root, "scripts", "prepublish-fast.mjs"), fastBody, "utf8");
+  await writeFile(path.join(opts.root, "scripts", "prepublish-heavy.mjs"), heavyBody, "utf8");
   await writeFile(
     path.join(opts.root, "scripts", "check-npm-version-availability.mjs"),
     opts.registryBody,
@@ -1020,6 +1026,68 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
       cwd: root,
     });
     expect(tagOut.trim()).toBe("");
+  }, 60_000);
+
+  it("fails on the fast release prepublish phase before running the heavy phase", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const remoteRoot = path.join(root, "remote.git");
+    await execFileAsync("git", ["init", "--bare", remoteRoot], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
+
+    await mkdir(path.join(root, "packages", "core"), { recursive: true });
+    await mkdir(path.join(root, "docs", "releases"), { recursive: true });
+    await writeReleasePushScripts({
+      root,
+      prepublishFastBody: [
+        String.raw`process.stderr.write('fast phase failed\n');`,
+        "process.exitCode = 1;",
+      ].join("\n"),
+      prepublishHeavyBody: [
+        "import { writeFile } from 'node:fs/promises';",
+        String.raw`await writeFile('prepublish-heavy.marker', 'ran\n', 'utf8');`,
+      ].join("\n"),
+      registryBody: `${String.raw`process.stdout.write('npm version availability check passed\n');`}\n`,
+    });
+
+    await seedReleaseWorkspace(root, {
+      coreVersion: "0.2.6",
+      cliVersion: "0.2.6",
+      recipesVersion: "0.2.6",
+      dependencyVersion: "0.2.6",
+      recipesDependencyVersion: "0.2.6",
+    });
+    await commitAll(root, "seed");
+    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    await commitAll(root, "feat: add file");
+
+    await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
+    await writeFile(
+      path.join(root, "docs", "releases", "v0.2.7.md"),
+      ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+      "utf8",
+    );
+
+    await expect(
+      withDryRunReleaseMode(async () =>
+        runReleaseApply(
+          { cwd: root, rootOverride: root },
+          { plan: undefined, yes: true, push: true, remote: "origin" },
+        ),
+      ),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        diagnostic_state:
+          "release prepublish fast validation failed before pushing the release tag",
+        diagnostic_next_action_command: "bun run release:prepublish:fast",
+      },
+    });
+
+    await expect(readFile(path.join(root, "prepublish-heavy.marker"), "utf8")).rejects.toThrow();
   }, 60_000);
 
   it("fails on an existing remote release tag before running release:prepublish or mutating local state", async () => {

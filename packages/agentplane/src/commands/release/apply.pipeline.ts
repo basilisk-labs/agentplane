@@ -221,7 +221,11 @@ async function runPushPreflight(opts: {
     reason: pushReason,
     interactive: Boolean(process.stdin.isTTY),
   });
-  await ensureRemoteExists(opts.gitRoot, opts.remote, opts.commandLabel as "release apply" | "release candidate");
+  await ensureRemoteExists(
+    opts.gitRoot,
+    opts.remote,
+    opts.commandLabel as "release apply" | "release candidate",
+  );
   await ensureRemoteTagDoesNotExist(
     opts.gitRoot,
     opts.remote,
