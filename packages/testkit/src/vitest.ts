@@ -14,9 +14,8 @@ export function describeWhenEnvPresent(enabled: boolean): DescribeFn {
  * Use for suites that should not run inside hook mode, where repository hooks
  * intentionally constrain side effects and process execution.
  */
-export const describeWhenNotHook = (
-  process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe
-);
+export const describeWhenNotHook =
+  process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 
 /**
  * Use to mark critical contract suites. This is currently an alias of `describe`
