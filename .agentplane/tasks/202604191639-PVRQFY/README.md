@@ -1,10 +1,11 @@
 ---
 id: "202604191639-PVRQFY"
 title: "Publish typed describe wrappers from testkit"
-status: "DOING"
+result_summary: "Added describeWhenEnvPresent, describeWhenNotHook, and describeCritical to @agentplane/testkit, wired them through packages/agentplane/src/testing/index.ts, and migrated the current redmine live, release/upgrade hook-gated, and CLI critical suites. Verified with testkit build, focused Vitest coverage, and a repo-local framework bootstrap."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-19T17:48:27.019Z"
   updated_by: "CODER"
   note: "Published shared Vitest suite wrappers and migrated current hook/env/critical declarations."
-commit: null
+commit:
+  hash: "ad42ce78248112bf212a3907959b38777a1e8b77"
+  message: "🧪 testkit: add shared vitest suite wrappers"
 comments:
   -
     author: "CODER"
     body: "Start: introduce typed Vitest suite wrappers in testkit, wire them through the compatibility layer, and migrate current hook/env/critical suite declarations."
+  -
+    author: "CODER"
+    body: "Verified: shared Vitest suite wrappers are published through testkit and the compatibility layer, and all current hook/env/critical consumers now use them."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Published shared Vitest suite wrappers and migrated current hook/env/critical declarations."
+  -
+    type: "status"
+    at: "2026-04-19T17:48:58.340Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: shared Vitest suite wrappers are published through testkit and the compatibility layer, and all current hook/env/critical consumers now use them."
 doc_version: 3
-doc_updated_at: "2026-04-19T17:48:27.026Z"
+doc_updated_at: "2026-04-19T17:48:58.341Z"
 doc_updated_by: "CODER"
 description: "Epic E′. Move describeWhenEnvPresent, describeCritical, and describeWhenNotHook helpers into @agentplane/testkit with typed exports."
 sections:
