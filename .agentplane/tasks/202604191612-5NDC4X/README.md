@@ -1,10 +1,11 @@
 ---
 id: "202604191612-5NDC4X"
 title: "Inline runner helpers into @agentplane/testkit"
-status: "DOING"
+result_summary: "Runner test helpers now have a single implementation in packages/testkit/src/runner.ts; the legacy runner/test-helpers.ts module is gone and its consumer tests remain green."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-19T16:14:16.686Z"
   updated_by: "CODER"
   note: "Focused runner helper migration checks passed."
-commit: null
+commit:
+  hash: "217172f3b6b25b20d036769289350f0d4f7d1267"
+  message: "🧪 testkit: inline runner helpers"
 comments:
   -
     author: "CODER"
     body: "Start: move runner test helper implementation into @agentplane/testkit, remove the legacy packages/agentplane/src/runner/test-helpers.ts module, and verify the affected runner-related tests and type surfaces remain green in direct mode."
+  -
+    author: "CODER"
+    body: "Verified: moved the runner test helper implementation into @agentplane/testkit, repointed the adapter and task-run-lifecycle tests at the package entry, removed the legacy packages/agentplane/src/runner/test-helpers.ts module, reran focused runner tests, typechecked the package, and refreshed the repo-local runtime snapshot after the watched-source deletion."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused runner helper migration checks passed."
+  -
+    type: "status"
+    at: "2026-04-19T16:14:45.077Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: moved the runner test helper implementation into @agentplane/testkit, repointed the adapter and task-run-lifecycle tests at the package entry, removed the legacy packages/agentplane/src/runner/test-helpers.ts module, reran focused runner tests, typechecked the package, and refreshed the repo-local runtime snapshot after the watched-source deletion."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:14:16.695Z"
+doc_updated_at: "2026-04-19T16:14:45.078Z"
 doc_updated_by: "CODER"
 description: "Continue epic E′ by moving runner test helpers out of packages/agentplane/src into packages/testkit/src and deleting the legacy helper module."
 sections:
