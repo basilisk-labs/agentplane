@@ -4,6 +4,7 @@ export const INIT_DEFAULTS: InitDefaults = {
   policyGateway: "codex",
   ide: "codex",
   workflow: "direct",
+  directCloseDirtyPolicy: "allow_other_task_readmes",
   backend: "local",
   hooks: true,
   recipes: [],

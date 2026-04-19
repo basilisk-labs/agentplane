@@ -56,6 +56,8 @@ export async function cmdInit(opts: {
   let ide: InitIde = flags.ide ?? INIT_DEFAULTS.ide;
   let policyGateway: PolicyGatewayFlavor = flags.policyGateway ?? INIT_DEFAULTS.policyGateway;
   let workflow: WorkflowMode = flags.workflow ?? INIT_DEFAULTS.workflow;
+  let directCloseDirtyPolicy =
+    flags.directCloseDirtyPolicy ?? INIT_DEFAULTS.directCloseDirtyPolicy;
   let backend: NonNullable<InitFlags["backend"]> = flags.backend ?? INIT_DEFAULTS.backend;
   let hooks = flags.hooks ?? INIT_DEFAULTS.hooks;
   let recipes = flags.recipes ?? INIT_DEFAULTS.recipes;
@@ -153,6 +155,21 @@ export async function cmdInit(opts: {
       );
       const choice = await askChoice("Workflow mode", ["direct", "branch_pr"], workflow);
       workflow = choice === "branch_pr" ? "branch_pr" : "direct";
+    }
+    if (workflow === "direct" && setupProfile === "full" && !flags.directCloseDirtyPolicy) {
+      process.stdout.write(
+        renderInitSection(
+          "Direct Close Dirt Policy",
+          "Choose how direct close commits handle unrelated tracked dirt. The tolerant mode ignores only README changes from other active tasks; strict mode blocks on any unrelated tracked change.",
+        ),
+      );
+      const choice = await askChoice(
+        "Direct close dirt policy",
+        ["allow-other-task-readmes", "strict"],
+        directCloseDirtyPolicy === "strict" ? "strict" : "allow-other-task-readmes",
+      );
+      directCloseDirtyPolicy =
+        choice === "strict" ? "strict" : "allow_other_task_readmes";
     }
     if (shouldPromptBackend) {
       if (shouldPromptWorkflow || setupProfile === "full") {
@@ -259,6 +276,8 @@ export async function cmdInit(opts: {
     ide = flags.ide ?? INIT_DEFAULTS.ide;
     policyGateway = flags.policyGateway ?? INIT_DEFAULTS.policyGateway;
     workflow = flags.workflow ?? INIT_DEFAULTS.workflow;
+    directCloseDirtyPolicy =
+      flags.directCloseDirtyPolicy ?? INIT_DEFAULTS.directCloseDirtyPolicy;
     backend = flags.backend ?? INIT_DEFAULTS.backend;
     hooks = flags.hooks ?? yesPreset.defaultHooks;
     recipes = flags.recipes ?? yesPreset.defaultRecipes;
@@ -329,6 +348,7 @@ export async function cmdInit(opts: {
       agentplaneDir: resolved.agentplaneDir,
       gitRoot: resolved.gitRoot,
       workflow,
+      directCloseDirtyPolicy,
       backendConfigPathAbs: backendPath,
       requirePlanApproval,
       requireNetworkApproval,

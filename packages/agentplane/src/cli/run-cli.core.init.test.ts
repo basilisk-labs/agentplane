@@ -257,6 +257,9 @@ describe("runCli", () => {
     expect(config.status_commit_policy).toBe("warn");
     expect(config.commit_automation).toBe("finish_only");
     expect(config.finish_auto_status_commit).toBe(false);
+    expect((config.close_commit as { direct_dirty_policy?: unknown } | undefined)?.direct_dirty_policy).toBe(
+      "allow_other_task_readmes",
+    );
     expect(
       normalizeSlashes(String((config.tasks_backend as Record<string, unknown>)?.config_path)),
     ).toBe(".agentplane/backends/local/backend.json");
@@ -852,6 +855,7 @@ describe("runCli", () => {
     expect(configText).toContain('"status_commit_policy": "confirm"');
     expect(configText).toContain('"commit_automation": "finish_only"');
     expect(configText).toContain('"finish_auto_status_commit": false');
+    expect(configText).toContain('"direct_dirty_policy": "allow_other_task_readmes"');
     expect(configText).toContain('"require_plan": true');
     expect(configText).toContain('"require_network": false');
     expect(configText).toContain('"require_verify": true');
@@ -904,6 +908,31 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("init writes strict direct close dirt policy when requested", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "init",
+        "--workflow",
+        "direct",
+        "--direct-close-dirty-policy",
+        "strict",
+        "--yes",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const configText = await readFile(path.join(root, ".agentplane", "config.json"), "utf8");
+    expect(configText).toContain('"direct_dirty_policy": "strict"');
   });
 
   it("init prompts for interactive defaults", async () => {

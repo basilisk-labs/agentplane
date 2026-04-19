@@ -18,6 +18,7 @@ const mocks = vi.hoisted(() => ({
   buildGitCommitEnv: vi.fn(),
   resolveCanonicalGitIdentity: vi.fn(),
   guardCommitCheck: vi.fn(),
+  resolveIgnoredDirectCloseDirtyPaths: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core", () => ({
@@ -47,6 +48,9 @@ vi.mock("./env.js", () => ({
   resolveCanonicalGitIdentity: mocks.resolveCanonicalGitIdentity,
 }));
 vi.mock("./policy.js", () => ({ guardCommitCheck: mocks.guardCommitCheck }));
+vi.mock("./close-dirt.js", () => ({
+  resolveIgnoredDirectCloseDirtyPaths: mocks.resolveIgnoredDirectCloseDirtyPaths,
+}));
 
 function mkCtx() {
   return {
@@ -74,6 +78,7 @@ describe("guard/impl/commands", () => {
     mocks.execFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
     mocks.gitEnv.mockReturnValue({});
     mocks.resolveCanonicalGitIdentity.mockResolvedValue(null);
+    mocks.resolveIgnoredDirectCloseDirtyPaths.mockResolvedValue([]);
   });
 
   it("cmdGuardClean maps non-Cli errors with mapCoreError", async () => {
@@ -650,6 +655,52 @@ describe("guard/impl/commands", () => {
     );
   });
 
+  it("cmdCommit close ignores other active task READMEs in tolerant direct mode", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "direct";
+    ctx.config.close_commit = { direct_dirty_policy: "allow_other_task_readmes" };
+    mocks.loadTaskFromContext.mockResolvedValue({ id: "T-12" });
+    mocks.buildCloseCommitMessage.mockResolvedValue({
+      subject: "✅ ABC123 close: done",
+      body: "body",
+    });
+    mocks.taskReadmePathForTask.mockReturnValue("/repo/.agentplane/tasks/T-12/README.md");
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-12" });
+    mocks.resolveIgnoredDirectCloseDirtyPaths.mockResolvedValue([
+      ".agentplane/tasks/T-99/README.md",
+    ]);
+
+    const rc = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-12",
+      message: "",
+      close: true,
+      allow: [],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(mocks.resolveIgnoredDirectCloseDirtyPaths).toHaveBeenCalledWith({
+      ctx,
+      taskId: "T-12",
+    });
+    expect(mocks.guardCommitCheck).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ignoredUnstagedTrackedPaths: [".agentplane/tasks/T-99/README.md"],
+      }),
+    );
+  });
+
   it("cmdCommit non-close path does not opt into stale-dist bypass", async () => {
     const { cmdCommit } = await import("./commands.js");
     const ctx = mkCtx();
@@ -779,10 +830,15 @@ describe("guard/impl/commands", () => {
       ".agentplane/tasks/T-10/README.md",
       "docs/readme.md",
     ]);
-    ctx.git.headHashSubject.mockResolvedValue({
-      hash: "1122334455667788",
-      subject: "✅ ABC123 task: message",
-    });
+    ctx.git.headHashSubject
+      .mockResolvedValueOnce({
+        hash: "1122334455667788",
+        subject: "✅ ABC123 task: message",
+      })
+      .mockResolvedValueOnce({
+        hash: "99aabbccddeeff00",
+        subject: "♻️ ABC123 task: refresh task artifacts after commit",
+      });
     mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-10" });
 
     try {
@@ -814,6 +870,13 @@ describe("guard/impl/commands", () => {
       expect(
         stdout.mock.calls.some(([text]) =>
           String(text).includes("staged=.agentplane/tasks/T-10/README.md"),
+        ),
+      ).toBe(true);
+      expect(
+        stdout.mock.calls.some(([text]) =>
+          String(text).includes(
+            "refresh=99aabbccddee ♻️ ABC123 task: refresh task artifacts after commit",
+          ),
         ),
       ).toBe(true);
     } finally {
@@ -951,6 +1014,48 @@ describe("guard/impl/commands", () => {
       nextAction: {
         command: "bun run lint:core",
         reasonCode: "git_pre_commit_lint",
+      },
+    });
+  });
+
+  it("cmdCommit recognizes execa-style git commit failures without legacy err.cmd", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    ctx.git.commit.mockRejectedValue(
+      Object.assign(new Error("Command failed with exit code 1: git commit -m ✅ ABC123 task: message"), {
+        shortMessage: "Command failed with exit code 1: git commit -m ✅ ABC123 task: message",
+        code: 1,
+        stderr: "Code style issues found. Run Prettier with --write.",
+      }),
+    );
+
+    const err = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-7",
+      message: "✅ ABC123 task: message",
+      close: false,
+      allow: ["src"],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+    }).catch((error: unknown) => error);
+
+    expect(err).toBeInstanceOf(CliError);
+    expect((err as CliError).code).toBe("E_GIT");
+    expect((err as CliError).message).toContain("git commit failed");
+    expect(readDiagnosticContext((err as CliError).context)).toMatchObject({
+      state: "git rejected the requested task-scoped commit",
+      nextAction: {
+        command: "bun run format",
+        reasonCode: "git_pre_commit_format",
       },
     });
   });

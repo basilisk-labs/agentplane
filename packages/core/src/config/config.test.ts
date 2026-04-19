@@ -131,11 +131,13 @@ describe("config", () => {
   it("setByDottedKey parses scalars and json-ish values", () => {
     const cfg = defaultConfig() as unknown as Record<string, unknown>;
     setByDottedKey(cfg, "finish_auto_status_commit", "false");
+    setByDottedKey(cfg, "close_commit.direct_dirty_policy", "strict");
     setByDottedKey(cfg, "tasks.id_suffix_length_default", "12");
     setByDottedKey(cfg, "tasks.verify.required_tags", '["code","backend"]');
 
     const validated = validateConfig(cfg);
     expect(validated.finish_auto_status_commit).toBe(false);
+    expect(validated.close_commit.direct_dirty_policy).toBe("strict");
     expect(validated.tasks.id_suffix_length_default).toBe(12);
     expect(validated.tasks.verify.required_tags).toEqual(["code", "backend"]);
   });
@@ -167,6 +169,7 @@ describe("config", () => {
       idle_ms: 180_000,
       terminate_grace_ms: 1500,
     });
+    expect(cfg.close_commit.direct_dirty_policy).toBe("allow_other_task_readmes");
   });
 
   it("default task README contract uses the active v3 sections", () => {

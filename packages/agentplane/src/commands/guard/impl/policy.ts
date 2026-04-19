@@ -20,6 +20,7 @@ export type GuardCommitOptions = {
   allowHooks: boolean;
   allowCI: boolean;
   requireClean: boolean;
+  ignoredUnstagedTrackedPaths?: string[];
   quiet: boolean;
 };
 
@@ -29,7 +30,14 @@ export async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> 
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
 
   const staged = await ctx.git.statusStagedPaths();
-  const unstagedTrackedPaths = opts.requireClean ? await ctx.git.statusUnstagedTrackedPaths() : [];
+  const ignoredUnstagedTrackedPaths = new Set(
+    (opts.ignoredUnstagedTrackedPaths ?? []).map((value) => value.trim()).filter(Boolean),
+  );
+  const unstagedTrackedPaths = opts.requireClean
+    ? (await ctx.git.statusUnstagedTrackedPaths()).filter(
+        (relPath) => !ignoredUnstagedTrackedPaths.has(relPath),
+      )
+    : [];
 
   const inBranchPr = ctx.config.workflow_mode === "branch_pr";
   const explicitBaseBranch = opts.baseBranchOverride?.trim();

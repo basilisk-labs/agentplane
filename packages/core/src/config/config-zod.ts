@@ -146,6 +146,16 @@ export const AgentplaneConfigSchema = z
     status_commit_policy: z.enum(["off", "warn", "confirm"]).default("warn"),
     commit_automation: z.enum(["manual", "finish_only"]).default("manual"),
     finish_auto_status_commit: z.boolean().default(false),
+    close_commit: z
+      .object({
+        direct_dirty_policy: z
+          .enum(["allow_other_task_readmes", "strict"])
+          .default("allow_other_task_readmes"),
+      })
+      .passthrough()
+      .default({
+        direct_dirty_policy: "allow_other_task_readmes",
+      }),
     agents: z
       .object({
         approvals: z

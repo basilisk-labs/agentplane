@@ -18,12 +18,15 @@ import { execFileAsync, gitEnv } from "../../shared/git.js";
 import { ensureReconciledBeforeMutation } from "../../shared/reconcile-check.js";
 
 import { stageAllowlist, suggestAllowPrefixes } from "./allow.js";
+import { resolveIgnoredDirectCloseDirtyPaths } from "./close-dirt.js";
 import { buildCloseCommitMessage, taskReadmePathForTask } from "./close-message.js";
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "./env.js";
 import { guardCommitCheck, type GuardCommitOptions } from "./policy.js";
 
 type ExecFileLikeError = Error & {
   cmd?: unknown;
+  escapedCommand?: unknown;
+  shortMessage?: unknown;
   code?: unknown;
   stdout?: unknown;
   stderr?: unknown;
@@ -162,7 +165,7 @@ async function commitRefreshedTaskArtifacts(opts: {
   taskId: string;
   sourceMessage: string;
   quiet: boolean;
-}): Promise<boolean> {
+}): Promise<{ hash: string; subject: string } | null> {
   const changedPaths = await opts.ctx.git.statusChangedPaths();
   const taskArtifactPaths = changedPaths.filter((relPath) =>
     isTaskLocalAdvancePath({
@@ -172,7 +175,7 @@ async function commitRefreshedTaskArtifacts(opts: {
       relPath,
     }),
   );
-  if (taskArtifactPaths.length === 0) return false;
+  if (taskArtifactPaths.length === 0) return null;
 
   await stageAllowlist({
     ctx: opts.ctx,
@@ -225,7 +228,7 @@ async function commitRefreshedTaskArtifacts(opts: {
     gitIdentity: await resolveCanonicalGitIdentity(),
   });
   await opts.ctx.git.commit({ message, env });
-  return true;
+  return await opts.ctx.git.headHashSubject();
 }
 
 function commitFailureDiagnostic(
@@ -319,7 +322,17 @@ function hasExplicitCommitScope(opts: {
 function asCommitFailure(err: unknown, phase: CommitFailurePhase): CliError | null {
   if (err instanceof Error) {
     const e = err as ExecFileLikeError;
-    const cmd = typeof e.cmd === "string" ? e.cmd : "";
+    const shortMessage = typeof e.shortMessage === "string" ? e.shortMessage : "";
+    const message = typeof e.message === "string" ? e.message : "";
+    const extractedCommand =
+      typeof e.cmd === "string"
+        ? e.cmd
+        : typeof e.escapedCommand === "string"
+          ? e.escapedCommand
+          : /^Command failed(?: with exit code \d+)?: ([^\n]+)$/m.exec(shortMessage)?.[1] ??
+            /^Command failed(?: with exit code \d+)?: ([^\n]+)$/m.exec(message)?.[1] ??
+            "";
+    const cmd = extractedCommand.trim();
     if (cmd.startsWith("git commit")) {
       const output = [readText(e.stderr), readText(e.stdout)]
         .filter((part) => part.length > 0)
@@ -346,6 +359,11 @@ function asCommitFailure(err: unknown, phase: CommitFailurePhase): CliError | nu
     return null;
   }
   return null;
+}
+
+function formatCommitRef(commit: { hash: string; subject: string } | null): string {
+  if (!commit) return "";
+  return `${commit.hash?.slice(0, 12) ?? ""} ${commit.subject ?? ""}`.trim();
 }
 
 export async function cmdGuardClean(opts: {
@@ -547,6 +565,10 @@ export async function cmdCommit(opts: {
             taskId: opts.taskId,
             allowPolicy: opts.allowPolicy,
           }));
+      const ignoredUnstagedTrackedPaths = await resolveIgnoredDirectCloseDirtyPaths({
+        ctx,
+        taskId: opts.taskId,
+      });
 
       // Close commits should not require manual --allow flags:
       // the command stages only the active task artifact scope.
@@ -565,6 +587,7 @@ export async function cmdCommit(opts: {
         allowHooks: false,
         allowCI: false,
         requireClean: true,
+        ignoredUnstagedTrackedPaths,
         quiet: opts.quiet,
       });
 
@@ -664,6 +687,7 @@ export async function cmdCommit(opts: {
       gitIdentity: await resolveCanonicalGitIdentity(),
     });
     await ctx.git.commit({ message: opts.message, env });
+    const primaryCommit = await ctx.git.headHashSubject();
     await refreshBranchPrArtifactsAfterTaskCommit({
       ctx,
       cwd: opts.cwd,
@@ -672,7 +696,7 @@ export async function cmdCommit(opts: {
       quiet: opts.quiet,
     });
     ctx.git.invalidateStatus();
-    await commitRefreshedTaskArtifacts({
+    const refreshCommit = await commitRefreshedTaskArtifacts({
       ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
@@ -682,12 +706,16 @@ export async function cmdCommit(opts: {
     });
 
     if (!opts.quiet) {
-      const { hash, subject } = await ctx.git.headHashSubject();
       process.stdout.write(
         `${successMessage(
           "committed",
-          `${hash?.slice(0, 12) ?? ""} ${subject ?? ""}`.trim(),
-          autoStaged.length > 0 ? `staged=${autoStaged.join(", ")}` : undefined,
+          formatCommitRef(primaryCommit),
+          [
+            autoStaged.length > 0 ? `staged=${autoStaged.join(", ")}` : null,
+            refreshCommit ? `refresh=${formatCommitRef(refreshCommit)}` : null,
+          ]
+            .filter(Boolean)
+            .join("; ") || undefined,
         )}\n`,
       );
     }

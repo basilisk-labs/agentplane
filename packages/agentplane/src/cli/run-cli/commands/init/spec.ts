@@ -3,7 +3,11 @@ import { usageError } from "../../../spec/errors.js";
 
 import { cmdInit } from "./orchestrate.js";
 import { normalizeSetupProfile } from "./presets.js";
-import { parseBooleanValueForInit, parseRecipesSelectionForInit } from "./parsers.js";
+import {
+  parseBooleanValueForInit,
+  parseDirectCloseDirtyPolicyForInit,
+  parseRecipesSelectionForInit,
+} from "./parsers.js";
 import type { InitFlags, InitParsed } from "./types.js";
 
 export const initSpec: CommandSpec<InitParsed> = {
@@ -42,6 +46,14 @@ export const initSpec: CommandSpec<InitParsed> = {
       valueHint: "<direct|branch_pr>",
       choices: ["direct", "branch_pr"],
       description: "Workflow mode (default: direct).",
+    },
+    {
+      kind: "string",
+      name: "direct-close-dirty-policy",
+      valueHint: "<allow-other-task-readmes|strict>",
+      choices: ["allow-other-task-readmes", "strict"],
+      description:
+        "Direct-mode close behavior when tracked dirt exists outside the active task: allow only other active task READMEs, or block on any unrelated tracked change.",
     },
     {
       kind: "string",
@@ -125,8 +137,12 @@ export const initSpec: CommandSpec<InitParsed> = {
     { cmd: "agentplane init", why: "Interactive setup (prompts for missing values)." },
     { cmd: "agentplane init --setup-profile light --yes", why: "Non-interactive setup with flexible defaults." },
     {
-      cmd: "agentplane init --workflow direct --backend local --hooks true --require-network-approval true --yes",
-      why: "Non-interactive setup with profile defaults plus an explicit network-approval override.",
+      cmd: "agentplane init --workflow direct --direct-close-dirty-policy allow-other-task-readmes --backend local --hooks true --require-network-approval true --yes",
+      why: "Non-interactive setup with the tolerant direct close policy plus an explicit network-approval override.",
+    },
+    {
+      cmd: "agentplane init --workflow direct --direct-close-dirty-policy strict --yes",
+      why: "Initialize direct mode with strict close-tail blocking on any unrelated tracked dirt.",
     },
     { cmd: "agentplane init --force --yes", why: "Re-initialize, overwriting conflicts (non-interactive)." },
     {
@@ -155,6 +171,14 @@ export const initSpec: CommandSpec<InitParsed> = {
       policyGateway: raw.opts["policy-gateway"] as InitFlags["policyGateway"],
       ide: raw.opts.ide as InitFlags["ide"],
       workflow: raw.opts.workflow as InitFlags["workflow"],
+      directCloseDirtyPolicy:
+        (raw.opts["direct-close-dirty-policy"] as string | undefined) === undefined
+          ? undefined
+          : parseDirectCloseDirtyPolicyForInit(
+              initSpec,
+              "--direct-close-dirty-policy",
+              String(raw.opts["direct-close-dirty-policy"]),
+            ),
       backend: raw.opts.backend as InitFlags["backend"],
       hooks:
         hooksRaw === undefined ? undefined : parseBooleanValueForInit(initSpec, "--hooks", hooksRaw),

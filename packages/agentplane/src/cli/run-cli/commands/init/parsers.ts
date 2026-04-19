@@ -25,3 +25,23 @@ export function parseRecipesSelectionForInit(value: string): string[] {
     .map((item) => item.trim())
     .filter(Boolean);
 }
+
+export function parseDirectCloseDirtyPolicyForInit<T>(
+  spec: CommandSpec<T>,
+  flag: string,
+  value: string,
+): "allow_other_task_readmes" | "strict" {
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "strict") return "strict";
+  if (
+    normalized === "allow-other-task-readmes" ||
+    normalized === "allow_other_task_readmes"
+  ) {
+    return "allow_other_task_readmes";
+  }
+  throw usageError({
+    spec,
+    command: "init",
+    message: invalidValueForFlag(flag, value, "strict|allow-other-task-readmes"),
+  });
+}

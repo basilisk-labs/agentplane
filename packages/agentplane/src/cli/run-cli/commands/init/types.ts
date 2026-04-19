@@ -12,6 +12,7 @@ export type InitFlags = {
   policyGateway?: PolicyGatewayFlavor;
   ide?: InitIde;
   workflow?: "direct" | "branch_pr";
+  directCloseDirtyPolicy?: "allow_other_task_readmes" | "strict";
   backend?: "local" | "redmine";
   hooks?: boolean;
   gitignoreAgents?: boolean;
@@ -32,6 +33,7 @@ export type InitDefaults = {
   policyGateway: PolicyGatewayFlavor;
   ide: InitIde;
   workflow: WorkflowMode;
+  directCloseDirtyPolicy: NonNullable<InitFlags["directCloseDirtyPolicy"]>;
   backend: NonNullable<InitFlags["backend"]>;
   hooks: boolean;
   recipes: string[];
