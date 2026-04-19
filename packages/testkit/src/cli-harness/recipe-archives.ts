@@ -398,7 +398,10 @@ export async function createUpgradeBundle(files: Record<string, string>): Promis
   bundlePath: string;
   checksumPath: string;
 }> {
-  const manifestUrl = new URL("../../../agentplane/assets/framework.manifest.json", import.meta.url);
+  const manifestUrl = new URL(
+    "../../../agentplane/assets/framework.manifest.json",
+    import.meta.url,
+  );
   const manifestText =
     typeof files["framework.manifest.json"] === "string"
       ? files["framework.manifest.json"]
