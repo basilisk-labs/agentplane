@@ -480,6 +480,62 @@ describe("guard/impl/commands", () => {
     }
   });
 
+  it("cmdCommit close stages policy mirrors together with the task README when policy writes are allowed", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusChangedPaths.mockResolvedValue([
+      ".agentplane/policy/incidents.md",
+      ".agentplane/tasks/T-2/README.md",
+      "packages/agentplane/assets/policy/incidents.md",
+      "src/outside.ts",
+    ]);
+    ctx.git.headHashSubject.mockResolvedValue({
+      hash: "fedcba9876543210",
+      subject: "✅ ABC123 close: done",
+    });
+    mocks.loadTaskFromContext.mockResolvedValue({ id: "T-2" });
+    mocks.buildCloseCommitMessage.mockResolvedValue({
+      subject: "✅ ABC123 close: done",
+      body: "body",
+    });
+    mocks.taskReadmePathForTask.mockReturnValue("/repo/.agentplane/tasks/T-2/README.md");
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-2" });
+
+    const rc = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-2",
+      message: "",
+      close: true,
+      allow: [],
+      autoAllow: false,
+      allowTasks: true,
+      allowBase: false,
+      allowPolicy: true,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+      closeCheckOnly: false,
+      closeUnstageOthers: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(ctx.git.stage).toHaveBeenCalledWith([
+      ".agentplane/policy/incidents.md",
+      ".agentplane/tasks/T-2/README.md",
+      "packages/agentplane/assets/policy/incidents.md",
+    ]);
+    expect(mocks.guardCommitCheck).toHaveBeenCalledWith(
+      expect.objectContaining({
+        allowPolicy: true,
+        allowTasks: true,
+        requireClean: true,
+      }),
+    );
+  });
+
   it("cmdCommit close refreshes PR artifacts before staging task artifact scope", async () => {
     const { cmdCommit } = await import("./commands.js");
     const ctx = mkCtx();

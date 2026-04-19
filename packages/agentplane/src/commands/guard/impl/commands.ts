@@ -9,6 +9,7 @@ import { infoMessage, successMessage } from "../../../cli/output.js";
 import { stripAnsi } from "../../../cli/shared/ansi.js";
 import { withDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
+import { protectedPathKindForFile } from "../../../shared/protected-paths.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commit-pr-artifacts.js";
 import { isTaskLocalAdvancePath } from "../../shared/task-local-freshness.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
@@ -131,6 +132,31 @@ function detectCommitFailureSignal(output: string): CommitFailureSignal {
 
 function taskArtifactRefreshCommitMessage(taskId: string): string {
   return `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`;
+}
+
+async function stageCloseCommitPaths(opts: {
+  ctx: CommandContext;
+  readmeRel: string;
+  taskId: string;
+  allowPolicy: boolean;
+}): Promise<void> {
+  const stagePaths = new Set<string>([opts.readmeRel]);
+  if (opts.allowPolicy) {
+    const changedPaths = await opts.ctx.git.statusChangedPaths();
+    for (const relPath of changedPaths) {
+      if (
+        protectedPathKindForFile({
+          filePath: relPath,
+          tasksPath: opts.ctx.config.paths.tasks_path,
+          workflowDir: opts.ctx.config.paths.workflow_dir,
+          taskId: opts.taskId,
+        }) === "policy"
+      ) {
+        stagePaths.add(relPath);
+      }
+    }
+  }
+  await opts.ctx.git.stage([...stagePaths].toSorted((a, b) => a.localeCompare(b)));
 }
 
 async function commitRefreshedTaskArtifacts(opts: {
@@ -515,7 +541,12 @@ export async function cmdCommit(opts: {
             noMatchMessage:
               "No changed files matched the active task artifact scope for the deterministic close commit.",
           })
-        : ctx.git.stage([readmeRel]));
+        : stageCloseCommitPaths({
+            ctx,
+            readmeRel,
+            taskId: opts.taskId,
+            allowPolicy: opts.allowPolicy,
+          }));
 
       // Close commits should not require manual --allow flags:
       // the command stages only the active task artifact scope.
