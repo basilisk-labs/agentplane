@@ -1,13 +1,9 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
-
+import { runProcess } from "@agentplaneorg/core";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 import { isDotEnvLoadedKey } from "../../../shared/env.js";
 import { gitEnv } from "../../shared/git.js";
 import { normalizeGhTransportError, withGhTransportRetry } from "../../shared/gh-transport.js";
-
-const execFileAsyncRaw = promisify(execFile);
 
 function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {
   const trimmed = remoteUrl.trim();
@@ -39,12 +35,15 @@ export function ghEnv(): NodeJS.ProcessEnv {
 }
 
 export async function resolveDefaultGithubRepo(cwd: string): Promise<string> {
-  const { stdout } = await execFileAsyncRaw("git", ["remote", "get-url", "origin"], {
+  const { stdout } = await runProcess({
+    command: "git",
+    args: ["remote", "get-url", "origin"],
     cwd,
     env: gitEnv(),
+    encoding: "utf8",
     maxBuffer: 10 * 1024 * 1024,
   });
-  const repo = parseGithubRepoFromRemoteUrl(stdout);
+  const repo = parseGithubRepoFromRemoteUrl(String(stdout));
   if (!repo) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
@@ -58,24 +57,30 @@ export async function resolveDefaultGithubRepo(cwd: string): Promise<string> {
 export async function runGhApiJson<T>(cwd: string, args: string[]): Promise<T> {
   const { stdout } = await withGhTransportRetry(
     () =>
-      execFileAsyncRaw("gh", ["api", ...args], {
+      runProcess({
+        command: "gh",
+        args: ["api", ...args],
         cwd,
         env: ghEnv(),
+        encoding: "utf8",
         maxBuffer: 10 * 1024 * 1024,
       }),
     {
       label: `running gh api ${args[0] ?? ""}`,
     },
   );
-  return JSON.parse(stdout) as T;
+  return JSON.parse(String(stdout)) as T;
 }
 
 export async function runGhApiNoOutput(cwd: string, args: string[]): Promise<void> {
   await withGhTransportRetry(
     () =>
-      execFileAsyncRaw("gh", ["api", ...args], {
+      runProcess({
+        command: "gh",
+        args: ["api", ...args],
         cwd,
         env: ghEnv(),
+        encoding: "utf8",
         maxBuffer: 10 * 1024 * 1024,
       }),
     {

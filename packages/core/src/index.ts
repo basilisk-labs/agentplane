@@ -165,7 +165,6 @@ export {
 } from "./git/base-branch.js";
 
 export {
-  execFileAsync,
   gitBranchExists,
   gitBranchUpstream,
   gitCurrentBranch,
@@ -175,6 +174,15 @@ export {
   gitRevParse,
   GitContext,
 } from "./git/git-client.js";
+
+export {
+  execFileAsync,
+  runProcess,
+  runProcessSync,
+  startProcess,
+  type RunProcessOptions,
+  type RunProcessResult,
+} from "./process/run-process.js";
 
 export {
   buildTaskArtifactRefreshCommitSubject,

@@ -1,9 +1,8 @@
-import { spawnSync } from "node:child_process";
 import { chmod, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
+import { loadConfig, resolveBaseBranch, resolveProject, runProcessSync } from "@agentplaneorg/core";
 
 import { evaluatePolicy } from "../../policy/evaluate.js";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
@@ -386,15 +385,19 @@ export async function cmdHooksRun(opts: {
           message: `Missing pre-push hook script: ${scriptPath}`,
         });
       }
-      const result = spawnSync("node", [scriptPath], {
+      const result = runProcessSync({
+        command: "node",
+        args: [scriptPath],
         cwd: resolved.gitRoot,
         env: process.env,
         encoding: "utf8",
         input: await readHookStdinUtf8(),
-        stdio: ["pipe", "inherit", "inherit"],
+        stdin: "pipe",
+        stdout: "inherit",
+        stderr: "inherit",
+        reject: false,
       });
-      if (result.error) throw result.error;
-      return result.status ?? (result.signal ? 1 : 0);
+      return result.exitCode ?? (result.signal ? 1 : 0);
     }
 
     if (opts.hook === "post-merge") {

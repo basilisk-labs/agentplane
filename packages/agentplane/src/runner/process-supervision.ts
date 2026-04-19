@@ -1,6 +1,6 @@
-import { execFile, spawn } from "node:child_process";
 import { appendFileSync } from "node:fs";
-import { promisify } from "node:util";
+
+import { runProcess, startProcess } from "@agentplaneorg/core";
 
 import {
   appendRunnerEvent,
@@ -25,8 +25,6 @@ const SUPPORTED_SIGNALS = new Set<RunnerProcessSignal>([
   "SIGTERM",
   "SIGKILL",
 ]);
-
-const execFileAsync = promisify(execFile);
 
 export type SupervisedProcessResult = {
   exit_code: number | null;
@@ -156,13 +154,15 @@ export async function readObservedProcessIdentity(
   pid: number,
 ): Promise<ObservedProcessIdentity | null> {
   try {
-    const { stdout } = await execFileAsync("ps", ["-o", "lstart=,command=", "-p", String(pid)], {
+    const { stdout } = await runProcess({
+      command: "ps",
+      args: ["-o", "lstart=,command=", "-p", String(pid)],
       encoding: "utf8",
     });
-    const line = stdout
+    const line = String(stdout)
       .split("\n")
-      .map((entry) => entry.trim())
-      .find((entry) => entry.length > 0);
+      .map((entry: string) => entry.trim())
+      .find((entry: string) => entry.length > 0);
     if (!line) return null;
     const match =
       /^([A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d\d:\d\d:\d\d\s+\d{4})\s+(.*)$/u.exec(line);
@@ -211,10 +211,14 @@ export async function runSupervisedProcess(opts: {
       return;
     }
 
-    const child = spawn(command, args, {
+    const child = startProcess({
+      command,
+      args,
       cwd: opts.invocation.run_dir,
       env: { ...process.env, ...opts.invocation.env },
-      stdio: ["pipe", "pipe", "pipe"],
+      stdin: "pipe",
+      stdout: "pipe",
+      stderr: "pipe",
     });
 
     const pid = typeof child.pid === "number" ? child.pid : null;
@@ -452,7 +456,7 @@ export async function runSupervisedProcess(opts: {
       finishWithError(err);
     });
 
-    child.stdout.on("data", (chunk: Buffer | string) => {
+    child.stdout?.on("data", (chunk: Buffer | string) => {
       const text = chunk.toString();
       const persistedText = redactTraceText(text, redactPatterns);
       heartbeat_at = new Date().toISOString();
@@ -461,7 +465,7 @@ export async function runSupervisedProcess(opts: {
       stdout_tail = appendTail(stdout_tail, persistedText, maxTailBytes);
       stdout_buffer = flushTraceBuffer(`${stdout_buffer}${persistedText}`, "stdout");
     });
-    child.stderr.on("data", (chunk: Buffer | string) => {
+    child.stderr?.on("data", (chunk: Buffer | string) => {
       const text = chunk.toString();
       const persistedText = redactTraceText(text, redactPatterns);
       heartbeat_at = new Date().toISOString();
@@ -536,7 +540,7 @@ export async function runSupervisedProcess(opts: {
       }, timeoutPolicy.wall_clock_ms);
     }
     resetIdleTimer();
-    child.stdin.end(opts.stdin_text);
+    child.stdin?.end(opts.stdin_text);
   });
 }
 

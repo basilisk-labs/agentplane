@@ -1,7 +1,8 @@
-import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { runProcessSync } from "@agentplaneorg/core";
 
 import { getVersion } from "./version.js";
 
@@ -40,10 +41,16 @@ export function getReleaseCommitDate(): string | null {
   }
 
   try {
-    const out = execFileSync("git", ["-C", gitRoot, "show", "-s", "--format=%cs", tag], {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-    }).trim();
+    const out = String(
+      runProcessSync({
+        command: "git",
+        args: ["-C", gitRoot, "show", "-s", "--format=%cs", tag],
+        encoding: "utf8",
+        stdin: "ignore",
+        stdout: "pipe",
+        stderr: "ignore",
+      }).stdout,
+    ).trim();
     cachedReleaseDate = out || null;
     return cachedReleaseDate;
   } catch {

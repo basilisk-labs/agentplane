@@ -1,8 +1,6 @@
-import { execFile } from "node:child_process";
 import path from "node:path";
-import { promisify } from "node:util";
 
-import { resolveProject, type ResolvedProject } from "@agentplaneorg/core";
+import { resolveProject, runProcess, type ResolvedProject } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../../cli/error-map.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
@@ -17,7 +15,6 @@ import {
   type ScenarioDefinition,
 } from "../../recipes.js";
 
-const execFileAsync = promisify(execFile);
 const output = createCliEmitter();
 
 type RecipeToolRuntime = "node" | "bash";
@@ -296,7 +293,9 @@ export async function executeRecipeTool(opts: {
 }): Promise<{ exitCode: number; stdout: string; stderr: string }> {
   const { command, args } = resolveRecipeToolInvocation(opts.runtime, opts.entrypoint, opts.args);
   try {
-    const { stdout, stderr } = await execFileAsync(command, args, {
+    const { stdout, stderr } = await runProcess({
+      command,
+      args,
       cwd: opts.cwd,
       env: opts.env,
     });

@@ -1,17 +1,13 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
-
 import { resolveProject } from "../project/project-root.js";
+import { execFileAsync } from "../process/run-process.js";
 import type { WorkflowMode } from "../config/config.js";
-
-const execFileAsync = promisify(execFile);
 
 const GIT_CONFIG_BASE_BRANCH_KEY = "agentplane.baseBranch";
 
 async function gitConfigGet(cwd: string, key: string): Promise<string | null> {
   try {
     const { stdout } = await execFileAsync("git", ["config", "--local", "--get", key], { cwd });
-    const trimmed = stdout.trim();
+    const trimmed = String(stdout).trim();
     return trimmed.length > 0 ? trimmed : null;
   } catch (err) {
     const code = (err as { code?: number | string } | null)?.code;
@@ -42,7 +38,7 @@ async function gitDefaultBranch(cwd: string): Promise<string | null> {
       ["symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD"],
       { cwd },
     );
-    const trimmed = stdout.trim();
+    const trimmed = String(stdout).trim();
     if (!trimmed) return null;
     return trimmed.startsWith("origin/") ? trimmed.slice("origin/".length) : trimmed;
   } catch (err) {

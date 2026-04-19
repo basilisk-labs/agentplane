@@ -1,7 +1,4 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
-
-export const execFileAsync = promisify(execFile);
+import { execFileAsync } from "../process/run-process.js";
 
 // Avoid leaking worktree/index overrides into nested git subprocesses.
 export function gitEnv(): NodeJS.ProcessEnv {
@@ -80,7 +77,7 @@ function parsePorcelainV1Z(output: Buffer | string): PorcelainStatus {
 
 export async function gitRevParse(cwd: string, args: string[]): Promise<string> {
   const { stdout } = await execFileAsync("git", ["rev-parse", ...args], { cwd, env: gitEnv() });
-  const trimmed = stdout.trim();
+  const trimmed = String(stdout).trim();
   if (!trimmed) throw new Error("Failed to resolve git path");
   return trimmed;
 }
@@ -91,7 +88,7 @@ export async function gitCurrentBranch(cwd: string): Promise<string> {
       cwd,
       env: gitEnv(),
     });
-    const trimmed = stdout.trim();
+    const trimmed = String(stdout).trim();
     if (trimmed) return trimmed;
   } catch {
     // fall through
@@ -101,7 +98,7 @@ export async function gitCurrentBranch(cwd: string): Promise<string> {
     cwd,
     env: gitEnv(),
   });
-  const trimmed = stdout.trim();
+  const trimmed = String(stdout).trim();
   if (!trimmed || trimmed === "HEAD") {
     throw new Error("Detached HEAD: failed to resolve current branch");
   }
@@ -147,7 +144,7 @@ export async function gitBranchUpstream(cwd: string, branch: string): Promise<st
       ["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`],
       { cwd, env: gitEnv() },
     );
-    const trimmed = stdout.trim();
+    const trimmed = String(stdout).trim();
     return trimmed.length > 0 ? trimmed : null;
   } catch {
     return null;
@@ -159,10 +156,10 @@ export async function gitListBranches(cwd: string): Promise<string[]> {
     cwd,
     env: gitEnv(),
   });
-  return stdout
+  return String(stdout)
     .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0);
+    .map((line: string) => line.trim())
+    .filter((line: string) => line.length > 0);
 }
 
 export class GitContext {

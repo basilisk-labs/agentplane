@@ -1,15 +1,12 @@
-import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
-import { promisify } from "node:util";
 import path from "node:path";
 import { gunzipSync } from "node:zlib";
 
+import { runProcess } from "@agentplaneorg/core";
 import yauzl from "yauzl";
 
 import { CliError } from "../shared/errors.js";
 import { exitCodeForError } from "./exit-codes.js";
-
-const execFileAsync = promisify(execFile);
 
 type ArchiveType = "tar" | "zip";
 
@@ -67,10 +64,10 @@ export async function extractArchive(opts: {
     });
   }
   if (archiveType === "tar") {
-    await execFileAsync("tar", ["-xzf", opts.archivePath, "-C", opts.destDir]);
+    await runProcess({ command: "tar", args: ["-xzf", opts.archivePath, "-C", opts.destDir] });
     return;
   }
-  await execFileAsync("unzip", ["-q", opts.archivePath, "-d", opts.destDir]);
+  await runProcess({ command: "unzip", args: ["-q", opts.archivePath, "-d", opts.destDir] });
 }
 
 export function validateArchiveEntries(entries: string[], symlinks: string[]): ArchiveEntryIssue[] {
