@@ -28,7 +28,7 @@ describe("workflow Node runtime contract", () => {
 
     for (const workflowPath of workflowFiles) {
       const workflow = await readFile(workflowPath, "utf8");
-      if (!workflow.includes("actions/setup-node@v4")) {
+      if (!workflow.includes("actions/setup-node@")) {
         continue;
       }
       expect(workflow, workflowPath).toContain('node-version: "24"');

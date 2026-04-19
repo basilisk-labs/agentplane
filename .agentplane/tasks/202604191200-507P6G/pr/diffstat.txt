@@ -1,0 +1,11 @@
+ .github/workflows/ci.yml                           | 26 +++++++++++-----------
+ .github/workflows/docs-ci.yml                      |  6 ++---
+ .github/workflows/pages-deploy.yml                 |  4 ++--
+ .github/workflows/prepublish.yml                   |  8 +++----
+ .github/workflows/publish.yml                      | 18 +++++++--------
+ .github/workflows/task-hosted-close.yml            |  4 ++--
+ .github/workflows/workflows-lint.yml               |  4 ++--
+ .../commands/release/ci-workflow-contract.test.ts  |  2 +-
+ .../release/publish-workflow-contract.test.ts      |  2 +-
+ .../release/workflow-node-version-contract.test.ts |  2 +-
+ 10 files changed, 38 insertions(+), 38 deletions(-)

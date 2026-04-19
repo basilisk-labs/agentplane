@@ -55,7 +55,7 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain('--ref "${AGENTPLANE_CI_REF}"');
     expect(workflow).toContain("--check-registry");
     expect(workflow).toContain("if: steps.manifest.outputs.ready == 'true'");
-    expect(workflow).toContain("actions/upload-artifact@v4");
+    expect(workflow).toContain("actions/upload-artifact@v7");
     expect(workflow).toContain("name: release-ready");
     expect(workflow).toContain("path: .agentplane/.release/ready/release-ready.json");
     expect(workflow).toContain("name: release-ready-${{ steps.target.outputs.sha }}");
