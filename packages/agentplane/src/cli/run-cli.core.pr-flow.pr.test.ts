@@ -897,6 +897,152 @@ describe("runCli", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
     expect(upstreamStdout.trim()).toBe(`origin/${branch}`);
   });
 
+  it("pr open skips a redundant push when origin already has the matching branch head", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await configurePushableOrigin(root);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open existing remote branch",
+        "--description",
+        "PR open should continue when origin already has the matching task branch head",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/published-head`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore branch publish seed"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    const publishRemotePath = await mkdtemp(
+      path.join(os.tmpdir(), "agentplane-pr-open-existing-head-"),
+    );
+    await execFileAsync("git", ["init", "--bare", publishRemotePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["remote", "set-url", "--push", "origin", publishRemotePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    const syncOnlyIo = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--sync-only",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      syncOnlyIo.restore();
+    }
+
+    await execFileAsync("git", ["push", "-u", "origin", `HEAD:refs/heads/${branch}`], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    const { fakeBin } = await installFakeGhPrApi({
+      scenarioName: "open-existing-published-head",
+      branch,
+      createResponse: {
+        number: 914,
+        html_url: "https://github.com/example/repo/pull/914",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        head: { sha: "remote-head-sha" },
+        base: { ref: "main" },
+      },
+    });
+    const fakeGitBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-fake-git-"));
+    const { stdout: realGitStdout } = await execFileAsync("which", ["git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const realGit = realGitStdout.trim();
+    const fakeGitPath = path.join(fakeGitBin, "git");
+    await writeFile(
+      fakeGitPath,
+      [
+        "#!/usr/bin/env node",
+        "const { spawnSync } = require('node:child_process');",
+        `const realGit = ${JSON.stringify(realGit)};`,
+        "const args = process.argv.slice(2);",
+        "if (args[0] === 'push' && args.includes('--no-verify')) {",
+        "  console.error('simulated push failure for published-branch regression');",
+        "  process.exit(1);",
+        "}",
+        "const result = spawnSync(realGit, args, { stdio: 'inherit', env: process.env });",
+        "if (result.error) throw result.error;",
+        "process.exit(result.status ?? 1);",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeGitPath, 0o755);
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeGitBin}${path.delimiter}${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("created GitHub PR #914");
+      expect(io.stdout).not.toContain("remote PR creation staged");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+    }
+  });
+
   it("pr open ignores dotenv-injected GitHub tokens when gh auth is otherwise available", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
