@@ -1,10 +1,11 @@
 ---
 id: "202604191639-DPNT53"
 title: "Introduce reusable repository and backend fixtures in testkit"
-status: "DOING"
+result_summary: "Added tempRepo, mockConfig, mockTaskBackend, and reusable fake GH PR fixtures to @agentplane/testkit, expanded the agentplane compatibility re-export, and migrated the first consumer batch in task-backend and pr-flow PR tests. Verified with @agentplane/testkit build, focused task-backend coverage, targeted PR-flow PR fixture checks, and a repo-local framework bootstrap."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-19T17:38:50.280Z"
   updated_by: "CODER"
   note: "Added reusable testkit repo/config/PR fixtures and migrated an initial consumer batch."
-commit: null
+commit:
+  hash: "14c41a30bcdca4dd16db1291e1b9b64c5e9ceb71"
+  message: "🧪 testkit: add shared repo and PR fixtures"
 comments:
   -
     author: "CODER"
     body: "Start: audit duplicated temp repo and backend fixture patterns, add shared testkit fixtures, and migrate an initial high-duplication batch of tests."
+  -
+    author: "CODER"
+    body: "Verified: shared testkit fixtures now cover temp repo/config and fake GH PR setup, and initial consumers use the centralized surface."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added reusable testkit repo/config/PR fixtures and migrated an initial consumer batch."
+  -
+    type: "status"
+    at: "2026-04-19T17:39:48.992Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: shared testkit fixtures now cover temp repo/config and fake GH PR setup, and initial consumers use the centralized surface."
 doc_version: 3
-doc_updated_at: "2026-04-19T17:38:50.286Z"
+doc_updated_at: "2026-04-19T17:39:48.994Z"
 doc_updated_by: "CODER"
 description: "Epic E′. Add shared tempRepo, mockTaskBackend, mockPrApi, and mockConfig fixtures in @agentplane/testkit and replace duplicated local helpers."
 sections:
