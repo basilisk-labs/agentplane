@@ -1,10 +1,11 @@
 ---
 id: "202604191526-ZV3XMR"
 title: "Clean branch_pr residue after switching to direct workflow"
-status: "DOING"
+result_summary: "Removed abandoned branch_pr residue after the direct-mode switch and normalized task state for the next epic commits."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-19T15:28:02.649Z"
   updated_by: "CODER"
   note: "Command: git worktree list; Result: pass; Evidence: only the main checkout remains after removing the abandoned branch_pr worktree. Scope: direct-mode workspace cleanup. Command: agentplane task list | rg '202604191509-|202604191516-|202604191526-|\\[(TODO|DOING|BLOCKED)\\]'; Result: pass; Evidence: superseded branch_pr tasks are blocked and the cleanup task is the only active task. Scope: task lifecycle cleanup after the workflow switch."
-commit: null
+commit:
+  hash: "2c400301b9ae5bc899e229eaf6308372bd216970"
+  message: "🧹 workflow: clean branch_pr residue after direct mode switch"
 comments:
   -
     author: "CODER"
     body: "Start: remove stale branch_pr artifacts and abandoned task residue so subsequent epic commits happen in a clean direct-mode repository state."
+  -
+    author: "CODER"
+    body: "Verified: branch_pr residue was removed, direct workflow files were updated, and only intentional epic work remains outside this cleanup task."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: git worktree list; Result: pass; Evidence: only the main checkout remains after removing the abandoned branch_pr worktree. Scope: direct-mode workspace cleanup. Command: agentplane task list | rg '202604191509-|202604191516-|202604191526-|\\[(TODO|DOING|BLOCKED)\\]'; Result: pass; Evidence: superseded branch_pr tasks are blocked and the cleanup task is the only active task. Scope: task lifecycle cleanup after the workflow switch."
+  -
+    type: "status"
+    at: "2026-04-19T15:28:37.228Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: branch_pr residue was removed, direct workflow files were updated, and only intentional epic work remains outside this cleanup task."
 doc_version: 3
-doc_updated_at: "2026-04-19T15:28:02.666Z"
+doc_updated_at: "2026-04-19T15:28:37.229Z"
 doc_updated_by: "CODER"
 description: "Remove obsolete branch_pr worktree and orphan handoff directories, and reconcile abandoned task artifacts created before the repository switched to direct mode."
 sections:
