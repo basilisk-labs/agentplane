@@ -1,10 +1,11 @@
 ---
 id: "202604191200-WGK57W"
 title: "Record hosted publish evidence in release task closure"
-status: "DOING"
+result_summary: "Merged via PR #483."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-19T13:40:09.063Z"
   updated_by: "CODER"
   note: "Added hosted release-evidence follow-up via publish workflow: successful publish-result now resolves the release task, writes canonical Verification evidence into the task README on a task-close branch, and opens/auto-merges a follow-up PR; validated by release-task-evidence script tests, publish workflow contract, eslint, prettier, and workflow lint."
-commit: null
+commit:
+  hash: "c26b7c23afb447d4d2d76c7e158fffb459967652"
+  message: "release: Record hosted publish evidence in release task closure (WGK57W) (#483)"
 comments:
   -
     author: "CODER"
     body: "Start: record hosted publish evidence in release task closure so release tasks close with published version, release URL, and install-smoke facts instead of only canonical DONE state."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #483 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added hosted release-evidence follow-up via publish workflow: successful publish-result now resolves the release task, writes canonical Verification evidence into the task README on a task-close branch, and opens/auto-merges a follow-up PR; validated by release-task-evidence script tests, publish workflow contract, eslint, prettier, and workflow lint."
+  -
+    type: "status"
+    at: "2026-04-19T14:08:22.246Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #483 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-19T13:40:09.067Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-19T14:08:22.252Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend hosted close handling for release-tagged tasks so DONE task artifacts record published package versions, release URL, and install-smoke evidence instead of only a generic merged-on-main note."
 sections:
   Summary: |-
