@@ -1,10 +1,11 @@
 ---
 id: "202604191640-ZVYNHY"
 title: "Implement execa-backed runProcess and migrate callers"
-status: "DOING"
+result_summary: "Implemented core runProcess/runProcessSync/startProcess, migrated production runtime callers, and left only cli critical harness on direct child_process as test-only infrastructure."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,15 +20,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-19T20:31:16.327Z"
+  updated_by: "CODER"
+  note: "runProcess on execa now backs core git/process runtime; production child_process imports are reduced to test harness only, with targeted typecheck/build/bootstrap and process/git regression suites passing."
+commit:
+  hash: "3695c84ecf9f21c242e824bb0fd8419092ba0d35"
+  message: "♻️ ZVYNHY task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
     body: "Start: inventorying direct child_process usage so the first runProcess slice can cover production runtime callers without dragging tests and script fixtures into the migration."
+  -
+    author: "CODER"
+    body: "Verified: execa-backed runProcess now owns core process execution; focused process/git/scenario/release/supervision suites passed; core+agentplane typecheck/build and framework bootstrap passed. Primary implementation commit 732dfb10 was followed by formalized task-artifact refresh commit 3695c84e."
 events:
   -
     type: "status"
@@ -36,8 +42,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: inventorying direct child_process usage so the first runProcess slice can cover production runtime callers without dragging tests and script fixtures into the migration."
+  -
+    type: "verify"
+    at: "2026-04-19T20:31:16.327Z"
+    author: "CODER"
+    state: "ok"
+    note: "runProcess on execa now backs core git/process runtime; production child_process imports are reduced to test harness only, with targeted typecheck/build/bootstrap and process/git regression suites passing."
+  -
+    type: "status"
+    at: "2026-04-19T20:31:34.375Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: execa-backed runProcess now owns core process execution; focused process/git/scenario/release/supervision suites passed; core+agentplane typecheck/build and framework bootstrap passed. Primary implementation commit 732dfb10 was followed by formalized task-artifact refresh commit 3695c84e."
 doc_version: 3
-doc_updated_at: "2026-04-19T19:54:45.130Z"
+doc_updated_at: "2026-04-19T20:31:34.376Z"
 doc_updated_by: "CODER"
 description: "Epic B′ and K. Add core runProcess on top of execa and migrate direct child_process callsites."
 sections:
@@ -58,6 +77,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-19T20:31:16.327Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: runProcess on execa now backs core git/process runtime; production child_process imports are reduced to test harness only, with targeted typecheck/build/bootstrap and process/git regression suites passing.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T19:54:45.130Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -91,6 +118,14 @@ Epic B′ and K. Add core runProcess on top of execa and migrate direct child_pr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-19T20:31:16.327Z — VERIFY — ok
+
+By: CODER
+
+Note: runProcess on execa now backs core git/process runtime; production child_process imports are reduced to test harness only, with targeted typecheck/build/bootstrap and process/git regression suites passing.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T19:54:45.130Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
