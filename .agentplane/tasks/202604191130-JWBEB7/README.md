@@ -1,10 +1,11 @@
 ---
 id: "202604191130-JWBEB7"
 title: "Prepare and ship patch release v0.3.15"
-status: "DOING"
+result_summary: "Merged via PR #475."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "49f09c7c261fd37886c557ab7873d6b9a7690f1e"
+  message: "release: Prepare and ship patch release v0.3.15 (JWBEB7) (#475)"
 comments:
   -
     author: "CODER"
     body: "Start: prepare v0.3.15 release notes, execute the canonical patch-release route, verify npm/global-install smoke, and close any stale release branches after publication."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #475 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -34,9 +40,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: prepare v0.3.15 release notes, execute the canonical patch-release route, verify npm/global-install smoke, and close any stale release branches after publication."
+  -
+    type: "status"
+    at: "2026-04-19T11:52:36.065Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #475 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-19T11:31:02.036Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-19T11:52:36.070Z"
+doc_updated_by: "INTEGRATOR"
 description: "Cut the next patch release after the release CI regression fixes, verify npm installation end-to-end, and publish the working release metadata."
 sections:
   Summary: |-
