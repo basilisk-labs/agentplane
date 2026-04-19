@@ -1,10 +1,11 @@
 ---
 id: "202604191639-7SDT2H"
 title: "Retire run-cli test helper shim after final CLI migration"
-status: "DOING"
+result_summary: "Removed packages/agentplane/src/cli/run-cli.test-helpers.ts and migrated the final CLI test batch to ../testing/index.js. Validated the full remaining CLI surface, including the slow pr-flow.pr and pr-flow.integrate suites in single-worker mode, then refreshed the repo-local framework runtime."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-19T17:31:07.276Z"
   updated_by: "CODER"
   note: "Retired run-cli test shim and migrated remaining CLI suites to canonical testkit exports."
-commit: null
+commit:
+  hash: "e32f55f97171181807d9c00d10ebbac57e51681d"
+  message: "🧪 tests: retire run-cli shim"
 comments:
   -
     author: "CODER"
     body: "Start: migrate the remaining heavy CLI consumers off packages/agentplane/src/cli/run-cli.test-helpers.ts, delete the shim once no imports remain, and verify the affected heavy CLI suites in direct mode."
+  -
+    author: "CODER"
+    body: "Verified: remaining CLI suites now import canonical testkit exports, the obsolete run-cli shim is removed, and the repo-local runtime was rebuilt after the deletion."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Retired run-cli test shim and migrated remaining CLI suites to canonical testkit exports."
+  -
+    type: "status"
+    at: "2026-04-19T17:31:36.169Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: remaining CLI suites now import canonical testkit exports, the obsolete run-cli shim is removed, and the repo-local runtime was rebuilt after the deletion."
 doc_version: 3
-doc_updated_at: "2026-04-19T17:31:07.283Z"
+doc_updated_at: "2026-04-19T17:31:36.170Z"
 doc_updated_by: "CODER"
 description: "Epic E′. Migrate the remaining CLI test consumers away from run-cli.test-helpers.ts and delete the shim once no imports remain."
 sections:
