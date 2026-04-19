@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604191200-507P6G/upgrade-workflow-actions",
   "created_at": "2026-04-19T13:19:02.863Z",
-  "head_sha": "189ae8abbdc5c122081bc76ecdb006619e5cfb97",
+  "head_sha": "cb2281671f50316eaa35570020e9e2b5a3cf89b8",
   "last_verified_at": "2026-04-19T13:19:02.721Z",
   "last_verified_sha": "206794d6e94f44af07e890f0e89987db04a03458",
+  "merge_commit": "9d593f12eeb91bd6a5c136387f1ea928ee30d700",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-19T14:05:57Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604191200-507P6G",
-  "updated_at": "2026-04-19T13:19:50.431Z",
+  "updated_at": "2026-04-19T14:05:57Z",
   "verify": {
     "status": "pass"
   }
