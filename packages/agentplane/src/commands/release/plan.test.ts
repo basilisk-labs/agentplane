@@ -5,7 +5,7 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { commitAll, mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helpers.js";
-import { seedReleaseWorkspace } from "../release.test-helpers.js";
+import { seedReleaseWorkspace } from "../../../../testkit/src/release.js";
 import { runReleasePlan, releasePlanSpec } from "./plan.command.js";
 
 const execFileAsync = promisify(execFile);

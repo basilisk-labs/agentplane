@@ -6,7 +6,7 @@ import {
   makeTaskBackendDouble,
   makeTaskCommandContext,
   makeTaskFixture,
-} from "../task.test-helpers.js";
+} from "../../../../testkit/src/task.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const mocks = vi.hoisted(() => ({

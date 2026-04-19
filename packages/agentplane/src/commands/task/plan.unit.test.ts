@@ -7,7 +7,7 @@ import {
   makeTaskBackendDouble,
   makeTaskCommandContext,
   makeTaskFixture,
-} from "../task.test-helpers.js";
+} from "../../../../testkit/src/task.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskStorePatch } from "../shared/task-store.js";
 
