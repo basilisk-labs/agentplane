@@ -1,10 +1,10 @@
 ---
 id: "202604191640-ZVYNHY"
 title: "Implement execa-backed runProcess and migrate callers"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -14,19 +14,30 @@ tags:
   - "refactor"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-19T19:54:45.124Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: inventorying direct child_process usage so the first runProcess slice can cover production runtime callers without dragging tests and script fixtures into the migration."
+events:
+  -
+    type: "status"
+    at: "2026-04-19T19:54:45.091Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: inventorying direct child_process usage so the first runProcess slice can cover production runtime callers without dragging tests and script fixtures into the migration."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:40:31.738Z"
+doc_updated_at: "2026-04-19T19:54:45.130Z"
 doc_updated_by: "CODER"
 description: "Epic B′ and K. Add core runProcess on top of execa and migrate direct child_process callsites."
 sections:
