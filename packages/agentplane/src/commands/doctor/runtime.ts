@@ -4,7 +4,10 @@ import {
   evaluateRepoCliVersionExpectation,
   type RepoCliVersionExpectation,
 } from "../../runtime/shared/repo-cli-version.js";
-import { describeRuntimeMode, resolveRuntimeSourceInfo } from "../../runtime/shared/runtime-source.js";
+import {
+  describeRuntimeMode,
+  resolveRuntimeSourceInfo,
+} from "../../runtime/shared/runtime-source.js";
 
 function renderCliVersionFacts(expectation: RepoCliVersionExpectation): string[] {
   if (!expectation.expectedVersion) return [];

@@ -1,8 +1,4 @@
-import {
-  createLogger,
-  type Logger,
-  type LoggerMode,
-} from "@agentplaneorg/core";
+import { createLogger, type Logger, type LoggerMode } from "@agentplaneorg/core";
 
 export type CliOutputWriter = {
   write: (chunk: string) => unknown;
@@ -192,8 +188,7 @@ export function createCliEmitter(streams?: {
 }): CliEmitter {
   const stdout = streams?.stdout ?? process.stdout;
   const stderr = streams?.stderr ?? process.stderr;
-  const logger =
-    streams?.logger ?? createLogger({ mode: streams?.loggerMode, stdout, stderr });
+  const logger = streams?.logger ?? createLogger({ mode: streams?.loggerMode, stdout, stderr });
 
   const line = (text: string, stream: CliEmitterStream = "stdout"): void => {
     logger.write({ kind: "line", text, stream });

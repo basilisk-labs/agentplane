@@ -68,9 +68,7 @@ export function createLogger(streams?: {
           writer.write(ensureTrailingNewline(JSON.stringify(entry.value, null, 2)));
           return;
         }
-        writer.write(
-          ensureTrailingNewline(entry.kind === "line" ? entry.text : entry.message),
-        );
+        writer.write(ensureTrailingNewline(entry.kind === "line" ? entry.text : entry.message));
         return;
       }
 

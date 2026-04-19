@@ -152,10 +152,7 @@ module.exports = [
   },
 
   {
-    files: [
-      "packages/core/src/**/*.{ts,tsx}",
-      "packages/agentplane/src/shared/**/*.{ts,tsx}",
-    ],
+    files: ["packages/core/src/**/*.{ts,tsx}", "packages/agentplane/src/shared/**/*.{ts,tsx}"],
     rules: {
       "import/no-restricted-paths": [
         "error",
@@ -205,7 +202,8 @@ module.exports = [
           paths: [
             {
               name: "../../cli/spec/errors.js",
-              message: "Shared/runtime and backend error modules must not depend on CLI usage helpers.",
+              message:
+                "Shared/runtime and backend error modules must not depend on CLI usage helpers.",
             },
             {
               name: "../../../cli/spec/errors.js",

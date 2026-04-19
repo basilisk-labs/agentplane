@@ -97,22 +97,14 @@ function buildProcessOptions(opts: RunProcessOptions) {
 export async function runProcess(opts: RunProcessStringOptions): Promise<RunProcessResult<string>>;
 export async function runProcess(opts: RunProcessBufferOptions): Promise<RunProcessResult<Buffer>>;
 export async function runProcess(opts: RunProcessOptions): Promise<RunProcessResult> {
-  const result = await execa(
-    opts.command,
-    opts.args ?? [],
-    buildProcessOptions(opts) as never,
-  );
+  const result = await execa(opts.command, opts.args ?? [], buildProcessOptions(opts) as never);
   return result as RunProcessResult;
 }
 
 export function runProcessSync(opts: RunProcessStringOptions): RunProcessResult<string>;
 export function runProcessSync(opts: RunProcessBufferOptions): RunProcessResult<Buffer>;
 export function runProcessSync(opts: RunProcessOptions): RunProcessResult {
-  const result = execaSync(
-    opts.command,
-    opts.args ?? [],
-    buildProcessOptions(opts) as never,
-  );
+  const result = execaSync(opts.command, opts.args ?? [], buildProcessOptions(opts) as never);
   return result as RunProcessResult;
 }
 

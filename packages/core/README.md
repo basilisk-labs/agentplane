@@ -55,16 +55,16 @@ console.log(config.data.workflow_mode, task?.id, snapshot.meta.version);
 
 ## Exported Modules
 
-| Area              | Highlights                                                     |
-| ----------------- | -------------------------------------------------------------- |
-| Project discovery | `resolveProject`, `findGitRoot`                                |
+| Area              | Highlights                                                                               |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| Project discovery | `resolveProject`, `findGitRoot`                                                          |
 | Config            | `loadConfig`, `saveConfig`, `setByDottedKey`, `validateConfig`, `AgentplaneConfigSchema` |
-| Task README       | `parseTaskReadme`, `renderTaskReadme`                          |
-| Task store        | `createTask`, `listTasks`, `readTask`, `setTaskDocSection`     |
-| Exports           | `buildTasksExportSnapshot`, `writeTasksExport`, checksums      |
-| Linting           | `lintTasksFile`, `lintTasksSnapshot`                           |
-| Git               | `getStagedFiles`, `getUnstagedFiles`, base branch helpers      |
-| Commit policy     | `validateCommitSubject`, `extractTaskSuffix`                   |
+| Task README       | `parseTaskReadme`, `renderTaskReadme`                                                    |
+| Task store        | `createTask`, `listTasks`, `readTask`, `setTaskDocSection`                               |
+| Exports           | `buildTasksExportSnapshot`, `writeTasksExport`, checksums                                |
+| Linting           | `lintTasksFile`, `lintTasksSnapshot`                                                     |
+| Git               | `getStagedFiles`, `getUnstagedFiles`, base branch helpers                                |
+| Commit policy     | `validateCommitSubject`, `extractTaskSuffix`                                             |
 
 ## Stability
 

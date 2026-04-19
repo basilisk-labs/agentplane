@@ -31,7 +31,12 @@ export async function executeFinishPlan(opts: {
   await appendStructuredFindingIfNeeded({ ctx, options, plan });
 
   const loadedState = await loadFinishTasks({ ctx, options, plan });
-  await collectIncidentsForLoadedTasks({ ctx, taskIds: options.taskIds, loadedTasks: loadedState.loadedTasks, write: false });
+  await collectIncidentsForLoadedTasks({
+    ctx,
+    taskIds: options.taskIds,
+    loadedTasks: loadedState.loadedTasks,
+    write: false,
+  });
 
   const tasksMissingCommit = loadedState.loadedTasks
     .filter(({ task }) => !existingCommitInfo(task))

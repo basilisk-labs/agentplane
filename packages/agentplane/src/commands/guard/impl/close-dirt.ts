@@ -29,7 +29,11 @@ function otherTaskIdForReadmePath(opts: {
 }
 
 function isActiveTaskStatus(status: unknown): boolean {
-  return String(status ?? "TODO").trim().toUpperCase() !== "DONE";
+  return (
+    String(status ?? "TODO")
+      .trim()
+      .toUpperCase() !== "DONE"
+  );
 }
 
 export async function resolveIgnoredDirectCloseDirtyPaths(opts: {

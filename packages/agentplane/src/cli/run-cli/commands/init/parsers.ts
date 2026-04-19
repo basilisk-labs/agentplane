@@ -33,10 +33,7 @@ export function parseDirectCloseDirtyPolicyForInit<T>(
 ): "allow_other_task_readmes" | "strict" {
   const normalized = value.trim().toLowerCase();
   if (normalized === "strict") return "strict";
-  if (
-    normalized === "allow-other-task-readmes" ||
-    normalized === "allow_other_task_readmes"
-  ) {
+  if (normalized === "allow-other-task-readmes" || normalized === "allow_other_task_readmes") {
     return "allow_other_task_readmes";
   }
   throw usageError({

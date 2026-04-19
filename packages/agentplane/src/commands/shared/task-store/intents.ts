@@ -5,10 +5,7 @@ import {
 } from "@agentplaneorg/core";
 
 import type { TaskData, TaskEvent } from "../../../backends/task-backend.js";
-import {
-  assertExpectedTaskDoc,
-  assertExpectedTaskSection,
-} from "../../../task-doc/conflicts.js";
+import { assertExpectedTaskDoc, assertExpectedTaskSection } from "../../../task-doc/conflicts.js";
 import type {
   CachedTask,
   TaskComment,

@@ -4,14 +4,11 @@ import { fileURLToPath } from "node:url";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockExistsSync = vi.fn<(p: string) => boolean>();
-const mockRunProcessSync =
-  vi.fn<
-    (
-      opts: Record<string, unknown>,
-    ) => {
-      stdout: string;
-    }
-  >();
+const mockRunProcessSync = vi.fn<
+  (opts: Record<string, unknown>) => {
+    stdout: string;
+  }
+>();
 
 vi.mock("node:fs", () => ({ existsSync: mockExistsSync }));
 vi.mock("@agentplaneorg/core", async () => {

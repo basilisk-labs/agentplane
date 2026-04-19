@@ -257,9 +257,9 @@ describe("runCli", () => {
     expect(config.status_commit_policy).toBe("warn");
     expect(config.commit_automation).toBe("finish_only");
     expect(config.finish_auto_status_commit).toBe(false);
-    expect((config.close_commit as { direct_dirty_policy?: unknown } | undefined)?.direct_dirty_policy).toBe(
-      "allow_other_task_readmes",
-    );
+    expect(
+      (config.close_commit as { direct_dirty_policy?: unknown } | undefined)?.direct_dirty_policy,
+    ).toBe("allow_other_task_readmes");
     expect(
       normalizeSlashes(String((config.tasks_backend as Record<string, unknown>)?.config_path)),
     ).toBe(".agentplane/backends/local/backend.json");

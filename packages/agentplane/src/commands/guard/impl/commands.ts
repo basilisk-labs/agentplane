@@ -329,9 +329,9 @@ function asCommitFailure(err: unknown, phase: CommitFailurePhase): CliError | nu
         ? e.cmd
         : typeof e.escapedCommand === "string"
           ? e.escapedCommand
-          : /^Command failed(?: with exit code \d+)?: ([^\n]+)$/m.exec(shortMessage)?.[1] ??
+          : (/^Command failed(?: with exit code \d+)?: ([^\n]+)$/m.exec(shortMessage)?.[1] ??
             /^Command failed(?: with exit code \d+)?: ([^\n]+)$/m.exec(message)?.[1] ??
-            "";
+            "");
     const cmd = extractedCommand.trim();
     if (cmd.startsWith("git commit")) {
       const output = [readText(e.stderr), readText(e.stdout)]

@@ -1,6 +1,10 @@
 import path from "node:path";
 
-import { buildExecutionProfile, setPinnedBaseBranch, type ExecutionProfile } from "@agentplaneorg/core";
+import {
+  buildExecutionProfile,
+  setPinnedBaseBranch,
+  type ExecutionProfile,
+} from "@agentplaneorg/core";
 
 import type { WorkflowMode } from "../../../../agents/agents-template.js";
 import { cmdHooksInstall, ensureInitCommit } from "../../../../commands/workflow.js";
@@ -18,7 +22,12 @@ import { resolveInitBaseBranchForInit } from "./base-branch.js";
 import { collectInitConflicts, handleInitConflicts } from "./conflicts.js";
 import { ensureGitRoot } from "./git.js";
 import { maybeSyncIde } from "./ide-sync.js";
-import { listCachedRecipes, maybeAddCachedRecipes, renderCachedRecipesHint, validateCachedRecipesSelection } from "./recipes.js";
+import {
+  listCachedRecipes,
+  maybeAddCachedRecipes,
+  renderCachedRecipesHint,
+  validateCachedRecipesSelection,
+} from "./recipes.js";
 import { INIT_DEFAULTS, setupProfilePresets } from "./presets.js";
 import type { InitFlags, InitIde, InitParsed, SetupProfilePreset } from "./types.js";
 import { ensureAgentsFiles } from "./write-agents.js";
@@ -56,14 +65,12 @@ export async function cmdInit(opts: {
   let ide: InitIde = flags.ide ?? INIT_DEFAULTS.ide;
   let policyGateway: PolicyGatewayFlavor = flags.policyGateway ?? INIT_DEFAULTS.policyGateway;
   let workflow: WorkflowMode = flags.workflow ?? INIT_DEFAULTS.workflow;
-  let directCloseDirtyPolicy =
-    flags.directCloseDirtyPolicy ?? INIT_DEFAULTS.directCloseDirtyPolicy;
+  let directCloseDirtyPolicy = flags.directCloseDirtyPolicy ?? INIT_DEFAULTS.directCloseDirtyPolicy;
   let backend: NonNullable<InitFlags["backend"]> = flags.backend ?? INIT_DEFAULTS.backend;
   let hooks = flags.hooks ?? INIT_DEFAULTS.hooks;
   let recipes = flags.recipes ?? INIT_DEFAULTS.recipes;
   let requirePlanApproval = flags.requirePlanApproval ?? INIT_DEFAULTS.requirePlanApproval;
-  let requireNetworkApproval =
-    flags.requireNetworkApproval ?? INIT_DEFAULTS.requireNetworkApproval;
+  let requireNetworkApproval = flags.requireNetworkApproval ?? INIT_DEFAULTS.requireNetworkApproval;
   let requireVerifyApproval = flags.requireVerifyApproval ?? INIT_DEFAULTS.requireVerifyApproval;
   let executionProfile = flags.executionProfile ?? INIT_DEFAULTS.executionProfile;
   let strictUnsafeConfirm = flags.strictUnsafeConfirm ?? INIT_DEFAULTS.strictUnsafeConfirm;
@@ -168,8 +175,7 @@ export async function cmdInit(opts: {
         ["allow-other-task-readmes", "strict"],
         directCloseDirtyPolicy === "strict" ? "strict" : "allow-other-task-readmes",
       );
-      directCloseDirtyPolicy =
-        choice === "strict" ? "strict" : "allow_other_task_readmes";
+      directCloseDirtyPolicy = choice === "strict" ? "strict" : "allow_other_task_readmes";
     }
     if (shouldPromptBackend) {
       if (shouldPromptWorkflow || setupProfile === "full") {
@@ -276,8 +282,7 @@ export async function cmdInit(opts: {
     ide = flags.ide ?? INIT_DEFAULTS.ide;
     policyGateway = flags.policyGateway ?? INIT_DEFAULTS.policyGateway;
     workflow = flags.workflow ?? INIT_DEFAULTS.workflow;
-    directCloseDirtyPolicy =
-      flags.directCloseDirtyPolicy ?? INIT_DEFAULTS.directCloseDirtyPolicy;
+    directCloseDirtyPolicy = flags.directCloseDirtyPolicy ?? INIT_DEFAULTS.directCloseDirtyPolicy;
     backend = flags.backend ?? INIT_DEFAULTS.backend;
     hooks = flags.hooks ?? yesPreset.defaultHooks;
     recipes = flags.recipes ?? yesPreset.defaultRecipes;

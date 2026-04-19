@@ -1,9 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import {
-  isTaskArtifactRefreshCommitSubject,
-} from "@agentplaneorg/core";
+import { isTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core";
 
 import { fileExists } from "../../../cli/fs-utils.js";
 import { execFileAsync, gitEnv } from "../../shared/git.js";

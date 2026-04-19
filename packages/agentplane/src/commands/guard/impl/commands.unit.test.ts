@@ -1023,11 +1023,14 @@ describe("guard/impl/commands", () => {
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     ctx.git.commit.mockRejectedValue(
-      Object.assign(new Error("Command failed with exit code 1: git commit -m ✅ ABC123 task: message"), {
-        shortMessage: "Command failed with exit code 1: git commit -m ✅ ABC123 task: message",
-        code: 1,
-        stderr: "Code style issues found. Run Prettier with --write.",
-      }),
+      Object.assign(
+        new Error("Command failed with exit code 1: git commit -m ✅ ABC123 task: message"),
+        {
+          shortMessage: "Command failed with exit code 1: git commit -m ✅ ABC123 task: message",
+          code: 1,
+          stderr: "Code style issues found. Run Prettier with --write.",
+        },
+      ),
     );
 
     const err = await cmdCommit({

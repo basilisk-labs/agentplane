@@ -21,7 +21,15 @@ export const initSpec: CommandSpec<InitParsed> = {
       kind: "string",
       name: "setup-profile",
       valueHint: "<light|normal|full-harness>",
-      choices: ["light", "normal", "full-harness", "developer", "vibecoder", "manager", "enterprise"],
+      choices: [
+        "light",
+        "normal",
+        "full-harness",
+        "developer",
+        "vibecoder",
+        "manager",
+        "enterprise",
+      ],
       description: "Setup profile preset. Preferred values: light, normal, full-harness.",
     },
     {
@@ -135,7 +143,10 @@ export const initSpec: CommandSpec<InitParsed> = {
   ],
   examples: [
     { cmd: "agentplane init", why: "Interactive setup (prompts for missing values)." },
-    { cmd: "agentplane init --setup-profile light --yes", why: "Non-interactive setup with flexible defaults." },
+    {
+      cmd: "agentplane init --setup-profile light --yes",
+      why: "Non-interactive setup with flexible defaults.",
+    },
     {
       cmd: "agentplane init --workflow direct --direct-close-dirty-policy allow-other-task-readmes --backend local --hooks true --require-network-approval true --yes",
       why: "Non-interactive setup with the tolerant direct close policy plus an explicit network-approval override.",
@@ -144,7 +155,10 @@ export const initSpec: CommandSpec<InitParsed> = {
       cmd: "agentplane init --workflow direct --direct-close-dirty-policy strict --yes",
       why: "Initialize direct mode with strict close-tail blocking on any unrelated tracked dirt.",
     },
-    { cmd: "agentplane init --force --yes", why: "Re-initialize, overwriting conflicts (non-interactive)." },
+    {
+      cmd: "agentplane init --force --yes",
+      why: "Re-initialize, overwriting conflicts (non-interactive).",
+    },
     {
       cmd: "agentplane init --yes --gitignore-agents",
       why: "Initialize without committing and keep agent prompts/templates local (gitignored).",
@@ -181,7 +195,9 @@ export const initSpec: CommandSpec<InitParsed> = {
             ),
       backend: raw.opts.backend as InitFlags["backend"],
       hooks:
-        hooksRaw === undefined ? undefined : parseBooleanValueForInit(initSpec, "--hooks", hooksRaw),
+        hooksRaw === undefined
+          ? undefined
+          : parseBooleanValueForInit(initSpec, "--hooks", hooksRaw),
       requirePlanApproval:
         requirePlanRaw === undefined
           ? undefined

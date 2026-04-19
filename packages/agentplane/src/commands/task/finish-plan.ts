@@ -4,7 +4,11 @@ import { backendUsesLocalTaskStore, type CommandContext } from "../shared/task-b
 import { getTaskStore } from "../shared/task-store.js";
 
 import { requireStructuredComment } from "./shared.js";
-import type { FinishExecutionPlan, FinishOptions, FinishStructuredFinding } from "./finish-types.js";
+import type {
+  FinishExecutionPlan,
+  FinishOptions,
+  FinishStructuredFinding,
+} from "./finish-types.js";
 
 export function resolveFinishExecutionPlan(opts: {
   ctx: CommandContext;
