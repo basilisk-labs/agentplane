@@ -1,10 +1,11 @@
 ---
 id: "202604191638-CQKMQN"
 title: "Repoint medium CLI test imports to canonical testkit surfaces"
-status: "DOING"
+result_summary: "The medium-risk CLI batch no longer depends on run-cli.test-helpers.ts; the remaining shim consumers are now concentrated in the heavier CLI suites reserved for the next atom."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-19T16:55:10.713Z"
   updated_by: "CODER"
   note: "Medium-risk CLI shim migration batch passed."
-commit: null
+commit:
+  hash: "0c08922c2548d8596f7eb575154307a341e6c942"
+  message: "🧪 tests: migrate medium cli run-cli shim batch"
 comments:
   -
     author: "CODER"
     body: "Start: migrate the medium-risk CLI batch off packages/agentplane/src/cli/run-cli.test-helpers.ts by repointing selected help, prompts, recipes, scenario, smoke, and task-close tests to the testing compatibility entrypoint, while deferring the heaviest CLI suites to the next atom."
+  -
+    author: "CODER"
+    body: "Verified: moved the selected medium-risk CLI batch off packages/agentplane/src/cli/run-cli.test-helpers.ts, kept helper behavior unchanged via the testing compatibility entrypoint, confirmed the migrated files no longer import the shim, and reran the targeted CLI suites."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Medium-risk CLI shim migration batch passed."
+  -
+    type: "status"
+    at: "2026-04-19T16:55:32.257Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: moved the selected medium-risk CLI batch off packages/agentplane/src/cli/run-cli.test-helpers.ts, kept helper behavior unchanged via the testing compatibility entrypoint, confirmed the migrated files no longer import the shim, and reran the targeted CLI suites."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:55:10.747Z"
+doc_updated_at: "2026-04-19T16:55:32.259Z"
 doc_updated_by: "CODER"
 description: "Epic E′. Move the first medium-sized batch of CLI tests from run-cli.test-helpers.ts to canonical testkit entrypoints while preserving existing coverage."
 sections:
