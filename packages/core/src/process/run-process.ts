@@ -12,8 +12,6 @@ type ProcessStdioOption = "pipe" | "ignore" | "inherit" | "ipc" | Stream | numbe
 type ExecFileCompatOptions = ExecFileOptions | ExecFileOptionsWithBufferEncoding;
 type ExecFileStringOptions = ExecFileOptions & { encoding?: BufferEncoding };
 type ExecFileBufferOptions = ExecFileOptionsWithBufferEncoding & { encoding: "buffer" | null };
-type RunProcessStringOptions = RunProcessOptions & { encoding?: BufferEncoding };
-type RunProcessBufferOptions = RunProcessOptions & { encoding: null };
 
 export type RunProcessOptions = {
   command: string;
@@ -57,6 +55,42 @@ type ExecFileAsyncResult<TOutput extends string | Buffer> = {
   stderr: TOutput;
 };
 
+type RunProcessFn = {
+  (opts: RunProcessOptions & { encoding?: BufferEncoding | undefined }): Promise<RunProcessResult<string>>;
+  (opts: RunProcessOptions & { encoding: null }): Promise<RunProcessResult<Buffer>>;
+  (opts: RunProcessOptions): Promise<RunProcessResult<string>>;
+};
+
+type RunProcessSyncFn = {
+  (opts: RunProcessOptions & { encoding?: BufferEncoding | undefined }): RunProcessResult<string>;
+  (opts: RunProcessOptions & { encoding: null }): RunProcessResult<Buffer>;
+  (opts: RunProcessOptions): RunProcessResult<string>;
+};
+
+type StartProcessFn = {
+  (opts: RunProcessOptions & { encoding?: BufferEncoding | undefined }): ExecaChildProcess<string>;
+  (opts: RunProcessOptions & { encoding: null }): ExecaChildProcess<Buffer>;
+  (opts: RunProcessOptions): ExecaChildProcess<string>;
+};
+
+type ExecFileAsyncFn = {
+  (
+    file: string,
+    args?: readonly string[] | ExecFileStringOptions | null,
+    options?: ExecFileStringOptions | null,
+  ): Promise<ExecFileAsyncResult<string>>;
+  (
+    file: string,
+    args?: readonly string[] | ExecFileBufferOptions | null,
+    options?: ExecFileBufferOptions | null,
+  ): Promise<ExecFileAsyncResult<Buffer>>;
+  (
+    file: string,
+    args?: readonly string[] | ExecFileCompatOptions | null,
+    options?: ExecFileCompatOptions | null,
+  ): Promise<ExecFileAsyncResult<string | Buffer>>;
+};
+
 function normalizeProcessError(err: unknown): unknown {
   if (!err || typeof err !== "object") return err;
   const error = err as { code?: number | string; exitCode?: number };
@@ -94,23 +128,23 @@ function buildProcessOptions(opts: RunProcessOptions) {
   };
 }
 
-export async function runProcess(opts: RunProcessStringOptions): Promise<RunProcessResult<string>>;
-export async function runProcess(opts: RunProcessBufferOptions): Promise<RunProcessResult<Buffer>>;
-export async function runProcess(opts: RunProcessOptions): Promise<RunProcessResult> {
+const runProcessImpl = async (
+  opts: RunProcessOptions,
+): Promise<RunProcessResult<string | Buffer>> => {
   const result = await execa(opts.command, opts.args ?? [], buildProcessOptions(opts) as never);
-  return result as RunProcessResult;
-}
+  return result as RunProcessResult<string | Buffer>;
+};
+export const runProcess = runProcessImpl as RunProcessFn;
 
-export function runProcessSync(opts: RunProcessStringOptions): RunProcessResult<string>;
-export function runProcessSync(opts: RunProcessBufferOptions): RunProcessResult<Buffer>;
-export function runProcessSync(opts: RunProcessOptions): RunProcessResult {
+const runProcessSyncImpl = (opts: RunProcessOptions): RunProcessResult<string | Buffer> => {
   const result = execaSync(opts.command, opts.args ?? [], buildProcessOptions(opts) as never);
-  return result as RunProcessResult;
-}
+  return result as RunProcessResult<string | Buffer>;
+};
+export const runProcessSync = runProcessSyncImpl as RunProcessSyncFn;
 
-export function startProcess(opts: RunProcessStringOptions): ExecaChildProcess<string>;
-export function startProcess(opts: RunProcessBufferOptions): ExecaChildProcess<Buffer>;
-export function startProcess(opts: RunProcessOptions): ExecaChildProcess<string | Buffer> {
+const startProcessImpl = (
+  opts: RunProcessOptions,
+): ExecaChildProcess<string | Buffer> => {
   const child = execa(
     opts.command,
     opts.args ?? [],
@@ -120,9 +154,10 @@ export function startProcess(opts: RunProcessOptions): ExecaChildProcess<string 
       buffer: opts.buffer ?? false,
     }) as never,
   ) as ExecaChildProcess<string | Buffer>;
-  child.catch(() => undefined);
+  void child.catch(() => null);
   return child;
-}
+};
+export const startProcess = startProcessImpl as StartProcessFn;
 
 function resolveExecFileArgs(
   argsOrOptions?: readonly string[] | ExecFileCompatOptions | null,
@@ -144,21 +179,11 @@ function resolveExecEncoding(
   return encoding ?? "utf8";
 }
 
-export async function execFileAsync(
-  file: string,
-  args?: readonly string[] | ExecFileStringOptions | null,
-  options?: ExecFileStringOptions | null,
-): Promise<ExecFileAsyncResult<string>>;
-export async function execFileAsync(
-  file: string,
-  args?: readonly string[] | ExecFileBufferOptions | null,
-  options?: ExecFileBufferOptions | null,
-): Promise<ExecFileAsyncResult<Buffer>>;
-export async function execFileAsync(
+const execFileAsyncImpl = async (
   file: string,
   args?: readonly string[] | ExecFileCompatOptions | null,
   options?: ExecFileCompatOptions | null,
-): Promise<ExecFileAsyncResult<string | Buffer>> {
+): Promise<ExecFileAsyncResult<string | Buffer>> => {
   const resolved = resolveExecFileArgs(args, options);
   const encoding = resolveExecEncoding(
     (resolved.options as ExecFileOptionsWithBufferEncoding | undefined)?.encoding,
@@ -192,4 +217,5 @@ export async function execFileAsync(
   } catch (err) {
     throw normalizeProcessError(err);
   }
-}
+};
+export const execFileAsync = execFileAsyncImpl as ExecFileAsyncFn;

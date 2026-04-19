@@ -80,18 +80,6 @@ function renderReportLine(entry: CliReportEntry): string {
   return `${entry.label}: ${String(entry.value)}`;
 }
 
-function resolveWriter(
-  stdout: CliOutputWriter,
-  stderr: CliOutputWriter,
-  stream: CliEmitterStream,
-): CliOutputWriter {
-  return stream === "stderr" ? stderr : stdout;
-}
-
-function writeChunk(writer: CliOutputWriter, text: string): void {
-  writer.write(text);
-}
-
 export function successMessage(action: string, target?: string, details?: string): string {
   const base = target ? `${action} ${target}` : action;
   const suffix = details ? ` (${details})` : "";

@@ -6,7 +6,7 @@ describe("run-process", () => {
   it("returns utf8 stdout without stripping the trailing newline", async () => {
     const result = await runProcess({
       command: "node",
-      args: ["-e", "process.stdout.write('hello\\n')"],
+      args: ["-e", String.raw`process.stdout.write('hello\n')`],
       encoding: "utf8",
     });
     expect(result.exitCode).toBe(0);

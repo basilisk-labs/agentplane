@@ -1,5 +1,5 @@
 import type { CommandContext } from "../shared/task-backend.js";
-import { getTaskStore } from "../shared/task-store.js";
+import type { TaskStore } from "../shared/task-store.js";
 
 export type FinishOptions = {
   ctx?: CommandContext;
@@ -58,7 +58,7 @@ export type FinishStructuredFinding = {
 
 export type FinishExecutionPlan = {
   useStore: boolean;
-  store: ReturnType<typeof getTaskStore> | null;
+  store: TaskStore | null;
   statusCommitRequested: boolean;
   primaryTaskId: string;
   metaTaskId: string;

@@ -105,13 +105,13 @@ export async function cmdInit(opts: {
       ),
     );
     process.stdout.write(`${presetLines.join("\n")}\n\n`);
-    setupProfilePreset = flags.setupProfile
-      ? flags.setupProfile
-      : ((await askChoice(
-          "Setup profile",
-          ["light", "normal", "full-harness"],
-          "normal",
-        )) as SetupProfilePreset);
+    setupProfilePreset =
+      flags.setupProfile ??
+      ((await askChoice(
+        "Setup profile",
+        ["light", "normal", "full-harness"],
+        "normal",
+      )) as SetupProfilePreset);
 
     const selectedPreset = setupProfilePresets[setupProfilePreset];
     setupProfile = selectedPreset.mode;

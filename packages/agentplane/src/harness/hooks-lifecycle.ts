@@ -48,7 +48,7 @@ export async function runLifecycleHook(opts: {
       () => {
         if (finished) return;
         finished = true;
-        child.kill("SIGKILL");
+        void child.kill("SIGKILL");
         resolve({
           ok: !opts.policy.blocking,
           hook: opts.hook,
@@ -67,7 +67,7 @@ export async function runLifecycleHook(opts: {
       output += String(chunk);
     });
 
-    child.on("close", (code) => {
+    void child.on("close", (code) => {
       if (finished) return;
       finished = true;
       clearTimeout(timer);

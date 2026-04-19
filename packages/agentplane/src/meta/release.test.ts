@@ -2,6 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type * as CoreModule from "@agentplaneorg/core";
 
 const mockExistsSync = vi.fn<(p: string) => boolean>();
 const mockRunProcessSync = vi.fn<
@@ -12,7 +13,7 @@ const mockRunProcessSync = vi.fn<
 
 vi.mock("node:fs", () => ({ existsSync: mockExistsSync }));
 vi.mock("@agentplaneorg/core", async () => {
-  const actual = await vi.importActual<typeof import("@agentplaneorg/core")>("@agentplaneorg/core");
+  const actual = await vi.importActual<typeof CoreModule>("@agentplaneorg/core");
   return {
     ...actual,
     runProcessSync: mockRunProcessSync,

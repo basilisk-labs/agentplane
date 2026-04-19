@@ -475,8 +475,8 @@ export async function runSupervisedProcess(opts: {
       stderr_buffer = flushTraceBuffer(`${stderr_buffer}${persistedText}`, "stderr");
       queueAppend("stderr", persistedText);
     });
-    child.on("error", finishWithError);
-    child.on("close", async (code, signal) => {
+    void child.on("error", finishWithError);
+    void child.on("close", async (code, signal) => {
       if (settled) return;
       clearTimers();
       const ended_at = new Date().toISOString();

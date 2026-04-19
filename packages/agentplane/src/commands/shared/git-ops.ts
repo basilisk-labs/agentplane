@@ -1,18 +1,14 @@
-import { setPinnedBaseBranch } from "@agentplaneorg/core";
 import {
   execFileAsync,
   gitBranchExists,
-  gitBranchUpstream,
   gitCurrentBranch,
-  gitEnv,
-  gitIsAncestor,
   gitListBranches,
-  gitRevParse,
+  gitEnv,
+  setPinnedBaseBranch,
 } from "@agentplaneorg/core";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { promptChoice, promptInput } from "../../cli/prompts.js";
 import { CliError } from "../../shared/errors.js";
-
 export {
   gitBranchExists,
   gitBranchUpstream,
@@ -20,7 +16,7 @@ export {
   gitIsAncestor,
   gitListBranches,
   gitRevParse,
-};
+} from "@agentplaneorg/core";
 
 export async function gitStagedPaths(cwd: string): Promise<string[]> {
   const { stdout } = await execFileAsync("git", ["diff", "--cached", "--name-only"], {
