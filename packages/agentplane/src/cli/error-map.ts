@@ -5,7 +5,11 @@ import { BackendError } from "../backends/task-backend.js";
 export function mapCoreError(err: unknown, context: Record<string, unknown>): CliError {
   const message = err instanceof Error ? err.message : String(err);
 
-  if (message.startsWith("Not a git repository")) {
+  if (
+    message.startsWith("Not a git repository") ||
+    message.startsWith("Detached HEAD") ||
+    message.includes("failed to resolve current branch")
+  ) {
     return new CliError({
       exitCode: exitCodeForError("E_GIT"),
       code: "E_GIT",

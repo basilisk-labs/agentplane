@@ -11,6 +11,14 @@ describe("core error mapping", () => {
     expect(mapped.code).toBe("E_GIT");
   });
 
+  it("maps detached HEAD branch-resolution errors to E_GIT", () => {
+    const mapped = mapCoreError(new Error("Detached HEAD: failed to resolve current branch"), {
+      cmd: "x",
+    });
+    expect(mapped).toBeInstanceOf(CliError);
+    expect(mapped.code).toBe("E_GIT");
+  });
+
   it("maps syntax errors to E_VALIDATION", () => {
     const mapped = mapCoreError(new SyntaxError("Unexpected token"), { cmd: "x" });
     expect(mapped).toBeInstanceOf(CliError);
