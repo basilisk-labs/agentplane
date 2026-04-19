@@ -58,7 +58,7 @@ console.log(config.data.workflow_mode, task?.id, snapshot.meta.version);
 | Area              | Highlights                                                     |
 | ----------------- | -------------------------------------------------------------- |
 | Project discovery | `resolveProject`, `findGitRoot`                                |
-| Config            | `loadConfig`, `saveConfig`, `setByDottedKey`, `validateConfig` |
+| Config            | `loadConfig`, `saveConfig`, `setByDottedKey`, `validateConfig`, `AgentplaneConfigSchema` |
 | Task README       | `parseTaskReadme`, `renderTaskReadme`                          |
 | Task store        | `createTask`, `listTasks`, `readTask`, `setTaskDocSection`     |
 | Exports           | `buildTasksExportSnapshot`, `writeTasksExport`, checksums      |

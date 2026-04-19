@@ -7,7 +7,7 @@ import { atomicWriteFile } from "../fs/atomic-write.js";
 import {
   AgentplaneConfigSchema,
   type AgentplaneConfig as AgentplaneConfigShape,
-} from "./config-schema.js";
+} from "./config-zod.js";
 
 export type AgentplaneConfig = AgentplaneConfigShape;
 

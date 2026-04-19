@@ -4,8 +4,14 @@ import path from "node:path";
 import { mkdtemp, readFile, writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
-import { defaultConfig, loadConfig, saveConfig, setByDottedKey, validateConfig } from "../index.js";
-import { renderAgentplaneConfigSchemaJson } from "./config-schema.js";
+import {
+  defaultConfig,
+  loadConfig,
+  renderAgentplaneConfigSchemaJson,
+  saveConfig,
+  setByDottedKey,
+  validateConfig,
+} from "../index.js";
 
 const makeConfigRecord = (): Record<string, unknown> =>
   structuredClone(defaultConfig()) as Record<string, unknown>;

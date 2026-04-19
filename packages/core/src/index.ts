@@ -28,6 +28,12 @@ export {
 } from "./config/config.js";
 
 export {
+  AGENTPLANE_CONFIG_SCHEMA,
+  AgentplaneConfigSchema,
+  renderAgentplaneConfigSchemaJson,
+} from "./config/config-zod.js";
+
+export {
   applyExecutionToApprovals,
   buildExecutionProfile,
   EXECUTION_PROFILE_PRESETS,
