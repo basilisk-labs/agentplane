@@ -141,4 +141,15 @@ describe("cli/output", () => {
     );
     expect(stderr.text()).toBe("⚠️ careful\n");
   });
+
+  it("supports json logger mode for emitter events", () => {
+    const stdout = createMemoryWriter();
+    const emitter = createCliEmitter({ stdout, stderr: createMemoryWriter(), loggerMode: "json" });
+
+    emitter.info("hello");
+    const parsed = JSON.parse(stdout.text().trim()) as Record<string, unknown>;
+    expect(parsed.kind).toBe("event");
+    expect(parsed.level).toBe("info");
+    expect(parsed.message).toBe("ℹ️ hello");
+  });
 });

@@ -1,10 +1,10 @@
 ---
 id: "202604191640-TR153B"
 title: "Introduce structured core logger for CLI output"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -14,19 +14,30 @@ tags:
   - "logging"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-19T19:52:16.512Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: defining a minimal core logger that can preserve existing human-readable CLI output while enabling an opt-in structured json mode through cli/output.ts."
+events:
+  -
+    type: "status"
+    at: "2026-04-19T19:52:16.592Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: defining a minimal core logger that can preserve existing human-readable CLI output while enabling an opt-in structured json mode through cli/output.ts."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:40:27.309Z"
+doc_updated_at: "2026-04-19T19:52:16.623Z"
 doc_updated_by: "CODER"
 description: "Epic B′ and H′. Add a minimal logger in core and route CLI output through it with optional structured mode."
 sections:

@@ -184,3 +184,13 @@ export {
 } from "./commit/commit-policy.js";
 
 export { getStagedFiles, getUnstagedFiles, getUnstagedTrackedFiles } from "./git/git-utils.js";
+
+export {
+  createLogger,
+  resolveLoggerMode,
+  type Logger,
+  type LoggerEntry,
+  type LoggerMode,
+  type LoggerStream,
+  type LoggerWriter,
+} from "./logger.js";
