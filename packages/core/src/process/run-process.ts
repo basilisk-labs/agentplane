@@ -56,7 +56,9 @@ type ExecFileAsyncResult<TOutput extends string | Buffer> = {
 };
 
 type RunProcessFn = {
-  (opts: RunProcessOptions & { encoding?: BufferEncoding | undefined }): Promise<RunProcessResult<string>>;
+  (
+    opts: RunProcessOptions & { encoding?: BufferEncoding | undefined },
+  ): Promise<RunProcessResult<string>>;
   (opts: RunProcessOptions & { encoding: null }): Promise<RunProcessResult<Buffer>>;
   (opts: RunProcessOptions): Promise<RunProcessResult<string>>;
 };
@@ -142,9 +144,7 @@ const runProcessSyncImpl = (opts: RunProcessOptions): RunProcessResult<string | 
 };
 export const runProcessSync = runProcessSyncImpl as RunProcessSyncFn;
 
-const startProcessImpl = (
-  opts: RunProcessOptions,
-): ExecaChildProcess<string | Buffer> => {
+const startProcessImpl = (opts: RunProcessOptions): ExecaChildProcess<string | Buffer> => {
   const child = execa(
     opts.command,
     opts.args ?? [],
