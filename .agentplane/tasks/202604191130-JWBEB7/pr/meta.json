@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604191130-JWBEB7/patch-release-v0-3-15",
+  "created_at": "2026-04-19T11:46:32.144Z",
+  "head_sha": "922f0abfad4b0e91f2c51f9d663ef424c932cb3a",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604191130-JWBEB7",
+  "updated_at": "2026-04-19T11:46:32.144Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

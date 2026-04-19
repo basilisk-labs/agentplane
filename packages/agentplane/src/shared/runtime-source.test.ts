@@ -110,7 +110,12 @@ describe("runtime-source", () => {
     const report = resolveRuntimeSourceInfo({
       cwd: fixture.nestedCwd,
       activeBinaryPath: fixture.agentplaneBin,
-      env: { ...process.env },
+      env: {
+        ...process.env,
+        AGENTPLANE_REPO_LOCAL_HANDOFF: "",
+        AGENTPLANE_RUNTIME_HANDOFF_FROM: "",
+        AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK: "",
+      },
       agentplanePackageRoot: fixture.agentplaneRoot,
     });
 
