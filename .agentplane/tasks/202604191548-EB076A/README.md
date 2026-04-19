@@ -1,10 +1,11 @@
 ---
 id: "202604191548-EB076A"
 title: "Inline task and release helpers into @agentplane/testkit"
-status: "DOING"
+result_summary: "Inlined task and release helper implementations into @agentplane/testkit and removed the old agentplane-local helper files."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-19T15:56:44.122Z"
   updated_by: "CODER"
   note: "Command: bun run --filter=@agentplane/testkit typecheck; Result: pass; Evidence: @agentplane/testkit typecheck exited with code 0 after inlining task and release helper implementations. Scope: canonical helper package. Command: bunx vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/check-release-version-script.test.ts packages/agentplane/src/commands/release/local-release-e2e-script.test.ts packages/agentplane/src/commands/release/plan.test.ts packages/agentplane/src/commands/release/write-release-ready-manifest-script.test.ts; Result: pass; Evidence: 16 files and 99 tests passed after removing agentplane-local task/release helper files. Scope: task and release helper migration."
-commit: null
+commit:
+  hash: "cef09d5886c48a4c620bf8d785bdd53966b15fe2"
+  message: "🧪 testkit: inline task and release helpers"
 comments:
   -
     author: "CODER"
     body: "Start: inline task and release helper implementations into @agentplane/testkit and remove the superseded local copies from agentplane/src."
+  -
+    author: "CODER"
+    body: "Verified: task and release helper implementations now live in @agentplane/testkit, and the superseded agentplane-local helper files were removed without breaking their consumers."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run --filter=@agentplane/testkit typecheck; Result: pass; Evidence: @agentplane/testkit typecheck exited with code 0 after inlining task and release helper implementations. Scope: canonical helper package. Command: bunx vitest run packages/agentplane/src/commands/shared/task-mutation.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/check-release-version-script.test.ts packages/agentplane/src/commands/release/local-release-e2e-script.test.ts packages/agentplane/src/commands/release/plan.test.ts packages/agentplane/src/commands/release/write-release-ready-manifest-script.test.ts; Result: pass; Evidence: 16 files and 99 tests passed after removing agentplane-local task/release helper files. Scope: task and release helper migration."
+  -
+    type: "status"
+    at: "2026-04-19T15:57:26.726Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: task and release helper implementations now live in @agentplane/testkit, and the superseded agentplane-local helper files were removed without breaking their consumers."
 doc_version: 3
-doc_updated_at: "2026-04-19T15:56:44.135Z"
+doc_updated_at: "2026-04-19T15:57:26.728Z"
 doc_updated_by: "CODER"
 description: "Move the task and release helper implementations out of agentplane/src into packages/testkit/src, then remove the superseded agentplane-local helper files once no direct consumers remain."
 sections:
