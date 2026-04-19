@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604191200-NT02DV/runtime-env-isolation",
+  "created_at": "2026-04-19T12:36:01.888Z",
+  "head_sha": "7dd55032af7324f5a8cd47eb6a99cd71959b6f6f",
+  "last_verified_at": "2026-04-19T12:36:01.834Z",
+  "last_verified_sha": "206794d6e94f44af07e890f0e89987db04a03458",
+  "schema_version": 1,
+  "task_id": "202604191200-NT02DV",
+  "updated_at": "2026-04-19T12:36:52.619Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,0 +1,5 @@
+ .../agentplane/src/cli/repo-local-handoff.test.ts  | 13 ++----
+ .../src/commands/runtime.command.test.ts           | 11 ++---
+ .../agentplane/src/shared/runtime-source.test.ts   | 47 +++++++++++++++++-----
+ packages/agentplane/src/testing/runtime-env.ts     | 25 ++++++++++++
+ 4 files changed, 68 insertions(+), 28 deletions(-)
