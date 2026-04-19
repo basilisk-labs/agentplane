@@ -36,7 +36,7 @@ async function readCachedPaths(gitRoot: string): Promise<string[]> {
 }
 
 function taskPrArtifactRefreshMessage(taskId: string): string {
-  return `📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`;
+  return `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`;
 }
 
 export async function maybeAutoCommitTaskPrArtifacts(opts: {

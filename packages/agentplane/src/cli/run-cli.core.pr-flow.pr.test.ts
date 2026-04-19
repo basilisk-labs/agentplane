@@ -410,7 +410,7 @@ describe("runCli", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
       cwd: root,
       env: cleanGitEnv(),
     });
-    const packetCommitSubject = `📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`;
+    const packetCommitSubject = `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`;
     const { fakeBin, logPath } = await installFakeGhPrApiRequiringPublishedPacketHead({
       scenarioName: "open-first-pass-final-head",
       branch,
@@ -1318,7 +1318,7 @@ describe("runCli", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
       .split("\n")
       .map((line) => line.trim())
       .filter(Boolean);
-    expect(subjects[0]).toBe(`📝 ${suffix} task: refresh PR artifacts`);
+    expect(subjects[0]).toBe(`🧩 ${suffix} workflow: refresh task artifacts after commit`);
     expect(subjects[1]).toBe(
       `🧩 ${suffix} workflow: refresh branch_pr artifacts after guard commit`,
     );
@@ -1674,7 +1674,9 @@ describe("runCli", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
     const { stdout: subjectOut } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
       cwd: root,
     });
-    expect(subjectOut.trim()).toBe(`📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`);
+    expect(subjectOut.trim()).toBe(
+      `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`,
+    );
 
     const { stdout: readmeTrackedOut } = await execFileAsync(
       "git",
@@ -1767,7 +1769,9 @@ describe("runCli", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
       .split("\n")
       .map((line) => line.trim())
       .filter(Boolean);
-    expect(subjects[0]).toBe(`📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`);
+    expect(subjects[0]).toBe(
+      `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`,
+    );
     expect(subjects[1]).toBe("change");
 
     const meta = JSON.parse(

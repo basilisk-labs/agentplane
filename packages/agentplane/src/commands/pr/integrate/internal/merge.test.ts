@@ -79,7 +79,9 @@ describe("pr/integrate/internal/merge", () => {
     mocks.execFileAsync
       .mockResolvedValueOnce({}) // merge --squash
       .mockResolvedValueOnce({ stdout: "src/app.ts\n" }) // diff --cached
-      .mockResolvedValueOnce({ stdout: "📝 X32XPT task: refresh PR artifacts\n" }) // log -1 subject
+      .mockResolvedValueOnce({
+        stdout: "🧩 X32XPT workflow: refresh task artifacts after commit\n",
+      }) // log -1 subject
       .mockResolvedValueOnce({
         stdout:
           ".agentplane/tasks/202602111653-X32XPT/pr/meta.json\n.agentplane/tasks/202602111653-X32XPT/pr/review.md\n",

@@ -25,7 +25,7 @@ export function isUnknownRevisionError(err: unknown): boolean {
 }
 
 export function taskPrArtifactRefreshMessage(taskId: string): string {
-  return `📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`;
+  return `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`;
 }
 
 export async function resolveBranchHeadSha(opts: {

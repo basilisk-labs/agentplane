@@ -130,7 +130,7 @@ function detectCommitFailureSignal(output: string): CommitFailureSignal {
 }
 
 function taskArtifactRefreshCommitMessage(taskId: string): string {
-  return `📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`;
+  return `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`;
 }
 
 async function commitRefreshedTaskArtifacts(opts: {

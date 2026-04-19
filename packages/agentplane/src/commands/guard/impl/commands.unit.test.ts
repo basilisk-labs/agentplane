@@ -219,7 +219,7 @@ describe("guard/impl/commands", () => {
     ]);
     ctx.git.headHashSubject.mockResolvedValue({
       hash: "feedfacecafebeef",
-      subject: "📝 7SRWEX task: refresh PR artifacts",
+      subject: "🧩 7SRWEX workflow: refresh task artifacts after commit",
     });
     mocks.buildGitCommitEnv
       .mockReturnValueOnce({ AGENTPLANE_TASK_ID: "202604130818-7SRWEX" })
@@ -259,7 +259,7 @@ describe("guard/impl/commands", () => {
       env: { AGENTPLANE_TASK_ID: "202604130818-7SRWEX" },
     });
     expect(ctx.git.commit).toHaveBeenNthCalledWith(2, {
-      message: "📝 7SRWEX task: refresh PR artifacts",
+      message: "🧩 7SRWEX workflow: refresh task artifacts after commit",
       env: {
         AGENTPLANE_TASK_ID: "202604130818-7SRWEX",
         AGENTPLANE_ALLOW_TASKS: "1",

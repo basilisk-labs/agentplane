@@ -1126,7 +1126,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     await commitPathsIfChanged(
       root,
       [`.agentplane/tasks/${taskId}`],
-      `📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`,
+      `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`,
     );
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
@@ -1152,7 +1152,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     const mergeSubject = subjects[1] ?? "";
     expect(mergeSubject.startsWith(`🧩 ${suffix} integrate:`)).toBe(true);
     expect(mergeSubject).toContain("Integrate subject ignores artifact tip");
-    expect(mergeSubject).not.toContain("refresh PR artifacts");
+    expect(mergeSubject).not.toContain("refresh task artifacts after commit");
   }, 180_000);
 
   it(
