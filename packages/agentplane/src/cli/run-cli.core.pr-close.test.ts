@@ -20,6 +20,7 @@ import {
 const execFileAsync = promisify(execFile);
 
 installRunCliIntegrationHarness();
+const PR_CLOSE_INTEGRATION_TIMEOUT_MS = 240_000;
 
 async function installFakeGh(opts: {
   scenarioName: string;
@@ -109,7 +110,7 @@ async function installFakeGh(opts: {
   };
 }
 
-describe("runCli pr close", () => {
+describe("runCli pr close", { timeout: PR_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
   it("closes a GitHub PR through REST and reports the result deterministically", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);

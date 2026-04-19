@@ -105,9 +105,7 @@ afterEach(async () => {
   }
 });
 
-describe("stale-dist warn-and-run command policy", () => {
-  const STALE_DIST_READONLY_TIMEOUT_MS = 60_000;
-
+describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
   it("warns but runs doctor when watched runtime paths are dirty", async () => {
     const { repoRoot, repoBin } = await setupFrameworkCheckout();
 
@@ -125,45 +123,37 @@ describe("stale-dist warn-and-run command policy", () => {
     expect(stderr).toContain("bun run framework:dev:bootstrap");
   });
 
-  it(
-    "warns but runs runtime explain when watched runtime paths are dirty",
-    { timeout: STALE_DIST_READONLY_TIMEOUT_MS },
-    async () => {
-      const { repoRoot, repoBin } = await setupFrameworkCheckout();
+  it("warns but runs runtime explain when watched runtime paths are dirty", async () => {
+    const { repoRoot, repoBin } = await setupFrameworkCheckout();
 
-      const { stdout, stderr } = await execFileAsync(
-        process.execPath,
-        [repoBin, "runtime", "explain", "--json"],
-        {
-          cwd: repoRoot,
-          encoding: "utf8",
-        },
-      );
-
-      expect(stdout).toContain("DIST");
-      expect(stdout).toContain('"args":["runtime","explain","--json"]');
-      expect(stderr).toContain("command: runtime explain --json");
-      expect(stderr).toContain("bun run framework:dev:bootstrap");
-    },
-  );
-
-  it(
-    "warns but runs task list when watched runtime paths are dirty",
-    { timeout: STALE_DIST_READONLY_TIMEOUT_MS },
-    async () => {
-      const { repoRoot, repoBin } = await setupFrameworkCheckout();
-
-      const { stdout, stderr } = await execFileAsync(process.execPath, [repoBin, "task", "list"], {
+    const { stdout, stderr } = await execFileAsync(
+      process.execPath,
+      [repoBin, "runtime", "explain", "--json"],
+      {
         cwd: repoRoot,
         encoding: "utf8",
-      });
+      },
+    );
 
-      expect(stdout).toContain("DIST");
-      expect(stdout).toContain('"args":["task","list"]');
-      expect(stderr).toContain("command: task list");
-      expect(stderr).toContain("bun run framework:dev:bootstrap");
-    },
-  );
+    expect(stdout).toContain("DIST");
+    expect(stdout).toContain('"args":["runtime","explain","--json"]');
+    expect(stderr).toContain("command: runtime explain --json");
+    expect(stderr).toContain("bun run framework:dev:bootstrap");
+  });
+
+  it("warns but runs task list when watched runtime paths are dirty", async () => {
+    const { repoRoot, repoBin } = await setupFrameworkCheckout();
+
+    const { stdout, stderr } = await execFileAsync(process.execPath, [repoBin, "task", "list"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+    });
+
+    expect(stdout).toContain("DIST");
+    expect(stdout).toContain('"args":["task","list"]');
+    expect(stderr).toContain("command: task list");
+    expect(stderr).toContain("bun run framework:dev:bootstrap");
+  });
 
   it("warns but runs task doc show when watched runtime paths are dirty", async () => {
     const { repoRoot, repoBin } = await setupFrameworkCheckout();

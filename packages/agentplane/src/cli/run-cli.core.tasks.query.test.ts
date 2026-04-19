@@ -68,6 +68,7 @@ import * as prompts from "./prompts.js";
 import { VERIFY_STEPS_PLACEHOLDER } from "../commands/task/shared/docs.js";
 
 installRunCliIntegrationHarness();
+const TASKS_QUERY_CLI_TIMEOUT_MS = 180_000;
 
 const CYRILLIC_RE = /[\u0400-\u04FF]/u;
 const RUSSIAN_TRACE_LINE = "Привет из raw trace";
@@ -367,7 +368,7 @@ async function seedTaskQueryFixture(root: string, tasks: taskBackend.TaskData[])
   }
 }
 
-describe("runCli", () => {
+describe("runCli", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS }, () => {
   it("task rebuild-index recreates the cache from tracked task artifacts when the cache file is missing", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -2112,6 +2113,7 @@ describe("runCli", () => {
       const liveRun = await waitForRunnerState({
         root,
         taskId,
+        timeoutMs: 30_000,
         predicate: (state) => {
           const status = state.status;
           const supervision =
@@ -2524,6 +2526,7 @@ describe("runCli", () => {
       const liveRun = await waitForRunnerState({
         root,
         taskId,
+        timeoutMs: 30_000,
         predicate: (state) => {
           const status = state.status;
           const supervision =

@@ -20,6 +20,7 @@ import {
 } from "./run-cli.test-helpers.js";
 
 installRunCliIntegrationHarness();
+const PR_CLOSE_SUPERSEDED_TIMEOUT_MS = 60_000;
 
 async function installFakeGhRepair(opts: {
   scenarioName: string;
@@ -151,102 +152,106 @@ async function prepareDoneTaskWithPrMeta(
 }
 
 describe("runCli pr close-superseded", () => {
-  it("closes an open superseded task PR from task artifacts and deletes the remote branch", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    await configureGitUser(root);
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    await commitAll(root, "chore config");
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    const execFileAsyncLocal = promisify(execFile);
-    await execFileAsyncLocal(
-      "git",
-      ["remote", "add", "origin", "https://github.com/example/repo.git"],
-      {
-        cwd: root,
-        env: cleanGitEnv(),
-      },
-    );
+  it(
+    "closes an open superseded task PR from task artifacts and deletes the remote branch",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await configureGitUser(root);
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await commitAll(root, "chore config");
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      const execFileAsyncLocal = promisify(execFile);
+      await execFileAsyncLocal(
+        "git",
+        ["remote", "add", "origin", "https://github.com/example/repo.git"],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
+      );
 
-    let taskId = "";
-    const ioTask = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Superseded PR repair",
-        "--description",
-        "Repair a stale task PR",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Superseded PR repair",
+          "--description",
+          "Repair a stale task PR",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+
+      const branch = `task/${taskId}/close-superseded`;
+      await prepareDoneTaskWithPrMeta(root, taskId, branch);
+      const { fakeBin, logPath } = await installFakeGhRepair({
+        scenarioName: "open-repair",
+        branch,
+      });
+      const originalPath = process.env.PATH;
+      process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+      process.env.AGENTPLANE_GH_LOG = logPath;
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "pr",
+          "close-superseded",
+          taskId,
+          "--delete-remote-branch",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain(`✅ pr close #141`);
+        expect(io.stdout).toContain("comment: added");
+        expect(io.stdout).toContain("remote_branch_action: deleted");
+      } finally {
+        io.restore();
+        process.env.PATH = originalPath;
+        delete process.env.AGENTPLANE_GH_LOG;
+      }
+
+      const rawLog = await readFile(logPath, "utf8");
+      const log = rawLog
+        .trim()
+        .split("\n")
+        .map((line) => JSON.parse(line) as string[]);
+      expect(log).toEqual([
+        [
+          "api",
+          `repos/example/repo/pulls?head=${encodeURIComponent(`example:${branch}`)}&state=open&per_page=100`,
+        ],
+        ["api", "repos/example/repo/pulls/141"],
+        [
+          "api",
+          "repos/example/repo/issues/141/comments",
+          "-X",
+          "POST",
+          "-f",
+          "body=Superseded by protected-main closure of task " + taskId + ".",
+        ],
+        ["api", "repos/example/repo/pulls/141", "-X", "PATCH", "-f", "state=closed"],
+        ["api", `repos/example/repo/git/refs/heads/${encodeURIComponent(branch)}`, "-X", "DELETE"],
       ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-
-    const branch = `task/${taskId}/close-superseded`;
-    await prepareDoneTaskWithPrMeta(root, taskId, branch);
-    const { fakeBin, logPath } = await installFakeGhRepair({
-      scenarioName: "open-repair",
-      branch,
-    });
-    const originalPath = process.env.PATH;
-    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
-    process.env.AGENTPLANE_GH_LOG = logPath;
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "pr",
-        "close-superseded",
-        taskId,
-        "--delete-remote-branch",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain(`✅ pr close #141`);
-      expect(io.stdout).toContain("comment: added");
-      expect(io.stdout).toContain("remote_branch_action: deleted");
-    } finally {
-      io.restore();
-      process.env.PATH = originalPath;
-      delete process.env.AGENTPLANE_GH_LOG;
-    }
-
-    const rawLog = await readFile(logPath, "utf8");
-    const log = rawLog
-      .trim()
-      .split("\n")
-      .map((line) => JSON.parse(line) as string[]);
-    expect(log).toEqual([
-      [
-        "api",
-        `repos/example/repo/pulls?head=${encodeURIComponent(`example:${branch}`)}&state=open&per_page=100`,
-      ],
-      ["api", "repos/example/repo/pulls/141"],
-      [
-        "api",
-        "repos/example/repo/issues/141/comments",
-        "-X",
-        "POST",
-        "-f",
-        "body=Superseded by protected-main closure of task " + taskId + ".",
-      ],
-      ["api", "repos/example/repo/pulls/141", "-X", "PATCH", "-f", "state=closed"],
-      ["api", `repos/example/repo/git/refs/heads/${encodeURIComponent(branch)}`, "-X", "DELETE"],
-    ]);
-  });
+    },
+    PR_CLOSE_SUPERSEDED_TIMEOUT_MS,
+  );
 
   it("no-ops when no open task PR remains", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -391,99 +396,103 @@ describe("runCli pr close-superseded", () => {
     }
   });
 
-  it("passes auth env through to gh while stripping git worktree overrides", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    await configureGitUser(root);
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    await commitAll(root, "chore config");
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    const execFileAsyncLocal = promisify(execFile);
-    await execFileAsyncLocal(
-      "git",
-      ["remote", "add", "origin", "https://github.com/example/repo.git"],
-      {
-        cwd: root,
-        env: cleanGitEnv(),
-      },
-    );
-
-    let taskId = "";
-    const ioTask = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Superseded PR auth env",
-        "--description",
-        "Ensure gh env propagates through close-superseded",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-
-    const branch = `task/${taskId}/close-superseded`;
-    await prepareDoneTaskWithPrMeta(root, taskId, branch);
-    const { fakeBin, envLogPath } = await installFakeGhRepair({
-      scenarioName: "env-sanitized",
-      branch,
-      captureEnv: true,
-    });
-    const originalPath = process.env.PATH;
-    const originalGhToken = process.env.GH_TOKEN;
-    const originalGitDir = process.env.GIT_DIR;
-    const originalGitWorkTree = process.env.GIT_WORK_TREE;
-    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
-    process.env.GH_TOKEN = "token-from-parent-env";
-    process.env.GIT_DIR = "/tmp/should-not-leak.git";
-    process.env.GIT_WORK_TREE = "/tmp/should-not-leak-tree";
-    process.env.AGENTPLANE_GH_ENV_LOG = envLogPath;
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["pr", "close-superseded", taskId, "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-      process.env.PATH = originalPath;
-      if (originalGhToken === undefined) delete process.env.GH_TOKEN;
-      else process.env.GH_TOKEN = originalGhToken;
-      if (originalGitDir === undefined) delete process.env.GIT_DIR;
-      else process.env.GIT_DIR = originalGitDir;
-      if (originalGitWorkTree === undefined) delete process.env.GIT_WORK_TREE;
-      else process.env.GIT_WORK_TREE = originalGitWorkTree;
-      delete process.env.AGENTPLANE_GH_ENV_LOG;
-    }
-
-    const rawEnvLog = await readFile(envLogPath, "utf8");
-    const envLog = rawEnvLog
-      .trim()
-      .split("\n")
-      .map(
-        (line) =>
-          JSON.parse(line) as {
-            GH_TOKEN: string | null;
-            HOME: string | null;
-            GIT_DIR: string | null;
-            GIT_WORK_TREE: string | null;
-          },
+  it(
+    "passes auth env through to gh while stripping git worktree overrides",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await configureGitUser(root);
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await commitAll(root, "chore config");
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      const execFileAsyncLocal = promisify(execFile);
+      await execFileAsyncLocal(
+        "git",
+        ["remote", "add", "origin", "https://github.com/example/repo.git"],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
       );
-    expect(envLog.length).toBeGreaterThan(0);
-    expect(envLog[0]?.GH_TOKEN).toBe("token-from-parent-env");
-    expect(envLog[0]?.HOME).toBeTruthy();
-    expect(envLog[0]?.GIT_DIR).toBeNull();
-    expect(envLog[0]?.GIT_WORK_TREE).toBeNull();
-  });
+
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Superseded PR auth env",
+          "--description",
+          "Ensure gh env propagates through close-superseded",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+
+      const branch = `task/${taskId}/close-superseded`;
+      await prepareDoneTaskWithPrMeta(root, taskId, branch);
+      const { fakeBin, envLogPath } = await installFakeGhRepair({
+        scenarioName: "env-sanitized",
+        branch,
+        captureEnv: true,
+      });
+      const originalPath = process.env.PATH;
+      const originalGhToken = process.env.GH_TOKEN;
+      const originalGitDir = process.env.GIT_DIR;
+      const originalGitWorkTree = process.env.GIT_WORK_TREE;
+      process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+      process.env.GH_TOKEN = "token-from-parent-env";
+      process.env.GIT_DIR = "/tmp/should-not-leak.git";
+      process.env.GIT_WORK_TREE = "/tmp/should-not-leak-tree";
+      process.env.AGENTPLANE_GH_ENV_LOG = envLogPath;
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["pr", "close-superseded", taskId, "--root", root]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+        process.env.PATH = originalPath;
+        if (originalGhToken === undefined) delete process.env.GH_TOKEN;
+        else process.env.GH_TOKEN = originalGhToken;
+        if (originalGitDir === undefined) delete process.env.GIT_DIR;
+        else process.env.GIT_DIR = originalGitDir;
+        if (originalGitWorkTree === undefined) delete process.env.GIT_WORK_TREE;
+        else process.env.GIT_WORK_TREE = originalGitWorkTree;
+        delete process.env.AGENTPLANE_GH_ENV_LOG;
+      }
+
+      const rawEnvLog = await readFile(envLogPath, "utf8");
+      const envLog = rawEnvLog
+        .trim()
+        .split("\n")
+        .map(
+          (line) =>
+            JSON.parse(line) as {
+              GH_TOKEN: string | null;
+              HOME: string | null;
+              GIT_DIR: string | null;
+              GIT_WORK_TREE: string | null;
+            },
+        );
+      expect(envLog.length).toBeGreaterThan(0);
+      expect(envLog[0]?.GH_TOKEN).toBe("token-from-parent-env");
+      expect(envLog[0]?.HOME).toBeTruthy();
+      expect(envLog[0]?.GIT_DIR).toBeNull();
+      expect(envLog[0]?.GIT_WORK_TREE).toBeNull();
+    },
+    PR_CLOSE_SUPERSEDED_TIMEOUT_MS,
+  );
 });

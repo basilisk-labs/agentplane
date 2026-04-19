@@ -19,6 +19,7 @@ type TestWorkspace = {
 const workspaces: string[] = [];
 const execFileAsync = promisify(execFile);
 const DOCTOR_HISTORICAL_ARCHIVE_TIMEOUT_MS = 60_000;
+const DOCTOR_COMMAND_TIMEOUT_MS = 60_000;
 const REDMINE_ENV_KEYS = [
   "AGENTPLANE_REDMINE_URL",
   "AGENTPLANE_REDMINE_API_KEY",
@@ -197,7 +198,7 @@ async function gitInitWithCommit(root: string, subject: string): Promise<string>
   await execFileAsync("git", ["config", "user.email", "doctor@example.com"], { cwd: root });
   await writeFile(path.join(root, "file.txt"), `${subject}\n`, "utf8");
   await execFileAsync("git", ["add", "file.txt"], { cwd: root });
-  await execFileAsync("git", ["commit", "-m", subject], { cwd: root });
+  await execFileAsync("git", ["commit", "--no-verify", "-m", subject], { cwd: root });
   const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
   return stdout.trim();
 }
@@ -235,7 +236,7 @@ afterEach(async () => {
   }
 });
 
-describe("doctor.command", () => {
+describe("doctor.command", { timeout: DOCTOR_COMMAND_TIMEOUT_MS }, () => {
   it("passes default checks for a normal initialized workspace without monorepo src folders", async () => {
     const ws = await mkWorkspace();
     const rc = await runDoctor(
@@ -440,7 +441,9 @@ describe("doctor.command", () => {
       ],
       { cwd: ws.root },
     );
-    await execFileAsync("git", ["commit", "-m", "chore doctor fixture"], { cwd: ws.root });
+    await execFileAsync("git", ["commit", "--no-verify", "-m", "chore doctor fixture"], {
+      cwd: ws.root,
+    });
 
     const stderr = vi.spyOn(console, "error").mockImplementation(() => {
       /* muted for assertion */
@@ -606,7 +609,9 @@ describe("doctor.command", () => {
       ],
       { cwd: ws.root },
     );
-    await execFileAsync("git", ["commit", "-m", "chore doctor fixture"], { cwd: ws.root });
+    await execFileAsync("git", ["commit", "--no-verify", "-m", "chore doctor fixture"], {
+      cwd: ws.root,
+    });
 
     const stderr = vi.spyOn(console, "error").mockImplementation(() => {
       /* muted for assertion */

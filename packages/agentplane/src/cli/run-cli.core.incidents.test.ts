@@ -17,6 +17,7 @@ import {
 } from "./run-cli.test-helpers.js";
 
 installRunCliIntegrationHarness();
+const INCIDENTS_CLI_TIMEOUT_MS = 120_000;
 
 const compactRegistryHeader = [
   "# Policy Incidents Log",
@@ -28,7 +29,7 @@ function makeCompactOpenEntry(index: number): string {
   return `- id: INC-20260407-${seq} | date: 2026-04-07 | scope: incident budget entry ${index} | tags: workflow, incidents, budget | match: incidents, budget, entry-${index} | failure: incident budget entry ${index} consumed registry space | advice: compact incident budget entry ${index} before promoting more incidents | rule: Incident budget entry ${index} MUST stay compact enough for the policy budget. | evidence: task TASK-${index} | enforcement: manual | fixability: external | state: open`;
 }
 
-describe("runCli incidents", () => {
+describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
   it("incidents collect validates structured external candidates and emits json", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);

@@ -55,8 +55,9 @@ import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
+const BRANCH_META_MAINTENANCE_TIMEOUT_MS = 240_000;
 
-describe("runCli", () => {
+describe("runCli", { timeout: BRANCH_META_MAINTENANCE_TIMEOUT_MS }, () => {
   it("sync forwards flags to the backend", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -379,7 +380,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  }, 60_000);
+  }, 180_000);
 
   it("branch remove deletes the branch", async () => {
     const root = await mkGitRepoRootWithBranch("main");

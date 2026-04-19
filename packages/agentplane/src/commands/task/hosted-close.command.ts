@@ -306,16 +306,32 @@ async function closeHostedTask(opts: {
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const taskDirRelative = path.join(opts.ctx.config.paths.workflow_dir, target.taskId);
   const taskReadmePath = path.join(gitRoot, taskDirRelative, "README.md");
+  const existingMetaPath = path.join(gitRoot, taskDirRelative, "pr", "meta.json");
+  let existingMeta: PrMeta | null = null;
+  if (await fileExists(existingMetaPath)) {
+    existingMeta = parsePrMeta(await readFile(existingMetaPath, "utf8"), target.taskId);
+  }
+  const existingMergeCommit = existingMeta?.merge_commit?.trim() ?? "";
+  const existingMetaAlreadyMerged =
+    existingMeta?.status === "MERGED" &&
+    existingMergeCommit.length > 0 &&
+    existingMergeCommit === target.mergedPr.mergeCommit.oid;
   let task: TaskData;
   try {
     task = await loadTaskFromContext({
       ctx: opts.ctx,
       taskId: target.taskId,
-      preferBranchSnapshot: true,
-      branchSnapshotBranch: target.branch,
+      preferBranchSnapshot: !existingMetaAlreadyMerged,
+      branchSnapshotBranch: existingMetaAlreadyMerged ? null : target.branch,
     });
   } catch (err) {
     if (!isMissingTaskReadmeError(err, taskReadmePath)) throw err;
+    if (existingMetaAlreadyMerged) {
+      return {
+        outcome: "noop",
+        detail: `${target.taskId} is already closed for merge ${target.mergedPr.mergeCommit.oid.slice(0, 12)}`,
+      };
+    }
     const recovered = await buildHostedTaskFromTrackedPrArtifacts({
       gitRoot,
       taskDirRelative,
@@ -348,6 +364,12 @@ async function closeHostedTask(opts: {
         `Hosted task closure found a conflicting DONE commit for ${target.taskId}: ` +
         `${task.commit?.hash} != ${target.mergedPr.mergeCommit.oid}`,
     });
+  }
+  if (alreadyClosed && existingMetaAlreadyMerged) {
+    return {
+      outcome: "noop",
+      detail: `${target.taskId} is already closed for merge ${target.mergedPr.mergeCommit.oid.slice(0, 12)}`,
+    };
   }
 
   const nextMeta = buildIntegratedPrMeta({

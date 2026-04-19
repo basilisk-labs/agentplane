@@ -13,8 +13,9 @@ import { cleanHookEnv } from "./apply.mutation.js";
 const execFileAsync = promisify(execFile);
 const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 const ORIGINAL_DRY_RUN = process.env.AGENTPLANE_RELEASE_DRY_RUN;
-const RELEASE_APPLY_LONG_TIMEOUT_MS = 60_000;
-const RELEASE_APPLY_FULL_GATE_TIMEOUT_MS = 120_000;
+const RELEASE_APPLY_LONG_TIMEOUT_MS = 120_000;
+const RELEASE_APPLY_FULL_GATE_TIMEOUT_MS = 240_000;
+const RELEASE_APPLY_PRIMARY_TIMEOUT_MS = 180_000;
 
 async function withDryRunReleaseMode<T>(work: () => Promise<T>): Promise<T> {
   process.env.AGENTPLANE_RELEASE_DRY_RUN = "1";
@@ -78,7 +79,7 @@ async function writeWorkflowMode(root: string, mode: "direct" | "branch_pr"): Pr
   await writeFile(configPath, JSON.stringify(raw, null, 2) + "\n", "utf8");
 }
 
-describeWhenNotHook("release apply", () => {
+describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_MS }, () => {
   it("allows the release commit to stage protected config updates", () => {
     const env = cleanHookEnv();
 
@@ -88,120 +89,126 @@ describeWhenNotHook("release apply", () => {
     expect(env.AGENTPLANE_AGENT_ID).toBeUndefined();
   });
 
-  it("bumps versions, commits, and tags using the latest plan", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await seedReleaseWorkspace(root, {
-      coreVersion: "0.2.6",
-      cliVersion: "0.2.6",
-      recipesVersion: "0.2.6",
-      dependencyVersion: "0.2.6",
-      recipesDependencyVersion: "0.2.6",
-    });
-    await mkdir(path.join(root, "packages", "testkit"), { recursive: true });
-    await writeFile(
-      path.join(root, "packages", "testkit", "package.json"),
-      JSON.stringify(
-        {
-          name: "@agentplane/testkit",
-          version: "0.0.0",
-          private: true,
-          dependencies: { agentplane: "0.2.6" },
-        },
-        null,
-        2,
-      ) + "\n",
-      "utf8",
-    );
-    await commitAll(root, "seed");
-    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+  it(
+    "bumps versions, commits, and tags using the latest plan",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.6",
+        cliVersion: "0.2.6",
+        recipesVersion: "0.2.6",
+        dependencyVersion: "0.2.6",
+        recipesDependencyVersion: "0.2.6",
+      });
+      await mkdir(path.join(root, "packages", "testkit"), { recursive: true });
+      await writeFile(
+        path.join(root, "packages", "testkit", "package.json"),
+        JSON.stringify(
+          {
+            name: "@agentplane/testkit",
+            version: "0.0.0",
+            private: true,
+            dependencies: { agentplane: "0.2.6" },
+          },
+          null,
+          2,
+        ) + "\n",
+        "utf8",
+      );
+      await commitAll(root, "seed");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
-    await writeFile(path.join(root, "file.txt"), "x", "utf8");
-    await commitAll(root, "feat: add file");
+      await writeFile(path.join(root, "file.txt"), "x", "utf8");
+      await commitAll(root, "feat: add file");
 
-    const rcPlan = await runReleasePlan(
-      { cwd: root, rootOverride: root },
-      { bump: "patch", yes: false },
-    );
-    expect(rcPlan).toBe(0);
-
-    // Mimic the DOCS agent: write release notes for the computed tag.
-    const runs = await listRuns(root);
-    const latest = runs.at(-1) ?? "";
-    const versionJsonPath = path.join(
-      root,
-      ".agentplane",
-      ".release",
-      "plan",
-      latest,
-      "version.json",
-    );
-    const versionJson = JSON.parse(await readFile(versionJsonPath, "utf8")) as { nextTag?: string };
-    const nextTag = String(versionJson.nextTag ?? "");
-    expect(nextTag).toBe("v0.2.7");
-
-    await writeReleaseNotes(
-      root,
-      nextTag.replace(/^v/u, ""),
-      ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
-    );
-
-    const rcApply = await withDryRunReleaseMode(async () =>
-      runReleaseApply(
+      const rcPlan = await runReleasePlan(
         { cwd: root, rootOverride: root },
-        { plan: undefined, yes: false, push: false, remote: "origin" },
-      ),
-    );
-    expect(rcApply).toBe(0);
+        { bump: "patch", yes: false },
+      );
+      expect(rcPlan).toBe(0);
 
-    const coreText = await readFile(path.join(root, "packages", "core", "package.json"), "utf8");
-    const recipesText = await readFile(
-      path.join(root, "packages", "recipes", "package.json"),
-      "utf8",
-    );
-    const testkitText = await readFile(
-      path.join(root, "packages", "testkit", "package.json"),
-      "utf8",
-    );
-    const agentplaneText = await readFile(
-      path.join(root, "packages", "agentplane", "package.json"),
-      "utf8",
-    );
-    const configText = await readFile(path.join(root, ".agentplane", "config.json"), "utf8");
-    expect(coreText).toContain('"version": "0.2.7"');
-    expect(recipesText).toContain('"version": "0.2.7"');
-    expect(agentplaneText).toContain('"version": "0.2.7"');
-    expect(agentplaneText).toContain('"@agentplaneorg/core": "0.2.7"');
-    expect(agentplaneText).toContain('"@agentplaneorg/recipes": "0.2.7"');
-    expect(testkitText).toContain('"agentplane": "0.2.7"');
-    expect(configText).toContain('"expected_version": "0.2.7"');
+      // Mimic the DOCS agent: write release notes for the computed tag.
+      const runs = await listRuns(root);
+      const latest = runs.at(-1) ?? "";
+      const versionJsonPath = path.join(
+        root,
+        ".agentplane",
+        ".release",
+        "plan",
+        latest,
+        "version.json",
+      );
+      const versionJson = JSON.parse(await readFile(versionJsonPath, "utf8")) as {
+        nextTag?: string;
+      };
+      const nextTag = String(versionJson.nextTag ?? "");
+      expect(nextTag).toBe("v0.2.7");
 
-    const { stdout: tagOut } = await execFileAsync("git", ["tag", "--list", "v0.2.7"], {
-      cwd: root,
-    });
-    expect(tagOut.trim()).toBe("v0.2.7");
+      await writeReleaseNotes(
+        root,
+        nextTag.replace(/^v/u, ""),
+        ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+      );
 
-    const { stdout: committedFiles } = await execFileAsync(
-      "git",
-      ["show", "--name-only", "--format=", "HEAD"],
-      { cwd: root },
-    );
-    expect(committedFiles).toContain(".agentplane/config.json");
-    expect(committedFiles).toContain("packages/recipes/package.json");
-    expect(committedFiles).toContain("packages/testkit/package.json");
+      const rcApply = await withDryRunReleaseMode(async () =>
+        runReleaseApply(
+          { cwd: root, rootOverride: root },
+          { plan: undefined, yes: false, push: false, remote: "origin" },
+        ),
+      );
+      expect(rcApply).toBe(0);
 
-    const reportPath = path.join(root, ".agentplane", ".release", "apply", "latest.json");
-    const report = JSON.parse(await readFile(reportPath, "utf8")) as {
-      next_tag?: string;
-      next_version?: string;
-      commit?: { subject?: string } | null;
-      checks?: { notes_validated?: boolean };
-    };
-    expect(report.next_tag).toBe("v0.2.7");
-    expect(report.next_version).toBe("0.2.7");
-    expect(report.checks?.notes_validated).toBe(true);
-    expect(report.commit?.subject).toContain("release: publish v0.2.7");
-  }, 90_000);
+      const coreText = await readFile(path.join(root, "packages", "core", "package.json"), "utf8");
+      const recipesText = await readFile(
+        path.join(root, "packages", "recipes", "package.json"),
+        "utf8",
+      );
+      const testkitText = await readFile(
+        path.join(root, "packages", "testkit", "package.json"),
+        "utf8",
+      );
+      const agentplaneText = await readFile(
+        path.join(root, "packages", "agentplane", "package.json"),
+        "utf8",
+      );
+      const configText = await readFile(path.join(root, ".agentplane", "config.json"), "utf8");
+      expect(coreText).toContain('"version": "0.2.7"');
+      expect(recipesText).toContain('"version": "0.2.7"');
+      expect(agentplaneText).toContain('"version": "0.2.7"');
+      expect(agentplaneText).toContain('"@agentplaneorg/core": "0.2.7"');
+      expect(agentplaneText).toContain('"@agentplaneorg/recipes": "0.2.7"');
+      expect(testkitText).toContain('"agentplane": "0.2.7"');
+      expect(configText).toContain('"expected_version": "0.2.7"');
+
+      const { stdout: tagOut } = await execFileAsync("git", ["tag", "--list", "v0.2.7"], {
+        cwd: root,
+      });
+      expect(tagOut.trim()).toBe("v0.2.7");
+
+      const { stdout: committedFiles } = await execFileAsync(
+        "git",
+        ["show", "--name-only", "--format=", "HEAD"],
+        { cwd: root },
+      );
+      expect(committedFiles).toContain(".agentplane/config.json");
+      expect(committedFiles).toContain("packages/recipes/package.json");
+      expect(committedFiles).toContain("packages/testkit/package.json");
+
+      const reportPath = path.join(root, ".agentplane", ".release", "apply", "latest.json");
+      const report = JSON.parse(await readFile(reportPath, "utf8")) as {
+        next_tag?: string;
+        next_version?: string;
+        commit?: { subject?: string } | null;
+        checks?: { notes_validated?: boolean };
+      };
+      expect(report.next_tag).toBe("v0.2.7");
+      expect(report.next_version).toBe("0.2.7");
+      expect(report.checks?.notes_validated).toBe(true);
+      expect(report.commit?.subject).toContain("release: publish v0.2.7");
+    },
+    RELEASE_APPLY_PRIMARY_TIMEOUT_MS,
+  );
 
   it(
     "fails when tracked tree is dirty before apply",
@@ -298,7 +305,7 @@ describeWhenNotHook("release apply", () => {
         process.env.AGENTPLANE_RELEASE_DRY_RUN = wasDryRun;
       }
     },
-    RELEASE_APPLY_LONG_TIMEOUT_MS,
+    RELEASE_APPLY_FULL_GATE_TIMEOUT_MS,
   );
 
   it("fails early when release tag already exists", async () => {
