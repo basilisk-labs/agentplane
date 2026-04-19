@@ -2,7 +2,10 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { validateConfig } from "../packages/core/src/config/config.ts";
-import { AgentplaneConfigSchema } from "../packages/core/src/config/config-zod.ts";
+import {
+  AgentplaneConfigSchema,
+  formatAgentplaneConfigIssues,
+} from "../packages/core/src/config/config-zod.ts";
 
 const repoRoot = process.cwd();
 const deprecatedConfigKeys = ["base_branch"];
@@ -31,45 +34,6 @@ function captureRuntimeValidation(raw) {
   }
 }
 
-function formatIssuePath(issue) {
-  if (issue.path.length === 0) {
-    return "config";
-  }
-  return `config/${issue.path.map(String).join("/")}`;
-}
-
-function formatSchemaIssues(issues) {
-  if (issues.length === 0) {
-    return "config schema validation failed";
-  }
-
-  return issues
-    .map((issue) => {
-      const pathLabel = formatIssuePath(issue);
-      switch (issue.code) {
-        case "invalid_type": {
-          if (issue.expected === "object") return `${pathLabel} must be object`;
-          if (issue.expected === "boolean") return `${pathLabel} must be boolean`;
-          if (issue.expected === "array") return `${pathLabel} must be array`;
-          if (issue.expected === "string") return `${pathLabel} must be string`;
-          if (issue.expected === "number") return `${pathLabel} must be number`;
-          return `${pathLabel} has invalid type`;
-        }
-        case "invalid_literal":
-        case "invalid_enum_value":
-        case "too_small":
-        case "too_big":
-        case "invalid_string": {
-          return pathLabel;
-        }
-        default: {
-          return issue.message ? `${pathLabel}: ${issue.message}` : pathLabel;
-        }
-      }
-    })
-    .join("; ");
-}
-
 function captureSchemaValidation(raw) {
   const parsed = AgentplaneConfigSchema.safeParse(sanitizeDeprecatedKeys(raw));
   if (parsed.success) {
@@ -77,7 +41,7 @@ function captureSchemaValidation(raw) {
   }
   return {
     ok: false,
-    error: formatSchemaIssues(parsed.error.issues),
+    error: formatAgentplaneConfigIssues(parsed.error.issues),
   };
 }
 

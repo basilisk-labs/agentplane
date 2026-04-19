@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z, type ZodIssue } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
 const nonEmptyString = () => z.string().min(1);
@@ -380,6 +380,64 @@ export const AgentplaneConfigSchema = z
   .passthrough();
 
 export type AgentplaneConfig = z.infer<typeof AgentplaneConfigSchema>;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function formatIssuePath(issue: ZodIssue): string {
+  if (issue.path.length === 0) return "config";
+  return `config/${issue.path.map(String).join("/")}`;
+}
+
+function formatIssue(issue: ZodIssue): string {
+  const pathLabel = formatIssuePath(issue);
+
+  switch (issue.code) {
+    case "invalid_type": {
+      if (issue.expected === "object") return `${pathLabel} must be object`;
+      if (issue.expected === "boolean") return `${pathLabel} must be boolean`;
+      if (issue.expected === "array") return `${pathLabel} must be array`;
+      if (issue.expected === "string") return `${pathLabel} must be string`;
+      if (issue.expected === "number") return `${pathLabel} must be number`;
+      return `${pathLabel} has invalid type`;
+    }
+    case "invalid_literal":
+    case "invalid_enum_value":
+    case "too_small":
+    case "too_big":
+    case "invalid_string": {
+      return pathLabel;
+    }
+    default: {
+      return issue.message ? `${pathLabel}: ${issue.message}` : pathLabel;
+    }
+  }
+}
+
+export function formatAgentplaneConfigIssues(issues: readonly ZodIssue[]): string {
+  if (issues.length === 0) return "config schema validation failed";
+  return issues.map((issue) => formatIssue(issue)).join("; ");
+}
+
+export function validateAgentplaneConfig(raw: unknown): AgentplaneConfig {
+  const parsed = AgentplaneConfigSchema.safeParse(raw);
+  if (!parsed.success) {
+    throw new Error(formatAgentplaneConfigIssues(parsed.error.issues));
+  }
+
+  if (!isRecord(parsed.data)) {
+    throw new Error("config must be an object");
+  }
+
+  return parsed.data;
+}
+
+const DEFAULT_AGENTPLANE_CONFIG = validateAgentplaneConfig({});
+
+export function defaultAgentplaneConfig(): AgentplaneConfig {
+  return structuredClone(DEFAULT_AGENTPLANE_CONFIG);
+}
 
 function buildAgentplaneConfigJsonSchema(): Record<string, unknown> {
   const schema = zodToJsonSchema(AgentplaneConfigSchema, {

@@ -30,6 +30,8 @@ export {
 export {
   AGENTPLANE_CONFIG_SCHEMA,
   AgentplaneConfigSchema,
+  defaultAgentplaneConfig,
+  formatAgentplaneConfigIssues,
   listTaskHandoffSchemaErrors,
   listTaskPrMetaSchemaErrors,
   listTaskReadmeFrontmatterSchemaErrors,
@@ -39,6 +41,7 @@ export {
   renderTaskPrMetaSchemaJson,
   renderTaskReadmeFrontmatterSchemaJson,
   renderTasksExportSchemaJson,
+  validateAgentplaneConfig,
   validateTaskHandoff,
   validateTaskPrMeta,
   validateTaskReadmeFrontmatter,

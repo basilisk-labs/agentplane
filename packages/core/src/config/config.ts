@@ -1,12 +1,11 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { ZodIssue } from "zod";
-
 import { atomicWriteFile } from "../fs/atomic-write.js";
 import {
-  AgentplaneConfigSchema,
   type AgentplaneConfig as AgentplaneConfigShape,
+  defaultAgentplaneConfig,
+  validateAgentplaneConfig,
 } from "./config-zod.js";
 
 export type AgentplaneConfig = AgentplaneConfigShape;
@@ -35,47 +34,10 @@ export type RunnerTraceConfig = {
 };
 export type RunnerTimeoutConfig = AgentplaneConfig["runner"]["timeouts"];
 
-export function defaultConfig(): AgentplaneConfig {
-  return structuredClone(DEFAULT_CONFIG);
-}
+export const defaultConfig = defaultAgentplaneConfig;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
-}
-
-function formatIssuePath(issue: ZodIssue): string {
-  if (issue.path.length === 0) return "config";
-  return `config/${issue.path.map(String).join("/")}`;
-}
-
-function formatIssue(issue: ZodIssue): string {
-  const pathLabel = formatIssuePath(issue);
-
-  switch (issue.code) {
-    case "invalid_type": {
-      if (issue.expected === "object") return `${pathLabel} must be object`;
-      if (issue.expected === "boolean") return `${pathLabel} must be boolean`;
-      if (issue.expected === "array") return `${pathLabel} must be array`;
-      if (issue.expected === "string") return `${pathLabel} must be string`;
-      if (issue.expected === "number") return `${pathLabel} must be number`;
-      return `${pathLabel} has invalid type`;
-    }
-    case "invalid_literal":
-    case "invalid_enum_value":
-    case "too_small":
-    case "too_big":
-    case "invalid_string": {
-      return pathLabel;
-    }
-    default: {
-      return issue.message ? `${pathLabel}: ${issue.message}` : pathLabel;
-    }
-  }
-}
-
-function formatSchemaErrors(issues: ZodIssue[]): string {
-  if (issues.length === 0) return "config schema validation failed";
-  return issues.map((issue) => formatIssue(issue)).join("; ");
 }
 
 const DEPRECATED_CONFIG_KEYS = ["base_branch"];
@@ -107,20 +69,8 @@ export function validateConfig(raw: unknown): AgentplaneConfig {
   if (isRecord(candidate)) {
     candidate = stripDeprecatedConfigKeys(candidate).sanitized;
   }
-
-  const parsed = AgentplaneConfigSchema.safeParse(candidate);
-  if (!parsed.success) {
-    throw new Error(formatSchemaErrors(parsed.error.issues));
-  }
-
-  if (!isRecord(parsed.data)) {
-    throw new Error("config must be an object");
-  }
-
-  return parsed.data;
+  return validateAgentplaneConfig(candidate);
 }
-
-const DEFAULT_CONFIG = validateConfig({});
 
 export type LoadedConfig = {
   path: string;
