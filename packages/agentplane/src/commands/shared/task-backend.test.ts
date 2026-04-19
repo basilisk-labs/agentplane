@@ -13,7 +13,7 @@ import {
   mkGitRepoRootWithBranch,
   writeConfig,
   writeDefaultConfig,
-} from "../../cli/run-cli.test-helpers.js";
+} from "../../testing/index.js";
 import { listTaskSummariesMemo, loadCommandContext, loadTaskFromContext } from "./task-backend.js";
 
 const TASK_BACKEND_INTEGRATION_TIMEOUT_MS = 180_000;
