@@ -9,7 +9,7 @@ import {
   installRecipesCommandHarness,
   mkGitRepoRoot,
   writeDefaultConfig,
-} from "../../commands/recipes.test-helpers.js";
+} from "../../../../testkit/src/recipes.js";
 import {
   materializeRecipeScenarioTask,
   buildMaterializedRecipeTask,
