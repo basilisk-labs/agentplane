@@ -110,19 +110,6 @@ function branchPrCloseBranchName(taskId: string, headCommitHash: string): string
   return `task-close/${taskId}/${headCommitHash.slice(0, 12)}`;
 }
 
-async function hasTaskArtifactChanges(opts: {
-  gitRoot: string;
-  workflowDir: string;
-  taskId: string;
-}): Promise<boolean> {
-  const taskDirRelative = path.join(opts.workflowDir, opts.taskId);
-  const { stdout } = await execFileAsync("git", ["status", "--short", "--", taskDirRelative], {
-    cwd: opts.gitRoot,
-    env: gitEnv(),
-  });
-  return stdout.trim().length > 0;
-}
-
 async function materializeBranchPrCloseTail(opts: {
   ctx: CommandContext;
   cwd: string;
@@ -520,9 +507,6 @@ export async function cmdFinish(opts: {
     let taskCommitInfo: ResolvedCommitInfo | null = opts.commit
       ? await readCommitInfo(gitRoot, opts.commit)
       : null;
-    const primaryLoadedTask = primaryTaskId
-      ? (loadedTasks.find((candidate) => candidate.taskId === primaryTaskId) ?? null)
-      : null;
     const preparedComment =
       opts.commitFromComment || statusCommitRequested
         ? prepareTaskTransitionComment({
@@ -628,12 +612,6 @@ export async function cmdFinish(opts: {
       incidentRegistryPaths.push(collected.registryPaths);
     }
     const promotedIncidents = incidentPlans.reduce((sum, plan) => sum + plan.promotable.length, 0);
-    const primaryTaskAlreadyClosedOnBase =
-      ctx.config.workflow_mode === "branch_pr" &&
-      primaryLoadedTask?.task.status === "DONE" &&
-      (primaryLoadedTask.task.commit?.hash?.trim() ?? "") !== "" &&
-      (taskCommitInfo?.hash?.trim() ?? "") !== "" &&
-      primaryLoadedTask.task.commit?.hash?.trim() === taskCommitInfo?.hash?.trim();
 
     // tasks.json is export-only; generated via `agentplane task export`.
 
@@ -645,44 +623,29 @@ export async function cmdFinish(opts: {
       }
       const closeUnstageOthers = opts.closeCommit === true && opts.closeUnstageOthers === true;
       if (ctx.config.workflow_mode === "branch_pr") {
-        const taskArtifactsChanged = await hasTaskArtifactChanges({
-          gitRoot: ctx.resolvedProject.gitRoot,
-          workflowDir: ctx.config.paths.workflow_dir,
+        const closeBranch = await materializeBranchPrCloseTail({
+          ctx,
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride,
           taskId: primaryTaskId,
+          baseBranchOverride: opts.baseBranchOverride,
+          quiet: opts.quiet,
+          closeUnstageOthers,
+          allowPolicy: promotedIncidents > 0,
         });
-        if (primaryTaskAlreadyClosedOnBase && !taskArtifactsChanged && promotedIncidents === 0) {
-          if (!opts.quiet) {
+        if (!opts.quiet) {
+          if (closeBranch) {
             process.stdout.write(
               `${infoMessage(
-                `branch_pr close tail skipped for ${primaryTaskId}; canonical close artifacts are already present on the base branch.`,
+                `branch_pr close tail ready on ${closeBranch}; push that branch and open it with task hosted-close-pr if hosted automation does not create the closure PR for you.`,
               )}\n`,
             );
-          }
-        } else {
-          const closeBranch = await materializeBranchPrCloseTail({
-            ctx,
-            cwd: opts.cwd,
-            rootOverride: opts.rootOverride,
-            taskId: primaryTaskId,
-            baseBranchOverride: opts.baseBranchOverride,
-            quiet: opts.quiet,
-            closeUnstageOthers,
-            allowPolicy: promotedIncidents > 0,
-          });
-          if (!opts.quiet) {
-            if (closeBranch) {
-              process.stdout.write(
-                `${infoMessage(
-                  `branch_pr close tail ready on ${closeBranch}; push that branch and open it with task hosted-close-pr if hosted automation does not create the closure PR for you.`,
-                )}\n`,
-              );
-            } else {
-              process.stdout.write(
-                `${infoMessage(
-                  "branch_pr close tail already exists on base; skipping local task-close branch materialization.",
-                )}\n`,
-              );
-            }
+          } else {
+            process.stdout.write(
+              `${infoMessage(
+                "branch_pr close tail already exists on base; skipping local task-close branch materialization.",
+              )}\n`,
+            );
           }
         }
       } else {
