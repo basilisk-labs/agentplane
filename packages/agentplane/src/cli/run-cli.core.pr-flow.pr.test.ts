@@ -410,7 +410,7 @@ describe("runCli", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
       cwd: root,
       env: cleanGitEnv(),
     });
-    const packetCommitSubject = `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`;
+    const packetCommitSubject = `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`;
     const { fakeBin, logPath } = await installFakeGhPrApiRequiringPublishedPacketHead({
       scenarioName: "open-first-pass-final-head",
       branch,
@@ -1675,7 +1675,7 @@ describe("runCli", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
       cwd: root,
     });
     expect(subjectOut.trim()).toBe(
-      `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`,
+      `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`,
     );
 
     const { stdout: readmeTrackedOut } = await execFileAsync(
@@ -1770,7 +1770,7 @@ describe("runCli", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
       .map((line) => line.trim())
       .filter(Boolean);
     expect(subjects[0]).toBe(
-      `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`,
+      `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`,
     );
     expect(subjects[1]).toBe("change");
 

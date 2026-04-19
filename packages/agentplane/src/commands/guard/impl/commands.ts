@@ -1,7 +1,7 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { extractTaskSuffix } from "@agentplaneorg/core";
+import { buildTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core";
 
 import { resolveTaskIndexPath } from "../../../backends/task-index.js";
 import { mapCoreError } from "../../../cli/error-map.js";
@@ -130,10 +130,6 @@ function detectCommitFailureSignal(output: string): CommitFailureSignal {
   return null;
 }
 
-function taskArtifactRefreshCommitMessage(taskId: string): string {
-  return `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`;
-}
-
 async function stageCloseCommitPaths(opts: {
   ctx: CommandContext;
   readmeRel: string;
@@ -164,6 +160,7 @@ async function commitRefreshedTaskArtifacts(opts: {
   cwd: string;
   rootOverride?: string;
   taskId: string;
+  sourceMessage: string;
   quiet: boolean;
 }): Promise<boolean> {
   const changedPaths = await opts.ctx.git.statusChangedPaths();
@@ -195,7 +192,10 @@ async function commitRefreshedTaskArtifacts(opts: {
       "PR artifact refresh produced changes outside the active task artifact scope; inspect the working tree before retrying the commit flow.",
   });
 
-  const message = taskArtifactRefreshCommitMessage(opts.taskId);
+  const message = buildTaskArtifactRefreshCommitSubject({
+    taskId: opts.taskId,
+    baseSubject: opts.sourceMessage,
+  });
   await guardCommitCheck({
     ctx: opts.ctx,
     cwd: opts.cwd,
@@ -677,6 +677,7 @@ export async function cmdCommit(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
+      sourceMessage: opts.message,
       quiet: opts.quiet,
     });
 

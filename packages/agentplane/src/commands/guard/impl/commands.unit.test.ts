@@ -5,7 +5,7 @@ import { readDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
-  extractTaskSuffix: vi.fn(),
+  buildTaskArtifactRefreshCommitSubject: vi.fn(),
   mapCoreError: vi.fn(),
   ensureReconciledBeforeMutation: vi.fn(),
   execFileAsync: vi.fn(),
@@ -20,7 +20,9 @@ const mocks = vi.hoisted(() => ({
   guardCommitCheck: vi.fn(),
 }));
 
-vi.mock("@agentplaneorg/core", () => ({ extractTaskSuffix: mocks.extractTaskSuffix }));
+vi.mock("@agentplaneorg/core", () => ({
+  buildTaskArtifactRefreshCommitSubject: mocks.buildTaskArtifactRefreshCommitSubject,
+}));
 vi.mock("../../../cli/error-map.js", () => ({ mapCoreError: mocks.mapCoreError }));
 vi.mock("../../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
@@ -64,7 +66,10 @@ function mkCtx() {
 describe("guard/impl/commands", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    mocks.extractTaskSuffix.mockReturnValue("7SRWEX");
+    mocks.buildTaskArtifactRefreshCommitSubject.mockImplementation(
+      ({ taskId, baseSubject }: { taskId: string; baseSubject?: string | null }) =>
+        `derived:${taskId}:${baseSubject ?? ""}`,
+    );
     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
     mocks.execFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
     mocks.gitEnv.mockReturnValue({});
@@ -219,7 +224,7 @@ describe("guard/impl/commands", () => {
     ]);
     ctx.git.headHashSubject.mockResolvedValue({
       hash: "feedfacecafebeef",
-      subject: "🧩 7SRWEX workflow: refresh task artifacts after commit",
+      subject: "derived:202604130818-7SRWEX:🧩 7SRWEX workflow: implementation body",
     });
     mocks.buildGitCommitEnv
       .mockReturnValueOnce({ AGENTPLANE_TASK_ID: "202604130818-7SRWEX" })
@@ -259,7 +264,7 @@ describe("guard/impl/commands", () => {
       env: { AGENTPLANE_TASK_ID: "202604130818-7SRWEX" },
     });
     expect(ctx.git.commit).toHaveBeenNthCalledWith(2, {
-      message: "🧩 7SRWEX workflow: refresh task artifacts after commit",
+      message: "derived:202604130818-7SRWEX:🧩 7SRWEX workflow: implementation body",
       env: {
         AGENTPLANE_TASK_ID: "202604130818-7SRWEX",
         AGENTPLANE_ALLOW_TASKS: "1",

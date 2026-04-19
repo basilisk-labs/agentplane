@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { extractTaskSuffix } from "@agentplaneorg/core";
+import { buildTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core";
 
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "../../guard/impl/env.js";
 import { toGitPath } from "../../shared/git-diff.js";
@@ -33,10 +33,6 @@ async function readCachedPaths(gitRoot: string): Promise<string[]> {
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
-}
-
-function taskPrArtifactRefreshMessage(taskId: string): string {
-  return `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`;
 }
 
 export async function maybeAutoCommitTaskPrArtifacts(opts: {
@@ -76,7 +72,7 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
 
   await opts.ctx.git.stage(taskPacketPaths);
   await opts.ctx.git.commit({
-    message: taskPrArtifactRefreshMessage(opts.taskId),
+    message: buildTaskArtifactRefreshCommitSubject({ taskId: opts.taskId }),
     env: buildGitCommitEnv({
       taskId: opts.taskId,
       allowTasks: true,

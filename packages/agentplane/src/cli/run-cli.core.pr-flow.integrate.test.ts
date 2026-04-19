@@ -1126,7 +1126,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     await commitPathsIfChanged(
       root,
       [`.agentplane/tasks/${taskId}`],
-      `🧩 ${extractTaskSuffix(taskId)} workflow: refresh task artifacts after commit`,
+      `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`,
     );
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });

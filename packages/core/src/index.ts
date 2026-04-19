@@ -177,8 +177,11 @@ export {
 } from "./git/git-client.js";
 
 export {
+  buildTaskArtifactRefreshCommitSubject,
   extractTaskSuffix,
+  isTaskArtifactRefreshCommitSubject,
   isGenericSubject,
+  parseTaskSubjectTemplate,
   validateCommitSubject,
   type CommitPolicyResult,
 } from "./commit/commit-policy.js";
