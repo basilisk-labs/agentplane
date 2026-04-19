@@ -1,1 +1,1 @@
-export * from "../../../testkit/dist/cli.js";
+export * from "../../../testkit/dist/index.js";
