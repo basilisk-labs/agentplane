@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604191200-N6XPEJ/pr-open-existing-branch",
   "created_at": "2026-04-19T12:10:22.070Z",
-  "head_sha": "5f9aaa0e08636a5276be45ec177ab3364ee858fb",
+  "head_sha": "160401057ed46fe34436cc20800f4ea9f667ae5e",
   "last_verified_at": "2026-04-19T12:10:22.023Z",
   "last_verified_sha": "206794d6e94f44af07e890f0e89987db04a03458",
+  "merge_commit": "7ed61866fbabd540b470b4ca4f1d405679f20550",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-19T14:05:21Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604191200-N6XPEJ",
-  "updated_at": "2026-04-19T12:11:04.433Z",
+  "updated_at": "2026-04-19T14:05:21Z",
   "verify": {
     "status": "pass"
   }

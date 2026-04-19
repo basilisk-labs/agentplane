@@ -1,10 +1,11 @@
 ---
 id: "202604191200-N6XPEJ"
 title: "Fix pr open when remote branch already exists"
-status: "DOING"
+result_summary: "Merged via PR #477."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-19T12:10:22.023Z"
   updated_by: "CODER"
   note: "Validated branch_pr pr open against a published task branch with a simulated internal push failure; the command now reuses the matching remote head and continues to GitHub PR creation."
-commit: null
+commit:
+  hash: "7ed61866fbabd540b470b4ca4f1d405679f20550"
+  message: "workflow: Fix pr open when remote branch already exists (N6XPEJ) (#477)"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the already-published branch path for pr open, patch the redundant push behavior, and verify that PR creation continues when origin already has the matching branch head."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #477 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Validated branch_pr pr open against a published task branch with a simulated internal push failure; the command now reuses the matching remote head and continues to GitHub PR creation."
+  -
+    type: "status"
+    at: "2026-04-19T14:05:55.359Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #477 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-19T12:10:22.028Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-19T14:05:55.363Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make pr open tolerate an already-published branch and continue PR creation when remote HEAD already matches the local branch, instead of failing on an unnecessary internal push path."
 sections:
   Summary: |-
