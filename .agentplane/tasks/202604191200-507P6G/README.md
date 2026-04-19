@@ -1,10 +1,11 @@
 ---
 id: "202604191200-507P6G"
 title: "Upgrade release workflows off deprecated Node 20 actions"
-status: "DOING"
+result_summary: "Merged via PR #481."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-19T13:19:02.721Z"
   updated_by: "CODER"
   note: "Updated release-related GitHub workflow action majors off the deprecated Node 20-based set, aligned the release workflow contract tests to the new refs, and re-ran workflow contract plus workflow lint checks."
-commit: null
+commit:
+  hash: "9d593f12eeb91bd6a5c136387f1ea928ee30d700"
+  message: "ci: Upgrade release workflows off deprecated Node 20 actions (507P6G) (#481)"
 comments:
   -
     author: "CODER"
     body: "Start: upgrade release-related GitHub Actions off deprecated Node 20-based majors, keep workflow contracts aligned, and validate that publish/release routes still match the new action set."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #481 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Updated release-related GitHub workflow action majors off the deprecated Node 20-based set, aligned the release workflow contract tests to the new refs, and re-ran workflow contract plus workflow lint checks."
+  -
+    type: "status"
+    at: "2026-04-19T14:06:24.749Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #481 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-19T13:19:02.742Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-19T14:06:24.755Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move GitHub Actions used by Core CI, Docs CI, and Publish to npm onto Node 24-compatible action versions before the runner deprecation becomes a hard release blocker."
 sections:
   Summary: |-
