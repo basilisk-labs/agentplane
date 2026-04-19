@@ -367,50 +367,60 @@ export async function ensureNpmVersionsAvailable(
   }
 }
 
+async function runReleasePrepublishPhase(gitRoot: string, phase: "fast" | "heavy"): Promise<void> {
+  await execFileAsync("bun", ["run", `release:prepublish:${phase}`], {
+    cwd: gitRoot,
+    env: {
+      ...process.env,
+      GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME ?? "agentplane-release",
+      GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL ?? "agentplane-release@example.com",
+      GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME ?? "agentplane-release",
+      GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL ?? "agentplane-release@example.com",
+    },
+    maxBuffer: 200 * 1024 * 1024,
+  });
+}
+
 export async function runReleasePrepublishGate(
   gitRoot: string,
   commandLabel: ReleaseCommandLabel = "release apply",
 ): Promise<void> {
-  try {
-    await execFileAsync("bun", ["run", "release:prepublish"], {
-      cwd: gitRoot,
-      env: {
-        ...process.env,
-        GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME ?? "agentplane-release",
-        GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL ?? "agentplane-release@example.com",
-        GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME ?? "agentplane-release",
-        GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL ?? "agentplane-release@example.com",
-      },
-      maxBuffer: 200 * 1024 * 1024,
-    });
-  } catch (err) {
-    const details = String(
-      (err as { stderr?: string; stdout?: string; message?: string } | null)?.stderr ??
-        (err as { stdout?: string; message?: string } | null)?.stdout ??
-        (err as { message?: string } | null)?.message ??
-        "",
-    ).trim();
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message:
-        `Release prepublish gate failed. \`agentplane ${commandLabel} --push\` requires a successful local \`bun run release:prepublish\` run before ${releasePushDescription(commandLabel)}.` +
-        (details ? `\n\n${details}` : ""),
-      context: withDiagnosticContext(
-        { command: commandLabel },
-        {
-          state: "release prepublish validation failed before pushing the release",
-          likelyCause:
-            "one of the local publish gates rejected the current repository state, so the release cannot be pushed safely yet",
-          nextAction: {
-            command: "bun run release:prepublish",
-            reason:
-              `rerun the exact local publish gate and fix the reported failure before retrying ${commandLabel}`,
-            reasonCode: "release_prepublish_failed",
+  for (const phase of ["fast", "heavy"] as const) {
+    try {
+      await runReleasePrepublishPhase(gitRoot, phase);
+    } catch (err) {
+      const details = String(
+        (err as { stderr?: string; stdout?: string; message?: string } | null)?.stderr ??
+          (err as { stdout?: string; message?: string } | null)?.stdout ??
+          (err as { message?: string } | null)?.message ??
+          "",
+      ).trim();
+      throw new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message:
+          `Release prepublish ${phase} phase failed. \`agentplane ${commandLabel} --push\` requires a successful local \`bun run release:prepublish:${phase}\` run before ${releasePushDescription(commandLabel)}.` +
+          (details ? `\n\n${details}` : ""),
+        context: withDiagnosticContext(
+          { command: commandLabel },
+          {
+            state: `release prepublish ${phase} validation failed before ${releasePushDescription(commandLabel)}`,
+            likelyCause:
+              phase === "fast"
+                ? "a lightweight publish-readiness check rejected the current release payload before the expensive validation route started"
+                : "the expensive release validation route rejected the current repository state after the fast publish-readiness checks passed",
+            nextAction: {
+              command: `bun run release:prepublish:${phase}`,
+              reason:
+                phase === "fast"
+                  ? `rerun the fast prepublish phase to fix the exact payload or packaging problem before retrying ${commandLabel}`
+                  : `rerun the heavy prepublish phase to inspect and fix the expensive validation failure before retrying ${commandLabel}`,
+              reasonCode: `release_prepublish_${phase}_failed`,
+            },
           },
-        },
-      ),
-    });
+        ),
+      });
+    }
   }
 }
 
