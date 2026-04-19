@@ -6,12 +6,7 @@ import { cmdTaskMigrate, cmdTaskNormalize, cmdTaskScaffold, cmdTaskScrub } from 
 import { defaultConfig } from "@agentplaneorg/core";
 import * as taskBackend from "../backends/task-backend.js";
 import type { TaskData } from "../backends/task-backend.js";
-import {
-  captureStdIO,
-  mkGitRepoRoot,
-  silenceStdIO,
-  writeDefaultConfig,
-} from "../testing/index.js";
+import { captureStdIO, mkGitRepoRoot, silenceStdIO, writeDefaultConfig } from "../testing/index.js";
 
 function baseTaskBackend(overrides: Partial<taskBackend.TaskBackend>): taskBackend.TaskBackend {
   return {

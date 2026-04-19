@@ -3,11 +3,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import {
-  createUpgradeBundle,
-  describeWhenNotHook,
-  tempRepo,
-} from "../testing/index.js";
+import { createUpgradeBundle, describeWhenNotHook, tempRepo } from "../testing/index.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
 
 async function exists(absPath: string): Promise<boolean> {

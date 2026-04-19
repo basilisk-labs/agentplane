@@ -24,12 +24,7 @@ import {
 } from "../../agentplane/src/commands/scenario.js";
 import { exitCodeForError } from "../../agentplane/src/cli/exit-codes.js";
 import { parseCommandArgv } from "../../agentplane/src/cli/spec/parse.js";
-import {
-  captureStdIO,
-  createRecipeArchive,
-  mkGitRepoRoot,
-  writeDefaultConfig,
-} from "./cli.js";
+import { captureStdIO, createRecipeArchive, mkGitRepoRoot, writeDefaultConfig } from "./cli.js";
 import { CliError } from "../../agentplane/src/shared/errors.js";
 import { recipesCachePruneSpec } from "../../agentplane/src/commands/recipes/cache-prune.command.js";
 import { recipesAddSpec } from "../../agentplane/src/commands/recipes/add.command.js";
@@ -137,7 +132,11 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
   for (const entry of recipes) {
     const record = entry as Record<string, unknown>;
     const manifest = record.manifest as Record<string, unknown>;
-    const recipeId = readStringFixtureValue(record, "id", readStringFixtureValue(manifest, "id", ""));
+    const recipeId = readStringFixtureValue(
+      record,
+      "id",
+      readStringFixtureValue(manifest, "id", ""),
+    );
     const recipeVersion = readStringFixtureValue(
       record,
       "version",
@@ -152,7 +151,11 @@ export async function writeInstalledRecipes(projectDir: string, recipes: unknown
         : [];
     const recipeDir = path.join(recipesDir, recipeId, recipeVersion);
     await mkdir(recipeDir, { recursive: true });
-    await writeFile(path.join(recipeDir, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
+    await writeFile(
+      path.join(recipeDir, "manifest.json"),
+      JSON.stringify(manifest, null, 2),
+      "utf8",
+    );
     const vendoredRecipeDir = resolveProjectRecipeDir(projectDir, recipeId);
     await mkdir(vendoredRecipeDir, { recursive: true });
     await writeFile(
@@ -377,7 +380,9 @@ export async function installRecipe(opts: {
     });
     if (opts.vendor ?? true) {
       const recipesHome = process.env.AGENTPLANE_HOME?.trim() ?? requireRecipesTempHome();
-      const installed = JSON.parse(await readFile(path.join(recipesHome, "recipes.json"), "utf8")) as {
+      const installed = JSON.parse(
+        await readFile(path.join(recipesHome, "recipes.json"), "utf8"),
+      ) as {
         recipes?: { id: string; version: string }[];
       };
       const latest = installed.recipes?.at(-1);

@@ -154,7 +154,10 @@ function buildScenarios(exampleConfig) {
 }
 
 async function main() {
-  const [exampleConfig, corePackage] = await Promise.all([loadExampleConfig(), loadCorePackageJson()]);
+  const [exampleConfig, corePackage] = await Promise.all([
+    loadExampleConfig(),
+    loadCorePackageJson(),
+  ]);
   const scenarios = buildScenarios(exampleConfig);
   const mismatches = [];
 
@@ -196,19 +199,29 @@ async function main() {
   const residualAjvDependencies = ["ajv", "ajv-formats"].filter((name) => name in dependencies);
 
   process.stdout.write(`Compared ${scenarios.length} config parity scenarios.\n`);
-  process.stdout.write("Config runtime source: packages/core/src/config/config.ts -> AgentplaneConfigSchema\n");
-  process.stdout.write(`Residual AJV package deps: ${residualAjvDependencies.join(", ") || "none"}\n`);
+  process.stdout.write(
+    "Config runtime source: packages/core/src/config/config.ts -> AgentplaneConfigSchema\n",
+  );
+  process.stdout.write(
+    `Residual AJV package deps: ${residualAjvDependencies.join(", ") || "none"}\n`,
+  );
 
   if (mismatches.length === 0) {
-    process.stdout.write("Parity OK: runtime wrapper and Zod schema produce identical sanitized outcomes.\n");
+    process.stdout.write(
+      "Parity OK: runtime wrapper and Zod schema produce identical sanitized outcomes.\n",
+    );
     return;
   }
 
   process.stdout.write("\nDetected mismatches:\n");
   for (const mismatch of mismatches) {
     process.stdout.write(`- ${mismatch.name}: ${mismatch.reason}\n`);
-    process.stdout.write(`  runtime: ${mismatch.runtime.ok ? serialize(mismatch.runtime.value) : mismatch.runtime.error}\n`);
-    process.stdout.write(`  schema: ${mismatch.schema.ok ? serialize(mismatch.schema.value) : mismatch.schema.error}\n`);
+    process.stdout.write(
+      `  runtime: ${mismatch.runtime.ok ? serialize(mismatch.runtime.value) : mismatch.runtime.error}\n`,
+    );
+    process.stdout.write(
+      `  schema: ${mismatch.schema.ok ? serialize(mismatch.schema.value) : mismatch.schema.error}\n`,
+    );
   }
   process.exitCode = 1;
 }

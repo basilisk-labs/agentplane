@@ -4,11 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import {
-  commitAll,
-  describeWhenNotHook,
-  tempRepo,
-} from "../../testing/index.js";
+import { commitAll, describeWhenNotHook, tempRepo } from "../../testing/index.js";
 import { seedReleaseWorkspace } from "../../../../testkit/src/release.js";
 import { runReleasePlan, releasePlanSpec } from "./plan.command.js";
 
