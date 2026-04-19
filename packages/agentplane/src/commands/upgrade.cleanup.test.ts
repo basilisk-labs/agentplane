@@ -1,7 +1,7 @@
 import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
 import { createUpgradeBundle, describeWhenNotHook, tempRepo } from "../testing/index.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
