@@ -1,10 +1,11 @@
 ---
 id: "202604191531-ZV3X7P"
 title: "Advance epic E′ testkit consolidation"
-status: "DOING"
+result_summary: "Moved the active CLI harness implementation into @agentplane/testkit while preserving agentplane compatibility helpers."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-19T15:37:22.383Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/testkit/src/index.test.ts packages/testkit/src/cli.test.ts packages/agentplane/src/cli/run-cli.test-helpers.test.ts; Result: pass; Evidence: 3 files and 3 tests passed after moving the active harness into testkit and keeping compatibility re-exports. Scope: testkit package surface and agentplane helper compatibility. Command: bun run --filter=@agentplane/testkit typecheck; Result: pass; Evidence: @agentplane/testkit typecheck exited with code 0. Scope: moved testkit sources and package boundary."
-commit: null
+commit:
+  hash: "2f28fb88841e12779abf253fc2084f9cac5dfc1b"
+  message: "🧪 testkit: move cli harness into package"
 comments:
   -
     author: "CODER"
     body: "Start: consolidate the current test harness into @agentplane/testkit while preserving compatibility imports in agentplane."
+  -
+    author: "CODER"
+    body: "Verified: the active CLI harness now has its own implementation inside @agentplane/testkit, and compatibility entrypoints in agentplane continue to serve existing tests."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/testkit/src/index.test.ts packages/testkit/src/cli.test.ts packages/agentplane/src/cli/run-cli.test-helpers.test.ts; Result: pass; Evidence: 3 files and 3 tests passed after moving the active harness into testkit and keeping compatibility re-exports. Scope: testkit package surface and agentplane helper compatibility. Command: bun run --filter=@agentplane/testkit typecheck; Result: pass; Evidence: @agentplane/testkit typecheck exited with code 0. Scope: moved testkit sources and package boundary."
+  -
+    type: "status"
+    at: "2026-04-19T15:38:36.726Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the active CLI harness now has its own implementation inside @agentplane/testkit, and compatibility entrypoints in agentplane continue to serve existing tests."
 doc_version: 3
-doc_updated_at: "2026-04-19T15:37:22.391Z"
+doc_updated_at: "2026-04-19T15:38:36.727Z"
 doc_updated_by: "CODER"
 description: "Move active testing utilities into @agentplane/testkit, leave thin compatibility entrypoints in agentplane, and start removing test-only helpers from production paths."
 sections:
