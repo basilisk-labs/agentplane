@@ -1,1 +1,1 @@
-export * from "./cli-harness.js";
+export * from "../../../testkit/dist/cli.js";
