@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604191200-J57Q9H/split-release-prepublish",
   "created_at": "2026-04-19T13:22:57.345Z",
-  "head_sha": "57161a18c61118fbd19ac723a52902ad52604bfa",
+  "head_sha": "195ee6e16ca7f3da08f436f49520fdb5fb6fe4e8",
   "last_verified_at": "2026-04-19T13:22:57.262Z",
   "last_verified_sha": "206794d6e94f44af07e890f0e89987db04a03458",
+  "merge_commit": "c0f0cac41bc844eaf3ff587d01da47177d274bed",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-19T14:20:59Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604191200-J57Q9H",
-  "updated_at": "2026-04-19T13:23:47.497Z",
+  "updated_at": "2026-04-19T14:20:59Z",
   "verify": {
     "status": "pass"
   }
