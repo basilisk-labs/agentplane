@@ -2,7 +2,7 @@ import { taskDocToSectionMap } from "@agentplaneorg/core";
 
 import { exitCodeForError } from "../cli/exit-codes.js";
 
-import { CliError } from "./errors.js";
+import { CliError } from "../shared/errors.js";
 
 function normalizeDocComparison(text: string | null | undefined): string {
   return String(text ?? "")

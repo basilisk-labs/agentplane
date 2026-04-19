@@ -1,7 +1,7 @@
 import os from "node:os";
 import path from "node:path";
 
-import { readDiagnosticContext } from "../../shared/diagnostics.js";
+import { readDiagnosticContext } from "../../commands/shared/diagnostics.js";
 import { formatJsonError } from "../../shared/errors.js";
 import type { CliError } from "../../shared/errors.js";
 import { getReasonCodeMeta } from "../reason-codes.js";

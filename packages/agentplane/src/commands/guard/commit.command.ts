@@ -4,7 +4,7 @@ import { CliError } from "../../shared/errors.js";
 import {
   findRepoWideAllowPrefixes,
   repoWideAllowPrefixMessage,
-} from "../../shared/allow-prefix-policy.js";
+} from "../shared/allow-prefix-policy.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { cmdGuardCommit } from "./index.js";

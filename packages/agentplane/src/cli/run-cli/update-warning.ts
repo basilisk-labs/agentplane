@@ -11,7 +11,7 @@ import {
   type UpdateCheckCache,
 } from "../update-check.js";
 import { resolveAgentplaneHome } from "./error-guidance.js";
-import { compareVersions } from "../../shared/version-compare.js";
+import { compareVersions } from "../../runtime/shared/version-compare.js";
 
 const UPDATE_CHECK_PACKAGE = "agentplane";
 const UPDATE_CHECK_URL = `https://registry.npmjs.org/${UPDATE_CHECK_PACKAGE}/latest`;

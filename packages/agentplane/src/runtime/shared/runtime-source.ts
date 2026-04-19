@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   resolveFrameworkBinaryContext,
   type FrameworkBinaryContext,
-} from "../../bin/runtime-context.js";
+} from "../../../bin/runtime-context.js";
 
 const ACTIVE_BIN_ENV = "AGENTPLANE_RUNTIME_ACTIVE_BIN";
 const HANDOFF_FROM_ENV = "AGENTPLANE_RUNTIME_HANDOFF_FROM";

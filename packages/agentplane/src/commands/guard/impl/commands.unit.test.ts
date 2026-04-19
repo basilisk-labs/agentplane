@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
-import { readDiagnosticContext } from "../../../shared/diagnostics.js";
+import { readDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({

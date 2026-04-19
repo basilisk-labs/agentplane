@@ -7,7 +7,7 @@ import { resolveTaskIndexPath } from "../../../backends/task-index.js";
 import { mapCoreError } from "../../../cli/error-map.js";
 import { infoMessage, successMessage } from "../../../cli/output.js";
 import { stripAnsi } from "../../../cli/shared/ansi.js";
-import { withDiagnosticContext } from "../../../shared/diagnostics.js";
+import { withDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 import { protectedPathKindForFile } from "../../../shared/protected-paths.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commit-pr-artifacts.js";

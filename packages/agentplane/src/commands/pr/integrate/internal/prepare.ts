@@ -7,7 +7,7 @@ import type { TaskData } from "../../../../backends/task-backend.js";
 import { fileExists } from "../../../../cli/fs-utils.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { unknownEntityMessage, workflowModeMessage } from "../../../../cli/output.js";
-import { withDiagnosticContext } from "../../../../shared/diagnostics.js";
+import { withDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../../shared/errors.js";
 import { ensureGitClean } from "../../../guard/index.js";
 import { gitDiffNames } from "../../../shared/git-diff.js";

@@ -1,4 +1,4 @@
-import { normalizeGitPathPrefix } from "./git-path.js";
+import { normalizeGitPathPrefix } from "../../shared/git-path.js";
 
 export function findRepoWideAllowPrefixes(prefixes: string[]): string[] {
   return prefixes.filter((prefix) => normalizeGitPathPrefix(prefix) === ".");

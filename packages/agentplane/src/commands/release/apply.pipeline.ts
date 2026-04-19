@@ -11,7 +11,7 @@ import { createCliEmitter, emitCommandResult } from "../../cli/output.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandSpec } from "../../cli/spec/spec.js";
-import { withDiagnosticContext } from "../../shared/diagnostics.js";
+import { withDiagnosticContext } from "../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { GitContext } from "../shared/git-context.js";

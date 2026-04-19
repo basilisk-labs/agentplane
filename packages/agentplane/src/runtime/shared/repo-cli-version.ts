@@ -5,7 +5,7 @@ import {
   FRAMEWORK_DEV_GLOBAL_VERIFY_COMMAND,
   FRAMEWORK_DEV_REINSTALL_SCRIPT,
   FRAMEWORK_DEV_REPO_LOCAL_VERIFY_COMMAND,
-} from "../../bin/framework-dev-contract.js";
+} from "../../../bin/framework-dev-contract.js";
 import type { RuntimeSourceInfo } from "./runtime-source.js";
 import { compareVersions } from "./version-compare.js";
 

@@ -3,8 +3,8 @@ import type { AgentplaneConfig } from "@agentplaneorg/core";
 import {
   evaluateRepoCliVersionExpectation,
   type RepoCliVersionExpectation,
-} from "../../shared/repo-cli-version.js";
-import { describeRuntimeMode, resolveRuntimeSourceInfo } from "../../shared/runtime-source.js";
+} from "../../runtime/shared/repo-cli-version.js";
+import { describeRuntimeMode, resolveRuntimeSourceInfo } from "../../runtime/shared/runtime-source.js";
 
 function renderCliVersionFacts(expectation: RepoCliVersionExpectation): string[] {
   if (!expectation.expectedVersion) return [];

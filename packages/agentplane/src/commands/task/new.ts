@@ -10,7 +10,7 @@ import {
 } from "../../runtime/task-intake/index.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import { CliError } from "../../shared/errors.js";
-import { buildTaskDocState } from "../../shared/task-doc-state.js";
+import { buildTaskDocState } from "../../task-doc/state.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import type { TaskData } from "../../backends/task-backend/shared/types.js";
 import {

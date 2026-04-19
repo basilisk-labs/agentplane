@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { buildTaskDocState } from "../../shared/task-doc-state.js";
+import { buildTaskDocState } from "../../task-doc/state.js";
 
 import type { BehaviorLayer } from "../behavior/index.js";
 import type { AgentplaneCapabilityRegistry } from "../capabilities/index.js";

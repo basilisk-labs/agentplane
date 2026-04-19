@@ -8,7 +8,7 @@ import type { TaskData, TaskEvent } from "../../../backends/task-backend.js";
 import {
   assertExpectedTaskDoc,
   assertExpectedTaskSection,
-} from "../../../shared/task-doc-conflicts.js";
+} from "../../../task-doc/conflicts.js";
 import type {
   CachedTask,
   TaskComment,

@@ -11,7 +11,7 @@ import {
 import {
   evaluateRepoCliVersionExpectation,
   type RepoCliVersionExpectation,
-} from "../shared/repo-cli-version.js";
+} from "../runtime/shared/repo-cli-version.js";
 import {
   FRAMEWORK_DEV_BOOTSTRAP_COMMAND,
   FRAMEWORK_DEV_FORCE_GLOBAL_EXAMPLE,
@@ -24,7 +24,7 @@ import {
   describeRuntimeMode,
   resolveRuntimeSourceInfo,
   type RuntimeSourceInfo,
-} from "../shared/runtime-source.js";
+} from "../runtime/shared/runtime-source.js";
 
 const output = createCliEmitter();
 

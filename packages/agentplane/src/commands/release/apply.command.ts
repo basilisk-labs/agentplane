@@ -3,7 +3,7 @@ import { loadConfig, resolveBaseBranch } from "@agentplaneorg/core";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
-import { withDiagnosticContext } from "../../shared/diagnostics.js";
+import { withDiagnosticContext } from "../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
 import { runReleaseCommandPipeline } from "./apply.pipeline.js";

@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import {
   AGENT_PROMPT_GITIGNORE_LINES,
   RUNTIME_GITIGNORE_LINES,
-} from "../../../../shared/runtime-artifacts.js";
+} from "../../../../runtime/shared/runtime-artifacts.js";
 import { writeTextIfChanged } from "../../../../shared/write-if-changed.js";
 
 async function readTextIfExists(filePath: string): Promise<string | null> {

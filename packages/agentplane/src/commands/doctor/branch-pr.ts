@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import { renderDiagnosticFinding } from "../../shared/diagnostics.js";
+import { renderDiagnosticFinding } from "../shared/diagnostics.js";
 import { backendUsesLocalTaskStore, type CommandContext } from "../shared/task-backend.js";
 import {
   findDoneBranchPrTasksWithOpenPrArtifacts,

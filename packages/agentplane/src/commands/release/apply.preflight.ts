@@ -2,7 +2,7 @@ import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
-import { withDiagnosticContext } from "../../shared/diagnostics.js";
+import { withDiagnosticContext } from "../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 

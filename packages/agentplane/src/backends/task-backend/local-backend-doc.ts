@@ -14,7 +14,7 @@ import {
 import {
   assertExpectedTaskDoc,
   assertExpectedTaskSection,
-} from "../../shared/task-doc-conflicts.js";
+} from "../../task-doc/conflicts.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 
 import {

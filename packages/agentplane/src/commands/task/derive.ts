@@ -3,7 +3,7 @@ import { setMarkdownSection } from "@agentplaneorg/core";
 import { mapBackendError } from "../../cli/error-map.js";
 import { unknownEntityMessage, warnMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { buildTaskDocState } from "../../shared/task-doc-state.js";
+import { buildTaskDocState } from "../../task-doc/state.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import {
   buildDefaultVerifyStepsSection,
