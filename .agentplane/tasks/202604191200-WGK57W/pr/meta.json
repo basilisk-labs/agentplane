@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604191200-WGK57W/release-closure-evidence",
   "created_at": "2026-04-19T13:40:09.113Z",
-  "head_sha": "37d3f0d78bc43922aad864673ed529f8f7a27a55",
+  "head_sha": "72790525575a8a2a6bc8d4c65a99c25ff8163e5a",
   "last_verified_at": "2026-04-19T13:40:09.063Z",
   "last_verified_sha": "206794d6e94f44af07e890f0e89987db04a03458",
+  "merge_commit": "c26b7c23afb447d4d2d76c7e158fffb459967652",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-19T14:07:51Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604191200-WGK57W",
-  "updated_at": "2026-04-19T13:43:32.535Z",
+  "updated_at": "2026-04-19T14:07:51Z",
   "verify": {
     "status": "pass"
   }
