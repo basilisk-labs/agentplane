@@ -1,10 +1,11 @@
 ---
 id: "202604191200-MA7MQ4"
 title: "Add fail-fast preflight for release candidate route"
-status: "DOING"
+result_summary: "Merged via PR #479."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-19T12:31:53.146Z"
   updated_by: "CODER"
   note: "Added a fail-fast release-candidate preflight layer by reusing the shared release preflight checks with command-aware diagnostics, then covered the new dirty-tracked-tree branch_pr route with release apply regressions kept green."
-commit: null
+commit:
+  hash: "6b36f2c66be81c6f53586ec5ee0010cc0a8efa82"
+  message: "release: Add fail-fast preflight for release candidate route (MA7MQ4) (#479)"
 comments:
   -
     author: "CODER"
     body: "Start: add a fail-fast preflight for release candidate so clean-tree and release prerequisite failures stop before the heavy release validation route runs."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #479 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added a fail-fast release-candidate preflight layer by reusing the shared release preflight checks with command-aware diagnostics, then covered the new dirty-tracked-tree branch_pr route with release apply regressions kept green."
+  -
+    type: "status"
+    at: "2026-04-19T14:06:09.436Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #479 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-19T12:31:53.157Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-19T14:06:09.442Z"
+doc_updated_by: "INTEGRATOR"
 description: "Validate clean tracked tree, authored release notes, and other cheap release-candidate prerequisites before launching the expensive release:prepublish gate in branch_pr mode."
 sections:
   Summary: |-
