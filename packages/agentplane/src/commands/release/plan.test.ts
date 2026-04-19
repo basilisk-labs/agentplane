@@ -2,7 +2,7 @@ import { execFile } from "node:child_process";
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
 import { commitAll, describeWhenNotHook, tempRepo } from "../../testing/index.js";
 import { seedReleaseWorkspace } from "../../../../testkit/src/release.js";

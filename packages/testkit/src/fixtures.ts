@@ -2,7 +2,6 @@ import { rm } from "node:fs/promises";
 
 import { defaultConfig } from "@agentplaneorg/core";
 
-import { makeTaskBackendDouble } from "./task.js";
 import {
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
@@ -10,6 +9,7 @@ import {
   writeConfig,
   writeDefaultConfig,
 } from "./cli.js";
+export { makeTaskBackendDouble as mockTaskBackend } from "./task.js";
 
 export type TempRepoHandle = {
   root: string;
@@ -59,5 +59,3 @@ export function mockConfig(
   configure?.(config);
   return config;
 }
-
-export const mockTaskBackend = makeTaskBackendDouble;

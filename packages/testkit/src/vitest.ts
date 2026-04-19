@@ -16,10 +16,10 @@ export function describeWhenEnvPresent(enabled: boolean): DescribeFn {
  */
 export const describeWhenNotHook = (
   process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe
-) as DescribeFn;
+);
 
 /**
  * Use to mark critical contract suites. This is currently an alias of `describe`
  * so the semantic tag lives in one place even before we add separate routing.
  */
-export const describeCritical = describe as DescribeFn;
+export const describeCritical: DescribeFn = describe;

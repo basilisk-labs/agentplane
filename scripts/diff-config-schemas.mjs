@@ -47,21 +47,24 @@ function formatSchemaIssues(issues) {
     .map((issue) => {
       const pathLabel = formatIssuePath(issue);
       switch (issue.code) {
-        case "invalid_type":
+        case "invalid_type": {
           if (issue.expected === "object") return `${pathLabel} must be object`;
           if (issue.expected === "boolean") return `${pathLabel} must be boolean`;
           if (issue.expected === "array") return `${pathLabel} must be array`;
           if (issue.expected === "string") return `${pathLabel} must be string`;
           if (issue.expected === "number") return `${pathLabel} must be number`;
           return `${pathLabel} has invalid type`;
+        }
         case "invalid_literal":
         case "invalid_enum_value":
         case "too_small":
         case "too_big":
-        case "invalid_string":
+        case "invalid_string": {
           return pathLabel;
-        default:
+        }
+        default: {
           return issue.message ? `${pathLabel}: ${issue.message}` : pathLabel;
+        }
       }
     })
     .join("; ");
