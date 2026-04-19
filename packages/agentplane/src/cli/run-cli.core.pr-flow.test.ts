@@ -53,7 +53,7 @@ import {
   writeConfig,
   writeDefaultConfig,
   recordVerificationOk,
-} from "./run-cli.test-helpers.js";
+} from "../testing/index.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 

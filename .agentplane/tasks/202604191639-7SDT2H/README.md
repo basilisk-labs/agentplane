@@ -1,10 +1,10 @@
 ---
 id: "202604191639-7SDT2H"
 title: "Retire run-cli test helper shim after final CLI migration"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -19,14 +19,31 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-04-19T17:31:07.276Z"
+  updated_by: "CODER"
+  note: "Retired run-cli test shim and migrated remaining CLI suites to canonical testkit exports."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: migrate the remaining heavy CLI consumers off packages/agentplane/src/cli/run-cli.test-helpers.ts, delete the shim once no imports remain, and verify the affected heavy CLI suites in direct mode."
+events:
+  -
+    type: "status"
+    at: "2026-04-19T17:02:28.258Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: migrate the remaining heavy CLI consumers off packages/agentplane/src/cli/run-cli.test-helpers.ts, delete the shim once no imports remain, and verify the affected heavy CLI suites in direct mode."
+  -
+    type: "verify"
+    at: "2026-04-19T17:31:07.276Z"
+    author: "CODER"
+    state: "ok"
+    note: "Retired run-cli test shim and migrated remaining CLI suites to canonical testkit exports."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:39:00.142Z"
+doc_updated_at: "2026-04-19T17:31:07.283Z"
 doc_updated_by: "CODER"
 description: "Epic E′. Migrate the remaining CLI test consumers away from run-cli.test-helpers.ts and delete the shim once no imports remain."
 sections:
@@ -37,21 +54,31 @@ sections:
   Scope: |-
     - In scope: Epic E′. Migrate the remaining CLI test consumers away from run-cli.test-helpers.ts and delete the shim once no imports remain.
     - Out of scope: unrelated refactors not required for "Retire run-cli test helper shim after final CLI migration".
-  Plan: |-
-    1. Implement the change for "Retire run-cli test helper shim after final CLI migration".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+  Plan: "1. Repoint every remaining CLI consumer of run-cli.test-helpers.ts to the testing compatibility entrypoint. 2. Delete packages/agentplane/src/cli/run-cli.test-helpers.ts once no imports remain. 3. Run a focused heavy CLI Vitest batch covering the migrated files, then refresh the repo-local runtime snapshot if the deleted watched source requires it. 4. Record verification and finish with task-scoped commit evidence."
   Verify Steps: |-
     1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
     2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-19T17:31:07.276Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Retired run-cli test shim and migrated remaining CLI suites to canonical testkit exports.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T17:02:28.290Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: No imports reference run-cli.test-helpers.js under packages/agentplane/src; heavy CLI suites passed after rerunning unstable PR-flow files in single-worker mode; framework bootstrap refreshed the repo-local runtime after shim deletion.
+      Impact: CLI and non-CLI tests now use one canonical testkit surface, and the obsolete src/cli/run-cli.test-helpers.ts shim is removed without behavioral regressions.
+      Resolution: Validated the migrated CLI batches, removed the shim, rebuilt the repo-local runtime, and recorded the single-worker workaround needed for the two slow PR-flow suites.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -67,9 +94,7 @@ Epic E′. Migrate the remaining CLI test consumers away from run-cli.test-helpe
 
 ## Plan
 
-1. Implement the change for "Retire run-cli test helper shim after final CLI migration".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Repoint every remaining CLI consumer of run-cli.test-helpers.ts to the testing compatibility entrypoint. 2. Delete packages/agentplane/src/cli/run-cli.test-helpers.ts once no imports remain. 3. Run a focused heavy CLI Vitest batch covering the migrated files, then refresh the repo-local runtime snapshot if the deleted watched source requires it. 4. Record verification and finish with task-scoped commit evidence.
 
 ## Verify Steps
 
@@ -80,6 +105,14 @@ Epic E′. Migrate the remaining CLI test consumers away from run-cli.test-helpe
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-19T17:31:07.276Z — VERIFY — ok
+
+By: CODER
+
+Note: Retired run-cli test shim and migrated remaining CLI suites to canonical testkit exports.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T17:02:28.290Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -88,3 +121,9 @@ Epic E′. Migrate the remaining CLI test consumers away from run-cli.test-helpe
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: No imports reference run-cli.test-helpers.js under packages/agentplane/src; heavy CLI suites passed after rerunning unstable PR-flow files in single-worker mode; framework bootstrap refreshed the repo-local runtime after shim deletion.
+  Impact: CLI and non-CLI tests now use one canonical testkit surface, and the obsolete src/cli/run-cli.test-helpers.ts shim is removed without behavioral regressions.
+  Resolution: Validated the migrated CLI batches, removed the shim, rebuilt the repo-local runtime, and recorded the single-worker workaround needed for the two slow PR-flow suites.
+  Promotion: incident-candidate
+  Fixability: external
