@@ -24,6 +24,7 @@ agentplane task new --title "..." --description "..." --priority med --owner <RO
 agentplane task plan set <task-id> --text "..." --updated-by <ROLE>
 agentplane task plan approve <task-id> --by ORCHESTRATOR
 agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
+agentplane commit <task-id> -m "✨ <SUFFIX> <scope>: <summary>" --allow <path-prefix>
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
 agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>
 ```
@@ -51,3 +52,4 @@ If any step fails:
 - MUST stop and request re-approval on material drift.
 - Do not use worktrees in direct mode.
 - Do not perform `branch_pr`-only operations.
+- Task-scoped implementation commits in direct mode MUST use `agentplane commit <task-id> ...` (or the close commit created by `finish`); plain `git commit` is reserved for explicit non-task maintenance commits and therefore uses the non-task subject template.
