@@ -1,10 +1,10 @@
 ---
 id: "202604191639-Z4DA83"
 title: "Modularize task finish workflow"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -14,19 +14,30 @@ tags:
   - "task"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-19T19:00:20.280Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: mapping the finish command phases so validation, incident promotion, and close-tail orchestration can move out of finish.ts without carrying compatibility scaffolding."
+events:
+  -
+    type: "status"
+    at: "2026-04-19T19:00:21.282Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: mapping the finish command phases so validation, incident promotion, and close-tail orchestration can move out of finish.ts without carrying compatibility scaffolding."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:39:46.957Z"
+doc_updated_at: "2026-04-19T19:00:21.294Z"
 doc_updated_by: "CODER"
 description: "Epic C′. Split task finish into validation, artifact, commit, and post-effect phases."
 sections:
