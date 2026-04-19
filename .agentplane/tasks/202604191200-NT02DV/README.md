@@ -1,10 +1,11 @@
 ---
 id: "202604191200-NT02DV"
 title: "Isolate runtime-source tests from ambient AGENTPLANE env"
-status: "TODO"
+result_summary: "Merged via PR #480."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -21,8 +22,13 @@ verification:
   updated_at: "2026-04-19T12:36:01.834Z"
   updated_by: "CODER"
   note: "Isolated runtime-mode tests from inherited AGENTPLANE_* env by introducing a shared runtime test-env helper, wiring runtime-source/runtime.command/repo-local-handoff to it, and adding a regression that proves ambient handoff flags no longer change runtime-source outcomes."
-commit: null
-comments: []
+commit:
+  hash: "ff29878a4c6c12a96841ba2016c280dc6731e244"
+  message: "tests: Isolate runtime-source tests from ambient AGENTPLANE env (NT02DV) (#480)"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #480 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "verify"
@@ -30,9 +36,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Isolated runtime-mode tests from inherited AGENTPLANE_* env by introducing a shared runtime test-env helper, wiring runtime-source/runtime.command/repo-local-handoff to it, and adding a regression that proves ambient handoff flags no longer change runtime-source outcomes."
+  -
+    type: "status"
+    at: "2026-04-19T14:09:17.755Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #480 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-19T12:36:01.839Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-19T14:09:17.760Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove hidden dependencies on inherited AGENTPLANE_* environment variables in runtime-source and repo-local-handoff test paths so release verification cannot fail because the invoking shell is in a framework checkout."
 sections:
   Summary: |-
