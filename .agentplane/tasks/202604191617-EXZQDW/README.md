@@ -1,10 +1,11 @@
 ---
 id: "202604191617-EXZQDW"
 title: "Collapse agentplane testing helpers into testkit reexports"
-status: "DOING"
+result_summary: "The agentplane testing compatibility layer is now thin and build-safe: packages/agentplane/src/testing delegates to packages/testkit/dist entrypoints, and test-only helper implementations no longer live in agentplane/src."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-19T16:22:34.662Z"
   updated_by: "CODER"
   note: "Testing compatibility layer migration checks passed."
-commit: null
+commit:
+  hash: "3a44cd72f9a59c0f7218475d1d89418da5bcd8ff"
+  message: "🧪 testkit: collapse testing compat layer"
 comments:
   -
     author: "CODER"
     body: "Start: collapse packages/agentplane/src/testing into compatibility reexports over @agentplane/testkit while keeping existing import paths stable, then verify the affected compatibility consumers and runtime snapshot in direct mode."
+  -
+    author: "CODER"
+    body: "Verified: collapsed packages/agentplane/src/testing into compatibility reexports, kept existing import paths stable, reran focused compatibility-consumer tests, confirmed non-test agentplane sources no longer import vitest, rebuilt testkit and agentplane successfully, and refreshed the repo-local runtime snapshot after the watched-source updates."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Testing compatibility layer migration checks passed."
+  -
+    type: "status"
+    at: "2026-04-19T16:23:31.381Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: collapsed packages/agentplane/src/testing into compatibility reexports, kept existing import paths stable, reran focused compatibility-consumer tests, confirmed non-test agentplane sources no longer import vitest, rebuilt testkit and agentplane successfully, and refreshed the repo-local runtime snapshot after the watched-source updates."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:22:34.676Z"
+doc_updated_at: "2026-04-19T16:23:31.383Z"
 doc_updated_by: "CODER"
 description: "Continue epic E′ by turning packages/agentplane/src/testing into a compatibility layer over packages/testkit/src so agentplane/src no longer owns test-only helper implementations."
 sections:
