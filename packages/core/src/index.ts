@@ -30,8 +30,26 @@ export {
 export {
   AGENTPLANE_CONFIG_SCHEMA,
   AgentplaneConfigSchema,
+  listTaskHandoffSchemaErrors,
+  listTaskPrMetaSchemaErrors,
+  listTaskReadmeFrontmatterSchemaErrors,
+  listTasksExportSnapshotSchemaErrors,
   renderAgentplaneConfigSchemaJson,
-} from "./config/config-zod.js";
+  renderTaskHandoffSchemaJson,
+  renderTaskPrMetaSchemaJson,
+  renderTaskReadmeFrontmatterSchemaJson,
+  renderTasksExportSchemaJson,
+  validateTaskHandoff,
+  validateTaskPrMeta,
+  validateTaskReadmeFrontmatter,
+  validateTasksExportSnapshot,
+  withTaskReadmeFrontmatterDefaults,
+  type TaskHandoff,
+  type TaskHandoffRoute,
+  type TaskHandoffRunnerNextAction,
+  type TaskHandoffRunnerState,
+  type TaskPrMeta,
+} from "./schemas/index.js";
 
 export {
   applyExecutionToApprovals,
@@ -49,27 +67,6 @@ export {
 } from "./tasks/task-readme.js";
 
 export { readTaskReadme, updateTaskReadmeAtomic } from "./tasks/task-readme-io.js";
-
-export {
-  listTaskHandoffSchemaErrors,
-  listTaskPrMetaSchemaErrors,
-  listTaskReadmeFrontmatterSchemaErrors,
-  listTasksExportSnapshotSchemaErrors,
-  renderTaskHandoffSchemaJson,
-  renderTaskPrMetaSchemaJson,
-  renderTaskReadmeFrontmatterSchemaJson,
-  renderTasksExportSchemaJson,
-  validateTaskHandoff,
-  validateTaskPrMeta,
-  validateTaskReadmeFrontmatter,
-  validateTasksExportSnapshot,
-  withTaskReadmeFrontmatterDefaults,
-  type TaskHandoff,
-  type TaskHandoffRoute,
-  type TaskHandoffRunnerNextAction,
-  type TaskHandoffRunnerState,
-  type TaskPrMeta,
-} from "./tasks/task-artifact-schema.js";
 
 export {
   buildDefaultTaskDoc,

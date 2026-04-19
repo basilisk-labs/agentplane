@@ -2,13 +2,13 @@ import path from "node:path";
 import { findDriftedRenderedArtifacts, syncRenderedArtifacts } from "./lib/sync-artifacts.mjs";
 import { parseCheckSyncMode } from "./lib/script-runtime.mjs";
 
-import { renderAgentplaneConfigSchemaJson } from "../packages/core/src/config/config-schema.ts";
 import {
+  renderAgentplaneConfigSchemaJson,
   renderTaskHandoffSchemaJson,
   renderTaskPrMetaSchemaJson,
   renderTaskReadmeFrontmatterSchemaJson,
   renderTasksExportSchemaJson,
-} from "../packages/core/src/tasks/task-artifact-schema.ts";
+} from "../packages/core/src/schemas/index.ts";
 
 function main() {
   const mode = parseCheckSyncMode(process.argv.slice(2), "scripts/sync-schemas.mjs");
