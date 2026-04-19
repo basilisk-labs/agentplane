@@ -145,7 +145,18 @@ export async function validateReleaseNotes(notesPath: string, minBullets: number
   }
 }
 
-export async function ensureCleanTrackedTree(gitRoot: string): Promise<void> {
+type ReleaseCommandLabel = "release apply" | "release candidate";
+
+function releasePushDescription(commandLabel: ReleaseCommandLabel): string {
+  return commandLabel === "release candidate"
+    ? "preparing or pushing the release candidate branch"
+    : "pushing the release tag";
+}
+
+export async function ensureCleanTrackedTree(
+  gitRoot: string,
+  commandLabel: ReleaseCommandLabel = "release apply",
+): Promise<void> {
   const { stdout } = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
     cwd: gitRoot,
     env: gitEnv(),
@@ -161,17 +172,17 @@ export async function ensureCleanTrackedTree(gitRoot: string): Promise<void> {
     exitCode: exitCodeForError("E_GIT"),
     code: "E_GIT",
     message:
-      "Release apply requires a clean tracked working tree.\n" +
+      `${commandLabel} requires a clean tracked working tree.\n` +
       `Found tracked changes:\n${dirty.map((line) => `  ${line}`).join("\n")}`,
     context: withDiagnosticContext(
-      { command: "release apply" },
+      { command: commandLabel },
       {
-        state: "release apply cannot start from a dirty tracked tree",
+        state: `${commandLabel} cannot start from a dirty tracked tree`,
         likelyCause:
           "the release flow needs to create one deterministic version-bump commit and tag, but tracked edits already exist in the workspace",
         nextAction: {
           command: "git status --short --untracked-files=no",
-          reason: "inspect or clear tracked changes before rerunning `agentplane release apply`",
+          reason: `inspect or clear tracked changes before rerunning \`agentplane ${commandLabel}\``,
           reasonCode: "release_dirty_tree",
         },
       },
@@ -179,7 +190,11 @@ export async function ensureCleanTrackedTree(gitRoot: string): Promise<void> {
   });
 }
 
-export async function ensureTagDoesNotExist(gitRoot: string, tag: string): Promise<void> {
+export async function ensureTagDoesNotExist(
+  gitRoot: string,
+  tag: string,
+  commandLabel: ReleaseCommandLabel = "release apply",
+): Promise<void> {
   try {
     await execFileAsync("git", ["rev-parse", "-q", "--verify", `refs/tags/${tag}`], {
       cwd: gitRoot,
@@ -190,7 +205,7 @@ export async function ensureTagDoesNotExist(gitRoot: string, tag: string): Promi
       code: "E_GIT",
       message: `Tag already exists: ${tag}`,
       context: withDiagnosticContext(
-        { command: "release apply" },
+        { command: commandLabel },
         {
           state: "the target release tag already exists locally",
           likelyCause:
@@ -210,7 +225,11 @@ export async function ensureTagDoesNotExist(gitRoot: string, tag: string): Promi
   }
 }
 
-export async function ensureRemoteExists(gitRoot: string, remote: string): Promise<void> {
+export async function ensureRemoteExists(
+  gitRoot: string,
+  remote: string,
+  commandLabel: ReleaseCommandLabel = "release apply",
+): Promise<void> {
   try {
     await execFileAsync("git", ["remote", "get-url", remote], {
       cwd: gitRoot,
@@ -227,14 +246,14 @@ export async function ensureRemoteExists(gitRoot: string, remote: string): Promi
       code: "E_GIT",
       message: `Git remote is not configured: ${remote}` + (details ? `\n\n${details}` : ""),
       context: withDiagnosticContext(
-        { command: "release apply" },
+        { command: commandLabel },
         {
           state: "the configured release remote does not exist locally",
           likelyCause:
             "release apply was asked to push, but the selected git remote is missing or misconfigured in this checkout",
           nextAction: {
             command: "git remote -v",
-            reason: "inspect configured remotes before rerunning release apply with --push",
+            reason: `inspect configured remotes before rerunning ${commandLabel} with --push`,
             reasonCode: "release_remote_missing",
           },
         },
@@ -247,6 +266,7 @@ export async function ensureRemoteTagDoesNotExist(
   gitRoot: string,
   remote: string,
   tag: string,
+  commandLabel: ReleaseCommandLabel = "release apply",
 ): Promise<void> {
   let stdout = "";
   try {
@@ -268,9 +288,9 @@ export async function ensureRemoteTagDoesNotExist(
         `Failed to inspect remote tag state for ${remote}/${tag}.` +
         (details ? `\n\n${details}` : ""),
       context: withDiagnosticContext(
-        { command: "release apply" },
+        { command: commandLabel },
         {
-          state: "release apply could not verify the remote tag state",
+          state: `${commandLabel} could not verify the remote tag state`,
           likelyCause:
             "the remote is configured, but git could not query it for the target release tag before the release started",
           nextAction: {
@@ -290,7 +310,7 @@ export async function ensureRemoteTagDoesNotExist(
     code: "E_GIT",
     message: `Remote tag already exists: ${remote}/${tag}`,
     context: withDiagnosticContext(
-      { command: "release apply" },
+      { command: commandLabel },
       {
         state: "the target release tag already exists on the remote",
         likelyCause:
@@ -306,7 +326,11 @@ export async function ensureRemoteTagDoesNotExist(
   });
 }
 
-export async function ensureNpmVersionsAvailable(gitRoot: string, version: string): Promise<void> {
+export async function ensureNpmVersionsAvailable(
+  gitRoot: string,
+  version: string,
+  commandLabel: ReleaseCommandLabel = "release apply",
+): Promise<void> {
   const scriptPath = path.join(gitRoot, "scripts", "check-npm-version-availability.mjs");
   try {
     await execFileAsync("node", [scriptPath, "--version", version], {
@@ -326,7 +350,7 @@ export async function ensureNpmVersionsAvailable(gitRoot: string, version: strin
         "Ensure this version is not already published for @agentplaneorg/core and agentplane." +
         (details ? `\n\n${details}` : ""),
       context: withDiagnosticContext(
-        { command: "release apply" },
+        { command: commandLabel },
         {
           state: "the target npm version is not publishable",
           likelyCause:
@@ -343,7 +367,10 @@ export async function ensureNpmVersionsAvailable(gitRoot: string, version: strin
   }
 }
 
-export async function runReleasePrepublishGate(gitRoot: string): Promise<void> {
+export async function runReleasePrepublishGate(
+  gitRoot: string,
+  commandLabel: ReleaseCommandLabel = "release apply",
+): Promise<void> {
   try {
     await execFileAsync("bun", ["run", "release:prepublish"], {
       cwd: gitRoot,
@@ -367,10 +394,10 @@ export async function runReleasePrepublishGate(gitRoot: string): Promise<void> {
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message:
-        "Release prepublish gate failed. `agentplane release apply --push` requires a successful local `bun run release:prepublish` run before pushing the release tag." +
+        `Release prepublish gate failed. \`agentplane ${commandLabel} --push\` requires a successful local \`bun run release:prepublish\` run before ${releasePushDescription(commandLabel)}.` +
         (details ? `\n\n${details}` : ""),
       context: withDiagnosticContext(
-        { command: "release apply" },
+        { command: commandLabel },
         {
           state: "release prepublish validation failed before pushing the release",
           likelyCause:
@@ -378,7 +405,7 @@ export async function runReleasePrepublishGate(gitRoot: string): Promise<void> {
           nextAction: {
             command: "bun run release:prepublish",
             reason:
-              "rerun the exact local publish gate and fix the reported failure before retrying release apply",
+              `rerun the exact local publish gate and fix the reported failure before retrying ${commandLabel}`,
             reasonCode: "release_prepublish_failed",
           },
         },

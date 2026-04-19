@@ -104,6 +104,7 @@ async function ensureReleasePlanMatchesRepoState(opts: {
   agentplanePkgPath: string;
   recipesPkgPath: string;
   testkitPkgPath: string;
+  commandLabel: "release apply" | "release candidate";
 }): Promise<void> {
   const [
     coreVersion,
@@ -163,8 +164,8 @@ async function ensureReleasePlanMatchesRepoState(opts: {
     }
   }
 
-  await ensureCleanTrackedTree(opts.gitRoot);
-  await ensureTagDoesNotExist(opts.gitRoot, opts.plan.nextTag);
+  await ensureCleanTrackedTree(opts.gitRoot, opts.commandLabel);
+  await ensureTagDoesNotExist(opts.gitRoot, opts.plan.nextTag, opts.commandLabel);
   if (coreVersion !== opts.plan.prevVersion) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
@@ -174,7 +175,7 @@ async function ensureReleasePlanMatchesRepoState(opts: {
         `current=${coreVersion} expected_prev=${opts.plan.prevVersion} expected_next=${opts.plan.nextVersion}\n` +
         "Re-run `agentplane release plan` to generate a fresh plan for this repo state.",
       context: withDiagnosticContext(
-        { command: "release apply" },
+        { command: opts.commandLabel },
         {
           state: "the repository version no longer matches the prepared release-plan baseline",
           likelyCause:
@@ -220,10 +221,22 @@ async function runPushPreflight(opts: {
     reason: pushReason,
     interactive: Boolean(process.stdin.isTTY),
   });
-  await ensureRemoteExists(opts.gitRoot, opts.remote);
-  await ensureRemoteTagDoesNotExist(opts.gitRoot, opts.remote, opts.nextTag);
-  await ensureNpmVersionsAvailable(opts.gitRoot, opts.nextVersion);
-  await runReleasePrepublishGate(opts.gitRoot);
+  await ensureRemoteExists(opts.gitRoot, opts.remote, opts.commandLabel as "release apply" | "release candidate");
+  await ensureRemoteTagDoesNotExist(
+    opts.gitRoot,
+    opts.remote,
+    opts.nextTag,
+    opts.commandLabel as "release apply" | "release candidate",
+  );
+  await ensureNpmVersionsAvailable(
+    opts.gitRoot,
+    opts.nextVersion,
+    opts.commandLabel as "release apply" | "release candidate",
+  );
+  await runReleasePrepublishGate(
+    opts.gitRoot,
+    opts.commandLabel as "release apply" | "release candidate",
+  );
   return true;
 }
 
@@ -450,6 +463,7 @@ async function runReleaseCommandPreflight(opts: {
     agentplanePkgPath: opts.state.agentplanePkgPath,
     recipesPkgPath: opts.state.recipesPkgPath,
     testkitPkgPath: opts.state.testkitPkgPath,
+    commandLabel: opts.commandLabel as "release apply" | "release candidate",
   });
 
   if (opts.flags.push) {

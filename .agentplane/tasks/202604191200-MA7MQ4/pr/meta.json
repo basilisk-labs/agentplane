@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604191200-MA7MQ4/release-candidate-preflight",
+  "created_at": "2026-04-19T12:31:53.285Z",
+  "head_sha": "64d75a4e9cbdf3dea362dbcf0a381751be7410c6",
+  "last_verified_at": "2026-04-19T12:31:53.146Z",
+  "last_verified_sha": "206794d6e94f44af07e890f0e89987db04a03458",
+  "schema_version": 1,
+  "task_id": "202604191200-MA7MQ4",
+  "updated_at": "2026-04-19T12:33:22.911Z",
+  "verify": {
+    "status": "pass"
+  }
+}

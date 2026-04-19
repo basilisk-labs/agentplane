@@ -308,6 +308,57 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
     RELEASE_APPLY_FULL_GATE_TIMEOUT_MS,
   );
 
+  it(
+    "fails on a dirty tracked tree before preparing a branch_pr release candidate",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await writeWorkflowMode(root, "branch_pr");
+
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.6",
+        cliVersion: "0.2.6",
+        dependencyVersion: "0.2.6",
+      });
+      await commitAll(root, "seed");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+      await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", "main"], {
+        cwd: root,
+      });
+      await execFileAsync("git", ["checkout", "-b", "task/202604130750-E2J835/release-dirty"], {
+        cwd: root,
+      });
+
+      await writeFile(path.join(root, "file.txt"), "x", "utf8");
+      await commitAll(root, "feat: add file");
+
+      await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
+      await writeReleaseNotes(
+        root,
+        "0.2.7",
+        ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+      );
+
+      await writeFile(path.join(root, "file.txt"), "dirty", "utf8");
+
+      await expect(
+        withDryRunReleaseMode(async () =>
+          runReleaseCandidate(
+            { cwd: root, rootOverride: root },
+            { plan: undefined, yes: false, push: false, remote: "origin" },
+          ),
+        ),
+      ).rejects.toMatchObject({
+        code: "E_GIT",
+        context: {
+          diagnostic_state: "release candidate cannot start from a dirty tracked tree",
+          diagnostic_next_action_command: "git status --short --untracked-files=no",
+        },
+      });
+    },
+    RELEASE_APPLY_FULL_GATE_TIMEOUT_MS,
+  );
+
   it("fails early when release tag already exists", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
