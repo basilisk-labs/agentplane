@@ -1,5 +1,7 @@
- .../src/cli/run-cli.core.task-hosted-close.test.ts | 140 +++++----------------
- packages/agentplane/src/commands/task/finish.ts    |  37 ++++++
- .../src/commands/task/finish.unit.test.ts          |  55 ++++++++
- .../src/commands/task/hosted-close-pr.command.ts   |  24 +++-
- 4 files changed, 143 insertions(+), 113 deletions(-)
+ .../src/cli/run-cli.core.task-hosted-close.test.ts | 121 +++++----------------
+ .../src/commands/task/close-tail-state.test.ts     |  50 +++++++++
+ .../src/commands/task/close-tail-state.ts          |  30 +++++
+ packages/agentplane/src/commands/task/finish.ts    |  67 +++++++++++-
+ .../src/commands/task/finish.unit.test.ts          |  71 ++++++++++++
+ .../src/commands/task/hosted-close-pr.command.ts   |  40 ++++++-
+ 6 files changed, 278 insertions(+), 101 deletions(-)

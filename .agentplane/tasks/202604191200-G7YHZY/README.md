@@ -4,7 +4,7 @@ title: "Avoid redundant manual close tails after hosted closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-19T12:24:30.317Z"
+  updated_at: "2026-04-19T13:59:13.700Z"
   updated_by: "CODER"
-  note: "Validated redundant close-tail suppression on base-side canonical closures: finish no longer materializes a task-close branch when the base already has canonical close artifacts, and hosted-close-pr now short-circuits before any GitHub recovery lookup once the task is already closed for that merge."
+  note: "Avoided redundant branch_pr close tails after canonical hosted closure: hosted-close-pr now skips follow-up PR creation when task README history already records a canonical close on base, and finish regression coverage prevents re-materializing redundant local task-close tails; validated by close-tail-state unit tests, finish unit regression, hosted-close-pr CLI regression, eslint, and prettier."
 commit: null
 comments:
   -
@@ -40,8 +40,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Validated redundant close-tail suppression on base-side canonical closures: finish no longer materializes a task-close branch when the base already has canonical close artifacts, and hosted-close-pr now short-circuits before any GitHub recovery lookup once the task is already closed for that merge."
+  -
+    type: "verify"
+    at: "2026-04-19T13:59:13.700Z"
+    author: "CODER"
+    state: "ok"
+    note: "Avoided redundant branch_pr close tails after canonical hosted closure: hosted-close-pr now skips follow-up PR creation when task README history already records a canonical close on base, and finish regression coverage prevents re-materializing redundant local task-close tails; validated by close-tail-state unit tests, finish unit regression, hosted-close-pr CLI regression, eslint, and prettier."
 doc_version: 3
-doc_updated_at: "2026-04-19T12:24:30.331Z"
+doc_updated_at: "2026-04-19T13:59:13.724Z"
 doc_updated_by: "CODER"
 description: "Short-circuit manual close-tail and hosted-close-pr flows when the canonical close commit is already present on main, so branch_pr users cannot create obsolete closure PRs after hosted automation has already closed the task."
 sections:
@@ -69,6 +75,14 @@ sections:
     Note: Validated redundant close-tail suppression on base-side canonical closures: finish no longer materializes a task-close branch when the base already has canonical close artifacts, and hosted-close-pr now short-circuits before any GitHub recovery lookup once the task is already closed for that merge.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T12:11:53.495Z, excerpt_hash=sha256:7f7377d7b755a861569f4277733542dc8a988cb6ba4ca24765076fe38d80cdb0
+    
+    ### 2026-04-19T13:59:13.700Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Avoided redundant branch_pr close tails after canonical hosted closure: hosted-close-pr now skips follow-up PR creation when task README history already records a canonical close on base, and finish regression coverage prevents re-materializing redundant local task-close tails; validated by close-tail-state unit tests, finish unit regression, hosted-close-pr CLI regression, eslint, and prettier.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T12:24:30.331Z, excerpt_hash=sha256:7f7377d7b755a861569f4277733542dc8a988cb6ba4ca24765076fe38d80cdb0
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -115,6 +129,14 @@ By: CODER
 Note: Validated redundant close-tail suppression on base-side canonical closures: finish no longer materializes a task-close branch when the base already has canonical close artifacts, and hosted-close-pr now short-circuits before any GitHub recovery lookup once the task is already closed for that merge.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T12:11:53.495Z, excerpt_hash=sha256:7f7377d7b755a861569f4277733542dc8a988cb6ba4ca24765076fe38d80cdb0
+
+### 2026-04-19T13:59:13.700Z — VERIFY — ok
+
+By: CODER
+
+Note: Avoided redundant branch_pr close tails after canonical hosted closure: hosted-close-pr now skips follow-up PR creation when task README history already records a canonical close on base, and finish regression coverage prevents re-materializing redundant local task-close tails; validated by close-tail-state unit tests, finish unit regression, hosted-close-pr CLI regression, eslint, and prettier.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T12:24:30.331Z, excerpt_hash=sha256:7f7377d7b755a861569f4277733542dc8a988cb6ba4ca24765076fe38d80cdb0
 
 <!-- END VERIFICATION RESULTS -->
 

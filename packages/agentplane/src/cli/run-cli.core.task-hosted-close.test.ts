@@ -875,6 +875,21 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
         cwd: root,
       },
     );
+    const taskReadmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const taskReadme = await readFile(taskReadmePath, "utf8");
+    await writeFile(
+      taskReadmePath,
+      `${taskReadme.trim()}\n\nHosted close already landed.\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", taskReadmePath], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["commit", "--no-verify", "-m", `✅ AD043V close: Merged via PR #97. (${taskId})`],
+      {
+        cwd: root,
+      },
+    );
     const firstGh = await installFakeGhHostedClosePr({
       scenarioName: "already-closed",
       branch: closureBranch,

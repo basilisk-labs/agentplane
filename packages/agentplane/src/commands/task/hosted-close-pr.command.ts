@@ -434,8 +434,7 @@ async function openHostedClosePr(opts: {
     return 0;
   }
   let mergedRecord =
-    sourceBranch.length > 0 &&
-    (meta?.status !== "MERGED" || !localMergeCommit)
+    sourceBranch.length > 0 && (meta?.status !== "MERGED" || !localMergeCommit)
       ? await resolveHostedCloseMergeRecord({
           gitRoot,
           repo,

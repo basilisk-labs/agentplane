@@ -659,31 +659,31 @@ export async function cmdFinish(opts: {
             );
           }
         } else {
-        const closeBranch = await materializeBranchPrCloseTail({
-          ctx,
-          cwd: opts.cwd,
-          rootOverride: opts.rootOverride,
-          taskId: primaryTaskId,
-          baseBranchOverride: opts.baseBranchOverride,
-          quiet: opts.quiet,
-          closeUnstageOthers,
-          allowPolicy: promotedIncidents > 0,
-        });
-        if (!opts.quiet) {
-          if (closeBranch) {
-            process.stdout.write(
-              `${infoMessage(
-                `branch_pr close tail ready on ${closeBranch}; push that branch and open it with task hosted-close-pr if hosted automation does not create the closure PR for you.`,
-              )}\n`,
-            );
-          } else {
-            process.stdout.write(
-              `${infoMessage(
-                "branch_pr close tail already exists on base; skipping local task-close branch materialization.",
-              )}\n`,
-            );
+          const closeBranch = await materializeBranchPrCloseTail({
+            ctx,
+            cwd: opts.cwd,
+            rootOverride: opts.rootOverride,
+            taskId: primaryTaskId,
+            baseBranchOverride: opts.baseBranchOverride,
+            quiet: opts.quiet,
+            closeUnstageOthers,
+            allowPolicy: promotedIncidents > 0,
+          });
+          if (!opts.quiet) {
+            if (closeBranch) {
+              process.stdout.write(
+                `${infoMessage(
+                  `branch_pr close tail ready on ${closeBranch}; push that branch and open it with task hosted-close-pr if hosted automation does not create the closure PR for you.`,
+                )}\n`,
+              );
+            } else {
+              process.stdout.write(
+                `${infoMessage(
+                  "branch_pr close tail already exists on base; skipping local task-close branch materialization.",
+                )}\n`,
+              );
+            }
           }
-        }
         }
       } else {
         await createTaskCloseCommit({
