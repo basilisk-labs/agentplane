@@ -58,16 +58,16 @@ jobs:
           else
             echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           fi
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ steps.ref.outputs.ref }}
           fetch-depth: 0
       - name: Checkout current workflow runtime
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.sha != ''
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: .agentplane/.release/runtime
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: "24"
       - name: Resolve release-ready source
@@ -185,7 +185,7 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN || '' }}
       NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/.npmrc
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ needs.detect.outputs.ref }}
           fetch-depth: 0
@@ -193,11 +193,11 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.3.6"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: "24"
       - name: Download release-ready artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{ needs.detect.outputs.release_ready_artifact_name }}
           path: .agentplane/.release/ready
@@ -232,7 +232,7 @@ jobs:
           EOF
       - run: npm i -g npm@11.5.1
       - name: Cache Bun artifacts
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.bun/install/cache
@@ -324,7 +324,7 @@ jobs:
           git push origin "refs/tags/${{ needs.detect.outputs.tag }}"
       - name: Create GitHub Release
         id: create_release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.detect.outputs.tag }}
           body_path: docs/releases/${{ needs.detect.outputs.tag }}.md
@@ -358,7 +358,7 @@ jobs:
           node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/publish/publish-result.json','utf8')); console.log(payload.message);"
       - name: Upload publish-result artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: publish-result
           path: .agentplane/.release/publish/publish-result.json

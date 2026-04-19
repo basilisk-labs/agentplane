@@ -15,7 +15,7 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain(
       "release_ready_artifact_name: ${{ steps.source.outputs.release_ready_artifact_name }}",
     );
-    expect(workflow).toContain("actions/download-artifact@v4");
+    expect(workflow).toContain("actions/download-artifact@v8");
     expect(workflow).toContain("RELEASE_READY_ARTIFACT_NAME=");
     expect(workflow).toContain('echo "release_ready_artifact_name=${RELEASE_READY_ARTIFACT_NAME}"');
     expect(workflow).toContain("name: ${{ needs.detect.outputs.release_ready_artifact_name }}");
