@@ -22,18 +22,18 @@ Short-circuit manual close-tail and hosted-close-pr flows when the canonical clo
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-19T13:59:13.764Z
+- Updated: 2026-04-19T14:00:06.222Z
 - Branch: task/202604191200-G7YHZY/avoid-redundant-close-tail
-- Head: e1c131c36d1e
+- Head: e1f205fbdebf
 
 ```text
- .../src/cli/run-cli.core.task-hosted-close.test.ts | 121 +++++----------------
- .../src/commands/task/close-tail-state.test.ts     |  50 +++++++++
+ .../src/cli/run-cli.core.task-hosted-close.test.ts | 136 +++++++--------------
+ .../src/commands/task/close-tail-state.test.ts     |  50 ++++++++
  .../src/commands/task/close-tail-state.ts          |  30 +++++
- packages/agentplane/src/commands/task/finish.ts    |  67 +++++++++++-
- .../src/commands/task/finish.unit.test.ts          |  71 ++++++++++++
- .../src/commands/task/hosted-close-pr.command.ts   |  40 ++++++-
- 6 files changed, 278 insertions(+), 101 deletions(-)
+ packages/agentplane/src/commands/task/finish.ts    |  85 ++++++++++---
+ .../src/commands/task/finish.unit.test.ts          |  71 +++++++++++
+ .../src/commands/task/hosted-close-pr.command.ts   |  41 ++++++-
+ 6 files changed, 302 insertions(+), 111 deletions(-)
 ```
 
 </details>
