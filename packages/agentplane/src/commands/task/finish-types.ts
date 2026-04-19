@@ -1,0 +1,71 @@
+import type { CommandContext } from "../shared/task-backend.js";
+import { getTaskStore } from "../shared/task-store.js";
+
+export type FinishOptions = {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskIds: string[];
+  author: string;
+  body: string;
+  result?: string;
+  risk?: "low" | "med" | "high";
+  breaking: boolean;
+  commit?: string;
+  force: boolean;
+  yes?: boolean;
+  commitFromComment: boolean;
+  commitEmoji?: string;
+  commitAllow: string[];
+  commitAutoAllow: boolean;
+  commitAllowTasks: boolean;
+  commitRequireClean: boolean;
+  statusCommit: boolean;
+  statusCommitEmoji?: string;
+  statusCommitAllow: string[];
+  statusCommitAutoAllow: boolean;
+  statusCommitRequireClean: boolean;
+  confirmStatusCommit: boolean;
+  closeCommit?: boolean;
+  noCloseCommit?: boolean;
+  closeUnstageOthers?: boolean;
+  baseBranchOverride?: string;
+  observation?: string;
+  impact?: string;
+  resolution?: string;
+  localOnly?: boolean;
+  repoFixable?: boolean;
+  incidentScope?: string;
+  incidentTags?: string[];
+  incidentMatch?: string[];
+  incidentAdvice?: string;
+  incidentRule?: string;
+  quiet: boolean;
+};
+
+export type FinishStructuredFinding = {
+  observation: string;
+  impact: string;
+  resolution: string;
+  localOnly: boolean;
+  repoFixable: boolean;
+  incidentScope?: string;
+  incidentTags: string[];
+  incidentMatch: string[];
+  incidentAdvice?: string;
+  incidentRule?: string;
+};
+
+export type FinishExecutionPlan = {
+  useStore: boolean;
+  store: ReturnType<typeof getTaskStore> | null;
+  statusCommitRequested: boolean;
+  primaryTaskId: string;
+  metaTaskId: string;
+  resultProvided: boolean;
+  resultSummary: string;
+  riskLevel?: "low" | "med" | "high";
+  breaking: boolean;
+  finishFinding: FinishStructuredFinding | null;
+  shouldCloseCommit: boolean;
+};
