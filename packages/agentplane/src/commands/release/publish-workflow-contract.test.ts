@@ -31,6 +31,15 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("name: publish-result");
     expect(workflow).toContain("path: .agentplane/.release/publish/publish-result.json");
     expect(workflow).toContain("if: always()");
+    expect(workflow).toContain("pull-requests: write");
+    expect(workflow).toContain("Prepare release task evidence");
+    expect(workflow).toContain("bun scripts/release-task-evidence.mjs prepare");
+    expect(workflow).toContain(".agentplane/.release/publish/release-task-evidence.json");
+    expect(workflow).toContain("Check for existing release evidence PR");
+    expect(workflow).toContain("Apply release task evidence on a follow-up branch");
+    expect(workflow).toContain("bun scripts/release-task-evidence.mjs apply");
+    expect(workflow).toContain("Open or recover release evidence PR");
+    expect(workflow).toContain("Enable auto-merge for release evidence PR");
   });
 
   it("checks out recursive submodules before validating the exact-ref publish payload", async () => {

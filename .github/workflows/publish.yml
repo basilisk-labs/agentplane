@@ -22,6 +22,7 @@ permissions:
   actions: read
   contents: write
   id-token: write
+  pull-requests: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.event.inputs.sha || github.event.inputs.ref || github.ref }}
@@ -363,3 +364,152 @@ jobs:
           name: publish-result
           path: .agentplane/.release/publish/publish-result.json
           if-no-files-found: error
+      - name: Prepare release task evidence
+        if: always()
+        id: release_evidence
+        env:
+          RELEASE_SHA: ${{ needs.detect.outputs.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p .agentplane/.release/publish
+          if bun scripts/release-task-evidence.mjs prepare \
+            --release-sha "${RELEASE_SHA}" \
+            --publish-result .agentplane/.release/publish/publish-result.json \
+            --repo "${REPO}" > .agentplane/.release/publish/release-task-evidence.json; then
+            true
+          else
+            true
+          fi
+          node <<'EOF'
+          const fs = require("node:fs");
+          const payload = JSON.parse(
+            fs.readFileSync(".agentplane/.release/publish/release-task-evidence.json", "utf8"),
+          );
+          const out = process.env.GITHUB_OUTPUT;
+          if (!out) throw new Error("GITHUB_OUTPUT is not set");
+          const lines = [`actionable=${payload.actionable ? "true" : "false"}`];
+          for (const key of ["task_id", "base_ref", "release_sha", "closure_branch", "readme_path"]) {
+            if (typeof payload[key] === "string" && payload[key].trim().length > 0) {
+              lines.push(`${key}=${payload[key]}`);
+            }
+          }
+          if (typeof payload.reason === "string") lines.push(`reason=${payload.reason}`);
+          if (typeof payload.pr_title === "string") {
+            lines.push("pr_title<<EOF");
+            lines.push(payload.pr_title);
+            lines.push("EOF");
+          }
+          if (typeof payload.pr_body === "string") {
+            lines.push("pr_body<<EOF");
+            lines.push(payload.pr_body);
+            lines.push("EOF");
+          }
+          fs.appendFileSync(out, `${lines.join("\n")}\n`);
+          EOF
+      - name: Skip release evidence follow-up
+        if: steps.release_evidence.outputs.actionable != 'true'
+        run: |
+          echo "release task evidence skipped: ${{ steps.release_evidence.outputs.reason }}"
+      - name: Check for existing release evidence PR
+        if: steps.release_evidence.outputs.actionable == 'true'
+        id: release_evidence_existing
+        run: |
+          set -euo pipefail
+          pr_url="$(gh pr list \
+            --state open \
+            --head "${{ steps.release_evidence.outputs.closure_branch }}" \
+            --base "${{ steps.release_evidence.outputs.base_ref }}" \
+            --json url \
+            --jq '.[0].url // ""')"
+          echo "pr_url=${pr_url}" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --heads origin "${{ steps.release_evidence.outputs.closure_branch }}" >/dev/null 2>&1; then
+            echo "branch_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "branch_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Apply release task evidence on a follow-up branch
+        if: |
+          steps.release_evidence.outputs.actionable == 'true' &&
+          steps.release_evidence_existing.outputs.pr_url == '' &&
+          steps.release_evidence_existing.outputs.branch_exists != 'true'
+        id: apply_release_evidence
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin \
+            "refs/heads/${{ steps.release_evidence.outputs.base_ref }}:refs/remotes/origin/${{ steps.release_evidence.outputs.base_ref }}"
+          git switch -C "${{ steps.release_evidence.outputs.closure_branch }}" "origin/${{ steps.release_evidence.outputs.base_ref }}"
+          before_status="$(git status --short -- .agentplane/tasks/${{ steps.release_evidence.outputs.task_id }}/README.md)"
+          bun scripts/release-task-evidence.mjs apply \
+            --task-id "${{ steps.release_evidence.outputs.task_id }}" \
+            --publish-result .agentplane/.release/publish/publish-result.json \
+            --repo "${REPO}" \
+            --author DEUS > .agentplane/.release/publish/release-task-apply.json
+          after_status="$(git status --short -- .agentplane/tasks/${{ steps.release_evidence.outputs.task_id }}/README.md)"
+          if [ -z "${after_status}" ] || [ "${before_status}" = "${after_status}" ]; then
+            echo "created_commit=false" >> "$GITHUB_OUTPUT"
+            echo "closure_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          suffix="${{ steps.release_evidence.outputs.task_id }}"
+          suffix="${suffix##*-}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "${{ steps.release_evidence.outputs.readme_path }}"
+          git commit --no-verify -m "📝 ${suffix} task: record hosted publish evidence"
+          echo "created_commit=true" >> "$GITHUB_OUTPUT"
+          echo "closure_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Push release evidence branch
+        if: steps.apply_release_evidence.outputs.created_commit == 'true'
+        run: |
+          set -euo pipefail
+          git push --set-upstream origin "${{ steps.release_evidence.outputs.closure_branch }}"
+      - name: Open or recover release evidence PR
+        if: |
+          steps.release_evidence.outputs.actionable == 'true' &&
+          steps.release_evidence_existing.outputs.pr_url == ''
+        id: create_release_evidence_pr
+        env:
+          PR_TITLE: ${{ steps.release_evidence.outputs.pr_title }}
+          PR_BODY: ${{ steps.release_evidence.outputs.pr_body }}
+          MANUAL_PR_URL: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.release_evidence.outputs.base_ref }}...${{ steps.release_evidence.outputs.closure_branch }}?expand=1
+        run: |
+          set -euo pipefail
+          if [ "${{ steps.release_evidence_existing.outputs.branch_exists }}" = "true" ] || [ "${{ steps.apply_release_evidence.outputs.created_commit }}" = "true" ]; then
+            printf '%s\n' "$PR_BODY" > .agentplane/.release/publish/release-task-evidence-pr.md
+            set +e
+            pr_url="$(gh pr create \
+              --base "${{ steps.release_evidence.outputs.base_ref }}" \
+              --head "${{ steps.release_evidence.outputs.closure_branch }}" \
+              --title "$PR_TITLE" \
+              --body-file .agentplane/.release/publish/release-task-evidence-pr.md 2>.agentplane/.release/publish/release-task-evidence-pr.err)"
+            status=$?
+            set -e
+            if [ "$status" -eq 0 ]; then
+              echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+            elif grep -qi "not permitted to create or approve pull requests" .agentplane/.release/publish/release-task-evidence-pr.err; then
+              echo "manual_pr_required=true" >> "$GITHUB_OUTPUT"
+              echo "manual_pr_url=$MANUAL_PR_URL" >> "$GITHUB_OUTPUT"
+              echo "::warning::Release evidence branch was pushed, but organization policy blocks GitHub Actions from creating the follow-up PR. Open it manually: $MANUAL_PR_URL"
+            else
+              cat .agentplane/.release/publish/release-task-evidence-pr.err >&2
+              exit "$status"
+            fi
+          fi
+      - name: Enable auto-merge for release evidence PR
+        if: |
+          steps.release_evidence.outputs.actionable == 'true' &&
+          (steps.release_evidence_existing.outputs.pr_url != '' || steps.create_release_evidence_pr.outputs.pr_url != '')
+        run: |
+          set -euo pipefail
+          pr_url="${{ steps.release_evidence_existing.outputs.pr_url }}"
+          if [ -z "$pr_url" ]; then
+            pr_url="${{ steps.create_release_evidence_pr.outputs.pr_url }}"
+          fi
+          if gh pr merge --squash --delete-branch "$pr_url"; then
+            echo "Release evidence PR merged immediately: $pr_url"
+          elif ! gh pr merge --auto --squash --delete-branch "$pr_url"; then
+            echo "::warning::Release evidence PR created but neither direct merge nor auto-merge could be enabled; inspect $pr_url manually."
+          fi
