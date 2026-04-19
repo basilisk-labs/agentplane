@@ -16,7 +16,7 @@ import {
   runCliSilent,
   writeConfig,
   writeAndConfigureRoot,
-} from "./run-cli.test-helpers.js";
+} from "../testing/index.js";
 
 installRunCliIntegrationHarness();
 
