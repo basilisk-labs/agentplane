@@ -1,10 +1,10 @@
 ---
 id: "202604191640-3MTXR7"
 title: "Promote shared git helpers into core git client"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -14,19 +14,30 @@ tags:
   - "refactor"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-19T19:46:29.314Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: auditing remaining git shell helpers so the first B′ slice can move stable git primitives into @agentplaneorg/core without widening command-layer behavior."
+events:
+  -
+    type: "status"
+    at: "2026-04-19T19:46:40.961Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: auditing remaining git shell helpers so the first B′ slice can move stable git primitives into @agentplaneorg/core without widening command-layer behavior."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:40:23.030Z"
+doc_updated_at: "2026-04-19T19:46:40.975Z"
 doc_updated_by: "CODER"
 description: "Epic B′. Move remaining command-layer git helpers into @agentplaneorg/core git surfaces and shrink agentplane wrappers."
 sections:
