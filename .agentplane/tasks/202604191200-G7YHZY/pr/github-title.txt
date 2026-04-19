@@ -1,0 +1,1 @@
+workflow: Avoid redundant manual close tails after hosted closure (G7YHZY)

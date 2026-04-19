@@ -201,7 +201,13 @@ async function readHostedCloseState(opts: {
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
   taskBranch: string | null;
 }> {
-  const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
+  const task =
+    (await opts.ctx.taskBackend.getTask(opts.taskId)) ??
+    (await loadTaskFromContext({
+      ctx: opts.ctx,
+      taskId: opts.taskId,
+      preferBranchSnapshot: false,
+    }));
   const taskBranch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   const { metaPath, config } = await resolvePrPaths({
     ctx: opts.ctx,
@@ -413,9 +419,22 @@ async function openHostedClosePr(opts: {
   });
   let sourceBranch = meta?.branch?.trim() ?? taskBranch?.trim() ?? "";
   let baseBranch = meta?.base?.trim() ?? defaultBaseBranch?.trim() ?? "";
+  const localMergeCommit = meta?.merge_commit?.trim() ?? task.commit?.hash?.trim() ?? "";
+  const canonicalCloseAlreadyPresent =
+    meta?.status === "MERGED" &&
+    sourceBranch.length > 0 &&
+    localMergeCommit.length > 0 &&
+    String(task.status || "TODO").toUpperCase() === "DONE" &&
+    (task.commit?.hash?.trim() ?? "") === localMergeCommit;
+  if (canonicalCloseAlreadyPresent) {
+    output.info(
+      `hosted-close-pr skipped: ${opts.taskId} is already closed on ${baseBranch || "the base branch"} for merge ${shortSha(localMergeCommit)}`,
+    );
+    return 0;
+  }
   let mergedRecord =
     sourceBranch.length > 0 &&
-    (meta?.status !== "MERGED" || !(meta?.merge_commit?.trim() ?? task.commit?.hash?.trim() ?? ""))
+    (meta?.status !== "MERGED" || !localMergeCommit)
       ? await resolveHostedCloseMergeRecord({
           gitRoot,
           repo,
@@ -424,7 +443,6 @@ async function openHostedClosePr(opts: {
           prNumber: typeof meta?.pr_number === "number" ? meta.pr_number : null,
         })
       : null;
-  const localMergeCommit = meta?.merge_commit?.trim() ?? task.commit?.hash?.trim() ?? "";
   if (!mergedRecord && localMergeCommit) {
     mergedRecord = await resolveHostedCloseMergeRecordByCommit({
       gitRoot,

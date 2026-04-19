@@ -680,6 +680,61 @@ describe("task finish (unit)", () => {
     );
   });
 
+  it("skips a redundant branch_pr close tail when canonical close artifacts are already on base", async () => {
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+    const task = mkTask({
+      id: "T-1",
+      status: "DONE",
+      tags: ["meta"],
+      commit: { hash: "hc", message: "feat: implement T-1" },
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(task),
+      patch: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            applyStorePatch(task, await builder(task));
+            return { changed: false, task };
+          },
+        ),
+    };
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdFinish } = await import("./finish.js");
+    await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "done",
+      breaking: false,
+      force: true,
+      commit: "impl-hash",
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+
+    expect(mocks.execFileAsync).not.toHaveBeenCalledWith(
+      "git",
+      ["checkout", "-b", "task-close/T-1/base-head-sh"],
+      expect.any(Object),
+    );
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
+  });
+
   it("suppresses default direct close commit with --no-close-commit", async () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "direct";

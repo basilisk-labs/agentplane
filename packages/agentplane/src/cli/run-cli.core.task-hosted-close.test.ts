@@ -634,7 +634,6 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
       cwd: root,
     });
     const branchHead = branchHeadStdout.trim();
-
     await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
     await execFileAsync("git", ["merge", "--no-ff", branch, "-m", "Merge missing pr meta task"], {
       cwd: root,
@@ -724,7 +723,7 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
     expect(metaRaw).toContain('"pr_url": "https://example.test/pr/92"');
   }, 240_000);
 
-  it("task hosted-close-pr opens the remote task-close branch and reuses an existing PR", async () => {
+  it("task hosted-close-pr no-ops when canonical close artifacts are already on base", async () => {
     const root = await writeAndConfigureRoot();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -826,11 +825,6 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
     await execFileAsync("git", ["commit", "--no-verify", "-m", "feat: hosted close PR fixture"], {
       cwd: root,
     });
-    const { stdout: branchHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: root,
-    });
-    const branchHead = branchHeadStdout.trim();
-
     await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
     await execFileAsync(
       "git",
@@ -844,51 +838,31 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
     });
     const mergeSha = mergeHeadStdout.trim();
 
-    const eventDir = await mkdtemp(path.join(tmpdir(), "agentplane-hosted-close-pr-event-"));
-    const eventPath = path.join(eventDir, "event.json");
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as {
+      status?: string;
+      branch?: string;
+      merge_commit?: string;
+      pr_number?: number;
+      base?: string;
+    };
+    const mergeCommit = mergeSha;
     await writeFile(
-      eventPath,
+      metaPath,
       `${JSON.stringify(
         {
-          pull_request: {
-            merged: true,
-            number: 97,
-            title: "Hosted close PR helper",
-            merge_commit_sha: mergeSha,
-            merged_at: "2026-04-09T12:57:00.000Z",
-            head: { ref: branch, sha: branchHead },
-            base: { ref: baseBranch },
-          },
+          ...meta,
+          status: "MERGED",
+          branch,
+          base: baseBranch,
+          pr_number: 97,
+          merge_commit: mergeCommit,
         },
         null,
         2,
       )}\n`,
       "utf8",
     );
-
-    const ioClose = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "hosted-close",
-        "--event-json",
-        eventPath,
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-    } finally {
-      ioClose.restore();
-    }
-
-    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
-    const meta = JSON.parse(await readFile(metaPath, "utf8")) as {
-      branch?: string;
-      merge_commit?: string;
-      pr_number?: number;
-      base?: string;
-    };
-    const mergeCommit = meta.merge_commit ?? mergeSha;
     const closureBranch = `task-close/${taskId}/${mergeCommit.slice(0, 12)}`;
 
     const bareOrigin = await mkdtemp(path.join(tmpdir(), "agentplane-hosted-close-pr-origin-"));
@@ -901,27 +875,17 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
         cwd: root,
       },
     );
-
-    const createResponse = {
-      number: 902,
-      html_url: "https://github.com/example/repo/pull/902",
-      state: "open",
-      merged_at: null,
-    };
-
-    const firstGh = await installFakeGhHostedClosePr({
-      scenarioName: "create",
-      branch: closureBranch,
-      existingResponse: [],
-      mergedResponse: [],
-      createResponse,
-      allowCreate: true,
+    const { backend } = await loadTaskBackend({ cwd: root, rootOverride: null });
+    const closedTask = await backend.getTask(taskId);
+    expect(closedTask).not.toBeNull();
+    await backend.writeTask({
+      ...closedTask!,
+      status: "DONE",
+      commit: { hash: mergeCommit, message: "Hosted close PR helper" },
+      result_summary: "Merged via PR #97.",
     });
-    const originalPath = process.env.PATH;
-    process.env.PATH = `${firstGh.fakeBin}${path.delimiter}${originalPath ?? ""}`;
-    process.env.AGENTPLANE_GH_LOG = firstGh.logPath;
 
-    const ioCreate = captureStdIO();
+    const io = captureStdIO();
     try {
       const code = await runCli([
         "task",
@@ -933,56 +897,12 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(ioCreate.stdout).toContain("created GitHub PR #902");
-      expect(ioCreate.stdout).toContain("https://github.com/example/repo/pull/902");
-      expect(ioCreate.stdout).toContain(`deleted branch ${branch}`);
+      expect(io.stdout).toContain("hosted-close-pr skipped");
+      expect(io.stdout).toContain(`${taskId} is already closed on ${baseBranch}`);
+      expect(io.stdout).toContain(mergeCommit.slice(0, 12));
     } finally {
-      ioCreate.restore();
-      process.env.PATH = originalPath;
-      delete process.env.AGENTPLANE_GH_LOG;
+      io.restore();
     }
-
-    const { stdout: localBranchStdout } = await execFileAsync("git", ["branch", "--list", branch], {
-      cwd: root,
-    });
-    expect(localBranchStdout.trim()).toBe("");
-
-    const secondGh = await installFakeGhHostedClosePr({
-      scenarioName: "reuse",
-      branch: closureBranch,
-      existingResponse: [createResponse],
-      mergedResponse: [],
-      createResponse,
-      allowCreate: false,
-    });
-    process.env.PATH = `${secondGh.fakeBin}${path.delimiter}${originalPath ?? ""}`;
-    process.env.AGENTPLANE_GH_LOG = secondGh.logPath;
-
-    const ioReuse = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "hosted-close-pr",
-        taskId,
-        "--repo",
-        "example/repo",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      expect(ioReuse.stdout).toContain("linked to GitHub PR #902");
-      expect(ioReuse.stdout).toContain("https://github.com/example/repo/pull/902");
-    } finally {
-      ioReuse.restore();
-      process.env.PATH = originalPath;
-      delete process.env.AGENTPLANE_GH_LOG;
-    }
-
-    const firstLog = await readFile(firstGh.logPath, "utf8");
-    expect(firstLog).toContain('"api"');
-    expect(firstLog).toContain('"POST"');
-    const secondLog = await readFile(secondGh.logPath, "utf8");
-    expect(secondLog).not.toContain('"POST"');
   }, 240_000);
 
   it("task hosted-close-pr recovers merge metadata from GitHub when base pr meta is stale", async () => {
