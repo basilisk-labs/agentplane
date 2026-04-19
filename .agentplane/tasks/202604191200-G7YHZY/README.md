@@ -1,10 +1,11 @@
 ---
 id: "202604191200-G7YHZY"
 title: "Avoid redundant manual close tails after hosted closure"
-status: "DOING"
+result_summary: "Merged via PR #478."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-19T13:59:13.700Z"
   updated_by: "CODER"
   note: "Avoided redundant branch_pr close tails after canonical hosted closure: hosted-close-pr now skips follow-up PR creation when task README history already records a canonical close on base, and finish regression coverage prevents re-materializing redundant local task-close tails; validated by close-tail-state unit tests, finish unit regression, hosted-close-pr CLI regression, eslint, and prettier."
-commit: null
+commit:
+  hash: "fbc5422f0dfb15126e66425079c84d431b5adc28"
+  message: "workflow: Avoid redundant manual close tails after hosted closure (G7YHZY) (#478)"
 comments:
   -
     author: "CODER"
     body: "Start: short-circuit manual close-tail and hosted-close-pr once canonical closure is already present on the base branch, then verify the no-op behavior with regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #478 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Avoided redundant branch_pr close tails after canonical hosted closure: hosted-close-pr now skips follow-up PR creation when task README history already records a canonical close on base, and finish regression coverage prevents re-materializing redundant local task-close tails; validated by close-tail-state unit tests, finish unit regression, hosted-close-pr CLI regression, eslint, and prettier."
+  -
+    type: "status"
+    at: "2026-04-19T14:09:47.595Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #478 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-19T13:59:13.724Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-19T14:09:47.602Z"
+doc_updated_by: "INTEGRATOR"
 description: "Short-circuit manual close-tail and hosted-close-pr flows when the canonical close commit is already present on main, so branch_pr users cannot create obsolete closure PRs after hosted automation has already closed the task."
 sections:
   Summary: |-
