@@ -1,10 +1,11 @@
 ---
 id: "202604191637-45CEKK"
 title: "Migrate non-CLI consumers off run-cli test shim"
-status: "DOING"
+result_summary: "Commands, backends, and runner tests no longer depend on packages/agentplane/src/cli/run-cli.test-helpers.ts; only CLI-scoped consumers remain on that shim."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-19T16:48:41.470Z"
   updated_by: "CODER"
   note: "Non-CLI run-cli shim migration checks passed."
-commit: null
+commit:
+  hash: "8f0e591116d596de3139eb0b8248ad3e36431119"
+  message: "🧪 tests: migrate non-cli run-cli shim consumers"
 comments:
   -
     author: "CODER"
     body: "Start: migrate the non-CLI consumers of packages/agentplane/src/cli/run-cli.test-helpers.ts onto canonical testkit or testing compatibility entrypoints, keep helper behavior unchanged, and verify the touched command, backend, and runner test surfaces in direct mode."
+  -
+    author: "CODER"
+    body: "Verified: moved all non-CLI consumers of run-cli.test-helpers.ts onto the testing compatibility entrypoint, kept helper behavior unchanged, confirmed no remaining non-CLI imports of the shim, and reran the affected command, backend, and runner test surfaces."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Non-CLI run-cli shim migration checks passed."
+  -
+    type: "status"
+    at: "2026-04-19T16:49:44.890Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: moved all non-CLI consumers of run-cli.test-helpers.ts onto the testing compatibility entrypoint, kept helper behavior unchanged, confirmed no remaining non-CLI imports of the shim, and reran the affected command, backend, and runner test surfaces."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:48:41.480Z"
+doc_updated_at: "2026-04-19T16:49:44.892Z"
 doc_updated_by: "CODER"
 description: "Epic E′. Move command, backend, and runner test consumers from packages/agentplane/src/cli/run-cli.test-helpers.ts to canonical @agentplane/test surfaces without widening helper APIs."
 sections:
