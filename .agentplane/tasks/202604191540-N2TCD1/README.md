@@ -1,10 +1,11 @@
 ---
 id: "202604191540-N2TCD1"
 title: "Add command helper surfaces to @agentplane/testkit"
-status: "DOING"
+result_summary: "Added canonical command-helper entry modules to @agentplane/testkit and switched representative tests onto them."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-19T15:42:56.825Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/commands/recipes.list.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/release/check-release-parity-script.test.ts packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts; Result: pass; Evidence: 4 files and 18 tests passed after introducing canonical testkit helper entry modules and switching representative tests to them. Scope: recipes/task/release/runner helper surfaces. Command: bun run --filter=@agentplane/testkit typecheck; Result: pass; Evidence: @agentplane/testkit typecheck exited with code 0. Scope: new testkit helper modules and package exports."
-commit: null
+commit:
+  hash: "74a963d627e995e6682c7212f0c6864204d6cbdd"
+  message: "🧪 testkit: add command helper entry modules"
 comments:
   -
     author: "CODER"
     body: "Start: add canonical command helper modules to @agentplane/testkit and switch representative tests to the new package surface."
+  -
+    author: "CODER"
+    body: "Verified: @agentplane/testkit now exposes canonical command-helper entry modules for recipes, task, release, and runner tests, and representative tests already consume those new surfaces."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/recipes.list.test.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/release/check-release-parity-script.test.ts packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts; Result: pass; Evidence: 4 files and 18 tests passed after introducing canonical testkit helper entry modules and switching representative tests to them. Scope: recipes/task/release/runner helper surfaces. Command: bun run --filter=@agentplane/testkit typecheck; Result: pass; Evidence: @agentplane/testkit typecheck exited with code 0. Scope: new testkit helper modules and package exports."
+  -
+    type: "status"
+    at: "2026-04-19T15:43:20.979Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: @agentplane/testkit now exposes canonical command-helper entry modules for recipes, task, release, and runner tests, and representative tests already consume those new surfaces."
 doc_version: 3
-doc_updated_at: "2026-04-19T15:42:56.840Z"
+doc_updated_at: "2026-04-19T15:43:20.981Z"
 doc_updated_by: "CODER"
 description: "Create canonical testkit modules for recipes, task, release, and runner helpers, then switch representative tests to import them from @agentplane/testkit before deleting the old agentplane-local helper files."
 sections:
