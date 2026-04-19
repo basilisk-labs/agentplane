@@ -1,10 +1,10 @@
 ---
 id: "202604191640-2DHQ29"
 title: "Expand ESLint boundaries for package and layer imports"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 2
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,21 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: tightening ESLint import boundaries so the new core process/git layers and command modules cannot drift back into cross-layer imports after the current refactor wave."
+events:
+  -
+    type: "status"
+    at: "2026-04-19T20:32:07.439Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: tightening ESLint import boundaries so the new core process/git layers and command modules cannot drift back into cross-layer imports after the current refactor wave."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:40:36.056Z"
+doc_updated_at: "2026-04-19T20:32:07.471Z"
 doc_updated_by: "CODER"
 description: "Epic B′ and J′. Tighten ESLint no-restricted-import rules to enforce current architectural boundaries."
 sections:
