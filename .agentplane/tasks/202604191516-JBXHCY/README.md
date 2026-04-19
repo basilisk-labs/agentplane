@@ -1,10 +1,11 @@
 ---
 id: "202604191516-JBXHCY"
 title: "Advance epic A′ Zod migration in direct mode"
-status: "DOING"
+result_summary: "Established the config Zod parity baseline and removed stale AJV dependencies from @agentplaneorg/core."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -23,7 +24,9 @@ verification:
   updated_at: "2026-04-19T15:29:44.452Z"
   updated_by: "CODER"
   note: "Command: bun scripts/diff-config-schemas.mjs; Result: pass; Evidence: runtime config path and raw Zod schema remain equivalent across 7 scenarios and residual AJV deps are now none. Scope: config parity audit and dependency cleanup. Command: bun run test:core; Result: pass; Evidence: 15 files and 138 tests passed after removing stale AJV dependencies. Scope: packages/core/src runtime, config, tasks, and git surfaces."
-commit: null
+commit:
+  hash: "8df0b8881345c09b191bf9ef11f8ce602d6b453f"
+  message: "🔧 core: finalize config zod parity baseline"
 comments:
   -
     author: "CODER"
@@ -34,6 +37,9 @@ comments:
   -
     author: "CODER"
     body: "Start: resume epic A′ after cleanup; continue the validated Zod migration work from the current direct-mode checkout."
+  -
+    author: "CODER"
+    body: "Verified: config parity is now enforced by an executable audit, stale AJV dependencies were removed from core, and the next Zod work can proceed from a single runtime source of truth."
 events:
   -
     type: "status"
@@ -68,8 +74,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun scripts/diff-config-schemas.mjs; Result: pass; Evidence: runtime config path and raw Zod schema remain equivalent across 7 scenarios and residual AJV deps are now none. Scope: config parity audit and dependency cleanup. Command: bun run test:core; Result: pass; Evidence: 15 files and 138 tests passed after removing stale AJV dependencies. Scope: packages/core/src runtime, config, tasks, and git surfaces."
+  -
+    type: "status"
+    at: "2026-04-19T15:30:56.577Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: config parity is now enforced by an executable audit, stale AJV dependencies were removed from core, and the next Zod work can proceed from a single runtime source of truth."
 doc_version: 3
-doc_updated_at: "2026-04-19T15:29:44.460Z"
+doc_updated_at: "2026-04-19T15:30:56.579Z"
 doc_updated_by: "CODER"
 description: "Continue the Zod migration epic in local direct workflow, record the actual config parity state, and implement the next safe cleanup steps from the current checkout without branch_pr worktrees."
 sections:
