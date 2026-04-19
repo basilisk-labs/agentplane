@@ -4,7 +4,7 @@ title: "Fix pr open when remote branch already exists"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-19T12:10:22.023Z"
+  updated_by: "CODER"
+  note: "Validated branch_pr pr open against a published task branch with a simulated internal push failure; the command now reuses the matching remote head and continues to GitHub PR creation."
 commit: null
 comments:
   -
@@ -34,8 +34,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reproduce the already-published branch path for pr open, patch the redundant push behavior, and verify that PR creation continues when origin already has the matching branch head."
+  -
+    type: "verify"
+    at: "2026-04-19T12:10:22.023Z"
+    author: "CODER"
+    state: "ok"
+    note: "Validated branch_pr pr open against a published task branch with a simulated internal push failure; the command now reuses the matching remote head and continues to GitHub PR creation."
 doc_version: 3
-doc_updated_at: "2026-04-19T12:04:07.788Z"
+doc_updated_at: "2026-04-19T12:10:22.028Z"
 doc_updated_by: "CODER"
 description: "Make pr open tolerate an already-published branch and continue PR creation when remote HEAD already matches the local branch, instead of failing on an unnecessary internal push path."
 sections:
@@ -56,11 +62,24 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-19T12:10:22.023Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Validated branch_pr pr open against a published task branch with a simulated internal push failure; the command now reuses the matching remote head and continues to GitHub PR creation.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T12:04:07.788Z, excerpt_hash=sha256:6d0568e0688a25a069c1e50a6037fa73435a3c5c2aaeafd4d638db4d236d31a8
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: pr open always retried git push before remote PR creation, even when origin already had the same branch head.
+      Impact: A redundant push failure blocked PR creation and forced a manual sync-only plus gh fallback route.
+      Resolution: Compare the local branch tip to the remote push target after a publish failure, accept an exact match, and cover it with a regression test.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -89,6 +108,14 @@ Make pr open tolerate an already-published branch and continue PR creation when 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-19T12:10:22.023Z — VERIFY — ok
+
+By: CODER
+
+Note: Validated branch_pr pr open against a published task branch with a simulated internal push failure; the command now reuses the matching remote head and continues to GitHub PR creation.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T12:04:07.788Z, excerpt_hash=sha256:6d0568e0688a25a069c1e50a6037fa73435a3c5c2aaeafd4d638db4d236d31a8
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -97,3 +124,9 @@ Make pr open tolerate an already-published branch and continue PR creation when 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: pr open always retried git push before remote PR creation, even when origin already had the same branch head.
+  Impact: A redundant push failure blocked PR creation and forced a manual sync-only plus gh fallback route.
+  Resolution: Compare the local branch tip to the remote push target after a publish failure, accept an exact match, and cover it with a regression test.
+  Promotion: incident-candidate
+  Fixability: external
