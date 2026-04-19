@@ -5,7 +5,7 @@ approvals:
   require_verify: false
 in_scope_paths:
   - "packages/**"
-mode: "branch_pr"
+mode: "direct"
 owners:
   orchestrator: "ORCHESTRATOR"
 retry_policy:
@@ -19,7 +19,7 @@ version: 1
 
 ## Prompt Template
 Repository: agentplane
-Workflow mode: branch_pr
+Workflow mode: direct
 
 ## Checks
 - preflight
