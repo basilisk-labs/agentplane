@@ -23,7 +23,11 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
-    "./cli": "./dist/cli.js"
+    "./cli": "./dist/cli.js",
+    "./recipes": "./dist/recipes.js",
+    "./task": "./dist/task.js",
+    "./release": "./dist/release.js",
+    "./runner": "./dist/runner.js"
   },
   "types": "./dist/index.d.ts",
   "dependencies": {
