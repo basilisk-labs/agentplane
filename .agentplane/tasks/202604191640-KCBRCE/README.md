@@ -1,10 +1,10 @@
 ---
 id: "202604191640-KCBRCE"
 title: "Clarify error module ownership and boundaries"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 2
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +23,21 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: auditing the remaining error modules so each one has an explicit ownership boundary and lint-enforced import contract instead of today\\'s implicit split across shared, cli, and backend codepaths."
+events:
+  -
+    type: "status"
+    at: "2026-04-19T20:37:33.859Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: auditing the remaining error modules so each one has an explicit ownership boundary and lint-enforced import contract instead of today\\'s implicit split across shared, cli, and backend codepaths."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:40:40.428Z"
+doc_updated_at: "2026-04-19T20:37:33.909Z"
 doc_updated_by: "CODER"
 description: "Epic B′. Add explicit ownership docs and tighter boundaries for error modules across CLI, shared, and backend layers."
 sections:
