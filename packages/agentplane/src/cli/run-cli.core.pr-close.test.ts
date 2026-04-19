@@ -15,7 +15,7 @@ import {
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
   writeConfig,
-} from "./run-cli.test-helpers.js";
+} from "../testing/index.js";
 
 const execFileAsync = promisify(execFile);
 

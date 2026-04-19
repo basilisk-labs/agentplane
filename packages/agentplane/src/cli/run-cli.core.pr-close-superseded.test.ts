@@ -17,7 +17,7 @@ import {
   mkGitRepoRootWithBranch,
   runCliSilent,
   writeConfig,
-} from "./run-cli.test-helpers.js";
+} from "../testing/index.js";
 
 installRunCliIntegrationHarness();
 const PR_CLOSE_SUPERSEDED_TIMEOUT_MS = 60_000;

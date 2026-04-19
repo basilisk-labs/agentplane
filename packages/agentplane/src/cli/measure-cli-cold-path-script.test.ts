@@ -5,7 +5,7 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
-import { captureStdIO, mkGitRepoRoot, writeDefaultConfig } from "./run-cli.test-helpers.js";
+import { captureStdIO, mkGitRepoRoot, writeDefaultConfig } from "../testing/index.js";
 
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts", "measure-cli-cold-path.mjs");
