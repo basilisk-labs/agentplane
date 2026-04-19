@@ -192,19 +192,23 @@ export class GitContext {
   }
 
   async statusChangedPaths(): Promise<string[]> {
-    return (await this.statusPorcelainZ()).changedPaths;
+    const status = await this.statusPorcelainZ();
+    return status.changedPaths;
   }
 
   async statusStagedPaths(): Promise<string[]> {
-    return (await this.statusPorcelainZ()).stagedPaths;
+    const status = await this.statusPorcelainZ();
+    return status.stagedPaths;
   }
 
   async statusUntrackedPaths(): Promise<string[]> {
-    return (await this.statusPorcelainZ()).untrackedPaths;
+    const status = await this.statusPorcelainZ();
+    return status.untrackedPaths;
   }
 
   async statusUnstagedTrackedPaths(): Promise<string[]> {
-    return (await this.statusPorcelainZ()).unstagedTrackedPaths;
+    const status = await this.statusPorcelainZ();
+    return status.unstagedTrackedPaths;
   }
 
   invalidateStatus(): void {

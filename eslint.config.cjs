@@ -16,6 +16,24 @@ const tsconfigProjects = [
   "./website/tsconfig.eslint.json",
 ];
 
+const sharedBoundaryTargets = [
+  "./packages/agentplane/src/commands",
+  "./packages/agentplane/src/backends",
+  "./packages/agentplane/src/runner",
+  "./packages/agentplane/src/runtime",
+  "./packages/agentplane/src/adapters",
+  "./packages/agentplane/src/ports",
+];
+
+const sharedBoundaryPatterns = [
+  "../commands/*",
+  "../backends/*",
+  "../runner/*",
+  "../runtime/*",
+  "../adapters/*",
+  "../ports/*",
+];
+
 /** @type {import("eslint").Linter.FlatConfig[]} */
 module.exports = [
   {
@@ -137,7 +155,6 @@ module.exports = [
     files: [
       "packages/core/src/**/*.{ts,tsx}",
       "packages/agentplane/src/shared/**/*.{ts,tsx}",
-      "packages/agentplane/src/commands/**/*.{ts,tsx}",
     ],
     rules: {
       "import/no-restricted-paths": [
@@ -149,17 +166,27 @@ module.exports = [
               from: "./packages/agentplane/src",
               message: "Core package must stay independent from agentplane package internals.",
             },
-            {
-              target: "./packages/agentplane/src/shared",
-              from: "./packages/agentplane/src/commands",
-              message: "Shared helpers must not depend on command-layer modules.",
-            },
-            {
-              target: "./packages/agentplane/src/commands",
-              from: "./packages/agentplane/src/usecases",
-              message: "Commands must not depend on usecase-layer modules.",
-            },
+            ...sharedBoundaryTargets.map((target) => ({
+              target,
+              from: "./packages/agentplane/src/shared",
+              message: "Shared helpers must stay below command/runtime/backend adapter layers.",
+            })),
           ],
+        },
+      ],
+    },
+  },
+
+  {
+    files: ["packages/agentplane/src/shared/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: sharedBoundaryPatterns.map((group) => ({
+            group: [group],
+            message: "Shared helpers must not import higher-level package layers.",
+          })),
         },
       ],
     },
