@@ -1,10 +1,11 @@
 ---
 id: "202604181840-K8PDGY"
 title: "Stabilize release CI regression tests after branch_pr close-tail changes"
-status: "DOING"
+result_summary: "Merged via PR #472."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-19T11:19:20.885Z"
   updated_by: "CODER"
   note: "Verified: release CI regressions are resolved; release:ci-check and the targeted branch_pr/release suites are green."
-commit: null
+commit:
+  hash: "63b505aef6571f616189cfacd237f710dd161a09"
+  message: "release: Stabilize release CI regression tests after branch_pr close-tail changes (K8PDGY) (#472)"
 comments:
   -
     author: "CODER"
     body: "Start: refresh branch_pr close-tail regression tests, align help snapshots, and re-run release:ci-check before pushing the release metadata tail."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #472 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: release CI regressions are resolved; release:ci-check and the targeted branch_pr/release suites are green."
+  -
+    type: "status"
+    at: "2026-04-19T11:27:41.635Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #472 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-19T11:19:20.896Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-19T11:27:41.641Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refresh help snapshots, align finish close-tail expectations, and bypass hooks in isolated git fixture tests so release:ci-check passes deterministically."
 sections:
   Summary: |-
