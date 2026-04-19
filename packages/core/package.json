@@ -46,8 +46,6 @@
     "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack"
   },
   "dependencies": {
-    "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1",
     "yaml": "^2.8.2",
     "zod": "^3",
     "zod-to-json-schema": "^3"
