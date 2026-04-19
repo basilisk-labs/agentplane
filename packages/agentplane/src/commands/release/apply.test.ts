@@ -48,7 +48,8 @@ async function writeReleasePushScripts(opts: {
 }): Promise<void> {
   const heavyBody = opts.prepublishHeavyBody ?? opts.prepublishBody ?? "";
   const fastBody =
-    opts.prepublishFastBody ?? `${String.raw`process.stdout.write('release prepublish fast ok\n');`}\n`;
+    opts.prepublishFastBody ??
+    `${String.raw`process.stdout.write('release prepublish fast ok\n');`}\n`;
   await mkdir(path.join(opts.root, "scripts"), { recursive: true });
   await writeFile(
     path.join(opts.root, "package.json"),
@@ -68,16 +69,8 @@ async function writeReleasePushScripts(opts: {
     ) + "\n",
     "utf8",
   );
-  await writeFile(
-    path.join(opts.root, "scripts", "prepublish-fast.mjs"),
-    fastBody,
-    "utf8",
-  );
-  await writeFile(
-    path.join(opts.root, "scripts", "prepublish-heavy.mjs"),
-    heavyBody,
-    "utf8",
-  );
+  await writeFile(path.join(opts.root, "scripts", "prepublish-fast.mjs"), fastBody, "utf8");
+  await writeFile(path.join(opts.root, "scripts", "prepublish-heavy.mjs"), heavyBody, "utf8");
   await writeFile(
     path.join(opts.root, "scripts", "check-npm-version-availability.mjs"),
     opts.registryBody,
@@ -1088,7 +1081,8 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
     ).rejects.toMatchObject({
       code: "E_VALIDATION",
       context: {
-        diagnostic_state: "release prepublish fast validation failed before pushing the release",
+        diagnostic_state:
+          "release prepublish fast validation failed before pushing the release tag",
         diagnostic_next_action_command: "bun run release:prepublish:fast",
       },
     });
