@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604191200-G7YHZY/avoid-redundant-close-tail",
   "created_at": "2026-04-19T12:24:30.431Z",
-  "head_sha": "e1f205fbdebf7bf84571a225699d1f6b63cb9456",
+  "head_sha": "2f004057768da5bbb2f1db4035e04c01af4e5839",
   "last_verified_at": "2026-04-19T13:59:13.700Z",
   "last_verified_sha": "e1c131c36d1e71ac491261ce0580ea2e9ab19005",
+  "merge_commit": "fbc5422f0dfb15126e66425079c84d431b5adc28",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-19T14:09:20Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604191200-G7YHZY",
-  "updated_at": "2026-04-19T14:00:06.222Z",
+  "updated_at": "2026-04-19T14:09:20Z",
   "verify": {
     "status": "pass"
   }
