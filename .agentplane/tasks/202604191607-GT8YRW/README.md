@@ -1,10 +1,11 @@
 ---
 id: "202604191607-GT8YRW"
 title: "Inline recipes helpers into @agentplane/testkit"
-status: "DOING"
+result_summary: "Recipes test helpers now have a single implementation in packages/testkit/src/recipes.ts; the legacy commands/recipes.test-helpers.ts module is gone and its consumer surface remains green."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-19T16:11:11.343Z"
   updated_by: "CODER"
   note: "Focused recipes helper migration checks passed."
-commit: null
+commit:
+  hash: "96278c3a0c27db3f36fc32e8d6a90e76b114e882"
+  message: "🧪 testkit: inline recipes helpers"
 comments:
   -
     author: "CODER"
     body: "Start: move recipes test helper implementation into @agentplane/testkit, delete the legacy helper module from packages/agentplane/src/commands, and verify the recipes/scenario consumer test surface stays green in direct mode."
+  -
+    author: "CODER"
+    body: "Verified: moved the recipes command helper implementation into @agentplane/testkit, removed the legacy helper from packages/agentplane/src/commands, reran focused recipes/scenario consumer tests, typechecked the package, and refreshed the repo-local runtime snapshot after the watched-source deletion."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused recipes helper migration checks passed."
+  -
+    type: "status"
+    at: "2026-04-19T16:11:47.756Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: moved the recipes command helper implementation into @agentplane/testkit, removed the legacy helper from packages/agentplane/src/commands, reran focused recipes/scenario consumer tests, typechecked the package, and refreshed the repo-local runtime snapshot after the watched-source deletion."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:11:11.349Z"
+doc_updated_at: "2026-04-19T16:11:47.757Z"
 doc_updated_by: "CODER"
 description: "Continue epic E′ by moving recipes test helpers out of packages/agentplane/src into packages/testkit/src and deleting the legacy helper module."
 sections:
