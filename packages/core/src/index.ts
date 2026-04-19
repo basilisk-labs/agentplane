@@ -165,6 +165,18 @@ export {
 } from "./git/base-branch.js";
 
 export {
+  execFileAsync,
+  gitBranchExists,
+  gitBranchUpstream,
+  gitCurrentBranch,
+  gitEnv,
+  gitIsAncestor,
+  gitListBranches,
+  gitRevParse,
+  GitContext,
+} from "./git/git-client.js";
+
+export {
   extractTaskSuffix,
   isGenericSubject,
   validateCommitSubject,

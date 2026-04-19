@@ -1,0 +1,271 @@
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+export const execFileAsync = promisify(execFile);
+
+// Avoid leaking worktree/index overrides into nested git subprocesses.
+export function gitEnv(): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = { ...process.env };
+  delete env.GIT_DIR;
+  delete env.GIT_WORK_TREE;
+  delete env.GIT_COMMON_DIR;
+  delete env.GIT_INDEX_FILE;
+  delete env.GIT_OBJECT_DIRECTORY;
+  delete env.GIT_ALTERNATE_OBJECT_DIRECTORIES;
+  return env;
+}
+
+function uniqSorted(paths: string[]): string[] {
+  return [...new Set(paths)].toSorted((a, b) => a.localeCompare(b));
+}
+
+type PorcelainStatus = {
+  changedPaths: string[];
+  stagedPaths: string[];
+  unstagedTrackedPaths: string[];
+  untrackedPaths: string[];
+};
+
+function parsePorcelainV1Z(output: Buffer | string): PorcelainStatus {
+  const text = Buffer.isBuffer(output) ? output.toString("utf8") : output;
+  const parts = text.split("\0").filter((part) => part.length > 0);
+
+  const changed: string[] = [];
+  const staged: string[] = [];
+  const unstagedTracked: string[] = [];
+  const untracked: string[] = [];
+
+  for (let i = 0; i < parts.length; i++) {
+    const entry = parts[i] ?? "";
+    if (entry.length < 3 || entry[2] !== " ") continue;
+
+    const x = entry[0] ?? " ";
+    const y = entry[1] ?? " ";
+    const pathA = entry.slice(3);
+    if (!pathA) continue;
+
+    if (x === "!" && y === "!") continue;
+
+    if (x === "?" && y === "?") {
+      changed.push(pathA);
+      untracked.push(pathA);
+      continue;
+    }
+
+    if (x === "R" || x === "C") {
+      const pathB = parts[i + 1] ?? "";
+      if (pathB) {
+        changed.push(pathA, pathB);
+        staged.push(pathA, pathB);
+      } else {
+        changed.push(pathA);
+        staged.push(pathA);
+      }
+      i++;
+      continue;
+    }
+
+    changed.push(pathA);
+    if (x !== " ") staged.push(pathA);
+    if (y !== " ") unstagedTracked.push(pathA);
+  }
+
+  return {
+    changedPaths: uniqSorted(changed),
+    stagedPaths: uniqSorted(staged),
+    unstagedTrackedPaths: uniqSorted(unstagedTracked),
+    untrackedPaths: uniqSorted(untracked),
+  };
+}
+
+export async function gitRevParse(cwd: string, args: string[]): Promise<string> {
+  const { stdout } = await execFileAsync("git", ["rev-parse", ...args], { cwd, env: gitEnv() });
+  const trimmed = stdout.trim();
+  if (!trimmed) throw new Error("Failed to resolve git path");
+  return trimmed;
+}
+
+export async function gitCurrentBranch(cwd: string): Promise<string> {
+  try {
+    const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], {
+      cwd,
+      env: gitEnv(),
+    });
+    const trimmed = stdout.trim();
+    if (trimmed) return trimmed;
+  } catch {
+    // fall through
+  }
+
+  const { stdout } = await execFileAsync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+    cwd,
+    env: gitEnv(),
+  });
+  const trimmed = stdout.trim();
+  if (!trimmed || trimmed === "HEAD") {
+    throw new Error("Detached HEAD: failed to resolve current branch");
+  }
+  return trimmed;
+}
+
+export async function gitBranchExists(cwd: string, branch: string): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], {
+      cwd,
+      env: gitEnv(),
+    });
+    return true;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1) return false;
+    throw err;
+  }
+}
+
+export async function gitIsAncestor(
+  cwd: string,
+  maybeAncestor: string,
+  descendant: string,
+): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["merge-base", "--is-ancestor", maybeAncestor, descendant], {
+      cwd,
+      env: gitEnv(),
+    });
+    return true;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1) return false;
+    throw err;
+  }
+}
+
+export async function gitBranchUpstream(cwd: string, branch: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync(
+      "git",
+      ["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`],
+      { cwd, env: gitEnv() },
+    );
+    const trimmed = stdout.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function gitListBranches(cwd: string): Promise<string[]> {
+  const { stdout } = await execFileAsync("git", ["branch", "--format=%(refname:short)"], {
+    cwd,
+    env: gitEnv(),
+  });
+  return stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
+export class GitContext {
+  readonly gitRoot: string;
+
+  private memo: {
+    status?: Promise<PorcelainStatus>;
+    headCommit?: Promise<string>;
+  } = {};
+
+  constructor(opts: { gitRoot: string }) {
+    this.gitRoot = opts.gitRoot;
+  }
+
+  private async statusPorcelainZ(): Promise<PorcelainStatus> {
+    this.memo.status ??= (async () => {
+      const { stdout } = await execFileAsync(
+        "git",
+        ["status", "--porcelain", "-z", "--untracked-files=all"],
+        {
+          cwd: this.gitRoot,
+          env: gitEnv(),
+          encoding: "buffer",
+          maxBuffer: 10 * 1024 * 1024,
+        },
+      );
+      return parsePorcelainV1Z(stdout);
+    })();
+    return await this.memo.status;
+  }
+
+  async statusChangedPaths(): Promise<string[]> {
+    return (await this.statusPorcelainZ()).changedPaths;
+  }
+
+  async statusStagedPaths(): Promise<string[]> {
+    return (await this.statusPorcelainZ()).stagedPaths;
+  }
+
+  async statusUntrackedPaths(): Promise<string[]> {
+    return (await this.statusPorcelainZ()).untrackedPaths;
+  }
+
+  async statusUnstagedTrackedPaths(): Promise<string[]> {
+    return (await this.statusPorcelainZ()).unstagedTrackedPaths;
+  }
+
+  invalidateStatus(): void {
+    this.memo.status = undefined;
+  }
+
+  headCommit(): Promise<string> {
+    this.memo.headCommit ??= (async () => {
+      const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: this.gitRoot,
+        env: gitEnv(),
+      });
+      return String(stdout).trim();
+    })();
+    return this.memo.headCommit;
+  }
+
+  async stage(paths: string[]): Promise<void> {
+    const unique = uniqSorted(paths.map((path) => path.trim()).filter(Boolean));
+    if (unique.length === 0) return;
+    await execFileAsync("git", ["add", "-A", "--", ...unique], {
+      cwd: this.gitRoot,
+      env: gitEnv(),
+    });
+    this.invalidateStatus();
+  }
+
+  async commit(opts: { message: string; body?: string; env?: NodeJS.ProcessEnv }): Promise<void> {
+    const args = ["commit", "-m", opts.message];
+    if (opts.body) args.push("-m", opts.body);
+    await execFileAsync("git", args, {
+      cwd: this.gitRoot,
+      env: opts.env ?? gitEnv(),
+      maxBuffer: 50 * 1024 * 1024,
+    });
+    this.memo.status = undefined;
+    this.memo.headCommit = undefined;
+  }
+
+  async commitAmendNoEdit(opts?: { env?: NodeJS.ProcessEnv }): Promise<void> {
+    await execFileAsync("git", ["commit", "--amend", "--no-edit"], {
+      cwd: this.gitRoot,
+      env: opts?.env ?? gitEnv(),
+      maxBuffer: 50 * 1024 * 1024,
+    });
+    this.memo.status = undefined;
+    this.memo.headCommit = undefined;
+  }
+
+  async headHashSubject(): Promise<{ hash: string; subject: string }> {
+    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H%x00%s"], {
+      cwd: this.gitRoot,
+      env: gitEnv(),
+      encoding: "buffer",
+      maxBuffer: 1024 * 1024,
+    });
+    const text = Buffer.isBuffer(stdout) ? stdout.toString("utf8") : String(stdout);
+    const [hash = "", subject = ""] = text.split("\0", 2);
+    return { hash: hash.trim(), subject: subject.trim() };
+  }
+}
