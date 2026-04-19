@@ -1,0 +1,5 @@
+ .github/workflows/publish.yml                      | 150 ++++++++
+ .../release/publish-workflow-contract.test.ts      |   9 +
+ .../release/release-task-evidence-script.test.ts   | 293 +++++++++++++++
+ scripts/release-task-evidence.mjs                  | 392 +++++++++++++++++++++
+ 4 files changed, 844 insertions(+)
