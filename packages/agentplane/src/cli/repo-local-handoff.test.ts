@@ -6,6 +6,8 @@ import { promisify } from "node:util";
 
 import { afterEach, describe, expect, it } from "vitest";
 
+import { buildCleanRuntimeModeEnv } from "../testing/runtime-env.js";
+
 const execFileAsync = promisify(execFile);
 const tempRoots: string[] = [];
 const workspaceRoot = process.cwd();
@@ -18,16 +20,7 @@ type CliPayload = {
 };
 
 function buildChildEnv(overrides: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
-  const env = { ...process.env };
-  delete env.AGENTPLANE_REPO_LOCAL_HANDOFF;
-  delete env.AGENTPLANE_RUNTIME_HANDOFF_FROM;
-  delete env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
-  delete env.AGENTPLANE_RUNTIME_MODE;
-  delete env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK;
-  return {
-    ...env,
-    ...overrides,
-  };
+  return buildCleanRuntimeModeEnv(process.env, overrides);
 }
 
 function parsePayload(output: string, prefix: "LOCAL" | "GLOBAL"): CliPayload {

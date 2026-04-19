@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
+import { buildCleanRuntimeModeEnv } from "../testing/runtime-env.js";
 import { resolveRuntimeSourceInfo } from "./runtime-source.js";
 
 const tempRoots: string[] = [];
@@ -63,11 +64,10 @@ describe("runtime-source", () => {
     const report = resolveRuntimeSourceInfo({
       cwd: fixture.nestedCwd,
       activeBinaryPath: fixture.agentplaneBin,
-      env: {
-        ...process.env,
+      env: buildCleanRuntimeModeEnv(process.env, {
         AGENTPLANE_REPO_LOCAL_HANDOFF: "1",
         AGENTPLANE_RUNTIME_HANDOFF_FROM: globalBin,
-      },
+      }),
       agentplanePackageRoot: fixture.agentplaneRoot,
       corePackageJsonPath: fixture.corePackageJsonPath,
     });
@@ -90,10 +90,9 @@ describe("runtime-source", () => {
     const report = resolveRuntimeSourceInfo({
       cwd: fixture.nestedCwd,
       activeBinaryPath: globalBin,
-      env: {
-        ...process.env,
+      env: buildCleanRuntimeModeEnv(process.env, {
         AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK: "1",
-      },
+      }),
       agentplanePackageRoot: fixture.agentplaneRoot,
       corePackageJsonPath: fixture.corePackageJsonPath,
     });
@@ -110,12 +109,11 @@ describe("runtime-source", () => {
     const report = resolveRuntimeSourceInfo({
       cwd: fixture.nestedCwd,
       activeBinaryPath: fixture.agentplaneBin,
-      env: {
-        ...process.env,
+      env: buildCleanRuntimeModeEnv(process.env, {
         AGENTPLANE_REPO_LOCAL_HANDOFF: "",
         AGENTPLANE_RUNTIME_HANDOFF_FROM: "",
         AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK: "",
-      },
+      }),
       agentplanePackageRoot: fixture.agentplaneRoot,
     });
 
@@ -135,7 +133,7 @@ describe("runtime-source", () => {
     const report = resolveRuntimeSourceInfo({
       cwd: outsideRoot,
       activeBinaryPath: path.join(os.tmpdir(), "agentplane-global-bin.js"),
-      env: { ...process.env },
+      env: buildCleanRuntimeModeEnv(process.env),
       agentplanePackageRoot: fixture.agentplaneRoot,
       corePackageJsonPath: fixture.corePackageJsonPath,
     });
@@ -143,5 +141,34 @@ describe("runtime-source", () => {
     expect(report.mode).toBe("global-installed");
     expect(report.framework.inFrameworkCheckout).toBe(false);
     expect(report.frameworkSources.repoRoot).toBeNull();
+  });
+
+  it("ignores ambient runtime handoff env when the test builds an explicit clean runtime env", async () => {
+    const fixture = await createFrameworkFixture();
+    const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-runtime-source-outside-"));
+    tempRoots.push(outsideRoot);
+    const previousHandoff = process.env.AGENTPLANE_REPO_LOCAL_HANDOFF;
+    const previousHandoffFrom = process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM;
+    process.env.AGENTPLANE_REPO_LOCAL_HANDOFF = "1";
+    process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM = "/tmp/ambient-agentplane";
+
+    try {
+      const report = resolveRuntimeSourceInfo({
+        cwd: outsideRoot,
+        activeBinaryPath: path.join(os.tmpdir(), "agentplane-global-bin.js"),
+        env: buildCleanRuntimeModeEnv(process.env),
+        agentplanePackageRoot: fixture.agentplaneRoot,
+        corePackageJsonPath: fixture.corePackageJsonPath,
+      });
+
+      expect(report.mode).toBe("global-installed");
+      expect(report.handoffFromBinaryPath).toBeNull();
+      expect(report.framework.inFrameworkCheckout).toBe(false);
+    } finally {
+      if (previousHandoff === undefined) delete process.env.AGENTPLANE_REPO_LOCAL_HANDOFF;
+      else process.env.AGENTPLANE_REPO_LOCAL_HANDOFF = previousHandoff;
+      if (previousHandoffFrom === undefined) delete process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM;
+      else process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM = previousHandoffFrom;
+    }
   });
 });
