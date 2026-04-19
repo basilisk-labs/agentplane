@@ -1,10 +1,11 @@
 ---
 id: "202604191200-J57Q9H"
 title: "Split release prepublish into fast and heavy phases"
-status: "DOING"
+result_summary: "Merged via PR #482."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-04-19T13:22:57.262Z"
   updated_by: "CODER"
   note: "Split release prepublish into explicit fast and heavy phases, reordered the gate to run the fast payload validation before the expensive CI route, and added a regression that proves the heavy phase is skipped when the fast phase fails."
-commit: null
+commit:
+  hash: "c0f0cac41bc844eaf3ff587d01da47177d274bed"
+  message: "release: Split release prepublish into fast and heavy phases (J57Q9H) (#482)"
 comments:
   -
     author: "CODER"
     body: "Start: split release prepublish into explicit fast and heavy phases so release candidate/apply can fail early with a stable phase label before the expensive validation route begins."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #482 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Split release prepublish into explicit fast and heavy phases, reordered the gate to run the fast payload validation before the expensive CI route, and added a regression that proves the heavy phase is skipped when the fast phase fails."
+  -
+    type: "status"
+    at: "2026-04-19T14:21:30.184Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #482 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-19T13:22:57.273Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-19T14:21:30.190Z"
+doc_updated_by: "INTEGRATOR"
 description: "Break release:prepublish into explicit fast, test, and pack phases with machine-readable reports so release failures surface the blocking phase immediately instead of after one long opaque command."
 sections:
   Summary: |-
