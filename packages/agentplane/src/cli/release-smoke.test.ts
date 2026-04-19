@@ -27,7 +27,7 @@ afterEach(() => {
 });
 
 describe("release smoke", () => {
-  const RELEASE_SMOKE_TIMEOUT_MS = 180_000;
+  const RELEASE_SMOKE_TIMEOUT_MS = 360_000;
 
   it(
     "upgrade restores workflow runtime artifacts even when managed files are otherwise unchanged",

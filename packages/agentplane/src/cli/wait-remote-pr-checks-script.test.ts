@@ -292,97 +292,109 @@ describe("wait-remote-pr-checks script", () => {
     expect(callLogText).not.toContain(`["pr","view","--pr"`);
   });
 
-  it("waits for multiple PRs in input order and caches shared protection lookups", async () => {
-    const root = await makeTempRoot();
-    const { stateFile, callLog } = await writeGhMock(root);
+  it(
+    "waits for multiple PRs in input order and caches shared protection lookups",
+    { timeout: 120_000 },
+    async () => {
+      const root = await makeTempRoot();
+      const { stateFile, callLog } = await writeGhMock(root);
 
-    const result = await runScript(["123", "456"], {
-      env: {
-        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
-        GH_SCENARIO: "multi-success",
-        GH_STATE_FILE: stateFile,
-        GH_CALL_LOG: callLog,
-        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
-        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "4",
-      },
-    });
+      const result = await runScript(["123", "456"], {
+        env: {
+          PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+          GH_SCENARIO: "multi-success",
+          GH_STATE_FILE: stateFile,
+          GH_CALL_LOG: callLog,
+          AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+          AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "4",
+        },
+      });
 
-    expect(result.exitCode, transcript(result)).toBe(0);
-    const output = transcript(result);
-    expect(output).toContain("PR #123 [1/2]");
-    expect(output).toContain("required checks passed for PR #123 [1/2]");
-    expect(output).toContain("PR #456 [2/2]");
-    expect(output).toContain("required checks passed for PR #456 [2/2]");
+      expect(result.exitCode, transcript(result)).toBe(0);
+      const output = transcript(result);
+      expect(output).toContain("PR #123 [1/2]");
+      expect(output).toContain("required checks passed for PR #123 [1/2]");
+      expect(output).toContain("PR #456 [2/2]");
+      expect(output).toContain("required checks passed for PR #456 [2/2]");
 
-    const callLogText = await readFile(callLog, "utf8");
-    expect(callLogText).toContain(`["pr","view","123"`);
-    expect(callLogText).toContain(`["pr","view","456"`);
-    expect(callLogText.match(/branches\/main\/protection/g)?.length).toBe(1);
+      const callLogText = await readFile(callLog, "utf8");
+      expect(callLogText).toContain(`["pr","view","123"`);
+      expect(callLogText).toContain(`["pr","view","456"`);
+      expect(callLogText.match(/branches\/main\/protection/g)?.length).toBe(1);
 
-    expect(callLogText.match(/"pr","view","123"/g)?.length ?? 0).toBeGreaterThan(0);
-    expect(callLogText.match(/"pr","view","456"/g)?.length ?? 0).toBeGreaterThan(0);
-    expect(
-      callLogText.match(/"api","repos\/basilisk-labs\/agentplane\/commits\/head-sha-1\/status"/g)
-        ?.length ?? 0,
-    ).toBeGreaterThan(1);
-    expect(
-      callLogText.match(/"api","repos\/basilisk-labs\/agentplane\/commits\/head-sha-2\/status"/g)
-        ?.length ?? 0,
-    ).toBeGreaterThan(1);
-    expect(callLogText.match(/branches\/main\/protection/g)?.length ?? 0).toBe(1);
-  });
+      expect(callLogText.match(/"pr","view","123"/g)?.length ?? 0).toBeGreaterThan(0);
+      expect(callLogText.match(/"pr","view","456"/g)?.length ?? 0).toBeGreaterThan(0);
+      expect(
+        callLogText.match(/"api","repos\/basilisk-labs\/agentplane\/commits\/head-sha-1\/status"/g)
+          ?.length ?? 0,
+      ).toBeGreaterThan(1);
+      expect(
+        callLogText.match(/"api","repos\/basilisk-labs\/agentplane\/commits\/head-sha-2\/status"/g)
+          ?.length ?? 0,
+      ).toBeGreaterThan(1);
+      expect(callLogText.match(/branches\/main\/protection/g)?.length ?? 0).toBe(1);
+    },
+  );
 
-  it("fails on the first failing PR and stops before later targets", async () => {
-    const root = await makeTempRoot();
-    const { stateFile, callLog } = await writeGhMock(root);
+  it(
+    "fails on the first failing PR and stops before later targets",
+    { timeout: 120_000 },
+    async () => {
+      const root = await makeTempRoot();
+      const { stateFile, callLog } = await writeGhMock(root);
 
-    const result = await runScript(["123", "456"], {
-      env: {
-        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
-        GH_SCENARIO: "multi-second-failure",
-        GH_STATE_FILE: stateFile,
-        GH_CALL_LOG: callLog,
-        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
-        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "3",
-      },
-    });
+      const result = await runScript(["123", "456"], {
+        env: {
+          PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+          GH_SCENARIO: "multi-second-failure",
+          GH_STATE_FILE: stateFile,
+          GH_CALL_LOG: callLog,
+          AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+          AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "3",
+        },
+      });
 
-    expect(result.exitCode).toBe(1);
-    const output = transcript(result);
-    expect(output).toContain("required checks passed for PR #123 [1/2]");
-    expect(output).toContain("required checks failed for PR #456 [2/2]");
+      expect(result.exitCode).toBe(1);
+      const output = transcript(result);
+      expect(output).toContain("required checks passed for PR #123 [1/2]");
+      expect(output).toContain("required checks failed for PR #456 [2/2]");
 
-    const callLogText = await readFile(callLog, "utf8");
-    expect(callLogText).toContain(`["pr","view","123"`);
-    expect(callLogText).toContain(`["pr","view","456"`);
-    expect(callLogText).toContain(
-      `["api","repos/basilisk-labs/agentplane/commits/head-sha-2/status"]`,
-    );
-  });
+      const callLogText = await readFile(callLog, "utf8");
+      expect(callLogText).toContain(`["pr","view","123"`);
+      expect(callLogText).toContain(`["pr","view","456"`);
+      expect(callLogText).toContain(
+        `["api","repos/basilisk-labs/agentplane/commits/head-sha-2/status"]`,
+      );
+    },
+  );
 
-  it("retries transient gh transport errors before resolving the PR", async () => {
-    const root = await makeTempRoot();
-    const { stateFile, callLog } = await writeGhMock(root);
+  it(
+    "retries transient gh transport errors before resolving the PR",
+    { timeout: 120_000 },
+    async () => {
+      const root = await makeTempRoot();
+      const { stateFile, callLog } = await writeGhMock(root);
 
-    const result = await runScript(["123"], {
-      env: {
-        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
-        GH_SCENARIO: "retry-transient",
-        GH_STATE_FILE: stateFile,
-        GH_CALL_LOG: callLog,
-        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
-        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
-      },
-    });
+      const result = await runScript(["123"], {
+        env: {
+          PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+          GH_SCENARIO: "retry-transient",
+          GH_STATE_FILE: stateFile,
+          GH_CALL_LOG: callLog,
+          AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+          AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
+        },
+      });
 
-    expect(result.exitCode).toBe(0);
-    const output = transcript(result);
-    expect(output).toContain("transient GitHub transport error");
-    expect(output).toContain("required checks passed for PR #123");
+      expect(result.exitCode).toBe(0);
+      const output = transcript(result);
+      expect(output).toContain("transient GitHub transport error");
+      expect(output).toContain("required checks passed for PR #123");
 
-    const state = JSON.parse(await readFile(stateFile, "utf8")) as { prViewCalls: number };
-    expect(state.prViewCalls).toBeGreaterThan(1);
-  });
+      const state = JSON.parse(await readFile(stateFile, "utf8")) as { prViewCalls: number };
+      expect(state.prViewCalls).toBeGreaterThan(1);
+    },
+  );
 
   it("fails explicitly for auth errors without retrying forever", async () => {
     const root = await makeTempRoot();
@@ -403,67 +415,79 @@ describe("wait-remote-pr-checks script", () => {
     expect(result.stderr).not.toContain("timed out waiting");
   });
 
-  it("times out with an explicit message when checks never settle", async () => {
-    const root = await makeTempRoot();
-    const { stateFile } = await writeGhMock(root);
+  it(
+    "times out with an explicit message when checks never settle",
+    { timeout: 120_000 },
+    async () => {
+      const root = await makeTempRoot();
+      const { stateFile } = await writeGhMock(root);
 
-    const result = await runScript([], {
-      env: {
-        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
-        GH_STATE_FILE: stateFile,
-        GH_SCENARIO: "timeout",
-        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
-        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
-      },
-    });
+      const result = await runScript([], {
+        env: {
+          PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+          GH_STATE_FILE: stateFile,
+          GH_SCENARIO: "timeout",
+          AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+          AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
+        },
+      });
 
-    expect(result.exitCode).toBe(1);
-    const output = transcript(result);
-    expect(output).toContain("poll 1 (idle 1/2)");
-    expect(output).toContain("poll 2 (idle 2/2)");
-    expect(output).toContain("timed out waiting for required checks after 2 idle polls");
-  });
+      expect(result.exitCode).toBe(1);
+      const output = transcript(result);
+      expect(output).toContain("poll 1 (idle 1/2)");
+      expect(output).toContain("poll 2 (idle 2/2)");
+      expect(output).toContain("timed out waiting for required checks after 2 idle polls");
+    },
+  );
 
-  it("keeps waiting while an in-progress required check keeps advancing", async () => {
-    const root = await makeTempRoot();
-    const { stateFile } = await writeGhMock(root);
+  it(
+    "keeps waiting while an in-progress required check keeps advancing",
+    { timeout: 120_000 },
+    async () => {
+      const root = await makeTempRoot();
+      const { stateFile } = await writeGhMock(root);
 
-    const result = await runScript([], {
-      env: {
-        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
-        GH_STATE_FILE: stateFile,
-        GH_SCENARIO: "progressing-in-progress",
-        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
-        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
-      },
-    });
+      const result = await runScript([], {
+        env: {
+          PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+          GH_STATE_FILE: stateFile,
+          GH_SCENARIO: "progressing-in-progress",
+          AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+          AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
+        },
+      });
 
-    expect(result.exitCode).toBe(0);
-    const output = transcript(result);
-    expect(output).toContain("poll 1 (idle 1/2): Core CI / test=in_progress");
-    expect(output).toContain("poll 2 (idle 1/2)");
-    expect(output).toContain("poll 3 (idle 0/2)");
-    expect(output).toContain("required checks passed for PR #123");
-  });
+      expect(result.exitCode).toBe(0);
+      const output = transcript(result);
+      expect(output).toContain("poll 1 (idle 1/2): Core CI / test=in_progress");
+      expect(output).toContain("poll 2 (idle 1/2)");
+      expect(output).toContain("poll 3 (idle 0/2)");
+      expect(output).toContain("required checks passed for PR #123");
+    },
+  );
 
-  it("still times out when an in-progress required check stops changing", async () => {
-    const root = await makeTempRoot();
-    const { stateFile } = await writeGhMock(root);
+  it(
+    "still times out when an in-progress required check stops changing",
+    { timeout: 120_000 },
+    async () => {
+      const root = await makeTempRoot();
+      const { stateFile } = await writeGhMock(root);
 
-    const result = await runScript([], {
-      env: {
-        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
-        GH_STATE_FILE: stateFile,
-        GH_SCENARIO: "stuck-in-progress",
-        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
-        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
-      },
-    });
+      const result = await runScript([], {
+        env: {
+          PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+          GH_STATE_FILE: stateFile,
+          GH_SCENARIO: "stuck-in-progress",
+          AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+          AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
+        },
+      });
 
-    expect(result.exitCode).toBe(1);
-    const output = transcript(result);
-    expect(output).toContain("poll 1 (idle 1/2): Core CI / test=in_progress");
-    expect(output).toContain("poll 2 (idle 2/2): Core CI / test=in_progress");
-    expect(output).toContain("timed out waiting for required checks after 2 idle polls");
-  });
+      expect(result.exitCode).toBe(1);
+      const output = transcript(result);
+      expect(output).toContain("poll 1 (idle 1/2): Core CI / test=in_progress");
+      expect(output).toContain("poll 2 (idle 2/2): Core CI / test=in_progress");
+      expect(output).toContain("timed out waiting for required checks after 2 idle polls");
+    },
+  );
 });

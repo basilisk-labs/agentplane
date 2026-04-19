@@ -1,0 +1,1 @@
+release: Stabilize release CI regression tests after branch_pr close-tail changes (K8PDGY)

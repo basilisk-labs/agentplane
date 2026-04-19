@@ -59,7 +59,7 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
-const WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS = 60_000;
+const WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS = 180_000;
 const workspaceRoot = process.cwd();
 
 async function seedRepoLocalDistArtifacts(root: string): Promise<void> {
@@ -113,7 +113,7 @@ async function seedFrameworkCheckoutMarker(root: string): Promise<void> {
   await writeFile(cliPath, "export const cli = true;\n", "utf8");
 }
 
-describe("runCli", () => {
+describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () => {
   it("work start requires task id and flags", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

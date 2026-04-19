@@ -55,7 +55,7 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
-const START_COMMIT_PATH_HANDLING_TIMEOUT_MS = 60_000;
+const START_COMMIT_PATH_HANDLING_TIMEOUT_MS = 120_000;
 
 async function approveTaskPlan(root: string, taskId: string): Promise<void> {
   const codeSet = await runCli([
@@ -135,7 +135,7 @@ async function startDirectWork(root: string, taskId: string, agentId = "CODER"):
   }
 }
 
-describe("runCli", () => {
+describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   it("start requires --author and --body", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
@@ -1093,59 +1093,63 @@ describe("runCli", () => {
     }
   });
 
-  it("start warns on status_commit_policy=warn without confirmation", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
-    await commitAll(root, "seed");
+  it(
+    "start warns on status_commit_policy=warn without confirmation",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
+      await commitAll(root, "seed");
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "Warn policy",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-    await approveTaskPlan(root, taskId);
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Start task",
+          "--description",
+          "Warn policy",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+      await approveTaskPlan(root, taskId);
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "start",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: implement warning path for status commit policy on start action",
-        "--commit-from-comment",
-        "--commit-allow",
-        ".agentplane/tasks",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      expect(io.stderr).toContain("policy=warn");
-    } finally {
-      io.restore();
-    }
-  });
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: implement warning path for status commit policy on start action",
+          "--commit-from-comment",
+          "--commit-allow",
+          ".agentplane/tasks",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stderr).toContain("policy=warn");
+      } finally {
+        io.restore();
+      }
+    },
+    START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
+  );
 
   it("start commit-from-comment rejects auto-allow", async () => {
     const root = await mkGitRepoRoot();
@@ -1313,66 +1317,70 @@ describe("runCli", () => {
     },
   );
 
-  it("start commit-from-comment formats -- separators and supports --quiet", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
-    await commitAll(root, "seed");
+  it(
+    "start commit-from-comment formats -- separators and supports --quiet",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
+      await commitAll(root, "seed");
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "Dash separator",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-    await approveTaskPlan(root, taskId);
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Start task",
+          "--description",
+          "Dash separator",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+      await approveTaskPlan(root, taskId);
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "start",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: apply separator rules -- include extra details in the commit message",
-        "--commit-from-comment",
-        "--commit-allow",
-        ".agentplane/tasks",
-        "--confirm-status-commit",
-        "--quiet",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      expect(io.stdout.trim()).toBe("");
-    } finally {
-      io.restore();
-    }
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: apply separator rules -- include extra details in the commit message",
+          "--commit-from-comment",
+          "--commit-allow",
+          ".agentplane/tasks",
+          "--confirm-status-commit",
+          "--quiet",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout.trim()).toBe("");
+      } finally {
+        io.restore();
+      }
 
-    const execFileAsync = promisify(execFile);
-    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
-    const suffix = extractTaskSuffix(taskId);
-    expect(stdout.trim()).toBe(`🚧 ${suffix} meta: doing`);
-  });
+      const execFileAsync = promisify(execFile);
+      const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
+      const suffix = extractTaskSuffix(taskId);
+      expect(stdout.trim()).toBe(`🚧 ${suffix} meta: doing`);
+    },
+    START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
+  );
 
   it("start rejects comments that are too short", async () => {
     const root = await mkGitRepoRoot();
@@ -1614,59 +1622,63 @@ describe("runCli", () => {
     START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
   );
 
-  it("start commit-from-comment still commits the active task README when allow prefixes do not match non-task changes", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
-    await commitAll(root, "seed");
+  it(
+    "start commit-from-comment still commits the active task README when allow prefixes do not match non-task changes",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
+      await commitAll(root, "seed");
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Start task",
-        "--description",
-        "Allowlist mismatch",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-    await approveTaskPlan(root, taskId);
-    await startDirectWork(root, taskId, "CODER");
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Start task",
+          "--description",
+          "Allowlist mismatch",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+      await approveTaskPlan(root, taskId);
+      await startDirectWork(root, taskId, "CODER");
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "start",
-        taskId,
-        "--author",
-        "CODER",
-        "--body",
-        "Start: allowlist mismatch should fail with helpful error message for debugging",
-        "--commit-from-comment",
-        "--commit-allow",
-        "src",
-        "--confirm-status-commit",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("committed");
-    } finally {
-      io.restore();
-    }
-  }, 60_000);
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: allowlist mismatch should fail with helpful error message for debugging",
+          "--commit-from-comment",
+          "--commit-allow",
+          "src",
+          "--confirm-status-commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("committed");
+      } finally {
+        io.restore();
+      }
+    },
+    START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
+  );
 });

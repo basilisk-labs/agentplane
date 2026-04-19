@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604181840-K8PDGY/release-ci-regression",
+  "created_at": "2026-04-18T18:41:08.809Z",
+  "head_sha": "07fadc5d64a2e8b7abb57c77e286c889fa6687b4",
+  "last_verified_at": "2026-04-19T11:19:20.885Z",
+  "last_verified_sha": "c13d3643dde0748a11915104b2f726e616afa245",
+  "schema_version": 1,
+  "task_id": "202604181840-K8PDGY",
+  "updated_at": "2026-04-19T11:21:23.627Z",
+  "verify": {
+    "status": "pass"
+  }
+}

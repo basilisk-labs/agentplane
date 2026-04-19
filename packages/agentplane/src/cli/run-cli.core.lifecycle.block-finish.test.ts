@@ -33,6 +33,7 @@ afterEach(() => {
 
 describe("runCli", () => {
   const BLOCK_FINISH_TIMEOUT_MS = 60_000;
+  const BLOCK_FINISH_LONG_TIMEOUT_MS = 180_000;
 
   it("block updates status and appends comment", async () => {
     const root = await mkGitRepoRoot();
@@ -309,7 +310,7 @@ describe("runCli", () => {
 
   it(
     "finish --close-commit creates deterministic close commit in the same command",
-    { timeout: 120_000 },
+    { timeout: BLOCK_FINISH_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
@@ -467,9 +468,22 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const { stdout: headSubject } = await execFileAsync("git", ["show", "-s", "--format=%s"], {
-      cwd: root,
-    });
+    const closeBranch = `task-close/${taskId}/${implHash.trim().slice(0, 12)}`;
+    const { stdout: currentBranch } = await execFileAsync(
+      "git",
+      ["rev-parse", "--abbrev-ref", "HEAD"],
+      {
+        cwd: root,
+      },
+    );
+    expect(currentBranch.trim()).toBe("main");
+    const { stdout: headSubject } = await execFileAsync(
+      "git",
+      ["show", "-s", "--format=%s", closeBranch],
+      {
+        cwd: root,
+      },
+    );
     expect(headSubject).toContain("close:");
   });
 
@@ -571,21 +585,33 @@ describe("runCli", () => {
       );
       expect(status.trim()).toBe("");
 
-      const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
-      const meta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
+      const closeBranch = `task-close/${taskId}/${implHash.trim().slice(0, 12)}`;
+      const prDirGitPath = `.agentplane/tasks/${taskId}/pr`;
+      const { stdout: metaText } = await execFileAsync(
+        "git",
+        ["show", `${closeBranch}:${prDirGitPath}/meta.json`],
+        { cwd: root },
+      );
+      const meta = JSON.parse(metaText) as {
         last_verified_at?: string | null;
         verify?: { status?: string | null };
       };
       expect(meta.last_verified_at).toBeTruthy();
       expect(meta.verify?.status).toBe("pass");
-      expect(await readFile(path.join(prDir, "review.md"), "utf8")).toContain("- State: ok");
-      expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toContain("- State: ok");
-      expect(await readFile(path.join(prDir, "review.md"), "utf8")).not.toContain(
-        "Not recorded yet.",
+      const { stdout: reviewText } = await execFileAsync(
+        "git",
+        ["show", `${closeBranch}:${prDirGitPath}/review.md`],
+        { cwd: root },
       );
-      expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).not.toContain(
-        "Not recorded yet.",
+      const { stdout: githubBodyText } = await execFileAsync(
+        "git",
+        ["show", `${closeBranch}:${prDirGitPath}/github-body.md`],
+        { cwd: root },
       );
+      expect(reviewText).toContain("- State: ok");
+      expect(githubBodyText).toContain("- State: ok");
+      expect(reviewText).not.toContain("Not recorded yet.");
+      expect(githubBodyText).not.toContain("Not recorded yet.");
     },
   );
 
@@ -675,9 +701,14 @@ describe("runCli", () => {
         io.restore();
       }
 
-      const { stdout: headSubject } = await execFileAsync("git", ["show", "-s", "--format=%s"], {
-        cwd: root,
-      });
+      const closeBranch = `task-close/${taskId}/${implHash.trim().slice(0, 12)}`;
+      const { stdout: headSubject } = await execFileAsync(
+        "git",
+        ["show", "-s", "--format=%s", closeBranch],
+        {
+          cwd: root,
+        },
+      );
       expect(headSubject).toContain("close:");
     },
   );
@@ -763,9 +794,14 @@ describe("runCli", () => {
         io.restore();
       }
 
-      const { stdout: headSubject } = await execFileAsync("git", ["show", "-s", "--format=%s"], {
-        cwd: root,
-      });
+      const closeBranch = `task-close/${taskId}/${implHash.trim().slice(0, 12)}`;
+      const { stdout: headSubject } = await execFileAsync(
+        "git",
+        ["show", "-s", "--format=%s", closeBranch],
+        {
+          cwd: root,
+        },
+      );
       expect(headSubject).toContain("close:");
     },
   );

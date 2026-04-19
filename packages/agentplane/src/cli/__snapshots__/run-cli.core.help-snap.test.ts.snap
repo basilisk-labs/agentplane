@@ -71,7 +71,7 @@ Commands:
     pr close  Close a GitHub PR through REST with optional remote head-branch deletion.
     pr close-superseded  Close a superseded task PR using task artifacts.
     pr note  Append a handoff note into PR review.md.
-    pr open  Create PR artifacts for a task.
+    pr open  Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.
     pr update  Update PR artifacts (review packet, diffstat, and GitHub projections).
   Quality:
     doctor  Check workspace invariants for a normal agentplane installation (with optional dev source checks).
@@ -279,6 +279,7 @@ exports[`runCli help snapshots (cli2) > help work start --json snapshot 1`] = `
   "notes": [
     "When workflow_mode=direct, agentplane does not create task branches; it records a single active task for the workspace.",
     "When workflow_mode=branch_pr, --worktree is required and the command must be run on the base branch.",
+    "After branch_pr work starts, run owner-scoped task commands from the created worktree so task README/PR artifacts stay attached to one checkout.",
   ],
   "options": [
     {

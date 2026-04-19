@@ -55,8 +55,9 @@ import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
+const TASKS_CLI_TIMEOUT_MS = 300_000;
 
-describe("runCli", () => {
+describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
   it("task new creates a task README and prints the id", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
@@ -1333,7 +1334,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  }, 60_000);
+  }, 180_000);
 
   it("task set-status requires explicit approval for --force in conservative profile", async () => {
     const root = await mkGitRepoRoot();

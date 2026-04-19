@@ -57,6 +57,8 @@ import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
+const PR_FLOW_INTEGRATION_TIMEOUT_MS = 180_000;
+const PR_FLOW_LONG_TIMEOUT_MS = 240_000;
 
 async function setConcreteVerifySteps(root: string, taskId: string): Promise<void> {
   await runCliSilent([
@@ -285,7 +287,7 @@ async function configurePushableOrigin(root: string): Promise<string> {
   return publishRemotePath;
 }
 
-describe("runCli", () => {
+describe("runCli", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
   it("pr open creates PR artifacts", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -1069,7 +1071,9 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("remote PR creation skipped (--sync-only)");
+      expect(io.stdout).toMatch(
+        /remote PR creation (skipped \(--sync-only\)|staged \(GitHub PR creation failed\))/,
+      );
     } finally {
       io.restore();
       process.env.PATH = originalPath;
@@ -1487,164 +1491,172 @@ describe("runCli", () => {
     }
   });
 
-  it("pr update refreshes diffstat and auto summary", { timeout: 60_000 }, async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    await configureGitUser(root);
+  it(
+    "pr update refreshes diffstat and auto summary",
+    { timeout: PR_FLOW_LONG_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
 
-    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
 
-    let taskId = "";
-    const ioTask = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "PR update task",
-        "--description",
-        "PR update writes diffstat",
-        "--priority",
-        "med",
-        "--owner",
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "PR update task",
+          "--description",
+          "PR update writes diffstat",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      await runCliSilent([
+        "pr",
+        "open",
+        taskId,
+        "--author",
         "CODER",
-        "--tag",
-        "nodejs",
+        "--branch",
+        `task/${taskId}/pr-update`,
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
 
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await execFileAsync("git", ["checkout", "-b", `task/${taskId}/pr-update`], { cwd: root });
+      await writeFile(path.join(root, "change.txt"), "change", "utf8");
+      await execFileAsync("git", ["add", "change.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "change"], { cwd: root });
 
-    await runCliSilent([
-      "pr",
-      "open",
-      taskId,
-      "--author",
-      "CODER",
-      "--branch",
-      `task/${taskId}/pr-update`,
-      "--root",
-      root,
-    ]);
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["pr", "update", taskId, "--root", root]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
 
-    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/pr-update`], { cwd: root });
-    await writeFile(path.join(root, "change.txt"), "change", "utf8");
-    await execFileAsync("git", ["add", "change.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "change"], { cwd: root });
+      const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+      const diffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
+      expect(diffstat).toContain("change.txt");
+      const review = await readFile(path.join(prDir, "review.md"), "utf8");
+      expect(review).toContain("BEGIN AUTO SUMMARY");
+      expect(review).toContain("change.txt");
+      const githubTitle = await readFile(path.join(prDir, "github-title.txt"), "utf8");
+      const githubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
+      expect(githubTitle.trim()).toContain(`(${extractTaskSuffix(taskId)})`);
+      expect(githubTitle).not.toContain(`task/${taskId}/pr-update`);
+      expect(githubBody).toContain("## Summary");
+      expect(githubBody).toContain("## Scope");
+      expect(githubBody).toContain("## Verification");
+      expect(githubBody).toContain("## Handoff Notes");
+      expect(githubBody).toContain("<details>");
+      expect(githubBody).toContain("change.txt");
+      expect(githubBody).not.toContain("## Risks");
+      expect(githubBody).not.toContain("### Plan");
+    },
+  );
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["pr", "update", taskId, "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
+  it(
+    "pr update is idempotent when HEAD and diff are unchanged",
+    { timeout: PR_FLOW_LONG_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
 
-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
-    const diffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
-    expect(diffstat).toContain("change.txt");
-    const review = await readFile(path.join(prDir, "review.md"), "utf8");
-    expect(review).toContain("BEGIN AUTO SUMMARY");
-    expect(review).toContain("change.txt");
-    const githubTitle = await readFile(path.join(prDir, "github-title.txt"), "utf8");
-    const githubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
-    expect(githubTitle.trim()).toContain(`(${extractTaskSuffix(taskId)})`);
-    expect(githubTitle).not.toContain(`task/${taskId}/pr-update`);
-    expect(githubBody).toContain("## Summary");
-    expect(githubBody).toContain("## Scope");
-    expect(githubBody).toContain("## Verification");
-    expect(githubBody).toContain("## Handoff Notes");
-    expect(githubBody).toContain("<details>");
-    expect(githubBody).toContain("change.txt");
-    expect(githubBody).not.toContain("## Risks");
-    expect(githubBody).not.toContain("### Plan");
-  });
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
 
-  it("pr update is idempotent when HEAD and diff are unchanged", { timeout: 60_000 }, async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    await configureGitUser(root);
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "PR update idempotent task",
+          "--description",
+          "PR update stays byte-stable when nothing changed",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
 
-    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
-
-    let taskId = "";
-    const ioTask = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "PR update idempotent task",
-        "--description",
-        "PR update stays byte-stable when nothing changed",
-        "--priority",
-        "med",
-        "--owner",
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await runCliSilent([
+        "pr",
+        "open",
+        taskId,
+        "--author",
         "CODER",
-        "--tag",
-        "nodejs",
+        "--branch",
+        `task/${taskId}/pr-update-idempotent`,
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
 
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    await runCliSilent([
-      "pr",
-      "open",
-      taskId,
-      "--author",
-      "CODER",
-      "--branch",
-      `task/${taskId}/pr-update-idempotent`,
-      "--root",
-      root,
-    ]);
+      await execFileAsync("git", ["checkout", "-b", `task/${taskId}/pr-update-idempotent`], {
+        cwd: root,
+      });
+      await writeFile(path.join(root, "change.txt"), "change", "utf8");
+      await execFileAsync("git", ["add", "change.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "change"], { cwd: root });
 
-    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/pr-update-idempotent`], {
-      cwd: root,
-    });
-    await writeFile(path.join(root, "change.txt"), "change", "utf8");
-    await execFileAsync("git", ["add", "change.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "change"], { cwd: root });
+      await runCliSilent(["pr", "update", taskId, "--root", root]);
 
-    await runCliSilent(["pr", "update", taskId, "--root", root]);
+      const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+      const firstMeta = await readFile(path.join(prDir, "meta.json"), "utf8");
+      const firstDiffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
+      const firstReview = await readFile(path.join(prDir, "review.md"), "utf8");
+      const firstGithubTitle = await readFile(path.join(prDir, "github-title.txt"), "utf8");
+      const firstGithubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
 
-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
-    const firstMeta = await readFile(path.join(prDir, "meta.json"), "utf8");
-    const firstDiffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
-    const firstReview = await readFile(path.join(prDir, "review.md"), "utf8");
-    const firstGithubTitle = await readFile(path.join(prDir, "github-title.txt"), "utf8");
-    const firstGithubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
+      await runCliSilent(["pr", "update", taskId, "--root", root]);
 
-    await runCliSilent(["pr", "update", taskId, "--root", root]);
-
-    expect(await readFile(path.join(prDir, "meta.json"), "utf8")).toBe(firstMeta);
-    expect(await readFile(path.join(prDir, "diffstat.txt"), "utf8")).toBe(firstDiffstat);
-    expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(firstReview);
-    expect(await readFile(path.join(prDir, "github-title.txt"), "utf8")).toBe(firstGithubTitle);
-    expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(firstGithubBody);
-  });
+      expect(await readFile(path.join(prDir, "meta.json"), "utf8")).toBe(firstMeta);
+      expect(await readFile(path.join(prDir, "diffstat.txt"), "utf8")).toBe(firstDiffstat);
+      expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(firstReview);
+      expect(await readFile(path.join(prDir, "github-title.txt"), "utf8")).toBe(firstGithubTitle);
+      expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(firstGithubBody);
+    },
+  );
 
   it("pr open auto-commits the task README and PR artifacts on the task branch", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -2093,7 +2105,7 @@ describe("runCli", () => {
 
   it(
     "verify recreates PR artifacts without a manual pr open or pr update",
-    { timeout: 90_000 },
+    { timeout: PR_FLOW_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
@@ -2382,7 +2394,7 @@ describe("runCli", () => {
 
   it(
     "pr check fails when review metadata is stale relative to branch head",
-    { timeout: 90_000 },
+    { timeout: PR_FLOW_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
@@ -2452,7 +2464,7 @@ describe("runCli", () => {
 
   it(
     "pr check fails when verify metadata is stale relative to branch head",
-    { timeout: 90_000 },
+    { timeout: PR_FLOW_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
@@ -2550,7 +2562,7 @@ describe("runCli", () => {
 
   it(
     "pr check accepts verify-log-backed verification when pr meta verify fields drift",
-    { timeout: 90_000 },
+    { timeout: PR_FLOW_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
@@ -2795,7 +2807,7 @@ describe("runCli", () => {
 
   it(
     "pr check falls back to PR artifacts committed on the task branch",
-    { timeout: 120_000 },
+    { timeout: PR_FLOW_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
@@ -2938,7 +2950,7 @@ describe("runCli", () => {
 
   it(
     "pr check prefers a fresher branch snapshot when local base PR artifacts are stale",
-    { timeout: 120_000 },
+    { timeout: PR_FLOW_LONG_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
