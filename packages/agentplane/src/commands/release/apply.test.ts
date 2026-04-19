@@ -4,14 +4,18 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { commitAll, mkGitRepoRoot, writeDefaultConfig } from "../../testing/index.js";
+import {
+  commitAll,
+  describeWhenNotHook,
+  mkGitRepoRoot,
+  writeDefaultConfig,
+} from "../../testing/index.js";
 import { seedReleaseWorkspace, writeReleaseNotes } from "../../../../testkit/src/release.js";
 import { runReleasePlan } from "./plan.command.js";
 import { pushReleaseRefs, runReleaseApply, runReleaseCandidate } from "./apply.command.js";
 import { cleanHookEnv } from "./apply.mutation.js";
 
 const execFileAsync = promisify(execFile);
-const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 const ORIGINAL_DRY_RUN = process.env.AGENTPLANE_RELEASE_DRY_RUN;
 const RELEASE_APPLY_LONG_TIMEOUT_MS = 120_000;
 const RELEASE_APPLY_FULL_GATE_TIMEOUT_MS = 240_000;

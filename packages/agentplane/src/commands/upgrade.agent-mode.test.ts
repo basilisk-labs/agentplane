@@ -4,11 +4,11 @@ import { describe, expect, it } from "vitest";
 
 import {
   createUpgradeBundle,
+  describeWhenNotHook,
   mkGitRepoRoot,
   writeDefaultConfig,
 } from "../testing/index.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
-const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 
 async function exists(absPath: string): Promise<boolean> {
   try {

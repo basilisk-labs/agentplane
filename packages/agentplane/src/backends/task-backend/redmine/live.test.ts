@@ -6,7 +6,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { parseDotEnv } from "../../../shared/env.js";
-import { silenceStdIO } from "../../../testing/index.js";
+import { describeWhenEnvPresent, silenceStdIO } from "../../../testing/index.js";
 import { LocalBackend } from "../local-backend.js";
 import { RedmineBackend } from "../redmine-backend.js";
 
@@ -42,8 +42,6 @@ export function shouldRunRedmineLiveSuite(env: NodeJS.ProcessEnv = process.env):
 
 loadRepoDotEnv();
 
-const describeWhenEnvPresent = shouldRunRedmineLiveSuite() ? describe : describe.skip;
-
 let restoreStdIO: (() => void) | null = null;
 
 beforeEach(() => {
@@ -77,7 +75,7 @@ describe("Redmine live suite gating", () => {
   });
 });
 
-describeWhenEnvPresent("Redmine live projection contract", () => {
+describeWhenEnvPresent(shouldRunRedmineLiveSuite())("Redmine live projection contract", () => {
   it("refreshes projection from Redmine and exports a snapshot without remote writes", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), TMP_PREFIX));
     const cacheDir = path.join(root, ".agentplane", "tasks");
