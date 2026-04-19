@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604191200-G7YHZY/avoid-redundant-close-tail",
+  "created_at": "2026-04-19T12:24:30.431Z",
+  "head_sha": "e1f205fbdebf7bf84571a225699d1f6b63cb9456",
+  "last_verified_at": "2026-04-19T13:59:13.700Z",
+  "last_verified_sha": "e1c131c36d1e71ac491261ce0580ea2e9ab19005",
+  "schema_version": 1,
+  "task_id": "202604191200-G7YHZY",
+  "updated_at": "2026-04-19T14:00:06.222Z",
+  "verify": {
+    "status": "pass"
+  }
+}

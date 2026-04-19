@@ -19,6 +19,7 @@ import { resolveDefaultGithubRepo, runGhApiJson } from "../pr/internal/gh-api.js
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 
 import { resolveBaseBranch } from "@agentplaneorg/core";
+import { taskCloseAlreadyRecordedOnBase } from "./close-tail-state.js";
 
 type TaskHostedClosePrParsed = {
   taskIds: string[];
@@ -201,7 +202,13 @@ async function readHostedCloseState(opts: {
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
   taskBranch: string | null;
 }> {
-  const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
+  const task =
+    (await opts.ctx.taskBackend.getTask(opts.taskId)) ??
+    (await loadTaskFromContext({
+      ctx: opts.ctx,
+      taskId: opts.taskId,
+      preferBranchSnapshot: false,
+    }));
   const taskBranch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   const { metaPath, config } = await resolvePrPaths({
     ctx: opts.ctx,
@@ -413,9 +420,21 @@ async function openHostedClosePr(opts: {
   });
   let sourceBranch = meta?.branch?.trim() ?? taskBranch?.trim() ?? "";
   let baseBranch = meta?.base?.trim() ?? defaultBaseBranch?.trim() ?? "";
-  let mergedRecord =
+  const localMergeCommit = meta?.merge_commit?.trim() ?? task.commit?.hash?.trim() ?? "";
+  const canonicalCloseAlreadyPresent =
+    meta?.status === "MERGED" &&
     sourceBranch.length > 0 &&
-    (meta?.status !== "MERGED" || !(meta?.merge_commit?.trim() ?? task.commit?.hash?.trim() ?? ""))
+    localMergeCommit.length > 0 &&
+    String(task.status || "TODO").toUpperCase() === "DONE" &&
+    (task.commit?.hash?.trim() ?? "") === localMergeCommit;
+  if (canonicalCloseAlreadyPresent) {
+    output.info(
+      `hosted-close-pr skipped: ${opts.taskId} is already closed on ${baseBranch || "the base branch"} for merge ${shortSha(localMergeCommit)}`,
+    );
+    return 0;
+  }
+  let mergedRecord =
+    sourceBranch.length > 0 && (meta?.status !== "MERGED" || !localMergeCommit)
       ? await resolveHostedCloseMergeRecord({
           gitRoot,
           repo,
@@ -424,7 +443,6 @@ async function openHostedClosePr(opts: {
           prNumber: typeof meta?.pr_number === "number" ? meta.pr_number : null,
         })
       : null;
-  const localMergeCommit = meta?.merge_commit?.trim() ?? task.commit?.hash?.trim() ?? "";
   if (!mergedRecord && localMergeCommit) {
     mergedRecord = await resolveHostedCloseMergeRecordByCommit({
       gitRoot,
@@ -478,6 +496,21 @@ async function openHostedClosePr(opts: {
     gitRoot,
     branch: sourceBranch,
   });
+  const alreadyClosedOnBase = await taskCloseAlreadyRecordedOnBase({
+    gitRoot,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
+    taskId: opts.taskId,
+    baseBranch,
+  });
+  if (alreadyClosedOnBase) {
+    output.info(`hosted close already recorded on ${baseBranch}; no follow-up PR needed`);
+    output.success(
+      "task hosted-close-pr",
+      opts.taskId,
+      `hosted close already recorded on ${baseBranch}; skipped follow-up PR`,
+    );
+    return 0;
+  }
   const owner = repo.split("/")[0]?.trim() ?? "";
   const existingQuery = new URLSearchParams({
     state: "open",
