@@ -1,10 +1,11 @@
 ---
 id: "202604191640-7DPEPE"
 title: "Reduce shared directory to justified cross-cutting helpers"
-status: "DOING"
+result_summary: "root shared directory is reduced to 12 files; domain-specific helpers moved into commands/runtime/task-doc; dead agent-emoji removed; imports and focused regressions stay green"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,15 +20,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-19T21:06:44.662Z"
+  updated_by: "CODER"
+  note: "Verified: shared root shrank to 12 files; agentplane typecheck/build passed after relocation; focused suites for moved modules and key consumers passed, including comment-format, git-log, runtime-source, repo-cli-version, runtime.command, workflow.task-doc, and guard commit diagnostics."
+commit:
+  hash: "521968ac6e7031934a45373a1f76a812c4b55415"
+  message: "♻️ 7DPEPE task: relocate shared helpers by domain"
 comments:
   -
     author: "CODER"
     body: "Start: classify shared-root files by real consumers, move non-cross-cutting helpers into domain-local modules, and leave only justified repo-wide utilities in packages/agentplane/src/shared."
+  -
+    author: "CODER"
+    body: "Verified: shared root shrank to 12 files; agentplane typecheck/build passed after relocation; focused suites for moved modules and key consumers passed, including comment-format, git-log, runtime-source, repo-cli-version, runtime.command, workflow.task-doc, and guard commit diagnostics."
 events:
   -
     type: "status"
@@ -36,8 +42,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: classify shared-root files by real consumers, move non-cross-cutting helpers into domain-local modules, and leave only justified repo-wide utilities in packages/agentplane/src/shared."
+  -
+    type: "verify"
+    at: "2026-04-19T21:06:44.662Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: shared root shrank to 12 files; agentplane typecheck/build passed after relocation; focused suites for moved modules and key consumers passed, including comment-format, git-log, runtime-source, repo-cli-version, runtime.command, workflow.task-doc, and guard commit diagnostics."
+  -
+    type: "status"
+    at: "2026-04-19T21:06:58.761Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: shared root shrank to 12 files; agentplane typecheck/build passed after relocation; focused suites for moved modules and key consumers passed, including comment-format, git-log, runtime-source, repo-cli-version, runtime.command, workflow.task-doc, and guard commit diagnostics."
 doc_version: 3
-doc_updated_at: "2026-04-19T21:01:37.232Z"
+doc_updated_at: "2026-04-19T21:06:58.762Z"
 doc_updated_by: "CODER"
 description: "Epic B′. Remove or relocate leftover shared helpers so only justified cross-cutting files remain."
 sections:
@@ -55,6 +74,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-19T21:06:44.662Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: shared root shrank to 12 files; agentplane typecheck/build passed after relocation; focused suites for moved modules and key consumers passed, including comment-format, git-log, runtime-source, repo-cli-version, runtime.command, workflow.task-doc, and guard commit diagnostics.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T21:01:37.232Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +113,14 @@ Epic B′. Remove or relocate leftover shared helpers so only justified cross-cu
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-19T21:06:44.662Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: shared root shrank to 12 files; agentplane typecheck/build passed after relocation; focused suites for moved modules and key consumers passed, including comment-format, git-log, runtime-source, repo-cli-version, runtime.command, workflow.task-doc, and guard commit diagnostics.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T21:01:37.232Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
