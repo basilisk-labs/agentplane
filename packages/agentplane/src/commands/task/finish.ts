@@ -37,6 +37,7 @@ import {
   requireStructuredComment,
   runTaskTransitionCommentCommit,
 } from "./shared.js";
+import { taskCloseAlreadyRecordedOnBase } from "./close-tail-state.js";
 
 async function clearDirectWorkLockIfMatches(opts: {
   agentplaneDir: string;
@@ -131,9 +132,18 @@ async function materializeBranchPrCloseTail(opts: {
   quiet: boolean;
   closeUnstageOthers?: boolean;
   allowPolicy?: boolean;
-}): Promise<string> {
+}): Promise<string | null> {
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const baseBranch = await gitCurrentBranch(gitRoot);
+  const alreadyClosedOnBase = await taskCloseAlreadyRecordedOnBase({
+    gitRoot,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
+    taskId: opts.taskId,
+    baseBranch,
+  });
+  if (alreadyClosedOnBase) {
+    return null;
+  }
   const headCommitHash = await readHeadCommitHash(gitRoot);
   const closeBranch = branchPrCloseBranchName(opts.taskId, headCommitHash);
   const branchExists = await gitBranchExists(gitRoot, closeBranch);
@@ -660,11 +670,19 @@ export async function cmdFinish(opts: {
           allowPolicy: promotedIncidents > 0,
         });
         if (!opts.quiet) {
-          process.stdout.write(
-            `${infoMessage(
-              `branch_pr close tail ready on ${closeBranch}; push that branch and open it with task hosted-close-pr if hosted automation does not create the closure PR for you.`,
-            )}\n`,
-          );
+          if (closeBranch) {
+            process.stdout.write(
+              `${infoMessage(
+                `branch_pr close tail ready on ${closeBranch}; push that branch and open it with task hosted-close-pr if hosted automation does not create the closure PR for you.`,
+              )}\n`,
+            );
+          } else {
+            process.stdout.write(
+              `${infoMessage(
+                "branch_pr close tail already exists on base; skipping local task-close branch materialization.",
+              )}\n`,
+            );
+          }
         }
         }
       } else {

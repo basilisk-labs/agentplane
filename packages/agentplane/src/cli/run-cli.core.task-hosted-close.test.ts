@@ -723,7 +723,7 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
     expect(metaRaw).toContain('"pr_url": "https://example.test/pr/92"');
   }, 240_000);
 
-  it("task hosted-close-pr no-ops when canonical close artifacts are already on base", async () => {
+  it("task hosted-close-pr skips opening a follow-up PR when hosted close is already recorded on base", async () => {
     const root = await writeAndConfigureRoot();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -875,17 +875,25 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
         cwd: root,
       },
     );
-    const { backend } = await loadTaskBackend({ cwd: root, rootOverride: null });
-    const closedTask = await backend.getTask(taskId);
-    expect(closedTask).not.toBeNull();
-    await backend.writeTask({
-      ...closedTask!,
-      status: "DONE",
-      commit: { hash: mergeCommit, message: "Hosted close PR helper" },
-      result_summary: "Merged via PR #97.",
+    const firstGh = await installFakeGhHostedClosePr({
+      scenarioName: "already-closed",
+      branch: closureBranch,
+      existingResponse: [],
+      mergedResponse: [],
+      createResponse: {
+        number: 902,
+        html_url: "https://github.com/example/repo/pull/902",
+        state: "open",
+        merged_at: null,
+      },
+      allowCreate: false,
     });
 
-    const io = captureStdIO();
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${firstGh.fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = firstGh.logPath;
+
+    const ioCreate = captureStdIO();
     try {
       const code = await runCli([
         "task",
@@ -897,12 +905,21 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("hosted-close-pr skipped");
-      expect(io.stdout).toContain(`${taskId} is already closed on ${baseBranch}`);
-      expect(io.stdout).toContain(mergeCommit.slice(0, 12));
+      expect(ioCreate.stdout).toContain("hosted close already recorded on");
+      expect(ioCreate.stdout).toContain("skipped follow-up PR");
     } finally {
-      io.restore();
+      ioCreate.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
     }
+
+    const { stdout: localBranchStdout } = await execFileAsync("git", ["branch", "--list", branch], {
+      cwd: root,
+    });
+    expect(localBranchStdout.trim()).toBe("");
+
+    const firstLog = await readFile(firstGh.logPath, "utf8");
+    expect(firstLog).not.toContain('"POST"');
   }, 240_000);
 
   it("task hosted-close-pr recovers merge metadata from GitHub when base pr meta is stale", async () => {

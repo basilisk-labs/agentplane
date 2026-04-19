@@ -19,6 +19,7 @@ import { resolveDefaultGithubRepo, runGhApiJson } from "../pr/internal/gh-api.js
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 
 import { resolveBaseBranch } from "@agentplaneorg/core";
+import { taskCloseAlreadyRecordedOnBase } from "./close-tail-state.js";
 
 type TaskHostedClosePrParsed = {
   taskIds: string[];
@@ -496,6 +497,21 @@ async function openHostedClosePr(opts: {
     gitRoot,
     branch: sourceBranch,
   });
+  const alreadyClosedOnBase = await taskCloseAlreadyRecordedOnBase({
+    gitRoot,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
+    taskId: opts.taskId,
+    baseBranch,
+  });
+  if (alreadyClosedOnBase) {
+    output.info(`hosted close already recorded on ${baseBranch}; no follow-up PR needed`);
+    output.success(
+      "task hosted-close-pr",
+      opts.taskId,
+      `hosted close already recorded on ${baseBranch}; skipped follow-up PR`,
+    );
+    return 0;
+  }
   const owner = repo.split("/")[0]?.trim() ?? "";
   const existingQuery = new URLSearchParams({
     state: "open",
