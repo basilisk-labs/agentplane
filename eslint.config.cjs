@@ -192,6 +192,39 @@ module.exports = [
     },
   },
 
+  {
+    files: [
+      "packages/agentplane/src/shared/errors.ts",
+      "packages/agentplane/src/cli/spec/errors.ts",
+      "packages/agentplane/src/backends/task-backend/shared/errors.ts",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "../../cli/spec/errors.js",
+              message: "Shared/runtime and backend error modules must not depend on CLI usage helpers.",
+            },
+            {
+              name: "../../../cli/spec/errors.js",
+              message: "Backend error modules must not depend on CLI usage helpers.",
+            },
+            {
+              name: "../../backends/task-backend/shared/errors.js",
+              message: "CLI/shared error modules must not depend on backend-local error types.",
+            },
+            {
+              name: "../../../backends/task-backend/shared/errors.js",
+              message: "CLI/shared error modules must not depend on backend-local error types.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   // Policy code must be pure: facts are injected via contexts.
   {
     files: ["packages/agentplane/src/policy/**/*.{ts,tsx}"],

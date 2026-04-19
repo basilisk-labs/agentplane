@@ -3,6 +3,18 @@ import { CliError } from "../../shared/errors.js";
 import type { CommandSpec } from "./spec.js";
 import { renderCommandHelpText } from "./help-render.js";
 
+/**
+ * Usage-error helpers for command-spec parsing/rendering only.
+ *
+ * Allowed here:
+ * - E_USAGE construction tied to CLI spec/help rendering
+ * - command-specific usage context shaping
+ *
+ * Do not add:
+ * - shared runtime error primitives
+ * - backend/domain errors
+ * - non-CLI formatting or transport concerns
+ */
 export function usageError(opts: {
   message: string;
   spec?: CommandSpec<unknown>;

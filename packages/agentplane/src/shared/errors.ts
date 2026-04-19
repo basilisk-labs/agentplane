@@ -1,3 +1,16 @@
+/**
+ * Shared CLI/runtime error surface for cross-cutting agentplane failures.
+ *
+ * Allowed here:
+ * - stable error codes shared across command, runner, and CLI rendering paths
+ * - the canonical `CliError` container used by command and output layers
+ * - JSON serialization helpers consumed by CLI formatting
+ *
+ * Do not add:
+ * - command-spec usage helpers
+ * - backend-specific transport/domain errors
+ * - error factories that belong to one feature subtree only
+ */
 export type ErrorCode =
   | "E_USAGE"
   | "E_VALIDATION"
