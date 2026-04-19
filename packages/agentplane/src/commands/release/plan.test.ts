@@ -4,13 +4,16 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { commitAll, mkGitRepoRoot, writeDefaultConfig } from "../../testing/index.js";
+import {
+  commitAll,
+  describeWhenNotHook,
+  mkGitRepoRoot,
+  writeDefaultConfig,
+} from "../../testing/index.js";
 import { seedReleaseWorkspace } from "../../../../testkit/src/release.js";
 import { runReleasePlan, releasePlanSpec } from "./plan.command.js";
 
 const execFileAsync = promisify(execFile);
-const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
-
 describeWhenNotHook("release plan", () => {
   it("writes a release plan dir with changes list and next patch version", async () => {
     const root = await mkGitRepoRoot();
