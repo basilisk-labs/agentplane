@@ -1,10 +1,10 @@
 ---
 id: "202604191516-JBXHCY"
 title: "Advance epic A′ Zod migration in direct mode"
-status: "BLOCKED"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-19T15:18:58.772Z"
+  updated_at: "2026-04-19T15:29:44.452Z"
   updated_by: "CODER"
-  note: "Command: bun scripts/diff-config-schemas.mjs; Result: pass; Evidence: runtime config path and raw Zod schema match across 7 scenarios, residual AJV deps dropped to none. Scope: config parity baseline and package dependency cleanup. Command: bun run test:core; Result: pass; Evidence: 15 files and 138 tests passed after removing stale AJV dependencies. Scope: packages/core/src runtime and schema-adjacent surfaces."
+  note: "Command: bun scripts/diff-config-schemas.mjs; Result: pass; Evidence: runtime config path and raw Zod schema remain equivalent across 7 scenarios and residual AJV deps are now none. Scope: config parity audit and dependency cleanup. Command: bun run test:core; Result: pass; Evidence: 15 files and 138 tests passed after removing stale AJV dependencies. Scope: packages/core/src runtime, config, tasks, and git surfaces."
 commit: null
 comments:
   -
@@ -31,6 +31,9 @@ comments:
   -
     author: "CODER"
     body: "Blocked: direct-mode cleanup must land first so branch_pr residue and orphan task artifacts do not contaminate the next epic commits."
+  -
+    author: "CODER"
+    body: "Start: resume epic A′ after cleanup; continue the validated Zod migration work from the current direct-mode checkout."
 events:
   -
     type: "status"
@@ -52,8 +55,21 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: direct-mode cleanup must land first so branch_pr residue and orphan task artifacts do not contaminate the next epic commits."
+  -
+    type: "status"
+    at: "2026-04-19T15:29:05.890Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Start: resume epic A′ after cleanup; continue the validated Zod migration work from the current direct-mode checkout."
+  -
+    type: "verify"
+    at: "2026-04-19T15:29:44.452Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun scripts/diff-config-schemas.mjs; Result: pass; Evidence: runtime config path and raw Zod schema remain equivalent across 7 scenarios and residual AJV deps are now none. Scope: config parity audit and dependency cleanup. Command: bun run test:core; Result: pass; Evidence: 15 files and 138 tests passed after removing stale AJV dependencies. Scope: packages/core/src runtime, config, tasks, and git surfaces."
 doc_version: 3
-doc_updated_at: "2026-04-19T15:26:44.428Z"
+doc_updated_at: "2026-04-19T15:29:44.460Z"
 doc_updated_by: "CODER"
 description: "Continue the Zod migration epic in local direct workflow, record the actual config parity state, and implement the next safe cleanup steps from the current checkout without branch_pr worktrees."
 sections:
@@ -82,6 +98,14 @@ sections:
     Note: Command: bun scripts/diff-config-schemas.mjs; Result: pass; Evidence: runtime config path and raw Zod schema match across 7 scenarios, residual AJV deps dropped to none. Scope: config parity baseline and package dependency cleanup. Command: bun run test:core; Result: pass; Evidence: 15 files and 138 tests passed after removing stale AJV dependencies. Scope: packages/core/src runtime and schema-adjacent surfaces.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T15:17:34.578Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-04-19T15:29:44.452Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun scripts/diff-config-schemas.mjs; Result: pass; Evidence: runtime config path and raw Zod schema remain equivalent across 7 scenarios and residual AJV deps are now none. Scope: config parity audit and dependency cleanup. Command: bun run test:core; Result: pass; Evidence: 15 files and 138 tests passed after removing stale AJV dependencies. Scope: packages/core/src runtime, config, tasks, and git surfaces.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T15:29:05.907Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -127,6 +151,14 @@ By: CODER
 Note: Command: bun scripts/diff-config-schemas.mjs; Result: pass; Evidence: runtime config path and raw Zod schema match across 7 scenarios, residual AJV deps dropped to none. Scope: config parity baseline and package dependency cleanup. Command: bun run test:core; Result: pass; Evidence: 15 files and 138 tests passed after removing stale AJV dependencies. Scope: packages/core/src runtime and schema-adjacent surfaces.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T15:17:34.578Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+### 2026-04-19T15:29:44.452Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun scripts/diff-config-schemas.mjs; Result: pass; Evidence: runtime config path and raw Zod schema remain equivalent across 7 scenarios and residual AJV deps are now none. Scope: config parity audit and dependency cleanup. Command: bun run test:core; Result: pass; Evidence: 15 files and 138 tests passed after removing stale AJV dependencies. Scope: packages/core/src runtime, config, tasks, and git surfaces.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T15:29:05.907Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 <!-- END VERIFICATION RESULTS -->
 
