@@ -10,7 +10,7 @@ import {
   makeRunnerContextBundle,
   setRunnerBundleRunDir,
   writeRunnerExecutable,
-} from "../test-helpers.js";
+} from "../../../../testkit/src/runner.js";
 import { createRunnerAdapter } from "./index.js";
 import { CliError } from "../../shared/errors.js";
 
