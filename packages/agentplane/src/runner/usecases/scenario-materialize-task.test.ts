@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
-import { runCliSilent } from "../../cli/run-cli.test-helpers.js";
+import { runCliSilent } from "../../testing/index.js";
 import {
   createRecipeArchive,
   installRecipesCommandHarness,

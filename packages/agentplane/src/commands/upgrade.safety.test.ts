@@ -9,7 +9,7 @@ import {
   createUpgradeBundle,
   mkGitRepoRoot,
   writeDefaultConfig,
-} from "../cli/run-cli.test-helpers.js";
+} from "../testing/index.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
 
 const execFileAsync = promisify(execFile);

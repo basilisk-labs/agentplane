@@ -20,7 +20,7 @@ import {
   resolveProjectRecipesRegistryPath,
   writeDefaultConfig,
 } from "../../../testkit/src/recipes.js";
-import { createRecipeArchiveWithManifest, pathExists } from "../cli/run-cli.test-helpers.js";
+import { createRecipeArchiveWithManifest, pathExists } from "../testing/index.js";
 
 installRecipesCommandHarness();
 

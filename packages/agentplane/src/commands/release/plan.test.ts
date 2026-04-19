@@ -4,7 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { commitAll, mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helpers.js";
+import { commitAll, mkGitRepoRoot, writeDefaultConfig } from "../../testing/index.js";
 import { seedReleaseWorkspace } from "../../../../testkit/src/release.js";
 import { runReleasePlan, releasePlanSpec } from "./plan.command.js";
 
