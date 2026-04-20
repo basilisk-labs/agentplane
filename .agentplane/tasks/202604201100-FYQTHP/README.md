@@ -1,10 +1,11 @@
 ---
 id: "202604201100-FYQTHP"
 title: "Fix guard core mock after GitClient migration"
-status: "DOING"
+result_summary: "Guard command unit tests no longer fail after the core GitClient helper migration."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T11:03:54.401Z"
   updated_by: "CODER"
   note: "Verified: guard unit suite now passes after preserving actual @agentplaneorg/core exports in the partial mock; format, typecheck, and lint:core all pass."
-commit: null
+commit:
+  hash: "c7b3508836bf6325856ae7fc615b91465dba0410"
+  message: "📝 FYQTHP verify: record guard mock fix checks"
 comments:
   -
     author: "CODER"
     body: "Start: Fixing the guard unit-test regression exposed by the full pre-push gate after moving shared git helpers into @agentplaneorg/core."
+  -
+    author: "CODER"
+    body: "Verified: guard unit regression fixed with a partial @agentplaneorg/core mock that preserves actual exports; focused test, format, typecheck, and lint:core passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: guard unit suite now passes after preserving actual @agentplaneorg/core exports in the partial mock; format, typecheck, and lint:core all pass."
+  -
+    type: "status"
+    at: "2026-04-20T11:04:12.709Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: guard unit regression fixed with a partial @agentplaneorg/core mock that preserves actual exports; focused test, format, typecheck, and lint:core passed."
 doc_version: 3
-doc_updated_at: "2026-04-20T11:03:54.413Z"
+doc_updated_at: "2026-04-20T11:04:12.710Z"
 doc_updated_by: "CODER"
 description: "Repair guard command unit tests after shared git helpers moved to @agentplaneorg/core by preserving real core exports in the targeted mock."
 sections:
