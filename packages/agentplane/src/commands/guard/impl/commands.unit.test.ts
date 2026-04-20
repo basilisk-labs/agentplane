@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type * as Core from "@agentplaneorg/core";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { readDiagnosticContext } from "../../shared/diagnostics.js";
@@ -21,9 +22,13 @@ const mocks = vi.hoisted(() => ({
   resolveIgnoredDirectCloseDirtyPaths: vi.fn(),
 }));
 
-vi.mock("@agentplaneorg/core", () => ({
-  buildTaskArtifactRefreshCommitSubject: mocks.buildTaskArtifactRefreshCommitSubject,
-}));
+vi.mock("@agentplaneorg/core", async (importOriginal) => {
+  const actual = await importOriginal<typeof Core>();
+  return {
+    ...actual,
+    buildTaskArtifactRefreshCommitSubject: mocks.buildTaskArtifactRefreshCommitSubject,
+  };
+});
 vi.mock("../../../cli/error-map.js", () => ({ mapCoreError: mocks.mapCoreError }));
 vi.mock("../../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
