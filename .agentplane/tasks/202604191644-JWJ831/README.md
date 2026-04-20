@@ -1,10 +1,11 @@
 ---
 id: "202604191644-JWJ831"
 title: "Split remaining integrate and tasks integration mega-tests"
-status: "DOING"
+result_summary: "Replaced the two remaining aggregate integration test files with eight scenario-focused files, each below 2000 LoC."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T17:10:40.385Z"
   updated_by: "CODER"
   note: "Command: wc -l integrate/tasks split files; Result: pass; Evidence: largest split file is 979 LoC, below 2000. Command: bunx vitest run eight split files --reporter dot; Result: pass; Evidence: 8 files, 53 tests passed. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass."
-commit: null
+commit:
+  hash: "454903f6a0eaba459c7b1acc99cca1f8b5ed1a5f"
+  message: "🧪 JWJ831 test: split aggregate integration suites"
 comments:
   -
     author: "CODER"
     body: "Start: split remaining aggregate integration suites into focused scenario files."
+  -
+    author: "CODER"
+    body: "Verified: remaining integrate and tasks integration suites were split into focused scenario files and checks passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: wc -l integrate/tasks split files; Result: pass; Evidence: largest split file is 979 LoC, below 2000. Command: bunx vitest run eight split files --reporter dot; Result: pass; Evidence: 8 files, 53 tests passed. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass."
+  -
+    type: "status"
+    at: "2026-04-20T17:10:48.573Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: remaining integrate and tasks integration suites were split into focused scenario files and checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-20T17:10:40.394Z"
+doc_updated_at: "2026-04-20T17:10:48.574Z"
 doc_updated_by: "CODER"
 description: "Epic L. Break the remaining large integrate and tasks integration files into scenario-focused files."
 sections:
