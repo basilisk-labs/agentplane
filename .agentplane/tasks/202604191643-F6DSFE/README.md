@@ -4,7 +4,7 @@ title: "Add concise README CI badges"
 status: "DOING"
 priority: "low"
 owner: "PLANNER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T14:05:51.115Z"
+  updated_by: "PLANNER"
+  note: "Command: rg -n 'Core CI|test:fast|coverage|release:parity|knip' README.md; Result: pass; Evidence: README contains badges for Core CI, test:fast, coverage, release:parity, and knip roadmap status. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with info-only runtime/archive findings. Command: bun run format:check; Result: pass; Evidence: Prettier reports all files formatted. Scope: README.md and task README."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Adding README badges for current CI-backed test, coverage, and parity checks plus an explicit knip roadmap status without changing runtime code."
+  -
+    type: "verify"
+    at: "2026-04-20T14:05:51.115Z"
+    author: "PLANNER"
+    state: "ok"
+    note: "Command: rg -n 'Core CI|test:fast|coverage|release:parity|knip' README.md; Result: pass; Evidence: README contains badges for Core CI, test:fast, coverage, release:parity, and knip roadmap status. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with info-only runtime/archive findings. Command: bun run format:check; Result: pass; Evidence: Prettier reports all files formatted. Scope: README.md and task README."
 doc_version: 3
-doc_updated_at: "2026-04-20T14:04:43.987Z"
+doc_updated_at: "2026-04-20T14:05:51.142Z"
 doc_updated_by: "PLANNER"
 description: "Epic G′. Add badges for fast tests, coverage, parity, and knip status to README.md."
 sections:
@@ -54,6 +60,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T14:05:51.115Z — VERIFY — ok
+    
+    By: PLANNER
+    
+    Note: Command: rg -n 'Core CI|test:fast|coverage|release:parity|knip' README.md; Result: pass; Evidence: README contains badges for Core CI, test:fast, coverage, release:parity, and knip roadmap status. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with info-only runtime/archive findings. Command: bun run format:check; Result: pass; Evidence: Prettier reports all files formatted. Scope: README.md and task README.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T14:04:43.987Z, excerpt_hash=sha256:28b3c2b8c97ebf5466b33963e47eed09c97b60049cb35c5dbdfec0d50d215a78
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +99,14 @@ Add concise README badges that expose the current CI surface for test:fast, cove
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T14:05:51.115Z — VERIFY — ok
+
+By: PLANNER
+
+Note: Command: rg -n 'Core CI|test:fast|coverage|release:parity|knip' README.md; Result: pass; Evidence: README contains badges for Core CI, test:fast, coverage, release:parity, and knip roadmap status. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with info-only runtime/archive findings. Command: bun run format:check; Result: pass; Evidence: Prettier reports all files formatted. Scope: README.md and task README.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T14:04:43.987Z, excerpt_hash=sha256:28b3c2b8c97ebf5466b33963e47eed09c97b60049cb35c5dbdfec0d50d215a78
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
