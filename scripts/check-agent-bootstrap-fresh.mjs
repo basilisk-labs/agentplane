@@ -91,8 +91,8 @@ const main = defineScript({
           "  bun run framework:dev:bootstrap\n" +
           "Or rebuild explicitly:\n" +
           "  bun run --filter=@agentplaneorg/core build\n" +
-          "  bun run --filter=@agentplane/testkit build\n" +
-          "  bun run --filter=agentplane build",
+          "  bun run --filter=agentplane build\n" +
+          "  bun run --filter=@agentplane/testkit build",
       );
     }
 

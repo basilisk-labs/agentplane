@@ -290,7 +290,7 @@ async function assertDistUpToDate() {
         "warning: linked development binary has a stale build, but current working directory is outside the agentplane checkout.\n" +
           "proceeding with existing dist output.\n" +
           `detected: ${staleReasons.join(", ")}\n` +
-          "tip: rebuild (`bun run --filter=@agentplaneorg/core build && bun run --filter=@agentplane/testkit build && bun run --filter=agentplane build`) or reinstall from npm for stable global usage.\n",
+          "tip: rebuild (`bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run --filter=@agentplane/testkit build`) or reinstall from npm for stable global usage.\n",
       );
       return true;
     }

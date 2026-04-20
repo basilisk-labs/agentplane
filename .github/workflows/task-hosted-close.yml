@@ -38,8 +38,8 @@ jobs:
       - name: Build packages (dist + manifests)
         run: |
           bun run --filter=@agentplaneorg/core build
-          bun run --filter=@agentplane/testkit build
           bun run --filter=agentplane build
+          bun run --filter=@agentplane/testkit build
       - name: Prepare hosted closure metadata
         id: prepare
         run: |

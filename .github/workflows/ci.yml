@@ -80,8 +80,8 @@ jobs:
       - name: Build packages (dist + manifests)
         run: |
           bun run --filter=@agentplaneorg/core build
-          bun run --filter=@agentplane/testkit build
           bun run --filter=agentplane build
+          bun run --filter=@agentplane/testkit build
       - name: CLI docs (generated reference check)
         run: bun run docs:cli:check
       - name: Hotspot Threshold (check)
@@ -152,8 +152,8 @@ jobs:
       - name: Build packages (dist + manifests)
         run: |
           bun run --filter=@agentplaneorg/core build
-          bun run --filter=@agentplane/testkit build
           bun run --filter=agentplane build
+          bun run --filter=@agentplane/testkit build
       - name: Unit tests (platform-critical)
         run: bun run test:platform-critical
         env:
@@ -191,8 +191,8 @@ jobs:
       - name: Build packages (dist + manifests)
         run: |
           bun run --filter=@agentplaneorg/core build
-          bun run --filter=@agentplane/testkit build
           bun run --filter=agentplane build
+          bun run --filter=@agentplane/testkit build
 
   release-ready:
     name: Release-ready manifest

@@ -85,8 +85,8 @@ describe("bootstrap-framework-dev script", () => {
       "bun install --ignore-scripts",
       "git submodule update --init --recursive agentplane-recipes",
       "bun run --filter=@agentplaneorg/core build",
-      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
+      "bun run --filter=@agentplane/testkit build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
   });
@@ -111,8 +111,8 @@ describe("bootstrap-framework-dev script", () => {
 
     expect(calls).toEqual([
       "bun run --filter=@agentplaneorg/core build",
-      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
+      "bun run --filter=@agentplane/testkit build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
     const shim = await readFile(path.join(repoRoot, ".agentplane", "bin", "agentplane"), "utf8");
@@ -144,8 +144,8 @@ describe("bootstrap-framework-dev script", () => {
 
     expect(calls).toEqual([
       "bun run --filter=@agentplaneorg/core build",
-      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
+      "bun run --filter=@agentplane/testkit build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
     const postMerge = await readFile(path.join(repoRoot, ".git", "hooks", "post-merge"), "utf8");
@@ -177,8 +177,8 @@ describe("bootstrap-framework-dev script", () => {
     expect(calls).toEqual([
       "bun install --ignore-scripts",
       "bun run --filter=@agentplaneorg/core build",
-      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
+      "bun run --filter=@agentplane/testkit build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
   });
@@ -201,8 +201,8 @@ describe("bootstrap-framework-dev script", () => {
     expect(calls).toEqual([
       "bun install --ignore-scripts",
       "bun run --filter=@agentplaneorg/core build",
-      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
+      "bun run --filter=@agentplane/testkit build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
   });
@@ -241,8 +241,8 @@ describe("bootstrap-framework-dev script", () => {
     expect(calls).toEqual([
       "bun install --ignore-scripts",
       "bun run --filter=@agentplaneorg/core build",
-      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
+      "bun run --filter=@agentplane/testkit build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
     await expect(lstat(path.join(repoRoot, "node_modules"))).rejects.toThrow();
@@ -277,8 +277,8 @@ describe("bootstrap-framework-dev script", () => {
 
     expect(calls).toEqual([
       "bun run --filter=@agentplaneorg/core build",
-      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
+      "bun run --filter=@agentplane/testkit build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
     const prePush = await readFile(path.join(repoRoot, ".git", "hooks", "pre-push"), "utf8");

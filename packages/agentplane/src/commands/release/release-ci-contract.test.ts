@@ -32,11 +32,11 @@ describe("release CI contract", () => {
     };
     const releaseCheck = rootPackageJson.scripts?.["release:check"] ?? "";
 
-    expect(releaseCheck.indexOf("bun run --filter=@agentplane/testkit build")).toBeGreaterThan(
+    expect(releaseCheck.indexOf("bun run --filter=agentplane build")).toBeGreaterThan(
       releaseCheck.indexOf("bun run --filter=@agentplaneorg/core build"),
     );
-    expect(releaseCheck.indexOf("bun run --filter=agentplane build")).toBeGreaterThan(
-      releaseCheck.indexOf("bun run --filter=@agentplane/testkit build"),
+    expect(releaseCheck.indexOf("bun run --filter=@agentplane/testkit build")).toBeGreaterThan(
+      releaseCheck.indexOf("bun run --filter=agentplane build"),
     );
 
     const [coreCi, prepublish, hostedClose, reinstall] = await Promise.all([
@@ -48,11 +48,11 @@ describe("release CI contract", () => {
 
     for (const text of [coreCi, prepublish, hostedClose, reinstall]) {
       expect(text).toContain("bun run --filter=@agentplane/testkit build");
-      expect(text.indexOf("bun run --filter=@agentplane/testkit build")).toBeGreaterThan(
+      expect(text.indexOf("bun run --filter=agentplane build")).toBeGreaterThan(
         text.indexOf("bun run --filter=@agentplaneorg/core build"),
       );
-      expect(text.indexOf("bun run --filter=agentplane build")).toBeGreaterThan(
-        text.indexOf("bun run --filter=@agentplane/testkit build"),
+      expect(text.indexOf("bun run --filter=@agentplane/testkit build")).toBeGreaterThan(
+        text.indexOf("bun run --filter=agentplane build"),
       );
     }
   });
@@ -74,6 +74,17 @@ describe("release CI contract", () => {
 
     expect(agentplanePackageJson.scripts?.build).toContain("npm run clean");
     expect(agentplanePackageJson.scripts?.build).toContain("tsc -b --force");
+  });
+
+  it("keeps repo-test compatibility files out of the publishable agentplane build", async () => {
+    const agentplaneTsconfigText = await readRootText("packages/agentplane/tsconfig.json");
+    const agentplaneTsconfig = JSON.parse(agentplaneTsconfigText) as {
+      exclude?: string[];
+    };
+
+    expect(agentplaneTsconfig.exclude).toContain("src/testing/**/*.ts");
+    expect(agentplaneTsconfig.exclude).toContain("src/cli/run-cli.core.pr-flow.pr-support.ts");
+    expect(agentplaneTsconfig.exclude).toContain("src/cli/run-cli.core.tasks.query-support.ts");
   });
 
   it("checks the generated bootstrap doc against the actual runtime-source dist path", async () => {

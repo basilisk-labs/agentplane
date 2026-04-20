@@ -22,7 +22,7 @@ function printUsage() {
       "Prepare a fresh framework checkout for repo-local development:",
       "- install workspace dependencies when node_modules is missing",
       "- initialize the agentplane-recipes submodule when it is empty",
-      "- build @agentplaneorg/core, @agentplane/testkit, and agentplane",
+      "- build @agentplaneorg/core, agentplane, and @agentplane/testkit",
       "- verify the repo-local runtime",
       "",
       `Repo-local verify: ${FRAMEWORK_DEV_REPO_LOCAL_VERIFY_COMMAND}`,
@@ -312,10 +312,10 @@ export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec
 
   process.stdout.write("==> Building @agentplaneorg/core\n");
   exec(repoRoot, "bun", ["run", "--filter=@agentplaneorg/core", "build"]);
-  process.stdout.write("==> Building @agentplane/testkit\n");
-  exec(repoRoot, "bun", ["run", "--filter=@agentplane/testkit", "build"]);
   process.stdout.write("==> Building agentplane\n");
   exec(repoRoot, "bun", ["run", "--filter=agentplane", "build"]);
+  process.stdout.write("==> Building @agentplane/testkit\n");
+  exec(repoRoot, "bun", ["run", "--filter=@agentplane/testkit", "build"]);
 
   ensureManagedShim(repoRoot);
   const reconciledHooks = reconcileManagedHooks(repoRoot);
