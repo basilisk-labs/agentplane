@@ -99,6 +99,7 @@ jobs:
           GIT_COMMITTER_NAME: agentplane-ci
           GIT_COMMITTER_EMAIL: agentplane-ci@example.com
       - name: CLI E2E (Critical)
+        timeout-minutes: 10
         run: bun run test:critical
         env:
           GIT_AUTHOR_NAME: agentplane-ci

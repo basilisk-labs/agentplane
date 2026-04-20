@@ -102,6 +102,7 @@ jobs:
         run: bun run test:fast
       - name: CLI E2E (critical)
         if: matrix.os == 'ubuntu-24.04'
+        timeout-minutes: 10
         run: bun run test:critical
       - name: Significant File Coverage (guard)
         if: matrix.os == 'ubuntu-24.04'

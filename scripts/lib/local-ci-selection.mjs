@@ -48,6 +48,7 @@ const HOOKS_BUCKET_PATTERNS = [
 const WORKFLOW_BUCKET_PATTERNS = [
   /^\.github\/workflows\//,
   /^\.github\/actionlint\.yaml$/,
+  /^scripts\/check-critical-test-route\.mjs$/,
   /^scripts\/run-workflows-lint\.mjs$/,
   /^scripts\/check-workflow-command-contract\.mjs$/,
 ];
