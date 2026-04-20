@@ -1,10 +1,11 @@
 ---
 id: "202604191640-4P31VQ"
 title: "Move lazy command loading next to command specs"
-status: "DOING"
+result_summary: "Moved lazy command loader declarations into a dedicated run-cli loader surface and kept aggregate catalog modules focused on command composition."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T07:00:38.379Z"
   updated_by: "CODER"
   note: "Verified loader co-location step: command-catalog files contain no dynamic import() calls; command-catalog/help contract tests passed; agentplane typecheck, prettier check, and framework bootstrap passed."
-commit: null
+commit:
+  hash: "99aab557f32d860e1b49925ecc6f759d6267553f"
+  message: "♻️ 4P31VQ task: move command lazy loaders out of catalog"
 comments:
   -
     author: "CODER"
     body: "Start: co-locate lazy command loading metadata with command/domain modules and simplify aggregate catalog files."
+  -
+    author: "CODER"
+    body: "Verified: command-catalog aggregate files no longer contain dynamic import() calls; command-catalog/help contract tests passed; agentplane typecheck, prettier check, and framework bootstrap passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified loader co-location step: command-catalog files contain no dynamic import() calls; command-catalog/help contract tests passed; agentplane typecheck, prettier check, and framework bootstrap passed."
+  -
+    type: "status"
+    at: "2026-04-20T07:00:49.767Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: command-catalog aggregate files no longer contain dynamic import() calls; command-catalog/help contract tests passed; agentplane typecheck, prettier check, and framework bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-04-20T07:00:38.381Z"
+doc_updated_at: "2026-04-20T07:00:49.767Z"
 doc_updated_by: "CODER"
 description: "Epic D′. Co-locate lazy command loading metadata with command specs and simplify catalog modules."
 sections:
