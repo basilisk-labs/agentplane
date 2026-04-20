@@ -1,10 +1,11 @@
 ---
 id: "202604201048-HR14NY"
 title: "Finish core GitClient shared helper migration"
-status: "DOING"
+result_summary: "Moved remaining shared git helpers into core and reduced commands/shared/git*.ts to 143 LoC."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T10:53:21.731Z"
   updated_by: "CODER"
   note: "Command: find packages/agentplane/src/commands/shared -maxdepth 1 -name 'git*.ts' -print | xargs wc -l -> 143 total. Command: bunx vitest run packages/core/src/git/git-client.test.ts packages/core/src/git/git-utils.test.ts packages/core/src/git/base-branch.test.ts packages/agentplane/src/commands/shared/git-context.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts -> 44 passed. Command: bun run typecheck -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass. Command: bun run framework:dev:bootstrap -> pass after runtime path changes."
-commit: null
+commit:
+  hash: "902cfc5bce5e29190854df4d50e88166985d9134"
+  message: "♻️ HR14NY git: move shared helpers into core"
 comments:
   -
     author: "CODER"
     body: "Start: complete B′.1 by moving remaining shared git helpers into core and leaving compatibility shims in the command layer."
+  -
+    author: "CODER"
+    body: "Verified: command-layer git helpers are now below the B′.1 LoC target, core exports own diff/worktree/basic operations, and focused git/PR checks plus typecheck/lint pass."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: find packages/agentplane/src/commands/shared -maxdepth 1 -name 'git*.ts' -print | xargs wc -l -> 143 total. Command: bunx vitest run packages/core/src/git/git-client.test.ts packages/core/src/git/git-utils.test.ts packages/core/src/git/base-branch.test.ts packages/agentplane/src/commands/shared/git-context.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts -> 44 passed. Command: bun run typecheck -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass. Command: bun run framework:dev:bootstrap -> pass after runtime path changes."
+  -
+    type: "status"
+    at: "2026-04-20T10:53:31.747Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: command-layer git helpers are now below the B′.1 LoC target, core exports own diff/worktree/basic operations, and focused git/PR checks plus typecheck/lint pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T10:53:21.744Z"
+doc_updated_at: "2026-04-20T10:53:31.748Z"
 doc_updated_by: "CODER"
 description: "Move remaining command-layer git diff/worktree/basic operations into @agentplaneorg/core and reduce commands/shared/git*.ts to thin compatibility/CLI-only helpers."
 sections:
