@@ -4,7 +4,7 @@ title: "Evaluate yauzl alternatives and record bundle decision"
 status: "DOING"
 priority: "low"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T16:15:04.161Z"
+  updated_by: "CODER"
+  note: "Recorded yauzl dependency decision in ADR 0008. Verification passed: npm metadata comparison for yauzl/unzipit/fflate; bun run format:check; bun run lint:core."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Evaluating yauzl alternatives and recording the bundle decision."
+  -
+    type: "verify"
+    at: "2026-04-20T16:15:04.161Z"
+    author: "CODER"
+    state: "ok"
+    note: "Recorded yauzl dependency decision in ADR 0008. Verification passed: npm metadata comparison for yauzl/unzipit/fflate; bun run format:check; bun run lint:core."
 doc_version: 3
-doc_updated_at: "2026-04-20T16:10:39.389Z"
+doc_updated_at: "2026-04-20T16:15:04.193Z"
 doc_updated_by: "CODER"
 description: "Epic I′ and G′. Measure yauzl alternatives and record whether the current zip dependency should stay."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T16:15:04.161Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Recorded yauzl dependency decision in ADR 0008. Verification passed: npm metadata comparison for yauzl/unzipit/fflate; bun run format:check; bun run lint:core.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T16:10:39.389Z, excerpt_hash=sha256:c0d7dc71ccbcb1690a245ed0b5bbb37df35dd88a1430957056c9f378504a1d9b
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Evaluate the current yauzl runtime dependency against lightweight unzip alternat
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T16:15:04.161Z — VERIFY — ok
+
+By: CODER
+
+Note: Recorded yauzl dependency decision in ADR 0008. Verification passed: npm metadata comparison for yauzl/unzipit/fflate; bun run format:check; bun run lint:core.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T16:10:39.389Z, excerpt_hash=sha256:c0d7dc71ccbcb1690a245ed0b5bbb37df35dd88a1430957056c9f378504a1d9b
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
