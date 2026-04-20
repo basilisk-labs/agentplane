@@ -1,10 +1,11 @@
 ---
 id: "202604191640-1PMR5T"
 title: "Add declareCommand helper to command catalog"
-status: "DOING"
+result_summary: "Added the declareCommand object-form contract, module-export loader validation, commandModule shorthand, and migrated command catalog entries away from entry(...)."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T06:57:30.002Z"
   updated_by: "CODER"
   note: "Verified declareCommand catalog migration: vitest command-catalog/help contract tests passed, agentplane typecheck passed, prettier check passed, framework dev bootstrap passed."
-commit: null
+commit:
+  hash: "b20ad00a931a8c470d61fa70329a0477fa5487a3"
+  message: "♻️ 1PMR5T task: declare command catalog entries"
 comments:
   -
     author: "CODER"
     body: "Start: add declareCommand helper and migrate command catalog entries without changing command behavior."
+  -
+    author: "CODER"
+    body: "Verified: command catalog uses declareCommand/commandModule declarations; command-catalog and help contract tests passed; agentplane typecheck, prettier check, and framework bootstrap passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified declareCommand catalog migration: vitest command-catalog/help contract tests passed, agentplane typecheck passed, prettier check passed, framework dev bootstrap passed."
+  -
+    type: "status"
+    at: "2026-04-20T06:57:50.649Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: command catalog uses declareCommand/commandModule declarations; command-catalog and help contract tests passed; agentplane typecheck, prettier check, and framework bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-04-20T06:57:30.005Z"
+doc_updated_at: "2026-04-20T06:57:50.649Z"
 doc_updated_by: "CODER"
 description: "Epic D′. Introduce a declareCommand helper and collapse repeated command-catalog boilerplate."
 sections:
