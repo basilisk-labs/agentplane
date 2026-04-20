@@ -4,7 +4,7 @@ title: "Condense DESIGN and EDITORIAL into navigational docs"
 status: "DOING"
 priority: "med"
 owner: "PLANNER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T14:03:36.907Z"
+  updated_by: "PLANNER"
+  note: "Command: wc -c DESIGN.md EDITORIAL.md; Result: pass; Evidence: DESIGN.md 2165 bytes and EDITORIAL.md 2435 bytes, both below the 4000-byte budget. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with info-only runtime/archive findings. Command: bun run format:check; Result: pass; Evidence: Prettier reports all files formatted. Command: bun run docs:site:check:design; Result: pass; Evidence: design language check passed. Scope: DESIGN.md, EDITORIAL.md, task README."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Condensing DESIGN.md and EDITORIAL.md into concise navigation guides with ADR links, byte-budget verification, and docs-only checks before commit."
+  -
+    type: "verify"
+    at: "2026-04-20T14:03:36.907Z"
+    author: "PLANNER"
+    state: "ok"
+    note: "Command: wc -c DESIGN.md EDITORIAL.md; Result: pass; Evidence: DESIGN.md 2165 bytes and EDITORIAL.md 2435 bytes, both below the 4000-byte budget. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with info-only runtime/archive findings. Command: bun run format:check; Result: pass; Evidence: Prettier reports all files formatted. Command: bun run docs:site:check:design; Result: pass; Evidence: design language check passed. Scope: DESIGN.md, EDITORIAL.md, task README."
 doc_version: 3
-doc_updated_at: "2026-04-20T14:02:44.350Z"
+doc_updated_at: "2026-04-20T14:03:36.924Z"
 doc_updated_by: "PLANNER"
 description: "Epic G′. Reduce DESIGN.md and EDITORIAL.md to concise navigational summaries with ADR links."
 sections:
@@ -54,6 +60,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T14:03:36.907Z — VERIFY — ok
+    
+    By: PLANNER
+    
+    Note: Command: wc -c DESIGN.md EDITORIAL.md; Result: pass; Evidence: DESIGN.md 2165 bytes and EDITORIAL.md 2435 bytes, both below the 4000-byte budget. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with info-only runtime/archive findings. Command: bun run format:check; Result: pass; Evidence: Prettier reports all files formatted. Command: bun run docs:site:check:design; Result: pass; Evidence: design language check passed. Scope: DESIGN.md, EDITORIAL.md, task README.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T14:02:44.350Z, excerpt_hash=sha256:4d669baa1ac2dfe98d82673a59be560dde8442ecc86c886201a2d3a0c3edaddc
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +99,14 @@ Condense DESIGN.md and EDITORIAL.md into concise navigational contracts under th
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T14:03:36.907Z — VERIFY — ok
+
+By: PLANNER
+
+Note: Command: wc -c DESIGN.md EDITORIAL.md; Result: pass; Evidence: DESIGN.md 2165 bytes and EDITORIAL.md 2435 bytes, both below the 4000-byte budget. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with info-only runtime/archive findings. Command: bun run format:check; Result: pass; Evidence: Prettier reports all files formatted. Command: bun run docs:site:check:design; Result: pass; Evidence: design language check passed. Scope: DESIGN.md, EDITORIAL.md, task README.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T14:02:44.350Z, excerpt_hash=sha256:4d669baa1ac2dfe98d82673a59be560dde8442ecc86c886201a2d3a0c3edaddc
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
