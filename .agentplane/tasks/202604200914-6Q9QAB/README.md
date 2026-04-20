@@ -1,10 +1,11 @@
 ---
 id: "202604200914-6Q9QAB"
 title: "Finish runner adapter facade split"
-status: "DOING"
+result_summary: "Moved adapter-specific preparation, capability, sandbox, and invocation construction helpers into codex-preparation.ts and custom-preparation.ts; custom.ts is 298 LoC and codex.ts is 293 LoC."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T09:20:04.753Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts -> pass, 22/22. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass. Size check: custom.ts=298 LoC, codex.ts=293 LoC."
-commit: null
+commit:
+  hash: "ecc66056c71ceaaa651a78bf5dc0910c510558ae"
+  message: "♻️ 6Q9QAB runner: split adapter preparation"
 comments:
   -
     author: "CODER"
     body: "Start: Move adapter-specific prepare and capability helpers out of Codex/custom facade files while preserving execution behavior."
+  -
+    author: "CODER"
+    body: "Verified: Codex/custom adapter facades are below 300 LoC, focused adapter tests passed, and typecheck/lint/format/bootstrap passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts -> pass, 22/22. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass. Size check: custom.ts=298 LoC, codex.ts=293 LoC."
+  -
+    type: "status"
+    at: "2026-04-20T09:20:21.350Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Codex/custom adapter facades are below 300 LoC, focused adapter tests passed, and typecheck/lint/format/bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:20:04.768Z"
+doc_updated_at: "2026-04-20T09:20:21.351Z"
 doc_updated_by: "CODER"
 description: "Complete the runner adapter decomposition by moving Codex and custom adapter prepare/capability/sandbox helpers into focused modules so codex.ts and custom.ts become smaller facades without changing execution behavior."
 sections:
