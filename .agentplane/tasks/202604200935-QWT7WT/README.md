@@ -1,10 +1,11 @@
 ---
 id: "202604200935-QWT7WT"
 title: "Migrate bootstrap freshness check to generated artifact helper"
-status: "DOING"
+result_summary: "Reused defineGeneratedArtifactCheck/runScriptMain in check-agent-bootstrap-fresh while preserving bootstrap parity assertions."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T09:37:07.831Z"
   updated_by: "CODER"
   note: "Command: bun run docs:bootstrap:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
-commit: null
+commit:
+  hash: "63e0452843475a17582747219e82b1cebf818145"
+  message: "♻️ QWT7WT scripts: reuse bootstrap artifact check"
 comments:
   -
     author: "CODER"
     body: "Start: migrate the generated doc freshness portion of the bootstrap check to the shared artifact-check helper without changing bootstrap parity assertions."
+  -
+    author: "CODER"
+    body: "Verified: bootstrap freshness check, format, and lint pass after migrating the generated-doc section to the shared helper."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run docs:bootstrap:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
+  -
+    type: "status"
+    at: "2026-04-20T09:37:14.278Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bootstrap freshness check, format, and lint pass after migrating the generated-doc section to the shared helper."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:37:07.842Z"
+doc_updated_at: "2026-04-20T09:37:14.279Z"
 doc_updated_by: "CODER"
 description: "Use the shared generated artifact check wrapper for the agent bootstrap generated doc while keeping bootstrap-specific parity assertions local to the script."
 sections:
