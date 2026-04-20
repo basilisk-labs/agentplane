@@ -1,10 +1,11 @@
 ---
 id: "202604191640-E9P7BS"
 title: "Extract process supervision lifecycle modules"
-status: "DOING"
+result_summary: "Extracted process supervision into a compact facade plus run, signals, state, and stream modules while preserving the existing runner import API."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T08:28:14.635Z"
   updated_by: "CODER"
   note: "Verified process supervision extraction: focused runner supervision/lifecycle Vitest slice passed (11 tests), agentplane typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap refreshed the repo-local runtime."
-commit: null
+commit:
+  hash: "8857ee27cc196f2395095ab726b6711f548b1783"
+  message: "♻️ E9P7BS task: extract process supervision modules"
 comments:
   -
     author: "CODER"
     body: "Start: extract process supervision lifecycle responsibilities into focused modules while preserving runner behavior."
+  -
+    author: "CODER"
+    body: "Verified: focused runner supervision/lifecycle Vitest slice passed (11 tests), typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified process supervision extraction: focused runner supervision/lifecycle Vitest slice passed (11 tests), agentplane typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap refreshed the repo-local runtime."
+  -
+    type: "status"
+    at: "2026-04-20T08:28:31.246Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: focused runner supervision/lifecycle Vitest slice passed (11 tests), typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
 doc_version: 3
-doc_updated_at: "2026-04-20T08:28:14.639Z"
+doc_updated_at: "2026-04-20T08:28:31.247Z"
 doc_updated_by: "CODER"
 description: "Epic C′. Break runner process supervision into focused start, stop, timeout, heartbeat, and recovery modules."
 sections:
