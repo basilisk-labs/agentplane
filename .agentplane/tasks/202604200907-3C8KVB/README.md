@@ -4,7 +4,7 @@ title: "Extract shared runner adapter base helpers"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T09:13:25.339Z"
+  updated_by: "CODER"
+  note: "Command: bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts -> pass, 22/22. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Extract common runner adapter base helpers for shared validation and supervision persistence while keeping adapter-specific execution semantics intact."
+  -
+    type: "verify"
+    at: "2026-04-20T09:13:25.339Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts -> pass, 22/22. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:07:36.309Z"
+doc_updated_at: "2026-04-20T09:13:25.348Z"
 doc_updated_by: "CODER"
 description: "Continue C-prime adapter decomposition by moving duplicated Codex/custom runner adapter validation, supervision state updates, and event append helpers into a shared runner adapter base module while preserving adapter-specific command and manifest behavior."
 sections:
@@ -59,6 +65,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T09:13:25.339Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts -> pass, 22/22. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:07:36.309Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -93,6 +107,14 @@ Continue C-prime adapter decomposition by moving duplicated Codex/custom runner 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T09:13:25.339Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts -> pass, 22/22. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:07:36.309Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
