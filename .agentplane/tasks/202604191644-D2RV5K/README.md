@@ -4,7 +4,7 @@ title: "Extend significant coverage enforcement to new hotspots"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T16:28:27.029Z"
+  updated_by: "CODER"
+  note: "Command: agentplane task verify-show 202604191644-D2RV5K; Result: pass; Evidence: verification contract reviewed. Command: bun run coverage:significant; Result: pass; Evidence: Significant suite contract OK, 21 source targets. Command: bun run lint:core; Result: pass; Evidence: eslint completed. Command: bun run format:check; Result: pass; Evidence: Prettier reported all matched files use style."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Extending significant coverage contract to the recently split hotspot modules."
+  -
+    type: "verify"
+    at: "2026-04-20T16:28:27.029Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: agentplane task verify-show 202604191644-D2RV5K; Result: pass; Evidence: verification contract reviewed. Command: bun run coverage:significant; Result: pass; Evidence: Significant suite contract OK, 21 source targets. Command: bun run lint:core; Result: pass; Evidence: eslint completed. Command: bun run format:check; Result: pass; Evidence: Prettier reported all matched files use style."
 doc_version: 3
-doc_updated_at: "2026-04-20T16:24:56.922Z"
+doc_updated_at: "2026-04-20T16:28:27.038Z"
 doc_updated_by: "CODER"
 description: "Epic J′. Add the newly split hotspot modules to significant coverage enforcement."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T16:28:27.029Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: agentplane task verify-show 202604191644-D2RV5K; Result: pass; Evidence: verification contract reviewed. Command: bun run coverage:significant; Result: pass; Evidence: Significant suite contract OK, 21 source targets. Command: bun run lint:core; Result: pass; Evidence: eslint completed. Command: bun run format:check; Result: pass; Evidence: Prettier reported all matched files use style.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T16:24:56.922Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Extend scripts/check-significant-coverage.mjs from the old guard-only contract t
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T16:28:27.029Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: agentplane task verify-show 202604191644-D2RV5K; Result: pass; Evidence: verification contract reviewed. Command: bun run coverage:significant; Result: pass; Evidence: Significant suite contract OK, 21 source targets. Command: bun run lint:core; Result: pass; Evidence: eslint completed. Command: bun run format:check; Result: pass; Evidence: Prettier reported all matched files use style.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T16:24:56.922Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
