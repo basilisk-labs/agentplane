@@ -1,17 +1,29 @@
 import type { ErrorCode } from "../shared/errors.js";
 
-const EXIT_CODE_BY_ERROR: Record<ErrorCode, number> = {
-  E_USAGE: 2,
-  E_VALIDATION: 3,
-  E_IO: 4,
-  E_GIT: 5,
-  E_BACKEND: 6,
-  E_NETWORK: 7,
-  E_RUNTIME: 8,
-  E_HANDOFF: 9,
-  E_INTERNAL: 1,
+export enum ExitCode {
+  Internal = 1,
+  Usage = 2,
+  Validation = 3,
+  Io = 4,
+  Git = 5,
+  Backend = 6,
+  Network = 7,
+  Runtime = 8,
+  Handoff = 9,
+}
+
+export const ERROR_TO_EXIT: Readonly<Record<ErrorCode, ExitCode>> = {
+  E_USAGE: ExitCode.Usage,
+  E_VALIDATION: ExitCode.Validation,
+  E_IO: ExitCode.Io,
+  E_GIT: ExitCode.Git,
+  E_BACKEND: ExitCode.Backend,
+  E_NETWORK: ExitCode.Network,
+  E_RUNTIME: ExitCode.Runtime,
+  E_HANDOFF: ExitCode.Handoff,
+  E_INTERNAL: ExitCode.Internal,
 };
 
-export function exitCodeForError(code: ErrorCode): number {
-  return EXIT_CODE_BY_ERROR[code];
+export function exitCodeForError(code: ErrorCode): ExitCode {
+  return ERROR_TO_EXIT[code];
 }
