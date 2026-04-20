@@ -1,10 +1,11 @@
 ---
 id: "202604191642-CEGDEN"
 title: "Document no-Effect stance in ADR"
-status: "DOING"
+result_summary: "Documented the decision to keep pragmatic TypeScript and avoid an Effect/fp-ts migration during this refactor cycle."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T13:55:13.339Z"
   updated_by: "PLANNER"
   note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0006-no-effect-fp-ts-migration.md and docs/adr/README.md."
-commit: null
+commit:
+  hash: "def63d9dc3d1dce5a942a0c1e3cd2d26b817338d"
+  message: "📝 CEGDEN adr: avoid Effect migration"
 comments:
   -
     author: "PLANNER"
     body: "Start: Record the no-Effect/fp-ts decision as a concise ADR and link it from the ADR index, keeping the implementation style unchanged."
+  -
+    author: "PLANNER"
+    body: "Verified: no-Effect/fp-ts ADR is linked from the ADR index; policy routing, doctor, and format check all pass."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0006-no-effect-fp-ts-migration.md and docs/adr/README.md."
+  -
+    type: "status"
+    at: "2026-04-20T13:55:29.000Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: no-Effect/fp-ts ADR is linked from the ADR index; policy routing, doctor, and format check all pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T13:55:13.351Z"
+doc_updated_at: "2026-04-20T13:55:29.000Z"
 doc_updated_by: "PLANNER"
 description: "Epic K and G′. Record the decision not to migrate this codebase to Effect or fp-ts during the current refactor."
 sections:
