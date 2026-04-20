@@ -4,7 +4,7 @@ title: "Guard global install path resolution"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T08:57:46.510Z"
+  updated_by: "CODER"
+  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.test.ts -> pass, 37/37. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass, repo-local runtime ready."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Audit global-install path resolution and add focused regression tests before returning to the refactor roadmap."
+  -
+    type: "verify"
+    at: "2026-04-20T08:57:46.510Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.test.ts -> pass, 37/37. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass, repo-local runtime ready."
 doc_version: 3
-doc_updated_at: "2026-04-20T08:51:03.820Z"
+doc_updated_at: "2026-04-20T08:57:46.568Z"
 doc_updated_by: "CODER"
 description: "Audit CLI path resolution for global-install style layouts, fix any repo-local script path defects, and add regression tests that fail when installed CLI code resolves repository scripts from the global package location."
 sections:
@@ -59,11 +65,24 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T08:57:46.510Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.test.ts -> pass, 37/37. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass, repo-local runtime ready.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T08:51:03.820Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Audited import.meta.url/fileURLToPath candidates touching scripts/bin paths. The real repo-script risk was pre-push fallback returning a non-existent global prefix path; workflow-playbook's bin path is package-bundled and covered by existing workflow tests.
+      Impact: Global installs no longer surface misleading ~/.nvm/.../lib/scripts/run-pre-push-hook.mjs-style paths when the fallback is absent, and resolver tests now fail if missing fallbacks are treated as valid scripts.
+      Resolution: Pre-push script resolution now returns repository-local script first, existing bundled fallback second, otherwise null with an actionable repository-local error message.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -93,6 +112,14 @@ Audit CLI path resolution for global-install style layouts, fix any repo-local s
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T08:57:46.510Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.test.ts -> pass, 37/37. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass, repo-local runtime ready.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T08:51:03.820Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -101,3 +128,9 @@ Audit CLI path resolution for global-install style layouts, fix any repo-local s
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Audited import.meta.url/fileURLToPath candidates touching scripts/bin paths. The real repo-script risk was pre-push fallback returning a non-existent global prefix path; workflow-playbook's bin path is package-bundled and covered by existing workflow tests.
+  Impact: Global installs no longer surface misleading ~/.nvm/.../lib/scripts/run-pre-push-hook.mjs-style paths when the fallback is absent, and resolver tests now fail if missing fallbacks are treated as valid scripts.
+  Resolution: Pre-push script resolution now returns repository-local script first, existing bundled fallback second, otherwise null with an actionable repository-local error message.
+  Promotion: incident-candidate
+  Fixability: external
