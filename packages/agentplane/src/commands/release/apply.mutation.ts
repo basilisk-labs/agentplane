@@ -88,6 +88,16 @@ export async function replacePackageDependencyVersion(
   await writeFile(pkgJsonPath, replaced, "utf8");
 }
 
+export async function packageDependencyExists(
+  pkgJsonPath: string,
+  dependencyName: string,
+): Promise<boolean> {
+  const raw = JSON.parse(await readFile(pkgJsonPath, "utf8")) as {
+    dependencies?: Record<string, unknown>;
+  };
+  return typeof raw.dependencies?.[dependencyName] === "string";
+}
+
 export async function maybeUpdateBunLockfile(
   gitRoot: string,
   fileExists: (p: string) => Promise<boolean>,

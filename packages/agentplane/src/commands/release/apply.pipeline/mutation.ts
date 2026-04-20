@@ -10,6 +10,7 @@ import {
   maybePersistExpectedCliVersion,
   maybeRefreshGeneratedReference,
   maybeUpdateBunLockfile,
+  packageDependencyExists,
   replaceAgentplanePackageMetadata,
   replacePackageDependencyVersion,
   replacePackageVersionInFile,
@@ -38,7 +39,10 @@ export async function applyReleaseMutation(opts: {
     replacePackageVersionInFile(opts.recipesPkgPath, opts.nextVersion),
     replaceAgentplanePackageMetadata(opts.agentplanePkgPath, opts.nextVersion),
   ]);
-  if (await fileExists(opts.testkitPkgPath)) {
+  const shouldUpdateTestkitAgentplaneDependency =
+    (await fileExists(opts.testkitPkgPath)) &&
+    (await packageDependencyExists(opts.testkitPkgPath, "agentplane"));
+  if (shouldUpdateTestkitAgentplaneDependency) {
     await replacePackageDependencyVersion(opts.testkitPkgPath, "agentplane", opts.nextVersion);
   }
 
@@ -55,7 +59,7 @@ export async function applyReleaseMutation(opts: {
     "packages/recipes/package.json",
     path.relative(opts.gitRoot, opts.notesPath),
   ];
-  if (await fileExists(opts.testkitPkgPath)) {
+  if (shouldUpdateTestkitAgentplaneDependency) {
     stagePaths.push("packages/testkit/package.json");
   }
   if (expectedCliVersionPersisted) {

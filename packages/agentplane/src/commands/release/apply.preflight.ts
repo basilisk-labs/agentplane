@@ -119,6 +119,17 @@ export async function readAgentplaneDependencyVersion(pkgJsonPath: string): Prom
   return await readDependencyVersion(pkgJsonPath, "agentplane");
 }
 
+export async function readOptionalAgentplaneDependencyVersion(
+  pkgJsonPath: string,
+): Promise<string | null> {
+  const raw = JSON.parse(await readFile(pkgJsonPath, "utf8")) as {
+    dependencies?: Record<string, unknown>;
+  };
+  const value = raw.dependencies?.agentplane;
+  const version = typeof value === "string" ? value.trim() : "";
+  return version || null;
+}
+
 export async function validateReleaseNotes(notesPath: string, minBullets: number): Promise<void> {
   const content = await readFile(notesPath, "utf8");
   if (!/release\s+notes/i.test(content)) {

@@ -10,8 +10,8 @@ import {
   ensureTagDoesNotExist,
   fileExists,
   loadReleasePlan,
-  readAgentplaneDependencyVersion,
   readCoreDependencyVersion,
+  readOptionalAgentplaneDependencyVersion,
   readPackageVersion,
   readRecipesDependencyVersion,
   validateReleaseNotes,
@@ -110,10 +110,13 @@ export async function ensureReleasePlanMatchesRepoState(opts: {
     });
   }
   if (await fileExists(opts.testkitPkgPath)) {
-    const testkitAgentplaneDependencyVersion = await readAgentplaneDependencyVersion(
+    const testkitAgentplaneDependencyVersion = await readOptionalAgentplaneDependencyVersion(
       opts.testkitPkgPath,
     );
-    if (testkitAgentplaneDependencyVersion !== agentplaneVersion) {
+    if (
+      testkitAgentplaneDependencyVersion &&
+      testkitAgentplaneDependencyVersion !== agentplaneVersion
+    ) {
       throw new CliError({
         exitCode: exitCodeForError("E_VALIDATION"),
         code: "E_VALIDATION",
