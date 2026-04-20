@@ -8,6 +8,7 @@ import {
   commitAll,
   describeWhenNotHook,
   mkGitRepoRoot,
+  mkGitRepoRootWithBranch,
   writeDefaultConfig,
 } from "../../testing/index.js";
 import { seedReleaseWorkspace, writeReleaseNotes } from "../../../../testkit/src/release.js";
@@ -102,7 +103,7 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
   it(
     "bumps versions, commits, and tags using the latest plan",
     async () => {
-      const root = await mkGitRepoRoot();
+      const root = await mkGitRepoRootWithBranch("release/v0.2.7");
       await writeDefaultConfig(root);
       await seedReleaseWorkspace(root, {
         coreVersion: "0.2.6",
@@ -223,7 +224,7 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
   it(
     "fails when tracked tree is dirty before apply",
     async () => {
-      const root = await mkGitRepoRoot();
+      const root = await mkGitRepoRootWithBranch("main");
       await writeDefaultConfig(root);
       await mkdir(path.join(root, "docs", "releases"), { recursive: true });
       await seedReleaseWorkspace(root, {
