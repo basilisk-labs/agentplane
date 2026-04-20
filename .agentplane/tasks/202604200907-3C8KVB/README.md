@@ -1,10 +1,11 @@
 ---
 id: "202604200907-3C8KVB"
 title: "Extract shared runner adapter base helpers"
-status: "DOING"
+result_summary: "Extracted common runner adapter validation and supervision state/event helpers into runner/adapters/base.ts; custom.ts and codex.ts now delegate shared execution bookkeeping to that base."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T09:13:25.339Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts -> pass, 22/22. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass."
-commit: null
+commit:
+  hash: "c9667fdd1777680472b71c7a956b6ea53268d512"
+  message: "♻️ 3C8KVB runner: extract adapter base helpers"
 comments:
   -
     author: "CODER"
     body: "Start: Extract common runner adapter base helpers for shared validation and supervision persistence while keeping adapter-specific execution semantics intact."
+  -
+    author: "CODER"
+    body: "Verified: shared runner adapter base helpers preserve Codex/custom adapter behavior with focused adapter tests, typecheck, lint, format, and bootstrap passing."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/runner/adapters/custom.test.ts packages/agentplane/src/runner/adapters/codex.test.ts -> pass, 22/22. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass."
+  -
+    type: "status"
+    at: "2026-04-20T09:13:42.650Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: shared runner adapter base helpers preserve Codex/custom adapter behavior with focused adapter tests, typecheck, lint, format, and bootstrap passing."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:13:25.348Z"
+doc_updated_at: "2026-04-20T09:13:42.650Z"
 doc_updated_by: "CODER"
 description: "Continue C-prime adapter decomposition by moving duplicated Codex/custom runner adapter validation, supervision state updates, and event append helpers into a shared runner adapter base module while preserving adapter-specific command and manifest behavior."
 sections:
