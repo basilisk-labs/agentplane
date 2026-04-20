@@ -1,10 +1,11 @@
 ---
 id: "202604191643-NYC3QG"
 title: "Add AgentplaneError subclasses across failure domains"
-status: "DOING"
+result_summary: "Introduced the shared AgentplaneError hierarchy and migrated central usage/core/backend mapping surfaces without changing CLI error contracts."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T11:16:11.493Z"
   updated_by: "CODER"
   note: "Verified: central AgentplaneError hierarchy preserves CliError compatibility and stable CLI rendering; focused tests, typecheck, format, lint, and framework bootstrap passed."
-commit: null
+commit:
+  hash: "cd5ff7eba2b5e376d31b3fabbd7045afb7371cad"
+  message: "📝 NYC3QG verify: record error hierarchy checks"
 comments:
   -
     author: "CODER"
     body: "Start: Introducing the shared AgentplaneError subclass hierarchy in the central error surface first, then wiring only central mappers so CLI rendering stays stable."
+  -
+    author: "CODER"
+    body: "Verified: AgentplaneError base and domain subclasses are in place, central mappers use typed subclasses, and CliError compatibility plus exit-code rendering stayed stable."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: central AgentplaneError hierarchy preserves CliError compatibility and stable CLI rendering; focused tests, typecheck, format, lint, and framework bootstrap passed."
+  -
+    type: "status"
+    at: "2026-04-20T11:16:31.147Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: AgentplaneError base and domain subclasses are in place, central mappers use typed subclasses, and CliError compatibility plus exit-code rendering stayed stable."
 doc_version: 3
-doc_updated_at: "2026-04-20T11:16:11.506Z"
+doc_updated_at: "2026-04-20T11:16:31.148Z"
 doc_updated_by: "CODER"
 description: "Epic H′. Introduce targeted error subclasses for validation, backend, git, runtime, and network failures."
 sections:
