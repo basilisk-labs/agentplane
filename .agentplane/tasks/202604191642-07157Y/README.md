@@ -1,10 +1,11 @@
 ---
 id: "202604191642-07157Y"
 title: "Replace root test matrix with Vitest workspace projects"
-status: "DOING"
+result_summary: "Replaced root test script sprawl with vitest.workspace.ts named projects and canonical test:project routing."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T15:19:09.803Z"
   updated_by: "CODER"
   note: "Verification passed: project smoke suites, coverage wrapper suites, release CI contract, lifecycle finish test, release-smoke project, full test:fast, format, lint, build, and workflow command contract. Root package.json now has 8 test scripts."
-commit: null
+commit:
+  hash: "b10004be7babcd503ee2799d91f8dc448a27cb44"
+  message: "🧪 07157Y test: add Vitest workspace projects"
 comments:
   -
     author: "CODER"
     body: "Start: Replacing the root test script matrix with named Vitest workspace projects and canonical CI aliases while preserving current suite coverage."
+  -
+    author: "CODER"
+    body: "Verified: Vitest workspace projects route the former root test matrix through named projects; package.json is down to 8 test scripts; coverage wrappers, CI workflows, docs, release contract tests, and run-cli finish output expectations were updated. Checks passed: test:fast, project smoke suites, coverage suites, format, lint, build."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification passed: project smoke suites, coverage wrapper suites, release CI contract, lifecycle finish test, release-smoke project, full test:fast, format, lint, build, and workflow command contract. Root package.json now has 8 test scripts."
+  -
+    type: "status"
+    at: "2026-04-20T15:19:32.494Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Vitest workspace projects route the former root test matrix through named projects; package.json is down to 8 test scripts; coverage wrappers, CI workflows, docs, release contract tests, and run-cli finish output expectations were updated. Checks passed: test:fast, project smoke suites, coverage suites, format, lint, build."
 doc_version: 3
-doc_updated_at: "2026-04-20T15:19:09.819Z"
+doc_updated_at: "2026-04-20T15:19:32.496Z"
 doc_updated_by: "CODER"
 description: "Epic K and J′. Introduce Vitest workspace projects and shrink the root test script matrix."
 sections:
