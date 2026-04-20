@@ -1,10 +1,11 @@
 ---
 id: "202604191643-KX8Y45"
 title: "Unify CLI error rendering and guidance"
-status: "DOING"
+result_summary: "Unified CLI error mapping and rendering into one central pipeline while preserving focused text and JSON output contracts."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T11:21:56.440Z"
   updated_by: "CODER"
   note: "Verified: CLI error mapping and rendering now share one central error-map pipeline; focused CLI error/render tests, typecheck, format, lint, and framework bootstrap passed."
-commit: null
+commit:
+  hash: "18a6dde6106c2ed7d2cd3bd66f81e3c962c40d4d"
+  message: "📝 KX8Y45 verify: record error pipeline checks"
 comments:
   -
     author: "CODER"
     body: "Start: Consolidating CLI error mapping and rendering into one central pipeline while preserving the existing text and JSON error output contract."
+  -
+    author: "CODER"
+    body: "Verified: error rendering and guidance are centralized in cli/error-map.ts, runCli imports the single pipeline, and the legacy run-cli/error-guidance module is removed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: CLI error mapping and rendering now share one central error-map pipeline; focused CLI error/render tests, typecheck, format, lint, and framework bootstrap passed."
+  -
+    type: "status"
+    at: "2026-04-20T11:22:14.420Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: error rendering and guidance are centralized in cli/error-map.ts, runCli imports the single pipeline, and the legacy run-cli/error-guidance module is removed."
 doc_version: 3
-doc_updated_at: "2026-04-20T11:21:56.453Z"
+doc_updated_at: "2026-04-20T11:22:14.421Z"
 doc_updated_by: "CODER"
 description: "Epic H′. Merge current error mapping and guidance logic into one renderError pipeline with tests."
 sections:
