@@ -1,0 +1,21 @@
+# Architecture Decision Records
+
+This directory stores accepted architecture decisions that affect the Agentplane framework,
+runtime contracts, release process, or dependency posture.
+
+Use ADRs for decisions that would otherwise be rediscovered in code review:
+
+1. A dependency is accepted, rejected, deferred, or constrained.
+2. A runtime or CLI contract is intentionally kept custom.
+3. A refactor changes module ownership or package boundaries.
+4. A migration has a measurable rollback or compatibility cost.
+
+Keep ADRs short. Prefer facts, decision, consequences, and follow-up over historical narrative.
+
+## Index
+
+| ADR                                   | Status   | Decision                                                                                 |
+| ------------------------------------- | -------- | ---------------------------------------------------------------------------------------- |
+| [0001](./0001-zod-config-parity.md)   | Accepted | Treat config validation as Zod-sourced and use parity audit as a regression guard.       |
+| [0002](./0002-adr-process.md)         | Accepted | Use lightweight Markdown ADRs for cross-cutting refactor and dependency decisions.       |
+| [0003](./0003-refactor-sequencing.md) | Accepted | Sequence remaining refactor work by drift risk first, then hotspot and tooling leverage. |
