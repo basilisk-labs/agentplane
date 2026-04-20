@@ -1,10 +1,11 @@
 ---
 id: "202604201717-96ZTA5"
 title: "Update CI selectors after Epic L test split"
-status: "DOING"
+result_summary: "Replaced stale aggregate test references in local CI selection, significant coverage, and Vitest backend-critical configuration."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T17:21:49.928Z"
   updated_by: "CODER"
   note: "Command: rg stale aggregate test filenames; Result: pass; Evidence: no stale filenames remain under packages, scripts, workflows, package.json, or vitest.workspace.ts. Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts --reporter dot; Result: pass; Evidence: 37 tests passed. Command: bun run coverage:significant; Result: pass; Evidence: Significant suite contract OK (21 source targets). Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass."
-commit: null
+commit:
+  hash: "4511e52f93a018f18bbd0c605a6dfda761c87774"
+  message: "🧪 96ZTA5 test: refresh split suite selectors"
 comments:
   -
     author: "CODER"
     body: "Start: repair CI routing references after Epic L split."
+  -
+    author: "CODER"
+    body: "Verified: CI selectors and coverage references now point at split Epic L suites."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: rg stale aggregate test filenames; Result: pass; Evidence: no stale filenames remain under packages, scripts, workflows, package.json, or vitest.workspace.ts. Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts --reporter dot; Result: pass; Evidence: 37 tests passed. Command: bun run coverage:significant; Result: pass; Evidence: Significant suite contract OK (21 source targets). Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass."
+  -
+    type: "status"
+    at: "2026-04-20T17:21:53.173Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: CI selectors and coverage references now point at split Epic L suites."
 doc_version: 3
-doc_updated_at: "2026-04-20T17:21:49.937Z"
+doc_updated_at: "2026-04-20T17:21:53.174Z"
 doc_updated_by: "CODER"
 description: "Refresh local CI selection, significant coverage, and Vitest project references after Epic L removed aggregate test files."
 sections:
