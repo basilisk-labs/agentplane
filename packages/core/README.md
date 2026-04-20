@@ -55,16 +55,15 @@ console.log(config.data.workflow_mode, task?.id, snapshot.meta.version);
 
 ## Exported Modules
 
-| Area              | Highlights                                                                               |
-| ----------------- | ---------------------------------------------------------------------------------------- |
-| Project discovery | `resolveProject`, `findGitRoot`                                                          |
-| Config            | `loadConfig`, `saveConfig`, `setByDottedKey`, `validateConfig`, `AgentplaneConfigSchema` |
-| Task README       | `parseTaskReadme`, `renderTaskReadme`                                                    |
-| Task store        | `createTask`, `listTasks`, `readTask`, `setTaskDocSection`                               |
-| Exports           | `buildTasksExportSnapshot`, `writeTasksExport`, checksums                                |
-| Linting           | `lintTasksFile`, `lintTasksSnapshot`                                                     |
-| Git               | `getStagedFiles`, `getUnstagedFiles`, base branch helpers                                |
-| Commit policy     | `validateCommitSubject`, `extractTaskSuffix`                                             |
+| Import path                   | Area       | Highlights                                                                        |
+| ----------------------------- | ---------- | --------------------------------------------------------------------------------- |
+| `@agentplaneorg/core`         | Full API   | Backward-compatible aggregate export                                              |
+| `@agentplaneorg/core/fs`      | Filesystem | `atomicWriteFile`                                                                 |
+| `@agentplaneorg/core/git`     | Git        | `GitContext`, base branch helpers, changed-file helpers                           |
+| `@agentplaneorg/core/logger`  | Logger     | `createLogger`, `resolveLoggerMode`                                               |
+| `@agentplaneorg/core/process` | Process    | `runProcess`, `runProcessSync`, `startProcess`                                    |
+| `@agentplaneorg/core/schemas` | Schemas    | `AgentplaneConfigSchema`, schema renderers, task metadata validators              |
+| `@agentplaneorg/core/tasks`   | Tasks      | `createTask`, `listTasks`, `readTask`, task docs, task export and linting helpers |
 
 ## Stability
 

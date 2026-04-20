@@ -1,5 +1,15 @@
 import { execFile } from "node:child_process";
-import { chmod, copyFile, mkdtemp, mkdir, readdir, rm, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  copyFile,
+  mkdtemp,
+  mkdir,
+  readFile,
+  readdir,
+  rm,
+  writeFile,
+} from "node:fs/promises";
+import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -210,6 +220,29 @@ afterEach(async () => {
 });
 
 describe("repo-local handoff wrapper", () => {
+  it("keeps core conditional exports resolvable from the repo-local dependency check", async () => {
+    const corePackageJson = JSON.parse(
+      await readFile(path.join(workspaceRoot, "packages", "core", "package.json"), "utf8"),
+    ) as {
+      exports?: Record<string, { default?: string; import?: string; types?: string } | string>;
+    };
+    const rootExport = corePackageJson.exports?.["."];
+
+    expect(typeof rootExport).toBe("object");
+    expect(rootExport).toMatchObject({
+      default: "./dist/index.js",
+      import: "./dist/index.js",
+      types: "./dist/index.d.ts",
+    });
+
+    const requireFromAgentplane = createRequire(
+      path.join(workspaceRoot, "packages", "agentplane", "package.json"),
+    );
+    expect(requireFromAgentplane.resolve("@agentplaneorg/core")).toBe(
+      path.join(workspaceRoot, "packages", "core", "dist", "index.js"),
+    );
+  });
+
   it("delegates to the repo-local binary from a nested framework cwd", async () => {
     const globalInstall = await setupGlobalInstall();
     const framework = await setupFrameworkCheckout();
