@@ -1,10 +1,10 @@
 ---
 id: "202604191642-TGEXZ7"
 title: "Baseline knip and remove easy dead exports"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -13,19 +13,30 @@ tags:
   - "tooling"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-20T15:31:07.343Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: Adding knip warn-only dead-code detection with scoped configuration and CI visibility."
+events:
+  -
+    type: "status"
+    at: "2026-04-20T15:31:09.493Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Adding knip warn-only dead-code detection with scoped configuration and CI visibility."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:42:38.572Z"
+doc_updated_at: "2026-04-20T15:31:09.514Z"
 doc_updated_by: "CODER"
 description: "Epic K, I′, and J′. Add knip in warn-only mode, baseline its report, and remove low-risk dead exports."
 sections:
@@ -36,10 +47,7 @@ sections:
   Scope: |-
     - In scope: Epic K, I′, and J′. Add knip in warn-only mode, baseline its report, and remove low-risk dead exports.
     - Out of scope: unrelated refactors not required for "Baseline knip and remove easy dead exports".
-  Plan: |-
-    1. Implement the change for "Baseline knip and remove easy dead exports".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+  Plan: "Add knip as a dev-only dead-code detector in warn-only mode. Create a root knip config scoped to current workspace packages and scripts, add package scripts that generate a report without failing CI yet, wire the warn-only check into CI/release guard after architecture checks, document the command/status, and remove only obviously unused exports if knip identifies low-risk deletions. Verification: knip warn-only command completes, format/lint/build pass, and any intentionally retained findings are documented as baseline debt."
   Verify Steps: |-
     1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
     2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
@@ -66,9 +74,7 @@ Epic K, I′, and J′. Add knip in warn-only mode, baseline its report, and rem
 
 ## Plan
 
-1. Implement the change for "Baseline knip and remove easy dead exports".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+Add knip as a dev-only dead-code detector in warn-only mode. Create a root knip config scoped to current workspace packages and scripts, add package scripts that generate a report without failing CI yet, wire the warn-only check into CI/release guard after architecture checks, document the command/status, and remove only obviously unused exports if knip identifies low-risk deletions. Verification: knip warn-only command completes, format/lint/build pass, and any intentionally retained findings are documented as baseline debt.
 
 ## Verify Steps
 

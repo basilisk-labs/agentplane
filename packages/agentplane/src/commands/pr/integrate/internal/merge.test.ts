@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { CliError } from "../../../../../shared/errors.js";
+import type { CliError } from "../../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
   createLogger: vi.fn(() => ({ write: vi.fn() })),

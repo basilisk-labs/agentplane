@@ -88,6 +88,8 @@ jobs:
         run: bun run lint:core
       - name: Architecture boundaries
         run: bun run arch:check
+      - name: Dead code baseline (warn-only)
+        run: bun run knip:check
       - name: Unit Tests (Fast)
         run: bun run test:fast
         env:

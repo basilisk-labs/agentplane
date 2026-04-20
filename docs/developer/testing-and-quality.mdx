@@ -140,6 +140,25 @@ To check package dependency boundaries and cycles:
 bun run arch:check
 ```
 
+To inspect unused files, exports, dependencies, and unresolved imports:
+
+```bash
+bun run knip:check
+```
+
+`knip:check` is intentionally warn-only during the initial baseline period. It reports current
+dead-code debt without failing CI; new cleanup work should reduce the report and avoid adding new
+findings. Use `bun run knip:report` for the full local report.
+
+Initial baseline after the warn-only guard was introduced:
+
+- 11 unused files.
+- 82 unused exports.
+- 106 unused exported types.
+
+The baseline has no unresolved imports and no unused dependencies; those categories should stay
+empty.
+
 To run the faster CLI unit-ish suites (core + recipes):
 
 ```bash

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "eslint.config.cjs",
+    "vitest.config.ts",
+    "vitest.workspace.ts",
+    "packages/*/tsup.config.ts",
+    "packages/*/src/index.ts",
+    "packages/agentplane/src/cli.ts",
+    "packages/agentplane/bin/*.js",
+    "scripts/**/*.mjs"
+  ],
+  "project": [
+    "packages/*/src/**/*.ts",
+    "packages/*/tsup.config.ts",
+    "scripts/**/*.mjs",
+    "*.config.{cjs,js,ts}"
+  ],
+  "ignore": [
+    ".agentplane/**",
+    "docs/**",
+    "website/**",
+    "packages/*/dist/**",
+    "packages/*/node_modules/**"
+  ],
+  "lefthook": false
+}

@@ -94,6 +94,9 @@ jobs:
       - name: Architecture boundaries
         if: matrix.os == 'ubuntu-24.04'
         run: bun run arch:check
+      - name: Dead code baseline (warn-only)
+        if: matrix.os == 'ubuntu-24.04'
+        run: bun run knip:check
       - name: Unit tests (fast)
         if: matrix.os == 'ubuntu-24.04'
         run: bun run test:fast
