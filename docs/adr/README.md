@@ -22,3 +22,4 @@ Keep ADRs short. Prefer facts, decision, consequences, and follow-up over histor
 | [0004](./0004-keep-custom-cli-stack.md)     | Accepted | Keep the custom command catalog and parser instead of adopting Commander, Citty, or Oclif. |
 | [0005](./0005-defer-biome-migration.md)     | Accepted | Defer Biome migration until rule parity and formatting churn risks are resolved.           |
 | [0006](./0006-no-effect-fp-ts-migration.md) | Accepted | Keep pragmatic TypeScript and avoid an Effect/fp-ts migration during this refactor cycle.  |
+| [0007](./0007-freeze-yaml-parser-stack.md)  | Accepted | Keep `yaml` as the canonical YAML parser during the current refactor cycle.                |
