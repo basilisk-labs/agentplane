@@ -4,7 +4,7 @@ title: "Add AgentplaneError subclasses across failure domains"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T11:16:11.493Z"
+  updated_by: "CODER"
+  note: "Verified: central AgentplaneError hierarchy preserves CliError compatibility and stable CLI rendering; focused tests, typecheck, format, lint, and framework bootstrap passed."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Introducing the shared AgentplaneError subclass hierarchy in the central error surface first, then wiring only central mappers so CLI rendering stays stable."
+  -
+    type: "verify"
+    at: "2026-04-20T11:16:11.493Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: central AgentplaneError hierarchy preserves CliError compatibility and stable CLI rendering; focused tests, typecheck, format, lint, and framework bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-04-20T11:11:13.234Z"
+doc_updated_at: "2026-04-20T11:16:11.506Z"
 doc_updated_by: "CODER"
 description: "Epic H′. Introduce targeted error subclasses for validation, backend, git, runtime, and network failures."
 sections:
@@ -60,6 +66,41 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T11:16:11.493Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: central AgentplaneError hierarchy preserves CliError compatibility and stable CLI rendering; focused tests, typecheck, format, lint, and framework bootstrap passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T11:11:13.234Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    Command: bunx vitest run packages/agentplane/src/shared/errors.test.ts packages/agentplane/src/cli/error-map.test.ts packages/agentplane/src/cli/exit-code.contract.test.ts packages/agentplane/src/cli/spec/parse.test.ts
+    Result: pass
+    Evidence: 4 files passed, 16 tests passed.
+    Scope: shared error hierarchy, central error mapping, exit-code contract, usage-error factory.
+    
+    Command: bun run typecheck
+    Result: pass
+    Evidence: tsc -b exited 0.
+    Scope: TypeScript project references.
+    
+    Command: bun run format:check
+    Result: pass
+    Evidence: all matched files use Prettier code style.
+    Scope: repository formatting gate.
+    
+    Command: bun run lint:core
+    Result: pass
+    Evidence: eslint exited 0.
+    Scope: packages, scripts, eslint config, vitest config.
+    
+    Command: bun run framework:dev:bootstrap
+    Result: pass
+    Evidence: core and agentplane built; repo-local runtime verified.
+    Scope: runtime snapshot freshness after CLI/shared error code changes.
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -95,6 +136,41 @@ Epic H′. Introduce targeted error subclasses for validation, backend, git, run
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T11:16:11.493Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: central AgentplaneError hierarchy preserves CliError compatibility and stable CLI rendering; focused tests, typecheck, format, lint, and framework bootstrap passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T11:11:13.234Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/shared/errors.test.ts packages/agentplane/src/cli/error-map.test.ts packages/agentplane/src/cli/exit-code.contract.test.ts packages/agentplane/src/cli/spec/parse.test.ts
+Result: pass
+Evidence: 4 files passed, 16 tests passed.
+Scope: shared error hierarchy, central error mapping, exit-code contract, usage-error factory.
+
+Command: bun run typecheck
+Result: pass
+Evidence: tsc -b exited 0.
+Scope: TypeScript project references.
+
+Command: bun run format:check
+Result: pass
+Evidence: all matched files use Prettier code style.
+Scope: repository formatting gate.
+
+Command: bun run lint:core
+Result: pass
+Evidence: eslint exited 0.
+Scope: packages, scripts, eslint config, vitest config.
+
+Command: bun run framework:dev:bootstrap
+Result: pass
+Evidence: core and agentplane built; repo-local runtime verified.
+Scope: runtime snapshot freshness after CLI/shared error code changes.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
