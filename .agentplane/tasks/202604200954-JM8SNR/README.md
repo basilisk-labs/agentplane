@@ -4,7 +4,7 @@ title: "Reach script-runtime adoption threshold"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T09:56:32.090Z"
+  updated_by: "CODER"
+  note: "Command: bunx vitest run packages/agentplane/src/cli/check-github-protection-contract-script.test.ts -> 4 passed. Command: bun run format:check -> pass. Command: bun run lint:core -> pass. Command: runtime adoption count -> 15 executable scripts."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: migrate the GitHub protection contract script as the final adoption-threshold atom for F′."
+  -
+    type: "verify"
+    at: "2026-04-20T09:56:32.090Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/cli/check-github-protection-contract-script.test.ts -> 4 passed. Command: bun run format:check -> pass. Command: bun run lint:core -> pass. Command: runtime adoption count -> 15 executable scripts."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:55:01.344Z"
+doc_updated_at: "2026-04-20T09:56:32.101Z"
 doc_updated_by: "CODER"
 description: "Migrate the GitHub protection contract checker to defineScript and parseScriptArgs so F′ reaches at least 15 runtime-backed scripts."
 sections:
@@ -58,6 +64,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T09:56:32.090Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bunx vitest run packages/agentplane/src/cli/check-github-protection-contract-script.test.ts -> 4 passed. Command: bun run format:check -> pass. Command: bun run lint:core -> pass. Command: runtime adoption count -> 15 executable scripts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:55:01.344Z, excerpt_hash=sha256:057efde6462dadca08aafd891fd3b9278c9898424058f2b9e987655ac4bc9506
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -92,6 +106,14 @@ Migrate the GitHub protection contract checker to defineScript and parseScriptAr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T09:56:32.090Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/agentplane/src/cli/check-github-protection-contract-script.test.ts -> 4 passed. Command: bun run format:check -> pass. Command: bun run lint:core -> pass. Command: runtime adoption count -> 15 executable scripts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:55:01.344Z, excerpt_hash=sha256:057efde6462dadca08aafd891fd3b9278c9898424058f2b9e987655ac4bc9506
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
