@@ -162,6 +162,68 @@ export async function gitListBranches(cwd: string): Promise<string[]> {
     .filter((line: string) => line.length > 0);
 }
 
+export async function gitStagedPaths(cwd: string): Promise<string[]> {
+  const { stdout } = await execFileAsync("git", ["diff", "--cached", "--name-only"], {
+    cwd,
+    env: gitEnv(),
+  });
+  return String(stdout)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
+export async function gitAddPaths(cwd: string, paths: string[]): Promise<void> {
+  if (paths.length === 0) return;
+  await execFileAsync("git", ["add", "--", ...paths], { cwd, env: gitEnv() });
+}
+
+export async function gitCommit(
+  cwd: string,
+  message: string,
+  opts?: { env?: NodeJS.ProcessEnv; skipHooks?: boolean },
+): Promise<void> {
+  const args = ["commit", "-m", message];
+  if (opts?.skipHooks) args.push("--no-verify");
+  const env = opts?.env ? { ...gitEnv(), ...opts.env } : gitEnv();
+  await execFileAsync("git", args, { cwd, env });
+}
+
+export async function gitInitRepo(cwd: string, branch: string): Promise<void> {
+  try {
+    await execFileAsync("git", ["init", "-q", "-b", branch], { cwd, env: gitEnv() });
+    return;
+  } catch {
+    await execFileAsync("git", ["init", "-q"], { cwd, env: gitEnv() });
+  }
+
+  try {
+    const current = await gitCurrentBranch(cwd);
+    if (current !== branch) {
+      await execFileAsync("git", ["checkout", "-q", "-b", branch], { cwd, env: gitEnv() });
+    }
+  } catch {
+    await execFileAsync("git", ["checkout", "-q", "-b", branch], { cwd, env: gitEnv() });
+  }
+}
+
+export async function resolveInitBaseBranch(gitRoot: string, fallback: string): Promise<string> {
+  let current: string | null = null;
+  try {
+    current = await gitCurrentBranch(gitRoot);
+  } catch {
+    current = null;
+  }
+  const branches = await gitListBranches(gitRoot);
+  if (current) return current;
+  if (branches.includes(fallback)) return fallback;
+  if (branches.length > 0) {
+    const first = branches[0];
+    if (first) return first;
+  }
+  return fallback;
+}
+
 export class GitContext {
   readonly gitRoot: string;
 

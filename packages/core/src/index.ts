@@ -167,13 +167,35 @@ export {
 export {
   gitBranchExists,
   gitBranchUpstream,
+  gitAddPaths,
+  gitCommit,
   gitCurrentBranch,
   gitEnv,
+  gitInitRepo,
   gitIsAncestor,
   gitListBranches,
   gitRevParse,
+  gitStagedPaths,
   GitContext,
+  resolveInitBaseBranch,
 } from "./git/git-client.js";
+
+export {
+  gitAheadBehind,
+  gitDiffNames,
+  gitDiffStat,
+  gitShowFile,
+  toGitPath,
+} from "./git/git-diff.js";
+
+export {
+  findWorktreeForBranch,
+  gitListBranchesByPrefixes,
+  gitListTaskBranches,
+  listWorktrees,
+  parseTaskIdFromBranch,
+  parseTaskIdFromCloseBranch,
+} from "./git/git-worktree.js";
 
 export {
   execFileAsync,
