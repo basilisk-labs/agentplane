@@ -1,10 +1,11 @@
 ---
 id: "202604191644-GE9B5J"
 title: "Evaluate yauzl alternatives and record bundle decision"
-status: "DOING"
+result_summary: "Recorded ADR 0008 keeping yauzl because alternatives do not meet the measured size/risk bar."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T16:15:04.161Z"
   updated_by: "CODER"
   note: "Recorded yauzl dependency decision in ADR 0008. Verification passed: npm metadata comparison for yauzl/unzipit/fflate; bun run format:check; bun run lint:core."
-commit: null
+commit:
+  hash: "6013ce3dbab11f1af874fdfd2ea46f03ab61b0d6"
+  message: "🧾 GE9B5J docs: record yauzl dependency decision"
 comments:
   -
     author: "CODER"
     body: "Start: Evaluating yauzl alternatives and recording the bundle decision."
+  -
+    author: "CODER"
+    body: "Verified: yauzl alternatives were measured, documented, and checked with format plus lint."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Recorded yauzl dependency decision in ADR 0008. Verification passed: npm metadata comparison for yauzl/unzipit/fflate; bun run format:check; bun run lint:core."
+  -
+    type: "status"
+    at: "2026-04-20T16:15:47.297Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: yauzl alternatives were measured, documented, and checked with format plus lint."
 doc_version: 3
-doc_updated_at: "2026-04-20T16:15:04.193Z"
+doc_updated_at: "2026-04-20T16:15:47.300Z"
 doc_updated_by: "CODER"
 description: "Epic I′ and G′. Measure yauzl alternatives and record whether the current zip dependency should stay."
 sections:
