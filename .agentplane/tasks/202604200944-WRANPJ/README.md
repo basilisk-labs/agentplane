@@ -1,10 +1,11 @@
 ---
 id: "202604200944-WRANPJ"
 title: "Add shared defineCheck script helper"
-status: "DOING"
+result_summary: "Added defineCheck to script-runtime and migrated two release check scripts to the shared check wrapper."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T09:46:04.522Z"
   updated_by: "CODER"
   note: "Command: node scripts/check-release-version.mjs --tag v0.3.15 -> pass. Command: node scripts/check-published-packages.mjs --spec @agentplaneorg/core@0.3.15 -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
-commit: null
+commit:
+  hash: "134db51e610f5787019f7e206e2829144a6a6a65"
+  message: "♻️ WRANPJ scripts: introduce defineCheck"
 comments:
   -
     author: "CODER"
     body: "Start: add a generic defineCheck wrapper and migrate two simple check scripts before touching heavier release recovery logic."
+  -
+    author: "CODER"
+    body: "Verified: release-version and published-packages checks pass through defineCheck; format and lint pass."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: node scripts/check-release-version.mjs --tag v0.3.15 -> pass. Command: node scripts/check-published-packages.mjs --spec @agentplaneorg/core@0.3.15 -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
+  -
+    type: "status"
+    at: "2026-04-20T09:46:11.053Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release-version and published-packages checks pass through defineCheck; format and lint pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:46:04.529Z"
+doc_updated_at: "2026-04-20T09:46:11.053Z"
 doc_updated_by: "CODER"
 description: "Introduce a small defineCheck wrapper in script-runtime for load/compare/report style scripts and migrate two simple check scripts to it."
 sections:
