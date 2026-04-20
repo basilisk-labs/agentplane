@@ -1,10 +1,11 @@
 ---
 id: "202604191643-TF1D4K"
 title: "Refresh roadmap for current refactor state"
-status: "DOING"
+result_summary: "Refreshed ROADMAP.md with current refactor status and ADR entry points."
+status: "DONE"
 priority: "low"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T13:59:51.257Z"
   updated_by: "PLANNER"
   note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: ROADMAP.md and docs/adr/README.md."
-commit: null
+commit:
+  hash: "51a60ff5c90cced30c195f982d32273f3234a544"
+  message: "📝 TF1D4K roadmap: refresh refactor status"
 comments:
   -
     author: "PLANNER"
     body: "Start: Refresh ROADMAP.md with a concise current refactor status section and ADR links, keeping the rest of the roadmap stable."
+  -
+    author: "PLANNER"
+    body: "Verified: ROADMAP.md now includes a concise 2026Q2 refactor status with ADR links; policy routing, doctor, and format check all pass."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: ROADMAP.md and docs/adr/README.md."
+  -
+    type: "status"
+    at: "2026-04-20T14:00:14.826Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: ROADMAP.md now includes a concise 2026Q2 refactor status with ADR links; policy routing, doctor, and format check all pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T13:59:51.304Z"
+doc_updated_at: "2026-04-20T14:00:14.831Z"
 doc_updated_by: "PLANNER"
 description: "Epic G′. Update ROADMAP.md to reflect closed and remaining refactor work with ADR links."
 sections:
