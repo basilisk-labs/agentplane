@@ -1,10 +1,11 @@
 ---
 id: "202604191643-KQR66F"
 title: "Fail CI on hotspot threshold regressions"
-status: "DOING"
+result_summary: "Added hotspot threshold check mode and wired it into CI gates."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T12:19:45.736Z"
   updated_by: "CODER"
   note: "Command: bun run hotspots:check; Result: pass; Evidence: max=600, oversized=0. Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts; Result: pass; Evidence: 4 tests passed including check failure and allowlist pass. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Command: bun run workflows:lint; Result: pass; Evidence: workflow command contract OK. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0."
-commit: null
+commit:
+  hash: "52b349ab61761a74f4f7ebb95b5bfa476617e9bd"
+  message: "🚦 KQR66F ci: enforce hotspot threshold"
 comments:
   -
     author: "CODER"
     body: "Start: Add a deterministic hotspot threshold guard to existing reporting/CI surfaces, with focused tests for allowed and rejected oversized files."
+  -
+    author: "CODER"
+    body: "Verified: hotspot threshold guard is enforced by script, local CI, GitHub CI, and prepublish checks; focused tests cover fail and allowlist behavior, and format, lint, typecheck, workflow lint all pass."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run hotspots:check; Result: pass; Evidence: max=600, oversized=0. Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts; Result: pass; Evidence: 4 tests passed including check failure and allowlist pass. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Command: bun run workflows:lint; Result: pass; Evidence: workflow command contract OK. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0."
+  -
+    type: "status"
+    at: "2026-04-20T12:20:00.378Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: hotspot threshold guard is enforced by script, local CI, GitHub CI, and prepublish checks; focused tests cover fail and allowlist behavior, and format, lint, typecheck, workflow lint all pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T12:19:45.749Z"
+doc_updated_at: "2026-04-20T12:20:00.379Z"
 doc_updated_by: "CODER"
 description: "Epic H′ and J′. Add hotspot-report based CI enforcement for oversized files beyond the agreed threshold."
 sections:
