@@ -26,6 +26,22 @@ export function defineScript({ name, run }) {
   };
 }
 
+export function defineCheck({ name, parseArgs = (argv) => argv, check }) {
+  if (typeof parseArgs !== "function") {
+    throw new TypeError(`defineCheck(${name}) requires parseArgs to be a function`);
+  }
+  if (typeof check !== "function") {
+    throw new TypeError(`defineCheck(${name}) requires check to be a function`);
+  }
+  return defineScript({
+    name,
+    async run(context) {
+      const options = await parseArgs(context.argv, context);
+      await check({ ...context, options });
+    },
+  });
+}
+
 export function runScriptMain(main) {
   main().catch((error) => {
     process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
