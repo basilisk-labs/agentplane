@@ -1,10 +1,11 @@
 ---
 id: "202604191640-PEYP4Q"
 title: "Use backend registry dispatch instead of task backend switches"
-status: "DOING"
+result_summary: "Replaced backend id conditionals in task backend loading with a typed registry of backend loader functions while preserving local fallback behavior."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T08:47:57.758Z"
   updated_by: "CODER"
   note: "Verified backend loader registry dispatch: task-backend.load/shared focused tests passed (20 tests), agentplane typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
-commit: null
+commit:
+  hash: "31b8aa520d13f9855b8fba1e96dc45b0db58f90e"
+  message: "♻️ PEYP4Q backend: register task backend loaders"
 comments:
   -
     author: "CODER"
     body: "Start: replace task backend kind dispatch with a typed loader registry."
+  -
+    author: "CODER"
+    body: "Verified: task-backend.load/shared focused tests passed (20 tests), typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified backend loader registry dispatch: task-backend.load/shared focused tests passed (20 tests), agentplane typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
+  -
+    type: "status"
+    at: "2026-04-20T08:48:39.645Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: task-backend.load/shared focused tests passed (20 tests), typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
 doc_version: 3
-doc_updated_at: "2026-04-20T08:47:57.767Z"
+doc_updated_at: "2026-04-20T08:48:39.646Z"
 doc_updated_by: "CODER"
 description: "Epic C′ and B′. Replace task backend switch statements with registry-driven dispatch."
 sections:
