@@ -14,7 +14,8 @@ import {
 import { seedReleaseWorkspace, writeReleaseNotes } from "../../../../testkit/src/release.js";
 import { runReleasePlan } from "./plan.command.js";
 import { pushReleaseRefs, runReleaseApply, runReleaseCandidate } from "./apply.command.js";
-import { cleanHookEnv } from "./apply.mutation.js";
+import { cleanHookEnv, packageDependencyExists } from "./apply.mutation.js";
+import { readOptionalAgentplaneDependencyVersion } from "./apply.preflight.js";
 
 const execFileAsync = promisify(execFile);
 const ORIGINAL_DRY_RUN = process.env.AGENTPLANE_RELEASE_DRY_RUN;
@@ -98,6 +99,29 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
     expect(env.AGENTPLANE_TASK_ID).toBeUndefined();
     expect(env.AGENTPLANE_STATUS_TO).toBeUndefined();
     expect(env.AGENTPLANE_AGENT_ID).toBeUndefined();
+  });
+
+  it("treats private testkit agentplane dependency as optional", async () => {
+    const root = await mkGitRepoRoot();
+    const pkgPath = path.join(root, "packages", "testkit", "package.json");
+    await mkdir(path.dirname(pkgPath), { recursive: true });
+    await writeFile(
+      pkgPath,
+      JSON.stringify(
+        {
+          name: "@agentplane/testkit",
+          version: "0.0.0",
+          private: true,
+          dependencies: { "@agentplaneorg/core": "0.3.15" },
+        },
+        null,
+        2,
+      ) + "\n",
+      "utf8",
+    );
+
+    await expect(readOptionalAgentplaneDependencyVersion(pkgPath)).resolves.toBeNull();
+    await expect(packageDependencyExists(pkgPath, "agentplane")).resolves.toBe(false);
   });
 
   it(
