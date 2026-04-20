@@ -4,7 +4,7 @@ title: "Update CI selectors after Epic L test split"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T17:21:49.928Z"
+  updated_by: "CODER"
+  note: "Command: rg stale aggregate test filenames; Result: pass; Evidence: no stale filenames remain under packages, scripts, workflows, package.json, or vitest.workspace.ts. Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts --reporter dot; Result: pass; Evidence: 37 tests passed. Command: bun run coverage:significant; Result: pass; Evidence: Significant suite contract OK (21 source targets). Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: repair CI routing references after Epic L split."
+  -
+    type: "verify"
+    at: "2026-04-20T17:21:49.928Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: rg stale aggregate test filenames; Result: pass; Evidence: no stale filenames remain under packages, scripts, workflows, package.json, or vitest.workspace.ts. Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts --reporter dot; Result: pass; Evidence: 37 tests passed. Command: bun run coverage:significant; Result: pass; Evidence: Significant suite contract OK (21 source targets). Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T17:18:09.761Z"
+doc_updated_at: "2026-04-20T17:21:49.937Z"
 doc_updated_by: "CODER"
 description: "Refresh local CI selection, significant coverage, and Vitest project references after Epic L removed aggregate test files."
 sections:
@@ -54,6 +60,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T17:21:49.928Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: rg stale aggregate test filenames; Result: pass; Evidence: no stale filenames remain under packages, scripts, workflows, package.json, or vitest.workspace.ts. Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts --reporter dot; Result: pass; Evidence: 37 tests passed. Command: bun run coverage:significant; Result: pass; Evidence: Significant suite contract OK (21 source targets). Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T17:18:09.761Z, excerpt_hash=sha256:639b7c315d2cdd037d97430c39a8702c2bd9f520ede219229a13f9cf7324dcf3
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +99,14 @@ Replace stale references to removed aggregate Epic L test files in local CI sele
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T17:21:49.928Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: rg stale aggregate test filenames; Result: pass; Evidence: no stale filenames remain under packages, scripts, workflows, package.json, or vitest.workspace.ts. Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts --reporter dot; Result: pass; Evidence: 37 tests passed. Command: bun run coverage:significant; Result: pass; Evidence: Significant suite contract OK (21 source targets). Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T17:18:09.761Z, excerpt_hash=sha256:639b7c315d2cdd037d97430c39a8702c2bd9f520ede219229a13f9cf7324dcf3
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
