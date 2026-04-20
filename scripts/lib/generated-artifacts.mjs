@@ -64,6 +64,43 @@ export async function checkGeneratedArtifactFresh({
   }
 }
 
+export function defineGeneratedArtifactCheck({
+  outputPath,
+  tempPrefix,
+  fileName,
+  generate,
+  formatWithPrettier = false,
+  missingMessage,
+  staleMessage,
+  successMessage,
+  beforeCheck,
+}) {
+  return async function runGeneratedArtifactCheck() {
+    if (beforeCheck) {
+      await beforeCheck();
+    }
+    await checkGeneratedArtifactFresh({
+      outputPath,
+      tempPrefix,
+      fileName,
+      generate,
+      formatWithPrettier,
+      missingMessage,
+      staleMessage,
+    });
+    if (successMessage) {
+      process.stdout.write(`${successMessage}\n`);
+    }
+  };
+}
+
+export function runScriptMain(main) {
+  main().catch((error) => {
+    process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
+    process.exitCode = 1;
+  });
+}
+
 export async function assertAgentplaneCliDistFreshForDocs(root = ROOT) {
   const packageRoot = path.join(root, "packages", "agentplane");
   if (!(await distExists(packageRoot))) {
