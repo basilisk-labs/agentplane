@@ -23,6 +23,27 @@ type BackendConfig = {
   settings?: Record<string, unknown>;
 };
 
+type NormalizedBackendConfig = {
+  id: string;
+  version: number;
+  settings: Record<string, unknown>;
+};
+
+type TaskBackendLoaderContext = {
+  resolved: ResolvedProject;
+  config: AgentplaneConfig;
+  settings: Record<string, unknown>;
+};
+
+type TaskBackendLoaderResult = {
+  backend: TaskBackend;
+  backendId: string;
+};
+
+type TaskBackendLoader = (
+  ctx: TaskBackendLoaderContext,
+) => TaskBackendLoaderResult | Promise<TaskBackendLoaderResult>;
+
 async function loadBackendConfig(configPath: string): Promise<BackendConfig | null> {
   try {
     const raw = JSON.parse(await readFile(configPath, "utf8")) as unknown;
@@ -32,6 +53,38 @@ async function loadBackendConfig(configPath: string): Promise<BackendConfig | nu
     if (code === "ENOENT") return null;
     throw err;
   }
+}
+
+function loadLocalTaskBackend(ctx: TaskBackendLoaderContext): TaskBackendLoaderResult {
+  const localDir =
+    resolveMaybeRelative(ctx.resolved.gitRoot, ctx.settings.dir) ??
+    path.join(ctx.resolved.gitRoot, ctx.config.paths.workflow_dir);
+  return {
+    backend: new LocalBackend({ dir: localDir }),
+    backendId: "local",
+  };
+}
+
+async function loadRedmineTaskBackend(
+  ctx: TaskBackendLoaderContext,
+): Promise<TaskBackendLoaderResult> {
+  await loadDotEnv(ctx.resolved.gitRoot);
+  const cacheDirRaw = resolveMaybeRelative(ctx.resolved.gitRoot, ctx.settings.cache_dir);
+  const cacheDir = cacheDirRaw ?? path.join(ctx.resolved.gitRoot, ctx.config.paths.workflow_dir);
+  const cache = cacheDir ? new LocalBackend({ dir: cacheDir }) : null;
+  return {
+    backend: new RedmineBackend(ctx.settings as RedmineSettings, { cache }),
+    backendId: "redmine",
+  };
+}
+
+const TASK_BACKEND_LOADERS: Record<string, TaskBackendLoader> = {
+  local: loadLocalTaskBackend,
+  redmine: loadRedmineTaskBackend,
+};
+
+function resolveTaskBackendLoader(backendId: string): TaskBackendLoader {
+  return TASK_BACKEND_LOADERS[backendId] ?? TASK_BACKEND_LOADERS.local;
 }
 
 async function instantiateTaskBackend(opts: {
@@ -49,30 +102,14 @@ async function instantiateTaskBackend(opts: {
   const normalized = normalizeBackendConfig(backendConfig);
   const backendId = normalized.id;
   const settings = normalized.settings;
-
-  if (backendId === "redmine") {
-    await loadDotEnv(opts.resolved.gitRoot);
-    const cacheDirRaw = resolveMaybeRelative(opts.resolved.gitRoot, settings.cache_dir);
-    const cacheDir =
-      cacheDirRaw ?? path.join(opts.resolved.gitRoot, opts.config.paths.workflow_dir);
-    const cache = cacheDir ? new LocalBackend({ dir: cacheDir }) : null;
-    const redmine = new RedmineBackend(settings as RedmineSettings, { cache });
-    return {
-      backend: redmine,
-      backendId,
-      resolved: opts.resolved,
-      config: opts.config,
-      backendConfigPath,
-    };
-  }
-
-  const localDir =
-    resolveMaybeRelative(opts.resolved.gitRoot, settings.dir) ??
-    path.join(opts.resolved.gitRoot, opts.config.paths.workflow_dir);
-  const local = new LocalBackend({ dir: localDir });
+  const loaded = await resolveTaskBackendLoader(backendId)({
+    resolved: opts.resolved,
+    config: opts.config,
+    settings,
+  });
   return {
-    backend: local,
-    backendId: "local",
+    backend: loaded.backend,
+    backendId: loaded.backendId,
     resolved: opts.resolved,
     config: opts.config,
     backendConfigPath,
@@ -86,11 +123,7 @@ function resolveMaybeRelative(root: string, input: unknown): string | null {
   return path.isAbsolute(raw) ? raw : path.join(root, raw);
 }
 
-function normalizeBackendConfig(raw: unknown): {
-  id: string;
-  version: number;
-  settings: Record<string, unknown>;
-} {
+function normalizeBackendConfig(raw: unknown): NormalizedBackendConfig {
   if (!isRecord(raw)) {
     return { id: "local", version: 1, settings: {} };
   }
