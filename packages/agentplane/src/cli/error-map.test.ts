@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { z } from "zod";
 
 import { mapBackendError, mapCoreError, writeError } from "./error-map.js";
 import { ExitCode } from "./exit-codes.js";
@@ -38,6 +39,24 @@ describe("core error mapping", () => {
     expect(mapped).toBeInstanceOf(ValidationError);
     expect(mapped.code).toBe("E_VALIDATION");
     expect(mapped.exitCode).toBe(ExitCode.Validation);
+  });
+
+  it("maps ZodError causes through zod-validation-error", () => {
+    const parsed = z
+      .object({ workflow_mode: z.enum(["direct", "branch_pr"]) })
+      .safeParse({ workflow_mode: "invalid" });
+    expect(parsed.success).toBe(false);
+    if (parsed.success) return;
+
+    const err = new Error("config/workflow_mode") as Error & { cause?: unknown };
+    err.cause = parsed.error;
+
+    const mapped = mapCoreError(err, { cmd: "config show" });
+    expect(mapped).toBeInstanceOf(ValidationError);
+    expect(mapped.code).toBe("E_VALIDATION");
+    expect(mapped.message).toContain("Validation error:");
+    expect(mapped.message).toContain("Invalid enum value");
+    expect(mapped.message).toContain('"workflow_mode"');
   });
 
   it("maps other errors to E_IO", () => {

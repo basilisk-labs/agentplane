@@ -433,7 +433,11 @@ export function formatAgentplaneConfigIssues(issues: readonly ZodIssue[]): strin
 export function validateAgentplaneConfig(raw: unknown): AgentplaneConfig {
   const parsed = AgentplaneConfigSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new Error(formatAgentplaneConfigIssues(parsed.error.issues));
+    const err = new Error(formatAgentplaneConfigIssues(parsed.error.issues)) as Error & {
+      cause?: unknown;
+    };
+    err.cause = parsed.error;
+    throw err;
   }
 
   if (!isRecord(parsed.data)) {

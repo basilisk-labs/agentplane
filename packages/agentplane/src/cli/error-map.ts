@@ -1,3 +1,5 @@
+import { fromZodError, isZodErrorLike, type ZodError } from "zod-validation-error/v3";
+
 import { readDiagnosticContext } from "../commands/shared/diagnostics.js";
 import {
   BackendCliError,
@@ -24,8 +26,29 @@ type ErrorGuidance = {
   nextAction?: NextAction;
 };
 
+function findZodError(err: unknown): ZodError | null {
+  if (isZodErrorLike(err)) return err;
+  if (err instanceof Error) {
+    const cause = (err as Error & { cause?: unknown }).cause;
+    if (isZodErrorLike(cause)) return cause;
+  }
+  return null;
+}
+
+function formatZodErrorForCli(err: ZodError): string {
+  return fromZodError(err, { prefix: "Validation error" }).message;
+}
+
 export function mapCoreError(err: unknown, context: Record<string, unknown>): CliError {
   const message = err instanceof Error ? err.message : String(err);
+  const zodError = findZodError(err);
+
+  if (zodError) {
+    return new ValidationError({
+      message: formatZodErrorForCli(zodError),
+      context,
+    });
+  }
 
   if (
     message.startsWith("Not a git repository") ||

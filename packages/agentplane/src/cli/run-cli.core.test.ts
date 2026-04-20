@@ -942,6 +942,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["config", "show", "--root", root]);
       expect(code).toBe(3);
+      expect(io.stderr).toContain("Validation error:");
       expect(io.stderr).toContain("schema_version");
     } finally {
       io.restore();

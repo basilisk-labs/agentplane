@@ -60,7 +60,9 @@
   "dependencies": {
     "@agentplaneorg/core": "0.3.15",
     "@agentplaneorg/recipes": "0.3.15",
-    "yauzl": "^2.10.0"
+    "yauzl": "^2.10.0",
+    "zod": "^3",
+    "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {
     "@types/yauzl": "^2.10.0"
