@@ -1,10 +1,11 @@
 ---
 id: "202604200951-NWPTHH"
 title: "Expand script-runtime adoption across generated checks"
-status: "DOING"
+result_summary: "Expanded script-runtime adoption across schema sync, agent template sync, recipes inventory generation, and onboarding docs checks."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T09:54:25.151Z"
   updated_by: "CODER"
   note: "Command: bun run schemas:check -> pass. Command: bun run agents:check -> pass. Command: bun run docs:recipes:check -> pass. Command: bun run docs:onboarding:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
-commit: null
+commit:
+  hash: "4319185d5524906eeee11af80eddf627b5606d3d"
+  message: "♻️ NWPTHH scripts: expand runtime adoption"
 comments:
   -
     author: "CODER"
     body: "Start: expand script-runtime adoption across generated checks and sync scripts without changing generated outputs."
+  -
+    author: "CODER"
+    body: "Verified: schemas, agent templates, recipes inventory, onboarding docs, format, and lint checks pass through script-runtime entrypoints."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run schemas:check -> pass. Command: bun run agents:check -> pass. Command: bun run docs:recipes:check -> pass. Command: bun run docs:onboarding:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
+  -
+    type: "status"
+    at: "2026-04-20T09:54:32.227Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: schemas, agent templates, recipes inventory, onboarding docs, format, and lint checks pass through script-runtime entrypoints."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:54:25.162Z"
+doc_updated_at: "2026-04-20T09:54:32.228Z"
 doc_updated_by: "CODER"
 description: "Migrate schema sync, agent template sync, recipes inventory generation, and onboarding docs check to defineScript so F′ reaches broad script-runtime usage."
 sections:
