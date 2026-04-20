@@ -16,88 +16,49 @@ import { startSpec } from "../../../commands/start.spec.js";
 import { verifySpec } from "../../../commands/verify.spec.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
-import { commandModule, declareCommand, type CommandEntry } from "./shared.js";
-
-const fromCommandsHooksHooksCommand = commandModule(
-  () => import("../../../commands/hooks/hooks.command.js"),
-);
-const fromCommandsHooksInstallCommand = commandModule(
-  () => import("../../../commands/hooks/install.command.js"),
-);
-const fromCommandsHooksRunCommand = commandModule(
-  () => import("../../../commands/hooks/run.command.js"),
-);
-const fromCommandsGuardGuardCommand = commandModule(
-  () => import("../../../commands/guard/guard.command.js"),
-);
-const fromCommandsGuardCleanCommand = commandModule(
-  () => import("../../../commands/guard/clean.command.js"),
-);
+import { declareCommand, type CommandEntry } from "./shared.js";
+import {
+  fromCommandsHooksHooksCommand,
+  fromCommandsHooksInstallCommand,
+  fromCommandsHooksRunCommand,
+  fromCommandsGuardGuardCommand,
+  fromCommandsGuardCleanCommand,
+  loadCommitSpec,
+  loadStartSpec,
+  loadBlockSpec,
+  loadVerifySpec,
+  loadFinishSpec,
+  loadReadySpec,
+  loadDocsCliSpec,
+  fromHooksUninstallSpec,
+  fromCleanupSpec,
+  loadCleanupMergedSpec,
+  fromGuardSuggestAllowSpec,
+  loadGuardCommitSpec,
+} from "../command-loaders.js";
 
 export const LIFECYCLE_COMMANDS = [
-  declareCommand(commitSpec, {
-    load: (deps) =>
-      import("../../../commands/commit.command.js").then((m) =>
-        m.makeRunCommitHandler(deps.getCtx),
-      ),
-  }),
-  declareCommand(startSpec, {
-    load: (deps) =>
-      import("../../../commands/start.run.js").then((m) => m.makeRunStartHandler(deps.getCtx)),
-  }),
-  declareCommand(blockSpec, {
-    load: (deps) =>
-      import("../../../commands/block.run.js").then((m) => m.makeRunBlockHandler(deps.getCtx)),
-  }),
+  declareCommand(commitSpec, { load: loadCommitSpec }),
+  declareCommand(startSpec, { load: loadStartSpec }),
+  declareCommand(blockSpec, { load: loadBlockSpec }),
   declareCommand(verifySpec, {
-    load: (deps) =>
-      import("../../../commands/verify.run.js").then((m) => m.makeRunVerifyHandler(deps.getCtx)),
+    load: loadVerifySpec,
     invocation: requireCanonicalCommandInvocation(["verify"]),
   }),
   declareCommand(finishSpec, {
-    load: (deps) =>
-      import("../../../commands/finish.run.js").then((m) => m.makeRunFinishHandler(deps.getCtx)),
+    load: loadFinishSpec,
     invocation: requireCanonicalCommandInvocation(["finish"]),
   }),
-  declareCommand(readySpec, {
-    load: (deps) =>
-      import("../../../commands/ready.command.js").then((m) => m.makeRunReadyHandler(deps.getCtx)),
-  }),
-  declareCommand(docsCliSpec, {
-    load: (deps) =>
-      import("../../../commands/docs/cli.command.js").then((m) =>
-        m.makeRunDocsCliHandler(deps.getHelpJsonForDocs),
-      ),
-    needs: "none",
-  }),
+  declareCommand(readySpec, { load: loadReadySpec }),
+  declareCommand(docsCliSpec, { load: loadDocsCliSpec, needs: "none" }),
   fromCommandsHooksHooksCommand(hooksSpec, "runHooks", { needs: "none" }),
   fromCommandsHooksInstallCommand(hooksInstallSpec, "runHooksInstall", {}),
-  declareCommand(hooksUninstallSpec, {
-    module: () => import("../../../commands/hooks/uninstall.command.js"),
-    runExport: "runHooksUninstall",
-  }),
+  fromHooksUninstallSpec(hooksUninstallSpec, "runHooksUninstall"),
   fromCommandsHooksRunCommand(hooksRunSpec, "runHooksRun", {}),
-  declareCommand(cleanupSpec, {
-    module: () => import("../../../commands/cleanup/merged.command.js"),
-    runExport: "runCleanup",
-    needs: "none",
-  }),
-  declareCommand(cleanupMergedSpec, {
-    load: (deps) =>
-      import("../../../commands/cleanup/merged.command.js").then((m) =>
-        m.makeRunCleanupMergedHandler(deps.getCtx),
-      ),
-  }),
+  fromCleanupSpec(cleanupSpec, "runCleanup", { needs: "none" }),
+  declareCommand(cleanupMergedSpec, { load: loadCleanupMergedSpec }),
   fromCommandsGuardGuardCommand(guardSpec, "runGuard", { needs: "none" }),
   fromCommandsGuardCleanCommand(guardCleanSpec, "runGuardClean", {}),
-  declareCommand(guardSuggestAllowSpec, {
-    module: () => import("../../../commands/guard/suggest-allow.command.js"),
-    runExport: "runGuardSuggestAllow",
-  }),
-  declareCommand(guardCommitSpec, {
-    load: (deps) =>
-      import("../../../commands/guard/commit.command.js").then((m) =>
-        m.makeRunGuardCommitHandler(deps.getCtx),
-      ),
-  }),
+  fromGuardSuggestAllowSpec(guardSuggestAllowSpec, "runGuardSuggestAllow"),
+  declareCommand(guardCommitSpec, { load: loadGuardCommitSpec }),
 ] as const satisfies readonly CommandEntry[];

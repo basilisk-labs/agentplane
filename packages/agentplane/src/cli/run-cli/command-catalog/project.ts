@@ -42,175 +42,81 @@ import { recipesRemoveSpec } from "../../../commands/recipes/remove.command.js";
 import { recipesSpec } from "../../../commands/recipes/recipes.command.js";
 import { recipesUpdateSpec } from "../../../commands/recipes/update.command.js";
 
-import { commandModule, declareCommand, type CommandEntry } from "./shared.js";
-
-const fromCommandsRecipesRecipesCommand = commandModule(
-  () => import("../../../commands/recipes/recipes.command.js"),
-);
-const fromCommandsRecipesCacheCommand = commandModule(
-  () => import("../../../commands/recipes/cache.command.js"),
-);
-const fromCommandsRecipesAddCommand = commandModule(
-  () => import("../../../commands/recipes/add.command.js"),
-);
-const fromCommandsRecipesListCommand = commandModule(
-  () => import("../../../commands/recipes/list.command.js"),
-);
-const fromCommandsRecipesListRemoteCommand = commandModule(
-  () => import("../../../commands/recipes/list-remote.command.js"),
-);
-const fromCommandsRecipesExplainCommand = commandModule(
-  () => import("../../../commands/recipes/explain.command.js"),
-);
-const fromCommandsRecipesEnableCommand = commandModule(
-  () => import("../../../commands/recipes/enable.command.js"),
-);
-const fromCommandsRecipesRemoveCommand = commandModule(
-  () => import("../../../commands/recipes/remove.command.js"),
-);
-const fromCommandsRecipesDetachCommand = commandModule(
-  () => import("../../../commands/recipes/detach.command.js"),
-);
-const fromCommandsRecipesInstallRun = commandModule(
-  () => import("../../../commands/recipes/install.run.js"),
-);
-const fromCommandsBranchBaseCommand = commandModule(
-  () => import("../../../commands/branch/base.command.js"),
-);
-const fromCommandsBranchStatusCommand = commandModule(
-  () => import("../../../commands/branch/status.command.js"),
-);
+import { declareCommand, type CommandEntry } from "./shared.js";
+import {
+  fromCommandsRecipesRecipesCommand,
+  fromCommandsRecipesCacheCommand,
+  fromCommandsRecipesAddCommand,
+  fromCommandsRecipesListCommand,
+  fromCommandsRecipesListRemoteCommand,
+  fromCommandsRecipesExplainCommand,
+  fromCommandsRecipesEnableCommand,
+  fromCommandsRecipesRemoveCommand,
+  fromCommandsRecipesDetachCommand,
+  fromCommandsRecipesInstallRun,
+  fromCommandsBranchBaseCommand,
+  fromCommandsBranchStatusCommand,
+  loadWorkStartSpec,
+  fromRecipesActiveSpec,
+  fromRecipesInfoSpec,
+  loadRecipesExplainActiveSpec,
+  fromRecipesDisableSpec,
+  fromRecipesUpdateSpec,
+  fromRecipesCachePruneSpec,
+  fromBranchBaseSetSpec,
+  fromBranchBaseExplainSpec,
+  fromBranchRemoveSpec,
+  loadBackendSpec,
+  loadBackendSyncSpec,
+  loadBackendInspectSpec,
+  loadBackendMigrateCanonicalStateSpec,
+  loadSyncSpec,
+  loadPrSpec,
+  loadPrOpenSpec,
+  loadPrUpdateSpec,
+  loadPrCheckSpec,
+  loadPrCloseSpec,
+  loadPrCloseSupersededSpec,
+  loadPrNoteSpec,
+  loadIntegrateSpec,
+} from "../command-loaders.js";
 
 export const PROJECT_COMMANDS = [
-  declareCommand(workStartSpec, {
-    load: (deps) =>
-      import("../../../commands/branch/work-start.command.js").then((m) =>
-        m.makeRunWorkStartHandler(deps.getCtx),
-      ),
-  }),
+  declareCommand(workStartSpec, { load: loadWorkStartSpec }),
   fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", { needs: "none" }),
   fromCommandsRecipesCacheCommand(recipesCacheSpec, "runRecipesCache", { needs: "none" }),
   fromCommandsRecipesAddCommand(recipesAddSpec, "runRecipesAdd", {}),
-  declareCommand(recipesActiveSpec, {
-    module: () => import("../../../commands/recipes/active.command.js"),
-    runExport: "runRecipesActive",
-  }),
+  fromRecipesActiveSpec(recipesActiveSpec, "runRecipesActive"),
   fromCommandsRecipesListCommand(recipesListSpec, "runRecipesList", { needs: "none" }),
   fromCommandsRecipesListRemoteCommand(recipesListRemoteSpec, "runRecipesListRemote", {}),
-  declareCommand(recipesInfoSpec, {
-    module: () => import("../../../commands/recipes/info.command.js"),
-    runExport: "runRecipesInfo",
-    needs: "none",
-  }),
+  fromRecipesInfoSpec(recipesInfoSpec, "runRecipesInfo", { needs: "none" }),
   fromCommandsRecipesExplainCommand(recipesExplainSpec, "runRecipesExplain", {}),
-  declareCommand(recipesExplainActiveSpec, {
-    load: () =>
-      import("../../../commands/recipes/explain-active.command.js").then(
-        (m) => m.runRecipesExplainActive,
-      ),
-  }),
+  declareCommand(recipesExplainActiveSpec, { load: loadRecipesExplainActiveSpec }),
   fromCommandsRecipesEnableCommand(recipesEnableSpec, "runRecipesEnable", {}),
-  declareCommand(recipesDisableSpec, {
-    module: () => import("../../../commands/recipes/disable.command.js"),
-    runExport: "runRecipesDisable",
-  }),
+  fromRecipesDisableSpec(recipesDisableSpec, "runRecipesDisable"),
   fromCommandsRecipesRemoveCommand(recipesRemoveSpec, "runRecipesRemove", {}),
-  declareCommand(recipesUpdateSpec, {
-    module: () => import("../../../commands/recipes/update.command.js"),
-    runExport: "runRecipesUpdate",
-  }),
+  fromRecipesUpdateSpec(recipesUpdateSpec, "runRecipesUpdate"),
   fromCommandsRecipesDetachCommand(recipesDetachSpec, "runRecipesDetach", {}),
-  declareCommand(recipesCachePruneSpec, {
-    module: () => import("../../../commands/recipes/cache-prune.command.js"),
-    runExport: "runRecipesCachePrune",
-  }),
+  fromRecipesCachePruneSpec(recipesCachePruneSpec, "runRecipesCachePrune"),
   fromCommandsRecipesInstallRun(recipesInstallSpec, "runRecipesInstall", { needs: "none" }),
   fromCommandsBranchBaseCommand(branchBaseSpec, "runBranchBase", { needs: "none" }),
   fromCommandsBranchBaseCommand(branchBaseGetSpec, "runBranchBaseGet", {}),
-  declareCommand(branchBaseSetSpec, {
-    module: () => import("../../../commands/branch/base.command.js"),
-    runExport: "runBranchBaseSet",
-  }),
+  fromBranchBaseSetSpec(branchBaseSetSpec, "runBranchBaseSet"),
   fromCommandsBranchBaseCommand(branchBaseClearSpec, "runBranchBaseClear", {}),
-  declareCommand(branchBaseExplainSpec, {
-    module: () => import("../../../commands/branch/base.command.js"),
-    runExport: "runBranchBaseExplain",
-  }),
+  fromBranchBaseExplainSpec(branchBaseExplainSpec, "runBranchBaseExplain"),
   fromCommandsBranchStatusCommand(branchStatusSpec, "runBranchStatus", {}),
-  declareCommand(branchRemoveSpec, {
-    module: () => import("../../../commands/branch/remove.command.js"),
-    runExport: "runBranchRemove",
-  }),
-  declareCommand(backendSpec, {
-    load: (deps) =>
-      import("../../../commands/backend/sync.command.js").then((m) =>
-        m.makeRunBackendHandler(deps.getCtx),
-      ),
-    needs: "none",
-  }),
-  declareCommand(backendSyncSpec, {
-    load: (deps) =>
-      import("../../../commands/backend/sync.command.js").then((m) =>
-        m.makeRunBackendSyncHandler(deps.getCtx),
-      ),
-  }),
-  declareCommand(backendInspectSpec, {
-    load: (deps) =>
-      import("../../../commands/backend/sync.command.js").then((m) =>
-        m.makeRunBackendInspectHandler(deps.getCtx),
-      ),
-  }),
-  declareCommand(backendMigrateCanonicalStateSpec, {
-    load: (deps) =>
-      import("../../../commands/backend/sync.command.js").then((m) =>
-        m.makeRunBackendMigrateCanonicalStateHandler(deps.getCtx),
-      ),
-  }),
-  declareCommand(syncSpec, {
-    load: (deps) =>
-      import("../../../commands/sync.command.js").then((m) => m.makeRunSyncHandler(deps.getCtx)),
-  }),
-  declareCommand(prSpec, {
-    load: (deps) =>
-      import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrHandler(deps.getCtx)),
-    needs: "none",
-  }),
-  declareCommand(prOpenSpec, {
-    load: (deps) =>
-      import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrOpenHandler(deps.getCtx)),
-  }),
-  declareCommand(prUpdateSpec, {
-    load: (deps) =>
-      import("../../../commands/pr/pr.command.js").then((m) =>
-        m.makeRunPrUpdateHandler(deps.getCtx),
-      ),
-  }),
-  declareCommand(prCheckSpec, {
-    load: (deps) =>
-      import("../../../commands/pr/pr.command.js").then((m) =>
-        m.makeRunPrCheckHandler(deps.getCtx),
-      ),
-  }),
-  declareCommand(prCloseSpec, {
-    load: (deps) =>
-      import("../../../commands/pr/pr.command.js").then((m) =>
-        m.makeRunPrCloseHandler(deps.getCtx),
-      ),
-  }),
-  declareCommand(prCloseSupersededSpec, {
-    load: (deps) =>
-      import("../../../commands/pr/pr.command.js").then((m) =>
-        m.makeRunPrCloseSupersededHandler(deps.getCtx),
-      ),
-  }),
-  declareCommand(prNoteSpec, {
-    load: (deps) =>
-      import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrNoteHandler(deps.getCtx)),
-  }),
-  declareCommand(integrateSpec, {
-    load: (deps) =>
-      import("../../../commands/integrate.command.js").then((m) =>
-        m.makeRunIntegrateHandler(deps.getCtx),
-      ),
-  }),
+  fromBranchRemoveSpec(branchRemoveSpec, "runBranchRemove"),
+  declareCommand(backendSpec, { load: loadBackendSpec, needs: "none" }),
+  declareCommand(backendSyncSpec, { load: loadBackendSyncSpec }),
+  declareCommand(backendInspectSpec, { load: loadBackendInspectSpec }),
+  declareCommand(backendMigrateCanonicalStateSpec, { load: loadBackendMigrateCanonicalStateSpec }),
+  declareCommand(syncSpec, { load: loadSyncSpec }),
+  declareCommand(prSpec, { load: loadPrSpec, needs: "none" }),
+  declareCommand(prOpenSpec, { load: loadPrOpenSpec }),
+  declareCommand(prUpdateSpec, { load: loadPrUpdateSpec }),
+  declareCommand(prCheckSpec, { load: loadPrCheckSpec }),
+  declareCommand(prCloseSpec, { load: loadPrCloseSpec }),
+  declareCommand(prCloseSupersededSpec, { load: loadPrCloseSupersededSpec }),
+  declareCommand(prNoteSpec, { load: loadPrNoteSpec }),
+  declareCommand(integrateSpec, { load: loadIntegrateSpec }),
 ] as const satisfies readonly CommandEntry[];
