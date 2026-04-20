@@ -4,7 +4,7 @@ title: "Fix guard core mock after GitClient migration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T11:03:54.401Z"
+  updated_by: "CODER"
+  note: "Verified: guard unit suite now passes after preserving actual @agentplaneorg/core exports in the partial mock; format, typecheck, and lint:core all pass."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Fixing the guard unit-test regression exposed by the full pre-push gate after moving shared git helpers into @agentplaneorg/core."
+  -
+    type: "verify"
+    at: "2026-04-20T11:03:54.401Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: guard unit suite now passes after preserving actual @agentplaneorg/core exports in the partial mock; format, typecheck, and lint:core all pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T11:00:41.035Z"
+doc_updated_at: "2026-04-20T11:03:54.413Z"
 doc_updated_by: "CODER"
 description: "Repair guard command unit tests after shared git helpers moved to @agentplaneorg/core by preserving real core exports in the targeted mock."
 sections:
@@ -59,6 +65,36 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T11:03:54.401Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: guard unit suite now passes after preserving actual @agentplaneorg/core exports in the partial mock; format, typecheck, and lint:core all pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T11:00:41.035Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    Command: bunx vitest run packages/agentplane/src/commands/guard/impl/commands.unit.test.ts
+    Result: pass
+    Evidence: 1 file passed, 26 tests passed.
+    Scope: guard command unit regression exposed by pre-push.
+    
+    Command: bun run format:check
+    Result: pass
+    Evidence: all matched files use Prettier code style.
+    Scope: repository formatting gate.
+    
+    Command: bun run typecheck
+    Result: pass
+    Evidence: tsc -b exited 0.
+    Scope: TypeScript project references.
+    
+    Command: bun run lint:core
+    Result: pass
+    Evidence: eslint exited 0.
+    Scope: packages, scripts, eslint config, vitest config.
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -93,6 +129,36 @@ Repair guard command unit tests after shared git helpers moved to @agentplaneorg
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T11:03:54.401Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: guard unit suite now passes after preserving actual @agentplaneorg/core exports in the partial mock; format, typecheck, and lint:core all pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T11:00:41.035Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/commands/guard/impl/commands.unit.test.ts
+Result: pass
+Evidence: 1 file passed, 26 tests passed.
+Scope: guard command unit regression exposed by pre-push.
+
+Command: bun run format:check
+Result: pass
+Evidence: all matched files use Prettier code style.
+Scope: repository formatting gate.
+
+Command: bun run typecheck
+Result: pass
+Evidence: tsc -b exited 0.
+Scope: TypeScript project references.
+
+Command: bun run lint:core
+Result: pass
+Evidence: eslint exited 0.
+Scope: packages, scripts, eslint config, vitest config.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
