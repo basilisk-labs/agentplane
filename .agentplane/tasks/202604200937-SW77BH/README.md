@@ -1,10 +1,11 @@
 ---
 id: "202604200937-SW77BH"
 title: "Introduce shared script entrypoint runner"
-status: "DOING"
+result_summary: "Added defineScript/runScriptMain to script-runtime and migrated generated-artifact scripts off local main().catch boilerplate."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T09:43:32.114Z"
   updated_by: "CODER"
   note: "Command: bun run docs:recipes:check -> pass. Command: bun run docs:cli:check -> pass. Command: bun run docs:bootstrap:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
-commit: null
+commit:
+  hash: "bf146bfb712834a89b6c4d7046f6ba39d336040d"
+  message: "♻️ SW77BH scripts: add shared script entrypoint"
 comments:
   -
     author: "CODER"
     body: "Start: introduce a shared script entrypoint runner and migrate the scripts already touched by F′ to it first."
+  -
+    author: "CODER"
+    body: "Verified: migrated generated-artifact checks and bootstrap generator keep their outputs and pass docs, format, and lint gates."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run docs:recipes:check -> pass. Command: bun run docs:cli:check -> pass. Command: bun run docs:bootstrap:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
+  -
+    type: "status"
+    at: "2026-04-20T09:43:40.709Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: migrated generated-artifact checks and bootstrap generator keep their outputs and pass docs, format, and lint gates."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:43:32.125Z"
+doc_updated_at: "2026-04-20T09:43:40.710Z"
 doc_updated_by: "CODER"
 description: "Add defineScript to scripts/lib/script-runtime.mjs for consistent argv handling and error reporting, then migrate generated-artifact freshness checks and the bootstrap generator to use it."
 sections:
