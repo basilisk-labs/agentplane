@@ -4,7 +4,7 @@ title: "Replace root test matrix with Vitest workspace projects"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T15:19:09.803Z"
+  updated_by: "CODER"
+  note: "Verification passed: project smoke suites, coverage wrapper suites, release CI contract, lifecycle finish test, release-smoke project, full test:fast, format, lint, build, and workflow command contract. Root package.json now has 8 test scripts."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Replacing the root test script matrix with named Vitest workspace projects and canonical CI aliases while preserving current suite coverage."
+  -
+    type: "verify"
+    at: "2026-04-20T15:19:09.803Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verification passed: project smoke suites, coverage wrapper suites, release CI contract, lifecycle finish test, release-smoke project, full test:fast, format, lint, build, and workflow command contract. Root package.json now has 8 test scripts."
 doc_version: 3
-doc_updated_at: "2026-04-20T14:38:09.268Z"
+doc_updated_at: "2026-04-20T15:19:09.819Z"
 doc_updated_by: "CODER"
 description: "Epic K and J′. Introduce Vitest workspace projects and shrink the root test script matrix."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T15:19:09.803Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verification passed: project smoke suites, coverage wrapper suites, release CI contract, lifecycle finish test, release-smoke project, full test:fast, format, lint, build, and workflow command contract. Root package.json now has 8 test scripts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T14:38:09.268Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Introduce vitest.workspace.ts with named projects for fast, package, CLI, critic
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T15:19:09.803Z — VERIFY — ok
+
+By: CODER
+
+Note: Verification passed: project smoke suites, coverage wrapper suites, release CI contract, lifecycle finish test, release-smoke project, full test:fast, format, lint, build, and workflow command contract. Root package.json now has 8 test scripts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T14:38:09.268Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
