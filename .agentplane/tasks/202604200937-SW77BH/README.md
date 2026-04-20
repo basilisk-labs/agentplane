@@ -4,7 +4,7 @@ title: "Introduce shared script entrypoint runner"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T09:43:32.114Z"
+  updated_by: "CODER"
+  note: "Command: bun run docs:recipes:check -> pass. Command: bun run docs:cli:check -> pass. Command: bun run docs:bootstrap:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: introduce a shared script entrypoint runner and migrate the scripts already touched by F′ to it first."
+  -
+    type: "verify"
+    at: "2026-04-20T09:43:32.114Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run docs:recipes:check -> pass. Command: bun run docs:cli:check -> pass. Command: bun run docs:bootstrap:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:37:38.692Z"
+doc_updated_at: "2026-04-20T09:43:32.125Z"
 doc_updated_by: "CODER"
 description: "Add defineScript to scripts/lib/script-runtime.mjs for consistent argv handling and error reporting, then migrate generated-artifact freshness checks and the bootstrap generator to use it."
 sections:
@@ -58,6 +64,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T09:43:32.114Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run docs:recipes:check -> pass. Command: bun run docs:cli:check -> pass. Command: bun run docs:bootstrap:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:37:38.692Z, excerpt_hash=sha256:85fa174a9582f525acc1f5ba6d1da696fc0155b3fd47d84961aacf801c99e7e4
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -92,6 +106,14 @@ Add defineScript to scripts/lib/script-runtime.mjs for consistent argv handling 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T09:43:32.114Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run docs:recipes:check -> pass. Command: bun run docs:cli:check -> pass. Command: bun run docs:bootstrap:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:37:38.692Z, excerpt_hash=sha256:85fa174a9582f525acc1f5ba6d1da696fc0155b3fd47d84961aacf801c99e7e4
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
