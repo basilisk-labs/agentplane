@@ -1,10 +1,11 @@
 ---
 id: "202604200829-1YBZMD"
 title: "Fix portable pre-push hook script resolution"
-status: "DOING"
+result_summary: "Fixed pre-push hook script resolution so globally installed agentplane prefers the target repository's scripts/run-pre-push-hook.mjs instead of looking under an npm/nvm lib path."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T08:32:17.105Z"
   updated_by: "CODER"
   note: "Verified portable pre-push hook resolution: hooks run pre-push now prefers the repository-local scripts/run-pre-push-hook.mjs before bundled fallback. Focused hooks Vitest suite passed (36 tests), typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
-commit: null
+commit:
+  hash: "641865491eef02143e9854428e0c4ef400161f01"
+  message: "🐛 1YBZMD hooks: resolve pre-push script from repo"
 comments:
   -
     author: "CODER"
     body: "Start: fix pre-push hook script resolution for globally installed agentplane by preferring repository-local hook scripts."
+  -
+    author: "CODER"
+    body: "Verified: focused hooks Vitest suite passed (36 tests), typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified portable pre-push hook resolution: hooks run pre-push now prefers the repository-local scripts/run-pre-push-hook.mjs before bundled fallback. Focused hooks Vitest suite passed (36 tests), typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
+  -
+    type: "status"
+    at: "2026-04-20T08:32:37.911Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: focused hooks Vitest suite passed (36 tests), typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
 doc_version: 3
-doc_updated_at: "2026-04-20T08:32:17.119Z"
+doc_updated_at: "2026-04-20T08:32:37.915Z"
 doc_updated_by: "CODER"
 description: "Resolve pre-push hook script from the target repository before bundled CLI-relative fallback so globally installed agentplane does not look for scripts/run-pre-push-hook.mjs under an npm/nvm lib directory."
 sections:
