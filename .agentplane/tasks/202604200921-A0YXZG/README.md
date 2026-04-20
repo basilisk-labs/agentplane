@@ -1,10 +1,11 @@
 ---
 id: "202604200921-A0YXZG"
 title: "Sync promoted incident policy mirror"
-status: "DOING"
+result_summary: "Synced .agentplane/policy/incidents.md with canonical packaged policy incidents so pre-push agents:check no longer blocks."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T09:22:36.078Z"
   updated_by: "CODER"
   note: "Command: bun run agents:sync -> pass, policy mirror synced. Command: bun run agents:check -> pass. Command: bun run format:check -> pass."
-commit: null
+commit:
+  hash: "894ebc262a9705d9866dca49056e45a810ec5429"
+  message: "🧹 A0YXZG policy: sync promoted incident mirror"
 comments:
   -
     author: "CODER"
     body: "Start: Sync promoted incident policy mirrors to clear the agents:check pre-push blocker."
+  -
+    author: "CODER"
+    body: "Verified: agents:sync restored the promoted incident policy mirror and agents:check plus format:check pass."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run agents:sync -> pass, policy mirror synced. Command: bun run agents:check -> pass. Command: bun run format:check -> pass."
+  -
+    type: "status"
+    at: "2026-04-20T09:22:48.866Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: agents:sync restored the promoted incident policy mirror and agents:check plus format:check pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:22:36.090Z"
+doc_updated_at: "2026-04-20T09:22:48.867Z"
 doc_updated_by: "CODER"
 description: "Fix pre-push agents:check drift by syncing the promoted incident policy asset back to the project policy mirror after the global-install hook incident was recorded."
 sections:
