@@ -1,10 +1,11 @@
 ---
 id: "202604191643-RM0P8T"
 title: "Condense DESIGN and EDITORIAL into navigational docs"
-status: "DOING"
+result_summary: "Condensed DESIGN.md and EDITORIAL.md into concise navigational docs with canonical ADR links and targeted QA commands."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T14:03:36.907Z"
   updated_by: "PLANNER"
   note: "Command: wc -c DESIGN.md EDITORIAL.md; Result: pass; Evidence: DESIGN.md 2165 bytes and EDITORIAL.md 2435 bytes, both below the 4000-byte budget. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with info-only runtime/archive findings. Command: bun run format:check; Result: pass; Evidence: Prettier reports all files formatted. Command: bun run docs:site:check:design; Result: pass; Evidence: design language check passed. Scope: DESIGN.md, EDITORIAL.md, task README."
-commit: null
+commit:
+  hash: "2b25649470cf6b7d26856eafe03c29e048c01aaf"
+  message: "📝 RM0P8T docs: condense design guides"
 comments:
   -
     author: "PLANNER"
     body: "Start: Condensing DESIGN.md and EDITORIAL.md into concise navigation guides with ADR links, byte-budget verification, and docs-only checks before commit."
+  -
+    author: "PLANNER"
+    body: "Verified: DESIGN.md and EDITORIAL.md are condensed below the 4000-byte budget, preserve ADR navigation, and passed routing, doctor, format, and design language checks."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Command: wc -c DESIGN.md EDITORIAL.md; Result: pass; Evidence: DESIGN.md 2165 bytes and EDITORIAL.md 2435 bytes, both below the 4000-byte budget. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with info-only runtime/archive findings. Command: bun run format:check; Result: pass; Evidence: Prettier reports all files formatted. Command: bun run docs:site:check:design; Result: pass; Evidence: design language check passed. Scope: DESIGN.md, EDITORIAL.md, task README."
+  -
+    type: "status"
+    at: "2026-04-20T14:03:56.751Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: DESIGN.md and EDITORIAL.md are condensed below the 4000-byte budget, preserve ADR navigation, and passed routing, doctor, format, and design language checks."
 doc_version: 3
-doc_updated_at: "2026-04-20T14:03:36.924Z"
+doc_updated_at: "2026-04-20T14:03:56.752Z"
 doc_updated_by: "PLANNER"
 description: "Epic G′. Reduce DESIGN.md and EDITORIAL.md to concise navigational summaries with ADR links."
 sections:
