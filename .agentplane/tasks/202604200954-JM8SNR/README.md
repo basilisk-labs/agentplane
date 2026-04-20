@@ -1,10 +1,11 @@
 ---
 id: "202604200954-JM8SNR"
 title: "Reach script-runtime adoption threshold"
-status: "DOING"
+result_summary: "Migrated GitHub protection contract checker to defineScript/parseScriptArgs and reached the F′ adoption threshold."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T09:56:32.090Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/check-github-protection-contract-script.test.ts -> 4 passed. Command: bun run format:check -> pass. Command: bun run lint:core -> pass. Command: runtime adoption count -> 15 executable scripts."
-commit: null
+commit:
+  hash: "2d92f769777a68b269bac362a82a82a55dedd4a2"
+  message: "♻️ JM8SNR scripts: adopt runtime in protection check"
 comments:
   -
     author: "CODER"
     body: "Start: migrate the GitHub protection contract script as the final adoption-threshold atom for F′."
+  -
+    author: "CODER"
+    body: "Verified: GitHub protection contract script tests, format, and lint pass; script-runtime adoption reached 15 executable scripts."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/check-github-protection-contract-script.test.ts -> 4 passed. Command: bun run format:check -> pass. Command: bun run lint:core -> pass. Command: runtime adoption count -> 15 executable scripts."
+  -
+    type: "status"
+    at: "2026-04-20T09:56:41.801Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: GitHub protection contract script tests, format, and lint pass; script-runtime adoption reached 15 executable scripts."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:56:32.101Z"
+doc_updated_at: "2026-04-20T09:56:41.802Z"
 doc_updated_by: "CODER"
 description: "Migrate the GitHub protection contract checker to defineScript and parseScriptArgs so F′ reaches at least 15 runtime-backed scripts."
 sections:
