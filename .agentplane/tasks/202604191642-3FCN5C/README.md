@@ -1,10 +1,11 @@
 ---
 id: "202604191642-3FCN5C"
 title: "Document YAML stack freeze in ADR"
-status: "DOING"
+result_summary: "Documented the decision to keep yaml as the canonical parser during this refactor cycle."
+status: "DONE"
 priority: "low"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T13:57:12.567Z"
   updated_by: "PLANNER"
   note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0007-freeze-yaml-parser-stack.md and docs/adr/README.md."
-commit: null
+commit:
+  hash: "b15bcbda1e9272d6dda9880c0b7cba9af791855c"
+  message: "📝 3FCN5C adr: freeze YAML parser stack"
 comments:
   -
     author: "PLANNER"
     body: "Start: Record the YAML parser stack-freeze decision as an ADR and link it from the ADR index, without touching dependencies or parser code."
+  -
+    author: "PLANNER"
+    body: "Verified: YAML parser stack-freeze ADR is linked from the ADR index; policy routing, doctor, and format check all pass."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0007-freeze-yaml-parser-stack.md and docs/adr/README.md."
+  -
+    type: "status"
+    at: "2026-04-20T13:57:30.690Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: YAML parser stack-freeze ADR is linked from the ADR index; policy routing, doctor, and format check all pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T13:57:12.582Z"
+doc_updated_at: "2026-04-20T13:57:30.690Z"
 doc_updated_by: "PLANNER"
 description: "Epic K and G′. Record the decision to keep the current YAML stack unchanged during the current refactor window."
 sections:
