@@ -4,7 +4,7 @@ title: "Reconcile superseded refactor placeholder tasks"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T10:48:02.834Z"
+  updated_by: "CODER"
+  note: "Command: agentplane task list | rg '[TODO]' | wc -l -> 29. Confirmed superseded placeholders 14J4R4, W1NJ6K, 7C5E0Q, JSHB40, W05RJ9, XVR8ZP, 4FZHMY are DONE. Command: git status --short --untracked-files=all -> only REFACTORING_PLAN_v2.md remains untracked."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reconcile superseded refactor TODO placeholders after F′ completion and push."
+  -
+    type: "verify"
+    at: "2026-04-20T10:48:02.834Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: agentplane task list | rg '[TODO]' | wc -l -> 29. Confirmed superseded placeholders 14J4R4, W1NJ6K, 7C5E0Q, JSHB40, W05RJ9, XVR8ZP, 4FZHMY are DONE. Command: git status --short --untracked-files=all -> only REFACTORING_PLAN_v2.md remains untracked."
 doc_version: 3
-doc_updated_at: "2026-04-20T10:46:23.651Z"
+doc_updated_at: "2026-04-20T10:48:02.861Z"
 doc_updated_by: "CODER"
 description: "Close stale TODO placeholders that were completed by newer concrete refactor tasks, so the remaining roadmap backlog reflects only actionable work."
 sections:
@@ -59,6 +65,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T10:48:02.834Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: agentplane task list | rg '[TODO]' | wc -l -> 29. Confirmed superseded placeholders 14J4R4, W1NJ6K, 7C5E0Q, JSHB40, W05RJ9, XVR8ZP, 4FZHMY are DONE. Command: git status --short --untracked-files=all -> only REFACTORING_PLAN_v2.md remains untracked.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T10:46:23.651Z, excerpt_hash=sha256:dba266b8ed82e1be1b26b66e86db0b1239d2740fa11b3a58785002e8b3f6f92a
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -93,6 +107,14 @@ Close stale TODO placeholders that were completed by newer concrete refactor tas
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T10:48:02.834Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: agentplane task list | rg '[TODO]' | wc -l -> 29. Confirmed superseded placeholders 14J4R4, W1NJ6K, 7C5E0Q, JSHB40, W05RJ9, XVR8ZP, 4FZHMY are DONE. Command: git status --short --untracked-files=all -> only REFACTORING_PLAN_v2.md remains untracked.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T10:46:23.651Z, excerpt_hash=sha256:dba266b8ed82e1be1b26b66e86db0b1239d2740fa11b3a58785002e8b3f6f92a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
