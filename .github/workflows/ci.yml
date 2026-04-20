@@ -86,6 +86,8 @@ jobs:
         run: bun run hotspots:check
       - name: Lint
         run: bun run lint:core
+      - name: Architecture boundaries
+        run: bun run arch:check
       - name: Unit Tests (Fast)
         run: bun run test:fast
         env:
