@@ -4,7 +4,7 @@ title: "Split remaining integrate and tasks integration mega-tests"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T17:10:40.385Z"
+  updated_by: "CODER"
+  note: "Command: wc -l integrate/tasks split files; Result: pass; Evidence: largest split file is 979 LoC, below 2000. Command: bunx vitest run eight split files --reporter dot; Result: pass; Evidence: 8 files, 53 tests passed. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: split remaining aggregate integration suites into focused scenario files."
+  -
+    type: "verify"
+    at: "2026-04-20T17:10:40.385Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: wc -l integrate/tasks split files; Result: pass; Evidence: largest split file is 979 LoC, below 2000. Command: bunx vitest run eight split files --reporter dot; Result: pass; Evidence: 8 files, 53 tests passed. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T17:04:48.698Z"
+doc_updated_at: "2026-04-20T17:10:40.394Z"
 doc_updated_by: "CODER"
 description: "Epic L. Break the remaining large integrate and tasks integration files into scenario-focused files."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T17:10:40.385Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: wc -l integrate/tasks split files; Result: pass; Evidence: largest split file is 979 LoC, below 2000. Command: bunx vitest run eight split files --reporter dot; Result: pass; Evidence: 8 files, 53 tests passed. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T17:04:48.698Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Split the remaining aggregate integration suites into scenario-focused files wit
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T17:10:40.385Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: wc -l integrate/tasks split files; Result: pass; Evidence: largest split file is 979 LoC, below 2000. Command: bunx vitest run eight split files --reporter dot; Result: pass; Evidence: 8 files, 53 tests passed. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T17:04:48.698Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
