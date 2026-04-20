@@ -4,7 +4,7 @@ title: "Migrate bootstrap freshness check to generated artifact helper"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T09:37:07.831Z"
+  updated_by: "CODER"
+  note: "Command: bun run docs:bootstrap:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: migrate the generated doc freshness portion of the bootstrap check to the shared artifact-check helper without changing bootstrap parity assertions."
+  -
+    type: "verify"
+    at: "2026-04-20T09:37:07.831Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run docs:bootstrap:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:35:37.858Z"
+doc_updated_at: "2026-04-20T09:37:07.842Z"
 doc_updated_by: "CODER"
 description: "Use the shared generated artifact check wrapper for the agent bootstrap generated doc while keeping bootstrap-specific parity assertions local to the script."
 sections:
@@ -58,6 +64,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T09:37:07.831Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run docs:bootstrap:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:35:37.858Z, excerpt_hash=sha256:5f9f66555ca2ed72a2d2a6b83ce09e0bb66b3884af7b4495a6c6e51943dc1d71
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -92,6 +106,14 @@ Use the shared generated artifact check wrapper for the agent bootstrap generate
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T09:37:07.831Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run docs:bootstrap:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:35:37.858Z, excerpt_hash=sha256:5f9f66555ca2ed72a2d2a6b83ce09e0bb66b3884af7b4495a6c6e51943dc1d71
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
