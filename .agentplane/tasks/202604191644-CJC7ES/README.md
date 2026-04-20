@@ -4,7 +4,7 @@ title: "Tune coverage thresholds during large test split rollout"
 status: "DOING"
 priority: "low"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T17:13:01.128Z"
+  updated_by: "CODER"
+  note: "Command: bun run coverage:thresholds:check; Result: pass; Evidence: guard confirmed lines=80 functions=80 branches=72 statements=80. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: enforce restored coverage thresholds after the large test split rollout."
+  -
+    type: "verify"
+    at: "2026-04-20T17:13:01.128Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run coverage:thresholds:check; Result: pass; Evidence: guard confirmed lines=80 functions=80 branches=72 statements=80. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T17:11:14.021Z"
+doc_updated_at: "2026-04-20T17:13:01.135Z"
 doc_updated_by: "CODER"
 description: "Epic L and J′. Adjust coverage thresholds during the large test-file migration window and restore them after the split sequence stabilizes."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T17:13:01.128Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run coverage:thresholds:check; Result: pass; Evidence: guard confirmed lines=80 functions=80 branches=72 statements=80. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T17:11:14.021Z, excerpt_hash=sha256:20d5a9c29f35550b72f1ab0b217d612e9a91ae66e2427a19316e5fc5cd9943b0
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Keep coverage thresholds at the restored target values after the large test spli
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T17:13:01.128Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run coverage:thresholds:check; Result: pass; Evidence: guard confirmed lines=80 functions=80 branches=72 statements=80. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T17:11:14.021Z, excerpt_hash=sha256:20d5a9c29f35550b72f1ab0b217d612e9a91ae66e2427a19316e5fc5cd9943b0
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
