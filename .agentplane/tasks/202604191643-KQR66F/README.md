@@ -4,7 +4,7 @@ title: "Fail CI on hotspot threshold regressions"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T12:19:45.736Z"
+  updated_by: "CODER"
+  note: "Command: bun run hotspots:check; Result: pass; Evidence: max=600, oversized=0. Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts; Result: pass; Evidence: 4 tests passed including check failure and allowlist pass. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Command: bun run workflows:lint; Result: pass; Evidence: workflow command contract OK. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Add a deterministic hotspot threshold guard to existing reporting/CI surfaces, with focused tests for allowed and rejected oversized files."
+  -
+    type: "verify"
+    at: "2026-04-20T12:19:45.736Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run hotspots:check; Result: pass; Evidence: max=600, oversized=0. Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts; Result: pass; Evidence: 4 tests passed including check failure and allowlist pass. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Command: bun run workflows:lint; Result: pass; Evidence: workflow command contract OK. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0."
 doc_version: 3
-doc_updated_at: "2026-04-20T12:15:40.007Z"
+doc_updated_at: "2026-04-20T12:19:45.749Z"
 doc_updated_by: "CODER"
 description: "Epic H′ and J′. Add hotspot-report based CI enforcement for oversized files beyond the agreed threshold."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T12:19:45.736Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run hotspots:check; Result: pass; Evidence: max=600, oversized=0. Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts; Result: pass; Evidence: 4 tests passed including check failure and allowlist pass. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Command: bun run workflows:lint; Result: pass; Evidence: workflow command contract OK. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T12:15:40.007Z, excerpt_hash=sha256:20d5a9c29f35550b72f1ab0b217d612e9a91ae66e2427a19316e5fc5cd9943b0
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Add an enforced hotspot threshold check around the existing hotspot-report tooli
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T12:19:45.736Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run hotspots:check; Result: pass; Evidence: max=600, oversized=0. Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts; Result: pass; Evidence: 4 tests passed including check failure and allowlist pass. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Command: bun run workflows:lint; Result: pass; Evidence: workflow command contract OK. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T12:15:40.007Z, excerpt_hash=sha256:20d5a9c29f35550b72f1ab0b217d612e9a91ae66e2427a19316e5fc5cd9943b0
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
