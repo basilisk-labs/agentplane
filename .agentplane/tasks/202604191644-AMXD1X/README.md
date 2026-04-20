@@ -1,10 +1,11 @@
 ---
 id: "202604191644-AMXD1X"
 title: "Add critical Vitest project route to CI"
-status: "DOING"
+result_summary: "Added critical route guard script, workflow timeout-minutes, and workflows:command-check enforcement for CI critical tests."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T16:34:17.229Z"
   updated_by: "CODER"
   note: "Command: agentplane task verify-show 202604191644-AMXD1X; Result: pass; Evidence: verification contract reviewed. Command: bun run workflows:command-check; Result: pass; Evidence: workflow command contract OK and critical Vitest route OK. Command: bun run test:critical; Result: pass; Evidence: 5 files, 13 tests passed. Command: bun run lint:core; Result: pass; Evidence: eslint completed. Command: bun run format:check; Result: pass; Evidence: Prettier reported all matched files use style."
-commit: null
+commit:
+  hash: "ef0363bbd4d7c87a7cff4d74ac51d71330312392"
+  message: "🧪 AMXD1X test: guard critical Vitest CI route"
 comments:
   -
     author: "CODER"
     body: "Start: Hardening the critical Vitest CI route with explicit timeout and route checks."
+  -
+    author: "CODER"
+    body: "Verified: critical Vitest route is wired through CI workflows with explicit timeout and route drift checks."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: agentplane task verify-show 202604191644-AMXD1X; Result: pass; Evidence: verification contract reviewed. Command: bun run workflows:command-check; Result: pass; Evidence: workflow command contract OK and critical Vitest route OK. Command: bun run test:critical; Result: pass; Evidence: 5 files, 13 tests passed. Command: bun run lint:core; Result: pass; Evidence: eslint completed. Command: bun run format:check; Result: pass; Evidence: Prettier reported all matched files use style."
+  -
+    type: "status"
+    at: "2026-04-20T16:34:33.061Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: critical Vitest route is wired through CI workflows with explicit timeout and route drift checks."
 doc_version: 3
-doc_updated_at: "2026-04-20T16:34:17.236Z"
+doc_updated_at: "2026-04-20T16:34:33.061Z"
 doc_updated_by: "CODER"
 description: "Epic J′ and K. Add a dedicated critical test project and wire CI to it with explicit timeout expectations."
 sections:
