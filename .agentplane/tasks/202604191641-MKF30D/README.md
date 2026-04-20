@@ -1,10 +1,11 @@
 ---
 id: "202604191641-MKF30D"
 title: "Merge exit code and error mapping contracts"
-status: "DOING"
+result_summary: "Promoted CLI exit statuses into named ExitCode values with a public ERROR_TO_EXIT contract and updated tests to assert mapped exit outcomes."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T07:03:19.255Z"
   updated_by: "CODER"
   note: "Verified unified exit contract: cli-contract, error-map, and critical exit-code tests passed; agentplane typecheck passed; prettier check passed; framework bootstrap passed."
-commit: null
+commit:
+  hash: "8c567c34a94b3e02bd453a4c989f2055866dfb6c"
+  message: "♻️ MKF30D task: unify CLI exit code contract"
 comments:
   -
     author: "CODER"
     body: "Start: unify CLI exit-code constants with error mapping contract."
+  -
+    author: "CODER"
+    body: "Verified: cli-contract, error-map, and critical exit-code tests passed; agentplane typecheck, prettier check, and framework bootstrap passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified unified exit contract: cli-contract, error-map, and critical exit-code tests passed; agentplane typecheck passed; prettier check passed; framework bootstrap passed."
+  -
+    type: "status"
+    at: "2026-04-20T07:03:32.147Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: cli-contract, error-map, and critical exit-code tests passed; agentplane typecheck, prettier check, and framework bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-04-20T07:03:19.257Z"
+doc_updated_at: "2026-04-20T07:03:32.147Z"
 doc_updated_by: "CODER"
 description: "Epic D′. Unify CLI exit code handling and error mapping behind one tested contract."
 sections:
