@@ -1,10 +1,11 @@
 ---
 id: "202604191640-4EGFKR"
 title: "Generate CLI reference from declared command specs"
-status: "DOING"
+result_summary: "Added a canonical docs:cli:generate script and updated CLI reference freshness guidance to use it."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T07:01:49.192Z"
   updated_by: "CODER"
   note: "Verified CLI reference generation standardization: bun run docs:cli:check passed; bun run docs:cli:generate ran without doc drift; docs-cli/help contract tests passed; prettier check passed."
-commit: null
+commit:
+  hash: "bbade948642e979650a6a60276835b2a4500e14e"
+  message: "📝 4EGFKR task: standardize CLI reference generation"
 comments:
   -
     author: "CODER"
     body: "Start: standardize CLI reference generation/check scripts around declared command specs."
+  -
+    author: "CODER"
+    body: "Verified: docs:cli:check passed, docs:cli:generate ran without drift, docs-cli/help contract tests passed, and prettier check passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified CLI reference generation standardization: bun run docs:cli:check passed; bun run docs:cli:generate ran without doc drift; docs-cli/help contract tests passed; prettier check passed."
+  -
+    type: "status"
+    at: "2026-04-20T07:01:59.758Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: docs:cli:check passed, docs:cli:generate ran without drift, docs-cli/help contract tests passed, and prettier check passed."
 doc_version: 3
-doc_updated_at: "2026-04-20T07:01:49.194Z"
+doc_updated_at: "2026-04-20T07:01:59.758Z"
 doc_updated_by: "CODER"
 description: "Epic D′ and G′. Make docs/cli-reference.md generated from command specs and enforce freshness via check mode."
 sections:
