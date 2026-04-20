@@ -4,7 +4,7 @@ title: "Migrate release utility scripts to script-runtime DSL"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T09:51:10.441Z"
+  updated_by: "CODER"
+  note: "Command: node scripts/check-release-parity.mjs --version=0.3.15 -> pass. Command: node scripts/resolve-release-ready-source.mjs --help -> pass. Command: AGENTPLANE_NPM_VIEW_TIMEOUT_MS=1 node scripts/check-npm-version-availability.mjs --version=0.0.0-never-published-test -> expected timeout error path. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: migrate the next small release utilities to script-runtime without changing networked behavior."
+  -
+    type: "verify"
+    at: "2026-04-20T09:51:10.441Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: node scripts/check-release-parity.mjs --version=0.3.15 -> pass. Command: node scripts/resolve-release-ready-source.mjs --help -> pass. Command: AGENTPLANE_NPM_VIEW_TIMEOUT_MS=1 node scripts/check-npm-version-availability.mjs --version=0.0.0-never-published-test -> expected timeout error path. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:49:10.389Z"
+doc_updated_at: "2026-04-20T09:51:10.452Z"
 doc_updated_by: "CODER"
 description: "Apply defineScript/defineCheck and parseScriptArgs to small release utility scripts so the F′ script runtime is exercised beyond docs freshness checks."
 sections:
@@ -58,6 +64,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T09:51:10.441Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: node scripts/check-release-parity.mjs --version=0.3.15 -> pass. Command: node scripts/resolve-release-ready-source.mjs --help -> pass. Command: AGENTPLANE_NPM_VIEW_TIMEOUT_MS=1 node scripts/check-npm-version-availability.mjs --version=0.0.0-never-published-test -> expected timeout error path. Command: bun run format:check -> pass. Command: bun run lint:core -> pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:49:10.389Z, excerpt_hash=sha256:6a711a2e45b06db9e1e6b91a5adf87c7c9b57211e94f2c66e8eb2bbaa012ae54
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -92,6 +106,14 @@ Apply defineScript/defineCheck and parseScriptArgs to small release utility scri
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T09:51:10.441Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: node scripts/check-release-parity.mjs --version=0.3.15 -> pass. Command: node scripts/resolve-release-ready-source.mjs --help -> pass. Command: AGENTPLANE_NPM_VIEW_TIMEOUT_MS=1 node scripts/check-npm-version-availability.mjs --version=0.0.0-never-published-test -> expected timeout error path. Command: bun run format:check -> pass. Command: bun run lint:core -> pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:49:10.389Z, excerpt_hash=sha256:6a711a2e45b06db9e1e6b91a5adf87c7c9b57211e94f2c66e8eb2bbaa012ae54
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
