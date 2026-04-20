@@ -4,6 +4,35 @@ import { fileURLToPath } from "node:url";
 
 export const ROOT = process.cwd();
 
+function defaultScriptContext(name, argv) {
+  return {
+    name,
+    argv,
+    cwd: ROOT,
+    stdout: process.stdout,
+    stderr: process.stderr,
+  };
+}
+
+export function defineScript({ name, run }) {
+  if (!name) {
+    throw new Error("defineScript requires a name");
+  }
+  if (typeof run !== "function") {
+    throw new TypeError(`defineScript(${name}) requires a run function`);
+  }
+  return async function runDefinedScript(argv = process.argv.slice(2)) {
+    await run(defaultScriptContext(name, argv));
+  };
+}
+
+export function runScriptMain(main) {
+  main().catch((error) => {
+    process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
+    process.exitCode = 1;
+  });
+}
+
 export function runBunx(args, options = {}) {
   const cwd = options.cwd ?? ROOT;
   return new Promise((resolve, reject) => {

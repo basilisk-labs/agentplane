@@ -94,13 +94,6 @@ export function defineGeneratedArtifactCheck({
   };
 }
 
-export function runScriptMain(main) {
-  main().catch((error) => {
-    process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
-    process.exitCode = 1;
-  });
-}
-
 export async function assertAgentplaneCliDistFreshForDocs(root = ROOT) {
   const packageRoot = path.join(root, "packages", "agentplane");
   if (!(await distExists(packageRoot))) {
