@@ -1,10 +1,11 @@
 ---
 id: "202604191644-3X3NWH"
 title: "Consolidate excess types files and add guardrail"
-status: "DOING"
+result_summary: "Reduced generic types.ts files from 19 to 10, added check:types-files, and wired it into ci and release:ci-check."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T16:23:53.666Z"
   updated_by: "CODER"
   note: "Command: agentplane task verify-show 202604191644-3X3NWH; Result: pass; Evidence: verification contract reviewed. Command: bun run check:types-files; Result: pass; Evidence: types.ts guardrail OK count=10 max=10. Command: bun run typecheck; Result: pass; Evidence: tsc -b completed. Command: bun run lint:core; Result: pass; Evidence: eslint completed. Command: bun run format:check; Result: pass; Evidence: Prettier reported all matched files use style. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited 0."
-commit: null
+commit:
+  hash: "974c7c914ba63de6501f3c8f31a3991946c974f9"
+  message: "🏗️ 3X3NWH arch: consolidate types barrels guardrail"
 comments:
   -
     author: "CODER"
     body: "Start: Consolidating generic types files and adding a guardrail for future type barrels."
+  -
+    author: "CODER"
+    body: "Verified: generic types barrels were reduced to the allowlisted limit and CI guardrails now enforce it."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: agentplane task verify-show 202604191644-3X3NWH; Result: pass; Evidence: verification contract reviewed. Command: bun run check:types-files; Result: pass; Evidence: types.ts guardrail OK count=10 max=10. Command: bun run typecheck; Result: pass; Evidence: tsc -b completed. Command: bun run lint:core; Result: pass; Evidence: eslint completed. Command: bun run format:check; Result: pass; Evidence: Prettier reported all matched files use style. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited 0."
+  -
+    type: "status"
+    at: "2026-04-20T16:24:11.764Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: generic types barrels were reduced to the allowlisted limit and CI guardrails now enforce it."
 doc_version: 3
-doc_updated_at: "2026-04-20T16:23:53.673Z"
+doc_updated_at: "2026-04-20T16:24:11.765Z"
 doc_updated_by: "CODER"
 description: "Epic J′. Reduce the number of distributed types.ts files and add a guardrail for module-local type organization."
 sections:
