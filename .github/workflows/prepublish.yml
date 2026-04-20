@@ -87,6 +87,8 @@ jobs:
           bun run --filter=agentplane build
       - name: CLI docs (generated reference check)
         run: bun run docs:cli:check
+      - name: Hotspot Threshold (check)
+        run: bun run hotspots:check
       - name: Lint
         run: bun run lint:core
       - name: Unit tests (fast)

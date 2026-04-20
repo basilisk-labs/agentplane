@@ -4,6 +4,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const SCRIPT_NAME = "hotspot-report.mjs";
 const DEFAULT_OVERSIZED_LINES = 500;
+const DEFAULT_CHECK_OVERSIZED_LINES = 600;
 const INCLUDED_EXTENSIONS = new Set([".ts", ".tsx"]);
 const EXCLUDED_SUFFIXES = [".d.ts", ".test.ts", ".test.tsx", ".test-helpers.ts"];
 const EXCLUDED_DIR_NAMES = new Set(["__fixtures__", "__snapshots__", "fixtures"]);
@@ -34,6 +35,8 @@ function printHelp() {
       "  --root <path>             Repository root to scan. Defaults to this checkout.",
       "  --runtime-dir <path>      Runtime directory to scan. Defaults to packages/agentplane/src.",
       `  --oversized-lines <n>     Line threshold for oversized modules. Default: ${DEFAULT_OVERSIZED_LINES}.`,
+      `  --check                   Fail when non-allowlisted modules exceed the line threshold. Uses ${DEFAULT_CHECK_OVERSIZED_LINES} lines when --oversized-lines is omitted.`,
+      "  --allow-oversized <path>  Repeatable git-path allowlist entry for --check.",
       "  --help                    Show this help text.",
       "",
       "Output:",
@@ -55,6 +58,9 @@ export function parseArgs(argv) {
   let root = repoRoot;
   let runtimeDir = defaultRuntimeDir;
   let oversizedLines = DEFAULT_OVERSIZED_LINES;
+  let oversizedLinesProvided = false;
+  let check = false;
+  const allowedOversized = [];
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -82,6 +88,18 @@ export function parseArgs(argv) {
         const next = argv[i + 1];
         if (!next) throw new Error("Missing value after --oversized-lines");
         oversizedLines = parsePositiveInt("--oversized-lines", next);
+        oversizedLinesProvided = true;
+        i++;
+        break;
+      }
+      case "--check": {
+        check = true;
+        break;
+      }
+      case "--allow-oversized": {
+        const next = argv[i + 1];
+        if (!next) throw new Error("Missing value after --allow-oversized");
+        allowedOversized.push(next.split(path.sep).join("/"));
         i++;
         break;
       }
@@ -95,7 +113,10 @@ export function parseArgs(argv) {
     help: false,
     root,
     runtimeDir,
-    oversizedLines,
+    oversizedLines:
+      check && !oversizedLinesProvided ? DEFAULT_CHECK_OVERSIZED_LINES : oversizedLines,
+    check,
+    allowedOversized,
   };
 }
 
@@ -196,8 +217,12 @@ export function collectHotspotReport(opts) {
     backendRedmineBranches += fileBackendRedmineBranches;
 
     const lines = source.split(/\r?\n/).length;
-    if (lines >= opts.oversizedLines) {
-      oversizedRuntimeModules.push({ file, lines });
+    if (lines > opts.oversizedLines) {
+      oversizedRuntimeModules.push({
+        file,
+        lines,
+        allowed: opts.allowedOversized?.includes(file) === true,
+      });
     }
   }
 
@@ -246,6 +271,10 @@ export function collectHotspotReport(opts) {
   };
 }
 
+export function collectHotspotThresholdViolations(report) {
+  return report.metrics.oversized_runtime_modules.modules.filter((entry) => entry.allowed !== true);
+}
+
 export async function main(argv = process.argv.slice(2)) {
   const parsed = parseArgs(argv);
   if (parsed.help) {
@@ -254,6 +283,24 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   const payload = collectHotspotReport(parsed);
+  if (parsed.check) {
+    const violations = collectHotspotThresholdViolations(payload);
+    if (violations.length > 0) {
+      process.stderr.write(
+        [
+          `Hotspot threshold failed: ${violations.length} module(s) exceed ${payload.metrics.oversized_runtime_modules.threshold_lines} lines.`,
+          ...violations.map((entry) => `- ${entry.file}: ${entry.lines} lines`),
+          "Use --allow-oversized <path> only for intentional temporary exceptions.",
+          "",
+        ].join("\n"),
+      );
+      return 1;
+    }
+    process.stdout.write(
+      `Hotspot threshold check passed (max=${payload.metrics.oversized_runtime_modules.threshold_lines}, oversized=${payload.metrics.oversized_runtime_modules.total}).\n`,
+    );
+    return 0;
+  }
   process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
   return 0;
 }

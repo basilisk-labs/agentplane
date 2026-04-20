@@ -97,6 +97,7 @@ function createBaselineStepEntries({ includeBuild }) {
       "Agent onboarding scenario (check)",
       () => runCommand("bun", ["run", "docs:onboarding:check"]),
     ],
+    ["Hotspot threshold (check)", () => runCommand("bun", ["run", "hotspots:check"])],
   ];
 }
 

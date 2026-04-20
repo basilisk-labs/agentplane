@@ -102,7 +102,7 @@ describe("hotspot-report script", () => {
       "--runtime-dir",
       "src",
       "--oversized-lines",
-      "7",
+      "6",
     ]);
 
     expect(result.exitCode).toBe(0);
@@ -151,7 +151,7 @@ describe("hotspot-report script", () => {
     expect(payload.mode).toBe("hotspot_report_v1");
     expect(payload.runtime_dir).toBe("src");
     expect(payload.runtime_file_count).toBe(2);
-    expect(payload.filters?.oversized_lines).toBe(7);
+    expect(payload.filters?.oversized_lines).toBe(6);
 
     expect(payload.metrics?.direct_stdio_writes).toEqual({
       total: 3,
@@ -186,12 +186,64 @@ describe("hotspot-report script", () => {
     });
 
     expect(payload.metrics?.oversized_runtime_modules?.total).toBe(1);
-    expect(payload.metrics?.oversized_runtime_modules?.threshold_lines).toBe(7);
+    expect(payload.metrics?.oversized_runtime_modules?.threshold_lines).toBe(6);
     expect(payload.metrics?.oversized_runtime_modules?.modules?.[0]?.file).toBe(
       "src/nested/runtime-b.ts",
     );
     expect(payload.metrics?.oversized_runtime_modules?.modules?.[0]?.lines).toBeGreaterThanOrEqual(
       7,
     );
+  });
+
+  it("fails check mode when an oversized module is not allowlisted", async () => {
+    const root = await makeTempRoot("agentplane-hotspot-check-");
+    const runtimeDir = path.join(root, "src");
+    await mkdir(runtimeDir, { recursive: true });
+    await writeFile(
+      path.join(runtimeDir, "too-big.ts"),
+      Array.from({ length: 8 }, (_, index) => `const value${index} = ${index};`).join("\n"),
+      "utf8",
+    );
+
+    const result = await runScript([
+      "--root",
+      root,
+      "--runtime-dir",
+      "src",
+      "--oversized-lines",
+      "6",
+      "--check",
+    ]);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain("Hotspot threshold failed");
+    expect(result.stderr).toContain("src/too-big.ts");
+  });
+
+  it("passes check mode when oversized modules are explicitly allowlisted", async () => {
+    const root = await makeTempRoot("agentplane-hotspot-check-");
+    const runtimeDir = path.join(root, "src");
+    await mkdir(runtimeDir, { recursive: true });
+    await writeFile(
+      path.join(runtimeDir, "temporary-exception.ts"),
+      Array.from({ length: 8 }, (_, index) => `const value${index} = ${index};`).join("\n"),
+      "utf8",
+    );
+
+    const result = await runScript([
+      "--root",
+      root,
+      "--runtime-dir",
+      "src",
+      "--oversized-lines",
+      "6",
+      "--check",
+      "--allow-oversized",
+      "src/temporary-exception.ts",
+    ]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("Hotspot threshold check passed");
+    expect(result.stderr).toBe("");
   });
 });
