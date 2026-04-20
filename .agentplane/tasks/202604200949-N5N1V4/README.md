@@ -1,10 +1,11 @@
 ---
 id: "202604200949-N5N1V4"
 title: "Migrate release utility scripts to script-runtime DSL"
-status: "DOING"
+result_summary: "Migrated release parity, npm version availability, and release-ready source scripts to script-runtime helpers."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T09:51:10.441Z"
   updated_by: "CODER"
   note: "Command: node scripts/check-release-parity.mjs --version=0.3.15 -> pass. Command: node scripts/resolve-release-ready-source.mjs --help -> pass. Command: AGENTPLANE_NPM_VIEW_TIMEOUT_MS=1 node scripts/check-npm-version-availability.mjs --version=0.0.0-never-published-test -> expected timeout error path. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
-commit: null
+commit:
+  hash: "391165663663c54bb5258ddde4396c2a40ef1dc7"
+  message: "♻️ N5N1V4 scripts: migrate release utilities"
 comments:
   -
     author: "CODER"
     body: "Start: migrate the next small release utilities to script-runtime without changing networked behavior."
+  -
+    author: "CODER"
+    body: "Verified: release parity, resolver help, npm timeout error path, format, and lint pass after DSL migration."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: node scripts/check-release-parity.mjs --version=0.3.15 -> pass. Command: node scripts/resolve-release-ready-source.mjs --help -> pass. Command: AGENTPLANE_NPM_VIEW_TIMEOUT_MS=1 node scripts/check-npm-version-availability.mjs --version=0.0.0-never-published-test -> expected timeout error path. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
+  -
+    type: "status"
+    at: "2026-04-20T09:51:20.921Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release parity, resolver help, npm timeout error path, format, and lint pass after DSL migration."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:51:10.452Z"
+doc_updated_at: "2026-04-20T09:51:20.922Z"
 doc_updated_by: "CODER"
 description: "Apply defineScript/defineCheck and parseScriptArgs to small release utility scripts so the F′ script runtime is exercised beyond docs freshness checks."
 sections:
