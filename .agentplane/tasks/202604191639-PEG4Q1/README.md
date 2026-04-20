@@ -4,7 +4,7 @@ title: "Modularize guard command dispatcher"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 2
 origin:
   system: "manual"
 depends_on: []
@@ -19,14 +19,21 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T08:00:24.363Z"
+  updated_by: "CODER"
+  note: "Verified guard dispatcher split: commands.ts is a 4-line facade; clean/suggest/guard-commit are separate subcommand modules; commit diagnostics are separated from commit flow; focused guard tests passed; agentplane typecheck, lint:core, prettier check, and framework bootstrap passed."
+commit: null
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-04-20T08:00:24.363Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified guard dispatcher split: commands.ts is a 4-line facade; clean/suggest/guard-commit are separate subcommand modules; commit diagnostics are separated from commit flow; focused guard tests passed; agentplane typecheck, lint:core, prettier check, and framework bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:39:51.711Z"
+doc_updated_at: "2026-04-20T08:00:24.375Z"
 doc_updated_by: "CODER"
 description: "Epic C′. Split guard command implementations by subcommand and reduce branch density in the entry module."
 sections:
@@ -47,6 +54,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T08:00:24.363Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified guard dispatcher split: commands.ts is a 4-line facade; clean/suggest/guard-commit are separate subcommand modules; commit diagnostics are separated from commit flow; focused guard tests passed; agentplane typecheck, lint:core, prettier check, and framework bootstrap passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T16:39:51.711Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -80,6 +95,14 @@ Epic C′. Split guard command implementations by subcommand and reduce branch d
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T08:00:24.363Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified guard dispatcher split: commands.ts is a 4-line facade; clean/suggest/guard-commit are separate subcommand modules; commit diagnostics are separated from commit flow; focused guard tests passed; agentplane typecheck, lint:core, prettier check, and framework bootstrap passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-19T16:39:51.711Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
