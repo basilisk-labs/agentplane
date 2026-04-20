@@ -21,7 +21,7 @@ import {
   writeDefaultConfig,
   writeInstalledRecipes,
   writeSignedIndex,
-} from "./recipes.test-helpers.js";
+} from "../../../testkit/src/recipes.js";
 
 installRecipesCommandHarness();
 

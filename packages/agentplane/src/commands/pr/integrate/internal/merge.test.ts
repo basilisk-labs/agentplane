@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { CliError } from "../../../../../shared/errors.js";
+import type { CliError } from "../../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
+  createLogger: vi.fn(() => ({ write: vi.fn() })),
   execFileAsync: vi.fn(),
   gitRevParse: vi.fn(),
   extractTaskSuffix: vi.fn(),
@@ -18,6 +19,7 @@ vi.mock("../../../shared/git-ops.js", () => ({
   gitRevParse: mocks.gitRevParse,
 }));
 vi.mock("@agentplaneorg/core", () => ({
+  createLogger: mocks.createLogger,
   extractTaskSuffix: mocks.extractTaskSuffix,
   validateCommitSubject: mocks.validateCommitSubject,
 }));
@@ -79,7 +81,9 @@ describe("pr/integrate/internal/merge", () => {
     mocks.execFileAsync
       .mockResolvedValueOnce({}) // merge --squash
       .mockResolvedValueOnce({ stdout: "src/app.ts\n" }) // diff --cached
-      .mockResolvedValueOnce({ stdout: "📝 X32XPT task: refresh PR artifacts\n" }) // log -1 subject
+      .mockResolvedValueOnce({
+        stdout: "🧩 X32XPT workflow: refresh task artifacts after commit\n",
+      }) // log -1 subject
       .mockResolvedValueOnce({
         stdout:
           ".agentplane/tasks/202602111653-X32XPT/pr/meta.json\n.agentplane/tasks/202602111653-X32XPT/pr/review.md\n",

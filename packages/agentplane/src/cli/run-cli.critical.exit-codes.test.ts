@@ -1,11 +1,12 @@
 import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
+import { describeCritical } from "../testing/index.js";
 import { ensureDir, expectCliError, makeTempDir, pathExists, runCli } from "./critical/harness.js";
 const CRITICAL_EXIT_CODES_TIMEOUT_MS = 240_000;
 
-describe("critical: exit codes contract", () => {
+describeCritical("critical: exit codes contract", () => {
   it(
     "init is idempotent by default (second run reports conflicts with E_IO)",
     async () => {

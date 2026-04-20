@@ -14,7 +14,7 @@ import {
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
   writeConfig,
-} from "./run-cli.test-helpers.js";
+} from "../testing/index.js";
 
 installRunCliIntegrationHarness();
 const INCIDENTS_CLI_TIMEOUT_MS = 120_000;

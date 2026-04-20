@@ -3,7 +3,7 @@ import type { ResolvedExecutionProfileRuntime } from "../execution-profile/index
 import type { ResolvedHarnessContract } from "../harness/index.js";
 import type { TaskIntakeRuntime } from "../task-intake/index.js";
 
-import type { ExplainBehaviorInput, FrameworkExplainPayload } from "./types.js";
+import type { ExplainBehaviorInput, FrameworkExplainPayload } from "./model.js";
 
 function normalizeBehaviorInputs(
   inputs: readonly ExplainBehaviorInput[],

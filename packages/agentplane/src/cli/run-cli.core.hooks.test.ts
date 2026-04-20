@@ -50,8 +50,9 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
-} from "./run-cli.test-helpers.js";
+} from "../testing/index.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
+import { resolvePrePushHookScriptPath } from "../commands/hooks/index.js";
 import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
@@ -478,6 +479,30 @@ describe("runCli", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("hooks run pre-push resolves the repository-local script before bundled fallbacks", async () => {
+    const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    const repoScript = path.join(root, "scripts", "run-pre-push-hook.mjs");
+    await writeFile(repoScript, "process.exit(0);\n", "utf8");
+
+    await expect(resolvePrePushHookScriptPath(root)).resolves.toBe(repoScript);
+  });
+
+  it("hooks run pre-push treats missing global-install fallbacks as unresolved", async () => {
+    const root = await mkGitRepoRoot();
+    const missingGlobalFallback = path.join(
+      root,
+      "simulated-global-prefix",
+      "lib",
+      "scripts",
+      "run-pre-push-hook.mjs",
+    );
+
+    await expect(
+      resolvePrePushHookScriptPath(root, { bundledScriptPath: missingGlobalFallback }),
+    ).resolves.toBeNull();
   });
 
   it("hooks run post-merge prunes merged local task worktrees on the base branch", async () => {

@@ -5,7 +5,7 @@ import { saveConfig, setByDottedKey } from "@agentplaneorg/core";
 
 import { backupPath, fileExists } from "../../cli/fs-utils.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
-import { withDiagnosticContext } from "../../shared/diagnostics.js";
+import { withDiagnosticContext } from "../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import { protectedPathKindForFile } from "../../shared/protected-paths.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";

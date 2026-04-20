@@ -20,7 +20,7 @@ import {
 import { fileExists } from "../../../cli/fs-utils.js";
 import { getVersion } from "../../../meta/version.js";
 import { dedupeStrings } from "../../../shared/strings.js";
-import { compareVersions } from "../../../shared/version-compare.js";
+import { compareVersions } from "../../../runtime/shared/version-compare.js";
 
 import { resolveProjectRecipesDir, resolveProjectInstalledRecipeDir } from "./paths.js";
 import { readProjectInstalledRecipes } from "./project-installed-recipes.js";

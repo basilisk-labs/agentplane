@@ -1,17 +1,29 @@
-import type { ErrorCode } from "../shared/errors.js";
+import { DEFAULT_ERROR_EXIT_CODES, type ErrorCode } from "../shared/errors.js";
 
-const EXIT_CODE_BY_ERROR: Record<ErrorCode, number> = {
-  E_USAGE: 2,
-  E_VALIDATION: 3,
-  E_IO: 4,
-  E_GIT: 5,
-  E_BACKEND: 6,
-  E_NETWORK: 7,
-  E_RUNTIME: 8,
-  E_HANDOFF: 9,
-  E_INTERNAL: 1,
+export enum ExitCode {
+  Internal = 1,
+  Usage = 2,
+  Validation = 3,
+  Io = 4,
+  Git = 5,
+  Backend = 6,
+  Network = 7,
+  Runtime = 8,
+  Handoff = 9,
+}
+
+export const ERROR_TO_EXIT: Readonly<Record<ErrorCode, ExitCode>> = {
+  E_USAGE: DEFAULT_ERROR_EXIT_CODES.E_USAGE,
+  E_VALIDATION: DEFAULT_ERROR_EXIT_CODES.E_VALIDATION,
+  E_IO: DEFAULT_ERROR_EXIT_CODES.E_IO,
+  E_GIT: DEFAULT_ERROR_EXIT_CODES.E_GIT,
+  E_BACKEND: DEFAULT_ERROR_EXIT_CODES.E_BACKEND,
+  E_NETWORK: DEFAULT_ERROR_EXIT_CODES.E_NETWORK,
+  E_RUNTIME: DEFAULT_ERROR_EXIT_CODES.E_RUNTIME,
+  E_HANDOFF: DEFAULT_ERROR_EXIT_CODES.E_HANDOFF,
+  E_INTERNAL: DEFAULT_ERROR_EXIT_CODES.E_INTERNAL,
 };
 
-export function exitCodeForError(code: ErrorCode): number {
-  return EXIT_CODE_BY_ERROR[code];
+export function exitCodeForError(code: ErrorCode): ExitCode {
+  return ERROR_TO_EXIT[code];
 }

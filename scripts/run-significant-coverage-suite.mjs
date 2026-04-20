@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 
 if (process.platform === "win32") {
   throw new Error(
-    "test:significant-coverage is supported only on POSIX shells (CI uses ubuntu-24.04).",
+    "coverage:significant-suite is supported only on POSIX shells (CI uses ubuntu-24.04).",
   );
 }
 
@@ -25,7 +25,5 @@ function runShell(command) {
     child.on("error", reject);
   });
 }
-await runShell(
-  "bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
-);
+await runShell("bun run test:project -- significant-coverage");
 await runShell("bun run coverage:significant");

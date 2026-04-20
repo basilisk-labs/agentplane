@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
+import { defineCheck, parseScriptArgs, runScriptMain } from "./lib/script-runtime.mjs";
 import { assertReleaseParity } from "./lib/release-version-parity.mjs";
 
 const execFileAsync = promisify(execFile);
@@ -11,15 +12,8 @@ const NPM_VIEW_TIMEOUT_MS = Number.parseInt(
 );
 
 function parseArgs(argv) {
-  const out = { version: "" };
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i] ?? "";
-    if (arg === "--version") {
-      out.version = String(argv[i + 1] ?? "").trim();
-      i += 1;
-    }
-  }
-  return out;
+  const { flags } = parseScriptArgs(argv, { valueFlags: ["version"] });
+  return { version: String(flags.version ?? "").trim() };
 }
 
 async function readVersion(pkgPath) {
@@ -63,27 +57,26 @@ async function assertVersionAvailable(pkgName, version, cwd) {
   }
 }
 
-async function main() {
-  const root = process.cwd();
-  const args = parseArgs(process.argv.slice(2));
-  const corePkg = path.join(root, "packages", "core", "package.json");
-  const coreVersion = await readVersion(corePkg);
-  const version = args.version || coreVersion;
-  // Availability checks can run before the version bump is applied.
-  // Enforce local parity consistency, but do not require package.json to
-  // already match the target release version.
-  await assertReleaseParity(root);
-  const pkgs = ["@agentplaneorg/core", "agentplane", "@agentplaneorg/recipes"];
+const main = defineCheck({
+  name: "check-npm-version-availability",
+  parseArgs,
+  async check({ options: args }) {
+    const root = process.cwd();
+    const corePkg = path.join(root, "packages", "core", "package.json");
+    const coreVersion = await readVersion(corePkg);
+    const version = args.version || coreVersion;
+    // Availability checks can run before the version bump is applied.
+    // Enforce local parity consistency, but do not require package.json to
+    // already match the target release version.
+    await assertReleaseParity(root);
+    const pkgs = ["@agentplaneorg/core", "agentplane", "@agentplaneorg/recipes"];
 
-  for (const name of pkgs) {
-    await assertVersionAvailable(name, version, root);
-  }
+    for (const name of pkgs) {
+      await assertVersionAvailable(name, version, root);
+    }
 
-  process.stdout.write(`npm version availability check passed for ${version}\n`);
-}
-
-main().catch((error) => {
-  const message = error instanceof Error ? error.message : String(error);
-  process.stderr.write(`${message}\n`);
-  process.exitCode = 1;
+    process.stdout.write(`npm version availability check passed for ${version}\n`);
+  },
 });
+
+runScriptMain(main);

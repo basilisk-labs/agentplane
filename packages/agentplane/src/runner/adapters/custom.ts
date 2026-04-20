@@ -2,7 +2,6 @@ import { readFile } from "node:fs/promises";
 
 import type { RunnerCustomConfig } from "@agentplaneorg/core";
 
-import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import type {
   RunnerAdapterCapabilities,
@@ -11,18 +10,13 @@ import type {
   RunnerResultArtifact,
   RunnerResult,
 } from "../types.js";
-import { evolveRunnerRunState } from "../artifacts.js";
 import {
   runnerAdapterCancelledResult,
   runnerAdapterFailureResult,
   runnerAdapterSuccessResult,
   type RunnerAdapter,
 } from "./shared.js";
-import {
-  buildInvocationEventData,
-  buildRunnerExecutionArtifacts,
-  durationMs,
-} from "./runtime-shared.js";
+import { buildRunnerExecutionArtifacts, durationMs } from "./runtime-shared.js";
 import {
   exitCodeForSignal,
   runSupervisedProcess,
@@ -41,189 +35,18 @@ import {
   assertRunnerManifestArtifactPolicy,
   readRecipeArtifactPrefixesFromRunnerEnv,
 } from "../result-manifest-policy.js";
-import { buildRecipeRunnerEnv, readRecipeRunProfile } from "./recipe-run-profile.js";
-
-const CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES = ["workspace-write"];
-
-function normalizeCustomEnforcement(config: RunnerCustomConfig | undefined): {
-  mode: NonNullable<RunnerCustomConfig["enforcement"]>["mode"];
-  platform: NonNullable<RunnerCustomConfig["enforcement"]>["platform"];
-} {
-  return {
-    mode: config?.enforcement?.mode ?? "none",
-    platform: config?.enforcement?.platform ?? "auto",
-  };
-}
-
-function buildCustomCapabilities(
-  config: RunnerCustomConfig | undefined,
-): RunnerAdapterCapabilities {
-  const enforcement = normalizeCustomEnforcement(config);
-  const configuredModeNote =
-    `Configured via runner.custom.enforcement.mode=${JSON.stringify(enforcement.mode)} ` +
-    `(platform=${JSON.stringify(enforcement.platform)}).`;
-  return {
-    adapter_id: "custom",
-    fields: {
-      sandbox:
-        enforcement.mode === "codex_sandbox_full_auto"
-          ? {
-              level: "wrapper",
-              channel: "argv",
-              supported_values: [...CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES],
-              note:
-                `${configuredModeNote} Custom runner sandbox is enforced through ` +
-                "`codex sandbox <platform> --full-auto` and currently supports workspace-write only, " +
-                "because the shared runner contract requires writable result and trace artifacts inside run_dir.",
-            }
-          : {
-              level: "advisory",
-              channel: "env",
-              note:
-                `${configuredModeNote} Custom runner receives sandbox intent through env only; ` +
-                "the adapter does not enforce it.",
-            },
-      writes_artifacts_to: {
-        level: "advisory",
-        channel: "env",
-        note: "Recipe artifact prefixes are exported through env and enforced post-run against external manifest artifacts and evidence paths.",
-      },
-    },
-  };
-}
-
-function resolveCodexSandboxPlatform(
-  value: NonNullable<RunnerCustomConfig["enforcement"]>["platform"],
-): "macos" | "linux" | "windows" {
-  const currentPlatform = (() => {
-    switch (process.platform) {
-      case "darwin": {
-        return "macos";
-      }
-      case "linux": {
-        return "linux";
-      }
-      case "win32": {
-        return "windows";
-      }
-      default: {
-        return null;
-      }
-    }
-  })();
-  if (!currentPlatform) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_RUNTIME"),
-      code: "E_RUNTIME",
-      message: `Custom runner codex sandbox wrapper does not support current platform ${JSON.stringify(process.platform)}.`,
-      context: {
-        adapter_id: "custom",
-        wrapper_mode: "codex_sandbox_full_auto",
-        platform: process.platform,
-        policy_field: "sandbox",
-      },
-    });
-  }
-  if (value && value !== "auto") {
-    if (value !== currentPlatform) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_RUNTIME"),
-        code: "E_RUNTIME",
-        message:
-          `Custom runner codex sandbox wrapper is configured for ${JSON.stringify(value)} but current platform is ` +
-          `${JSON.stringify(currentPlatform)}.`,
-        context: {
-          adapter_id: "custom",
-          wrapper_mode: "codex_sandbox_full_auto",
-          configured_platform: value,
-          platform: currentPlatform,
-          policy_field: "sandbox",
-        },
-      });
-    }
-    return value;
-  }
-  return currentPlatform;
-}
-
-function unsupportedCustomSandboxError(opts: {
-  enforcementMode: string;
-  requestedSandbox: string;
-}): CliError {
-  const baseContext = {
-    adapter_id: "custom",
-    wrapper_mode: opts.enforcementMode,
-    policy_field: "sandbox",
-    declared_value: opts.requestedSandbox,
-    supported_values: CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES,
-  } as const;
-  if (opts.requestedSandbox === "read-only") {
-    return new CliError({
-      exitCode: exitCodeForError("E_RUNTIME"),
-      code: "E_RUNTIME",
-      message:
-        `Custom runner wrapper mode ${JSON.stringify(opts.enforcementMode)} cannot support recipe sandbox ` +
-        `${JSON.stringify(opts.requestedSandbox)} because the shared runner contract requires write access ` +
-        "to result.json and trace artifacts inside run_dir, while the default codex sandbox blocks writes " +
-        "to cwd and TMPDIR. Supported values: workspace-write.",
-      context: baseContext,
-    });
-  }
-  return new CliError({
-    exitCode: exitCodeForError("E_RUNTIME"),
-    code: "E_RUNTIME",
-    message:
-      `Custom runner wrapper mode ${JSON.stringify(opts.enforcementMode)} does not support recipe sandbox ` +
-      `${JSON.stringify(opts.requestedSandbox)}; supported values: ${CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES.join(", ")}.`,
-    context: baseContext,
-  });
-}
-
-function buildCustomCommand(opts: {
-  config: RunnerCustomConfig | undefined;
-  bundle: RunnerContextBundle;
-  command: string[];
-}): string[] {
-  const enforcement = normalizeCustomEnforcement(opts.config);
-  if (enforcement.mode !== "codex_sandbox_full_auto") return opts.command;
-
-  const runProfile = readRecipeRunProfile(opts.bundle.recipe);
-  const requestedSandbox = typeof runProfile?.sandbox === "string" ? runProfile.sandbox.trim() : "";
-  if (!requestedSandbox) return opts.command;
-  if (!CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES.includes(requestedSandbox)) {
-    throw unsupportedCustomSandboxError({
-      enforcementMode: enforcement.mode,
-      requestedSandbox,
-    });
-  }
-
-  return [
-    "codex",
-    "sandbox",
-    resolveCodexSandboxPlatform(enforcement.platform),
-    "--full-auto",
-    ...opts.command,
-  ];
-}
-
-function normalizeCustomCommand(value: RunnerCustomConfig["command"] | undefined): string[] {
-  return Array.isArray(value)
-    ? value.map((entry) => entry.trim()).filter((entry) => entry.length > 0)
-    : [];
-}
+import {
+  appendRunnerExecutionEvent,
+  appendRunnerResultEvent,
+  assertAdapterBundle,
+  assertAdapterInvocation,
+  writeRunnerExecutionState,
+  writeRunnerResultState,
+} from "./base.js";
+import { buildCustomCapabilities, buildCustomInvocation } from "./custom-preparation.js";
 
 function assertCustomBundle(bundle: RunnerContextBundle): void {
-  if (bundle.execution.adapter_id !== "custom") {
-    throw new Error(
-      `Custom adapter cannot prepare bundle for adapter_id=${JSON.stringify(bundle.execution.adapter_id)}`,
-    );
-  }
-  if (!bundle.execution.artifact_paths.bundle_path.trim()) {
-    throw new Error("Custom adapter requires a non-empty bundle path");
-  }
-  if (!bundle.execution.artifact_paths.run_dir.trim()) {
-    throw new Error("Custom adapter requires a non-empty run dir");
-  }
+  assertAdapterBundle({ adapterId: "custom", label: "Custom", bundle });
 }
 
 function buildCustomArtifacts(opts: {
@@ -280,35 +103,6 @@ function applyCustomRunnerResultManifest(opts: {
   return merged;
 }
 
-function assertCustomInvocation(invocation: RunnerInvocation): void {
-  if (invocation.adapter_id !== "custom") {
-    throw new Error(
-      `Custom adapter cannot execute invocation for adapter_id=${JSON.stringify(invocation.adapter_id)}`,
-    );
-  }
-  if (!invocation.bundle_path.trim()) {
-    throw new Error("Custom adapter invocation is missing bundle_path");
-  }
-  if (!invocation.run_dir.trim()) {
-    throw new Error("Custom adapter invocation is missing run_dir");
-  }
-  if (!invocation.state_path.trim()) {
-    throw new Error("Custom adapter invocation is missing state_path");
-  }
-  if (!invocation.events_path.trim()) {
-    throw new Error("Custom adapter invocation is missing events_path");
-  }
-  if (!invocation.result_path.trim()) {
-    throw new Error("Custom adapter invocation is missing result_path");
-  }
-  if (!invocation.trace_path.trim()) {
-    throw new Error("Custom adapter invocation is missing trace_path");
-  }
-  if (!invocation.stderr_path.trim()) {
-    throw new Error("Custom adapter invocation is missing stderr_path");
-  }
-}
-
 export class CustomRunnerAdapter implements RunnerAdapter {
   readonly id = "custom" as const;
 
@@ -320,53 +114,13 @@ export class CustomRunnerAdapter implements RunnerAdapter {
 
   prepare(bundle: RunnerContextBundle): Promise<RunnerInvocation> {
     assertCustomBundle(bundle);
-    const command = normalizeCustomCommand(this.config?.command);
-    if (command.length === 0) {
-      throw new Error(
-        "Custom runner adapter requires config.runner.custom.command to contain at least one argv element",
-      );
-    }
-    const { execution } = bundle;
-    const recipeEnv = buildRecipeRunnerEnv(bundle.recipe);
-    const enforcement = normalizeCustomEnforcement(this.config);
-    const preparedCommand = buildCustomCommand({
-      config: this.config,
-      bundle,
-      command,
-    });
-    return Promise.resolve({
-      adapter_id: this.id,
-      run_id: execution.run_id,
-      run_dir: execution.artifact_paths.run_dir,
-      bundle_path: execution.artifact_paths.bundle_path,
-      state_path: execution.artifact_paths.state_path,
-      events_path: execution.artifact_paths.events_path,
-      result_path: execution.artifact_paths.result_path,
-      trace_path: execution.artifact_paths.trace_path,
-      stderr_path: execution.artifact_paths.stderr_path,
-      trace_policy: execution.trace_policy,
-      timeout_policy: execution.timeout_policy,
-      bootstrap_path: execution.artifact_paths.bootstrap_path,
-      output_last_message_path: null,
-      argv: preparedCommand,
-      env: {
-        ...this.config?.env,
-        AGENTPLANE_RUNNER_ADAPTER: this.id,
-        AGENTPLANE_RUNNER_MODE: execution.mode,
-        AGENTPLANE_RUNNER_API_VERSION: bundle.runner_api_version,
-        AGENTPLANE_RUNNER_TARGET: bundle.target.kind,
-        AGENTPLANE_RUNNER_BUNDLE_PATH: execution.artifact_paths.bundle_path,
-        AGENTPLANE_RUNNER_RUN_DIR: execution.artifact_paths.run_dir,
-        AGENTPLANE_RUNNER_BOOTSTRAP_PATH: execution.artifact_paths.bootstrap_path,
-        AGENTPLANE_RUNNER_STATE_PATH: execution.artifact_paths.state_path,
-        AGENTPLANE_RUNNER_EVENTS_PATH: execution.artifact_paths.events_path,
-        AGENTPLANE_RUNNER_RESULT_PATH: execution.artifact_paths.result_path,
-        AGENTPLANE_RUNNER_ENFORCEMENT_MODE: enforcement.mode ?? "none",
-        AGENTPLANE_RUNNER_ENFORCEMENT_PLATFORM: enforcement.platform ?? "auto",
-        ...recipeEnv,
-      },
-      dry_run: execution.mode === "dry_run",
-    });
+    return Promise.resolve(
+      buildCustomInvocation({
+        adapterId: this.id,
+        config: this.config,
+        bundle,
+      }),
+    );
   }
 
   execute(invocation: RunnerInvocation): Promise<RunnerResult> {
@@ -374,7 +128,7 @@ export class CustomRunnerAdapter implements RunnerAdapter {
     let processResult: SupervisedProcessResult | null = null;
     return (async () => {
       try {
-        assertCustomInvocation(invocation);
+        assertAdapterInvocation({ adapterId: "custom", label: "Custom", invocation });
         const repository = RunnerRunRepository.fromInvocation(invocation);
         const bootstrapText = invocation.bootstrap_path
           ? await readFile(invocation.bootstrap_path, "utf8")
@@ -476,48 +230,19 @@ export class CustomRunnerAdapter implements RunnerAdapter {
           result_path: invocation.result_path,
           manifest: manifestFromRunnerResult(result),
         });
-        const stateAfter = await repository.readState();
-        if (stateAfter) {
-          await repository.writeState(
-            evolveRunnerRunState({
-              state: stateAfter,
-              status: result.status,
-              result,
-              supervision: {
-                ...stateAfter.supervision,
-                pid: processResult.pid,
-                command: invocation.argv.join(" "),
-                started_at: processResult.started_at,
-                heartbeat_at: processResult.heartbeat_at,
-                exit_signal: processResult.exit_signal,
-                timeout_reason: processResult.timeout_reason,
-                timeout_requested_at: processResult.timeout_requested_at,
-                terminate_sent_at: processResult.terminate_sent_at,
-                kill_sent_at: processResult.kill_sent_at,
-                force_killed: processResult.force_killed,
-              },
-            }),
-          );
-        }
-        await repository.appendEvent({
-          at: result.ended_at,
-          type: "runner_execute_finish",
+        await writeRunnerExecutionState({
+          repository,
+          result,
+          processResult,
+          command: invocation.argv.join(" "),
+        });
+        await appendRunnerExecutionEvent({
+          repository,
+          invocation,
+          result,
+          processResult,
           message: `custom runner finished with status=${result.status}`,
-          data: {
-            ...buildInvocationEventData(invocation),
-            pid: processResult.pid,
-            exit_signal: processResult.exit_signal,
-            cancel_requested_at: processResult.cancel_requested_at,
-            cancel_signal: processResult.cancel_signal,
-            timeout_reason: processResult.timeout_reason,
-            timeout_requested_at: processResult.timeout_requested_at,
-            terminate_sent_at: processResult.terminate_sent_at,
-            kill_sent_at: processResult.kill_sent_at,
-            force_killed: processResult.force_killed,
-            exit_code: result.exit_code,
-            output_paths,
-            metrics: result.metrics,
-          },
+          outputPaths: output_paths,
         });
         return result;
       } catch (err) {
@@ -557,26 +282,14 @@ export class CustomRunnerAdapter implements RunnerAdapter {
           }),
         });
         const repository = RunnerRunRepository.fromInvocation(invocation);
-        const stateAfter = await repository.readState();
-        if (stateAfter) {
-          await repository.writeState(
-            evolveRunnerRunState({
-              state: stateAfter,
-              status: result.status,
-              result,
-            }),
-          );
-        }
-        await repository.appendEvent({
-          at: result.ended_at,
+        await writeRunnerResultState({ repository, result });
+        await appendRunnerResultEvent({
+          repository,
+          invocation,
+          result,
           type: "runner_execute_finish",
           message: `custom runner failed with status=${result.status}`,
-          data: {
-            ...buildInvocationEventData(invocation),
-            exit_code: result.exit_code,
-            output_paths,
-            metrics: result.metrics,
-          },
+          outputPaths: output_paths,
         });
         return result;
       }

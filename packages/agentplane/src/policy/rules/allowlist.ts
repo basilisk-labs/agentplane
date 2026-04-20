@@ -2,7 +2,7 @@ import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../shared/git-p
 import { protectedPathAllowPrefixes } from "../../shared/protected-paths.js";
 
 import { gitError, okResult } from "../result.js";
-import type { PolicyContext, PolicyResult } from "../types.js";
+import type { PolicyContext, PolicyResult } from "../model.js";
 
 export function allowlistRule(ctx: PolicyContext): PolicyResult {
   const allowRaw = ctx.allow?.prefixes ?? [];

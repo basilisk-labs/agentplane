@@ -5,7 +5,7 @@ import type {
   BehaviorResolutionEntry,
   BehaviorResolutionTrace,
   ResolvedBehavior,
-} from "./types.js";
+} from "./model.js";
 
 const BEHAVIOR_LAYER_RANK = {
   harness: 0,

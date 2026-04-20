@@ -1,7 +1,8 @@
 import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
+import { describeCritical } from "../testing/index.js";
 import {
   expectCliError,
   gitHead,
@@ -14,7 +15,7 @@ import {
   writeText,
 } from "./critical/harness.js";
 
-describe("critical: scope leak", () => {
+describeCritical("critical: scope leak", () => {
   it("init does not target a parent git repo", { timeout: 60_000 }, async () => {
     const parent = await makeTempDir("agentplane-critical-parent-");
     await gitInit(parent);

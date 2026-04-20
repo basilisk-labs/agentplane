@@ -16,6 +16,24 @@ const tsconfigProjects = [
   "./website/tsconfig.eslint.json",
 ];
 
+const sharedBoundaryTargets = [
+  "./packages/agentplane/src/commands",
+  "./packages/agentplane/src/backends",
+  "./packages/agentplane/src/runner",
+  "./packages/agentplane/src/runtime",
+  "./packages/agentplane/src/adapters",
+  "./packages/agentplane/src/ports",
+];
+
+const sharedBoundaryPatterns = [
+  "../commands/*",
+  "../backends/*",
+  "../runner/*",
+  "../runtime/*",
+  "../adapters/*",
+  "../ports/*",
+];
+
 /** @type {import("eslint").Linter.FlatConfig[]} */
 module.exports = [
   {
@@ -134,11 +152,7 @@ module.exports = [
   },
 
   {
-    files: [
-      "packages/core/src/**/*.{ts,tsx}",
-      "packages/agentplane/src/shared/**/*.{ts,tsx}",
-      "packages/agentplane/src/commands/**/*.{ts,tsx}",
-    ],
+    files: ["packages/core/src/**/*.{ts,tsx}", "packages/agentplane/src/shared/**/*.{ts,tsx}"],
     rules: {
       "import/no-restricted-paths": [
         "error",
@@ -149,15 +163,59 @@ module.exports = [
               from: "./packages/agentplane/src",
               message: "Core package must stay independent from agentplane package internals.",
             },
+            ...sharedBoundaryTargets.map((target) => ({
+              target,
+              from: "./packages/agentplane/src/shared",
+              message: "Shared helpers must stay below command/runtime/backend adapter layers.",
+            })),
+          ],
+        },
+      ],
+    },
+  },
+
+  {
+    files: ["packages/agentplane/src/shared/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: sharedBoundaryPatterns.map((group) => ({
+            group: [group],
+            message: "Shared helpers must not import higher-level package layers.",
+          })),
+        },
+      ],
+    },
+  },
+
+  {
+    files: [
+      "packages/agentplane/src/shared/errors.ts",
+      "packages/agentplane/src/cli/spec/errors.ts",
+      "packages/agentplane/src/backends/task-backend/shared/errors.ts",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
             {
-              target: "./packages/agentplane/src/shared",
-              from: "./packages/agentplane/src/commands",
-              message: "Shared helpers must not depend on command-layer modules.",
+              name: "../../cli/spec/errors.js",
+              message:
+                "Shared/runtime and backend error modules must not depend on CLI usage helpers.",
             },
             {
-              target: "./packages/agentplane/src/commands",
-              from: "./packages/agentplane/src/usecases",
-              message: "Commands must not depend on usecase-layer modules.",
+              name: "../../../cli/spec/errors.js",
+              message: "Backend error modules must not depend on CLI usage helpers.",
+            },
+            {
+              name: "../../backends/task-backend/shared/errors.js",
+              message: "CLI/shared error modules must not depend on backend-local error types.",
+            },
+            {
+              name: "../../../backends/task-backend/shared/errors.js",
+              message: "CLI/shared error modules must not depend on backend-local error types.",
             },
           ],
         },

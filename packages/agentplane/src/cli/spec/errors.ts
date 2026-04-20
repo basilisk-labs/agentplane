@@ -1,8 +1,21 @@
-import { CliError } from "../../shared/errors.js";
+import { UsageError } from "../../shared/errors.js";
+import type { CliError } from "../../shared/errors.js";
 
 import type { CommandSpec } from "./spec.js";
 import { renderCommandHelpText } from "./help-render.js";
 
+/**
+ * Usage-error helpers for command-spec parsing/rendering only.
+ *
+ * Allowed here:
+ * - E_USAGE construction tied to CLI spec/help rendering
+ * - command-specific usage context shaping
+ *
+ * Do not add:
+ * - shared runtime error primitives
+ * - backend/domain errors
+ * - non-CLI formatting or transport concerns
+ */
 export function usageError(opts: {
   message: string;
   spec?: CommandSpec<unknown>;
@@ -18,9 +31,7 @@ export function usageError(opts: {
   if (command) context.command = command;
   if (opts.context) Object.assign(context, opts.context);
 
-  return new CliError({
-    exitCode: 2,
-    code: "E_USAGE",
+  return new UsageError({
     message: fullMessage,
     context: Object.keys(context).length > 0 ? context : undefined,
   });

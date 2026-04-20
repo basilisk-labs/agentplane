@@ -3,7 +3,7 @@ import path from "node:path";
 import { mapBackendError } from "../../../cli/error-map.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { createCliEmitter } from "../../../cli/output.js";
-import { withDiagnosticContext } from "../../../shared/diagnostics.js";
+import { withDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 
 import { cleanupIntegratedBranch } from "./internal/cleanup.js";

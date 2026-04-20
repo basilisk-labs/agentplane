@@ -15,4 +15,4 @@ export type {
   AgentplaneCapabilityRegistry,
   AgentplaneCapabilitySourceId,
   AgentplaneCapabilitySourceRef,
-} from "./types.js";
+} from "./model.js";

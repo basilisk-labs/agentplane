@@ -64,6 +64,36 @@ export async function checkGeneratedArtifactFresh({
   }
 }
 
+export function defineGeneratedArtifactCheck({
+  outputPath,
+  tempPrefix,
+  fileName,
+  generate,
+  formatWithPrettier = false,
+  missingMessage,
+  staleMessage,
+  successMessage,
+  beforeCheck,
+}) {
+  return async function runGeneratedArtifactCheck() {
+    if (beforeCheck) {
+      await beforeCheck();
+    }
+    await checkGeneratedArtifactFresh({
+      outputPath,
+      tempPrefix,
+      fileName,
+      generate,
+      formatWithPrettier,
+      missingMessage,
+      staleMessage,
+    });
+    if (successMessage) {
+      process.stdout.write(`${successMessage}\n`);
+    }
+  };
+}
+
 export async function assertAgentplaneCliDistFreshForDocs(root = ROOT) {
   const packageRoot = path.join(root, "packages", "agentplane");
   if (!(await distExists(packageRoot))) {
@@ -72,7 +102,8 @@ export async function assertAgentplaneCliDistFreshForDocs(root = ROOT) {
         "  bun run framework:dev:bootstrap\n" +
         "Or rebuild explicitly:\n" +
         "  bun run --filter=@agentplaneorg/core build\n" +
-        "  bun run --filter=agentplane build",
+        "  bun run --filter=agentplane build\n" +
+        "  bun run --filter=@agentplane/testkit build",
     );
   }
 
@@ -95,7 +126,8 @@ export async function assertAgentplaneCliDistFreshForDocs(root = ROOT) {
       "  bun run framework:dev:bootstrap\n" +
       "Or rebuild explicitly:\n" +
       "  bun run --filter=@agentplaneorg/core build\n" +
-      "  bun run --filter=agentplane build" +
+      "  bun run --filter=agentplane build\n" +
+      "  bun run --filter=@agentplane/testkit build" +
       changedSummary,
   );
 }

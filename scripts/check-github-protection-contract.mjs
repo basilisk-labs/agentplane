@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { defineScript, parseScriptArgs, runScriptMain } from "./lib/script-runtime.mjs";
 
 const EXPECTED_CHECKS = ["Core CI / test", "Core CI / test-windows", "Docs CI / docs"];
 
@@ -20,35 +21,16 @@ function usage() {
 }
 
 function parseArgs(argv) {
-  const options = {
+  const { flags } = parseScriptArgs(argv, {
+    valueFlags: ["repo", "branch"],
+    booleanFlags: ["help"],
+    aliases: { h: "help" },
+  });
+  return {
     branch: "main",
     repo: "basilisk-labs/agentplane",
+    ...flags,
   };
-
-  for (let index = 0; index < argv.length; index += 1) {
-    const arg = argv[index];
-    if (arg === "--help" || arg === "-h") {
-      options.help = true;
-      continue;
-    }
-    if (arg === "--repo") {
-      const value = argv[index + 1];
-      if (!value) throw new Error("Missing value for --repo");
-      options.repo = value;
-      index += 1;
-      continue;
-    }
-    if (arg === "--branch") {
-      const value = argv[index + 1];
-      if (!value) throw new Error("Missing value for --branch");
-      options.branch = value;
-      index += 1;
-      continue;
-    }
-    throw new Error(`Unknown argument: ${arg}`);
-  }
-
-  return options;
 }
 
 function runGh(args) {
@@ -94,68 +76,66 @@ function compareExpected(actualContexts) {
   return { extras, missing };
 }
 
-function main() {
-  const options = parseArgs(process.argv.slice(2));
-  if (options.help) {
-    usage();
-    return;
-  }
+const main = defineScript({
+  name: "check-github-protection-contract",
+  run({ argv }) {
+    const options = parseArgs(argv);
+    if (options.help) {
+      usage();
+      return;
+    }
 
-  const protectionJson = runGh([
-    "api",
-    `repos/${options.repo}/branches/${options.branch}/protection`,
-  ]);
-  const normalized = normalizeChecks(JSON.parse(protectionJson));
-  const expected = compareExpected(normalized.contexts);
+    const protectionJson = runGh([
+      "api",
+      `repos/${options.repo}/branches/${options.branch}/protection`,
+    ]);
+    const normalized = normalizeChecks(JSON.parse(protectionJson));
+    const expected = compareExpected(normalized.contexts);
 
-  const errors = [];
-  if (!normalized.strict) {
-    errors.push("required_status_checks.strict must be true.");
-  }
-  if (expected.missing.length > 0) {
-    errors.push(`Missing required checks: ${expected.missing.join(", ")}`);
-  }
-  if (expected.extras.length > 0) {
-    errors.push(`Unexpected required checks: ${expected.extras.join(", ")}`);
-  }
+    const errors = [];
+    if (!normalized.strict) {
+      errors.push("required_status_checks.strict must be true.");
+    }
+    if (expected.missing.length > 0) {
+      errors.push(`Missing required checks: ${expected.missing.join(", ")}`);
+    }
+    if (expected.extras.length > 0) {
+      errors.push(`Unexpected required checks: ${expected.extras.join(", ")}`);
+    }
 
-  for (const check of normalized.checks) {
-    if (!EXPECTED_CHECKS.includes(check.context)) continue;
-    if (check.appId === null) {
-      errors.push(
-        `Required check '${check.context}' is not bound to a concrete GitHub app (app_id=null).`,
+    for (const check of normalized.checks) {
+      if (!EXPECTED_CHECKS.includes(check.context)) continue;
+      if (check.appId === null) {
+        errors.push(
+          `Required check '${check.context}' is not bound to a concrete GitHub app (app_id=null).`,
+        );
+      }
+    }
+
+    if (errors.length > 0) {
+      throw new Error(
+        [
+          `GitHub protection contract mismatch for ${options.repo}#${options.branch}`,
+          ...errors.map((line) => `- ${line}`),
+          "",
+          "Expected canonical required checks:",
+          ...EXPECTED_CHECKS.map((name) => `- ${name}`),
+        ].join("\n"),
       );
     }
-  }
 
-  if (errors.length > 0) {
-    throw new Error(
+    const appBindings = normalized.checks
+      .filter((entry) => EXPECTED_CHECKS.includes(entry.context))
+      .map((entry) => `${entry.context} [app_id=${entry.appId}]`);
+
+    process.stdout.write(
       [
-        `GitHub protection contract mismatch for ${options.repo}#${options.branch}`,
-        ...errors.map((line) => `- ${line}`),
-        "",
-        "Expected canonical required checks:",
-        ...EXPECTED_CHECKS.map((name) => `- ${name}`),
-      ].join("\n"),
+        `GitHub protection contract OK for ${options.repo}#${options.branch}`,
+        `strict=true`,
+        ...appBindings,
+      ].join("\n") + "\n",
     );
-  }
+  },
+});
 
-  const appBindings = normalized.checks
-    .filter((entry) => EXPECTED_CHECKS.includes(entry.context))
-    .map((entry) => `${entry.context} [app_id=${entry.appId}]`);
-
-  process.stdout.write(
-    [
-      `GitHub protection contract OK for ${options.repo}#${options.branch}`,
-      `strict=true`,
-      ...appBindings,
-    ].join("\n") + "\n",
-  );
-}
-
-try {
-  main();
-} catch (error) {
-  process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-  process.exitCode = 1;
-}
+runScriptMain(main);

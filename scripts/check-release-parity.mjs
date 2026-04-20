@@ -1,30 +1,23 @@
+import { defineCheck, parseScriptArgs, runScriptMain } from "./lib/script-runtime.mjs";
 import { assertReleaseParity } from "./lib/release-version-parity.mjs";
 
 function parseArgs(argv) {
-  const out = { version: "" };
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i] ?? "";
-    if (arg === "--version") {
-      out.version = String(argv[i + 1] ?? "").trim();
-      i += 1;
-    }
-  }
-  return out;
+  const { flags } = parseScriptArgs(argv, { valueFlags: ["version"] });
+  return { version: String(flags.version ?? "").trim() };
 }
 
-async function main() {
-  const args = parseArgs(process.argv.slice(2));
-  const requiredVersion = args.version || undefined;
-  const state = await assertReleaseParity(process.cwd(), { requiredVersion });
-  process.stdout.write(
-    `Release parity check passed (core=${state.coreVersion}, agentplane=${state.agentplaneVersion}, recipes=${state.recipesVersion}, coreDep=${String(
-      state.coreDependency,
-    )}, recipesDep=${String(state.recipesDependency)}).\n`,
-  );
-}
-
-main().catch((error) => {
-  const message = error instanceof Error ? error.message : String(error);
-  process.stderr.write(`${message}\n`);
-  process.exitCode = 1;
+const main = defineCheck({
+  name: "check-release-parity",
+  parseArgs,
+  async check({ options }) {
+    const requiredVersion = options.version || undefined;
+    const state = await assertReleaseParity(process.cwd(), { requiredVersion });
+    process.stdout.write(
+      `Release parity check passed (core=${state.coreVersion}, agentplane=${state.agentplaneVersion}, recipes=${state.recipesVersion}, coreDep=${String(
+        state.coreDependency,
+      )}, recipesDep=${String(state.recipesDependency)}).\n`,
+    );
+  },
 });
+
+runScriptMain(main);

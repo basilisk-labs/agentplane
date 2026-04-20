@@ -4,7 +4,7 @@ import {
 } from "../../shared/protected-paths.js";
 
 import { gitError, okResult } from "../result.js";
-import type { PolicyAction, PolicyContext, PolicyResult } from "../types.js";
+import type { PolicyAction, PolicyContext, PolicyResult } from "../model.js";
 
 function renderProtectedMessage(opts: {
   action: PolicyAction;

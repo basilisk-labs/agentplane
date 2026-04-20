@@ -15,7 +15,7 @@ import {
   createTaskIntakeContext,
   materializeTaskGraphDraft,
 } from "../../runtime/task-intake/index.js";
-import { buildTaskDocState } from "../../shared/task-doc-state.js";
+import { buildTaskDocState } from "../../task-doc/state.js";
 import { dedupeStrings } from "../../shared/strings.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import { createRunnerRunId } from "../run-id.js";

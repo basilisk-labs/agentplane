@@ -5,12 +5,7 @@ import { spawn } from "node:child_process";
 import path from "node:path";
 
 import { runCli } from "./run-cli.js";
-import {
-  captureStdIO,
-  mkGitRepoRoot,
-  silenceStdIO,
-  writeDefaultConfig,
-} from "./run-cli.test-helpers.js";
+import { captureStdIO, mkGitRepoRoot, silenceStdIO, writeDefaultConfig } from "../testing/index.js";
 
 function runBunx(args: string[], cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {

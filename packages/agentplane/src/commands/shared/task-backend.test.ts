@@ -12,8 +12,10 @@ import {
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
   writeConfig,
+  tempRepo,
+  mockConfig,
   writeDefaultConfig,
-} from "../../cli/run-cli.test-helpers.js";
+} from "../../testing/index.js";
 import { listTaskSummariesMemo, loadCommandContext, loadTaskFromContext } from "./task-backend.js";
 
 const TASK_BACKEND_INTEGRATION_TIMEOUT_MS = 180_000;
@@ -35,8 +37,8 @@ describe(
   },
   () => {
     it("loadCommandContext loads config/backend once and exposes backendConfigPath", async () => {
-      const root = await mkGitRepoRoot();
-      await writeDefaultConfig(root);
+      const repo = await tempRepo({ withDefaultConfig: true });
+      const root = repo.root;
       await writeLocalBackendConfig(root);
 
       const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -48,8 +50,8 @@ describe(
     });
 
     it("loadTaskFromContext reads an existing task and throws a deterministic ENOENT when missing", async () => {
-      const root = await mkGitRepoRoot();
-      await writeDefaultConfig(root);
+      const repo = await tempRepo({ withDefaultConfig: true });
+      const root = repo.root;
       await writeLocalBackendConfig(root);
 
       const created = await createTask({
@@ -77,8 +79,8 @@ describe(
     });
 
     it("loadCommandContext reuses preloaded resolved project/config when provided", async () => {
-      const root = await mkGitRepoRoot();
-      await writeDefaultConfig(root);
+      const repo = await tempRepo({ withDefaultConfig: true });
+      const root = repo.root;
       await writeLocalBackendConfig(root);
 
       const resolved = await resolveProject({ cwd: root, rootOverride: root });
@@ -95,11 +97,13 @@ describe(
     });
 
     it("loadTaskFromContext falls back to a branch-backed task README in branch_pr mode", async () => {
-      const root = await mkGitRepoRootWithBranch("main");
+      const repo = await tempRepo({ branch: "main" });
+      const root = repo.root;
       await configureGitUser(root);
-      const config = defaultConfig();
-      config.workflow_mode = "branch_pr";
-      await writeConfig(root, config);
+      const config = mockConfig((draft) => {
+        draft.workflow_mode = "branch_pr";
+      });
+      await repo.writeConfig(config);
       await writeLocalBackendConfig(root);
 
       const execFileAsync = promisify(execFile);
@@ -147,11 +151,13 @@ describe(
     });
 
     it("loadTaskFromContext can read the active task README from a live branch_pr worktree", async () => {
-      const root = await mkGitRepoRootWithBranch("main");
+      const repo = await tempRepo({ branch: "main" });
+      const root = repo.root;
       await configureGitUser(root);
-      const config = defaultConfig();
-      config.workflow_mode = "branch_pr";
-      await writeConfig(root, config);
+      const config = mockConfig((draft) => {
+        draft.workflow_mode = "branch_pr";
+      });
+      await repo.writeConfig(config);
       await writeLocalBackendConfig(root);
 
       const execFileAsync = promisify(execFile);
@@ -214,11 +220,13 @@ describe(
     });
 
     it("loadTaskFromContext can prefer an explicit branch snapshot over a stale base task copy", async () => {
-      const root = await mkGitRepoRootWithBranch("main");
+      const repo = await tempRepo({ branch: "main" });
+      const root = repo.root;
       await configureGitUser(root);
-      const config = defaultConfig();
-      config.workflow_mode = "branch_pr";
-      await writeConfig(root, config);
+      const config = mockConfig((draft) => {
+        draft.workflow_mode = "branch_pr";
+      });
+      await repo.writeConfig(config);
       await writeLocalBackendConfig(root);
 
       const execFileAsync = promisify(execFile);

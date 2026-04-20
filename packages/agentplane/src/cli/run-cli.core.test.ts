@@ -52,7 +52,7 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
-} from "./run-cli.test-helpers.js";
+} from "../testing/index.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 
@@ -942,6 +942,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["config", "show", "--root", root]);
       expect(code).toBe(3);
+      expect(io.stderr).toContain("Validation error:");
       expect(io.stderr).toContain("schema_version");
     } finally {
       io.restore();

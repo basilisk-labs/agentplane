@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
+import { defineCheck, runScriptMain } from "./lib/script-runtime.mjs";
 
 const ROOT = process.cwd();
 const MAX_ATTEMPTS = Number.parseInt(process.env.AGENTPLANE_PUBLISH_SMOKE_ATTEMPTS ?? "8", 10);
@@ -90,23 +91,23 @@ async function assertPublished(name, version) {
   );
 }
 
-async function main() {
-  const specs = parseSpecs(process.argv.slice(2));
-  const targets =
-    specs.length > 0
-      ? specs
-      : [
-          await readPackageInfo(path.join(ROOT, "packages", "core", "package.json")),
-          await readPackageInfo(path.join(ROOT, "packages", "recipes", "package.json")),
-          await readPackageInfo(path.join(ROOT, "packages", "agentplane", "package.json")),
-        ];
+const main = defineCheck({
+  name: "check-published-packages",
+  parseArgs: parseSpecs,
+  async check({ options: specs }) {
+    const targets =
+      specs.length > 0
+        ? specs
+        : [
+            await readPackageInfo(path.join(ROOT, "packages", "core", "package.json")),
+            await readPackageInfo(path.join(ROOT, "packages", "recipes", "package.json")),
+            await readPackageInfo(path.join(ROOT, "packages", "agentplane", "package.json")),
+          ];
 
-  for (const target of targets) {
-    await assertPublished(target.name, target.version);
-  }
-}
-
-main().catch((error) => {
-  process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
-  process.exitCode = 1;
+    for (const target of targets) {
+      await assertPublished(target.name, target.version);
+    }
+  },
 });
+
+runScriptMain(main);

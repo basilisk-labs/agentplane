@@ -4,7 +4,7 @@ import { toStringList } from "../../cli/spec/parse-utils.js";
 import {
   findRepoWideAllowPrefixes,
   repoWideAllowPrefixMessage,
-} from "../../shared/allow-prefix-policy.js";
+} from "../shared/allow-prefix-policy.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { cmdTaskSetStatus } from "./set-status.js";

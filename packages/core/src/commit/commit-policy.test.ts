@@ -5,7 +5,14 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { extractTaskSuffix, isGenericSubject, validateCommitSubject } from "./commit-policy.js";
+import {
+  buildTaskArtifactRefreshCommitSubject,
+  extractTaskSuffix,
+  isGenericSubject,
+  isTaskArtifactRefreshCommitSubject,
+  parseTaskSubjectTemplate,
+  validateCommitSubject,
+} from "./commit-policy.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -18,6 +25,47 @@ async function mkGitRepoRoot(): Promise<string> {
 describe("commit-policy", () => {
   it("extracts task suffix", () => {
     expect(extractTaskSuffix("202601010101-ABCDEF")).toBe("ABCDEF");
+  });
+
+  it("parses task commit subjects", () => {
+    expect(parseTaskSubjectTemplate("♻️ ABCDEF task: tighten routing")).toEqual({
+      emoji: "♻️",
+      suffix: "ABCDEF",
+      scope: "task",
+      summary: "tighten routing",
+    });
+  });
+
+  it("builds task artifact refresh subjects by inheriting emoji and scope", () => {
+    expect(
+      buildTaskArtifactRefreshCommitSubject({
+        taskId: "202601010101-ABCDEF",
+        baseSubject: "♻️ ABCDEF task: tighten routing",
+      }),
+    ).toBe("♻️ ABCDEF task: refresh task artifacts after commit");
+  });
+
+  it("falls back to the canonical artifact refresh subject", () => {
+    expect(
+      buildTaskArtifactRefreshCommitSubject({
+        taskId: "202601010101-ABCDEF",
+      }),
+    ).toBe("🧩 ABCDEF task: refresh task artifacts after commit");
+  });
+
+  it("recognizes artifact refresh subjects semantically", () => {
+    expect(
+      isTaskArtifactRefreshCommitSubject({
+        subject: "🧩 ABCDEF task: refresh task artifacts after commit",
+        taskId: "202601010101-ABCDEF",
+      }),
+    ).toBe(true);
+    expect(
+      isTaskArtifactRefreshCommitSubject({
+        subject: "🧩 ABCDEF workflow: refresh task artifacts after commit",
+        taskId: "202601010101-ABCDEF",
+      }),
+    ).toBe(true);
   });
 
   it("flags generic subjects", () => {

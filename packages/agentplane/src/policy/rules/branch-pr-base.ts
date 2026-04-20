@@ -1,5 +1,5 @@
 import { gitError, internalError, okResult, usageError } from "../result.js";
-import type { PolicyContext, PolicyResult } from "../types.js";
+import type { PolicyContext, PolicyResult } from "../model.js";
 
 export function branchPrBaseRule(ctx: PolicyContext): PolicyResult {
   if (ctx.config.workflow_mode !== "branch_pr") return okResult();

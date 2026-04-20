@@ -85,20 +85,30 @@ jobs:
         run: |
           bun run --filter=@agentplaneorg/core build
           bun run --filter=agentplane build
+          bun run --filter=@agentplane/testkit build
       - name: CLI docs (generated reference check)
         run: bun run docs:cli:check
+      - name: Hotspot Threshold (check)
+        run: bun run hotspots:check
       - name: Lint
         run: bun run lint:core
+      - name: Architecture boundaries
+        if: matrix.os == 'ubuntu-24.04'
+        run: bun run arch:check
+      - name: Dead code baseline (warn-only)
+        if: matrix.os == 'ubuntu-24.04'
+        run: bun run knip:check
       - name: Unit tests (fast)
         if: matrix.os == 'ubuntu-24.04'
         run: bun run test:fast
       - name: CLI E2E (critical)
         if: matrix.os == 'ubuntu-24.04'
+        timeout-minutes: 10
         run: bun run test:critical
       - name: Significant File Coverage (guard)
         if: matrix.os == 'ubuntu-24.04'
         shell: bash
-        run: bun run test:significant-coverage
+        run: bun run coverage:significant-suite
       - name: Unit tests (platform-critical)
         if: matrix.os == 'windows-latest'
         run: bun run test:platform-critical

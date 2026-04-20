@@ -1,163 +1,31 @@
-import { execFileAsync, gitEnv } from "./git.js";
-import { setPinnedBaseBranch } from "@agentplaneorg/core";
+import {
+  execFileAsync,
+  gitBranchExists,
+  gitCurrentBranch,
+  gitAddPaths,
+  gitCommit,
+  gitListBranches,
+  gitEnv,
+  gitStagedPaths,
+  setPinnedBaseBranch,
+} from "@agentplaneorg/core";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { promptChoice, promptInput } from "../../cli/prompts.js";
 import { CliError } from "../../shared/errors.js";
-
-export async function gitRevParse(cwd: string, args: string[]): Promise<string> {
-  const { stdout } = await execFileAsync("git", ["rev-parse", ...args], { cwd, env: gitEnv() });
-  const trimmed = stdout.trim();
-  if (!trimmed) throw new Error("Failed to resolve git path");
-  return trimmed;
-}
-
-export async function gitCurrentBranch(cwd: string): Promise<string> {
-  try {
-    const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], {
-      cwd,
-      env: gitEnv(),
-    });
-    const trimmed = stdout.trim();
-    if (trimmed) return trimmed;
-  } catch {
-    // fall through
-  }
-  const { stdout } = await execFileAsync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
-    cwd,
-    env: gitEnv(),
-  });
-  const trimmed = stdout.trim();
-  if (!trimmed || trimmed === "HEAD") {
-    throw new CliError({
-      code: "E_GIT",
-      exitCode: exitCodeForError("E_GIT"),
-      message: "Detached HEAD: failed to resolve current branch",
-    });
-  }
-  return trimmed;
-}
-
-export async function gitBranchExists(cwd: string, branch: string): Promise<boolean> {
-  try {
-    await execFileAsync("git", ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], {
-      cwd,
-      env: gitEnv(),
-    });
-    return true;
-  } catch (err) {
-    const code = (err as { code?: number | string } | null)?.code;
-    if (code === 1) return false;
-    throw err;
-  }
-}
-
-export async function gitIsAncestor(
-  cwd: string,
-  maybeAncestor: string,
-  descendant: string,
-): Promise<boolean> {
-  try {
-    await execFileAsync("git", ["merge-base", "--is-ancestor", maybeAncestor, descendant], {
-      cwd,
-      env: gitEnv(),
-    });
-    return true;
-  } catch (err) {
-    const code = (err as { code?: number | string } | null)?.code;
-    if (code === 1) return false;
-    throw err;
-  }
-}
-
-export async function gitBranchUpstream(cwd: string, branch: string): Promise<string | null> {
-  try {
-    const { stdout } = await execFileAsync(
-      "git",
-      ["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`],
-      {
-        cwd,
-        env: gitEnv(),
-      },
-    );
-    const trimmed = stdout.trim();
-    return trimmed.length > 0 ? trimmed : null;
-  } catch {
-    return null;
-  }
-}
-
-export async function gitListBranches(cwd: string): Promise<string[]> {
-  const { stdout } = await execFileAsync("git", ["branch", "--format=%(refname:short)"], {
-    cwd,
-    env: gitEnv(),
-  });
-  return stdout
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0);
-}
-
-export async function gitStagedPaths(cwd: string): Promise<string[]> {
-  const { stdout } = await execFileAsync("git", ["diff", "--cached", "--name-only"], {
-    cwd,
-    env: gitEnv(),
-  });
-  return stdout
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0);
-}
-
-export async function gitAddPaths(cwd: string, paths: string[]): Promise<void> {
-  if (paths.length === 0) return;
-  await execFileAsync("git", ["add", "--", ...paths], { cwd, env: gitEnv() });
-}
-
-export async function gitCommit(
-  cwd: string,
-  message: string,
-  opts?: { env?: NodeJS.ProcessEnv; skipHooks?: boolean },
-): Promise<void> {
-  const args = ["commit", "-m", message];
-  if (opts?.skipHooks) args.push("--no-verify");
-  const env = opts?.env ? { ...gitEnv(), ...opts.env } : gitEnv();
-  await execFileAsync("git", args, { cwd, env });
-}
-
-export async function gitInitRepo(cwd: string, branch: string): Promise<void> {
-  try {
-    await execFileAsync("git", ["init", "-q", "-b", branch], { cwd, env: gitEnv() });
-    return;
-  } catch {
-    await execFileAsync("git", ["init", "-q"], { cwd, env: gitEnv() });
-  }
-
-  try {
-    const current = await gitCurrentBranch(cwd);
-    if (current !== branch) {
-      await execFileAsync("git", ["checkout", "-q", "-b", branch], { cwd, env: gitEnv() });
-    }
-  } catch {
-    await execFileAsync("git", ["checkout", "-q", "-b", branch], { cwd, env: gitEnv() });
-  }
-}
-
-export async function resolveInitBaseBranch(gitRoot: string, fallback: string): Promise<string> {
-  let current: string | null = null;
-  try {
-    current = await gitCurrentBranch(gitRoot);
-  } catch {
-    current = null;
-  }
-  const branches = await gitListBranches(gitRoot);
-  if (current) return current;
-  if (branches.includes(fallback)) return fallback;
-  if (branches.length > 0) {
-    const first = branches[0];
-    if (first) return first;
-  }
-  return fallback;
-}
+import { emitTraceEvent } from "../../shared/trace-events.js";
+export {
+  gitBranchExists,
+  gitBranchUpstream,
+  gitCurrentBranch,
+  gitIsAncestor,
+  gitListBranches,
+  gitRevParse,
+  gitAddPaths,
+  gitCommit,
+  gitInitRepo,
+  gitStagedPaths,
+  resolveInitBaseBranch,
+} from "@agentplaneorg/core";
 
 export async function promptInitBaseBranch(opts: {
   gitRoot: string;
@@ -220,6 +88,11 @@ export async function ensureInitCommit(opts: {
   version: string;
   skipHooks: boolean;
 }): Promise<void> {
+  emitTraceEvent({
+    component: "git-ops",
+    event: "init_commit_started",
+    details: { base_branch: opts.baseBranch, path_count: opts.installPaths.length },
+  });
   const stagedBefore = await gitStagedPaths(opts.gitRoot);
   if (stagedBefore.length > 0) {
     throw new CliError({
@@ -239,8 +112,20 @@ export async function ensureInitCommit(opts: {
   const dedupedPaths = [...new Set(opts.installPaths)].filter((entry) => entry.length > 0);
   await gitAddPaths(opts.gitRoot, dedupedPaths);
   const staged = await gitStagedPaths(opts.gitRoot);
-  if (staged.length === 0) return;
+  if (staged.length === 0) {
+    emitTraceEvent({
+      component: "git-ops",
+      event: "init_commit_skipped",
+      details: { reason: "no_staged_changes" },
+    });
+    return;
+  }
 
   const message = `chore: install agentplane ${opts.version}`;
   await gitCommit(opts.gitRoot, message, { skipHooks: opts.skipHooks });
+  emitTraceEvent({
+    component: "git-ops",
+    event: "init_commit_completed",
+    details: { staged_path_count: staged.length, skip_hooks: opts.skipHooks },
+  });
 }

@@ -1,5 +1,5 @@
 import { gitError, mergeResults, okResult } from "./result.js";
-import type { PolicyContext, PolicyResult } from "./types.js";
+import type { PolicyContext, PolicyResult } from "./model.js";
 import { allowlistRule } from "./rules/allowlist.js";
 import { branchPrBaseRule } from "./rules/branch-pr-base.js";
 import { cleanTreeRule } from "./rules/clean-tree.js";

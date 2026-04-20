@@ -1,5 +1,5 @@
 import { exitCodeForError } from "../../cli/exit-codes.js";
-import { withDiagnosticContext } from "../../shared/diagnostics.js";
+import { withDiagnosticContext } from "./diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import path from "node:path";
 

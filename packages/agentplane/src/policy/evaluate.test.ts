@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core";
 
 import { evaluatePolicy } from "./evaluate.js";
-import type { PolicyContext } from "./types.js";
+import type { PolicyContext } from "./model.js";
 
 function makeCtx(partial: Partial<PolicyContext>): PolicyContext {
   const cfg = defaultConfig();

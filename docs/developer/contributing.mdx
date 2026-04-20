@@ -30,25 +30,25 @@ bun run test:fast
 Run the CLI tests:
 
 ```bash
-bun run test:cli
+bun run test:project -- cli
 ```
 
 Run the faster CLI unit-ish suites (core + recipes):
 
 ```bash
-bun run test:cli:unit
+bun run test:project -- cli-unit
 ```
 
 Run the CLI smoke test when validating full end-to-end behavior:
 
 ```bash
-bun run test:cli:smoke
+bun run test:project -- cli-smoke
 ```
 
 Run the slower CLI suites together (scenario + smoke):
 
 ```bash
-bun run test:cli:slow
+bun run test:project -- cli-slow
 ```
 
 Run full checks when touching multiple areas:

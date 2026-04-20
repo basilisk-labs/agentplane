@@ -23,7 +23,7 @@ import { execFileAsync, gitEnv } from "../shared/git.js";
 import { gitAheadBehind } from "../shared/git-diff.js";
 import { gitBranchExists, gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
 import { isPathWithin } from "../shared/path.js";
-import { resolveRuntimeSourceInfo } from "../../shared/runtime-source.js";
+import { resolveRuntimeSourceInfo } from "../../runtime/shared/runtime-source.js";
 import {
   loadBackendTask,
   loadCommandContext,

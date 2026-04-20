@@ -4,7 +4,7 @@ import {
   type LoadedConfig,
   type ResolvedProject,
 } from "@agentplaneorg/core";
-import { mapCoreError } from "./error-map.js";
+import { mapCoreError, writeError } from "./error-map.js";
 import { exitCodeForError } from "./exit-codes.js";
 import { loadDotEnv } from "../shared/env.js";
 import { CliError } from "../shared/errors.js";
@@ -18,7 +18,6 @@ import { usageError } from "./spec/errors.js";
 import { suggestOne } from "./spec/suggest.js";
 import { COMMANDS, matchCommandCatalog } from "./run-cli/command-catalog.js";
 import { parseGlobalArgs, resolveOutputMode, runWithOutputMode } from "./run-cli/globals.js";
-import { writeError } from "./run-cli/error-guidance.js";
 import { maybeWarnOnUpdate } from "./run-cli/update-warning.js";
 const HELP_TAIL_OPTIONS = new Set(["--compact", "--json"]);
 

@@ -28,6 +28,20 @@
       "type": "boolean",
       "default": false
     },
+    "close_commit": {
+      "type": "object",
+      "properties": {
+        "direct_dirty_policy": {
+          "type": "string",
+          "enum": ["allow_other_task_readmes", "strict"],
+          "default": "allow_other_task_readmes"
+        }
+      },
+      "additionalProperties": true,
+      "default": {
+        "direct_dirty_policy": "allow_other_task_readmes"
+      }
+    },
     "agents": {
       "type": "object",
       "properties": {

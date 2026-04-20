@@ -20,6 +20,10 @@ function stripPunctuation(input: string): string {
   return input.replaceAll(/[^\p{L}\p{N}\s-]/gu, " ");
 }
 
+function normalizeSummaryText(input: string): string {
+  return stripPunctuation(input).toLowerCase().trim().replaceAll(/\s+/g, " ");
+}
+
 export function extractTaskSuffix(taskId: string): string {
   const parts = taskId.split("-");
   return parts.at(-1) ?? "";
@@ -34,7 +38,7 @@ export function isGenericSubject(subject: string, genericTokens: string[]): bool
   return words.length <= 3 && words.every((w) => tokenSet.has(w));
 }
 
-function parseTaskSubjectTemplate(subject: string): {
+export function parseTaskSubjectTemplate(subject: string): {
   emoji: string;
   suffix: string;
   scope: string;
@@ -58,6 +62,35 @@ function parseTaskSubjectTemplate(subject: string): {
   if (!scope || !summary) return null;
 
   return { emoji, suffix, scope, summary };
+}
+
+const TASK_ARTIFACT_REFRESH_SUMMARY = "refresh task artifacts after commit";
+
+export function buildTaskArtifactRefreshCommitSubject(opts: {
+  taskId: string;
+  baseSubject?: string | null;
+  defaultEmoji?: string;
+  defaultScope?: string;
+}): string {
+  const suffix = extractTaskSuffix(opts.taskId);
+  const parsed = parseTaskSubjectTemplate(opts.baseSubject ?? "");
+  const canInherit = parsed !== null && parsed.suffix.toLowerCase() === suffix.toLowerCase();
+  const emoji = canInherit ? parsed.emoji : (opts.defaultEmoji ?? "🧩");
+  const scope = canInherit ? parsed.scope : (opts.defaultScope ?? "task");
+  return `${emoji} ${suffix} ${scope}: ${TASK_ARTIFACT_REFRESH_SUMMARY}`;
+}
+
+export function isTaskArtifactRefreshCommitSubject(opts: {
+  subject: string;
+  taskId?: string | null;
+}): boolean {
+  const parsed = parseTaskSubjectTemplate(opts.subject);
+  if (!parsed) return false;
+  const taskId = (opts.taskId ?? "").trim();
+  if (taskId && parsed.suffix.toLowerCase() !== extractTaskSuffix(taskId).toLowerCase()) {
+    return false;
+  }
+  return normalizeSummaryText(parsed.summary) === TASK_ARTIFACT_REFRESH_SUMMARY;
 }
 
 function parseNonTaskSubjectTemplate(subject: string): {
@@ -141,7 +174,7 @@ export function validateCommitSubject(opts: {
       return t ? { summary: t.summary } : null;
     })();
   const summary = parsedForSummary?.summary ?? "";
-  const normalizedSummary = stripPunctuation(summary).toLowerCase().trim();
+  const normalizedSummary = normalizeSummaryText(summary);
   if (!normalizedSummary) {
     errors.push("commit subject is too generic");
     return { ok: errors.length === 0, errors };

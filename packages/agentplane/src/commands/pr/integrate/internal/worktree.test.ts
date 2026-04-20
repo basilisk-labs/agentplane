@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { CliError } from "../../../../../shared/errors.js";
+import type { CliError } from "../../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
   fileExists: vi.fn(),

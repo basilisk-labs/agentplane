@@ -1,12 +1,8 @@
-import { execFile } from "node:child_process";
 import path from "node:path";
-import { promisify } from "node:util";
 
-import { atomicWriteFile } from "@agentplaneorg/core";
+import { atomicWriteFile, runProcess } from "@agentplaneorg/core";
 
 import { dedupeStrings } from "../../../shared/strings.js";
-
-const execFileAsync = promisify(execFile);
 
 const SCENARIO_REPORT_NAME = "report.json";
 
@@ -92,9 +88,9 @@ function isNotGitRepoError(err: unknown): boolean {
 export async function getGitDiffSummary(cwd: string): Promise<ScenarioRunGitSummary | undefined> {
   try {
     const [diff, staged, status] = await Promise.all([
-      execFileAsync("git", ["diff", "--stat"], { cwd }),
-      execFileAsync("git", ["diff", "--stat", "--staged"], { cwd }),
-      execFileAsync("git", ["status", "--porcelain"], { cwd }),
+      runProcess({ command: "git", args: ["diff", "--stat"], cwd }),
+      runProcess({ command: "git", args: ["diff", "--stat", "--staged"], cwd }),
+      runProcess({ command: "git", args: ["status", "--porcelain"], cwd }),
     ]);
     const diffStat = String(diff.stdout).trim();
     const stagedStat = String(staged.stdout).trim();

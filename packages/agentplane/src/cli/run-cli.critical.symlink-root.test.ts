@@ -1,7 +1,8 @@
 import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
+import { describeCritical } from "../testing/index.js";
 import {
   ensureDir,
   expectCliError,
@@ -27,7 +28,7 @@ async function canCreateSymlink(): Promise<boolean> {
   }
 }
 
-describe("critical: symlink root", () => {
+describeCritical("critical: symlink root", () => {
   it("config show must not climb to a real parent repo when cwd is a symlinked child", async () => {
     if (!(await canCreateSymlink())) return;
 

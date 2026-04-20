@@ -15,14 +15,83 @@ describe("release CI contract", () => {
     };
 
     const releaseCiCheck = packageJson.scripts?.["release:ci-check"] ?? "";
-    expect(releaseCiCheck).toContain("bun run test:workflow-coverage");
-    expect(releaseCiCheck).toContain("bun run test:significant-coverage");
-    expect(releaseCiCheck.indexOf("bun run test:workflow-coverage")).toBeGreaterThan(
-      releaseCiCheck.indexOf("bun run test:release:ci-base"),
+    expect(releaseCiCheck).toContain("bun run coverage:workflow-suite");
+    expect(releaseCiCheck).toContain("bun run coverage:significant-suite");
+    expect(releaseCiCheck.indexOf("bun run coverage:workflow-suite")).toBeGreaterThan(
+      releaseCiCheck.indexOf("bun run test:project -- release-ci-base"),
     );
-    expect(releaseCiCheck.indexOf("bun run test:significant-coverage")).toBeGreaterThan(
-      releaseCiCheck.indexOf("bun run test:workflow-coverage"),
+    expect(releaseCiCheck.indexOf("bun run coverage:significant-suite")).toBeGreaterThan(
+      releaseCiCheck.indexOf("bun run coverage:workflow-suite"),
     );
+  });
+
+  it("builds testkit before agentplane in release and hosted install routes", async () => {
+    const rootPackageJsonText = await readRootText("package.json");
+    const rootPackageJson = JSON.parse(rootPackageJsonText) as {
+      scripts?: Record<string, string>;
+    };
+    const releaseCheck = rootPackageJson.scripts?.["release:check"] ?? "";
+
+    expect(releaseCheck.indexOf("bun run --filter=agentplane build")).toBeGreaterThan(
+      releaseCheck.indexOf("bun run --filter=@agentplaneorg/core build"),
+    );
+    expect(releaseCheck.indexOf("bun run --filter=@agentplane/testkit build")).toBeGreaterThan(
+      releaseCheck.indexOf("bun run --filter=agentplane build"),
+    );
+
+    const [coreCi, prepublish, hostedClose, reinstall] = await Promise.all([
+      readRootText(".github/workflows/ci.yml"),
+      readRootText(".github/workflows/prepublish.yml"),
+      readRootText(".github/workflows/task-hosted-close.yml"),
+      readRootText("scripts/reinstall-global-agentplane.sh"),
+    ]);
+
+    for (const text of [coreCi, prepublish, hostedClose, reinstall]) {
+      expect(text).toContain("bun run --filter=@agentplane/testkit build");
+      expect(text.indexOf("bun run --filter=agentplane build")).toBeGreaterThan(
+        text.indexOf("bun run --filter=@agentplaneorg/core build"),
+      );
+      expect(text.indexOf("bun run --filter=@agentplane/testkit build")).toBeGreaterThan(
+        text.indexOf("bun run --filter=agentplane build"),
+      );
+    }
+  });
+
+  it("does not expose repo-private test helpers from the published agentplane package", async () => {
+    const agentplanePackageJsonText = await readRootText("packages/agentplane/package.json");
+    const agentplanePackageJson = JSON.parse(agentplanePackageJsonText) as {
+      exports?: Record<string, unknown>;
+    };
+
+    expect(agentplanePackageJson.exports?.["./internal/testing"]).toBeUndefined();
+  });
+
+  it("keeps the publishable agentplane build independent from cached dist state", async () => {
+    const agentplanePackageJsonText = await readRootText("packages/agentplane/package.json");
+    const agentplanePackageJson = JSON.parse(agentplanePackageJsonText) as {
+      scripts?: Record<string, string>;
+    };
+
+    expect(agentplanePackageJson.scripts?.build).toContain("npm run clean");
+    expect(agentplanePackageJson.scripts?.build).toContain("tsc -b --force");
+  });
+
+  it("keeps repo-test compatibility files out of the publishable agentplane build", async () => {
+    const agentplaneTsconfigText = await readRootText("packages/agentplane/tsconfig.json");
+    const agentplaneTsconfig = JSON.parse(agentplaneTsconfigText) as {
+      exclude?: string[];
+    };
+
+    expect(agentplaneTsconfig.exclude).toContain("src/testing/**/*.ts");
+    expect(agentplaneTsconfig.exclude).toContain("src/cli/run-cli.core.pr-flow.pr-support.ts");
+    expect(agentplaneTsconfig.exclude).toContain("src/cli/run-cli.core.tasks.query-support.ts");
+  });
+
+  it("checks the generated bootstrap doc against the actual runtime-source dist path", async () => {
+    const checkScript = await readRootText("scripts/check-agent-bootstrap-fresh.mjs");
+
+    expect(checkScript).toContain('"runtime",\n  "shared",\n  "runtime-source.js"');
+    expect(checkScript).not.toContain('"dist",\n  "shared",\n  "runtime-source.js"');
   });
 
   it("documents the release prepublish coverage guards", async () => {

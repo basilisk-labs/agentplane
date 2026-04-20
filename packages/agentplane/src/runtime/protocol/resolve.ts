@@ -9,7 +9,7 @@ import {
   type AgentplaneProtocolSuccessResult,
   type FrameworkExplainProtocolResult,
   type FrameworkProtocolSurface,
-} from "./types.js";
+} from "./model.js";
 
 export const AGENTPLANE_PROTOCOL_COMPATIBILITY: AgentplaneProtocolCompatibility = {
   strategy: "additive",

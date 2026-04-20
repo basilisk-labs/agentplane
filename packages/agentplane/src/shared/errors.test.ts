@@ -1,8 +1,41 @@
 import { describe, expect, it } from "vitest";
 
-import { CliError, formatJsonError } from "./errors.js";
+import {
+  AgentplaneError,
+  BackendCliError,
+  CliError,
+  GitError,
+  InternalError,
+  IoError,
+  NetworkError,
+  RuntimeError,
+  UsageError,
+  ValidationError,
+  formatJsonError,
+} from "./errors.js";
 
 describe("errors", () => {
+  it("domain subclasses preserve the CliError compatibility contract", () => {
+    const cases = [
+      [new UsageError({ message: "usage" }), "E_USAGE", 2],
+      [new ValidationError({ message: "validation" }), "E_VALIDATION", 3],
+      [new IoError({ message: "io" }), "E_IO", 4],
+      [new GitError({ message: "git" }), "E_GIT", 5],
+      [new BackendCliError({ message: "backend" }), "E_BACKEND", 6],
+      [new NetworkError({ message: "network" }), "E_NETWORK", 7],
+      [new RuntimeError({ message: "runtime" }), "E_RUNTIME", 8],
+      [new InternalError({ message: "internal" }), "E_INTERNAL", 1],
+    ] as const;
+
+    for (const [err, code, exitCode] of cases) {
+      expect(err).toBeInstanceOf(AgentplaneError);
+      expect(err).toBeInstanceOf(CliError);
+      expect(err.code).toBe(code);
+      expect(err.exitCode).toBe(exitCode);
+      expect(err.name).toBe(err.constructor.name);
+    }
+  });
+
   it("formatJsonError emits stable shape", () => {
     const err = new CliError({
       exitCode: 2,

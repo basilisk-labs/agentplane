@@ -35,9 +35,6 @@
   "bin": {
     "agentplane": "bin/agentplane.js"
   },
-  "exports": {
-    "./internal/testing": "./dist/testing/index.js"
-  },
   "files": [
     "bin",
     "dist",
@@ -51,7 +48,7 @@
   },
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
-    "build": "tsc -b && node ../../scripts/manifest.mjs build .",
+    "build": "npm run clean && tsc -b --force && node ../../scripts/manifest.mjs build .",
     "typecheck": "tsc -b",
     "prepare": "npm run build",
     "prepack": "npm run clean && npm run build",
@@ -60,7 +57,10 @@
   "dependencies": {
     "@agentplaneorg/core": "0.3.15",
     "@agentplaneorg/recipes": "0.3.15",
-    "yauzl": "^2.10.0"
+    "@clack/prompts": "^1.2.0",
+    "yauzl": "^2.10.0",
+    "zod": "^3",
+    "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {
     "@types/yauzl": "^2.10.0"

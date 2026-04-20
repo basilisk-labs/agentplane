@@ -6,7 +6,7 @@ import type {
   ExecutionBudgetCounter,
   ExecutionBudgetPhase,
   ResolvedExecutionProfileRuntime,
-} from "./types.js";
+} from "./model.js";
 
 function toBudgetCounter(limit: number): ExecutionBudgetCounter {
   return {

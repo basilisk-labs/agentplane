@@ -1,6 +1,7 @@
 import { backendNotSupportedMessage, createCliEmitter } from "../cli/output.js";
 import { mapBackendError } from "../cli/error-map.js";
 import { CliError } from "../shared/errors.js";
+import type { TaskBackend } from "../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "./shared/task-backend.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
 const output = createCliEmitter();
@@ -33,6 +34,57 @@ export type BackendInspectParsed = {
   quiet: boolean;
 };
 
+type BackendCommandDescriptor<Flags extends { backendId?: string | null; yes: boolean }> = {
+  command: string;
+  operation: keyof Pick<TaskBackend, "sync" | "migrateCanonicalState" | "inspectConfiguration">;
+  unsupportedLabel: string;
+  mismatchReasonCode: string;
+  networkAction: string;
+  networkReason: (backendId: string) => string;
+  flags: Flags;
+};
+
+async function resolveBackendCommandContext<
+  Flags extends { backendId?: string | null; yes: boolean },
+>(
+  opts: {
+    ctx?: CommandContext;
+    cwd: string;
+    rootOverride?: string;
+  },
+  descriptor: BackendCommandDescriptor<Flags>,
+): Promise<{ ctx: CommandContext; backend: TaskBackend; backendId: string }> {
+  const ctx =
+    opts.ctx ??
+    (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  const backend = ctx.taskBackend;
+  const backendId = ctx.backendId;
+  if (descriptor.flags.backendId && backendId && descriptor.flags.backendId !== backendId) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `Configured backend is "${backendId}", not "${descriptor.flags.backendId}"`,
+      context: { command: descriptor.command, reason_code: descriptor.mismatchReasonCode },
+    });
+  }
+  if (!backend[descriptor.operation]) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: backendNotSupportedMessage(descriptor.unsupportedLabel),
+    });
+  }
+  if (backendId !== "local") {
+    await ensureNetworkApproved({
+      action: descriptor.networkAction,
+      config: ctx.config,
+      yes: descriptor.flags.yes,
+      reason: descriptor.networkReason(backendId),
+    });
+  }
+  return { ctx, backend, backendId };
+}
+
 export async function cmdBackendSyncParsed(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -40,36 +92,16 @@ export async function cmdBackendSyncParsed(opts: {
   flags: BackendSyncParsed;
 }): Promise<number> {
   try {
-    const ctx =
-      opts.ctx ??
-      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const backend = ctx.taskBackend;
-    const backendId = ctx.backendId;
-    const config = ctx.config;
-    if (opts.flags.backendId && backendId && opts.flags.backendId !== backendId) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Configured backend is "${backendId}", not "${opts.flags.backendId}"`,
-        context: { command: "backend sync", reason_code: "sync_backend_mismatch" },
-      });
-    }
-    if (!backend.sync) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: backendNotSupportedMessage("sync()"),
-      });
-    }
-    if (backendId !== "local") {
-      await ensureNetworkApproved({
-        action: "backend_sync",
-        config,
-        yes: opts.flags.yes,
-        reason: `backend sync may access the network (backend: ${backendId})`,
-      });
-    }
-    await backend.sync({
+    const { backend } = await resolveBackendCommandContext(opts, {
+      command: "backend sync",
+      operation: "sync",
+      unsupportedLabel: "sync()",
+      mismatchReasonCode: "sync_backend_mismatch",
+      networkAction: "backend_sync",
+      networkReason: (backendId) => `backend sync may access the network (backend: ${backendId})`,
+      flags: opts.flags,
+    });
+    await backend.sync!({
       direction: opts.flags.direction,
       conflict: opts.flags.conflict,
       quiet: opts.flags.quiet,
@@ -89,36 +121,16 @@ export async function cmdSyncParsed(opts: {
   flags: SyncParsed;
 }): Promise<number> {
   try {
-    const ctx =
-      opts.ctx ??
-      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const backend = ctx.taskBackend;
-    const backendId = ctx.backendId;
-    const config = ctx.config;
-    if (opts.flags.backendId && backendId && opts.flags.backendId !== backendId) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Configured backend is "${backendId}", not "${opts.flags.backendId}"`,
-        context: { command: "sync", reason_code: "sync_backend_mismatch" },
-      });
-    }
-    if (!backend.sync) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: backendNotSupportedMessage("sync()"),
-      });
-    }
-    if (backendId !== "local") {
-      await ensureNetworkApproved({
-        action: "backend_sync",
-        config,
-        yes: opts.flags.yes,
-        reason: `sync may access the network (backend: ${backendId})`,
-      });
-    }
-    await backend.sync({
+    const { backend } = await resolveBackendCommandContext(opts, {
+      command: "sync",
+      operation: "sync",
+      unsupportedLabel: "sync()",
+      mismatchReasonCode: "sync_backend_mismatch",
+      networkAction: "backend_sync",
+      networkReason: (backendId) => `sync may access the network (backend: ${backendId})`,
+      flags: opts.flags,
+    });
+    await backend.sync!({
       direction: opts.flags.direction,
       conflict: opts.flags.conflict,
       quiet: opts.flags.quiet,
@@ -138,39 +150,17 @@ export async function cmdBackendMigrateCanonicalStateParsed(opts: {
   flags: BackendMigrateCanonicalStateParsed;
 }): Promise<number> {
   try {
-    const ctx =
-      opts.ctx ??
-      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const backend = ctx.taskBackend;
-    const backendId = ctx.backendId;
-    const config = ctx.config;
-    if (opts.flags.backendId && backendId && opts.flags.backendId !== backendId) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Configured backend is "${backendId}", not "${opts.flags.backendId}"`,
-        context: {
-          command: "backend migrate-canonical-state",
-          reason_code: "sync_backend_mismatch",
-        },
-      });
-    }
-    if (!backend.migrateCanonicalState) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: backendNotSupportedMessage("migrateCanonicalState()"),
-      });
-    }
-    if (backendId !== "local") {
-      await ensureNetworkApproved({
-        action: "backend_migrate_canonical_state",
-        config,
-        yes: opts.flags.yes,
-        reason: `backend migrate-canonical-state may access the network (backend: ${backendId})`,
-      });
-    }
-    const result = await backend.migrateCanonicalState();
+    const { backend } = await resolveBackendCommandContext(opts, {
+      command: "backend migrate-canonical-state",
+      operation: "migrateCanonicalState",
+      unsupportedLabel: "migrateCanonicalState()",
+      mismatchReasonCode: "sync_backend_mismatch",
+      networkAction: "backend_migrate_canonical_state",
+      networkReason: (backendId) =>
+        `backend migrate-canonical-state may access the network (backend: ${backendId})`,
+      flags: opts.flags,
+    });
+    const result = await backend.migrateCanonicalState!();
     if (!opts.flags.quiet) {
       output.success(
         "backend migrate-canonical-state",
@@ -203,39 +193,17 @@ export async function cmdBackendInspectParsed(opts: {
   flags: BackendInspectParsed;
 }): Promise<number> {
   try {
-    const ctx =
-      opts.ctx ??
-      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const backend = ctx.taskBackend;
-    const backendId = ctx.backendId;
-    const config = ctx.config;
-    if (opts.flags.backendId && backendId && opts.flags.backendId !== backendId) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Configured backend is "${backendId}", not "${opts.flags.backendId}"`,
-        context: {
-          command: "backend inspect",
-          reason_code: "inspect_backend_mismatch",
-        },
-      });
-    }
-    if (!backend.inspectConfiguration) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: backendNotSupportedMessage("inspectConfiguration()"),
-      });
-    }
-    if (backendId !== "local") {
-      await ensureNetworkApproved({
-        action: "backend_inspect",
-        config,
-        yes: opts.flags.yes,
-        reason: `backend inspect may access the network (backend: ${backendId})`,
-      });
-    }
-    const result = await backend.inspectConfiguration();
+    const { backend } = await resolveBackendCommandContext(opts, {
+      command: "backend inspect",
+      operation: "inspectConfiguration",
+      unsupportedLabel: "inspectConfiguration()",
+      mismatchReasonCode: "inspect_backend_mismatch",
+      networkAction: "backend_inspect",
+      networkReason: (backendId) =>
+        `backend inspect may access the network (backend: ${backendId})`,
+      flags: opts.flags,
+    });
+    const result = await backend.inspectConfiguration!();
     if (opts.flags.quiet) return 0;
     const canonicalStateSummary =
       result.canonicalState.configuredFieldId === null

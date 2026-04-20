@@ -1,17 +1,21 @@
 import { describe, expect, it } from "vitest";
 
-import { exitCodeForError } from "./exit-codes.js";
+import { ERROR_TO_EXIT, ExitCode, exitCodeForError } from "./exit-codes.js";
 
 describe("cli contract exit codes", () => {
   it("maps error codes to documented exit codes", () => {
-    expect(exitCodeForError("E_USAGE")).toBe(2);
-    expect(exitCodeForError("E_VALIDATION")).toBe(3);
-    expect(exitCodeForError("E_IO")).toBe(4);
-    expect(exitCodeForError("E_GIT")).toBe(5);
-    expect(exitCodeForError("E_BACKEND")).toBe(6);
-    expect(exitCodeForError("E_NETWORK")).toBe(7);
-    expect(exitCodeForError("E_RUNTIME")).toBe(8);
-    expect(exitCodeForError("E_HANDOFF")).toBe(9);
-    expect(exitCodeForError("E_INTERNAL")).toBe(1);
+    expect(ERROR_TO_EXIT).toEqual({
+      E_USAGE: ExitCode.Usage,
+      E_VALIDATION: ExitCode.Validation,
+      E_IO: ExitCode.Io,
+      E_GIT: ExitCode.Git,
+      E_BACKEND: ExitCode.Backend,
+      E_NETWORK: ExitCode.Network,
+      E_RUNTIME: ExitCode.Runtime,
+      E_HANDOFF: ExitCode.Handoff,
+      E_INTERNAL: ExitCode.Internal,
+    });
+    expect(exitCodeForError("E_USAGE")).toBe(ExitCode.Usage);
+    expect(exitCodeForError("E_INTERNAL")).toBe(ExitCode.Internal);
   });
 });

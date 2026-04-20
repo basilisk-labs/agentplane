@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helpers.js";
+import { mkGitRepoRoot, writeDefaultConfig } from "../../testing/index.js";
 
 import { cmdTaskMigrateDoc } from "./migrate-doc.js";
 

@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { defineScript, runScriptMain } from "./lib/script-runtime.mjs";
 
 const ROOT = process.cwd();
 
@@ -96,54 +97,58 @@ const onboardingScenarios = [
   },
 ];
 
-async function main() {
-  const fileContents = Object.fromEntries(
-    await Promise.all(
-      Object.entries(files).map(async ([key, file]) => [key, await readFile(file, "utf8")]),
-    ),
-  );
+const main = defineScript({
+  name: "check-agent-onboarding-scenario",
+  async run() {
+    const fileContents = Object.fromEntries(
+      await Promise.all(
+        Object.entries(files).map(async ([key, file]) => [key, await readFile(file, "utf8")]),
+      ),
+    );
 
-  for (const heading of ["### Start", "### Work on a task", "### Upgrade & recover"]) {
-    assertIncludes(fileContents.docsIndex, heading, "docs index");
-  }
-
-  assertIncludes(fileContents.setup, "### Managed ownership contract", "setup");
-  assertIncludes(
-    fileContents.setup,
-    "do not treat `incidents.md` as part of the normal startup reading path for agents",
-    "setup",
-  );
-  assertIncludes(
-    fileContents.agents ?? "",
-    "Agents should not read `incidents.md` during the normal startup path",
-    "agents",
-  );
-
-  assertIncludes(fileContents.lifecycle, "**Exceptional/manual close paths**", "task lifecycle");
-  assertIncludes(fileContents.lifecycle, "--no-close-commit", "task lifecycle");
-
-  for (const label of ['label: "Start"', 'label: "Work on a task"', 'label: "Upgrade & recover"']) {
-    assertIncludes(fileContents.sidebar, label, "sidebar");
-  }
-
-  for (const navLabel of [
-    'label: "Start"',
-    'label: "Work on a Task"',
-    'label: "Upgrade & Recover"',
-  ]) {
-    assertIncludes(fileContents.docusaurusConfig, navLabel, "navbar");
-  }
-
-  for (const scenario of onboardingScenarios) {
-    for (const [fileKey, needle] of scenario.checks) {
-      assertScenarioText(fileContents, fileKey, needle, scenario.name);
+    for (const heading of ["### Start", "### Work on a task", "### Upgrade & recover"]) {
+      assertIncludes(fileContents.docsIndex, heading, "docs index");
     }
-  }
 
-  process.stdout.write("ok: agent onboarding scenario surfaces are aligned\n");
-}
+    assertIncludes(fileContents.setup, "### Managed ownership contract", "setup");
+    assertIncludes(
+      fileContents.setup,
+      "do not treat `incidents.md` as part of the normal startup reading path for agents",
+      "setup",
+    );
+    assertIncludes(
+      fileContents.agents ?? "",
+      "Agents should not read `incidents.md` during the normal startup path",
+      "agents",
+    );
 
-main().catch((error) => {
-  process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
-  process.exitCode = 1;
+    assertIncludes(fileContents.lifecycle, "**Exceptional/manual close paths**", "task lifecycle");
+    assertIncludes(fileContents.lifecycle, "--no-close-commit", "task lifecycle");
+
+    for (const label of [
+      'label: "Start"',
+      'label: "Work on a task"',
+      'label: "Upgrade & recover"',
+    ]) {
+      assertIncludes(fileContents.sidebar, label, "sidebar");
+    }
+
+    for (const navLabel of [
+      'label: "Start"',
+      'label: "Work on a Task"',
+      'label: "Upgrade & Recover"',
+    ]) {
+      assertIncludes(fileContents.docusaurusConfig, navLabel, "navbar");
+    }
+
+    for (const scenario of onboardingScenarios) {
+      for (const [fileKey, needle] of scenario.checks) {
+        assertScenarioText(fileContents, fileKey, needle, scenario.name);
+      }
+    }
+
+    process.stdout.write("ok: agent onboarding scenario surfaces are aligned\n");
+  },
 });
+
+runScriptMain(main);

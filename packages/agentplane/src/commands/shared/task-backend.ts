@@ -13,6 +13,7 @@ import {
 
 import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
 import { CliError } from "../../shared/errors.js";
+import { emitTraceEvent } from "../../shared/trace-events.js";
 import {
   loadTaskBackend,
   taskRecordToData,
@@ -164,6 +165,15 @@ export async function loadCommandContext(opts: {
     config: opts.config,
   });
   const { backend, backendId, backendConfigPath, resolved, config } = backendLoaded;
+  emitTraceEvent({
+    component: "backend-ops",
+    event: "command_context_loaded",
+    details: {
+      backend: backendId,
+      config_path: path.relative(resolved.gitRoot, backendConfigPath),
+      canonical_source: backend.capabilities?.canonical_source ?? null,
+    },
+  });
   return {
     resolvedProject: resolved,
     config,
@@ -197,10 +207,24 @@ export async function loadTaskFromContext(opts: {
   }
 
   const task = await opts.ctx.taskBackend.getTask(opts.taskId);
-  if (task) return task;
+  if (task) {
+    emitTraceEvent({
+      component: "backend-ops",
+      event: "task_loaded",
+      details: { task_id: opts.taskId, backend: opts.ctx.backendId },
+    });
+    return task;
+  }
 
   const fallbackTask = await branchFallback();
-  if (fallbackTask) return fallbackTask;
+  if (fallbackTask) {
+    emitTraceEvent({
+      component: "backend-ops",
+      event: "task_loaded_from_branch_snapshot",
+      details: { task_id: opts.taskId, backend: opts.ctx.backendId },
+    });
+    return fallbackTask;
+  }
 
   throw new CliError({
     exitCode: 4,

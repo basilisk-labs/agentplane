@@ -27,10 +27,26 @@ export type CommandEntry = {
   invocation?: string;
 };
 
-type CommandMeta = {
+export type CommandMeta = {
   needs?: CommandNeeds;
   invocation?: string;
 };
+
+export type CommandModule = object;
+
+type LoadedCommandDeclaration<TParsed> = CommandMeta & {
+  load: (deps: RunDeps) => Promise<CommandHandler<TParsed>>;
+  module?: never;
+  runExport?: never;
+};
+
+type ExportedCommandDeclaration = CommandMeta & {
+  module: () => Promise<CommandModule>;
+  runExport: string;
+  load?: never;
+};
+
+type CommandDeclaration<TParsed> = LoadedCommandDeclaration<TParsed> | ExportedCommandDeclaration;
 
 function normalizeDispatchNeeds(needs: CommandNeeds): DispatchNeeds {
   switch (needs) {
@@ -51,23 +67,40 @@ function normalizeDispatchNeeds(needs: CommandNeeds): DispatchNeeds {
 
 export function declareCommand<TParsed>(
   spec: CommandSpec<TParsed>,
-  load: (deps: RunDeps) => Promise<CommandHandler<TParsed>>,
-  meta?: CommandMeta,
+  declaration: CommandDeclaration<TParsed>,
 ): CommandEntry {
-  const needs = meta?.needs ?? "project+config+task";
+  const needs = declaration.needs ?? "project+config+task";
   return {
     spec: spec as CommandSpec<unknown>,
-    load: (deps) => load(deps) as Promise<CommandHandler<unknown>>,
+    load: (deps) => loadDeclaredCommand(declaration, deps) as Promise<CommandHandler<unknown>>,
     needs,
     dispatch: normalizeDispatchNeeds(needs),
-    invocation: meta?.invocation,
+    invocation: declaration.invocation,
   };
 }
 
-export function entry<TParsed>(
-  spec: CommandSpec<TParsed>,
-  load: (deps: RunDeps) => Promise<CommandHandler<TParsed>>,
-  meta?: CommandMeta,
-): CommandEntry {
-  return declareCommand(spec, load, meta);
+export function commandModule<TModule extends CommandModule>(module: () => Promise<TModule>) {
+  return function declareModuleCommand<TParsed>(
+    spec: CommandSpec<TParsed>,
+    runExport: Extract<keyof TModule, string>,
+    meta?: CommandMeta,
+  ): CommandEntry {
+    return declareCommand(spec, { module, runExport, ...meta });
+  };
+}
+
+async function loadDeclaredCommand<TParsed>(
+  declaration: CommandDeclaration<TParsed>,
+  deps: RunDeps,
+): Promise<CommandHandler<TParsed>> {
+  if (typeof declaration.load === "function") {
+    return declaration.load(deps);
+  }
+
+  const module = await declaration.module();
+  const handler = (module as Record<string, unknown>)[declaration.runExport];
+  if (typeof handler !== "function") {
+    throw new Error(`Command module does not export handler "${declaration.runExport}"`);
+  }
+  return handler as CommandHandler<TParsed>;
 }

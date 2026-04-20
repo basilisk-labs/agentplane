@@ -5,7 +5,7 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
   cat <<'USAGE'
 Usage: scripts/reinstall-global-agentplane.sh
 
-Rebuilds local @agentplaneorg/core and agentplane packages,
+Rebuilds local @agentplaneorg/core, agentplane, and @agentplane/testkit packages,
 reinstalls both packages globally from the local checkout,
 and verifies that global agentplane resolves local framework bits.
 USAGE
@@ -20,6 +20,7 @@ fi
 echo "==> Building local packages"
 bun run --filter=@agentplaneorg/core build
 bun run --filter=agentplane build
+bun run --filter=@agentplane/testkit build
 
 echo "==> Reinstalling global framework packages from local source"
 npm uninstall -g agentplane @agentplaneorg/core >/dev/null 2>&1 || true

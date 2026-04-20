@@ -35,6 +35,7 @@ export async function writeInitConfig(opts: {
   agentplaneDir: string;
   gitRoot: string;
   workflow: "direct" | "branch_pr";
+  directCloseDirtyPolicy: "allow_other_task_readmes" | "strict";
   backendConfigPathAbs: string;
   requirePlanApproval: boolean;
   requireNetworkApproval: boolean;
@@ -51,6 +52,7 @@ export async function writeInitConfig(opts: {
   setByDottedKey(rawConfig, "commit_automation", "finish_only");
   // Keep status commits explicit by default in all modes to reduce commit noise.
   setByDottedKey(rawConfig, "finish_auto_status_commit", "false");
+  setByDottedKey(rawConfig, "close_commit.direct_dirty_policy", opts.directCloseDirtyPolicy);
   setByDottedKey(
     rawConfig,
     "tasks_backend.config_path",

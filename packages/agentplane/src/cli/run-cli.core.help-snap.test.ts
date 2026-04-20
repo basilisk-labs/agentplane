@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
-import { captureStdIO, silenceStdIO } from "./run-cli.test-helpers.js";
+import { captureStdIO, silenceStdIO } from "../testing/index.js";
 
 let restoreStdIO: (() => void) | null = null;
 

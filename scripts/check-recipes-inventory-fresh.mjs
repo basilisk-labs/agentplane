@@ -1,10 +1,12 @@
 import path from "node:path";
-import { ROOT, checkGeneratedArtifactFresh, runNode } from "./lib/generated-artifacts.mjs";
+import { ROOT, defineGeneratedArtifactCheck, runNode } from "./lib/generated-artifacts.mjs";
+import { defineScript, runScriptMain } from "./lib/script-runtime.mjs";
 
 const DOC_PATH = path.join(ROOT, "docs", "recipes-inventory.json");
 
-async function main() {
-  await checkGeneratedArtifactFresh({
+const main = defineScript({
+  name: "check-recipes-inventory-fresh",
+  run: defineGeneratedArtifactCheck({
     outputPath: DOC_PATH,
     tempPrefix: "agentplane-recipes-inventory-",
     fileName: "recipes-inventory.json",
@@ -14,12 +16,8 @@ async function main() {
       "docs/recipes-inventory.json is missing. Regenerate with: node scripts/generate-recipes-inventory.mjs",
     staleMessage:
       "Recipes inventory is stale. Regenerate with: node scripts/generate-recipes-inventory.mjs",
-  });
-
-  process.stdout.write("ok: docs/recipes-inventory.json is up to date\n");
-}
-
-main().catch((error) => {
-  process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
-  process.exitCode = 1;
+    successMessage: "ok: docs/recipes-inventory.json is up to date",
+  }),
 });
+
+runScriptMain(main);

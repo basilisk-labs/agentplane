@@ -3,7 +3,13 @@ import fs from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
-import { isDirectRun, resolveOutPathArg, runBunx } from "./lib/script-runtime.mjs";
+import {
+  defineScript,
+  isDirectRun,
+  resolveOutPathArg,
+  runBunx,
+  runScriptMain,
+} from "./lib/script-runtime.mjs";
 
 const ROOT = process.cwd();
 const SUPPORTED_RUN_PROFILE_FIELDS = [
@@ -143,18 +149,18 @@ async function buildInventory(cwd = ROOT, options = {}) {
   };
 }
 
-async function main(cwd = ROOT) {
-  const { outputPath: defaultOutputPath } = resolveInventoryPaths(cwd);
-  const outputPath = resolveOutPathArg(process.argv.slice(2), cwd, defaultOutputPath);
-  const payload = await buildInventory(cwd);
-  await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
-  await runBunx(["prettier", "--write", outputPath], { cwd });
-  process.stdout.write(`generated ${path.relative(cwd, outputPath)}\n`);
-}
+const main = defineScript({
+  name: "generate-recipes-inventory",
+  async run({ argv, cwd = ROOT }) {
+    const { outputPath: defaultOutputPath } = resolveInventoryPaths(cwd);
+    const outputPath = resolveOutPathArg(argv, cwd, defaultOutputPath);
+    const payload = await buildInventory(cwd);
+    await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+    await runBunx(["prettier", "--write", outputPath], { cwd });
+    process.stdout.write(`generated ${path.relative(cwd, outputPath)}\n`);
+  },
+});
 
 if (isDirectRun(import.meta.url)) {
-  main().catch((error) => {
-    process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
-    process.exitCode = 1;
-  });
+  runScriptMain(main);
 }

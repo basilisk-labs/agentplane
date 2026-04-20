@@ -8,6 +8,11 @@
     "declarationMap": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.test.ts"],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/testing/**/*.ts",
+    "src/cli/run-cli.core.pr-flow.pr-support.ts",
+    "src/cli/run-cli.core.tasks.query-support.ts"
+  ],
   "references": [{ "path": "../core" }, { "path": "../recipes" }]
 }

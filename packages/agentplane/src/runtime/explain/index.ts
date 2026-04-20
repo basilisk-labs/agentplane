@@ -3,4 +3,4 @@ export type {
   ExplainBehaviorInput,
   ExplainBehaviorInputCategory,
   FrameworkExplainPayload,
-} from "./types.js";
+} from "./model.js";

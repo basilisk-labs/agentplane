@@ -6,7 +6,7 @@ import { promisify } from "node:util";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { seedReleaseWorkspace } from "../release.test-helpers.js";
+import { seedReleaseWorkspace } from "../../../../testkit/src/release.js";
 import { writeExecutableFile } from "../../test-helpers/fs.js";
 
 const execFileAsync = promisify(execFile);

@@ -49,7 +49,7 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
-} from "./run-cli.test-helpers.js";
+} from "../testing/index.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 
@@ -874,6 +874,119 @@ describe("runCli", { timeout: COMMIT_WRAPPER_SUITE_TIMEOUT_MS }, () => {
         .map((s) => s.trim())
         .filter(Boolean);
       expect(changed).toEqual([`.agentplane/tasks/${taskId}/README.md`]);
+    },
+    COMMIT_WRAPPER_CLOSE_CHECK_ONLY_TIMEOUT_MS,
+  );
+
+  it(
+    "commit wrapper --close tolerates dirty README from another active task in direct mode",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
+      const execFileAsync = promisify(execFile);
+
+      await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+      await writeFile(path.join(root, "src.txt"), "impl\n", "utf8");
+      await execFileAsync("git", ["add", "src.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "impl"], { cwd: root });
+      const implRes = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+      const implHash = implRes.stdout.trim();
+
+      const closeTaskId = "202602081506-R18Y1Q";
+      const otherTaskId = "202602081506-QA9T2B";
+      const closeTaskDir = path.join(root, ".agentplane", "tasks", closeTaskId);
+      const otherTaskDir = path.join(root, ".agentplane", "tasks", otherTaskId);
+      await mkdir(closeTaskDir, { recursive: true });
+      await mkdir(otherTaskDir, { recursive: true });
+
+      const closeReadme = renderTaskReadme(
+        {
+          id: closeTaskId,
+          title: "Close commit tolerates parallel active task dirt",
+          result_summary: "close one task without swallowing another active task README",
+          description: "desc",
+          status: "DONE",
+          priority: "high",
+          owner: "ORCHESTRATOR",
+          depends_on: [],
+          tags: ["cli", "code", "git"],
+          verify: ["manual"],
+          verification: {
+            state: "ok",
+            updated_at: "2026-02-08T00:00:00.000Z",
+            updated_by: "TESTER",
+            note: "Verified: direct close should stage only the active task README.",
+          },
+          commit: { hash: implHash, message: "✨ R18Y1Q guard: impl" },
+          doc_version: 2,
+          doc_updated_at: "2026-02-08T00:00:00.000Z",
+          doc_updated_by: "TESTER",
+        },
+        "## Summary\n\nClose me\n",
+      );
+      const otherReadme = renderTaskReadme(
+        {
+          id: otherTaskId,
+          title: "Parallel active task",
+          result_summary: "",
+          description: "desc",
+          status: "DOING",
+          priority: "medium",
+          owner: "CODER",
+          depends_on: [],
+          tags: ["code"],
+          verify: [],
+          verification: null,
+          commit: null,
+          doc_version: 2,
+          doc_updated_at: "2026-02-08T00:00:00.000Z",
+          doc_updated_by: "CODER",
+        },
+        "## Summary\n\nStill active\n",
+      );
+      await writeFile(path.join(closeTaskDir, "README.md"), closeReadme, "utf8");
+      await writeFile(path.join(otherTaskDir, "README.md"), otherReadme, "utf8");
+      await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "task seed"], { cwd: root });
+
+      await writeFile(
+        path.join(closeTaskDir, "README.md"),
+        closeReadme.replace("## Summary\n\nClose me", "## Summary\n\nClose me now"),
+        "utf8",
+      );
+      await writeFile(
+        path.join(otherTaskDir, "README.md"),
+        otherReadme.replace("## Summary\n\nStill active", "## Summary\n\nStill active and dirty"),
+        "utf8",
+      );
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["commit", closeTaskId, "--close", "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("committed");
+      } finally {
+        io.restore();
+      }
+
+      const showRes = await execFileAsync("git", ["show", "--name-only", "--format="], {
+        cwd: root,
+      });
+      const changed = showRes.stdout
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      expect(changed).toEqual([`.agentplane/tasks/${closeTaskId}/README.md`]);
+
+      const statusRes = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
+        cwd: root,
+      });
+      expect(statusRes.stdout).toContain(`.agentplane/tasks/${otherTaskId}/README.md`);
+      expect(statusRes.stdout).not.toContain(`.agentplane/tasks/${closeTaskId}/README.md`);
     },
     COMMIT_WRAPPER_CLOSE_CHECK_ONLY_TIMEOUT_MS,
   );

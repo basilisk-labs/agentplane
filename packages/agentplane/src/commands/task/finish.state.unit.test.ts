@@ -1,0 +1,683 @@
+import {
+  defaultConfig,
+  ensureDocSections,
+  setMarkdownSection,
+  type ResolvedProject,
+} from "@agentplaneorg/core";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
+import { CliError } from "../../shared/errors.js";
+import type { CommandContext } from "../shared/task-backend.js";
+import { GitContext } from "../shared/git-context.js";
+import type { TaskStorePatch } from "../shared/task-store.js";
+
+const mocks = vi.hoisted(() => ({
+  commitFromComment: vi.fn(),
+  cmdCommit: vi.fn(),
+  ensureReconciledBeforeMutation: vi.fn(),
+  loadCommandContext: vi.fn(),
+  loadTaskFromContext: vi.fn(),
+  backendIsLocalFileBackend: vi.fn(),
+  getTaskStore: vi.fn(),
+  readCommitInfo: vi.fn(),
+  nowIso: vi.fn(),
+  resolveBaseBranch: vi.fn(),
+  execFileAsync: vi.fn(),
+  gitBranchExists: vi.fn(),
+  gitCurrentBranch: vi.fn(),
+}));
+
+vi.mock("@agentplaneorg/core", async (importOriginal) => {
+  const actualUnknown: unknown = await importOriginal();
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    resolveBaseBranch: mocks.resolveBaseBranch,
+  };
+});
+
+vi.mock("../guard/index.js", () => ({
+  commitFromComment: mocks.commitFromComment,
+  cmdCommit: mocks.cmdCommit,
+}));
+vi.mock("../shared/reconcile-check.js", () => ({
+  ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
+}));
+vi.mock("../shared/task-backend.js", () => ({
+  backendUsesLocalTaskStore: mocks.backendIsLocalFileBackend,
+  loadCommandContext: mocks.loadCommandContext,
+  loadTaskFromContext: mocks.loadTaskFromContext,
+}));
+vi.mock("../shared/git-ops.js", () => ({
+  gitBranchExists: mocks.gitBranchExists,
+  gitCurrentBranch: mocks.gitCurrentBranch,
+}));
+vi.mock("../shared/git.js", () => ({
+  execFileAsync: mocks.execFileAsync,
+  gitEnv: () => ({}),
+}));
+vi.mock("../shared/task-store.js", async (importOriginal) => {
+  const actualUnknown: unknown = await importOriginal();
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    backendIsLocalFileBackend: mocks.backendIsLocalFileBackend,
+    getTaskStore: mocks.getTaskStore,
+  };
+});
+vi.mock("./shared.js", async (importOriginal) => {
+  const actualUnknown: unknown = await importOriginal();
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    readCommitInfo: mocks.readCommitInfo,
+    nowIso: mocks.nowIso,
+  };
+});
+
+function mkTask(overrides: Partial<TaskData>): TaskData {
+  return {
+    id: "T-1",
+    title: "Title",
+    description: "Desc",
+    status: "TODO",
+    priority: "normal",
+    owner: "me",
+    depends_on: [],
+    tags: [],
+    verify: [],
+    doc: [
+      "## Summary",
+      "Task summary",
+      "",
+      "## Scope",
+      "In-scope files",
+      "",
+      "## Plan",
+      "1. Implement",
+      "",
+      "## Risks",
+      "Low",
+      "",
+      "## Verification",
+      "",
+      "## Rollback Plan",
+      "Revert commit",
+    ].join("\n"),
+    ...overrides,
+  };
+}
+
+function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
+  const config = defaultConfig();
+  // Match the repo's current config defaults: verification is not required at runtime unless enabled.
+  config.agents = {
+    approvals: { require_plan: false, require_network: true, require_verify: false },
+  };
+  config.status_commit_policy = "off";
+  config.paths.workflow_dir = ".agentplane/tasks";
+  config.tasks.comments.verified = { prefix: "Verified:", min_chars: 10 };
+
+  const resolved = {
+    gitRoot: "/repo",
+    agentplaneDir: "/repo/.agentplane",
+  } as unknown as ResolvedProject;
+
+  const backend: TaskBackend = {
+    id: "mock",
+    capabilities: {
+      canonical_source: "local",
+      projection: "canonical",
+      projection_read_mode: "native",
+      reads_from_projection_by_default: true,
+      writes_task_readmes: true,
+      supports_task_revisions: true,
+      supports_revision_guarded_writes: true,
+      may_access_network_on_read: false,
+      may_access_network_on_write: false,
+      supports_projection_refresh: false,
+      supports_push_sync: false,
+      supports_snapshot_export: true,
+    },
+    listTasks: () => Promise.resolve([]),
+    getTask: () => Promise.resolve(null),
+    writeTask: () => Promise.resolve(),
+  };
+
+  const ctx: CommandContext = {
+    resolvedProject: resolved,
+    config,
+    taskBackend: backend,
+    backendId: "mock",
+    backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
+    git: new GitContext({ gitRoot: "/repo" }),
+    memo: {},
+    resolved,
+    backend,
+  };
+  return { ...ctx, ...overrides };
+}
+
+function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
+  if (!patch) return current;
+  const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
+  if (patch.appendComments && patch.appendComments.length > 0) {
+    next.comments = [
+      ...(Array.isArray(current.comments) ? current.comments : []),
+      ...patch.appendComments,
+    ];
+  }
+  if (patch.appendEvents && patch.appendEvents.length > 0) {
+    next.events = [...(Array.isArray(current.events) ? current.events : []), ...patch.appendEvents];
+  }
+  if (patch.doc) {
+    if (patch.doc.kind === "replace-doc") {
+      next.doc = patch.doc.doc;
+    } else {
+      const baseDoc = ensureDocSections(String(current.doc ?? ""), patch.doc.requiredSections);
+      next.doc = ensureDocSections(
+        setMarkdownSection(baseDoc, patch.doc.section, patch.doc.text),
+        patch.doc.requiredSections,
+      );
+    }
+  }
+  if (patch.doc || patch.docMeta?.touch === true) {
+    next.doc_version = patch.docMeta?.version ?? next.doc_version;
+    next.doc_updated_at = new Date().toISOString();
+    next.doc_updated_by = patch.docMeta?.updatedBy ?? next.doc_updated_by;
+  }
+  return next;
+}
+
+describe("task finish state and errors", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  beforeEach(() => {
+    mocks.commitFromComment.mockReset();
+    mocks.cmdCommit.mockReset();
+    mocks.ensureReconciledBeforeMutation.mockReset();
+    mocks.loadCommandContext.mockReset();
+    mocks.loadTaskFromContext.mockReset();
+    mocks.backendIsLocalFileBackend.mockReset();
+    mocks.getTaskStore.mockReset();
+    mocks.readCommitInfo.mockReset();
+    mocks.nowIso.mockReset();
+    mocks.resolveBaseBranch.mockReset();
+    mocks.execFileAsync.mockReset();
+    mocks.gitBranchExists.mockReset();
+    mocks.gitCurrentBranch.mockReset();
+
+    mocks.backendIsLocalFileBackend.mockReturnValue(false);
+    mocks.readCommitInfo.mockResolvedValue({ hash: "hc", message: "mc" });
+    mocks.nowIso.mockReturnValue("2026-02-09T00:00:00.000Z");
+    mocks.resolveBaseBranch.mockResolvedValue("main");
+    mocks.execFileAsync.mockImplementation((...args: unknown[]) => {
+      const [, gitArgs] = args as [string, string[]];
+      if (Array.isArray(gitArgs) && gitArgs[0] === "rev-parse" && gitArgs[1] === "HEAD") {
+        return Promise.resolve({ stdout: "base-head-sha\n", stderr: "" });
+      }
+      return Promise.resolve({ stdout: "", stderr: "" });
+    });
+    mocks.gitBranchExists.mockResolvedValue(false);
+    mocks.gitCurrentBranch.mockResolvedValue("main");
+    mocks.commitFromComment.mockResolvedValue({
+      hash: "new-hash",
+      message: "✅ T-1 task: verified",
+      staged: ["packages/agentplane"],
+    });
+    mocks.cmdCommit.mockResolvedValue(0);
+    mocks.ensureReconciledBeforeMutation.mockResolvedValue();
+  });
+
+  it("rejects implicit HEAD fallback when deterministic close commit lacks implementation metadata", async () => {
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "direct";
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue({
+      get: vi.fn(() => mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
+      patch: vi.fn(
+        async (_taskId: string, builder: (task: TaskData) => Promise<TaskStorePatch>) => ({
+          changed: true,
+          task: applyStorePatch(
+            mkTask({ id: "T-1", status: "DOING", tags: ["docs"] }),
+            await builder(mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
+          ),
+        }),
+      ),
+    });
+
+    const { cmdFinish } = await import("./finish.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: close commit path should require deterministic commit provenance.",
+        result: "close-commit-needs-commit",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+  });
+
+  it("preserves fresher README content and comments when store update sees newer task data", async () => {
+    const staleTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["code"],
+      comments: [{ author: "OLD", body: "stale comment" }],
+      doc: [
+        "## Summary",
+        "Stale summary",
+        "",
+        "## Scope",
+        "scope",
+        "",
+        "## Plan",
+        "plan",
+        "",
+        "## Risks",
+        "Low",
+        "",
+        "## Verification",
+        "done",
+        "",
+        "## Rollback Plan",
+        "rollback",
+      ].join("\n"),
+    });
+    let currentTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["code"],
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
+      comments: [{ author: "CURRENT", body: "fresh comment" }],
+      doc: [
+        "## Summary",
+        "Concurrent summary",
+        "",
+        "## Scope",
+        "scope",
+        "",
+        "## Plan",
+        "plan",
+        "",
+        "## Risks",
+        "Low",
+        "",
+        "## Verification",
+        "done",
+        "",
+        "## Rollback Plan",
+        "rollback",
+      ].join("\n"),
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(staleTask),
+      patch: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+    ctx.taskBackend.capabilities.writes_task_readmes = false;
+    ctx.taskBackend.capabilities.writes_task_readmes = false;
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "done",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(store.get).not.toHaveBeenCalled();
+    expect(store.patch).toHaveBeenCalledTimes(2);
+    expect(currentTask.status).toBe("DONE");
+    expect(currentTask.doc).toContain("## Summary\nConcurrent summary");
+    expect(currentTask.comments).toEqual([
+      { author: "CURRENT", body: "fresh comment" },
+      { author: "A", body: "Verified: this is long enough" },
+    ]);
+    expect(currentTask.comments).not.toEqual(
+      expect.arrayContaining([{ author: "OLD", body: "stale comment" }]),
+    );
+  });
+
+  it("cmdFinish validates the current local task state instead of a stale initial snapshot", async () => {
+    const staleTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["code"],
+      verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+    });
+    let currentTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["code"],
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
+      verification: {
+        state: "ok",
+        updated_at: "2026-02-09T00:00:00.000Z",
+        updated_by: "TESTER",
+        note: "ok",
+      },
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(staleTask),
+      patch: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    const ctx = mkCtx();
+    ctx.config.agents = {
+      approvals: { require_plan: false, require_network: true, require_verify: true },
+    };
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "ok",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(store.get).not.toHaveBeenCalled();
+    expect(store.patch).toHaveBeenCalledTimes(2);
+    expect(currentTask.status).toBe("DONE");
+  });
+
+  it("cmdFinish derives status-commit metadata from the current local task state", async () => {
+    const staleTask = mkTask({
+      id: "T-1",
+      status: "TODO",
+      tags: ["meta"],
+    });
+    let currentTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["code"],
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(staleTask),
+      patch: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+    ctx.taskBackend.capabilities.writes_task_readmes = false;
+    ctx.taskBackend.capabilities.writes_task_readmes = false;
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "ok",
+      breaking: false,
+      force: false,
+      commitFromComment: true,
+      commitEmoji: "✅",
+      commitAllow: ["packages/agentplane"],
+      commitAutoAllow: false,
+      commitAllowTasks: true,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(mocks.commitFromComment).toHaveBeenCalledTimes(1);
+    expect(mocks.commitFromComment.mock.calls.at(-1)?.[0]).toMatchObject({
+      taskId: "T-1",
+      primaryTag: "code",
+      statusFrom: "DOING",
+      statusTo: "DONE",
+    });
+  });
+
+  it("propagates E_VALIDATION when require_verify=true and task is not verified", async () => {
+    const ctx = mkCtx();
+    ctx.config.agents = {
+      approvals: { require_plan: false, require_network: true, require_verify: true },
+    };
+    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["code"] }));
+
+    const { cmdFinish } = await import("./finish.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "ok",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+  });
+
+  it("fails when required agent-filled doc sections are empty", async () => {
+    const ctx = mkCtx();
+    ctx.config.tasks.doc.required_sections = [
+      "Summary",
+      "Scope",
+      "Plan",
+      "Verification",
+      "Verify Steps",
+      "Notes",
+    ];
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        id: "T-1",
+        tags: ["spike"],
+        doc: [
+          "## Summary",
+          "x",
+          "",
+          "## Scope",
+          "",
+          "",
+          "## Plan",
+          "do",
+          "",
+          "## Verify Steps",
+          "Run checks",
+          "",
+          "## Notes",
+          "n/a",
+        ].join("\n"),
+      }),
+    );
+
+    const { cmdFinish } = await import("./finish.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "ok",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+  });
+
+  it("maps non-CliError failures as E_IO via backend error mapping", async () => {
+    const ctx = mkCtx();
+    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["spike"] }));
+    mocks.readCommitInfo.mockRejectedValue(new Error("boom"));
+
+    const { cmdFinish } = await import("./finish.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "ok",
+        commit: "abc123",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_IO" });
+  });
+
+  it("fails early when reconcile guard blocks mutation", async () => {
+    const ctx = mkCtx();
+    mocks.ensureReconciledBeforeMutation.mockRejectedValue(
+      new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message: "reconcile blocked",
+      }),
+    );
+
+    const { cmdFinish } = await import("./finish.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "ok",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+  });
+});

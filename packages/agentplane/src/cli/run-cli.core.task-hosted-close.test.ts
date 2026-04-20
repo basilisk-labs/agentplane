@@ -19,7 +19,7 @@ import {
   runCliSilent,
   writeAndConfigureRoot,
   writeConfig,
-} from "./run-cli.test-helpers.js";
+} from "../testing/index.js";
 
 const execFileAsync = promisify(execFile);
 const HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS = 300_000;

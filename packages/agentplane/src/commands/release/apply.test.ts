@@ -2,16 +2,21 @@ import { execFile } from "node:child_process";
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
-import { commitAll, mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helpers.js";
-import { seedReleaseWorkspace, writeReleaseNotes } from "../release.test-helpers.js";
+import {
+  commitAll,
+  describeWhenNotHook,
+  mkGitRepoRoot,
+  mkGitRepoRootWithBranch,
+  writeDefaultConfig,
+} from "../../testing/index.js";
+import { seedReleaseWorkspace, writeReleaseNotes } from "../../../../testkit/src/release.js";
 import { runReleasePlan } from "./plan.command.js";
 import { pushReleaseRefs, runReleaseApply, runReleaseCandidate } from "./apply.command.js";
 import { cleanHookEnv } from "./apply.mutation.js";
 
 const execFileAsync = promisify(execFile);
-const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 const ORIGINAL_DRY_RUN = process.env.AGENTPLANE_RELEASE_DRY_RUN;
 const RELEASE_APPLY_LONG_TIMEOUT_MS = 120_000;
 const RELEASE_APPLY_FULL_GATE_TIMEOUT_MS = 240_000;
@@ -98,7 +103,7 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
   it(
     "bumps versions, commits, and tags using the latest plan",
     async () => {
-      const root = await mkGitRepoRoot();
+      const root = await mkGitRepoRootWithBranch("release/v0.2.7");
       await writeDefaultConfig(root);
       await seedReleaseWorkspace(root, {
         coreVersion: "0.2.6",
@@ -219,7 +224,7 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
   it(
     "fails when tracked tree is dirty before apply",
     async () => {
-      const root = await mkGitRepoRoot();
+      const root = await mkGitRepoRootWithBranch("main");
       await writeDefaultConfig(root);
       await mkdir(path.join(root, "docs", "releases"), { recursive: true });
       await seedReleaseWorkspace(root, {
@@ -697,7 +702,7 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
   it(
     "fails when release apply is invoked from the branch_pr base branch",
     async () => {
-      const root = await mkGitRepoRoot();
+      const root = await mkGitRepoRootWithBranch("main");
       await writeDefaultConfig(root);
       await writeWorkflowMode(root, "branch_pr");
 

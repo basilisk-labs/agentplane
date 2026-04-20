@@ -1,7 +1,7 @@
 import type { TaskBackendCapabilities } from "../../backends/task-backend.js";
 
 import { createCapabilityRegistry } from "./registry.js";
-import type { AgentplaneCapabilityEntry, AgentplaneCapabilityRegistry } from "./types.js";
+import type { AgentplaneCapabilityEntry, AgentplaneCapabilityRegistry } from "./model.js";
 
 const BOOLEAN_CAPABILITY_FIELDS = [
   {

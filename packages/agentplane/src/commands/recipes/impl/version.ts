@@ -1,4 +1,4 @@
-import { compareVersions } from "../../../shared/version-compare.js";
+import { compareVersions } from "../../../runtime/shared/version-compare.js";
 
 export function compareRecipeVersions(left: string, right: string): number {
   return compareVersions(left, right);

@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { captureStdIO } from "../cli/run-cli.test-helpers.js";
+import { captureStdIO } from "../testing/index.js";
 import { clearRuntimeModeEnv } from "../testing/runtime-env.js";
 import {
   buildFrameworkDevWorkflow,

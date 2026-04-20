@@ -5,7 +5,7 @@ import { CliError } from "../../../shared/errors.js";
 import {
   formatCommentBodyForCommit,
   normalizeCommentBodyForCommit,
-} from "../../../shared/comment-format.js";
+} from "../../shared/comment-format.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
 
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "./env.js";

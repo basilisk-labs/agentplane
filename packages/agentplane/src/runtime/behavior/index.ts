@@ -5,4 +5,4 @@ export type {
   BehaviorResolutionEntry,
   BehaviorResolutionTrace,
   ResolvedBehavior,
-} from "./types.js";
+} from "./model.js";

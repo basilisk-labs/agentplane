@@ -1,0 +1,112 @@
+import path from "node:path";
+
+import { extractTaskSuffix } from "@agentplaneorg/core";
+
+import { execFileAsync, gitEnv } from "../../shared/git.js";
+import { GitContext } from "../../shared/git-context.js";
+import { parseTaskIdFromBranch } from "../../shared/git-worktree.js";
+import {
+  cleanHookEnv,
+  maybePersistExpectedCliVersion,
+  maybeRefreshGeneratedReference,
+  maybeUpdateBunLockfile,
+  replaceAgentplanePackageMetadata,
+  replacePackageDependencyVersion,
+  replacePackageVersionInFile,
+} from "../apply.mutation.js";
+import { fileExists } from "../apply.preflight.js";
+import type { ReleaseCommandMutation, ReleaseCommandState } from "../apply.types.js";
+import { emitReleaseLine } from "./shared.js";
+
+export async function applyReleaseMutation(opts: {
+  agentplaneDir: string;
+  gitRoot: string;
+  git: GitContext;
+  notesPath: string;
+  corePkgPath: string;
+  agentplanePkgPath: string;
+  recipesPkgPath: string;
+  testkitPkgPath: string;
+  nextTag: string;
+  nextVersion: string;
+  route: ReleaseCommandState["route"];
+  taskBranchPrefix: string;
+}): Promise<ReleaseCommandMutation> {
+  let releaseCommit: { hash: string; subject: string } | null = null;
+  await Promise.all([
+    replacePackageVersionInFile(opts.corePkgPath, opts.nextVersion),
+    replacePackageVersionInFile(opts.recipesPkgPath, opts.nextVersion),
+    replaceAgentplanePackageMetadata(opts.agentplanePkgPath, opts.nextVersion),
+  ]);
+  if (await fileExists(opts.testkitPkgPath)) {
+    await replacePackageDependencyVersion(opts.testkitPkgPath, "agentplane", opts.nextVersion);
+  }
+
+  const expectedCliVersionPersisted = await maybePersistExpectedCliVersion(
+    opts.agentplaneDir,
+    opts.nextVersion,
+  );
+  await maybeUpdateBunLockfile(opts.gitRoot, fileExists);
+  const generatedReferenceExists = await maybeRefreshGeneratedReference(opts.gitRoot, fileExists);
+
+  const stagePaths = [
+    "packages/core/package.json",
+    "packages/agentplane/package.json",
+    "packages/recipes/package.json",
+    path.relative(opts.gitRoot, opts.notesPath),
+  ];
+  if (await fileExists(opts.testkitPkgPath)) {
+    stagePaths.push("packages/testkit/package.json");
+  }
+  if (expectedCliVersionPersisted) {
+    stagePaths.push(".agentplane/config.json");
+  }
+  if (generatedReferenceExists) {
+    stagePaths.push("docs/reference/generated-reference.mdx");
+  }
+  if (await fileExists(path.join(opts.gitRoot, "bun.lock"))) {
+    stagePaths.push("bun.lock");
+  }
+  await opts.git.stage(stagePaths);
+
+  const staged = await opts.git.statusStagedPaths();
+  if (staged.length === 0) {
+    emitReleaseLine("No changes to commit.");
+    return { releaseCommit };
+  }
+
+  const taskId =
+    opts.route.kind === "release_candidate"
+      ? parseTaskIdFromBranch(opts.taskBranchPrefix, opts.route.current_branch)
+      : null;
+  const subject = taskId
+    ? `✨ ${extractTaskSuffix(taskId)} release: publish ${opts.nextTag}`
+    : `✨ release: publish ${opts.nextTag}`;
+  await opts.git.commit({ message: subject, env: cleanHookEnv() });
+  const { stdout: headHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: opts.gitRoot,
+    env: gitEnv(),
+  });
+  releaseCommit = { hash: String(headHash ?? "").trim(), subject };
+  return { releaseCommit };
+}
+
+export async function runReleaseCommandExecute(
+  state: ReleaseCommandState,
+): Promise<ReleaseCommandMutation> {
+  const git = new GitContext({ gitRoot: state.gitRoot });
+  return await applyReleaseMutation({
+    agentplaneDir: state.resolved.agentplaneDir,
+    gitRoot: state.gitRoot,
+    git,
+    notesPath: state.notesPath,
+    corePkgPath: state.corePkgPath,
+    agentplanePkgPath: state.agentplanePkgPath,
+    recipesPkgPath: state.recipesPkgPath,
+    testkitPkgPath: state.testkitPkgPath,
+    nextTag: state.plan.nextTag,
+    nextVersion: state.plan.nextVersion,
+    route: state.route,
+    taskBranchPrefix: state.taskBranchPrefix,
+  });
+}

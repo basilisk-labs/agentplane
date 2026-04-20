@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { parseTaskReadme } from "@agentplaneorg/core";
 
-import { RUNTIME_GITIGNORE_LINES } from "../../shared/runtime-artifacts.js";
+import { RUNTIME_GITIGNORE_LINES } from "../../runtime/shared/runtime-artifacts.js";
 import { GitContext } from "../shared/git-context.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";

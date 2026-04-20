@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 
 if (process.platform === "win32") {
   throw new Error(
-    "test:workflow-coverage is supported only on POSIX shells (CI uses ubuntu-24.04).",
+    "coverage:workflow-suite is supported only on POSIX shells (CI uses ubuntu-24.04).",
   );
 }
 
@@ -25,7 +25,5 @@ function runShell(command) {
     child.on("error", reject);
   });
 }
-await runShell(
-  "bunx vitest run packages/agentplane/src/workflow-runtime/*.test.ts packages/agentplane/src/harness/*.test.ts",
-);
+await runShell("bun run test:project -- workflow-coverage");
 await runShell("bun run coverage:workflow-harness");

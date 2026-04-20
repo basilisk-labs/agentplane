@@ -1,9 +1,8 @@
-import { spawnSync } from "node:child_process";
 import { chmod, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
+import { loadConfig, resolveBaseBranch, resolveProject, runProcessSync } from "@agentplaneorg/core";
 
 import { evaluatePolicy } from "../../policy/evaluate.js";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
@@ -150,6 +149,17 @@ function readCommitSubject(message: string): string {
 
 function resolveBundledPrePushHookScriptPath(): string {
   return fileURLToPath(new URL("../../../../../scripts/run-pre-push-hook.mjs", import.meta.url));
+}
+
+export async function resolvePrePushHookScriptPath(
+  gitRoot: string,
+  opts: { bundledScriptPath?: string } = {},
+): Promise<string | null> {
+  const repoScriptPath = path.join(gitRoot, "scripts", "run-pre-push-hook.mjs");
+  if (await fileExists(repoScriptPath)) return repoScriptPath;
+  const bundledScriptPath = opts.bundledScriptPath ?? resolveBundledPrePushHookScriptPath();
+  if (await fileExists(bundledScriptPath)) return bundledScriptPath;
+  return null;
 }
 
 async function readHookStdinUtf8(timeoutMs = 25): Promise<string> {
@@ -378,23 +388,33 @@ export async function cmdHooksRun(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride ?? null,
       });
-      const scriptPath = resolveBundledPrePushHookScriptPath();
-      if (!(await fileExists(scriptPath))) {
+      const scriptPath = await resolvePrePushHookScriptPath(resolved.gitRoot);
+      if (!scriptPath) {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message: `Missing pre-push hook script: ${scriptPath}`,
+          message: [
+            "Missing pre-push hook script: scripts/run-pre-push-hook.mjs",
+            "The pre-push hook needs a repository-local script or an installed CLI bundle that ships the fallback.",
+            "Fix:",
+            "  1) Restore scripts/run-pre-push-hook.mjs in this repository, or",
+            "  2) Run `agentplane hooks uninstall` if this repository should not use the agentplane pre-push gate.",
+          ].join("\n"),
         });
       }
-      const result = spawnSync("node", [scriptPath], {
+      const result = runProcessSync({
+        command: "node",
+        args: [scriptPath],
         cwd: resolved.gitRoot,
         env: process.env,
         encoding: "utf8",
         input: await readHookStdinUtf8(),
-        stdio: ["pipe", "inherit", "inherit"],
+        stdin: "pipe",
+        stdout: "inherit",
+        stderr: "inherit",
+        reject: false,
       });
-      if (result.error) throw result.error;
-      return result.status ?? (result.signal ? 1 : 0);
+      return result.exitCode ?? (result.signal ? 1 : 0);
     }
 
     if (opts.hook === "post-merge") {

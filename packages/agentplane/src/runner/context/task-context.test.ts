@@ -8,7 +8,7 @@ import {
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
   writeDefaultConfig,
-} from "../../cli/run-cli.test-helpers.js";
+} from "../../testing/index.js";
 import { loadCommandContext, loadTaskFromContext } from "../../commands/shared/task-backend.js";
 import { assembleRunnerTaskContext, RUNNER_TASK_CONTEXT_BUDGETS } from "./task-context.js";
 

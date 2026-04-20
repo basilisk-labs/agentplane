@@ -31,201 +31,86 @@ import { ideSyncSpec } from "../commands/ide.js";
 import { initSpec } from "../commands/init.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
-import { entry, type CommandEntry } from "./shared.js";
+import { declareCommand, type CommandEntry } from "./shared.js";
+import {
+  fromCommandsInit,
+  fromCommandsUpgradeCommand,
+  fromCommandsReleaseReleaseCommand,
+  fromCommandsReleasePlanCommand,
+  fromCommandsReleaseApplyCommand,
+  fromCommandsCoreQuickstart,
+  fromCommandsCorePreflight,
+  fromCommandsCodex,
+  fromCommandsRuntimeCommand,
+  fromCommandsIncidentsIncidentsCommand,
+  fromCommandsCoreRole,
+  fromCommandsDoctorRun,
+  fromCommandsWorkflowCommand,
+  fromCommandsWorkflowBuildCommand,
+  fromCommandsWorkflowRestoreCommand,
+  fromCommandsWorkflowPlaybookCommand,
+  loadCodexPluginInstallSpec,
+  loadIncidentsCollectSpec,
+  loadIncidentsAdviseSpec,
+  loadAgentsSpec,
+  loadConfigShowSpec,
+  loadConfigSetSpec,
+  loadModeGetSpec,
+  loadModeSetSpec,
+  loadProfileSetSpec,
+  loadIdeSyncSpec,
+} from "../command-loaders.js";
 
 export const CORE_COMMANDS = [
-  entry(initSpec, () => import("../commands/init.js").then((m) => m.runInit), {
+  fromCommandsInit(initSpec, "runInit", {
     needs: "none",
     invocation: requireCanonicalCommandInvocation(["init"]),
   }),
-  entry(
-    upgradeSpec,
-    () => import("../../../commands/upgrade.command.js").then((m) => m.runUpgrade),
-    {
-      needs: "none",
-    },
-  ),
-  entry(
-    releaseSpec,
-    () => import("../../../commands/release/release.command.js").then((m) => m.runRelease),
-    {
-      needs: "none",
-    },
-  ),
-  entry(
-    releasePlanSpec,
-    () => import("../../../commands/release/plan.command.js").then((m) => m.runReleasePlan),
-    {
-      needs: "project",
-    },
-  ),
-  entry(
-    releaseApplySpec,
-    () => import("../../../commands/release/apply.command.js").then((m) => m.runReleaseApply),
-    {
-      needs: "project",
-    },
-  ),
-  entry(
-    releaseCandidateSpec,
-    () => import("../../../commands/release/apply.command.js").then((m) => m.runReleaseCandidate),
-    {
-      needs: "project",
-    },
-  ),
-  entry(
-    quickstartSpec,
-    () => import("../commands/core/quickstart.js").then((m) => m.runQuickstart),
-    {
-      needs: "none",
-      invocation: requireCanonicalCommandInvocation(["quickstart"]),
-    },
-  ),
-  entry(preflightSpec, () => import("../commands/core/preflight.js").then((m) => m.runPreflight), {
+  fromCommandsUpgradeCommand(upgradeSpec, "runUpgrade", { needs: "none" }),
+  fromCommandsReleaseReleaseCommand(releaseSpec, "runRelease", { needs: "none" }),
+  fromCommandsReleasePlanCommand(releasePlanSpec, "runReleasePlan", { needs: "project" }),
+  fromCommandsReleaseApplyCommand(releaseApplySpec, "runReleaseApply", { needs: "project" }),
+  fromCommandsReleaseApplyCommand(releaseCandidateSpec, "runReleaseCandidate", {
+    needs: "project",
+  }),
+  fromCommandsCoreQuickstart(quickstartSpec, "runQuickstart", {
+    needs: "none",
+    invocation: requireCanonicalCommandInvocation(["quickstart"]),
+  }),
+  fromCommandsCorePreflight(preflightSpec, "runPreflight", {
     needs: "none",
     invocation: requireCanonicalCommandInvocation(["preflight"]),
   }),
-  entry(codexSpec, () => import("../commands/codex.js").then((m) => m.runCodex), {
-    needs: "none",
-  }),
-  entry(codexPluginSpec, () => import("../commands/codex.js").then((m) => m.runCodexPlugin), {
-    needs: "none",
-  }),
-  entry(
-    codexPluginInstallSpec,
-    (deps) => import("../commands/codex.js").then((m) => m.makeRunCodexPluginInstallHandler(deps)),
-    {
-      needs: "none",
-    },
-  ),
-  entry(
-    runtimeSpec,
-    () => import("../../../commands/runtime.command.js").then((m) => m.runRuntime),
-    {
-      needs: "none",
-    },
-  ),
-  entry(
-    runtimeExplainSpec,
-    () => import("../../../commands/runtime.command.js").then((m) => m.runRuntimeExplain),
-    {
-      needs: "none",
-    },
-  ),
-  entry(
-    incidentsSpec,
-    () => import("../../../commands/incidents/incidents.command.js").then((m) => m.runIncidents),
-    {
-      needs: "none",
-    },
-  ),
-  entry(incidentsCollectSpec, (deps) =>
-    import("../../../commands/incidents/collect.command.js").then((m) =>
-      m.makeRunIncidentsCollectHandler(deps.getCtx),
-    ),
-  ),
-  entry(incidentsAdviseSpec, (deps) =>
-    import("../../../commands/incidents/advise.command.js").then((m) =>
-      m.makeRunIncidentsAdviseHandler(deps.getCtx),
-    ),
-  ),
-  entry(roleSpec, () => import("../commands/core/role.js").then((m) => m.runRole), {
+  fromCommandsCodex(codexSpec, "runCodex", { needs: "none" }),
+  fromCommandsCodex(codexPluginSpec, "runCodexPlugin", { needs: "none" }),
+  declareCommand(codexPluginInstallSpec, { load: loadCodexPluginInstallSpec, needs: "none" }),
+  fromCommandsRuntimeCommand(runtimeSpec, "runRuntime", { needs: "none" }),
+  fromCommandsRuntimeCommand(runtimeExplainSpec, "runRuntimeExplain", { needs: "none" }),
+  fromCommandsIncidentsIncidentsCommand(incidentsSpec, "runIncidents", { needs: "none" }),
+  declareCommand(incidentsCollectSpec, { load: loadIncidentsCollectSpec }),
+  declareCommand(incidentsAdviseSpec, { load: loadIncidentsAdviseSpec }),
+  fromCommandsCoreRole(roleSpec, "runRole", {
     needs: "none",
     invocation: requireCanonicalCommandInvocation(["role"]),
   }),
-  entry(
-    agentsSpec,
-    (deps) => import("../commands/core/agents.js").then((m) => m.makeRunAgentsHandler(deps)),
-    {
-      needs: "project",
-    },
-  ),
-  entry(
-    configShowSpec,
-    (deps) => import("../commands/config.js").then((m) => m.makeRunConfigShowHandler(deps)),
-    {
-      needs: "project+config",
-      invocation: requireCanonicalCommandInvocation(["config", "show"]),
-    },
-  ),
-  entry(
-    configSetSpec,
-    (deps) => import("../commands/config.js").then((m) => m.makeRunConfigSetHandler(deps)),
-    {
-      needs: "project+config",
-    },
-  ),
-  entry(
-    modeGetSpec,
-    (deps) => import("../commands/config.js").then((m) => m.makeRunModeGetHandler(deps)),
-    {
-      needs: "project+config",
-    },
-  ),
-  entry(
-    modeSetSpec,
-    (deps) => import("../commands/config.js").then((m) => m.makeRunModeSetHandler(deps)),
-    {
-      needs: "project+config",
-    },
-  ),
-  entry(
-    profileSetSpec,
-    (deps) => import("../commands/config.js").then((m) => m.makeRunProfileSetHandler(deps)),
-    {
-      needs: "project+config",
-    },
-  ),
-  entry(
-    ideSyncSpec,
-    (deps) => import("../commands/ide.js").then((m) => m.makeRunIdeSyncHandler(deps)),
-    {
-      needs: "project",
-    },
-  ),
-  entry(doctorSpec, () => import("../../../commands/doctor.run.js").then((m) => m.runDoctor), {
+  declareCommand(agentsSpec, { load: loadAgentsSpec, needs: "project" }),
+  declareCommand(configShowSpec, {
+    load: loadConfigShowSpec,
+    needs: "project+config",
+    invocation: requireCanonicalCommandInvocation(["config", "show"]),
+  }),
+  declareCommand(configSetSpec, { load: loadConfigSetSpec, needs: "project+config" }),
+  declareCommand(modeGetSpec, { load: loadModeGetSpec, needs: "project+config" }),
+  declareCommand(modeSetSpec, { load: loadModeSetSpec, needs: "project+config" }),
+  declareCommand(profileSetSpec, { load: loadProfileSetSpec, needs: "project+config" }),
+  declareCommand(ideSyncSpec, { load: loadIdeSyncSpec, needs: "project" }),
+  fromCommandsDoctorRun(doctorSpec, "runDoctor", { needs: "project" }),
+  fromCommandsWorkflowCommand(workflowSpec, "runWorkflow", { needs: "none" }),
+  fromCommandsWorkflowBuildCommand(workflowBuildSpec, "runWorkflowBuild", { needs: "project" }),
+  fromCommandsWorkflowRestoreCommand(workflowRestoreSpec, "runWorkflowRestore", {
     needs: "project",
   }),
-  entry(
-    workflowSpec,
-    () => import("../../../commands/workflow.command.js").then((m) => m.runWorkflow),
-    {
-      needs: "none",
-    },
-  ),
-  entry(
-    workflowBuildSpec,
-    () => import("../../../commands/workflow-build.command.js").then((m) => m.runWorkflowBuild),
-    {
-      needs: "project",
-    },
-  ),
-  entry(
-    workflowRestoreSpec,
-    () => import("../../../commands/workflow-restore.command.js").then((m) => m.runWorkflowRestore),
-    {
-      needs: "project",
-    },
-  ),
-  entry(
-    workflowDebugSpec,
-    () => import("../../../commands/workflow-playbook.command.js").then((m) => m.runWorkflowDebug),
-    {
-      needs: "project",
-    },
-  ),
-  entry(
-    workflowSyncSpec,
-    () => import("../../../commands/workflow-playbook.command.js").then((m) => m.runWorkflowSync),
-    {
-      needs: "project",
-    },
-  ),
-  entry(
-    workflowLandSpec,
-    () => import("../../../commands/workflow-playbook.command.js").then((m) => m.runWorkflowLand),
-    {
-      needs: "project",
-    },
-  ),
+  fromCommandsWorkflowPlaybookCommand(workflowDebugSpec, "runWorkflowDebug", { needs: "project" }),
+  fromCommandsWorkflowPlaybookCommand(workflowSyncSpec, "runWorkflowSync", { needs: "project" }),
+  fromCommandsWorkflowPlaybookCommand(workflowLandSpec, "runWorkflowLand", { needs: "project" }),
 ] as const satisfies readonly CommandEntry[];

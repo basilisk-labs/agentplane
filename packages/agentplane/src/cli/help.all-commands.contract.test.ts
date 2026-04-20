@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { COMMANDS } from "./run-cli/command-catalog.js";
-import { captureStdIO, registerAgentplaneHome } from "./run-cli.test-helpers.js";
+import { captureStdIO, registerAgentplaneHome } from "../testing/index.js";
 import { runCli } from "./run-cli.js";
 import { renderUsageLines } from "./spec/help-render.js";
 

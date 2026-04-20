@@ -28,6 +28,33 @@ export {
 } from "./config/config.js";
 
 export {
+  AGENTPLANE_CONFIG_SCHEMA,
+  AgentplaneConfigSchema,
+  defaultAgentplaneConfig,
+  formatAgentplaneConfigIssues,
+  listTaskHandoffSchemaErrors,
+  listTaskPrMetaSchemaErrors,
+  listTaskReadmeFrontmatterSchemaErrors,
+  listTasksExportSnapshotSchemaErrors,
+  renderAgentplaneConfigSchemaJson,
+  renderTaskHandoffSchemaJson,
+  renderTaskPrMetaSchemaJson,
+  renderTaskReadmeFrontmatterSchemaJson,
+  renderTasksExportSchemaJson,
+  validateAgentplaneConfig,
+  validateTaskHandoff,
+  validateTaskPrMeta,
+  validateTaskReadmeFrontmatter,
+  validateTasksExportSnapshot,
+  withTaskReadmeFrontmatterDefaults,
+  type TaskHandoff,
+  type TaskHandoffRoute,
+  type TaskHandoffRunnerNextAction,
+  type TaskHandoffRunnerState,
+  type TaskPrMeta,
+} from "./schemas/index.js";
+
+export {
   applyExecutionToApprovals,
   buildExecutionProfile,
   EXECUTION_PROFILE_PRESETS,
@@ -43,27 +70,6 @@ export {
 } from "./tasks/task-readme.js";
 
 export { readTaskReadme, updateTaskReadmeAtomic } from "./tasks/task-readme-io.js";
-
-export {
-  listTaskHandoffSchemaErrors,
-  listTaskPrMetaSchemaErrors,
-  listTaskReadmeFrontmatterSchemaErrors,
-  listTasksExportSnapshotSchemaErrors,
-  renderTaskHandoffSchemaJson,
-  renderTaskPrMetaSchemaJson,
-  renderTaskReadmeFrontmatterSchemaJson,
-  renderTasksExportSchemaJson,
-  validateTaskHandoff,
-  validateTaskPrMeta,
-  validateTaskReadmeFrontmatter,
-  validateTasksExportSnapshot,
-  withTaskReadmeFrontmatterDefaults,
-  type TaskHandoff,
-  type TaskHandoffRoute,
-  type TaskHandoffRunnerNextAction,
-  type TaskHandoffRunnerState,
-  type TaskPrMeta,
-} from "./tasks/task-artifact-schema.js";
 
 export {
   buildDefaultTaskDoc,
@@ -159,10 +165,65 @@ export {
 } from "./git/base-branch.js";
 
 export {
+  gitBranchExists,
+  gitBranchUpstream,
+  gitAddPaths,
+  gitCommit,
+  gitCurrentBranch,
+  gitEnv,
+  gitInitRepo,
+  gitIsAncestor,
+  gitListBranches,
+  gitRevParse,
+  gitStagedPaths,
+  GitContext,
+  resolveInitBaseBranch,
+} from "./git/git-client.js";
+
+export {
+  gitAheadBehind,
+  gitDiffNames,
+  gitDiffStat,
+  gitShowFile,
+  toGitPath,
+} from "./git/git-diff.js";
+
+export {
+  findWorktreeForBranch,
+  gitListBranchesByPrefixes,
+  gitListTaskBranches,
+  listWorktrees,
+  parseTaskIdFromBranch,
+  parseTaskIdFromCloseBranch,
+} from "./git/git-worktree.js";
+
+export {
+  execFileAsync,
+  runProcess,
+  runProcessSync,
+  startProcess,
+  type RunProcessOptions,
+  type RunProcessResult,
+} from "./process/run-process.js";
+
+export {
+  buildTaskArtifactRefreshCommitSubject,
   extractTaskSuffix,
+  isTaskArtifactRefreshCommitSubject,
   isGenericSubject,
+  parseTaskSubjectTemplate,
   validateCommitSubject,
   type CommitPolicyResult,
 } from "./commit/commit-policy.js";
 
 export { getStagedFiles, getUnstagedFiles, getUnstagedTrackedFiles } from "./git/git-utils.js";
+
+export {
+  createLogger,
+  resolveLoggerMode,
+  type Logger,
+  type LoggerEntry,
+  type LoggerMode,
+  type LoggerStream,
+  type LoggerWriter,
+} from "./logger.js";

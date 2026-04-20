@@ -1,9 +1,5 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
-
 import { resolveProject } from "../project/project-root.js";
-
-const execFileAsync = promisify(execFile);
+import { execFileAsync } from "../process/run-process.js";
 
 async function gitNullSeparatedPaths(cwd: string, args: string[]): Promise<string[]> {
   const { stdout } = await execFileAsync("git", args, {

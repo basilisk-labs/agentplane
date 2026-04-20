@@ -10,7 +10,7 @@ import type {
   ApprovalRuntimeOptions,
   ApprovalResolveOptions,
   EffectiveApprovalSettings,
-} from "./types.js";
+} from "./model.js";
 
 export function resolveEffectiveApprovalSettings(
   config: AgentplaneConfig,

@@ -3,10 +3,94 @@ import path from "node:path";
 
 const TARGETS = [
   {
+    source: "packages/agentplane/src/cli/run-cli/commands/init.ts",
+    tests: ["packages/agentplane/src/cli/run-cli.core.init.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts",
+    tests: ["packages/agentplane/src/cli/run-cli.core.init.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/cli/run-cli/commands/init/parsers.ts",
+    tests: ["packages/agentplane/src/cli/run-cli.core.init.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/cli/run-cli/commands/init/presets.ts",
+    tests: ["packages/agentplane/src/cli/run-cli.core.init.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/cli/run-cli/commands/init/ui.ts",
+    tests: ["packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/commands/task/finish.ts",
+    tests: [
+      "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+    ],
+  },
+  {
+    source: "packages/agentplane/src/commands/task/finish-command.ts",
+    tests: [
+      "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
+    ],
+  },
+  {
+    source: "packages/agentplane/src/commands/task/finish-execute.ts",
+    tests: [
+      "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+    ],
+  },
+  {
+    source: "packages/agentplane/src/commands/task/finish-plan.ts",
+    tests: [
+      "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+    ],
+  },
+  {
+    source: "packages/agentplane/src/commands/task/hosted-merge-sync.ts",
+    tests: ["packages/agentplane/src/commands/task/hosted-merge-sync.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/commands/task/hosted-merge-sync/builders.ts",
+    tests: ["packages/agentplane/src/commands/task/hosted-merge-sync.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/commands/task/hosted-merge-sync/github.ts",
+    tests: ["packages/agentplane/src/commands/task/hosted-merge-sync.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/commands/task/hosted-merge-sync/local-branch.ts",
+    tests: ["packages/agentplane/src/commands/task/hosted-merge-sync.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/commands/task/hosted-merge-sync/pr-meta.ts",
+    tests: ["packages/agentplane/src/commands/task/hosted-merge-sync.test.ts"],
+  },
+  {
     source: "packages/agentplane/src/commands/guard/impl/commands.ts",
     tests: [
       "packages/agentplane/src/commands/guard/impl/commands.unit.test.ts",
       "packages/agentplane/src/cli/run-cli.core.guard.test.ts",
+    ],
+  },
+  {
+    source: "packages/agentplane/src/commands/guard/impl/allow.ts",
+    tests: ["packages/agentplane/src/commands/guard/impl/allow.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/commands/guard/impl/commit.ts",
+    tests: [
+      "packages/agentplane/src/commands/guard/impl/commands.unit.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
     ],
   },
   {
@@ -15,6 +99,18 @@ const TARGETS = [
       "packages/agentplane/src/commands/guard/impl/comment-commit.test.ts",
       "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
     ],
+  },
+  {
+    source: "packages/agentplane/src/commands/guard/impl/env.ts",
+    tests: ["packages/agentplane/src/commands/guard/impl/env.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/commands/guard/impl/policy.ts",
+    tests: ["packages/agentplane/src/commands/guard/impl/policy.test.ts"],
+  },
+  {
+    source: "packages/agentplane/src/commands/guard/impl/suggest.ts",
+    tests: ["packages/agentplane/src/commands/guard/impl/commands.unit.test.ts"],
   },
 ];
 

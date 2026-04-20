@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { startProcess } from "@agentplaneorg/core";
 
 export type HookName = "after_create" | "before_run" | "after_run" | "before_remove";
 
@@ -32,9 +32,13 @@ export async function runLifecycleHook(opts: {
   }
 
   return await new Promise<HookResult>((resolve) => {
-    const child = spawn("sh", ["-lc", opts.policy.command!], {
+    const child = startProcess({
+      command: "sh",
+      args: ["-lc", opts.policy.command!],
       cwd: opts.cwd,
-      stdio: ["ignore", "pipe", "pipe"],
+      stdin: "ignore",
+      stdout: "pipe",
+      stderr: "pipe",
     });
 
     let output = "";
@@ -44,7 +48,7 @@ export async function runLifecycleHook(opts: {
       () => {
         if (finished) return;
         finished = true;
-        child.kill("SIGKILL");
+        void child.kill("SIGKILL");
         resolve({
           ok: !opts.policy.blocking,
           hook: opts.hook,
@@ -56,14 +60,14 @@ export async function runLifecycleHook(opts: {
       Math.max(1, opts.policy.timeoutMs),
     );
 
-    child.stdout.on("data", (chunk: Buffer | string) => {
+    child.stdout?.on("data", (chunk: Buffer | string) => {
       output += String(chunk);
     });
-    child.stderr.on("data", (chunk: Buffer | string) => {
+    child.stderr?.on("data", (chunk: Buffer | string) => {
       output += String(chunk);
     });
 
-    child.on("close", (code) => {
+    void child.on("close", (code) => {
       if (finished) return;
       finished = true;
       clearTimeout(timer);

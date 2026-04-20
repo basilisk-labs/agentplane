@@ -21,7 +21,7 @@ import {
   scenarioDescriptor,
   writeDefaultConfig,
   writeInstalledRecipes,
-} from "./recipes.test-helpers.js";
+} from "../../../testkit/src/recipes.js";
 
 installRecipesCommandHarness();
 

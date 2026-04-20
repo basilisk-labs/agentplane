@@ -5,7 +5,7 @@ import type {
 } from "@agentplaneorg/recipes";
 
 import { createCapabilityRegistry } from "./registry.js";
-import type { AgentplaneCapabilityEntry, AgentplaneCapabilityRegistry } from "./types.js";
+import type { AgentplaneCapabilityEntry, AgentplaneCapabilityRegistry } from "./model.js";
 
 type RecipeSelection = Pick<
   ResolvedRecipeScenarioSelection,

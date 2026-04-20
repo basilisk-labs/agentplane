@@ -2,7 +2,7 @@ import type {
   AgentplaneCapabilityEntry,
   AgentplaneCapabilityFilter,
   AgentplaneCapabilityRegistry,
-} from "./types.js";
+} from "./model.js";
 
 function sortStrings(values: readonly string[] | undefined): string[] | undefined {
   if (!values || values.length === 0) return undefined;

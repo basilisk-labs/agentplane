@@ -3,6 +3,7 @@ import type { Adapters } from "../adapters/index.js";
 import { buildAdapters } from "../adapters/index.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { PolicyEngine } from "../policy/engine.js";
+import { emitTraceEvent } from "../shared/trace-events.js";
 import { createApprovalRuntime, type ApprovalRuntime } from "./approvals/index.js";
 import {
   resolveTaskBackendCapabilityRegistry,
@@ -112,6 +113,11 @@ export async function makeExecutionContext(command: CommandContext): Promise<Exe
 async function buildReadOnlyExecutionContext(
   command: CommandContext,
 ): Promise<ReadOnlyExecutionContext> {
+  emitTraceEvent({
+    component: "runtime-resolve",
+    event: "execution_context_started",
+    details: { backend: command.backendId },
+  });
   const harness = await resolveHarnessFromCommandContext(command);
   const policy = new PolicyEngine();
   const executionProfile = resolveExecutionProfileRuntime(command.config);
@@ -141,6 +147,16 @@ async function buildReadOnlyExecutionContext(
     capabilities,
     execution_profile: executionProfile,
     task_intake: taskIntake,
+  });
+  emitTraceEvent({
+    component: "runtime-resolve",
+    event: "execution_context_completed",
+    details: {
+      backend: command.backendId,
+      workflow_mode: command.config.workflow_mode,
+      runner_adapter_count: capabilities.entries.filter((entry) => entry.kind === "runner_adapter")
+        .length,
+    },
   });
   return {
     command,

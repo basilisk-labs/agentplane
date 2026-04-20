@@ -1,15 +1,11 @@
-import { execFile } from "node:child_process";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { promisify } from "node:util";
 
-import { atomicWriteFile, resolveProject } from "@agentplaneorg/core";
+import { atomicWriteFile, resolveProject, runProcess } from "@agentplaneorg/core";
 
 import { type CommandHandler, type CommandSpec } from "../cli/spec/spec.js";
 import { mapCoreError } from "../cli/error-map.js";
-
-const execFileAsync = promisify(execFile);
 
 const AGENTPLANE_BIN = fileURLToPath(new URL("../../bin/agentplane.js", import.meta.url));
 const MAX_LOG_CHARS = 8000;
@@ -114,7 +110,9 @@ async function runWorkflowPlaybookCommand(opts: {
   let stderr = "";
 
   try {
-    const result = await execFileAsync(command, args, {
+    const result = await runProcess({
+      command,
+      args,
       cwd: opts.repoRoot,
       env: {
         ...process.env,
@@ -122,9 +120,11 @@ async function runWorkflowPlaybookCommand(opts: {
       },
       encoding: "utf8",
       maxBuffer: 10 * 1024 * 1024,
+      reject: false,
     });
-    stdout = String(result.stdout ?? "");
-    stderr = String(result.stderr ?? "");
+    exitCode = result.exitCode;
+    stdout = String(result.stdout);
+    stderr = String(result.stderr);
   } catch (err) {
     const failed = err as { code?: number | string; stdout?: unknown; stderr?: unknown };
     exitCode = typeof failed.code === "number" ? failed.code : 1;

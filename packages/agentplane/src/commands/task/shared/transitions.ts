@@ -1,20 +1,15 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
-
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import { execFileAsync, type AgentplaneConfig } from "@agentplaneorg/core";
 
 import { infoMessage, warnMessage } from "../../../cli/output.js";
-import { formatCommentBodyForCommit } from "../../../shared/comment-format.js";
-import { readDirectWorkLock } from "../../../shared/direct-work-lock.js";
+import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
+import { readDirectWorkLock } from "./direct-work-lock.js";
 import { CliError } from "../../../shared/errors.js";
-import { parseGitLogHashSubject } from "../../../shared/git-log.js";
+import { parseGitLogHashSubject } from "./git-log.js";
 import type { TaskData, TaskEvent } from "../../../backends/task-backend.js";
 import { commitFromComment } from "../../guard/index.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commit-pr-artifacts.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { requiresVerificationByPrimary, toStringArray } from "./tags.js";
-
-const execFileAsync = promisify(execFile);
 
 export function appendTaskEvent(task: TaskData, event: TaskEvent): TaskEvent[] {
   const existing = Array.isArray(task.events)

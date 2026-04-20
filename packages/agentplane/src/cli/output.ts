@@ -1,3 +1,5 @@
+import { createLogger, type Logger, type LoggerMode } from "@agentplaneorg/core";
+
 export type CliOutputWriter = {
   write: (chunk: string) => unknown;
 };
@@ -76,18 +78,6 @@ function renderReportLine(entry: CliReportEntry): string {
   if (typeof entry === "string") return entry;
   if (entry.value === undefined || entry.value === null) return `${entry.label}:`;
   return `${entry.label}: ${String(entry.value)}`;
-}
-
-function resolveWriter(
-  stdout: CliOutputWriter,
-  stderr: CliOutputWriter,
-  stream: CliEmitterStream,
-): CliOutputWriter {
-  return stream === "stderr" ? stderr : stdout;
-}
-
-function writeChunk(writer: CliOutputWriter, text: string): void {
-  writer.write(text);
 }
 
 export function successMessage(action: string, target?: string, details?: string): string {
@@ -181,20 +171,25 @@ function renderJsonSectionBlock(label: string, value: unknown, indent: string): 
 export function createCliEmitter(streams?: {
   stdout?: CliOutputWriter;
   stderr?: CliOutputWriter;
+  loggerMode?: LoggerMode;
+  logger?: Logger;
 }): CliEmitter {
   const stdout = streams?.stdout ?? process.stdout;
   const stderr = streams?.stderr ?? process.stderr;
+  const logger = streams?.logger ?? createLogger({ mode: streams?.loggerMode, stdout, stderr });
 
   const line = (text: string, stream: CliEmitterStream = "stdout"): void => {
-    writeChunk(resolveWriter(stdout, stderr, stream), renderTextLine(text));
+    logger.write({ kind: "line", text, stream });
   };
 
   const lines = (values: Iterable<string>, stream: CliEmitterStream = "stdout"): void => {
-    writeChunk(resolveWriter(stdout, stderr, stream), renderTextLines(values));
+    for (const value of values) {
+      logger.write({ kind: "line", text: value, stream });
+    }
   };
 
   const json = (value: unknown, stream: CliEmitterStream = "stdout"): void => {
-    line(renderPrettyJson(value), stream);
+    logger.write({ kind: "json", value, stream });
   };
 
   const jsonSection = (
@@ -207,14 +202,16 @@ export function createCliEmitter(streams?: {
   ): void => {
     const block = renderJsonSectionBlock(label, value, options?.indent ?? "  ");
     if (!block) return;
-    writeChunk(resolveWriter(stdout, stderr, options?.stream ?? "stdout"), block);
+    for (const valueLine of block.trimEnd().split("\n")) {
+      logger.write({ kind: "line", text: valueLine, stream: options?.stream ?? "stdout" });
+    }
   };
 
   const report = (entries: Iterable<CliReportEntry>, options?: CliReportOptions): void => {
-    writeChunk(
-      resolveWriter(stdout, stderr, options?.stream ?? "stdout"),
-      renderReportBlock(entries, options),
-    );
+    const block = renderReportBlock(entries, options);
+    for (const valueLine of block.trimEnd().split("\n")) {
+      logger.write({ kind: "line", text: valueLine, stream: options?.stream ?? "stdout" });
+    }
   };
 
   return {
@@ -224,10 +221,10 @@ export function createCliEmitter(streams?: {
     jsonSection,
     report,
     info: (message: string, stream: CliEmitterStream = "stdout") => {
-      line(infoMessage(message), stream);
+      logger.write({ kind: "event", level: "info", message: infoMessage(message), stream });
     },
     warn: (message: string, stream: CliEmitterStream = "stderr") => {
-      line(warnMessage(message), stream);
+      logger.write({ kind: "event", level: "warn", message: warnMessage(message), stream });
     },
     success: (
       action: string,
@@ -235,7 +232,15 @@ export function createCliEmitter(streams?: {
       details?: string,
       stream: CliEmitterStream = "stdout",
     ) => {
-      line(successMessage(action, target, details), stream);
+      logger.write({
+        kind: "event",
+        level: "success",
+        message: successMessage(action, target, details),
+        stream,
+        action,
+        target,
+        details,
+      });
     },
   };
 }

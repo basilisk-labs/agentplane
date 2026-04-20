@@ -1,5 +1,4 @@
 import { readFile } from "node:fs/promises";
-import path from "node:path";
 
 import type {
   RunnerAdapterCapabilities,
@@ -9,18 +8,13 @@ import type {
 } from "../types.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
-import { evolveRunnerRunState } from "../artifacts.js";
 import {
   runnerAdapterCancelledResult,
   runnerAdapterFailureResult,
   runnerAdapterSuccessResult,
   type RunnerAdapter,
 } from "./shared.js";
-import {
-  buildInvocationEventData,
-  buildRunnerExecutionArtifacts,
-  durationMs,
-} from "./runtime-shared.js";
+import { buildRunnerExecutionArtifacts, durationMs } from "./runtime-shared.js";
 import {
   exitCodeForSignal,
   runSupervisedProcess,
@@ -40,27 +34,15 @@ import {
   assertRunnerManifestArtifactPolicy,
   readRecipeArtifactPrefixesFromRunnerEnv,
 } from "../result-manifest-policy.js";
-import { buildRecipeRunnerEnv, readRecipeRunProfile } from "./recipe-run-profile.js";
-
-const CODEX_LAST_MESSAGE_FILENAME = "codex-last-message.md";
-const CODEX_SANDBOX_VALUES = new Set(["read-only", "workspace-write", "danger-full-access"]);
-const SUPPORTED_CODEX_SANDBOXES = [...CODEX_SANDBOX_VALUES];
-const CODEX_RUN_PROFILE_CAPABILITIES: RunnerAdapterCapabilities = {
-  adapter_id: "codex",
-  fields: {
-    sandbox: {
-      level: "native",
-      channel: "argv",
-      supported_values: SUPPORTED_CODEX_SANDBOXES,
-      note: "Recipe sandbox is enforced through codex --sandbox argv mapping.",
-    },
-    writes_artifacts_to: {
-      level: "advisory",
-      channel: "env",
-      note: "Recipe artifact prefixes are exported through env and enforced post-run against external manifest artifacts and evidence paths.",
-    },
-  },
-};
+import {
+  appendRunnerExecutionEvent,
+  appendRunnerResultEvent,
+  assertAdapterBundle,
+  assertAdapterInvocation,
+  writeRunnerExecutionState,
+  writeRunnerResultState,
+} from "./base.js";
+import { buildCodexInvocation, CODEX_RUN_PROFILE_CAPABILITIES } from "./codex-preparation.js";
 
 function byteLength(text: string | null | undefined): number {
   return Buffer.byteLength(text ?? "", "utf8");
@@ -88,69 +70,16 @@ function buildCodexArtifacts(opts: {
 }
 
 function assertCodexBundle(bundle: RunnerContextBundle): void {
-  if (bundle.execution.adapter_id !== "codex") {
-    throw new Error(
-      `Codex adapter cannot prepare bundle for adapter_id=${JSON.stringify(bundle.execution.adapter_id)}`,
-    );
-  }
-  if (!bundle.execution.artifact_paths.bundle_path.trim()) {
-    throw new Error("Codex adapter requires a non-empty bundle path");
-  }
-  if (!bundle.execution.artifact_paths.run_dir.trim()) {
-    throw new Error("Codex adapter requires a non-empty run dir");
-  }
+  assertAdapterBundle({ adapterId: "codex", label: "Codex", bundle });
 }
 
 function assertCodexInvocation(invocation: RunnerInvocation): void {
-  if (invocation.adapter_id !== "codex") {
-    throw new Error(
-      `Codex adapter cannot execute invocation for adapter_id=${JSON.stringify(invocation.adapter_id)}`,
-    );
-  }
-  if (!invocation.bundle_path.trim()) {
-    throw new Error("Codex adapter invocation is missing bundle_path");
-  }
-  if (!invocation.run_dir.trim()) {
-    throw new Error("Codex adapter invocation is missing run_dir");
-  }
-  if (!invocation.state_path.trim()) {
-    throw new Error("Codex adapter invocation is missing state_path");
-  }
-  if (!invocation.events_path.trim()) {
-    throw new Error("Codex adapter invocation is missing events_path");
-  }
-  if (!invocation.result_path.trim()) {
-    throw new Error("Codex adapter invocation is missing result_path");
-  }
-  if (!invocation.trace_path.trim()) {
-    throw new Error("Codex adapter invocation is missing trace_path");
-  }
-  if (!invocation.stderr_path.trim()) {
-    throw new Error("Codex adapter invocation is missing stderr_path");
-  }
-  if (!invocation.bootstrap_path?.trim()) {
-    throw new Error("Codex adapter invocation is missing bootstrap_path");
-  }
-  if (invocation.argv.length < 5) {
-    throw new Error("Codex adapter invocation is missing normalized argv metadata");
-  }
-}
-
-function resolveCodexSandbox(value: unknown): string {
-  const normalized = typeof value === "string" ? value.trim() : "";
-  if (!normalized) return "danger-full-access";
-  if (CODEX_SANDBOX_VALUES.has(normalized)) return normalized;
-  throw new CliError({
-    exitCode: 8,
-    code: "E_RUNTIME",
-    message:
-      `Codex runner does not support recipe sandbox ${JSON.stringify(normalized)}; ` +
-      `supported values: ${SUPPORTED_CODEX_SANDBOXES.join(", ")}.`,
-    context: {
-      adapter_id: "codex",
-      requested_sandbox: normalized,
-      supported_sandboxes: SUPPORTED_CODEX_SANDBOXES,
-    },
+  assertAdapterInvocation({
+    adapterId: "codex",
+    label: "Codex",
+    invocation,
+    requireBootstrap: true,
+    minArgvLength: 5,
   });
 }
 
@@ -187,51 +116,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
 
   prepare(bundle: RunnerContextBundle): Promise<RunnerInvocation> {
     assertCodexBundle(bundle);
-    const { execution } = bundle;
-    const runProfile = readRecipeRunProfile(bundle.recipe);
-    const sandbox = resolveCodexSandbox(runProfile?.sandbox);
-    const recipeEnv = buildRecipeRunnerEnv(bundle.recipe);
-    return Promise.resolve({
-      adapter_id: this.id,
-      run_id: execution.run_id,
-      run_dir: execution.artifact_paths.run_dir,
-      bundle_path: execution.artifact_paths.bundle_path,
-      state_path: execution.artifact_paths.state_path,
-      events_path: execution.artifact_paths.events_path,
-      result_path: execution.artifact_paths.result_path,
-      trace_path: execution.artifact_paths.trace_path,
-      stderr_path: execution.artifact_paths.stderr_path,
-      trace_policy: execution.trace_policy,
-      timeout_policy: execution.timeout_policy,
-      bootstrap_path: execution.artifact_paths.bootstrap_path,
-      output_last_message_path: path.join(
-        execution.artifact_paths.run_dir,
-        CODEX_LAST_MESSAGE_FILENAME,
-      ),
-      argv: [
-        "codex",
-        "-a",
-        "never",
-        "exec",
-        "--json",
-        "--output-last-message",
-        path.join(execution.artifact_paths.run_dir, CODEX_LAST_MESSAGE_FILENAME),
-        "-C",
-        bundle.repository.git_root,
-        "-s",
-        sandbox,
-        "-",
-      ],
-      env: {
-        AGENTPLANE_RUNNER_ADAPTER: this.id,
-        AGENTPLANE_RUNNER_MODE: execution.mode,
-        AGENTPLANE_RUNNER_API_VERSION: bundle.runner_api_version,
-        AGENTPLANE_RUNNER_TARGET: bundle.target.kind,
-        AGENTPLANE_RUNNER_RESULT_PATH: execution.artifact_paths.result_path,
-        ...recipeEnv,
-      },
-      dry_run: execution.mode === "dry_run",
-    });
+    return Promise.resolve(buildCodexInvocation({ adapterId: this.id, bundle }));
   }
 
   execute(invocation: RunnerInvocation): Promise<RunnerResult> {
@@ -340,48 +225,19 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           result_path: invocation.result_path,
           manifest: manifestFromRunnerResult(result),
         });
-        const stateAfter = await repository.readState();
-        if (stateAfter) {
-          await repository.writeState(
-            evolveRunnerRunState({
-              state: stateAfter,
-              status: result.status,
-              result,
-              supervision: {
-                ...stateAfter.supervision,
-                pid: processResult.pid,
-                command: invocation.argv.join(" "),
-                started_at: processResult.started_at,
-                heartbeat_at: processResult.heartbeat_at,
-                exit_signal: processResult.exit_signal,
-                timeout_reason: processResult.timeout_reason,
-                timeout_requested_at: processResult.timeout_requested_at,
-                terminate_sent_at: processResult.terminate_sent_at,
-                kill_sent_at: processResult.kill_sent_at,
-                force_killed: processResult.force_killed,
-              },
-            }),
-          );
-        }
-        await repository.appendEvent({
-          at: result.ended_at,
-          type: "runner_execute_finish",
+        await writeRunnerExecutionState({
+          repository,
+          result,
+          processResult,
+          command: invocation.argv.join(" "),
+        });
+        await appendRunnerExecutionEvent({
+          repository,
+          invocation,
+          result,
+          processResult,
           message: `codex exec finished with status=${result.status}`,
-          data: {
-            ...buildInvocationEventData(invocation),
-            pid: processResult.pid,
-            exit_signal: processResult.exit_signal,
-            cancel_requested_at: processResult.cancel_requested_at,
-            cancel_signal: processResult.cancel_signal,
-            timeout_reason: processResult.timeout_reason,
-            timeout_requested_at: processResult.timeout_requested_at,
-            terminate_sent_at: processResult.terminate_sent_at,
-            kill_sent_at: processResult.kill_sent_at,
-            force_killed: processResult.force_killed,
-            exit_code: result.exit_code,
-            output_paths,
-            metrics: result.metrics,
-          },
+          outputPaths: output_paths,
         });
         return result;
       } catch (err) {
@@ -420,25 +276,15 @@ export class CodexRunnerAdapter implements RunnerAdapter {
             capabilities_used: ["codex.exec"],
           }),
         });
-        const stateAfter = await RunnerRunRepository.fromInvocation(invocation).readState();
-        if (stateAfter) {
-          await RunnerRunRepository.fromInvocation(invocation).writeState(
-            evolveRunnerRunState({
-              state: stateAfter,
-              status: result.status,
-              result,
-            }),
-          );
-        }
-        await RunnerRunRepository.fromInvocation(invocation).appendEvent({
-          at: result.ended_at,
+        const repository = RunnerRunRepository.fromInvocation(invocation);
+        await writeRunnerResultState({ repository, result });
+        await appendRunnerResultEvent({
+          repository,
+          invocation,
+          result,
           type: "runner_execute_error",
           message: result.stderr_summary ?? "codex exec failed",
-          data: {
-            ...buildInvocationEventData(invocation),
-            output_paths,
-            metrics: result.metrics,
-          },
+          outputPaths: output_paths,
         });
         return result;
       }

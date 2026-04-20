@@ -2,61 +2,63 @@ import { execFile } from "node:child_process";
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
-import { commitAll, mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helpers.js";
-import { seedReleaseWorkspace } from "../release.test-helpers.js";
+import { commitAll, describeWhenNotHook, tempRepo } from "../../testing/index.js";
+import { seedReleaseWorkspace } from "../../../../testkit/src/release.js";
 import { runReleasePlan, releasePlanSpec } from "./plan.command.js";
 
 const execFileAsync = promisify(execFile);
-const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
-
 describeWhenNotHook("release plan", () => {
   it("writes a release plan dir with changes list and next patch version", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await seedReleaseWorkspace(root, {
-      coreVersion: "0.2.6",
-      cliVersion: "0.2.6",
-      dependencyVersion: "0.2.6",
-    });
-    await commitAll(root, "seed");
-    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+    const repo = await tempRepo({ withDefaultConfig: true });
+    const { root } = repo;
+    try {
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.6",
+        cliVersion: "0.2.6",
+        dependencyVersion: "0.2.6",
+      });
+      await commitAll(root, "seed");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
-    await writeFile(path.join(root, "file.txt"), "x", "utf8");
-    await commitAll(root, "feat: add file");
+      await writeFile(path.join(root, "file.txt"), "x", "utf8");
+      await commitAll(root, "feat: add file");
 
-    const rc = await runReleasePlan(
-      { cwd: root, rootOverride: root },
-      { bump: "patch", yes: false },
-    );
-    expect(rc).toBe(0);
+      const rc = await runReleasePlan(
+        { cwd: root, rootOverride: root },
+        { bump: "patch", yes: false },
+      );
+      expect(rc).toBe(0);
 
-    const plansDir = path.join(root, ".agentplane", ".release", "plan");
-    const runNames = await readdir(plansDir);
-    const runs = runNames.toSorted();
-    expect(runs.length).toBeGreaterThan(0);
-    const latest = runs.at(-1) ?? "";
-    const runDir = path.join(plansDir, latest);
+      const plansDir = path.join(root, ".agentplane", ".release", "plan");
+      const runNames = await readdir(plansDir);
+      const runs = runNames.toSorted();
+      expect(runs.length).toBeGreaterThan(0);
+      const latest = runs.at(-1) ?? "";
+      const runDir = path.join(plansDir, latest);
 
-    const version = JSON.parse(await readFile(path.join(runDir, "version.json"), "utf8")) as {
-      prevTag?: string | null;
-      prevVersion?: string;
-      nextTag?: string;
-      nextVersion?: string;
-      bump?: string;
-    };
-    expect(version.prevTag).toBe("v0.2.6");
-    expect(version.nextTag).toBe("v0.2.7");
-    expect(version.nextVersion).toBe("0.2.7");
-    expect(version.bump).toBe("patch");
+      const version = JSON.parse(await readFile(path.join(runDir, "version.json"), "utf8")) as {
+        prevTag?: string | null;
+        prevVersion?: string;
+        nextTag?: string;
+        nextVersion?: string;
+        bump?: string;
+      };
+      expect(version.prevTag).toBe("v0.2.6");
+      expect(version.nextTag).toBe("v0.2.7");
+      expect(version.nextVersion).toBe("0.2.7");
+      expect(version.bump).toBe("patch");
 
-    const instructions = await readFile(path.join(runDir, "instructions.md"), "utf8");
-    expect(instructions).toContain("docs/releases/v0.2.7.md");
-    expect(instructions).toContain("Cover all listed differences");
-    expect(instructions).toContain("Write at least 1 bullet points.");
-    const changesMd = await readFile(path.join(runDir, "changes.md"), "utf8");
-    expect(changesMd).toContain("feat: add file");
+      const instructions = await readFile(path.join(runDir, "instructions.md"), "utf8");
+      expect(instructions).toContain("docs/releases/v0.2.7.md");
+      expect(instructions).toContain("Cover all listed differences");
+      expect(instructions).toContain("Write at least 1 bullet points.");
+      const changesMd = await readFile(path.join(runDir, "changes.md"), "utf8");
+      expect(changesMd).toContain("feat: add file");
+    } finally {
+      await repo.cleanup();
+    }
   }, 60_000);
 
   it("requires --yes for minor/major bumps", () => {
@@ -69,21 +71,25 @@ describeWhenNotHook("release plan", () => {
   });
 
   it("fails when workspace version is already ahead of the latest published patch tag", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await seedReleaseWorkspace(root, {
-      coreVersion: "0.2.8",
-      cliVersion: "0.2.8",
-      dependencyVersion: "0.2.8",
-    });
-    await commitAll(root, "seed");
-    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+    const repo = await tempRepo({ withDefaultConfig: true });
+    const { root } = repo;
+    try {
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.8",
+        cliVersion: "0.2.8",
+        dependencyVersion: "0.2.8",
+      });
+      await commitAll(root, "seed");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
-    await expect(
-      runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false }),
-    ).rejects.toThrow(/latest published\/tagged release is v0\.2\.6/i);
-    await expect(
-      runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false }),
-    ).rejects.toThrow(/v0\.2\.7, v0\.2\.8/i);
+      await expect(
+        runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false }),
+      ).rejects.toThrow(/latest published\/tagged release is v0\.2\.6/i);
+      await expect(
+        runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false }),
+      ).rejects.toThrow(/v0\.2\.7, v0\.2\.8/i);
+    } finally {
+      await repo.cleanup();
+    }
   }, 60_000);
 });

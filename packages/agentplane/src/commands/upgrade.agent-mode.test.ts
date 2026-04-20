@@ -1,14 +1,9 @@
 import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
-import {
-  createUpgradeBundle,
-  mkGitRepoRoot,
-  writeDefaultConfig,
-} from "../cli/run-cli.test-helpers.js";
+import { createUpgradeBundle, describeWhenNotHook, tempRepo } from "../testing/index.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
-const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 
 async function exists(absPath: string): Promise<boolean> {
   try {
@@ -21,124 +16,128 @@ async function exists(absPath: string): Promise<boolean> {
 
 describeWhenNotHook("upgrade agent-assisted mode", () => {
   it("writes an upgrade plan and does not modify managed files", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
+    const repo = await tempRepo({ withDefaultConfig: true });
+    const { root } = repo;
+    try {
+      const agentsMdPath = path.join(root, "AGENTS.md");
+      const existingAgents =
+        "# Existing\n\n<!-- AGENTPLANE:LOCAL-START -->\nLOCAL\n<!-- AGENTPLANE:LOCAL-END -->\n";
+      await writeFile(agentsMdPath, existingAgents, "utf8");
 
-    const agentsMdPath = path.join(root, "AGENTS.md");
-    const existingAgents =
-      "# Existing\n\n<!-- AGENTPLANE:LOCAL-START -->\nLOCAL\n<!-- AGENTPLANE:LOCAL-END -->\n";
-    await writeFile(agentsMdPath, existingAgents, "utf8");
+      const incomingAgents =
+        "# Incoming\n\n<!-- AGENTPLANE:LOCAL-START -->\n<!-- AGENTPLANE:LOCAL-END -->\n";
+      const { bundlePath, checksumPath } = await createUpgradeBundle({
+        "framework.manifest.json": JSON.stringify(
+          {
+            schema_version: 1,
+            files: [
+              {
+                path: "AGENTS.md",
+                type: "markdown",
+                merge_strategy: "agents_policy_markdown",
+                required: true,
+              },
+            ],
+          },
+          null,
+          2,
+        ),
+        "AGENTS.md": incomingAgents,
+      });
 
-    const incomingAgents =
-      "# Incoming\n\n<!-- AGENTPLANE:LOCAL-START -->\n<!-- AGENTPLANE:LOCAL-END -->\n";
-    const { bundlePath, checksumPath } = await createUpgradeBundle({
-      "framework.manifest.json": JSON.stringify(
-        {
-          schema_version: 1,
-          files: [
-            {
-              path: "AGENTS.md",
-              type: "markdown",
-              merge_strategy: "agents_policy_markdown",
-              required: true,
-            },
-          ],
+      const code = await cmdUpgradeParsed({
+        cwd: root,
+        rootOverride: root,
+        flags: {
+          bundle: bundlePath,
+          checksum: checksumPath,
+          mode: "agent",
+          remote: false,
+          allowTarball: false,
+          dryRun: false,
+          backup: false,
+          yes: true,
         },
-        null,
-        2,
-      ),
-      "AGENTS.md": incomingAgents,
-    });
+      });
+      expect(code).toBe(0);
 
-    const code = await cmdUpgradeParsed({
-      cwd: root,
-      rootOverride: root,
-      flags: {
-        bundle: bundlePath,
-        checksum: checksumPath,
-        mode: "agent",
-        remote: false,
-        allowTarball: false,
-        dryRun: false,
-        backup: false,
-        yes: true,
-      },
-    });
-    expect(code).toBe(0);
+      expect(await readFile(agentsMdPath, "utf8")).toBe(existingAgents);
 
-    // Managed files remain unchanged in agent mode.
-    expect(await readFile(agentsMdPath, "utf8")).toBe(existingAgents);
+      const agentDir = path.join(root, ".agentplane", ".upgrade", "agent");
+      await mkdir(agentDir, { recursive: true });
+      const runNames = await readdir(agentDir);
+      const runs = runNames.toSorted();
+      expect(runs.length).toBeGreaterThan(0);
+      const latest = runs.at(-1) ?? "";
+      const planPath = path.join(agentDir, latest, "plan.md");
+      const constraintsPath = path.join(agentDir, latest, "constraints.md");
+      const filesJsonPath = path.join(agentDir, latest, "files.json");
+      const reviewJsonPath = path.join(agentDir, latest, "review.json");
+      expect(await readFile(planPath, "utf8")).toContain("agent-assisted");
+      expect(await readFile(constraintsPath, "utf8")).toContain("Must not touch");
+      expect(await readFile(filesJsonPath, "utf8")).toContain('"additions"');
 
-    // Plan artifacts are written under .agentplane/.upgrade/agent/<runId>/.
-    const agentDir = path.join(root, ".agentplane", ".upgrade", "agent");
-    await mkdir(agentDir, { recursive: true });
-    const runNames = await readdir(agentDir);
-    const runs = runNames.toSorted();
-    expect(runs.length).toBeGreaterThan(0);
-    const latest = runs.at(-1) ?? "";
-    const planPath = path.join(agentDir, latest, "plan.md");
-    const constraintsPath = path.join(agentDir, latest, "constraints.md");
-    const filesJsonPath = path.join(agentDir, latest, "files.json");
-    const reviewJsonPath = path.join(agentDir, latest, "review.json");
-    expect(await readFile(planPath, "utf8")).toContain("agent-assisted");
-    expect(await readFile(constraintsPath, "utf8")).toContain("Must not touch");
-    expect(await readFile(filesJsonPath, "utf8")).toContain('"additions"');
-
-    const review = JSON.parse(await readFile(reviewJsonPath, "utf8")) as {
-      counts?: { total?: number; needsSemanticReview?: number };
-      files?: { relPath?: string; needsSemanticReview?: boolean }[];
-    };
-    expect(review.counts?.total).toBe(1);
-    expect(review.counts?.needsSemanticReview).toBe(0);
-    expect(review.files?.[0]?.relPath).toBe("AGENTS.md");
-    expect(review.files?.[0]?.needsSemanticReview).toBe(false);
+      const review = JSON.parse(await readFile(reviewJsonPath, "utf8")) as {
+        counts?: { total?: number; needsSemanticReview?: number };
+        files?: { relPath?: string; needsSemanticReview?: boolean }[];
+      };
+      expect(review.counts?.total).toBe(1);
+      expect(review.counts?.needsSemanticReview).toBe(0);
+      expect(review.files?.[0]?.relPath).toBe("AGENTS.md");
+      expect(review.files?.[0]?.needsSemanticReview).toBe(false);
+    } finally {
+      await repo.cleanup();
+    }
   }, 20_000);
 
   it("returns fast no-op in agent mode when there are no managed changes", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
+    const repo = await tempRepo({ withDefaultConfig: true });
+    const { root } = repo;
+    try {
+      const agentsMdPath = path.join(root, "AGENTS.md");
+      const sameAgents = "# Same policy\n";
+      await writeFile(agentsMdPath, sameAgents, "utf8");
 
-    const agentsMdPath = path.join(root, "AGENTS.md");
-    const sameAgents = "# Same policy\n";
-    await writeFile(agentsMdPath, sameAgents, "utf8");
+      const { bundlePath, checksumPath } = await createUpgradeBundle({
+        "framework.manifest.json": JSON.stringify(
+          {
+            schema_version: 1,
+            files: [
+              {
+                path: "AGENTS.md",
+                type: "markdown",
+                merge_strategy: "agents_policy_markdown",
+                required: true,
+              },
+            ],
+          },
+          null,
+          2,
+        ),
+        "AGENTS.md": sameAgents,
+      });
 
-    const { bundlePath, checksumPath } = await createUpgradeBundle({
-      "framework.manifest.json": JSON.stringify(
-        {
-          schema_version: 1,
-          files: [
-            {
-              path: "AGENTS.md",
-              type: "markdown",
-              merge_strategy: "agents_policy_markdown",
-              required: true,
-            },
-          ],
+      const code = await cmdUpgradeParsed({
+        cwd: root,
+        rootOverride: root,
+        flags: {
+          bundle: bundlePath,
+          checksum: checksumPath,
+          mode: "agent",
+          remote: false,
+          allowTarball: false,
+          dryRun: false,
+          backup: false,
+          yes: true,
         },
-        null,
-        2,
-      ),
-      "AGENTS.md": sameAgents,
-    });
+      });
+      expect(code).toBe(0);
+      expect(await readFile(agentsMdPath, "utf8")).toBe(sameAgents);
 
-    const code = await cmdUpgradeParsed({
-      cwd: root,
-      rootOverride: root,
-      flags: {
-        bundle: bundlePath,
-        checksum: checksumPath,
-        mode: "agent",
-        remote: false,
-        allowTarball: false,
-        dryRun: false,
-        backup: false,
-        yes: true,
-      },
-    });
-    expect(code).toBe(0);
-    expect(await readFile(agentsMdPath, "utf8")).toBe(sameAgents);
-
-    const agentDir = path.join(root, ".agentplane", ".upgrade", "agent");
-    expect(await exists(agentDir)).toBe(false);
+      const agentDir = path.join(root, ".agentplane", ".upgrade", "agent");
+      expect(await exists(agentDir)).toBe(false);
+    } finally {
+      await repo.cleanup();
+    }
   });
 });

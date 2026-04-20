@@ -3,7 +3,7 @@ import { usageError } from "../cli/spec/errors.js";
 import {
   findRepoWideAllowPrefixes,
   repoWideAllowPrefixMessage,
-} from "../shared/allow-prefix-policy.js";
+} from "./shared/allow-prefix-policy.js";
 
 import { toStringList } from "../cli/spec/parse-utils.js";
 

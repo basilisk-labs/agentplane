@@ -11,10 +11,7 @@ import {
   withTaskReadmeFrontmatterDefaults,
 } from "@agentplaneorg/core";
 
-import {
-  assertExpectedTaskDoc,
-  assertExpectedTaskSection,
-} from "../../shared/task-doc-conflicts.js";
+import { assertExpectedTaskDoc, assertExpectedTaskSection } from "../../task-doc/conflicts.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 
 import {

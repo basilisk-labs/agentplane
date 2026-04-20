@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { extractTaskSuffix } from "@agentplaneorg/core";
+import { isTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core";
 
 import { fileExists } from "../../../cli/fs-utils.js";
 import { execFileAsync, gitEnv } from "../../shared/git.js";
@@ -22,10 +22,6 @@ export function isUnknownRevisionError(err: unknown): boolean {
     /bad revision/i.test(message) ||
     /ambiguous argument/i.test(message)
   );
-}
-
-export function taskPrArtifactRefreshMessage(taskId: string): string {
-  return `📝 ${extractTaskSuffix(taskId)} task: refresh PR artifacts`;
 }
 
 export async function resolveBranchHeadSha(opts: {
@@ -67,7 +63,7 @@ export async function resolveRenderableBranchHead(opts: {
     const subject = subjectStdout.trim();
     return {
       headSha: branchHeadSha,
-      artifactRefresh: subject === taskPrArtifactRefreshMessage(opts.taskId),
+      artifactRefresh: isTaskArtifactRefreshCommitSubject({ subject, taskId: opts.taskId }),
     };
   } catch {
     return { headSha: branchHeadSha, artifactRefresh: false };

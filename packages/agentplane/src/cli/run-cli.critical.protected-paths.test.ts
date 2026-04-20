@@ -2,8 +2,9 @@ import { execFile } from "node:child_process";
 import path from "node:path";
 import { promisify } from "node:util";
 
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 
+import { describeCritical } from "../testing/index.js";
 import {
   cleanGitEnv,
   ensureDir,
@@ -17,7 +18,7 @@ import {
 
 const execFileAsync = promisify(execFile);
 
-describe("critical: protected paths (staged)", () => {
+describeCritical("critical: protected paths (staged)", () => {
   it("blocks staged rename of AGENTS.md", async () => {
     const root = await makeTempDir("agentplane-critical-protected-");
     await ensureDir(root);

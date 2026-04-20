@@ -44,7 +44,8 @@ jobs:
   test:
     needs: changes
     if: >-
-      needs.changes.outputs.core == 'true' &&
+      (needs.changes.outputs.core == 'true' ||
+        (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
       !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '')
     runs-on: ubuntu-24.04
     steps:
@@ -80,10 +81,17 @@ jobs:
         run: |
           bun run --filter=@agentplaneorg/core build
           bun run --filter=agentplane build
+          bun run --filter=@agentplane/testkit build
       - name: CLI docs (generated reference check)
         run: bun run docs:cli:check
+      - name: Hotspot Threshold (check)
+        run: bun run hotspots:check
       - name: Lint
         run: bun run lint:core
+      - name: Architecture boundaries
+        run: bun run arch:check
+      - name: Dead code baseline (warn-only)
+        run: bun run knip:check
       - name: Unit Tests (Fast)
         run: bun run test:fast
         env:
@@ -93,6 +101,7 @@ jobs:
           GIT_COMMITTER_NAME: agentplane-ci
           GIT_COMMITTER_EMAIL: agentplane-ci@example.com
       - name: CLI E2E (Critical)
+        timeout-minutes: 10
         run: bun run test:critical
         env:
           GIT_AUTHOR_NAME: agentplane-ci
@@ -109,14 +118,15 @@ jobs:
           node packages/agentplane/bin/agentplane.js workflow build --validate
           node packages/agentplane/bin/agentplane.js doctor
       - name: Workflow/Harness Coverage (guard)
-        run: bun run test:workflow-coverage
+        run: bun run coverage:workflow-suite
       - name: Significant File Coverage (guard)
-        run: bun run test:significant-coverage
+        run: bun run coverage:significant-suite
 
   test-windows:
     needs: changes
     if: >-
-      needs.changes.outputs.core == 'true' &&
+      (needs.changes.outputs.core == 'true' ||
+        (github.event_name == 'workflow_dispatch' && github.event.inputs.sha == '')) &&
       !(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '')
     runs-on: windows-latest
     timeout-minutes: 60
@@ -143,6 +153,7 @@ jobs:
         run: |
           bun run --filter=@agentplaneorg/core build
           bun run --filter=agentplane build
+          bun run --filter=@agentplane/testkit build
       - name: Unit tests (platform-critical)
         run: bun run test:platform-critical
         env:
@@ -181,6 +192,7 @@ jobs:
         run: |
           bun run --filter=@agentplaneorg/core build
           bun run --filter=agentplane build
+          bun run --filter=@agentplane/testkit build
 
   release-ready:
     name: Release-ready manifest

@@ -16,12 +16,7 @@ import {
 } from "./workflow.js";
 import * as taskBackend from "../backends/task-backend.js";
 import { parseCommandArgv } from "../cli/spec/parse.js";
-import {
-  captureStdIO,
-  mkGitRepoRoot,
-  silenceStdIO,
-  writeDefaultConfig,
-} from "../cli/run-cli.test-helpers.js";
+import { captureStdIO, mkGitRepoRoot, silenceStdIO, writeDefaultConfig } from "../testing/index.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import { verifySpec } from "./verify.spec.js";
 import { cmdVerifyParsed } from "./task/verify-record.js";
