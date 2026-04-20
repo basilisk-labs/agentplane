@@ -490,6 +490,21 @@ describe("runCli", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     await expect(resolvePrePushHookScriptPath(root)).resolves.toBe(repoScript);
   });
 
+  it("hooks run pre-push treats missing global-install fallbacks as unresolved", async () => {
+    const root = await mkGitRepoRoot();
+    const missingGlobalFallback = path.join(
+      root,
+      "simulated-global-prefix",
+      "lib",
+      "scripts",
+      "run-pre-push-hook.mjs",
+    );
+
+    await expect(
+      resolvePrePushHookScriptPath(root, { bundledScriptPath: missingGlobalFallback }),
+    ).resolves.toBeNull();
+  });
+
   it("hooks run post-merge prunes merged local task worktrees on the base branch", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
