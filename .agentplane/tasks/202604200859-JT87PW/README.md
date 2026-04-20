@@ -4,7 +4,7 @@ title: "Declarative dispatch for scenario and backend commands"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T09:06:04.683Z"
+  updated_by: "CODER"
+  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts packages/agentplane/src/commands/recipes.scenario.test.ts packages/agentplane/src/commands/recipes/impl/scenario.test.ts -> pass, 43/43. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Refactor backend command preflight into descriptors and apply small declarative cleanup to scenario helpers without changing CLI behavior."
+  -
+    type: "verify"
+    at: "2026-04-20T09:06:04.683Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts packages/agentplane/src/commands/recipes.scenario.test.ts packages/agentplane/src/commands/recipes/impl/scenario.test.ts -> pass, 43/43. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T08:59:32.316Z"
+doc_updated_at: "2026-04-20T09:06:04.713Z"
 doc_updated_by: "CODER"
 description: "Complete C-prime command dispatch cleanup by extracting shared backend command preflight/operation dispatch and replacing scenario command branching with small declarative registries where it reduces repeated if-chains without changing CLI behavior."
 sections:
@@ -59,6 +65,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T09:06:04.683Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts packages/agentplane/src/commands/recipes.scenario.test.ts packages/agentplane/src/commands/recipes/impl/scenario.test.ts -> pass, 43/43. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T08:59:32.316Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -93,6 +107,14 @@ Complete C-prime command dispatch cleanup by extracting shared backend command p
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T09:06:04.683Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts packages/agentplane/src/commands/recipes.scenario.test.ts packages/agentplane/src/commands/recipes/impl/scenario.test.ts -> pass, 43/43. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T08:59:32.316Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
