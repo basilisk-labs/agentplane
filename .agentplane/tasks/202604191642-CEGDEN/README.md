@@ -4,7 +4,7 @@ title: "Document no-Effect stance in ADR"
 status: "DOING"
 priority: "med"
 owner: "PLANNER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T13:55:13.339Z"
+  updated_by: "PLANNER"
+  note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0006-no-effect-fp-ts-migration.md and docs/adr/README.md."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Record the no-Effect/fp-ts decision as a concise ADR and link it from the ADR index, keeping the implementation style unchanged."
+  -
+    type: "verify"
+    at: "2026-04-20T13:55:13.339Z"
+    author: "PLANNER"
+    state: "ok"
+    note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0006-no-effect-fp-ts-migration.md and docs/adr/README.md."
 doc_version: 3
-doc_updated_at: "2026-04-20T13:53:57.816Z"
+doc_updated_at: "2026-04-20T13:55:13.351Z"
 doc_updated_by: "PLANNER"
 description: "Epic K and G′. Record the decision not to migrate this codebase to Effect or fp-ts during the current refactor."
 sections:
@@ -54,6 +60,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T13:55:13.339Z — VERIFY — ok
+    
+    By: PLANNER
+    
+    Note: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0006-no-effect-fp-ts-migration.md and docs/adr/README.md.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T13:53:57.816Z, excerpt_hash=sha256:99ea1c40b107bffb3fa47409249f1e39e8005df076090a8914acc388a7571f4a
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +99,14 @@ Add a focused ADR documenting the decision not to migrate Agentplane to Effect o
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T13:55:13.339Z — VERIFY — ok
+
+By: PLANNER
+
+Note: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0006-no-effect-fp-ts-migration.md and docs/adr/README.md.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T13:53:57.816Z, excerpt_hash=sha256:99ea1c40b107bffb3fa47409249f1e39e8005df076090a8914acc388a7571f4a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
