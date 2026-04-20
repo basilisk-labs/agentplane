@@ -1,10 +1,11 @@
 ---
 id: "202604191639-413SPN"
 title: "Extract Redmine backend API modules"
-status: "DOING"
+result_summary: "Extracted Redmine sync and backend runtime responsibilities into focused modules while keeping RedmineBackend as a compact composer and preserving existing behavior."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T08:23:06.640Z"
   updated_by: "CODER"
   note: "Verified Redmine backend module extraction: focused Redmine/backend Vitest slice passed (77 tests), agentplane typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap refreshed the repo-local runtime."
-commit: null
+commit:
+  hash: "55a15045dffc02386674f7a51a7a2ff241952657"
+  message: "♻️ 413SPN task: extract Redmine backend modules"
 comments:
   -
     author: "CODER"
     body: "Start: split Redmine backend sync responsibilities into focused modules while preserving public backend behavior."
+  -
+    author: "CODER"
+    body: "Verified: focused Redmine/backend Vitest slice passed (77 tests), typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified Redmine backend module extraction: focused Redmine/backend Vitest slice passed (77 tests), agentplane typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap refreshed the repo-local runtime."
+  -
+    type: "status"
+    at: "2026-04-20T08:23:33.644Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: focused Redmine/backend Vitest slice passed (77 tests), typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
 doc_version: 3
-doc_updated_at: "2026-04-20T08:23:06.644Z"
+doc_updated_at: "2026-04-20T08:23:33.644Z"
 doc_updated_by: "CODER"
 description: "Epic C′. Break Redmine backend code into focused issue, project, user, mapping, and rate-limit modules."
 sections:
