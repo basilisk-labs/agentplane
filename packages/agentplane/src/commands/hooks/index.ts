@@ -151,6 +151,12 @@ function resolveBundledPrePushHookScriptPath(): string {
   return fileURLToPath(new URL("../../../../../scripts/run-pre-push-hook.mjs", import.meta.url));
 }
 
+export async function resolvePrePushHookScriptPath(gitRoot: string): Promise<string> {
+  const repoScriptPath = path.join(gitRoot, "scripts", "run-pre-push-hook.mjs");
+  if (await fileExists(repoScriptPath)) return repoScriptPath;
+  return resolveBundledPrePushHookScriptPath();
+}
+
 async function readHookStdinUtf8(timeoutMs = 25): Promise<string> {
   if (process.stdin.isTTY) return "";
 
@@ -377,7 +383,7 @@ export async function cmdHooksRun(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride ?? null,
       });
-      const scriptPath = resolveBundledPrePushHookScriptPath();
+      const scriptPath = await resolvePrePushHookScriptPath(resolved.gitRoot);
       if (!(await fileExists(scriptPath))) {
         throw new CliError({
           exitCode: 2,
