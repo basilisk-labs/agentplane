@@ -4,8 +4,9 @@ import { pathToFileURL } from "node:url";
 import {
   ROOT,
   assertAgentplaneCliDistFreshForDocs,
-  checkGeneratedArtifactFresh,
+  defineGeneratedArtifactCheck,
   fileExists,
+  runScriptMain,
 } from "./lib/generated-artifacts.mjs";
 
 const CLI_DIST_DIR = path.join(ROOT, "packages", "agentplane", "dist", "cli");
@@ -95,7 +96,7 @@ async function main() {
   const commandGuideModule = await import(pathToFileURL(COMMAND_GUIDE_DIST).href);
   const runtimeModule = await import(pathToFileURL(RUNTIME_COMMAND_DIST).href);
   const runtimeSourceModule = await import(pathToFileURL(RUNTIME_SOURCE_DIST).href);
-  await checkGeneratedArtifactFresh({
+  const checkBootstrapDocFresh = defineGeneratedArtifactCheck({
     outputPath: DOC_PATH,
     tempPrefix: "agentplane-bootstrap-doc-",
     fileName: "agent-bootstrap.generated.mdx",
@@ -107,6 +108,7 @@ async function main() {
     staleMessage:
       "Agent bootstrap doc is stale. Regenerate with: node scripts/generate-agent-bootstrap-doc.mjs",
   });
+  await checkBootstrapDocFresh();
 
   const runtimeReport = runtimeSourceModule.resolveRuntimeSourceInfo({
     cwd: ROOT,
@@ -250,7 +252,4 @@ async function main() {
   );
 }
 
-main().catch((error) => {
-  process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
-  process.exitCode = 1;
-});
+runScriptMain(main);
