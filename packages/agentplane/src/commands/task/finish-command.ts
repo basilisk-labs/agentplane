@@ -1,5 +1,6 @@
 import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
+import { emitTraceEvent } from "../../shared/trace-events.js";
 
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
@@ -15,6 +16,11 @@ export async function cmdFinish(options: FinishOptions): Promise<number> {
     const ctx =
       options.ctx ??
       (await loadCommandContext({ cwd: options.cwd, rootOverride: options.rootOverride ?? null }));
+    emitTraceEvent({
+      component: "task-finish",
+      event: "finish_started",
+      details: { task_count: options.taskIds.length, backend: ctx.backendId },
+    });
     await ensureReconciledBeforeMutation({ ctx, command: "finish" });
     await ensureFinishRunsOnBaseBranch({
       ctx,
@@ -32,8 +38,22 @@ export async function cmdFinish(options: FinishOptions): Promise<number> {
     }
 
     const plan = resolveFinishExecutionPlan({ ctx, options });
-    return await executeFinishPlan({ ctx, options, plan });
+    const code = await executeFinishPlan({ ctx, options, plan });
+    emitTraceEvent({
+      component: "task-finish",
+      event: "finish_completed",
+      details: { task_count: options.taskIds.length, exit_code: code },
+    });
+    return code;
   } catch (err) {
+    emitTraceEvent({
+      component: "task-finish",
+      event: "finish_failed",
+      details: {
+        task_count: options.taskIds.length,
+        error: err instanceof Error ? err.name : "UnknownError",
+      },
+    });
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "finish", root: options.rootOverride ?? null });
   }

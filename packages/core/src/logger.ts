@@ -24,6 +24,13 @@ export type LoggerEntry =
       kind: "json";
       value: unknown;
       stream?: LoggerStream;
+    }
+  | {
+      kind: "trace";
+      component: string;
+      event: string;
+      stream?: LoggerStream;
+      details?: Record<string, unknown>;
     };
 
 export type Logger = {
@@ -68,6 +75,16 @@ export function createLogger(streams?: {
           writer.write(ensureTrailingNewline(JSON.stringify(entry.value, null, 2)));
           return;
         }
+        if (entry.kind === "trace") {
+          writer.write(
+            ensureTrailingNewline(
+              `${entry.component}:${entry.event}${
+                entry.details ? ` ${JSON.stringify(entry.details)}` : ""
+              }`,
+            ),
+          );
+          return;
+        }
         writer.write(ensureTrailingNewline(entry.kind === "line" ? entry.text : entry.message));
         return;
       }
@@ -75,18 +92,25 @@ export function createLogger(streams?: {
       const payload =
         entry.kind === "json"
           ? { ts: nowIso(), kind: entry.kind, stream, value: entry.value }
-          : entry.kind === "line"
-            ? { ts: nowIso(), kind: entry.kind, stream, text: entry.text }
-            : {
+          : entry.kind === "trace"
+            ? {
                 ts: nowIso(),
-                kind: entry.kind,
-                stream,
-                level: entry.level,
-                message: entry.message,
-                action: entry.action,
-                target: entry.target,
+                component: entry.component,
+                event: entry.event,
                 details: entry.details,
-              };
+              }
+            : entry.kind === "line"
+              ? { ts: nowIso(), kind: entry.kind, stream, text: entry.text }
+              : {
+                  ts: nowIso(),
+                  kind: entry.kind,
+                  stream,
+                  level: entry.level,
+                  message: entry.message,
+                  action: entry.action,
+                  target: entry.target,
+                  details: entry.details,
+                };
       writer.write(ensureTrailingNewline(JSON.stringify(payload)));
     },
   };

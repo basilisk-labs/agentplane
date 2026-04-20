@@ -1,10 +1,10 @@
 ---
 id: "202604191643-CDSPNH"
 title: "Emit structured trace events behind AGENTPLANE_TRACE"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -14,19 +14,30 @@ tags:
   - "observability"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-20T12:07:46.334Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: Implement opt-in structured trace output for observability without changing normal command output, then verify trace gating and task-finish relevant behavior."
+events:
+  -
+    type: "status"
+    at: "2026-04-20T12:08:08.314Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Implement opt-in structured trace output for observability without changing normal command output, then verify trace gating and task-finish relevant behavior."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:43:09.765Z"
+doc_updated_at: "2026-04-20T12:08:08.392Z"
 doc_updated_by: "CODER"
 description: "Epic H′. Add structured trace event output for runtime, backend, git, and PR sync paths."
 sections:
@@ -37,10 +48,7 @@ sections:
   Scope: |-
     - In scope: Epic H′. Add structured trace event output for runtime, backend, git, and PR sync paths.
     - Out of scope: unrelated refactors not required for "Emit structured trace events behind AGENTPLANE_TRACE".
-  Plan: |-
-    1. Implement the change for "Emit structured trace events behind AGENTPLANE_TRACE".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+  Plan: "Implement AGENTPLANE_TRACE as an opt-in structured NDJSON event channel using the existing logger surface. Keep default CLI output unchanged when the flag is absent. Add focused tests for trace gating and at least one task-finish relevant emission path, then run targeted tests plus repository quality gates required for code changes."
   Verify Steps: |-
     1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
     2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
@@ -67,9 +75,7 @@ Epic H′. Add structured trace event output for runtime, backend, git, and PR s
 
 ## Plan
 
-1. Implement the change for "Emit structured trace events behind AGENTPLANE_TRACE".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+Implement AGENTPLANE_TRACE as an opt-in structured NDJSON event channel using the existing logger surface. Keep default CLI output unchanged when the flag is absent. Add focused tests for trace gating and at least one task-finish relevant emission path, then run targeted tests plus repository quality gates required for code changes.
 
 ## Verify Steps
 

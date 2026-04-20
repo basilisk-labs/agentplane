@@ -8,6 +8,7 @@ import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { fileExists } from "../../../cli/fs-utils.js";
 import { workflowModeMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
+import { emitTraceEvent } from "../../../shared/trace-events.js";
 import type { TaskData } from "../../../backends/task-backend.js";
 import { INCIDENTS_POLICY_PATH } from "../../incidents/shared.js";
 import { resolvePrArtifactHeadSha, parsePrMeta, type PrMeta } from "../../shared/pr-meta.js";
@@ -197,6 +198,11 @@ export async function syncPrArtifacts(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    emitTraceEvent({
+      component: "pr-sync",
+      event: "sync_started",
+      details: { task_id: opts.taskId, mode: opts.mode, backend: ctx.backendId },
+    });
     const { task } = await loadBackendTask({
       ctx,
       cwd: opts.cwd,
@@ -292,9 +298,24 @@ export async function syncPrArtifacts(opts: {
           author: opts.author,
           remoteMode,
         });
+        emitTraceEvent({
+          component: "pr-sync",
+          event: "sync_completed",
+          details: {
+            task_id: task.id,
+            mode: opts.mode,
+            branch,
+            action: openOutcome?.action ?? null,
+          },
+        });
         return { meta, prDir, resolved, openOutcome };
       }
       const { meta } = await runPrUpdateSync(common);
+      emitTraceEvent({
+        component: "pr-sync",
+        event: "sync_completed",
+        details: { task_id: task.id, mode: opts.mode, branch, action: "updated" },
+      });
       return { meta, prDir, resolved };
     } finally {
       await restoreIncidentRegistryIfNeeded({
@@ -303,6 +324,15 @@ export async function syncPrArtifacts(opts: {
       });
     }
   } catch (err) {
+    emitTraceEvent({
+      component: "pr-sync",
+      event: "sync_failed",
+      details: {
+        task_id: opts.taskId,
+        mode: opts.mode,
+        error: err instanceof Error ? err.name : "UnknownError",
+      },
+    });
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "pr sync", root: opts.rootOverride ?? null });
   }

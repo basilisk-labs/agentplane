@@ -4,7 +4,7 @@ import {
   setMarkdownSection,
   type ResolvedProject,
 } from "@agentplaneorg/core";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
@@ -201,6 +201,10 @@ function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undef
 }
 
 describe("task finish (unit)", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   beforeEach(() => {
     mocks.commitFromComment.mockReset();
     mocks.cmdCommit.mockReset();
@@ -1011,6 +1015,12 @@ describe("task finish (unit)", () => {
       writes.push(String(chunk));
       return true;
     });
+    const traceWrites: string[] = [];
+    const traceSpy = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      traceWrites.push(String(chunk));
+      return true;
+    });
+    vi.stubEnv("AGENTPLANE_TRACE", "1");
 
     let currentTask = mkTask({
       id: "T-1",
@@ -1110,7 +1120,20 @@ describe("task finish (unit)", () => {
     expect(writes.join("")).toContain("creating commit from verification comment");
     expect(writes.join("")).toContain("creating deterministic close commit");
     expect(writes.join("")).toContain("finished");
+    const traceEvents = traceWrites
+      .join("")
+      .trim()
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => JSON.parse(line) as { component?: string; event?: string });
+    expect(traceEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ component: "task-finish", event: "finish_started" }),
+        expect.objectContaining({ component: "task-finish", event: "finish_completed" }),
+      ]),
+    );
     writeSpy.mockRestore();
+    traceSpy.mockRestore();
   });
 
   it("prints status-commit progress before the finish status commit runs", async () => {

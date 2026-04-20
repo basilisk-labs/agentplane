@@ -37,4 +37,20 @@ describe("logger", () => {
     expect(parsed.message).toBe("done");
     expect(parsed.action).toBe("done");
   });
+
+  it("writes trace entries as structured ndjson events", () => {
+    const stderr = createMemoryWriter();
+    const logger = createLogger({ mode: "json", stdout: stderr, stderr });
+    logger.write({
+      kind: "trace",
+      component: "backend-ops",
+      event: "command_context_loaded",
+      stream: "stderr",
+      details: { backend: "local" },
+    });
+    const parsed = JSON.parse(stderr.text().trim()) as Record<string, unknown>;
+    expect(parsed.component).toBe("backend-ops");
+    expect(parsed.event).toBe("command_context_loaded");
+    expect(parsed.details).toEqual({ backend: "local" });
+  });
 });

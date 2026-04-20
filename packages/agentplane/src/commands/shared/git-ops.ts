@@ -12,6 +12,7 @@ import {
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { promptChoice, promptInput } from "../../cli/prompts.js";
 import { CliError } from "../../shared/errors.js";
+import { emitTraceEvent } from "../../shared/trace-events.js";
 export {
   gitBranchExists,
   gitBranchUpstream,
@@ -87,6 +88,11 @@ export async function ensureInitCommit(opts: {
   version: string;
   skipHooks: boolean;
 }): Promise<void> {
+  emitTraceEvent({
+    component: "git-ops",
+    event: "init_commit_started",
+    details: { base_branch: opts.baseBranch, path_count: opts.installPaths.length },
+  });
   const stagedBefore = await gitStagedPaths(opts.gitRoot);
   if (stagedBefore.length > 0) {
     throw new CliError({
@@ -106,8 +112,20 @@ export async function ensureInitCommit(opts: {
   const dedupedPaths = [...new Set(opts.installPaths)].filter((entry) => entry.length > 0);
   await gitAddPaths(opts.gitRoot, dedupedPaths);
   const staged = await gitStagedPaths(opts.gitRoot);
-  if (staged.length === 0) return;
+  if (staged.length === 0) {
+    emitTraceEvent({
+      component: "git-ops",
+      event: "init_commit_skipped",
+      details: { reason: "no_staged_changes" },
+    });
+    return;
+  }
 
   const message = `chore: install agentplane ${opts.version}`;
   await gitCommit(opts.gitRoot, message, { skipHooks: opts.skipHooks });
+  emitTraceEvent({
+    component: "git-ops",
+    event: "init_commit_completed",
+    details: { staged_path_count: staged.length, skip_hooks: opts.skipHooks },
+  });
 }
