@@ -1,10 +1,40 @@
 import { createInterface } from "node:readline/promises";
+import type * as ClackPromptsModule from "@clack/prompts";
+
+type ClackPrompts = typeof ClackPromptsModule;
+
+function shouldUseClackPrompts(): boolean {
+  return (
+    process.env.AGENTPLANE_PROMPTS !== "plain" &&
+    process.stdin.isTTY === true &&
+    process.stdout.isTTY === true
+  );
+}
+
+async function loadClackPrompts(): Promise<ClackPrompts | null> {
+  if (!shouldUseClackPrompts()) return null;
+  return await import("@clack/prompts");
+}
 
 export async function promptChoice(
   prompt: string,
   choices: string[],
   defaultValue: string,
 ): Promise<string> {
+  const clack = await loadClackPrompts();
+  if (clack) {
+    const answer = await clack.select({
+      message: prompt,
+      options: choices.map((value) => ({ value, label: value })),
+      initialValue: defaultValue,
+    });
+    if (clack.isCancel(answer)) {
+      clack.cancel("Prompt cancelled; using default.");
+      return defaultValue;
+    }
+    return String(answer);
+  }
+
   const rl = createInterface({ input: process.stdin, output: process.stdout });
   const question = `${prompt} [${choices.join("/")}] (default ${defaultValue}): `;
   const answer = await rl.question(question);
@@ -19,6 +49,19 @@ export async function promptChoice(
 }
 
 export async function promptYesNo(prompt: string, defaultValue: boolean): Promise<boolean> {
+  const clack = await loadClackPrompts();
+  if (clack) {
+    const answer = await clack.confirm({
+      message: prompt,
+      initialValue: defaultValue,
+    });
+    if (clack.isCancel(answer)) {
+      clack.cancel("Prompt cancelled; using default.");
+      return defaultValue;
+    }
+    return answer;
+  }
+
   const rl = createInterface({ input: process.stdin, output: process.stdout });
   const question = `${prompt} [${defaultValue ? "Y/n" : "y/N"}]: `;
   const answer = await rl.question(question);
@@ -31,6 +74,16 @@ export async function promptYesNo(prompt: string, defaultValue: boolean): Promis
 }
 
 export async function promptInput(prompt: string): Promise<string> {
+  const clack = await loadClackPrompts();
+  if (clack) {
+    const answer = await clack.text({ message: prompt });
+    if (clack.isCancel(answer)) {
+      clack.cancel("Prompt cancelled.");
+      return "";
+    }
+    return answer.trim();
+  }
+
   const rl = createInterface({ input: process.stdin, output: process.stdout });
   const answer = await rl.question(prompt);
   rl.close();

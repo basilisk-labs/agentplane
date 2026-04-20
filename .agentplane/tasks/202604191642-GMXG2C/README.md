@@ -1,10 +1,10 @@
 ---
 id: "202604191642-GMXG2C"
 title: "Prototype clack prompts in interactive command flows"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -13,19 +13,30 @@ tags:
   - "ux"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-20T15:44:24.567Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: Prototyping clack prompts behind the existing prompt abstraction."
+events:
+  -
+    type: "status"
+    at: "2026-04-20T15:44:25.711Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Prototyping clack prompts behind the existing prompt abstraction."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:42:19.675Z"
+doc_updated_at: "2026-04-20T15:44:25.737Z"
 doc_updated_by: "CODER"
 description: "Epic K. Evaluate @clack/prompts in interactive init and plugin installation flows without breaking non-interactive behavior."
 sections:
@@ -36,10 +47,7 @@ sections:
   Scope: |-
     - In scope: Epic K. Evaluate @clack/prompts in interactive init and plugin installation flows without breaking non-interactive behavior.
     - Out of scope: unrelated refactors not required for "Prototype clack prompts in interactive command flows".
-  Plan: |-
-    1. Implement the change for "Prototype clack prompts in interactive command flows".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+  Plan: "Prototype @clack/prompts only behind the existing interactive prompt abstraction. Add the dependency to the CLI package, keep non-TTY and injected prompt tests on the current deterministic stdio path, and use clack for recoverable TTY input/confirm/select flows where it improves UX without changing command contracts. Add focused tests for fallback behavior and run targeted prompt/init or plugin-install tests plus format, lint, and build."
   Verify Steps: |-
     1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
     2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
@@ -66,9 +74,7 @@ Epic K. Evaluate @clack/prompts in interactive init and plugin installation flow
 
 ## Plan
 
-1. Implement the change for "Prototype clack prompts in interactive command flows".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+Prototype @clack/prompts only behind the existing interactive prompt abstraction. Add the dependency to the CLI package, keep non-TTY and injected prompt tests on the current deterministic stdio path, and use clack for recoverable TTY input/confirm/select flows where it improves UX without changing command contracts. Add focused tests for fallback behavior and run targeted prompt/init or plugin-install tests plus format, lint, and build.
 
 ## Verify Steps
 
