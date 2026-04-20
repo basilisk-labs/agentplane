@@ -4,7 +4,7 @@ title: "Document custom CLI stack decision in ADR"
 status: "DOING"
 priority: "med"
 owner: "PLANNER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T12:30:46.292Z"
+  updated_by: "PLANNER"
+  note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0004-keep-custom-cli-stack.md and docs/adr/README.md."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Record the custom CLI stack decision as an ADR and link it from the ADR index, without changing CLI runtime code."
+  -
+    type: "verify"
+    at: "2026-04-20T12:30:46.292Z"
+    author: "PLANNER"
+    state: "ok"
+    note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0004-keep-custom-cli-stack.md and docs/adr/README.md."
 doc_version: 3
-doc_updated_at: "2026-04-20T12:27:53.987Z"
+doc_updated_at: "2026-04-20T12:30:46.306Z"
 doc_updated_by: "PLANNER"
 description: "Epic K and G′. Record the decision to keep the custom CLI stack instead of moving to Commander, citty, or oclif."
 sections:
@@ -54,6 +60,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T12:30:46.292Z — VERIFY — ok
+    
+    By: PLANNER
+    
+    Note: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0004-keep-custom-cli-stack.md and docs/adr/README.md.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T12:27:53.987Z, excerpt_hash=sha256:fe6e857bbc48fe720c9757a90aaa1db1bb3ffc889136f27b13ba9c0bc3beefec
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +99,14 @@ Document the custom CLI stack decision in docs/adr: explain why Agentplane keeps
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T12:30:46.292Z — VERIFY — ok
+
+By: PLANNER
+
+Note: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0004-keep-custom-cli-stack.md and docs/adr/README.md.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T12:27:53.987Z, excerpt_hash=sha256:fe6e857bbc48fe720c9757a90aaa1db1bb3ffc889136f27b13ba9c0bc3beefec
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
