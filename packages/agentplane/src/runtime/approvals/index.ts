@@ -5,7 +5,7 @@ export type {
   ApprovalResolveOptions,
   ApprovalRuntimeOptions,
   EffectiveApprovalSettings,
-} from "./types.js";
+} from "./model.js";
 export {
   ApprovalRuntime,
   createApprovalRuntime,

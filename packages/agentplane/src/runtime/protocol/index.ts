@@ -18,4 +18,4 @@ export {
   type AgentplaneProtocolSuccessResult,
   type FrameworkExplainProtocolResult,
   type FrameworkProtocolSurface,
-} from "./types.js";
+} from "./model.js";

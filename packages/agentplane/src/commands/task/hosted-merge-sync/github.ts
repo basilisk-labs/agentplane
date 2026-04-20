@@ -2,7 +2,7 @@ import { execFileAsync } from "../../shared/git.js";
 import { withGhTransportRetry } from "../../shared/gh-transport.js";
 import { parseTaskIdFromBranch } from "../../shared/git-worktree.js";
 import { ghEnv } from "../../pr/internal/gh-api.js";
-import type { HostedMergedPr, HostedMergeTarget } from "./types.js";
+import type { HostedMergedPr, HostedMergeTarget } from "./model.js";
 
 function normalizeMergedPr(value: unknown): HostedMergedPr | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;

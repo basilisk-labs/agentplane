@@ -5,7 +5,7 @@ import type { TaskPrMeta } from "@agentplaneorg/core";
 
 import { parsePrMeta } from "../../shared/pr-meta.js";
 import type { CommandContext } from "../../shared/task-backend.js";
-import type { LocalMergedPrMeta } from "./types.js";
+import type { LocalMergedPrMeta } from "./model.js";
 
 export function resolveLocalMergedPrMeta(meta: TaskPrMeta | null): LocalMergedPrMeta | null {
   const branch = meta?.branch?.trim() ?? "";

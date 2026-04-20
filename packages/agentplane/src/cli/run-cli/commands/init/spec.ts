@@ -8,7 +8,7 @@ import {
   parseDirectCloseDirtyPolicyForInit,
   parseRecipesSelectionForInit,
 } from "./parsers.js";
-import type { InitFlags, InitParsed } from "./types.js";
+import type { InitFlags, InitParsed } from "./model.js";
 
 export const initSpec: CommandSpec<InitParsed> = {
   id: ["init"],

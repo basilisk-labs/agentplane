@@ -2,7 +2,7 @@ import type { AgentplaneConfig } from "@agentplaneorg/core";
 
 import { evaluatePolicy } from "./evaluate.js";
 import { resolvePolicyActionDescriptor, type PolicyActionDescriptor } from "./taxonomy.js";
-import type { PolicyAction, PolicyContext, PolicyProblem, PolicyResult } from "./types.js";
+import type { PolicyAction, PolicyContext, PolicyProblem, PolicyResult } from "./model.js";
 
 export type PolicyDecision = {
   ok: boolean;

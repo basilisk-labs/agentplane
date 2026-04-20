@@ -1,4 +1,4 @@
-import type { PolicyProblem, PolicyResult } from "./types.js";
+import type { PolicyProblem, PolicyResult } from "./model.js";
 
 export function okResult(): PolicyResult {
   return { ok: true, errors: [], warnings: [] };

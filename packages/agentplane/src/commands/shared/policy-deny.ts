@@ -1,4 +1,4 @@
-import type { PolicyResult } from "../../policy/types.js";
+import type { PolicyResult } from "../../policy/model.js";
 import { CliError } from "../../shared/errors.js";
 
 export function throwIfPolicyDenied(res: PolicyResult): void {

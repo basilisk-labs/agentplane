@@ -29,7 +29,7 @@ import {
   validateCachedRecipesSelection,
 } from "./recipes.js";
 import { INIT_DEFAULTS, setupProfilePresets } from "./presets.js";
-import type { InitFlags, InitIde, InitParsed, SetupProfilePreset } from "./types.js";
+import type { InitFlags, InitIde, InitParsed, SetupProfilePreset } from "./model.js";
 import { ensureAgentsFiles } from "./write-agents.js";
 import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./write-config.js";
 import { ensureInitRedmineEnvTemplate } from "./write-env.js";

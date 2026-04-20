@@ -2,5 +2,5 @@ export type {
   ExecutionBudgetCounter,
   ExecutionBudgetPhase,
   ResolvedExecutionProfileRuntime,
-} from "./types.js";
+} from "./model.js";
 export { consumeExecutionProfileBudget, resolveExecutionProfileRuntime } from "./resolve.js";

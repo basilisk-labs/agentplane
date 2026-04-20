@@ -1,7 +1,7 @@
 import type { RunnerAdapterCapabilities } from "../../runner/types.js";
 
 import { createCapabilityRegistry } from "./registry.js";
-import type { AgentplaneCapabilityEntry, AgentplaneCapabilityRegistry } from "./types.js";
+import type { AgentplaneCapabilityEntry, AgentplaneCapabilityRegistry } from "./model.js";
 
 function source(adapterId: string) {
   return {

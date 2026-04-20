@@ -1,10 +1,10 @@
 ---
 id: "202604191644-3X3NWH"
 title: "Consolidate excess types files and add guardrail"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -14,19 +14,30 @@ tags:
   - "tooling"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-20T16:18:50.764Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: Consolidating generic types files and adding a guardrail for future type barrels."
+events:
+  -
+    type: "status"
+    at: "2026-04-20T16:19:00.809Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Consolidating generic types files and adding a guardrail for future type barrels."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:44:14.732Z"
+doc_updated_at: "2026-04-20T16:19:00.815Z"
 doc_updated_by: "CODER"
 description: "Epic J′. Reduce the number of distributed types.ts files and add a guardrail for module-local type organization."
 sections:
@@ -37,10 +48,7 @@ sections:
   Scope: |-
     - In scope: Epic J′. Reduce the number of distributed types.ts files and add a guardrail for module-local type organization.
     - Out of scope: unrelated refactors not required for "Consolidate excess types files and add guardrail".
-  Plan: |-
-    1. Implement the change for "Consolidate excess types files and add guardrail".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+  Plan: "Reduce generic types.ts spread without destabilizing domain contracts. Rename the small/local types.ts modules to semantic filenames (policy model, runtime resolver contracts, init model, hosted merge sync model), update imports/exports, and leave only justified large domain type barrels on an explicit allowlist. Add a scripts/check-types-files.mjs guardrail plus package script so CI/local checks fail when new non-allowlisted types.ts files appear or the count exceeds 10. Verification: agentplane task verify-show; bun run check:types-files; bun run typecheck; bun run lint:core; bun run format:check."
   Verify Steps: |-
     1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
     2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
@@ -67,9 +75,7 @@ Epic J′. Reduce the number of distributed types.ts files and add a guardrail f
 
 ## Plan
 
-1. Implement the change for "Consolidate excess types files and add guardrail".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+Reduce generic types.ts spread without destabilizing domain contracts. Rename the small/local types.ts modules to semantic filenames (policy model, runtime resolver contracts, init model, hosted merge sync model), update imports/exports, and leave only justified large domain type barrels on an explicit allowlist. Add a scripts/check-types-files.mjs guardrail plus package script so CI/local checks fail when new non-allowlisted types.ts files appear or the count exceeds 10. Verification: agentplane task verify-show; bun run check:types-files; bun run typecheck; bun run lint:core; bun run format:check.
 
 ## Verify Steps
 

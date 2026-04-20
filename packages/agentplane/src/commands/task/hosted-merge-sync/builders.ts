@@ -2,7 +2,7 @@ import { normalizeTaskDocVersion, type TaskPrMeta } from "@agentplaneorg/core";
 
 import type { TaskData } from "../../../backends/task-backend.js";
 import { appendTaskEvent } from "../shared.js";
-import type { HostedMergedPr, LocalBranchPrSyncCandidate, LocalMergedPrMeta } from "./types.js";
+import type { HostedMergedPr, LocalBranchPrSyncCandidate, LocalMergedPrMeta } from "./model.js";
 
 export function buildSyncedPrMeta(opts: {
   meta: TaskPrMeta;

@@ -6,7 +6,7 @@ import { parseTaskIdFromBranch } from "../../shared/git-worktree.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { backendUsesLocalTaskStore } from "../../shared/task-backend.js";
 import { readPrMetaIfPresent } from "./pr-meta.js";
-import type { LocalBranchPrSyncCandidate, LocalDoneBranchPrDrift } from "./types.js";
+import type { LocalBranchPrSyncCandidate, LocalDoneBranchPrDrift } from "./model.js";
 
 function hasTaskVerificationForLocalSync(opts: {
   task: TaskData;

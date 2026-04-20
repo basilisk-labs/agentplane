@@ -1,5 +1,5 @@
 import { gitError, internalError, okResult } from "../result.js";
-import type { PolicyContext, PolicyResult } from "../types.js";
+import type { PolicyContext, PolicyResult } from "../model.js";
 
 export function cleanTreeRule(ctx: PolicyContext): PolicyResult {
   if (ctx.requireClean !== true) return okResult();

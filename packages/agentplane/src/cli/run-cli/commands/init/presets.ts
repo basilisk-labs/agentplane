@@ -1,4 +1,4 @@
-import type { InitDefaults, SetupProfilePreset } from "./types.js";
+import type { InitDefaults, SetupProfilePreset } from "./model.js";
 
 export const INIT_DEFAULTS: InitDefaults = {
   policyGateway: "codex",

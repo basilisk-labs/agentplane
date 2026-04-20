@@ -15,7 +15,7 @@ import {
 import { resolveHostedMergedPr } from "./hosted-merge-sync/github.js";
 import { findLocallyShippedBranchPrTasks } from "./hosted-merge-sync/local-branch.js";
 import { readPrMetaIfPresent, resolveLocalMergedPrMeta } from "./hosted-merge-sync/pr-meta.js";
-import type { HostedMergeSyncResult, HostedMergeTarget } from "./hosted-merge-sync/types.js";
+import type { HostedMergeSyncResult, HostedMergeTarget } from "./hosted-merge-sync/model.js";
 
 export type {
   HostedMergedPr,
@@ -24,7 +24,7 @@ export type {
   LocalBranchPrSyncCandidate,
   LocalDoneBranchPrDrift,
   LocalMergedPrMeta,
-} from "./hosted-merge-sync/types.js";
+} from "./hosted-merge-sync/model.js";
 export {
   findDoneBranchPrTasksWithOpenPrArtifacts,
   findLocallyShippedBranchPrTasks,

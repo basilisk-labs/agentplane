@@ -1,7 +1,7 @@
 import { validateCommitSubject } from "@agentplaneorg/core";
 
 import { gitError, okResult } from "../result.js";
-import type { PolicyContext, PolicyResult } from "../types.js";
+import type { PolicyContext, PolicyResult } from "../model.js";
 
 export function commitSubjectRule(ctx: PolicyContext): PolicyResult {
   const subject = (ctx.commit?.subject ?? "").trim();
