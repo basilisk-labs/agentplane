@@ -1,10 +1,11 @@
 ---
 id: "202604191643-GA9N4F"
 title: "Measure CLI cold path and store baseline"
-status: "DOING"
+result_summary: "Recorded local cold-path benchmark numbers for quickstart, task list/search/next, and preflight quick with rerun guidance."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T16:09:55.023Z"
   updated_by: "CODER"
   note: "Recorded CLI cold-path baseline from bun run bench:cli:cold --runs 5 --warmups 1. Verification passed: benchmark command completed; bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts --reporter dot; bun run format:check; bun run lint:core; bun run build."
-commit: null
+commit:
+  hash: "b42cd855fa3b92d6d96386476a758b5e026e5fa7"
+  message: "📈 GA9N4F perf: record CLI cold-path baseline"
 comments:
   -
     author: "CODER"
     body: "Start: Measuring and documenting the current CLI cold-path baseline."
+  -
+    author: "CODER"
+    body: "Verified: CLI cold-path baseline is captured and documented."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Recorded CLI cold-path baseline from bun run bench:cli:cold --runs 5 --warmups 1. Verification passed: benchmark command completed; bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts --reporter dot; bun run format:check; bun run lint:core; bun run build."
+  -
+    type: "status"
+    at: "2026-04-20T16:10:19.386Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: CLI cold-path baseline is captured and documented."
 doc_version: 3
-doc_updated_at: "2026-04-20T16:09:55.061Z"
+doc_updated_at: "2026-04-20T16:10:19.387Z"
 doc_updated_by: "CODER"
 description: "Epic I′. Refresh the CLI cold-path baseline and record the current performance contract."
 sections:
