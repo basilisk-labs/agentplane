@@ -66,6 +66,16 @@ describe("release CI contract", () => {
     expect(agentplanePackageJson.exports?.["./internal/testing"]).toBeUndefined();
   });
 
+  it("keeps the publishable agentplane build independent from cached dist state", async () => {
+    const agentplanePackageJsonText = await readRootText("packages/agentplane/package.json");
+    const agentplanePackageJson = JSON.parse(agentplanePackageJsonText) as {
+      scripts?: Record<string, string>;
+    };
+
+    expect(agentplanePackageJson.scripts?.build).toContain("npm run clean");
+    expect(agentplanePackageJson.scripts?.build).toContain("tsc -b --force");
+  });
+
   it("checks the generated bootstrap doc against the actual runtime-source dist path", async () => {
     const checkScript = await readRootText("scripts/check-agent-bootstrap-fresh.mjs");
 

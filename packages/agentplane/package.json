@@ -48,7 +48,7 @@
   },
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
-    "build": "tsc -b && node ../../scripts/manifest.mjs build .",
+    "build": "npm run clean && tsc -b --force && node ../../scripts/manifest.mjs build .",
     "typecheck": "tsc -b",
     "prepare": "npm run build",
     "prepack": "npm run clean && npm run build",
