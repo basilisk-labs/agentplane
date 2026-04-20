@@ -1,10 +1,11 @@
 ---
 id: "202604200946-0FAD2W"
 title: "Add shared script argv parser"
-status: "DOING"
+result_summary: "Added parseScriptArgs for shared value/boolean flag parsing and migrated release tag checks away from hand-rolled argv loops."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T09:48:32.836Z"
   updated_by: "CODER"
   note: "Command: node scripts/check-release-version.mjs --tag=v0.3.15 -> pass. Command: node scripts/check-release-notes.mjs --tag=v0.3.15 --min-bullets=1 -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
-commit: null
+commit:
+  hash: "bdffec112b982895804f44e70b34e94b3df1b3c2"
+  message: "♻️ 0FAD2W scripts: share argv parsing"
 comments:
   -
     author: "CODER"
     body: "Start: add a reusable script argv parser and migrate the two release tag checks that currently hand-roll flag loops."
+  -
+    author: "CODER"
+    body: "Verified: release-version and release-notes scripts pass with shared parser; format and lint pass."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: node scripts/check-release-version.mjs --tag=v0.3.15 -> pass. Command: node scripts/check-release-notes.mjs --tag=v0.3.15 --min-bullets=1 -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
+  -
+    type: "status"
+    at: "2026-04-20T09:48:39.546Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release-version and release-notes scripts pass with shared parser; format and lint pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:48:32.843Z"
+doc_updated_at: "2026-04-20T09:48:39.547Z"
 doc_updated_by: "CODER"
 description: "Add a reusable argv flag parser to script-runtime and migrate release-version plus release-notes checks away from hand-rolled flag loops."
 sections:
