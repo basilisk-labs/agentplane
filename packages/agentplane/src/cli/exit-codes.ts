@@ -1,4 +1,4 @@
-import type { ErrorCode } from "../shared/errors.js";
+import { DEFAULT_ERROR_EXIT_CODES, type ErrorCode } from "../shared/errors.js";
 
 export enum ExitCode {
   Internal = 1,
@@ -13,15 +13,15 @@ export enum ExitCode {
 }
 
 export const ERROR_TO_EXIT: Readonly<Record<ErrorCode, ExitCode>> = {
-  E_USAGE: ExitCode.Usage,
-  E_VALIDATION: ExitCode.Validation,
-  E_IO: ExitCode.Io,
-  E_GIT: ExitCode.Git,
-  E_BACKEND: ExitCode.Backend,
-  E_NETWORK: ExitCode.Network,
-  E_RUNTIME: ExitCode.Runtime,
-  E_HANDOFF: ExitCode.Handoff,
-  E_INTERNAL: ExitCode.Internal,
+  E_USAGE: DEFAULT_ERROR_EXIT_CODES.E_USAGE,
+  E_VALIDATION: DEFAULT_ERROR_EXIT_CODES.E_VALIDATION,
+  E_IO: DEFAULT_ERROR_EXIT_CODES.E_IO,
+  E_GIT: DEFAULT_ERROR_EXIT_CODES.E_GIT,
+  E_BACKEND: DEFAULT_ERROR_EXIT_CODES.E_BACKEND,
+  E_NETWORK: DEFAULT_ERROR_EXIT_CODES.E_NETWORK,
+  E_RUNTIME: DEFAULT_ERROR_EXIT_CODES.E_RUNTIME,
+  E_HANDOFF: DEFAULT_ERROR_EXIT_CODES.E_HANDOFF,
+  E_INTERNAL: DEFAULT_ERROR_EXIT_CODES.E_INTERNAL,
 };
 
 export function exitCodeForError(code: ErrorCode): ExitCode {

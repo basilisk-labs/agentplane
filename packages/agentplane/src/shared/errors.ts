@@ -22,21 +22,100 @@ export type ErrorCode =
   | "E_RUNTIME"
   | "E_INTERNAL";
 
-export class CliError extends Error {
+export const DEFAULT_ERROR_EXIT_CODES: Readonly<Record<ErrorCode, number>> = {
+  E_USAGE: 2,
+  E_VALIDATION: 3,
+  E_IO: 4,
+  E_GIT: 5,
+  E_BACKEND: 6,
+  E_NETWORK: 7,
+  E_RUNTIME: 8,
+  E_HANDOFF: 9,
+  E_INTERNAL: 1,
+};
+
+type AgentplaneErrorOptions = {
+  message: string;
+  exitCode?: number;
+  context?: Record<string, unknown>;
+};
+
+export class AgentplaneError extends Error {
   public readonly exitCode: number;
   public readonly code: ErrorCode;
   public readonly context?: Record<string, unknown>;
 
+  constructor(code: ErrorCode, opts: AgentplaneErrorOptions) {
+    super(opts.message);
+    this.name = new.target.name;
+    this.exitCode = opts.exitCode ?? DEFAULT_ERROR_EXIT_CODES[code];
+    this.code = code;
+    this.context = opts.context;
+  }
+}
+
+export class CliError extends AgentplaneError {
   constructor(opts: {
-    exitCode: number;
+    exitCode?: number;
     code: ErrorCode;
     message: string;
     context?: Record<string, unknown>;
   }) {
-    super(opts.message);
-    this.exitCode = opts.exitCode;
-    this.code = opts.code;
-    this.context = opts.context;
+    super(opts.code, opts);
+  }
+}
+
+export class UsageError extends CliError {
+  constructor(opts: AgentplaneErrorOptions) {
+    super({ ...opts, code: "E_USAGE" });
+  }
+}
+
+export class ValidationError extends CliError {
+  constructor(opts: AgentplaneErrorOptions) {
+    super({ ...opts, code: "E_VALIDATION" });
+  }
+}
+
+export class IoError extends CliError {
+  constructor(opts: AgentplaneErrorOptions) {
+    super({ ...opts, code: "E_IO" });
+  }
+}
+
+export class GitError extends CliError {
+  constructor(opts: AgentplaneErrorOptions) {
+    super({ ...opts, code: "E_GIT" });
+  }
+}
+
+export class HandoffError extends CliError {
+  constructor(opts: AgentplaneErrorOptions) {
+    super({ ...opts, code: "E_HANDOFF" });
+  }
+}
+
+export class BackendCliError extends CliError {
+  constructor(opts: AgentplaneErrorOptions) {
+    super({ ...opts, code: "E_BACKEND" });
+  }
+}
+
+export class NetworkError extends CliError {
+  constructor(opts: AgentplaneErrorOptions) {
+    super({ ...opts, code: "E_NETWORK" });
+  }
+}
+
+export class RuntimeError extends CliError {
+  constructor(opts: AgentplaneErrorOptions) {
+    super({ ...opts, code: "E_RUNTIME" });
+  }
+}
+
+export class InternalError extends CliError {
+  constructor(opts: AgentplaneErrorOptions) {
+    super({ ...opts, code: "E_INTERNAL" });
   }
 }
 

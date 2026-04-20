@@ -1,5 +1,11 @@
-import { exitCodeForError } from "./exit-codes.js";
-import { CliError } from "../shared/errors.js";
+import {
+  BackendCliError,
+  GitError,
+  IoError,
+  NetworkError,
+  ValidationError,
+} from "../shared/errors.js";
+import type { CliError } from "../shared/errors.js";
 import { BackendError } from "../backends/task-backend.js";
 
 export function mapCoreError(err: unknown, context: Record<string, unknown>): CliError {
@@ -10,43 +16,33 @@ export function mapCoreError(err: unknown, context: Record<string, unknown>): Cl
     message.startsWith("Detached HEAD") ||
     message.includes("failed to resolve current branch")
   ) {
-    return new CliError({
-      exitCode: exitCodeForError("E_GIT"),
-      code: "E_GIT",
+    return new GitError({
       message,
       context,
     });
   }
 
   if (err instanceof SyntaxError) {
-    return new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
+    return new ValidationError({
       message: `Invalid JSON: ${message}`,
       context,
     });
   }
 
   if (message.includes("schema_version") || message.startsWith("config.")) {
-    return new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
+    return new ValidationError({
       message,
       context,
     });
   }
 
-  return new CliError({ exitCode: exitCodeForError("E_IO"), code: "E_IO", message, context });
+  return new IoError({ message, context });
 }
 
 export function mapBackendError(err: unknown, context: Record<string, unknown>): CliError {
   if (err instanceof BackendError) {
-    return new CliError({
-      exitCode: exitCodeForError(err.code),
-      code: err.code,
-      message: err.message,
-      context,
-    });
+    if (err.code === "E_NETWORK") return new NetworkError({ message: err.message, context });
+    return new BackendCliError({ message: err.message, context });
   }
   return mapCoreError(err, context);
 }
