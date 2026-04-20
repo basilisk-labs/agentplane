@@ -1,10 +1,11 @@
 ---
 id: "202604191642-GMXG2C"
 title: "Prototype clack prompts in interactive command flows"
-status: "DOING"
+result_summary: "Added @clack/prompts behind cli/prompts with cancel/default handling and AGENTPLANE_PROMPTS=plain fallback."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T15:54:18.493Z"
   updated_by: "CODER"
   note: "Implemented clack-backed TTY prompts behind cli/prompts with plain/non-TTY fallback. Verification passed: bunx vitest run packages/agentplane/src/cli/prompts.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.codex-plugin.test.ts --reporter dot; bun run --filter=agentplane typecheck; bun run format:check; bun run lint:core; bun run build."
-commit: null
+commit:
+  hash: "5b8a0e0ff05f6a70b573259d5953766b5eaa00d0"
+  message: "💬 GMXG2C ux: add clack-backed interactive prompts"
 comments:
   -
     author: "CODER"
     body: "Start: Prototyping clack prompts behind the existing prompt abstraction."
+  -
+    author: "CODER"
+    body: "Verified: clack prompts are active only for TTY interactive flows and deterministic fallback remains available."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented clack-backed TTY prompts behind cli/prompts with plain/non-TTY fallback. Verification passed: bunx vitest run packages/agentplane/src/cli/prompts.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.codex-plugin.test.ts --reporter dot; bun run --filter=agentplane typecheck; bun run format:check; bun run lint:core; bun run build."
+  -
+    type: "status"
+    at: "2026-04-20T15:54:41.591Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: clack prompts are active only for TTY interactive flows and deterministic fallback remains available."
 doc_version: 3
-doc_updated_at: "2026-04-20T15:54:18.525Z"
+doc_updated_at: "2026-04-20T15:54:41.592Z"
 doc_updated_by: "CODER"
 description: "Epic K. Evaluate @clack/prompts in interactive init and plugin installation flows without breaking non-interactive behavior."
 sections:
