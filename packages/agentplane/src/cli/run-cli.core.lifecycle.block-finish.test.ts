@@ -295,7 +295,7 @@ describe("runCli", () => {
         throw new Error(`finish failed (code=${code}): ${io.stderr}`);
       }
       expect(code).toBe(0);
-      expect(io.stdout).toContain("✅ finished");
+      expect(io.stdout).toMatch(/\nfinished\n/);
     } finally {
       io.restore();
     }
@@ -379,7 +379,7 @@ describe("runCli", () => {
         ]);
         expect(code).toBe(0);
         expect(io.stdout).toContain("creating deterministic close commit");
-        expect(io.stdout).toContain("✅ finished");
+        expect(io.stdout).toMatch(/\nfinished\n/);
       } finally {
         io.restore();
       }
@@ -463,7 +463,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("creating deterministic close commit");
-      expect(io.stdout).toContain("✅ finished");
+      expect(io.stdout).toMatch(/\nfinished\n/);
     } finally {
       io.restore();
     }
@@ -573,7 +573,7 @@ describe("runCli", () => {
         ]);
         expect(code).toBe(0);
         expect(io.stdout).toContain("creating deterministic close commit");
-        expect(io.stdout).toContain("✅ finished");
+        expect(io.stdout).toMatch(/\nfinished\n/);
       } finally {
         io.restore();
       }
@@ -696,7 +696,7 @@ describe("runCli", () => {
         ]);
         expect(code).toBe(0);
         expect(io.stdout).toContain("creating deterministic close commit");
-        expect(io.stdout).toContain("✅ finished");
+        expect(io.stdout).toMatch(/\nfinished\n/);
       } finally {
         io.restore();
       }
@@ -789,7 +789,7 @@ describe("runCli", () => {
         ]);
         expect(code).toBe(0);
         expect(io.stdout).toContain("creating deterministic close commit");
-        expect(io.stdout).toContain("✅ finished");
+        expect(io.stdout).toMatch(/\nfinished\n/);
       } finally {
         io.restore();
       }
@@ -996,7 +996,7 @@ describe("runCli", () => {
         expect(code).toBe(0);
         expect(io.stdout).toContain("creating commit from verification comment");
         expect(io.stdout).toContain("creating deterministic close commit");
-        expect(io.stdout).toContain("✅ finished");
+        expect(io.stdout).toMatch(/\nfinished\n/);
       } finally {
         io.restore();
       }
@@ -1274,7 +1274,7 @@ describe("runCli", () => {
           root,
         ]);
         expect(code).toBe(0);
-        expect(io.stdout).toContain("✅ finished");
+        expect(io.stdout).toMatch(/\nfinished\n/);
       } finally {
         io.restore();
       }

@@ -111,9 +111,9 @@ jobs:
           node packages/agentplane/bin/agentplane.js workflow build --validate
           node packages/agentplane/bin/agentplane.js doctor
       - name: Workflow/Harness Coverage (guard)
-        run: bun run test:workflow-coverage
+        run: bun run coverage:workflow-suite
       - name: Significant File Coverage (guard)
-        run: bun run test:significant-coverage
+        run: bun run coverage:significant-suite
 
   test-windows:
     needs: changes
