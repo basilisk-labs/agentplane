@@ -1,10 +1,11 @@
 ---
 id: "202604191644-N16809"
 title: "Split PR flow PR mega-test by scenario families"
-status: "DOING"
+result_summary: "Replaced the 4264-line PR-flow PR mega-test with four scenario files, each below 2000 LoC, plus shared test support."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T16:46:28.752Z"
   updated_by: "CODER"
   note: "Command: agentplane task verify-show 202604191644-N16809; Result: pass; Evidence: verification contract reviewed. Command: wc -l packages/agentplane/src/cli/run-cli.core.pr-flow.pr-*.test.ts; Result: pass; Evidence: largest split file is 1712 LoC, below 2000. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --reporter dot; Result: pass; Evidence: 4 files, 57 tests passed. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass. Command: bun run typecheck; Result: pass."
-commit: null
+commit:
+  hash: "7b5c21d3d9129fd910ab58061f3835e21be0248f"
+  message: "🧪 N16809 test: split PR flow scenarios"
 comments:
   -
     author: "CODER"
     body: "Start: Splitting the PR-flow PR mega-test into scenario-focused files without behavior changes."
+  -
+    author: "CODER"
+    body: "Verified: PR-flow PR mega-test was split into scenario families and all focused checks passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: agentplane task verify-show 202604191644-N16809; Result: pass; Evidence: verification contract reviewed. Command: wc -l packages/agentplane/src/cli/run-cli.core.pr-flow.pr-*.test.ts; Result: pass; Evidence: largest split file is 1712 LoC, below 2000. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --reporter dot; Result: pass; Evidence: 4 files, 57 tests passed. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass. Command: bun run typecheck; Result: pass."
+  -
+    type: "status"
+    at: "2026-04-20T16:46:44.590Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR-flow PR mega-test was split into scenario families and all focused checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-20T16:46:28.759Z"
+doc_updated_at: "2026-04-20T16:46:44.590Z"
 doc_updated_by: "CODER"
 description: "Epic L. Break run-cli.core.pr-flow.pr.test.ts into scenario-focused files under the current coverage contract."
 sections:
