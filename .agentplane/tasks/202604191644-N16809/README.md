@@ -4,7 +4,7 @@ title: "Split PR flow PR mega-test by scenario families"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T16:46:28.752Z"
+  updated_by: "CODER"
+  note: "Command: agentplane task verify-show 202604191644-N16809; Result: pass; Evidence: verification contract reviewed. Command: wc -l packages/agentplane/src/cli/run-cli.core.pr-flow.pr-*.test.ts; Result: pass; Evidence: largest split file is 1712 LoC, below 2000. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --reporter dot; Result: pass; Evidence: 4 files, 57 tests passed. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass. Command: bun run typecheck; Result: pass."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Splitting the PR-flow PR mega-test into scenario-focused files without behavior changes."
+  -
+    type: "verify"
+    at: "2026-04-20T16:46:28.752Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: agentplane task verify-show 202604191644-N16809; Result: pass; Evidence: verification contract reviewed. Command: wc -l packages/agentplane/src/cli/run-cli.core.pr-flow.pr-*.test.ts; Result: pass; Evidence: largest split file is 1712 LoC, below 2000. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --reporter dot; Result: pass; Evidence: 4 files, 57 tests passed. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass. Command: bun run typecheck; Result: pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T16:40:11.824Z"
+doc_updated_at: "2026-04-20T16:46:28.759Z"
 doc_updated_by: "CODER"
 description: "Epic L. Break run-cli.core.pr-flow.pr.test.ts into scenario-focused files under the current coverage contract."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T16:46:28.752Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: agentplane task verify-show 202604191644-N16809; Result: pass; Evidence: verification contract reviewed. Command: wc -l packages/agentplane/src/cli/run-cli.core.pr-flow.pr-*.test.ts; Result: pass; Evidence: largest split file is 1712 LoC, below 2000. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --reporter dot; Result: pass; Evidence: 4 files, 57 tests passed. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass. Command: bun run typecheck; Result: pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T16:40:11.824Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Split packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts into scenario-
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T16:46:28.752Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: agentplane task verify-show 202604191644-N16809; Result: pass; Evidence: verification contract reviewed. Command: wc -l packages/agentplane/src/cli/run-cli.core.pr-flow.pr-*.test.ts; Result: pass; Evidence: largest split file is 1712 LoC, below 2000. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --reporter dot; Result: pass; Evidence: 4 files, 57 tests passed. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass. Command: bun run typecheck; Result: pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T16:40:11.824Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
