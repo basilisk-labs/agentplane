@@ -4,7 +4,7 @@ title: "Emit structured trace events behind AGENTPLANE_TRACE"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T12:14:45.800Z"
+  updated_by: "CODER"
+  note: "Command: bunx vitest run packages/core/src/logger.test.ts packages/agentplane/src/shared/trace-events.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts; Result: pass; Evidence: 3 files, 41 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Command: bun run format:check; Result: pass; Evidence: all files matched Prettier. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime verified."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement opt-in structured trace output for observability without changing normal command output, then verify trace gating and task-finish relevant behavior."
+  -
+    type: "verify"
+    at: "2026-04-20T12:14:45.800Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/core/src/logger.test.ts packages/agentplane/src/shared/trace-events.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts; Result: pass; Evidence: 3 files, 41 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Command: bun run format:check; Result: pass; Evidence: all files matched Prettier. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime verified."
 doc_version: 3
-doc_updated_at: "2026-04-20T12:08:08.392Z"
+doc_updated_at: "2026-04-20T12:14:45.812Z"
 doc_updated_by: "CODER"
 description: "Epic H′. Add structured trace event output for runtime, backend, git, and PR sync paths."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T12:14:45.800Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bunx vitest run packages/core/src/logger.test.ts packages/agentplane/src/shared/trace-events.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts; Result: pass; Evidence: 3 files, 41 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Command: bun run format:check; Result: pass; Evidence: all files matched Prettier. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime verified.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T12:08:08.392Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Implement AGENTPLANE_TRACE as an opt-in structured NDJSON event channel using th
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T12:14:45.800Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/core/src/logger.test.ts packages/agentplane/src/shared/trace-events.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts; Result: pass; Evidence: 3 files, 41 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Command: bun run format:check; Result: pass; Evidence: all files matched Prettier. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime verified.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T12:08:08.392Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
