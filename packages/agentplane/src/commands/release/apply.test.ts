@@ -702,7 +702,7 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
   it(
     "fails when release apply is invoked from the branch_pr base branch",
     async () => {
-      const root = await mkGitRepoRoot();
+      const root = await mkGitRepoRootWithBranch("main");
       await writeDefaultConfig(root);
       await writeWorkflowMode(root, "branch_pr");
 
