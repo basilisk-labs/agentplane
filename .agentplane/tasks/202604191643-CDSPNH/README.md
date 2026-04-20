@@ -1,10 +1,11 @@
 ---
 id: "202604191643-CDSPNH"
 title: "Emit structured trace events behind AGENTPLANE_TRACE"
-status: "DOING"
+result_summary: "Added opt-in structured trace events across runtime, backend, git, PR sync, and task finish surfaces."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T12:14:45.800Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/core/src/logger.test.ts packages/agentplane/src/shared/trace-events.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts; Result: pass; Evidence: 3 files, 41 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Command: bun run format:check; Result: pass; Evidence: all files matched Prettier. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime verified."
-commit: null
+commit:
+  hash: "6bc97352626274785d66d77c7a9f74cfc5a996d6"
+  message: "🔭 CDSPNH logging: emit structured trace events"
 comments:
   -
     author: "CODER"
     body: "Start: Implement opt-in structured trace output for observability without changing normal command output, then verify trace gating and task-finish relevant behavior."
+  -
+    author: "CODER"
+    body: "Verified: structured AGENTPLANE_TRACE events are opt-in, task finish emits start/completion events, and the focused tests plus typecheck, format, lint, and bootstrap all pass."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/core/src/logger.test.ts packages/agentplane/src/shared/trace-events.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts; Result: pass; Evidence: 3 files, 41 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Command: bun run format:check; Result: pass; Evidence: all files matched Prettier. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime verified."
+  -
+    type: "status"
+    at: "2026-04-20T12:15:04.019Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: structured AGENTPLANE_TRACE events are opt-in, task finish emits start/completion events, and the focused tests plus typecheck, format, lint, and bootstrap all pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T12:14:45.812Z"
+doc_updated_at: "2026-04-20T12:15:04.020Z"
 doc_updated_by: "CODER"
 description: "Epic H′. Add structured trace event output for runtime, backend, git, and PR sync paths."
 sections:
