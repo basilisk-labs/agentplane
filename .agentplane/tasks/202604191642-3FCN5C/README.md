@@ -4,7 +4,7 @@ title: "Document YAML stack freeze in ADR"
 status: "DOING"
 priority: "low"
 owner: "PLANNER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T13:57:12.567Z"
+  updated_by: "PLANNER"
+  note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0007-freeze-yaml-parser-stack.md and docs/adr/README.md."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Record the YAML parser stack-freeze decision as an ADR and link it from the ADR index, without touching dependencies or parser code."
+  -
+    type: "verify"
+    at: "2026-04-20T13:57:12.567Z"
+    author: "PLANNER"
+    state: "ok"
+    note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0007-freeze-yaml-parser-stack.md and docs/adr/README.md."
 doc_version: 3
-doc_updated_at: "2026-04-20T13:55:58.875Z"
+doc_updated_at: "2026-04-20T13:57:12.582Z"
 doc_updated_by: "PLANNER"
 description: "Epic K and G′. Record the decision to keep the current YAML stack unchanged during the current refactor window."
 sections:
@@ -54,6 +60,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T13:57:12.567Z — VERIFY — ok
+    
+    By: PLANNER
+    
+    Note: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0007-freeze-yaml-parser-stack.md and docs/adr/README.md.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T13:55:58.875Z, excerpt_hash=sha256:47949151b021b8fd12bc7618c02e5ee911a19d9ddd36297d8f5216cb457a806d
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +99,14 @@ Add a focused ADR documenting the YAML stack freeze: keep the existing yaml pack
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T13:57:12.567Z — VERIFY — ok
+
+By: PLANNER
+
+Note: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0007-freeze-yaml-parser-stack.md and docs/adr/README.md.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T13:55:58.875Z, excerpt_hash=sha256:47949151b021b8fd12bc7618c02e5ee911a19d9ddd36297d8f5216cb457a806d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
