@@ -4,7 +4,7 @@ title: "Refresh roadmap for current refactor state"
 status: "DOING"
 priority: "low"
 owner: "PLANNER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T13:59:51.257Z"
+  updated_by: "PLANNER"
+  note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: ROADMAP.md and docs/adr/README.md."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Refresh ROADMAP.md with a concise current refactor status section and ADR links, keeping the rest of the roadmap stable."
+  -
+    type: "verify"
+    at: "2026-04-20T13:59:51.257Z"
+    author: "PLANNER"
+    state: "ok"
+    note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: ROADMAP.md and docs/adr/README.md."
 doc_version: 3
-doc_updated_at: "2026-04-20T13:58:14.315Z"
+doc_updated_at: "2026-04-20T13:59:51.304Z"
 doc_updated_by: "PLANNER"
 description: "Epic G′. Update ROADMAP.md to reflect closed and remaining refactor work with ADR links."
 sections:
@@ -54,6 +60,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T13:59:51.257Z — VERIFY — ok
+    
+    By: PLANNER
+    
+    Note: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: ROADMAP.md and docs/adr/README.md.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T13:58:14.315Z, excerpt_hash=sha256:90ecc8637e8778b87c8918b15ddba17318937ac6f5f8a74965afeeb070c4bc76
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +99,14 @@ Refresh ROADMAP.md with a concise 2026Q2 refactor status section that references
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T13:59:51.257Z — VERIFY — ok
+
+By: PLANNER
+
+Note: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: ROADMAP.md and docs/adr/README.md.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T13:58:14.315Z, excerpt_hash=sha256:90ecc8637e8778b87c8918b15ddba17318937ac6f5f8a74965afeeb070c4bc76
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
