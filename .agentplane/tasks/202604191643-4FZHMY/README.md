@@ -1,10 +1,11 @@
 ---
 id: "202604191643-4FZHMY"
 title: "Move docs generators onto shared freshness framework"
-status: "TODO"
+result_summary: "Superseded by completed docs generator and freshness framework migrations."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +24,23 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit:
+  hash: "4319185d5524906eeee11af80eddf627b5606d3d"
+  message: "♻️ NWPTHH scripts: expand runtime adoption"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: superseded by generated artifact helper and runtime adoption tasks QWT7WT, SW77BH, and NWPTHH."
+events:
+  -
+    type: "status"
+    at: "2026-04-20T10:47:06.243Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: superseded by generated artifact helper and runtime adoption tasks QWT7WT, SW77BH, and NWPTHH."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:43:27.148Z"
+doc_updated_at: "2026-04-20T10:47:06.244Z"
 doc_updated_by: "CODER"
 description: "Epic G′ and F′. Convert docs inventory and bootstrap generators to the shared freshness-check framework."
 sections:

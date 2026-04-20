@@ -1,10 +1,11 @@
 ---
 id: "202604191640-W1NJ6K"
 title: "Use declarative registries in scenario and backend commands"
-status: "TODO"
+result_summary: "Superseded by completed declarative scenario/backend dispatch work."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +24,23 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit:
+  hash: "3ecf6ffe81d34daf9905ef0ba5755742294d6ed7"
+  message: "♻️ JT87PW backend: declare command operation setup"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: superseded by concrete declarative dispatch task 202604200859-JT87PW."
+events:
+  -
+    type: "status"
+    at: "2026-04-20T10:46:51.061Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: superseded by concrete declarative dispatch task 202604200859-JT87PW."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:40:18.706Z"
+doc_updated_at: "2026-04-20T10:46:51.061Z"
 doc_updated_by: "CODER"
 description: "Epic C′. Replace scenario and backend command dispatch branches with declarative command registries."
 sections:

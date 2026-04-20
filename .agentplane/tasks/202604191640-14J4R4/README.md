@@ -1,10 +1,11 @@
 ---
 id: "202604191640-14J4R4"
 title: "Factor BaseRunnerAdapter for custom and codex"
-status: "TODO"
+result_summary: "Superseded by completed BaseRunnerAdapter/helper extraction and adapter facade split."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +24,23 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit:
+  hash: "ecc66056c71ceaaa651a78bf5dc0910c510558ae"
+  message: "♻️ 6Q9QAB runner: split adapter preparation"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: superseded by concrete runner adapter tasks 202604200907-3C8KVB and 202604200914-6Q9QAB."
+events:
+  -
+    type: "status"
+    at: "2026-04-20T10:46:50.308Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: superseded by concrete runner adapter tasks 202604200907-3C8KVB and 202604200914-6Q9QAB."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:40:09.885Z"
+doc_updated_at: "2026-04-20T10:46:50.308Z"
 doc_updated_by: "CODER"
 description: "Epic C′. Extract a shared base adapter for custom and codex runner adapters to remove duplicated preparation and error handling."
 sections:

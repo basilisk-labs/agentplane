@@ -1,10 +1,11 @@
 ---
 id: "202604191642-W05RJ9"
 title: "Unify generated artifact freshness checks"
-status: "TODO"
+result_summary: "Superseded by completed generated artifact freshness helper and docs freshness migrations."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +24,23 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit:
+  hash: "e99e959d141f9e970e99706e101b8cf6b82bb9f0"
+  message: "♻️ 4K75DY scripts: share generated artifact checks"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: superseded by concrete generated artifact helper task 202604200931-4K75DY and bootstrap migration 202604200935-QWT7WT."
+events:
+  -
+    type: "status"
+    at: "2026-04-20T10:47:04.381Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: superseded by concrete generated artifact helper task 202604200931-4K75DY and bootstrap migration 202604200935-QWT7WT."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:42:06.627Z"
+doc_updated_at: "2026-04-20T10:47:04.382Z"
 doc_updated_by: "CODER"
 description: "Epic F′ and G′. Use one freshness-check framework for generated docs and artifact outputs across the repo."
 sections:

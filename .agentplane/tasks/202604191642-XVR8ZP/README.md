@@ -1,10 +1,11 @@
 ---
 id: "202604191642-XVR8ZP"
 title: "Prune duplicate and obsolete package scripts"
-status: "TODO"
+result_summary: "Superseded by completed redundant platform-critical package script cleanup."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +23,23 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit:
+  hash: "f5a4cf30b5cf9dee8135cf0be7c27bf8326eedf5"
+  message: "cli/tooling: Drop redundant platform-critical init-upgrade alias (MQ7NQ5) (#418)"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: superseded by completed package-script cleanup task 202604171519-MQ7NQ5; duplicate script is absent in current package.json."
+events:
+  -
+    type: "status"
+    at: "2026-04-20T10:47:05.352Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: superseded by completed package-script cleanup task 202604171519-MQ7NQ5; duplicate script is absent in current package.json."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:42:11.271Z"
+doc_updated_at: "2026-04-20T10:47:05.353Z"
 doc_updated_by: "CODER"
 description: "Epic F′. Remove duplicate or obsolete npm scripts after consolidating the script runtime."
 sections:

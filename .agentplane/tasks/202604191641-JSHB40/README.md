@@ -1,10 +1,11 @@
 ---
 id: "202604191641-JSHB40"
 title: "Standardize check scripts on shared runtime helper"
-status: "TODO"
+result_summary: "Superseded by completed shared check runtime adoption across scripts."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -23,10 +24,23 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit:
+  hash: "4319185d5524906eeee11af80eddf627b5606d3d"
+  message: "♻️ NWPTHH scripts: expand runtime adoption"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: superseded by concrete defineCheck and runtime adoption tasks WRANPJ, NWPTHH, and JM8SNR."
+events:
+  -
+    type: "status"
+    at: "2026-04-20T10:47:02.885Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: superseded by concrete defineCheck and runtime adoption tasks WRANPJ, NWPTHH, and JM8SNR."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:41:10.560Z"
+doc_updated_at: "2026-04-20T10:47:02.886Z"
 doc_updated_by: "CODER"
 description: "Epic F′. Convert repetitive check-* scripts to a shared helper built on top of script-runtime."
 sections:
