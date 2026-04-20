@@ -85,6 +85,7 @@ describe("bootstrap-framework-dev script", () => {
       "bun install --ignore-scripts",
       "git submodule update --init --recursive agentplane-recipes",
       "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
@@ -110,6 +111,7 @@ describe("bootstrap-framework-dev script", () => {
 
     expect(calls).toEqual([
       "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
@@ -142,6 +144,7 @@ describe("bootstrap-framework-dev script", () => {
 
     expect(calls).toEqual([
       "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
@@ -174,6 +177,7 @@ describe("bootstrap-framework-dev script", () => {
     expect(calls).toEqual([
       "bun install --ignore-scripts",
       "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
@@ -197,6 +201,7 @@ describe("bootstrap-framework-dev script", () => {
     expect(calls).toEqual([
       "bun install --ignore-scripts",
       "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
@@ -236,6 +241,7 @@ describe("bootstrap-framework-dev script", () => {
     expect(calls).toEqual([
       "bun install --ignore-scripts",
       "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);
@@ -271,6 +277,7 @@ describe("bootstrap-framework-dev script", () => {
 
     expect(calls).toEqual([
       "bun run --filter=@agentplaneorg/core build",
+      "bun run --filter=@agentplane/testkit build",
       "bun run --filter=agentplane build",
       "node packages/agentplane/bin/agentplane.js runtime explain",
     ]);

@@ -80,6 +80,7 @@ jobs:
       - name: Build packages (dist + manifests)
         run: |
           bun run --filter=@agentplaneorg/core build
+          bun run --filter=@agentplane/testkit build
           bun run --filter=agentplane build
       - name: CLI docs (generated reference check)
         run: bun run docs:cli:check
@@ -151,6 +152,7 @@ jobs:
       - name: Build packages (dist + manifests)
         run: |
           bun run --filter=@agentplaneorg/core build
+          bun run --filter=@agentplane/testkit build
           bun run --filter=agentplane build
       - name: Unit tests (platform-critical)
         run: bun run test:platform-critical
@@ -189,6 +191,7 @@ jobs:
       - name: Build packages (dist + manifests)
         run: |
           bun run --filter=@agentplaneorg/core build
+          bun run --filter=@agentplane/testkit build
           bun run --filter=agentplane build
 
   release-ready:

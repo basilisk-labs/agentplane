@@ -15,6 +15,7 @@ async function assertCliDistExists() {
     throw new Error(
       "CLI dist is missing. Build first:\n" +
         "  bun run --filter=@agentplaneorg/core build\n" +
+        "  bun run --filter=@agentplane/testkit build\n" +
         "  bun run --filter=agentplane build",
     );
   }

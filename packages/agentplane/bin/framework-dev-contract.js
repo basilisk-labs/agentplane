@@ -3,6 +3,7 @@ export const FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS = [
   "bun install",
   "git submodule update --init --recursive agentplane-recipes",
   "bun run --filter=@agentplaneorg/core build",
+  "bun run --filter=@agentplane/testkit build",
   "bun run --filter=agentplane build",
 ];
 export const FRAMEWORK_DEV_REPO_LOCAL_VERIFY_COMMAND =

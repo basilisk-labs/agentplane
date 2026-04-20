@@ -35,9 +35,6 @@
   "bin": {
     "agentplane": "bin/agentplane.js"
   },
-  "exports": {
-    "./internal/testing": "./dist/testing/index.js"
-  },
   "files": [
     "bin",
     "dist",

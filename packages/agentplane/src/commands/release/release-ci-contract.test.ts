@@ -25,6 +25,54 @@ describe("release CI contract", () => {
     );
   });
 
+  it("builds testkit before agentplane in release and hosted install routes", async () => {
+    const rootPackageJsonText = await readRootText("package.json");
+    const rootPackageJson = JSON.parse(rootPackageJsonText) as {
+      scripts?: Record<string, string>;
+    };
+    const releaseCheck = rootPackageJson.scripts?.["release:check"] ?? "";
+
+    expect(releaseCheck.indexOf("bun run --filter=@agentplane/testkit build")).toBeGreaterThan(
+      releaseCheck.indexOf("bun run --filter=@agentplaneorg/core build"),
+    );
+    expect(releaseCheck.indexOf("bun run --filter=agentplane build")).toBeGreaterThan(
+      releaseCheck.indexOf("bun run --filter=@agentplane/testkit build"),
+    );
+
+    const [coreCi, prepublish, hostedClose, reinstall] = await Promise.all([
+      readRootText(".github/workflows/ci.yml"),
+      readRootText(".github/workflows/prepublish.yml"),
+      readRootText(".github/workflows/task-hosted-close.yml"),
+      readRootText("scripts/reinstall-global-agentplane.sh"),
+    ]);
+
+    for (const text of [coreCi, prepublish, hostedClose, reinstall]) {
+      expect(text).toContain("bun run --filter=@agentplane/testkit build");
+      expect(text.indexOf("bun run --filter=@agentplane/testkit build")).toBeGreaterThan(
+        text.indexOf("bun run --filter=@agentplaneorg/core build"),
+      );
+      expect(text.indexOf("bun run --filter=agentplane build")).toBeGreaterThan(
+        text.indexOf("bun run --filter=@agentplane/testkit build"),
+      );
+    }
+  });
+
+  it("does not expose repo-private test helpers from the published agentplane package", async () => {
+    const agentplanePackageJsonText = await readRootText("packages/agentplane/package.json");
+    const agentplanePackageJson = JSON.parse(agentplanePackageJsonText) as {
+      exports?: Record<string, unknown>;
+    };
+
+    expect(agentplanePackageJson.exports?.["./internal/testing"]).toBeUndefined();
+  });
+
+  it("checks the generated bootstrap doc against the actual runtime-source dist path", async () => {
+    const checkScript = await readRootText("scripts/check-agent-bootstrap-fresh.mjs");
+
+    expect(checkScript).toContain('"runtime",\n  "shared",\n  "runtime-source.js"');
+    expect(checkScript).not.toContain('"dist",\n  "shared",\n  "runtime-source.js"');
+  });
+
   it("documents the release prepublish coverage guards", async () => {
     const docsText = await readRootText("docs/developer/release-and-publishing.mdx");
     expect(docsText).toContain("workflow/harness coverage guard");

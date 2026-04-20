@@ -102,6 +102,7 @@ export async function assertAgentplaneCliDistFreshForDocs(root = ROOT) {
         "  bun run framework:dev:bootstrap\n" +
         "Or rebuild explicitly:\n" +
         "  bun run --filter=@agentplaneorg/core build\n" +
+        "  bun run --filter=@agentplane/testkit build\n" +
         "  bun run --filter=agentplane build",
     );
   }
@@ -125,6 +126,7 @@ export async function assertAgentplaneCliDistFreshForDocs(root = ROOT) {
       "  bun run framework:dev:bootstrap\n" +
       "Or rebuild explicitly:\n" +
       "  bun run --filter=@agentplaneorg/core build\n" +
+      "  bun run --filter=@agentplane/testkit build\n" +
       "  bun run --filter=agentplane build" +
       changedSummary,
   );
