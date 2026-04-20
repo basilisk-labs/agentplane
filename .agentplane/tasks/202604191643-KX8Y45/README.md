@@ -4,7 +4,7 @@ title: "Unify CLI error rendering and guidance"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T11:21:56.440Z"
+  updated_by: "CODER"
+  note: "Verified: CLI error mapping and rendering now share one central error-map pipeline; focused CLI error/render tests, typecheck, format, lint, and framework bootstrap passed."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Consolidating CLI error mapping and rendering into one central pipeline while preserving the existing text and JSON error output contract."
+  -
+    type: "verify"
+    at: "2026-04-20T11:21:56.440Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: CLI error mapping and rendering now share one central error-map pipeline; focused CLI error/render tests, typecheck, format, lint, and framework bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-04-20T11:17:23.624Z"
+doc_updated_at: "2026-04-20T11:21:56.453Z"
 doc_updated_by: "CODER"
 description: "Epic H′. Merge current error mapping and guidance logic into one renderError pipeline with tests."
 sections:
@@ -60,6 +66,41 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T11:21:56.440Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: CLI error mapping and rendering now share one central error-map pipeline; focused CLI error/render tests, typecheck, format, lint, and framework bootstrap passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T11:17:23.624Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    Command: bunx vitest run packages/agentplane/src/cli/error-map.test.ts packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts
+    Result: pass
+    Evidence: 3 files passed, 59 tests passed.
+    Scope: central error rendering, runCli writeError integration, JSON/text CLI error behavior.
+    
+    Command: bun run typecheck
+    Result: pass
+    Evidence: tsc -b exited 0.
+    Scope: TypeScript project references.
+    
+    Command: bun run format:check
+    Result: pass
+    Evidence: all matched files use Prettier code style.
+    Scope: repository formatting gate.
+    
+    Command: bun run lint:core
+    Result: pass
+    Evidence: eslint exited 0.
+    Scope: packages, scripts, eslint config, vitest config.
+    
+    Command: bun run framework:dev:bootstrap
+    Result: pass
+    Evidence: core and agentplane built; repo-local runtime verified.
+    Scope: runtime snapshot freshness after CLI error pipeline changes.
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -95,6 +136,41 @@ Epic H′. Merge current error mapping and guidance logic into one renderError p
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T11:21:56.440Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: CLI error mapping and rendering now share one central error-map pipeline; focused CLI error/render tests, typecheck, format, lint, and framework bootstrap passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T11:17:23.624Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/error-map.test.ts packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts
+Result: pass
+Evidence: 3 files passed, 59 tests passed.
+Scope: central error rendering, runCli writeError integration, JSON/text CLI error behavior.
+
+Command: bun run typecheck
+Result: pass
+Evidence: tsc -b exited 0.
+Scope: TypeScript project references.
+
+Command: bun run format:check
+Result: pass
+Evidence: all matched files use Prettier code style.
+Scope: repository formatting gate.
+
+Command: bun run lint:core
+Result: pass
+Evidence: eslint exited 0.
+Scope: packages, scripts, eslint config, vitest config.
+
+Command: bun run framework:dev:bootstrap
+Result: pass
+Evidence: core and agentplane built; repo-local runtime verified.
+Scope: runtime snapshot freshness after CLI error pipeline changes.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
