@@ -4,7 +4,7 @@ title: "Use zod-validation-error in CLI validation output"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T15:43:47.161Z"
+  updated_by: "CODER"
+  note: "Implemented zod-validation-error CLI rendering. Verification passed: bunx vitest run packages/agentplane/src/cli/error-map.test.ts packages/agentplane/src/cli/run-cli.core.test.ts --reporter dot; bun run --filter=agentplane typecheck; bun run format:check; bun run lint:core; bun run build."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Wiring zod-validation-error into CLI validation error rendering."
+  -
+    type: "verify"
+    at: "2026-04-20T15:43:47.161Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented zod-validation-error CLI rendering. Verification passed: bunx vitest run packages/agentplane/src/cli/error-map.test.ts packages/agentplane/src/cli/run-cli.core.test.ts --reporter dot; bun run --filter=agentplane typecheck; bun run format:check; bun run lint:core; bun run build."
 doc_version: 3
-doc_updated_at: "2026-04-20T15:38:58.844Z"
+doc_updated_at: "2026-04-20T15:43:47.173Z"
 doc_updated_by: "CODER"
 description: "Epic K and H′. Adopt zod-validation-error for human-readable schema and config validation output in the CLI."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T15:43:47.161Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Implemented zod-validation-error CLI rendering. Verification passed: bunx vitest run packages/agentplane/src/cli/error-map.test.ts packages/agentplane/src/cli/run-cli.core.test.ts --reporter dot; bun run --filter=agentplane typecheck; bun run format:check; bun run lint:core; bun run build.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T15:38:58.844Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Adopt zod-validation-error only at the CLI error-rendering boundary. Add the dep
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T15:43:47.161Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented zod-validation-error CLI rendering. Verification passed: bunx vitest run packages/agentplane/src/cli/error-map.test.ts packages/agentplane/src/cli/run-cli.core.test.ts --reporter dot; bun run --filter=agentplane typecheck; bun run format:check; bun run lint:core; bun run build.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T15:38:58.844Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
