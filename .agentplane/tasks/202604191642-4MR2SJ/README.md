@@ -4,7 +4,7 @@ title: "Add dependency cruiser checks for architecture rules"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T15:30:27.584Z"
+  updated_by: "CODER"
+  note: "Verification passed: bun run arch:check; bun run format:check; bun run lint:core; bun run build; node scripts/check-workflow-command-contract.mjs. arch:check reports no new dependency violations and keeps 49 existing cycle violations in the committed baseline."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Adding dependency-cruiser boundary enforcement with a pragmatic initial ruleset and canonical script integration."
+  -
+    type: "verify"
+    at: "2026-04-20T15:30:27.584Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verification passed: bun run arch:check; bun run format:check; bun run lint:core; bun run build; node scripts/check-workflow-command-contract.mjs. arch:check reports no new dependency violations and keeps 49 existing cycle violations in the committed baseline."
 doc_version: 3
-doc_updated_at: "2026-04-20T15:20:19.185Z"
+doc_updated_at: "2026-04-20T15:30:27.605Z"
 doc_updated_by: "CODER"
 description: "Epic K and J′. Add dependency-cruiser enforcement for package boundaries and cycles."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T15:30:27.584Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verification passed: bun run arch:check; bun run format:check; bun run lint:core; bun run build; node scripts/check-workflow-command-contract.mjs. arch:check reports no new dependency violations and keeps 49 existing cycle violations in the committed baseline.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T15:20:19.185Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Add dependency-cruiser as a dev-only architecture guard. Create a root depcruise
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T15:30:27.584Z — VERIFY — ok
+
+By: CODER
+
+Note: Verification passed: bun run arch:check; bun run format:check; bun run lint:core; bun run build; node scripts/check-workflow-command-contract.mjs. arch:check reports no new dependency violations and keeps 49 existing cycle violations in the committed baseline.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T15:20:19.185Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
