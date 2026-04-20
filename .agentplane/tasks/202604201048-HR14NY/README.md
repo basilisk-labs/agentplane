@@ -4,7 +4,7 @@ title: "Finish core GitClient shared helper migration"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T10:53:21.731Z"
+  updated_by: "CODER"
+  note: "Command: find packages/agentplane/src/commands/shared -maxdepth 1 -name 'git*.ts' -print | xargs wc -l -> 143 total. Command: bunx vitest run packages/core/src/git/git-client.test.ts packages/core/src/git/git-utils.test.ts packages/core/src/git/base-branch.test.ts packages/agentplane/src/commands/shared/git-context.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts -> 44 passed. Command: bun run typecheck -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass. Command: bun run framework:dev:bootstrap -> pass after runtime path changes."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: complete B′.1 by moving remaining shared git helpers into core and leaving compatibility shims in the command layer."
+  -
+    type: "verify"
+    at: "2026-04-20T10:53:21.731Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: find packages/agentplane/src/commands/shared -maxdepth 1 -name 'git*.ts' -print | xargs wc -l -> 143 total. Command: bunx vitest run packages/core/src/git/git-client.test.ts packages/core/src/git/git-utils.test.ts packages/core/src/git/base-branch.test.ts packages/agentplane/src/commands/shared/git-context.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts -> 44 passed. Command: bun run typecheck -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass. Command: bun run framework:dev:bootstrap -> pass after runtime path changes."
 doc_version: 3
-doc_updated_at: "2026-04-20T10:49:00.881Z"
+doc_updated_at: "2026-04-20T10:53:21.744Z"
 doc_updated_by: "CODER"
 description: "Move remaining command-layer git diff/worktree/basic operations into @agentplaneorg/core and reduce commands/shared/git*.ts to thin compatibility/CLI-only helpers."
 sections:
@@ -59,6 +65,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T10:53:21.731Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: find packages/agentplane/src/commands/shared -maxdepth 1 -name 'git*.ts' -print | xargs wc -l -> 143 total. Command: bunx vitest run packages/core/src/git/git-client.test.ts packages/core/src/git/git-utils.test.ts packages/core/src/git/base-branch.test.ts packages/agentplane/src/commands/shared/git-context.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts -> 44 passed. Command: bun run typecheck -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass. Command: bun run framework:dev:bootstrap -> pass after runtime path changes.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T10:49:00.881Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -93,6 +107,14 @@ Move remaining command-layer git diff/worktree/basic operations into @agentplane
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T10:53:21.731Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: find packages/agentplane/src/commands/shared -maxdepth 1 -name 'git*.ts' -print | xargs wc -l -> 143 total. Command: bunx vitest run packages/core/src/git/git-client.test.ts packages/core/src/git/git-utils.test.ts packages/core/src/git/base-branch.test.ts packages/agentplane/src/commands/shared/git-context.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts -> 44 passed. Command: bun run typecheck -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass. Command: bun run framework:dev:bootstrap -> pass after runtime path changes.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T10:49:00.881Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
