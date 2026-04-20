@@ -4,7 +4,7 @@ title: "Split Redmine backend mega-test and close TODO backlog"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T16:56:37.910Z"
+  updated_by: "CODER"
+  note: "Command: agentplane task verify-show 202604191644-4HRNBB; Result: pass; Evidence: verification contract reviewed. Command: wc -l packages/agentplane/src/backends/task-backend.redmine.*.test.ts; Result: pass; Evidence: largest split file is 567 LoC, below 2000. Command: bunx vitest run packages/agentplane/src/backends/task-backend.redmine.cache.test.ts packages/agentplane/src/backends/task-backend.redmine.docs.test.ts packages/agentplane/src/backends/task-backend.redmine.mapping.test.ts packages/agentplane/src/backends/task-backend.redmine.remote.test.ts packages/agentplane/src/backends/task-backend.redmine.write.test.ts --reporter dot; Result: pass; Evidence: 5 files, 43 tests passed. Command: rg comment TODO/FIXME pattern; Result: pass; Evidence: no inline TODO/FIXME comments in split Redmine tests. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Splitting the Redmine backend mega-test into focused resource and sync suites."
+  -
+    type: "verify"
+    at: "2026-04-20T16:56:37.910Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: agentplane task verify-show 202604191644-4HRNBB; Result: pass; Evidence: verification contract reviewed. Command: wc -l packages/agentplane/src/backends/task-backend.redmine.*.test.ts; Result: pass; Evidence: largest split file is 567 LoC, below 2000. Command: bunx vitest run packages/agentplane/src/backends/task-backend.redmine.cache.test.ts packages/agentplane/src/backends/task-backend.redmine.docs.test.ts packages/agentplane/src/backends/task-backend.redmine.mapping.test.ts packages/agentplane/src/backends/task-backend.redmine.remote.test.ts packages/agentplane/src/backends/task-backend.redmine.write.test.ts --reporter dot; Result: pass; Evidence: 5 files, 43 tests passed. Command: rg comment TODO/FIXME pattern; Result: pass; Evidence: no inline TODO/FIXME comments in split Redmine tests. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T16:52:46.497Z"
+doc_updated_at: "2026-04-20T16:56:37.917Z"
 doc_updated_by: "CODER"
 description: "Epic L. Break task-backend.redmine.test.ts into focused suites and close the outstanding inline TODO backlog."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T16:56:37.910Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: agentplane task verify-show 202604191644-4HRNBB; Result: pass; Evidence: verification contract reviewed. Command: wc -l packages/agentplane/src/backends/task-backend.redmine.*.test.ts; Result: pass; Evidence: largest split file is 567 LoC, below 2000. Command: bunx vitest run packages/agentplane/src/backends/task-backend.redmine.cache.test.ts packages/agentplane/src/backends/task-backend.redmine.docs.test.ts packages/agentplane/src/backends/task-backend.redmine.mapping.test.ts packages/agentplane/src/backends/task-backend.redmine.remote.test.ts packages/agentplane/src/backends/task-backend.redmine.write.test.ts --reporter dot; Result: pass; Evidence: 5 files, 43 tests passed. Command: rg comment TODO/FIXME pattern; Result: pass; Evidence: no inline TODO/FIXME comments in split Redmine tests. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T16:52:46.497Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Split packages/agentplane/src/backends/task-backend.redmine.test.ts into focused
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T16:56:37.910Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: agentplane task verify-show 202604191644-4HRNBB; Result: pass; Evidence: verification contract reviewed. Command: wc -l packages/agentplane/src/backends/task-backend.redmine.*.test.ts; Result: pass; Evidence: largest split file is 567 LoC, below 2000. Command: bunx vitest run packages/agentplane/src/backends/task-backend.redmine.cache.test.ts packages/agentplane/src/backends/task-backend.redmine.docs.test.ts packages/agentplane/src/backends/task-backend.redmine.mapping.test.ts packages/agentplane/src/backends/task-backend.redmine.remote.test.ts packages/agentplane/src/backends/task-backend.redmine.write.test.ts --reporter dot; Result: pass; Evidence: 5 files, 43 tests passed. Command: rg comment TODO/FIXME pattern; Result: pass; Evidence: no inline TODO/FIXME comments in split Redmine tests. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T16:52:46.497Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
