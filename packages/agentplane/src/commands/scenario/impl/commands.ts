@@ -25,6 +25,44 @@ type RecipeToolInvocation = {
 };
 
 type ScenarioCliSelection = Awaited<ReturnType<typeof resolveRecipeScenarioSelection>>;
+type ScenarioSelectionErrorRule = {
+  startsWith: string[];
+  exitCode: ReturnType<typeof exitCodeForError>;
+  code: "E_IO" | "E_VALIDATION";
+  message?: (message: string) => string;
+};
+
+const SCENARIO_SELECTION_ERROR_RULES: ScenarioSelectionErrorRule[] = [
+  {
+    startsWith: ["No recipe scenario matches"],
+    exitCode: exitCodeForError("E_IO"),
+    code: "E_IO",
+    message: (_message) => "",
+  },
+  {
+    startsWith: ["Scenario definition not found"],
+    exitCode: exitCodeForError("E_IO"),
+    code: "E_IO",
+  },
+  {
+    startsWith: [
+      "Scenario selection is ambiguous",
+      "Missing required field: scenario.",
+      "Invalid field scenario.",
+      "Scenario definition id mismatch:",
+    ],
+    exitCode: exitCodeForError("E_VALIDATION"),
+    code: "E_VALIDATION",
+  },
+];
+
+const RECIPE_TOOL_INVOCATIONS: Record<
+  RecipeToolRuntime,
+  (entrypoint: string) => RecipeToolInvocation
+> = {
+  node: (entrypoint) => ({ command: "node", args: [entrypoint] }),
+  bash: (entrypoint) => ({ command: "bash", args: [entrypoint] }),
+};
 
 function buildScenarioNotFoundError(recipeId: string, scenarioId: string): CliError {
   return new CliError({
@@ -32,6 +70,26 @@ function buildScenarioNotFoundError(recipeId: string, scenarioId: string): CliEr
     code: "E_IO",
     message: `Scenario not found: ${recipeId}:${scenarioId}`,
   });
+}
+
+function mapScenarioSelectionError(
+  recipeId: string,
+  scenarioId: string,
+  error: unknown,
+): CliError | null {
+  const message = error instanceof Error ? error.message : String(error);
+  for (const rule of SCENARIO_SELECTION_ERROR_RULES) {
+    if (!rule.startsWith.some((prefix) => message.startsWith(prefix))) continue;
+    if (message.startsWith("No recipe scenario matches")) {
+      return buildScenarioNotFoundError(recipeId, scenarioId);
+    }
+    return new CliError({
+      exitCode: rule.exitCode,
+      code: rule.code,
+      message: rule.message ? rule.message(message) : message,
+    });
+  }
+  return null;
 }
 
 async function resolveScenarioForCli(opts: {
@@ -62,35 +120,8 @@ async function resolveScenarioForCli(opts: {
     });
     return { entry, selection };
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    if (message.startsWith("No recipe scenario matches")) {
-      throw buildScenarioNotFoundError(opts.recipeId, opts.scenarioId);
-    }
-    if (message.startsWith("Scenario definition not found")) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_IO"),
-        code: "E_IO",
-        message,
-      });
-    }
-    if (message.startsWith("Scenario selection is ambiguous")) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_VALIDATION"),
-        code: "E_VALIDATION",
-        message,
-      });
-    }
-    if (
-      message.startsWith("Missing required field: scenario.") ||
-      message.startsWith("Invalid field scenario.") ||
-      message.startsWith("Scenario definition id mismatch:")
-    ) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_VALIDATION"),
-        code: "E_VALIDATION",
-        message,
-      });
-    }
+    const mapped = mapScenarioSelectionError(opts.recipeId, opts.scenarioId, error);
+    if (mapped) throw mapped;
     throw error;
   }
 }
@@ -198,13 +229,8 @@ export function resolveRecipeToolInvocation(
   entrypoint: string,
   args: string[],
 ): RecipeToolInvocation {
-  if (runtime === "node") {
-    return { command: "node", args: [entrypoint, ...args] };
-  }
-  return {
-    command: "bash",
-    args: [entrypoint, ...args],
-  };
+  const invocation = RECIPE_TOOL_INVOCATIONS[runtime](entrypoint);
+  return { command: invocation.command, args: [...invocation.args, ...args] };
 }
 
 export async function cmdScenarioListParsed(opts: {
