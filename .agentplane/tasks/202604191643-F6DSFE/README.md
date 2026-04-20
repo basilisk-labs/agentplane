@@ -1,10 +1,11 @@
 ---
 id: "202604191643-F6DSFE"
 title: "Add concise README CI badges"
-status: "DOING"
+result_summary: "Added README status badges for test:fast, coverage, release:parity, and knip roadmap tracking."
+status: "DONE"
 priority: "low"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T14:05:51.115Z"
   updated_by: "PLANNER"
   note: "Command: rg -n 'Core CI|test:fast|coverage|release:parity|knip' README.md; Result: pass; Evidence: README contains badges for Core CI, test:fast, coverage, release:parity, and knip roadmap status. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with info-only runtime/archive findings. Command: bun run format:check; Result: pass; Evidence: Prettier reports all files formatted. Scope: README.md and task README."
-commit: null
+commit:
+  hash: "820b69d7864a532c305739f5c8e0260e1b4c1a78"
+  message: "📝 F6DSFE docs: add README status badges"
 comments:
   -
     author: "PLANNER"
     body: "Start: Adding README badges for current CI-backed test, coverage, and parity checks plus an explicit knip roadmap status without changing runtime code."
+  -
+    author: "PLANNER"
+    body: "Verified: README now shows concise CI/status badges for Core CI-backed test, coverage, release parity checks, and the explicit knip roadmap status; docs checks passed."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Command: rg -n 'Core CI|test:fast|coverage|release:parity|knip' README.md; Result: pass; Evidence: README contains badges for Core CI, test:fast, coverage, release:parity, and knip roadmap status. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with info-only runtime/archive findings. Command: bun run format:check; Result: pass; Evidence: Prettier reports all files formatted. Scope: README.md and task README."
+  -
+    type: "status"
+    at: "2026-04-20T14:06:09.685Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: README now shows concise CI/status badges for Core CI-backed test, coverage, release parity checks, and the explicit knip roadmap status; docs checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-20T14:05:51.142Z"
+doc_updated_at: "2026-04-20T14:06:09.686Z"
 doc_updated_by: "PLANNER"
 description: "Epic G′. Add badges for fast tests, coverage, parity, and knip status to README.md."
 sections:
