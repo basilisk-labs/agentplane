@@ -1,10 +1,11 @@
 ---
 id: "202604200931-4K75DY"
 title: "Introduce generated artifact check helper"
-status: "DOING"
+result_summary: "Added defineGeneratedArtifactCheck/runScriptMain and migrated CLI reference plus recipes inventory freshness checks."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T09:34:57.406Z"
   updated_by: "CODER"
   note: "Command: bun run docs:recipes:check -> pass. Command: bun run docs:cli:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
-commit: null
+commit:
+  hash: "e99e959d141f9e970e99706e101b8cf6b82bb9f0"
+  message: "♻️ 4K75DY scripts: share generated artifact checks"
 comments:
   -
     author: "CODER"
     body: "Start: Add a shared generated-artifact check helper and migrate the shortest freshness checks first."
+  -
+    author: "CODER"
+    body: "Verified: generated artifact helper preserves docs:cli and docs:recipes freshness checks; format and lint pass."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run docs:recipes:check -> pass. Command: bun run docs:cli:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
+  -
+    type: "status"
+    at: "2026-04-20T09:35:12.133Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: generated artifact helper preserves docs:cli and docs:recipes freshness checks; format and lint pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:34:57.416Z"
+doc_updated_at: "2026-04-20T09:35:12.134Z"
 doc_updated_by: "CODER"
 description: "Start Epic F-prime script-runtime DSL by adding a shared generated-artifact check helper and migrating short freshness check scripts away from repeated main/catch boilerplate."
 sections:
