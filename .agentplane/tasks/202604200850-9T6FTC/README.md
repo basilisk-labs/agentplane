@@ -1,10 +1,11 @@
 ---
 id: "202604200850-9T6FTC"
 title: "Guard global install path resolution"
-status: "DOING"
+result_summary: "Fixed pre-push global-install path fallback handling and added resolver regression coverage."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T08:57:46.510Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.test.ts -> pass, 37/37. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass, repo-local runtime ready."
-commit: null
+commit:
+  hash: "d30a706ce56847195754f721b1d85597b4b162a5"
+  message: "🐛 9T6FTC hooks: guard pre-push script fallback"
 comments:
   -
     author: "CODER"
     body: "Start: Audit global-install path resolution and add focused regression tests before returning to the refactor roadmap."
+  -
+    author: "CODER"
+    body: "Verified: hooks path resolution now prefers the target repository script, treats missing global-install fallbacks as unresolved, and passes hooks regression tests plus typecheck, lint, format, and bootstrap."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.test.ts -> pass, 37/37. Command: bun run typecheck -> pass. Command: bun run lint:core -> pass. Command: bun run format:check -> pass. Command: bun run framework:dev:bootstrap -> pass, repo-local runtime ready."
+  -
+    type: "status"
+    at: "2026-04-20T08:58:14.873Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: hooks path resolution now prefers the target repository script, treats missing global-install fallbacks as unresolved, and passes hooks regression tests plus typecheck, lint, format, and bootstrap."
 doc_version: 3
-doc_updated_at: "2026-04-20T08:57:46.568Z"
+doc_updated_at: "2026-04-20T08:58:14.875Z"
 doc_updated_by: "CODER"
 description: "Audit CLI path resolution for global-install style layouts, fix any repo-local script path defects, and add regression tests that fail when installed CLI code resolves repository scripts from the global package location."
 sections:
