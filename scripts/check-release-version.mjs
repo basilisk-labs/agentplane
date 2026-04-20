@@ -1,17 +1,10 @@
 import fs from "node:fs";
-import { defineCheck, runScriptMain } from "./lib/script-runtime.mjs";
+import { defineCheck, parseScriptArgs, runScriptMain } from "./lib/script-runtime.mjs";
 import { assertReleaseParity } from "./lib/release-version-parity.mjs";
 
 const parseArgs = (args) => {
-  let tagArg = null;
-  for (let i = 0; i < args.length; i += 1) {
-    const value = args[i];
-    if (value === "--tag" && args[i + 1]) {
-      tagArg = args[i + 1];
-      i += 1;
-    }
-  }
-  return { tagArg };
+  const { flags } = parseScriptArgs(args, { valueFlags: ["tag"] });
+  return { tagArg: flags.tag ?? null };
 };
 
 const resolveTag = (tagArg) => {
