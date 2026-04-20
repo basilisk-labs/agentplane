@@ -1,10 +1,11 @@
 ---
 id: "202604201046-6ME6BM"
 title: "Reconcile superseded refactor placeholder tasks"
-status: "DOING"
+result_summary: "Closed seven superseded refactor placeholder tasks and reconciled the roadmap backlog."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T10:48:02.834Z"
   updated_by: "CODER"
   note: "Command: agentplane task list | rg '[TODO]' | wc -l -> 29. Confirmed superseded placeholders 14J4R4, W1NJ6K, 7C5E0Q, JSHB40, W05RJ9, XVR8ZP, 4FZHMY are DONE. Command: git status --short --untracked-files=all -> only REFACTORING_PLAN_v2.md remains untracked."
-commit: null
+commit:
+  hash: "96197e68661a7815e3063da34d69918dec8cfa42"
+  message: "🧹 6ME6BM tasks: mark superseded placeholders done"
 comments:
   -
     author: "CODER"
     body: "Start: reconcile superseded refactor TODO placeholders after F′ completion and push."
+  -
+    author: "CODER"
+    body: "Verified: stale refactor placeholders are closed and remaining TODO backlog contains only actionable K/H/G/I/J/L/B follow-up tasks."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: agentplane task list | rg '[TODO]' | wc -l -> 29. Confirmed superseded placeholders 14J4R4, W1NJ6K, 7C5E0Q, JSHB40, W05RJ9, XVR8ZP, 4FZHMY are DONE. Command: git status --short --untracked-files=all -> only REFACTORING_PLAN_v2.md remains untracked."
+  -
+    type: "status"
+    at: "2026-04-20T10:48:11.129Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: stale refactor placeholders are closed and remaining TODO backlog contains only actionable K/H/G/I/J/L/B follow-up tasks."
 doc_version: 3
-doc_updated_at: "2026-04-20T10:48:02.861Z"
+doc_updated_at: "2026-04-20T10:48:11.129Z"
 doc_updated_by: "CODER"
 description: "Close stale TODO placeholders that were completed by newer concrete refactor tasks, so the remaining roadmap backlog reflects only actionable work."
 sections:
