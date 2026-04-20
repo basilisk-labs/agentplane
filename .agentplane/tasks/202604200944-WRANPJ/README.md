@@ -4,7 +4,7 @@ title: "Add shared defineCheck script helper"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T09:46:04.522Z"
+  updated_by: "CODER"
+  note: "Command: node scripts/check-release-version.mjs --tag v0.3.15 -> pass. Command: node scripts/check-published-packages.mjs --spec @agentplaneorg/core@0.3.15 -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: add a generic defineCheck wrapper and migrate two simple check scripts before touching heavier release recovery logic."
+  -
+    type: "verify"
+    at: "2026-04-20T09:46:04.522Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: node scripts/check-release-version.mjs --tag v0.3.15 -> pass. Command: node scripts/check-published-packages.mjs --spec @agentplaneorg/core@0.3.15 -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:44:19.253Z"
+doc_updated_at: "2026-04-20T09:46:04.529Z"
 doc_updated_by: "CODER"
 description: "Introduce a small defineCheck wrapper in script-runtime for load/compare/report style scripts and migrate two simple check scripts to it."
 sections:
@@ -58,6 +64,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T09:46:04.522Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: node scripts/check-release-version.mjs --tag v0.3.15 -> pass. Command: node scripts/check-published-packages.mjs --spec @agentplaneorg/core@0.3.15 -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:44:19.253Z, excerpt_hash=sha256:499400725159acb6c4dfcc67fc3d00722c2b3cf9238367a0f03fe23b8e8134d8
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -92,6 +106,14 @@ Introduce a small defineCheck wrapper in script-runtime for load/compare/report 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T09:46:04.522Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: node scripts/check-release-version.mjs --tag v0.3.15 -> pass. Command: node scripts/check-published-packages.mjs --spec @agentplaneorg/core@0.3.15 -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:44:19.253Z, excerpt_hash=sha256:499400725159acb6c4dfcc67fc3d00722c2b3cf9238367a0f03fe23b8e8134d8
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
