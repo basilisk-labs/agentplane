@@ -85,7 +85,9 @@ describe("local CI fast selection", () => {
     ]);
     expect(plan.kind).toBe("targeted");
     expect(plan.bucket).toBe("task");
-    expect(plan.testFiles).toContain("packages/agentplane/src/commands/task/finish.unit.test.ts");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+    );
   });
 
   it("routes isolated doctor paths to the doctor bucket", () => {
@@ -109,7 +111,7 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain("packages/agentplane/src/backends/task-backend.test.ts");
     expect(plan.testFiles).toContain("packages/agentplane/src/backends/task-backend.local.test.ts");
     expect(plan.testFiles).toContain(
-      "packages/agentplane/src/backends/task-backend.redmine.test.ts",
+      "packages/agentplane/src/backends/task-backend.redmine.mapping.test.ts",
     );
     expect(plan.testFiles).toContain("packages/agentplane/src/backends/task-backend.load.test.ts");
     expect(plan.testFiles).toContain(
@@ -188,15 +190,20 @@ describe("local CI fast selection", () => {
 
   it("routes split pr-flow suites to the cli-core bucket", () => {
     const plan = selectFastCiPlan([
-      "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts",
     ]);
     expect(plan.kind).toBe("targeted");
     expect(plan.bucket).toBe("cli-core");
     expect(plan.reason).toBe("cli_core_execution_paths_only");
     expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts");
-    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts");
     expect(plan.testFiles).toContain(
-      "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts",
     );
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts",
@@ -211,21 +218,23 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/commands/pr/input-validation.test.ts",
     );
-    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts",
+    );
   });
 
   it("ignores task artifacts when routing PR bucket changes", () => {
     const plan = selectFastCiPlan([
       ".agentplane/tasks/202604130750-E2J835/README.md",
       ".agentplane/tasks/202604130750-E2J835/pr/meta.json",
-      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts",
       "packages/agentplane/src/commands/pr/internal/sync.ts",
     ]);
     expect(plan.kind).toBe("targeted");
     expect(plan.bucket).toBe("pr");
     expect(plan.reason).toBe("pr_paths_only");
     expect(plan.lintTargets).toEqual([
-      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts",
       "packages/agentplane/src/commands/pr/internal/sync.ts",
     ]);
   });
@@ -252,13 +261,17 @@ describe("local CI fast selection", () => {
   });
 
   it("routes split task suites to the cli-core bucket", () => {
-    const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts"]);
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts",
+    ]);
     expect(plan.kind).toBe("targeted");
     expect(plan.bucket).toBe("cli-core");
     expect(plan.reason).toBe("cli_core_execution_paths_only");
-    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.tasks.test.ts");
     expect(plan.testFiles).toContain(
-      "packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts",
     );
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",

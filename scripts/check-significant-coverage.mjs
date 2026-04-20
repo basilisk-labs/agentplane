@@ -24,22 +24,36 @@ const TARGETS = [
   },
   {
     source: "packages/agentplane/src/commands/task/finish.ts",
-    tests: ["packages/agentplane/src/commands/task/finish.unit.test.ts"],
+    tests: [
+      "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+    ],
   },
   {
     source: "packages/agentplane/src/commands/task/finish-command.ts",
     tests: [
-      "packages/agentplane/src/commands/task/finish.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
       "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
     ],
   },
   {
     source: "packages/agentplane/src/commands/task/finish-execute.ts",
-    tests: ["packages/agentplane/src/commands/task/finish.unit.test.ts"],
+    tests: [
+      "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+    ],
   },
   {
     source: "packages/agentplane/src/commands/task/finish-plan.ts",
-    tests: ["packages/agentplane/src/commands/task/finish.unit.test.ts"],
+    tests: [
+      "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+    ],
   },
   {
     source: "packages/agentplane/src/commands/task/hosted-merge-sync.ts",

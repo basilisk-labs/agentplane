@@ -147,7 +147,9 @@ const TASK_TEST_FILES = [
   "packages/agentplane/src/commands/task/shared.unit.test.ts",
   "packages/agentplane/src/commands/task/shared.verify-steps.test.ts",
   "packages/agentplane/src/commands/task/warn-owner.unit.test.ts",
-  "packages/agentplane/src/commands/task/finish.unit.test.ts",
+  "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
+  "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
+  "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
   "packages/agentplane/src/commands/task/verify-record.unit.test.ts",
   "packages/agentplane/src/commands/task/plan.unit.test.ts",
 ];
@@ -156,7 +158,11 @@ const DOCTOR_TEST_FILES = ["packages/agentplane/src/commands/doctor.fast.test.ts
 const BACKEND_TEST_FILES = [
   "packages/agentplane/src/backends/task-backend.test.ts",
   "packages/agentplane/src/backends/task-backend.local.test.ts",
-  "packages/agentplane/src/backends/task-backend.redmine.test.ts",
+  "packages/agentplane/src/backends/task-backend.redmine.cache.test.ts",
+  "packages/agentplane/src/backends/task-backend.redmine.docs.test.ts",
+  "packages/agentplane/src/backends/task-backend.redmine.mapping.test.ts",
+  "packages/agentplane/src/backends/task-backend.redmine.remote.test.ts",
+  "packages/agentplane/src/backends/task-backend.redmine.write.test.ts",
   "packages/agentplane/src/backends/task-backend.load.test.ts",
   "packages/agentplane/src/backends/task-backend/redmine/env.test.ts",
   "packages/agentplane/src/commands/backend.test.ts",
@@ -165,7 +171,10 @@ const BACKEND_TEST_FILES = [
   "packages/agentplane/src/commands/task/migrate-doc.test.ts",
   "packages/agentplane/src/commands/doctor.fast.test.ts",
   "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.tasks.incidents.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts",
 ];
 const HOOKS_TEST_FILES = [
   "packages/agentplane/src/cli/local-ci-selection.test.ts",
