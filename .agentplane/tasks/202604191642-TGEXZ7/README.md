@@ -1,10 +1,11 @@
 ---
 id: "202604191642-TGEXZ7"
 title: "Baseline knip and remove easy dead exports"
-status: "DOING"
+result_summary: "Added knip warn-only baseline guard; removed legacy testing shims; fixed stale test import paths; removed unused testkit dependency."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T15:38:19.070Z"
   updated_by: "CODER"
   note: "Implemented knip warn-only guard and baseline cleanup. Verification passed: bun run knip:check; bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts packages/agentplane/src/commands/pr/integrate/internal/worktree.test.ts --reporter dot; bun run test:project -- testkit --reporter dot; bun run format:check; bun run lint:core; bun run build."
-commit: null
+commit:
+  hash: "f8999d3ed111e17695dd07ed9d9a249ee1bec848"
+  message: "🔎 TGEXZ7 tooling: add knip warn-only baseline"
 comments:
   -
     author: "CODER"
     body: "Start: Adding knip warn-only dead-code detection with scoped configuration and CI visibility."
+  -
+    author: "CODER"
+    body: "Verified: knip warn-only guard is configured, CI-visible, documented, and easy cleanup was applied."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented knip warn-only guard and baseline cleanup. Verification passed: bun run knip:check; bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts packages/agentplane/src/commands/pr/integrate/internal/worktree.test.ts --reporter dot; bun run test:project -- testkit --reporter dot; bun run format:check; bun run lint:core; bun run build."
+  -
+    type: "status"
+    at: "2026-04-20T15:38:33.939Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: knip warn-only guard is configured, CI-visible, documented, and easy cleanup was applied."
 doc_version: 3
-doc_updated_at: "2026-04-20T15:38:19.077Z"
+doc_updated_at: "2026-04-20T15:38:33.940Z"
 doc_updated_by: "CODER"
 description: "Epic K, I′, and J′. Add knip in warn-only mode, baseline its report, and remove low-risk dead exports."
 sections:
