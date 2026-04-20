@@ -1,10 +1,10 @@
 ---
 id: "202604191643-F6DSFE"
 title: "Add concise README CI badges"
-status: "TODO"
+status: "DOING"
 priority: "low"
 owner: "PLANNER"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -13,19 +13,30 @@ tags:
   - "readme"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-20T14:04:37.875Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "PLANNER"
+    body: "Start: Adding README badges for current CI-backed test, coverage, and parity checks plus an explicit knip roadmap status without changing runtime code."
+events:
+  -
+    type: "status"
+    at: "2026-04-20T14:04:43.976Z"
+    author: "PLANNER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Adding README badges for current CI-backed test, coverage, and parity checks plus an explicit knip roadmap status without changing runtime code."
 doc_version: 3
-doc_updated_at: "2026-04-19T16:43:35.326Z"
+doc_updated_at: "2026-04-20T14:04:43.987Z"
 doc_updated_by: "PLANNER"
 description: "Epic G′. Add badges for fast tests, coverage, parity, and knip status to README.md."
 sections:
@@ -36,10 +47,7 @@ sections:
   Scope: |-
     - In scope: Epic G′. Add badges for fast tests, coverage, parity, and knip status to README.md.
     - Out of scope: unrelated refactors not required for "Add concise README CI badges".
-  Plan: |-
-    1. Implement the change for "Add concise README CI badges".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+  Plan: "Add concise README badges that expose the current CI surface for test:fast, coverage, release:parity, and the current knip roadmap status without implying knip is already enforced. Verification: README diff review, policy routing, doctor, and format check."
   Verify Steps: |-
     1. Review the requested outcome for "Add concise README CI badges". Expected: the visible result matches ## Summary and stays inside approved scope.
     2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
@@ -66,9 +74,7 @@ Epic G′. Add badges for fast tests, coverage, parity, and knip status to READM
 
 ## Plan
 
-1. Implement the change for "Add concise README CI badges".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+Add concise README badges that expose the current CI surface for test:fast, coverage, release:parity, and the current knip roadmap status without implying knip is already enforced. Verification: README diff review, policy routing, doctor, and format check.
 
 ## Verify Steps
 
