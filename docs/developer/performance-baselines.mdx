@@ -1,0 +1,35 @@
+---
+title: "Performance baselines"
+description: "Local performance measurements used to compare future Agent Plane CLI changes."
+---
+
+## CLI Cold Path
+
+Baseline captured on 2026-04-20 from the repo-local CLI:
+
+```bash
+bun run bench:cli:cold --runs 5 --warmups 1
+```
+
+Environment and dataset:
+
+- Checkout: `/Users/densmirnov/Github/agentplane`.
+- CLI: `packages/agentplane/bin/agentplane.js`.
+- Mode: `cli_cold_path_v1`.
+- Runs: 5 timed runs per command after 1 warmup.
+- Task dataset: full framework task store in this checkout, including 1900+ historical tasks.
+- Working tree note: the benchmark saw a non-clean tracked-only preflight state as `false` in the
+  command output preview context; this baseline should be used for relative local comparisons, not
+  cross-machine claims.
+
+| Command                             |   Min ms |   Avg ms |   Max ms | Exit |
+| ----------------------------------- | -------: | -------: | -------: | ---: |
+| `agentplane quickstart`             |  988.885 | 1149.253 | 1487.562 |    0 |
+| `agentplane task list`              | 1334.829 | 1473.203 | 1711.791 |    0 |
+| `agentplane task search task`       | 1222.379 | 1316.054 | 1484.236 |    0 |
+| `agentplane task next`              | 1141.919 | 1229.862 | 1361.252 |    0 |
+| `agentplane preflight --mode quick` | 1783.960 | 2043.974 | 2409.861 |    0 |
+
+Use this baseline after packaging, subpath export, startup, or task-index changes. Compare the same
+checkout shape and task volume when possible; `task list` and `task search` are output-size
+sensitive and should not be compared against a small fixture repository.
