@@ -4,7 +4,7 @@ title: "Expand script-runtime adoption across generated checks"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T09:54:25.151Z"
+  updated_by: "CODER"
+  note: "Command: bun run schemas:check -> pass. Command: bun run agents:check -> pass. Command: bun run docs:recipes:check -> pass. Command: bun run docs:onboarding:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: expand script-runtime adoption across generated checks and sync scripts without changing generated outputs."
+  -
+    type: "verify"
+    at: "2026-04-20T09:54:25.151Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run schemas:check -> pass. Command: bun run agents:check -> pass. Command: bun run docs:recipes:check -> pass. Command: bun run docs:onboarding:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T09:51:54.444Z"
+doc_updated_at: "2026-04-20T09:54:25.162Z"
 doc_updated_by: "CODER"
 description: "Migrate schema sync, agent template sync, recipes inventory generation, and onboarding docs check to defineScript so F′ reaches broad script-runtime usage."
 sections:
@@ -58,6 +64,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T09:54:25.151Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run schemas:check -> pass. Command: bun run agents:check -> pass. Command: bun run docs:recipes:check -> pass. Command: bun run docs:onboarding:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:51:54.444Z, excerpt_hash=sha256:2d20a3942d843efe6bc02776c047d72de9d00f8977a0d728b60c5620cc360bad
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -92,6 +106,14 @@ Migrate schema sync, agent template sync, recipes inventory generation, and onbo
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T09:54:25.151Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run schemas:check -> pass. Command: bun run agents:check -> pass. Command: bun run docs:recipes:check -> pass. Command: bun run docs:onboarding:check -> pass. Command: bun run format:check -> pass. Command: bun run lint:core -> pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T09:51:54.444Z, excerpt_hash=sha256:2d20a3942d843efe6bc02776c047d72de9d00f8977a0d728b60c5620cc360bad
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
