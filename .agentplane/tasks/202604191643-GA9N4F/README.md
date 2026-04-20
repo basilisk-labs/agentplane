@@ -4,7 +4,7 @@ title: "Measure CLI cold path and store baseline"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-20T16:09:55.023Z"
+  updated_by: "CODER"
+  note: "Recorded CLI cold-path baseline from bun run bench:cli:cold --runs 5 --warmups 1. Verification passed: benchmark command completed; bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts --reporter dot; bun run format:check; bun run lint:core; bun run build."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Measuring and documenting the current CLI cold-path baseline."
+  -
+    type: "verify"
+    at: "2026-04-20T16:09:55.023Z"
+    author: "CODER"
+    state: "ok"
+    note: "Recorded CLI cold-path baseline from bun run bench:cli:cold --runs 5 --warmups 1. Verification passed: benchmark command completed; bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts --reporter dot; bun run format:check; bun run lint:core; bun run build."
 doc_version: 3
-doc_updated_at: "2026-04-20T16:03:29.861Z"
+doc_updated_at: "2026-04-20T16:09:55.061Z"
 doc_updated_by: "CODER"
 description: "Epic I′. Refresh the CLI cold-path baseline and record the current performance contract."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-20T16:09:55.023Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Recorded CLI cold-path baseline from bun run bench:cli:cold --runs 5 --warmups 1. Verification passed: benchmark command completed; bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts --reporter dot; bun run format:check; bun run lint:core; bun run build.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T16:03:29.861Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Record the current CLI cold-path baseline using the existing measure-cli-cold-pa
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-20T16:09:55.023Z — VERIFY — ok
+
+By: CODER
+
+Note: Recorded CLI cold-path baseline from bun run bench:cli:cold --runs 5 --warmups 1. Verification passed: benchmark command completed; bunx vitest run packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts --reporter dot; bun run format:check; bun run lint:core; bun run build.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T16:03:29.861Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
