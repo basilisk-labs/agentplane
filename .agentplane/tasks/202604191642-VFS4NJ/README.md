@@ -1,10 +1,11 @@
 ---
 id: "202604191642-VFS4NJ"
 title: "Document custom CLI stack decision in ADR"
-status: "DOING"
+result_summary: "Documented the decision to keep Agentplane's custom CLI stack instead of adopting Commander, Citty, or Oclif."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T12:30:46.292Z"
   updated_by: "PLANNER"
   note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0004-keep-custom-cli-stack.md and docs/adr/README.md."
-commit: null
+commit:
+  hash: "b55361eb6c93933767995e104409abdbb5857573"
+  message: "📝 VFS4NJ adr: keep custom CLI stack"
 comments:
   -
     author: "PLANNER"
     body: "Start: Record the custom CLI stack decision as an ADR and link it from the ADR index, without changing CLI runtime code."
+  -
+    author: "PLANNER"
+    body: "Verified: custom CLI stack ADR is linked from the ADR index; policy routing, doctor, and format check all pass."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0004-keep-custom-cli-stack.md and docs/adr/README.md."
+  -
+    type: "status"
+    at: "2026-04-20T12:31:01.404Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: custom CLI stack ADR is linked from the ADR index; policy routing, doctor, and format check all pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T12:30:46.306Z"
+doc_updated_at: "2026-04-20T12:31:01.405Z"
 doc_updated_by: "PLANNER"
 description: "Epic K and G′. Record the decision to keep the custom CLI stack instead of moving to Commander, citty, or oclif."
 sections:
