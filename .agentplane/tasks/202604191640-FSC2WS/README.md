@@ -1,10 +1,11 @@
 ---
 id: "202604191640-FSC2WS"
 title: "Trim release apply pipeline orchestrator"
-status: "DOING"
+result_summary: "Split release apply pipeline step logic into focused state, preflight, mutation, finalize, and shared modules while keeping apply.pipeline.ts as a compact orchestration facade."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T08:40:34.964Z"
   updated_by: "CODER"
   note: "Verified release apply pipeline extraction: apply.test.ts passed (18 tests), agentplane typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
-commit: null
+commit:
+  hash: "a37d5a876e3b6e7ad88eb4993c7e9cc5931629b4"
+  message: "♻️ FSC2WS release: split apply pipeline steps"
 comments:
   -
     author: "CODER"
     body: "Start: move release apply pipeline step logic into focused modules while keeping the pipeline API stable."
+  -
+    author: "CODER"
+    body: "Verified: release apply suite passed (18 tests), typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified release apply pipeline extraction: apply.test.ts passed (18 tests), agentplane typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
+  -
+    type: "status"
+    at: "2026-04-20T08:41:01.533Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release apply suite passed (18 tests), typecheck passed, lint:core passed, prettier check passed, and framework:dev:bootstrap completed."
 doc_version: 3
-doc_updated_at: "2026-04-20T08:40:34.968Z"
+doc_updated_at: "2026-04-20T08:41:01.534Z"
 doc_updated_by: "CODER"
 description: "Epic C′. Move step logic out of release apply pipeline orchestration so the main file only coordinates explicit phases."
 sections:
