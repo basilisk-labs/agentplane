@@ -92,6 +92,7 @@
     "bench:cli:cold": "node scripts/measure-cli-cold-path.mjs",
     "runner:codex:approval-probe": "bun scripts/run-runner-codex-approval-probe.mjs",
     "runner:codex:smoke": "bun scripts/run-runner-codex-smoke.mjs",
+    "docs:cli:generate": "node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx",
     "docs:cli:check": "node scripts/check-cli-reference-fresh.mjs",
     "docs:recipes:generate": "node scripts/generate-recipes-inventory.mjs",
     "docs:recipes:check": "node scripts/check-recipes-inventory-fresh.mjs",
