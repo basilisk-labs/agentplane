@@ -1,10 +1,11 @@
 ---
 id: "202604191642-E9ZVBF"
 title: "Use zod-validation-error in CLI validation output"
-status: "DOING"
+result_summary: "Preserved ZodError causes from core config validation and rendered them through zod-validation-error/v3 with focused tests and package dependencies."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T15:43:47.161Z"
   updated_by: "CODER"
   note: "Implemented zod-validation-error CLI rendering. Verification passed: bunx vitest run packages/agentplane/src/cli/error-map.test.ts packages/agentplane/src/cli/run-cli.core.test.ts --reporter dot; bun run --filter=agentplane typecheck; bun run format:check; bun run lint:core; bun run build."
-commit: null
+commit:
+  hash: "baaec2412d8ffbae2b7def9447d36728cb5d5d64"
+  message: "🧭 E9ZVBF cli: render Zod validation errors"
 comments:
   -
     author: "CODER"
     body: "Start: Wiring zod-validation-error into CLI validation error rendering."
+  -
+    author: "CODER"
+    body: "Verified: zod-validation-error now renders Zod validation failures in the CLI error mapper."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented zod-validation-error CLI rendering. Verification passed: bunx vitest run packages/agentplane/src/cli/error-map.test.ts packages/agentplane/src/cli/run-cli.core.test.ts --reporter dot; bun run --filter=agentplane typecheck; bun run format:check; bun run lint:core; bun run build."
+  -
+    type: "status"
+    at: "2026-04-20T15:44:03.116Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: zod-validation-error now renders Zod validation failures in the CLI error mapper."
 doc_version: 3
-doc_updated_at: "2026-04-20T15:43:47.173Z"
+doc_updated_at: "2026-04-20T15:44:03.118Z"
 doc_updated_by: "CODER"
 description: "Epic K and H′. Adopt zod-validation-error for human-readable schema and config validation output in the CLI."
 sections:
