@@ -1,10 +1,11 @@
 ---
 id: "202604191642-C6ASHS"
 title: "Document Biome deferral in ADR"
-status: "DOING"
+result_summary: "Documented the decision to defer Biome migration and keep ESLint plus Prettier until rule parity and churn risks are resolved."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-20T13:53:13.542Z"
   updated_by: "PLANNER"
   note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0005-defer-biome-migration.md and docs/adr/README.md."
-commit: null
+commit:
+  hash: "2d405c7e391d90c204fcef322ff7c66fd7a25322"
+  message: "📝 C6ASHS adr: defer Biome migration"
 comments:
   -
     author: "PLANNER"
     body: "Start: Record the Biome deferral decision as a concise ADR and link it from the ADR index, keeping this task docs-only."
+  -
+    author: "PLANNER"
+    body: "Verified: Biome deferral ADR is linked from the ADR index; policy routing, doctor, and format check all pass."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with informational runtime/archive findings only. Command: bun run format:check; Result: pass; Evidence: all matched files use Prettier. Links: docs/adr/0005-defer-biome-migration.md and docs/adr/README.md."
+  -
+    type: "status"
+    at: "2026-04-20T13:53:29.113Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Biome deferral ADR is linked from the ADR index; policy routing, doctor, and format check all pass."
 doc_version: 3
-doc_updated_at: "2026-04-20T13:53:13.556Z"
+doc_updated_at: "2026-04-20T13:53:29.113Z"
 doc_updated_by: "PLANNER"
 description: "Epic K and G′. Record why ESLint and Prettier remain the active lint and format stack for now."
 sections:
