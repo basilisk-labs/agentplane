@@ -1,10 +1,11 @@
 ---
 id: "202604191644-D2RV5K"
 title: "Extend significant coverage enforcement to new hotspots"
-status: "DOING"
+result_summary: "Expanded significant coverage guard from 2 to 21 source targets across init, finish, hosted merge sync, and guard modules."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T16:28:27.029Z"
   updated_by: "CODER"
   note: "Command: agentplane task verify-show 202604191644-D2RV5K; Result: pass; Evidence: verification contract reviewed. Command: bun run coverage:significant; Result: pass; Evidence: Significant suite contract OK, 21 source targets. Command: bun run lint:core; Result: pass; Evidence: eslint completed. Command: bun run format:check; Result: pass; Evidence: Prettier reported all matched files use style."
-commit: null
+commit:
+  hash: "24c9e3d6338cb3849508911d3ad77e2f7cb17dfa"
+  message: "🧪 D2RV5K test: extend significant coverage targets"
 comments:
   -
     author: "CODER"
     body: "Start: Extending significant coverage contract to the recently split hotspot modules."
+  -
+    author: "CODER"
+    body: "Verified: significant coverage contract now includes the newly decomposed hotspot modules and passes local checks."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: agentplane task verify-show 202604191644-D2RV5K; Result: pass; Evidence: verification contract reviewed. Command: bun run coverage:significant; Result: pass; Evidence: Significant suite contract OK, 21 source targets. Command: bun run lint:core; Result: pass; Evidence: eslint completed. Command: bun run format:check; Result: pass; Evidence: Prettier reported all matched files use style."
+  -
+    type: "status"
+    at: "2026-04-20T16:28:41.223Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: significant coverage contract now includes the newly decomposed hotspot modules and passes local checks."
 doc_version: 3
-doc_updated_at: "2026-04-20T16:28:27.038Z"
+doc_updated_at: "2026-04-20T16:28:41.223Z"
 doc_updated_by: "CODER"
 description: "Epic J′. Add the newly split hotspot modules to significant coverage enforcement."
 sections:
