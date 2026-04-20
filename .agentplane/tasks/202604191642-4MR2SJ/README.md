@@ -1,10 +1,11 @@
 ---
 id: "202604191642-4MR2SJ"
 title: "Add dependency cruiser checks for architecture rules"
-status: "DOING"
+result_summary: "Added dependency-cruiser architecture boundary checks with fail-on-new enforcement for package boundaries, unresolved imports, and new cycles."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-20T15:30:27.584Z"
   updated_by: "CODER"
   note: "Verification passed: bun run arch:check; bun run format:check; bun run lint:core; bun run build; node scripts/check-workflow-command-contract.mjs. arch:check reports no new dependency violations and keeps 49 existing cycle violations in the committed baseline."
-commit: null
+commit:
+  hash: "05ebc46719ed316ecfc0f4e09fe5c7355349b2a9"
+  message: "🏗️ 4MR2SJ arch: add dependency-cruiser guard"
 comments:
   -
     author: "CODER"
     body: "Start: Adding dependency-cruiser boundary enforcement with a pragmatic initial ruleset and canonical script integration."
+  -
+    author: "CODER"
+    body: "Verified: dependency-cruiser guard added with committed baseline for existing cycles, CI/prepublish/release gates wired to arch:check, docs updated, and validation passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification passed: bun run arch:check; bun run format:check; bun run lint:core; bun run build; node scripts/check-workflow-command-contract.mjs. arch:check reports no new dependency violations and keeps 49 existing cycle violations in the committed baseline."
+  -
+    type: "status"
+    at: "2026-04-20T15:30:41.954Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: dependency-cruiser guard added with committed baseline for existing cycles, CI/prepublish/release gates wired to arch:check, docs updated, and validation passed."
 doc_version: 3
-doc_updated_at: "2026-04-20T15:30:27.605Z"
+doc_updated_at: "2026-04-20T15:30:41.955Z"
 doc_updated_by: "CODER"
 description: "Epic K and J′. Add dependency-cruiser enforcement for package boundaries and cycles."
 sections:
