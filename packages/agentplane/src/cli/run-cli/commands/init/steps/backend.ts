@@ -1,0 +1,32 @@
+import type { InitDefaults, InitFlags } from "../model.js";
+import { INIT_DEFAULTS } from "../presets.js";
+
+import { selectStepValue } from "./prompt-utils.js";
+import type { BackendStepAnswers, InitV2PromptClack } from "./types.js";
+
+const backendOptions: {
+  value: NonNullable<InitFlags["backend"]>;
+  label: string;
+  hint: string;
+}[] = [
+  { value: "local", label: "Local", hint: "Store task data in .agentplane." },
+  { value: "redmine", label: "Redmine", hint: "Prepare Redmine backend stubs." },
+];
+
+export async function promptBackendStep(opts: {
+  clack: InitV2PromptClack;
+  flags: Pick<InitFlags, "backend">;
+  defaults?: Pick<InitDefaults, "backend">;
+}): Promise<BackendStepAnswers> {
+  const defaults = opts.defaults ?? INIT_DEFAULTS;
+  const backend =
+    opts.flags.backend ??
+    (await selectStepValue(opts.clack, {
+      message: "Task backend",
+      options: backendOptions,
+      initialValue: defaults.backend,
+      cancelMessage: "Task backend selection cancelled.",
+    }));
+
+  return { backend };
+}

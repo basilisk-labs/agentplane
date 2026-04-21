@@ -1,10 +1,10 @@
 ---
 id: "202604211316-H02C2T"
 title: "Extract init v2 prompt steps"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +28,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: extract pure init v2 prompt step modules and focused tests; keep orchestrator integration for the dependent task."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T15:46:43.724Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: extract pure init v2 prompt step modules and focused tests; keep orchestrator integration for the dependent task."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:16:06.298Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T15:46:43.739Z"
+doc_updated_by: "CODER"
 description: "Create pure init v2 prompt step modules for setup profile, policy gateway, IDE, workflow, backend, advanced settings, and recipe selection."
 sections:
   Summary: |-
