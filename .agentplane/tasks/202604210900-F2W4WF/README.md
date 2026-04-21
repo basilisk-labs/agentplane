@@ -1,10 +1,11 @@
 ---
 id: "202604210900-F2W4WF"
 title: "Define recipes signing algorithm policy"
-status: "DOING"
+result_summary: "Defined recipes signing algorithm policy and verifier registry."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-21T10:35:59.206Z"
   updated_by: "CODER"
   note: "Verified recipes signing registry, unsupported-algorithm failure, ADR policy, scoped lint, and focused typecheck."
-commit: null
+commit:
+  hash: "e673c0f73eb008dbdb16d09133d1f03f12076326"
+  message: "✅ F2W4WF code: done"
 comments:
   -
     author: "CODER"
     body: "Start: formalize recipe signing algorithm policy and refactor verifier code into an explicit ed25519 registry with tests."
+  -
+    author: "CODER"
+    body: "Verified: added recipes signing verifier registry, documented Ed25519-only policy and future dual-signature/PQC path, and passed focused recipes tests, scoped lint, and typecheck."
 events:
   -
     type: "status"
@@ -48,8 +54,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified recipes signing registry, unsupported-algorithm failure, ADR policy, scoped lint, and focused typecheck."
+  -
+    type: "status"
+    at: "2026-04-21T10:36:35.005Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: added recipes signing verifier registry, documented Ed25519-only policy and future dual-signature/PQC path, and passed focused recipes tests, scoped lint, and typecheck."
 doc_version: 3
-doc_updated_at: "2026-04-21T10:35:59.209Z"
+doc_updated_at: "2026-04-21T10:36:35.006Z"
 doc_updated_by: "CODER"
 description: "Add an ADR and verifier-registry path for recipe index signatures so ed25519 remains supported while future algorithm rotation is possible."
 sections:
