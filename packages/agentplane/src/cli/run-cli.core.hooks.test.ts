@@ -44,7 +44,7 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import { resolvePrePushHookScriptPath } from "../commands/hooks/index.js";
 import * as prompts from "./prompts.js";

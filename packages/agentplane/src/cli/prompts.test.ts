@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { captureStdIO } from "../testing/index.js";
+import { captureStdIO } from "@agentplane/testkit";
 import { promptChoice, promptInput, promptYesNo } from "./prompts.js";
 
 const mocks = vi.hoisted(() => {

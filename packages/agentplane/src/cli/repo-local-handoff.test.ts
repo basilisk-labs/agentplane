@@ -16,7 +16,7 @@ import { promisify } from "node:util";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { buildCleanRuntimeModeEnv } from "../testing/runtime-env.js";
+import { buildCleanRuntimeModeEnv } from "@agentplane/testkit";
 
 const execFileAsync = promisify(execFile);
 const tempRoots: string[] = [];

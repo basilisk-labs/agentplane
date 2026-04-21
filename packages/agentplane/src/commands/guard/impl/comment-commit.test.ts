@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { defaultConfig, type AgentplaneConfig } from "@agentplaneorg/core";
 
 import type { CliError } from "../../../shared/errors.js";
-import { captureStdIO } from "../../../testing/index.js";
+import { captureStdIO } from "@agentplane/testkit";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { commitFromComment } from "./comment-commit.js";
 

@@ -11,7 +11,7 @@ import {
   writeTasksExportFromTasks,
   type TaskData,
 } from "./task-backend.js";
-import { mkTempDir, silenceStdIO } from "../testing/index.js";
+import { mkTempDir, silenceStdIO } from "@agentplane/testkit";
 
 let restoreStdIO: (() => void) | null = null;
 

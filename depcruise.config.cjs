@@ -58,7 +58,7 @@ module.exports = {
         "agentplane runtime source must not import @agentplane/testkit or testkit implementation artifacts.",
       from: {
         path: "^packages/agentplane/src/",
-        pathNot: "(\\.test\\.ts$|^packages/agentplane/src/testing/)",
+        pathNot: "\\.test\\.ts$",
       },
       to: {
         path: "^(packages/testkit/(src|dist)/|@agentplane/testkit($|/))",

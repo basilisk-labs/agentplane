@@ -10,7 +10,7 @@ import {
   mkGitRepoRoot,
   mkTempDir,
   writeDefaultConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 
 installRunCliIntegrationHarness();
 

@@ -17,7 +17,7 @@ import {
   mkGitRepoRootWithBranch,
   runCliSilent,
   writeConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 
 installRunCliIntegrationHarness();
 const PR_CLOSE_SUPERSEDED_TIMEOUT_MS = 60_000;

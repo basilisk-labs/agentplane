@@ -11,7 +11,7 @@ import {
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
   writeDefaultConfig,
-} from "../../testing/index.js";
+} from "@agentplane/testkit";
 import { loadCommandContext, loadTaskFromContext } from "../../commands/shared/task-backend.js";
 import { assembleRunnerTaskContext, RUNNER_TASK_CONTEXT_BUDGETS } from "./task-context.js";
 

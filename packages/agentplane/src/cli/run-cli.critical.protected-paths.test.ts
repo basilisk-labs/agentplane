@@ -4,7 +4,7 @@ import { promisify } from "node:util";
 
 import { expect, it } from "vitest";
 
-import { describeCritical } from "../testing/index.js";
+import { describeCritical } from "@agentplane/testkit";
 import {
   cleanGitEnv,
   ensureDir,

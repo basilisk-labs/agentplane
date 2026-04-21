@@ -8,7 +8,7 @@ import {
   installRunCliIntegrationHarness,
   mkTempDir,
   pathExists,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 
 const mocks = vi.hoisted(() => ({
   cancelMock: vi.fn(),

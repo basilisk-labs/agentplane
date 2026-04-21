@@ -13,7 +13,7 @@ import {
   mkGitRepoRoot,
   stubTaskBackend,
   writeAndConfigureRoot,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 
 installRunCliIntegrationHarness();
 

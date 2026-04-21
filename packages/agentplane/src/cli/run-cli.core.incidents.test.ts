@@ -14,7 +14,7 @@ import {
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
   writeConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 
 installRunCliIntegrationHarness();
 const INCIDENTS_CLI_TIMEOUT_MS = 120_000;

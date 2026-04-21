@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { expect, it } from "vitest";
 
-import { describeCritical } from "../testing/index.js";
+import { describeCritical } from "@agentplane/testkit";
 import { ensureDir, expectCliError, makeTempDir, pathExists, runCli } from "./critical/harness.js";
 const CRITICAL_EXIT_CODES_TIMEOUT_MS = 240_000;
 

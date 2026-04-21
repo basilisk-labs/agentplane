@@ -5,7 +5,7 @@ import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
 
-import { cleanGitEnv, commitAll, configureGitUser, mkGitRepoRoot } from "../testing/index.js";
+import { cleanGitEnv, commitAll, configureGitUser, mkGitRepoRoot } from "@agentplane/testkit";
 
 const execFileAsync = promisify(execFile);
 

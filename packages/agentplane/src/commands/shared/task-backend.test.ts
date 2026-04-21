@@ -15,7 +15,7 @@ import {
   tempRepo,
   mockConfig,
   writeDefaultConfig,
-} from "../../testing/index.js";
+} from "@agentplane/testkit";
 import { listTaskSummariesMemo, loadCommandContext, loadTaskFromContext } from "./task-backend.js";
 
 const TASK_BACKEND_INTEGRATION_TIMEOUT_MS = 180_000;

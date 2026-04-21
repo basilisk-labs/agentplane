@@ -3,7 +3,7 @@ import path from "node:path";
 import { expect } from "vitest";
 
 import { runCli } from "./run-cli.js";
-import { captureStdIO } from "../testing/index.js";
+import { captureStdIO } from "@agentplane/testkit";
 
 export const START_COMMIT_PATH_HANDLING_TIMEOUT_MS = 120_000;
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
-import { captureStdIO } from "../testing/index.js";
+import { captureStdIO } from "@agentplane/testkit";
 
 const GROUP_USAGE_CASES = [
   {

@@ -17,10 +17,6 @@ export default defineConfig({
       "@agentplaneorg/core/schemas": path.join(__dirname, "packages/core/src/schemas/index.ts"),
       "@agentplaneorg/core/tasks": path.join(__dirname, "packages/core/src/tasks/index.ts"),
       "@agentplaneorg/core": path.join(__dirname, "packages/core/src/index.ts"),
-      "agentplane/internal/testing": path.join(
-        __dirname,
-        "packages/agentplane/src/testing/index.ts",
-      ),
     },
   },
   test: {
