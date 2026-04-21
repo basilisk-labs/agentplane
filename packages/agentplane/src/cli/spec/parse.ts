@@ -1,6 +1,6 @@
 import type { CommandSpec, OptionSpec, ParsedRaw } from "./spec.js";
 import { suggestOne } from "./suggest.js";
-import { usageError } from "./errors.js";
+import { deprecatedFlagError, usageError } from "./errors.js";
 
 type ParsedCommand<TParsed> = {
   raw: ParsedRaw;
@@ -82,6 +82,11 @@ function normalizeForValidation(opt: OptionSpec, rawValue: string): string {
   return typeof coerced === "string" ? coerced : rawValue;
 }
 
+function assertNotDeprecated(spec: CommandSpec<unknown>, opt: OptionSpec, token: string): void {
+  if (!opt.deprecated) return;
+  throw deprecatedFlagError({ spec, option: token, deprecated: opt.deprecated });
+}
+
 export function parseCommandArgv<TParsed>(
   spec: CommandSpec<TParsed>,
   argv: readonly string[],
@@ -114,6 +119,7 @@ export function parseCommandArgv<TParsed>(
         const suffix = sugg ? ` Did you mean ${sugg}?` : "";
         throw usageError({ spec, message: `Unknown option: ${head}.${suffix}` });
       }
+      assertNotDeprecated(spec, opt, head);
 
       if (opt.kind === "boolean") {
         if (eq === -1) {
@@ -141,6 +147,7 @@ export function parseCommandArgv<TParsed>(
       const suffix = sugg ? ` Did you mean ${sugg}?` : "";
       throw usageError({ spec, message: `Unknown option: ${tok}.${suffix}` });
     }
+    assertNotDeprecated(spec, opt, tok);
 
     if (opt.kind === "boolean") {
       setOpt(raw, opt, true);

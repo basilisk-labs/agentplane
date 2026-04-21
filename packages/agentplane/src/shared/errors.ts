@@ -13,6 +13,7 @@
  */
 export type ErrorCode =
   | "E_USAGE"
+  | "E_DEPRECATED_FLAG"
   | "E_VALIDATION"
   | "E_IO"
   | "E_GIT"
@@ -24,6 +25,7 @@ export type ErrorCode =
 
 export const DEFAULT_ERROR_EXIT_CODES: Readonly<Record<ErrorCode, number>> = {
   E_USAGE: 2,
+  E_DEPRECATED_FLAG: 2,
   E_VALIDATION: 3,
   E_IO: 4,
   E_GIT: 5,
@@ -68,6 +70,12 @@ export class CliError extends AgentplaneError {
 export class UsageError extends CliError {
   constructor(opts: AgentplaneErrorOptions) {
     super({ ...opts, code: "E_USAGE" });
+  }
+}
+
+export class DeprecatedFlagError extends CliError {
+  constructor(opts: AgentplaneErrorOptions) {
+    super({ ...opts, code: "E_DEPRECATED_FLAG" });
   }
 }
 

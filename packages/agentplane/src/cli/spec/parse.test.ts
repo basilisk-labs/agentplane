@@ -44,6 +44,12 @@ const baseSpec: CommandSpec<{ foo?: string; tag?: string[]; quiet?: boolean; mod
       valueHint: "<text>",
       description: "message",
     },
+    {
+      kind: "boolean",
+      name: "legacy",
+      description: "legacy",
+      deprecated: "disabled",
+    },
   ],
   parse: (raw) => ({
     foo: raw.opts.foo as string | undefined,
@@ -102,5 +108,17 @@ describe("cli2 parseCommandArgv", () => {
   it("supports short string option -m", () => {
     const out = parseCommandArgv(baseSpec, ["-m", "hi", "--tag", "a", "--tag", "b"]);
     expect(out.raw.opts.msg).toBe("hi");
+  });
+
+  it("fails on deprecated options before command validation", () => {
+    try {
+      parseCommandArgv(baseSpec, ["--legacy"]);
+      throw new Error("expected");
+    } catch (e) {
+      const err = e as CliError;
+      expect(err.code).toBe("E_DEPRECATED_FLAG");
+      expect(err.exitCode).toBe(2);
+      expect(err.message).toContain("Deprecated option --legacy is disabled");
+    }
   });
 });
