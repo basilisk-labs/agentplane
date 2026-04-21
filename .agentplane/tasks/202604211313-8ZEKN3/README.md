@@ -1,0 +1,91 @@
+---
+id: "202604211313-8ZEKN3"
+title: "Regenerate and guard config schema artifacts"
+status: "TODO"
+priority: "med"
+owner: "CODER"
+revision: 3
+origin:
+  system: "manual"
+depends_on:
+  - "202604211313-X8R4TK"
+tags:
+  - "config"
+  - "schemas"
+  - "tooling"
+verify:
+  - "bun run schemas:check"
+  - "bun run schemas:sync"
+  - "bun run test:project -- cli-unit"
+  - "bun run typecheck"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-04-21T13:13:06.992Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit: null
+comments: []
+events: []
+doc_version: 3
+doc_updated_at: "2026-04-21T13:13:06.356Z"
+doc_updated_by: "PLANNER"
+description: "Refresh generated config schema artifacts and add or adjust tests so the flattened config module structure cannot drift."
+sections:
+  Summary: |-
+    Regenerate and guard config schema artifacts
+    
+    Refresh generated config schema artifacts and add or adjust tests so the flattened config module structure cannot drift.
+  Scope: |-
+    - In scope: Refresh generated config schema artifacts and add or adjust tests so the flattened config module structure cannot drift.
+    - Out of scope: unrelated refactors not required for "Regenerate and guard config schema artifacts".
+  Plan: "Scope: close config refactor with generated artifact consistency. Steps: 1. Run schema generation after module split. 2. Commit only intentional schema changes. 3. Add a focused import/export contract test if the old dual config paths were relied on. Acceptance: schemas check passes from a clean tree and no stale generated artifacts remain."
+  Verify Steps: |-
+    1. Review the requested outcome for "Regenerate and guard config schema artifacts". Expected: the visible result matches ## Summary and stays inside approved scope.
+    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+id_source: "generated"
+---
+## Summary
+
+Regenerate and guard config schema artifacts
+
+Refresh generated config schema artifacts and add or adjust tests so the flattened config module structure cannot drift.
+
+## Scope
+
+- In scope: Refresh generated config schema artifacts and add or adjust tests so the flattened config module structure cannot drift.
+- Out of scope: unrelated refactors not required for "Regenerate and guard config schema artifacts".
+
+## Plan
+
+Scope: close config refactor with generated artifact consistency. Steps: 1. Run schema generation after module split. 2. Commit only intentional schema changes. 3. Add a focused import/export contract test if the old dual config paths were relied on. Acceptance: schemas check passes from a clean tree and no stale generated artifacts remain.
+
+## Verify Steps
+
+1. Review the requested outcome for "Regenerate and guard config schema artifacts". Expected: the visible result matches ## Summary and stays inside approved scope.
+2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings

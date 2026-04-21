@@ -1,0 +1,90 @@
+---
+id: "202604211311-R3RFB9"
+title: "Add zero-regression command catalog cycle gate"
+status: "TODO"
+priority: "high"
+owner: "CODER"
+revision: 3
+origin:
+  system: "manual"
+depends_on:
+  - "202604211311-6RM7SK"
+tags:
+  - "architecture"
+  - "ci"
+  - "tooling"
+verify:
+  - "bun run arch:check"
+  - "bun run test:project -- cli-unit"
+  - "node scripts/check-depcruise-known-violations.mjs"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-04-21T13:11:37.544Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit: null
+comments: []
+events: []
+doc_version: 3
+doc_updated_at: "2026-04-21T13:11:36.489Z"
+doc_updated_by: "PLANNER"
+description: "Introduce a targeted dep-cruiser gate for command-catalog cycles and lower the known-violations baseline after D-prime refactor removes current catalog cycles."
+sections:
+  Summary: |-
+    Add zero-regression command catalog cycle gate
+    
+    Introduce a targeted dep-cruiser gate for command-catalog cycles and lower the known-violations baseline after D-prime refactor removes current catalog cycles.
+  Scope: |-
+    - In scope: Introduce a targeted dep-cruiser gate for command-catalog cycles and lower the known-violations baseline after D-prime refactor removes current catalog cycles.
+    - Out of scope: unrelated refactors not required for "Add zero-regression command catalog cycle gate".
+  Plan: "Scope: make command catalog cycles non-regressable. Steps: 1. Measure post-refactor dep-cruiser no-circular count. 2. Lower .dependency-cruiser-known-violations.json to the new count. 3. Add a specific rule or checker assertion that new cli/run-cli/command-catalog cycles fail clearly. 4. Add/update tests for baseline growth behavior if checker behavior changes. Acceptance: arch:check fails on a synthetic new catalog cycle or baseline growth; normal arch:check passes."
+  Verify Steps: |-
+    1. Review the requested outcome for "Add zero-regression command catalog cycle gate". Expected: the visible result matches ## Summary and stays inside approved scope.
+    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+id_source: "generated"
+---
+## Summary
+
+Add zero-regression command catalog cycle gate
+
+Introduce a targeted dep-cruiser gate for command-catalog cycles and lower the known-violations baseline after D-prime refactor removes current catalog cycles.
+
+## Scope
+
+- In scope: Introduce a targeted dep-cruiser gate for command-catalog cycles and lower the known-violations baseline after D-prime refactor removes current catalog cycles.
+- Out of scope: unrelated refactors not required for "Add zero-regression command catalog cycle gate".
+
+## Plan
+
+Scope: make command catalog cycles non-regressable. Steps: 1. Measure post-refactor dep-cruiser no-circular count. 2. Lower .dependency-cruiser-known-violations.json to the new count. 3. Add a specific rule or checker assertion that new cli/run-cli/command-catalog cycles fail clearly. 4. Add/update tests for baseline growth behavior if checker behavior changes. Acceptance: arch:check fails on a synthetic new catalog cycle or baseline growth; normal arch:check passes.
+
+## Verify Steps
+
+1. Review the requested outcome for "Add zero-regression command catalog cycle gate". Expected: the visible result matches ## Summary and stays inside approved scope.
+2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
