@@ -4,8 +4,8 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
-
-import { defaultConfig, readTask } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core";
+import { readTask } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import {

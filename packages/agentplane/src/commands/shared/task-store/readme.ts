@@ -1,6 +1,5 @@
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
-
 import {
   docChanged,
   extractTaskDoc,
@@ -8,7 +7,7 @@ import {
   normalizeTaskDocVersion,
   parseTaskReadme,
   renderTaskReadme,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/tasks";
 
 import { taskRecordToData, type TaskData } from "../../../backends/task-backend.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";

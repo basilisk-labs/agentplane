@@ -1,21 +1,19 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-
+import type { AgentplaneConfig } from "@agentplaneorg/core";
+import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import {
-  atomicWriteFile,
   ensureDocSections,
   extractTaskDoc,
-  loadConfig,
   mergeTaskDoc,
   normalizeTaskDoc,
   parseTaskReadme,
   renderTaskDocFromSections,
   renderTaskReadme,
-  resolveProject,
   setMarkdownSection,
   taskDocToSectionMap,
-  type AgentplaneConfig,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/tasks";
 
 import { mapCoreError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";

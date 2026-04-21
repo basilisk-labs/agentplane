@@ -1,4 +1,4 @@
-import { setMarkdownSection } from "@agentplaneorg/core";
+import { setMarkdownSection } from "@agentplaneorg/core/tasks";
 
 import { decodeEscapedTaskTextNewlines } from "./shared/docs.js";
 

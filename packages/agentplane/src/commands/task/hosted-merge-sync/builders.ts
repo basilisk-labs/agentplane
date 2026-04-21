@@ -1,4 +1,5 @@
-import { normalizeTaskDocVersion, type TaskPrMeta } from "@agentplaneorg/core";
+import { normalizeTaskDocVersion } from "@agentplaneorg/core/tasks";
+import type { TaskPrMeta } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../../backends/task-backend.js";
 import { appendTaskEvent } from "../shared.js";

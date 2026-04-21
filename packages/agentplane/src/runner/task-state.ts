@@ -1,4 +1,4 @@
-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
+import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
 
 import type {
   TaskData,

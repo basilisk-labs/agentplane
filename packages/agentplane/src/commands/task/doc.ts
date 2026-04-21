@@ -1,6 +1,5 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-
 import {
   normalizeDocSectionName,
   normalizeTaskDoc,
@@ -9,7 +8,7 @@ import {
   setMarkdownSection,
   taskDocToSectionMap,
   ensureDocSections,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/tasks";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import {

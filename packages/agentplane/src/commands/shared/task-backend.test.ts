@@ -3,8 +3,8 @@ import { execFile } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-
-import { createTask, defaultConfig, loadConfig, resolveProject } from "@agentplaneorg/core";
+import { defaultConfig, loadConfig, resolveProject } from "@agentplaneorg/core";
+import { createTask } from "@agentplaneorg/core/tasks";
 import { describe, expect, it } from "vitest";
 
 import {

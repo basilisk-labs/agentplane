@@ -1,4 +1,4 @@
-import { ensureDocSections } from "@agentplaneorg/core";
+import { ensureDocSections } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";

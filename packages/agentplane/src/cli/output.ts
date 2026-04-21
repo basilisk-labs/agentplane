@@ -1,4 +1,5 @@
-import { createLogger, type Logger, type LoggerMode } from "@agentplaneorg/core";
+import type { Logger, LoggerMode } from "@agentplaneorg/core/logger";
+import { createLogger } from "@agentplaneorg/core/logger";
 
 export type CliOutputWriter = {
   write: (chunk: string) => unknown;

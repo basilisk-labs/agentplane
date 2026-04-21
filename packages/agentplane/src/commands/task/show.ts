@@ -1,4 +1,8 @@
-import { parseTaskReadme, taskReadmePath, validateTaskDocMetadata } from "@agentplaneorg/core";
+import {
+  parseTaskReadme,
+  taskReadmePath,
+  validateTaskDocMetadata,
+} from "@agentplaneorg/core/tasks";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 

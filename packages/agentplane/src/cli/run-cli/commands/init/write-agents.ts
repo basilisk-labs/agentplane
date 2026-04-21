@@ -1,7 +1,6 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
-
-import { atomicWriteFile } from "@agentplaneorg/core";
+import { atomicWriteFile } from "@agentplaneorg/core/fs";
 
 import type { WorkflowMode } from "../../../../agents/agents-template.js";
 import {

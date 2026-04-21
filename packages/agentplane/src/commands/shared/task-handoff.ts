@@ -1,13 +1,12 @@
 import { appendFile, mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
-
-import {
-  validateTaskHandoff,
-  type TaskHandoff,
-  type TaskHandoffRoute,
-  type TaskHandoffRunnerNextAction,
-  type TaskHandoffRunnerState,
-} from "@agentplaneorg/core";
+import type {
+  TaskHandoff,
+  TaskHandoffRoute,
+  TaskHandoffRunnerNextAction,
+  TaskHandoffRunnerState,
+} from "@agentplaneorg/core/schemas";
+import { validateTaskHandoff } from "@agentplaneorg/core/schemas";
 
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "./git.js";

@@ -1,7 +1,10 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-
-import { createTask, renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core";
+import {
+  createTask,
+  renderTaskDocFromSections,
+  taskDocToSectionMap,
+} from "@agentplaneorg/core/tasks";
 import { describe, expect, it } from "vitest";
 
 import {

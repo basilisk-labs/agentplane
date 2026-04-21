@@ -1,4 +1,4 @@
-import { taskDocToSectionMap } from "@agentplaneorg/core";
+import { taskDocToSectionMap } from "@agentplaneorg/core/tasks";
 
 import { isRecord } from "../../../shared/guards.js";
 

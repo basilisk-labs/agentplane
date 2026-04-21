@@ -1,12 +1,9 @@
 import { createHash } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
-
-import {
-  canonicalizeJson,
-  validateTasksExportSnapshot,
-  type TasksExportSnapshot,
-} from "@agentplaneorg/core";
+import type { TasksExportSnapshot } from "@agentplaneorg/core/tasks";
+import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+import { validateTasksExportSnapshot } from "@agentplaneorg/core/schemas";
 
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 

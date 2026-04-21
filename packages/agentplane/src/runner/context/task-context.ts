@@ -1,6 +1,5 @@
 import path from "node:path";
-
-import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core";
+import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";

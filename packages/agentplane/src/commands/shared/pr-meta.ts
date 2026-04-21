@@ -1,8 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-
-import { validateTaskPrMeta, type TaskPrMeta } from "@agentplaneorg/core";
+import type { TaskPrMeta } from "@agentplaneorg/core/schemas";
+import { validateTaskPrMeta } from "@agentplaneorg/core/schemas";
 
 import { execFileAsync } from "./git.js";
 

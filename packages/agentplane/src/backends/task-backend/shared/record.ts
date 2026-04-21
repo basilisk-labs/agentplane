@@ -1,4 +1,9 @@
-import { normalizeTaskDocVersion, type TaskRecord } from "@agentplaneorg/core";
+import type { TaskRecord } from "@agentplaneorg/core/tasks";
+import {
+  normalizeTaskDocVersion,
+  renderTaskDocFromSections,
+  taskDocToSectionMap,
+} from "@agentplaneorg/core/tasks";
 
 import { isRecord } from "../../../shared/guards.js";
 
@@ -13,7 +18,6 @@ import {
 } from "./normalize.js";
 import { toStringArray } from "./strings.js";
 import type { TaskData } from "./types.js";
-import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core";
 
 function normalizeRevision(value: unknown): number | undefined {
   return Number.isInteger(value) && Number(value) > 0 ? Number(value) : undefined;

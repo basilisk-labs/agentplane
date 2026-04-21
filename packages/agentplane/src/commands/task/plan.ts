@@ -1,7 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-
-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
+import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage } from "../../cli/output.js";

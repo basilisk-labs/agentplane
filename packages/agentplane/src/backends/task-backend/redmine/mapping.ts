@@ -1,8 +1,5 @@
-import {
-  renderTaskDocFromSections,
-  taskDocToSectionMap,
-  type TaskDocVersion,
-} from "@agentplaneorg/core";
+import type { TaskDocVersion } from "@agentplaneorg/core/tasks";
+import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
 
 import { isRecord } from "../../../shared/guards.js";
 

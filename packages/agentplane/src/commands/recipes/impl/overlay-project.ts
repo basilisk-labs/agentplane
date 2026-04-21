@@ -10,7 +10,8 @@ import {
   validateCompiledOverlayBundle,
   validateCompiledRecipeAssetRegistry,
 } from "@agentplaneorg/recipes";
-import { atomicWriteFile, canonicalizeJson } from "@agentplaneorg/core";
+import { atomicWriteFile } from "@agentplaneorg/core/fs";
+import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 

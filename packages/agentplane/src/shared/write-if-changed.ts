@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
-
-import { atomicWriteFile, canonicalizeJson } from "@agentplaneorg/core";
+import { atomicWriteFile } from "@agentplaneorg/core/fs";
+import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
 async function readTextIfExists(filePath: string): Promise<string | null> {
   try {

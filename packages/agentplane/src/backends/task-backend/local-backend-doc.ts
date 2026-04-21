@@ -1,5 +1,4 @@
 import { readFile } from "node:fs/promises";
-
 import {
   applyTaskDocMutations,
   docChanged,
@@ -7,9 +6,11 @@ import {
   renderTaskReadme,
   taskDocToSectionMap,
   taskReadmePath,
+} from "@agentplaneorg/core/tasks";
+import {
   validateTaskReadmeFrontmatter,
   withTaskReadmeFrontmatterDefaults,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/schemas";
 
 import { assertExpectedTaskDoc, assertExpectedTaskSection } from "../../task-doc/conflicts.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";

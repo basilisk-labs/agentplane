@@ -1,10 +1,10 @@
 ---
 id: "202604211311-DZTRN8"
 title: "Migrate schema task logger and fs imports to core subpaths"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -29,11 +29,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: migrate schema, task, logger, and fs root core imports to published core subpaths using the completed import inventory."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T16:00:51.755Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: migrate schema, task, logger, and fs root core imports to published core subpaths using the completed import inventory."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:11:56.837Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T16:00:51.773Z"
+doc_updated_by: "CODER"
 description: "Switch schema, task, logger, and filesystem imports from @agentplaneorg/core root to the matching subpath exports."
 sections:
   Summary: |-

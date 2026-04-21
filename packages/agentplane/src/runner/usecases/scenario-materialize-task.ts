@@ -1,6 +1,5 @@
 import path from "node:path";
-
-import { setMarkdownSection } from "@agentplaneorg/core";
+import { setMarkdownSection } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";

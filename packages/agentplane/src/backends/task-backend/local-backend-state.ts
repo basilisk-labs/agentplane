@@ -1,4 +1,4 @@
-import { type TaskDocMutationState } from "@agentplaneorg/core";
+import type { TaskDocMutationState } from "@agentplaneorg/core/tasks";
 
 import { isRecord } from "../../shared/guards.js";
 

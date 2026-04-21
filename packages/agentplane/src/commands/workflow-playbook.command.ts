@@ -1,7 +1,8 @@
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { atomicWriteFile, resolveProject } from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core";
+import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { runProcess } from "@agentplaneorg/core/process";
 
 import { type CommandHandler, type CommandSpec } from "../cli/spec/spec.js";

@@ -1,4 +1,5 @@
-import { defaultConfig, renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core";
+import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData, TaskEvent } from "../../backends/task-backend.js";

@@ -1,8 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
-import { parseTaskReadme, renderTaskDocFromSections } from "@agentplaneorg/core";
+import { parseTaskReadme, renderTaskDocFromSections } from "@agentplaneorg/core/tasks";
 
 import type { TaskSummary } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";

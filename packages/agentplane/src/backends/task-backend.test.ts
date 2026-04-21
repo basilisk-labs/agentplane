@@ -1,7 +1,6 @@
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
-
-import { type TaskRecord } from "@agentplaneorg/core";
+import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {

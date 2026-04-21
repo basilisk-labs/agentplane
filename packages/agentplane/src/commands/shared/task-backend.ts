@@ -1,15 +1,16 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import type { AgentplaneConfig, ResolvedProject } from "@agentplaneorg/core";
+import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import {
   resolveTaskDocUpdatedBy,
   parseTaskReadme,
   taskDocToSectionMap,
+} from "@agentplaneorg/core/tasks";
+import {
   validateTaskReadmeFrontmatter,
   withTaskReadmeFrontmatterDefaults,
-  type TaskRecord,
-  type AgentplaneConfig,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/schemas";
 
 import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
 import { CliError } from "../../shared/errors.js";
