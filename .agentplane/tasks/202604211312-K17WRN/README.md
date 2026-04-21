@@ -1,10 +1,11 @@
 ---
 id: "202604211312-K17WRN"
 title: "Resolve remaining facade retention policy"
-status: "DOING"
+result_summary: "Removed remaining one-line internal facades for pr integrate and git-context, updated consumers to canonical modules, documented retention reasons for release apply pipeline and hosted-close-pr command boundaries, and updated stale test references."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-21T17:28:18.890Z"
   updated_by: "CODER"
   note: "Verified remaining facade retention policy. Checks: bun run typecheck passed; bun run docs:cli:check passed; bun run knip:check passed; bun run lint:core passed; bun run format:check passed; bun run test:project -- cli-unit passed (63 files, 629 tests); git diff --check passed. Additional architecture check passed: bun run arch:check."
-commit: null
+commit:
+  hash: "755a8c59eb79e6f1153d5fbe1e579bde7f9dc1c5"
+  message: "🧹 K17WRN architecture: resolve retained facades"
 comments:
   -
     author: "CODER"
     body: "Start: classify and resolve remaining non-trivial facade retention policy for release pipeline and hosted-close command wrappers without changing public CLI behavior."
+  -
+    author: "CODER"
+    body: "Verified: resolved remaining facade retention policy. Checks: bun run typecheck; bun run docs:cli:check; bun run knip:check; bun run lint:core; bun run format:check; bun run test:project -- cli-unit; git diff --check; bun run arch:check."
 events:
   -
     type: "status"
@@ -47,14 +53,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified remaining facade retention policy. Checks: bun run typecheck passed; bun run docs:cli:check passed; bun run knip:check passed; bun run lint:core passed; bun run format:check passed; bun run test:project -- cli-unit passed (63 files, 629 tests); git diff --check passed. Additional architecture check passed: bun run arch:check."
+  -
+    type: "status"
+    at: "2026-04-21T17:28:52.064Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: resolved remaining facade retention policy. Checks: bun run typecheck; bun run docs:cli:check; bun run knip:check; bun run lint:core; bun run format:check; bun run test:project -- cli-unit; git diff --check; bun run arch:check."
 doc_version: 3
-doc_updated_at: "2026-04-21T17:28:18.893Z"
+doc_updated_at: "2026-04-21T17:28:52.065Z"
 doc_updated_by: "CODER"
 description: "Decide and implement removal or deprecation for non-trivial facades such as release apply.pipeline and hosted-close command wrappers."
 sections:
   Summary: |-
     Resolve remaining facade retention policy
-
+    
     Decide and implement removal or deprecation for non-trivial facades such as release apply.pipeline and hosted-close command wrappers.
   Scope: |-
     - In scope: Decide and implement removal or deprecation for non-trivial facades such as release apply.pipeline and hosted-close command wrappers.
@@ -70,13 +83,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-21T17:28:18.890Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Verified remaining facade retention policy. Checks: bun run typecheck passed; bun run docs:cli:check passed; bun run knip:check passed; bun run lint:core passed; bun run format:check passed; bun run test:project -- cli-unit passed (63 files, 629 tests); git diff --check passed. Additional architecture check passed: bun run arch:check.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T17:24:56.073Z, excerpt_hash=sha256:95415bcd2ad331de9f87a6b661d4dbe56425729b1643907c2a82f77b54a3f61e
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
