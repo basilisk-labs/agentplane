@@ -1,10 +1,11 @@
 ---
 id: "202604210859-HCJQP0"
 title: "Split hosted-close PR command pipeline"
-status: "DOING"
+result_summary: "Split hosted-close PR command pipeline without public CLI contract changes."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-21T10:58:29.592Z"
   updated_by: "CODER"
   note: "Hosted-close PR command split into pre-check, execute, post-check, and report phases; direct hosted-close PR tests, cli-core hosted-close scenarios, formatter, eslint, and typecheck passed."
-commit: null
+commit:
+  hash: "ba8f2eb652354367f7483e4e9f836d5617937149"
+  message: "✅ HCJQP0 code: done"
 comments:
   -
     author: "CODER"
     body: "Start: split hosted-close PR command pipeline into lifecycle phase modules while preserving CLI contract."
+  -
+    author: "CODER"
+    body: "Verified: split hosted-close PR command into precheck, execute, postcheck, report, and shared type modules; targeted CLI/command tests, typecheck, lint/format, and framework bootstrap passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Hosted-close PR command split into pre-check, execute, post-check, and report phases; direct hosted-close PR tests, cli-core hosted-close scenarios, formatter, eslint, and typecheck passed."
+  -
+    type: "status"
+    at: "2026-04-21T11:02:11.059Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: split hosted-close PR command into precheck, execute, postcheck, report, and shared type modules; targeted CLI/command tests, typecheck, lint/format, and framework bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-04-21T10:58:29.595Z"
+doc_updated_at: "2026-04-21T11:02:11.060Z"
 doc_updated_by: "CODER"
 description: "Decompose hosted-close PR command into lifecycle modules while keeping command behavior unchanged."
 sections:
