@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { defineScript, runScriptMain } from "./lib/script-runtime.mjs";
 
 const SCRIPT_NAME = "check-no-console.mjs";
-const MAX_CONSOLE_OCCURRENCES = 26;
+const MAX_CONSOLE_OCCURRENCES = 25;
 const CONSOLE_PATTERN = /\bconsole\.(?:log|warn|error)\b/g;
 const EXCLUDED_DIR_NAMES = new Set([".git", "dist", "node_modules"]);
 const EXCLUDED_FILE_PATTERNS = [/\.test\.ts$/, /\.spec\.ts$/];

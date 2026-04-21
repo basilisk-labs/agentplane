@@ -2,6 +2,7 @@ import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { atomicWriteFile } from "../fs/atomic-write.js";
+import { createLogger } from "../logger.js";
 import {
   type AgentplaneConfig as AgentplaneConfigShape,
   defaultAgentplaneConfig,
@@ -58,8 +59,16 @@ function stripDeprecatedConfigKeys(raw: Record<string, unknown>): {
 }
 
 function warnDeprecatedConfigKeys(keys: string[]): void {
+  const logger = createLogger();
   for (const key of keys) {
-    console.warn(`config key "${key}" is deprecated and ignored`);
+    logger.write({
+      kind: "event",
+      level: "warn",
+      stream: "stderr",
+      action: "config.deprecated",
+      target: key,
+      message: `config key "${key}" is deprecated and ignored`,
+    });
   }
 }
 

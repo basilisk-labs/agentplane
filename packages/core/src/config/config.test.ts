@@ -69,14 +69,16 @@ describe("config", () => {
     (raw as { base_branch?: string }).base_branch = "main";
     await writeFile(path.join(agentplaneDir, "config.json"), JSON.stringify(raw, null, 2), "utf8");
 
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => false);
+    const stderrSpy = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
     try {
       const loaded = await loadConfig(agentplaneDir);
       expect(loaded.raw).not.toHaveProperty("base_branch");
       expect(loaded.config).not.toHaveProperty("base_branch");
-      expect(warnSpy).toHaveBeenCalled();
+      expect(stderrSpy).toHaveBeenCalledWith(
+        expect.stringContaining('config key "base_branch" is deprecated and ignored'),
+      );
     } finally {
-      warnSpy.mockRestore();
+      stderrSpy.mockRestore();
     }
   });
 
