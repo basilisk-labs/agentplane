@@ -6,20 +6,51 @@ import { pipeline } from "node:stream/promises";
 import { exitCodeForError } from "./exit-codes.js";
 import { CliError } from "../shared/errors.js";
 
-const DEFAULT_FETCH_TIMEOUT_MS = 1500;
+const DEFAULT_FETCH_TIMEOUT_MS = 5000;
 const DEFAULT_DOWNLOAD_TIMEOUT_MS = 30_000;
+const FETCH_ATTEMPTS = 2;
+const FETCH_RETRY_BACKOFF_MS = 100;
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, {
+      headers: { "User-Agent": "agentplane" },
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function fetchWithRetry(url: string, timeoutMs: number): Promise<Response> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= FETCH_ATTEMPTS; attempt += 1) {
+    try {
+      return await fetchWithTimeout(url, timeoutMs);
+    } catch (err) {
+      lastError = err;
+      if (attempt < FETCH_ATTEMPTS) {
+        await delay(FETCH_RETRY_BACKOFF_MS * attempt);
+      }
+    }
+  }
+  throw lastError;
+}
 
 export async function fetchJson(
   url: string,
   timeoutMs = DEFAULT_FETCH_TIMEOUT_MS,
 ): Promise<unknown> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(url, {
-      headers: { "User-Agent": "agentplane" },
-      signal: controller.signal,
-    });
+    const res = await fetchWithRetry(url, timeoutMs);
     if (!res.ok) {
       throw new CliError({
         exitCode: exitCodeForError("E_NETWORK"),
@@ -35,8 +66,6 @@ export async function fetchJson(
       code: "E_NETWORK",
       message: `Failed to fetch ${url}`,
     });
-  } finally {
-    clearTimeout(timeout);
   }
 }
 
@@ -44,13 +73,8 @@ export async function fetchText(
   url: string,
   timeoutMs = DEFAULT_FETCH_TIMEOUT_MS,
 ): Promise<string> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(url, {
-      headers: { "User-Agent": "agentplane" },
-      signal: controller.signal,
-    });
+    const res = await fetchWithRetry(url, timeoutMs);
     if (!res.ok) {
       throw new CliError({
         exitCode: exitCodeForError("E_NETWORK"),
@@ -66,8 +90,6 @@ export async function fetchText(
       code: "E_NETWORK",
       message: `Failed to fetch ${url}`,
     });
-  } finally {
-    clearTimeout(timeout);
   }
 }
 
