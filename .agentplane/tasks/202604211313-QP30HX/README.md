@@ -1,10 +1,11 @@
 ---
 id: "202604211313-QP30HX"
 title: "Wire scripts README freshness check"
-status: "TODO"
+result_summary: "Wired scripts README freshness check."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +23,44 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-04-21T13:46:26.647Z"
+  updated_by: "CODER"
+  note: "Command: node scripts/generate-scripts-readme.mjs --check; Result: pass. Command: bun run ci:local:fast; Result: pass; Evidence: format, schemas, agents, policy routing, build, docs scripts freshness, hotspot check, fast unit tests 1341 passed/2 skipped, critical CLI tests 13 passed."
+commit:
+  hash: "b1488267692af231468d94b7c8f11a3436e627e7"
+  message: "🧰 tooling: add hotspot and scripts docs guards"
+comments:
+  -
+    author: "CODER"
+    body: "Start: Verify and close the scripts README freshness wiring that was implemented with the generator and CI/local route updates."
+  -
+    author: "CODER"
+    body: "Verified: scripts README freshness check is wired into package scripts and local fast CI, with generator freshness and ci:local:fast passing."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T13:43:20.989Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Verify and close the scripts README freshness wiring that was implemented with the generator and CI/local route updates."
+  -
+    type: "verify"
+    at: "2026-04-21T13:46:26.647Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: node scripts/generate-scripts-readme.mjs --check; Result: pass. Command: bun run ci:local:fast; Result: pass; Evidence: format, schemas, agents, policy routing, build, docs scripts freshness, hotspot check, fast unit tests 1341 passed/2 skipped, critical CLI tests 13 passed."
+  -
+    type: "status"
+    at: "2026-04-21T13:46:27.434Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: scripts README freshness check is wired into package scripts and local fast CI, with generator freshness and ci:local:fast passing."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:13:39.046Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T13:46:27.435Z"
+doc_updated_by: "CODER"
 description: "Add the scripts README freshness check to the appropriate local and CI quality routes."
 sections:
   Summary: |-
@@ -48,6 +77,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T13:46:26.647Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: node scripts/generate-scripts-readme.mjs --check; Result: pass. Command: bun run ci:local:fast; Result: pass; Evidence: format, schemas, agents, policy routing, build, docs scripts freshness, hotspot check, fast unit tests 1341 passed/2 skipped, critical CLI tests 13 passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:43:21.007Z, excerpt_hash=sha256:0700118cfeac6b5ea10934c022f18e55376c5e978b8446631102aef8a4e6eb71
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -79,6 +116,14 @@ Scope: make scripts documentation non-stale. Steps: 1. Add a package.json script
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T13:46:26.647Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: node scripts/generate-scripts-readme.mjs --check; Result: pass. Command: bun run ci:local:fast; Result: pass; Evidence: format, schemas, agents, policy routing, build, docs scripts freshness, hotspot check, fast unit tests 1341 passed/2 skipped, critical CLI tests 13 passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:43:21.007Z, excerpt_hash=sha256:0700118cfeac6b5ea10934c022f18e55376c5e978b8446631102aef8a4e6eb71
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
