@@ -1,10 +1,11 @@
 ---
 id: "202604210859-2R83M2"
 title: "Split Redmine backend runtime responsibilities"
-status: "DOING"
+result_summary: "Split Redmine backend runtime responsibilities without changing backend interface."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-21T10:47:09.503Z"
   updated_by: "CODER"
   note: "Verified: split Redmine backend runtime into context, state, operations, and methods modules; typecheck, targeted lint/format, and backend-critical tests pass."
-commit: null
+commit:
+  hash: "7bd4ba73cff118a6c270af6310d8896aba794d33"
+  message: "✅ 2R83M2 code: done"
 comments:
   -
     author: "CODER"
     body: "Start: split Redmine backend runtime responsibilities into mapping, request/client, and cache/state modules while preserving behavior."
+  -
+    author: "CODER"
+    body: "Verified: split Redmine backend runtime into context, state, operations, and methods modules; typecheck, targeted lint/format, backend-critical tests, and framework bootstrap passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: split Redmine backend runtime into context, state, operations, and methods modules; typecheck, targeted lint/format, and backend-critical tests pass."
+  -
+    type: "status"
+    at: "2026-04-21T10:48:46.688Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: split Redmine backend runtime into context, state, operations, and methods modules; typecheck, targeted lint/format, backend-critical tests, and framework bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-04-21T10:47:09.506Z"
+doc_updated_at: "2026-04-21T10:48:46.688Z"
 doc_updated_by: "CODER"
 description: "Decompose Redmine backend runtime into mapping, client-call, and cache-management modules without changing backend behavior."
 sections:
