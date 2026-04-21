@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import type { InitV2ClackPrompts } from "./prompts-v2.js";
 
 export type InitV2PreviewItem = {
@@ -35,6 +37,20 @@ export function previewInstall(
   items: InitV2PreviewItem[],
 ): void {
   clack.note(renderInitV2Preview(items), "Install preview");
+}
+
+export function renderInitV2ConflictPreview(gitRoot: string, conflicts: readonly string[]): string {
+  return conflicts.map((conflict) => `- ${path.relative(gitRoot, conflict)}`).join("\n");
+}
+
+export function previewConflicts(
+  clack: Pick<InitV2ClackPrompts, "note">,
+  opts: {
+    gitRoot: string;
+    conflicts: readonly string[];
+  },
+): void {
+  clack.note(renderInitV2ConflictPreview(opts.gitRoot, opts.conflicts), "Init conflicts detected");
 }
 
 export function outroSuccess(clack: Pick<InitV2ClackPrompts, "outro">, root: string): void {

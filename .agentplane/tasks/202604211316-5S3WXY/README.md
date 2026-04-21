@@ -1,10 +1,10 @@
 ---
 id: "202604211316-5S3WXY"
 title: "Add init v2 interactive conflict resolver"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +28,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: add init v2 interactive conflict resolver on top of the extracted prompt step modules."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T16:00:51.755Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add init v2 interactive conflict resolver on top of the extracted prompt step modules."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:16:13.158Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T16:00:51.773Z"
+doc_updated_by: "CODER"
 description: "Add a Clack select-based conflict resolver for init v2 that supports overwrite, backup, and cancel choices when conflicts exist and --force/--backup are not set."
 sections:
   Summary: |-

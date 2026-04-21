@@ -1,6 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { outroError, outroSuccess, previewInstall, renderInitV2Preview, section } from "./ui-v2.js";
+import {
+  outroError,
+  outroSuccess,
+  previewConflicts,
+  previewInstall,
+  renderInitV2ConflictPreview,
+  renderInitV2Preview,
+  section,
+} from "./ui-v2.js";
 
 function clackMock() {
   return {
@@ -44,6 +52,25 @@ describe("init ui v2", () => {
     expect(clack.note).toHaveBeenCalledWith(
       ["backend           local", "network approval  no"].join("\n"),
       "Install preview",
+    );
+  });
+
+  it("renders and previews conflicts as relative paths", () => {
+    const clack = clackMock();
+    const conflicts = [
+      "/repo/.agentplane/config.json",
+      "/repo/.agentplane/backends/local/backend.json",
+    ];
+
+    expect(renderInitV2ConflictPreview("/repo", conflicts)).toBe(
+      ["- .agentplane/config.json", "- .agentplane/backends/local/backend.json"].join("\n"),
+    );
+
+    previewConflicts(clack, { gitRoot: "/repo", conflicts });
+
+    expect(clack.note).toHaveBeenCalledWith(
+      ["- .agentplane/config.json", "- .agentplane/backends/local/backend.json"].join("\n"),
+      "Init conflicts detected",
     );
   });
 
