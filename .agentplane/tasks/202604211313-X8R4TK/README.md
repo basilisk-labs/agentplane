@@ -1,10 +1,10 @@
 ---
 id: "202604211313-X8R4TK"
 title: "Move config IO behind a flat public index"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -22,21 +22,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T17:32:45.248Z"
+  updated_by: "CODER"
+  note: "Verified config IO split. Checks: bun run typecheck passed; bunx vitest run packages/core/src/config/config.test.ts 'packages/agentplane/src/commands/config*.test.ts' --pool=forks --maxWorkers 4 passed (18 tests; no agentplane config*.test.ts files matched); bun run knip:check passed; bun run lint:core passed; bun run format:check passed; git diff --check passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: split config validation and IO into responsibility-based modules while preserving the existing public config compatibility surface."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T17:30:28.026Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split config validation and IO into responsibility-based modules while preserving the existing public config compatibility surface."
+  -
+    type: "verify"
+    at: "2026-04-21T17:32:45.248Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified config IO split. Checks: bun run typecheck passed; bunx vitest run packages/core/src/config/config.test.ts 'packages/agentplane/src/commands/config*.test.ts' --pool=forks --maxWorkers 4 passed (18 tests; no agentplane config*.test.ts files matched); bun run knip:check passed; bun run lint:core passed; bun run format:check passed; git diff --check passed."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:13:02.688Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T17:32:45.251Z"
+doc_updated_by: "CODER"
 description: "Move loadConfig/saveConfig and atomic write behavior into config/io.ts and expose the intended public surface through config/index or existing package exports."
 sections:
   Summary: |-
     Move config IO behind a flat public index
-    
+
     Move loadConfig/saveConfig and atomic write behavior into config/io.ts and expose the intended public surface through config/index or existing package exports.
   Scope: |-
     - In scope: Move loadConfig/saveConfig and atomic write behavior into config/io.ts and expose the intended public surface through config/index or existing package exports.
@@ -49,6 +65,14 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T17:32:45.248Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified config IO split. Checks: bun run typecheck passed; bunx vitest run packages/core/src/config/config.test.ts 'packages/agentplane/src/commands/config*.test.ts' --pool=forks --maxWorkers 4 passed (18 tests; no agentplane config*.test.ts files matched); bun run knip:check passed; bun run lint:core passed; bun run format:check passed; git diff --check passed.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T17:30:28.035Z, excerpt_hash=sha256:4d23e49c0afa887b3cae8c75210701202c38a539113404dcd079746b82ca6e33
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -81,6 +105,14 @@ Scope: make config module boundaries match responsibilities. Steps: 1. Move load
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T17:32:45.248Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified config IO split. Checks: bun run typecheck passed; bunx vitest run packages/core/src/config/config.test.ts 'packages/agentplane/src/commands/config*.test.ts' --pool=forks --maxWorkers 4 passed (18 tests; no agentplane config*.test.ts files matched); bun run knip:check passed; bun run lint:core passed; bun run format:check passed; git diff --check passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T17:30:28.035Z, excerpt_hash=sha256:4d23e49c0afa887b3cae8c75210701202c38a539113404dcd079746b82ca6e33
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
