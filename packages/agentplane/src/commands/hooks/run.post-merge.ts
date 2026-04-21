@@ -1,4 +1,4 @@
-import { resolveBaseBranch } from "@agentplaneorg/core";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 
 import { cmdCleanupMerged } from "../branch/index.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";

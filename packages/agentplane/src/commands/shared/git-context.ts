@@ -1,1 +1,1 @@
-export { GitContext } from "@agentplaneorg/core";
+export { GitContext } from "@agentplaneorg/core/git";

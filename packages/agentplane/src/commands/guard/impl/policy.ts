@@ -1,4 +1,4 @@
-import { resolveBaseBranch } from "@agentplaneorg/core";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 
 import { evaluatePolicy } from "../../../policy/evaluate.js";
 import { gitCurrentBranch } from "../../shared/git-ops.js";

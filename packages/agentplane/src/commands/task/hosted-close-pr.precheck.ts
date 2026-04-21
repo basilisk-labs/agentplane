@@ -1,6 +1,5 @@
 import { readFile } from "node:fs/promises";
-
-import { resolveBaseBranch } from "@agentplaneorg/core";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists } from "../../cli/fs-utils.js";

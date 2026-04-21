@@ -1,4 +1,4 @@
-import { startProcess } from "@agentplaneorg/core";
+import { startProcess } from "@agentplaneorg/core/process";
 
 export type HookName = "after_create" | "before_run" | "after_run" | "before_remove";
 

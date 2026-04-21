@@ -4,4 +4,4 @@ export {
   gitDiffStat,
   gitShowFile,
   toGitPath,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/git";

@@ -1,4 +1,5 @@
-import { runProcessSync, resolveProject } from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core";
+import { runProcessSync } from "@agentplaneorg/core/process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 

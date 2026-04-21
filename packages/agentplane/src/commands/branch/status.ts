@@ -1,4 +1,5 @@
-import { loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
+import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 
 import { mapCoreError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";

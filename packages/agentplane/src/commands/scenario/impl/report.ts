@@ -1,6 +1,6 @@
 import path from "node:path";
-
-import { atomicWriteFile, runProcess } from "@agentplaneorg/core";
+import { atomicWriteFile } from "@agentplaneorg/core";
+import { runProcess } from "@agentplaneorg/core/process";
 
 import { dedupeStrings } from "../../../shared/strings.js";
 

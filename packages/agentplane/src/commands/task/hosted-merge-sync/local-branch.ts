@@ -1,4 +1,5 @@
-import { resolveBaseBranch, type TaskPrMeta } from "@agentplaneorg/core";
+import { TaskPrMeta } from "@agentplaneorg/core";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 
 import type { TaskData } from "../../../backends/task-backend.js";
 import { execFileAsync } from "../../shared/git.js";

@@ -1,5 +1,5 @@
+import { execFileAsync } from "@agentplaneorg/core/process";
 import {
-  execFileAsync,
   gitBranchExists,
   gitCurrentBranch,
   gitAddPaths,
@@ -8,7 +8,7 @@ import {
   gitEnv,
   gitStagedPaths,
   setPinnedBaseBranch,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/git";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { promptChoice, promptInput } from "../../cli/prompts.js";
 import { CliError } from "../../shared/errors.js";
@@ -25,7 +25,7 @@ export {
   gitInitRepo,
   gitStagedPaths,
   resolveInitBaseBranch,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/git";
 
 export async function promptInitBaseBranch(opts: {
   gitRoot: string;

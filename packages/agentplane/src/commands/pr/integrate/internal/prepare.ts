@@ -1,7 +1,6 @@
 import path from "node:path";
 import { readFile } from "node:fs/promises";
-
-import { resolveBaseBranch } from "@agentplaneorg/core";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 import type { TaskData } from "../../../../backends/task-backend.js";
 
 import { fileExists } from "../../../../cli/fs-utils.js";

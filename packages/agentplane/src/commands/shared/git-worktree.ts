@@ -5,4 +5,4 @@ export {
   listWorktrees,
   parseTaskIdFromBranch,
   parseTaskIdFromCloseBranch,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/git";

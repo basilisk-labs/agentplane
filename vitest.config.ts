@@ -9,6 +9,12 @@ export default defineConfig({
     alias: {
       "@agentplane/testkit/cli": path.join(__dirname, "packages/testkit/src/cli.ts"),
       // In-repo tests should run against source, not stale built artifacts.
+      "@agentplaneorg/core/fs": path.join(__dirname, "packages/core/src/fs/index.ts"),
+      "@agentplaneorg/core/git": path.join(__dirname, "packages/core/src/git/index.ts"),
+      "@agentplaneorg/core/logger": path.join(__dirname, "packages/core/src/logger.ts"),
+      "@agentplaneorg/core/process": path.join(__dirname, "packages/core/src/process/index.ts"),
+      "@agentplaneorg/core/schemas": path.join(__dirname, "packages/core/src/schemas/index.ts"),
+      "@agentplaneorg/core/tasks": path.join(__dirname, "packages/core/src/tasks/index.ts"),
       "@agentplaneorg/core": path.join(__dirname, "packages/core/src/index.ts"),
       "agentplane/internal/testing": path.join(
         __dirname,

@@ -1,4 +1,5 @@
-import { execFileAsync, type AgentplaneConfig } from "@agentplaneorg/core";
+import { AgentplaneConfig } from "@agentplaneorg/core";
+import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { infoMessage, warnMessage } from "../../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";

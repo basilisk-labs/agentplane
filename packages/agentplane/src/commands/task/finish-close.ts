@@ -1,4 +1,4 @@
-import { resolveBaseBranch } from "@agentplaneorg/core";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 

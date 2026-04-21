@@ -1,10 +1,10 @@
 ---
 id: "202604211311-WZCXTF"
 title: "Migrate git and process imports to core subpaths"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +28,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: migrate git and process symbols from root @agentplaneorg/core imports to the published core subpath exports using the completed inventory map."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T15:49:56.744Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: migrate git and process symbols from root @agentplaneorg/core imports to the published core subpath exports using the completed inventory map."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:11:49.949Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T15:49:56.780Z"
+doc_updated_by: "CODER"
 description: "Switch git and process-related callsites from @agentplaneorg/core root imports to @agentplaneorg/core/git and @agentplaneorg/core/process."
 sections:
   Summary: |-

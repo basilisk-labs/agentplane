@@ -1,8 +1,7 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
-import { runProcessSync } from "@agentplaneorg/core";
+import { runProcessSync } from "@agentplaneorg/core/process";
 
 import { getVersion } from "./version.js";
 

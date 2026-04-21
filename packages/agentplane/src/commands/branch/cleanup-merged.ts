@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import { resolveBaseBranch } from "@agentplaneorg/core";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { createCliEmitter, unknownEntityMessage, workflowModeMessage } from "../../cli/output.js";

@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-
-import { GitContext as CoreGitContext } from "@agentplaneorg/core";
+import { GitContext as CoreGitContext } from "@agentplaneorg/core/git";
 
 import { GitContext } from "./git-context.js";
 

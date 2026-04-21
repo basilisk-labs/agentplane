@@ -1,4 +1,4 @@
-import { resolveBaseBranch } from "@agentplaneorg/core";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import {

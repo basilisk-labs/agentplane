@@ -1,4 +1,4 @@
-import { runProcess } from "@agentplaneorg/core";
+import { runProcess } from "@agentplaneorg/core/process";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 import { isDotEnvLoadedKey } from "../../../shared/env.js";

@@ -1,4 +1,5 @@
-import { loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
+import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 
 import { evaluatePolicy } from "../../policy/evaluate.js";
 import { GitContext } from "../shared/git-context.js";
