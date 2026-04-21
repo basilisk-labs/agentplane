@@ -33,8 +33,9 @@ For `redmine`, Redmine is the canonical source and `.agentplane/` holds the loca
 
 ## README contract versions
 
-- `doc_version=2` is the legacy task README layout and remains readable.
-- `doc_version=3` is the active layout for new tasks and the canonical target for migrations.
+- `doc_version=2` is the legacy task README layout and is no longer accepted by the current
+  runtime validators.
+- `doc_version=3` is the only active layout for task READMEs.
 - Frontmatter remains a machine-oriented state layer.
 - Body sections remain the human working document for planning, verification, and findings.
 
@@ -82,7 +83,8 @@ Section semantics:
 ## Migrating older projects to README v3
 
 Older repositories may still contain legacy `doc_version=2` task READMEs after the framework files
-were upgraded.
+were upgraded. Migrate those READMEs before running normal task lifecycle commands with the current
+runtime.
 
 Use this order:
 

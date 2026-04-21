@@ -3,4 +3,4 @@ import { TASK_ID_ALPHABET, type TaskDocVersion } from "@agentplaneorg/core";
 export const TASK_ID_RE = new RegExp(String.raw`^\d{12}-[${TASK_ID_ALPHABET}]{4,}$`);
 export const DEFAULT_DOC_UPDATED_BY = "agentplane";
 export const DOC_VERSION: TaskDocVersion = 3;
-export const SUPPORTED_DOC_VERSIONS = [2, 3] as const;
+export const SUPPORTED_DOC_VERSIONS = [3] as const;

@@ -23,7 +23,7 @@
       },
       "commit": null,
       "comments": [{ "author": "owner", "body": "Context about the task." }],
-      "doc_version": 2,
+      "doc_version": 3,
       "doc_updated_at": "2026-01-27T00:00:00Z",
       "doc_updated_by": "agentplane",
       "description": "Short description of why the task matters.",

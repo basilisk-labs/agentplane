@@ -33,7 +33,7 @@ const RUNNER_OUTCOME_STATUS_VALUES = [
 ] as const;
 const RUNNER_MODE_VALUES = ["execute", "dry_run"] as const;
 const RUNNER_TARGET_KIND_VALUES = ["task", "recipe_scenario"] as const;
-const DOC_VERSION_VALUES = [z.literal(2), z.literal(3)] as const;
+const DOC_VERSION_SCHEMA = z.literal(3);
 const PR_STATUS_VALUES = ["OPEN", "CLOSED", "MERGED"] as const;
 const MERGE_STRATEGY_VALUES = ["squash", "merge", "rebase"] as const;
 const PR_VERIFY_STATUS_VALUES = ["pass", "fail", "skipped"] as const;
@@ -177,7 +177,7 @@ const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
     commit: TASK_COMMIT_SCHEMA.optional(),
     comments: z.array(TASK_COMMENT_SCHEMA),
     events: z.array(TASK_EVENT_SCHEMA).optional(),
-    doc_version: z.union(DOC_VERSION_VALUES),
+    doc_version: DOC_VERSION_SCHEMA,
     doc_updated_at: ISO_UTC_TIMESTAMP,
     doc_updated_by: NON_EMPTY_STRING,
     description: z.string(),
@@ -208,7 +208,7 @@ const TASKS_EXPORT_TASK_SCHEMA = z
     commit: TASK_COMMIT_SCHEMA,
     comments: z.array(TASK_COMMENT_SCHEMA),
     events: z.array(TASK_EVENT_SCHEMA).optional(),
-    doc_version: z.union(DOC_VERSION_VALUES),
+    doc_version: DOC_VERSION_SCHEMA,
     doc_updated_at: ISO_UTC_TIMESTAMP,
     doc_updated_by: NON_EMPTY_STRING,
     description: z.string(),

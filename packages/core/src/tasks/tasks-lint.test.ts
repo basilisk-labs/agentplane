@@ -171,7 +171,7 @@ describe("tasks-lint", () => {
     expect(joined).toContain("A: status must be TODO|DOING|DONE|BLOCKED");
     expect(joined).toContain("A: priority must be low|normal|med|high");
     expect(joined).toContain("A: owner must be non-empty");
-    expect(joined).toContain("A: doc_version must be 2 or 3");
+    expect(joined).toContain("A: doc_version must be 3");
     expect(joined).toContain("A: doc_updated_at must be ISO date-time");
     expect(joined).toContain("A: doc_updated_by must be non-empty");
     expect(joined).toContain("A: description must be string");

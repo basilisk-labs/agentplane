@@ -171,12 +171,12 @@ workspace is in an active v2/v3 mixed state.
 
 - First ensure the framework-owned files are already up to date:
   - `agentplane upgrade --yes`
-- Then normalize task-local README docs:
+- Then normalize task-local README docs before continuing active lifecycle work:
   - `agentplane task migrate-doc --all`
 - Re-run diagnostics:
   - `agentplane doctor`
-- If the warning mentions only historical DONE tasks, migration is still recommended for archive
-  consistency but no longer blocks active work.
+- Current runtime validators accept `doc_version=3` task READMEs only; `doc_version=2` is an
+  upgrade/migration input, not an active task contract.
 
 ## Policy modules are missing after upgrade
 
