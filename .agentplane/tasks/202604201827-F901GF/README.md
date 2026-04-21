@@ -1,10 +1,11 @@
 ---
 id: "202604201827-F901GF"
 title: "Add task closure recovery skill"
-status: "DOING"
+result_summary: "Added repo-local task closure recovery skill for finish, hosted-close, close-tail, PR metadata, and branch divergence recovery."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-21T03:45:09.619Z"
   updated_by: "CODER"
   note: "Verified task closure recovery skill content, skills index entry, format check, policy routing, and doctor evidence."
-commit: null
+commit:
+  hash: "a49495728059f6890988785f20b3eba41a18fbbf"
+  message: "📝 7Y2QS2 task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: implementing task closure recovery skill."
+  -
+    author: "CODER"
+    body: "Verified: task closure recovery skill added, indexed, and checked."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified task closure recovery skill content, skills index entry, format check, policy routing, and doctor evidence."
+  -
+    type: "status"
+    at: "2026-04-21T03:48:25.137Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: task closure recovery skill added, indexed, and checked."
 doc_version: 3
-doc_updated_at: "2026-04-21T03:45:09.622Z"
+doc_updated_at: "2026-04-21T03:48:25.137Z"
 doc_updated_by: "CODER"
 description: "Add a repo-local skill for diagnosing and recovering direct finish, hosted-close, close-tail, PR metadata, dirty artifact, and remote divergence task closure failures."
 sections:
