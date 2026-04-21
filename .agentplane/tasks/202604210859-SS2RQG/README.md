@@ -1,10 +1,12 @@
 ---
 id: "202604210859-SS2RQG"
 title: "Convert deprecated CLI flags from no-op to hard error"
-status: "DOING"
+result_summary: "Converted deprecated CLI options to hard parser errors."
+risk_level: "med"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +25,16 @@ verification:
   updated_at: "2026-04-21T09:09:56.230Z"
   updated_by: "CODER"
   note: "Deprecated CLI options now fail in the command-spec parser with E_DEPRECATED_FLAG before command handlers/validateRaw run. Verification: parse.test passed (7 tests), targeted guard auto-allow CLI test passed, and agentplane typecheck passed."
-commit: null
+commit:
+  hash: "5f2ce5918c74fbaebf6cdc1519d6b89b55c8b0d5"
+  message: "✅ SS2RQG code: done"
 comments:
   -
     author: "CODER"
     body: "Start: Convert deprecated no-op CLI flags to explicit hard errors with focused parser/spec tests and no final flag removal."
+  -
+    author: "CODER"
+    body: "Verified: deprecated CLI options now fail in parser with E_DEPRECATED_FLAG before no-op handlers can run; targeted tests and typecheck passed."
 events:
   -
     type: "status"
@@ -42,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Deprecated CLI options now fail in the command-spec parser with E_DEPRECATED_FLAG before command handlers/validateRaw run. Verification: parse.test passed (7 tests), targeted guard auto-allow CLI test passed, and agentplane typecheck passed."
+  -
+    type: "status"
+    at: "2026-04-21T09:14:01.938Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: deprecated CLI options now fail in parser with E_DEPRECATED_FLAG before no-op handlers can run; targeted tests and typecheck passed."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:09:56.236Z"
+doc_updated_at: "2026-04-21T09:14:01.939Z"
 doc_updated_by: "CODER"
 description: "Make deprecated/no-op CLI flags fail loudly with a structured E_DEPRECATED_FLAG error instead of silently doing nothing."
 sections:

@@ -1,10 +1,12 @@
 ---
 id: "202604210858-XWZ1M2"
 title: "Remove retired config schema diff script"
-status: "DOING"
+result_summary: "Removed retired config schema diff script and updated ADR-0001."
+risk_level: "low"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +25,16 @@ verification:
   updated_at: "2026-04-21T09:09:55.498Z"
   updated_by: "CODER"
   note: "Command: rg diff-config-schemas live paths; Result: pass; Evidence: no package/hook/CI/scripts references found. Command: test ! -e scripts/diff-config-schemas.mjs; Result: pass; Evidence: retired script is deleted. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with 0 errors and 0 warnings. Command: bun run schemas:check; Result: pass; Evidence: schemas OK. Scope: retired config schema diff script cleanup and ADR-0001 supersession note."
-commit: null
+commit:
+  hash: "da141c0dfb42b6053fa2ccfe5052cdc626d38942"
+  message: "✅ XWZ1M2 code: done"
 comments:
   -
     author: "CODER"
     body: "Start: Remove the retired config schema diff script and update ADR-0001 with a supersession note after confirming no live references remain."
+  -
+    author: "CODER"
+    body: "Verified: retired config schema diff script removed, ADR supersession recorded, and live references/checks passed."
 events:
   -
     type: "status"
@@ -42,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: rg diff-config-schemas live paths; Result: pass; Evidence: no package/hook/CI/scripts references found. Command: test ! -e scripts/diff-config-schemas.mjs; Result: pass; Evidence: retired script is deleted. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with 0 errors and 0 warnings. Command: bun run schemas:check; Result: pass; Evidence: schemas OK. Scope: retired config schema diff script cleanup and ADR-0001 supersession note."
+  -
+    type: "status"
+    at: "2026-04-21T09:13:23.253Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: retired config schema diff script removed, ADR supersession recorded, and live references/checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:09:55.516Z"
+doc_updated_at: "2026-04-21T09:13:23.254Z"
 doc_updated_by: "CODER"
 description: "Delete the obsolete AJV-vs-Zod schema diff script and update ADR-0001 so documentation no longer points at a retired verifier."
 sections:

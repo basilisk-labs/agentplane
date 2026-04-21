@@ -1,10 +1,12 @@
 ---
 id: "202604210856-0J4XZH"
 title: "Fix testkit workspace dependency drift"
-status: "DOING"
+result_summary: "Aligned testkit core dependency and lockfile to 0.3.16."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +25,16 @@ verification:
   updated_at: "2026-04-21T09:03:20.343Z"
   updated_by: "CODER"
   note: "packages/testkit now depends on @agentplaneorg/core 0.3.16; bun.lock no longer contains nested @agentplane/testkit/@agentplaneorg/core@0.3.15; testkit typecheck passed."
-commit: null
+commit:
+  hash: "98442208f2360c7501fcb24c7c04d6c0c44e79d8"
+  message: "✅ 0J4XZH code: done"
 comments:
   -
     author: "CODER"
     body: "Start: Align testkit internal core dependency with the workspace release strategy and verify package metadata without touching audit input files."
+  -
+    author: "CODER"
+    body: "Verified: testkit dependency drift fixed; package metadata and lockfile now resolve core 0.3.16, with targeted testkit typecheck passing."
 events:
   -
     type: "status"
@@ -42,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "packages/testkit now depends on @agentplaneorg/core 0.3.16; bun.lock no longer contains nested @agentplane/testkit/@agentplaneorg/core@0.3.15; testkit typecheck passed."
+  -
+    type: "status"
+    at: "2026-04-21T09:12:22.687Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: testkit dependency drift fixed; package metadata and lockfile now resolve core 0.3.16, with targeted testkit typecheck passing."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:03:20.350Z"
+doc_updated_at: "2026-04-21T09:12:22.688Z"
 doc_updated_by: "CODER"
 description: "Align packages/testkit with the active workspace core dependency so the next patch release cannot publish or install with a stale @agentplaneorg/core range."
 sections:

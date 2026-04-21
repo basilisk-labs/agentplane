@@ -1,10 +1,12 @@
 ---
 id: "202604210858-3JVPBT"
 title: "Harden HTTP fetch timeout and retry behavior"
-status: "DOING"
+result_summary: "Hardened CLI fetch timeout and retry behavior."
+risk_level: "med"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +25,16 @@ verification:
   updated_at: "2026-04-21T09:06:13.538Z"
   updated_by: "CODER"
   note: "Raised CLI fetch timeout to 5000ms, added bounded retry for fetchJson/fetchText transient fetch failures, and covered retry/default-timeout behavior in cli/http tests. Verification: agentplane http test passed (9 tests) and agentplane typecheck passed."
-commit: null
+commit:
+  hash: "3964ccf386d304db5044ec2722be09193bcb5061"
+  message: "✅ 3JVPBT code: done"
 comments:
   -
     author: "CODER"
     body: "Start: Harden the CLI HTTP fetch helper timeout and retry behavior with focused tests while avoiding unrelated network access."
+  -
+    author: "CODER"
+    body: "Verified: CLI fetch helpers now use a longer timeout and retry transient fetch failures with focused tests and typecheck passing."
 events:
   -
     type: "status"
@@ -42,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Raised CLI fetch timeout to 5000ms, added bounded retry for fetchJson/fetchText transient fetch failures, and covered retry/default-timeout behavior in cli/http tests. Verification: agentplane http test passed (9 tests) and agentplane typecheck passed."
+  -
+    type: "status"
+    at: "2026-04-21T09:13:44.077Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: CLI fetch helpers now use a longer timeout and retry transient fetch failures with focused tests and typecheck passing."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:06:13.544Z"
+doc_updated_at: "2026-04-21T09:13:44.079Z"
 doc_updated_by: "CODER"
 description: "Raise CLI HTTP fetch tolerance and add focused retry behavior so transient slow networks do not produce false E_NETWORK failures."
 sections:
