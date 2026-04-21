@@ -1,10 +1,10 @@
 ---
 id: "202604211316-KAPJPA"
 title: "Add init v2 apply spinner wrapper"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,21 +23,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T16:25:40.497Z"
+  updated_by: "CODER"
+  note: "Added init v2 apply spinner wrapper (withStep + apply orchestration) with focused success/failure tests; typecheck, targeted apply test, and cli-unit passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: add init v2 apply spinner wrapper after conflict resolver is available."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T16:19:42.873Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add init v2 apply spinner wrapper after conflict resolver is available."
+  -
+    type: "verify"
+    at: "2026-04-21T16:25:40.497Z"
+    author: "CODER"
+    state: "ok"
+    note: "Added init v2 apply spinner wrapper (withStep + apply orchestration) with focused success/failure tests; typecheck, targeted apply test, and cli-unit passed."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:16:19.751Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T16:25:40.507Z"
+doc_updated_by: "CODER"
 description: "Add withStep spinner helper and wrap init v2 mutation writers with progress messages while keeping mutation functions unchanged."
 sections:
   Summary: |-
     Add init v2 apply spinner wrapper
-    
+
     Add withStep spinner helper and wrap init v2 mutation writers with progress messages while keeping mutation functions unchanged.
   Scope: |-
     - In scope: Add withStep spinner helper and wrap init v2 mutation writers with progress messages while keeping mutation functions unchanged.
@@ -51,6 +67,14 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T16:25:40.497Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Added init v2 apply spinner wrapper (withStep + apply orchestration) with focused success/failure tests; typecheck, targeted apply test, and cli-unit passed.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:19:42.881Z, excerpt_hash=sha256:a67c33a6dc75f669c1951e1f437643311a6ab8c4c51fcfe858356ebaf71e6ce3
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -84,6 +108,14 @@ Scope: implement atom #5. Steps: 1. Add steps/apply.ts with withStep helper that
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T16:25:40.497Z — VERIFY — ok
+
+By: CODER
+
+Note: Added init v2 apply spinner wrapper (withStep + apply orchestration) with focused success/failure tests; typecheck, targeted apply test, and cli-unit passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:19:42.881Z, excerpt_hash=sha256:a67c33a6dc75f669c1951e1f437643311a6ab8c4c51fcfe858356ebaf71e6ce3
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

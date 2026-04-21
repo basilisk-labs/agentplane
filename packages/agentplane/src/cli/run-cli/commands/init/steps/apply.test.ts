@@ -1,0 +1,145 @@
+import { describe, expect, it, vi } from "vitest";
+
+import { applyInitV2WithProgress, withStep } from "./apply.js";
+
+function createSpinnerMocks() {
+  const start = vi.fn();
+  const stop = vi.fn();
+  const message = vi.fn();
+  return { start, stop, message };
+}
+
+describe("init v2 apply wrapper", () => {
+  it("runs withStep with spinner progress and success message", async () => {
+    const spinner = createSpinnerMocks();
+    const clack = { spinner: vi.fn(() => spinner) };
+
+    const value = await withStep({
+      clack,
+      start: "Writing init config",
+      success: "Wrote init config",
+      failure: "Failed to write init config",
+      run: (setProgress) => {
+        setProgress("Writing backend stubs");
+        return Promise.resolve("ok");
+      },
+    });
+
+    expect(value).toBe("ok");
+    expect(clack.spinner).toHaveBeenCalledTimes(1);
+    expect(spinner.start).toHaveBeenCalledWith("Writing init config");
+    expect(spinner.message).toHaveBeenCalledWith("Writing backend stubs");
+    expect(spinner.stop).toHaveBeenCalledWith("Wrote init config");
+  });
+
+  it("stops spinner with failure message when withStep throws", async () => {
+    const spinner = createSpinnerMocks();
+    const clack = { spinner: vi.fn(() => spinner) };
+
+    await expect(
+      withStep({
+        clack,
+        start: "Creating install commit",
+        success: "Created install commit",
+        failure: "Failed to create install commit",
+        run: () => Promise.reject(new Error("commit failed")),
+      }),
+    ).rejects.toThrow("commit failed");
+
+    expect(spinner.start).toHaveBeenCalledWith("Creating install commit");
+    expect(spinner.stop).toHaveBeenCalledWith("Failed to create install commit");
+  });
+
+  it("applies init v2 writers in order and forwards install paths to commit step", async () => {
+    const calls: string[] = [];
+
+    const config = vi.fn(() => {
+      calls.push("config");
+      return Promise.resolve();
+    });
+    const agents = vi.fn(() => {
+      calls.push("agents");
+      return Promise.resolve([".agentplane/agents/CODER.md"]);
+    });
+    const workflow = vi.fn(() => {
+      calls.push("workflow");
+      return Promise.resolve([".github/workflows/agentplane.yml"]);
+    });
+    const gitignore = vi.fn(() => {
+      calls.push("gitignore");
+      return Promise.resolve([".gitignore"]);
+    });
+    const hooks = vi.fn(() => {
+      calls.push("hooks");
+      return Promise.resolve([".agentplane/bin/agentplane"]);
+    });
+    const ideSync = vi.fn(() => {
+      calls.push("ide");
+      return Promise.resolve([".cursor/rules/agentplane.mdc"]);
+    });
+    const recipes = vi.fn(() => {
+      calls.push("recipes");
+      return Promise.resolve();
+    });
+    const installCommit = vi.fn(() => {
+      calls.push("commit");
+      return Promise.resolve();
+    });
+
+    const result = await applyInitV2WithProgress({
+      plan: {
+        config,
+        agents,
+        workflow,
+        gitignore,
+        hooks,
+        ideSync,
+        recipes,
+        installCommit,
+      },
+      includeInstallCommit: true,
+    });
+
+    expect(calls).toEqual([
+      "config",
+      "agents",
+      "workflow",
+      "gitignore",
+      "hooks",
+      "ide",
+      "recipes",
+      "commit",
+    ]);
+    expect(result.installPaths).toEqual([
+      ".agentplane/agents/CODER.md",
+      ".github/workflows/agentplane.yml",
+      ".gitignore",
+      ".agentplane/bin/agentplane",
+      ".cursor/rules/agentplane.mdc",
+    ]);
+    expect(installCommit).toHaveBeenCalledWith(result.installPaths);
+  });
+
+  it("skips install commit when includeInstallCommit=false", async () => {
+    const hooks = vi.fn(() => Promise.resolve([".agentplane/bin/agentplane"]));
+    const installCommit = vi.fn(() => Promise.resolve());
+
+    const result = await applyInitV2WithProgress({
+      plan: {
+        config: () => Promise.resolve(),
+        agents: () => Promise.resolve([]),
+        workflow: () => Promise.resolve([]),
+        gitignore: () => Promise.resolve([".gitignore"]),
+        ideSync: () => Promise.resolve([]),
+        recipes: () => Promise.resolve(),
+        hooks,
+        installCommit,
+      },
+      includeInstallCommit: false,
+    });
+
+    expect(result.installPaths).toEqual([".gitignore", ".agentplane/bin/agentplane"]);
+    expect(hooks).toHaveBeenCalledTimes(1);
+    expect(installCommit).not.toHaveBeenCalled();
+  });
+});
