@@ -1,10 +1,11 @@
 ---
 id: "202604211311-76QNYV"
 title: "Extract command catalog kernel"
-status: "DOING"
+result_summary: "Extracted command catalog kernel."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-21T13:39:13.954Z"
   updated_by: "CODER"
   note: "Command: bun run arch:check; Result: pass; Evidence: dependency-cruiser known violations OK count=8 max=49 and no new dependency violations. Command: bun run typecheck; Result: pass. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli/command-catalog.test.ts --pool=forks --maxWorkers 4; Result: pass via combined catalog/group/help targeted run."
-commit: null
+commit:
+  hash: "0f8f8e6465ecdaaee3061f5b97f47fcedb3684c3"
+  message: "♻️ cli: break command catalog cycles"
 comments:
   -
     author: "CODER"
     body: "Start: extracting command catalog kernel for command registry primitives while preserving existing command registration behavior and verification contract."
+  -
+    author: "CODER"
+    body: "Verified: command catalog kernel extracted with typecheck, arch check, and targeted command catalog tests passing."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run arch:check; Result: pass; Evidence: dependency-cruiser known violations OK count=8 max=49 and no new dependency violations. Command: bun run typecheck; Result: pass. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli/command-catalog.test.ts --pool=forks --maxWorkers 4; Result: pass via combined catalog/group/help targeted run."
+  -
+    type: "status"
+    at: "2026-04-21T13:39:59.413Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: command catalog kernel extracted with typecheck, arch check, and targeted command catalog tests passing."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:39:13.978Z"
+doc_updated_at: "2026-04-21T13:39:59.414Z"
 doc_updated_by: "CODER"
 description: "Break the command-catalog type/runtime cycle by extracting RunDeps, command module typing, and commandModule factory into a command-catalog kernel module that imports no concrete command loaders or catalog registries."
 sections:
