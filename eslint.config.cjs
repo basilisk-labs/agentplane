@@ -123,7 +123,7 @@ module.exports = [
       ],
 
       "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
-      "@typescript-eslint/no-misused-promises": ["error", { checksVoidReturn: false }],
+      "@typescript-eslint/no-misused-promises": ["error", { checksVoidReturn: true }],
 
       "no-undef": "off",
 

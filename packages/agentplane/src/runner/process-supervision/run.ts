@@ -325,63 +325,65 @@ export async function runSupervisedProcess(opts: {
       queueAppend("stderr", persistedText);
     });
     void child.on("error", finishWithError);
-    void child.on("close", async (code, signal) => {
-      if (settled) return;
-      clearTimers();
-      const ended_at = new Date().toISOString();
-      if (stdout_buffer) {
-        writeTraceLine("stdout", stdout_buffer);
-      }
-      if (stderr_buffer) {
-        writeTraceLine("stderr", stderr_buffer);
-      }
-      if (settled) return;
-      const normalizedSignal = normalizeSignal(signal);
-      const currentState = await readRunnerRunState(opts.invocation.state_path);
-      const supervision = currentState?.supervision;
-      const runStatus: "success" | "failed" | "cancelled" = supervision?.cancel_requested_at
-        ? "cancelled"
-        : timeoutReason
-          ? "failed"
-          : code === 0
-            ? "success"
-            : "failed";
-      const [traceArtifact, stderrArtifact] = await Promise.all([
-        finalizeTraceArtifact({
-          file_path: opts.invocation.trace_path,
-          policy: tracePolicy,
-          run_status: runStatus,
-        }),
-        finalizeTraceArtifact({
-          file_path: opts.invocation.stderr_path,
-          policy: tracePolicy,
-          run_status: runStatus,
-        }),
-      ]);
-      settled = true;
-      resolve({
-        exit_code: code,
-        exit_signal: normalizedSignal,
-        stdout_tail,
-        stderr_tail,
-        stdout_bytes,
-        stderr_bytes,
-        pid,
-        started_at,
-        ended_at,
-        cancel_requested_at: supervision?.cancel_requested_at ?? null,
-        cancel_signal: supervision?.cancel_signal ?? null,
-        timeout_reason: supervision?.timeout_reason ?? timeoutReason,
-        timeout_requested_at: supervision?.timeout_requested_at ?? timeoutRequestedAt,
-        terminate_sent_at: supervision?.terminate_sent_at ?? terminateSentAt,
-        kill_sent_at: supervision?.kill_sent_at ?? killSentAt,
-        force_killed: supervision?.force_killed === true || killSentAt !== null,
-        heartbeat_at: heartbeat_at || ended_at,
-        trace_artifact_path: traceArtifact.artifact_path,
-        trace_archive_path: traceArtifact.archive_path,
-        stderr_artifact_path: stderrArtifact.artifact_path,
-        stderr_archive_path: stderrArtifact.archive_path,
-      });
+    void child.on("close", (code, signal) => {
+      void (async () => {
+        if (settled) return;
+        clearTimers();
+        const ended_at = new Date().toISOString();
+        if (stdout_buffer) {
+          writeTraceLine("stdout", stdout_buffer);
+        }
+        if (stderr_buffer) {
+          writeTraceLine("stderr", stderr_buffer);
+        }
+        if (settled) return;
+        const normalizedSignal = normalizeSignal(signal);
+        const currentState = await readRunnerRunState(opts.invocation.state_path);
+        const supervision = currentState?.supervision;
+        const runStatus: "success" | "failed" | "cancelled" = supervision?.cancel_requested_at
+          ? "cancelled"
+          : timeoutReason
+            ? "failed"
+            : code === 0
+              ? "success"
+              : "failed";
+        const [traceArtifact, stderrArtifact] = await Promise.all([
+          finalizeTraceArtifact({
+            file_path: opts.invocation.trace_path,
+            policy: tracePolicy,
+            run_status: runStatus,
+          }),
+          finalizeTraceArtifact({
+            file_path: opts.invocation.stderr_path,
+            policy: tracePolicy,
+            run_status: runStatus,
+          }),
+        ]);
+        settled = true;
+        resolve({
+          exit_code: code,
+          exit_signal: normalizedSignal,
+          stdout_tail,
+          stderr_tail,
+          stdout_bytes,
+          stderr_bytes,
+          pid,
+          started_at,
+          ended_at,
+          cancel_requested_at: supervision?.cancel_requested_at ?? null,
+          cancel_signal: supervision?.cancel_signal ?? null,
+          timeout_reason: supervision?.timeout_reason ?? timeoutReason,
+          timeout_requested_at: supervision?.timeout_requested_at ?? timeoutRequestedAt,
+          terminate_sent_at: supervision?.terminate_sent_at ?? terminateSentAt,
+          kill_sent_at: supervision?.kill_sent_at ?? killSentAt,
+          force_killed: supervision?.force_killed === true || killSentAt !== null,
+          heartbeat_at: heartbeat_at || ended_at,
+          trace_artifact_path: traceArtifact.artifact_path,
+          trace_archive_path: traceArtifact.archive_path,
+          stderr_artifact_path: stderrArtifact.artifact_path,
+          stderr_archive_path: stderrArtifact.archive_path,
+        });
+      })().catch(finishWithError);
     });
     if (timeoutPolicy.wall_clock_ms > 0) {
       wallTimer = setTimeout(() => {
