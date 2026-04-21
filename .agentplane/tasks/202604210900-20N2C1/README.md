@@ -1,10 +1,12 @@
 ---
 id: "202604210900-20N2C1"
 title: "Make task doc v3 the only supported version"
-status: "DOING"
+result_summary: "Made task doc v3 the only accepted task README version."
+breaking: true
+status: "DONE"
 priority: "normal"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +26,16 @@ verification:
   updated_at: "2026-04-21T10:04:20.997Z"
   updated_by: "CODER"
   note: "Made task README schema/metadata/lint enforcement v3-only, updated schema artifacts/examples/docs, and passed targeted core/backend tests plus typechecks."
-commit: null
+commit:
+  hash: "b14d7bf8db4531028ca65538e18c5e0a56a7b108"
+  message: "✅ 20N2C1 code: done"
 comments:
   -
     author: "CODER"
     body: "Start: make task README doc_version=3 the only supported active format, keep migration command guidance, and update targeted task-doc tests."
+  -
+    author: "CODER"
+    body: "Verified: made task README schema, metadata validation, linting, examples, and docs v3-only; synced schema artifacts, rebuilt runtime, and passed targeted core/backend tests plus typechecks."
 events:
   -
     type: "status"
@@ -43,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Made task README schema/metadata/lint enforcement v3-only, updated schema artifacts/examples/docs, and passed targeted core/backend tests plus typechecks."
+  -
+    type: "status"
+    at: "2026-04-21T10:04:45.263Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: made task README schema, metadata validation, linting, examples, and docs v3-only; synced schema artifacts, rebuilt runtime, and passed targeted core/backend tests plus typechecks."
 doc_version: 3
-doc_updated_at: "2026-04-21T10:04:21.002Z"
+doc_updated_at: "2026-04-21T10:04:45.264Z"
 doc_updated_by: "CODER"
 description: "Drop task doc v2 support only after migration policy confirms old task READMEs can fail explicitly."
 sections:
