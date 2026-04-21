@@ -1,10 +1,10 @@
 ---
 id: "202604211312-AGQKVA"
 title: "Split core config schema and defaults"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +28,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: split core config schema/default responsibilities after subpath import migration."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T16:19:46.192Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split core config schema/default responsibilities after subpath import migration."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:12:58.252Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T16:19:46.201Z"
+doc_updated_by: "CODER"
 description: "Refactor core config into schema/defaults/execution/io modules without changing the public config behavior."
 sections:
   Summary: |-

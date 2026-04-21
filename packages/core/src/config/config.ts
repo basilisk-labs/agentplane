@@ -3,13 +3,14 @@ import path from "node:path";
 
 import { atomicWriteFile } from "../fs/atomic-write.js";
 import { createLogger } from "../logger.js";
+import { defaultConfig, isConfigRecord } from "./defaults.js";
 import {
   type AgentplaneConfig as AgentplaneConfigShape,
-  defaultAgentplaneConfig,
   validateAgentplaneConfig,
-} from "./config-zod.js";
+} from "./schema.js";
 
 export type AgentplaneConfig = AgentplaneConfigShape;
+export { defaultConfig, setByDottedKey } from "./defaults.js";
 
 export type WorkflowMode = AgentplaneConfig["workflow_mode"];
 export type StatusCommitPolicy = AgentplaneConfig["status_commit_policy"];
@@ -34,12 +35,6 @@ export type RunnerTraceConfig = {
   redact_patterns?: string[];
 };
 export type RunnerTimeoutConfig = AgentplaneConfig["runner"]["timeouts"];
-
-export const defaultConfig = defaultAgentplaneConfig;
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
 
 const DEPRECATED_CONFIG_KEYS = ["base_branch"];
 
@@ -75,7 +70,7 @@ function warnDeprecatedConfigKeys(keys: string[]): void {
 export function validateConfig(raw: unknown): AgentplaneConfig {
   let candidate =
     raw && typeof raw === "object" ? structuredClone(raw as Record<string, unknown>) : raw;
-  if (isRecord(candidate)) {
+  if (isConfigRecord(candidate)) {
     candidate = stripDeprecatedConfigKeys(candidate).sanitized;
   }
   return validateAgentplaneConfig(candidate);
@@ -99,7 +94,7 @@ export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {
   try {
     const rawText = await readFile(filePath, "utf8");
     const parsed = JSON.parse(rawText) as unknown;
-    const rawRecord = isRecord(parsed) ? parsed : null;
+    const rawRecord = isConfigRecord(parsed) ? parsed : null;
     const sanitized = rawRecord
       ? stripDeprecatedConfigKeys(rawRecord)
       : { sanitized: parsed, removed: [] };
@@ -124,44 +119,6 @@ export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {
     }
     throw err;
   }
-}
-
-function parseScalar(value: string): unknown {
-  const trimmed = value.trim();
-  if (trimmed === "true") return true;
-  if (trimmed === "false") return false;
-  if (trimmed === "null") return null;
-  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
-    try {
-      return JSON.parse(trimmed);
-    } catch {
-      return value;
-    }
-  }
-  if (/^-?\d+(?:\.\d+)?$/.test(trimmed)) return Number(trimmed);
-  return value;
-}
-
-export function setByDottedKey(
-  obj: Record<string, unknown>,
-  dottedKey: string,
-  value: string,
-): void {
-  const parts = dottedKey.split(".").filter(Boolean);
-  if (parts.length === 0) throw new Error("config key must be non-empty");
-  let current: Record<string, unknown> = obj;
-  for (let i = 0; i < parts.length - 1; i++) {
-    const part = parts[i];
-    if (!part) continue;
-    const next = current[part];
-    if (!isRecord(next)) {
-      current[part] = {};
-    }
-    current = current[part] as Record<string, unknown>;
-  }
-  const last = parts.at(-1);
-  if (!last) throw new Error("config key must be non-empty");
-  current[last] = parseScalar(value);
 }
 
 export async function saveConfig(
