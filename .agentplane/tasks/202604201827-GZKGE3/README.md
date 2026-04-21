@@ -1,10 +1,11 @@
 ---
 id: "202604201827-GZKGE3"
 title: "Add release and packaging operator skill"
-status: "DOING"
+result_summary: "Added repo-local release and packaging operator skill with release/package workflow guidance."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-21T03:45:08.834Z"
   updated_by: "CODER"
   note: "Verified release/operator skill content, skills index entry, package naming, format check, policy routing, doctor, and package build evidence."
-commit: null
+commit:
+  hash: "a49495728059f6890988785f20b3eba41a18fbbf"
+  message: "📝 7Y2QS2 task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: implementing release and packaging operator skill."
+  -
+    author: "CODER"
+    body: "Verified: release/operator skill added, indexed, and checked."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified release/operator skill content, skills index entry, package naming, format check, policy routing, doctor, and package build evidence."
+  -
+    type: "status"
+    at: "2026-04-21T03:46:40.868Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release/operator skill added, indexed, and checked."
 doc_version: 3
-doc_updated_at: "2026-04-21T03:45:08.839Z"
+doc_updated_at: "2026-04-21T03:46:40.868Z"
 doc_updated_by: "CODER"
 description: "Add a repo-local skill that captures Agentplane release, package build ordering, npm publish, install smoke, and release recovery workflow knowledge."
 sections:
