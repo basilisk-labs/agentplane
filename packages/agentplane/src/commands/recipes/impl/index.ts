@@ -17,6 +17,14 @@ import {
 } from "./constants.js";
 import { resolveRecipesIndexCachePath, resolveRecipesIndexCacheSigPath } from "./paths.js";
 
+type RecipesIndexSignatureVerifier = (indexText: string, signature: RecipesIndexSignature) => void;
+
+const DEFAULT_RECIPES_INDEX_SIGNATURE_ALGORITHM = "ed25519";
+
+const recipesIndexSignatureVerifiers: Record<string, RecipesIndexSignatureVerifier> = {
+  ed25519: verifyRecipesIndexEd25519Signature,
+};
+
 function loadRecipesIndexPublicKeys(): Record<string, string> {
   const raw = process.env[RECIPES_INDEX_PUBLIC_KEYS_ENV];
   if (!raw) return { ...RECIPES_INDEX_PUBLIC_KEYS };
@@ -42,14 +50,27 @@ function validateRecipesIndexSignature(raw: unknown): RecipesIndexSignature {
   if (!keyId || !signature) {
     throw new Error(invalidFieldMessage("recipes index signature", "key_id, signature"));
   }
-  const algorithm = typeof raw.algorithm === "string" ? raw.algorithm.trim() : undefined;
+  const algorithm =
+    typeof raw.algorithm === "string" && raw.algorithm.trim() ? raw.algorithm.trim() : undefined;
   return { schema_version: 1, key_id: keyId, signature, algorithm };
 }
 
 function verifyRecipesIndexSignature(indexText: string, signature: RecipesIndexSignature): void {
-  if (signature.algorithm && signature.algorithm !== "ed25519") {
-    throw new Error(invalidFieldMessage("recipes index signature.algorithm", "ed25519"));
+  const algorithm = signature.algorithm ?? DEFAULT_RECIPES_INDEX_SIGNATURE_ALGORITHM;
+  const verifier = recipesIndexSignatureVerifiers[algorithm];
+  if (!verifier) {
+    const supportedAlgorithms = Object.keys(recipesIndexSignatureVerifiers).toSorted().join(", ");
+    throw new Error(
+      `Unsupported recipes index signature algorithm "${algorithm}". Supported algorithms: ${supportedAlgorithms}`,
+    );
   }
+  verifier(indexText, signature);
+}
+
+function verifyRecipesIndexEd25519Signature(
+  indexText: string,
+  signature: RecipesIndexSignature,
+): void {
   const keys = loadRecipesIndexPublicKeys();
   const publicKey = keys[signature.key_id];
   if (!publicKey) {
