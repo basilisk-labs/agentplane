@@ -52,6 +52,26 @@ describe("config", () => {
     expect(JSON.parse(coreText)).toEqual(rendered);
   });
 
+  it("keeps config IO and validation behind dedicated modules", async () => {
+    const moduleText = async (relativePath: string) =>
+      await readFile(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
+
+    const [configText, ioText, validationText] = await Promise.all([
+      moduleText("./config.ts"),
+      moduleText("./io.ts"),
+      moduleText("./validation.ts"),
+    ]);
+
+    expect(configText).toContain('from "./io.js"');
+    expect(configText).toContain('from "./validation.js"');
+    expect(configText).not.toContain("node:fs/promises");
+    expect(configText).not.toContain("atomicWriteFile");
+
+    expect(ioText).toContain("node:fs/promises");
+    expect(ioText).toContain("atomicWriteFile");
+    expect(validationText).toContain("validateAgentplaneConfig");
+  });
+
   it("validateConfig allows missing agents approvals", () => {
     const raw = defaultConfig() as unknown as Record<string, unknown>;
     delete raw.agents;
