@@ -1,10 +1,11 @@
 ---
 id: "202604211312-7QK5H1"
 title: "Close testkit boundary rule gaps"
-status: "DOING"
+result_summary: "Extended dependency-cruiser testkit boundary rule to cover packages/testkit/src, packages/testkit/dist, and @agentplane/testkit while preserving approved test-only and compatibility facade surfaces."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-04-21T17:09:42.831Z"
   updated_by: "CODER"
   note: "Verified testkit boundary rule gaps. Checks: bun run arch:check passed; bun run lint:core passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run format:check passed; git diff --check passed."
-commit: null
+commit:
+  hash: "a610cb5965c26b837f816477787909824ba06291"
+  message: "🧭 7QK5H1 arch: close testkit boundary gaps"
 comments:
   -
     author: "CODER"
     body: "Start: close testkit architecture boundary gaps for source, dist, and package-alias imports while preserving test-only surfaces."
+  -
+    author: "CODER"
+    body: "Verified: testkit boundary rule gaps. Checks: bun run arch:check; bun run lint:core; bun run test:project -- cli-unit; bun run format:check; git diff --check."
 events:
   -
     type: "status"
@@ -46,14 +52,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified testkit boundary rule gaps. Checks: bun run arch:check passed; bun run lint:core passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run format:check passed; git diff --check passed."
+  -
+    type: "status"
+    at: "2026-04-21T17:10:01.450Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: testkit boundary rule gaps. Checks: bun run arch:check; bun run lint:core; bun run test:project -- cli-unit; bun run format:check; git diff --check."
 doc_version: 3
-doc_updated_at: "2026-04-21T17:09:42.834Z"
+doc_updated_at: "2026-04-21T17:10:01.451Z"
 doc_updated_by: "CODER"
 description: "Extend architecture rules so runtime code cannot import packages/testkit/src, packages/testkit/dist, or @agentplane/testkit outside approved test-only surfaces."
 sections:
   Summary: |-
     Close testkit boundary rule gaps
-
+    
     Extend architecture rules so runtime code cannot import packages/testkit/src, packages/testkit/dist, or @agentplane/testkit outside approved test-only surfaces.
   Scope: |-
     - In scope: Extend architecture rules so runtime code cannot import packages/testkit/src, packages/testkit/dist, or @agentplane/testkit outside approved test-only surfaces.
@@ -66,13 +79,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-21T17:09:42.831Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Verified testkit boundary rule gaps. Checks: bun run arch:check passed; bun run lint:core passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run format:check passed; git diff --check passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T17:06:40.268Z, excerpt_hash=sha256:a9ce382c13e2f145b2707231bad7f25b0f27c3e76562f988517ec686588fefbb
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
