@@ -72,6 +72,8 @@ This second step is about task-local docs, not managed framework files:
   README v3 contract.
 - If an older workspace still has `.agentplane/cache/tasks-index.v1.json`, delete it or leave it
   ignored; the task index is rebuildable cache and the current CLI writes `tasks-index.v2.json`.
+- If an older workspace still has root-level `WORKFLOW.md`, move its relevant content into
+  `.agentplane/WORKFLOW.md`; current workflow checks no longer read the root file as a fallback.
 
 ## If `upgrade` still does nothing useful
 

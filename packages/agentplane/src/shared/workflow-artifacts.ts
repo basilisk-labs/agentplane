@@ -55,12 +55,9 @@ export async function ensureWorkflowArtifacts(opts: {
   projectOverrideTemplate?: string;
 }): Promise<{ installPaths: string[]; commitPaths: string[]; changedPaths: string[] }> {
   const workflowPaths = resolveWorkflowPaths(opts.gitRoot);
-  const [beforeWorkflow, beforeLastKnownGood, beforeLegacyWorkflow] = await Promise.all([
+  const [beforeWorkflow, beforeLastKnownGood] = await Promise.all([
     readIfPresent(workflowPaths.workflowPath),
     readIfPresent(workflowPaths.lastKnownGoodPath),
-    workflowPaths.legacyWorkflowPath === workflowPaths.workflowPath
-      ? Promise.resolve(null)
-      : readIfPresent(workflowPaths.legacyWorkflowPath),
   ]);
 
   const built = buildWorkflowFromTemplates({
@@ -109,12 +106,6 @@ export async function ensureWorkflowArtifacts(opts: {
   const changedPaths: string[] = [];
   if (beforeWorkflow !== built.text) changedPaths.push(workflowPaths.workflowPath);
   if (beforeLastKnownGood !== built.text) changedPaths.push(workflowPaths.lastKnownGoodPath);
-  if (
-    workflowPaths.legacyWorkflowPath !== workflowPaths.workflowPath &&
-    beforeLegacyWorkflow !== null
-  ) {
-    changedPaths.push(workflowPaths.legacyWorkflowPath);
-  }
 
   const commitPaths = [
     ...new Set(changedPaths.map((absPath) => path.relative(opts.gitRoot, absPath))),

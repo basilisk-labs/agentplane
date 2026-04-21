@@ -18,27 +18,6 @@ async function pathExists(absPath: string): Promise<boolean> {
   }
 }
 
-async function resolveWorkflowReadPath(paths: {
-  workflowPath: string;
-  legacyWorkflowPath: string;
-}): Promise<string> {
-  if (await pathExists(paths.workflowPath)) return paths.workflowPath;
-  if (await pathExists(paths.legacyWorkflowPath)) return paths.legacyWorkflowPath;
-  return paths.workflowPath;
-}
-
-async function removeLegacyWorkflowIfPresent(paths: {
-  workflowPath: string;
-  legacyWorkflowPath: string;
-}): Promise<void> {
-  if (paths.workflowPath === paths.legacyWorkflowPath) return;
-  try {
-    await fs.rm(paths.legacyWorkflowPath, { force: true });
-  } catch {
-    // best effort cleanup
-  }
-}
-
 async function listAgentIds(agentplaneDir: string): Promise<Set<string>> {
   const ids = new Set<string>();
   const dir = path.join(agentplaneDir, "agents");
@@ -60,7 +39,7 @@ export async function readWorkflowDocument(
   absPath?: string,
 ): Promise<{ document: WorkflowDocument | null; diagnostics: WorkflowDiagnostic[]; path: string }> {
   const paths = resolveWorkflowPaths(repoRoot);
-  const targetPath = absPath ?? (await resolveWorkflowReadPath(paths));
+  const targetPath = absPath ?? paths.workflowPath;
 
   try {
     const content = await fs.readFile(targetPath, "utf8");
@@ -162,7 +141,6 @@ export async function publishWorkflowCandidate(
     await fs.mkdir(paths.workflowDir, { recursive: true });
     await fs.writeFile(tempPath, candidateText, "utf8");
     await fs.rename(tempPath, paths.workflowPath);
-    await removeLegacyWorkflowIfPresent(paths);
     await fs.copyFile(paths.workflowPath, paths.lastKnownGoodPath);
     emitWorkflowEvent({
       event: "workflow_publish_completed",
@@ -244,7 +222,6 @@ export async function restoreWorkflowFromLastKnownGood(
     await fs.mkdir(path.dirname(paths.workflowPath), { recursive: true });
     await fs.writeFile(tempPath, lkgText, "utf8");
     await fs.rename(tempPath, paths.workflowPath);
-    await removeLegacyWorkflowIfPresent(paths);
     emitWorkflowEvent({
       event: "workflow_restore_completed",
       details: { workflowPath: paths.workflowPath, from: paths.lastKnownGoodPath },
