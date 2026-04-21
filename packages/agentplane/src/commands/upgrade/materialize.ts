@@ -99,19 +99,8 @@ export async function materializeUpgradeSource(opts: {
         await downloadToFile(checksumValue, checksumPath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
       }
     } else {
-      const sourceFromFlags = typeof flags.source === "string" && flags.source.trim().length > 0;
       const originalSource = flags.source ?? opts.frameworkSource;
       const normalized = normalizeFrameworkSourceForUpgrade(originalSource);
-      if (!sourceFromFlags && normalized.migrated) {
-        normalizedSourceToPersist = normalized.source;
-      }
-      if (normalized.migrated) {
-        process.stderr.write(
-          `${warnMessage(
-            `config.framework.source uses deprecated repo basilisk-labs/agent-plane; using ${normalized.source}`,
-          )}\n`,
-        );
-      }
 
       const releaseUrl = flags.tag
         ? `https://api.github.com/repos/${normalized.owner}/${normalized.repo}/releases/tags/${flags.tag}`
