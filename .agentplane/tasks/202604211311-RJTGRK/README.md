@@ -1,10 +1,11 @@
 ---
 id: "202604211311-RJTGRK"
 title: "Inventory core subpath import mapping"
-status: "DOING"
+result_summary: "Recorded the symbol-to-subpath map in task Findings, including git/process/logger/fs/schemas/tasks targets and intentional root gaps for config/project/commit-policy. Evidence: bun run typecheck; rg \"@agentplaneorg/core\" packages scripts -n."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-21T15:49:12.243Z"
   updated_by: "CODER"
   note: "Verified: bun run typecheck passed; rg \"@agentplaneorg/core\" packages scripts -n passed and confirmed remaining root import surface. Findings now record the symbol-to-subpath migration map and intentional root gaps for config/project/commit-policy."
-commit: null
+commit:
+  hash: "5bfcbd5e4f7082936f2b982f53b9fd3e050e6dcf"
+  message: "🧭 RJTGRK docs: map core subpath imports"
 comments:
   -
     author: "CODER"
     body: "Start: inventory root @agentplaneorg/core imports and classify each symbol to existing subpath exports before any callsite migration."
+  -
+    author: "CODER"
+    body: "Verified: core root import inventory is recorded and downstream migration order is explicit."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun run typecheck passed; rg \"@agentplaneorg/core\" packages scripts -n passed and confirmed remaining root import surface. Findings now record the symbol-to-subpath migration map and intentional root gaps for config/project/commit-policy."
+  -
+    type: "status"
+    at: "2026-04-21T15:49:40.659Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: core root import inventory is recorded and downstream migration order is explicit."
 doc_version: 3
-doc_updated_at: "2026-04-21T15:49:12.255Z"
+doc_updated_at: "2026-04-21T15:49:40.661Z"
 doc_updated_by: "CODER"
 description: "Build a concrete import migration map from @agentplaneorg/core root imports to existing subpath exports before changing callsites."
 sections:
