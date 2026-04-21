@@ -178,7 +178,7 @@ async function runBlockScenario(mode: BackendMode) {
   const backend = createBackend({ writeTask });
   const ctx = mkCtx(backend);
 
-  vi.doMock("../guard/index.js", () => ({
+  vi.doMock("../guard/impl/comment-commit.js", () => ({
     commitFromComment: vi.fn(),
   }));
   vi.doMock("../shared/task-backend.js", () => ({
@@ -253,7 +253,7 @@ async function runStartScenario(mode: BackendMode) {
   const backend = createBackend({ writeTask });
   const ctx = mkCtx(backend);
 
-  vi.doMock("../guard/index.js", () => ({
+  vi.doMock("../guard/impl/comment-commit.js", () => ({
     commitFromComment: vi.fn(),
   }));
   vi.doMock("../shared/task-backend.js", () => ({
@@ -320,7 +320,7 @@ async function runSetStatusScenario(mode: BackendMode) {
   const backend = createBackend({ writeTask });
   const ctx = mkCtx(backend);
 
-  vi.doMock("../guard/index.js", () => ({
+  vi.doMock("../guard/impl/comment-commit.js", () => ({
     commitFromComment: vi.fn(),
   }));
   vi.doMock("../shared/task-backend.js", () => ({
@@ -677,7 +677,7 @@ describe("task mutation parity across local and backend paths", () => {
     vi.useRealTimers();
     vi.restoreAllMocks();
     vi.resetModules();
-    vi.unmock("../guard/index.js");
+    vi.unmock("../guard/impl/comment-commit.js");
     vi.unmock("../shared/reconcile-check.js");
     vi.unmock("../shared/task-backend.js");
     vi.unmock("../shared/task-store.js");

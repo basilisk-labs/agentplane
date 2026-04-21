@@ -7,7 +7,7 @@ import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js
 import { createRunnerAdapter } from "../adapters/index.js";
 import { runnerAdapterCancelledResult } from "../adapters/shared.js";
 import { evolveRunnerRunState } from "../artifacts.js";
-import { isProcessAlive, readObservedProcessIdentity } from "../process-supervision.js";
+import { isProcessAlive, readObservedProcessIdentity } from "../process-supervision/signals.js";
 import { assertRunnerBundleMatchesTask, RunnerRunRepository } from "../run-repository.js";
 import type {
   RunnerContextBundle,

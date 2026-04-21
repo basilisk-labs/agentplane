@@ -52,7 +52,7 @@ export {
   cmdGuardClean,
   cmdGuardSuggestAllow,
   cmdGuardCommit,
-  cmdCommit,
 } from "./guard/index.js";
+export { cmdCommit } from "./guard/impl/commit.js";
 
 export { HOOK_NAMES, cmdHooksInstall, cmdHooksUninstall, cmdHooksRun } from "./hooks/index.js";

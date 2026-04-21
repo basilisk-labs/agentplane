@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { runSupervisedProcess } from "./process-supervision.js";
+import { runSupervisedProcess } from "./process-supervision/run.js";
 import { compressedTraceArtifactPath, readTraceArtifactText } from "./trace-artifacts.js";
 
 async function waitForTraceMatch(opts: {

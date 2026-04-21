@@ -28,7 +28,7 @@ import { preflightSpec } from "../commands/core/preflight.js";
 import { quickstartSpec } from "../commands/core/quickstart.js";
 import { roleSpec } from "../commands/core/role.js";
 import { ideSyncSpec } from "../commands/ide.js";
-import { initSpec } from "../commands/init.js";
+import { initSpec } from "../commands/init/spec.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
 import { declareCommand, type CommandEntry } from "./kernel.js";

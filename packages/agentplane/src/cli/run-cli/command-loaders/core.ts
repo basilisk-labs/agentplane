@@ -1,6 +1,6 @@
 import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
 
-export const fromCommandsInit = commandModule(() => import("../commands/init.js"));
+export const fromCommandsInit = commandModule(() => import("../commands/init/spec.js"));
 export const fromCommandsUpgradeCommand = commandModule(
   () => import("../../../commands/upgrade.command.js"),
 );

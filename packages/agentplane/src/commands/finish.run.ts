@@ -2,7 +2,7 @@ import type { CommandCtx } from "../cli/spec/spec.js";
 import { usageError } from "../cli/spec/errors.js";
 import type { CommandContext } from "./shared/task-backend.js";
 
-import { cmdFinish } from "./task/finish.js";
+import { cmdFinish } from "./task/finish-command.js";
 import { finishSpec, type FinishParsed } from "./finish.spec.js";
 
 export function makeRunFinishHandler(getCtx: (cmd: string) => Promise<CommandContext>) {

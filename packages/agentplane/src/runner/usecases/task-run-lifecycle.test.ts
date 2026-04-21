@@ -14,7 +14,7 @@ import {
 } from "@agentplane/testkit";
 import { runCli } from "../../cli/run-cli.js";
 import { evolveRunnerRunState, readRunnerRunState, writeRunnerRunState } from "../artifacts.js";
-import * as processSupervision from "../process-supervision.js";
+import * as processSupervision from "../process-supervision/signals.js";
 
 import {
   cancelTaskRunnerExecution,

@@ -33,7 +33,7 @@ export { cmdTaskPlanSet, cmdTaskPlanApprove, cmdTaskPlanReject } from "./plan.js
 
 export { cmdStart } from "./start.js";
 export { cmdBlock } from "./block.js";
-export { cmdFinish } from "./finish.js";
+export { cmdFinish } from "./finish-command.js";
 export { cmdTaskVerifyOk, cmdTaskVerifyRework } from "./verify-record.js";
 
 export { cmdTaskDocSet, cmdTaskDocShow } from "./doc.js";

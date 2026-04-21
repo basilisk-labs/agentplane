@@ -1,29 +1,13 @@
 [
   {
     "type": "cycle",
-    "from": "packages/agentplane/src/commands/guard/impl/commands.ts",
-    "to": "packages/agentplane/src/commands/guard/impl/commit.ts",
+    "from": "packages/agentplane/src/commands/incidents/shared.ts",
+    "to": "packages/agentplane/src/commands/task/shared.ts",
     "rule": {
       "severity": "error",
       "name": "no-circular"
     },
     "cycle": [
-      {
-        "name": "packages/agentplane/src/commands/guard/impl/commit.ts",
-        "dependencyTypes": ["local", "export"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/pr/internal/sync.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/incidents/shared.ts",
-        "dependencyTypes": ["local", "import"]
-      },
       {
         "name": "packages/agentplane/src/commands/task/shared.ts",
         "dependencyTypes": ["local", "import"]
@@ -37,12 +21,16 @@
         "dependencyTypes": ["local", "import"]
       },
       {
-        "name": "packages/agentplane/src/commands/guard/index.ts",
+        "name": "packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts",
+        "dependencyTypes": ["local", "dynamic-import"]
+      },
+      {
+        "name": "packages/agentplane/src/commands/pr/internal/sync.ts",
         "dependencyTypes": ["local", "import"]
       },
       {
-        "name": "packages/agentplane/src/commands/guard/impl/commands.ts",
-        "dependencyTypes": ["local", "export"]
+        "name": "packages/agentplane/src/commands/incidents/shared.ts",
+        "dependencyTypes": ["local", "import"]
       }
     ]
   },
@@ -72,20 +60,8 @@
         "dependencyTypes": ["local", "import"]
       },
       {
-        "name": "packages/agentplane/src/commands/guard/index.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/guard/impl/commands.ts",
-        "dependencyTypes": ["local", "export"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/guard/impl/commit.ts",
-        "dependencyTypes": ["local", "export"]
-      },
-      {
         "name": "packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts",
-        "dependencyTypes": ["local", "import"]
+        "dependencyTypes": ["local", "dynamic-import"]
       },
       {
         "name": "packages/agentplane/src/commands/pr/internal/sync.ts",
@@ -93,41 +69,6 @@
       },
       {
         "name": "packages/agentplane/src/commands/pr/internal/sync-support.ts",
-        "dependencyTypes": ["local", "import"]
-      }
-    ]
-  },
-  {
-    "type": "cycle",
-    "from": "packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts",
-    "to": "packages/agentplane/src/commands/pr/internal/sync.ts",
-    "rule": {
-      "severity": "error",
-      "name": "no-circular"
-    },
-    "cycle": [
-      {
-        "name": "packages/agentplane/src/commands/pr/internal/sync.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/incidents/shared.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/task/shared.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/task/shared/transition-command.ts",
-        "dependencyTypes": ["local", "export"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/task/shared/transitions.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts",
         "dependencyTypes": ["local", "import"]
       }
     ]
@@ -146,20 +87,8 @@
         "dependencyTypes": ["local", "export"]
       },
       {
-        "name": "packages/agentplane/src/commands/guard/index.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/guard/impl/commands.ts",
-        "dependencyTypes": ["local", "export"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/guard/impl/commit.ts",
-        "dependencyTypes": ["local", "export"]
-      },
-      {
         "name": "packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts",
-        "dependencyTypes": ["local", "import"]
+        "dependencyTypes": ["local", "dynamic-import"]
       },
       {
         "name": "packages/agentplane/src/commands/pr/internal/sync.ts",
@@ -219,37 +148,6 @@
   },
   {
     "type": "cycle",
-    "from": "packages/agentplane/src/commands/task/shared/transitions.ts",
-    "to": "packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts",
-    "rule": {
-      "severity": "error",
-      "name": "no-circular"
-    },
-    "cycle": [
-      {
-        "name": "packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/pr/internal/sync.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/incidents/shared.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/task/shared.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/task/shared/transitions.ts",
-        "dependencyTypes": ["local", "export"]
-      }
-    ]
-  },
-  {
-    "type": "cycle",
     "from": "packages/agentplane/src/commands/task/shared/workflow-transition-service.ts",
     "to": "packages/agentplane/src/commands/task/shared/transitions.ts",
     "rule": {
@@ -262,20 +160,8 @@
         "dependencyTypes": ["local", "import"]
       },
       {
-        "name": "packages/agentplane/src/commands/guard/index.ts",
-        "dependencyTypes": ["local", "import"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/guard/impl/commands.ts",
-        "dependencyTypes": ["local", "export"]
-      },
-      {
-        "name": "packages/agentplane/src/commands/guard/impl/commit.ts",
-        "dependencyTypes": ["local", "export"]
-      },
-      {
         "name": "packages/agentplane/src/commands/shared/post-commit-pr-artifacts.ts",
-        "dependencyTypes": ["local", "import"]
+        "dependencyTypes": ["local", "dynamic-import"]
       },
       {
         "name": "packages/agentplane/src/commands/pr/internal/sync.ts",

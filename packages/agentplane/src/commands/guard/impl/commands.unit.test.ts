@@ -88,7 +88,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdGuardClean maps non-Cli errors with mapCoreError", async () => {
-    const { cmdGuardClean } = await import("./commands.js");
+    const { cmdGuardClean } = await import("./clean.js");
     const mapped = new CliError({ exitCode: 5, code: "E_GIT", message: "mapped clean" });
     mocks.mapCoreError.mockReturnValue(mapped);
     mocks.loadCommandContext.mockRejectedValue(new Error("boom"));
@@ -102,7 +102,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdGuardSuggestAllow covers empty-index usage and maps unknown errors", async () => {
-    const { cmdGuardSuggestAllow } = await import("./commands.js");
+    const { cmdGuardSuggestAllow } = await import("./suggest.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue([]);
     mocks.loadCommandContext.mockResolvedValue(ctx);
@@ -136,7 +136,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdGuardCommit writes OK and maps unknown errors", async () => {
-    const { cmdGuardCommit } = await import("./commands.js");
+    const { cmdGuardCommit } = await import("./guard-commit.js");
     const ctx = mkCtx();
     mocks.loadCommandContext.mockResolvedValue(ctx);
     await expect(
@@ -192,7 +192,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit non-close path commits with env and provided ctx", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-1" });
@@ -226,7 +226,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit creates a follow-up task-artifact commit when PR refresh leaves task-local drift", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     ctx.git.statusChangedPaths.mockResolvedValue([
@@ -284,7 +284,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit close path stages absolute README when outside gitRoot", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     mocks.loadTaskFromContext.mockResolvedValue({ id: "T-2" });
     mocks.buildCloseCommitMessage.mockResolvedValue({
@@ -325,7 +325,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit close --check-only skips reconcile guard", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     mocks.loadTaskFromContext.mockResolvedValue({ id: "T-2" });
     mocks.buildCloseCommitMessage.mockResolvedValue({
@@ -357,7 +357,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit close rejects a dirty index unless --unstage-others is set", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
 
@@ -391,7 +391,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit close --check-only reports the unstage suffix when it would clear the index", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
     ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts", "docs/readme.md"]);
@@ -433,7 +433,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit close --unstage-others clears the index before committing", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
     ctx.git.statusStagedPaths.mockResolvedValueOnce(["src/app.ts"]).mockResolvedValueOnce([]);
@@ -497,7 +497,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit close stages policy mirrors together with the task README when policy writes are allowed", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusChangedPaths.mockResolvedValue([
       ".agentplane/policy/incidents.md",
@@ -553,7 +553,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit close refreshes PR artifacts before staging task artifact scope", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusChangedPaths.mockResolvedValue([
       ".agentplane/tasks/T-12/pr/meta.json",
@@ -613,7 +613,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit close can skip PR artifact refresh while still staging task artifact scope", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusChangedPaths.mockResolvedValue([
       ".agentplane/tasks/T-12/pr/meta.json",
@@ -662,7 +662,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit close ignores other active task READMEs in tolerant direct mode", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.config.workflow_mode = "direct";
     ctx.config.close_commit = { direct_dirty_policy: "allow_other_task_readmes" };
@@ -708,7 +708,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit non-close path does not opt into stale-dist bypass", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-1" });
@@ -740,7 +740,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit rejects auto-allow mode", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     await expect(
       cmdCommit({
@@ -764,7 +764,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit non-close auto-stages allowlist paths when the index is empty", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusChangedPaths.mockResolvedValue(["src/app.ts", "docs/readme.md"]);
     ctx.git.headHashSubject.mockResolvedValue({
@@ -801,7 +801,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit non-close rejects an empty index when no explicit scope is provided", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue([]);
 
@@ -828,7 +828,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit non-close prints auto-stage details and success output when allowTasks provides the scope", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
     ctx.git.statusStagedPaths.mockResolvedValue([]);
@@ -891,7 +891,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit non-close auto-stages CI changes when --allow-ci provides the scope", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue([]);
     ctx.git.statusChangedPaths.mockResolvedValue([
@@ -935,7 +935,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit maps unknown errors via mapCoreError when not git-commit shaped", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     const mapped = new CliError({
@@ -967,7 +967,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit preserves salient linter failure lines in git-commit-shaped errors", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     ctx.git.commit.mockRejectedValue(
@@ -1025,7 +1025,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit recognizes execa-style git commit failures without legacy err.cmd", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     ctx.git.commit.mockRejectedValue(
@@ -1070,7 +1070,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit close path promotes formatter blockers into close-commit guidance", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     mocks.loadTaskFromContext.mockResolvedValue({ id: "T-8" });
     mocks.buildCloseCommitMessage.mockResolvedValue({
@@ -1123,7 +1123,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit maps generic close-commit hook failures and keeps buffer output readable", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     mocks.loadTaskFromContext.mockResolvedValue({ id: "T-11" });
     mocks.buildCloseCommitMessage.mockResolvedValue({
@@ -1170,7 +1170,7 @@ describe("guard/impl/commands", () => {
   });
 
   it("cmdCommit non-close auto-allow rejects when ctx is absent", async () => {
-    const { cmdCommit } = await import("./commands.js");
+    const { cmdCommit } = await import("./commit.js");
     mocks.loadCommandContext.mockResolvedValue(mkCtx());
     await expect(
       cmdCommit({

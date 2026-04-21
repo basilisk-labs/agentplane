@@ -2,7 +2,7 @@ import { ensureDocSections } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
-import { cmdCommit } from "../guard/index.js";
+import { cmdCommit } from "../guard/impl/commit.js";
 import {
   backendUsesLocalTaskStore,
   loadTaskFromContext,

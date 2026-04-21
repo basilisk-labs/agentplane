@@ -16,7 +16,7 @@ import {
   type TaskHandoffArtifact,
   type TaskHandoffRunnerHint,
 } from "../shared/task-handoff.js";
-import { isProcessAlive } from "../../runner/process-supervision.js";
+import { isProcessAlive } from "../../runner/process-supervision/signals.js";
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
 import { CliError } from "../../shared/errors.js";
 

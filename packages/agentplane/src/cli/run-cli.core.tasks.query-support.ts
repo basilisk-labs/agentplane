@@ -61,7 +61,7 @@ import {
 } from "../runner/policy-display.js";
 import type { RunnerAdapterCapabilities, RunnerPolicyDecision } from "../runner/types.js";
 import { prepareTaskRunnerExecution } from "../runner/usecases/task-run.js";
-import * as processSupervision from "../runner/process-supervision.js";
+import * as processSupervision from "../runner/process-supervision/signals.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 import { VERIFY_STEPS_PLACEHOLDER } from "../commands/task/shared/docs.js";
