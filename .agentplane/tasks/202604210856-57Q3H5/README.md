@@ -1,10 +1,12 @@
 ---
 id: "202604210856-57Q3H5"
 title: "Add workspace cross-dependency consistency check"
-status: "DOING"
+result_summary: "Added workspace dependency drift guard to release parity."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +26,16 @@ verification:
   updated_at: "2026-04-21T09:32:50.677Z"
   updated_by: "CODER"
   note: "Extended release parity to scan internal package dependencies across packages/* and fail when @agentplaneorg/* or @agentplane/testkit ranges drift from the workspace release version. Verification: node scripts/check-release-parity.mjs passed; focused check-release-parity-script test passed (5 tests)."
-commit: null
+commit:
+  hash: "d95dfe6b643683b1fef4fcaf2ce695209e771945"
+  message: "✅ 57Q3H5 code: done"
 comments:
   -
     author: "CODER"
     body: "Start: Add a workspace dependency consistency guard by extending existing release parity surfaces and verifying it catches stale internal package ranges."
+  -
+    author: "CODER"
+    body: "Verified: release parity now checks internal workspace dependency ranges across packages and rejects stale private-package deps."
 events:
   -
     type: "status"
@@ -43,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Extended release parity to scan internal package dependencies across packages/* and fail when @agentplaneorg/* or @agentplane/testkit ranges drift from the workspace release version. Verification: node scripts/check-release-parity.mjs passed; focused check-release-parity-script test passed (5 tests)."
+  -
+    type: "status"
+    at: "2026-04-21T09:32:58.467Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release parity now checks internal workspace dependency ranges across packages and rejects stale private-package deps."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:32:50.683Z"
+doc_updated_at: "2026-04-21T09:32:58.468Z"
 doc_updated_by: "CODER"
 description: "Add an automated guard that fails when internal @agentplaneorg package dependencies drift from the active workspace release version."
 sections:
