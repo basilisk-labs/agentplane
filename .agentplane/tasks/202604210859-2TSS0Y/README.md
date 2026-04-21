@@ -1,10 +1,11 @@
 ---
 id: "202604210859-2TSS0Y"
 title: "Add depcruise trend guard"
-status: "DOING"
+result_summary: "Added depcruise known-violations trend guard."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +33,16 @@ verification:
     Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0 | Scope: repository TypeScript project references
     Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK | Scope: loaded routing policy sanity
     Command: agentplane doctor | Result: pass | Evidence: doctor OK with errors=0 warnings=0; preamble noted stale repo build from unrelated recipes file drift | Scope: workflow/runtime diagnostics
-commit: null
+commit:
+  hash: "5ecfc46a7aae4f66c0929fe6d51a600b0f25ff9f"
+  message: "✅ 2TSS0Y code: done"
 comments:
   -
     author: "CODER"
     body: "Start: add dependency-cruiser trend guard that passes current baseline and fails on artificial growth, with architecture verification."
+  -
+    author: "CODER"
+    body: "Verified: added dependency-cruiser known-violations baseline guard, wired it into arch:check, and confirmed current baseline plus artificial growth behavior."
 events:
   -
     type: "status"
@@ -60,8 +66,15 @@ events:
       Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0 | Scope: repository TypeScript project references
       Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK | Scope: loaded routing policy sanity
       Command: agentplane doctor | Result: pass | Evidence: doctor OK with errors=0 warnings=0; preamble noted stale repo build from unrelated recipes file drift | Scope: workflow/runtime diagnostics
+  -
+    type: "status"
+    at: "2026-04-21T10:35:01.502Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: added dependency-cruiser known-violations baseline guard, wired it into arch:check, and confirmed current baseline plus artificial growth behavior."
 doc_version: 3
-doc_updated_at: "2026-04-21T10:32:23.867Z"
+doc_updated_at: "2026-04-21T10:35:01.502Z"
 doc_updated_by: "CODER"
 description: "Prevent dependency-cruiser known-violation baseline growth and verify the baseline format is stable enough for review."
 sections:
