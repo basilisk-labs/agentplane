@@ -1,10 +1,10 @@
 ---
 id: "202604211313-RE08PF"
 title: "Add oversized test file guard"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,16 +21,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "needs_rework"
+  updated_at: "2026-04-21T13:42:51.439Z"
+  updated_by: "CODER"
+  note: "Command: bun run hotspots:check; Result: pass; oversized test hard threshold enforced. Command: bun run test:project -- cli-unit; Result: fail; Evidence: 13 failures in guard/finish/upgrade/normalize areas unrelated to hotspot-report script. Leaving task open until cli-unit is green or verify contract is narrowed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: добавить guard oversized test files через hotspot check с явным порогом и без затрагивания init UX/command-catalog областей."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T13:21:38.148Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: добавить guard oversized test files через hotspot check с явным порогом и без затрагивания init UX/command-catalog областей."
+  -
+    type: "verify"
+    at: "2026-04-21T13:42:51.439Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Command: bun run hotspots:check; Result: pass; oversized test hard threshold enforced. Command: bun run test:project -- cli-unit; Result: fail; Evidence: 13 failures in guard/finish/upgrade/normalize areas unrelated to hotspot-report script. Leaving task open until cli-unit is green or verify contract is narrowed."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:13:22.992Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T13:42:51.449Z"
+doc_updated_by: "CODER"
 description: "Introduce a test-file size guard with warning or failure threshold so new 1000+ LoC CLI tests cannot appear silently."
 sections:
   Summary: |-
@@ -47,6 +63,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T13:42:51.439Z — VERIFY — needs_rework
+    
+    By: CODER
+    
+    Note: Command: bun run hotspots:check; Result: pass; oversized test hard threshold enforced. Command: bun run test:project -- cli-unit; Result: fail; Evidence: 13 failures in guard/finish/upgrade/normalize areas unrelated to hotspot-report script. Leaving task open until cli-unit is green or verify contract is narrowed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:21:38.186Z, excerpt_hash=sha256:2cb1520f83fe2730cc30beb6438b017c837611b3a6601e3c9dfa3e78fe535bc2
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -78,6 +102,14 @@ Scope: establish enforcement before splitting remaining large tests. Steps: 1. E
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T13:42:51.439Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Command: bun run hotspots:check; Result: pass; oversized test hard threshold enforced. Command: bun run test:project -- cli-unit; Result: fail; Evidence: 13 failures in guard/finish/upgrade/normalize areas unrelated to hotspot-report script. Leaving task open until cli-unit is green or verify contract is narrowed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:21:38.186Z, excerpt_hash=sha256:2cb1520f83fe2730cc30beb6438b017c837611b3a6601e3c9dfa3e78fe535bc2
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

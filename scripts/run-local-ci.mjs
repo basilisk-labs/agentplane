@@ -93,6 +93,7 @@ function createBaselineStepEntries({ includeBuild }) {
       : []),
     ["CLI docs freshness (check)", () => runCliDocsFreshnessStep()],
     ["Recipes inventory freshness (check)", () => runCommand("bun", ["run", "docs:recipes:check"])],
+    ["Scripts README freshness (check)", () => runCommand("bun", ["run", "docs:scripts:check"])],
     [
       "Agent onboarding scenario (check)",
       () => runCommand("bun", ["run", "docs:onboarding:check"]),

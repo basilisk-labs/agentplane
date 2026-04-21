@@ -1,10 +1,10 @@
 ---
 id: "202604211313-KVSVYR"
 title: "Generate scripts README from package scripts"
-status: "TODO"
+status: "DOING"
 priority: "low"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,16 +21,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T13:42:51.438Z"
+  updated_by: "CODER"
+  note: "Command: bun run typecheck; Result: pass. Command: node scripts/generate-scripts-readme.mjs --check; Result: pass after generator writes Prettier-stable Markdown. Command: bun run format:check; Result: pass."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: генератор scripts/README.md из package.json scripts с check-режимом и устойчивым детерминированным выводом по namespace."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T13:21:27.016Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: генератор scripts/README.md из package.json scripts с check-режимом и устойчивым детерминированным выводом по namespace."
+  -
+    type: "verify"
+    at: "2026-04-21T13:42:51.438Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run typecheck; Result: pass. Command: node scripts/generate-scripts-readme.mjs --check; Result: pass after generator writes Prettier-stable Markdown. Command: bun run format:check; Result: pass."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:13:35.199Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T13:42:51.450Z"
+doc_updated_by: "CODER"
 description: "Add a generator that documents package.json scripts by namespace and flags ambiguous or ungrouped scripts."
 sections:
   Summary: |-
@@ -47,6 +63,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T13:42:51.438Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run typecheck; Result: pass. Command: node scripts/generate-scripts-readme.mjs --check; Result: pass after generator writes Prettier-stable Markdown. Command: bun run format:check; Result: pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:21:27.040Z, excerpt_hash=sha256:b3334112bbe21181f2550dfaab435b41064233ff845cb92f604072efafcbc844
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -78,6 +102,14 @@ Scope: improve maintainability of the large root scripts surface. Steps: 1. Crea
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T13:42:51.438Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run typecheck; Result: pass. Command: node scripts/generate-scripts-readme.mjs --check; Result: pass after generator writes Prettier-stable Markdown. Command: bun run format:check; Result: pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:21:27.040Z, excerpt_hash=sha256:b3334112bbe21181f2550dfaab435b41064233ff845cb92f604072efafcbc844
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

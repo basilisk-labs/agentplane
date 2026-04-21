@@ -1,10 +1,10 @@
 ---
 id: "202604211313-G34KY8"
 title: "Add hotspot warning threshold at 400 LoC"
-status: "TODO"
+status: "DOING"
 priority: "low"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,16 +21,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T13:42:51.442Z"
+  updated_by: "CODER"
+  note: "Command: bun run hotspots:check; Result: pass; Evidence: warning threshold printed 17 runtime warnings and hard threshold passed. Command: node scripts/hotspot-report.mjs --check --oversized-lines 600; Result: pass via updated hotspot check path. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/hotspot-report-script.test.ts --pool=forks --maxWorkers 4; Result: pass, 18 assertions across workspace projects."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: ввод двух порогов hotspot (warning/error) без ужесточения текущего CI-провала и с сохранением обратной совместимости CLI."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T13:21:15.120Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: ввод двух порогов hotspot (warning/error) без ужесточения текущего CI-провала и с сохранением обратной совместимости CLI."
+  -
+    type: "verify"
+    at: "2026-04-21T13:42:51.442Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run hotspots:check; Result: pass; Evidence: warning threshold printed 17 runtime warnings and hard threshold passed. Command: node scripts/hotspot-report.mjs --check --oversized-lines 600; Result: pass via updated hotspot check path. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/hotspot-report-script.test.ts --pool=forks --maxWorkers 4; Result: pass, 18 assertions across workspace projects."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:13:45.636Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T13:42:51.455Z"
+doc_updated_by: "CODER"
 description: "Extend hotspot reporting with a two-level threshold: warning at 400 LoC and error at 600 LoC, without making existing warnings fail CI."
 sections:
   Summary: |-
@@ -47,6 +63,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T13:42:51.442Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run hotspots:check; Result: pass; Evidence: warning threshold printed 17 runtime warnings and hard threshold passed. Command: node scripts/hotspot-report.mjs --check --oversized-lines 600; Result: pass via updated hotspot check path. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/hotspot-report-script.test.ts --pool=forks --maxWorkers 4; Result: pass, 18 assertions across workspace projects.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:21:15.151Z, excerpt_hash=sha256:eb0448b66c15b010e2f039943a670ac06cb025730766d8492559181d98e261d6
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -78,6 +102,14 @@ Scope: expose medium-sized files before they become hard failures. Steps: 1. Add
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T13:42:51.442Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run hotspots:check; Result: pass; Evidence: warning threshold printed 17 runtime warnings and hard threshold passed. Command: node scripts/hotspot-report.mjs --check --oversized-lines 600; Result: pass via updated hotspot check path. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/hotspot-report-script.test.ts --pool=forks --maxWorkers 4; Result: pass, 18 assertions across workspace projects.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:21:15.151Z, excerpt_hash=sha256:eb0448b66c15b010e2f039943a670ac06cb025730766d8492559181d98e261d6
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
