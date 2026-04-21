@@ -33,6 +33,11 @@ import { ensureInitRedmineEnvTemplate } from "./write-env.js";
 import { ensureInitGitignore } from "./write-gitignore.js";
 import { ensureInitWorkflow } from "./write-workflow.js";
 import { renderInitSection, renderInitWelcome } from "./ui.js";
+import { cmdInitV2 } from "./orchestrate-v2.js";
+
+function shouldUseExperimentalInitV2(flags: InitParsed): boolean {
+  return flags.experimentalUi === true || process.env.AGENTPLANE_INIT_UI === "v2";
+}
 
 async function askChoice(label: string, choices: string[], defaultValue: string): Promise<string> {
   const result = await promptChoice(`\n${label}`, choices, defaultValue);
@@ -59,6 +64,10 @@ export async function cmdInit(opts: {
   spec: CommandSpec<InitParsed>;
 }): Promise<number> {
   const flags = opts.flags;
+  if (shouldUseExperimentalInitV2(flags)) {
+    return cmdInitV2(opts);
+  }
+
   let ide: InitIde = flags.ide ?? INIT_DEFAULTS.ide;
   let policyGateway: PolicyGatewayFlavor = flags.policyGateway ?? INIT_DEFAULTS.policyGateway;
   let workflow: WorkflowMode = flags.workflow ?? INIT_DEFAULTS.workflow;

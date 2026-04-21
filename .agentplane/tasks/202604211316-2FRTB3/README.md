@@ -1,10 +1,10 @@
 ---
 id: "202604211316-2FRTB3"
 title: "Implement experimental init v2 orchestrator"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,21 +23,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T16:53:31.163Z"
+  updated_by: "CODER"
+  note: "Verified experimental init v2 orchestrator. Checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.init.v2.test.ts --pool=forks --maxWorkers 4 --testTimeout 60000 passed (1 file, 3 tests); bun run typecheck passed; bun run test:project -- cli-core passed (60 files, 596 tests); bun run lint:core passed; bun run format:check passed; git diff --check passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: implement experimental init v2 orchestrator now that prompt, conflict, and apply helpers exist."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T16:34:49.280Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: implement experimental init v2 orchestrator now that prompt, conflict, and apply helpers exist."
+  -
+    type: "verify"
+    at: "2026-04-21T16:53:31.163Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified experimental init v2 orchestrator. Checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.init.v2.test.ts --pool=forks --maxWorkers 4 --testTimeout 60000 passed (1 file, 3 tests); bun run typecheck passed; bun run test:project -- cli-core passed (60 files, 596 tests); bun run lint:core passed; bun run format:check passed; git diff --check passed."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:16:26.245Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T16:53:31.170Z"
+doc_updated_by: "CODER"
 description: "Add orchestrate-v2 flow behind AGENTPLANE_INIT_UI=v2 or --experimental-ui while legacy init remains the default path."
 sections:
   Summary: |-
     Implement experimental init v2 orchestrator
-    
+
     Add orchestrate-v2 flow behind AGENTPLANE_INIT_UI=v2 or --experimental-ui while legacy init remains the default path.
   Scope: |-
     - In scope: Add orchestrate-v2 flow behind AGENTPLANE_INIT_UI=v2 or --experimental-ui while legacy init remains the default path.
@@ -51,6 +67,14 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T16:53:31.163Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified experimental init v2 orchestrator. Checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.init.v2.test.ts --pool=forks --maxWorkers 4 --testTimeout 60000 passed (1 file, 3 tests); bun run typecheck passed; bun run test:project -- cli-core passed (60 files, 596 tests); bun run lint:core passed; bun run format:check passed; git diff --check passed.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:34:49.288Z, excerpt_hash=sha256:11fa93fe90bb07cabd42b1c1a9cc51f236cb8861c71cf666e707b75b26b382a6
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -84,6 +108,14 @@ Scope: implement atom #6. Steps: 1. Add orchestrate-v2.ts using prompts-v2, ui-v
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T16:53:31.163Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified experimental init v2 orchestrator. Checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.init.v2.test.ts --pool=forks --maxWorkers 4 --testTimeout 60000 passed (1 file, 3 tests); bun run typecheck passed; bun run test:project -- cli-core passed (60 files, 596 tests); bun run lint:core passed; bun run format:check passed; git diff --check passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:34:49.288Z, excerpt_hash=sha256:11fa93fe90bb07cabd42b1c1a9cc51f236cb8861c71cf666e707b75b26b382a6
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
