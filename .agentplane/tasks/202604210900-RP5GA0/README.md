@@ -1,10 +1,12 @@
 ---
 id: "202604210900-RP5GA0"
 title: "Decide legacy bridge removal policy for patch release"
-status: "DOING"
+result_summary: "Approved remove-now policy for legacy bridge cleanup."
+risk_level: "high"
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +26,16 @@ verification:
   updated_at: "2026-04-21T09:39:08.755Z"
   updated_by: "PLANNER"
   note: "Recorded remove-now legacy bridge policy for the patch release based on explicit user approval; downstream removal tasks can proceed without WARN-window gating."
-commit: null
+commit:
+  hash: "df9ceaec2d90f6713f8c221f09d9fca58140dfe5"
+  message: "✅ RP5GA0 meta: done"
 comments:
   -
     author: "PLANNER"
     body: "Start: Record explicit remove-now policy for legacy bridge support in the patch release based on user approval."
+  -
+    author: "PLANNER"
+    body: "Verified: patch-release policy now explicitly allows legacy support removal and delegates old-version handling to the upgrade agent."
 events:
   -
     type: "status"
@@ -43,8 +50,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Recorded remove-now legacy bridge policy for the patch release based on explicit user approval; downstream removal tasks can proceed without WARN-window gating."
+  -
+    type: "status"
+    at: "2026-04-21T09:39:18.558Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: patch-release policy now explicitly allows legacy support removal and delegates old-version handling to the upgrade agent."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:39:08.768Z"
+doc_updated_at: "2026-04-21T09:39:18.559Z"
 doc_updated_by: "PLANNER"
 description: "Resolve the SemVer conflict around legacy bridge removal before any breaking cleanup is attempted."
 sections:
