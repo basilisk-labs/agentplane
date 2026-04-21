@@ -66,7 +66,7 @@ export default defineConfig({
       project("cli", {
         include: [
           "packages/agentplane/src/cli/run-cli.core*.test.ts",
-          "packages/agentplane/src/cli/run-cli.recipes.test.ts",
+          "packages/agentplane/src/cli/run-cli.recipes*.test.ts",
           "packages/agentplane/src/cli/run-cli.scenario.test.ts",
         ],
         hookTimeout: 60_000,
@@ -78,7 +78,7 @@ export default defineConfig({
         testTimeout: 60_000,
       }),
       project("cli-recipes", {
-        include: ["packages/agentplane/src/cli/run-cli.recipes.test.ts"],
+        include: ["packages/agentplane/src/cli/run-cli.recipes*.test.ts"],
         hookTimeout: 60_000,
         testTimeout: 60_000,
       }),
@@ -90,7 +90,7 @@ export default defineConfig({
       project("cli-unit", {
         include: [
           "packages/agentplane/src/cli/run-cli.core*.test.ts",
-          "packages/agentplane/src/cli/run-cli.recipes.test.ts",
+          "packages/agentplane/src/cli/run-cli.recipes*.test.ts",
         ],
         hookTimeout: 60_000,
         testTimeout: 60_000,
