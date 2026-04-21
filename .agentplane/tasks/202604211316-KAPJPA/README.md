@@ -1,10 +1,11 @@
 ---
 id: "202604211316-KAPJPA"
 title: "Add init v2 apply spinner wrapper"
-status: "DOING"
+result_summary: "Added withStep/applyInitV2WithProgress for init v2 mutation progress, exported the apply surface, and covered success/failure/order behavior."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -24,14 +25,19 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-21T16:25:40.497Z"
+  updated_at: "2026-04-21T16:34:04.313Z"
   updated_by: "CODER"
-  note: "Added init v2 apply spinner wrapper (withStep + apply orchestration) with focused success/failure tests; typecheck, targeted apply test, and cli-unit passed."
-commit: null
+  note: "Verified init v2 apply spinner wrapper: focused apply.test.ts run passed (3 project/file executions, 12 tests); bun run typecheck passed; bun run lint:core passed; bun run format:check passed; full bun run test:project -- cli-unit passed (62 files, 624 tests)."
+commit:
+  hash: "d4860e19b072ef2700d9e395983a56a78a5d6f04"
+  message: "✨ KAPJPA init: add v2 apply spinner"
 comments:
   -
     author: "CODER"
     body: "Start: add init v2 apply spinner wrapper after conflict resolver is available."
+  -
+    author: "CODER"
+    body: "Verified: init v2 apply spinner wrapper. Checks: focused apply.test.ts run passed (3 project/file executions, 12 tests); bun run typecheck; bun run lint:core; bun run format:check; bun run test:project -- cli-unit."
 events:
   -
     type: "status"
@@ -46,14 +52,27 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added init v2 apply spinner wrapper (withStep + apply orchestration) with focused success/failure tests; typecheck, targeted apply test, and cli-unit passed."
+  -
+    type: "verify"
+    at: "2026-04-21T16:34:04.313Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified init v2 apply spinner wrapper: focused apply.test.ts run passed (3 project/file executions, 12 tests); bun run typecheck passed; bun run lint:core passed; bun run format:check passed; full bun run test:project -- cli-unit passed (62 files, 624 tests)."
+  -
+    type: "status"
+    at: "2026-04-21T16:34:10.402Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: init v2 apply spinner wrapper. Checks: focused apply.test.ts run passed (3 project/file executions, 12 tests); bun run typecheck; bun run lint:core; bun run format:check; bun run test:project -- cli-unit."
 doc_version: 3
-doc_updated_at: "2026-04-21T16:25:40.507Z"
+doc_updated_at: "2026-04-21T16:34:10.403Z"
 doc_updated_by: "CODER"
 description: "Add withStep spinner helper and wrap init v2 mutation writers with progress messages while keeping mutation functions unchanged."
 sections:
   Summary: |-
     Add init v2 apply spinner wrapper
-
+    
     Add withStep spinner helper and wrap init v2 mutation writers with progress messages while keeping mutation functions unchanged.
   Scope: |-
     - In scope: Add withStep spinner helper and wrap init v2 mutation writers with progress messages while keeping mutation functions unchanged.
@@ -68,13 +87,21 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-21T16:25:40.497Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Added init v2 apply spinner wrapper (withStep + apply orchestration) with focused success/failure tests; typecheck, targeted apply test, and cli-unit passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:19:42.881Z, excerpt_hash=sha256:a67c33a6dc75f669c1951e1f437643311a6ab8c4c51fcfe858356ebaf71e6ce3
-
+    
+    ### 2026-04-21T16:34:04.313Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified init v2 apply spinner wrapper: focused apply.test.ts run passed (3 project/file executions, 12 tests); bun run typecheck passed; bun run lint:core passed; bun run format:check passed; full bun run test:project -- cli-unit passed (62 files, 624 tests).
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:25:40.507Z, excerpt_hash=sha256:a67c33a6dc75f669c1951e1f437643311a6ab8c4c51fcfe858356ebaf71e6ce3
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -115,6 +142,14 @@ By: CODER
 Note: Added init v2 apply spinner wrapper (withStep + apply orchestration) with focused success/failure tests; typecheck, targeted apply test, and cli-unit passed.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:19:42.881Z, excerpt_hash=sha256:a67c33a6dc75f669c1951e1f437643311a6ab8c4c51fcfe858356ebaf71e6ce3
+
+### 2026-04-21T16:34:04.313Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified init v2 apply spinner wrapper: focused apply.test.ts run passed (3 project/file executions, 12 tests); bun run typecheck passed; bun run lint:core passed; bun run format:check passed; full bun run test:project -- cli-unit passed (62 files, 624 tests).
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:25:40.507Z, excerpt_hash=sha256:a67c33a6dc75f669c1951e1f437643311a6ab8c4c51fcfe858356ebaf71e6ce3
 
 <!-- END VERIFICATION RESULTS -->
 
