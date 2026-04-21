@@ -99,6 +99,14 @@ function createBaselineStepEntries({ includeBuild }) {
       () => runCommand("bun", ["run", "docs:onboarding:check"]),
     ],
     ["Hotspot threshold (check)", () => runCommand("bun", ["run", "hotspots:check"])],
+    ...(includeBuild
+      ? [
+          [
+            "CLI cold-start baseline (check)",
+            () => runCommand("bun", ["run", "bench:cli:cold:check"]),
+          ],
+        ]
+      : []),
   ];
 }
 

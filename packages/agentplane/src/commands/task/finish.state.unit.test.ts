@@ -68,6 +68,7 @@ vi.mock("@agentplaneorg/core/git", async () => {
   return {
     ...actual,
     gitEnv: () => ({}),
+    resolveBaseBranch: mocks.resolveBaseBranch,
   };
 });
 vi.mock("../shared/task-store.js", async (importOriginal) => {

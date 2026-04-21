@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "mode": "cli_cold_path_v1",
+  "metric": "avg_ms",
+  "captured_at": "2026-04-22",
+  "source_task": "202604211313-5RAM5H",
+  "notes": [
+    "Baseline ceilings are intentionally above the local bundled CLI measurement to avoid machine-level flakes.",
+    "They are still below the pre-bundling 2026-04-20 baseline documented in docs/developer/performance-baselines.mdx."
+  ],
+  "commands": [
+    {
+      "id": "quickstart",
+      "max_avg_ms": 900,
+      "expected_exit_code": 0
+    },
+    {
+      "id": "task_list",
+      "max_avg_ms": 1100,
+      "expected_exit_code": 0
+    },
+    {
+      "id": "task_search",
+      "max_avg_ms": 1100,
+      "expected_exit_code": 0
+    },
+    {
+      "id": "task_next",
+      "max_avg_ms": 1200,
+      "expected_exit_code": 0
+    },
+    {
+      "id": "preflight_quick",
+      "max_avg_ms": 1400,
+      "expected_exit_code": 0
+    }
+  ]
+}

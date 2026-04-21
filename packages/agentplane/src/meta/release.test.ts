@@ -11,13 +11,12 @@ const mockRunProcessSync = vi.fn<
 >();
 
 vi.mock("node:fs", () => ({ existsSync: mockExistsSync }));
-vi.mock("@agentplaneorg/core", async () => {
-  const actual = await vi.importActual<Record<string, unknown>>("@agentplaneorg/core");
-  return {
-    ...actual,
-    runProcessSync: mockRunProcessSync,
-  };
-});
+vi.mock("@agentplaneorg/core/process", () => ({
+  runProcessSync: mockRunProcessSync,
+}));
+vi.mock("../shared/package-paths.js", () => ({
+  resolveAgentplanePackageRoot: () => path.join(repoRootFromThisFile(), "packages", "agentplane"),
+}));
 vi.mock("./version.js", () => ({ getVersion: () => "1.2.3" }));
 
 function repoRootFromThisFile(): string {

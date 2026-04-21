@@ -39,9 +39,13 @@ vi.mock("../../shared/reconcile-check.js", () => ({
 vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
 }));
-vi.mock("@agentplaneorg/core/git", () => ({
-  gitEnv: mocks.gitEnv,
-}));
+vi.mock("@agentplaneorg/core/git", async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  return {
+    ...actual,
+    gitEnv: mocks.gitEnv,
+  };
+});
 vi.mock("../../shared/post-commit-pr-artifacts.js", () => ({
   refreshBranchPrArtifactsAfterTaskCommit: mocks.refreshBranchPrArtifactsAfterTaskCommit,
 }));
@@ -76,6 +80,15 @@ function mkCtx() {
 describe("guard command implementations", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    mocks.mapCoreError.mockImplementation((err: unknown) =>
+      err instanceof Error
+        ? err
+        : new CliError({
+            exitCode: exitCodeForError("E_IO"),
+            code: "E_IO",
+            message: String(err),
+          }),
+    );
     mocks.buildTaskArtifactRefreshCommitSubject.mockImplementation(
       ({ taskId, baseSubject }: { taskId: string; baseSubject?: string | null }) =>
         `derived:${taskId}:${baseSubject ?? ""}`,

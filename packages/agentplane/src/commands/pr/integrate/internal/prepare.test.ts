@@ -37,6 +37,7 @@ vi.mock("../../../guard/index.js", () => ({ ensureGitClean: mocks.ensureGitClean
 vi.mock("@agentplaneorg/core/git", () => ({
   findWorktreeForBranch: mocks.findWorktreeForBranch,
   gitDiffNames: mocks.gitDiffNames,
+  resolveBaseBranch: mocks.resolveBaseBranch,
 }));
 vi.mock("../../../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
