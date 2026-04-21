@@ -1,10 +1,11 @@
 ---
 id: "202604211312-AGQKVA"
 title: "Split core config schema and defaults"
-status: "DOING"
+result_summary: "Added config/schema.ts and config/defaults.ts, moved defaultConfig and dotted-key helpers out of config.ts, and kept config.ts as the backward-compatible public IO facade."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,15 +24,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-21T16:41:10.742Z"
+  updated_by: "CODER"
+  note: "Verified core config split: bunx vitest config/execution-profile tests passed (8 project/file executions, 96 tests); bun run typecheck passed; bun run lint:core passed; bun run --filter=@agentplaneorg/core build passed; bun run format:check passed; git diff --check passed."
+commit:
+  hash: "882fcc37ba24c02c9fe9e821331f30f06a849572"
+  message: "♻️ AGQKVA config: split schema and defaults"
 comments:
   -
     author: "CODER"
     body: "Start: split core config schema/default responsibilities after subpath import migration."
+  -
+    author: "CODER"
+    body: "Verified: core config schema/default split. Checks: config/execution-profile Vitest suite; bun run typecheck; bun run lint:core; bun run --filter=@agentplaneorg/core build; bun run format:check; git diff --check."
 events:
   -
     type: "status"
@@ -40,8 +46,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: split core config schema/default responsibilities after subpath import migration."
+  -
+    type: "verify"
+    at: "2026-04-21T16:41:10.742Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified core config split: bunx vitest config/execution-profile tests passed (8 project/file executions, 96 tests); bun run typecheck passed; bun run lint:core passed; bun run --filter=@agentplaneorg/core build passed; bun run format:check passed; git diff --check passed."
+  -
+    type: "status"
+    at: "2026-04-21T16:41:17.994Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: core config schema/default split. Checks: config/execution-profile Vitest suite; bun run typecheck; bun run lint:core; bun run --filter=@agentplaneorg/core build; bun run format:check; git diff --check."
 doc_version: 3
-doc_updated_at: "2026-04-21T16:19:46.201Z"
+doc_updated_at: "2026-04-21T16:41:17.995Z"
 doc_updated_by: "CODER"
 description: "Refactor core config into schema/defaults/execution/io modules without changing the public config behavior."
 sections:
@@ -61,6 +80,14 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T16:41:10.742Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified core config split: bunx vitest config/execution-profile tests passed (8 project/file executions, 96 tests); bun run typecheck passed; bun run lint:core passed; bun run --filter=@agentplaneorg/core build passed; bun run format:check passed; git diff --check passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:19:46.201Z, excerpt_hash=sha256:e79b6711ef59d1ecc315d21e7759130e7da3d873a2a4741c14733769f9dafa6e
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -94,6 +121,14 @@ Scope: reduce config-zod/config duality while preserving behavior. Steps: 1. Mov
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T16:41:10.742Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified core config split: bunx vitest config/execution-profile tests passed (8 project/file executions, 96 tests); bun run typecheck passed; bun run lint:core passed; bun run --filter=@agentplaneorg/core build passed; bun run format:check passed; git diff --check passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:19:46.201Z, excerpt_hash=sha256:e79b6711ef59d1ecc315d21e7759130e7da3d873a2a4741c14733769f9dafa6e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
