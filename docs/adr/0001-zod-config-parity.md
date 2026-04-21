@@ -8,6 +8,12 @@ Accepted
 
 2026-04-19
 
+## Supersession
+
+2026-04-21: AJV was removed from the config validation stack. The temporary
+`scripts/diff-config-schemas.mjs` audit is retired and deleted; config validation now relies on
+the Zod source of truth and the generated schema sync check.
+
 ## Context
 
 The v2 refactor plan assumed that `packages/core/src/config/config.ts` still hosted an AJV-based
@@ -22,21 +28,21 @@ That assumption is no longer true in the 0.3.15 repository state.
 3. `loadConfig()` and `saveConfig()` are runtime adapters around the schema, not independent
    schema sources.
 4. `scripts/sync-schemas.mjs` already renders `config.schema.json` from the Zod schema.
-5. `packages/core/package.json` still declares `ajv` and `ajv-formats` even though the current
-   source tree no longer imports them from `packages/core/src/**`.
+5. The temporary AJV-vs-Zod parity audit is no longer needed after AJV dependency cleanup.
 
 ## Decision
 
 Treat config schema migration as functionally complete for runtime validation and move the next
 guardrail to regression prevention rather than dual-validator coexistence.
 
-We add `scripts/diff-config-schemas.mjs` to compare representative config fixtures through:
+The original baseline added `scripts/diff-config-schemas.mjs` to compare representative config
+fixtures through:
 
 - the runtime adapter path (`validateConfig()`), and
 - the raw Zod schema path (`AgentplaneConfigSchema.safeParse(...)` after deprecated-key sanitization).
 
-This script becomes the baseline audit for future config changes until AJV dependencies are fully
-removed from package manifests.
+That audit was intentionally temporary. After AJV removal, the script is retired rather than kept as
+a second config validation path.
 
 ## Consequences
 
@@ -49,13 +55,10 @@ removed from package manifests.
 
 ### Negative
 
-1. `ajv` and `ajv-formats` are still stale dependencies in `packages/core/package.json`.
-2. Error-message parity is checked only for a representative fixture set, not exhaustive generated
-   cases.
+1. Error-message parity was checked only for a representative fixture set during the transition, not
+   exhaustive generated cases.
 
 ## Follow-up
 
-1. Retarget the next config migration task toward dependency cleanup and schema-surface export
-   consolidation instead of a non-existent runtime cutover.
-2. Remove stale AJV dependencies after confirming no package-level or release-path consumers still
-   depend on them.
+1. Retarget future config work toward schema-surface export consolidation and generated artifact
+   freshness, not AJV parity.
