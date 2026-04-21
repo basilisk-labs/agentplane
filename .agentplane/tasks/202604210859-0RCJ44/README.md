@@ -1,10 +1,11 @@
 ---
 id: "202604210859-0RCJ44"
 title: "Inventory large tests and settle test suffix convention"
-status: "DOING"
+result_summary: "Documented test naming convention and large test inventory."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-21T09:41:58.533Z"
   updated_by: "CODER"
   note: "Findings now include the compact large-test inventory and the documented .test.ts convention; policy routing and doctor checks remain passing."
-commit: null
+commit:
+  hash: "f034d81f81a9da33187c774996e04b66b2bea55a"
+  message: "✅ 0RCJ44 docs: done"
 comments:
   -
     author: "CODER"
     body: "Start: Inventory largest test files, compare .test.ts and .spec.ts usage, document the minimal suffix convention in approved docs/task-local scope, and run cheap checks only."
+  -
+    author: "CODER"
+    body: "Verified: documented .test.ts as the Vitest suffix convention, recorded oversized test inventory, and verified policy routing, doctor, and diff whitespace checks."
 events:
   -
     type: "status"
@@ -48,8 +54,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Findings now include the compact large-test inventory and the documented .test.ts convention; policy routing and doctor checks remain passing."
+  -
+    type: "status"
+    at: "2026-04-21T09:43:29.542Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: documented .test.ts as the Vitest suffix convention, recorded oversized test inventory, and verified policy routing, doctor, and diff whitespace checks."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:41:58.576Z"
+doc_updated_at: "2026-04-21T09:43:29.545Z"
 doc_updated_by: "CODER"
 description: "Document the largest test files and decide whether the repository standard is .test.ts or .spec.ts before further splitting."
 sections:
