@@ -1,1 +1,1 @@
-export { buildCleanRuntimeModeEnv, clearRuntimeModeEnv } from "../../../testkit/dist/index.js";
+export { buildCleanRuntimeModeEnv, clearRuntimeModeEnv } from "@agentplane/testkit";
