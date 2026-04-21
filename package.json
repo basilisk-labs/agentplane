@@ -30,7 +30,7 @@
     "arch:baseline": "node scripts/check-depcruise-known-violations.mjs",
     "arch:deps": "depcruise --config depcruise.config.cjs --ignore-known .dependency-cruiser-known-violations.json --include-only '^packages/(agentplane|core|recipes|testkit)/src' --exclude '(^|/)(dist|node_modules)/' packages/agentplane/src packages/core/src packages/recipes/src packages/testkit/src",
     "arch:check": "bun run arch:baseline && bun run arch:deps",
-    "knip:check": "knip --config knip.json --no-exit-code --reporter compact",
+    "knip:check": "node scripts/check-knip-baseline.mjs",
     "knip:report": "knip --config knip.json --no-exit-code",
     "ci": "bun run format:check && bun run schemas:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run typecheck && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run hotspots:check && bun run check:types-files && bun run lint:core && bun run logging:check && bun run arch:check && bun run knip:check && bun run coverage:thresholds:check && bun run coverage && bun run coverage:significant",
     "ci:local": "node scripts/run-local-ci.mjs --mode fast",
