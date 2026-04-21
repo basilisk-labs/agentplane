@@ -137,6 +137,49 @@ describe("collectRunnerBasePrompts", () => {
     expect(prompts[2]?.resolution?.winner.layer).toBe("builtin");
   });
 
+  it("adds project-local skill metadata when skills are present", async () => {
+    const root = await makeTempRepo();
+    const skillDir = path.join(root, "skills", "release-operator");
+    await mkdir(skillDir, { recursive: true });
+    await writeFile(
+      path.join(skillDir, "SKILL.md"),
+      [
+        "---",
+        "name: release-operator",
+        "description: Use when release packaging needs validation.",
+        "---",
+        "",
+        "# Release Operator",
+        "",
+        "Long body should stay out of the discovery prompt.",
+      ].join("\n"),
+    );
+
+    const prompts = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+    });
+
+    expect(prompts.map((prompt) => prompt.id)).toEqual([
+      "base.framework_runner",
+      "base.policy_gateway",
+      "base.owner_profile",
+      "project.skills_index",
+    ]);
+    expect(prompts[3]).toMatchObject({
+      role: "context",
+      priority: 350,
+      source: "skills/*/SKILL.md",
+      title: "Repository Skill Discovery",
+    });
+    expect(prompts[3]?.content).toContain('"name": "release-operator"');
+    expect(prompts[3]?.content).toContain(
+      '"description": "Use when release packaging needs validation."',
+    );
+    expect(prompts[3]?.content).toContain('"source": "skills/release-operator/SKILL.md"');
+    expect(prompts[3]?.content).not.toContain("Long body");
+  });
+
   it("inserts execution profile runtime constraints before the owner profile when provided", async () => {
     const root = await makeTempRepo();
     const config = defaultConfig();
@@ -170,14 +213,25 @@ describe("collectRunnerBasePrompts", () => {
   it("adds recipe-aware prompt blocks after framework, policy, and owner prompts", async () => {
     const root = await makeTempRepo();
     const agentsDir = path.join(root, ".agentplane", "agents");
+    const projectSkillDir = path.join(root, "skills", "release-operator");
     const recipeDir = path.join(root, ".agentplane", "recipes", "viewer");
     await mkdir(agentsDir, { recursive: true });
+    await mkdir(projectSkillDir, { recursive: true });
     await mkdir(path.join(recipeDir, "agents"), { recursive: true });
     await mkdir(path.join(recipeDir, "skills"), { recursive: true });
     await writeFile(path.join(root, "AGENTS.md"), "# Repo Policy\n");
     await writeFile(
       path.join(agentsDir, "CODER.json"),
       JSON.stringify({ id: "CODER", role: "Repo-local coder profile" }, null, 2),
+    );
+    await writeFile(
+      path.join(projectSkillDir, "SKILL.md"),
+      [
+        "---",
+        "name: release-operator",
+        "description: Use when release packaging needs validation.",
+        "---",
+      ].join("\n"),
     );
     await writeFile(
       path.join(recipeDir, "agents", "recipe.md"),
@@ -222,20 +276,21 @@ describe("collectRunnerBasePrompts", () => {
       "base.framework_runner",
       "base.policy_gateway",
       "base.owner_profile",
+      "project.skills_index",
       "recipe.execution_context",
       "recipe.agent.RECIPE_AGENT",
       "recipe.skill.RECIPE_SKILL",
       "recipe.tools_summary",
     ]);
-    expect(prompts[3]?.content).toContain('"goal": "Preview installed tasks."');
-    expect(prompts[4]?.source).toBe(".agentplane/recipes/viewer/agents/recipe.md");
-    expect(prompts[4]?.content).toContain("Use recipe local policy.");
-    expect(prompts[4]?.resolution?.winner.layer).toBe("extension");
-    expect(prompts[4]?.resolution?.conflicts[0]?.source).toBe("recipe:viewer:agent:RECIPE_AGENT");
-    expect(prompts[5]?.source).toBe(".agentplane/recipes/viewer/skills/analysis.md");
-    expect(prompts[5]?.content).toContain("Inspect bundle.");
+    expect(prompts[4]?.content).toContain('"goal": "Preview installed tasks."');
+    expect(prompts[5]?.source).toBe(".agentplane/recipes/viewer/agents/recipe.md");
+    expect(prompts[5]?.content).toContain("Use recipe local policy.");
     expect(prompts[5]?.resolution?.winner.layer).toBe("extension");
-    expect(prompts[6]?.content).toContain('"entrypoint": "tools/run.js"');
+    expect(prompts[5]?.resolution?.conflicts[0]?.source).toBe("recipe:viewer:agent:RECIPE_AGENT");
+    expect(prompts[6]?.source).toBe(".agentplane/recipes/viewer/skills/analysis.md");
+    expect(prompts[6]?.content).toContain("Inspect bundle.");
+    expect(prompts[6]?.resolution?.winner.layer).toBe("extension");
+    expect(prompts[7]?.content).toContain('"entrypoint": "tools/run.js"');
   });
 
   it("filters overlay prompt fragments by conjunctive when predicates including command", async () => {

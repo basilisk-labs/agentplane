@@ -6,6 +6,7 @@ import {
   loadPolicyGatewayPrompt,
 } from "./base-prompt-sources.js";
 import { collectOverlayPromptBlocks } from "./overlay-prompt-blocks.js";
+import { collectProjectSkillPromptBlocks } from "./project-skill-prompt-blocks.js";
 import { loadFrameworkRunnerPrompt, normalizeOwnerId } from "./prompt-block-shared.js";
 import { collectRecipePromptBlocks } from "./recipe-prompt-blocks.js";
 import type { RunnerPromptBlock, RunnerRecipeContext, RunnerTaskContext } from "../types.js";
@@ -53,6 +54,9 @@ export async function collectRunnerBasePrompts(opts: {
       git_root: opts.git_root,
       task: opts.task,
       command: opts.command,
+    })),
+    ...(await collectProjectSkillPromptBlocks({
+      git_root: opts.git_root,
     })),
     ...(await collectRecipePromptBlocks({
       git_root: opts.git_root,
