@@ -1,10 +1,12 @@
 ---
 id: "202604201745-RD18WW"
 title: "Publish next patch release"
-status: "DOING"
+result_summary: "Published v0.3.17 and restored the Knip release gate on main."
+risk_level: "med"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,15 +21,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-21T12:47:15.330Z"
+  updated_by: "CODER"
+  note: "Verified: v0.3.17 published to npm and GitHub Release; Core CI release-ready succeeded for main, publish job 24722101481 published core/recipes/cli and pushed tag v0.3.17; follow-up PR #495 restored Knip gate on main."
+commit:
+  hash: "60ef3389b913e5280a3128f96c9766facfe2f985"
+  message: "Merge pull request #495 from basilisk-labs/release/v0.3.17-knip-fix"
 comments:
   -
     author: "CODER"
     body: "Start: verify hosted and local release gates, framework install behavior, and publish the next patch release through the direct release route."
+  -
+    author: "CODER"
+    body: "Verified: v0.3.17 is published to npm and GitHub Release; hosted publish job succeeded; main includes the follow-up Knip gate fix."
 events:
   -
     type: "status"
@@ -36,8 +43,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: verify hosted and local release gates, framework install behavior, and publish the next patch release through the direct release route."
+  -
+    type: "verify"
+    at: "2026-04-21T12:47:15.330Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: v0.3.17 published to npm and GitHub Release; Core CI release-ready succeeded for main, publish job 24722101481 published core/recipes/cli and pushed tag v0.3.17; follow-up PR #495 restored Knip gate on main."
+  -
+    type: "status"
+    at: "2026-04-21T12:47:50.401Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: v0.3.17 is published to npm and GitHub Release; hosted publish job succeeded; main includes the follow-up Knip gate fix."
 doc_version: 3
-doc_updated_at: "2026-04-20T17:45:35.378Z"
+doc_updated_at: "2026-04-21T12:47:50.403Z"
 doc_updated_by: "CODER"
 description: "Verify local and hosted release gates, confirm framework install/runtime behavior, and publish the next patch release through the direct release pipeline."
 sections:
@@ -55,11 +75,22 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T12:47:15.330Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: v0.3.17 published to npm and GitHub Release; Core CI release-ready succeeded for main, publish job 24722101481 published core/recipes/cli and pushed tag v0.3.17; follow-up PR #495 restored Knip gate on main.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T17:45:35.378Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Publish evidence: @agentplaneorg/core@0.3.17, @agentplaneorg/recipes@0.3.17, and agentplane@0.3.17 are visible in npm; GitHub Release v0.3.17 is published; remote tag v0.3.17 exists at f0ad813c.
+      Impact: Release v0.3.17 is available; main additionally contains 60ef3389 with the Knip baseline fix for subsequent gates.
+      Resolution: No further release action required for v0.3.17.
 id_source: "generated"
 ---
 ## Summary
@@ -86,6 +117,14 @@ Release plan: publish the next patch release from direct mode only after gates p
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T12:47:15.330Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: v0.3.17 published to npm and GitHub Release; Core CI release-ready succeeded for main, publish job 24722101481 published core/recipes/cli and pushed tag v0.3.17; follow-up PR #495 restored Knip gate on main.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-20T17:45:35.378Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -94,3 +133,7 @@ Release plan: publish the next patch release from direct mode only after gates p
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Publish evidence: @agentplaneorg/core@0.3.17, @agentplaneorg/recipes@0.3.17, and agentplane@0.3.17 are visible in npm; GitHub Release v0.3.17 is published; remote tag v0.3.17 exists at f0ad813c.
+  Impact: Release v0.3.17 is available; main additionally contains 60ef3389 with the Knip baseline fix for subsequent gates.
+  Resolution: No further release action required for v0.3.17.
