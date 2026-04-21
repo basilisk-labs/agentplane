@@ -1,10 +1,11 @@
 ---
 id: "202604210900-Q33H9D"
 title: "Split task artifact schema by document domain"
-status: "DOING"
+result_summary: "Split task artifact schema by document domain without schema compatibility drift."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-21T10:47:02.630Z"
   updated_by: "CODER"
   note: "Schema split verified: targeted schema tests, schema sync check, typecheck, targeted lint, and targeted formatting check passed."
-commit: null
+commit:
+  hash: "a9ee141c2f4ba835787a90e075c84114bc4e3497"
+  message: "✅ Q33H9D code: done"
 comments:
   -
     author: "CODER"
     body: "Start: split task artifact schema by document domain while preserving public exports and serialized compatibility."
+  -
+    author: "CODER"
+    body: "Verified: split task artifact schema into domain modules while preserving public exports and serialized compatibility; targeted schema tests, schemas check, typecheck, lint/format, and framework bootstrap passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Schema split verified: targeted schema tests, schema sync check, typecheck, targeted lint, and targeted formatting check passed."
+  -
+    type: "status"
+    at: "2026-04-21T10:49:11.568Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: split task artifact schema into domain modules while preserving public exports and serialized compatibility; targeted schema tests, schemas check, typecheck, lint/format, and framework bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-04-21T10:47:02.633Z"
+doc_updated_at: "2026-04-21T10:49:11.569Z"
 doc_updated_by: "CODER"
 description: "Break the large task artifact Zod schema into focused schema modules for task, handoff, findings, verification, and PR metadata."
 sections:
