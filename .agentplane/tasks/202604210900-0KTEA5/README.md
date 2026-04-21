@@ -1,10 +1,12 @@
 ---
 id: "202604210900-0KTEA5"
 title: "Remove legacy task index v1 support"
-status: "DOING"
+result_summary: "Removed legacy task index v1 support."
+breaking: true
+status: "DONE"
 priority: "normal"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +26,16 @@ verification:
   updated_at: "2026-04-21T09:48:47.038Z"
   updated_by: "CODER"
   note: "Removed live tasks-index.v1 compatibility fallback; only migration docs and the targeted negative test mention tasks-index.v1; task-index test and agentplane typecheck pass."
-commit: null
+commit:
+  hash: "851fc3d7bc752275144170027db143693fa57d8d"
+  message: "✅ 0KTEA5 code: done"
 comments:
   -
     author: "CODER"
     body: "Start: remove tasks-index.v1 compatibility branches under approved patch-release breaking cleanup policy, update targeted tests/docs, and verify no live tasks-index.v1 references remain."
+  -
+    author: "CODER"
+    body: "Verified: removed tasks-index.v1 fallback, documented cache recovery, rebuilt framework runtime, and passed targeted task-index test plus agentplane typecheck."
 events:
   -
     type: "status"
@@ -43,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed live tasks-index.v1 compatibility fallback; only migration docs and the targeted negative test mention tasks-index.v1; task-index test and agentplane typecheck pass."
+  -
+    type: "status"
+    at: "2026-04-21T09:50:09.118Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: removed tasks-index.v1 fallback, documented cache recovery, rebuilt framework runtime, and passed targeted task-index test plus agentplane typecheck."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:49:09.612Z"
+doc_updated_at: "2026-04-21T09:50:09.121Z"
 doc_updated_by: "CODER"
 description: "Remove tasks-index.v1 compatibility only after the legacy bridge policy allows breaking cleanup."
 sections:
