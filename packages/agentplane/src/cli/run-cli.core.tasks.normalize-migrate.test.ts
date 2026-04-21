@@ -82,7 +82,7 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
                 tags: ["nodejs"],
                 verify: [],
                 comments: [],
-                doc_version: 2,
+                doc_version: 3,
                 doc_updated_at: new Date().toISOString(),
                 doc_updated_by: "agentplane",
               },

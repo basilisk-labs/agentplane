@@ -1665,7 +1665,6 @@ describe("runCli", () => {
         "✅",
         "--commit-allow",
         "docs/",
-        "--commit-allow-tasks",
         "--commit-require-clean",
         "--status-commit",
         "--status-commit-emoji",

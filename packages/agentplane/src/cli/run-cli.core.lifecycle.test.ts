@@ -1604,7 +1604,6 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
           "🦞",
           "--commit-allow",
           ".agentplane/tasks",
-          "--commit-allow-tasks",
           "--confirm-status-commit",
           "--root",
           root,
