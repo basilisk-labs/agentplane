@@ -1,10 +1,12 @@
 ---
 id: "202604210900-0NXV2W"
 title: "Remove legacy workflow path support"
-status: "DOING"
+result_summary: "Removed legacy root WORKFLOW.md compatibility support."
+breaking: true
+status: "DONE"
 priority: "normal"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +26,16 @@ verification:
   updated_at: "2026-04-21T09:55:22.660Z"
   updated_by: "CODER"
   note: "Removed root WORKFLOW.md compatibility reads/migration cleanup; canonical workflow path is .agentplane/WORKFLOW.md only; targeted workflow runtime and doctor tests pass."
-commit: null
+commit:
+  hash: "11b2d147bfa5ff2a297527999bde5d87aec9e83e"
+  message: "✅ 0NXV2W code: done"
 comments:
   -
     author: "CODER"
     body: "Start: remove root WORKFLOW.md compatibility branches under approved patch-release breaking cleanup policy, update targeted workflow/doctor tests, and keep migration guidance explicit."
+  -
+    author: "CODER"
+    body: "Verified: removed root WORKFLOW.md compatibility reads and migration cleanup, kept migration guidance, rebuilt framework runtime, and passed targeted workflow-runtime plus doctor tests."
 events:
   -
     type: "status"
@@ -43,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed root WORKFLOW.md compatibility reads/migration cleanup; canonical workflow path is .agentplane/WORKFLOW.md only; targeted workflow runtime and doctor tests pass."
+  -
+    type: "status"
+    at: "2026-04-21T09:55:45.897Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: removed root WORKFLOW.md compatibility reads and migration cleanup, kept migration guidance, rebuilt framework runtime, and passed targeted workflow-runtime plus doctor tests."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:55:22.679Z"
+doc_updated_at: "2026-04-21T09:55:45.899Z"
 doc_updated_by: "CODER"
 description: "Remove WORKFLOW.md compatibility only after the legacy bridge policy allows breaking cleanup."
 sections:
