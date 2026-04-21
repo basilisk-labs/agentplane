@@ -36,7 +36,9 @@ import { renderInitSection, renderInitWelcome } from "./ui.js";
 import { cmdInitV2 } from "./orchestrate-v2.js";
 
 function shouldUseExperimentalInitV2(flags: InitParsed): boolean {
-  return flags.experimentalUi === true || process.env.AGENTPLANE_INIT_UI === "v2";
+  if (flags.experimentalUi === true || process.env.AGENTPLANE_INIT_UI === "v2") return true;
+  if (flags.yes || process.env.AGENTPLANE_PROMPTS === "plain") return false;
+  return process.stdin.isTTY === true && process.stdout.isTTY === true;
 }
 
 async function askChoice(label: string, choices: string[], defaultValue: string): Promise<string> {

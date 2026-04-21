@@ -1,10 +1,10 @@
 ---
 id: "202604211316-302EM1"
 title: "Promote init v2 as default interactive UI"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -24,21 +24,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T16:58:11.673Z"
+  updated_by: "CODER"
+  note: "Verified init v2 default interactive promotion. Checks: bun run typecheck passed; bun run test:project -- cli-core passed (60 files, 598 tests); bun run docs:cli:check passed; bun run test:project -- critical passed (5 files, 13 tests); bunx vitest run packages/agentplane/src/cli/run-cli.core.init.v2.test.ts --pool=forks --maxWorkers 4 --testTimeout 60000 passed (1 file, 5 tests); bun run lint:core passed; bun run format:check passed; git diff --check passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: promote the validated init v2 route to the default interactive TTY path while preserving --yes, non-TTY, and plain prompt behavior."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T16:54:33.076Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: promote the validated init v2 route to the default interactive TTY path while preserving --yes, non-TTY, and plain prompt behavior."
+  -
+    type: "verify"
+    at: "2026-04-21T16:58:11.673Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified init v2 default interactive promotion. Checks: bun run typecheck passed; bun run test:project -- cli-core passed (60 files, 598 tests); bun run docs:cli:check passed; bun run test:project -- critical passed (5 files, 13 tests); bunx vitest run packages/agentplane/src/cli/run-cli.core.init.v2.test.ts --pool=forks --maxWorkers 4 --testTimeout 60000 passed (1 file, 5 tests); bun run lint:core passed; bun run format:check passed; git diff --check passed."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:16:32.988Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T16:58:11.675Z"
+doc_updated_by: "CODER"
 description: "After experimental validation, make init v2 the default TTY interactive UI while preserving non-TTY and plain legacy behavior."
 sections:
   Summary: |-
     Promote init v2 as default interactive UI
-    
+
     After experimental validation, make init v2 the default TTY interactive UI while preserving non-TTY and plain legacy behavior.
   Scope: |-
     - In scope: After experimental validation, make init v2 the default TTY interactive UI while preserving non-TTY and plain legacy behavior.
@@ -53,6 +69,14 @@ sections:
     6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T16:58:11.673Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified init v2 default interactive promotion. Checks: bun run typecheck passed; bun run test:project -- cli-core passed (60 files, 598 tests); bun run docs:cli:check passed; bun run test:project -- critical passed (5 files, 13 tests); bunx vitest run packages/agentplane/src/cli/run-cli.core.init.v2.test.ts --pool=forks --maxWorkers 4 --testTimeout 60000 passed (1 file, 5 tests); bun run lint:core passed; bun run format:check passed; git diff --check passed.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:54:33.084Z, excerpt_hash=sha256:6db0e71a93be54810b3abe68ea513b618d8592053762ca77a608f0bc05a1dacc
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -87,6 +111,14 @@ Scope: implement atom #7. Steps: 1. Switch default TTY interactive init to v2. 2
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T16:58:11.673Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified init v2 default interactive promotion. Checks: bun run typecheck passed; bun run test:project -- cli-core passed (60 files, 598 tests); bun run docs:cli:check passed; bun run test:project -- critical passed (5 files, 13 tests); bunx vitest run packages/agentplane/src/cli/run-cli.core.init.v2.test.ts --pool=forks --maxWorkers 4 --testTimeout 60000 passed (1 file, 5 tests); bun run lint:core passed; bun run format:check passed; git diff --check passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:54:33.084Z, excerpt_hash=sha256:6db0e71a93be54810b3abe68ea513b618d8592053762ca77a608f0bc05a1dacc
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

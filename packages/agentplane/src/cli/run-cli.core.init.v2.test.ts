@@ -165,7 +165,23 @@ describe("runCli init v2", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["init", "--root", root]);
+      const code = await runCli([
+        "init",
+        "--setup-profile",
+        "light",
+        "--policy-gateway",
+        "codex",
+        "--ide",
+        "codex",
+        "--backend",
+        "local",
+        "--workflow",
+        "direct",
+        "--require-network-approval",
+        "true",
+        "--root",
+        root,
+      ]);
 
       expect(code).toBe(0);
       expect(io.stdout).toContain(".agentplane");
@@ -178,8 +194,51 @@ describe("runCli init v2", () => {
     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(true);
   });
 
-  it("keeps legacy init as the default route", async () => {
+  it("uses init v2 for the default TTY interactive route", async () => {
     const root = await mkTempDir();
+    mocks.selectMock
+      .mockResolvedValueOnce("light")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("local");
+    mocks.confirmMock.mockResolvedValueOnce(true);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--root", root]);
+
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
+    expect(mocks.confirmMock).toHaveBeenCalledWith({
+      message: "Apply this init plan?",
+      initialValue: true,
+    });
+  });
+
+  it("keeps legacy init for non-TTY and --yes", async () => {
+    const root = await mkTempDir();
+    setTty(false);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--root", root]);
+
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    expect(mocks.introMock).not.toHaveBeenCalled();
+    expect(mocks.confirmMock).not.toHaveBeenCalled();
+  });
+
+  it("keeps legacy init when plain prompt mode is requested for non-interactive init", async () => {
+    const root = await mkTempDir();
+    process.env.AGENTPLANE_PROMPTS = "plain";
     setTty(false);
 
     const io = captureStdIO();
