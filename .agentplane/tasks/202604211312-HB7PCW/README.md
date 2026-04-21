@@ -1,10 +1,11 @@
 ---
 id: "202604211312-HB7PCW"
 title: "Define root core export deprecation strategy"
-status: "DOING"
+result_summary: "Documented the core root export deprecation strategy without removing compatibility exports. Verification passed: docs bootstrap check, onboarding check, typecheck, format check, policy routing check, agentplane doctor, and git diff --check."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-04-21T19:44:00.971Z"
   updated_by: "CODER"
   note: "Implemented ADR 0010 and README guidance for @agentplaneorg/core root export compatibility: patch/minor releases keep the root aggregate, internal runtime code prefers subpaths, and any future removal requires a breaking-release migration plan. Verification passed: bun run docs:bootstrap:check; bun run docs:onboarding:check; bun run typecheck; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; git diff --check."
-commit: null
+commit:
+  hash: "15c88f008923ab68b4ea8eec4cebd66fee2c175f"
+  message: "🧭 HB7PCW docs: define core root export policy"
 comments:
   -
     author: "CODER"
     body: "Start: document the root @agentplaneorg/core export stance and external deprecation strategy without removing compatibility exports."
+  -
+    author: "CODER"
+    body: "Verified: ADR 0010 records the root @agentplaneorg/core compatibility policy, package README now directs new users to subpath imports, and existing root re-exports remain intact for patch/minor compatibility."
 events:
   -
     type: "status"
@@ -46,14 +52,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented ADR 0010 and README guidance for @agentplaneorg/core root export compatibility: patch/minor releases keep the root aggregate, internal runtime code prefers subpaths, and any future removal requires a breaking-release migration plan. Verification passed: bun run docs:bootstrap:check; bun run docs:onboarding:check; bun run typecheck; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; git diff --check."
+  -
+    type: "status"
+    at: "2026-04-21T19:44:29.958Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: ADR 0010 records the root @agentplaneorg/core compatibility policy, package README now directs new users to subpath imports, and existing root re-exports remain intact for patch/minor compatibility."
 doc_version: 3
-doc_updated_at: "2026-04-21T19:44:00.979Z"
+doc_updated_at: "2026-04-21T19:44:29.958Z"
 doc_updated_by: "CODER"
 description: "Decide and document whether root @agentplaneorg/core re-exports stay, become deprecated, or are removed in a later breaking release."
 sections:
   Summary: |-
     Define root core export deprecation strategy
-
+    
     Decide and document whether root @agentplaneorg/core re-exports stay, become deprecated, or are removed in a later breaking release.
   Scope: |-
     - In scope: Decide and document whether root @agentplaneorg/core re-exports stay, become deprecated, or are removed in a later breaking release.
@@ -66,13 +79,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-21T19:44:00.971Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Implemented ADR 0010 and README guidance for @agentplaneorg/core root export compatibility: patch/minor releases keep the root aggregate, internal runtime code prefers subpaths, and any future removal requires a breaking-release migration plan. Verification passed: bun run docs:bootstrap:check; bun run docs:onboarding:check; bun run typecheck; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; git diff --check.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T19:42:44.366Z, excerpt_hash=sha256:9a475b4c5cac92f086c03548dd54f83df4b378d7296fff9c1f51ca07ca5f7e51
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
