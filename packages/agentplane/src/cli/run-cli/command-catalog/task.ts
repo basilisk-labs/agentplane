@@ -49,7 +49,7 @@ import { taskVerifyShowSpec } from "../../../commands/task/verify-show.command.j
 import { taskVerifySpec } from "../../../commands/task/verify.command.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
-import { declareCommand, type CommandEntry } from "./shared.js";
+import { declareCommand, type CommandEntry } from "./kernel.js";
 import {
   fromCommandsTaskTaskCommand,
   fromCommandsTaskHandoffCommand,
@@ -100,7 +100,7 @@ import {
   loadTaskVerifyShowSpec,
   loadTaskRebuildIndexSpec,
   fromTaskReclaimSpec,
-} from "../command-loaders.js";
+} from "../command-loaders/task.js";
 
 export const TASK_COMMANDS = [
   fromCommandsTaskTaskCommand(taskSpec, "runTask", { needs: "none" }),

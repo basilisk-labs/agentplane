@@ -11,7 +11,7 @@ import {
   resolveCodexInstallRoot,
   type CodexPluginInstallScope,
 } from "../../../commands/codex/plugin-install.js";
-import type { RunDeps } from "../command-catalog.js";
+import type { RunDeps } from "../command-catalog/kernel.js";
 
 import { wrapCommand } from "./wrap-command.js";
 

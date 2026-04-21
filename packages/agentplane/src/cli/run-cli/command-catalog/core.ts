@@ -31,7 +31,7 @@ import { ideSyncSpec } from "../commands/ide.js";
 import { initSpec } from "../commands/init.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
-import { declareCommand, type CommandEntry } from "./shared.js";
+import { declareCommand, type CommandEntry } from "./kernel.js";
 import {
   fromCommandsInit,
   fromCommandsUpgradeCommand,
@@ -59,7 +59,7 @@ import {
   loadModeSetSpec,
   loadProfileSetSpec,
   loadIdeSyncSpec,
-} from "../command-loaders.js";
+} from "../command-loaders/core.js";
 
 export const CORE_COMMANDS = [
   fromCommandsInit(initSpec, "runInit", {

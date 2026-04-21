@@ -1,10 +1,10 @@
 ---
 id: "202604211311-R3RFB9"
 title: "Add zero-regression command catalog cycle gate"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,16 +23,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T13:39:14.178Z"
+  updated_by: "CODER"
+  note: "Command: bun run arch:check; Result: pass; Evidence: dependency-cruiser known violations OK count=8 max=49 and no new dependency violations. Command: node scripts/check-depcruise-known-violations.mjs; Result: pass. Scope review: depcruise config now has a targeted no-catalog-cycle guard."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: adding a targeted dependency-cruiser guard and lowering the catalog-cycle baseline after the D-prime command catalog refactor."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T13:22:03.925Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: adding a targeted dependency-cruiser guard and lowering the catalog-cycle baseline after the D-prime command catalog refactor."
+  -
+    type: "verify"
+    at: "2026-04-21T13:39:14.178Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run arch:check; Result: pass; Evidence: dependency-cruiser known violations OK count=8 max=49 and no new dependency violations. Command: node scripts/check-depcruise-known-violations.mjs; Result: pass. Scope review: depcruise config now has a targeted no-catalog-cycle guard."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:11:36.489Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T13:39:14.189Z"
+doc_updated_by: "CODER"
 description: "Introduce a targeted dep-cruiser gate for command-catalog cycles and lower the known-violations baseline after D-prime refactor removes current catalog cycles."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T13:39:14.178Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run arch:check; Result: pass; Evidence: dependency-cruiser known violations OK count=8 max=49 and no new dependency violations. Command: node scripts/check-depcruise-known-violations.mjs; Result: pass. Scope review: depcruise config now has a targeted no-catalog-cycle guard.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:22:03.952Z, excerpt_hash=sha256:58e903225ee7633a078933e3760ad1c9aafd926aee0f9d666013d32d7ed29083
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -80,6 +104,14 @@ Scope: make command catalog cycles non-regressable. Steps: 1. Measure post-refac
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T13:39:14.178Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run arch:check; Result: pass; Evidence: dependency-cruiser known violations OK count=8 max=49 and no new dependency violations. Command: node scripts/check-depcruise-known-violations.mjs; Result: pass. Scope review: depcruise config now has a targeted no-catalog-cycle guard.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:22:03.952Z, excerpt_hash=sha256:58e903225ee7633a078933e3760ad1c9aafd926aee0f9d666013d32d7ed29083
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

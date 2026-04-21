@@ -11,6 +11,16 @@ module.exports = {
       },
     },
     {
+      name: "no-command-catalog-cycles",
+      severity: "error",
+      comment: "The command catalog is a registry fan-in and must not participate in cycles.",
+      from: {},
+      to: {
+        path: "^packages/agentplane/src/cli/run-cli/command-catalog",
+        circular: true,
+      },
+    },
+    {
       name: "not-to-unresolvable",
       severity: "error",
       comment: "Every import in the cruised source graph must resolve.",

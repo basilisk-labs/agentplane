@@ -1,10 +1,10 @@
 ---
 id: "202604211311-BA2037"
 title: "Split command loaders by domain"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,16 +23,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T13:39:13.967Z"
+  updated_by: "CODER"
+  note: "Command: bun run arch:check; Result: pass; Evidence: catalog cycles removed from dep-cruiser baseline. Command: bun run typecheck; Result: pass. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/group-command.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts --pool=forks --maxWorkers 4; Result: pass via combined targeted run."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: splitting command loaders by domain after kernel extraction so each catalog domain imports only its corresponding loader surface."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T13:21:53.315Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: splitting command loaders by domain after kernel extraction so each catalog domain imports only its corresponding loader surface."
+  -
+    type: "verify"
+    at: "2026-04-21T13:39:13.967Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run arch:check; Result: pass; Evidence: catalog cycles removed from dep-cruiser baseline. Command: bun run typecheck; Result: pass. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/group-command.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts --pool=forks --maxWorkers 4; Result: pass via combined targeted run."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:11:23.349Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T13:39:13.994Z"
+doc_updated_by: "CODER"
 description: "Decompose cli/run-cli/command-loaders.ts into domain-specific loader modules so loaders depend on the catalog kernel but not on the aggregate catalog."
 sections:
   Summary: |-
@@ -51,6 +67,14 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T13:39:13.967Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run arch:check; Result: pass; Evidence: catalog cycles removed from dep-cruiser baseline. Command: bun run typecheck; Result: pass. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/group-command.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts --pool=forks --maxWorkers 4; Result: pass via combined targeted run.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:21:53.343Z, excerpt_hash=sha256:15b9087fc21bd586a24e385db76547aa45de4ce597b1ab5dfb3188c315c7a653
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -84,6 +108,14 @@ Scope: reduce the 18-cycle hotspot in command-loaders.ts. Steps: 1. Split loader
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T13:39:13.967Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run arch:check; Result: pass; Evidence: catalog cycles removed from dep-cruiser baseline. Command: bun run typecheck; Result: pass. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/group-command.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts --pool=forks --maxWorkers 4; Result: pass via combined targeted run.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:21:53.343Z, excerpt_hash=sha256:15b9087fc21bd586a24e385db76547aa45de4ce597b1ab5dfb3188c315c7a653
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -8,7 +8,7 @@ import { usageError } from "../../spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { ensureWorkflowArtifacts } from "../../../shared/workflow-artifacts.js";
 import { ensureActionApproved } from "../../../commands/shared/approval-requirements.js";
-import type { RunDeps } from "../command-catalog.js";
+import type { RunDeps } from "../command-catalog/kernel.js";
 import { wrapCommand } from "./wrap-command.js";
 
 const output = createCliEmitter();

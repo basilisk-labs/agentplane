@@ -6,6 +6,7 @@ import {
   directSubcommandNamesFromIds,
   loadDirectSubcommandNames,
 } from "./group-command.js";
+import "./run-cli/command-catalog.js";
 import type { CommandId, CommandSpec } from "./spec/spec.js";
 
 const rootSpec: CommandSpec<{ cmd: string[] }> = {

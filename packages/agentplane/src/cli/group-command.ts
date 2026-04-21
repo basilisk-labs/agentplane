@@ -37,10 +37,17 @@ export function directSubcommandNamesFromIds(
   return [...names].toSorted((left, right) => left.localeCompare(right));
 }
 
+let directSubcommandNamesLoader: ((prefix: CommandId) => Promise<readonly string[]>) | null = null;
+
+export function setDirectSubcommandNamesLoader(
+  loader: (prefix: CommandId) => Promise<readonly string[]>,
+): void {
+  directSubcommandNamesLoader = loader;
+}
+
 export async function loadDirectSubcommandNames(prefix: CommandId): Promise<readonly string[]> {
-  // Lazy-load the catalog to avoid a static cycle between group roots and catalog bootstrap.
-  const { getDirectChildCommandNames } = await import("./run-cli/command-catalog.js");
-  return getDirectChildCommandNames(prefix);
+  if (!directSubcommandNamesLoader) return [];
+  return await directSubcommandNamesLoader(prefix);
 }
 
 export function throwGroupCommandUsage(opts: {

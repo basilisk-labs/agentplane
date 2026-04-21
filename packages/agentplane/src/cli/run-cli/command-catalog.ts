@@ -1,13 +1,14 @@
 import { CommandGraph } from "../spec/registry.js";
 import type { CommandId } from "../spec/spec.js";
-import type { CommandEntry } from "./command-catalog/shared.js";
+import { setDirectSubcommandNamesLoader } from "../group-command.js";
+import type { CommandEntry } from "./command-catalog/kernel.js";
 
 import { CORE_COMMANDS } from "./command-catalog/core.js";
 import { LIFECYCLE_COMMANDS } from "./command-catalog/lifecycle.js";
 import { PROJECT_COMMANDS } from "./command-catalog/project.js";
 import { TASK_COMMANDS } from "./command-catalog/task.js";
 
-export type { CommandEntry, RunDeps } from "./command-catalog/shared.js";
+export type { CommandEntry, RunDeps } from "./command-catalog/kernel.js";
 
 export const COMMANDS = [
   ...CORE_COMMANDS,
@@ -44,6 +45,8 @@ export function getDirectChildCommandEntries(parentId: CommandId = []): readonly
 export function getDirectChildCommandNames(parentId: CommandId = []): readonly string[] {
   return CATALOG_GRAPH.directChildSegments(parentId);
 }
+
+setDirectSubcommandNamesLoader((prefix) => Promise.resolve(getDirectChildCommandNames(prefix)));
 
 export function getCommandInvocation(id: CommandId): string {
   const entry = findCommandEntry(id);

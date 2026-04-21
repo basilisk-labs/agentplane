@@ -42,7 +42,7 @@ import { recipesRemoveSpec } from "../../../commands/recipes/remove.command.js";
 import { recipesSpec } from "../../../commands/recipes/recipes.command.js";
 import { recipesUpdateSpec } from "../../../commands/recipes/update.command.js";
 
-import { declareCommand, type CommandEntry } from "./shared.js";
+import { declareCommand, type CommandEntry } from "./kernel.js";
 import {
   fromCommandsRecipesRecipesCommand,
   fromCommandsRecipesCacheCommand,
@@ -79,7 +79,7 @@ import {
   loadPrCloseSupersededSpec,
   loadPrNoteSpec,
   loadIntegrateSpec,
-} from "../command-loaders.js";
+} from "../command-loaders/project.js";
 
 export const PROJECT_COMMANDS = [
   declareCommand(workStartSpec, { load: loadWorkStartSpec }),

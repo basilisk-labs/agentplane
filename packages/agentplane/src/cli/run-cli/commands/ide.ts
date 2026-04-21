@@ -5,7 +5,7 @@ import { writeTextIfChanged } from "../../../shared/write-if-changed.js";
 import { resolvePolicyGatewayForRepo } from "../../../shared/policy-gateway.js";
 import { renderRole, type RoleProfileGuide } from "../../command-guide.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
-import type { RunDeps } from "../command-catalog.js";
+import type { RunDeps } from "../command-catalog/kernel.js";
 import { wrapCommand } from "./wrap-command.js";
 
 type IdeSyncParsed = { ide?: "cursor" | "windsurf" };

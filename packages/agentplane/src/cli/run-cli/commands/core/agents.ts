@@ -6,7 +6,7 @@ import { CliError } from "../../../../shared/errors.js";
 import { createCliEmitter } from "../../../output.js";
 import type { CommandHandler, CommandSpec } from "../../../spec/spec.js";
 import { fileExists } from "../../../fs-utils.js";
-import type { RunDeps } from "../../command-catalog.js";
+import type { RunDeps } from "../../command-catalog/kernel.js";
 
 import { parseAgentProfileJson } from "./agent-profiles.js";
 import { wrapCommand } from "../wrap-command.js";
