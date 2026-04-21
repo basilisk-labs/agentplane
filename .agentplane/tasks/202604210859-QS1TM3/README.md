@@ -1,10 +1,11 @@
 ---
 id: "202604210859-QS1TM3"
 title: "Add production no-console guard"
-status: "DOING"
+result_summary: "Added executable production no-console guard coverage."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-21T10:31:48.551Z"
   updated_by: "CODER"
   note: "Added executable no-console guard tests and documented production logging hygiene; current logging baseline and scoped lint pass."
-commit: null
+commit:
+  hash: "c7f61eb6ae62694f399a7ba8ccab46be0699580f"
+  message: "✅ QS1TM3 code: done"
 comments:
   -
     author: "CODER"
     body: "Start: enforce no new production console usage using existing inventory/check surface while preserving approved CLI UX paths."
+  -
+    author: "CODER"
+    body: "Verified: added executable no-console guard tests, documented production logging hygiene, and passed logging check plus scoped lint for changed files."
 events:
   -
     type: "status"
@@ -43,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added executable no-console guard tests and documented production logging hygiene; current logging baseline and scoped lint pass."
+  -
+    type: "status"
+    at: "2026-04-21T10:32:51.975Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: added executable no-console guard tests, documented production logging hygiene, and passed logging check plus scoped lint for changed files."
 doc_version: 3
-doc_updated_at: "2026-04-21T10:31:48.557Z"
+doc_updated_at: "2026-04-21T10:32:51.975Z"
 doc_updated_by: "CODER"
 description: "Turn the console inventory into an enforced guard for production core/command paths after logger migration."
 sections:
