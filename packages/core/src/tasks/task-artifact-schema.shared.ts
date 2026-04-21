@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
+import { formatZodIssues } from "../schemas/zod-error-format.js";
+
 export type JsonSchemaDocument = Record<string, unknown>;
 
 export const NON_EMPTY_STRING = z.string().min(1);
@@ -44,11 +46,7 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function formatSchemaErrors(label: string, issues: z.ZodIssue[] | undefined): string {
   if (!issues || issues.length === 0) return `${label} schema validation failed`;
-  const rendered = issues.map((issue) => {
-    const path = issue.path.length > 0 ? `${label}/${issue.path.join("/")}` : label;
-    return `${path}: ${issue.message}`;
-  });
-  return `${label} schema validation failed: ${rendered.join("; ")}`;
+  return formatZodIssues(`${label} schema validation failed`, issues);
 }
 
 export function schemaErrors<T>(label: string, schema: z.ZodType<T>, value: unknown): string[] {

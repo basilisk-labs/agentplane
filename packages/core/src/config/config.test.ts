@@ -15,8 +15,16 @@ import {
 
 const makeConfigRecord = (): Record<string, unknown> =>
   structuredClone(defaultConfig()) as Record<string, unknown>;
-const schemaPath = (pathValue: string): RegExp =>
-  new RegExp(`(?:config/)?${pathValue.replaceAll(".", "/")}`);
+const schemaPath = (pathValue: string): RegExp => {
+  const [first = "", ...rest] = pathValue.split(".");
+  const pathPattern = [
+    first,
+    ...rest.map((segment) =>
+      /^\d+$/.test(segment) ? String.raw`(?:[./]${segment}|\[${segment}\])` : `[./]${segment}`,
+    ),
+  ].join("");
+  return new RegExp(`(?:config[/.])?${pathPattern}`);
+};
 
 describe("config", () => {
   it("defaultConfig validates", () => {
@@ -269,7 +277,7 @@ describe("config", () => {
         (raw) => (raw.finish_auto_status_commit = "nope"),
         /finish_auto_status_commit/,
       ],
-      ["agents", (raw) => (raw.agents = "nope"), /agents must be object/],
+      ["agents", (raw) => (raw.agents = "nope"), schemaPath("agents")],
       [
         "agents.approvals",
         (raw) => ((raw.agents as Record<string, unknown>).approvals = "nope"),
@@ -281,7 +289,7 @@ describe("config", () => {
           ((
             (raw.agents as Record<string, unknown>).approvals as Record<string, unknown>
           ).require_plan = "nope"),
-        /require_plan must be boolean/,
+        schemaPath("agents.approvals.require_plan"),
       ],
       [
         "agents.approvals.require_network",
@@ -289,7 +297,7 @@ describe("config", () => {
           ((
             (raw.agents as Record<string, unknown>).approvals as Record<string, unknown>
           ).require_network = "nope"),
-        /require_network must be boolean/,
+        schemaPath("agents.approvals.require_network"),
       ],
       [
         "agents.approvals.require_verify",
@@ -297,7 +305,7 @@ describe("config", () => {
           ((
             (raw.agents as Record<string, unknown>).approvals as Record<string, unknown>
           ).require_verify = "nope"),
-        /require_verify must be boolean/,
+        schemaPath("agents.approvals.require_verify"),
       ],
       [
         "agents.approvals.require_force",
@@ -305,15 +313,15 @@ describe("config", () => {
           ((
             (raw.agents as Record<string, unknown>).approvals as Record<string, unknown>
           ).require_force = "nope"),
-        /require_force must be boolean/,
+        schemaPath("agents.approvals.require_force"),
       ],
-      ["recipes", (raw) => (raw.recipes = "nope"), /recipes must be object/],
+      ["recipes", (raw) => (raw.recipes = "nope"), schemaPath("recipes")],
       [
         "recipes.storage_default",
         (raw) => ((raw.recipes as Record<string, unknown>).storage_default = "bad"),
         schemaPath("recipes.storage_default"),
       ],
-      ["runner", (raw) => (raw.runner = "nope"), /runner must be object/],
+      ["runner", (raw) => (raw.runner = "nope"), schemaPath("runner")],
       [
         "runner.default_adapter",
         (raw) => ((raw.runner as Record<string, unknown>).default_adapter = "unknown"),
@@ -396,7 +404,7 @@ describe("config", () => {
           ).terminate_grace_ms = -1),
         schemaPath("runner.timeouts.terminate_grace_ms"),
       ],
-      ["execution", (raw) => (raw.execution = "nope"), /execution must be object/],
+      ["execution", (raw) => (raw.execution = "nope"), schemaPath("execution")],
       [
         "execution.profile",
         (raw) => ((raw.execution as Record<string, unknown>).profile = "bad"),
@@ -438,12 +446,12 @@ describe("config", () => {
           ]),
         schemaPath("execution.unsafe_actions_requiring_explicit_user_ok"),
       ],
-      ["paths", (raw) => (raw.paths = "nope"), /paths must be object/],
-      ["branch", (raw) => (raw.branch = "nope"), /branch must be object/],
-      ["framework", (raw) => (raw.framework = "nope"), /framework must be object/],
-      ["tasks", (raw) => (raw.tasks = "nope"), /tasks must be object/],
-      ["commit", (raw) => (raw.commit = "nope"), /commit must be object/],
-      ["tasks_backend", (raw) => (raw.tasks_backend = "nope"), /tasks_backend must be object/],
+      ["paths", (raw) => (raw.paths = "nope"), schemaPath("paths")],
+      ["branch", (raw) => (raw.branch = "nope"), schemaPath("branch")],
+      ["framework", (raw) => (raw.framework = "nope"), schemaPath("framework")],
+      ["tasks", (raw) => (raw.tasks = "nope"), schemaPath("tasks")],
+      ["commit", (raw) => (raw.commit = "nope"), schemaPath("commit")],
+      ["tasks_backend", (raw) => (raw.tasks_backend = "nope"), schemaPath("tasks_backend")],
       [
         "closure_commit_requires_approval",
         (raw) => (raw.closure_commit_requires_approval = "nope"),
