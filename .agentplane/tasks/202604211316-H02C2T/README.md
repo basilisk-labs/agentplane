@@ -1,10 +1,11 @@
 ---
 id: "202604211316-H02C2T"
 title: "Extract init v2 prompt steps"
-status: "DOING"
+result_summary: "Added pure init v2 prompt step modules for setup profile, policy gateway, IDE, workflow, backend, advanced settings, and recipe selection, with shared prompt utilities and tests. Evidence: bun run typecheck; bunx vitest run packages/agentplane/src/cli/run-cli/commands/init/steps/*.test.ts --pool=forks --maxWorkers 4; bun run test:project -- cli-unit."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,15 +24,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-21T15:59:49.202Z"
+  updated_by: "CODER"
+  note: "Verified: bun run typecheck passed; bunx vitest run packages/agentplane/src/cli/run-cli/commands/init/steps/*.test.ts --pool=forks --maxWorkers 4 passed (1 file, 5 tests); bun run test:project -- cli-unit passed earlier on the integrated tree after subpath alias fix (56 files, 624 tests)."
+commit:
+  hash: "de982557595956223434543c14a694e20812eacc"
+  message: "✨ H02C2T init: extract v2 prompt steps"
 comments:
   -
     author: "CODER"
     body: "Start: extract pure init v2 prompt step modules and focused tests; keep orchestrator integration for the dependent task."
+  -
+    author: "CODER"
+    body: "Verified: init v2 prompt steps are extracted as pure modules with focused tests."
 events:
   -
     type: "status"
@@ -40,8 +46,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: extract pure init v2 prompt step modules and focused tests; keep orchestrator integration for the dependent task."
+  -
+    type: "verify"
+    at: "2026-04-21T15:59:49.202Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bun run typecheck passed; bunx vitest run packages/agentplane/src/cli/run-cli/commands/init/steps/*.test.ts --pool=forks --maxWorkers 4 passed (1 file, 5 tests); bun run test:project -- cli-unit passed earlier on the integrated tree after subpath alias fix (56 files, 624 tests)."
+  -
+    type: "status"
+    at: "2026-04-21T15:59:57.114Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: init v2 prompt steps are extracted as pure modules with focused tests."
 doc_version: 3
-doc_updated_at: "2026-04-21T15:46:43.739Z"
+doc_updated_at: "2026-04-21T15:59:57.115Z"
 doc_updated_by: "CODER"
 description: "Create pure init v2 prompt step modules for setup profile, policy gateway, IDE, workflow, backend, advanced settings, and recipe selection."
 sections:
@@ -61,6 +80,14 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T15:59:49.202Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: bun run typecheck passed; bunx vitest run packages/agentplane/src/cli/run-cli/commands/init/steps/*.test.ts --pool=forks --maxWorkers 4 passed (1 file, 5 tests); bun run test:project -- cli-unit passed earlier on the integrated tree after subpath alias fix (56 files, 624 tests).
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T15:46:43.739Z, excerpt_hash=sha256:5b2d6b445cb84a76ef1850f63a823a7a581611abd12906a2af91e38f5e2420e3
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -94,6 +121,14 @@ Scope: implement atom #3. Steps: 1. Add init/steps modules for each prompt famil
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T15:59:49.202Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bun run typecheck passed; bunx vitest run packages/agentplane/src/cli/run-cli/commands/init/steps/*.test.ts --pool=forks --maxWorkers 4 passed (1 file, 5 tests); bun run test:project -- cli-unit passed earlier on the integrated tree after subpath alias fix (56 files, 624 tests).
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T15:46:43.739Z, excerpt_hash=sha256:5b2d6b445cb84a76ef1850f63a823a7a581611abd12906a2af91e38f5e2420e3
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
