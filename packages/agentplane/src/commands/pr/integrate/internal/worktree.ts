@@ -3,8 +3,8 @@ import { mkdir } from "node:fs/promises";
 
 import { fileExists } from "../../../../cli/fs-utils.js";
 import { CliError } from "../../../../shared/errors.js";
-import { execFileAsync, gitEnv } from "../../../shared/git.js";
-import { findWorktreeForBranch } from "../../../shared/git-worktree.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv, findWorktreeForBranch } from "@agentplaneorg/core/git";
 import { isPathWithin } from "../../../shared/path.js";
 
 export type IntegrateWorktree = {

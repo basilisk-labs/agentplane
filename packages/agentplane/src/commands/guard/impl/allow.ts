@@ -7,7 +7,7 @@ import {
   protectedPathAllowPrefixes,
   taskArtifactPrefixes,
 } from "../../../shared/protected-paths.js";
-import { GitContext } from "../../shared/git-context.js";
+import { GitContext } from "@agentplaneorg/core/git";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
 
 function normalizeAllowPrefixes(prefixes: string[]): string[] {

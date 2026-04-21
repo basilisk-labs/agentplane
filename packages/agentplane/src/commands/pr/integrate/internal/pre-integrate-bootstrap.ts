@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 
-import { execFileAsync } from "../../../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { shouldAutoBootstrapAfterIntegrate } from "./bootstrap-guidance.js";
 

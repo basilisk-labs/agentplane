@@ -12,7 +12,7 @@ import {
   taskDataToFrontmatter,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { listWorktrees, parseTaskIdFromBranch } from "../shared/git-worktree.js";
+import { listWorktrees, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import { recordVerifiedNoopClosure } from "./close-shared.js";
 
 async function ensureLocalTaskReadmeHydrated(opts: {

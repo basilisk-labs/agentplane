@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@agentplaneorg/core", () => ({
   resolveProject: mocks.resolveProject,
 }));
-vi.mock("../../shared/git-context.js", () => ({
+vi.mock("@agentplaneorg/core/git", () => ({
   GitContext: class {
     constructor(opts: { gitRoot: string }) {
       void opts.gitRoot;

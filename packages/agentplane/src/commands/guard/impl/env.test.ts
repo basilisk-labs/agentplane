@@ -4,7 +4,7 @@ const mocks = vi.hoisted(() => ({
   execFileAsync: vi.fn(),
 }));
 
-vi.mock("../../shared/git.js", () => ({
+vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
 }));
 

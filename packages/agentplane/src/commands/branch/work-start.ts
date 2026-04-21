@@ -6,7 +6,8 @@ import { fileExists } from "../../cli/fs-utils.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { execFileAsync, gitEnv } from "../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
 import { isPathWithin } from "../shared/path.js";
 import {

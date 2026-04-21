@@ -1,13 +1,12 @@
 import { readFile } from "node:fs/promises";
-import { resolveBaseBranch } from "@agentplaneorg/core/git";
+import { resolveBaseBranch, gitEnv, parseTaskIdFromCloseBranch } from "@agentplaneorg/core/git";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { CliError } from "../../shared/errors.js";
 import { resolveDefaultGithubRepo, runGhApiJson } from "../pr/internal/gh-api.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
-import { execFileAsync, gitEnv } from "../shared/git.js";
-import { parseTaskIdFromCloseBranch } from "../shared/git-worktree.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import { parsePrMeta } from "../shared/pr-meta.js";
 import {
   loadTaskFromContext,

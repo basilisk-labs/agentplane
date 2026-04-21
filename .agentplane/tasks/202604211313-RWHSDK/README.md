@@ -1,10 +1,10 @@
 ---
 id: "202604211313-RWHSDK"
 title: "Remove command git shim imports"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -24,21 +24,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T16:29:20.376Z"
+  updated_by: "CODER"
+  note: "Command git shim imports removed from commands scope."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: remove command git shim imports after core git/process subpath migration."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T16:19:39.594Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: remove command git shim imports after core git/process subpath migration."
+  -
+    type: "verify"
+    at: "2026-04-21T16:29:20.376Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command git shim imports removed from commands scope."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:13:53.450Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T16:29:20.381Z"
+doc_updated_by: "CODER"
 description: "Replace command-layer git shim imports with direct @agentplaneorg/core/git imports and delete one-line git shim files that become unused."
 sections:
   Summary: |-
     Remove command git shim imports
-    
+
     Replace command-layer git shim imports with direct @agentplaneorg/core/git imports and delete one-line git shim files that become unused.
   Scope: |-
     - In scope: Replace command-layer git shim imports with direct @agentplaneorg/core/git imports and delete one-line git shim files that become unused.
@@ -53,6 +69,18 @@ sections:
     6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T16:29:20.376Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Command git shim imports removed from commands scope.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:19:39.602Z, excerpt_hash=sha256:c118bcfe376cbcbdc3c2a7555638bcede91502ca71d37e6d3edfe94deb14232b
+
+    Details:
+
+    Command: rg -n 'from \"(\./|(?:\.\./)+shared/)git(\.js|-diff\.js|-worktree\.js|-context\.js)\"|vi\.mock\(\"(\./|(?:\.\./)+shared/)git(\.js|-diff\.js|-worktree\.js|-context\.js)\"' packages/agentplane/src/commands -g '*.ts' | Result: pass, no matches. Command: bun run typecheck | Result: pass. Command: bun run test:project -- cli-unit | Result: pass, 62 files and 624 tests. Command: bun run arch:check | Result: pass, no dependency violations; 8 known violations ignored. Command: bun run format:check | Result: pass. Command: targeted eslint over changed commands files | Result: pass. Command: bun run lint | Result: fail outside approved scope only, packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts has require-await/no-empty-function errors and init v2 is out of scope. Command: bun run knip:check | Result: fail outside this change: files baseline 14/11, types 306/301, total 571/563; remaining command file growth points at scenario files, while removed git shim files are no longer reported.
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -87,6 +115,18 @@ Scope: close the most obvious shared-directory cleanup without a broad rename. S
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T16:29:20.376Z — VERIFY — ok
+
+By: CODER
+
+Note: Command git shim imports removed from commands scope.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:19:39.602Z, excerpt_hash=sha256:c118bcfe376cbcbdc3c2a7555638bcede91502ca71d37e6d3edfe94deb14232b
+
+Details:
+
+Command: rg -n 'from \"(\./|(?:\.\./)+shared/)git(\.js|-diff\.js|-worktree\.js|-context\.js)\"|vi\.mock\(\"(\./|(?:\.\./)+shared/)git(\.js|-diff\.js|-worktree\.js|-context\.js)\"' packages/agentplane/src/commands -g '*.ts' | Result: pass, no matches. Command: bun run typecheck | Result: pass. Command: bun run test:project -- cli-unit | Result: pass, 62 files and 624 tests. Command: bun run arch:check | Result: pass, no dependency violations; 8 known violations ignored. Command: bun run format:check | Result: pass. Command: targeted eslint over changed commands files | Result: pass. Command: bun run lint | Result: fail outside approved scope only, packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts has require-await/no-empty-function errors and init v2 is out of scope. Command: bun run knip:check | Result: fail outside this change: files baseline 14/11, types 306/301, total 571/563; remaining command file growth points at scenario files, while removed git shim files are no longer reported.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

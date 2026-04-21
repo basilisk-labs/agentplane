@@ -9,7 +9,8 @@ import type {
 import { validateTaskHandoff } from "@agentplaneorg/core/schemas";
 
 import { CliError } from "../../shared/errors.js";
-import { execFileAsync, gitEnv } from "./git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 import type { CommandContext } from "./task-backend.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 

@@ -1,7 +1,6 @@
 import os from "node:os";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import * as git from "./git.js";
 import {
   buildObservedGithubPrMeta,
   buildIntegratedPrMeta,
@@ -61,7 +60,8 @@ describe("pr-meta shell invocations", () => {
     vi.spyOn(os, "platform").mockReturnValue("win32");
     delete process.env.COMSPEC;
     delete process.env.ComSpec;
-    const execFileAsync = vi.spyOn(git, "execFileAsync").mockResolvedValue({
+    const gitProcess = await import("@agentplaneorg/core/process");
+    const execFileAsync = vi.spyOn(gitProcess, "execFileAsync").mockResolvedValue({
       stdout: "ok",
       stderr: "",
     });

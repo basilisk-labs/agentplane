@@ -3,8 +3,8 @@ import path from "node:path";
 import { buildTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core";
 
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "../../guard/impl/env.js";
-import { toGitPath } from "../../shared/git-diff.js";
-import { execFileAsync, gitEnv } from "../../shared/git.js";
+import { toGitPath, gitEnv } from "@agentplaneorg/core/git";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitCurrentBranch } from "../../shared/git-ops.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 

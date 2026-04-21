@@ -2,7 +2,8 @@ import path from "node:path";
 
 import { extractTaskSuffix } from "@agentplaneorg/core";
 
-import { execFileAsync, gitEnv } from "../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 
 export async function taskCloseAlreadyRecordedOnBase(opts: {
   gitRoot: string;

@@ -2,7 +2,7 @@ import { runProcess } from "@agentplaneorg/core/process";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 import { isDotEnvLoadedKey } from "../../../shared/env.js";
-import { gitEnv } from "../../shared/git.js";
+import { gitEnv } from "@agentplaneorg/core/git";
 import { normalizeGhTransportError, withGhTransportRetry } from "../../shared/gh-transport.js";
 
 function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {

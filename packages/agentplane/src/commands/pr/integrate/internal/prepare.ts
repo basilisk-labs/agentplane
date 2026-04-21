@@ -1,6 +1,6 @@
 import path from "node:path";
 import { readFile } from "node:fs/promises";
-import { resolveBaseBranch } from "@agentplaneorg/core/git";
+import { resolveBaseBranch, gitDiffNames, findWorktreeForBranch } from "@agentplaneorg/core/git";
 import type { TaskData } from "../../../../backends/task-backend.js";
 
 import { fileExists } from "../../../../cli/fs-utils.js";
@@ -9,9 +9,7 @@ import { unknownEntityMessage, workflowModeMessage } from "../../../../cli/outpu
 import { withDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../../shared/errors.js";
 import { ensureGitClean } from "../../../guard/index.js";
-import { gitDiffNames } from "../../../shared/git-diff.js";
 import { gitBranchExists, gitCurrentBranch, gitRevParse } from "../../../shared/git-ops.js";
-import { findWorktreeForBranch } from "../../../shared/git-worktree.js";
 import {
   loadCommandContext,
   loadTaskFromContext,

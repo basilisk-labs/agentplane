@@ -6,7 +6,7 @@ import { parseTaskReadme, renderTaskDocFromSections } from "@agentplaneorg/core/
 import type { TaskSummary } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";
 import { resolvePolicyGatewayForRepo } from "../../shared/policy-gateway.js";
-import { GitContext } from "../shared/git-context.js";
+import { GitContext } from "@agentplaneorg/core/git";
 import { listTaskProjection, type CommandContext } from "../shared/task-backend.js";
 
 type TaskDocSnapshot = {

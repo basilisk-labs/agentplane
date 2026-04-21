@@ -12,7 +12,8 @@ import {
   renderPostIntegrateBootstrapGuidance,
   shouldRecommendPostIntegrateBootstrap,
 } from "./internal/bootstrap-guidance.js";
-import { execFileAsync, gitEnv } from "../../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 import { gitRevParse } from "../../shared/git-ops.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import {

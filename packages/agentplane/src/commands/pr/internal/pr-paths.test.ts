@@ -8,7 +8,7 @@ import type {
   resolveProject as resolveProjectFn,
 } from "@agentplaneorg/core";
 import type { fileExists as fileExistsFn } from "../../../cli/fs-utils.js";
-import type { gitShowFile as gitShowFileFn } from "../../shared/git-diff.js";
+import type { gitShowFile as gitShowFileFn } from "@agentplaneorg/core/git";
 
 const mocks = {
   resolveProject: vi.fn(),
@@ -45,7 +45,7 @@ vi.mock("../../../cli/fs-utils.js", () => ({
 vi.mock("node:fs/promises", () => ({
   readFile: callReadFile,
 }));
-vi.mock("../../shared/git-diff.js", () => ({
+vi.mock("@agentplaneorg/core/git", () => ({
   toGitPath: (value: string) => value.replaceAll("\\", "/"),
   gitShowFile: callGitShowFile,
 }));

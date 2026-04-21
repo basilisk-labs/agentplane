@@ -24,13 +24,14 @@ import {
   type TaskData,
   type TaskSummary,
 } from "../../backends/task-backend.js";
-import { gitShowFile, toGitPath } from "./git-diff.js";
-import { GitContext } from "./git-context.js";
 import {
   findWorktreeForBranch,
+  GitContext,
   gitListTaskBranches,
+  gitShowFile,
   parseTaskIdFromBranch,
-} from "./git-worktree.js";
+  toGitPath,
+} from "@agentplaneorg/core/git";
 
 export type CommandMemo = {
   taskProjection?: Promise<TaskSummary[]>;

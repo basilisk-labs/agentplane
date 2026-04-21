@@ -7,7 +7,7 @@ import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { GitContext } from "../shared/git-context.js";
+import { GitContext } from "@agentplaneorg/core/git";
 import type { TaskStorePatch } from "../shared/task-store.js";
 
 const mocks = vi.hoisted(() => ({
@@ -54,10 +54,20 @@ vi.mock("../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
   gitCurrentBranch: mocks.gitCurrentBranch,
 }));
-vi.mock("../shared/git.js", () => ({
+vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
-  gitEnv: () => ({}),
 }));
+vi.mock("@agentplaneorg/core/git", async () => {
+  const actualUnknown: unknown = await vi.importActual("@agentplaneorg/core/git");
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    gitEnv: () => ({}),
+  };
+});
 vi.mock("../shared/task-store.js", async (importOriginal) => {
   const actualUnknown: unknown = await importOriginal();
   const actual =

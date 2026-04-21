@@ -2,9 +2,8 @@ import path from "node:path";
 
 import { extractTaskSuffix } from "@agentplaneorg/core";
 
-import { execFileAsync, gitEnv } from "../../shared/git.js";
-import { GitContext } from "../../shared/git-context.js";
-import { parseTaskIdFromBranch } from "../../shared/git-worktree.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv, GitContext, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import {
   cleanHookEnv,
   maybePersistExpectedCliVersion,
