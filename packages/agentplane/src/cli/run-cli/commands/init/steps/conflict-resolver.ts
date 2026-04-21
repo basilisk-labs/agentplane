@@ -5,7 +5,7 @@ import { previewConflicts } from "../ui-v2.js";
 import { selectStepValue } from "./prompt-utils.js";
 import type { InitV2PromptClack } from "./types.js";
 
-export type ConflictChoice = "overwrite" | "backup";
+type ConflictChoice = "overwrite" | "backup";
 type ConflictResolutionChoice = ConflictChoice | "cancel";
 
 const conflictResolutionOptions: {

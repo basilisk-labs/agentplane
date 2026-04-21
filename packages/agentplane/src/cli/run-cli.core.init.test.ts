@@ -983,7 +983,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--root", root, "--setup-profile", "developer"]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("◇  Workflow");
+      expect(io.stdout).not.toContain("◇  Workflow");
       expect(choice).toHaveBeenCalled();
       expect(yesNo).toHaveBeenCalled();
       expect(

@@ -2,7 +2,7 @@ import path from "node:path";
 
 import type { InitV2ClackPrompts } from "./prompts-v2.js";
 
-export type InitV2PreviewItem = {
+type InitV2PreviewItem = {
   label: string;
   value: string | number | boolean | null | undefined;
 };

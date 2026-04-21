@@ -32,7 +32,6 @@ import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./writ
 import { ensureInitRedmineEnvTemplate } from "./write-env.js";
 import { ensureInitGitignore } from "./write-gitignore.js";
 import { ensureInitWorkflow } from "./write-workflow.js";
-import { renderInitSection, renderInitWelcome } from "./ui.js";
 import { cmdInitV2 } from "./orchestrate-v2.js";
 
 function shouldUseExperimentalInitV2(flags: InitParsed): boolean {
@@ -102,15 +101,8 @@ export async function cmdInit(opts: {
   }
 
   if (isInteractive) {
-    process.stdout.write(renderInitWelcome());
     const presetLines = Object.entries(setupProfilePresets).map(
       ([id, preset]) => `- ${id}: ${preset.description}`,
-    );
-    process.stdout.write(
-      renderInitSection(
-        "Setup Profile",
-        "Pick one of three setup profiles. This controls policy strictness and questionnaire depth.",
-      ),
     );
     process.stdout.write(`${presetLines.join("\n")}\n\n`);
     setupProfilePreset =
@@ -125,21 +117,13 @@ export async function cmdInit(opts: {
     setupProfile = selectedPreset.mode;
     hooks = flags.hooks ?? selectedPreset.defaultHooks;
 
-    if (flags.policyGateway) {
-      policyGateway = flags.policyGateway;
-    } else {
-      process.stdout.write(
-        renderInitSection(
-          "Policy Gateway",
-          "Choose which root policy gateway file to install for your primary agent runtime.",
-        ),
-      );
-      policyGateway = (await askChoice(
+    policyGateway =
+      flags.policyGateway ??
+      ((await askChoice(
         "Policy gateway",
         ["codex", "claude"],
         policyGateway,
-      )) as PolicyGatewayFlavor;
-    }
+      )) as PolicyGatewayFlavor);
 
     if (flags.strictUnsafeConfirm === undefined) {
       strictUnsafeConfirm = selectedPreset.defaultStrictUnsafeConfirm;
@@ -162,22 +146,10 @@ export async function cmdInit(opts: {
 
     ide = flags.ide ?? INIT_DEFAULTS.ide;
     if (shouldPromptWorkflow) {
-      process.stdout.write(
-        renderInitSection(
-          "Workflow",
-          "Choose how this repository will be orchestrated: direct means one branch, branch_pr means PR-first tasks.",
-        ),
-      );
       const choice = await askChoice("Workflow mode", ["direct", "branch_pr"], workflow);
       workflow = choice === "branch_pr" ? "branch_pr" : "direct";
     }
     if (workflow === "direct" && setupProfile === "full" && !flags.directCloseDirtyPolicy) {
-      process.stdout.write(
-        renderInitSection(
-          "Direct Close Dirt Policy",
-          "Choose how direct close commits handle unrelated tracked dirt. The tolerant mode ignores only README changes from other active tasks; strict mode blocks on any unrelated tracked change.",
-        ),
-      );
       const choice = await askChoice(
         "Direct close dirt policy",
         ["allow-other-task-readmes", "strict"],
@@ -186,30 +158,11 @@ export async function cmdInit(opts: {
       directCloseDirtyPolicy = choice === "strict" ? "strict" : "allow_other_task_readmes";
     }
     if (shouldPromptBackend) {
-      if (shouldPromptWorkflow || setupProfile === "full") {
-        process.stdout.write(
-          renderInitSection("Task Backend", "Choose where task data is stored and managed."),
-        );
-      }
       const choice = await askChoice("Task backend", ["local", "redmine"], backend);
       backend = choice === "redmine" ? "redmine" : "local";
     }
 
     if (setupProfile === "full") {
-      process.stdout.write(
-        renderInitSection(
-          "Hooks",
-          hooks
-            ? "Managed git hooks are enabled and will be installed automatically."
-            : "Managed git hooks are disabled by profile/flag and will not be installed.",
-        ),
-      );
-      process.stdout.write(
-        renderInitSection(
-          "Execution Profile",
-          "Set default autonomy/effort for agents. You can change this later in config.",
-        ),
-      );
       if (!flags.executionProfile) {
         executionProfile = (await askChoice(
           "Execution profile",
@@ -223,24 +176,12 @@ export async function cmdInit(opts: {
           strictUnsafeConfirm,
         );
       }
-      process.stdout.write(
-        renderInitSection(
-          "Network Approval",
-          "Control whether network actions require explicit approval by default. Plan and verification approvals follow the selected setup profile unless you override them with explicit flags.",
-        ),
-      );
       if (flags.requireNetworkApproval === undefined) {
         requireNetworkApproval = await askYesNo(
           "Require explicit approval for network actions?",
           requireNetworkApproval,
         );
       }
-      process.stdout.write(
-        renderInitSection(
-          "Recipes",
-          "Optional: materialize cached recipes now (comma-separated IDs) or choose none.",
-        ),
-      );
       if (!flags.recipes) {
         const cachedRecipes = await listCachedRecipes();
         process.stdout.write(`${renderCachedRecipesHint(cachedRecipes)}\n`);
@@ -276,12 +217,6 @@ export async function cmdInit(opts: {
         flags.requireVerifyApproval ?? selectedPreset.defaultRequireVerifyApproval;
       executionProfile = flags.executionProfile ?? selectedPreset.defaultExecutionProfile;
       strictUnsafeConfirm = flags.strictUnsafeConfirm ?? selectedPreset.defaultStrictUnsafeConfirm;
-      process.stdout.write(
-        renderInitSection(
-          "Defaults Applied",
-          `Using compact ${setupProfilePreset} defaults for approvals, execution profile, and cached recipe selection. Hooks: ${hooks ? "enabled" : "disabled"}.`,
-        ),
-      );
     }
   }
 

@@ -8,7 +8,7 @@ import type {
   RecipeSelectionStepAnswers,
 } from "./types.js";
 
-export type InitRecipeSelectionItem = {
+type InitRecipeSelectionItem = {
   id: string;
   label?: string;
 };

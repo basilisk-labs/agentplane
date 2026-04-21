@@ -8,11 +8,11 @@ type InitV2ApplySpinner = {
 
 type InitV2ApplyClack = Pick<InitV2ClackPrompts, "spinner">;
 
-export type InitV2ApplyStepWriter = () => Promise<void | readonly string[]>;
+type InitV2ApplyStepWriter = () => Promise<void | readonly string[]>;
 
-export type InitV2ApplyInstallCommitWriter = (installPaths: readonly string[]) => Promise<void>;
+type InitV2ApplyInstallCommitWriter = (installPaths: readonly string[]) => Promise<void>;
 
-export type InitV2ApplyPlan = {
+type InitV2ApplyPlan = {
   config: InitV2ApplyStepWriter;
   agents: InitV2ApplyStepWriter;
   workflow: InitV2ApplyStepWriter;
