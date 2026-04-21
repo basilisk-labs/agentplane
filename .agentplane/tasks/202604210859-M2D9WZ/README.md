@@ -1,10 +1,12 @@
 ---
 id: "202604210859-M2D9WZ"
 title: "Inventory production console usage"
-status: "DOING"
+result_summary: "Added production console usage inventory guard."
+risk_level: "low"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +25,16 @@ verification:
   updated_at: "2026-04-21T09:35:24.173Z"
   updated_by: "CODER"
   note: "Added logging:check as a production console usage inventory guard with a current baseline of 26 occurrences across packages/**/*.ts excluding tests/spec/dist. Verification: bun run logging:check passed; bun run lint:core -- scripts/check-no-console.mjs passed."
-commit: null
+commit:
+  hash: "21071375b06c0b79d84ac39fcb7e886e74df816b"
+  message: "✅ M2D9WZ code: done"
 comments:
   -
     author: "CODER"
     body: "Start: Add a production console usage inventory guard that records the current baseline without replacing console calls yet."
+  -
+    author: "CODER"
+    body: "Verified: production console inventory guard added with baseline 26 and wired into CI/release checks."
 events:
   -
     type: "status"
@@ -42,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added logging:check as a production console usage inventory guard with a current baseline of 26 occurrences across packages/**/*.ts excluding tests/spec/dist. Verification: bun run logging:check passed; bun run lint:core -- scripts/check-no-console.mjs passed."
+  -
+    type: "status"
+    at: "2026-04-21T09:35:33.172Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: production console inventory guard added with baseline 26 and wired into CI/release checks."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:35:24.177Z"
+doc_updated_at: "2026-04-21T09:35:33.173Z"
 doc_updated_by: "CODER"
 description: "Add a baseline check for production console.* usage so structured logging migration has measurable progress."
 sections:
