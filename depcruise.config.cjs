@@ -54,13 +54,14 @@ module.exports = {
     {
       name: "agentplane-runtime-does-not-import-testkit",
       severity: "error",
-      comment: "agentplane runtime source must not import @agentplane/testkit.",
+      comment:
+        "agentplane runtime source must not import @agentplane/testkit or testkit implementation artifacts.",
       from: {
         path: "^packages/agentplane/src/",
-        pathNot: "\\.test\\.ts$",
+        pathNot: "(\\.test\\.ts$|^packages/agentplane/src/testing/)",
       },
       to: {
-        path: "^packages/testkit/src/",
+        path: "^(packages/testkit/(src|dist)/|@agentplane/testkit($|/))",
       },
     },
   ],

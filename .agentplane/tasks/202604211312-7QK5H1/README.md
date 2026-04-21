@@ -1,10 +1,10 @@
 ---
 id: "202604211312-7QK5H1"
 title: "Close testkit boundary rule gaps"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,21 +23,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T17:09:42.831Z"
+  updated_by: "CODER"
+  note: "Verified testkit boundary rule gaps. Checks: bun run arch:check passed; bun run lint:core passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run format:check passed; git diff --check passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: close testkit architecture boundary gaps for source, dist, and package-alias imports while preserving test-only surfaces."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T17:06:40.260Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: close testkit architecture boundary gaps for source, dist, and package-alias imports while preserving test-only surfaces."
+  -
+    type: "verify"
+    at: "2026-04-21T17:09:42.831Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified testkit boundary rule gaps. Checks: bun run arch:check passed; bun run lint:core passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run format:check passed; git diff --check passed."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:12:35.719Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T17:09:42.834Z"
+doc_updated_by: "CODER"
 description: "Extend architecture rules so runtime code cannot import packages/testkit/src, packages/testkit/dist, or @agentplane/testkit outside approved test-only surfaces."
 sections:
   Summary: |-
     Close testkit boundary rule gaps
-    
+
     Extend architecture rules so runtime code cannot import packages/testkit/src, packages/testkit/dist, or @agentplane/testkit outside approved test-only surfaces.
   Scope: |-
     - In scope: Extend architecture rules so runtime code cannot import packages/testkit/src, packages/testkit/dist, or @agentplane/testkit outside approved test-only surfaces.
@@ -49,6 +65,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T17:09:42.831Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified testkit boundary rule gaps. Checks: bun run arch:check passed; bun run lint:core passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run format:check passed; git diff --check passed.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T17:06:40.268Z, excerpt_hash=sha256:a9ce382c13e2f145b2707231bad7f25b0f27c3e76562f988517ec686588fefbb
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -80,6 +104,14 @@ Scope: make the testkit boundary enforce the real import surfaces. Steps: 1. Ext
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T17:09:42.831Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified testkit boundary rule gaps. Checks: bun run arch:check passed; bun run lint:core passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run format:check passed; git diff --check passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T17:06:40.268Z, excerpt_hash=sha256:a9ce382c13e2f145b2707231bad7f25b0f27c3e76562f988517ec686588fefbb
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
