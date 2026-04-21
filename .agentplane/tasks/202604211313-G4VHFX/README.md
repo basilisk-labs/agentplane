@@ -1,10 +1,10 @@
 ---
 id: "202604211313-G4VHFX"
 title: "Split CLI lifecycle mega-test"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +28,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: split the remaining CLI lifecycle mega-test into scenario-family files while preserving behavior."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T16:00:51.755Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split the remaining CLI lifecycle mega-test into scenario-family files while preserving behavior."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:13:31.139Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T16:00:51.773Z"
+doc_updated_by: "CODER"
 description: "Decompose the large run-cli lifecycle test file into focused lifecycle scenario files using shared fixtures where appropriate."
 sections:
   Summary: |-
