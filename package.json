@@ -11,7 +11,7 @@
   "packageManager": "bun@1.3.6",
   "scripts": {
     "postinstall": "lefthook install",
-    "build": "tsc -b && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle",
+    "build": "tsc -b && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle",
     "typecheck": "tsc -b",
     "test": "bun run test:fast",
     "test:fast": "vitest --config vitest.workspace.ts run --project fast",

@@ -15,6 +15,8 @@ import {
 
 const makeConfigRecord = (): Record<string, unknown> =>
   structuredClone(defaultConfig()) as Record<string, unknown>;
+const readConfigModuleText = async (relativePath: string): Promise<string> =>
+  await readFile(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
 const schemaPath = (pathValue: string): RegExp => {
   const [first = "", ...rest] = pathValue.split(".");
   const pathPattern = [
@@ -53,13 +55,10 @@ describe("config", () => {
   });
 
   it("keeps config IO and validation behind dedicated modules", async () => {
-    const moduleText = async (relativePath: string) =>
-      await readFile(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
-
     const [configText, ioText, validationText] = await Promise.all([
-      moduleText("./config.ts"),
-      moduleText("./io.ts"),
-      moduleText("./validation.ts"),
+      readConfigModuleText("./config.ts"),
+      readConfigModuleText("./io.ts"),
+      readConfigModuleText("./validation.ts"),
     ]);
 
     expect(configText).toContain('from "./io.js"');

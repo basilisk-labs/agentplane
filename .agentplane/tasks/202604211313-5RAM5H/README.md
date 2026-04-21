@@ -1,10 +1,10 @@
 ---
 id: "202604211313-5RAM5H"
 title: "Bundle agentplane CLI entry with tsup"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,21 +24,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T19:52:01.723Z"
+  updated_by: "CODER"
+  note: "Implemented agentplane CLI bundling with tsup while preserving bin/agentplane.js as the dist guard/runtime wrapper. Added package-root path helpers so bundled dist/cli.js resolves assets, package.json, bin/agentplane.js, and repo fallback scripts from the package root rather than source-module import.meta.url. Verification passed: bun run build; bun run release:check; bun run bench:cli:cold (quickstart avg 232.386ms, task_list avg 250.638ms, task_search avg 255.014ms, task_next avg 366.22ms, preflight_quick avg 295.473ms); bun run test:project -- critical; bun run typecheck; bun run lint:core; bun run knip:check; bun run format:check; git diff --check; node packages/agentplane/bin/agentplane.js --help; runtime explain; doctor; agents; role CODER; package-paths unit test; config module boundary unit test."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: add a bundled agentplane CLI entry while preserving the bin wrapper, dist guard, and runtime watch behavior."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T19:44:56.626Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add a bundled agentplane CLI entry while preserving the bin wrapper, dist guard, and runtime watch behavior."
+  -
+    type: "verify"
+    at: "2026-04-21T19:52:01.723Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented agentplane CLI bundling with tsup while preserving bin/agentplane.js as the dist guard/runtime wrapper. Added package-root path helpers so bundled dist/cli.js resolves assets, package.json, bin/agentplane.js, and repo fallback scripts from the package root rather than source-module import.meta.url. Verification passed: bun run build; bun run release:check; bun run bench:cli:cold (quickstart avg 232.386ms, task_list avg 250.638ms, task_search avg 255.014ms, task_next avg 366.22ms, preflight_quick avg 295.473ms); bun run test:project -- critical; bun run typecheck; bun run lint:core; bun run knip:check; bun run format:check; git diff --check; node packages/agentplane/bin/agentplane.js --help; runtime explain; doctor; agents; role CODER; package-paths unit test; config module boundary unit test."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:13:14.918Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T19:52:23.277Z"
+doc_updated_by: "CODER"
 description: "Prototype and adopt a bundled agentplane CLI entry while keeping bin/agentplane.js as the runtime/watch wrapper."
 sections:
   Summary: |-
     Bundle agentplane CLI entry with tsup
-    
+
     Prototype and adopt a bundled agentplane CLI entry while keeping bin/agentplane.js as the runtime/watch wrapper.
   Scope: |-
     - In scope: Prototype and adopt a bundled agentplane CLI entry while keeping bin/agentplane.js as the runtime/watch wrapper.
@@ -50,11 +66,19 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T19:52:01.723Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented agentplane CLI bundling with tsup while preserving bin/agentplane.js as the dist guard/runtime wrapper. Added package-root path helpers so bundled dist/cli.js resolves assets, package.json, bin/agentplane.js, and repo fallback scripts from the package root rather than source-module import.meta.url. Verification passed: bun run build; bun run release:check; bun run bench:cli:cold (quickstart avg 232.386ms, task_list avg 250.638ms, task_search avg 255.014ms, task_next avg 366.22ms, preflight_quick avg 295.473ms); bun run test:project -- critical; bun run typecheck; bun run lint:core; bun run knip:check; bun run format:check; git diff --check; node packages/agentplane/bin/agentplane.js --help; runtime explain; doctor; agents; role CODER; package-paths unit test; config module boundary unit test.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T19:44:56.635Z, excerpt_hash=sha256:ae9bc4646eb8f53b6fc6f595ff4d0c6323b128bd408da2d951d7fbc111632748
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: "- Non-acceptance smoke note: `node packages/agentplane/bin/agentplane.js recipes list --root /Users/densmirnov/Github/agentplane` returned `E_IO: Invalid field manifest.scenarios[0].name: expected string`. Required bundling acceptance checks passed, and this appears tied to local recipe manifest data rather than the CLI entry bundle. No recipe data was changed under this task scope."
 id_source: "generated"
 ---
 ## Summary
@@ -81,6 +105,14 @@ Scope: reduce CLI cold-path module loading. Steps: 1. Add tsup/esbuild config fo
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T19:52:01.723Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented agentplane CLI bundling with tsup while preserving bin/agentplane.js as the dist guard/runtime wrapper. Added package-root path helpers so bundled dist/cli.js resolves assets, package.json, bin/agentplane.js, and repo fallback scripts from the package root rather than source-module import.meta.url. Verification passed: bun run build; bun run release:check; bun run bench:cli:cold (quickstart avg 232.386ms, task_list avg 250.638ms, task_search avg 255.014ms, task_next avg 366.22ms, preflight_quick avg 295.473ms); bun run test:project -- critical; bun run typecheck; bun run lint:core; bun run knip:check; bun run format:check; git diff --check; node packages/agentplane/bin/agentplane.js --help; runtime explain; doctor; agents; role CODER; package-paths unit test; config module boundary unit test.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T19:44:56.635Z, excerpt_hash=sha256:ae9bc4646eb8f53b6fc6f595ff4d0c6323b128bd408da2d951d7fbc111632748
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -89,3 +121,5 @@ Scope: reduce CLI cold-path module loading. Steps: 1. Add tsup/esbuild config fo
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Non-acceptance smoke note: `node packages/agentplane/bin/agentplane.js recipes list --root /Users/densmirnov/Github/agentplane` returned `E_IO: Invalid field manifest.scenarios[0].name: expected string`. Required bundling acceptance checks passed, and this appears tied to local recipe manifest data rather than the CLI entry bundle. No recipe data was changed under this task scope.

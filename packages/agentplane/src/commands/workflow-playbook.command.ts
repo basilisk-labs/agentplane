@@ -1,14 +1,14 @@
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { resolveProject } from "@agentplaneorg/core";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { runProcess } from "@agentplaneorg/core/process";
 
 import { type CommandHandler, type CommandSpec } from "../cli/spec/spec.js";
 import { mapCoreError } from "../cli/error-map.js";
+import { resolveAgentplaneBinPath } from "../shared/package-paths.js";
 
-const AGENTPLANE_BIN = fileURLToPath(new URL("../../bin/agentplane.js", import.meta.url));
+const AGENTPLANE_BIN = resolveAgentplaneBinPath();
 const MAX_LOG_CHARS = 8000;
 
 type WorkflowPlaybookMode = "debug" | "sync" | "land";

@@ -7,8 +7,9 @@ import {
   type ResolvedBehavior,
 } from "../../runtime/behavior/index.js";
 import type { RunnerPromptBlock, RunnerPromptRole } from "../types.js";
+import { resolveAgentplaneAssetUrl } from "../../shared/package-paths.js";
 
-export const FRAMEWORK_RUNNER_PROMPT_URL = new URL("../../../assets/RUNNER.md", import.meta.url);
+export const FRAMEWORK_RUNNER_PROMPT_URL = resolveAgentplaneAssetUrl("RUNNER.md");
 
 export const BASE_PROMPT_PRIORITIES = {
   framework_runner: 100,

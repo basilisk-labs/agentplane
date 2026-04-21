@@ -1,6 +1,5 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { parseTaskReadme, renderTaskDocFromSections } from "@agentplaneorg/core/tasks";
 
 import type { TaskSummary } from "../../backends/task-backend.js";
@@ -8,6 +7,7 @@ import { renderDiagnosticFinding } from "../shared/diagnostics.js";
 import { resolvePolicyGatewayForRepo } from "../../shared/policy-gateway.js";
 import { GitContext } from "@agentplaneorg/core/git";
 import { listTaskProjection, type CommandContext } from "../shared/task-backend.js";
+import { resolveAgentplaneAssetPath } from "../../shared/package-paths.js";
 
 type TaskDocSnapshot = {
   id?: unknown;
@@ -34,9 +34,7 @@ async function isDirectory(absPath: string): Promise<boolean> {
 }
 
 async function listMissingManagedPolicyFiles(repoRoot: string): Promise<string[]> {
-  const manifestPath = fileURLToPath(
-    new URL("../../../assets/framework.manifest.json", import.meta.url),
-  );
+  const manifestPath = resolveAgentplaneAssetPath("framework.manifest.json");
   let parsed: { files?: { path?: unknown; required?: unknown }[] } = {};
   try {
     parsed = JSON.parse(await fs.readFile(manifestPath, "utf8")) as {
