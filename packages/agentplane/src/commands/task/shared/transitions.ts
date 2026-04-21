@@ -1,4 +1,4 @@
-import { AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { infoMessage, warnMessage } from "../../../cli/output.js";
