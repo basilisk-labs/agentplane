@@ -1,10 +1,11 @@
 ---
 id: "202604211316-5S3WXY"
 title: "Add init v2 interactive conflict resolver"
-status: "DOING"
+result_summary: "Added init v2 conflict preview and interactive overwrite/backup/cancel resolution step, exported through prompt steps and covered with focused tests."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,15 +24,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-21T16:19:04.463Z"
+  updated_by: "CODER"
+  note: "Verified init v2 conflict resolver: direct Vitest run passed for conflict-resolver.test.ts and ui-v2.test.ts (6 project/file executions, 27 assertions); bun run typecheck passed; bun run lint:core passed; bun run format:check passed."
+commit:
+  hash: "9a4bf4f8f03393aa5bd2010c0b843ec60b2e58ba"
+  message: "✨ 5S3WXY init: add v2 conflict resolver"
 comments:
   -
     author: "CODER"
     body: "Start: add init v2 interactive conflict resolver on top of the extracted prompt step modules."
+  -
+    author: "CODER"
+    body: "Verified: init v2 conflict resolver. Checks: direct Vitest run passed for conflict-resolver.test.ts and ui-v2.test.ts (6 project/file executions, 27 assertions); bun run typecheck; bun run lint:core; bun run format:check."
 events:
   -
     type: "status"
@@ -40,8 +46,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: add init v2 interactive conflict resolver on top of the extracted prompt step modules."
+  -
+    type: "verify"
+    at: "2026-04-21T16:19:04.463Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified init v2 conflict resolver: direct Vitest run passed for conflict-resolver.test.ts and ui-v2.test.ts (6 project/file executions, 27 assertions); bun run typecheck passed; bun run lint:core passed; bun run format:check passed."
+  -
+    type: "status"
+    at: "2026-04-21T16:19:09.412Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: init v2 conflict resolver. Checks: direct Vitest run passed for conflict-resolver.test.ts and ui-v2.test.ts (6 project/file executions, 27 assertions); bun run typecheck; bun run lint:core; bun run format:check."
 doc_version: 3
-doc_updated_at: "2026-04-21T16:00:51.773Z"
+doc_updated_at: "2026-04-21T16:19:09.412Z"
 doc_updated_by: "CODER"
 description: "Add a Clack select-based conflict resolver for init v2 that supports overwrite, backup, and cancel choices when conflicts exist and --force/--backup are not set."
 sections:
@@ -61,6 +80,14 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T16:19:04.463Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified init v2 conflict resolver: direct Vitest run passed for conflict-resolver.test.ts and ui-v2.test.ts (6 project/file executions, 27 assertions); bun run typecheck passed; bun run lint:core passed; bun run format:check passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:00:51.773Z, excerpt_hash=sha256:02b93e09a86dd16d85d0ed31be7ea7682e2a4c207e1241b8ca2bcf3c0390fe5d
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -94,6 +121,14 @@ Scope: implement atom #4. Steps: 1. Add steps/conflict-resolver.ts with Conflict
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T16:19:04.463Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified init v2 conflict resolver: direct Vitest run passed for conflict-resolver.test.ts and ui-v2.test.ts (6 project/file executions, 27 assertions); bun run typecheck passed; bun run lint:core passed; bun run format:check passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:00:51.773Z, excerpt_hash=sha256:02b93e09a86dd16d85d0ed31be7ea7682e2a4c207e1241b8ca2bcf3c0390fe5d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
