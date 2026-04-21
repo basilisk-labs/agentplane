@@ -1,10 +1,11 @@
 ---
 id: "202604210859-ZFNDKG"
 title: "Tighten Knip unused-code guard"
-status: "DOING"
+result_summary: "Knip check now fails on new unused-code baseline growth while preserving current debt."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-21T10:50:34.623Z"
   updated_by: "CODER"
   note: "Tightened Knip into a current-baseline regression guard; post-refactor repository passes, artificial unused probe fails as expected, and command behavior is documented."
-commit: null
+commit:
+  hash: "e238fcdb3f1345a9fdb952c6b5c4389e2b046643"
+  message: "✅ ZFNDKG code: done"
 comments:
   -
     author: "CODER"
     body: "Start: tighten Knip unused-code guard into a regression check while preserving existing baseline."
+  -
+    author: "CODER"
+    body: "Verified: tightened Knip unused-code guard into a current-baseline regression check; post-refactor baseline passes, artificial unused probe fails as expected, and command behavior is documented."
 events:
   -
     type: "status"
@@ -49,8 +55,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Tightened Knip into a current-baseline regression guard; post-refactor repository passes, artificial unused probe fails as expected, and command behavior is documented."
+  -
+    type: "status"
+    at: "2026-04-21T10:50:50.260Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: tightened Knip unused-code guard into a current-baseline regression check; post-refactor baseline passes, artificial unused probe fails as expected, and command behavior is documented."
 doc_version: 3
-doc_updated_at: "2026-04-21T10:50:34.625Z"
+doc_updated_at: "2026-04-21T10:50:50.261Z"
 doc_updated_by: "CODER"
 description: "Move Knip enforcement from warn-only toward failing on newly introduced unused exports/files while preserving existing ignores."
 sections:
