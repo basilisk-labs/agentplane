@@ -70,6 +70,8 @@ This second step is about task-local docs, not managed framework files:
   `.agentplane/WORKFLOW.md` and `.agentplane/workflows/last-known-good.md`;
 - `agentplane task migrate-doc --all` upgrades task READMEs from legacy `doc_version=2` to the
   README v3 contract.
+- If an older workspace still has `.agentplane/cache/tasks-index.v1.json`, delete it or leave it
+  ignored; the task index is rebuildable cache and the current CLI writes `tasks-index.v2.json`.
 
 ## If `upgrade` still does nothing useful
 
