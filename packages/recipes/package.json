@@ -1,6 +1,6 @@
 {
   "name": "@agentplaneorg/recipes",
-  "version": "0.3.16",
+  "version": "0.3.17",
   "description": "Recipe runtime helpers for the Agent Plane CLI.",
   "keywords": [
     "agentplane",
@@ -48,6 +48,6 @@
     "typecheck": "tsc -b",
     "prepack": "bun run clean && bun run build",
     "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack",
-    "test": "node --test"
+    "test": "bun test ./src/index.test.ts ./src/overlay.test.ts"
   }
 }

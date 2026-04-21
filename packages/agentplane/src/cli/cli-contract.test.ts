@@ -6,6 +6,7 @@ describe("cli contract exit codes", () => {
   it("maps error codes to documented exit codes", () => {
     expect(ERROR_TO_EXIT).toEqual({
       E_USAGE: ExitCode.Usage,
+      E_DEPRECATED_FLAG: ExitCode.Usage,
       E_VALIDATION: ExitCode.Validation,
       E_IO: ExitCode.Io,
       E_GIT: ExitCode.Git,

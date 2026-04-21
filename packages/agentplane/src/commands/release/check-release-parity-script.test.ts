@@ -4,7 +4,7 @@ import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
 
-import { initReleaseWorkspace } from "../../../../testkit/src/release.js";
+import { initReleaseWorkspace, writePackageJson } from "../../../../testkit/src/release.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -79,6 +79,44 @@ describe("check-release-parity script", () => {
     expect(result.ok).toBe(false);
     expect(result.stderr).toContain("packages/recipes=2.3.3");
     expect(result.stderr).toContain("@agentplaneorg/recipes=2.3.2");
+  });
+
+  it("fails when private workspace package dependencies drift from the release version", async () => {
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-parity-",
+      coreVersion: "2.3.4",
+      cliVersion: "2.3.4",
+      recipesVersion: "2.3.4",
+      dependencyVersion: "2.3.4",
+      recipesDependencyVersion: "2.3.4",
+    });
+    await writePackageJson(root, "packages/testkit", {
+      name: "@agentplane/testkit",
+      version: "0.0.0",
+      private: true,
+      dependencies: {
+        "@agentplaneorg/core": "2.3.3",
+      },
+    });
+
+    const result = await execFileAsync("node", [SCRIPT_PATH], { cwd: root }).then(
+      () => ({ ok: true as const, stderr: "" }),
+      (error: unknown) => {
+        const stderr =
+          typeof error === "object" &&
+          error !== null &&
+          "stderr" in error &&
+          typeof (error as { stderr?: unknown }).stderr === "string"
+            ? (error as { stderr: string }).stderr
+            : "";
+        return { ok: false as const, stderr };
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain(
+      "packages/testkit/package.json dependencies @agentplaneorg/core=2.3.3 does not match workspace version 2.3.4",
+    );
   });
 
   it("fails when the publishable package manifest leaks a workspace protocol dependency", async () => {

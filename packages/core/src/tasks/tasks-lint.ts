@@ -138,8 +138,8 @@ export function lintTasksSnapshot(
       errors.push(`${id}: verify must be a string[]`);
     }
     if (!isCommentsArray(t.comments)) errors.push(`${id}: comments must be {author,body}[]`);
-    if (t.doc_version !== 2 && t.doc_version !== 3) {
-      errors.push(`${id}: doc_version must be 2 or 3`);
+    if (t.doc_version !== 3) {
+      errors.push(`${id}: doc_version must be 3`);
     }
     if (!isIsoUtcTimestamp(t.doc_updated_at)) {
       errors.push(`${id}: doc_updated_at must be ISO date-time`);

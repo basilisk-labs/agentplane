@@ -61,20 +61,16 @@ describe("workflow-runtime/file-ops", () => {
     }
   });
 
-  it("falls back to legacy root WORKFLOW.md and migrates it on publish", async () => {
+  it("does not read legacy root WORKFLOW.md as a fallback", async () => {
     const root = await setupRepo();
     try {
-      const paths = resolveWorkflowPaths(root);
-      await fs.mkdir(path.dirname(paths.legacyWorkflowPath), { recursive: true });
-      await fs.writeFile(paths.legacyWorkflowPath, DEFAULT_WORKFLOW_TEMPLATE, "utf8");
+      await fs.writeFile(path.join(root, "WORKFLOW.md"), DEFAULT_WORKFLOW_TEMPLATE, "utf8");
 
       const validationBefore = await validateWorkflowAtPath(root);
-      expect(validationBefore.ok).toBe(true);
-
-      const published = await publishWorkflowCandidate(root, DEFAULT_WORKFLOW_TEMPLATE);
-      expect(published.ok).toBe(true);
-      expect(await fs.readFile(paths.workflowPath, "utf8")).toContain("## Prompt Template");
-      await expect(fs.access(paths.legacyWorkflowPath)).rejects.toThrow();
+      expect(validationBefore.ok).toBe(false);
+      expect(validationBefore.diagnostics.map((diagnostic) => diagnostic.code)).toContain(
+        "WF_MISSING_FILE",
+      );
     } finally {
       await fs.rm(root, { recursive: true, force: true });
     }

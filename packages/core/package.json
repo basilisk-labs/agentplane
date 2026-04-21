@@ -1,6 +1,6 @@
 {
   "name": "@agentplaneorg/core",
-  "version": "0.3.16",
+  "version": "0.3.17",
   "description": "Core utilities and models for the Agent Plane CLI.",
   "keywords": [
     "agentplane",
@@ -85,6 +85,7 @@
     "execa": "^5.1.1",
     "yaml": "^2.8.2",
     "zod": "^3",
+    "zod-validation-error": "^5.0.0",
     "zod-to-json-schema": "^3"
   }
 }

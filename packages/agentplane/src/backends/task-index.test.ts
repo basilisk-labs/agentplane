@@ -82,4 +82,44 @@ describe("task index", () => {
       await rm(tempDir, { recursive: true, force: true });
     }
   });
+
+  it("ignores legacy v1 cache files", async () => {
+    const tempDir = await mkdtemp(path.join(tmpdir(), "agentplane-task-index-"));
+    const indexPath = path.join(tempDir, "tasks-index.v2.json");
+    const legacyIndexPath = path.join(tempDir, "tasks-index.v1.json");
+
+    try {
+      await writeFile(
+        legacyIndexPath,
+        JSON.stringify({
+          schema_version: 1,
+          tasks: [
+            buildTaskIndexEntry(
+              {
+                id: "202601300014-ABCD",
+                title: "Legacy index",
+                description: "Desc",
+                status: "TODO",
+                priority: "med",
+                owner: "tester",
+                depends_on: [],
+                tags: [],
+                verify: [],
+                comments: [],
+                events: [],
+                doc: "## Summary\n\nBody",
+              },
+              "/repo/.agentplane/tasks/202601300014-ABCD/README.md",
+              123,
+            ),
+          ],
+        }),
+        "utf8",
+      );
+
+      await expect(loadTaskIndex(indexPath)).resolves.toBeNull();
+    } finally {
+      await rm(tempDir, { recursive: true, force: true });
+    }
+  });
 });

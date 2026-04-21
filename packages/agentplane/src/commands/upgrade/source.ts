@@ -59,18 +59,9 @@ export function normalizeFrameworkSourceForUpgrade(source: string): {
   source: string;
   owner: string;
   repo: string;
-  migrated: boolean;
 } {
   const { owner, repo } = parseGitHubRepo(source);
-  if (owner === "basilisk-labs" && repo === "agent-plane") {
-    return {
-      source: `https://github.com/${owner}/agentplane`,
-      owner,
-      repo: "agentplane",
-      migrated: true,
-    };
-  }
-  return { source: `https://github.com/${owner}/${repo}`, owner, repo, migrated: false };
+  return { source: `https://github.com/${owner}/${repo}`, owner, repo };
 }
 
 export function resolveUpgradeDownloadFromRelease(opts: {

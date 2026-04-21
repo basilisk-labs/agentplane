@@ -160,7 +160,7 @@ export function issueToTask(opts: {
   if (derivedDoc) task.doc = derivedDoc;
   task.sections = canonicalSections ?? (derivedDoc ? taskDocToSectionMap(derivedDoc) : undefined);
   const docVersion = coerceDocVersion(docVersionVal);
-  task.doc_version = docVersion ?? opts.defaultDocVersion;
+  task.doc_version = docVersion === opts.defaultDocVersion ? docVersion : opts.defaultDocVersion;
   task.doc_updated_at = docUpdatedAtVal ? toStringSafe(docUpdatedAtVal) : (updatedOn ?? nowIso());
   task.doc_updated_by = docUpdatedByVal ? toStringSafe(docUpdatedByVal) : opts.ownerAgent;
 

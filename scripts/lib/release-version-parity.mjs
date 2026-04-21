@@ -35,6 +35,51 @@ async function readWorkspacePrivatePackageNames(rootDir) {
   return names;
 }
 
+async function readPackageWorkspaceDependencies(rootDir) {
+  const packagesDir = path.join(rootDir, "packages");
+  let entries = [];
+  try {
+    entries = await readdir(packagesDir, { withFileTypes: true });
+  } catch (error) {
+    const code = error && typeof error === "object" ? error.code : undefined;
+    if (code === "ENOENT") return [];
+    throw error;
+  }
+
+  const dependencies = [];
+  const sections = ["dependencies", "optionalDependencies", "peerDependencies"];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const relPath = `packages/${entry.name}/package.json`;
+    let raw;
+    try {
+      ({ raw } = await readPackageJson(rootDir, relPath));
+    } catch (error) {
+      const code = error && typeof error === "object" ? error.code : undefined;
+      if (code === "ENOENT") continue;
+      throw error;
+    }
+
+    const packageName = typeof raw.name === "string" ? raw.name.trim() : relPath;
+    for (const section of sections) {
+      const deps = raw?.[section];
+      if (!deps || typeof deps !== "object") continue;
+      for (const [name, spec] of Object.entries(deps)) {
+        if (!name.startsWith("@agentplaneorg/") && name !== "@agentplane/testkit") continue;
+        dependencies.push({
+          relPath,
+          packageName,
+          section,
+          name,
+          spec: typeof spec === "string" ? spec.trim() : String(spec),
+        });
+      }
+    }
+  }
+
+  return dependencies;
+}
+
 function collectUnsupportedDependencyErrors(raw, privateWorkspacePackageNames) {
   const errors = [];
   const sections = ["dependencies", "optionalDependencies", "peerDependencies"];
@@ -79,6 +124,7 @@ export async function readReleaseParityState(rootDir) {
     readPackageJson(rootDir, "packages/recipes/package.json"),
   ]);
   const privateWorkspacePackageNames = await readWorkspacePrivatePackageNames(rootDir);
+  const packageWorkspaceDependencies = await readPackageWorkspaceDependencies(rootDir);
 
   const coreVersion = readVersion(corePkg, corePath);
   const agentplaneVersion = readVersion(agentplanePkg, agentplanePath);
@@ -96,6 +142,7 @@ export async function readReleaseParityState(rootDir) {
     recipesVersion,
     coreDependency,
     recipesDependency,
+    packageWorkspaceDependencies,
     publishDependencyErrors,
   };
 }
@@ -155,6 +202,15 @@ export function collectReleaseParityErrors(state, opts = {}) {
 
   for (const error of state.publishDependencyErrors ?? []) {
     errors.push(error);
+  }
+
+  for (const dep of state.packageWorkspaceDependencies ?? []) {
+    if (dep.packageName === "agentplane") continue;
+    if (dep.spec !== state.agentplaneVersion) {
+      errors.push(
+        `${dep.relPath} ${dep.section} ${dep.name}=${dep.spec} does not match workspace version ${state.agentplaneVersion}.`,
+      );
+    }
   }
 
   return errors;

@@ -1,4 +1,4 @@
-import { UsageError } from "../../shared/errors.js";
+import { DeprecatedFlagError, UsageError } from "../../shared/errors.js";
 import type { CliError } from "../../shared/errors.js";
 
 import type { CommandSpec } from "./spec.js";
@@ -34,5 +34,27 @@ export function usageError(opts: {
   return new UsageError({
     message: fullMessage,
     context: Object.keys(context).length > 0 ? context : undefined,
+  });
+}
+
+export function deprecatedFlagError(opts: {
+  option: string;
+  deprecated: string;
+  spec?: CommandSpec<unknown>;
+}): CliError {
+  const command = opts.spec ? opts.spec.id.join(" ") : undefined;
+  const usage =
+    opts.spec && renderCommandHelpText(opts.spec, { compact: true, includeHeader: false });
+  const fullMessage = `Deprecated option ${opts.option} is ${opts.deprecated}; remove it or use the documented replacement.${
+    usage ? `\n\n${usage}` : ""
+  }`;
+
+  return new DeprecatedFlagError({
+    message: fullMessage,
+    context: {
+      option: opts.option,
+      deprecated: opts.deprecated,
+      ...(command ? { command } : {}),
+    },
   });
 }

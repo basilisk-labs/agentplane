@@ -7,7 +7,6 @@ export function resolveWorkflowPaths(repoRoot: string): WorkflowPaths {
   const workflowPath = path.join(repoRoot, ".agentplane", "WORKFLOW.md");
   return {
     workflowPath,
-    legacyWorkflowPath: path.join(repoRoot, "WORKFLOW.md"),
     lastKnownGoodPath: path.join(workflowDir, "last-known-good.md"),
     workflowDir,
   };

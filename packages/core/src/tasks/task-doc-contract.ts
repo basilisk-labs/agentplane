@@ -89,8 +89,8 @@ export function validateTaskDocMetadata(frontmatter: Record<string, unknown>): s
   const errors: string[] = [];
 
   const version = frontmatter.doc_version;
-  if (version !== 2 && version !== 3 && version !== "2" && version !== "3") {
-    errors.push("doc_version must be 2 or 3");
+  if (version !== 3 && version !== "3") {
+    errors.push("doc_version must be 3");
   }
 
   const updatedAt = frontmatter.doc_updated_at;

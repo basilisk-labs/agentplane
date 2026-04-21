@@ -4,7 +4,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CliError } from "../shared/errors.js";
-import { downloadToFile, fetchJson } from "./http.js";
+import { downloadToFile, fetchJson, fetchText } from "./http.js";
 
 describe("cli/http", () => {
   const fetchMock = vi.fn();
@@ -29,6 +29,19 @@ describe("cli/http", () => {
     });
 
     await expect(fetchJson("https://example.test")).resolves.toEqual({ ok: true });
+    expect(setTimeoutSpy.mock.calls.some((c) => c[1] === 5000)).toBe(true);
+  });
+
+  it("fetchJson retries transient fetch failures", async () => {
+    fetchMock.mockRejectedValueOnce(new Error("temporary network failure")).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      json: vi.fn(() => ({ ok: true })),
+    });
+
+    await expect(fetchJson("https://example.test")).resolves.toEqual({ ok: true });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it("fetchJson throws a CliError when response is not ok", async () => {
@@ -51,6 +64,19 @@ describe("cli/http", () => {
     fetchMock.mockRejectedValue(new Error("nope"));
 
     await expect(fetchJson("https://example.test")).rejects.toBeInstanceOf(CliError);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("fetchText retries transient fetch failures", async () => {
+    fetchMock.mockRejectedValueOnce(new Error("temporary network failure")).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      text: vi.fn(() => "payload"),
+    });
+
+    await expect(fetchText("https://example.test")).resolves.toBe("payload");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it("downloadToFile writes response bytes to disk", async () => {

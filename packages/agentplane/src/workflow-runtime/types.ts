@@ -81,7 +81,6 @@ export type WorkflowTemplateRenderOptions = {
 
 export type WorkflowPaths = {
   workflowPath: string;
-  legacyWorkflowPath: string;
   lastKnownGoodPath: string;
   workflowDir: string;
 };

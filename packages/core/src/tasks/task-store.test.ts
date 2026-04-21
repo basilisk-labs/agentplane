@@ -482,7 +482,7 @@ describe("task-store", () => {
       doc_updated_by: "",
     });
     expect(errors).toEqual([
-      "doc_version must be 2 or 3",
+      "doc_version must be 3",
       "doc_updated_at must be an ISO timestamp",
       "doc_updated_by must be a non-empty string",
     ]);
@@ -497,14 +497,14 @@ describe("task-store", () => {
     expect(errors).toEqual([]);
   });
 
-  it("validateTaskDocMetadata accepts quoted doc_version and rejects loose timestamps", () => {
+  it("validateTaskDocMetadata rejects legacy doc_version and loose timestamps", () => {
     expect(
       validateTaskDocMetadata({
         doc_version: "2",
         doc_updated_at: "2026-02-05T00:00:00.000Z",
         doc_updated_by: "CODER",
       }),
-    ).toEqual([]);
+    ).toEqual(["doc_version must be 3"]);
 
     expect(
       validateTaskDocMetadata({

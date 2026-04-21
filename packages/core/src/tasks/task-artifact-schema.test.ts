@@ -8,6 +8,7 @@ import {
   renderTaskPrMetaSchemaJson,
   renderTaskReadmeFrontmatterSchemaJson,
   renderTasksExportSchemaJson,
+  listTaskReadmeFrontmatterSchemaErrors,
   validateTaskHandoff,
   validateTaskPrMeta,
   validateTaskReadmeFrontmatter,
@@ -140,5 +141,32 @@ describe("task-artifact-schema", () => {
         }),
       ),
     ).not.toThrow();
+  });
+
+  it("formats nested and multiple task artifact schema errors consistently", () => {
+    const errors = listTaskReadmeFrontmatterSchemaErrors(
+      withTaskReadmeFrontmatterDefaults({
+        id: "202603251535-DPZ4NN",
+        title: "Nested validation fixture",
+        status: "TODO",
+        priority: "normal",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "invalid", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [{ author: "", body: "" }],
+        doc_version: 3,
+        doc_updated_at: "2026-03-25T17:30:00.000Z",
+        doc_updated_by: "CODER",
+        description: "Fixture",
+      }),
+    );
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("task README frontmatter schema validation failed:");
+    expect(errors[0]).toContain("comments[0].author");
+    expect(errors[0]).toContain("comments[0].body");
   });
 });

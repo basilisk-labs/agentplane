@@ -226,6 +226,34 @@ describe("commands/recipes list", () => {
     expect(io.stdout).toContain("viewer@1.0.0");
   });
 
+  it("rejects unsupported recipes index signature algorithms clearly", async () => {
+    const cwd = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipes-cwd-"));
+    const indexPath = path.join(cwd, "recipes-index.json");
+    const index = {
+      schema_version: 1,
+      recipes: [],
+    };
+    const indexText = JSON.stringify(index, null, 2);
+    const signature = {
+      ...signIndexPayload(indexText),
+      algorithm: "ml-dsa-65",
+    };
+    await writeFile(indexPath, indexText, "utf8");
+    await writeFile(`${indexPath}.sig`, JSON.stringify(signature, null, 2), "utf8");
+
+    await expect(
+      runRecipesTest({
+        cwd,
+        args: ["--index", indexPath, "--refresh"],
+        command: "list-remote",
+      }),
+    ).rejects.toThrow(
+      'Unsupported recipes index signature algorithm "ml-dsa-65". Supported algorithms: ed25519',
+    );
+
+    await rm(cwd, { recursive: true, force: true });
+  });
+
   it("lists remote recipes from an http index", async () => {
     const indexPayload = {
       schema_version: 1,
