@@ -1,10 +1,10 @@
 ---
 id: "202604210859-2TSS0Y"
 title: "Add depcruise trend guard"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -14,21 +14,55 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-21T10:27:33.836Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T10:32:23.861Z"
+  updated_by: "CODER"
+  note: |-
+    Command: agentplane task verify-show 202604210859-2TSS0Y | Result: pass | Evidence: declared checks are current baseline pass, artificial baseline growth failure, and arch:deps/arch:check green | Scope: task verification contract
+    Command: node scripts/check-depcruise-known-violations.mjs | Result: pass | Evidence: dependency-cruiser known violations OK (count=49, max=49, rules=no-circular=49) | Scope: current known-violations baseline
+    Command: tmp=$(mktemp); node -e '<append first known violation to temp baseline>'; node scripts/check-depcruise-known-violations.mjs --known-violations "$tmp"; expect exit 1 | Result: pass | Evidence: guard failed on count=50/max=49 and no-circular=50/max=49; wrapper reported artificial growth check failed as expected | Scope: artificial baseline growth regression
+    Command: bun run arch:check | Result: pass | Evidence: baseline guard passed, depcruise reported no dependency violations found; 49 known violations ignored | Scope: dependency-cruiser architecture check
+    Command: bunx eslint scripts/check-depcruise-known-violations.mjs | Result: pass | Evidence: no lint output, exit 0 | Scope: new script lint
+    Command: bunx prettier --check package.json scripts/check-depcruise-known-violations.mjs | Result: pass | Evidence: All matched files use Prettier code style | Scope: changed package script and new script formatting
+    Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0 | Scope: repository TypeScript project references
+    Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK | Scope: loaded routing policy sanity
+    Command: agentplane doctor | Result: pass | Evidence: doctor OK with errors=0 warnings=0; preamble noted stale repo build from unrelated recipes file drift | Scope: workflow/runtime diagnostics
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: add dependency-cruiser trend guard that passes current baseline and fails on artificial growth, with architecture verification."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T10:27:38.666Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add dependency-cruiser trend guard that passes current baseline and fails on artificial growth, with architecture verification."
+  -
+    type: "verify"
+    at: "2026-04-21T10:32:23.861Z"
+    author: "CODER"
+    state: "ok"
+    note: |-
+      Command: agentplane task verify-show 202604210859-2TSS0Y | Result: pass | Evidence: declared checks are current baseline pass, artificial baseline growth failure, and arch:deps/arch:check green | Scope: task verification contract
+      Command: node scripts/check-depcruise-known-violations.mjs | Result: pass | Evidence: dependency-cruiser known violations OK (count=49, max=49, rules=no-circular=49) | Scope: current known-violations baseline
+      Command: tmp=$(mktemp); node -e '<append first known violation to temp baseline>'; node scripts/check-depcruise-known-violations.mjs --known-violations "$tmp"; expect exit 1 | Result: pass | Evidence: guard failed on count=50/max=49 and no-circular=50/max=49; wrapper reported artificial growth check failed as expected | Scope: artificial baseline growth regression
+      Command: bun run arch:check | Result: pass | Evidence: baseline guard passed, depcruise reported no dependency violations found; 49 known violations ignored | Scope: dependency-cruiser architecture check
+      Command: bunx eslint scripts/check-depcruise-known-violations.mjs | Result: pass | Evidence: no lint output, exit 0 | Scope: new script lint
+      Command: bunx prettier --check package.json scripts/check-depcruise-known-violations.mjs | Result: pass | Evidence: All matched files use Prettier code style | Scope: changed package script and new script formatting
+      Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0 | Scope: repository TypeScript project references
+      Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK | Scope: loaded routing policy sanity
+      Command: agentplane doctor | Result: pass | Evidence: doctor OK with errors=0 warnings=0; preamble noted stale repo build from unrelated recipes file drift | Scope: workflow/runtime diagnostics
 doc_version: 3
-doc_updated_at: "2026-04-21T08:59:28.194Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T10:32:23.867Z"
+doc_updated_by: "CODER"
 description: "Prevent dependency-cruiser known-violation baseline growth and verify the baseline format is stable enough for review."
 sections:
   Summary: "Add a guard that fails on growth in dependency-cruiser known violations and documents the baseline format decision."
@@ -44,6 +78,22 @@ sections:
     - arch:deps or equivalent command remains green.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T10:32:23.861Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: agentplane task verify-show 202604210859-2TSS0Y | Result: pass | Evidence: declared checks are current baseline pass, artificial baseline growth failure, and arch:deps/arch:check green | Scope: task verification contract
+    Command: node scripts/check-depcruise-known-violations.mjs | Result: pass | Evidence: dependency-cruiser known violations OK (count=49, max=49, rules=no-circular=49) | Scope: current known-violations baseline
+    Command: tmp=$(mktemp); node -e '<append first known violation to temp baseline>'; node scripts/check-depcruise-known-violations.mjs --known-violations "$tmp"; expect exit 1 | Result: pass | Evidence: guard failed on count=50/max=49 and no-circular=50/max=49; wrapper reported artificial growth check failed as expected | Scope: artificial baseline growth regression
+    Command: bun run arch:check | Result: pass | Evidence: baseline guard passed, depcruise reported no dependency violations found; 49 known violations ignored | Scope: dependency-cruiser architecture check
+    Command: bunx eslint scripts/check-depcruise-known-violations.mjs | Result: pass | Evidence: no lint output, exit 0 | Scope: new script lint
+    Command: bunx prettier --check package.json scripts/check-depcruise-known-violations.mjs | Result: pass | Evidence: All matched files use Prettier code style | Scope: changed package script and new script formatting
+    Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0 | Scope: repository TypeScript project references
+    Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK | Scope: loaded routing policy sanity
+    Command: agentplane doctor | Result: pass | Evidence: doctor OK with errors=0 warnings=0; preamble noted stale repo build from unrelated recipes file drift | Scope: workflow/runtime diagnostics
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T10:27:38.687Z, excerpt_hash=sha256:ee4c3fb9ce040dfc830d4cb1776e25dd1d2a4dd39811f81d25db1445123965f0
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Remove trend guard wiring and any baseline normalization."
   Findings: "Source input: AUDIT H-3/M-1 and REFACTORING_PLAN D.1."
@@ -73,6 +123,22 @@ In scope: depcruise check script/config/CI script and baseline-count validation.
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T10:32:23.861Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: agentplane task verify-show 202604210859-2TSS0Y | Result: pass | Evidence: declared checks are current baseline pass, artificial baseline growth failure, and arch:deps/arch:check green | Scope: task verification contract
+Command: node scripts/check-depcruise-known-violations.mjs | Result: pass | Evidence: dependency-cruiser known violations OK (count=49, max=49, rules=no-circular=49) | Scope: current known-violations baseline
+Command: tmp=$(mktemp); node -e '<append first known violation to temp baseline>'; node scripts/check-depcruise-known-violations.mjs --known-violations "$tmp"; expect exit 1 | Result: pass | Evidence: guard failed on count=50/max=49 and no-circular=50/max=49; wrapper reported artificial growth check failed as expected | Scope: artificial baseline growth regression
+Command: bun run arch:check | Result: pass | Evidence: baseline guard passed, depcruise reported no dependency violations found; 49 known violations ignored | Scope: dependency-cruiser architecture check
+Command: bunx eslint scripts/check-depcruise-known-violations.mjs | Result: pass | Evidence: no lint output, exit 0 | Scope: new script lint
+Command: bunx prettier --check package.json scripts/check-depcruise-known-violations.mjs | Result: pass | Evidence: All matched files use Prettier code style | Scope: changed package script and new script formatting
+Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0 | Scope: repository TypeScript project references
+Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK | Scope: loaded routing policy sanity
+Command: agentplane doctor | Result: pass | Evidence: doctor OK with errors=0 warnings=0; preamble noted stale repo build from unrelated recipes file drift | Scope: workflow/runtime diagnostics
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T10:27:38.687Z, excerpt_hash=sha256:ee4c3fb9ce040dfc830d4cb1776e25dd1d2a4dd39811f81d25db1445123965f0
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
