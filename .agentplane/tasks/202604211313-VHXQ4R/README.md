@@ -1,10 +1,10 @@
 ---
 id: "202604211313-VHXQ4R"
 title: "Split PR validation CLI mega-test"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +28,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: split PR validation CLI mega-test into scenario-family files while preserving existing test helpers and behavior."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T15:46:47.293Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split PR validation CLI mega-test into scenario-family files while preserving existing test helpers and behavior."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:13:26.887Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T15:46:47.309Z"
+doc_updated_by: "CODER"
 description: "Decompose run-cli.core.pr-flow.pr-validation.test.ts into scenario-family files under the new test size guard."
 sections:
   Summary: |-
