@@ -1,10 +1,10 @@
 ---
 id: "202604211313-99AH4A"
 title: "Cache clack prompt import and baseline cold path"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +28,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: cache lazy clack prompt import and capture cold-path baseline."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T16:34:45.447Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: cache lazy clack prompt import and capture cold-path baseline."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:13:10.387Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T16:34:45.455Z"
+doc_updated_by: "CODER"
 description: "Replace repeated lazy @clack/prompts import calls with a cached getClack helper and record a current CLI cold-start baseline before bundling."
 sections:
   Summary: |-
