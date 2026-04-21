@@ -219,6 +219,15 @@ bun run test:project -- recipes
 bun run test:project -- testkit
 ```
 
+## Test file naming
+
+Vitest test files use the `.test.ts` suffix. `vitest.config.ts` includes
+`packages/**/src/**/*.test.ts`, and new tests should follow that convention.
+
+Do not use `.spec.ts` for Vitest tests. In this repository, `.spec.ts` is reserved for
+command specification modules such as `packages/agentplane/src/commands/*.spec.ts`; those files
+define command parsing/help contracts and are not test suites.
+
 ## Package-specific checks
 
 ```bash
