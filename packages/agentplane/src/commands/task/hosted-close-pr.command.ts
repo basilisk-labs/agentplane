@@ -13,6 +13,10 @@ import {
 } from "./hosted-close-pr.report.js";
 import type { TaskHostedClosePrParsed } from "./hosted-close-pr.types.js";
 
+/**
+ * Retained public command boundary: this module owns the CLI spec and handler
+ * wiring; hosted-close-pr.* phase modules own execution details.
+ */
 export const taskHostedClosePrSpec: CommandSpec<TaskHostedClosePrParsed> = {
   id: ["task", "hosted-close-pr"],
   group: "Task",

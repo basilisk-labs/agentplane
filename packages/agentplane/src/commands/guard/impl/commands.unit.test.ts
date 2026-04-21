@@ -73,7 +73,7 @@ function mkCtx() {
   };
 }
 
-describe("guard/impl/commands", () => {
+describe("guard command implementations", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mocks.buildTaskArtifactRefreshCommitSubject.mockImplementation(
