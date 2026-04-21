@@ -1,10 +1,11 @@
 ---
 id: "202604211316-2FRTB3"
 title: "Implement experimental init v2 orchestrator"
-status: "DOING"
+result_summary: "Added experimental Clack-powered init v2 orchestration behind --experimental-ui and AGENTPLANE_INIT_UI=v2 while keeping legacy init as the default route."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-04-21T16:53:31.163Z"
   updated_by: "CODER"
   note: "Verified experimental init v2 orchestrator. Checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.init.v2.test.ts --pool=forks --maxWorkers 4 --testTimeout 60000 passed (1 file, 3 tests); bun run typecheck passed; bun run test:project -- cli-core passed (60 files, 596 tests); bun run lint:core passed; bun run format:check passed; git diff --check passed."
-commit: null
+commit:
+  hash: "77a86edbac6fdd357bbc1d728ba7c2fee598e8a4"
+  message: "✨ 2FRTB3 init: add experimental v2 orchestrator"
 comments:
   -
     author: "CODER"
     body: "Start: implement experimental init v2 orchestrator now that prompt, conflict, and apply helpers exist."
+  -
+    author: "CODER"
+    body: "Verified: experimental init v2 orchestrator. Checks: v2 e2e test; bun run typecheck; bun run test:project -- cli-core; bun run lint:core; bun run format:check; git diff --check."
 events:
   -
     type: "status"
@@ -46,14 +52,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified experimental init v2 orchestrator. Checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.init.v2.test.ts --pool=forks --maxWorkers 4 --testTimeout 60000 passed (1 file, 3 tests); bun run typecheck passed; bun run test:project -- cli-core passed (60 files, 596 tests); bun run lint:core passed; bun run format:check passed; git diff --check passed."
+  -
+    type: "status"
+    at: "2026-04-21T16:54:12.825Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: experimental init v2 orchestrator. Checks: v2 e2e test; bun run typecheck; bun run test:project -- cli-core; bun run lint:core; bun run format:check; git diff --check."
 doc_version: 3
-doc_updated_at: "2026-04-21T16:53:31.170Z"
+doc_updated_at: "2026-04-21T16:54:12.826Z"
 doc_updated_by: "CODER"
 description: "Add orchestrate-v2 flow behind AGENTPLANE_INIT_UI=v2 or --experimental-ui while legacy init remains the default path."
 sections:
   Summary: |-
     Implement experimental init v2 orchestrator
-
+    
     Add orchestrate-v2 flow behind AGENTPLANE_INIT_UI=v2 or --experimental-ui while legacy init remains the default path.
   Scope: |-
     - In scope: Add orchestrate-v2 flow behind AGENTPLANE_INIT_UI=v2 or --experimental-ui while legacy init remains the default path.
@@ -68,13 +81,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-21T16:53:31.163Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Verified experimental init v2 orchestrator. Checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.init.v2.test.ts --pool=forks --maxWorkers 4 --testTimeout 60000 passed (1 file, 3 tests); bun run typecheck passed; bun run test:project -- cli-core passed (60 files, 596 tests); bun run lint:core passed; bun run format:check passed; git diff --check passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:34:49.288Z, excerpt_hash=sha256:11fa93fe90bb07cabd42b1c1a9cc51f236cb8861c71cf666e707b75b26b382a6
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
