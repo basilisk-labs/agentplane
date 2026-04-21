@@ -1,10 +1,11 @@
 ---
 id: "202604210859-824XT0"
 title: "Split oversized test files by scenario family"
-status: "DOING"
+result_summary: "Split oversized test files into scenario-focused test suites."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-21T10:58:52.430Z"
   updated_by: "CODER"
   note: "Split recipes and task-run execution oversized test files by scenario family; affected Vitest selectors and lint checks pass; no production behavior changes in task scope."
-commit: null
+commit:
+  hash: "d9f5f6b40b60b37310048822f12fc635738ffd0f"
+  message: "✅ 824XT0 code: done"
 comments:
   -
     author: "CODER"
     body: "Start: split approved oversized test files by scenario family while preserving test behavior."
+  -
+    author: "CODER"
+    body: "Verified: split approved oversized recipe and query-run-execute tests by scenario family; split files are below 600 lines and affected cli-recipes/cli-core tests, lint, diff check, policy routing, and framework bootstrap passed."
 events:
   -
     type: "status"
@@ -43,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Split recipes and task-run execution oversized test files by scenario family; affected Vitest selectors and lint checks pass; no production behavior changes in task scope."
+  -
+    type: "status"
+    at: "2026-04-21T11:02:36.668Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: split approved oversized recipe and query-run-execute tests by scenario family; split files are below 600 lines and affected cli-recipes/cli-core tests, lint, diff check, policy routing, and framework bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-04-21T10:58:52.433Z"
+doc_updated_at: "2026-04-21T11:02:36.669Z"
 doc_updated_by: "CODER"
 description: "Break selected large test files into smaller scenario-focused files after the suffix convention is settled."
 sections:
