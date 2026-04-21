@@ -1,10 +1,11 @@
 ---
 id: "202604201827-7Y2QS2"
 title: "Expose project-local skills in runner prompts"
-status: "DOING"
+result_summary: "Runner base prompt assembly now emits metadata-only project skill discovery blocks from skills/*/SKILL.md before recipe prompt blocks."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-21T03:45:10.052Z"
   updated_by: "CODER"
   note: "Verified runner prompt discovery with focused tests, lint, typecheck, format, policy routing, doctor, and package builds."
-commit: null
+commit:
+  hash: "a49495728059f6890988785f20b3eba41a18fbbf"
+  message: "📝 7Y2QS2 task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: implementing project-local skill prompt discovery."
+  -
+    author: "CODER"
+    body: "Verified: project-local skill discovery added to runner prompt assembly and tested."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified runner prompt discovery with focused tests, lint, typecheck, format, policy routing, doctor, and package builds."
+  -
+    type: "status"
+    at: "2026-04-21T03:49:05.563Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: project-local skill discovery added to runner prompt assembly and tested."
 doc_version: 3
-doc_updated_at: "2026-04-21T03:45:10.056Z"
+doc_updated_at: "2026-04-21T03:49:05.564Z"
 doc_updated_by: "CODER"
 description: "Add runner prompt assembly support that discovers repo-local skills from skills/*/SKILL.md and injects metadata so agents can discover applicable skills during system prompt construction."
 sections:
