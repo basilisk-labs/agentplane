@@ -1,10 +1,11 @@
 ---
 id: "202604211313-G4VHFX"
 title: "Split CLI lifecycle mega-test"
-status: "DOING"
+result_summary: "Split lifecycle scenarios into focused plan, start-readiness, and start-commit test files with shared test-only helpers excluded from package build."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,15 +24,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-21T16:17:48.218Z"
+  updated_by: "CODER"
+  note: "Verified lifecycle test split: focused cli-core lifecycle suite passed (7 files, 26 tests); bun run typecheck passed; bun run hotspots:check passed; full bun run test:project -- cli-unit previously passed on the same split working tree (62 files, 624 tests)."
+commit:
+  hash: "51e1966068c525c3bf058dde1dc5bdc3ac278311"
+  message: "✅ G4VHFX test: split lifecycle scenarios"
 comments:
   -
     author: "CODER"
     body: "Start: split the remaining CLI lifecycle mega-test into scenario-family files while preserving behavior."
+  -
+    author: "CODER"
+    body: "Verified: lifecycle mega-test split. Checks: focused cli-core lifecycle suite passed (7 files, 26 tests); bun run typecheck; bun run hotspots:check; full bun run test:project -- cli-unit previously passed on the same split working tree."
 events:
   -
     type: "status"
@@ -40,8 +46,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: split the remaining CLI lifecycle mega-test into scenario-family files while preserving behavior."
+  -
+    type: "verify"
+    at: "2026-04-21T16:17:48.218Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified lifecycle test split: focused cli-core lifecycle suite passed (7 files, 26 tests); bun run typecheck passed; bun run hotspots:check passed; full bun run test:project -- cli-unit previously passed on the same split working tree (62 files, 624 tests)."
+  -
+    type: "status"
+    at: "2026-04-21T16:17:54.292Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: lifecycle mega-test split. Checks: focused cli-core lifecycle suite passed (7 files, 26 tests); bun run typecheck; bun run hotspots:check; full bun run test:project -- cli-unit previously passed on the same split working tree."
 doc_version: 3
-doc_updated_at: "2026-04-21T16:00:51.773Z"
+doc_updated_at: "2026-04-21T16:17:54.292Z"
 doc_updated_by: "CODER"
 description: "Decompose the large run-cli lifecycle test file into focused lifecycle scenario files using shared fixtures where appropriate."
 sections:
@@ -61,6 +80,14 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T16:17:48.218Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified lifecycle test split: focused cli-core lifecycle suite passed (7 files, 26 tests); bun run typecheck passed; bun run hotspots:check passed; full bun run test:project -- cli-unit previously passed on the same split working tree (62 files, 624 tests).
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:00:51.773Z, excerpt_hash=sha256:77ee4355e7098463ac4354869f49524955d459f733636e1946b89663643a8d05
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -94,6 +121,14 @@ Scope: reduce the second large CLI test hotspot. Steps: 1. Partition lifecycle s
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T16:17:48.218Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified lifecycle test split: focused cli-core lifecycle suite passed (7 files, 26 tests); bun run typecheck passed; bun run hotspots:check passed; full bun run test:project -- cli-unit previously passed on the same split working tree (62 files, 624 tests).
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T16:00:51.773Z, excerpt_hash=sha256:77ee4355e7098463ac4354869f49524955d459f733636e1946b89663643a8d05
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
