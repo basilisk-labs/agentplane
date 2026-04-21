@@ -30,7 +30,7 @@ describe("tasks-export", () => {
     const parsed = JSON.parse(raw) as { tasks: TasksExportTask[] };
 
     const checksum = computeTasksChecksum(parsed.tasks);
-    expect(checksum).toBe("bd96120b48a3c2cc157c2edbacc73e03758447113fd859e0693e0a95666801b6");
+    expect(checksum).toBe("a62b5efae4e65f14d3ab17de8af58eeff11943aa0116d6b3260eefe66803fa54");
   });
 
   it("writeTasksExport writes .agentplane/tasks.json with matching checksum", async () => {
@@ -74,7 +74,7 @@ describe("tasks-export", () => {
         "comments:",
         '  - { author: "owner", body: "ok" }',
         '  - "bad"',
-        "doc_version: 2",
+        "doc_version: 3",
         "doc_updated_at: 123",
         "doc_updated_by: 456",
         "description: 789",
@@ -119,7 +119,7 @@ describe("tasks-export", () => {
         'verify: ["run", 2]',
         'commit: { hash: "", message: "" }',
         "comments: nope",
-        "doc_version: 2",
+        "doc_version: 3",
         `doc_updated_at: "${new Date().toISOString()}"`,
         "doc_updated_by: tester",
         "description: 999",
@@ -156,8 +156,12 @@ describe("tasks-export", () => {
         'verification: { state: "pending", updated_at: null, updated_by: null, note: null }',
         "comments: []",
         "events:",
-        '  - { type: "status", at: "2026-02-07T10:00:00.000Z", author: "CODER", from: "TODO", to: "DOING" }',
-        "doc_version: 2",
+        '  - type: "status"',
+        '    at: "2026-02-07T10:00:00.000Z"',
+        '    author: "CODER"',
+        '    from: "TODO"',
+        '    to: "DOING"',
+        "doc_version: 3",
         `doc_updated_at: "${new Date().toISOString()}"`,
         "doc_updated_by: CODER",
         'description: "Event tracking"',

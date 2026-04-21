@@ -9,10 +9,7 @@ import {
   checkBranchPrDoneTaskOpenPrDrift,
   checkBranchPrShippedTaskDrift,
 } from "./doctor/branch-pr.js";
-import {
-  safeFixGitignore,
-  safeFixTaskIndex,
-} from "./doctor/fixes.js";
+import { safeFixGitignore, safeFixTaskIndex } from "./doctor/fixes.js";
 import { checkLayering } from "./doctor/layering.js";
 import { checkRuntimeSourceFacts, findingSeverity } from "./doctor/runtime.js";
 import { checkWorkspace } from "./doctor/workspace.js";

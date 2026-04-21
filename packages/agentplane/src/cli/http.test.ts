@@ -33,14 +33,12 @@ describe("cli/http", () => {
   });
 
   it("fetchJson retries transient fetch failures", async () => {
-    fetchMock
-      .mockRejectedValueOnce(new Error("temporary network failure"))
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        statusText: "OK",
-        json: vi.fn(() => ({ ok: true })),
-      });
+    fetchMock.mockRejectedValueOnce(new Error("temporary network failure")).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      json: vi.fn(() => ({ ok: true })),
+    });
 
     await expect(fetchJson("https://example.test")).resolves.toEqual({ ok: true });
     expect(fetchMock).toHaveBeenCalledTimes(2);
@@ -70,14 +68,12 @@ describe("cli/http", () => {
   });
 
   it("fetchText retries transient fetch failures", async () => {
-    fetchMock
-      .mockRejectedValueOnce(new Error("temporary network failure"))
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        statusText: "OK",
-        text: vi.fn(() => "payload"),
-      });
+    fetchMock.mockRejectedValueOnce(new Error("temporary network failure")).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      text: vi.fn(() => "payload"),
+    });
 
     await expect(fetchText("https://example.test")).resolves.toBe("payload");
     expect(fetchMock).toHaveBeenCalledTimes(2);

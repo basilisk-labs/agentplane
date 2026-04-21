@@ -41,7 +41,13 @@ describe("check-no-console script", () => {
     await writeFile(path.join(srcDir, "unit.test.ts"), "console.warn('test only');\n", "utf8");
     await writeFile(path.join(srcDir, "command.spec.ts"), "console.warn('spec only');\n", "utf8");
 
-    const result = await execFileAsync(process.execPath, [scriptPath, "--root", root, "--max", "0"]);
+    const result = await execFileAsync(process.execPath, [
+      scriptPath,
+      "--root",
+      root,
+      "--max",
+      "0",
+    ]);
     expect(result.stdout).toContain("production console usage OK (count=0, max=0)");
   });
 });
