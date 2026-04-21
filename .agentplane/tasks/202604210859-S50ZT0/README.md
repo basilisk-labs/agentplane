@@ -1,10 +1,11 @@
 ---
 id: "202604210859-S50ZT0"
 title: "Enable full no-misused-promises checking"
-status: "DOING"
+result_summary: "Enabled full no-misused-promises void-return checking with one safe async handler fix."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-21T10:54:22.909Z"
   updated_by: "CODER"
   note: "Enabled no-misused-promises checksVoidReturn, fixed the sole async close-handler finding without suppressions, and passed lint plus affected process supervision tests."
-commit: null
+commit:
+  hash: "87f7d00f33ba7e786c920835f6e9d9a7fefae36a"
+  message: "✅ S50ZT0 code: done"
 comments:
   -
     author: "CODER"
     body: "Start: enable no-misused-promises checksVoidReturn and fix or justify resulting findings."
+  -
+    author: "CODER"
+    body: "Verified: enabled no-misused-promises checksVoidReturn, fixed the sole async close-handler finding without suppressions, and passed lint, affected process-supervision tests, format, diff check, and framework bootstrap."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Enabled no-misused-promises checksVoidReturn, fixed the sole async close-handler finding without suppressions, and passed lint plus affected process supervision tests."
+  -
+    type: "status"
+    at: "2026-04-21T10:54:51.832Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: enabled no-misused-promises checksVoidReturn, fixed the sole async close-handler finding without suppressions, and passed lint, affected process-supervision tests, format, diff check, and framework bootstrap."
 doc_version: 3
-doc_updated_at: "2026-04-21T10:54:22.912Z"
+doc_updated_at: "2026-04-21T10:54:51.832Z"
 doc_updated_by: "CODER"
 description: "Enable @typescript-eslint/no-misused-promises checksVoidReturn and fix or explicitly justify resulting async handler findings."
 sections:
