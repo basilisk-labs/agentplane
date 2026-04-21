@@ -1,10 +1,10 @@
 ---
 id: "202604211311-RJTGRK"
 title: "Inventory core subpath import mapping"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T15:49:12.243Z"
+  updated_by: "CODER"
+  note: "Verified: bun run typecheck passed; rg \"@agentplaneorg/core\" packages scripts -n passed and confirmed remaining root import surface. Findings now record the symbol-to-subpath migration map and intentional root gaps for config/project/commit-policy."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: inventory root @agentplaneorg/core imports and classify each symbol to existing subpath exports before any callsite migration."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T15:46:39.932Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: inventory root @agentplaneorg/core imports and classify each symbol to existing subpath exports before any callsite migration."
+  -
+    type: "verify"
+    at: "2026-04-21T15:49:12.243Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bun run typecheck passed; rg \"@agentplaneorg/core\" packages scripts -n passed and confirmed remaining root import surface. Findings now record the symbol-to-subpath migration map and intentional root gaps for config/project/commit-policy."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:11:43.164Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T15:49:12.255Z"
+doc_updated_by: "CODER"
 description: "Build a concrete import migration map from @agentplaneorg/core root imports to existing subpath exports before changing callsites."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T15:49:12.243Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: bun run typecheck passed; rg "@agentplaneorg/core" packages scripts -n passed and confirmed remaining root import surface. Findings now record the symbol-to-subpath migration map and intentional root gaps for config/project/commit-policy.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T15:48:54.242Z, excerpt_hash=sha256:9f2f1053f6100e45099793ba59c32f55a055799c3fd857f3687a17f5ba96b19c
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -81,6 +105,14 @@ Scope: create the mechanical map for I-prime.apply. Steps: 1. List all root @age
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T15:49:12.243Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bun run typecheck passed; rg "@agentplaneorg/core" packages scripts -n passed and confirmed remaining root import surface. Findings now record the symbol-to-subpath migration map and intentional root gaps for config/project/commit-policy.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T15:48:54.242Z, excerpt_hash=sha256:9f2f1053f6100e45099793ba59c32f55a055799c3fd857f3687a17f5ba96b19c
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
