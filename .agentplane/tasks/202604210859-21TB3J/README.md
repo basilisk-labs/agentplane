@@ -1,10 +1,11 @@
 ---
 id: "202604210859-21TB3J"
 title: "Resolve recipe manifest and types hotspot"
-status: "DOING"
+result_summary: "Split recipe manifest/types hotspot by domain while preserving public API."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-21T10:37:40.052Z"
   updated_by: "CODER"
   note: "Resolved recipe manifest/types hotspot as hand-maintained code with minimal domain split; recipes typecheck, tests, build, and types-file guard pass."
-commit: null
+commit:
+  hash: "60afa878de9954d2cdc13800d76ca5cc1ae4c958"
+  message: "✅ 21TB3J code: done"
 comments:
   -
     author: "CODER"
     body: "Start: classify recipe manifest/types hotspot, choose marker versus split, update minimal recipe package code/docs, and run recipe-focused verification."
+  -
+    author: "CODER"
+    body: "Verified: resolved recipe manifest/types hotspot as hand-maintained code with a domain split, kept public types barrel stable, and passed recipes typecheck/tests/build plus types-file guard."
 events:
   -
     type: "status"
@@ -48,8 +54,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Resolved recipe manifest/types hotspot as hand-maintained code with minimal domain split; recipes typecheck, tests, build, and types-file guard pass."
+  -
+    type: "status"
+    at: "2026-04-21T10:39:28.821Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: resolved recipe manifest/types hotspot as hand-maintained code with a domain split, kept public types barrel stable, and passed recipes typecheck/tests/build plus types-file guard."
 doc_version: 3
-doc_updated_at: "2026-04-21T10:37:40.055Z"
+doc_updated_at: "2026-04-21T10:39:28.822Z"
 doc_updated_by: "CODER"
 description: "Determine whether recipe manifest/types files are generated or hand-maintained, then either mark generated or decompose by domain."
 sections:
