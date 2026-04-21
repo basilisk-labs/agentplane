@@ -1,10 +1,11 @@
 ---
 id: "202604210859-GWFWDM"
 title: "Unify Zod validation error formatting"
-status: "DOING"
+result_summary: "Unified Zod validation error formatting for core config and task artifact schemas."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-21T11:01:23.598Z"
   updated_by: "CODER"
   note: "Unified core schema validation formatting through zod-validation-error; focused core tests, schemas check, typecheck, lint, formatting, and dependency lock validation pass."
-commit: null
+commit:
+  hash: "1b1207c5f7df5e926fc6ae6a573cec8e0d521499"
+  message: "✅ GWFWDM code: done"
 comments:
   -
     author: "CODER"
     body: "Start: unify Zod validation error formatting through zod-validation-error while preserving error codes and exit behavior."
+  -
+    author: "CODER"
+    body: "Verified: unified core schema validation formatting through zod-validation-error; focused core tests, schemas check, typecheck, lint, formatting, lock validation, and framework bootstrap passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Unified core schema validation formatting through zod-validation-error; focused core tests, schemas check, typecheck, lint, formatting, and dependency lock validation pass."
+  -
+    type: "status"
+    at: "2026-04-21T11:03:03.306Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: unified core schema validation formatting through zod-validation-error; focused core tests, schemas check, typecheck, lint, formatting, lock validation, and framework bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-04-21T11:01:23.601Z"
+doc_updated_at: "2026-04-21T11:03:03.307Z"
 doc_updated_by: "CODER"
 description: "Standardize schema validation diagnostics on zod-validation-error so CLI and core schema failures use one readable format."
 sections:
