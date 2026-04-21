@@ -1,10 +1,11 @@
 ---
 id: "202604211313-RE08PF"
 title: "Add oversized test file guard"
-status: "DOING"
+result_summary: "Implemented oversized test guard in hotspot reporting; finalized with cli-unit fixture updates for removed legacy compatibility. Evidence: bun run hotspots:check, bun run test:project -- cli-unit, bun run format:check, git diff --check."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,15 +22,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-04-21T13:42:51.439Z"
+  state: "ok"
+  updated_at: "2026-04-21T15:45:33.055Z"
   updated_by: "CODER"
-  note: "Command: bun run hotspots:check; Result: pass; oversized test hard threshold enforced. Command: bun run test:project -- cli-unit; Result: fail; Evidence: 13 failures in guard/finish/upgrade/normalize areas unrelated to hotspot-report script. Leaving task open until cli-unit is green or verify contract is narrowed."
-commit: null
+  note: "Verified: bun run hotspots:check passed; bun run test:project -- cli-unit passed (54 files, 624 tests); bun run format:check passed; git diff --check passed. Follow-up test fixture alignment committed in a8a90546."
+commit:
+  hash: "a8a90546afc5197555d484e878ac5b704429b8a2"
+  message: "✅ RE08PF test: align cli-unit fixtures with current contracts"
 comments:
   -
     author: "CODER"
     body: "Start: добавить guard oversized test files через hotspot check с явным порогом и без затрагивания init UX/command-catalog областей."
+  -
+    author: "CODER"
+    body: "Verified: oversized test guard is enforced and the full cli-unit gate is green after current-contract fixture updates."
 events:
   -
     type: "status"
@@ -44,8 +50,21 @@ events:
     author: "CODER"
     state: "needs_rework"
     note: "Command: bun run hotspots:check; Result: pass; oversized test hard threshold enforced. Command: bun run test:project -- cli-unit; Result: fail; Evidence: 13 failures in guard/finish/upgrade/normalize areas unrelated to hotspot-report script. Leaving task open until cli-unit is green or verify contract is narrowed."
+  -
+    type: "verify"
+    at: "2026-04-21T15:45:33.055Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bun run hotspots:check passed; bun run test:project -- cli-unit passed (54 files, 624 tests); bun run format:check passed; git diff --check passed. Follow-up test fixture alignment committed in a8a90546."
+  -
+    type: "status"
+    at: "2026-04-21T15:45:46.037Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: oversized test guard is enforced and the full cli-unit gate is green after current-contract fixture updates."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:42:51.449Z"
+doc_updated_at: "2026-04-21T15:45:46.037Z"
 doc_updated_by: "CODER"
 description: "Introduce a test-file size guard with warning or failure threshold so new 1000+ LoC CLI tests cannot appear silently."
 sections:
@@ -70,6 +89,14 @@ sections:
     Note: Command: bun run hotspots:check; Result: pass; oversized test hard threshold enforced. Command: bun run test:project -- cli-unit; Result: fail; Evidence: 13 failures in guard/finish/upgrade/normalize areas unrelated to hotspot-report script. Leaving task open until cli-unit is green or verify contract is narrowed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:21:38.186Z, excerpt_hash=sha256:2cb1520f83fe2730cc30beb6438b017c837611b3a6601e3c9dfa3e78fe535bc2
+    
+    ### 2026-04-21T15:45:33.055Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: bun run hotspots:check passed; bun run test:project -- cli-unit passed (54 files, 624 tests); bun run format:check passed; git diff --check passed. Follow-up test fixture alignment committed in a8a90546.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:42:51.449Z, excerpt_hash=sha256:2cb1520f83fe2730cc30beb6438b017c837611b3a6601e3c9dfa3e78fe535bc2
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -109,6 +136,14 @@ By: CODER
 Note: Command: bun run hotspots:check; Result: pass; oversized test hard threshold enforced. Command: bun run test:project -- cli-unit; Result: fail; Evidence: 13 failures in guard/finish/upgrade/normalize areas unrelated to hotspot-report script. Leaving task open until cli-unit is green or verify contract is narrowed.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:21:38.186Z, excerpt_hash=sha256:2cb1520f83fe2730cc30beb6438b017c837611b3a6601e3c9dfa3e78fe535bc2
+
+### 2026-04-21T15:45:33.055Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bun run hotspots:check passed; bun run test:project -- cli-unit passed (54 files, 624 tests); bun run format:check passed; git diff --check passed. Follow-up test fixture alignment committed in a8a90546.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T13:42:51.449Z, excerpt_hash=sha256:2cb1520f83fe2730cc30beb6438b017c837611b3a6601e3c9dfa3e78fe535bc2
 
 <!-- END VERIFICATION RESULTS -->
 
