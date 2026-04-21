@@ -1,10 +1,10 @@
 ---
 id: "202604210900-FZWAPD"
 title: "Prepare next patch release readiness gate"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -41,30 +41,42 @@ tags:
   - "release"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-21T11:13:08.290Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-21T11:15:15.937Z"
+  updated_by: "CODER"
+  note: "Verified: v0.3.17 patch readiness gate prepared without publishing. Commands: agentplane release plan --patch (pass, target v0.3.17 from v0.3.16); node scripts/check-release-notes.mjs --tag v0.3.17 --min-bullets 57 (exit 0; git reported unknown tag because v0.3.17 is not created yet); local release-notes validation (pass, 72 bullets, Release Notes heading present, no Cyrillic); bunx prettier --check docs/releases/v0.3.17.md .agentplane/tasks/202604210900-FZWAPD/README.md (pass); bun run release:parity (pass); bun run release:check (pass); git diff --check for release note/task files (pass); git status confirms audit input files remain untracked and unstaged."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: prepare v0.3.17 patch release readiness gate, generate English release notes, run release-note and readiness checks, and avoid any publish or tag push."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T11:13:15.602Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: prepare v0.3.17 patch release readiness gate, generate English release notes, run release-note and readiness checks, and avoid any publish or tag push."
+  -
+    type: "verify"
+    at: "2026-04-21T11:15:15.937Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: v0.3.17 patch readiness gate prepared without publishing. Commands: agentplane release plan --patch (pass, target v0.3.17 from v0.3.16); node scripts/check-release-notes.mjs --tag v0.3.17 --min-bullets 57 (exit 0; git reported unknown tag because v0.3.17 is not created yet); local release-notes validation (pass, 72 bullets, Release Notes heading present, no Cyrillic); bunx prettier --check docs/releases/v0.3.17.md .agentplane/tasks/202604210900-FZWAPD/README.md (pass); bun run release:parity (pass); bun run release:check (pass); git diff --check for release note/task files (pass); git status confirms audit input files remain untracked and unstaged."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:01:02.306Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T11:15:15.940Z"
+doc_updated_by: "CODER"
 description: "Aggregate verification, release notes, and gating evidence for the next patch release after roadmap tasks land."
 sections:
   Summary: "Create the final readiness gate for the next patch release: checks, changelog/release-note impact, and explicit deferred breaking work if any."
   Scope: "In scope: release notes/changelog entries, verification matrix, and final task evidence. Out of scope: publishing unless a separate release task authorizes it."
-  Plan: |-
-    1. Gather verification evidence from all dependent tasks.
-    2. Ensure user-visible changes have release notes.
-    3. Confirm no audit input files are staged/committed.
-    4. Run release readiness checks and record results.
+  Plan: "Release plan: version=0.3.17, tag=v0.3.17, scope=patch readiness gate only. Generate English docs/releases/v0.3.17.md from agentplane release plan output, verify release notes coverage, run readiness checks, and do not publish or push tags in this task."
   Verify Steps: |-
     - Required checks pass or have approved deferrals.
     - Changelog/release notes cover CLI behavior changes and migration warnings.
@@ -72,6 +84,14 @@ sections:
     - Audit input files are not committed.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-21T11:15:15.937Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: v0.3.17 patch readiness gate prepared without publishing. Commands: agentplane release plan --patch (pass, target v0.3.17 from v0.3.16); node scripts/check-release-notes.mjs --tag v0.3.17 --min-bullets 57 (exit 0; git reported unknown tag because v0.3.17 is not created yet); local release-notes validation (pass, 72 bullets, Release Notes heading present, no Cyrillic); bunx prettier --check docs/releases/v0.3.17.md .agentplane/tasks/202604210900-FZWAPD/README.md (pass); bun run release:parity (pass); bun run release:check (pass); git diff --check for release note/task files (pass); git status confirms audit input files remain untracked and unstaged.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T11:13:15.627Z, excerpt_hash=sha256:3e494872164137d1617a7e4305c4eee4be61580e4de007918bffc9412f895f1c
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert only release-note/readiness documentation changes made by this task."
   Findings: "Final aggregation task; depends on the full roadmap graph."
@@ -87,10 +107,7 @@ In scope: release notes/changelog entries, verification matrix, and final task e
 
 ## Plan
 
-1. Gather verification evidence from all dependent tasks.
-2. Ensure user-visible changes have release notes.
-3. Confirm no audit input files are staged/committed.
-4. Run release readiness checks and record results.
+Release plan: version=0.3.17, tag=v0.3.17, scope=patch readiness gate only. Generate English docs/releases/v0.3.17.md from agentplane release plan output, verify release notes coverage, run readiness checks, and do not publish or push tags in this task.
 
 ## Verify Steps
 
@@ -102,6 +119,14 @@ In scope: release notes/changelog entries, verification matrix, and final task e
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-21T11:15:15.937Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: v0.3.17 patch readiness gate prepared without publishing. Commands: agentplane release plan --patch (pass, target v0.3.17 from v0.3.16); node scripts/check-release-notes.mjs --tag v0.3.17 --min-bullets 57 (exit 0; git reported unknown tag because v0.3.17 is not created yet); local release-notes validation (pass, 72 bullets, Release Notes heading present, no Cyrillic); bunx prettier --check docs/releases/v0.3.17.md .agentplane/tasks/202604210900-FZWAPD/README.md (pass); bun run release:parity (pass); bun run release:check (pass); git diff --check for release note/task files (pass); git status confirms audit input files remain untracked and unstaged.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T11:13:15.627Z, excerpt_hash=sha256:3e494872164137d1617a7e4305c4eee4be61580e4de007918bffc9412f895f1c
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
