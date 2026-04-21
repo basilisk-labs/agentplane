@@ -1,10 +1,11 @@
 ---
 id: "202604211313-8ZEKN3"
 title: "Regenerate and guard config schema artifacts"
-status: "DOING"
+result_summary: "Confirmed generated schema artifacts are already in sync and added a focused config test that guards the config.ts compatibility surface against reabsorbing disk IO or validation responsibilities from config/io.ts and config/validation.ts."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-21T19:40:58.019Z"
   updated_by: "CODER"
   note: "Verified config schema artifact guard. Checks: bun run schemas:sync passed (schemas already in sync); bun run schemas:check passed (schemas OK); bunx vitest run packages/core/src/config/config.test.ts 'packages/agentplane/src/commands/config*.test.ts' --pool=forks --maxWorkers 4 passed (19 tests; no agentplane config*.test.ts files matched); bun run typecheck passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run knip:check passed; bun run format:check passed; git diff --check passed."
-commit: null
+commit:
+  hash: "b86b8f57c0120a732045a1d21acf1497a1c91933"
+  message: "✅ 8ZEKN3 config: guard schema module split"
 comments:
   -
     author: "CODER"
     body: "Start: refresh schema artifacts and add a focused config module boundary guard after the config IO split."
+  -
+    author: "CODER"
+    body: "Verified: config schema artifacts and module guard. Checks: bun run schemas:sync; bun run schemas:check; bunx vitest run packages/core/src/config/config.test.ts 'packages/agentplane/src/commands/config*.test.ts' --pool=forks --maxWorkers 4; bun run typecheck; bun run test:project -- cli-unit; bun run knip:check; bun run format:check; git diff --check."
 events:
   -
     type: "status"
@@ -47,14 +53,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified config schema artifact guard. Checks: bun run schemas:sync passed (schemas already in sync); bun run schemas:check passed (schemas OK); bunx vitest run packages/core/src/config/config.test.ts 'packages/agentplane/src/commands/config*.test.ts' --pool=forks --maxWorkers 4 passed (19 tests; no agentplane config*.test.ts files matched); bun run typecheck passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run knip:check passed; bun run format:check passed; git diff --check passed."
+  -
+    type: "status"
+    at: "2026-04-21T19:41:21.211Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: config schema artifacts and module guard. Checks: bun run schemas:sync; bun run schemas:check; bunx vitest run packages/core/src/config/config.test.ts 'packages/agentplane/src/commands/config*.test.ts' --pool=forks --maxWorkers 4; bun run typecheck; bun run test:project -- cli-unit; bun run knip:check; bun run format:check; git diff --check."
 doc_version: 3
-doc_updated_at: "2026-04-21T19:40:58.022Z"
+doc_updated_at: "2026-04-21T19:41:21.211Z"
 doc_updated_by: "CODER"
 description: "Refresh generated config schema artifacts and add or adjust tests so the flattened config module structure cannot drift."
 sections:
   Summary: |-
     Regenerate and guard config schema artifacts
-
+    
     Refresh generated config schema artifacts and add or adjust tests so the flattened config module structure cannot drift.
   Scope: |-
     - In scope: Refresh generated config schema artifacts and add or adjust tests so the flattened config module structure cannot drift.
@@ -67,13 +80,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-21T19:40:58.019Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Verified config schema artifact guard. Checks: bun run schemas:sync passed (schemas already in sync); bun run schemas:check passed (schemas OK); bunx vitest run packages/core/src/config/config.test.ts 'packages/agentplane/src/commands/config*.test.ts' --pool=forks --maxWorkers 4 passed (19 tests; no agentplane config*.test.ts files matched); bun run typecheck passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run knip:check passed; bun run format:check passed; git diff --check passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T19:39:32.344Z, excerpt_hash=sha256:8c2a0abf93c9cf8aa29d304b6213f6b765999e5c64db7679887ad69d4dae6028
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
