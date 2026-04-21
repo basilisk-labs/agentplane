@@ -1,4 +1,5 @@
-import { createLogger, type Logger, type LoggerWriter } from "@agentplaneorg/core";
+import type { Logger, LoggerWriter } from "@agentplaneorg/core/logger";
+import { createLogger } from "@agentplaneorg/core/logger";
 
 export type TraceEvent = {
   component: string;

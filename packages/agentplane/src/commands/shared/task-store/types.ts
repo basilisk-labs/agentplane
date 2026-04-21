@@ -1,4 +1,4 @@
-import type { ParsedTaskReadme } from "@agentplaneorg/core";
+import type { ParsedTaskReadme } from "@agentplaneorg/core/tasks";
 
 import type { TaskData, TaskEvent } from "../../../backends/task-backend.js";
 import type { CommandContext } from "../task-backend.js";

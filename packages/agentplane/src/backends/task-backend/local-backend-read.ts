@@ -1,13 +1,11 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
-
+import type { TaskRecord } from "@agentplaneorg/core/tasks";
+import { parseTaskReadme, taskReadmePath } from "@agentplaneorg/core/tasks";
 import {
-  parseTaskReadme,
-  taskReadmePath,
   validateTaskReadmeFrontmatter,
   withTaskReadmeFrontmatterDefaults,
-  type TaskRecord,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/schemas";
 
 import { isRecord } from "../../shared/guards.js";
 import {

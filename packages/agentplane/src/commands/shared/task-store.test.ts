@@ -2,14 +2,13 @@ import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-
+import { defaultConfig } from "@agentplaneorg/core";
 import {
-  defaultConfig,
   parseTaskReadme,
   renderTaskReadme,
   taskDocToSectionMap,
   writeTasksExport,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/tasks";
 
 import { LocalBackend } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";

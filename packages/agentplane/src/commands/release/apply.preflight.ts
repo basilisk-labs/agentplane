@@ -4,7 +4,8 @@ import path from "node:path";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { withDiagnosticContext } from "../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
-import { execFileAsync, gitEnv } from "../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 
 import type { PlanChange, ReleaseVersionPlan } from "./apply.types.js";
 

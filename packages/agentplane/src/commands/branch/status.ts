@@ -1,12 +1,16 @@
-import { loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
+import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import {
+  resolveBaseBranch,
+  gitAheadBehind,
+  findWorktreeForBranch,
+  parseTaskIdFromBranch,
+} from "@agentplaneorg/core/git";
 
 import { mapCoreError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter, unknownEntityMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { gitAheadBehind } from "../shared/git-diff.js";
 import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
-import { findWorktreeForBranch, parseTaskIdFromBranch } from "../shared/git-worktree.js";
 const output = createCliEmitter();
 
 export async function cmdBranchStatus(opts: {

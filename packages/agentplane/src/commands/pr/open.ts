@@ -4,7 +4,8 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { execFileAsync, gitEnv } from "../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 

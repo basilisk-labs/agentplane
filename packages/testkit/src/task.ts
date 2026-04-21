@@ -1,7 +1,7 @@
 import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
+import { GitContext } from "@agentplaneorg/core/git";
 
 import type { TaskBackend, TaskData } from "../../agentplane/src/backends/task-backend.js";
-import { GitContext } from "../../agentplane/src/commands/shared/git-context.js";
 import type { CommandContext } from "../../agentplane/src/commands/shared/task-backend.js";
 
 export function makeTaskFixture(overrides: Partial<TaskData> = {}): TaskData {

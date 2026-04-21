@@ -29,7 +29,7 @@ import { defaultConfig } from "@agentplaneorg/core";
 import * as taskBackend from "../backends/task-backend.js";
 import * as prompts from "../cli/prompts.js";
 import { parseCommandArgv } from "../cli/spec/parse.js";
-import { captureStdIO, mkGitRepoRoot, silenceStdIO, writeDefaultConfig } from "../testing/index.js";
+import { captureStdIO, mkGitRepoRoot, silenceStdIO, writeDefaultConfig } from "@agentplane/testkit";
 import { taskNewSpec } from "./task/new.command.js";
 import { runTaskNewParsed } from "./task/new.js";
 import { loadCommandContext } from "./shared/task-backend.js";

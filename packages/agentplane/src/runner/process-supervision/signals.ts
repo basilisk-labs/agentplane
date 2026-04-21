@@ -1,4 +1,4 @@
-import { runProcess } from "@agentplaneorg/core";
+import { runProcess } from "@agentplaneorg/core/process";
 
 import type { RunnerProcessSignal } from "../types.js";
 

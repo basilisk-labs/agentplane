@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   getTaskStore: vi.fn(),
 }));
 
-vi.mock("../guard/index.js", () => ({
+vi.mock("../guard/impl/comment-commit.js", () => ({
   commitFromComment: mocks.commitFromComment,
 }));
 vi.mock("../shared/task-backend.js", () => ({

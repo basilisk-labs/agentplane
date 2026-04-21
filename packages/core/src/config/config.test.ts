@@ -15,6 +15,8 @@ import {
 
 const makeConfigRecord = (): Record<string, unknown> =>
   structuredClone(defaultConfig()) as Record<string, unknown>;
+const readConfigModuleText = async (relativePath: string): Promise<string> =>
+  await readFile(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
 const schemaPath = (pathValue: string): RegExp => {
   const [first = "", ...rest] = pathValue.split(".");
   const pathPattern = [
@@ -50,6 +52,23 @@ describe("config", () => {
 
     expect(JSON.parse(specText)).toEqual(rendered);
     expect(JSON.parse(coreText)).toEqual(rendered);
+  });
+
+  it("keeps config IO and validation behind dedicated modules", async () => {
+    const [configText, ioText, validationText] = await Promise.all([
+      readConfigModuleText("./config.ts"),
+      readConfigModuleText("./io.ts"),
+      readConfigModuleText("./validation.ts"),
+    ]);
+
+    expect(configText).toContain('from "./io.js"');
+    expect(configText).toContain('from "./validation.js"');
+    expect(configText).not.toContain("node:fs/promises");
+    expect(configText).not.toContain("atomicWriteFile");
+
+    expect(ioText).toContain("node:fs/promises");
+    expect(ioText).toContain("atomicWriteFile");
+    expect(validationText).toContain("validateAgentplaneConfig");
   });
 
   it("validateConfig allows missing agents approvals", () => {

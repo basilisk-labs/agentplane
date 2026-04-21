@@ -6,15 +6,15 @@ const mocks = vi.hoisted(() => ({
   findWorktreeForBranch: vi.fn(),
 }));
 
-vi.mock("./git.js", () => ({
+vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
-  gitEnv: () => ({}),
 }));
 vi.mock("./git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
 }));
-vi.mock("./git-worktree.js", () => ({
+vi.mock("@agentplaneorg/core/git", () => ({
   findWorktreeForBranch: mocks.findWorktreeForBranch,
+  gitEnv: () => ({}),
 }));
 
 describe("commands/shared/merged-branch-cleanup", () => {

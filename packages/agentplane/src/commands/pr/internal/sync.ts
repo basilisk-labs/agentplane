@@ -1,7 +1,6 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
-
-import { resolveBaseBranch } from "@agentplaneorg/core";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 
 import { mapBackendError } from "../../../cli/error-map.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";

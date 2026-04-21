@@ -11,8 +11,10 @@ const mocks = vi.hoisted(() => ({
   buildGithubPrTitle: vi.fn(),
 }));
 
-vi.mock("../../../shared/git.js", () => ({
+vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
+}));
+vi.mock("@agentplaneorg/core/git", () => ({
   gitEnv: () => ({}),
 }));
 vi.mock("../../../shared/git-ops.js", () => ({

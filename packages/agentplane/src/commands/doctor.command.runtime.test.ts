@@ -6,8 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-
-import { renderTaskReadme } from "@agentplaneorg/core";
+import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { checkBranchPrDoneTaskOpenPrDrift } from "./doctor/branch-pr.js";

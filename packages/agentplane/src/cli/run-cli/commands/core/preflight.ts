@@ -1,7 +1,7 @@
 import { loadConfig, resolveProject, type AgentplaneConfig } from "@agentplaneorg/core";
+import { GitContext } from "@agentplaneorg/core/git";
 
 import { loadTaskBackend } from "../../../../backends/task-backend.js";
-import { GitContext } from "../../../../commands/shared/git-context.js";
 import { gitCurrentBranch } from "../../../../commands/shared/git-ops.js";
 import { dedupeStrings } from "../../../../shared/strings.js";
 import {

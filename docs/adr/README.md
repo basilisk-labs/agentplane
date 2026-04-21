@@ -25,3 +25,4 @@ Keep ADRs short. Prefer facts, decision, consequences, and follow-up over histor
 | [0007](./0007-freeze-yaml-parser-stack.md)               | Accepted | Keep `yaml` as the canonical YAML parser during the current refactor cycle.                                |
 | [0008](./0008-keep-yauzl-for-zip-validation.md)          | Accepted | Keep `yauzl` for ZIP validation because alternatives do not meet the measured size/risk bar.               |
 | [0009](./0009-recipes-index-signing-algorithm-policy.md) | Accepted | Keep Ed25519 as the only implemented recipes index signing algorithm behind an explicit verifier registry. |
+| [0010](./0010-core-root-export-compatibility.md)         | Accepted | Keep `@agentplaneorg/core` as a compatibility aggregate while internal runtime code uses subpath imports.  |

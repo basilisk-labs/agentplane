@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   loadCommandContext: vi.fn(),
 }));
 
-vi.mock("@agentplaneorg/core", () => ({ resolveBaseBranch: mocks.resolveBaseBranch }));
+vi.mock("@agentplaneorg/core/git", () => ({ resolveBaseBranch: mocks.resolveBaseBranch }));
 vi.mock("../../../policy/evaluate.js", () => ({ evaluatePolicy: mocks.evaluatePolicy }));
 vi.mock("../../shared/git-ops.js", () => ({ gitCurrentBranch: mocks.gitCurrentBranch }));
 vi.mock("../../shared/policy-deny.js", () => ({ throwIfPolicyDenied: mocks.throwIfPolicyDenied }));

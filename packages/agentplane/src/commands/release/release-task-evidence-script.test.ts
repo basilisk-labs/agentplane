@@ -5,8 +5,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { afterEach, describe, expect, it } from "vitest";
-
-import { renderTaskReadme } from "@agentplaneorg/core";
+import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/release-task-evidence.mjs");

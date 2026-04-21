@@ -1,4 +1,4 @@
-import { parseTaskReadme, renderTaskFrontmatter } from "@agentplaneorg/core";
+import { parseTaskReadme, renderTaskFrontmatter } from "@agentplaneorg/core/tasks";
 
 import type {
   WorkflowDiagnostic,

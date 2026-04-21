@@ -135,6 +135,12 @@ export const initSpec: CommandSpec<InitParsed> = {
     },
     {
       kind: "boolean",
+      name: "experimental-ui",
+      default: false,
+      description: "Use the experimental Clack-powered init UI.",
+    },
+    {
+      kind: "boolean",
       name: "gitignore-agents",
       default: false,
       description:
@@ -222,6 +228,7 @@ export const initSpec: CommandSpec<InitParsed> = {
       recipes: recipesRaw === undefined ? undefined : parseRecipesSelectionForInit(recipesRaw),
       force: raw.opts.force === true,
       backup: raw.opts.backup === true,
+      experimentalUi: raw.opts["experimental-ui"] === true,
       yes: raw.opts.yes === true,
       gitignoreAgents: raw.opts["gitignore-agents"] === true,
     };

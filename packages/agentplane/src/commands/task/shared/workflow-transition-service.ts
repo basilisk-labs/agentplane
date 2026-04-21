@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-
-import { ensureDocSections, setMarkdownSection, type AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core";
+import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
 
 import type { TaskBackend, TaskData } from "../../../backends/task-backend.js";
 import { CliError } from "../../../shared/errors.js";

@@ -76,13 +76,12 @@ describe("release CI contract", () => {
     expect(agentplanePackageJson.scripts?.build).toContain("tsc -b --force");
   });
 
-  it("keeps repo-test compatibility files out of the publishable agentplane build", async () => {
+  it("keeps repo-only helper files out of the publishable agentplane build", async () => {
     const agentplaneTsconfigText = await readRootText("packages/agentplane/tsconfig.json");
     const agentplaneTsconfig = JSON.parse(agentplaneTsconfigText) as {
       exclude?: string[];
     };
 
-    expect(agentplaneTsconfig.exclude).toContain("src/testing/**/*.ts");
     expect(agentplaneTsconfig.exclude).toContain("src/cli/run-cli.core.pr-flow.pr-support.ts");
     expect(agentplaneTsconfig.exclude).toContain("src/cli/run-cli.core.tasks.query-support.ts");
   });

@@ -1,8 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { gunzipSync } from "node:zlib";
-
-import { runProcess } from "@agentplaneorg/core";
+import { runProcess } from "@agentplaneorg/core/process";
 import yauzl from "yauzl";
 
 import { CliError } from "../shared/errors.js";

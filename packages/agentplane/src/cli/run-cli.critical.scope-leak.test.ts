@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { expect, it } from "vitest";
 
-import { describeCritical } from "../testing/index.js";
+import { describeCritical } from "@agentplane/testkit";
 import {
   expectCliError,
   gitHead,

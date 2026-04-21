@@ -2,7 +2,7 @@ import {
   applyTaskDocMutations,
   normalizeTaskDocVersion,
   taskDocToSectionMap,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/tasks";
 
 import type { TaskData, TaskEvent } from "../../../backends/task-backend.js";
 import { assertExpectedTaskDoc, assertExpectedTaskSection } from "../../../task-doc/conflicts.js";

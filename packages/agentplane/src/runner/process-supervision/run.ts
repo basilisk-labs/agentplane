@@ -1,6 +1,5 @@
 import { appendFileSync } from "node:fs";
-
-import { startProcess } from "@agentplaneorg/core";
+import { startProcess } from "@agentplaneorg/core/process";
 
 import {
   appendRunnerEvent,

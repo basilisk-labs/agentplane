@@ -1,4 +1,5 @@
-import type { ApprovalSettings, TaskDocVersion } from "@agentplaneorg/core";
+import type { ApprovalSettings } from "@agentplaneorg/core";
+import type { TaskDocVersion } from "@agentplaneorg/core/tasks";
 
 import type { TaskBackendCapabilities, TaskData, TaskOrigin } from "../../backends/task-backend.js";
 import type { BehaviorLayer } from "../behavior/index.js";

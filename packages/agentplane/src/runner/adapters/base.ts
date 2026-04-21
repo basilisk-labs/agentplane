@@ -1,4 +1,4 @@
-import type { SupervisedProcessResult } from "../process-supervision.js";
+import type { SupervisedProcessResult } from "../process-supervision/run.js";
 import type { RunnerRunRepository } from "../run-repository.js";
 import type { RunnerContextBundle, RunnerInvocation, RunnerResult } from "../types.js";
 import { evolveRunnerRunState } from "../artifacts.js";

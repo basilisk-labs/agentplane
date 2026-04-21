@@ -1,4 +1,4 @@
-import { type TaskDocVersion } from "@agentplaneorg/core";
+import type { TaskDocVersion } from "@agentplaneorg/core/tasks";
 
 import { toStringSafe } from "../shared.js";
 

@@ -4,7 +4,7 @@ import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 
 import { readPrArtifact, readPrArtifactFromBranch } from "../internal/pr-paths.js";
-import { findWorktreeForBranch } from "../../shared/git-worktree.js";
+import { findWorktreeForBranch } from "@agentplaneorg/core/git";
 
 import type { CommandContext } from "../../shared/task-backend.js";
 

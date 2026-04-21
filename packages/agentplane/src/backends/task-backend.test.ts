@@ -1,7 +1,6 @@
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
-
-import { type TaskRecord } from "@agentplaneorg/core";
+import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
@@ -12,7 +11,7 @@ import {
   writeTasksExportFromTasks,
   type TaskData,
 } from "./task-backend.js";
-import { mkTempDir, silenceStdIO } from "../testing/index.js";
+import { mkTempDir, silenceStdIO } from "@agentplane/testkit";
 
 let restoreStdIO: (() => void) | null = null;
 

@@ -1,4 +1,4 @@
-import { canonicalizeJson } from "@agentplaneorg/core";
+import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
 import {
   detectConfiguredFieldNameDrift,

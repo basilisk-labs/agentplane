@@ -1,7 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-
-import type { TaskPrMeta } from "@agentplaneorg/core";
+import type { TaskPrMeta } from "@agentplaneorg/core/schemas";
 
 import { parsePrMeta } from "../../shared/pr-meta.js";
 import type { CommandContext } from "../../shared/task-backend.js";

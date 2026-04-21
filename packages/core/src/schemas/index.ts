@@ -6,7 +6,7 @@ export {
   renderAgentplaneConfigSchemaJson,
   validateAgentplaneConfig,
   type AgentplaneConfig,
-} from "../config/config-zod.js";
+} from "../config/schema.js";
 
 export {
   listTaskHandoffSchemaErrors,

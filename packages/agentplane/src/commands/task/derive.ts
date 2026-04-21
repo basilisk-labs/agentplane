@@ -1,4 +1,4 @@
-import { setMarkdownSection } from "@agentplaneorg/core";
+import { setMarkdownSection } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { unknownEntityMessage, warnMessage } from "../../cli/output.js";

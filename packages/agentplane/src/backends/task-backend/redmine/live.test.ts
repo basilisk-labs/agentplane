@@ -6,7 +6,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { parseDotEnv } from "../../../shared/env.js";
-import { describeWhenEnvPresent, silenceStdIO } from "../../../testing/index.js";
+import { describeWhenEnvPresent, silenceStdIO } from "@agentplane/testkit";
 import { LocalBackend } from "../local-backend.js";
 import { RedmineBackend } from "../redmine-backend.js";
 

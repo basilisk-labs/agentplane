@@ -1,4 +1,4 @@
-import type { TaskPrMeta } from "@agentplaneorg/core";
+import type { TaskPrMeta } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../../backends/task-backend.js";
 

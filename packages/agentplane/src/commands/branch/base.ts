@@ -1,11 +1,10 @@
+import { loadConfig, resolveProject } from "@agentplaneorg/core";
 import {
   clearPinnedBaseBranch,
   getPinnedBaseBranch,
-  loadConfig,
   resolveBaseBranch,
-  resolveProject,
   setPinnedBaseBranch,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/git";
 
 import { mapCoreError } from "../../cli/error-map.js";
 import { createCliEmitter } from "../../cli/output.js";

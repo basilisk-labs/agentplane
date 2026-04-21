@@ -1,6 +1,6 @@
-import { execFileAsync, gitEnv } from "./git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv, findWorktreeForBranch } from "@agentplaneorg/core/git";
 import { gitBranchExists } from "./git-ops.js";
-import { findWorktreeForBranch } from "./git-worktree.js";
 import { isPathWithin, resolvePathFallback } from "./path.js";
 
 export type MergedBranchCleanupResult = {

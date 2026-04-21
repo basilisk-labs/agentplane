@@ -15,14 +15,8 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
-
-import {
-  defaultConfig,
-  extractTaskSuffix,
-  readTask,
-  renderTaskReadme,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import { defaultConfig, extractTaskSuffix, ResolvedProject } from "@agentplaneorg/core";
+import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import { getVersion } from "../meta/version.js";
@@ -52,7 +46,7 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 
@@ -989,7 +983,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--root", root, "--setup-profile", "developer"]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("◇  Workflow");
+      expect(io.stdout).not.toContain("◇  Workflow");
       expect(choice).toHaveBeenCalled();
       expect(yesNo).toHaveBeenCalled();
       expect(

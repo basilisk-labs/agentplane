@@ -5,7 +5,8 @@ import { extractTaskSuffix, validateCommitSubject } from "@agentplaneorg/core";
 
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
-import { execFileAsync, gitEnv } from "../../../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 import { gitRevParse } from "../../../shared/git-ops.js";
 import type { PrMeta } from "../../../shared/pr-meta.js";
 import { buildGithubPrTitle } from "../../internal/review-template.js";

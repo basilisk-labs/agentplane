@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { RunDeps } from "../command-catalog.js";
+import type { RunDeps } from "../command-catalog/kernel.js";
 
 const mockResolveProject =
   vi.fn<

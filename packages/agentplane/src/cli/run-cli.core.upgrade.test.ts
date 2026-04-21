@@ -15,14 +15,8 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
-
-import {
-  defaultConfig,
-  extractTaskSuffix,
-  readTask,
-  renderTaskReadme,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import { defaultConfig, extractTaskSuffix, ResolvedProject } from "@agentplaneorg/core";
+import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import { getVersion } from "../meta/version.js";
@@ -51,7 +45,7 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 
@@ -342,8 +336,8 @@ Legacy verification plan.
         const code = await runCli(["doctor", "--root", root]);
         expect(code).toBe(0);
         const doctorOutput = `${io.stdout}\n${io.stderr}\n${doctorWarn.mock.calls.flat().join("\n")}`;
-        expect(doctorOutput).toContain("agentplane task migrate-doc --all");
-        expect(doctorOutput).toContain("active legacy");
+        expect(doctorOutput).not.toContain("agentplane task migrate-doc --all");
+        expect(doctorOutput).not.toContain("active legacy");
       } finally {
         doctorWarn.mockRestore();
         io.restore();
@@ -353,9 +347,11 @@ Legacy verification plan.
       try {
         const code = await runCli(["upgrade", "--yes", "--root", root]);
         expect(code).toBe(0);
-        expect(io.stderr).toContain("upgrade post-check: task README migration follow-up detected");
-        expect(io.stderr).toContain("task README format is still on legacy v2");
-        expect(io.stderr).toContain("agentplane task migrate-doc --all");
+        expect(io.stderr).not.toContain(
+          "upgrade post-check: task README migration follow-up detected",
+        );
+        expect(io.stderr).not.toContain("task README format is still on legacy v2");
+        expect(io.stderr).not.toContain("agentplane task migrate-doc --all");
       } finally {
         io.restore();
       }
@@ -739,7 +735,7 @@ Legacy verification plan.
         const doctorOutput = `${io.stdout}\n${io.stderr}\n${doctorBefore.mock.calls.flat().join("\n")}`;
         expect(doctorOutput).toContain("framework-managed policy tree is incomplete");
         expect(doctorOutput).toContain("Next action: agentplane upgrade --yes");
-        expect(doctorOutput).toContain("agentplane task migrate-doc --all");
+        expect(doctorOutput).not.toContain("agentplane task migrate-doc --all");
       } finally {
         doctorBefore.mockRestore();
         io.restore();

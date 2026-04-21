@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileExists } from "../../../fs-utils.js";
 
 import { cmdIdeSync } from "../ide.js";
-import type { RunDeps } from "../../command-catalog.js";
+import type { RunDeps } from "../../command-catalog/kernel.js";
 
 export async function maybeSyncIde(opts: {
   cwd: string;

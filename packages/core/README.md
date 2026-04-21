@@ -53,6 +53,15 @@ const snapshot = await buildTasksExportSnapshot(project.root);
 console.log(config.data.workflow_mode, task?.id, snapshot.meta.version);
 ```
 
+The root `@agentplaneorg/core` import is a backward-compatible aggregate export. For new code, prefer
+the narrowest published subpath when you only need one domain:
+
+```ts
+import { GitContext } from "@agentplaneorg/core/git";
+import { runProcess } from "@agentplaneorg/core/process";
+import { renderTaskReadme } from "@agentplaneorg/core/tasks";
+```
+
 ## Exported Modules
 
 | Import path                   | Area       | Highlights                                                                        |
@@ -69,6 +78,10 @@ console.log(config.data.workflow_mode, task?.id, snapshot.meta.version);
 
 This package is versioned alongside the CLI and is primarily used by `agentplane`. The API is stable for
 current use cases, but expect changes as the CLI evolves.
+
+The root aggregate export is kept for patch/minor compatibility. Existing root re-exports will not be
+removed in a patch release. Any future removal or narrowing of the aggregate export requires a breaking
+release plan and migration notes that map removed symbols to their replacement subpaths.
 
 ## Docs
 

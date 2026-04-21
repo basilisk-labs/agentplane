@@ -34,14 +34,15 @@ vi.mock("@agentplaneorg/core", () => ({
 vi.mock("../../../../cli/fs-utils.js", () => ({ fileExists: mocks.fileExists }));
 vi.mock("node:fs/promises", () => ({ readFile: mocks.readFile }));
 vi.mock("../../../guard/index.js", () => ({ ensureGitClean: mocks.ensureGitClean }));
-vi.mock("../../../shared/git-diff.js", () => ({ gitDiffNames: mocks.gitDiffNames }));
+vi.mock("@agentplaneorg/core/git", () => ({
+  findWorktreeForBranch: mocks.findWorktreeForBranch,
+  gitDiffNames: mocks.gitDiffNames,
+  resolveBaseBranch: mocks.resolveBaseBranch,
+}));
 vi.mock("../../../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
   gitCurrentBranch: mocks.gitCurrentBranch,
   gitRevParse: mocks.gitRevParse,
-}));
-vi.mock("../../../shared/git-worktree.js", () => ({
-  findWorktreeForBranch: mocks.findWorktreeForBranch,
 }));
 vi.mock("../../../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,

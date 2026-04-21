@@ -25,7 +25,7 @@ vi.mock("../../../../shared/write-if-changed.js", () => ({
   writeJsonStableIfChanged: mocks.writeJsonStableIfChanged,
   writeTextIfChanged: mocks.writeTextIfChanged,
 }));
-vi.mock("../../../shared/git-diff.js", () => ({ gitDiffStat: mocks.gitDiffStat }));
+vi.mock("@agentplaneorg/core/git", () => ({ gitDiffStat: mocks.gitDiffStat }));
 vi.mock("../../../shared/pr-meta.js", () => ({
   appendVerifyLog: mocks.appendVerifyLog,
   parsePrMeta: mocks.parsePrMeta,

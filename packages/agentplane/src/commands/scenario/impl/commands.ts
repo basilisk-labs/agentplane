@@ -1,6 +1,7 @@
 import path from "node:path";
-
-import { resolveProject, runProcess, type ResolvedProject } from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core";
+import { runProcess } from "@agentplaneorg/core/process";
 
 import { mapCoreError } from "../../../cli/error-map.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";

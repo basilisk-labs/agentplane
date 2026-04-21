@@ -3,7 +3,7 @@ import {
   mergeTaskDoc as mergeTaskDocCore,
   normalizeTaskDocVersion as normalizeTaskDocVersionCore,
   resolveTaskDocUpdatedBy,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/tasks";
 
 import { isRecord } from "../../../shared/guards.js";
 

@@ -1,8 +1,8 @@
-import { resolveBaseBranch, type TaskPrMeta } from "@agentplaneorg/core";
+import type { TaskPrMeta } from "@agentplaneorg/core/schemas";
+import { resolveBaseBranch, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 
 import type { TaskData } from "../../../backends/task-backend.js";
-import { execFileAsync } from "../../shared/git.js";
-import { parseTaskIdFromBranch } from "../../shared/git-worktree.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { backendUsesLocalTaskStore } from "../../shared/task-backend.js";
 import { readPrMetaIfPresent } from "./pr-meta.js";

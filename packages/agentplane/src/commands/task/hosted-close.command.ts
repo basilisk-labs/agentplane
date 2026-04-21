@@ -8,7 +8,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
-import { execFileAsync } from "../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import { buildIntegratedPrMeta, parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { createTaskCloseCommit, writeFinishedTasks } from "./finish-shared.js";

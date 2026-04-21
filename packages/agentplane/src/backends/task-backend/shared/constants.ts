@@ -1,4 +1,5 @@
-import { TASK_ID_ALPHABET, type TaskDocVersion } from "@agentplaneorg/core";
+import type { TaskDocVersion } from "@agentplaneorg/core/tasks";
+import { TASK_ID_ALPHABET } from "@agentplaneorg/core/tasks";
 
 export const TASK_ID_RE = new RegExp(String.raw`^\d{12}-[${TASK_ID_ALPHABET}]{4,}$`);
 export const DEFAULT_DOC_UPDATED_BY = "agentplane";

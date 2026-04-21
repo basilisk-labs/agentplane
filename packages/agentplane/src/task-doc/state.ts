@@ -1,8 +1,5 @@
-import {
-  applyTaskDocMutations,
-  type TaskDocMutationComment,
-  type TaskDocVersion,
-} from "@agentplaneorg/core";
+import type { TaskDocMutationComment, TaskDocVersion } from "@agentplaneorg/core/tasks";
+import { applyTaskDocMutations } from "@agentplaneorg/core/tasks";
 
 export function buildTaskDocState(opts: {
   doc: string;

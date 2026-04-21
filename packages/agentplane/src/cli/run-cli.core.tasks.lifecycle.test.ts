@@ -15,14 +15,8 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
-
-import {
-  defaultConfig,
-  extractTaskSuffix,
-  readTask,
-  renderTaskReadme,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import { defaultConfig, extractTaskSuffix, ResolvedProject } from "@agentplaneorg/core";
+import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 
 import { runCli } from "./run-cli.js";
@@ -50,7 +44,7 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 

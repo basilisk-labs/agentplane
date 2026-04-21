@@ -1,9 +1,9 @@
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
-import { gitAheadBehind } from "../shared/git-diff.js";
+import { gitAheadBehind } from "@agentplaneorg/core/git";
 import { gitBranchUpstream } from "../shared/git-ops.js";
 
-export { resolveBaseBranch } from "@agentplaneorg/core";
+export { resolveBaseBranch } from "@agentplaneorg/core/git";
 
 export async function ensureCurrentBaseBranch(gitRoot: string, baseBranch: string): Promise<void> {
   const upstreamBranch = await gitBranchUpstream(gitRoot, baseBranch);

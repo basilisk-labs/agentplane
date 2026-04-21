@@ -12,12 +12,12 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("../../../../cli/fs-utils.js", () => ({ fileExists: mocks.fileExists }));
-vi.mock("../../../shared/git-worktree.js", () => ({
+vi.mock("@agentplaneorg/core/git", () => ({
   findWorktreeForBranch: mocks.findWorktreeForBranch,
-}));
-vi.mock("../../../shared/git.js", () => ({
-  execFileAsync: mocks.execFileAsync,
   gitEnv: () => ({}),
+}));
+vi.mock("@agentplaneorg/core/process", () => ({
+  execFileAsync: mocks.execFileAsync,
 }));
 vi.mock("node:fs/promises", () => ({ mkdir: mocks.mkdir }));
 

@@ -15,7 +15,7 @@ const mocks = vi.hoisted(() => ({
   readCommitInfo: vi.fn(),
 }));
 
-vi.mock("../guard/index.js", () => ({
+vi.mock("../guard/impl/comment-commit.js", () => ({
   commitFromComment: mocks.commitFromComment,
 }));
 vi.mock("../shared/task-backend.js", () => ({

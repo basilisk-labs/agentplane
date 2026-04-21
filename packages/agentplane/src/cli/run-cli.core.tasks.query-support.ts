@@ -15,15 +15,13 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { expect, it, vi } from "vitest";
-
+import type { ResolvedProject } from "@agentplaneorg/core";
+import { defaultConfig, extractTaskSuffix } from "@agentplaneorg/core";
 import {
-  defaultConfig,
-  extractTaskSuffix,
   readTask,
   renderTaskDocFromSections,
   taskDocToSectionMap,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import { infoMessage } from "./output.js";
@@ -55,7 +53,7 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 import { evolveRunnerRunState, writeRunnerRunState } from "../runner/artifacts.js";
 import {
   formatRunnerCapabilitySummaryLines,
@@ -63,7 +61,7 @@ import {
 } from "../runner/policy-display.js";
 import type { RunnerAdapterCapabilities, RunnerPolicyDecision } from "../runner/types.js";
 import { prepareTaskRunnerExecution } from "../runner/usecases/task-run.js";
-import * as processSupervision from "../runner/process-supervision.js";
+import * as processSupervision from "../runner/process-supervision/signals.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 import { VERIFY_STEPS_PLACEHOLDER } from "../commands/task/shared/docs.js";

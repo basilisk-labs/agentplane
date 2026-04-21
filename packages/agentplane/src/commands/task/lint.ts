@@ -1,4 +1,4 @@
-import { lintTasksFile } from "@agentplaneorg/core";
+import { lintTasksFile } from "@agentplaneorg/core/tasks";
 
 import { mapCoreError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";

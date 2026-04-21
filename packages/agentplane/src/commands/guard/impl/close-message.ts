@@ -6,7 +6,8 @@ import type { TaskData } from "../../../backends/task-backend.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 
-import { execFileAsync, gitEnv } from "../../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 
 type NumstatEntry = {
   file: string;

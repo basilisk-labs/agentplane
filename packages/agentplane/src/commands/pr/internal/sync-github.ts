@@ -1,4 +1,4 @@
-import { execFileAsync } from "../../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   isTransientGhTransportError,
   normalizeGhTransportError,

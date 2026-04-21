@@ -1,8 +1,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-
-import { defaultConfig, parseTaskReadme } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core";
+import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 import { runCli } from "./run-cli.js";
@@ -12,7 +12,7 @@ import {
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
   writeConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 
 installRunCliIntegrationHarness();
 

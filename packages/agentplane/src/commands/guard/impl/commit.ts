@@ -16,7 +16,8 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../../shared/task-backend.js";
-import { execFileAsync, gitEnv } from "../../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 import { ensureReconciledBeforeMutation } from "../../shared/reconcile-check.js";
 import { stageAllowlist } from "./allow.js";
 import { resolveIgnoredDirectCloseDirtyPaths } from "./close-dirt.js";

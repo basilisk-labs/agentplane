@@ -4,8 +4,8 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
-
-import { defaultConfig, readTask } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core";
+import { readTask } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -17,7 +17,7 @@ import {
   mkGitRepoRootWithBranch,
   runCliSilent,
   writeConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 
 installRunCliIntegrationHarness();
 const PR_CLOSE_SUPERSEDED_TIMEOUT_MS = 60_000;

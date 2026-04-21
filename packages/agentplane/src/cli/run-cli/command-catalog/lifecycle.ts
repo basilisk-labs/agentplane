@@ -16,7 +16,7 @@ import { startSpec } from "../../../commands/start.spec.js";
 import { verifySpec } from "../../../commands/verify.spec.js";
 import { requireCanonicalCommandInvocation } from "../../command-invocations.js";
 
-import { declareCommand, type CommandEntry } from "./shared.js";
+import { declareCommand, type CommandEntry } from "./kernel.js";
 import {
   fromCommandsHooksHooksCommand,
   fromCommandsHooksInstallCommand,
@@ -35,7 +35,7 @@ import {
   loadCleanupMergedSpec,
   fromGuardSuggestAllowSpec,
   loadGuardCommitSpec,
-} from "../command-loaders.js";
+} from "../command-loaders/lifecycle.js";
 
 export const LIFECYCLE_COMMANDS = [
   declareCommand(commitSpec, { load: loadCommitSpec }),

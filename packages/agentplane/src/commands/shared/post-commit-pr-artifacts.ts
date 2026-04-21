@@ -1,6 +1,7 @@
 import { warnMessage } from "../../cli/output.js";
 import { normalizeGhTransportError } from "../shared/gh-transport.js";
-import { execFileAsync, gitEnv } from "../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 import type { CommandContext } from "../shared/task-backend.js";
 import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
 import { isTaskLocalOnlyAdvance } from "./task-local-freshness.js";

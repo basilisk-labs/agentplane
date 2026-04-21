@@ -1,11 +1,8 @@
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { evolveRunnerRunState } from "../artifacts.js";
-import {
-  isProcessAlive,
-  waitForProcessExit,
-  waitForRunnerStateStop,
-} from "../process-supervision.js";
+import { isProcessAlive, waitForProcessExit } from "../process-supervision/signals.js";
+import { waitForRunnerStateStop } from "../process-supervision/state.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
 import type { RunnerProcessSignal } from "../types.js";
 

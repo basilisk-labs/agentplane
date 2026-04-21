@@ -12,7 +12,7 @@ import {
   mkGitRepoRoot,
   runCliSilent,
   writeConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 
 installRunCliIntegrationHarness();
 

@@ -10,7 +10,7 @@ import {
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
   writeDefaultConfig,
-} from "../../testing/index.js";
+} from "@agentplane/testkit";
 import { seedReleaseWorkspace, writeReleaseNotes } from "../../../../testkit/src/release.js";
 import { runReleasePlan } from "./plan.command.js";
 import { pushReleaseRefs, runReleaseApply, runReleaseCandidate } from "./apply.command.js";

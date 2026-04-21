@@ -2,22 +2,23 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import { resolveBaseBranch } from "@agentplaneorg/core";
+import {
+  resolveBaseBranch,
+  gitEnv,
+  gitDiffNames,
+  findWorktreeForBranch,
+  gitListBranchesByPrefixes,
+  parseTaskIdFromCloseBranch,
+  parseTaskIdFromBranch,
+} from "@agentplaneorg/core/git";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { createCliEmitter, unknownEntityMessage, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { ensureGitClean } from "../guard/index.js";
-import { execFileAsync, gitEnv } from "../shared/git.js";
-import { gitDiffNames } from "../shared/git-diff.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitBranchExists, gitCurrentBranch, gitIsAncestor } from "../shared/git-ops.js";
 import { cleanupMergedLocalBranch } from "../shared/merged-branch-cleanup.js";
-import {
-  findWorktreeForBranch,
-  gitListBranchesByPrefixes,
-  parseTaskIdFromCloseBranch,
-  parseTaskIdFromBranch,
-} from "../shared/git-worktree.js";
 import { isPathWithin, resolvePathFallback } from "../shared/path.js";
 import { parsePrMeta } from "../shared/pr-meta.js";
 import {

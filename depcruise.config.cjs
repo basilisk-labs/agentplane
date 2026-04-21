@@ -11,6 +11,16 @@ module.exports = {
       },
     },
     {
+      name: "no-command-catalog-cycles",
+      severity: "error",
+      comment: "The command catalog is a registry fan-in and must not participate in cycles.",
+      from: {},
+      to: {
+        path: "^packages/agentplane/src/cli/run-cli/command-catalog",
+        circular: true,
+      },
+    },
+    {
       name: "not-to-unresolvable",
       severity: "error",
       comment: "Every import in the cruised source graph must resolve.",
@@ -44,13 +54,14 @@ module.exports = {
     {
       name: "agentplane-runtime-does-not-import-testkit",
       severity: "error",
-      comment: "agentplane runtime source must not import @agentplane/testkit.",
+      comment:
+        "agentplane runtime source must not import @agentplane/testkit or testkit implementation artifacts.",
       from: {
         path: "^packages/agentplane/src/",
         pathNot: "\\.test\\.ts$",
       },
       to: {
-        path: "^packages/testkit/src/",
+        path: "^(packages/testkit/(src|dist)/|@agentplane/testkit($|/))",
       },
     },
   ],

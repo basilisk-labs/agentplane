@@ -30,6 +30,15 @@ Environment and dataset:
 | `agentplane task next`              | 1141.919 | 1229.862 | 1361.252 |    0 |
 | `agentplane preflight --mode quick` | 1783.960 | 2043.974 | 2409.861 |    0 |
 
-Use this baseline after packaging, subpath export, startup, or task-index changes. Compare the same
-checkout shape and task volume when possible; `task list` and `task search` are output-size
-sensitive and should not be compared against a small fixture repository.
+The enforced guard lives in `scripts/baselines/cli-cold-path.json` and runs through:
+
+```bash
+bun run bench:cli:cold:check
+```
+
+The guard uses per-command average-time ceilings with tolerance for machine-level variance. It is
+intended to catch regressions back toward the pre-bundling cold path, not to make cross-machine
+performance claims. Use the raw benchmark after packaging, subpath export, startup, or task-index
+changes. Compare the same checkout shape and task volume when possible; `task list` and
+`task search` are output-size sensitive and should not be compared against a small fixture
+repository.

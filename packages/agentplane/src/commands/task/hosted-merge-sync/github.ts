@@ -1,6 +1,6 @@
-import { execFileAsync } from "../../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import { withGhTransportRetry } from "../../shared/gh-transport.js";
-import { parseTaskIdFromBranch } from "../../shared/git-worktree.js";
+import { parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import { ghEnv } from "../../pr/internal/gh-api.js";
 import type { HostedMergedPr, HostedMergeTarget } from "./model.js";
 

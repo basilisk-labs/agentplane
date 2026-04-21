@@ -19,7 +19,7 @@ import {
   runCliSilent,
   writeAndConfigureRoot,
   writeConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 
 const execFileAsync = promisify(execFile);
 const HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS = 300_000;

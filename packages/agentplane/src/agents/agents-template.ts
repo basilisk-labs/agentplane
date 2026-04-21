@@ -1,16 +1,16 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 import {
   policyGatewayFileName,
   renderPolicyGatewayTemplateText,
   type PolicyGatewayFlavor,
 } from "../shared/policy-gateway.js";
+import { resolveAgentplaneAssetPath } from "../shared/package-paths.js";
 
-const AGENTS_TEMPLATE_URL = new URL("../../assets/AGENTS.md", import.meta.url);
-const AGENTS_DIR_URL = new URL("../../assets/agents/", import.meta.url);
-const POLICY_DIR_URL = new URL("../../assets/policy/", import.meta.url);
+const AGENTS_TEMPLATE_PATH = resolveAgentplaneAssetPath("AGENTS.md");
+const AGENTS_DIR_PATH = resolveAgentplaneAssetPath("agents");
+const POLICY_DIR_PATH = resolveAgentplaneAssetPath("policy");
 
 const HEADING_RE = /^(#+)\s+(.*)$/;
 
@@ -64,7 +64,7 @@ export async function loadAgentsTemplate(): Promise<string> {
 }
 
 export async function loadAgentTemplates(): Promise<AgentTemplate[]> {
-  const dirPath = fileURLToPath(AGENTS_DIR_URL);
+  const dirPath = AGENTS_DIR_PATH;
   const entries = await readdir(dirPath);
   const jsonFiles = entries.filter((entry) => entry.endsWith(".json"));
   const templates: AgentTemplate[] = [];
@@ -99,7 +99,7 @@ async function listFilesRecursive(dirPath: string, relPrefix = ""): Promise<stri
 }
 
 export async function loadPolicyTemplates(): Promise<PolicyTemplate[]> {
-  const dirPath = fileURLToPath(POLICY_DIR_URL);
+  const dirPath = POLICY_DIR_PATH;
   const relFiles = await listFilesRecursive(dirPath);
   const templates: PolicyTemplate[] = [];
 
@@ -127,7 +127,7 @@ export function filterAgentsByWorkflow(template: string, workflow: WorkflowMode)
 }
 
 export async function loadPolicyGatewayTemplate(flavor: PolicyGatewayFlavor): Promise<string> {
-  const text = await readFile(AGENTS_TEMPLATE_URL, "utf8");
+  const text = await readFile(AGENTS_TEMPLATE_PATH, "utf8");
   const rendered = renderPolicyGatewayTemplateText(text, policyGatewayFileName(flavor));
   return ensureTrailingNewline(rendered.trimEnd());
 }

@@ -8,6 +8,10 @@ import { runReleaseCommandExecute } from "./apply.pipeline/mutation.js";
 import { runReleaseCommandPreflight } from "./apply.pipeline/preflight.js";
 import { buildReleaseCommandState } from "./apply.pipeline/state.js";
 
+/**
+ * Retained internal pipeline boundary: apply.command owns CLI routing/specs,
+ * while this module composes release state, preflight, mutation, and finalize phases.
+ */
 export async function runReleaseCommandPipeline(opts: {
   ctx: { cwd: string; rootOverride?: string | null };
   flags: ReleaseApplyParsed;

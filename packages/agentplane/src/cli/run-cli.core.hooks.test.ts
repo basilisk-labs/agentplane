@@ -16,14 +16,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
-
-import {
-  defaultConfig,
-  extractTaskSuffix,
-  readTask,
-  renderTaskReadme,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import { defaultConfig, extractTaskSuffix, ResolvedProject } from "@agentplaneorg/core";
+import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -50,7 +44,7 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import { resolvePrePushHookScriptPath } from "../commands/hooks/index.js";
 import * as prompts from "./prompts.js";

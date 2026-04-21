@@ -14,7 +14,7 @@ import {
   runCliSilent,
   silenceStdIO,
   writeDefaultConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 
 registerAgentplaneHome();
 

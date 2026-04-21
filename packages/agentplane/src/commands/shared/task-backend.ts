@@ -1,15 +1,16 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import type { AgentplaneConfig, ResolvedProject } from "@agentplaneorg/core";
+import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import {
   resolveTaskDocUpdatedBy,
   parseTaskReadme,
   taskDocToSectionMap,
+} from "@agentplaneorg/core/tasks";
+import {
   validateTaskReadmeFrontmatter,
   withTaskReadmeFrontmatterDefaults,
-  type TaskRecord,
-  type AgentplaneConfig,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/schemas";
 
 import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
 import { CliError } from "../../shared/errors.js";
@@ -23,13 +24,14 @@ import {
   type TaskData,
   type TaskSummary,
 } from "../../backends/task-backend.js";
-import { gitShowFile, toGitPath } from "./git-diff.js";
-import { GitContext } from "./git-context.js";
 import {
   findWorktreeForBranch,
+  GitContext,
   gitListTaskBranches,
+  gitShowFile,
   parseTaskIdFromBranch,
-} from "./git-worktree.js";
+  toGitPath,
+} from "@agentplaneorg/core/git";
 
 export type CommandMemo = {
   taskProjection?: Promise<TaskSummary[]>;

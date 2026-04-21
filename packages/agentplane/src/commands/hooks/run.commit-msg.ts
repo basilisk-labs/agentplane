@@ -6,7 +6,7 @@ import { evaluatePolicy } from "../../policy/evaluate.js";
 import { CliError } from "../../shared/errors.js";
 import { throwIfPolicyDenied } from "../shared/policy-deny.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
-import { parseTaskIdFromBranch, parseTaskIdFromCloseBranch } from "../shared/git-worktree.js";
+import { parseTaskIdFromBranch, parseTaskIdFromCloseBranch } from "@agentplaneorg/core/git";
 import type { HooksRunOptions } from "./run.js";
 
 async function inferTaskIdFromBranchContext(opts: {

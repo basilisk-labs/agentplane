@@ -1,7 +1,6 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
-
-import { renderTaskReadme, taskReadmePath } from "@agentplaneorg/core";
+import { renderTaskReadme, taskReadmePath } from "@agentplaneorg/core/tasks";
 
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";

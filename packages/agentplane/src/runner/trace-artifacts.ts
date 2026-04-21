@@ -2,8 +2,7 @@ import { mkdir, readFile, rm } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { gunzip, gzip } from "node:zlib";
-
-import { atomicWriteFile } from "@agentplaneorg/core";
+import { atomicWriteFile } from "@agentplaneorg/core/fs";
 
 import type { RunnerResultStatus, RunnerTracePolicy } from "./types.js";
 

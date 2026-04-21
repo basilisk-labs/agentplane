@@ -1,17 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  defaultConfig,
-  ensureDocSections,
-  setMarkdownSection,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core";
+import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
-import { exitCodeForError } from "../../cli/exit-codes.js";
-import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { GitContext } from "../shared/git-context.js";
+import { GitContext } from "@agentplaneorg/core/git";
 import type { TaskStorePatch } from "../shared/task-store.js";
 
 const mocks = vi.hoisted(() => ({
@@ -42,8 +36,10 @@ vi.mock("@agentplaneorg/core", async (importOriginal) => {
   };
 });
 
-vi.mock("../guard/index.js", () => ({
+vi.mock("../guard/impl/comment-commit.js", () => ({
   commitFromComment: mocks.commitFromComment,
+}));
+vi.mock("../guard/impl/commit.js", () => ({
   cmdCommit: mocks.cmdCommit,
 }));
 vi.mock("../shared/reconcile-check.js", () => ({
@@ -58,10 +54,21 @@ vi.mock("../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
   gitCurrentBranch: mocks.gitCurrentBranch,
 }));
-vi.mock("../shared/git.js", () => ({
+vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
-  gitEnv: () => ({}),
 }));
+vi.mock("@agentplaneorg/core/git", async () => {
+  const actualUnknown: unknown = await vi.importActual("@agentplaneorg/core/git");
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    gitEnv: () => ({}),
+    resolveBaseBranch: mocks.resolveBaseBranch,
+  };
+});
 vi.mock("../shared/task-store.js", async (importOriginal) => {
   const actualUnknown: unknown = await importOriginal();
   const actual =
@@ -244,7 +251,7 @@ describe("task finish validation", () => {
   });
 
   it("rejects --commit-from-comment/--status-commit with multiple task ids", async () => {
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await expect(
       cmdFinish({
         ctx: mkCtx(),
@@ -270,7 +277,7 @@ describe("task finish validation", () => {
   });
 
   it("rejects --commit-from-comment without explicit allowlist or auto-allow", async () => {
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await expect(
       cmdFinish({
         ctx: mkCtx(),
@@ -296,7 +303,7 @@ describe("task finish validation", () => {
   });
 
   it("rejects --status-commit without explicit allowlist or auto-allow", async () => {
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await expect(
       cmdFinish({
         ctx: mkCtx(),
@@ -341,7 +348,7 @@ describe("task finish validation", () => {
       patch: storePatch,
     });
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await expect(
       cmdFinish({
         ctx,
@@ -418,7 +425,7 @@ describe("task finish validation", () => {
       patch: storePatch,
     });
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await expect(
       cmdFinish({
         ctx,
@@ -465,7 +472,7 @@ describe("task finish validation", () => {
       }),
     );
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -525,7 +532,7 @@ describe("task finish validation", () => {
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -588,7 +595,7 @@ describe("task finish validation", () => {
     ctx.config.workflow_mode = "direct";
     mocks.loadTaskFromContext.mockResolvedValue(task);
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -642,7 +649,7 @@ describe("task finish validation", () => {
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -720,7 +727,7 @@ describe("task finish validation", () => {
       return Promise.resolve({ stdout: "", stderr: "" });
     });
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -778,7 +785,7 @@ describe("task finish validation", () => {
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -806,7 +813,7 @@ describe("task finish validation", () => {
   });
 
   it("rejects commit/status commit flags when primary task id is empty", async () => {
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await expect(
       cmdFinish({
         ctx: mkCtx(),
@@ -832,7 +839,7 @@ describe("task finish validation", () => {
   });
 
   it("requires exactly one task id when --result/--risk/--breaking metadata is requested", async () => {
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await expect(
       cmdFinish({
         ctx: mkCtx(),
@@ -862,7 +869,7 @@ describe("task finish validation", () => {
     const ctx = mkCtx();
     mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["code"] }));
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await expect(
       cmdFinish({
         ctx,
@@ -898,7 +905,7 @@ describe("task finish validation", () => {
       }),
     );
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -952,7 +959,7 @@ describe("task finish validation", () => {
     const ctx = mkCtx();
     mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", status: "DOING" }));
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await expect(
       cmdFinish({
         ctx,
@@ -984,7 +991,7 @@ describe("task finish validation", () => {
       mkTask({ id: "T-1", status: "DONE", tags: ["spike"] }),
     );
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     await expect(
       cmdFinish({
         ctx,

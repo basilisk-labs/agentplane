@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { buildUpdatedPrMeta } from "../shared/pr-meta.js";
-import { execFileAsync } from "../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
 
 import {
   resolveHostedMergeTargetFromEvent,
@@ -10,7 +10,7 @@ import {
   syncHostedMergedTasks,
 } from "./hosted-merge-sync.js";
 
-vi.mock("../shared/git.js", () => {
+vi.mock("@agentplaneorg/core/process", () => {
   return {
     execFileAsync: vi.fn(),
     gitEnv: () => {

@@ -1,10 +1,10 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import type { TaskPrMeta } from "@agentplaneorg/core/schemas";
+import { validateTaskPrMeta } from "@agentplaneorg/core/schemas";
 
-import { validateTaskPrMeta, type TaskPrMeta } from "@agentplaneorg/core";
-
-import { execFileAsync } from "./git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
 
 export type PrMeta = TaskPrMeta;
 export type ObservedGithubPrState = {

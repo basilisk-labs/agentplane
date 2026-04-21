@@ -52,8 +52,10 @@ describe("hotspot-report script", () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("hotspot-report.mjs");
+    expect(result.stdout).toContain("--warning-lines");
     expect(result.stdout).toContain("--runtime-dir");
     expect(result.stdout).toContain("--oversized-lines");
+    expect(result.stdout).toContain("--oversized-test-lines");
   });
 
   it("reports deterministic hotspot counts for a fixture runtime tree", async () => {
@@ -245,5 +247,64 @@ describe("hotspot-report script", () => {
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Hotspot threshold check passed");
     expect(result.stderr).toBe("");
+  });
+
+  it("emits warning output without failing when runtime modules are between warning and error thresholds", async () => {
+    const root = await makeTempRoot("agentplane-hotspot-warning-");
+    const runtimeDir = path.join(root, "src");
+    await mkdir(runtimeDir, { recursive: true });
+    await writeFile(
+      path.join(runtimeDir, "warn-only.ts"),
+      Array.from({ length: 5 }, (_, index) => `const value${index} = ${index};`).join("\n"),
+      "utf8",
+    );
+
+    const result = await runScript([
+      "--root",
+      root,
+      "--runtime-dir",
+      "src",
+      "--warning-lines",
+      "4",
+      "--oversized-lines",
+      "6",
+      "--check",
+    ]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("Hotspot warning");
+    expect(result.stderr).toBe("");
+  });
+
+  it("fails check mode when oversized test files exceed the configured threshold", async () => {
+    const root = await makeTempRoot("agentplane-hotspot-test-threshold-");
+    const runtimeDir = path.join(root, "src");
+    const testDir = path.join(root, "tests");
+    await mkdir(runtimeDir, { recursive: true });
+    await mkdir(testDir, { recursive: true });
+    await writeFile(path.join(runtimeDir, "ok.ts"), "const value = 1;\n", "utf8");
+    await writeFile(
+      path.join(testDir, "too-large.test.ts"),
+      Array.from({ length: 12 }, (_, index) => `const testValue${index} = ${index};`).join("\n"),
+      "utf8",
+    );
+
+    const result = await runScript([
+      "--root",
+      root,
+      "--runtime-dir",
+      "src",
+      "--test-dir",
+      "tests",
+      "--test-warning-lines",
+      "6",
+      "--oversized-test-lines",
+      "10",
+      "--check",
+    ]);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain("Oversized test threshold failed");
+    expect(result.stderr).toContain("tests/too-large.test.ts");
   });
 });

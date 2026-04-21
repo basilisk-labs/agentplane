@@ -15,14 +15,8 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
-
-import {
-  defaultConfig,
-  extractTaskSuffix,
-  readTask,
-  renderTaskReadme,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import { defaultConfig, extractTaskSuffix, ResolvedProject } from "@agentplaneorg/core";
+import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -49,7 +43,7 @@ import {
   stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 
@@ -307,14 +301,14 @@ describe("runCli", () => {
         result_summary: "",
         description: "desc",
         status: "DOING",
-        priority: "medium",
+        priority: "med",
         owner: "CODER",
         depends_on: [],
         tags: ["cli", "code"],
         verify: [],
         verification: null,
         commit: null,
-        doc_version: 2,
+        doc_version: 3,
         doc_updated_at: "2026-03-12T00:00:00.000Z",
         doc_updated_by: "CODER",
       },

@@ -1,4 +1,4 @@
-import { generateTaskId as generateTaskIdCore } from "@agentplaneorg/core";
+import { generateTaskId as generateTaskIdCore } from "@agentplaneorg/core/tasks";
 
 import { TASK_ID_RE } from "./constants.js";
 

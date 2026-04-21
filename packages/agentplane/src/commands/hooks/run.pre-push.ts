@@ -1,13 +1,14 @@
-import { runProcessSync, resolveProject } from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core";
+import { runProcessSync } from "@agentplaneorg/core/process";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 import { fileExists } from "../../cli/fs-utils.js";
 import { CliError } from "../../shared/errors.js";
+import { resolveAgentplaneRepoScriptPath } from "../../shared/package-paths.js";
 import type { HooksRunOptions } from "./run.js";
 
 function resolveBundledPrePushHookScriptPath(): string {
-  return fileURLToPath(new URL("../../../../../scripts/run-pre-push-hook.mjs", import.meta.url));
+  return resolveAgentplaneRepoScriptPath("run-pre-push-hook.mjs");
 }
 
 export async function resolvePrePushHookScriptPath(

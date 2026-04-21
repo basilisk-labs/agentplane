@@ -1,7 +1,7 @@
-import { loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
+import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import { resolveBaseBranch, GitContext } from "@agentplaneorg/core/git";
 
 import { evaluatePolicy } from "../../policy/evaluate.js";
-import { GitContext } from "../shared/git-context.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
 import { throwIfPolicyDenied } from "../shared/policy-deny.js";
 import type { HooksRunOptions } from "./run.js";

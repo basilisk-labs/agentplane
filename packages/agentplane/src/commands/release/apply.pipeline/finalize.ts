@@ -1,6 +1,7 @@
 import path from "node:path";
 
-import { execFileAsync, gitEnv } from "../../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 import {
   pushReleaseCandidateBranch,
   pushReleaseRefs,

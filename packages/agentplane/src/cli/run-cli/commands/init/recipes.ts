@@ -5,7 +5,7 @@ import {
 } from "../../../../commands/recipes.js";
 import { CliError } from "../../../../shared/errors.js";
 
-export type CachedRecipeInfo = {
+type CachedRecipeInfo = {
   id: string;
   summary: string;
   version: string;

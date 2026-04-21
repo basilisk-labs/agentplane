@@ -11,9 +11,12 @@ function shouldUseClackPrompts(): boolean {
   );
 }
 
-async function loadClackPrompts(): Promise<ClackPrompts | null> {
-  if (!shouldUseClackPrompts()) return null;
-  return await import("@clack/prompts");
+let clackPromptsPromise: Promise<ClackPrompts> | null = null;
+
+function getClackPrompts(): Promise<ClackPrompts | null> {
+  if (!shouldUseClackPrompts()) return Promise.resolve(null);
+  clackPromptsPromise ??= import("@clack/prompts");
+  return clackPromptsPromise;
 }
 
 export async function promptChoice(
@@ -21,7 +24,7 @@ export async function promptChoice(
   choices: string[],
   defaultValue: string,
 ): Promise<string> {
-  const clack = await loadClackPrompts();
+  const clack = await getClackPrompts();
   if (clack) {
     const answer = await clack.select({
       message: prompt,
@@ -49,7 +52,7 @@ export async function promptChoice(
 }
 
 export async function promptYesNo(prompt: string, defaultValue: boolean): Promise<boolean> {
-  const clack = await loadClackPrompts();
+  const clack = await getClackPrompts();
   if (clack) {
     const answer = await clack.confirm({
       message: prompt,
@@ -74,7 +77,7 @@ export async function promptYesNo(prompt: string, defaultValue: boolean): Promis
 }
 
 export async function promptInput(prompt: string): Promise<string> {
-  const clack = await loadClackPrompts();
+  const clack = await getClackPrompts();
   if (clack) {
     const answer = await clack.text({ message: prompt });
     if (clack.isCancel(answer)) {

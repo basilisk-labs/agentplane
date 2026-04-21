@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { gitDiffNames, toGitPath } from "./git-diff.js";
+import { gitDiffNames, toGitPath } from "@agentplaneorg/core/git";
 
 function taskRootPrefix(workflowDir: string, taskId: string): string {
   return `${toGitPath(path.join(workflowDir, taskId))}/`;

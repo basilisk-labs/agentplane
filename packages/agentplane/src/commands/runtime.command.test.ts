@@ -3,8 +3,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { captureStdIO } from "../testing/index.js";
-import { clearRuntimeModeEnv } from "../testing/runtime-env.js";
+import { captureStdIO, clearRuntimeModeEnv } from "@agentplane/testkit";
 import {
   buildFrameworkDevWorkflow,
   runRuntimeExplain,

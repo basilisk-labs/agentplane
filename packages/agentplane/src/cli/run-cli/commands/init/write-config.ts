@@ -6,7 +6,7 @@ import { defaultConfig, saveConfig, setByDottedKey } from "@agentplaneorg/core";
 import { writeJsonStableIfChanged } from "../../../../shared/write-if-changed.js";
 import { getVersion } from "../../../../meta/version.js";
 
-export type InitExecutionConfig = {
+type InitExecutionConfig = {
   profile: "conservative" | "balanced" | "aggressive";
   reasoning_effort: "low" | "medium" | "high";
   tool_budget: {

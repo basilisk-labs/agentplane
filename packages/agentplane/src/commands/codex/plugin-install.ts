@@ -6,11 +6,12 @@ import { fileURLToPath } from "node:url";
 import { CliError } from "../../shared/errors.js";
 import { getVersion } from "../../meta/version.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write-if-changed.js";
+import { resolveAgentplaneAssetDirUrl } from "../../shared/package-paths.js";
 
 const PLUGIN_NAME = "agentplane";
 const DEFAULT_MARKETPLACE_NAME = "agentplane-local-marketplace";
 const DEFAULT_MARKETPLACE_DISPLAY_NAME = "AgentPlane Local Plugins";
-const ASSET_ROOT_URL = new URL("../../../assets/codex-plugin/", import.meta.url);
+const ASSET_ROOT_URL = resolveAgentplaneAssetDirUrl("codex-plugin");
 
 const TEXT_ASSETS = [
   {

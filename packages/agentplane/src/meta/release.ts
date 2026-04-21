@@ -1,10 +1,9 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-import { runProcessSync } from "@agentplaneorg/core";
+import { runProcessSync } from "@agentplaneorg/core/process";
 
 import { getVersion } from "./version.js";
+import { resolveAgentplanePackageRoot } from "../shared/package-paths.js";
 
 let cachedReleaseDate: string | null | undefined;
 
@@ -24,9 +23,7 @@ function resolveGitRootForReleaseLookup(): string | null {
   const fromCwd = findGitRootSync(process.cwd());
   if (fromCwd) return fromCwd;
 
-  const here = path.dirname(fileURLToPath(import.meta.url));
-  const pkgRoot = path.resolve(here, "../../..");
-  return findGitRootSync(pkgRoot);
+  return findGitRootSync(resolveAgentplanePackageRoot());
 }
 
 export function getReleaseCommitDate(): string | null {

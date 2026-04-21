@@ -1,6 +1,6 @@
 import { mkdir, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-
+import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import {
   applyTaskDocMutations,
   docChanged,
@@ -8,10 +8,11 @@ import {
   renderTaskReadme,
   taskDocToSectionMap,
   taskReadmePath,
+} from "@agentplaneorg/core/tasks";
+import {
   validateTaskReadmeFrontmatter,
   withTaskReadmeFrontmatterDefaults,
-  type TaskRecord,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/schemas";
 
 import { isRecord } from "../../shared/guards.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";

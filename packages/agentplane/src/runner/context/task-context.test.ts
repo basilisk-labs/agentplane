@@ -1,14 +1,17 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-
-import { createTask, renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core";
+import {
+  createTask,
+  renderTaskDocFromSections,
+  taskDocToSectionMap,
+} from "@agentplaneorg/core/tasks";
 import { describe, expect, it } from "vitest";
 
 import {
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
   writeDefaultConfig,
-} from "../../testing/index.js";
+} from "@agentplane/testkit";
 import { loadCommandContext, loadTaskFromContext } from "../../commands/shared/task-backend.js";
 import { assembleRunnerTaskContext, RUNNER_TASK_CONTEXT_BUDGETS } from "./task-context.js";
 

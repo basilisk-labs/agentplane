@@ -1,0 +1,149 @@
+import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { defineCheck, parseScriptArgs, runScriptMain } from "./lib/script-runtime.mjs";
+
+const SCRIPT_NAME = "check-cli-cold-baseline.mjs";
+const MODE = "cli_cold_path_v1";
+const scriptPath = fileURLToPath(import.meta.url);
+const repoRoot = path.resolve(path.dirname(scriptPath), "..");
+const DEFAULT_BASELINE_PATH = path.join(repoRoot, "scripts", "baselines", "cli-cold-path.json");
+const MEASURE_SCRIPT_PATH = path.join(repoRoot, "scripts", "measure-cli-cold-path.mjs");
+
+function parsePositiveInt(raw, flag) {
+  const value = Number.parseInt(raw, 10);
+  if (!Number.isSafeInteger(value) || value < 1 || String(value) !== raw) {
+    throw new Error(`--${flag} must be an integer >= 1`);
+  }
+  return value;
+}
+
+function parseNonNegativeInt(raw, flag) {
+  const value = Number.parseInt(raw, 10);
+  if (!Number.isSafeInteger(value) || value < 0 || String(value) !== raw) {
+    throw new Error(`--${flag} must be an integer >= 0`);
+  }
+  return value;
+}
+
+function parseArgs(argv) {
+  const { flags, positionals } = parseScriptArgs(argv, {
+    valueFlags: ["baseline", "measurement", "root", "cli", "runs", "warmups"],
+  });
+  if (positionals.length > 0) {
+    throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
+  }
+
+  return {
+    baselinePath: path.resolve(flags.baseline ?? DEFAULT_BASELINE_PATH),
+    measurementPath: flags.measurement ? path.resolve(flags.measurement) : null,
+    root: flags.root ? path.resolve(flags.root) : repoRoot,
+    cliPath: flags.cli ? path.resolve(flags.cli) : null,
+    runs: flags.runs === undefined ? 3 : parsePositiveInt(flags.runs, "runs"),
+    warmups: flags.warmups === undefined ? 0 : parseNonNegativeInt(flags.warmups, "warmups"),
+  };
+}
+
+function readJson(filePath, label) {
+  try {
+    return JSON.parse(readFileSync(filePath, "utf8"));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`failed to read ${label} JSON at ${filePath}: ${message}`);
+  }
+}
+
+function runMeasurement(options) {
+  const args = [MEASURE_SCRIPT_PATH, "--root", options.root, "--runs", String(options.runs)];
+  if (options.warmups > 0) args.push("--warmups", String(options.warmups));
+  if (options.cliPath) args.push("--cli", options.cliPath);
+  const stdout = execFileSync(process.execPath, args, {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      AGENTPLANE_NO_UPDATE_CHECK: "1",
+    },
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  return JSON.parse(stdout);
+}
+
+function normalizeCommandList(payload, label) {
+  if (!payload || payload.mode !== MODE || !Array.isArray(payload.commands)) {
+    throw new Error(`${label} must be a ${MODE} payload with a commands array`);
+  }
+  return new Map(payload.commands.map((command) => [String(command.id ?? ""), command]));
+}
+
+function assertBaselineShape(baseline) {
+  if (!baseline || baseline.schema_version !== 1 || baseline.mode !== MODE) {
+    throw new Error(`baseline must use schema_version=1 and mode=${MODE}`);
+  }
+  if (baseline.metric !== "avg_ms") {
+    throw new Error("baseline metric must be avg_ms");
+  }
+}
+
+function compareMeasurementToBaseline(measurement, baseline) {
+  assertBaselineShape(baseline);
+  const measuredById = normalizeCommandList(measurement, "measurement");
+  const baselineById = normalizeCommandList(baseline, "baseline");
+  const failures = [];
+  const summaries = [];
+
+  for (const [id, expected] of baselineById) {
+    if (!id) continue;
+    const actual = measuredById.get(id);
+    if (!actual) {
+      failures.push(`${id}: missing from measurement`);
+      continue;
+    }
+
+    const avg = Number(actual.avg_ms);
+    const maxAvg = Number(expected.max_avg_ms);
+    if (!Number.isFinite(avg) || !Number.isFinite(maxAvg)) {
+      failures.push(`${id}: avg_ms/max_avg_ms must be numeric`);
+      continue;
+    }
+
+    const expectedExit = Number(expected.expected_exit_code ?? 0);
+    const actualExit = Number(actual.exit_code);
+    if (actualExit !== expectedExit) {
+      failures.push(`${id}: exit_code=${actualExit}, expected=${expectedExit}`);
+    }
+    if (avg > maxAvg) {
+      failures.push(`${id}: avg_ms=${avg} exceeds max_avg_ms=${maxAvg}`);
+    }
+    summaries.push(`${id} avg=${avg}ms <= ${maxAvg}ms`);
+  }
+
+  return { failures, summaries };
+}
+
+const main = defineCheck({
+  name: SCRIPT_NAME,
+  parseArgs,
+  async check({ options, stdout }) {
+    const baseline = readJson(options.baselinePath, "baseline");
+    const measurement = options.measurementPath
+      ? readJson(options.measurementPath, "measurement")
+      : runMeasurement(options);
+    const { failures, summaries } = compareMeasurementToBaseline(measurement, baseline);
+    if (failures.length > 0) {
+      throw new Error(
+        [
+          "CLI cold-start baseline guard failed.",
+          ...failures.map((failure) => `- ${failure}`),
+          "",
+          "Run bun run bench:cli:cold to inspect current timings. Only raise baseline ceilings after reviewed performance drift.",
+        ].join("\n"),
+      );
+    }
+    stdout.write(`CLI cold-start baseline OK (${summaries.join("; ")})\n`);
+  },
+});
+
+runScriptMain(main);

@@ -19,10 +19,6 @@ const TARGETS = [
     tests: ["packages/agentplane/src/cli/run-cli.core.init.test.ts"],
   },
   {
-    source: "packages/agentplane/src/cli/run-cli/commands/init/ui.ts",
-    tests: ["packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts"],
-  },
-  {
     source: "packages/agentplane/src/commands/task/finish.ts",
     tests: [
       "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",

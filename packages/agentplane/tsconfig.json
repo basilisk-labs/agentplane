@@ -10,7 +10,7 @@
   "include": ["src/**/*.ts"],
   "exclude": [
     "src/**/*.test.ts",
-    "src/testing/**/*.ts",
+    "src/cli/run-cli.core.lifecycle.helpers.ts",
     "src/cli/run-cli.core.pr-flow.pr-support.ts",
     "src/cli/run-cli.core.tasks.query-support.ts"
   ],

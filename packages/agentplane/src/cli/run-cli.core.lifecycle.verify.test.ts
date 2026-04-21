@@ -9,7 +9,7 @@ import {
   registerAgentplaneHome,
   silenceStdIO,
   writeDefaultConfig,
-} from "../testing/index.js";
+} from "@agentplane/testkit";
 
 registerAgentplaneHome();
 let restoreStdIO: (() => void) | null = null;

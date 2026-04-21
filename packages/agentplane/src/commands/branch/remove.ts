@@ -6,7 +6,8 @@ import { mapCoreError } from "../../cli/error-map.js";
 import { createCliEmitter, unknownEntityMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
-import { execFileAsync, gitEnv } from "../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 import { gitBranchExists } from "../shared/git-ops.js";
 import { isPathWithin, resolvePathFallback } from "../shared/path.js";
 

@@ -4,10 +4,9 @@ import path from "node:path";
 import { isTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core";
 
 import { fileExists } from "../../../cli/fs-utils.js";
-import { execFileAsync, gitEnv } from "../../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv, parseTaskIdFromBranch, gitDiffStat } from "@agentplaneorg/core/git";
 import { gitBranchUpstream, gitCurrentBranch } from "../../shared/git-ops.js";
-import { parseTaskIdFromBranch } from "../../shared/git-worktree.js";
-import { gitDiffStat } from "../../shared/git-diff.js";
 import { parsePrMeta } from "../../shared/pr-meta.js";
 
 export type ResolvedPrSyncBranch = {

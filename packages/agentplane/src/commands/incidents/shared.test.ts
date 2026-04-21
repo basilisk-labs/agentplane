@@ -5,7 +5,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
-import { GitContext } from "../shared/git-context.js";
+import { GitContext } from "@agentplaneorg/core/git";
 import type { CommandContext } from "../shared/task-backend.js";
 import { createIncidentRegistrySkeleton } from "../../runtime/incidents/index.js";
 

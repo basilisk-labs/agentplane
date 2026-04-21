@@ -2,7 +2,8 @@ import { CommandRegistry } from "../spec/registry.js";
 import { helpSpec, makeHelpHandler } from "../spec/help.js";
 
 import { makeHelpJsonFromSpecs } from "../../commands/docs/cli.command.js";
-import { COMMANDS, type RunDeps } from "./command-catalog.js";
+import { COMMANDS } from "./command-catalog.js";
+import type { RunDeps } from "./command-catalog/kernel.js";
 
 export function buildRegistry(opts: {
   getCtx: RunDeps["getCtx"];

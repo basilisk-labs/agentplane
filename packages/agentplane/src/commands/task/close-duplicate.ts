@@ -1,7 +1,6 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
-
-import { renderTaskReadme } from "@agentplaneorg/core";
+import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
@@ -13,7 +12,7 @@ import {
   taskDataToFrontmatter,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { listWorktrees, parseTaskIdFromBranch } from "../shared/git-worktree.js";
+import { listWorktrees, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import { recordVerifiedNoopClosure } from "./close-shared.js";
 
 async function ensureLocalTaskReadmeHydrated(opts: {

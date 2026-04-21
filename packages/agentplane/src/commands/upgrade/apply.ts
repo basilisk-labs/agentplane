@@ -8,7 +8,8 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { withDiagnosticContext } from "../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import { protectedPathKindForFile } from "../../shared/protected-paths.js";
-import { execFileAsync, gitEnv } from "../shared/git.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 
 import type { UpgradeReviewRecord } from "./types.js";
 

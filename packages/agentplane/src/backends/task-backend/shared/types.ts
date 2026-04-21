@@ -6,9 +6,8 @@ import type {
   TaskOrigin,
   TaskRunnerOutcome,
   VerificationResult,
-} from "@agentplaneorg/core";
-
-export type {
+} from "@agentplaneorg/core/tasks";
+export {
   PlanApproval,
   PlanApprovalState,
   TaskEvent,
@@ -22,7 +21,7 @@ export type {
   TaskRunnerTarget,
   VerificationResult,
   VerificationState,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/tasks";
 
 export type TaskData = {
   id: string;

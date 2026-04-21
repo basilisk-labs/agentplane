@@ -11,7 +11,7 @@ import {
   findWorktreeForBranch,
   gitListTaskBranches,
   parseTaskIdFromBranch,
-} from "../shared/git-worktree.js";
+} from "@agentplaneorg/core/git";
 import { gitRevParse } from "../shared/git-ops.js";
 import {
   loadBackendTask,

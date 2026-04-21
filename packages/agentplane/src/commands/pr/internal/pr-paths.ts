@@ -4,7 +4,7 @@ import path from "node:path";
 import { loadConfig, resolveProject, type AgentplaneConfig } from "@agentplaneorg/core";
 
 import { fileExists } from "../../../cli/fs-utils.js";
-import { gitShowFile, toGitPath } from "../../shared/git-diff.js";
+import { gitShowFile, toGitPath } from "@agentplaneorg/core/git";
 import type { CommandContext } from "../../shared/task-backend.js";
 
 export type ResolvedPrPaths = {

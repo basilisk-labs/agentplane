@@ -29,6 +29,7 @@ import {
 } from "./upgrade/policy.js";
 import { printUpgradeDryRun, writeUpgradeAgentReview } from "./upgrade/report.js";
 import { describeUpgradeSource } from "./upgrade/source.js";
+import { resolveAgentplaneAssetDirUrl } from "../shared/package-paths.js";
 
 export type UpgradeFlags = {
   source?: string;
@@ -46,7 +47,7 @@ export type UpgradeFlags = {
   yes: boolean;
 };
 
-const ASSETS_DIR_URL = new URL("../../assets/", import.meta.url);
+const ASSETS_DIR_URL = resolveAgentplaneAssetDirUrl();
 
 export async function cmdUpgradeParsed(opts: {
   cwd: string;

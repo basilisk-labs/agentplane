@@ -9,7 +9,7 @@ import {
   writeJsonStableIfChanged,
   writeTextIfChanged,
 } from "../../../../shared/write-if-changed.js";
-import { gitDiffStat } from "../../../shared/git-diff.js";
+import { gitDiffStat } from "@agentplaneorg/core/git";
 import {
   appendVerifyLog,
   buildIntegratedPrMeta,

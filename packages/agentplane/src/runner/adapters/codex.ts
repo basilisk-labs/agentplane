@@ -15,11 +15,8 @@ import {
   type RunnerAdapter,
 } from "./shared.js";
 import { buildRunnerExecutionArtifacts, durationMs } from "./runtime-shared.js";
-import {
-  exitCodeForSignal,
-  runSupervisedProcess,
-  type SupervisedProcessResult,
-} from "../process-supervision.js";
+import { runSupervisedProcess, type SupervisedProcessResult } from "../process-supervision/run.js";
+import { exitCodeForSignal } from "../process-supervision/signals.js";
 import {
   InvalidRunnerResultManifestError,
   applyRunnerResultManifest,

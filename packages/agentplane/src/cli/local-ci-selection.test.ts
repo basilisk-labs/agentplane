@@ -81,7 +81,7 @@ describe("local CI fast selection", () => {
   it("routes isolated task command paths to the task bucket", () => {
     const plan = selectFastCiPlan([
       "packages/agentplane/src/commands/task/shared.ts",
-      "packages/agentplane/src/commands/task/finish.ts",
+      "packages/agentplane/src/commands/task/finish-command.ts",
     ]);
     expect(plan.kind).toBe("targeted");
     expect(plan.bucket).toBe("task");

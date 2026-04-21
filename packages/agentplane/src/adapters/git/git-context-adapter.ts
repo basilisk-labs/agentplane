@@ -1,5 +1,6 @@
+import type { GitContext } from "@agentplaneorg/core/git";
+
 import type { GitPort } from "../../ports/git-port.js";
-import type { GitContext } from "../../commands/shared/git-context.js";
 
 export class GitContextAdapter implements GitPort {
   private readonly inner: GitContext;

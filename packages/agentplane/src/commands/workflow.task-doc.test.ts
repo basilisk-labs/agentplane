@@ -12,7 +12,7 @@ import {
 } from "./workflow.js";
 import { defaultConfig } from "@agentplaneorg/core";
 import * as taskBackend from "../backends/task-backend.js";
-import { captureStdIO, mkGitRepoRoot, silenceStdIO, writeDefaultConfig } from "../testing/index.js";
+import { captureStdIO, mkGitRepoRoot, silenceStdIO, writeDefaultConfig } from "@agentplane/testkit";
 
 function baseTaskBackend(overrides: Partial<taskBackend.TaskBackend>): taskBackend.TaskBackend {
   return {

@@ -1,17 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  defaultConfig,
-  ensureDocSections,
-  setMarkdownSection,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core";
+import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
-import { exitCodeForError } from "../../cli/exit-codes.js";
-import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { GitContext } from "../shared/git-context.js";
+import { GitContext } from "@agentplaneorg/core/git";
 import type { TaskStorePatch } from "../shared/task-store.js";
 
 const mocks = vi.hoisted(() => ({
@@ -42,8 +36,10 @@ vi.mock("@agentplaneorg/core", async (importOriginal) => {
   };
 });
 
-vi.mock("../guard/index.js", () => ({
+vi.mock("../guard/impl/comment-commit.js", () => ({
   commitFromComment: mocks.commitFromComment,
+}));
+vi.mock("../guard/impl/commit.js", () => ({
   cmdCommit: mocks.cmdCommit,
 }));
 vi.mock("../shared/reconcile-check.js", () => ({
@@ -58,10 +54,21 @@ vi.mock("../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
   gitCurrentBranch: mocks.gitCurrentBranch,
 }));
-vi.mock("../shared/git.js", () => ({
+vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
-  gitEnv: () => ({}),
 }));
+vi.mock("@agentplaneorg/core/git", async () => {
+  const actualUnknown: unknown = await vi.importActual("@agentplaneorg/core/git");
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    gitEnv: () => ({}),
+    resolveBaseBranch: mocks.resolveBaseBranch,
+  };
+});
 vi.mock("../shared/task-store.js", async (importOriginal) => {
   const actualUnknown: unknown = await importOriginal();
   const actual =
@@ -302,7 +309,7 @@ describe("task finish close-tail", () => {
       get: storeGet,
       patch: storePatch,
     });
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     const rc = await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -382,7 +389,7 @@ describe("task finish close-tail", () => {
       mkTask({ id: "T-1", status: "DOING", tags: ["docs"] }),
     );
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     const rc = await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -433,7 +440,7 @@ describe("task finish close-tail", () => {
     );
     mocks.readCommitInfo.mockResolvedValue({ hash: "abc123", message: "feat: T-1" });
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     const rc = await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -504,7 +511,7 @@ describe("task finish close-tail", () => {
     );
     mocks.readCommitInfo.mockResolvedValue({ hash: "abc999", message: "feat: T-PLAIN" });
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     const rc = await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -575,7 +582,7 @@ describe("task finish close-tail", () => {
     );
     mocks.readCommitInfo.mockResolvedValue({ hash: "def456", message: "feat: T-2" });
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     const rc = await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -641,7 +648,7 @@ describe("task finish close-tail", () => {
     });
     ctx.config.workflow_mode = "branch_pr";
     mocks.loadTaskFromContext.mockImplementation(() => Promise.resolve(currentTask));
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     const rc = await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -695,7 +702,7 @@ describe("task finish close-tail", () => {
       }),
     );
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     const rc = await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -759,7 +766,7 @@ describe("task finish close-tail", () => {
       ),
     });
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     const rc = await cmdFinish({
       ctx,
       cwd: "/repo",
@@ -850,7 +857,7 @@ describe("task finish close-tail", () => {
     mocks.getTaskStore.mockReturnValue(store);
     mocks.readCommitInfo.mockResolvedValue({ hash: "impl-hash", message: "feat: implement T-1" });
 
-    const { cmdFinish } = await import("./finish.js");
+    const { cmdFinish } = await import("./finish-command.js");
     const rc = await cmdFinish({
       ctx,
       cwd: "/repo",
