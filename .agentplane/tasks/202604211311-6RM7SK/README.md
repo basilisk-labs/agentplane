@@ -1,10 +1,11 @@
 ---
 id: "202604211311-6RM7SK"
 title: "Make command catalog a thin registry fan-in"
-status: "DOING"
+result_summary: "Made command catalog a thin registry fan-in."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-04-21T13:39:13.962Z"
   updated_by: "CODER"
   note: "Command: bun run arch:check; Result: pass. Command: bun run docs:cli:check; Result: pass; Evidence: cli-reference generated output unchanged. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/help.all-commands.contract.test.ts --pool=forks --maxWorkers 4; Result: pass via combined targeted run."
-commit: null
+commit:
+  hash: "0f8f8e6465ecdaaee3061f5b97f47fcedb3684c3"
+  message: "♻️ cli: break command catalog cycles"
 comments:
   -
     author: "CODER"
     body: "Start: making command-catalog.ts a thin registry fan-in after loader domain split, preserving command graph semantics and docs output."
+  -
+    author: "CODER"
+    body: "Verified: command catalog fan-in remains docs-compatible with arch check, CLI docs freshness, and help/catalog tests passing."
 events:
   -
     type: "status"
@@ -46,8 +52,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run arch:check; Result: pass. Command: bun run docs:cli:check; Result: pass; Evidence: cli-reference generated output unchanged. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/help.all-commands.contract.test.ts --pool=forks --maxWorkers 4; Result: pass via combined targeted run."
+  -
+    type: "status"
+    at: "2026-04-21T13:40:38.752Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: command catalog fan-in remains docs-compatible with arch check, CLI docs freshness, and help/catalog tests passing."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:39:13.989Z"
+doc_updated_at: "2026-04-21T13:40:38.752Z"
 doc_updated_by: "CODER"
 description: "Refactor command-catalog.ts and command-catalog/{task,core,project,lifecycle}.ts so they assemble registry entries without owning shared types or importing loaders back through cycles."
 sections:

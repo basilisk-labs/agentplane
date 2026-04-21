@@ -1,10 +1,11 @@
 ---
 id: "202604211311-BA2037"
 title: "Split command loaders by domain"
-status: "DOING"
+result_summary: "Split command loaders by domain."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-04-21T13:39:13.967Z"
   updated_by: "CODER"
   note: "Command: bun run arch:check; Result: pass; Evidence: catalog cycles removed from dep-cruiser baseline. Command: bun run typecheck; Result: pass. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/group-command.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts --pool=forks --maxWorkers 4; Result: pass via combined targeted run."
-commit: null
+commit:
+  hash: "0f8f8e6465ecdaaee3061f5b97f47fcedb3684c3"
+  message: "♻️ cli: break command catalog cycles"
 comments:
   -
     author: "CODER"
     body: "Start: splitting command loaders by domain after kernel extraction so each catalog domain imports only its corresponding loader surface."
+  -
+    author: "CODER"
+    body: "Verified: command loaders split by domain with typecheck, arch check, and group/catalog tests passing."
 events:
   -
     type: "status"
@@ -46,8 +52,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run arch:check; Result: pass; Evidence: catalog cycles removed from dep-cruiser baseline. Command: bun run typecheck; Result: pass. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/group-command.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts --pool=forks --maxWorkers 4; Result: pass via combined targeted run."
+  -
+    type: "status"
+    at: "2026-04-21T13:40:37.930Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: command loaders split by domain with typecheck, arch check, and group/catalog tests passing."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:39:13.994Z"
+doc_updated_at: "2026-04-21T13:40:37.931Z"
 doc_updated_by: "CODER"
 description: "Decompose cli/run-cli/command-loaders.ts into domain-specific loader modules so loaders depend on the catalog kernel but not on the aggregate catalog."
 sections:
