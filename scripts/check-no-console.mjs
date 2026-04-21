@@ -11,7 +11,37 @@ const EXCLUDED_DIR_NAMES = new Set([".git", "dist", "node_modules"]);
 const EXCLUDED_FILE_PATTERNS = [/\.test\.ts$/, /\.spec\.ts$/];
 
 const scriptPath = fileURLToPath(import.meta.url);
-const repoRoot = path.resolve(path.dirname(scriptPath), "..");
+const defaultRepoRoot = path.resolve(path.dirname(scriptPath), "..");
+
+function parseArgs(argv) {
+  const opts = {
+    root: defaultRepoRoot,
+    max: MAX_CONSOLE_OCCURRENCES,
+  };
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg === "--root") {
+      const value = argv[index + 1];
+      if (!value) throw new Error("--root requires a value");
+      opts.root = path.resolve(value);
+      index += 1;
+      continue;
+    }
+    if (arg === "--max") {
+      const value = argv[index + 1];
+      if (!value) throw new Error("--max requires a value");
+      const parsed = Number.parseInt(value, 10);
+      if (!Number.isSafeInteger(parsed) || parsed < 0) {
+        throw new Error("--max must be a non-negative integer");
+      }
+      opts.max = parsed;
+      index += 1;
+      continue;
+    }
+    throw new Error(`Unknown argument: ${arg}`);
+  }
+  return opts;
+}
 
 function normalizePath(filePath) {
   return filePath.split(path.sep).join("/");
@@ -42,7 +72,7 @@ function walkTypeScriptFiles(dir, files = []) {
   return files;
 }
 
-function collectConsoleOccurrences() {
+function collectConsoleOccurrences(repoRoot) {
   const files = walkTypeScriptFiles(path.join(repoRoot, "packages"));
   const occurrences = [];
 
@@ -67,11 +97,12 @@ function formatList(items) {
 const main = defineScript({
   name: SCRIPT_NAME,
   async run() {
-    const occurrences = collectConsoleOccurrences();
-    if (occurrences.length > MAX_CONSOLE_OCCURRENCES) {
+    const opts = parseArgs(process.argv.slice(2));
+    const occurrences = collectConsoleOccurrences(opts.root);
+    if (occurrences.length > opts.max) {
       throw new Error(
         [
-          `production console usage baseline exceeded: count=${occurrences.length}, max=${MAX_CONSOLE_OCCURRENCES}`,
+          `production console usage baseline exceeded: count=${occurrences.length}, max=${opts.max}`,
           "Occurrences:",
           formatList(occurrences),
           "",
@@ -81,7 +112,7 @@ const main = defineScript({
     }
 
     process.stdout.write(
-      `production console usage OK (count=${occurrences.length}, max=${MAX_CONSOLE_OCCURRENCES})\n`,
+      `production console usage OK (count=${occurrences.length}, max=${opts.max})\n`,
     );
   },
 });

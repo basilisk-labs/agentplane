@@ -160,6 +160,17 @@ Initial baseline after the warn-only guard was introduced:
 The baseline has no unresolved imports and no unused dependencies; those categories should stay
 empty.
 
+To enforce production logging hygiene:
+
+```bash
+bun run logging:check
+```
+
+This guard scans production TypeScript under `packages/**` and excludes `.test.ts` and `.spec.ts`
+files. New `console.log`, `console.warn`, or `console.error` usage in production paths must either
+use structured logging instead or intentionally lower the baseline after removing existing console
+usage.
+
 To run the faster CLI unit-ish suites (core + recipes):
 
 ```bash
