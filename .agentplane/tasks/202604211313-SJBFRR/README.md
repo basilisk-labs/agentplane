@@ -1,10 +1,11 @@
 ---
 id: "202604211313-SJBFRR"
 title: "Add cold-start regression guard"
-status: "DOING"
+result_summary: "Added script-readable CLI cold-start baseline guard, wired it into local CI, documented the baseline, and fixed test mocks exposed by the full fast CI path."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-21T20:01:21.464Z"
   updated_by: "CODER"
   note: "Implemented script-readable CLI cold-start baseline guard. Evidence: bun run bench:cli:cold avg quickstart=182.396ms task_list=201.38ms task_search=203.256ms task_next=195.528ms preflight_quick=240.924ms; bun run bench:cli:cold:check passed; bun run ci:local:fast passed with 233 unit files and 13 critical E2E tests; focused baseline script tests passed; docs:scripts:check passed; git diff --check passed."
-commit: null
+commit:
+  hash: "9a4c15ef35e664fbea2bb7bce57f1dfe05a8d83a"
+  message: "⏱️ SJBFRR perf: guard cli cold-start baseline"
 comments:
   -
     author: "CODER"
     body: "Start: add a script-readable CLI cold-start baseline and a regression check now that the bundled CLI entry is in place."
+  -
+    author: "CODER"
+    body: "Verified: bun run bench:cli:cold; bun run bench:cli:cold:check; bun run ci:local:fast; focused baseline script tests; docs:scripts:check; git diff --check."
 events:
   -
     type: "status"
@@ -45,14 +51,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented script-readable CLI cold-start baseline guard. Evidence: bun run bench:cli:cold avg quickstart=182.396ms task_list=201.38ms task_search=203.256ms task_next=195.528ms preflight_quick=240.924ms; bun run bench:cli:cold:check passed; bun run ci:local:fast passed with 233 unit files and 13 critical E2E tests; focused baseline script tests passed; docs:scripts:check passed; git diff --check passed."
+  -
+    type: "status"
+    at: "2026-04-21T20:01:48.078Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun run bench:cli:cold; bun run bench:cli:cold:check; bun run ci:local:fast; focused baseline script tests; docs:scripts:check; git diff --check."
 doc_version: 3
-doc_updated_at: "2026-04-21T20:01:21.470Z"
+doc_updated_at: "2026-04-21T20:01:48.078Z"
 doc_updated_by: "CODER"
 description: "Turn CLI cold-path measurement into a tracked baseline check with a reasonable tolerance after subpath import and bundling work lands."
 sections:
   Summary: |-
     Add cold-start regression guard
-
+    
     Turn CLI cold-path measurement into a tracked baseline check with a reasonable tolerance after subpath import and bundling work lands.
   Scope: |-
     - In scope: Turn CLI cold-path measurement into a tracked baseline check with a reasonable tolerance after subpath import and bundling work lands.
@@ -65,13 +78,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-21T20:01:21.464Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Implemented script-readable CLI cold-start baseline guard. Evidence: bun run bench:cli:cold avg quickstart=182.396ms task_list=201.38ms task_search=203.256ms task_next=195.528ms preflight_quick=240.924ms; bun run bench:cli:cold:check passed; bun run ci:local:fast passed with 233 unit files and 13 critical E2E tests; focused baseline script tests passed; docs:scripts:check passed; git diff --check passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T19:53:09.707Z, excerpt_hash=sha256:6921c1b11db0823c2b9c4311024ede2ae4da9f5cc55bf3daa0864864c3fbb89c
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
