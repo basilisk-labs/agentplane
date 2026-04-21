@@ -1,10 +1,10 @@
 ---
 id: "202604211312-4PXEBW"
 title: "Enforce core subpath imports with lint"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +28,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: enforce core subpath imports with a lint guard after DZTRN8 root-import migration."
+events:
+  -
+    type: "status"
+    at: "2026-04-21T16:19:36.033Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: enforce core subpath imports with a lint guard after DZTRN8 root-import migration."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:12:07.887Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-21T16:19:36.041Z"
+doc_updated_by: "CODER"
 description: "Add a lint guard that forbids new internal @agentplaneorg/core root imports except an allowlisted aggregate case."
 sections:
   Summary: |-

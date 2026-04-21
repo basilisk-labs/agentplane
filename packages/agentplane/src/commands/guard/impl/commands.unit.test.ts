@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type * as Core from "@agentplaneorg/core";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { readDiagnosticContext } from "../../shared/diagnostics.js";
@@ -23,7 +22,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@agentplaneorg/core", async (importOriginal) => {
-  const actual = await importOriginal<typeof Core>();
+  const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
     buildTaskArtifactRefreshCommitSubject: mocks.buildTaskArtifactRefreshCommitSubject,
@@ -37,8 +36,10 @@ vi.mock("../../shared/task-backend.js", () => ({
 vi.mock("../../shared/reconcile-check.js", () => ({
   ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
 }));
-vi.mock("../../shared/git.js", () => ({
+vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
+}));
+vi.mock("@agentplaneorg/core/git", () => ({
   gitEnv: mocks.gitEnv,
 }));
 vi.mock("../../shared/post-commit-pr-artifacts.js", () => ({
