@@ -1,10 +1,11 @@
 ---
 id: "202604211313-G34KY8"
 title: "Add hotspot warning threshold at 400 LoC"
-status: "DOING"
+result_summary: "Added runtime hotspot warning threshold."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-21T13:42:51.442Z"
   updated_by: "CODER"
   note: "Command: bun run hotspots:check; Result: pass; Evidence: warning threshold printed 17 runtime warnings and hard threshold passed. Command: node scripts/hotspot-report.mjs --check --oversized-lines 600; Result: pass via updated hotspot check path. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/hotspot-report-script.test.ts --pool=forks --maxWorkers 4; Result: pass, 18 assertions across workspace projects."
-commit: null
+commit:
+  hash: "b1488267692af231468d94b7c8f11a3436e627e7"
+  message: "🧰 tooling: add hotspot and scripts docs guards"
 comments:
   -
     author: "CODER"
     body: "Start: ввод двух порогов hotspot (warning/error) без ужесточения текущего CI-провала и с сохранением обратной совместимости CLI."
+  -
+    author: "CODER"
+    body: "Verified: hotspot warning threshold is active, hard threshold still passes, and hotspot-report tests pass."
 events:
   -
     type: "status"
@@ -44,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run hotspots:check; Result: pass; Evidence: warning threshold printed 17 runtime warnings and hard threshold passed. Command: node scripts/hotspot-report.mjs --check --oversized-lines 600; Result: pass via updated hotspot check path. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/hotspot-report-script.test.ts --pool=forks --maxWorkers 4; Result: pass, 18 assertions across workspace projects."
+  -
+    type: "status"
+    at: "2026-04-21T13:43:05.880Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: hotspot warning threshold is active, hard threshold still passes, and hotspot-report tests pass."
 doc_version: 3
-doc_updated_at: "2026-04-21T13:42:51.455Z"
+doc_updated_at: "2026-04-21T13:43:05.881Z"
 doc_updated_by: "CODER"
 description: "Extend hotspot reporting with a two-level threshold: warning at 400 LoC and error at 600 LoC, without making existing warnings fail CI."
 sections:
