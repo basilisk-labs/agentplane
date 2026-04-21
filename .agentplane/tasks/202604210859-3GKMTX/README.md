@@ -1,10 +1,12 @@
 ---
 id: "202604210859-3GKMTX"
 title: "Route config deprecation warnings through logger"
-status: "DOING"
+result_summary: "Routed config deprecation warnings through logger."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +26,16 @@ verification:
   updated_at: "2026-04-21T09:36:43.514Z"
   updated_by: "CODER"
   note: "Replaced config deprecation console.warn with core logger.warn-style event output and lowered production console baseline from 26 to 25. Verification: core config test passed (18 tests), core typecheck passed, logging:check passed, and rg found no console.warn in core/agentplane production TS files."
-commit: null
+commit:
+  hash: "64c671d573087d853c68617c3581d66a6b3abcf5"
+  message: "✅ 3GKMTX code: done"
 comments:
   -
     author: "CODER"
     body: "Start: Replace config deprecation console.warn with the core logger and lower the console usage baseline accordingly."
+  -
+    author: "CODER"
+    body: "Verified: config deprecation warnings now use the core logger and production console baseline is reduced to 25."
 events:
   -
     type: "status"
@@ -43,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Replaced config deprecation console.warn with core logger.warn-style event output and lowered production console baseline from 26 to 25. Verification: core config test passed (18 tests), core typecheck passed, logging:check passed, and rg found no console.warn in core/agentplane production TS files."
+  -
+    type: "status"
+    at: "2026-04-21T09:37:37.704Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: config deprecation warnings now use the core logger and production console baseline is reduced to 25."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:36:43.518Z"
+doc_updated_at: "2026-04-21T09:37:37.707Z"
 doc_updated_by: "CODER"
 description: "Replace config deprecation console.warn output with the core logger so structured logging remains parseable."
 sections:
