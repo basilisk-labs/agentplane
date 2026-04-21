@@ -1,10 +1,11 @@
 ---
 id: "202604201827-EVCH0N"
 title: "Add testkit migration skill"
-status: "DOING"
+result_summary: "Added repo-local testkit migration skill using canonical @agentplane/testkit naming and migration/build guidance."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-21T03:45:09.221Z"
   updated_by: "CODER"
   note: "Verified testkit migration skill content, canonical @agentplane/testkit package name, skills index entry, format check, policy routing, doctor, and package build evidence."
-commit: null
+commit:
+  hash: "a49495728059f6890988785f20b3eba41a18fbbf"
+  message: "📝 7Y2QS2 task: refresh PR artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: implementing testkit migration skill."
+  -
+    author: "CODER"
+    body: "Verified: testkit migration skill added, indexed, and checked."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified testkit migration skill content, canonical @agentplane/testkit package name, skills index entry, format check, policy routing, doctor, and package build evidence."
+  -
+    type: "status"
+    at: "2026-04-21T03:47:45.801Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: testkit migration skill added, indexed, and checked."
 doc_version: 3
-doc_updated_at: "2026-04-21T03:45:09.225Z"
+doc_updated_at: "2026-04-21T03:47:45.801Z"
 doc_updated_by: "CODER"
 description: "Add a repo-local skill for migrating tests to the canonical testkit surface and diagnosing testkit export/build-order failures."
 sections:
