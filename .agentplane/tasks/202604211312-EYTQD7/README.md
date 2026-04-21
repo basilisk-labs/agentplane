@@ -1,10 +1,11 @@
 ---
 id: "202604211312-EYTQD7"
 title: "Remove agentplane testing facade"
-status: "DOING"
+result_summary: "Migrated agentplane tests and repo-only helper consumers to @agentplane/testkit, deleted packages/agentplane/src/testing, removed the temporary vitest alias and tsconfig exclusion, and restored the strict runtime testkit boundary rule."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-21T17:13:28.671Z"
   updated_by: "CODER"
   note: "Verified removal of the agentplane testing facade. Checks: bun run typecheck passed; bun run arch:check passed; bun run knip:check passed; bun run lint:core passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run format:check passed; git diff --check passed. Additional scan confirmed no remaining src/testing or agentplane/internal/testing references."
-commit: null
+commit:
+  hash: "6d2d04f401008d335f003f318c29a77c1182afed"
+  message: "🧹 EYTQD7 testkit: remove agentplane testing facade"
 comments:
   -
     author: "CODER"
     body: "Start: remove the transitional agentplane testing facade by migrating test consumers to @agentplane/testkit and deleting packages/agentplane/src/testing."
+  -
+    author: "CODER"
+    body: "Verified: removed the agentplane testing facade. Checks: bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run test:project -- cli-unit; bun run format:check; git diff --check."
 events:
   -
     type: "status"
@@ -47,14 +53,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified removal of the agentplane testing facade. Checks: bun run typecheck passed; bun run arch:check passed; bun run knip:check passed; bun run lint:core passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run format:check passed; git diff --check passed. Additional scan confirmed no remaining src/testing or agentplane/internal/testing references."
+  -
+    type: "status"
+    at: "2026-04-21T17:14:00.521Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: removed the agentplane testing facade. Checks: bun run typecheck; bun run arch:check; bun run knip:check; bun run lint:core; bun run test:project -- cli-unit; bun run format:check; git diff --check."
 doc_version: 3
-doc_updated_at: "2026-04-21T17:13:28.674Z"
+doc_updated_at: "2026-04-21T17:14:00.522Z"
 doc_updated_by: "CODER"
 description: "Migrate remaining consumers off packages/agentplane/src/testing and delete the transitional testing facade."
 sections:
   Summary: |-
     Remove agentplane testing facade
-
+    
     Migrate remaining consumers off packages/agentplane/src/testing and delete the transitional testing facade.
   Scope: |-
     - In scope: Migrate remaining consumers off packages/agentplane/src/testing and delete the transitional testing facade.
@@ -70,13 +83,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-21T17:13:28.671Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Verified removal of the agentplane testing facade. Checks: bun run typecheck passed; bun run arch:check passed; bun run knip:check passed; bun run lint:core passed; bun run test:project -- cli-unit passed (63 files, 629 tests); bun run format:check passed; git diff --check passed. Additional scan confirmed no remaining src/testing or agentplane/internal/testing references.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-21T17:10:22.803Z, excerpt_hash=sha256:cba41b7c1dbe55cf2e152bc98973d9c89009ed0a7a65e2aaff289d0f4480f630
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
