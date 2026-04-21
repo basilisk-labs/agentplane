@@ -1,10 +1,12 @@
 ---
 id: "202604210900-M6XXWF"
 title: "Resolve old source redirect and doctor legacy fix retention"
-status: "DOING"
+result_summary: "Removed old upgrade source redirect and doctor legacy README fix."
+breaking: true
+status: "DONE"
 priority: "normal"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +26,16 @@ verification:
   updated_at: "2026-04-21T09:59:36.758Z"
   updated_by: "CODER"
   note: "Removed the basilisk-labs/agent-plane source redirect and doctor legacy untracked DONE README cleanup; targeted upgrade/doctor tests and typecheck pass."
-commit: null
+commit:
+  hash: "490a1b90a9e49f840fb840bfb75ee2568b2e6854"
+  message: "✅ M6XXWF code: done"
 comments:
   -
     author: "CODER"
     body: "Start: remove or explicitly resolve old source redirect and doctor legacy README fix paths under approved patch-release breaking cleanup policy, with targeted tests and documentation."
+  -
+    author: "CODER"
+    body: "Verified: removed basilisk-labs/agent-plane source redirect and doctor legacy untracked DONE README cleanup, rebuilt framework runtime, and passed targeted upgrade/doctor tests plus typecheck."
 events:
   -
     type: "status"
@@ -43,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed the basilisk-labs/agent-plane source redirect and doctor legacy untracked DONE README cleanup; targeted upgrade/doctor tests and typecheck pass."
+  -
+    type: "status"
+    at: "2026-04-21T09:59:56.093Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: removed basilisk-labs/agent-plane source redirect and doctor legacy untracked DONE README cleanup, rebuilt framework runtime, and passed targeted upgrade/doctor tests plus typecheck."
 doc_version: 3
-doc_updated_at: "2026-04-21T09:59:36.773Z"
+doc_updated_at: "2026-04-21T09:59:56.096Z"
 doc_updated_by: "CODER"
 description: "Either remove or explicitly retain the old source redirect and doctor legacy README fix based on evidence and user-impact policy."
 sections:
