@@ -25,7 +25,9 @@ export function validateTestRouting(entries) {
     }
     seenFiles.add(entry.filePath);
 
-    const unknownPrimaryRoutes = entry.primaryRoutes.filter((route) => !PRIMARY_ROUTE_SET.has(route));
+    const unknownPrimaryRoutes = entry.primaryRoutes.filter(
+      (route) => !PRIMARY_ROUTE_SET.has(route),
+    );
     if (unknownPrimaryRoutes.length > 0) {
       errors.push(
         `${entry.filePath}: unknown primary route(s): ${formatList(unknownPrimaryRoutes)}`,
@@ -35,7 +37,9 @@ export function validateTestRouting(entries) {
     if (entry.primaryRoutes.length === 0) {
       errors.push(`${entry.filePath}: missing primary route`);
     } else if (entry.primaryRoutes.length > 1) {
-      errors.push(`${entry.filePath}: duplicate primary routes: ${formatList(entry.primaryRoutes)}`);
+      errors.push(
+        `${entry.filePath}: duplicate primary routes: ${formatList(entry.primaryRoutes)}`,
+      );
     }
 
     const unknownAggregateRoutes = entry.aggregateRoutes.filter(
@@ -57,9 +61,7 @@ export function validateTestRouting(entries) {
 }
 
 export function renderTestRoutingReport(result) {
-  const lines = [];
-  lines.push(`test routing ${result.ok ? "OK" : "FAILED"}`);
-  lines.push(`total tests: ${result.total}`);
+  const lines = [`test routing ${result.ok ? "OK" : "FAILED"}`, `total tests: ${result.total}`];
   for (const [route, count] of Object.entries(result.summary)) {
     lines.push(`  ${route}: ${count}`);
   }
