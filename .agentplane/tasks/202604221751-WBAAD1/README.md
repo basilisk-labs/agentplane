@@ -1,10 +1,11 @@
 ---
 id: "202604221751-WBAAD1"
 title: "Migrate legacy recipe cache scenarios during init"
-status: "DOING"
+result_summary: "Implemented legacy scenario file fallback, init cache migration writeback, and regression coverage for full interactive init."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-22T17:56:26.116Z"
   updated_by: "CODER"
   note: "Verified legacy cached recipe migration during init."
-commit: null
+commit:
+  hash: "a9338d82b23c7a34d6515abe6e456ee41dd2e8ee"
+  message: "🚧 WBAAD1 task: migrate legacy recipe cache scenarios"
 comments:
   -
     author: "CODER"
     body: "Start: fixing init recipe cache migration for legacy cached scenario descriptors that omit file metadata, with persistence and release-path regression coverage."
+  -
+    author: "CODER"
+    body: "Verified: legacy cached recipe scenarios without file now normalize and persist during init read path."
 events:
   -
     type: "status"
@@ -43,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified legacy cached recipe migration during init."
+  -
+    type: "status"
+    at: "2026-04-22T17:56:57.673Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: legacy cached recipe scenarios without file now normalize and persist during init read path."
 doc_version: 3
-doc_updated_at: "2026-04-22T17:56:26.123Z"
+doc_updated_at: "2026-04-22T17:56:57.673Z"
 doc_updated_by: "CODER"
 description: "Fix agentplane init for legacy cached recipe scenarios that omit file metadata by normalizing and persisting old recipe cache entries instead of aborting init."
 sections:
