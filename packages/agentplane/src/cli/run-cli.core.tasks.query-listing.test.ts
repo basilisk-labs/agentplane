@@ -65,6 +65,7 @@ import {
   stageGitignoreIfPresent,
   stubTaskBackend,
   taskDocToSectionMap,
+  useRunCliIntegrationHarness,
   vi,
   waitForRunnerState,
   writeConfig,
@@ -75,6 +76,8 @@ import {
   type RunShowPayload,
   type taskBackend,
 } from "./run-cli.core.tasks.query-support.js";
+
+useRunCliIntegrationHarness();
 
 describe(
   "runCli task next search doc show and list queries",

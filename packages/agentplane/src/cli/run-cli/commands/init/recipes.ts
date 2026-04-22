@@ -1,8 +1,6 @@
-import {
-  cmdRecipeAddParsed,
-  readInstalledRecipesFile,
-  resolveInstalledRecipesPath,
-} from "../../../../commands/recipes.js";
+import { cmdRecipeAddParsed } from "../../../../commands/recipes/impl/commands/add.js";
+import { readInstalledRecipesFile } from "../../../../commands/recipes/impl/installed-recipes.js";
+import { resolveInstalledRecipesPath } from "../../../../commands/recipes/impl/paths.js";
 import { CliError } from "../../../../shared/errors.js";
 
 type CachedRecipeInfo = {

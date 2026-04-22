@@ -4,7 +4,7 @@ import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
 
-import { initReleaseWorkspace, writePackageJson } from "../../../../testkit/src/release.js";
+import { initReleaseWorkspace, writePackageJson } from "@agentplane/testkit/release";
 
 const execFileAsync = promisify(execFile);
 

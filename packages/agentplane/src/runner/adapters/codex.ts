@@ -15,31 +15,15 @@ import {
   type RunnerAdapter,
 } from "./shared.js";
 import { buildRunnerExecutionArtifacts, durationMs } from "./runtime-shared.js";
-import { runSupervisedProcess, type SupervisedProcessResult } from "../process-supervision/run.js";
+import type { SupervisedProcessResult } from "../process-supervision/run.js";
 import { exitCodeForSignal } from "../process-supervision/signals.js";
-import {
-  InvalidRunnerResultManifestError,
-  applyRunnerResultManifest,
-  manifestFromRunnerResult,
-  preserveRunnerResultManifestSource,
-  preserveInvalidRunnerResultManifest,
-  readRunnerResultManifest,
-  writeRunnerResultManifest,
-} from "../result-manifest.js";
-import { RunnerRunRepository } from "../run-repository.js";
-import {
-  assertRunnerManifestArtifactPolicy,
-  readRecipeArtifactPrefixesFromRunnerEnv,
-} from "../result-manifest-policy.js";
-import {
-  appendRunnerExecutionEvent,
-  appendRunnerResultEvent,
-  assertAdapterBundle,
-  assertAdapterInvocation,
-  writeRunnerExecutionState,
-  writeRunnerResultState,
-} from "./base.js";
+import { applyRunnerResultManifest, type readRunnerResultManifest } from "../result-manifest.js";
+import { assertAdapterBundle, assertAdapterInvocation } from "./base.js";
 import { buildCodexInvocation, CODEX_RUN_PROFILE_CAPABILITIES } from "./codex-preparation.js";
+import {
+  executeSupervisedRunnerAdapter,
+  type SupervisedRunnerArtifactInput,
+} from "./execute-supervised.js";
 
 function byteLength(text: string | null | undefined): number {
   return Buffer.byteLength(text ?? "", "utf8");
@@ -54,16 +38,19 @@ async function readOptionalText(filePath?: string | null): Promise<string | null
   }
 }
 
-function buildCodexArtifacts(opts: {
-  invocation: RunnerInvocation;
-  trace_artifact_path?: string | null;
-  trace_archive_path?: string | null;
-  stderr_artifact_path?: string | null;
-  stderr_archive_path?: string | null;
-  source_manifest_path?: string | null;
-  invalid_manifest_path?: string | null;
-}): NonNullable<RunnerResult["artifacts"]> {
-  return buildRunnerExecutionArtifacts({ ...opts, include_output_last_message: true });
+function buildCodexArtifacts(
+  opts: SupervisedRunnerArtifactInput,
+): NonNullable<RunnerResult["artifacts"]> {
+  return buildRunnerExecutionArtifacts({
+    invocation: opts.invocation,
+    trace_artifact_path: opts.processResult?.trace_artifact_path,
+    trace_archive_path: opts.processResult?.trace_archive_path,
+    stderr_artifact_path: opts.processResult?.stderr_artifact_path,
+    stderr_archive_path: opts.processResult?.stderr_archive_path,
+    source_manifest_path: opts.source_manifest_path,
+    invalid_manifest_path: opts.invalid_manifest_path,
+    include_output_last_message: true,
+  });
 }
 
 function assertCodexBundle(bundle: RunnerContextBundle): void {
@@ -117,27 +104,21 @@ export class CodexRunnerAdapter implements RunnerAdapter {
   }
 
   execute(invocation: RunnerInvocation): Promise<RunnerResult> {
-    const started_at = new Date().toISOString();
-    let processResult: SupervisedProcessResult | null = null;
-    return (async () => {
-      try {
-        assertCodexInvocation(invocation);
-        const repository = RunnerRunRepository.fromInvocation(invocation);
-        const bootstrapText = await readFile(invocation.bootstrap_path!, "utf8");
-        processResult = await runSupervisedProcess({
-          invocation,
-          stdin_text: bootstrapText,
-          start_message: "codex exec started",
-        });
+    return executeSupervisedRunnerAdapter({
+      invocation,
+      assertInvocation: assertCodexInvocation,
+      readStdinText: async (input) => await readFile(input.bootstrap_path!, "utf8"),
+      startMessage: "codex exec started",
+      buildArtifacts: buildCodexArtifacts,
+      capabilitiesUsed: () => ["codex.exec"],
+      assertManifest: assertExecuteModeManifest,
+      applyManifest: ({ base, manifest }) => applyRunnerResultManifest({ base, manifest }),
+      successEventMessage: (result) => `codex exec finished with status=${result.status}`,
+      failureSummary: "Codex execution failed before producing a valid result manifest.",
+      failureEventType: "runner_execute_error",
+      failureEventMessage: (result) => result.stderr_summary ?? "codex exec failed",
+      buildBaseResult: async ({ processResult, artifacts, output_paths }) => {
         const lastMessage = await readOptionalText(invocation.output_last_message_path);
-        const artifacts = buildCodexArtifacts({
-          invocation,
-          trace_artifact_path: processResult.trace_artifact_path,
-          trace_archive_path: processResult.trace_archive_path,
-          stderr_artifact_path: processResult.stderr_artifact_path,
-          stderr_archive_path: processResult.stderr_archive_path,
-        });
-        const output_paths = artifacts.map((artifact) => artifact.path);
         const success = processResult.exit_code === 0;
         const ended_at = processResult.ended_at;
         const timedOut = processResult.timeout_reason !== null;
@@ -199,92 +180,12 @@ export class CodexRunnerAdapter implements RunnerAdapter {
                   metrics,
                   timeout_reason: processResult.timeout_reason,
                 });
-        const manifest = await readRunnerResultManifest(invocation.result_path);
-        assertRunnerManifestArtifactPolicy({
-          adapter_id: invocation.adapter_id,
-          allowed_prefixes: readRecipeArtifactPrefixesFromRunnerEnv(invocation.env),
-          manifest,
-        });
-        assertExecuteModeManifest({
-          invocation,
-          processResult,
-          manifest,
-        });
-        const result = applyRunnerResultManifest({
-          base: {
-            ...baseResult,
-            artifacts,
-            capabilities_used: ["codex.exec"],
-          },
-          manifest,
-        });
-        await writeRunnerResultManifest({
-          result_path: invocation.result_path,
-          manifest: manifestFromRunnerResult(result),
-        });
-        await writeRunnerExecutionState({
-          repository,
-          result,
-          processResult,
-          command: invocation.argv.join(" "),
-        });
-        await appendRunnerExecutionEvent({
-          repository,
-          invocation,
-          result,
-          processResult,
-          message: `codex exec finished with status=${result.status}`,
-          outputPaths: output_paths,
-        });
-        return result;
-      } catch (err) {
-        const ended_at = new Date().toISOString();
-        const sourceManifestPath = await preserveRunnerResultManifestSource(invocation.result_path);
-        const invalidManifestPath =
-          err instanceof InvalidRunnerResultManifestError
-            ? await preserveInvalidRunnerResultManifest({
-                result_path: invocation.result_path,
-                error: err,
-              })
-            : null;
-        const artifacts = buildCodexArtifacts({
-          invocation,
-          trace_artifact_path: processResult?.trace_artifact_path,
-          trace_archive_path: processResult?.trace_archive_path,
-          stderr_artifact_path: processResult?.stderr_artifact_path,
-          stderr_archive_path: processResult?.stderr_archive_path,
-          source_manifest_path: sourceManifestPath,
-          invalid_manifest_path: invalidManifestPath,
-        });
-        const output_paths = artifacts.map((artifact) => artifact.path);
-        const result = runnerAdapterFailureResult({
-          err,
-          summary: "Codex execution failed before producing a valid result manifest.",
-          started_at,
-          ended_at,
-          exit_code: err instanceof CliError ? err.exitCode : undefined,
-          output_paths,
-        });
-        await writeRunnerResultManifest({
-          result_path: invocation.result_path,
-          manifest: manifestFromRunnerResult({
-            ...result,
-            artifacts,
-            capabilities_used: ["codex.exec"],
-          }),
-        });
-        const repository = RunnerRunRepository.fromInvocation(invocation);
-        await writeRunnerResultState({ repository, result });
-        await appendRunnerResultEvent({
-          repository,
-          invocation,
-          result,
-          type: "runner_execute_error",
-          message: result.stderr_summary ?? "codex exec failed",
-          outputPaths: output_paths,
-        });
-        return result;
-      }
-    })();
+        return {
+          ...baseResult,
+          artifacts,
+          capabilities_used: ["codex.exec"],
+        };
+      },
+    });
   }
 }

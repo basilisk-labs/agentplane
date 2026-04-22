@@ -1,4 +1,4 @@
-import { defaultConfig, loadConfig } from "@agentplaneorg/core";
+import { defaultConfig, loadConfig } from "@agentplaneorg/core/config";
 
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { fileExists } from "../../../../cli/fs-utils.js";

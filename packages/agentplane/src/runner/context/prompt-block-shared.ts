@@ -11,6 +11,8 @@ import { resolveAgentplaneAssetUrl } from "../../shared/package-paths.js";
 
 export const FRAMEWORK_RUNNER_PROMPT_URL = resolveAgentplaneAssetUrl("RUNNER.md");
 
+let frameworkRunnerPromptCache: Promise<RunnerPromptBlock> | null = null;
+
 export const BASE_PROMPT_PRIORITIES = {
   framework_runner: 100,
   policy_gateway: 200,
@@ -126,7 +128,7 @@ export function promptBlockFromResolved(opts: {
   };
 }
 
-export async function loadFrameworkRunnerPrompt(): Promise<RunnerPromptBlock> {
+async function readFrameworkRunnerPrompt(): Promise<RunnerPromptBlock> {
   const resolved = resolveBehavior({
     key: "runner.framework_prompt",
     candidates: [
@@ -148,4 +150,9 @@ export async function loadFrameworkRunnerPrompt(): Promise<RunnerPromptBlock> {
     priority: BASE_PROMPT_PRIORITIES.framework_runner,
     resolved,
   });
+}
+
+export async function loadFrameworkRunnerPrompt(): Promise<RunnerPromptBlock> {
+  frameworkRunnerPromptCache ??= readFrameworkRunnerPrompt();
+  return frameworkRunnerPromptCache;
 }

@@ -3,7 +3,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { cmdTaskMigrate, cmdTaskNormalize, cmdTaskScaffold, cmdTaskScrub } from "./workflow.js";
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import * as taskBackend from "../backends/task-backend.js";
 import type { TaskData } from "../backends/task-backend.js";
 import { captureStdIO, mkGitRepoRoot, silenceStdIO, writeDefaultConfig } from "@agentplane/testkit";

@@ -1,4 +1,4 @@
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -7,7 +7,7 @@ import {
   makeTaskBackendDouble,
   makeTaskCommandContext,
   makeTaskFixture,
-} from "../../../../testkit/src/task.js";
+} from "@agentplane/testkit/task";
 import type { CommandContext } from "../shared/task-backend.js";
 
 type BackendMode = "local" | "remote";

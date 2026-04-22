@@ -3,25 +3,17 @@ import { access, cp, mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/prom
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { afterAll, afterEach, beforeAll, beforeEach, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 
+import { resetRecipeArchiveCache } from "./cli-harness/recipe-archives.js";
 import { runCliSilent, silenceStdIO } from "./cli-harness/stdio.js";
+import { makeTaskBackendDouble } from "./task.js";
 
 export * from "./cli-harness/recipe-archives.js";
 export * from "./cli-harness/stdio.js";
 export * from "./runtime-env.js";
-
-type TaskBackendLike = {
-  id: string;
-  capabilities: Record<string, unknown>;
-  listTasks: (...args: unknown[]) => Promise<unknown>;
-  getTask: (...args: unknown[]) => Promise<unknown>;
-  writeTask: (...args: unknown[]) => Promise<unknown>;
-  getTaskDoc?: (...args: unknown[]) => Promise<unknown>;
-  setTaskDoc?: (...args: unknown[]) => Promise<unknown>;
-};
 
 const execFileAsync = promisify(execFile);
 
@@ -110,6 +102,7 @@ export function registerAgentplaneHome(): void {
   });
 
   afterEach(async () => {
+    await resetRecipeArchiveCache();
     const roots = [...testRoots];
     testRoots.clear();
     await Promise.all(
@@ -139,28 +132,13 @@ export function getAgentplaneHome(): string | null {
   return agentplaneHome;
 }
 
-export function stubTaskBackend(overrides: Partial<TaskBackendLike> = {}): TaskBackendLike {
-  return {
+export function stubTaskBackend(
+  overrides: Parameters<typeof makeTaskBackendDouble>[0] = {},
+): ReturnType<typeof makeTaskBackendDouble> {
+  return makeTaskBackendDouble({
     id: "local",
-    capabilities: {
-      canonical_source: "local",
-      projection: "canonical",
-      projection_read_mode: "fallback",
-      reads_from_projection_by_default: false,
-      writes_task_readmes: true,
-      supports_task_revisions: true,
-      supports_revision_guarded_writes: true,
-      may_access_network_on_read: false,
-      may_access_network_on_write: false,
-      supports_projection_refresh: false,
-      supports_push_sync: false,
-      supports_snapshot_export: false,
-    },
-    listTasks: vi.fn().mockResolvedValue([]),
-    getTask: vi.fn().mockResolvedValue(null),
-    writeTask: vi.fn().mockImplementation(() => Promise.resolve()),
     ...overrides,
-  };
+  });
 }
 
 export async function mkGitRepoRoot(): Promise<string> {

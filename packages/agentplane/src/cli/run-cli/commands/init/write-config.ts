@@ -1,7 +1,6 @@
+import { saveConfig, setByDottedKey, defaultConfig } from "@agentplaneorg/core/config";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
-
-import { defaultConfig, saveConfig, setByDottedKey } from "@agentplaneorg/core";
 
 import { writeJsonStableIfChanged } from "../../../../shared/write-if-changed.js";
 import { getVersion } from "../../../../meta/version.js";

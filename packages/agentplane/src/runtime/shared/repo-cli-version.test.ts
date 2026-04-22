@@ -1,4 +1,4 @@
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import { describe, expect, it } from "vitest";
 
 import { evaluateRepoCliVersionExpectation } from "./repo-cli-version.js";

@@ -3,7 +3,7 @@ import type {
   RunnerAdapterId,
   RunnerTimeoutConfig,
   RunnerTraceConfig,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/config";
 
 export const KNOWN_RUNNER_ADAPTER_IDS: RunnerAdapterId[] = ["codex", "custom"];
 

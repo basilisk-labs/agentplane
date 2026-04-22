@@ -65,6 +65,7 @@ import {
   stageGitignoreIfPresent,
   stubTaskBackend,
   taskDocToSectionMap,
+  useRunCliIntegrationHarness,
   vi,
   waitForRunnerState,
   writeConfig,
@@ -75,6 +76,8 @@ import {
   type RunShowPayload,
   type taskBackend,
 } from "./run-cli.core.tasks.query-support.js";
+
+useRunCliIntegrationHarness();
 
 describe("runCli task run control operations", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS }, () => {
   it("task run cancel marks an existing prepared execute-mode run as cancelled", async () => {

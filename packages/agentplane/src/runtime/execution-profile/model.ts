@@ -1,4 +1,8 @@
-import type { AgentplaneConfig, RunnerTimeoutConfig, RunnerTraceConfig } from "@agentplaneorg/core";
+import type {
+  AgentplaneConfig,
+  RunnerTimeoutConfig,
+  RunnerTraceConfig,
+} from "@agentplaneorg/core/config";
 
 export type ExecutionBudgetPhase = keyof AgentplaneConfig["execution"]["tool_budget"];
 

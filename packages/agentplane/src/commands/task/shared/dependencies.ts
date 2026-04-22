@@ -1,3 +1,5 @@
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+
 import {
   toTaskSummary,
   type TaskBackend,
@@ -106,7 +108,7 @@ export async function resolveTaskDependencyState(
       missing.push(depId);
       continue;
     }
-    const status = String(dep.status || "TODO").toUpperCase();
+    const status = normalizeTaskStatus(dep.status);
     if (status !== "DONE") incomplete.push(depId);
   }
 
@@ -137,7 +139,7 @@ export function buildDependencyState(tasks: TaskSummary[]): Map<string, Dependen
         missing.push(depId);
         continue;
       }
-      const status = String(dep.status || "TODO").toUpperCase();
+      const status = normalizeTaskStatus(dep.status);
       if (status !== "DONE") {
         incomplete.push(depId);
       }
@@ -162,7 +164,7 @@ function formatDepsSummary(dep: DependencyState | undefined): string | null {
 }
 
 export function formatTaskLine(task: TaskSummary, depState?: DependencyState): string {
-  const status = String(task.status || "TODO").toUpperCase();
+  const status = normalizeTaskStatus(task.status);
   const extras: string[] = [];
   if (task.owner?.trim()) extras.push(`owner=${task.owner.trim()}`);
   if (task.priority !== undefined && String(task.priority).trim()) {

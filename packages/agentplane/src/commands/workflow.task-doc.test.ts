@@ -10,7 +10,7 @@ import {
   cmdTaskPlanApprove,
   cmdTaskPlanReject,
 } from "./workflow.js";
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import * as taskBackend from "../backends/task-backend.js";
 import { captureStdIO, mkGitRepoRoot, silenceStdIO, writeDefaultConfig } from "@agentplane/testkit";
 

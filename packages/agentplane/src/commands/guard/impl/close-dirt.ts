@@ -1,3 +1,5 @@
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+
 import type { CommandContext } from "../../shared/task-backend.js";
 import { loadTaskFromContext } from "../../shared/task-backend.js";
 
@@ -29,8 +31,7 @@ function otherTaskIdForReadmePath(opts: {
 }
 
 function isActiveTaskStatus(status: unknown): boolean {
-  if (typeof status !== "string") return true;
-  return status.trim().toUpperCase() !== "DONE";
+  return normalizeTaskStatus(status) !== "DONE";
 }
 
 export async function resolveIgnoredDirectCloseDirtyPaths(opts: {

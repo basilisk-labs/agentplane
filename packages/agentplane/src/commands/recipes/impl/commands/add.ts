@@ -1,7 +1,8 @@
+import { resolveProject } from "@agentplaneorg/core/project";
 import { cp, mkdir, rm, symlink } from "node:fs/promises";
 
 import { normalizeRecipeTags } from "@agentplaneorg/recipes";
-import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import { loadConfig } from "@agentplaneorg/core/config";
 
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";

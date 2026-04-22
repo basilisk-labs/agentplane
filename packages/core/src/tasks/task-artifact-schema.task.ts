@@ -12,8 +12,8 @@ import {
   TASK_VERIFICATION_SCHEMA,
   normalizeApprovalRecord,
 } from "./task-artifact-schema.verification.js";
+import { TASK_STATUS_VALUES } from "./task-status.js";
 
-const TASK_STATUS_VALUES = ["TODO", "DOING", "DONE", "BLOCKED"] as const;
 const TASK_PRIORITY_VALUES = ["low", "normal", "med", "high"] as const;
 const TASK_RISK_LEVEL_VALUES = ["low", "med", "high"] as const;
 const RUNNER_OUTCOME_STATUS_VALUES = [

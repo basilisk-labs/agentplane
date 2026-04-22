@@ -1,4 +1,5 @@
-import { loadConfig, resolveProject, type AgentplaneConfig } from "@agentplaneorg/core";
+import { loadConfig, type AgentplaneConfig } from "@agentplaneorg/core/config";
+import { resolveProject } from "@agentplaneorg/core/project";
 import { GitContext } from "@agentplaneorg/core/git";
 
 import { loadTaskBackend } from "../../../../backends/task-backend.js";

@@ -34,6 +34,13 @@ const sharedBoundaryPatterns = [
   "../ports/*",
 ];
 
+const testkitDeepImportPatterns = [
+  "**/testkit/src/*",
+  "**/testkit/src/*.js",
+  "**/testkit/dist/*",
+  "**/testkit/dist/*.js",
+];
+
 const coreSubpathRestrictedImportNames = [
   "AGENTPLANE_CONFIG_SCHEMA",
   "AgentplaneConfigSchema",
@@ -186,6 +193,12 @@ const coreSubpathRestrictedImportPath = {
     "Import this symbol from the matching @agentplaneorg/core subpath: /fs, /git, /logger, /process, /schemas, or /tasks.",
 };
 
+const coreRootProductionImportPath = {
+  name: "@agentplaneorg/core",
+  message:
+    "Production code must import from explicit @agentplaneorg/core subpaths: /commit, /config, /fs, /git, /logger, /process, /project, /schemas, or /tasks. Keep the root barrel only for external compatibility and test mocks.",
+};
+
 /** @type {import("eslint").Linter.FlatConfig[]} */
 module.exports = [
   {
@@ -300,6 +313,30 @@ module.exports = [
     files: ["**/*.test.ts"],
     rules: {
       "@typescript-eslint/no-floating-promises": "off",
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [coreSubpathRestrictedImportPath],
+          patterns: testkitDeepImportPatterns.map((group) => ({
+            group: [group],
+            message:
+              "Import test helpers through @agentplane/testkit instead of packages/testkit internals.",
+          })),
+        },
+      ],
+    },
+  },
+
+  {
+    files: ["packages/agentplane/src/**/*.ts", "packages/testkit/src/**/*.ts"],
+    ignores: ["**/*.test.ts", "**/*.test-helpers.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [coreRootProductionImportPath],
+        },
+      ],
     },
   },
 
@@ -339,7 +376,7 @@ module.exports = [
       "no-restricted-imports": [
         "error",
         {
-          paths: [coreSubpathRestrictedImportPath],
+          paths: [coreRootProductionImportPath],
           patterns: sharedBoundaryPatterns.map((group) => ({
             group: [group],
             message: "Shared helpers must not import higher-level package layers.",
@@ -360,7 +397,7 @@ module.exports = [
         "error",
         {
           paths: [
-            coreSubpathRestrictedImportPath,
+            coreRootProductionImportPath,
             {
               name: "../../cli/spec/errors.js",
               message:
@@ -393,7 +430,7 @@ module.exports = [
         {
           patterns: ["node:*"],
           paths: [
-            coreSubpathRestrictedImportPath,
+            coreRootProductionImportPath,
             { name: "child_process", message: "Policy code must not execute subprocesses." },
             { name: "fs", message: "Policy code must not read or write the filesystem." },
             { name: "fs/promises", message: "Policy code must not read or write the filesystem." },

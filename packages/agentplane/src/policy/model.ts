@@ -1,4 +1,4 @@
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import type { PolicyActionId } from "./taxonomy.js";
 
 export type PolicyAction = PolicyActionId;

@@ -1,0 +1,7 @@
+const TASKS_QUERY_CLI_TIMEOUT_MS = 180_000;
+
+const CYRILLIC_RE = /[\u0400-\u04FF]/u;
+const RUSSIAN_TRACE_LINE = "Привет из raw trace";
+const RUSSIAN_LAST_MESSAGE = "Привет из сообщения Codex";
+
+export { CYRILLIC_RE, RUSSIAN_LAST_MESSAGE, RUSSIAN_TRACE_LINE, TASKS_QUERY_CLI_TIMEOUT_MS };

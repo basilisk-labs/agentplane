@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";

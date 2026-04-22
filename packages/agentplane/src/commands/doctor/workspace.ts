@@ -1,6 +1,10 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { parseTaskReadme, renderTaskDocFromSections } from "@agentplaneorg/core/tasks";
+import {
+  normalizeTaskStatus,
+  parseTaskReadme,
+  renderTaskDocFromSections,
+} from "@agentplaneorg/core/tasks";
 
 import type { TaskSummary } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";
@@ -105,7 +109,7 @@ export function buildTaskReadmeMigrationFindings(tasks: TaskDocSnapshot[]): stri
   if (legacy.length === 0) return [];
 
   const legacyActive = legacy.filter((task) => {
-    const status = typeof task.status === "string" ? task.status.trim().toUpperCase() : "";
+    const status = normalizeTaskStatus(task.status);
     return status !== "DONE";
   });
   const v3Count = tasks.length - legacy.length;
@@ -195,7 +199,7 @@ async function checkDoneTaskReadmeArchiveDrift(
 
   const affected = tasks
     .filter((task) => {
-      const status = typeof task.status === "string" ? task.status.trim().toUpperCase() : "";
+      const status = normalizeTaskStatus(task.status);
       const taskId = typeof task.id === "string" ? task.id.trim() : "";
       if (status !== "DONE" || !taskId) return false;
       return untracked.has(`${workflowDir}/${taskId}/README.md`);
@@ -282,10 +286,7 @@ async function checkTaskProjectionDrift(repoRoot: string, ctx?: CommandContext):
       typeof parsed.frontmatter.id === "string" && parsed.frontmatter.id.trim()
         ? parsed.frontmatter.id.trim()
         : entry.name;
-    const status =
-      typeof parsed.frontmatter.status === "string" && parsed.frontmatter.status.trim()
-        ? parsed.frontmatter.status.trim().toUpperCase()
-        : "UNKNOWN";
+    const status = normalizeTaskStatus(parsed.frontmatter.status);
     drifted.push({ id: taskId, status });
   }
 

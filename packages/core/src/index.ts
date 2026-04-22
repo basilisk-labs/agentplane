@@ -112,6 +112,15 @@ export { atomicWriteFile } from "./fs/atomic-write.js";
 export { generateTaskId, timestampIdPrefix, TASK_ID_ALPHABET } from "./tasks/task-id.js";
 
 export {
+  isTaskStatus,
+  normalizeTaskStatus,
+  parseTaskStatus,
+  TASK_STATUS_LABEL,
+  TASK_STATUS_VALUES,
+  type TaskStatus,
+} from "./tasks/task-status.js";
+
+export {
   createTask,
   getTasksDir,
   listTasks,
@@ -133,7 +142,6 @@ export {
   type TaskRunnerOutcome,
   type TaskRunnerOutcomeStatus,
   type TaskRunnerTarget,
-  type TaskStatus,
   type VerificationResult,
   type VerificationState,
 } from "./tasks/task-store.js";

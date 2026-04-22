@@ -1,6 +1,6 @@
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 
-import { cmdRecipeActiveParsed } from "../recipes.js";
+import { cmdRecipeActiveParsed } from "./impl/commands/active.js";
 
 export type RecipesActiveParsed = { full: boolean };
 

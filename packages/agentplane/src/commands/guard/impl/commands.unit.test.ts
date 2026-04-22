@@ -21,7 +21,7 @@ const mocks = vi.hoisted(() => ({
   resolveIgnoredDirectCloseDirtyPaths: vi.fn(),
 }));
 
-vi.mock("@agentplaneorg/core", async (importOriginal) => {
+vi.mock("@agentplaneorg/core/commit", async (importOriginal) => {
   const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,

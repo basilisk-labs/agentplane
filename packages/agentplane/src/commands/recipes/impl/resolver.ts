@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import type { ResolvedProject } from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 import {
   readScenarioDefinition,
   type InstalledRecipeEntry,

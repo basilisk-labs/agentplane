@@ -15,7 +15,7 @@ import {
   writeDefaultConfig,
   writeInstalledRecipes,
   writeSignedIndex,
-} from "../../../testkit/src/recipes.js";
+} from "@agentplane/testkit/recipes";
 
 installRecipesCommandHarness();
 

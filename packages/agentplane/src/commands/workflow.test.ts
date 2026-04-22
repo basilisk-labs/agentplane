@@ -25,7 +25,7 @@ import {
   promptInitBaseBranch,
   suggestAllowPrefixes,
 } from "./workflow.js";
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import * as taskBackend from "../backends/task-backend.js";
 import * as prompts from "../cli/prompts.js";
 import { parseCommandArgv } from "../cli/spec/parse.js";

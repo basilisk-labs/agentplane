@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { extractTaskSuffix } from "@agentplaneorg/core";
+import { extractTaskSuffix } from "@agentplaneorg/core/commit";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";

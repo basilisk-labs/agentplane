@@ -1,6 +1,6 @@
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 
-import { cmdRecipeDetachParsed } from "../recipes.js";
+import { cmdRecipeDetachParsed } from "./impl/commands/detach.js";
 
 export type RecipesDetachParsed = { id: string };
 

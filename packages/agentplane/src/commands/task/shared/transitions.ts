@@ -1,29 +1,21 @@
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import { execFileAsync } from "@agentplaneorg/core/process";
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import { infoMessage, warnMessage } from "../../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { readDirectWorkLock } from "./direct-work-lock.js";
 import { CliError } from "../../../shared/errors.js";
 import { parseGitLogHashSubject } from "./git-log.js";
-import type { TaskData, TaskEvent } from "../../../backends/task-backend.js";
+import type { TaskData } from "../../../backends/task-backend.js";
 import { commitFromComment } from "../../guard/impl/comment-commit.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commit-pr-artifacts.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { requiresVerificationByPrimary, toStringArray } from "./tags.js";
-
-export function appendTaskEvent(task: TaskData, event: TaskEvent): TaskEvent[] {
-  const existing = Array.isArray(task.events)
-    ? task.events.filter(
-        (entry): entry is TaskEvent =>
-          !!entry &&
-          typeof entry.type === "string" &&
-          typeof entry.at === "string" &&
-          typeof entry.author === "string",
-      )
-    : [];
-  return [...existing, event];
-}
+import {
+  resolveCommentCommitWarning,
+  resolveStatusCommitPolicyWarning,
+} from "./transition-rules.js";
 
 export function ensurePlanApprovedIfRequired(task: TaskData, config: AgentplaneConfig): void {
   if (config.agents?.approvals?.require_plan !== true) return;
@@ -65,31 +57,6 @@ export function ensureVerificationSatisfiedIfRequired(
   });
 }
 
-export function isTransitionAllowed(current: string, next: string): boolean {
-  if (current === next) return true;
-  if (current === "TODO") return next === "DOING" || next === "BLOCKED";
-  if (current === "DOING") return next === "DONE" || next === "BLOCKED";
-  if (current === "BLOCKED") return next === "TODO" || next === "DOING";
-  if (current === "DONE") return false;
-  return false;
-}
-
-export function ensureStatusTransitionAllowed(opts: {
-  currentStatus: string;
-  nextStatus: string;
-  force: boolean;
-}): void {
-  if (opts.force) return;
-  if (isTransitionAllowed(opts.currentStatus, opts.nextStatus)) return;
-  throw new CliError({
-    exitCode: 2,
-    code: "E_USAGE",
-    message:
-      `Refusing status transition ${opts.currentStatus} -> ${opts.nextStatus} ` +
-      "(use --force to override)",
-  });
-}
-
 export function ensureCommentCommitAllowed(opts: {
   enabled: boolean;
   config: AgentplaneConfig;
@@ -110,35 +77,6 @@ export function emitTransitionWarnings(warnings: readonly string[], quiet: boole
   for (const warning of new Set(warnings.filter((item) => item.trim().length > 0))) {
     process.stderr.write(`${warnMessage(warning)}\n`);
   }
-}
-
-export function resolveCommentCommitWarning(opts: {
-  enabled: boolean;
-  config: AgentplaneConfig;
-  action: string;
-  confirmed: boolean;
-  quiet: boolean;
-  statusFrom: string;
-  statusTo: string;
-}): string | null {
-  if (!opts.enabled) return null;
-  if (opts.config.commit_automation === "finish_only") {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message:
-        `${opts.action}: --commit-from-comment is disabled by commit_automation='finish_only' ` +
-        "(allowed only in finish).",
-    });
-  }
-  return resolveStatusCommitPolicyWarning({
-    policy: opts.config.status_commit_policy,
-    action: opts.action,
-    confirmed: opts.confirmed,
-    quiet: opts.quiet,
-    statusFrom: opts.statusFrom,
-    statusTo: opts.statusTo,
-  });
 }
 
 export function requireStructuredComment(body: string, prefix: string, minChars: number): void {
@@ -271,57 +209,6 @@ export function enforceStatusCommitPolicy(opts: {
   }
 }
 
-export function resolveStatusCommitPolicyWarning(opts: {
-  policy: AgentplaneConfig["status_commit_policy"];
-  action: string;
-  confirmed: boolean;
-  quiet: boolean;
-  statusFrom: string;
-  statusTo: string;
-}): string | null {
-  if (!isMajorStatusCommitTransition(opts.statusFrom, opts.statusTo)) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message:
-        `${opts.action}: status/comment-driven commit is allowed only for major transitions ` +
-        `(got ${opts.statusFrom.toUpperCase()} -> ${opts.statusTo.toUpperCase()})`,
-    });
-  }
-  if (opts.policy === "off") return null;
-  if (opts.policy === "warn") {
-    return opts.quiet || opts.confirmed
-      ? null
-      : `${opts.action}: status/comment-driven commit requested; policy=warn ` +
-          "(pass --confirm-status-commit to acknowledge)";
-  }
-  if (opts.policy === "confirm" && !opts.confirmed) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message:
-        `${opts.action}: status/comment-driven commit blocked by status_commit_policy='confirm' ` +
-        "(pass --confirm-status-commit to proceed)",
-    });
-  }
-  return null;
-}
-
-const MAJOR_STATUS_COMMIT_TRANSITIONS = new Set([
-  "READY->DOING",
-  "TODO->DOING",
-  "DOING->BLOCKED",
-  "BLOCKED->DOING",
-  "DOING->DONE",
-]);
-
-export function isMajorStatusCommitTransition(statusFrom: string, statusTo: string): boolean {
-  const from = statusFrom.trim().toUpperCase();
-  const to = statusTo.trim().toUpperCase();
-  if (!from || !to) return false;
-  return MAJOR_STATUS_COMMIT_TRANSITIONS.has(`${from}->${to}`);
-}
-
 export async function readCommitInfo(
   cwd: string,
   rev: string,
@@ -332,7 +219,7 @@ export async function readCommitInfo(
 }
 
 export function defaultCommitEmojiForStatus(status: string): string {
-  const normalized = status.trim().toUpperCase();
+  const normalized = normalizeTaskStatus(status);
   if (normalized === "DOING") return "🚧";
   if (normalized === "DONE") return "✅";
   if (normalized === "BLOCKED") return "⛔";

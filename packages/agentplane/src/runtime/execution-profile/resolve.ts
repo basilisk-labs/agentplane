@@ -1,4 +1,4 @@
-import { applyExecutionToApprovals, type AgentplaneConfig } from "@agentplaneorg/core";
+import { applyExecutionToApprovals, type AgentplaneConfig } from "@agentplaneorg/core/config";
 
 import { resolveRunnerTimeoutPolicy, resolveRunnerTracePolicy } from "../../runner/config.js";
 

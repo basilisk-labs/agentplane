@@ -1,3 +1,5 @@
+import { normalizeTaskStatus, parseTaskStatus } from "@agentplaneorg/core/tasks";
+
 import { invalidValueForFlag, missingValueMessage, warnMessage } from "../../../cli/output.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import type { TaskSummary } from "../../../backends/task-backend.js";
@@ -133,8 +135,10 @@ function filterTaskProjectionByStatus(
   if (statuses.length === 0) {
     return tasks;
   }
-  const wanted = new Set(statuses.map((status) => status.trim().toUpperCase()));
-  return tasks.filter((task) => wanted.has(String(task.status || "TODO").toUpperCase()));
+  const wanted = new Set(
+    statuses.map((status) => parseTaskStatus(status)).filter((status) => status !== null),
+  );
+  return tasks.filter((task) => wanted.has(normalizeTaskStatus(task.status)));
 }
 
 function filterTaskProjectionByOwner(

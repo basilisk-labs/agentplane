@@ -65,6 +65,7 @@ import {
   stageGitignoreIfPresent,
   stubTaskBackend,
   taskDocToSectionMap,
+  useRunCliIntegrationHarness,
   vi,
   waitForRunnerState,
   writeConfig,
@@ -75,6 +76,8 @@ import {
   type RunShowPayload,
   type taskBackend,
 } from "./run-cli.core.tasks.query-support.js";
+
+useRunCliIntegrationHarness();
 
 describe("runCli task run history rendering", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS }, () => {
   it("task runner history stays ordered and bounded across execute, cancel, resume, and retry flows", async () => {

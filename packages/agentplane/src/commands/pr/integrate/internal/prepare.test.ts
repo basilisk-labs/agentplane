@@ -28,9 +28,6 @@ const mocks = vi.hoisted(() => ({
   ensurePrArtifactsSynced: vi.fn(),
 }));
 
-vi.mock("@agentplaneorg/core", () => ({
-  resolveBaseBranch: mocks.resolveBaseBranch,
-}));
 vi.mock("../../../../cli/fs-utils.js", () => ({ fileExists: mocks.fileExists }));
 vi.mock("node:fs/promises", () => ({ readFile: mocks.readFile }));
 vi.mock("../../../guard/index.js", () => ({ ensureGitClean: mocks.ensureGitClean }));

@@ -27,6 +27,7 @@ import {
 } from "../agents/agents-template.js";
 import * as taskBackend from "../backends/task-backend.js";
 import {
+  approveTaskPlan,
   captureStdIO,
   cleanGitEnv,
   commitAll,
@@ -48,7 +49,6 @@ import {
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 import {
-  approveTaskPlan,
   START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
   startDirectWork,
 } from "./run-cli.core.lifecycle.helpers.js";

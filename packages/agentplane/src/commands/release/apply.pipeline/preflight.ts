@@ -1,4 +1,4 @@
-import { loadConfig } from "@agentplaneorg/core";
+import { loadConfig } from "@agentplaneorg/core/config";
 
 import { usageError } from "../../../cli/spec/errors.js";
 import type { CommandSpec } from "../../../cli/spec/spec.js";

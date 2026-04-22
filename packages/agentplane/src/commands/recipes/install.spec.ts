@@ -1,7 +1,7 @@
 import type { CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 
-import type { RecipeConflictMode, RecipeInstallSource } from "../recipes.js";
+import type { RecipeConflictMode, RecipeInstallSource } from "@agentplaneorg/recipes";
 
 export type RecipesInstallParsed = {
   source: RecipeInstallSource;

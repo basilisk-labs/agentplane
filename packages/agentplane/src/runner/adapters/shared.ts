@@ -1,4 +1,4 @@
-import type { RunnerAdapterId } from "@agentplaneorg/core";
+import type { RunnerAdapterId } from "@agentplaneorg/core/config";
 
 import type {
   RunnerAdapterCapabilities,

@@ -2,9 +2,9 @@ import type {
   RunnerTimeoutConfig,
   RunnerTimeoutReason,
   RunnerTraceConfig,
-} from "@agentplaneorg/core";
+} from "@agentplaneorg/core/config";
 import type { OverlayStrength, OverlaySurface } from "@agentplaneorg/recipes";
-export type { RunnerTimeoutReason } from "@agentplaneorg/core";
+export type { RunnerTimeoutReason } from "@agentplaneorg/core/config";
 
 import type { BehaviorResolutionTrace } from "../runtime/behavior/index.js";
 import type { TaskData, TaskEvent } from "../backends/task-backend.js";

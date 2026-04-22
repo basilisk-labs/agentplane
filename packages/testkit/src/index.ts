@@ -3,3 +3,4 @@ export * from "./fixtures.js";
 export * from "./github-pr.js";
 export * from "./runtime-env.js";
 export * from "./vitest.js";
+export * from "./wait.js";

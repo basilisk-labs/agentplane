@@ -3,10 +3,8 @@ import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { readFile as readFileFn } from "node:fs/promises";
-import type {
-  loadConfig as loadConfigFn,
-  resolveProject as resolveProjectFn,
-} from "@agentplaneorg/core";
+import type { loadConfig as loadConfigFn } from "@agentplaneorg/core/config";
+import type { resolveProject as resolveProjectFn } from "@agentplaneorg/core/project";
 import type { fileExists as fileExistsFn } from "../../../cli/fs-utils.js";
 import type { gitShowFile as gitShowFileFn } from "@agentplaneorg/core/git";
 
@@ -35,8 +33,10 @@ const callGitShowFile = (
 ): ReturnType<typeof gitShowFileFn> =>
   mocks.gitShowFile(...args) as ReturnType<typeof gitShowFileFn>;
 
-vi.mock("@agentplaneorg/core", () => ({
+vi.mock("@agentplaneorg/core/project", () => ({
   resolveProject: callResolveProject,
+}));
+vi.mock("@agentplaneorg/core/config", () => ({
   loadConfig: callLoadConfig,
 }));
 vi.mock("../../../cli/fs-utils.js", () => ({

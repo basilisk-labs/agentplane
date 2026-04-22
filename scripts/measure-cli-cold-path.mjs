@@ -59,7 +59,7 @@ function printHelp() {
       "  --help            Show this help text.",
       "",
       "Output:",
-      "  JSON payload with per-command durations_ms plus min/avg/max summary fields.",
+      "  JSON payload with per-command durations_ms plus min/median/avg/p95/max summary fields.",
       "",
     ].join("\n"),
   );
@@ -137,6 +137,19 @@ function roundMs(value) {
   return Number(value.toFixed(3));
 }
 
+function median(values) {
+  const sorted = values.toSorted((left, right) => left - right);
+  const mid = Math.floor(sorted.length / 2);
+  if (sorted.length % 2 === 1) return sorted[mid];
+  return (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+function percentile(values, percentileValue) {
+  const sorted = values.toSorted((left, right) => left - right);
+  const index = Math.ceil((percentileValue / 100) * sorted.length) - 1;
+  return sorted[Math.min(Math.max(index, 0), sorted.length - 1)];
+}
+
 function cliRepoRootFromPath(cliPath) {
   return path.resolve(path.dirname(cliPath), "..", "..", "..");
 }
@@ -172,8 +185,10 @@ async function runCommand(cliPath, argv) {
 function summarizeDurations(durations) {
   return {
     min_ms: roundMs(Math.min(...durations)),
+    median_ms: roundMs(median(durations)),
     max_ms: roundMs(Math.max(...durations)),
     avg_ms: roundMs(durations.reduce((sum, value) => sum + value, 0) / durations.length),
+    p95_ms: roundMs(percentile(durations, 95)),
   };
 }
 

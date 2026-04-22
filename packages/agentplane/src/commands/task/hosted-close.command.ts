@@ -1,8 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
-import { usageError } from "../../cli/spec/errors.js";
+import type { CommandCtx } from "../../cli/spec/spec.js";
 import { infoMessage, successMessage } from "../../cli/output.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
@@ -16,50 +15,9 @@ import { resolveHostedMergeTargetFromEvent, type HostedMergeTarget } from "./hos
 import { readCommitInfo } from "./shared.js";
 import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
 import type { TaskData } from "../../backends/task-backend.js";
+import type { TaskHostedCloseParsed } from "./hosted-close.spec.js";
 
-export type TaskHostedCloseParsed = {
-  eventJson: string;
-  quiet: boolean;
-};
-
-export const taskHostedCloseSpec: CommandSpec<TaskHostedCloseParsed> = {
-  id: ["task", "hosted-close"],
-  group: "Task",
-  summary: "Close a branch_pr task on the current branch from a merged hosted PR event payload.",
-  options: [
-    {
-      kind: "string",
-      name: "event-json",
-      valueHint: "<path>",
-      description: "Path to the GitHub pull_request closed event payload.",
-    },
-    {
-      kind: "boolean",
-      name: "quiet",
-      default: false,
-      description: "Suppress normal output (still prints errors).",
-    },
-  ],
-  validateRaw: (raw) => {
-    const value = raw.opts["event-json"];
-    if (typeof value !== "string" || value.trim() === "") {
-      throw usageError({
-        spec: taskHostedCloseSpec,
-        message: "Missing required option: --event-json.",
-      });
-    }
-  },
-  examples: [
-    {
-      cmd: 'agentplane task hosted-close --event-json "$GITHUB_EVENT_PATH"',
-      why: "Apply the canonical branch_pr closure payload on an automation branch after a hosted PR merge.",
-    },
-  ],
-  parse: (raw) => ({
-    eventJson: String(raw.opts["event-json"]),
-    quiet: raw.opts.quiet === true,
-  }),
-};
+export { taskHostedCloseSpec } from "./hosted-close.spec.js";
 
 type HostedCloseOutcome =
   | { outcome: "noop"; detail: string }
@@ -349,7 +307,7 @@ async function closeHostedTask(opts: {
     taskDirRelative,
     target,
   });
-  const taskStatus = String(task.status || "TODO").toUpperCase();
+  const taskStatus = normalizeTaskStatus(task.status);
   const taskCommitHash = task.commit?.hash ?? "";
   const alreadyClosed = taskStatus === "DONE" && taskCommitHash === target.mergedPr.mergeCommit.oid;
   if (
@@ -497,3 +455,4 @@ export function makeRunTaskHostedCloseHandler(getCtx: (cmd: string) => Promise<C
     }
   };
 }
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";

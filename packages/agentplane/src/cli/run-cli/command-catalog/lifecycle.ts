@@ -4,7 +4,7 @@ import { cleanupMergedSpec, cleanupSpec } from "../../../commands/cleanup/merged
 import { docsCliSpec } from "../../../commands/docs/cli.command.js";
 import { finishSpec } from "../../../commands/finish.spec.js";
 import { guardCleanSpec } from "../../../commands/guard/clean.command.js";
-import { guardCommitSpec } from "../../../commands/guard/commit.command.js";
+import { guardCommitSpec } from "../../../commands/guard/commit.spec.js";
 import { guardSpec } from "../../../commands/guard/guard.command.js";
 import { guardSuggestAllowSpec } from "../../../commands/guard/suggest-allow.command.js";
 import { hooksInstallSpec } from "../../../commands/hooks/install.command.js";

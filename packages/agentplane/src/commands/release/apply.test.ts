@@ -11,7 +11,7 @@ import {
   mkGitRepoRootWithBranch,
   writeDefaultConfig,
 } from "@agentplane/testkit";
-import { seedReleaseWorkspace, writeReleaseNotes } from "../../../../testkit/src/release.js";
+import { seedReleaseWorkspace, writeReleaseNotes } from "@agentplane/testkit/release";
 import { runReleasePlan } from "./plan.command.js";
 import { pushReleaseRefs, runReleaseApply, runReleaseCandidate } from "./apply.command.js";
 import { cleanHookEnv, packageDependencyExists } from "./apply.mutation.js";
