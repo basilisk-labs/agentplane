@@ -1,10 +1,11 @@
 ---
 id: "202604221918-25GXRR"
 title: "Wire test routing guard into checks"
-status: "DOING"
+result_summary: "Wired test routing guard into existing validation checks."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-22T19:37:13.179Z"
   updated_by: "CODER"
   note: "Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK and test routing OK (315 tests, 10 primary routes). Command: bun run ci:local:fast; Result: pass; Evidence: baseline checks passed, fast test suite 238 files passed, critical suite 5 files passed."
-commit: null
+commit:
+  hash: "b5fe8213e065e2b75704cc4ab35e59ae47907050"
+  message: "✨ 25GXRR test: wire routing guard into checks"
 comments:
   -
     author: "CODER"
     body: "Start: wiring the test routing guard into existing project validation and local CI checks while preserving command names."
+  -
+    author: "CODER"
+    body: "Verified: routing guard is now part of vitest project validation and local fast CI completed successfully."
 events:
   -
     type: "status"
@@ -44,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK and test routing OK (315 tests, 10 primary routes). Command: bun run ci:local:fast; Result: pass; Evidence: baseline checks passed, fast test suite 238 files passed, critical suite 5 files passed."
+  -
+    type: "status"
+    at: "2026-04-22T19:37:20.644Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: routing guard is now part of vitest project validation and local fast CI completed successfully."
 doc_version: 3
-doc_updated_at: "2026-04-22T19:37:13.185Z"
+doc_updated_at: "2026-04-22T19:37:20.645Z"
 doc_updated_by: "CODER"
 description: "Connect the routing guard to existing project and local/release validation scripts so routing drift is caught by normal developer and release flows."
 sections:
