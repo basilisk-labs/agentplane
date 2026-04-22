@@ -1,10 +1,11 @@
 ---
 id: "202604221918-QX0XJG"
 title: "Add oversized test ratchet"
-status: "DOING"
+result_summary: "Added baseline-backed oversized test ratchet to hotspots check."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-22T19:42:45.424Z"
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/hotspot-report-script.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 8 tests passed. Command: bun run hotspots:check; Result: pass; Evidence: hotspot thresholds passed and oversized test baseline OK (16 entries, threshold>1000). Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK and test routing OK."
-commit: null
+commit:
+  hash: "0ef3c27adfc4233d4000b9b032833aa526a11cb2"
+  message: "✨ QX0XJG test: add oversized test ratchet"
 comments:
   -
     author: "CODER"
     body: "Start: adding a deterministic oversized test ratchet baseline so current large-test debt is explicit and future growth fails."
+  -
+    author: "CODER"
+    body: "Verified: oversized test ratchet is enforced through hotspots check with focused tests and project validation passing."
 events:
   -
     type: "status"
@@ -44,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/hotspot-report-script.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 8 tests passed. Command: bun run hotspots:check; Result: pass; Evidence: hotspot thresholds passed and oversized test baseline OK (16 entries, threshold>1000). Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK and test routing OK."
+  -
+    type: "status"
+    at: "2026-04-22T19:42:51.858Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: oversized test ratchet is enforced through hotspots check with focused tests and project validation passing."
 doc_version: 3
-doc_updated_at: "2026-04-22T19:42:45.426Z"
+doc_updated_at: "2026-04-22T19:42:51.858Z"
 doc_updated_by: "CODER"
 description: "Add a baseline-backed oversized-test ratchet that allows current large tests but fails on new oversized tests or growth beyond the checked-in baseline."
 sections:
