@@ -32,6 +32,7 @@ export function makeTaskBackendDouble(overrides: Partial<TaskBackend> = {}): Tas
       projection: "canonical",
       projection_read_mode: "fallback",
       reads_from_projection_by_default: false,
+      writes_task_readmes: true,
       supports_task_revisions: true,
       supports_revision_guarded_writes: true,
       may_access_network_on_read: false,

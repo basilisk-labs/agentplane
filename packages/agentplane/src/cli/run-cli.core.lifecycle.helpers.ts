@@ -1,41 +1,10 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { expect } from "vitest";
 
 import { runCli } from "./run-cli.js";
 import { captureStdIO } from "@agentplane/testkit";
 
 export const START_COMMIT_PATH_HANDLING_TIMEOUT_MS = 120_000;
-
-export async function approveTaskPlan(root: string, taskId: string): Promise<void> {
-  const codeSet = await runCli([
-    "task",
-    "plan",
-    "set",
-    taskId,
-    "--text",
-    "1) Do the work\n2) Verify the work",
-    "--updated-by",
-    "ORCHESTRATOR",
-    "--root",
-    root,
-  ]);
-  expect(codeSet).toBe(0);
-
-  const codeApprove = await runCli([
-    "task",
-    "plan",
-    "approve",
-    taskId,
-    "--by",
-    "USER",
-    "--note",
-    "OK",
-    "--root",
-    root,
-  ]);
-  expect(codeApprove).toBe(0);
-}
 
 export async function startDirectWork(
   root: string,
