@@ -4,7 +4,7 @@ title: "Integrate current local branches into main"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-22T09:53:59.405Z"
+  updated_by: "CODER"
+  note: "Verified: merged codex/optimization-roadmap-tasks into main with merge commit 3e4d8aee; stale branches codex/init-prompts-v2 and task/202604191509-G8XQ9K/zod-config-parity had zero unique commits over main; release/v0.3.16-publish contains obsolete v0.3.16 publication history and was not merged over v0.3.17. Checks passed: bun run arch:baseline, bun run arch:deps, bun run knip:check, bun run bench:cli:cold:check, bun run ci:local:fast, git diff --check."
 commit: null
 comments:
   -
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: audit all local branches, merge the current optimization branch into main, classify stale no-op branches, verify main, and push the integrated base before release."
+  -
+    type: "verify"
+    at: "2026-04-22T09:53:59.405Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: merged codex/optimization-roadmap-tasks into main with merge commit 3e4d8aee; stale branches codex/init-prompts-v2 and task/202604191509-G8XQ9K/zod-config-parity had zero unique commits over main; release/v0.3.16-publish contains obsolete v0.3.16 publication history and was not merged over v0.3.17. Checks passed: bun run arch:baseline, bun run arch:deps, bun run knip:check, bun run bench:cli:cold:check, bun run ci:local:fast, git diff --check."
 doc_version: 3
-doc_updated_at: "2026-04-22T09:47:52.182Z"
+doc_updated_at: "2026-04-22T09:53:59.411Z"
 doc_updated_by: "CODER"
 description: "Audit all local branches, merge the current optimization branch into main, classify stale/no-op branches, and verify main before release."
 sections:
@@ -59,6 +65,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-22T09:53:59.405Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: merged codex/optimization-roadmap-tasks into main with merge commit 3e4d8aee; stale branches codex/init-prompts-v2 and task/202604191509-G8XQ9K/zod-config-parity had zero unique commits over main; release/v0.3.16-publish contains obsolete v0.3.16 publication history and was not merged over v0.3.17. Checks passed: bun run arch:baseline, bun run arch:deps, bun run knip:check, bun run bench:cli:cold:check, bun run ci:local:fast, git diff --check.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T09:47:52.182Z, excerpt_hash=sha256:a3add814e0752ed6d00bbe65d8f15e95f40eb6bd4e5f6867103ae2400ce98fdd
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -94,6 +108,14 @@ Audit all local branches, merge the current optimization branch into main, class
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-22T09:53:59.405Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: merged codex/optimization-roadmap-tasks into main with merge commit 3e4d8aee; stale branches codex/init-prompts-v2 and task/202604191509-G8XQ9K/zod-config-parity had zero unique commits over main; release/v0.3.16-publish contains obsolete v0.3.16 publication history and was not merged over v0.3.17. Checks passed: bun run arch:baseline, bun run arch:deps, bun run knip:check, bun run bench:cli:cold:check, bun run ci:local:fast, git diff --check.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T09:47:52.182Z, excerpt_hash=sha256:a3add814e0752ed6d00bbe65d8f15e95f40eb6bd4e5f6867103ae2400ce98fdd
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
