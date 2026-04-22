@@ -296,9 +296,7 @@ describe("runCli interactive init UI", () => {
     ) as {
       recipes: [{ manifest: { scenarios: [{ file: string; use_when: string[] }] } }];
     };
-    expect(migrated.recipes[0]?.manifest.scenarios[0]?.file).toBe(
-      "scenarios/RECIPE_SCENARIO.json",
-    );
+    expect(migrated.recipes[0]?.manifest.scenarios[0]?.file).toBe("scenarios/RECIPE_SCENARIO.json");
     expect(migrated.recipes[0]?.manifest.scenarios[0]?.use_when).toEqual(["Recipe scenario"]);
   });
 

@@ -50,9 +50,7 @@ describe("init cached recipes", () => {
     ) as {
       recipes: [{ manifest: { scenarios: [{ file: string; use_when: string[] }] } }];
     };
-    expect(migrated.recipes[0]?.manifest.scenarios[0]?.file).toBe(
-      `scenarios/${scenario.id}.json`,
-    );
+    expect(migrated.recipes[0]?.manifest.scenarios[0]?.file).toBe(`scenarios/${scenario.id}.json`);
     expect(migrated.recipes[0]?.manifest.scenarios[0]?.use_when).toEqual([scenario.summary]);
   });
 });
