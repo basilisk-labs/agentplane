@@ -1,10 +1,11 @@
 ---
 id: "202604220255-YDBAT5"
 title: "Consolidate CLI harness helpers and backend doubles"
-status: "DOING"
+result_summary: "Moved lifecycle tests to public approveTaskPlan from testkit and made stubTaskBackend delegate to makeTaskBackendDouble while preserving CLI harness defaults."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T06:05:43.235Z"
   updated_by: "CODER"
   note: "Verified testkit helper consolidation. Checks passed: focused lifecycle/backend/testkit Vitest suite; bun run typecheck; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
-commit: null
+commit:
+  hash: "6c9d684ed8a15b013e859bd2c2134ade444eafc9"
+  message: "🧹 YDBAT5 testkit: consolidate CLI helper doubles"
 comments:
   -
     author: "CODER"
     body: "Start: consolidate CLI harness helpers and backend doubles."
+  -
+    author: "CODER"
+    body: "Verified: test helper behavior is consolidated in @agentplane/testkit and duplicate local implementations were removed."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified testkit helper consolidation. Checks passed: focused lifecycle/backend/testkit Vitest suite; bun run typecheck; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
+  -
+    type: "status"
+    at: "2026-04-22T06:05:56.309Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: test helper behavior is consolidated in @agentplane/testkit and duplicate local implementations were removed."
 doc_version: 3
-doc_updated_at: "2026-04-22T06:05:43.242Z"
+doc_updated_at: "2026-04-22T06:05:56.310Z"
 doc_updated_by: "CODER"
 description: "Deduplicate approveTaskPlan and task-backend double helpers across testkit and run-cli lifecycle helper modules."
 sections:
