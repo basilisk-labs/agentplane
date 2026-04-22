@@ -1,10 +1,10 @@
 ---
 id: "202604220256-964PZX"
 title: "Extract workflow transition ports to break task shared cycles"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -24,16 +24,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-22T08:41:35.663Z"
+  updated_by: "CODER"
+  note: "Verified: extracted pure task transition rules into a dependency-inverted port, reduced dep-cruiser no-circular known baseline from 6 to 3, and passed bun run arch:baseline && bun run arch:deps && bun run ci:local:fast && bun run knip:check && git diff --check."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: inspect task shared transition cycles, extract stable ports, and lower dep-cruiser known baseline without changing lifecycle behavior."
+events:
+  -
+    type: "status"
+    at: "2026-04-22T08:30:19.795Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: inspect task shared transition cycles, extract stable ports, and lower dep-cruiser known baseline without changing lifecycle behavior."
+  -
+    type: "verify"
+    at: "2026-04-22T08:41:35.663Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: extracted pure task transition rules into a dependency-inverted port, reduced dep-cruiser no-circular known baseline from 6 to 3, and passed bun run arch:baseline && bun run arch:deps && bun run ci:local:fast && bun run knip:check && git diff --check."
 doc_version: 3
-doc_updated_at: "2026-04-22T02:56:22.776Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-22T08:41:35.670Z"
+doc_updated_by: "CODER"
 description: "Break dependency cycles around commands/task/shared transitions and workflow-transition-service by extracting stable types/ports."
 sections:
   Summary: "Reduce known dep-cruiser cycles in task shared transition code without changing transition behavior."
@@ -44,7 +60,19 @@ sections:
     3. Rewire modules to depend inward on ports.
     4. Lower dep-cruiser known baseline if cycles are removed.
   Verify Steps: "Run arch:baseline && arch:deps, task lifecycle tests, fast CI."
-  Verification: "Pending implementation."
+  Verification: |-
+    Pending implementation.
+    
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-22T08:41:35.663Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: extracted pure task transition rules into a dependency-inverted port, reduced dep-cruiser no-circular known baseline from 6 to 3, and passed bun run arch:baseline && bun run arch:deps && bun run ci:local:fast && bun run knip:check && git diff --check.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T08:30:19.803Z, excerpt_hash=sha256:6e1da35e42d88fbf00da6d76fa12151c629cf84072e102576604a04a81516faf
+    
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Restore previous imports and dep-cruiser baseline."
   Findings: "None yet."
 id_source: "generated"
@@ -71,6 +99,17 @@ Run arch:baseline && arch:deps, task lifecycle tests, fast CI.
 ## Verification
 
 Pending implementation.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-22T08:41:35.663Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: extracted pure task transition rules into a dependency-inverted port, reduced dep-cruiser no-circular known baseline from 6 to 3, and passed bun run arch:baseline && bun run arch:deps && bun run ci:local:fast && bun run knip:check && git diff --check.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T08:30:19.803Z, excerpt_hash=sha256:6e1da35e42d88fbf00da6d76fa12151c629cf84072e102576604a04a81516faf
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 

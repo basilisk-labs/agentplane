@@ -23,14 +23,17 @@ import {
   type DependencyState,
 } from "./dependencies.js";
 import {
-  appendTaskEvent,
   extractDocSection,
   normalizeTaskDocVersion,
   normalizeVerificationSectionLayout,
   VERIFICATION_RESULTS_BEGIN,
   VERIFICATION_RESULTS_END,
-} from "../shared.js";
-import { ensureStatusTransitionAllowed, resolveCommentCommitWarning } from "./transitions.js";
+} from "./docs.js";
+import {
+  appendTaskEvent,
+  ensureStatusTransitionAllowed,
+  resolveCommentCommitWarning,
+} from "./transition-rules.js";
 
 type TaskComment = NonNullable<TaskData["comments"]>[number];
 

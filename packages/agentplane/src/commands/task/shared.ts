@@ -41,20 +41,19 @@ export {
 } from "./shared/dependencies.js";
 export {
   appendTaskEvent,
+  isTransitionAllowed,
+  isMajorStatusCommitTransition,
+} from "./shared/transition-rules.js";
+export {
   ensurePlanApprovedIfRequired,
   ensureVerificationSatisfiedIfRequired,
-  isTransitionAllowed,
-  ensureStatusTransitionAllowed,
   ensureCommentCommitAllowed,
   emitTransitionWarnings,
-  resolveCommentCommitWarning,
   requireStructuredComment,
   prepareTaskTransitionComment,
   resolveTaskTransitionExecutorAgent,
   runTaskTransitionCommentCommit,
   enforceStatusCommitPolicy,
-  resolveStatusCommitPolicyWarning,
-  isMajorStatusCommitTransition,
   readHeadCommit,
   readCommitInfo,
   defaultCommitEmojiForStatus,
