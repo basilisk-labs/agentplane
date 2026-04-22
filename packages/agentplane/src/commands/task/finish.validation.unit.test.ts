@@ -24,18 +24,6 @@ const mocks = vi.hoisted(() => ({
   gitCurrentBranch: vi.fn(),
 }));
 
-vi.mock("@agentplaneorg/core", async (importOriginal) => {
-  const actualUnknown: unknown = await importOriginal();
-  const actual =
-    actualUnknown && typeof actualUnknown === "object"
-      ? (actualUnknown as Record<string, unknown>)
-      : {};
-  return {
-    ...actual,
-    resolveBaseBranch: mocks.resolveBaseBranch,
-  };
-});
-
 vi.mock("../guard/impl/comment-commit.js", () => ({
   commitFromComment: mocks.commitFromComment,
 }));

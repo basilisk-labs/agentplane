@@ -1,10 +1,10 @@
 ---
 id: "202604220255-9XHT1G"
 title: "Remove obsolete mixed root and subpath test mocks"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,16 +24,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-22T07:33:25.596Z"
+  updated_by: "CODER"
+  note: "Verified obsolete mixed root/subpath core mocks removal. Checks passed: mixed mock detection script; focused finish/prepare tests; focused lint; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: remove obsolete mixed root and subpath core mocks while keeping tests aligned to production imports."
+events:
+  -
+    type: "status"
+    at: "2026-04-22T07:23:20.389Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: remove obsolete mixed root and subpath core mocks while keeping tests aligned to production imports."
+  -
+    type: "verify"
+    at: "2026-04-22T07:33:25.596Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified obsolete mixed root/subpath core mocks removal. Checks passed: mixed mock detection script; focused finish/prepare tests; focused lint; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
 doc_version: 3
-doc_updated_at: "2026-04-22T02:55:50.594Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-22T07:33:25.607Z"
+doc_updated_by: "CODER"
 description: "Clean up tests that mock both @agentplaneorg/core root and subpath modules after the subpath migration."
 sections:
   Summary: "Make test mocks match the production import graph and reduce fragile duplicate mock setup."
@@ -44,7 +60,19 @@ sections:
     3. Extract shared mock setup where repeated.
     4. Verify affected tests and knip baseline.
   Verify Steps: "Run affected tests, fast CI, knip check."
-  Verification: "Pending implementation."
+  Verification: |-
+    Pending implementation.
+    
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-22T07:33:25.596Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified obsolete mixed root/subpath core mocks removal. Checks passed: mixed mock detection script; focused finish/prepare tests; focused lint; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T07:23:20.405Z, excerpt_hash=sha256:1d456773d40b70418dd8ce2c710da378fc9cd7148b22ae94307fa63c5de4cb63
+    
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Restore previous mock declarations."
   Findings: "None yet."
 id_source: "generated"
@@ -71,6 +99,17 @@ Run affected tests, fast CI, knip check.
 ## Verification
 
 Pending implementation.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-22T07:33:25.596Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified obsolete mixed root/subpath core mocks removal. Checks passed: mixed mock detection script; focused finish/prepare tests; focused lint; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T07:23:20.405Z, excerpt_hash=sha256:1d456773d40b70418dd8ce2c710da378fc9cd7148b22ae94307fa63c5de4cb63
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
