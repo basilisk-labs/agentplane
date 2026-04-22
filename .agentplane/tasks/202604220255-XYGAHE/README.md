@@ -1,10 +1,11 @@
 ---
 id: "202604220255-XYGAHE"
 title: "Remove duplicate task doc normalization in task new"
-status: "DOING"
+result_summary: "Removed redundant task document normalization from task new so generated docs are finalized once by task graph materialization, while preserving README v3 metadata and canonical sections after Verify Steps seeding."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T04:57:03.060Z"
   updated_by: "CODER"
   note: "Verified task new single-normalization cleanup. Checks passed: cli-core task create/doc-write tests (2 files, 27 tests), task-intake/core task doc tests (3 files, 18 tests), typecheck, eslint on changed files, git diff --check, arch baseline/deps, knip baseline, ci:local:fast (234 fast files / 1361 tests passed, 2 skipped; 5 critical E2E files / 13 tests passed)."
-commit: null
+commit:
+  hash: "0caada72992fecd35c43ada565d9e83055e34e0b"
+  message: "♻️ XYGAHE task: remove duplicate doc normalization"
 comments:
   -
     author: "CODER"
     body: "Start: remove the redundant first task document state build in task new, preserve final README v3 metadata/sections output, and cover canonical sections after Verify Steps seeding."
+  -
+    author: "CODER"
+    body: "Verified: focused task create/doc tests, task-intake/core doc tests, typecheck, eslint on changed files, git diff --check, arch baseline/deps, knip baseline, ci:local:fast."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified task new single-normalization cleanup. Checks passed: cli-core task create/doc-write tests (2 files, 27 tests), task-intake/core task doc tests (3 files, 18 tests), typecheck, eslint on changed files, git diff --check, arch baseline/deps, knip baseline, ci:local:fast (234 fast files / 1361 tests passed, 2 skipped; 5 critical E2E files / 13 tests passed)."
+  -
+    type: "status"
+    at: "2026-04-22T04:57:22.433Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: focused task create/doc tests, task-intake/core doc tests, typecheck, eslint on changed files, git diff --check, arch baseline/deps, knip baseline, ci:local:fast."
 doc_version: 3
-doc_updated_at: "2026-04-22T04:57:03.073Z"
+doc_updated_at: "2026-04-22T04:57:22.433Z"
 doc_updated_by: "CODER"
 description: "Ensure task creation normalizes the generated task document once instead of running redundant normalization paths."
 sections:
