@@ -15,14 +15,12 @@ import {
   type PrUpdateParsed,
 } from "./pr.spec.js";
 
-import {
-  cmdPrCheck,
-  cmdPrClose,
-  cmdPrCloseSuperseded,
-  cmdPrNote,
-  cmdPrOpen,
-  cmdPrUpdate,
-} from "./index.js";
+import { cmdPrCheck } from "./check.js";
+import { cmdPrCloseSuperseded } from "./close-superseded.js";
+import { cmdPrClose } from "./close.js";
+import { cmdPrNote } from "./note.js";
+import { cmdPrOpen } from "./open.js";
+import { cmdPrUpdate } from "./update.js";
 
 export {
   prCheckSpec,

@@ -5,7 +5,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { shouldAutoBootstrapAfterIntegrate } from "./bootstrap-guidance.js";
 
-export type PreIntegrateBootstrapResult =
+type PreIntegrateBootstrapResult =
   | { status: "not-needed" }
   | { status: "skipped" }
   | { status: "ran" }

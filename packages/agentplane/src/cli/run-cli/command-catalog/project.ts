@@ -15,7 +15,7 @@ import {
 import { branchRemoveSpec } from "../../../commands/branch/remove.command.js";
 import { branchStatusSpec } from "../../../commands/branch/status.command.js";
 import { workStartSpec } from "../../../commands/branch/work-start.command.js";
-import { integrateSpec } from "../../../commands/integrate.command.js";
+import { integrateSpec } from "../../../commands/integrate.spec.js";
 import {
   prCheckSpec,
   prCloseSpec,

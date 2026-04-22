@@ -30,7 +30,7 @@ import { parsePrMetaForwardCompatible, type PrMeta } from "../../../shared/pr-me
 import { assessPrArtifactFreshness } from "../../internal/freshness.js";
 import { requiresPullRequestMergePath } from "./github-protection.js";
 
-export type PreparedIntegrate = {
+type PreparedIntegrate = {
   ctx: CommandContext;
   resolved: CommandContext["resolvedProject"];
   loadedConfig: CommandContext["config"];

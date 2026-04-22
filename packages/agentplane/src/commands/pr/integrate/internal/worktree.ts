@@ -7,7 +7,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv, findWorktreeForBranch } from "@agentplaneorg/core/git";
 import { isPathWithin } from "../../../shared/path.js";
 
-export type IntegrateWorktree = {
+type IntegrateWorktree = {
   worktreePath: string | null;
   tempWorktreePath: string | null;
   createdTempWorktree: boolean;
