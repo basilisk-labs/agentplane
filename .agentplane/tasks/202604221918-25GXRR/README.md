@@ -1,10 +1,10 @@
 ---
 id: "202604221918-25GXRR"
 title: "Wire test routing guard into checks"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -16,21 +16,37 @@ verify:
   - "bun run ci:local:fast"
   - "bun run vitest:projects:check"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-22T19:31:16.041Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-22T19:37:13.179Z"
+  updated_by: "CODER"
+  note: "Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK and test routing OK (315 tests, 10 primary routes). Command: bun run ci:local:fast; Result: pass; Evidence: baseline checks passed, fast test suite 238 files passed, critical suite 5 files passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: wiring the test routing guard into existing project validation and local CI checks while preserving command names."
+events:
+  -
+    type: "status"
+    at: "2026-04-22T19:31:16.416Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: wiring the test routing guard into existing project validation and local CI checks while preserving command names."
+  -
+    type: "verify"
+    at: "2026-04-22T19:37:13.179Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK and test routing OK (315 tests, 10 primary routes). Command: bun run ci:local:fast; Result: pass; Evidence: baseline checks passed, fast test suite 238 files passed, critical suite 5 files passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T19:19:22.579Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-22T19:37:13.185Z"
+doc_updated_by: "CODER"
 description: "Connect the routing guard to existing project and local/release validation scripts so routing drift is caught by normal developer and release flows."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     3. Inspect package scripts touched by the task. Expected: no obsolete command path remains documented as canonical.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-22T19:37:13.179Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK and test routing OK (315 tests, 10 primary routes). Command: bun run ci:local:fast; Result: pass; Evidence: baseline checks passed, fast test suite 238 files passed, critical suite 5 files passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T19:31:16.424Z, excerpt_hash=sha256:83ac03cc4d5c73459b1a31a75649eff482e098d61cb4df74b233be74fe3425b9
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +106,14 @@ Integrate the routing guard into existing validation commands while preserving p
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-22T19:37:13.179Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK and test routing OK (315 tests, 10 primary routes). Command: bun run ci:local:fast; Result: pass; Evidence: baseline checks passed, fast test suite 238 files passed, critical suite 5 files passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T19:31:16.424Z, excerpt_hash=sha256:83ac03cc4d5c73459b1a31a75649eff482e098d61cb4df74b233be74fe3425b9
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
