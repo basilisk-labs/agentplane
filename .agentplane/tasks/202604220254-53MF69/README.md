@@ -1,10 +1,11 @@
 ---
 id: "202604220254-53MF69"
 title: "Remove broad PR action barrel imports from CLI loaders"
-status: "DOING"
+result_summary: "PR command handlers no longer import through the broad PR action barrel; integrate catalog metadata is split into a pure spec module; the dead PR barrel was removed and related legacy facade exports were narrowed."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T04:01:47.379Z"
   updated_by: "CODER"
   note: "Verified PR barrel cleanup. Evidence: PR/workflow focused Vitest set passed (12 files, 93 tests); typecheck passed; arch:baseline + arch:deps passed with 6 known no-circular ignored; knip:check passed (total=545/563); bench:cli:cold:check passed; git diff --check passed; ci:local:fast passed with 233 fast files / 1357 passed / 2 skipped and critical E2E 5 files / 13 passed."
-commit: null
+commit:
+  hash: "6c79ea3c0a2666c5cf006c2265dce383f169d17e"
+  message: "♻️ 53MF69 pr: remove action barrel imports"
 comments:
   -
     author: "CODER"
     body: "Start: remove broad PR action barrel imports from CLI loaders, preserving PR command registration and workflow behavior."
+  -
+    author: "CODER"
+    body: "Verified: PR command registration and integrate paths pass focused checks, arch, knip, cold path, and fast CI."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified PR barrel cleanup. Evidence: PR/workflow focused Vitest set passed (12 files, 93 tests); typecheck passed; arch:baseline + arch:deps passed with 6 known no-circular ignored; knip:check passed (total=545/563); bench:cli:cold:check passed; git diff --check passed; ci:local:fast passed with 233 fast files / 1357 passed / 2 skipped and critical E2E 5 files / 13 passed."
+  -
+    type: "status"
+    at: "2026-04-22T04:02:05.083Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR command registration and integrate paths pass focused checks, arch, knip, cold path, and fast CI."
 doc_version: 3
-doc_updated_at: "2026-04-22T04:01:47.391Z"
+doc_updated_at: "2026-04-22T04:02:05.084Z"
 doc_updated_by: "CODER"
 description: "Ensure PR command group specs/loaders do not import the full PR action barrel during catalog construction."
 sections:
