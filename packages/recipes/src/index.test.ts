@@ -17,7 +17,7 @@ describe("@agentplaneorg/recipes", () => {
     expect(normalizeRecipeId("demo")).toBe("demo");
   });
 
-  it("normalizes legacy scenario descriptors that omit name", () => {
+  it("normalizes legacy v1 scenario descriptors that omit modern metadata", () => {
     const manifest = validateRecipeManifest({
       schema_version: "1",
       kind: "project_overlay",
@@ -38,16 +38,45 @@ describe("@agentplaneorg/recipes", () => {
         {
           id: "viewer",
           summary: "Launch the viewer",
-          use_when: ["Need a browser preview"],
-          required_inputs: [],
-          outputs: [],
-          agents_involved: ["viewer"],
-          run_profile: { mode: "analysis" },
           file: "scenarios/viewer.json",
         },
       ],
     });
 
     expect(manifest.scenarios?.[0]?.name).toBe("Launch the viewer");
+    expect(manifest.scenarios?.[0]?.use_when).toEqual(["Launch the viewer"]);
+    expect(manifest.scenarios?.[0]?.required_inputs).toEqual([]);
+    expect(manifest.scenarios?.[0]?.outputs).toEqual([]);
+    expect(manifest.scenarios?.[0]?.agents_involved).toEqual([]);
+    expect(manifest.scenarios?.[0]?.run_profile).toEqual({ mode: "analysis" });
+  });
+
+  it("keeps v2 scenario descriptors strict", () => {
+    expect(() =>
+      validateRecipeManifest({
+        schema_version: "2",
+        kind: "project_overlay",
+        id: "viewer",
+        version: "1.0.0",
+        name: "Viewer",
+        summary: "Preview tasks",
+        agents: [
+          {
+            id: "viewer",
+            display_name: "Viewer",
+            role: "viewer",
+            summary: "Preview tasks",
+            file: "agents/viewer.md",
+          },
+        ],
+        scenarios: [
+          {
+            id: "viewer",
+            summary: "Launch the viewer",
+            file: "scenarios/viewer.json",
+          },
+        ],
+      }),
+    ).toThrow("Invalid field manifest.scenarios[0].use_when: expected string[]");
   });
 });

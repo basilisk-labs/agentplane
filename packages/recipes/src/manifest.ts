@@ -142,10 +142,22 @@ function normalizeAgents(raw: unknown): RecipeAgentDefinition[] | undefined {
   });
 }
 
-function normalizeScenarios(raw: unknown): RecipeScenarioDescriptor[] {
+function normalizeLegacyStringList(raw: unknown, field: string, fallback: string[]): string[] {
+  return raw === undefined ? fallback : normalizeStringList(raw, field);
+}
+
+function normalizeLegacyRunProfile(raw: unknown, field: string): RecipeRunProfile {
+  return raw === undefined ? { mode: "analysis" } : normalizeRunProfile(raw, field);
+}
+
+function normalizeScenarios(
+  raw: unknown,
+  opts?: { legacyScenarioDefaults?: boolean },
+): RecipeScenarioDescriptor[] {
   if (!Array.isArray(raw) || raw.length === 0) {
     throw new Error(invalidFieldMessage("manifest.scenarios", "non-empty array"));
   }
+  const legacyDefaults = opts?.legacyScenarioDefaults === true;
   return raw.map((entry, index) => {
     if (!isRecord(entry)) {
       throw new Error(invalidFieldMessage(`manifest.scenarios[${index}]`, "object"));
@@ -162,18 +174,30 @@ function normalizeScenarios(raw: unknown): RecipeScenarioDescriptor[] {
         entry.description,
         `manifest.scenarios[${index}].description`,
       ),
-      use_when: normalizeStringList(entry.use_when, `manifest.scenarios[${index}].use_when`, {
-        minLength: 1,
-      }),
+      use_when: legacyDefaults
+        ? normalizeLegacyStringList(entry.use_when, `manifest.scenarios[${index}].use_when`, [
+            summary,
+          ])
+        : normalizeStringList(entry.use_when, `manifest.scenarios[${index}].use_when`, {
+            minLength: 1,
+          }),
       avoid_when: normalizeOptionalStringList(
         entry.avoid_when,
         `manifest.scenarios[${index}].avoid_when`,
       ),
-      required_inputs: normalizeStringList(
-        entry.required_inputs,
-        `manifest.scenarios[${index}].required_inputs`,
-      ),
-      outputs: normalizeStringList(entry.outputs, `manifest.scenarios[${index}].outputs`),
+      required_inputs: legacyDefaults
+        ? normalizeLegacyStringList(
+            entry.required_inputs,
+            `manifest.scenarios[${index}].required_inputs`,
+            [],
+          )
+        : normalizeStringList(
+            entry.required_inputs,
+            `manifest.scenarios[${index}].required_inputs`,
+          ),
+      outputs: legacyDefaults
+        ? normalizeLegacyStringList(entry.outputs, `manifest.scenarios[${index}].outputs`, [])
+        : normalizeStringList(entry.outputs, `manifest.scenarios[${index}].outputs`),
       permissions: normalizeStringList(
         Array.isArray(entry.permissions) ? entry.permissions : [],
         `manifest.scenarios[${index}].permissions`,
@@ -182,11 +206,19 @@ function normalizeScenarios(raw: unknown): RecipeScenarioDescriptor[] {
         Array.isArray(entry.artifacts) ? entry.artifacts : [],
         `manifest.scenarios[${index}].artifacts`,
       ),
-      agents_involved: normalizeStringList(
-        entry.agents_involved,
-        `manifest.scenarios[${index}].agents_involved`,
-        { minLength: 1 },
-      ),
+      agents_involved: legacyDefaults
+        ? normalizeLegacyStringList(
+            entry.agents_involved,
+            `manifest.scenarios[${index}].agents_involved`,
+            [],
+          )
+        : normalizeStringList(
+            entry.agents_involved,
+            `manifest.scenarios[${index}].agents_involved`,
+            {
+              minLength: 1,
+            },
+          ),
       skills_used: normalizeStringList(
         Array.isArray(entry.skills_used) ? entry.skills_used : [],
         `manifest.scenarios[${index}].skills_used`,
@@ -195,10 +227,9 @@ function normalizeScenarios(raw: unknown): RecipeScenarioDescriptor[] {
         Array.isArray(entry.tools_used) ? entry.tools_used : [],
         `manifest.scenarios[${index}].tools_used`,
       ),
-      run_profile: normalizeRunProfile(
-        entry.run_profile,
-        `manifest.scenarios[${index}].run_profile`,
-      ),
+      run_profile: legacyDefaults
+        ? normalizeLegacyRunProfile(entry.run_profile, `manifest.scenarios[${index}].run_profile`)
+        : normalizeRunProfile(entry.run_profile, `manifest.scenarios[${index}].run_profile`),
       file: normalizeRecipeRelativePath(
         `manifest.scenarios[${index}].file`,
         normalizeRequiredString(entry.file, `manifest.scenarios[${index}].file`),
@@ -272,9 +303,12 @@ function normalizeOptionalPrompts(raw: unknown): OverlayPromptFragment[] | undef
   return normalizePrompts(raw);
 }
 
-function normalizeOptionalScenarios(raw: unknown): RecipeScenarioDescriptor[] | undefined {
+function normalizeOptionalScenarios(
+  raw: unknown,
+  opts?: { legacyScenarioDefaults?: boolean },
+): RecipeScenarioDescriptor[] | undefined {
   if (raw === undefined) return undefined;
-  return normalizeScenarios(raw);
+  return normalizeScenarios(raw, opts);
 }
 
 function normalizeValidators(raw: unknown): OverlayValidator[] | undefined {
@@ -384,7 +418,9 @@ function normalizeProjectOverlay(raw: Record<string, unknown>): ProjectOverlayMa
   const skills = normalizeSkills(raw.skills);
   const agents = normalizeAgents(raw.agents);
   const tools = normalizeTools(raw.tools);
-  const scenarios = normalizeOptionalScenarios(raw.scenarios);
+  const scenarios = normalizeOptionalScenarios(raw.scenarios, {
+    legacyScenarioDefaults: raw.schema_version === "1",
+  });
   const tags = normalizeRecipeTags(raw.tags);
   if (!prompts?.length && !scenarios?.length) {
     throw new Error(invalidFieldMessage("manifest", "prompts or scenarios"));
