@@ -1,10 +1,11 @@
 ---
 id: "202604221556-W3HD3Y"
 title: "Fix init recipe manifest validation and ASCII logo"
-status: "DOING"
+result_summary: "Fixed init cached recipe manifest compatibility and restored the interactive init ASCII logo."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-22T15:59:54.205Z"
   updated_by: "CODER"
   note: "Verified: legacy cached recipe manifests without manifest.scenarios[].name no longer fail init recipe cache reads; ASCII logo rendering is covered; targeted recipe/init tests, typechecks, prettier, bootstrap, and temp AGENTPLANE_HOME init smoke passed."
-commit: null
+commit:
+  hash: "86fb6c8af95663b8559e94b0d94c058e5a5d75cb"
+  message: "🐛 W3HD3Y init: tolerate legacy recipe scenarios"
 comments:
   -
     author: "CODER"
     body: "Start: fix the v0.3.18 init cached recipe manifest regression, restore ASCII logo rendering in interactive init, and verify both paths with focused tests and smoke coverage."
+  -
+    author: "CODER"
+    body: "Verified: legacy cached recipe manifests without manifest.scenarios[].name no longer break init recipe cache reads; ASCII logo rendering is restored in interactive init; targeted tests, typechecks, prettier, bootstrap, and temp AGENTPLANE_HOME init smoke passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: legacy cached recipe manifests without manifest.scenarios[].name no longer fail init recipe cache reads; ASCII logo rendering is covered; targeted recipe/init tests, typechecks, prettier, bootstrap, and temp AGENTPLANE_HOME init smoke passed."
+  -
+    type: "status"
+    at: "2026-04-22T16:00:17.107Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: legacy cached recipe manifests without manifest.scenarios[].name no longer break init recipe cache reads; ASCII logo rendering is restored in interactive init; targeted tests, typechecks, prettier, bootstrap, and temp AGENTPLANE_HOME init smoke passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T15:59:54.208Z"
+doc_updated_at: "2026-04-22T16:00:17.108Z"
 doc_updated_by: "CODER"
 description: "Fix the v0.3.18 init regression that rejects cached recipe manifests with 'manifest.scenarios[0].name: expected string', restore the ASCII logo in the interactive init UI, and add regression coverage for both behaviors."
 sections:
