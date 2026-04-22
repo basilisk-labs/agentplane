@@ -21,3 +21,22 @@ export {
   type PromptModuleSurface,
   type PromptModuleTarget,
 } from "./model.js";
+export type {
+  PromptModuleAddMutation,
+  PromptModuleBindMutation,
+  PromptModuleBinding,
+  PromptModuleBindingKind,
+  PromptModuleDisableMutation,
+  PromptModuleMutation,
+  PromptModuleMutationBase,
+  PromptModuleMutationSet,
+  PromptModuleMutationSource,
+  PromptModuleMutationWhen,
+  PromptModulePatchMutation,
+  PromptModuleReplaceMutation,
+  PromptModuleSelector,
+  PromptModuleStructuredPatch,
+  PromptModuleValidator,
+  PromptModuleValidatorMutation,
+  PromptModuleValidatorPhase,
+} from "./mutations.js";

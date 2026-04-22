@@ -1,10 +1,10 @@
 ---
 id: "202604221538-RJMG6E"
 title: "Define prompt mutation and binding contracts"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-22T15:55:37.432Z"
+  updated_by: "CODER"
+  note: "Implemented prompt mutation and binding contracts for recipe-driven module changes: add, replace, structured patch, disable, bind, add validator, and disable validator."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: define explicit prompt mutation and binding contracts on top of the new prompt module model so recipes can add, replace, disable, bind, and validate modules without raw text patching."
+events:
+  -
+    type: "status"
+    at: "2026-04-22T15:54:01.858Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: define explicit prompt mutation and binding contracts on top of the new prompt module model so recipes can add, replace, disable, bind, and validate modules without raw text patching."
+  -
+    type: "verify"
+    at: "2026-04-22T15:55:37.432Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented prompt mutation and binding contracts for recipe-driven module changes: add, replace, structured patch, disable, bind, add validator, and disable validator."
 doc_version: 3
-doc_updated_at: "2026-04-22T15:38:12.284Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-22T15:55:44.163Z"
+doc_updated_by: "CODER"
 description: "Add typed contracts for recipe prompt mutations and bindings, including add, patch, replace, disable, bind, validator operations, and condition matching."
 sections:
   Summary: |-
@@ -63,11 +79,22 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-22T15:55:37.432Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented prompt mutation and binding contracts for recipe-driven module changes: add, replace, structured patch, disable, bind, add validator, and disable validator.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T15:54:01.867Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Commands passed: bunx prettier --write/check scoped prompt-module files and task README; bunx vitest --config vitest.workspace.ts run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts --project agentplane; bun run typecheck; git diff --check; bun run framework:dev:bootstrap; agentplane doctor.
+      Impact: Recipe and compiler tasks can now target modules through explicit selectors and structured operations instead of raw text patching.
+      Resolution: Kept contracts type-only; mutation engine behavior remains for the later TAEV8T task.
 id_source: "generated"
 ---
 ## Summary
@@ -108,6 +135,14 @@ Rollback Plan:
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-22T15:55:37.432Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented prompt mutation and binding contracts for recipe-driven module changes: add, replace, structured patch, disable, bind, add validator, and disable validator.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T15:54:01.867Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -116,3 +151,7 @@ Rollback Plan:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Commands passed: bunx prettier --write/check scoped prompt-module files and task README; bunx vitest --config vitest.workspace.ts run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts --project agentplane; bun run typecheck; git diff --check; bun run framework:dev:bootstrap; agentplane doctor.
+  Impact: Recipe and compiler tasks can now target modules through explicit selectors and structured operations instead of raw text patching.
+  Resolution: Kept contracts type-only; mutation engine behavior remains for the later TAEV8T task.
