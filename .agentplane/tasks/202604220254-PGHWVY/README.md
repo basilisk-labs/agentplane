@@ -1,10 +1,10 @@
 ---
 id: "202604220254-PGHWVY"
 title: "Unify supervised runner adapter execution pipeline"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,16 +24,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-22T04:14:19.695Z"
+  updated_by: "CODER"
+  note: "Verified shared supervised runner executor. Checks: focused runner tests (5 files/38 tests), cli-core query-run-execute Codex/custom tests (2 files/5 tests), typecheck, eslint on changed runner files, arch baseline/deps, knip baseline, git diff --check, ci:local:fast (233 fast files/1357 passed/2 skipped; 5 critical E2E files/13 passed)."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: consolidate duplicated supervised execution/finalization flow between Codex and custom runner adapters while preserving adapter-specific event mapping and lifecycle semantics."
+events:
+  -
+    type: "status"
+    at: "2026-04-22T04:05:16.068Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: consolidate duplicated supervised execution/finalization flow between Codex and custom runner adapters while preserving adapter-specific event mapping and lifecycle semantics."
+  -
+    type: "verify"
+    at: "2026-04-22T04:14:19.695Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified shared supervised runner executor. Checks: focused runner tests (5 files/38 tests), cli-core query-run-execute Codex/custom tests (2 files/5 tests), typecheck, eslint on changed runner files, arch baseline/deps, knip baseline, git diff --check, ci:local:fast (233 fast files/1357 passed/2 skipped; 5 critical E2E files/13 passed)."
 doc_version: 3
-doc_updated_at: "2026-04-22T02:54:47.178Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-22T04:14:19.709Z"
+doc_updated_by: "CODER"
 description: "Consolidate duplicated supervised execution/finalization flow between custom and Codex runner adapters behind a shared executor."
 sections:
   Summary: "Remove duplicated process supervision orchestration from runner adapters while preserving adapter-specific event mapping."
@@ -44,7 +60,19 @@ sections:
     3. Keep adapter-specific prompt/env/event logic local.
     4. Update tests to cover both adapters through shared behavior.
   Verify Steps: "Run runner adapter tests, task lifecycle tests, arch checks, fast CI."
-  Verification: "Pending implementation."
+  Verification: |-
+    Pending implementation.
+    
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-22T04:14:19.695Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified shared supervised runner executor. Checks: focused runner tests (5 files/38 tests), cli-core query-run-execute Codex/custom tests (2 files/5 tests), typecheck, eslint on changed runner files, arch baseline/deps, knip baseline, git diff --check, ci:local:fast (233 fast files/1357 passed/2 skipped; 5 critical E2E files/13 passed).
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T04:05:16.084Z, excerpt_hash=sha256:0fa856365d1de0c2006d31a8cca6feb6c0237a56ac4bd7a17383375580ca38df
+    
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Inline the shared executor back into adapters and restore previous adapter implementations."
   Findings: "None yet."
 id_source: "generated"
@@ -71,6 +99,17 @@ Run runner adapter tests, task lifecycle tests, arch checks, fast CI.
 ## Verification
 
 Pending implementation.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-22T04:14:19.695Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified shared supervised runner executor. Checks: focused runner tests (5 files/38 tests), cli-core query-run-execute Codex/custom tests (2 files/5 tests), typecheck, eslint on changed runner files, arch baseline/deps, knip baseline, git diff --check, ci:local:fast (233 fast files/1357 passed/2 skipped; 5 critical E2E files/13 passed).
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T04:05:16.084Z, excerpt_hash=sha256:0fa856365d1de0c2006d31a8cca6feb6c0237a56ac4bd7a17383375580ca38df
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
