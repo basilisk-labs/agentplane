@@ -1,10 +1,11 @@
 ---
 id: "202604220257-F79BSN"
 title: "Harden CLI cold-start baseline statistics"
-status: "DOING"
+result_summary: "Implementation commit eb2d16a1ff64. Verification passed: repeated bun run bench:cli:cold:check, focused cold-start script tests, bun run arch:baseline && bun run arch:deps && bun run ci:local:fast && bun run knip:check && git diff --check."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T09:06:41.439Z"
   updated_by: "CODER"
   note: "Verified: cold-start guard now enforces median_ms with p95 diagnostics, repeated bench:cli:cold:check runs passed, focused tests passed, and bun run arch:baseline && bun run arch:deps && bun run ci:local:fast && bun run knip:check && git diff --check passed."
-commit: null
+commit:
+  hash: "eb2d16a1ff64e2b9d673f4443da34b4dbeb04d05"
+  message: "📈 F79BSN perf: harden cold-start baseline metric"
 comments:
   -
     author: "CODER"
     body: "Start: replace fragile average-based CLI cold-start guard with robust median-based baseline statistics, update measurement payloads/tests, and verify repeated cold baseline stability."
+  -
+    author: "CODER"
+    body: "Verified: cold-start baseline guard now uses median_ms with p95 diagnostics and repeated checks passed."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: cold-start guard now enforces median_ms with p95 diagnostics, repeated bench:cli:cold:check runs passed, focused tests passed, and bun run arch:baseline && bun run arch:deps && bun run ci:local:fast && bun run knip:check && git diff --check passed."
+  -
+    type: "status"
+    at: "2026-04-22T09:07:07.357Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: cold-start baseline guard now uses median_ms with p95 diagnostics and repeated checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T09:06:41.446Z"
+doc_updated_at: "2026-04-22T09:07:07.357Z"
 doc_updated_by: "CODER"
 description: "Replace fragile average-of-three cold-start guard with a robust metric resistant to transient process-load outliers."
 sections:
