@@ -1,10 +1,11 @@
 ---
 id: "202604220254-GSBPC3"
 title: "Replace synchronous trace writes in runner hot path"
-status: "DOING"
+result_summary: "Replaced process-supervision synchronous appendFileSync trace writes with a buffered async writer and explicit flush before artifact finalization/error rejection; added tests for event ordering and failed-run flush behavior."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T04:23:52.618Z"
   updated_by: "CODER"
   note: "Verified async buffered process-supervision writes. Checks: no appendFileSync/writeFileSync remains in runner process-supervision/adapters; focused process-supervision tests (7 tests), runner lifecycle/adapter focused set (4 files/35 tests), typecheck, eslint on changed runner files, arch baseline/deps, knip baseline, git diff --check, ci:local:fast (233 fast files/1359 passed/2 skipped; 5 critical E2E files/13 passed)."
-commit: null
+commit:
+  hash: "7c89cc1e4b6e6b2fe837f1c363780b3308b72012"
+  message: "✅ GSBPC3 runner: cover buffered trace flushing"
 comments:
   -
     author: "CODER"
     body: "Start: replace synchronous process-supervision trace/stderr writes with deterministic async buffered writing while preserving trace ordering, retention, and failure cleanup semantics."
+  -
+    author: "CODER"
+    body: "Verified: async buffered trace/stderr writes preserve ordering and flush deterministically on success/failure; focused runner tests and full fast CI passed."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified async buffered process-supervision writes. Checks: no appendFileSync/writeFileSync remains in runner process-supervision/adapters; focused process-supervision tests (7 tests), runner lifecycle/adapter focused set (4 files/35 tests), typecheck, eslint on changed runner files, arch baseline/deps, knip baseline, git diff --check, ci:local:fast (233 fast files/1359 passed/2 skipped; 5 critical E2E files/13 passed)."
+  -
+    type: "status"
+    at: "2026-04-22T04:24:34.754Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: async buffered trace/stderr writes preserve ordering and flush deterministically on success/failure; focused runner tests and full fast CI passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T04:23:52.631Z"
+doc_updated_at: "2026-04-22T04:24:34.755Z"
 doc_updated_by: "CODER"
 description: "Remove appendFileSync/writeFileSync calls from process-supervision output streaming and use a buffered asynchronous writer with deterministic flush."
 sections:
