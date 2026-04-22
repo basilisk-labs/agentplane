@@ -1,5 +1,5 @@
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
-import { cmdRecipeInfoParsed } from "../recipes.js";
+import { cmdRecipeInfoParsed } from "./impl/commands/info.js";
 
 export type RecipesInfoParsed = { id: string };
 

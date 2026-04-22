@@ -1,10 +1,10 @@
 ---
 id: "202604220254-7TACEE"
 title: "Replace recipes facade imports with direct command imports"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,16 +24,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-22T03:42:50.899Z"
+  updated_by: "CODER"
+  note: "Verified direct recipe command imports. Evidence: cli-recipes 31/31 passed; focused recipe command/impl tests 64/64 passed via vitest fast; command catalog/help contract 6/6 passed; typecheck passed; arch:baseline + arch:deps passed with 6 known no-circular ignored; bench:cli:cold:check passed when run alone; git diff --check passed; ci:local:fast passed with 233 fast files / 1357 passed / 2 skipped and critical E2E 5 files / 13 passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Replace broad recipes facade imports with direct per-command imports, preserving recipe CLI behavior and validating focused recipe and CLI checks."
+events:
+  -
+    type: "status"
+    at: "2026-04-22T03:32:38.545Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Replace broad recipes facade imports with direct per-command imports, preserving recipe CLI behavior and validating focused recipe and CLI checks."
+  -
+    type: "verify"
+    at: "2026-04-22T03:42:50.899Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified direct recipe command imports. Evidence: cli-recipes 31/31 passed; focused recipe command/impl tests 64/64 passed via vitest fast; command catalog/help contract 6/6 passed; typecheck passed; arch:baseline + arch:deps passed with 6 known no-circular ignored; bench:cli:cold:check passed when run alone; git diff --check passed; ci:local:fast passed with 233 fast files / 1357 passed / 2 skipped and critical E2E 5 files / 13 passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T02:54:34.891Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-22T03:42:50.913Z"
+doc_updated_by: "CODER"
 description: "Stop recipe command entrypoints from importing the broad recipes facade and route each CLI command to its minimal implementation module."
 sections:
   Summary: "Reduce cold-path import weight by removing broad imports through packages/agentplane/src/commands/recipes.ts for per-command recipe handlers."
@@ -44,7 +60,19 @@ sections:
     3. Keep any public facade only for compatibility if still referenced externally.
     4. Verify command snapshots and recipe command tests.
   Verify Steps: "Run recipe command tests, CLI fast tests, cold-path check, and arch checks."
-  Verification: "Pending implementation."
+  Verification: |-
+    Pending implementation.
+    
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-22T03:42:50.899Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified direct recipe command imports. Evidence: cli-recipes 31/31 passed; focused recipe command/impl tests 64/64 passed via vitest fast; command catalog/help contract 6/6 passed; typecheck passed; arch:baseline + arch:deps passed with 6 known no-circular ignored; bench:cli:cold:check passed when run alone; git diff --check passed; ci:local:fast passed with 233 fast files / 1357 passed / 2 skipped and critical E2E 5 files / 13 passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T03:32:38.587Z, excerpt_hash=sha256:330077834a358373498a8d041bb4fdaa2e4aaa2e8d34ccb3f2427d26e8993a03
+    
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Restore imports from the recipes facade and remove direct import rewiring."
   Findings: "None yet."
 id_source: "generated"
@@ -71,6 +99,17 @@ Run recipe command tests, CLI fast tests, cold-path check, and arch checks.
 ## Verification
 
 Pending implementation.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-22T03:42:50.899Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified direct recipe command imports. Evidence: cli-recipes 31/31 passed; focused recipe command/impl tests 64/64 passed via vitest fast; command catalog/help contract 6/6 passed; typecheck passed; arch:baseline + arch:deps passed with 6 known no-circular ignored; bench:cli:cold:check passed when run alone; git diff --check passed; ci:local:fast passed with 233 fast files / 1357 passed / 2 skipped and critical E2E 5 files / 13 passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T03:32:38.587Z, excerpt_hash=sha256:330077834a358373498a8d041bb4fdaa2e4aaa2e8d34ccb3f2427d26e8993a03
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
