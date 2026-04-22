@@ -1,10 +1,11 @@
 ---
 id: "202604221442-K283A6"
 title: "Document v0.4 prompt assembly migration"
-status: "DOING"
+result_summary: "Added planned v0.4 prompt assembly breaking-change and migration guidance to docs/user/breaking-changes.mdx."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-22T14:43:54.442Z"
   updated_by: "DOCS"
   note: "Command: bunx prettier --check docs/user/breaking-changes.mdx | Result: pass | Evidence: All matched files use Prettier code style. | Scope: v0.4 prompt assembly breaking-change docs. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. | Scope: docs-only policy routing. Command: agentplane doctor | Result: pass | Evidence: doctor OK with 0 errors and 0 warnings; informational runtime/archive notes only. | Links: docs/user/breaking-changes.mdx, docs/developer/prompt-assembly-system.mdx"
-commit: null
+commit:
+  hash: "a0402269492448818115b6f00262c5eaf4e009e0"
+  message: "📝 K283A6 docs: document v0.4 prompt migration"
 comments:
   -
     author: "DOCS"
     body: "Start: add docs-only v0.4 prompt assembly migration guidance to the breaking changes page and verify with formatter, routing, and doctor checks."
+  -
+    author: "DOCS"
+    body: "Verified: v0.4 prompt assembly migration guidance is documented in breaking changes and linked to the prompt assembly system page; formatter, routing, and doctor checks passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: bunx prettier --check docs/user/breaking-changes.mdx | Result: pass | Evidence: All matched files use Prettier code style. | Scope: v0.4 prompt assembly breaking-change docs. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. | Scope: docs-only policy routing. Command: agentplane doctor | Result: pass | Evidence: doctor OK with 0 errors and 0 warnings; informational runtime/archive notes only. | Links: docs/user/breaking-changes.mdx, docs/developer/prompt-assembly-system.mdx"
+  -
+    type: "status"
+    at: "2026-04-22T14:44:26.731Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: v0.4 prompt assembly migration guidance is documented in breaking changes and linked to the prompt assembly system page; formatter, routing, and doctor checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T14:43:54.449Z"
+doc_updated_at: "2026-04-22T14:44:26.731Z"
 doc_updated_by: "DOCS"
 description: "Extend breaking-change and migration documentation for the planned v0.4 prompt assembly model, including compiled prompt files, module graph authority, recipe mutation behavior, and upgrade implications."
 sections:
