@@ -1,10 +1,11 @@
 ---
 id: "202604220254-7TACEE"
 title: "Replace recipes facade imports with direct command imports"
-status: "DOING"
+result_summary: "Recipe command entrypoints and init recipe helper no longer import through the broad commands/recipes facade; they import direct implementation modules and source package types."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T03:42:50.899Z"
   updated_by: "CODER"
   note: "Verified direct recipe command imports. Evidence: cli-recipes 31/31 passed; focused recipe command/impl tests 64/64 passed via vitest fast; command catalog/help contract 6/6 passed; typecheck passed; arch:baseline + arch:deps passed with 6 known no-circular ignored; bench:cli:cold:check passed when run alone; git diff --check passed; ci:local:fast passed with 233 fast files / 1357 passed / 2 skipped and critical E2E 5 files / 13 passed."
-commit: null
+commit:
+  hash: "0bf7d5c1fd118a4efacc46429bd62f9a7529e3ea"
+  message: "♻️ 7TACEE recipes: use direct command imports"
 comments:
   -
     author: "CODER"
     body: "Start: Replace broad recipes facade imports with direct per-command imports, preserving recipe CLI behavior and validating focused recipe and CLI checks."
+  -
+    author: "CODER"
+    body: "Verified: direct recipe command imports are in place and recipe/CLI/arch/cold/fast CI checks passed."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified direct recipe command imports. Evidence: cli-recipes 31/31 passed; focused recipe command/impl tests 64/64 passed via vitest fast; command catalog/help contract 6/6 passed; typecheck passed; arch:baseline + arch:deps passed with 6 known no-circular ignored; bench:cli:cold:check passed when run alone; git diff --check passed; ci:local:fast passed with 233 fast files / 1357 passed / 2 skipped and critical E2E 5 files / 13 passed."
+  -
+    type: "status"
+    at: "2026-04-22T03:43:12.319Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: direct recipe command imports are in place and recipe/CLI/arch/cold/fast CI checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T03:42:50.913Z"
+doc_updated_at: "2026-04-22T03:43:12.321Z"
 doc_updated_by: "CODER"
 description: "Stop recipe command entrypoints from importing the broad recipes facade and route each CLI command to its minimal implementation module."
 sections:
