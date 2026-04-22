@@ -1,10 +1,11 @@
 ---
 id: "202604220255-9XHT1G"
 title: "Remove obsolete mixed root and subpath test mocks"
-status: "DOING"
+result_summary: "Removed root @agentplaneorg/core mocks from finish and PR integrate tests so mocks now match production subpath imports."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T07:33:25.596Z"
   updated_by: "CODER"
   note: "Verified obsolete mixed root/subpath core mocks removal. Checks passed: mixed mock detection script; focused finish/prepare tests; focused lint; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
-commit: null
+commit:
+  hash: "9491ef65ee6ad28324d7554926305b258e247c7d"
+  message: "🧪 9XHT1G test: remove obsolete core root mocks"
 comments:
   -
     author: "CODER"
     body: "Start: remove obsolete mixed root and subpath core mocks while keeping tests aligned to production imports."
+  -
+    author: "CODER"
+    body: "Verified: removed obsolete mixed root/subpath core test mocks."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified obsolete mixed root/subpath core mocks removal. Checks passed: mixed mock detection script; focused finish/prepare tests; focused lint; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
+  -
+    type: "status"
+    at: "2026-04-22T07:33:45.727Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: removed obsolete mixed root/subpath core test mocks."
 doc_version: 3
-doc_updated_at: "2026-04-22T07:33:25.607Z"
+doc_updated_at: "2026-04-22T07:33:45.728Z"
 doc_updated_by: "CODER"
 description: "Clean up tests that mock both @agentplaneorg/core root and subpath modules after the subpath migration."
 sections:
