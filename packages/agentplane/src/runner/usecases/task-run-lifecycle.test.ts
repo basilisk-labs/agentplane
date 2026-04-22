@@ -10,6 +10,7 @@ import {
   captureStdIO,
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
+  waitForCondition,
   writeConfig,
 } from "@agentplane/testkit";
 import { runCli } from "../../cli/run-cli.js";
@@ -93,13 +94,16 @@ async function waitForState(
   predicate: (state: Awaited<ReturnType<typeof readRunnerRunState>>) => boolean,
   timeoutMs = 5000,
 ): Promise<Awaited<ReturnType<typeof readRunnerRunState>>> {
-  const started = Date.now();
-  while (Date.now() - started < timeoutMs) {
-    const state = await readRunnerRunState(statePath);
-    if (predicate(state)) return state;
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-  return await readRunnerRunState(statePath);
+  return await waitForCondition({
+    description: `runner state in ${statePath}`,
+    timeoutMs,
+    read: async () => await readRunnerRunState(statePath),
+    predicate,
+    onTimeout: (lastState) =>
+      new Error(
+        `Timed out waiting for runner state in ${statePath}: ${lastState?.status ?? "unknown"}`,
+      ),
+  });
 }
 
 describe("task-run lifecycle usecases", () => {

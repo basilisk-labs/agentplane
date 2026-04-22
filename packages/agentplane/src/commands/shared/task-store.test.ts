@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, stat, utimes, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -62,6 +62,11 @@ function baseReadme(taskId: string, title: string, docVersion: 2 | 3 = 2): strin
   return rendered.endsWith("\n") ? rendered : `${rendered}\n`;
 }
 
+async function makeConcurrentWriteDetectable(filePath: string): Promise<void> {
+  const st = await stat(filePath);
+  await utimes(filePath, st.atime, new Date("2020-01-01T00:00:00.000Z"));
+}
+
 describe("commands/shared/TaskStore", () => {
   it("retries once on concurrent modification and succeeds", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
@@ -78,7 +83,7 @@ describe("commands/shared/TaskStore", () => {
     const result = await store.update(taskId, async (current) => {
       if (!didInterfere) {
         didInterfere = true;
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        await makeConcurrentWriteDetectable(readmePath);
         await writeFile(readmePath, `${initial}\n# external\n`, "utf8");
       }
       return { ...current, title: "after" };
@@ -104,7 +109,7 @@ describe("commands/shared/TaskStore", () => {
 
     await expect(
       store.update(taskId, async (current) => {
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        await makeConcurrentWriteDetectable(readmePath);
         await writeFile(readmePath, `${initial}\n# external\n`, "utf8");
         return { ...current, title: "after" };
       }),
@@ -191,7 +196,7 @@ describe("commands/shared/TaskStore", () => {
       if (!String(current.doc ?? "").includes("Run bun run test:cli:core")) {
         if (!didInterfere) {
           didInterfere = true;
-          await new Promise((resolve) => setTimeout(resolve, 10));
+          await makeConcurrentWriteDetectable(readmePath);
           await writeFile(readmePath, `${refreshed}\n`, "utf8");
         }
         throw new CliError({
@@ -614,7 +619,7 @@ describe("commands/shared/TaskStore", () => {
           : null;
         if (!didInterfere) {
           didInterfere = true;
-          await new Promise((resolve) => setTimeout(resolve, 10));
+          await makeConcurrentWriteDetectable(readmePath);
           await writeFile(
             readmePath,
             `${renderTaskReadme(
@@ -695,7 +700,7 @@ describe("commands/shared/TaskStore", () => {
         expectedDoc ??= String(current.doc ?? "");
         if (!didInterfere) {
           didInterfere = true;
-          await new Promise((resolve) => setTimeout(resolve, 10));
+          await makeConcurrentWriteDetectable(readmePath);
           await writeFile(
             readmePath,
             `${renderTaskReadme(
@@ -776,7 +781,7 @@ describe("commands/shared/TaskStore", () => {
           : null;
         if (!didInterfere) {
           didInterfere = true;
-          await new Promise((resolve) => setTimeout(resolve, 10));
+          await makeConcurrentWriteDetectable(readmePath);
           await writeFile(
             readmePath,
             `${renderTaskReadme(
@@ -856,7 +861,7 @@ describe("commands/shared/TaskStore", () => {
         expectedDoc ??= String(current.doc ?? "");
         if (!didInterfere) {
           didInterfere = true;
-          await new Promise((resolve) => setTimeout(resolve, 10));
+          await makeConcurrentWriteDetectable(readmePath);
           await writeFile(
             readmePath,
             `${renderTaskReadme(
@@ -933,7 +938,7 @@ describe("commands/shared/TaskStore", () => {
       expectedSummary ??= /## Summary\s+before/u.test(String(current.doc ?? "")) ? "before" : null;
       if (!didInterfere) {
         didInterfere = true;
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        await makeConcurrentWriteDetectable(readmePath);
         await writeFile(
           readmePath,
           `${renderTaskReadme(
@@ -993,7 +998,7 @@ describe("commands/shared/TaskStore", () => {
     const result = await store.patch(taskId, async () => {
       if (!didInterfere) {
         didInterfere = true;
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        await makeConcurrentWriteDetectable(readmePath);
         await store.update(taskId, (current) => ({
           ...current,
           comments: [...(current.comments ?? []), { author: "OTHER", body: "external" }],

@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
+import { waitForCondition } from "@agentplane/testkit";
 
 import { runSupervisedProcess } from "./process-supervision/run.js";
 import { compressedTraceArtifactPath, readTraceArtifactText } from "./trace-artifacts.js";
@@ -12,22 +13,19 @@ async function waitForTraceMatch(opts: {
   timeoutMs: number;
   matcher: (contents: string) => boolean;
 }): Promise<string> {
-  const started = Date.now();
-  let lastContents = "";
-  while (Date.now() - started < opts.timeoutMs) {
-    const contents = await readFile(opts.path, "utf8").catch((err: NodeJS.ErrnoException) => {
-      if (err.code === "ENOENT") {
-        return "";
-      }
-      throw err;
-    });
-    lastContents = contents;
-    if (opts.matcher(contents)) {
-      return contents;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 25));
-  }
-  return lastContents;
+  return await waitForCondition({
+    description: `trace match in ${opts.path}`,
+    timeoutMs: opts.timeoutMs,
+    pollMs: 25,
+    read: async () =>
+      await readFile(opts.path, "utf8").catch((err: NodeJS.ErrnoException) => {
+        if (err.code === "ENOENT") {
+          return "";
+        }
+        throw err;
+      }),
+    predicate: opts.matcher,
+  });
 }
 
 describe("runSupervisedProcess", () => {

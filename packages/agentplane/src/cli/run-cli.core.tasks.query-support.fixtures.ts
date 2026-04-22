@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   installRunCliIntegrationHarness,
   pathExists,
+  waitForCondition,
   writeDefaultConfig,
 } from "@agentplane/testkit";
 
@@ -20,10 +21,13 @@ async function waitForRunnerState(opts: {
   timeoutMs?: number;
 }): Promise<{ runId: string; statePath: string; state: Record<string, unknown> }> {
   const timeoutMs = opts.timeoutMs ?? 5000;
-  const started = Date.now();
   const runsRoot = path.join(opts.root, ".agentplane", "tasks", opts.taskId, "runs");
-  while (Date.now() - started < timeoutMs) {
-    if (await pathExists(runsRoot)) {
+
+  return await waitForCondition({
+    description: `runner state in ${runsRoot}`,
+    timeoutMs,
+    read: async () => {
+      if (!(await pathExists(runsRoot))) return null;
       const runEntries = await readdir(runsRoot);
       const sortedRunEntries = runEntries.toSorted();
       for (const runId of sortedRunEntries) {
@@ -32,10 +36,14 @@ async function waitForRunnerState(opts: {
         const state = JSON.parse(await readFile(statePath, "utf8")) as Record<string, unknown>;
         if (opts.predicate(state)) return { runId, statePath, state };
       }
-    }
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-  throw new Error(`Timed out waiting for runner state in ${runsRoot}`);
+      return null;
+    },
+    predicate: (
+      match,
+    ): match is { runId: string; statePath: string; state: Record<string, unknown> } =>
+      match !== null,
+    onTimeout: () => new Error(`Timed out waiting for runner state in ${runsRoot}`),
+  });
 }
 
 async function seedTaskQueryFixture(root: string, tasks: taskBackend.TaskData[]): Promise<void> {

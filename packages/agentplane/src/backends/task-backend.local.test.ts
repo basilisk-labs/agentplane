@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, stat, utimes, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -306,14 +306,13 @@ describe("LocalBackend", () => {
     await backend.listTasks();
     const indexPath = path.join(tempDir, ".cache", "tasks-index.v2.json");
     const firstStat = await stat(indexPath);
-    const firstMtime = firstStat.mtimeMs;
-
-    await new Promise((resolve) => setTimeout(resolve, 15));
+    await utimes(indexPath, firstStat.atime, new Date("2020-01-01T00:00:00.000Z"));
+    const visibleFirstStat = await stat(indexPath);
     await backend.listTasks();
     const secondStat = await stat(indexPath);
     const secondMtime = secondStat.mtimeMs;
 
-    expect(secondMtime).toBe(firstMtime);
+    expect(secondMtime).toBe(visibleFirstStat.mtimeMs);
   });
 
   it("rebuilds the task index cache after the cache file is deleted", async () => {
