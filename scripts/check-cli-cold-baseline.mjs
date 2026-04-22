@@ -79,11 +79,11 @@ function normalizeCommandList(payload, label) {
 }
 
 function assertBaselineShape(baseline) {
-  if (!baseline || baseline.schema_version !== 1 || baseline.mode !== MODE) {
-    throw new Error(`baseline must use schema_version=1 and mode=${MODE}`);
+  if (!baseline || baseline.schema_version !== 2 || baseline.mode !== MODE) {
+    throw new Error(`baseline must use schema_version=2 and mode=${MODE}`);
   }
-  if (baseline.metric !== "avg_ms") {
-    throw new Error("baseline metric must be avg_ms");
+  if (baseline.metric !== "median_ms") {
+    throw new Error("baseline metric must be median_ms");
   }
 }
 
@@ -102,10 +102,11 @@ function compareMeasurementToBaseline(measurement, baseline) {
       continue;
     }
 
-    const avg = Number(actual.avg_ms);
-    const maxAvg = Number(expected.max_avg_ms);
-    if (!Number.isFinite(avg) || !Number.isFinite(maxAvg)) {
-      failures.push(`${id}: avg_ms/max_avg_ms must be numeric`);
+    const median = Number(actual.median_ms);
+    const maxMedian = Number(expected.max_median_ms);
+    const p95 = Number(actual.p95_ms);
+    if (!Number.isFinite(median) || !Number.isFinite(maxMedian)) {
+      failures.push(`${id}: median_ms/max_median_ms must be numeric`);
       continue;
     }
 
@@ -114,10 +115,11 @@ function compareMeasurementToBaseline(measurement, baseline) {
     if (actualExit !== expectedExit) {
       failures.push(`${id}: exit_code=${actualExit}, expected=${expectedExit}`);
     }
-    if (avg > maxAvg) {
-      failures.push(`${id}: avg_ms=${avg} exceeds max_avg_ms=${maxAvg}`);
+    if (median > maxMedian) {
+      failures.push(`${id}: median_ms=${median} exceeds max_median_ms=${maxMedian}`);
     }
-    summaries.push(`${id} avg=${avg}ms <= ${maxAvg}ms`);
+    const p95Summary = Number.isFinite(p95) ? `, p95=${p95}ms` : "";
+    summaries.push(`${id} median=${median}ms <= ${maxMedian}ms${p95Summary}`);
   }
 
   return { failures, summaries };

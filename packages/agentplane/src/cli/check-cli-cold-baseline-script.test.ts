@@ -36,15 +36,16 @@ async function runScript(args: string[]) {
   }
 }
 
-function payload(avgMs: number) {
+function payload(medianMs: number) {
   return {
     schema_version: 1,
     mode: "cli_cold_path_v1",
-    metric: "avg_ms",
     commands: [
       {
         id: "quickstart",
-        avg_ms: avgMs,
+        median_ms: medianMs,
+        avg_ms: medianMs,
+        p95_ms: medianMs,
         exit_code: 0,
       },
     ],
@@ -55,13 +56,13 @@ describe("check-cli-cold-baseline script", () => {
   it("passes when measurement stays below the baseline ceiling", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cold-baseline-"));
     const baselinePath = await writeJson(root, "baseline.json", {
-      schema_version: 1,
+      schema_version: 2,
       mode: "cli_cold_path_v1",
-      metric: "avg_ms",
+      metric: "median_ms",
       commands: [
         {
           id: "quickstart",
-          max_avg_ms: 100,
+          max_median_ms: 100,
           expected_exit_code: 0,
         },
       ],
@@ -78,13 +79,13 @@ describe("check-cli-cold-baseline script", () => {
   it("fails when measurement exceeds the baseline ceiling", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cold-baseline-"));
     const baselinePath = await writeJson(root, "baseline.json", {
-      schema_version: 1,
+      schema_version: 2,
       mode: "cli_cold_path_v1",
-      metric: "avg_ms",
+      metric: "median_ms",
       commands: [
         {
           id: "quickstart",
-          max_avg_ms: 100,
+          max_median_ms: 100,
           expected_exit_code: 0,
         },
       ],
@@ -95,6 +96,40 @@ describe("check-cli-cold-baseline script", () => {
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain("CLI cold-start baseline guard failed");
-    expect(result.stderr).toContain("quickstart: avg_ms=150 exceeds max_avg_ms=100");
+    expect(result.stderr).toContain("quickstart: median_ms=150 exceeds max_median_ms=100");
+  });
+
+  it("uses median timing instead of average timing so one outlier does not fail the guard", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cold-baseline-"));
+    const baselinePath = await writeJson(root, "baseline.json", {
+      schema_version: 2,
+      mode: "cli_cold_path_v1",
+      metric: "median_ms",
+      commands: [
+        {
+          id: "quickstart",
+          max_median_ms: 100,
+          expected_exit_code: 0,
+        },
+      ],
+    });
+    const measurementPath = await writeJson(root, "measurement.json", {
+      schema_version: 1,
+      mode: "cli_cold_path_v1",
+      commands: [
+        {
+          id: "quickstart",
+          median_ms: 50,
+          avg_ms: 500,
+          p95_ms: 1400,
+          exit_code: 0,
+        },
+      ],
+    });
+
+    const result = await runScript(["--baseline", baselinePath, "--measurement", measurementPath]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("quickstart median=50ms <= 100ms");
   });
 });
