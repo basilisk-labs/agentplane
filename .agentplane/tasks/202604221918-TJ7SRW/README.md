@@ -1,10 +1,11 @@
 ---
 id: "202604221918-TJ7SRW"
 title: "Add test inventory source of truth"
-status: "DOING"
+result_summary: "Added shared test inventory source of truth for package test route classification."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-22T19:26:59.134Z"
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/test-inventory.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 3 tests passed. Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK. Command: bun run test:fast; Result: pass; Evidence: 237 test files passed, 1374 tests passed, 2 skipped."
-commit: null
+commit:
+  hash: "6adf8152e0aa527386658335081c36d310462219"
+  message: "✨ TJ7SRW test: add shared test inventory"
 comments:
   -
     author: "CODER"
     body: "Start: implementing shared test inventory as the source of truth for package test discovery and route classification."
+  -
+    author: "CODER"
+    body: "Verified: shared test inventory added with focused inventory coverage plus vitest project and fast-suite checks passing."
 events:
   -
     type: "status"
@@ -43,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/test-inventory.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 3 tests passed. Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK. Command: bun run test:fast; Result: pass; Evidence: 237 test files passed, 1374 tests passed, 2 skipped."
+  -
+    type: "status"
+    at: "2026-04-22T19:27:18.905Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: shared test inventory added with focused inventory coverage plus vitest project and fast-suite checks passing."
 doc_version: 3
-doc_updated_at: "2026-04-22T19:26:59.140Z"
+doc_updated_at: "2026-04-22T19:27:18.906Z"
 doc_updated_by: "CODER"
 description: "Create a shared test inventory module that discovers package test files and classifies them into explicit primary and aggregate test routes."
 sections:
