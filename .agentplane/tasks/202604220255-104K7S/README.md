@@ -1,10 +1,11 @@
 ---
 id: "202604220255-104K7S"
 title: "Stabilize init v2 naming and flags"
-status: "DOING"
+result_summary: "Renamed the public init UI flag to --interactive-ui, kept --experimental-ui as a hidden compatibility alias, accepted AGENTPLANE_INIT_UI=interactive while preserving v2 compatibility, and refreshed generated CLI reference."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T04:48:45.644Z"
   updated_by: "CODER"
   note: "Verified init UI naming stabilization. Checks passed: focused init submodule tests (5 files, 22 tests), cli-core init tests (2 files, 44 tests), docs:cli:check, typecheck, eslint on changed init files, git diff --check, arch baseline/deps, knip baseline, ci:local:fast (234 fast files / 1361 tests passed, 2 skipped; 5 critical E2E files / 13 tests passed)."
-commit: null
+commit:
+  hash: "242b7ffd93a43b6a618fc5fa1a04c75a868465d4"
+  message: "🧭 104K7S init: stabilize interactive UI flag"
 comments:
   -
     author: "CODER"
     body: "Start: remove stale experimental init v2 wording, converge user-facing init UI flag names on stable terminology, and keep compatibility only where existing parser patterns support it."
+  -
+    author: "CODER"
+    body: "Verified: focused init tests, docs:cli:check, typecheck, eslint on changed init files, git diff --check, arch baseline/deps, knip baseline, ci:local:fast."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified init UI naming stabilization. Checks passed: focused init submodule tests (5 files, 22 tests), cli-core init tests (2 files, 44 tests), docs:cli:check, typecheck, eslint on changed init files, git diff --check, arch baseline/deps, knip baseline, ci:local:fast (234 fast files / 1361 tests passed, 2 skipped; 5 critical E2E files / 13 tests passed)."
+  -
+    type: "status"
+    at: "2026-04-22T04:48:59.767Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: focused init tests, docs:cli:check, typecheck, eslint on changed init files, git diff --check, arch baseline/deps, knip baseline, ci:local:fast."
 doc_version: 3
-doc_updated_at: "2026-04-22T04:48:45.657Z"
+doc_updated_at: "2026-04-22T04:48:59.767Z"
 doc_updated_by: "CODER"
 description: "Remove stale experimental wording from init v2 user-facing text and converge init UI flags on stable names."
 sections:
