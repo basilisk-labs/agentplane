@@ -38,7 +38,6 @@ describe("@agentplaneorg/recipes", () => {
         {
           id: "viewer",
           summary: "Launch the viewer",
-          file: "scenarios/viewer.json",
         },
       ],
     });
@@ -49,6 +48,7 @@ describe("@agentplaneorg/recipes", () => {
     expect(manifest.scenarios?.[0]?.outputs).toEqual([]);
     expect(manifest.scenarios?.[0]?.agents_involved).toEqual([]);
     expect(manifest.scenarios?.[0]?.run_profile).toEqual({ mode: "analysis" });
+    expect(manifest.scenarios?.[0]?.file).toBe("scenarios/viewer.json");
   });
 
   it("keeps v2 scenario descriptors strict", () => {
@@ -78,5 +78,39 @@ describe("@agentplaneorg/recipes", () => {
         ],
       }),
     ).toThrow("Invalid field manifest.scenarios[0].use_when: expected string[]");
+  });
+
+  it("keeps v2 scenario files strict", () => {
+    expect(() =>
+      validateRecipeManifest({
+        schema_version: "2",
+        kind: "project_overlay",
+        id: "viewer",
+        version: "1.0.0",
+        name: "Viewer",
+        summary: "Preview tasks",
+        agents: [
+          {
+            id: "viewer",
+            display_name: "Viewer",
+            role: "viewer",
+            summary: "Preview tasks",
+            file: "agents/viewer.md",
+          },
+        ],
+        scenarios: [
+          {
+            id: "viewer",
+            name: "Launch the viewer",
+            summary: "Launch the viewer",
+            use_when: ["Preview tasks"],
+            required_inputs: [],
+            outputs: [],
+            agents_involved: ["viewer"],
+            run_profile: { mode: "analysis" },
+          },
+        ],
+      }),
+    ).toThrow("Invalid field manifest.scenarios[0].file: expected string");
   });
 });

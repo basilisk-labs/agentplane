@@ -150,6 +150,12 @@ function normalizeLegacyRunProfile(raw: unknown, field: string): RecipeRunProfil
   return raw === undefined ? { mode: "analysis" } : normalizeRunProfile(raw, field);
 }
 
+function normalizeLegacyScenarioFile(raw: unknown, field: string, scenarioId: string): string {
+  const value =
+    raw === undefined ? `scenarios/${scenarioId}.json` : normalizeRequiredString(raw, field);
+  return normalizeRecipeRelativePath(field, value);
+}
+
 function normalizeScenarios(
   raw: unknown,
   opts?: { legacyScenarioDefaults?: boolean },
@@ -230,10 +236,12 @@ function normalizeScenarios(
       run_profile: legacyDefaults
         ? normalizeLegacyRunProfile(entry.run_profile, `manifest.scenarios[${index}].run_profile`)
         : normalizeRunProfile(entry.run_profile, `manifest.scenarios[${index}].run_profile`),
-      file: normalizeRecipeRelativePath(
-        `manifest.scenarios[${index}].file`,
-        normalizeRequiredString(entry.file, `manifest.scenarios[${index}].file`),
-      ),
+      file: legacyDefaults
+        ? normalizeLegacyScenarioFile(entry.file, `manifest.scenarios[${index}].file`, id)
+        : normalizeRecipeRelativePath(
+            `manifest.scenarios[${index}].file`,
+            normalizeRequiredString(entry.file, `manifest.scenarios[${index}].file`),
+          ),
     };
   });
 }

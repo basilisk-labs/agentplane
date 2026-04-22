@@ -1,6 +1,7 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 import {
   normalizeRecipeTags,
   validateRecipeManifest,
@@ -45,10 +46,36 @@ function sortInstalledRecipes(file: InstalledRecipesFile): InstalledRecipesFile 
   return { schema_version: 1, updated_at: file.updated_at, recipes };
 }
 
+function canonicalJsonText(value: unknown): string {
+  return JSON.stringify(canonicalizeJson(value));
+}
+
+function installedRecipesNeedMigration(raw: unknown, normalized: InstalledRecipesFile): boolean {
+  return canonicalJsonText(raw) !== canonicalJsonText(normalized);
+}
+
 export async function readInstalledRecipesFile(filePath: string): Promise<InstalledRecipesFile> {
   try {
     const raw = JSON.parse(await readFile(filePath, "utf8")) as unknown;
     return sortInstalledRecipes(validateInstalledRecipesFile(raw));
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code === "ENOENT") return { schema_version: 1, updated_at: "", recipes: [] };
+    throw err;
+  }
+}
+
+export async function readAndMigrateInstalledRecipesFile(
+  filePath: string,
+): Promise<InstalledRecipesFile> {
+  try {
+    const raw = JSON.parse(await readFile(filePath, "utf8")) as unknown;
+    const normalized = sortInstalledRecipes(validateInstalledRecipesFile(raw));
+    if (installedRecipesNeedMigration(raw, normalized)) {
+      await mkdir(path.dirname(filePath), { recursive: true });
+      await writeJsonStableIfChanged(filePath, normalized);
+    }
+    return normalized;
   } catch (err) {
     const code = (err as { code?: string } | null)?.code;
     if (code === "ENOENT") return { schema_version: 1, updated_at: "", recipes: [] };
