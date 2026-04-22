@@ -34,8 +34,14 @@ import { ensureInitGitignore } from "./write-gitignore.js";
 import { ensureInitWorkflow } from "./write-workflow.js";
 import { cmdInitV2 } from "./orchestrate-v2.js";
 
-function shouldUseExperimentalInitV2(flags: InitParsed): boolean {
-  if (flags.experimentalUi === true || process.env.AGENTPLANE_INIT_UI === "v2") return true;
+function shouldUseInteractiveInitUi(flags: InitParsed): boolean {
+  if (
+    flags.interactiveUi === true ||
+    process.env.AGENTPLANE_INIT_UI === "interactive" ||
+    process.env.AGENTPLANE_INIT_UI === "v2"
+  ) {
+    return true;
+  }
   if (flags.yes || process.env.AGENTPLANE_PROMPTS === "plain") return false;
   return process.stdin.isTTY === true && process.stdout.isTTY === true;
 }
@@ -65,7 +71,7 @@ export async function cmdInit(opts: {
   spec: CommandSpec<InitParsed>;
 }): Promise<number> {
   const flags = opts.flags;
-  if (shouldUseExperimentalInitV2(flags)) {
+  if (shouldUseInteractiveInitUi(flags)) {
     return cmdInitV2(opts);
   }
 

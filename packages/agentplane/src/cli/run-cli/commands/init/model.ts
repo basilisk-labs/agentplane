@@ -24,7 +24,7 @@ export type InitFlags = {
   recipes?: string[];
   force?: boolean;
   backup?: boolean;
-  experimentalUi?: boolean;
+  interactiveUi?: boolean;
   yes: boolean;
 };
 

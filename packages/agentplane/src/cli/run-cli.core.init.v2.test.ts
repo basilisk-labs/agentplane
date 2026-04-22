@@ -101,7 +101,7 @@ function resetClackMocks(): void {
 
 installRunCliIntegrationHarness();
 
-describe("runCli init v2", () => {
+describe("runCli interactive init UI", () => {
   beforeEach(() => {
     setTty(true);
     restoreEnv();
@@ -115,7 +115,7 @@ describe("runCli init v2", () => {
     restoreEnv();
   });
 
-  it("runs the experimental preview, confirm, and apply path behind --experimental-ui", async () => {
+  it("runs the preview, confirm, and apply path behind --interactive-ui", async () => {
     const root = await mkTempDir();
     mocks.selectMock
       .mockResolvedValueOnce("light")
@@ -126,7 +126,7 @@ describe("runCli init v2", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["init", "--experimental-ui", "--root", root]);
+      const code = await runCli(["init", "--interactive-ui", "--root", root]);
 
       expect(code).toBe(0);
       expect(io.stdout).toContain(".agentplane");
@@ -153,9 +153,9 @@ describe("runCli init v2", () => {
     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
   });
 
-  it("routes to init v2 from AGENTPLANE_INIT_UI=v2", async () => {
+  it("routes to interactive init UI from AGENTPLANE_INIT_UI=interactive", async () => {
     const root = await mkTempDir();
-    process.env.AGENTPLANE_INIT_UI = "v2";
+    process.env.AGENTPLANE_INIT_UI = "interactive";
     mocks.selectMock
       .mockResolvedValueOnce("light")
       .mockResolvedValueOnce("codex")
@@ -217,6 +217,27 @@ describe("runCli init v2", () => {
       message: "Apply this init plan?",
       initialValue: true,
     });
+  });
+
+  it("keeps --experimental-ui as a compatibility alias", async () => {
+    const root = await mkTempDir();
+    mocks.selectMock
+      .mockResolvedValueOnce("light")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("local");
+    mocks.confirmMock.mockResolvedValueOnce(true);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--experimental-ui", "--root", root]);
+
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
   });
 
   it("keeps legacy init for non-TTY and --yes", async () => {

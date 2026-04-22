@@ -1,10 +1,10 @@
 ---
 id: "202604220255-104K7S"
 title: "Stabilize init v2 naming and flags"
-status: "TODO"
+status: "DOING"
 priority: "low"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,16 +24,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-22T04:48:45.644Z"
+  updated_by: "CODER"
+  note: "Verified init UI naming stabilization. Checks passed: focused init submodule tests (5 files, 22 tests), cli-core init tests (2 files, 44 tests), docs:cli:check, typecheck, eslint on changed init files, git diff --check, arch baseline/deps, knip baseline, ci:local:fast (234 fast files / 1361 tests passed, 2 skipped; 5 critical E2E files / 13 tests passed)."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: remove stale experimental init v2 wording, converge user-facing init UI flag names on stable terminology, and keep compatibility only where existing parser patterns support it."
+events:
+  -
+    type: "status"
+    at: "2026-04-22T04:43:37.573Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: remove stale experimental init v2 wording, converge user-facing init UI flag names on stable terminology, and keep compatibility only where existing parser patterns support it."
+  -
+    type: "verify"
+    at: "2026-04-22T04:48:45.644Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified init UI naming stabilization. Checks passed: focused init submodule tests (5 files, 22 tests), cli-core init tests (2 files, 44 tests), docs:cli:check, typecheck, eslint on changed init files, git diff --check, arch baseline/deps, knip baseline, ci:local:fast (234 fast files / 1361 tests passed, 2 skipped; 5 critical E2E files / 13 tests passed)."
 doc_version: 3
-doc_updated_at: "2026-04-22T02:55:05.772Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-22T04:48:45.657Z"
+doc_updated_by: "CODER"
 description: "Remove stale experimental wording from init v2 user-facing text and converge init UI flags on stable names."
 sections:
   Summary: "Align init v2 docs/help/output with its current default status."
@@ -44,7 +60,19 @@ sections:
     3. Update snapshots and docs for stable terminology.
     4. Verify init command suites.
   Verify Steps: "Run init CLI tests, docs checks if docs changed, fast CI."
-  Verification: "Pending implementation."
+  Verification: |-
+    Pending implementation.
+    
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-22T04:48:45.644Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified init UI naming stabilization. Checks passed: focused init submodule tests (5 files, 22 tests), cli-core init tests (2 files, 44 tests), docs:cli:check, typecheck, eslint on changed init files, git diff --check, arch baseline/deps, knip baseline, ci:local:fast (234 fast files / 1361 tests passed, 2 skipped; 5 critical E2E files / 13 tests passed).
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T04:43:37.588Z, excerpt_hash=sha256:135bdd825a07c78cb854c09a88fe99f5a3f989c284509d6d98266820321f22c6
+    
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Restore prior wording/flag names; keep compatibility aliases if added only by this task."
   Findings: "None yet."
 id_source: "generated"
@@ -71,6 +99,17 @@ Run init CLI tests, docs checks if docs changed, fast CI.
 ## Verification
 
 Pending implementation.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-22T04:48:45.644Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified init UI naming stabilization. Checks passed: focused init submodule tests (5 files, 22 tests), cli-core init tests (2 files, 44 tests), docs:cli:check, typecheck, eslint on changed init files, git diff --check, arch baseline/deps, knip baseline, ci:local:fast (234 fast files / 1361 tests passed, 2 skipped; 5 critical E2E files / 13 tests passed).
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T04:43:37.588Z, excerpt_hash=sha256:135bdd825a07c78cb854c09a88fe99f5a3f989c284509d6d98266820321f22c6
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 

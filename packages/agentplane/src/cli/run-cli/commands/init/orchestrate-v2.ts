@@ -48,7 +48,7 @@ function assertInteractiveInitV2(opts: { flags: InitParsed; spec: CommandSpec<In
     throw usageError({
       spec: opts.spec,
       command: "init",
-      message: "Experimental init UI is interactive and cannot be combined with --yes.",
+      message: "Interactive init UI cannot be combined with --yes.",
     });
   }
 }
@@ -62,7 +62,7 @@ function requireInitV2Clack(
     spec,
     command: "init",
     message:
-      "Experimental init UI requires an interactive TTY. Unset AGENTPLANE_INIT_UI or omit --experimental-ui for the legacy non-interactive route.",
+      "Interactive init UI requires an interactive TTY. Unset AGENTPLANE_INIT_UI or omit --interactive-ui for the non-interactive route.",
   });
 }
 
