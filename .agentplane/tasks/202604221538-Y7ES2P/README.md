@@ -1,10 +1,11 @@
 ---
 id: "202604221538-Y7ES2P"
 title: "Define prompt module domain contracts"
-status: "DOING"
+result_summary: "Added prompt module domain contracts for v0.4 modular prompt assembly."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-22T15:51:55.886Z"
   updated_by: "CODER"
   note: "Implemented v0.4 prompt module domain contracts with typed module addressing, ownership, surfaces, targets, slots, mutability, load conditions, merge policy, dependencies, graph nodes, and provenance."
-commit: null
+commit:
+  hash: "a1b48fa5c01a7adca60dc8de3957143598b09a51"
+  message: "🏗️ Y7ES2P code: add prompt module contracts"
 comments:
   -
     author: "CODER"
     body: "Start: implement the foundational v0.4 prompt module domain contracts first so downstream schema, compiler, recipe, and migration tasks share one typed model."
+  -
+    author: "CODER"
+    body: "Verified: v0.4 prompt module domain contracts are implemented with typed addressing, ownership, surfaces, targets, slots, mutability, load conditions, merge policy, graph nodes, dependencies, and provenance; focused tests, typecheck, bootstrap, and doctor passed."
 events:
   -
     type: "status"
@@ -43,32 +49,39 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented v0.4 prompt module domain contracts with typed module addressing, ownership, surfaces, targets, slots, mutability, load conditions, merge policy, dependencies, graph nodes, and provenance."
+  -
+    type: "status"
+    at: "2026-04-22T15:53:34.659Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: v0.4 prompt module domain contracts are implemented with typed addressing, ownership, surfaces, targets, slots, mutability, load conditions, merge policy, graph nodes, dependencies, and provenance; focused tests, typecheck, bootstrap, and doctor passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T15:52:43.450Z"
+doc_updated_at: "2026-04-22T15:53:34.659Z"
 doc_updated_by: "CODER"
 description: "Add v0.4 domain types for prompt modules, module ownership, surfaces, targets, slots, mutability, load conditions, merge policy, and provenance."
 sections:
   Summary: |-
     Define prompt module domain contracts
-
+    
     Add v0.4 domain types for prompt modules, module ownership, surfaces, targets, slots, mutability, load conditions, merge policy, and provenance.
   Scope: |-
     - In scope: Add v0.4 domain types for prompt modules, module ownership, surfaces, targets, slots, mutability, load conditions, merge policy, and provenance.
     - Out of scope: unrelated refactors not required for "Define prompt module domain contracts".
   Plan: |-
     Goal: Define prompt module domain contracts
-
+    
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-
+    
     Acceptance:
     - Module contracts cover gateway, policy, agent, runner, validator, and template surfaces with typed ids and provenance.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-
+    
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-
@@ -78,13 +91,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-22T15:51:55.886Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Implemented v0.4 prompt module domain contracts with typed module addressing, ownership, surfaces, targets, slots, mutability, load conditions, merge policy, dependencies, graph nodes, and provenance.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T15:50:35.337Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
