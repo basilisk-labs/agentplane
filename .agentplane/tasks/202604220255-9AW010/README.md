@@ -1,10 +1,11 @@
 ---
 id: "202604220255-9AW010"
 title: "Complete core subpath surface and root import ban"
-status: "DOING"
+result_summary: "Added core config/project/commit subpath entries, migrated production import callsites, updated Vitest aliases and test mocks, and enforced production root @agentplaneorg/core import ban."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T05:53:38.305Z"
   updated_by: "CODER"
   note: "Verified core subpath exports and production root import ban. Checks passed: bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
-commit: null
+commit:
+  hash: "b88824de690666664003a69e864c086a50680cca"
+  message: "🧩 9AW010 core: complete subpath imports"
 comments:
   -
     author: "CODER"
     body: "Start: add core config/project/commit subpaths and migrate production root core imports."
+  -
+    author: "CODER"
+    body: "Verified: core config/project/commit subpaths are exported, production root imports are banned, and workspace imports use subpaths."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified core subpath exports and production root import ban. Checks passed: bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
+  -
+    type: "status"
+    at: "2026-04-22T05:54:01.019Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: core config/project/commit subpaths are exported, production root imports are banned, and workspace imports use subpaths."
 doc_version: 3
-doc_updated_at: "2026-04-22T05:53:38.311Z"
+doc_updated_at: "2026-04-22T05:54:01.019Z"
 doc_updated_by: "CODER"
 description: "Add missing core subpath exports for config/project/commit surfaces and make lint enforcement cover remaining production root imports."
 sections:
