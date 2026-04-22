@@ -8,6 +8,11 @@ import { afterEach, describe, expect, it } from "vitest";
 
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts", "hotspot-report.mjs");
+const BASELINE_SCRIPT_PATH = path.resolve(
+  process.cwd(),
+  "scripts",
+  "check-oversized-test-baseline.mjs",
+);
 const tempRoots: string[] = [];
 
 async function makeTempRoot(prefix: string) {
@@ -19,6 +24,28 @@ async function makeTempRoot(prefix: string) {
 async function runScript(args: string[]) {
   try {
     const result = await execFileAsync(process.execPath, [SCRIPT_PATH, ...args], {
+      cwd: process.cwd(),
+      env: process.env,
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    return {
+      exitCode: 0,
+      stdout: String(result.stdout ?? ""),
+      stderr: String(result.stderr ?? ""),
+    };
+  } catch (error: unknown) {
+    const execError = error as { code?: number; stdout?: string; stderr?: string };
+    return {
+      exitCode: Number.isInteger(execError.code) ? Number(execError.code) : 1,
+      stdout: typeof execError.stdout === "string" ? execError.stdout : "",
+      stderr: typeof execError.stderr === "string" ? execError.stderr : String(error),
+    };
+  }
+}
+
+async function runBaselineScript(args: string[]) {
+  try {
+    const result = await execFileAsync(process.execPath, [BASELINE_SCRIPT_PATH, ...args], {
       cwd: process.cwd(),
       env: process.env,
       maxBuffer: 10 * 1024 * 1024,
@@ -306,5 +333,88 @@ describe("hotspot-report script", () => {
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain("Oversized test threshold failed");
     expect(result.stderr).toContain("tests/too-large.test.ts");
+  });
+
+  it("passes oversized test baseline when current files are within baseline", async () => {
+    const root = await makeTempRoot("agentplane-hotspot-test-baseline-");
+    await mkdir(path.join(root, "packages", "agentplane", "src"), { recursive: true });
+    await mkdir(path.join(root, "packages", "example", "src"), { recursive: true });
+    await writeFile(path.join(root, "packages", "agentplane", "src", "ok.ts"), "const ok = 1;\n");
+    await writeFile(
+      path.join(root, "packages", "example", "src", "large.test.ts"),
+      Array.from({ length: 5 }, (_, index) => `const testValue${index} = ${index};`).join("\n"),
+    );
+    const baselinePath = path.join(root, "baseline.json");
+    await writeFile(
+      baselinePath,
+      JSON.stringify(
+        {
+          schema_version: 1,
+          threshold_lines: 3,
+          entries: [{ file: "packages/example/src/large.test.ts", lines: 5 }],
+        },
+        null,
+        2,
+      ),
+    );
+
+    const result = await runBaselineScript([
+      "--root",
+      root,
+      "--baseline",
+      baselinePath,
+      "--threshold-lines",
+      "3",
+    ]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("Oversized test baseline OK");
+    expect(result.stderr).toBe("");
+  });
+
+  it("fails oversized test baseline on new or grown oversized tests", async () => {
+    const root = await makeTempRoot("agentplane-hotspot-test-baseline-");
+    await mkdir(path.join(root, "packages", "agentplane", "src"), { recursive: true });
+    await mkdir(path.join(root, "packages", "example", "src"), { recursive: true });
+    await writeFile(path.join(root, "packages", "agentplane", "src", "ok.ts"), "const ok = 1;\n");
+    await writeFile(
+      path.join(root, "packages", "example", "src", "large.test.ts"),
+      Array.from({ length: 6 }, (_, index) => `const testValue${index} = ${index};`).join("\n"),
+    );
+    await writeFile(
+      path.join(root, "packages", "example", "src", "new-large.test.ts"),
+      Array.from({ length: 5 }, (_, index) => `const newValue${index} = ${index};`).join("\n"),
+    );
+    const baselinePath = path.join(root, "baseline.json");
+    await writeFile(
+      baselinePath,
+      JSON.stringify(
+        {
+          schema_version: 1,
+          threshold_lines: 3,
+          entries: [{ file: "packages/example/src/large.test.ts", lines: 5 }],
+        },
+        null,
+        2,
+      ),
+    );
+
+    const result = await runBaselineScript([
+      "--root",
+      root,
+      "--baseline",
+      baselinePath,
+      "--threshold-lines",
+      "3",
+    ]);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain("Oversized test baseline failed");
+    expect(result.stderr).toContain(
+      "Oversized test grew beyond baseline: packages/example/src/large.test.ts",
+    );
+    expect(result.stderr).toContain(
+      "New oversized test without baseline: packages/example/src/new-large.test.ts",
+    );
   });
 });
