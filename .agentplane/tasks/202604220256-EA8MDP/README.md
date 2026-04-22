@@ -1,10 +1,11 @@
 ---
 id: "202604220256-EA8MDP"
 title: "Normalize recipe test fixture cache reset behavior"
-status: "DOING"
+result_summary: "Added explicit recipe archive fixture cache reset semantics and wired cleanup into recipe/test integration harnesses."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T08:12:24.899Z"
   updated_by: "CODER"
   note: "Passed: focused recipe/testkit Vitest suite (8 files, 62 tests), focused lint, bun run arch:baseline && bun run arch:deps, bun run ci:local:fast, bun run knip:check, git diff --check."
-commit: null
+commit:
+  hash: "b48006b99eb825e6d26169a36cd7f167508312cf"
+  message: "🧪 EA8MDP test: reset recipe archive fixtures"
 comments:
   -
     author: "CODER"
     body: "Start: normalize recipe fixture cache reset behavior and verify recipe suites in isolation and fast CI."
+  -
+    author: "CODER"
+    body: "Verified: focused recipe/testkit tests and full fast CI contract passed."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Passed: focused recipe/testkit Vitest suite (8 files, 62 tests), focused lint, bun run arch:baseline && bun run arch:deps, bun run ci:local:fast, bun run knip:check, git diff --check."
+  -
+    type: "status"
+    at: "2026-04-22T08:12:36.849Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: focused recipe/testkit tests and full fast CI contract passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T08:12:24.905Z"
+doc_updated_at: "2026-04-22T08:12:36.849Z"
 doc_updated_by: "CODER"
 description: "Remove global recipe archive fixture state leaks by adding explicit reset semantics around recipe test caches."
 sections:
