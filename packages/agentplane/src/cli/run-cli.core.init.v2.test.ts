@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -9,6 +9,11 @@ import {
   mkTempDir,
   pathExists,
 } from "@agentplane/testkit";
+import {
+  baseRecipeEntry,
+  baseRecipeManifest,
+  scenarioDescriptor,
+} from "@agentplane/testkit/recipes";
 
 const mocks = vi.hoisted(() => ({
   cancelMock: vi.fn(),
@@ -97,6 +102,32 @@ function resetClackMocks(): void {
   mocks.spinnerStartMock.mockReset();
   mocks.spinnerStopMock.mockReset();
   mocks.textMock.mockReset();
+}
+
+async function writeLegacyRecipeCache(): Promise<void> {
+  const scenario = {
+    ...scenarioDescriptor(),
+    name: undefined,
+    use_when: undefined,
+    required_inputs: undefined,
+    outputs: undefined,
+    agents_involved: undefined,
+    run_profile: undefined,
+  };
+  const manifest = baseRecipeManifest({ scenarios: [scenario] });
+  await writeFile(
+    path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"),
+    JSON.stringify(
+      {
+        schema_version: 1,
+        updated_at: "2026-04-22T00:00:00.000Z",
+        recipes: [baseRecipeEntry({ manifest })],
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
 }
 
 installRunCliIntegrationHarness();
@@ -217,6 +248,48 @@ describe("runCli interactive init UI", () => {
       message: "Apply this init plan?",
       initialValue: true,
     });
+  });
+
+  it("completes the default TTY dialog with a legacy cached recipe manifest", async () => {
+    const root = await mkTempDir();
+    await writeLegacyRecipeCache();
+    mocks.selectMock
+      .mockResolvedValueOnce("full-harness")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("direct")
+      .mockResolvedValueOnce("allow_other_task_readmes")
+      .mockResolvedValueOnce("local")
+      .mockResolvedValueOnce("aggressive");
+    mocks.confirmMock
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
+    mocks.textMock.mockResolvedValueOnce("none");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--root", root]);
+
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(".agentplane");
+    } finally {
+      io.restore();
+    }
+
+    expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
+    expect(mocks.noteMock).toHaveBeenCalledWith(expect.stringContaining("agent/plane"));
+    expect(mocks.logStepMock).toHaveBeenCalledWith("Setup");
+    expect(mocks.selectMock).toHaveBeenCalledTimes(7);
+    expect(mocks.textMock).toHaveBeenCalledWith(
+      expect.objectContaining({ message: "Materialize cached recipes" }),
+    );
+    expect(mocks.confirmMock).toHaveBeenCalledWith({
+      message: "Apply this init plan?",
+      initialValue: true,
+    });
+    expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
+    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(true);
   });
 
   it("keeps --experimental-ui as a compatibility alias", async () => {

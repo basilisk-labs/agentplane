@@ -15,8 +15,16 @@ import { listCachedRecipes } from "./run-cli/commands/init/recipes.js";
 installRecipesCommandHarness();
 
 describe("init cached recipes", () => {
-  it("lists cached legacy scenario manifests that omit scenario name", async () => {
-    const scenario = { ...scenarioDescriptor(), name: undefined };
+  it("lists cached legacy scenario manifests that omit modern scenario metadata", async () => {
+    const scenario = {
+      ...scenarioDescriptor(),
+      name: undefined,
+      use_when: undefined,
+      required_inputs: undefined,
+      outputs: undefined,
+      agents_involved: undefined,
+      run_profile: undefined,
+    };
     const manifest = baseRecipeManifest({ scenarios: [scenario] });
     await writeFile(
       path.join(requireRecipesTempHome(), "recipes.json"),

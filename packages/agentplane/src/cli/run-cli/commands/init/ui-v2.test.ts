@@ -47,8 +47,8 @@ describe("init ui v2", () => {
 
     introLogo(clack);
 
-    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("_   ____"));
-    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining(String.raw`\___`));
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("░█▀█░█▀▀░█▀▀"));
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("agent/plane"));
   });
 
   it("emits preview output through Clack note", () => {
