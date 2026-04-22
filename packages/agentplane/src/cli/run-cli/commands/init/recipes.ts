@@ -1,5 +1,5 @@
 import { cmdRecipeAddParsed } from "../../../../commands/recipes/impl/commands/add.js";
-import { readInstalledRecipesFile } from "../../../../commands/recipes/impl/installed-recipes.js";
+import { readAndMigrateInstalledRecipesFile } from "../../../../commands/recipes/impl/installed-recipes.js";
 import { resolveInstalledRecipesPath } from "../../../../commands/recipes/impl/paths.js";
 import { CliError } from "../../../../shared/errors.js";
 
@@ -10,7 +10,7 @@ type CachedRecipeInfo = {
 };
 
 export async function listCachedRecipes(): Promise<CachedRecipeInfo[]> {
-  const cached = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+  const cached = await readAndMigrateInstalledRecipesFile(resolveInstalledRecipesPath());
   return cached.recipes.map((recipe) => ({
     id: recipe.id,
     summary: recipe.manifest.summary,

@@ -1,4 +1,4 @@
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -24,6 +24,7 @@ describe("init cached recipes", () => {
       outputs: undefined,
       agents_involved: undefined,
       run_profile: undefined,
+      file: undefined,
     };
     const manifest = baseRecipeManifest({ scenarios: [scenario] });
     await writeFile(
@@ -43,5 +44,13 @@ describe("init cached recipes", () => {
     await expect(listCachedRecipes()).resolves.toEqual([
       { id: "viewer", summary: "Preview tasks", version: "1.2.3" },
     ]);
+
+    const migrated = JSON.parse(
+      await readFile(path.join(requireRecipesTempHome(), "recipes.json"), "utf8"),
+    ) as {
+      recipes: [{ manifest: { scenarios: [{ file: string; use_when: string[] }] } }];
+    };
+    expect(migrated.recipes[0]?.manifest.scenarios[0]?.file).toBe(`scenarios/${scenario.id}.json`);
+    expect(migrated.recipes[0]?.manifest.scenarios[0]?.use_when).toEqual([scenario.summary]);
   });
 });

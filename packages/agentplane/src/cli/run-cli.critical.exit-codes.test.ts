@@ -71,7 +71,6 @@ describeCritical("critical: exit codes contract", () => {
                     {
                       id: "viewer",
                       summary: "Launch the viewer",
-                      file: "scenarios/viewer.json",
                     },
                   ],
                 },

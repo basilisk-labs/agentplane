@@ -113,6 +113,7 @@ async function writeLegacyRecipeCache(): Promise<void> {
     outputs: undefined,
     agents_involved: undefined,
     run_profile: undefined,
+    file: undefined,
   };
   const manifest = baseRecipeManifest({ scenarios: [scenario] });
   await writeFile(
@@ -290,6 +291,13 @@ describe("runCli interactive init UI", () => {
     });
     expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(true);
+    const migrated = JSON.parse(
+      await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
+    ) as {
+      recipes: [{ manifest: { scenarios: [{ file: string; use_when: string[] }] } }];
+    };
+    expect(migrated.recipes[0]?.manifest.scenarios[0]?.file).toBe("scenarios/RECIPE_SCENARIO.json");
+    expect(migrated.recipes[0]?.manifest.scenarios[0]?.use_when).toEqual(["Recipe scenario"]);
   });
 
   it("keeps --experimental-ui as a compatibility alias", async () => {
