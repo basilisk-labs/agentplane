@@ -1,10 +1,11 @@
 ---
 id: "202604221636-WSX1K4"
 title: "Fix init legacy scenario cache and full dialog smoke"
-status: "DOING"
+result_summary: "Fixed legacy cached recipe scenario metadata handling, restored the original init logo, and added full-dialog plus critical release-path init coverage."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,15 +20,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-22T16:51:41.109Z"
+  updated_by: "CODER"
+  note: "Local verification passed: targeted recipes/init tests, cli-core dialog test, critical init E2E, package typechecks, release parity, and full pre-push standard gate including fast unit + critical E2E."
+commit:
+  hash: "316226e92a30bf5d253ba9be8311034a47e902fb"
+  message: "🐛 WSX1K4 init: tolerate legacy scenario cache"
 comments:
   -
     author: "CODER"
     body: "Start: fix init legacy cached scenario compatibility, restore original ASCII logo, and add release-covered full init smoke coverage before preparing the next patch release."
+  -
+    author: "CODER"
+    body: "Verified: legacy schema v1 scenario manifests now get compatibility defaults; the init TTY dialog and critical process smoke cover the reported cache failure; release parity and pre-push gate passed."
 events:
   -
     type: "status"
@@ -36,8 +42,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: fix init legacy cached scenario compatibility, restore original ASCII logo, and add release-covered full init smoke coverage before preparing the next patch release."
+  -
+    type: "verify"
+    at: "2026-04-22T16:51:41.109Z"
+    author: "CODER"
+    state: "ok"
+    note: "Local verification passed: targeted recipes/init tests, cli-core dialog test, critical init E2E, package typechecks, release parity, and full pre-push standard gate including fast unit + critical E2E."
+  -
+    type: "status"
+    at: "2026-04-22T16:51:48.165Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: legacy schema v1 scenario manifests now get compatibility defaults; the init TTY dialog and critical process smoke cover the reported cache failure; release parity and pre-push gate passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T16:44:27.096Z"
+doc_updated_at: "2026-04-22T16:51:48.166Z"
 doc_updated_by: "CODER"
 description: "Fix agentplane init compatibility with legacy cached recipe scenarios, restore the original ASCII logo, and add release-covered smoke coverage for the complete init dialog path."
 sections:
@@ -68,6 +87,14 @@ sections:
     - pre-push standard gate before PR
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-22T16:51:41.109Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Local verification passed: targeted recipes/init tests, cli-core dialog test, critical init E2E, package typechecks, release parity, and full pre-push standard gate including fast unit + critical E2E.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T16:44:27.096Z, excerpt_hash=sha256:9931b30448eea633556339558bcbe171ef74afbb8da9770407eaec6f008aa3e4
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -111,6 +138,14 @@ Plan:
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-22T16:51:41.109Z — VERIFY — ok
+
+By: CODER
+
+Note: Local verification passed: targeted recipes/init tests, cli-core dialog test, critical init E2E, package typechecks, release parity, and full pre-push standard gate including fast unit + critical E2E.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T16:44:27.096Z, excerpt_hash=sha256:9931b30448eea633556339558bcbe171ef74afbb8da9770407eaec6f008aa3e4
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
