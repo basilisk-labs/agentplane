@@ -1,10 +1,11 @@
 ---
 id: "202604220255-07NK08"
 title: "Replace sleep and polling tests with deterministic wait helpers"
-status: "DOING"
+result_summary: "Added @agentplane/testkit waitForCondition, migrated runner/query wait loops to it, and replaced mtime sleep tests with explicit mtime control."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T07:46:01.643Z"
   updated_by: "CODER"
   note: "Verified deterministic wait helper migration. Checks passed: direct sleep inventory for changed test scopes; focused Vitest for testkit, mtime, TaskStore, runner lifecycle, process supervision, and query-run consumers; focused lint; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
-commit: null
+commit:
+  hash: "df8c4a9c96148d2563930ef8e48ee79ab86b2d01"
+  message: "🧪 07NK08 test: add deterministic wait helpers"
 comments:
   -
     author: "CODER"
     body: "Start: replace fragile sleep/polling waits in tests with deterministic wait helpers where predicates are available."
+  -
+    author: "CODER"
+    body: "Verified: replaced fragile test sleeps and local polling loops with shared deterministic wait helpers."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified deterministic wait helper migration. Checks passed: direct sleep inventory for changed test scopes; focused Vitest for testkit, mtime, TaskStore, runner lifecycle, process supervision, and query-run consumers; focused lint; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
+  -
+    type: "status"
+    at: "2026-04-22T07:46:16.707Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: replaced fragile test sleeps and local polling loops with shared deterministic wait helpers."
 doc_version: 3
-doc_updated_at: "2026-04-22T07:46:01.649Z"
+doc_updated_at: "2026-04-22T07:46:16.708Z"
 doc_updated_by: "CODER"
 description: "Remove short setTimeout sleeps and ad hoc polling loops from test suites where deterministic hooks or filesystem/event predicates can be used."
 sections:
