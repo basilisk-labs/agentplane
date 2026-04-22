@@ -1,10 +1,11 @@
 ---
 id: "202604221918-C1KTM7"
 title: "Validate suite and selector test targets"
-status: "DOING"
+result_summary: "Validated hard-coded Vitest suite and local CI selector test targets."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-22T19:39:16.899Z"
   updated_by: "CODER"
   note: "Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK and target-backed test routing OK. Command: bun run test:precommit; Result: pass; Evidence: 17 files passed, 134 tests passed. Command: bun run lint:core -- scripts/check-test-routing.mjs scripts/run-vitest-suite.mjs scripts/lib/local-ci-selection.mjs packages/agentplane/src/cli/test-routing-check.test.ts; Result: pass."
-commit: null
+commit:
+  hash: "500e6dbf97cf0e4179efe7714421aeed431e8e33"
+  message: "✨ C1KTM7 test: validate suite targets"
 comments:
   -
     author: "CODER"
     body: "Start: validating hard-coded Vitest suite and local CI selector targets against the shared test inventory."
+  -
+    author: "CODER"
+    body: "Verified: suite and selector target validation is wired into the routing check and precommit coverage passed."
 events:
   -
     type: "status"
@@ -44,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK and target-backed test routing OK. Command: bun run test:precommit; Result: pass; Evidence: 17 files passed, 134 tests passed. Command: bun run lint:core -- scripts/check-test-routing.mjs scripts/run-vitest-suite.mjs scripts/lib/local-ci-selection.mjs packages/agentplane/src/cli/test-routing-check.test.ts; Result: pass."
+  -
+    type: "status"
+    at: "2026-04-22T19:39:23.254Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: suite and selector target validation is wired into the routing check and precommit coverage passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T19:39:16.902Z"
+doc_updated_at: "2026-04-22T19:39:23.254Z"
 doc_updated_by: "CODER"
 description: "Make run-vitest-suite and local CI selector targets validate against the shared test inventory so stale hard-coded test paths cannot survive silently."
 sections:
