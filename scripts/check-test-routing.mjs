@@ -1,11 +1,13 @@
 import { pathToFileURL } from "node:url";
 
+import { listLocalCiTargetTestFiles } from "./lib/local-ci-selection.mjs";
 import {
   AGGREGATE_TEST_ROUTES,
   PRIMARY_TEST_ROUTES,
   buildTestInventory,
   summarizeTestInventory,
 } from "./lib/test-inventory.mjs";
+import { listVitestSuiteFiles } from "./run-vitest-suite.mjs";
 
 const PRIMARY_ROUTE_SET = new Set(PRIMARY_TEST_ROUTES);
 const AGGREGATE_ROUTE_SET = new Set(AGGREGATE_TEST_ROUTES);
@@ -17,6 +19,7 @@ function formatList(values) {
 export function validateTestRouting(entries) {
   const errors = [];
   const seenFiles = new Set();
+  const inventoryFiles = new Set(entries.map((entry) => entry.filePath));
 
   for (const entry of entries) {
     if (seenFiles.has(entry.filePath)) {
@@ -52,12 +55,47 @@ export function validateTestRouting(entries) {
     }
   }
 
+  for (const error of validateTargetedTestFiles(
+    "vitest suite",
+    listVitestSuiteFiles(),
+    inventoryFiles,
+  )) {
+    errors.push(error);
+  }
+  for (const error of validateTargetedTestFiles(
+    "local CI selector",
+    listLocalCiTargetTestFiles(),
+    inventoryFiles,
+  )) {
+    errors.push(error);
+  }
+
   return {
     ok: errors.length === 0,
     errors,
     summary: summarizeTestInventory(entries),
     total: entries.length,
   };
+}
+
+export function validateTargetedTestFiles(sourceLabel, groups, inventoryFiles) {
+  const errors = [];
+  for (const [groupName, files] of Object.entries(groups)) {
+    const seenTargets = new Set();
+    for (const filePath of files) {
+      if (seenTargets.has(filePath)) {
+        errors.push(`${sourceLabel} ${groupName}: duplicate target ${filePath}`);
+        continue;
+      }
+      seenTargets.add(filePath);
+      if (!inventoryFiles.has(filePath)) {
+        errors.push(
+          `${sourceLabel} ${groupName}: target is missing from test inventory: ${filePath}`,
+        );
+      }
+    }
+  }
+  return errors;
 }
 
 export function renderTestRoutingReport(result) {

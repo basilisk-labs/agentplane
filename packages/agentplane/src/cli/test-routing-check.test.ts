@@ -13,20 +13,26 @@ const { buildTestInventory } = testInventoryModule as {
   buildTestInventory: () => InventoryEntry[];
 };
 
-const { renderTestRoutingReport, validateTestRouting } = testRoutingCheckModule as {
-  renderTestRoutingReport: (result: {
-    ok: boolean;
-    errors: string[];
-    summary: Record<string, number>;
-    total: number;
-  }) => string;
-  validateTestRouting: (entries: InventoryEntry[]) => {
-    ok: boolean;
-    errors: string[];
-    summary: Record<string, number>;
-    total: number;
+const { renderTestRoutingReport, validateTargetedTestFiles, validateTestRouting } =
+  testRoutingCheckModule as {
+    renderTestRoutingReport: (result: {
+      ok: boolean;
+      errors: string[];
+      summary: Record<string, number>;
+      total: number;
+    }) => string;
+    validateTargetedTestFiles: (
+      sourceLabel: string,
+      groups: Record<string, string[]>,
+      inventoryFiles: Set<string>,
+    ) => string[];
+    validateTestRouting: (entries: InventoryEntry[]) => {
+      ok: boolean;
+      errors: string[];
+      summary: Record<string, number>;
+      total: number;
+    };
   };
-};
 
 describe("test routing check", () => {
   it("passes for the current inventory", () => {
@@ -82,6 +88,27 @@ describe("test routing check", () => {
     );
     expect(result.errors).toContain(
       "packages/agentplane/src/cli/unknown-route.test.ts: unknown aggregate route(s): unknown-aggregate",
+    );
+  });
+
+  it("reports stale targeted suite references", () => {
+    const errors = validateTargetedTestFiles(
+      "fixture suite",
+      {
+        duplicate: [
+          "packages/agentplane/src/cli/test-routing-check.test.ts",
+          "packages/agentplane/src/cli/test-routing-check.test.ts",
+        ],
+        stale: ["packages/agentplane/src/cli/missing-target.test.ts"],
+      },
+      new Set(["packages/agentplane/src/cli/test-routing-check.test.ts"]),
+    );
+
+    expect(errors).toContain(
+      "fixture suite duplicate: duplicate target packages/agentplane/src/cli/test-routing-check.test.ts",
+    );
+    expect(errors).toContain(
+      "fixture suite stale: target is missing from test inventory: packages/agentplane/src/cli/missing-target.test.ts",
     );
   });
 

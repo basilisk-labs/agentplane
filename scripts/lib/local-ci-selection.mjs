@@ -477,3 +477,20 @@ export function shouldRunCliDocsCheck(changedFiles) {
   if (files.length === 0) return true;
   return anyPathMatches(files, CLI_DOCS_RELEVANT_PATTERNS);
 }
+
+export function listLocalCiTargetTestFiles() {
+  return {
+    backend: [...BACKEND_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),
+    "cli-core": [...CLI_CORE_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),
+    "cli-help": [...CLI_HELP_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),
+    "cli-runtime": [...CLI_RUNTIME_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),
+    doctor: [...DOCTOR_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),
+    guard: [...GUARD_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),
+    hooks: [...HOOKS_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),
+    pr: [...PR_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),
+    release: [...RELEASE_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),
+    task: [...TASK_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),
+    upgrade: [...UPGRADE_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),
+    workflow: [...WORKFLOW_TEST_FILES].toSorted((a, b) => a.localeCompare(b)),
+  };
+}
