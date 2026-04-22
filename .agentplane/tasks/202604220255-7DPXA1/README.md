@@ -1,10 +1,11 @@
 ---
 id: "202604220255-7DPXA1"
 title: "Split remaining oversized CLI mega-tests"
-status: "DOING"
+result_summary: "Split block/finish, hosted-close, and init CLI mega-tests into scenario-focused files; updated platform-critical routing, significant coverage mapping, and removed obsolete hotspot allowlist entries."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T06:51:19.733Z"
   updated_by: "CODER"
   note: "Verified oversized CLI mega-test split. Checks passed: targeted split CLI suites; hotspot guard; typecheck; format check; local CI selection and release contract tests; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
-commit: null
+commit:
+  hash: "8a761473730ed046d605c85fe82b4c87ab6aec13"
+  message: "🧪 7DPXA1 test: split oversized CLI suites"
 comments:
   -
     author: "CODER"
     body: "Start: split remaining oversized CLI mega-tests while preserving behavior and verification coverage."
+  -
+    author: "CODER"
+    body: "Verified: split oversized CLI mega-tests and preserved coverage routing."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified oversized CLI mega-test split. Checks passed: targeted split CLI suites; hotspot guard; typecheck; format check; local CI selection and release contract tests; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
+  -
+    type: "status"
+    at: "2026-04-22T06:51:37.159Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: split oversized CLI mega-tests and preserved coverage routing."
 doc_version: 3
-doc_updated_at: "2026-04-22T06:51:19.741Z"
+doc_updated_at: "2026-04-22T06:51:37.160Z"
 doc_updated_by: "CODER"
 description: "Split block-finish, task-hosted-close, and init mega-test files into scenario-focused files under the configured test size threshold."
 sections:
