@@ -1,10 +1,11 @@
 ---
 id: "202604220254-Q6YYWM"
 title: "Extract pure CLI command specs for lazy loaders"
-status: "DOING"
+result_summary: "Pure command specs extracted for heavy CLI catalog imports."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-04-22T03:25:37.737Z"
   updated_by: "CODER"
   note: "Command spec extraction verified: focused command catalog/runtime tests passed; cold-start baseline passed after rerun; arch, knip, diff check, typecheck, lint, and full fast CI passed."
-commit: null
+commit:
+  hash: "f6038a868763a83a1512484c70e305d9bf6bb5e8"
+  message: "♻️ Q6YYWM cli: extract pure command specs"
 comments:
   -
     author: "CODER"
     body: "Start: Implement pure CLI command spec extraction for heavy command loaders, preserving command behavior and verifying catalog/runtime checks before closure."
+  -
+    author: "CODER"
+    body: "Verified: Extracted pure command spec modules for heavy CLI catalog imports; focused tests, typecheck, arch checks, knip, cold-start check, and full fast CI passed."
 events:
   -
     type: "status"
@@ -46,8 +52,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command spec extraction verified: focused command catalog/runtime tests passed; cold-start baseline passed after rerun; arch, knip, diff check, typecheck, lint, and full fast CI passed."
+  -
+    type: "status"
+    at: "2026-04-22T03:26:08.167Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Extracted pure command spec modules for heavy CLI catalog imports; focused tests, typecheck, arch checks, knip, cold-start check, and full fast CI passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T03:25:37.765Z"
+doc_updated_at: "2026-04-22T03:26:08.168Z"
 doc_updated_by: "CODER"
 description: "Split heavy command spec metadata from runtime command handlers so command catalog modules can be imported without loading command implementations."
 sections:
