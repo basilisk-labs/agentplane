@@ -9,10 +9,8 @@ const DEFAULT_CHECK_OVERSIZED_LINES = 600;
 const DEFAULT_TEST_WARNING_LINES = 1000;
 const DEFAULT_CHECK_TEST_OVERSIZED_LINES = 1300;
 const DEFAULT_ALLOWED_OVERSIZED_TESTS = [
-  "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
   "packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts",
   "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts",
 ];
 const INCLUDED_EXTENSIONS = new Set([".ts", ".tsx"]);
 const EXCLUDED_SUFFIXES = [".d.ts", ".test.ts", ".test.tsx", ".test-helpers.ts"];

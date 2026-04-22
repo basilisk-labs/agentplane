@@ -117,7 +117,7 @@ export default defineConfig({
         include: [
           "packages/agentplane/src/commands/shared/pr-meta.test.ts",
           "packages/agentplane/src/commands/scenario/impl/commands.test.ts",
-          "packages/agentplane/src/cli/run-cli.core.init.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.init*.test.ts",
           "packages/agentplane/src/cli/run-cli.core.upgrade.test.ts",
         ],
         hookTimeout: 60_000,
@@ -163,7 +163,7 @@ export default defineConfig({
         exclude: [
           "**/cli-smoke.test.ts",
           "**/release-recovery-script.test.ts",
-          "**/run-cli.core.init.test.ts",
+          "**/run-cli.core.init*.test.ts",
           "**/run-cli.core.upgrade.test.ts",
           "**/run-cli.core.backend-sync.test.ts",
         ],

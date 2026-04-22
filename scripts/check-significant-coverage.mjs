@@ -4,19 +4,35 @@ import path from "node:path";
 const TARGETS = [
   {
     source: "packages/agentplane/src/cli/run-cli/commands/init.ts",
-    tests: ["packages/agentplane/src/cli/run-cli.core.init.test.ts"],
+    tests: [
+      "packages/agentplane/src/cli/run-cli.core.init.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts",
+    ],
   },
   {
     source: "packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts",
-    tests: ["packages/agentplane/src/cli/run-cli.core.init.test.ts"],
+    tests: [
+      "packages/agentplane/src/cli/run-cli.core.init.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts",
+    ],
   },
   {
     source: "packages/agentplane/src/cli/run-cli/commands/init/parsers.ts",
-    tests: ["packages/agentplane/src/cli/run-cli.core.init.test.ts"],
+    tests: [
+      "packages/agentplane/src/cli/run-cli.core.init.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts",
+    ],
   },
   {
     source: "packages/agentplane/src/cli/run-cli/commands/init/presets.ts",
-    tests: ["packages/agentplane/src/cli/run-cli.core.init.test.ts"],
+    tests: [
+      "packages/agentplane/src/cli/run-cli.core.init.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts",
+    ],
   },
   {
     source: "packages/agentplane/src/commands/task/finish.ts",
@@ -33,6 +49,9 @@ const TARGETS = [
       "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
       "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
       "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts",
     ],
   },
   {
