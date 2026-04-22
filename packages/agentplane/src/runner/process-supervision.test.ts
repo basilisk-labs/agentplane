@@ -131,6 +131,127 @@ describe("runSupervisedProcess", () => {
     }
   });
 
+  it("preserves trace event ordering across buffered async writes", async () => {
+    tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-order-"));
+    const runDir = path.join(tempDir, "run");
+    const scriptPath = path.join(tempDir, "runner.mjs");
+    await mkdir(runDir, { recursive: true });
+    await writeFile(
+      scriptPath,
+      [
+        "for (let i = 0; i < 50; i += 1) {",
+        "  process.stdout.write(`stdout-${i}\\n`);",
+        "  process.stderr.write(`stderr-${i}\\n`);",
+        "}",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const invocation = {
+      adapter_id: "custom",
+      run_id: "run-ordering",
+      run_dir: runDir,
+      bundle_path: path.join(runDir, "bundle.json"),
+      state_path: path.join(runDir, "run-state.json"),
+      events_path: path.join(runDir, "events.jsonl"),
+      result_path: path.join(runDir, "result.json"),
+      trace_path: path.join(runDir, "agent-trace.jsonl"),
+      stderr_path: path.join(runDir, "stderr.log"),
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 64 * 1024,
+        capture_stderr: true,
+      },
+      timeout_policy: {
+        wall_clock_ms: 10_000,
+        idle_ms: 10_000,
+        terminate_grace_ms: 100,
+      },
+      bootstrap_path: null,
+      output_last_message_path: null,
+      argv: [process.execPath, scriptPath],
+      env: {},
+      dry_run: false,
+    } as const;
+
+    const result = await runSupervisedProcess({
+      invocation,
+      stdin_text: "",
+      start_message: "test runner started",
+    });
+
+    expect(result.exit_code).toBe(0);
+    const trace = await readFile(invocation.trace_path, "utf8");
+    const events = trace
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line) as { seq: number; raw: string });
+    expect(events).toHaveLength(100);
+    expect(events.map((event) => event.seq)).toEqual(
+      Array.from({ length: 100 }, (_, index) => index + 1),
+    );
+    expect(events.map((event) => event.raw).toSorted()).toEqual(
+      Array.from({ length: 50 }, (_, index) => [`stderr-${index}`, `stdout-${index}`])
+        .flat()
+        .toSorted(),
+    );
+    expect(await readFile(invocation.stderr_path, "utf8")).toContain("stderr-49");
+  });
+
+  it("flushes buffered trace and stderr writes before resolving failed runs", async () => {
+    tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-failure-"));
+    const runDir = path.join(tempDir, "run");
+    const scriptPath = path.join(tempDir, "runner.mjs");
+    await mkdir(runDir, { recursive: true });
+    await writeFile(
+      scriptPath,
+      [
+        String.raw`process.stdout.write('final stdout without newline');`,
+        String.raw`process.stderr.write('final stderr without newline');`,
+        "process.exit(7);",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const invocation = {
+      adapter_id: "custom",
+      run_id: "run-failure-flush",
+      run_dir: runDir,
+      bundle_path: path.join(runDir, "bundle.json"),
+      state_path: path.join(runDir, "run-state.json"),
+      events_path: path.join(runDir, "events.jsonl"),
+      result_path: path.join(runDir, "result.json"),
+      trace_path: path.join(runDir, "agent-trace.jsonl"),
+      stderr_path: path.join(runDir, "stderr.log"),
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 64 * 1024,
+        capture_stderr: true,
+      },
+      timeout_policy: {
+        wall_clock_ms: 10_000,
+        idle_ms: 10_000,
+        terminate_grace_ms: 100,
+      },
+      bootstrap_path: null,
+      output_last_message_path: null,
+      argv: [process.execPath, scriptPath],
+      env: {},
+      dry_run: false,
+    } as const;
+
+    const result = await runSupervisedProcess({
+      invocation,
+      stdin_text: "",
+      start_message: "test runner started",
+    });
+
+    expect(result.exit_code).toBe(7);
+    expect(await readFile(invocation.trace_path, "utf8")).toContain("final stdout without newline");
+    expect(await readFile(invocation.trace_path, "utf8")).toContain("final stderr without newline");
+    expect(await readFile(invocation.stderr_path, "utf8")).toBe("final stderr without newline");
+  });
+
   it("honors trace policy knobs for raw capture, stderr capture, and tail size", async () => {
     tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-policy-"));
     const runDir = path.join(tempDir, "run");
