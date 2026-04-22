@@ -1,10 +1,11 @@
 ---
 id: "202604220957-R334Y4"
 title: "Document prompt assembly system"
-status: "DOING"
+result_summary: "Implementation commit 1d52646788ee. Verification passed: bunx prettier changed docs/sidebar files --check, node .agentplane/policy/check-routing.mjs, agentplane doctor, and git diff --check."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-22T09:59:32.165Z"
   updated_by: "DOCS"
   note: "Verified: prompt assembly docs are linked from docs index, docs.json, website sidebar, recipes docs, and documentation IA; wording marks the model as planned/target v0.4 rather than current runtime behavior. Checks passed: bunx prettier changed docs/sidebar files --check, node .agentplane/policy/check-routing.mjs, agentplane doctor, and git diff --check."
-commit: null
+commit:
+  hash: "1d52646788ee8084f66316b8f877bb2610376c81"
+  message: "📝 R334Y4 docs: add prompt assembly model"
 comments:
   -
     author: "DOCS"
     body: "Start: finalize the prompt assembly system documentation page and navigation links that surfaced during final docs freshness checks before the patch release."
+  -
+    author: "DOCS"
+    body: "Verified: prompt assembly docs and navigation are complete and marked as planned v0.4 architecture."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: prompt assembly docs are linked from docs index, docs.json, website sidebar, recipes docs, and documentation IA; wording marks the model as planned/target v0.4 rather than current runtime behavior. Checks passed: bunx prettier changed docs/sidebar files --check, node .agentplane/policy/check-routing.mjs, agentplane doctor, and git diff --check."
+  -
+    type: "status"
+    at: "2026-04-22T10:00:04.040Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: prompt assembly docs and navigation are complete and marked as planned v0.4 architecture."
 doc_version: 3
-doc_updated_at: "2026-04-22T09:59:32.205Z"
+doc_updated_at: "2026-04-22T10:00:04.041Z"
 doc_updated_by: "DOCS"
 description: "Add developer documentation and navigation entries for the v0.4 prompt assembly module graph model surfaced during final docs freshness checks."
 sections:
