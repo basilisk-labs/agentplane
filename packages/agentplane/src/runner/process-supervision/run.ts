@@ -1,4 +1,3 @@
-import { appendFileSync } from "node:fs";
 import { startProcess } from "@agentplaneorg/core/process";
 
 import {
@@ -16,6 +15,7 @@ import type {
 } from "../types.js";
 import { createRunnerTraceEvent, serializeRunnerTraceEvent } from "../trace.js";
 import { isProcessAlive, normalizeSignal } from "./signals.js";
+import { BufferedFileWriter } from "./buffered-file-writer.js";
 import {
   buildInvocationEventData,
   mergeSupervisionState,
@@ -93,16 +93,15 @@ export async function runSupervisedProcess(opts: {
     let idleTimer: NodeJS.Timeout | null = null;
     let wallTimer: NodeJS.Timeout | null = null;
     let killTimer: NodeJS.Timeout | null = null;
+    const flushTraceWriters = async () => {
+      await Promise.all([traceWriter.flush(), stderrWriter.flush()]);
+    };
 
     const queueAppend = (kind: "trace" | "stderr", text: string) => {
       if (kind === "trace" && traceMode !== "raw") return;
       if (kind === "stderr" && !captureStderr) return;
-      const path = kind === "trace" ? opts.invocation.trace_path : opts.invocation.stderr_path;
-      try {
-        appendFileSync(path, text, "utf8");
-      } catch (err) {
-        finishWithError(err);
-      }
+      const writer = kind === "trace" ? traceWriter : stderrWriter;
+      writer.append(text);
     };
 
     const writeTraceLine = (stream: "stdout" | "stderr", raw: string) => {
@@ -290,8 +289,24 @@ export async function runSupervisedProcess(opts: {
       if (settled) return;
       clearTimers();
       settled = true;
+      void rejectAfterBufferedFlush(err);
+    };
+
+    const rejectAfterBufferedFlush = async (err: unknown) => {
+      // Error callbacks must preserve already buffered trace chunks before rejecting supervision.
+      // eslint-disable-next-line promise/no-promise-in-callback
+      await Promise.allSettled([traceWriter.flush(), stderrWriter.flush()]);
       reject(err instanceof Error ? err : new Error(String(err)));
     };
+
+    const traceWriter = new BufferedFileWriter({
+      file_path: opts.invocation.trace_path,
+      on_error: finishWithError,
+    });
+    const stderrWriter = new BufferedFileWriter({
+      file_path: opts.invocation.stderr_path,
+      on_error: finishWithError,
+    });
 
     void updateRunningState().catch((err) => {
       if (pid && isProcessAlive(pid)) {
@@ -335,6 +350,7 @@ export async function runSupervisedProcess(opts: {
         if (stderr_buffer) {
           writeTraceLine("stderr", stderr_buffer);
         }
+        await flushTraceWriters();
         if (settled) return;
         const normalizedSignal = normalizeSignal(signal);
         const currentState = await readRunnerRunState(opts.invocation.state_path);
