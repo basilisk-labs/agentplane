@@ -1,10 +1,11 @@
 ---
 id: "202604220255-E4C2R4"
 title: "De-overlap Vitest workspace projects"
-status: "DOING"
+result_summary: "Reduced vitest.workspace.ts to primary ownership projects; moved aggregate suites to scripts/run-vitest-suite.mjs; added vitest project guard to CI; updated release contracts, coverage scripts, script docs, and developer docs."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T07:17:41.223Z"
   updated_by: "CODER"
   note: "Verified Vitest project de-overlap. Checks passed: node scripts/check-vitest-projects.mjs; docs:scripts:check; focused release/local-ci tests; test:precommit; test:platform-critical; test:backend-critical; test:release:critical; test:fast; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
-commit: null
+commit:
+  hash: "5f8e55df7c784ea2ba33241090ae60e82452718e"
+  message: "🧪 E4C2R4 ci: de-overlap vitest projects"
 comments:
   -
     author: "CODER"
     body: "Start: de-overlap Vitest workspace projects while preserving existing CI entrypoints and verification coverage."
+  -
+    author: "CODER"
+    body: "Verified: de-overlapped Vitest workspace projects and preserved public test entrypoints."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified Vitest project de-overlap. Checks passed: node scripts/check-vitest-projects.mjs; docs:scripts:check; focused release/local-ci tests; test:precommit; test:platform-critical; test:backend-critical; test:release:critical; test:fast; bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
+  -
+    type: "status"
+    at: "2026-04-22T07:18:14.272Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: de-overlapped Vitest workspace projects and preserved public test entrypoints."
 doc_version: 3
-doc_updated_at: "2026-04-22T07:17:41.236Z"
+doc_updated_at: "2026-04-22T07:18:14.273Z"
 doc_updated_by: "CODER"
 description: "Restructure vitest.workspace.ts so each test file belongs to one primary project and aggregate execution is handled by scripts instead of overlapping projects."
 sections:
