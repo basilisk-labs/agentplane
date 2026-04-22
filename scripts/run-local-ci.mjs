@@ -99,6 +99,7 @@ function createBaselineStepEntries({ includeBuild }) {
       () => runCommand("bun", ["run", "docs:onboarding:check"]),
     ],
     ["Hotspot threshold (check)", () => runCommand("bun", ["run", "hotspots:check"])],
+    ["Vitest projects (check)", () => runCommand("bun", ["run", "vitest:projects:check"])],
     ...(includeBuild
       ? [
           [

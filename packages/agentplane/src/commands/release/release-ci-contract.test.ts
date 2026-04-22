@@ -17,8 +17,9 @@ describe("release CI contract", () => {
     const releaseCiCheck = packageJson.scripts?.["release:ci-check"] ?? "";
     expect(releaseCiCheck).toContain("bun run coverage:workflow-suite");
     expect(releaseCiCheck).toContain("bun run coverage:significant-suite");
+    expect(releaseCiCheck).toContain("node scripts/run-vitest-suite.mjs release-ci-base");
     expect(releaseCiCheck.indexOf("bun run coverage:workflow-suite")).toBeGreaterThan(
-      releaseCiCheck.indexOf("bun run test:project -- release-ci-base"),
+      releaseCiCheck.indexOf("node scripts/run-vitest-suite.mjs release-ci-base"),
     );
     expect(releaseCiCheck.indexOf("bun run coverage:significant-suite")).toBeGreaterThan(
       releaseCiCheck.indexOf("bun run coverage:workflow-suite"),

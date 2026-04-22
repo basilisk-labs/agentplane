@@ -25,5 +25,5 @@ function runShell(command) {
     child.on("error", reject);
   });
 }
-await runShell("bun run test:project -- significant-coverage");
+await runShell("node scripts/run-vitest-suite.mjs significant-coverage");
 await runShell("bun run coverage:significant");

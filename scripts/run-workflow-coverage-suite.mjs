@@ -25,5 +25,5 @@ function runShell(command) {
     child.on("error", reject);
   });
 }
-await runShell("bun run test:project -- workflow-coverage");
+await runShell("node scripts/run-vitest-suite.mjs workflow-coverage");
 await runShell("bun run coverage:workflow-harness");
