@@ -1,10 +1,11 @@
 ---
 id: "202604221536-1Z90V4"
 title: "Decompose v0.4 modular prompt implementation"
-status: "DOING"
+result_summary: "Created and committed task graph for v0.4 modular prompt assembly implementation."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-22T15:40:20.526Z"
   updated_by: "PLANNER"
   note: "Created v0.4 modular prompt implementation task graph: top-level epic, five implementation epics, and 24 atomic tasks. Verified task plans are set and approved; future implementation tasks remain unstarted."
-commit: null
+commit:
+  hash: "3047ee2197c0adbd23863c372a5aad1f69d86497"
+  message: "🧭 1Z90V4 plan: decompose v0.4 prompt modules"
 comments:
   -
     author: "PLANNER"
     body: "Start: create the v0.4 modular prompt implementation task graph as AgentPlane tasks, grouped into roll-up epics with atomic dependencies."
+  -
+    author: "PLANNER"
+    body: "Verified: v0.4 modular prompt implementation has been decomposed into a dependency-scoped task graph with one top-level epic, five implementation epics, and 24 atomic tasks. Future implementation tasks have approved plans and remain unstarted."
 events:
   -
     type: "status"
@@ -43,8 +49,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Created v0.4 modular prompt implementation task graph: top-level epic, five implementation epics, and 24 atomic tasks. Verified task plans are set and approved; future implementation tasks remain unstarted."
+  -
+    type: "status"
+    at: "2026-04-22T15:40:36.424Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: v0.4 modular prompt implementation has been decomposed into a dependency-scoped task graph with one top-level epic, five implementation epics, and 24 atomic tasks. Future implementation tasks have approved plans and remain unstarted."
 doc_version: 3
-doc_updated_at: "2026-04-22T15:40:20.536Z"
+doc_updated_at: "2026-04-22T15:40:36.425Z"
 doc_updated_by: "PLANNER"
 description: "Create an executable v0.4 implementation task graph for modular prompt assembly, grouped into epics with atomic tasks and dependencies."
 sections:
