@@ -83,7 +83,7 @@ describe("release CI contract", () => {
     };
 
     expect(agentplaneTsconfig.exclude).toContain("src/cli/run-cli.core.pr-flow.pr-support.ts");
-    expect(agentplaneTsconfig.exclude).toContain("src/cli/run-cli.core.tasks.query-support.ts");
+    expect(agentplaneTsconfig.exclude).toContain("src/cli/run-cli.core.tasks.query-support*.ts");
   });
 
   it("checks the generated bootstrap doc against the actual runtime-source dist path", async () => {

@@ -12,7 +12,7 @@
     "src/**/*.test.ts",
     "src/cli/run-cli.core.lifecycle.helpers.ts",
     "src/cli/run-cli.core.pr-flow.pr-support.ts",
-    "src/cli/run-cli.core.tasks.query-support.ts"
+    "src/cli/run-cli.core.tasks.query-support*.ts"
   ],
   "references": [{ "path": "../core" }, { "path": "../recipes" }]
 }
