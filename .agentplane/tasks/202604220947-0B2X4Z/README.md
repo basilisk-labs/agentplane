@@ -1,10 +1,11 @@
 ---
 id: "202604220947-0B2X4Z"
 title: "Integrate current local branches into main"
-status: "DOING"
+result_summary: "Implementation commits 3e4d8aee and 8333f8efeed0. Verification passed: arch baseline/deps, knip, cold-start guard, ci:local:fast, and git diff --check. Stale local branches with no unique main changes were classified; obsolete v0.3.16 publication branch was not merged over v0.3.17."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-22T09:53:59.405Z"
   updated_by: "CODER"
   note: "Verified: merged codex/optimization-roadmap-tasks into main with merge commit 3e4d8aee; stale branches codex/init-prompts-v2 and task/202604191509-G8XQ9K/zod-config-parity had zero unique commits over main; release/v0.3.16-publish contains obsolete v0.3.16 publication history and was not merged over v0.3.17. Checks passed: bun run arch:baseline, bun run arch:deps, bun run knip:check, bun run bench:cli:cold:check, bun run ci:local:fast, git diff --check."
-commit: null
+commit:
+  hash: "8333f8efeed028145391a5e4ec0196b532f0c603"
+  message: "✅ 0B2X4Z integration: verify main merge"
 comments:
   -
     author: "CODER"
     body: "Start: audit all local branches, merge the current optimization branch into main, classify stale no-op branches, verify main, and push the integrated base before release."
+  -
+    author: "CODER"
+    body: "Verified: main contains the optimization roadmap merge and all integration checks passed."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: merged codex/optimization-roadmap-tasks into main with merge commit 3e4d8aee; stale branches codex/init-prompts-v2 and task/202604191509-G8XQ9K/zod-config-parity had zero unique commits over main; release/v0.3.16-publish contains obsolete v0.3.16 publication history and was not merged over v0.3.17. Checks passed: bun run arch:baseline, bun run arch:deps, bun run knip:check, bun run bench:cli:cold:check, bun run ci:local:fast, git diff --check."
+  -
+    type: "status"
+    at: "2026-04-22T09:54:14.178Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: main contains the optimization roadmap merge and all integration checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-22T09:53:59.411Z"
+doc_updated_at: "2026-04-22T09:54:14.179Z"
 doc_updated_by: "CODER"
 description: "Audit all local branches, merge the current optimization branch into main, classify stale/no-op branches, and verify main before release."
 sections:
