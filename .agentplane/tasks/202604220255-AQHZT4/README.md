@@ -1,10 +1,11 @@
 ---
 id: "202604220255-AQHZT4"
 title: "Cache runner prompt source assembly"
-status: "DOING"
+result_summary: "Bundled prompt/template sources now use process-local caches; repo-local policy/profile reads invalidate by mtime/size; focused runner prompt tests and required checks passed."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-22T05:09:04.222Z"
   updated_by: "CODER"
   note: "Implemented process-local caching for static runner prompt inputs. Verified focused runner prompt tests, arch checks, knip baseline, git diff --check, and ci:local:fast."
-commit: null
+commit:
+  hash: "268c42af4447f4c361bbbc433fde760b2364258c"
+  message: "🚧 AQHZT4 task: cache runner prompt source assembly"
 comments:
   -
     author: "CODER"
     body: "Start: cache static runner prompt source assembly without caching task-specific prompt content."
+  -
+    author: "CODER"
+    body: "Verified: cached runner prompt source assembly with stat-aware invalidation for repo-local files."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented process-local caching for static runner prompt inputs. Verified focused runner prompt tests, arch checks, knip baseline, git diff --check, and ci:local:fast."
+  -
+    type: "status"
+    at: "2026-04-22T05:10:01.747Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: cached runner prompt source assembly with stat-aware invalidation for repo-local files."
 doc_version: 3
-doc_updated_at: "2026-04-22T05:09:04.236Z"
+doc_updated_at: "2026-04-22T05:10:01.748Z"
 doc_updated_by: "CODER"
 description: "Avoid repeated scanning/assembly of static runner prompt source files during repeated runner invocations in one process."
 sections:
