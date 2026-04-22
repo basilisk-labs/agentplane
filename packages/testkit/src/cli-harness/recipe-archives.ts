@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -11,8 +11,14 @@ const execFileAsync = promisify(execFile);
 
 const recipeArchiveCache = new Map<
   string,
-  { archivePath: string; manifest: Record<string, unknown> }
+  { archivePath: string; baseDir: string; manifest: Record<string, unknown> }
 >();
+
+export async function resetRecipeArchiveCache(): Promise<void> {
+  const cachedRoots = [...new Set([...recipeArchiveCache.values()].map((entry) => entry.baseDir))];
+  recipeArchiveCache.clear();
+  await Promise.all(cachedRoots.map((root) => rm(root, { recursive: true, force: true })));
+}
 
 export async function createRecipeArchive(opts?: {
   id?: string;
@@ -36,7 +42,7 @@ export async function createRecipeArchive(opts?: {
     wrapDir: opts?.wrapDir ?? false,
   });
   const cached = recipeArchiveCache.get(cacheKey);
-  if (cached) return cached;
+  if (cached) return { archivePath: cached.archivePath, manifest: cached.manifest };
 
   const baseDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-"));
   const recipeDir = path.join(baseDir, opts?.wrapDir ? "bundle" : "recipe");
@@ -186,9 +192,9 @@ export async function createRecipeArchive(opts?: {
       ? execFileAsync("tar", ["-czf", archivePath, "-C", baseDir, path.basename(recipeDir)])
       : execFileAsync("tar", ["-czf", archivePath, "-C", recipeDir, "."]));
   }
-  const payload = { archivePath, manifest };
+  const payload = { archivePath, baseDir, manifest };
   recipeArchiveCache.set(cacheKey, payload);
-  return payload;
+  return { archivePath: payload.archivePath, manifest: payload.manifest };
 }
 
 export async function createRecipeArchiveWithManifest(opts: {

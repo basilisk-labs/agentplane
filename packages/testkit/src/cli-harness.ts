@@ -7,6 +7,7 @@ import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
 
+import { resetRecipeArchiveCache } from "./cli-harness/recipe-archives.js";
 import { runCliSilent, silenceStdIO } from "./cli-harness/stdio.js";
 import { makeTaskBackendDouble } from "./task.js";
 
@@ -101,6 +102,7 @@ export function registerAgentplaneHome(): void {
   });
 
   afterEach(async () => {
+    await resetRecipeArchiveCache();
     const roots = [...testRoots];
     testRoots.clear();
     await Promise.all(
