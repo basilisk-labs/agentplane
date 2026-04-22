@@ -1,10 +1,10 @@
 ---
 id: "202604221538-Y7ES2P"
 title: "Define prompt module domain contracts"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-22T15:51:55.886Z"
+  updated_by: "CODER"
+  note: "Implemented v0.4 prompt module domain contracts with typed module addressing, ownership, surfaces, targets, slots, mutability, load conditions, merge policy, dependencies, graph nodes, and provenance."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: implement the foundational v0.4 prompt module domain contracts first so downstream schema, compiler, recipe, and migration tasks share one typed model."
+events:
+  -
+    type: "status"
+    at: "2026-04-22T15:50:35.330Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: implement the foundational v0.4 prompt module domain contracts first so downstream schema, compiler, recipe, and migration tasks share one typed model."
+  -
+    type: "verify"
+    at: "2026-04-22T15:51:55.886Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented v0.4 prompt module domain contracts with typed module addressing, ownership, surfaces, targets, slots, mutability, load conditions, merge policy, dependencies, graph nodes, and provenance."
 doc_version: 3
-doc_updated_at: "2026-04-22T15:38:10.836Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-22T15:52:43.450Z"
+doc_updated_by: "CODER"
 description: "Add v0.4 domain types for prompt modules, module ownership, surfaces, targets, slots, mutability, load conditions, merge policy, and provenance."
 sections:
   Summary: |-
@@ -61,11 +77,22 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-22T15:51:55.886Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented v0.4 prompt module domain contracts with typed module addressing, ownership, surfaces, targets, slots, mutability, load conditions, merge policy, dependencies, graph nodes, and provenance.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T15:50:35.337Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Commands passed: bunx prettier --check packages/agentplane/src/runtime/prompt-modules/model.ts packages/agentplane/src/runtime/prompt-modules/index.ts packages/agentplane/src/runtime/prompt-modules/model.test.ts .agentplane/tasks/202604221538-Y7ES2P/README.md; bunx vitest --config vitest.workspace.ts run packages/agentplane/src/runtime/prompt-modules/model.test.ts --project agentplane; bun run typecheck; git diff --check; bun run framework:dev:bootstrap; agentplane doctor. An earlier broad vitest invocation unintentionally ran 212 agentplane files and failed one unrelated cold-path measurement; side-effect branch/tag/task drift was removed and the focused test passed afterward.
+      Impact: Downstream schema, compiler, recipe, and migration tasks can import one stable prompt module contract instead of inventing separate address/provenance shapes.
+      Resolution: Kept behavior unhooked from compiler/runtime assembly in this atom; added focused examples for locked framework modules and recipe extensions.
 id_source: "generated"
 ---
 ## Summary
@@ -106,6 +133,14 @@ Rollback Plan:
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-22T15:51:55.886Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented v0.4 prompt module domain contracts with typed module addressing, ownership, surfaces, targets, slots, mutability, load conditions, merge policy, dependencies, graph nodes, and provenance.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T15:50:35.337Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -114,3 +149,7 @@ Rollback Plan:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Commands passed: bunx prettier --check packages/agentplane/src/runtime/prompt-modules/model.ts packages/agentplane/src/runtime/prompt-modules/index.ts packages/agentplane/src/runtime/prompt-modules/model.test.ts .agentplane/tasks/202604221538-Y7ES2P/README.md; bunx vitest --config vitest.workspace.ts run packages/agentplane/src/runtime/prompt-modules/model.test.ts --project agentplane; bun run typecheck; git diff --check; bun run framework:dev:bootstrap; agentplane doctor. An earlier broad vitest invocation unintentionally ran 212 agentplane files and failed one unrelated cold-path measurement; side-effect branch/tag/task drift was removed and the focused test passed afterward.
+  Impact: Downstream schema, compiler, recipe, and migration tasks can import one stable prompt module contract instead of inventing separate address/provenance shapes.
+  Resolution: Kept behavior unhooked from compiler/runtime assembly in this atom; added focused examples for locked framework modules and recipe extensions.
