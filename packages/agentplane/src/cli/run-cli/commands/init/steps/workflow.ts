@@ -3,7 +3,7 @@ import type { InitDefaults, InitFlags } from "../model.js";
 import { INIT_DEFAULTS } from "../presets.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { InitSetupProfileMode, InitV2PromptClack, WorkflowStepAnswers } from "./types.js";
+import type { InitSetupProfileMode, InitV2PromptClack, WorkflowStepAnswers } from "./contracts.js";
 
 type DirectCloseDirtyPolicyChoice = "allow-other-task-readmes" | "strict";
 

@@ -35,7 +35,7 @@ import {
   promptSetupProfileStep,
   promptWorkflowStep,
 } from "./steps/index.js";
-import type { InitV2PromptClack } from "./steps/types.js";
+import type { InitV2PromptClack } from "./steps/contracts.js";
 import { outroError, outroSuccess, previewInstall, section } from "./ui-v2.js";
 import { ensureAgentsFiles } from "./write-agents.js";
 import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./write-config.js";

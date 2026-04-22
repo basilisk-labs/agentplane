@@ -1,6 +1,6 @@
 import { assertNotCancelled } from "../prompts-v2.js";
 
-import type { InitV2PromptClack, InitV2PromptOption } from "./types.js";
+import type { InitV2PromptClack, InitV2PromptOption } from "./contracts.js";
 
 export async function selectStepValue<T extends string>(
   clack: InitV2PromptClack,

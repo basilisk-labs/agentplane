@@ -6,7 +6,7 @@ import type {
   InitSetupProfileMode,
   InitV2PromptClack,
   RecipeSelectionStepAnswers,
-} from "./types.js";
+} from "./contracts.js";
 
 type InitRecipeSelectionItem = {
   id: string;

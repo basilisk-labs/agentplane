@@ -3,7 +3,7 @@ import type { InitV2ClackPrompts } from "../prompts-v2.js";
 import { previewConflicts } from "../ui-v2.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { InitV2PromptClack } from "./types.js";
+import type { InitV2PromptClack } from "./contracts.js";
 
 type ConflictChoice = "overwrite" | "backup";
 type ConflictResolutionChoice = ConflictChoice | "cancel";

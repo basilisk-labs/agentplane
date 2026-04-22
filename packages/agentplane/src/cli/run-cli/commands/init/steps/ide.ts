@@ -2,7 +2,7 @@ import type { InitDefaults, InitFlags, InitIde } from "../model.js";
 import { INIT_DEFAULTS } from "../presets.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { IdeStepAnswers, InitV2PromptClack } from "./types.js";
+import type { IdeStepAnswers, InitV2PromptClack } from "./contracts.js";
 
 const ideOptions: { value: InitIde; label: string; hint: string }[] = [
   { value: "codex", label: "Codex", hint: "Use Codex-oriented local rules." },

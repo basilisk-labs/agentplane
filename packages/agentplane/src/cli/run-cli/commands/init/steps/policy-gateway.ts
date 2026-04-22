@@ -3,7 +3,7 @@ import type { InitFlags, InitDefaults } from "../model.js";
 import { INIT_DEFAULTS } from "../presets.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { InitV2PromptClack, PolicyGatewayStepAnswers } from "./types.js";
+import type { InitV2PromptClack, PolicyGatewayStepAnswers } from "./contracts.js";
 
 const policyGatewayOptions: { value: PolicyGatewayFlavor; label: string; hint: string }[] = [
   { value: "codex", label: "Codex", hint: "Install AGENTS.md." },
