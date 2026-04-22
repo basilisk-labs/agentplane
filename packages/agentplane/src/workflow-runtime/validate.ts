@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 
 import type {
   WorkflowDiagnostic,

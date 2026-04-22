@@ -1,7 +1,7 @@
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import { parseTaskStatus, TASK_STATUS_VALUES } from "@agentplaneorg/core/tasks";
 
 import { fileExists } from "../../../cli/fs-utils.js";

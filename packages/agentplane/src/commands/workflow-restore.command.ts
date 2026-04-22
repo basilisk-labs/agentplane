@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { resolveProject } from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core/project";
 
 import type { CommandHandler, CommandSpec } from "../cli/spec/spec.js";
 import { successMessage, warnMessage } from "../cli/output.js";

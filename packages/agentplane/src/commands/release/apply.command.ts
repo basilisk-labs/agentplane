@@ -1,4 +1,4 @@
-import { loadConfig } from "@agentplaneorg/core";
+import { loadConfig } from "@agentplaneorg/core/config";
 import { resolveBaseBranch } from "@agentplaneorg/core/git";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";

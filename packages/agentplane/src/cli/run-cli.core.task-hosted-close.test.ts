@@ -6,7 +6,7 @@ import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
 
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import { loadTaskBackend } from "../backends/task-backend.js";
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 

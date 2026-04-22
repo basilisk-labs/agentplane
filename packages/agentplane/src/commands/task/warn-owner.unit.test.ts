@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const mocks = vi.hoisted(() => {

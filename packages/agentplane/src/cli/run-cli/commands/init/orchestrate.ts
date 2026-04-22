@@ -1,6 +1,6 @@
 import path from "node:path";
-import type { ExecutionProfile } from "@agentplaneorg/core";
-import { buildExecutionProfile } from "@agentplaneorg/core";
+import type { ExecutionProfile } from "@agentplaneorg/core/config";
+import { buildExecutionProfile } from "@agentplaneorg/core/config";
 import { setPinnedBaseBranch } from "@agentplaneorg/core/git";
 
 import type { WorkflowMode } from "../../../../agents/agents-template.js";

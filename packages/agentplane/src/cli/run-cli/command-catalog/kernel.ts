@@ -1,4 +1,5 @@
-import type { LoadedConfig, ResolvedProject } from "@agentplaneorg/core";
+import type { LoadedConfig } from "@agentplaneorg/core/config";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 
 import type { CommandContext } from "../../../commands/shared/task-backend.js";
 import type { HelpJson } from "../../spec/help-render.js";

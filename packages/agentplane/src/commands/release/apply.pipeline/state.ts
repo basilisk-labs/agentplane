@@ -1,6 +1,7 @@
 import path from "node:path";
 
-import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import { loadConfig } from "@agentplaneorg/core/config";
+import { resolveProject } from "@agentplaneorg/core/project";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";

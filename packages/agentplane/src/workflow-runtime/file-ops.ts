@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { loadConfig } from "@agentplaneorg/core";
+import { loadConfig } from "@agentplaneorg/core/config";
 
 import { parseWorkflowMarkdown } from "./markdown.js";
 import { emitWorkflowEvent } from "./observability.js";

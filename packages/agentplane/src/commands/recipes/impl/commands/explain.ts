@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import { collectRecipeScenarioDetails } from "@agentplaneorg/recipes";
-import { resolveProject } from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core/project";
 
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { createCliEmitter } from "../../../../cli/output.js";

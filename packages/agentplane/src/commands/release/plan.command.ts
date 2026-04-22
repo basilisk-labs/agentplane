@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { resolveProject } from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core/project";
 import { createCliEmitter } from "../../cli/output.js";
 import type { CommandHandler } from "../../cli/spec/spec.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";

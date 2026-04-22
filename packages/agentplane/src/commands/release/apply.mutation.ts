@@ -1,7 +1,6 @@
+import { saveConfig, setByDottedKey, loadConfig } from "@agentplaneorg/core/config";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-
-import { loadConfig, saveConfig, setByDottedKey } from "@agentplaneorg/core";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
@@ -38,7 +37,7 @@ export async function replaceAgentplanePackageMetadata(
     });
   }
   const withDependency = withVersion.replace(
-    /("@agentplaneorg\/core"\s*:\s*")[^"]*(")/u,
+    /("@agentplaneorg[/]core"\s*:\s*")[^"]*(")/u,
     `$1${nextVersion}$2`,
   );
   if (withDependency === withVersion) {

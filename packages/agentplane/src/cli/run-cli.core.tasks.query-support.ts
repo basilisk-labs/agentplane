@@ -15,8 +15,9 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { expect, it, vi } from "vitest";
-import type { ResolvedProject } from "@agentplaneorg/core";
-import { defaultConfig, extractTaskSuffix } from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
+import { defaultConfig } from "@agentplaneorg/core/config";
+import { extractTaskSuffix } from "@agentplaneorg/core/commit";
 import {
   readTask,
   renderTaskDocFromSections,

@@ -1,4 +1,4 @@
-import type { ResolvedProject } from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 
 export type BumpKind = "patch" | "minor" | "major";
 

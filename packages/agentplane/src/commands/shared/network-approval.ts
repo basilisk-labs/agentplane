@@ -1,4 +1,4 @@
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 
 import type { PolicyActionId } from "../../policy/taxonomy.js";
 import { ensureActionApproved } from "./approval-requirements.js";

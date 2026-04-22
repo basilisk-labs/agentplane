@@ -1,6 +1,6 @@
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
-import { resolveProject } from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core/project";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { runProcess } from "@agentplaneorg/core/process";
 

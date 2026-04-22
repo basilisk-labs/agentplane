@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { extractTaskSuffix } from "@agentplaneorg/core";
+import { extractTaskSuffix } from "@agentplaneorg/core/commit";
 
 import type { TaskData } from "../../../backends/task-backend.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";

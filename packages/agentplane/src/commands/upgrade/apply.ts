@@ -1,7 +1,6 @@
+import { setByDottedKey, saveConfig } from "@agentplaneorg/core/config";
 import { lstat, mkdir, readlink, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-
-import { saveConfig, setByDottedKey } from "@agentplaneorg/core";
 
 import { backupPath, fileExists } from "../../cli/fs-utils.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";

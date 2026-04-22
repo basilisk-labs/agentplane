@@ -1,4 +1,5 @@
-import { extractTaskSuffix, type AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+import { extractTaskSuffix } from "@agentplaneorg/core/commit";
 
 import { invalidValueMessage, successMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";

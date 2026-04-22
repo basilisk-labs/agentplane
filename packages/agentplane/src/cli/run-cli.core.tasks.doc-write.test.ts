@@ -1,8 +1,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import type { ResolvedProject } from "@agentplaneorg/core";
-import { defaultConfig } from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";

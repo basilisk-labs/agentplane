@@ -1,4 +1,4 @@
-import type { ResolvedProject } from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 
 import type { CommandSpec } from "../../cli/spec/spec.js";
 import { runOperatorPipeline } from "../shared/operator-pipeline.js";

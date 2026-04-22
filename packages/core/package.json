@@ -30,6 +30,16 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
+    "./commit": {
+      "types": "./dist/commit/index.d.ts",
+      "import": "./dist/commit/index.js",
+      "default": "./dist/commit/index.js"
+    },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "import": "./dist/config/index.js",
+      "default": "./dist/config/index.js"
+    },
     "./fs": {
       "types": "./dist/fs/index.d.ts",
       "import": "./dist/fs/index.js",
@@ -49,6 +59,11 @@
       "types": "./dist/process/index.d.ts",
       "import": "./dist/process/index.js",
       "default": "./dist/process/index.js"
+    },
+    "./project": {
+      "types": "./dist/project/index.d.ts",
+      "import": "./dist/project/index.js",
+      "default": "./dist/project/index.js"
     },
     "./schemas": {
       "types": "./dist/schemas/index.d.ts",

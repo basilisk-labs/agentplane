@@ -2,7 +2,7 @@ import { chmod, mkdir, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 
 import { infoMessage } from "./output.js";
 import { runCli } from "./run-cli.js";

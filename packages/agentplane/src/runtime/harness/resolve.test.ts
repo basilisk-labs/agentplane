@@ -4,7 +4,7 @@ import path from "node:path";
 
 import type { TaskBackendCapabilities } from "../../backends/task-backend.js";
 
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { resolveHarnessContract } from "./resolve.js";

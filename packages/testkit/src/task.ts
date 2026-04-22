@@ -1,4 +1,5 @@
-import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { GitContext } from "@agentplaneorg/core/git";
 
 import type { TaskBackend, TaskData } from "../../agentplane/src/backends/task-backend.js";

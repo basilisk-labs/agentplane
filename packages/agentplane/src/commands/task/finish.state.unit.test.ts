@@ -1,5 +1,5 @@
-import type { ResolvedProject } from "@agentplaneorg/core";
-import { defaultConfig } from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 

@@ -1,4 +1,4 @@
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 

@@ -1,6 +1,7 @@
+import { resolveProject } from "@agentplaneorg/core/project";
 import { readFile } from "node:fs/promises";
 
-import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import { loadConfig } from "@agentplaneorg/core/config";
 
 import { evaluatePolicy } from "../../policy/evaluate.js";
 import { CliError } from "../../shared/errors.js";

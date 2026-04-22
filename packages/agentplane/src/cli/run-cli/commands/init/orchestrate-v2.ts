@@ -1,5 +1,5 @@
 import path from "node:path";
-import { buildExecutionProfile } from "@agentplaneorg/core";
+import { buildExecutionProfile } from "@agentplaneorg/core/config";
 import { setPinnedBaseBranch } from "@agentplaneorg/core/git";
 
 import { cmdHooksInstall, ensureInitCommit } from "../../../../commands/workflow.js";

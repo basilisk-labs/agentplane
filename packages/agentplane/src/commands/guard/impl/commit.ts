@@ -1,7 +1,7 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { buildTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core";
+import { buildTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core/commit";
 
 import { resolveTaskIndexPath } from "../../../backends/task-index.js";
 import { mapCoreError } from "../../../cli/error-map.js";

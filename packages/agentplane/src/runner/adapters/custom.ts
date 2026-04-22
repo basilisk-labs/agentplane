@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-import type { RunnerCustomConfig } from "@agentplaneorg/core";
+import type { RunnerCustomConfig } from "@agentplaneorg/core/config";
 
 import type {
   RunnerAdapterCapabilities,

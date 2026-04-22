@@ -1,7 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { buildExecutionProfile, loadConfig, saveConfig, setByDottedKey } from "@agentplaneorg/core";
+import {
+  buildExecutionProfile,
+  loadConfig,
+  saveConfig,
+  setByDottedKey,
+} from "@agentplaneorg/core/config";
 
 import { createCliEmitter } from "../../output.js";
 import { usageError } from "../../spec/errors.js";

@@ -1,3 +1,5 @@
+import { loadConfig, defaultConfig } from "@agentplaneorg/core/config";
+import { resolveProject } from "@agentplaneorg/core/project";
 import { cp, mkdir, mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -8,7 +10,6 @@ import {
   type RecipeConflictMode,
   type RecipeInstallSource,
 } from "@agentplaneorg/recipes";
-import { defaultConfig, loadConfig, resolveProject } from "@agentplaneorg/core";
 
 import { extractArchive } from "../../../../cli/archive.js";
 import { sha256File } from "../../../../cli/checksum.js";

@@ -1,10 +1,10 @@
 ---
 id: "202604220255-9AW010"
 title: "Complete core subpath surface and root import ban"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,16 +24,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-22T05:53:38.305Z"
+  updated_by: "CODER"
+  note: "Verified core subpath exports and production root import ban. Checks passed: bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: add core config/project/commit subpaths and migrate production root core imports."
+events:
+  -
+    type: "status"
+    at: "2026-04-22T05:18:24.910Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add core config/project/commit subpaths and migrate production root core imports."
+  -
+    type: "verify"
+    at: "2026-04-22T05:53:38.305Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified core subpath exports and production root import ban. Checks passed: bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check."
 doc_version: 3
-doc_updated_at: "2026-04-22T02:55:24.960Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-22T05:53:38.311Z"
+doc_updated_by: "CODER"
 description: "Add missing core subpath exports for config/project/commit surfaces and make lint enforcement cover remaining production root imports."
 sections:
   Summary: "Finish the subpath-export migration so production packages do not depend on the root @agentplaneorg/core barrel except intentional public compatibility cases."
@@ -44,7 +60,19 @@ sections:
     3. Migrate callsites and extend lint restrictions.
     4. Keep root barrel as compatibility surface where policy requires.
   Verify Steps: "Run lint/fast CI, core build/type checks, arch checks, cold-path check."
-  Verification: "Pending implementation."
+  Verification: |-
+    Pending implementation.
+    
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-22T05:53:38.305Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified core subpath exports and production root import ban. Checks passed: bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T05:18:24.928Z, excerpt_hash=sha256:cd3e42ebc31b61adce310efdb18b3dc8d9290a2eb548e5b1bbf2ef525d9e7b8e
+    
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Restore root imports and remove newly added subpath export entries."
   Findings: "None yet."
 id_source: "generated"
@@ -71,6 +99,17 @@ Run lint/fast CI, core build/type checks, arch checks, cold-path check.
 ## Verification
 
 Pending implementation.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-22T05:53:38.305Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified core subpath exports and production root import ban. Checks passed: bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T05:18:24.928Z, excerpt_hash=sha256:cd3e42ebc31b61adce310efdb18b3dc8d9290a2eb548e5b1bbf2ef525d9e7b8e
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 

@@ -1,4 +1,5 @@
-import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import { loadConfig } from "@agentplaneorg/core/config";
+import { resolveProject } from "@agentplaneorg/core/project";
 
 import { createCliEmitter } from "../cli/output.js";
 import type { CommandHandler } from "../cli/spec/spec.js";

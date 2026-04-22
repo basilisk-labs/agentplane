@@ -1,4 +1,4 @@
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import { normalizeDocSectionName } from "@agentplaneorg/core/tasks";
 
 import { CliError } from "../../../shared/errors.js";

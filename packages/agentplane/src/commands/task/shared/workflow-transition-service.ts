@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import {
   ensureDocSections,
   normalizeTaskStatus,

@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   loadCommandContext: vi.fn(),
 }));
 
-vi.mock("@agentplaneorg/core", () => ({
+vi.mock("@agentplaneorg/core/project", () => ({
   resolveProject: mocks.resolveProject,
 }));
 vi.mock("@agentplaneorg/core/git", () => ({

@@ -31,7 +31,7 @@ const mockRenderRole = vi.fn<
 const mockGetRoleSupplementLines = vi.fn<(role: string) => string[] | null>();
 const mockListRoles = vi.fn<() => string[]>();
 
-vi.mock("@agentplaneorg/core", async (importOriginal) => {
+vi.mock("@agentplaneorg/core/project", async (importOriginal) => {
   const actualUnknown: unknown = await importOriginal();
   const actual =
     actualUnknown && typeof actualUnknown === "object"
