@@ -69,7 +69,7 @@
       "name": "@agentplane/testkit",
       "version": "0.0.0",
       "dependencies": {
-        "@agentplaneorg/core": "0.3.20",
+        "@agentplaneorg/core": "0.3.21",
       },
     },
     "website": {
@@ -3198,8 +3198,6 @@
     "zod-validation-error": ["zod-validation-error@5.0.0", "", { "peerDependencies": { "zod": "^3.25.0 || ^4.0.0" } }, "sha512-hmk+pkyKq7Q71PiWVSDUc3VfpzpvcRHZ3QPw9yEMVvmtCekaMeOHnbr3WbxfrgEnQTv6haGP4cmv0Ojmihzsxw=="],
 
     "zwitch": ["zwitch@2.0.4", "", {}, "sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A=="],
-
-    "@agentplane/testkit/@agentplaneorg/core": ["@agentplaneorg/core@0.3.20", "", { "dependencies": { "execa": "^5.1.1", "yaml": "^2.8.2", "zod": "^3", "zod-to-json-schema": "^3", "zod-validation-error": "^5.0.0" } }, "sha512-7zOlrzSIW3KqaSTcRGu162mrlZ9R8SHNlAUN6BZun3Pm02YHRql1RCrRJtw4bfbfosEcjxrr4nliOF8aoGdtlw=="],
 
     "@antfu/install-pkg/tinyexec": ["tinyexec@1.0.2", "", {}, "sha512-W/KYk+NFhkmsYpuHq5JykngiOCnxeVL8v8dFnqxSD8qEEdRfXk1SDM6JzNqcERbcGYj9tMrDQBYV9cjgnunFIg=="],
 
