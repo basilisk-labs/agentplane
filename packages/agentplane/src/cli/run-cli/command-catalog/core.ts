@@ -1,19 +1,19 @@
 import { doctorSpec } from "../../../commands/doctor.spec.js";
-import { runtimeExplainSpec, runtimeSpec } from "../../../commands/runtime.command.js";
-import { upgradeSpec } from "../../../commands/upgrade.command.js";
+import { runtimeExplainSpec, runtimeSpec } from "../../../commands/runtime.spec.js";
+import { upgradeSpec } from "../../../commands/upgrade.spec.js";
 import { workflowBuildSpec } from "../../../commands/workflow-build.command.js";
 import { workflowSpec } from "../../../commands/workflow.command.js";
 import {
   workflowDebugSpec,
   workflowLandSpec,
   workflowSyncSpec,
-} from "../../../commands/workflow-playbook.command.js";
+} from "../../../commands/workflow-playbook.spec.js";
 import { workflowRestoreSpec } from "../../../commands/workflow-restore.command.js";
 import { incidentsAdviseSpec } from "../../../commands/incidents/advise.command.js";
 import { incidentsCollectSpec } from "../../../commands/incidents/collect.command.js";
 import { incidentsSpec } from "../../../commands/incidents/incidents.command.js";
-import { releaseApplySpec, releaseCandidateSpec } from "../../../commands/release/apply.command.js";
-import { releasePlanSpec } from "../../../commands/release/plan.command.js";
+import { releaseApplySpec, releaseCandidateSpec } from "../../../commands/release/apply.spec.js";
+import { releasePlanSpec } from "../../../commands/release/plan.spec.js";
 import { releaseSpec } from "../../../commands/release/release.command.js";
 import {
   configSetSpec,

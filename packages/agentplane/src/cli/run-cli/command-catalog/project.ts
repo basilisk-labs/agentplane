@@ -24,7 +24,7 @@ import {
   prOpenSpec,
   prSpec,
   prUpdateSpec,
-} from "../../../commands/pr/pr.command.js";
+} from "../../../commands/pr/pr.spec.js";
 import { recipesAddSpec } from "../../../commands/recipes/add.command.js";
 import { recipesActiveSpec } from "../../../commands/recipes/active.command.js";
 import { recipesCachePruneSpec } from "../../../commands/recipes/cache-prune.command.js";

@@ -4,9 +4,10 @@ import { resolveProject } from "@agentplaneorg/core";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { runProcess } from "@agentplaneorg/core/process";
 
-import { type CommandHandler, type CommandSpec } from "../cli/spec/spec.js";
+import type { CommandHandler } from "../cli/spec/spec.js";
 import { mapCoreError } from "../cli/error-map.js";
 import { resolveAgentplaneBinPath } from "../shared/package-paths.js";
+import type { WorkflowPlaybookParsed } from "./workflow-playbook.spec.js";
 
 const AGENTPLANE_BIN = resolveAgentplaneBinPath();
 const MAX_LOG_CHARS = 8000;
@@ -39,7 +40,7 @@ type WorkflowPlaybookEvidence = {
   commands: WorkflowPlaybookEvidenceCommand[];
 };
 
-type WorkflowPlaybookParsed = Record<string, never>;
+export { workflowDebugSpec, workflowLandSpec, workflowSyncSpec } from "./workflow-playbook.spec.js";
 
 function truncate(text: string): string {
   if (text.length <= MAX_LOG_CHARS) return text;
@@ -196,30 +197,6 @@ async function runWorkflowPlaybook(opts: {
     });
   }
 }
-
-export const workflowDebugSpec: CommandSpec<WorkflowPlaybookParsed> = {
-  id: ["workflow", "debug"],
-  group: "Workflow",
-  summary: "Run built-in debug checks and capture workflow evidence.",
-  parse: () => ({}),
-  examples: [{ cmd: "agentplane workflow debug", why: "Collect debug readiness evidence." }],
-};
-
-export const workflowSyncSpec: CommandSpec<WorkflowPlaybookParsed> = {
-  id: ["workflow", "sync"],
-  group: "Workflow",
-  summary: "Run built-in sync checks and capture workflow evidence.",
-  parse: () => ({}),
-  examples: [{ cmd: "agentplane workflow sync", why: "Collect sync-state evidence." }],
-};
-
-export const workflowLandSpec: CommandSpec<WorkflowPlaybookParsed> = {
-  id: ["workflow", "land"],
-  group: "Workflow",
-  summary: "Run built-in pre-land checks and capture workflow evidence.",
-  parse: () => ({}),
-  examples: [{ cmd: "agentplane workflow land", why: "Collect land-readiness evidence." }],
-};
 
 export const runWorkflowDebug: CommandHandler<WorkflowPlaybookParsed> = async (ctx) => {
   return await runWorkflowPlaybook({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, mode: "debug" });
