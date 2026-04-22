@@ -38,25 +38,25 @@ description: "Extend recipe manifest parsing and schemas with modules, mutations
 sections:
   Summary: |-
     Extend recipe manifest for prompt modules
-    
+
     Extend recipe manifest parsing and schemas with modules, mutations, bindings, validators, templates, and compatibility metadata for v0.4 prompt assembly.
   Scope: |-
     - In scope: Extend recipe manifest parsing and schemas with modules, mutations, bindings, validators, templates, and compatibility metadata for v0.4 prompt assembly.
     - Out of scope: unrelated refactors not required for "Extend recipe manifest for prompt modules".
   Plan: |-
     Goal: Extend recipe manifest for prompt modules
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Recipe manifests can declare module assets and mutations without breaking existing project_overlay recipes.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

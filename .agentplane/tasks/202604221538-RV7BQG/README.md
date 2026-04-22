@@ -36,25 +36,25 @@ description: "Add drift detection and repo-local override handling for manual ed
 sections:
   Summary: |-
     Detect compiled prompt drift and repo overrides
-    
+
     Add drift detection and repo-local override handling for manual edits to compiled AGENTS, policy, and agent files.
   Scope: |-
     - In scope: Add drift detection and repo-local override handling for manual edits to compiled AGENTS, policy, and agent files.
     - Out of scope: unrelated refactors not required for "Detect compiled prompt drift and repo overrides".
   Plan: |-
     Goal: Detect compiled prompt drift and repo overrides
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Manual prompt edits are reported as drift unless represented as repo-local modules or sanctioned overrides.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

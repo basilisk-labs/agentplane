@@ -40,25 +40,25 @@ description: "Roll-up epic for compiler tests, init/upgrade migration tests, rec
 sections:
   Summary: |-
     Epic E: Prompt assembly verification and docs
-    
+
     Roll-up epic for compiler tests, init/upgrade migration tests, recipe lifecycle tests, doctor diagnostics, and shipped-behavior docs.
   Scope: |-
     - In scope: Roll-up epic for compiler tests, init/upgrade migration tests, recipe lifecycle tests, doctor diagnostics, and shipped-behavior docs.
     - Out of scope: unrelated refactors not required for "Epic E: Prompt assembly verification and docs".
   Plan: |-
     Goal: Epic E: Prompt assembly verification and docs
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - All verification and docs tasks are DONE with final checks recorded.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

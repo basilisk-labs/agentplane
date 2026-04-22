@@ -37,25 +37,25 @@ description: "Add canonical fixtures and developer-facing schema notes for frame
 sections:
   Summary: |-
     Add prompt module fixtures and schema docs
-    
+
     Add canonical fixtures and developer-facing schema notes for framework modules, recipe modules, repo overrides, and invalid mutation cases.
   Scope: |-
     - In scope: Add canonical fixtures and developer-facing schema notes for framework modules, recipe modules, repo overrides, and invalid mutation cases.
     - Out of scope: unrelated refactors not required for "Add prompt module fixtures and schema docs".
   Plan: |-
     Goal: Add prompt module fixtures and schema docs
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Fixtures cover valid TDD, PRD, roadmap, naming, and invalid raw-patch recipe examples.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

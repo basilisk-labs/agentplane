@@ -40,25 +40,25 @@ description: "Update developer, recipe, setup, breaking-change, and upgrade docs
 sections:
   Summary: |-
     Update v0.4 prompt assembly implementation docs
-    
+
     Update developer, recipe, setup, breaking-change, and upgrade docs after the v0.4 prompt assembly implementation matches the target model.
   Scope: |-
     - In scope: Update developer, recipe, setup, breaking-change, and upgrade docs after the v0.4 prompt assembly implementation matches the target model.
     - Out of scope: unrelated refactors not required for "Update v0.4 prompt assembly implementation docs".
   Plan: |-
     Goal: Update v0.4 prompt assembly implementation docs
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Docs describe shipped behavior, migration commands, limitations, and known compatibility notes.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

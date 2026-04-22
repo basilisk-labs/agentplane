@@ -36,25 +36,25 @@ description: "Generate .agentplane/policy files from policy modules and recipe p
 sections:
   Summary: |-
     Compile policy tree from prompt modules
-    
+
     Generate .agentplane/policy files from policy modules and recipe policy bindings, preserving lazy load rules and policy budget constraints.
   Scope: |-
     - In scope: Generate .agentplane/policy files from policy modules and recipe policy bindings, preserving lazy load rules and policy budget constraints.
     - Out of scope: unrelated refactors not required for "Compile policy tree from prompt modules".
   Plan: |-
     Goal: Compile policy tree from prompt modules
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Policy files preserve current routing behavior and include recipe-bound policy modules only through explicit load rules.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

@@ -37,25 +37,25 @@ description: "Rebuild prompt graph and compiled prompt outputs when recipes are 
 sections:
   Summary: |-
     Refresh prompt artifacts on recipe lifecycle
-    
+
     Rebuild prompt graph and compiled prompt outputs when recipes are added, updated, removed, enabled, disabled, or detached.
   Scope: |-
     - In scope: Rebuild prompt graph and compiled prompt outputs when recipes are added, updated, removed, enabled, disabled, or detached.
     - Out of scope: unrelated refactors not required for "Refresh prompt artifacts on recipe lifecycle".
   Plan: |-
     Goal: Refresh prompt artifacts on recipe lifecycle
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - All recipe lifecycle commands keep prompt graph, manifest, overlay bundle, and recipe asset artifacts consistent.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

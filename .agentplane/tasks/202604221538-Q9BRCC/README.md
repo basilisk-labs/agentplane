@@ -38,25 +38,25 @@ description: "Add integration tests for init and upgrade paths that compile prom
 sections:
   Summary: |-
     Add init and upgrade prompt migration tests
-    
+
     Add integration tests for init and upgrade paths that compile prompt outputs, preserve no-recipe behavior, and report drift.
   Scope: |-
     - In scope: Add integration tests for init and upgrade paths that compile prompt outputs, preserve no-recipe behavior, and report drift.
     - Out of scope: unrelated refactors not required for "Add init and upgrade prompt migration tests".
   Plan: |-
     Goal: Add init and upgrade prompt migration tests
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Tests prove legacy prompt files migrate to compiled outputs without losing gateway semantics.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

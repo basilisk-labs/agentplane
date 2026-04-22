@@ -36,25 +36,25 @@ description: "Apply recipe requires/conflicts and prompt module conflict rules d
 sections:
   Summary: |-
     Enforce recipe module conflicts and requirements
-    
+
     Apply recipe requires/conflicts and prompt module conflict rules during activation and prompt compilation.
   Scope: |-
     - In scope: Apply recipe requires/conflicts and prompt module conflict rules during activation and prompt compilation.
     - Out of scope: unrelated refactors not required for "Enforce recipe module conflicts and requirements".
   Plan: |-
     Goal: Enforce recipe module conflicts and requirements
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Conflicting active recipes fail closed with actionable diagnostics and no partial prompt artifact writes.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

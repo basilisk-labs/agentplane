@@ -36,25 +36,25 @@ description: "Write .agentplane/generated/prompt-graph.json and prompt-manifest.
 sections:
   Summary: |-
     Emit prompt graph and manifest artifacts
-    
+
     Write .agentplane/generated/prompt-graph.json and prompt-manifest.json from the resolved prompt graph with stable ordering and content hashes.
   Scope: |-
     - In scope: Write .agentplane/generated/prompt-graph.json and prompt-manifest.json from the resolved prompt graph with stable ordering and content hashes.
     - Out of scope: unrelated refactors not required for "Emit prompt graph and manifest artifacts".
   Plan: |-
     Goal: Emit prompt graph and manifest artifacts
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Generated artifacts are deterministic, schema-valid, and clearly marked as derived rather than authoritative.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

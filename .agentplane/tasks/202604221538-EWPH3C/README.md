@@ -38,25 +38,25 @@ description: "Update init and upgrade flows so managed prompt files are compiled
 sections:
   Summary: |-
     Wire init and upgrade to prompt compiler
-    
+
     Update init and upgrade flows so managed prompt files are compiled outputs, baseline snapshots stay coherent, and existing projects migrate safely.
   Scope: |-
     - In scope: Update init and upgrade flows so managed prompt files are compiled outputs, baseline snapshots stay coherent, and existing projects migrate safely.
     - Out of scope: unrelated refactors not required for "Wire init and upgrade to prompt compiler".
   Plan: |-
     Goal: Wire init and upgrade to prompt compiler
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Init and upgrade regenerate prompt outputs from the graph and preserve existing no-recipe behavior.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

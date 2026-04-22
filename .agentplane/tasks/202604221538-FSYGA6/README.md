@@ -37,25 +37,25 @@ description: "Implement the resolver that loads framework modules, repo override
 sections:
   Summary: |-
     Implement prompt graph resolver
-    
+
     Implement the resolver that loads framework modules, repo overrides, active recipe modules, and bindings into a deterministic prompt graph.
   Scope: |-
     - In scope: Implement the resolver that loads framework modules, repo overrides, active recipe modules, and bindings into a deterministic prompt graph.
     - Out of scope: unrelated refactors not required for "Implement prompt graph resolver".
   Plan: |-
     Goal: Implement prompt graph resolver
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Resolver produces deterministic module order and explains included and skipped bindings.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

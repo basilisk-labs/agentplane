@@ -37,25 +37,25 @@ description: "Update recipes explain, explain-active, and prompt graph diagnosti
 sections:
   Summary: |-
     Expose recipe prompt modules in explain commands
-    
+
     Update recipes explain, explain-active, and prompt graph diagnostics to show recipe modules, bindings, mutations, validators, and compiled outputs.
   Scope: |-
     - In scope: Update recipes explain, explain-active, and prompt graph diagnostics to show recipe modules, bindings, mutations, validators, and compiled outputs.
     - Out of scope: unrelated refactors not required for "Expose recipe prompt modules in explain commands".
   Plan: |-
     Goal: Expose recipe prompt modules in explain commands
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Explain output shows active recipe module provenance without dumping long prompt bodies by default.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

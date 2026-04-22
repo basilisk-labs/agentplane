@@ -35,25 +35,25 @@ description: "Replace direct gateway template copying with module-based gateway 
 sections:
   Summary: |-
     Compile AGENTS and CLAUDE gateway from modules
-    
+
     Replace direct gateway template copying with module-based gateway assembly while preserving AGENTS.md and CLAUDE.md entrypoint semantics.
   Scope: |-
     - In scope: Replace direct gateway template copying with module-based gateway assembly while preserving AGENTS.md and CLAUDE.md entrypoint semantics.
     - Out of scope: unrelated refactors not required for "Compile AGENTS and CLAUDE gateway from modules".
   Plan: |-
     Goal: Compile AGENTS and CLAUDE gateway from modules
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Gateway output stays compact, deterministic, flavor-aware, and compatible with existing load rules.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

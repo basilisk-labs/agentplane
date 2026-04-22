@@ -37,25 +37,25 @@ description: "Add tests for recipe install, add, update, enable, disable, remove
 sections:
   Summary: |-
     Add recipe prompt lifecycle tests
-    
+
     Add tests for recipe install, add, update, enable, disable, remove, and detach flows that affect prompt modules and generated artifacts.
   Scope: |-
     - In scope: Add tests for recipe install, add, update, enable, disable, remove, and detach flows that affect prompt modules and generated artifacts.
     - Out of scope: unrelated refactors not required for "Add recipe prompt lifecycle tests".
   Plan: |-
     Goal: Add recipe prompt lifecycle tests
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Recipe lifecycle tests assert artifact refresh, conflict behavior, and rollback safety.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

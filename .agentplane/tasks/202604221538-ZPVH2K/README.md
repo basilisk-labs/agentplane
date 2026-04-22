@@ -38,25 +38,25 @@ description: "Add CLI and doctor tests for prompt graph explain output, missing 
 sections:
   Summary: |-
     Add prompt diagnostics and doctor tests
-    
+
     Add CLI and doctor tests for prompt graph explain output, missing generated artifacts, invalid recipe modules, and compiled prompt drift.
   Scope: |-
     - In scope: Add CLI and doctor tests for prompt graph explain output, missing generated artifacts, invalid recipe modules, and compiled prompt drift.
     - Out of scope: unrelated refactors not required for "Add prompt diagnostics and doctor tests".
   Plan: |-
     Goal: Add prompt diagnostics and doctor tests
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Doctor and explain surfaces report prompt assembly failures with actionable reason codes.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

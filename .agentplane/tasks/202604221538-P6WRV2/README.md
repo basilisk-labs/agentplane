@@ -35,25 +35,25 @@ description: "Add JSON schemas and validation helpers for compiled prompt graph 
 sections:
   Summary: |-
     Add prompt graph and manifest schemas
-    
+
     Add JSON schemas and validation helpers for compiled prompt graph and prompt manifest artifacts emitted under .agentplane/generated.
   Scope: |-
     - In scope: Add JSON schemas and validation helpers for compiled prompt graph and prompt manifest artifacts emitted under .agentplane/generated.
     - Out of scope: unrelated refactors not required for "Add prompt graph and manifest schemas".
   Plan: |-
     Goal: Add prompt graph and manifest schemas
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Generated prompt graph and manifest schemas validate module ids, compiled outputs, content hashes, and resolution provenance.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

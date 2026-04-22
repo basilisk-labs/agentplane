@@ -35,25 +35,25 @@ description: "Validate recipe-local module, policy, agent, prompt, template, and
 sections:
   Summary: |-
     Validate recipe module asset references
-    
+
     Validate recipe-local module, policy, agent, prompt, template, and validator asset references during install and project vendoring.
   Scope: |-
     - In scope: Validate recipe-local module, policy, agent, prompt, template, and validator asset references during install and project vendoring.
     - Out of scope: unrelated refactors not required for "Validate recipe module asset references".
   Plan: |-
     Goal: Validate recipe module asset references
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Invalid paths, missing files, duplicate module ids, and escaping references fail before activation.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

@@ -34,25 +34,25 @@ description: "Add v0.4 domain types for prompt modules, module ownership, surfac
 sections:
   Summary: |-
     Define prompt module domain contracts
-    
+
     Add v0.4 domain types for prompt modules, module ownership, surfaces, targets, slots, mutability, load conditions, merge policy, and provenance.
   Scope: |-
     - In scope: Add v0.4 domain types for prompt modules, module ownership, surfaces, targets, slots, mutability, load conditions, merge policy, and provenance.
     - Out of scope: unrelated refactors not required for "Define prompt module domain contracts".
   Plan: |-
     Goal: Define prompt module domain contracts
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Module contracts cover gateway, policy, agent, runner, validator, and template surfaces with typed ids and provenance.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

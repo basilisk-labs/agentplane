@@ -40,25 +40,25 @@ description: "Roll-up epic for framework module registry, graph resolution, muta
 sections:
   Summary: |-
     Epic B: Prompt graph compiler core
-    
+
     Roll-up epic for framework module registry, graph resolution, mutation engine, manifest emission, and explain diagnostics.
   Scope: |-
     - In scope: Roll-up epic for framework module registry, graph resolution, mutation engine, manifest emission, and explain diagnostics.
     - Out of scope: unrelated refactors not required for "Epic B: Prompt graph compiler core".
   Plan: |-
     Goal: Epic B: Prompt graph compiler core
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - Compiler core tasks are DONE and generated graph artifacts are deterministic.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

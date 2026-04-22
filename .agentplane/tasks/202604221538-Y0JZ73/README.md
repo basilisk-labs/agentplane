@@ -40,25 +40,25 @@ description: "Top-level roll-up epic for shipping modular prompt assembly across
 sections:
   Summary: |-
     Epic: Ship v0.4 modular prompt assembly
-    
+
     Top-level roll-up epic for shipping modular prompt assembly across contracts, compiler, compiled prompt surfaces, recipe integration, verification, and docs.
   Scope: |-
     - In scope: Top-level roll-up epic for shipping modular prompt assembly across contracts, compiler, compiled prompt surfaces, recipe integration, verification, and docs.
     - Out of scope: unrelated refactors not required for "Epic: Ship v0.4 modular prompt assembly".
   Plan: |-
     Goal: Epic: Ship v0.4 modular prompt assembly
-    
+
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-    
+
     Acceptance:
     - All v0.4 modular prompt assembly epics are DONE and release readiness is explicitly verified.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-    
+
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-
