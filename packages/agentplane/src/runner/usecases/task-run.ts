@@ -1,3 +1,5 @@
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
@@ -159,9 +161,7 @@ async function writeRunnerRefusalArtifacts(opts: {
 export function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
   const task = bundle.task;
   if (!task) return;
-  const status = String(task.data.status || "TODO")
-    .trim()
-    .toUpperCase();
+  const status = normalizeTaskStatus(task.data.status);
   if (status === "DOING") return;
   throw new CliError({
     exitCode: 2,

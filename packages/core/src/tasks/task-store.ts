@@ -21,10 +21,10 @@ import {
 } from "./task-doc-contract.js";
 import { applyTaskDocMutations } from "./task-doc-mutation.js";
 import { generateTaskId } from "./task-id.js";
+import type { TaskStatus } from "./task-status.js";
 
 export { validateTaskDocMetadata } from "./task-doc-contract.js";
 
-export type TaskStatus = "TODO" | "DOING" | "DONE" | "BLOCKED";
 export type TaskPriority = "low" | "normal" | "med" | "high";
 export type PlanApprovalState = "pending" | "approved" | "rejected";
 export type PlanApproval = {

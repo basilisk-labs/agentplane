@@ -1,6 +1,10 @@
 import { createHash } from "node:crypto";
 import type { AgentplaneConfig } from "@agentplaneorg/core";
-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
+import {
+  ensureDocSections,
+  normalizeTaskStatus,
+  setMarkdownSection,
+} from "@agentplaneorg/core/tasks";
 
 import type { TaskBackend, TaskData } from "../../../backends/task-backend.js";
 import { CliError } from "../../../shared/errors.js";
@@ -187,7 +191,7 @@ function buildStatusTaskPatch(opts: BuildTaskStatusTransitionOptions): TaskStore
 export function buildTaskStatusTransition(
   opts: BuildTaskStatusTransitionOptions,
 ): TaskTransitionWrite {
-  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  const currentStatus = normalizeTaskStatus(opts.task.status);
   const patch = buildStatusTaskPatch(opts);
   const statusEvent = {
     type: "status" as const,
@@ -225,7 +229,7 @@ export function buildTaskStatusTransition(
 export async function executeTaskStatusTransitionRequest(
   opts: ExecuteTaskStatusTransitionRequest,
 ): Promise<TaskStatusTransitionExecution> {
-  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  const currentStatus = normalizeTaskStatus(opts.task.status);
   ensureStatusTransitionAllowed({
     currentStatus,
     nextStatus: opts.toStatus,
@@ -277,7 +281,7 @@ export async function executeTaskStatusTransitionRequest(
 export function buildTaskVerificationTransition(
   opts: BuildTaskVerificationTransitionOptions,
 ): TaskTransitionWrite {
-  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  const currentStatus = normalizeTaskStatus(opts.task.status);
   const verification = {
     state: opts.state,
     updated_at: opts.at,

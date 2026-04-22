@@ -2,6 +2,7 @@ import { readdir } from "node:fs/promises";
 import path from "node:path";
 
 import type { AgentplaneConfig } from "@agentplaneorg/core";
+import { parseTaskStatus, TASK_STATUS_VALUES } from "@agentplaneorg/core/tasks";
 
 import { fileExists } from "../../../cli/fs-utils.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
@@ -32,19 +33,13 @@ export function normalizeDependsOnInput(value: string): string[] {
   return [trimmed];
 }
 
-const ALLOWED_TASK_STATUSES = new Set(["TODO", "DOING", "DONE", "BLOCKED"]);
-
 export function normalizeTaskStatus(value: string): string {
-  const normalized = value.trim().toUpperCase();
-  if (!ALLOWED_TASK_STATUSES.has(normalized)) {
+  const normalized = parseTaskStatus(value);
+  if (!normalized) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: invalidValueMessage(
-        "status",
-        value,
-        `one of ${[...ALLOWED_TASK_STATUSES].join(", ")}`,
-      ),
+      message: invalidValueMessage("status", value, `one of ${TASK_STATUS_VALUES.join(", ")}`),
     });
   }
   return normalized;

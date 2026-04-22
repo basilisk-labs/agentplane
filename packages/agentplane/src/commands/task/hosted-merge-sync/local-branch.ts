@@ -79,7 +79,7 @@ export async function findLocallyShippedBranchPrTasks(opts: {
 
   const matches: LocalBranchPrSyncCandidate[] = [];
   for (const task of opts.tasks) {
-    const currentStatus = String(task.status || "TODO").toUpperCase();
+    const currentStatus = normalizeTaskStatus(task.status);
     const prMetaRecord = await readPrMetaIfPresent({ ctx: opts.ctx, taskId: task.id });
     const meta = prMetaRecord?.meta ?? null;
     const branch = meta?.branch?.trim() ?? "";
@@ -133,7 +133,7 @@ export async function findDoneBranchPrTasksWithOpenPrArtifacts(opts: {
 
   const matches: LocalDoneBranchPrDrift[] = [];
   for (const task of opts.tasks) {
-    const currentStatus = String(task.status || "TODO").toUpperCase();
+    const currentStatus = normalizeTaskStatus(task.status);
     if (currentStatus !== "DONE") continue;
 
     const prMetaRecord = await readPrMetaIfPresent({ ctx: opts.ctx, taskId: task.id });
@@ -164,3 +164,4 @@ export async function findDoneBranchPrTasksWithOpenPrArtifacts(opts: {
 
   return matches;
 }
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";

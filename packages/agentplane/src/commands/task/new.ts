@@ -1,4 +1,4 @@
-import { setMarkdownSection } from "@agentplaneorg/core/tasks";
+import { normalizeTaskStatus, setMarkdownSection } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, warnMessage } from "../../cli/output.js";
@@ -136,7 +136,7 @@ function listOpenTaskDuplicates(
   title: string,
 ): { task: TaskData; score: number }[] {
   return tasks
-    .filter((task) => String(task.status ?? "").toUpperCase() !== "DONE")
+    .filter((task) => normalizeTaskStatus(task.status) !== "DONE")
     .map((task) => ({
       task,
       score: duplicateSimilarity(task.title ?? "", title),
@@ -155,7 +155,7 @@ function formatDuplicateTaskMessage(
     .slice(0, 3)
     .map(
       ({ task, score }) =>
-        `${task.id} (${Math.round(score * 100)}% title overlap, status=${String(task.status || "TODO").toUpperCase()}): ${task.title}`,
+        `${task.id} (${Math.round(score * 100)}% title overlap, status=${normalizeTaskStatus(task.status)}): ${task.title}`,
     )
     .join("; ");
   const tail = allowDuplicate

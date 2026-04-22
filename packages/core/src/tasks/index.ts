@@ -36,6 +36,15 @@ export {
 
 export { generateTaskId, TASK_ID_ALPHABET, timestampIdPrefix } from "./task-id.js";
 
+export {
+  isTaskStatus,
+  normalizeTaskStatus,
+  parseTaskStatus,
+  TASK_STATUS_LABEL,
+  TASK_STATUS_VALUES,
+  type TaskStatus,
+} from "./task-status.js";
+
 export { readTaskReadme, updateTaskReadmeAtomic } from "./task-readme-io.js";
 
 export {
@@ -67,7 +76,6 @@ export {
   type TaskRunnerOutcome,
   type TaskRunnerOutcomeStatus,
   type TaskRunnerTarget,
-  type TaskStatus,
   type VerificationResult,
   type VerificationState,
 } from "./task-store.js";

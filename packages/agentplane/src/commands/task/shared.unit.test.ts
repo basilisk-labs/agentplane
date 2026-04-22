@@ -199,7 +199,20 @@ describe("task shared helpers", () => {
   it("normalizeTaskStatus enforces allowed statuses", () => {
     expect(normalizeTaskStatus("todo")).toBe("TODO");
     expect(normalizeTaskStatus(" Doing ")).toBe("DOING");
-    expect(() => normalizeTaskStatus("nope")).toThrow(CliError);
+    for (const value of ["", "nope", "READY", "REVIEW", "VERIFIED"]) {
+      expect(() => normalizeTaskStatus(value)).toThrow(CliError);
+    }
+  });
+
+  it("queryTaskProjection keeps invalid status filters empty instead of falling back to TODO", () => {
+    const tasks = [mkTask({ id: "T-1", status: "TODO" }), mkTask({ id: "T-2", status: "DONE" })];
+
+    const result = queryTaskProjection({
+      tasks,
+      filters: { status: ["review"], owner: [], tag: [], quiet: false },
+    });
+
+    expect(result.items).toEqual([]);
   });
 
   it("toStringArray returns trimmed strings and drops non-strings", () => {

@@ -1,3 +1,5 @@
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage, unknownEntityMessage, warnMessage } from "../../cli/output.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
@@ -40,7 +42,7 @@ export async function cmdReady(opts: {
     }
 
     if (task) {
-      const status = String(task.status || "TODO").toUpperCase();
+      const status = normalizeTaskStatus(task.status);
       const title = task.title?.trim() || "(untitled task)";
       const owner = task.owner?.trim() || "-";
       const dependsOn = dep?.dependsOn ?? [];

@@ -1,5 +1,6 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core";
 import { execFileAsync } from "@agentplaneorg/core/process";
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import { infoMessage, warnMessage } from "../../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
@@ -332,7 +333,7 @@ export async function readCommitInfo(
 }
 
 export function defaultCommitEmojiForStatus(status: string): string {
-  const normalized = status.trim().toUpperCase();
+  const normalized = normalizeTaskStatus(status);
   if (normalized === "DOING") return "🚧";
   if (normalized === "DONE") return "✅";
   if (normalized === "BLOCKED") return "⛔";

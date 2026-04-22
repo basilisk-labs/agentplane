@@ -1,3 +1,5 @@
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+
 import { toStringSafe } from "../../shared.js";
 import type { RedmineSyncContext } from "./context.js";
 
@@ -5,7 +7,7 @@ export async function inferRedmineStatusIdForTaskStatus(
   context: RedmineSyncContext,
   statusRaw: unknown,
 ): Promise<number | null> {
-  const status = toStringSafe(statusRaw).trim().toUpperCase();
+  const status = normalizeTaskStatus(toStringSafe(statusRaw));
   if (!status) return null;
 
   const explicit = context.statusMap?.[status];

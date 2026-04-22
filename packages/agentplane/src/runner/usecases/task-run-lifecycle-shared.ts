@@ -1,5 +1,7 @@
 import path from "node:path";
 
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+
 import type { TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
@@ -45,12 +47,6 @@ export type RetriedTaskRunnerExecution = ExecutedTaskRunnerExecution & {
   source_status: RunnerLifecycleStatus;
 };
 
-function normalizeTaskStatus(task: TaskData): string {
-  return String(task.status || "TODO")
-    .trim()
-    .toUpperCase();
-}
-
 function assertCurrentTaskDoing(taskId: string, task: TaskData | null): void {
   if (!task) {
     throw new CliError({
@@ -59,7 +55,7 @@ function assertCurrentTaskDoing(taskId: string, task: TaskData | null): void {
       message: `Task not found: ${taskId}`,
     });
   }
-  const status = normalizeTaskStatus(task);
+  const status = normalizeTaskStatus(task.status);
   if (status === "DOING") return;
   throw new CliError({
     exitCode: 2,

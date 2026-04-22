@@ -307,7 +307,7 @@ async function closeHostedTask(opts: {
     taskDirRelative,
     target,
   });
-  const taskStatus = String(task.status || "TODO").toUpperCase();
+  const taskStatus = normalizeTaskStatus(task.status);
   const taskCommitHash = task.commit?.hash ?? "";
   const alreadyClosed = taskStatus === "DONE" && taskCommitHash === target.mergedPr.mergeCommit.oid;
   if (
@@ -455,3 +455,4 @@ export function makeRunTaskHostedCloseHandler(getCtx: (cmd: string) => Promise<C
     }
   };
 }
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";

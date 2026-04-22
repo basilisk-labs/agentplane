@@ -1,8 +1,11 @@
 import { createHash } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
-import type { TasksExportSnapshot } from "@agentplaneorg/core/tasks";
-import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+import {
+  canonicalizeJson,
+  normalizeTaskStatus,
+  type TasksExportSnapshot,
+} from "@agentplaneorg/core/tasks";
 import { validateTasksExportSnapshot } from "@agentplaneorg/core/schemas";
 
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
@@ -19,21 +22,6 @@ const DEFAULT_EXPORT_OWNER = "UNKNOWN";
 
 function normalizeExportTitle(value: TaskData["title"]): string {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : DEFAULT_EXPORT_TITLE;
-}
-
-function normalizeExportStatus(value: TaskData["status"]): "TODO" | "DOING" | "DONE" | "BLOCKED" {
-  if (typeof value === "string") {
-    const normalized = value.trim().toUpperCase();
-    if (
-      normalized === "TODO" ||
-      normalized === "DOING" ||
-      normalized === "DONE" ||
-      normalized === "BLOCKED"
-    ) {
-      return normalized;
-    }
-  }
-  return "TODO";
 }
 
 function normalizeExportOwner(value: TaskData["owner"]): string {
@@ -69,7 +57,7 @@ function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_sourc
     id: task.id,
     title: normalizeExportTitle(task.title),
     description: task.description ?? "",
-    status: normalizeExportStatus(task.status),
+    status: normalizeTaskStatus(task.status),
     priority: normalizeExportPriority(task.priority),
     owner: normalizeExportOwner(task.owner),
     result_summary: typeof task.result_summary === "string" ? task.result_summary : undefined,

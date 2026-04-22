@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 const DEFAULT_RECENT_DONE_TASK_LIMIT = 200;
 
@@ -160,8 +161,7 @@ export async function checkDoneTaskCommitInvariants(
   }
   const all = Array.isArray(parsed.tasks) ? (parsed.tasks as TaskSnapshotRecord[]) : [];
   const allDone = all.filter((t) => {
-    const status = typeof t.status === "string" ? t.status : "";
-    return status.toUpperCase() === "DONE";
+    return normalizeTaskStatus(t.status) === "DONE";
   });
   const done = opts.fullArchive ? allDone : allDone.slice(-DEFAULT_RECENT_DONE_TASK_LIMIT);
   if (done.length === 0) return [];

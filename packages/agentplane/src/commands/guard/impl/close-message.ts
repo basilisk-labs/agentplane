@@ -156,7 +156,7 @@ export async function buildCloseCommitMessage(opts: {
     : [];
   const isSpike = tags.includes("spike");
 
-  if (String(task.status || "").toUpperCase() !== "DONE") {
+  if (normalizeTaskStatus(task.status) !== "DONE") {
     throw new CliError({
       exitCode: exitCodeForError("E_USAGE"),
       code: "E_USAGE",
@@ -212,3 +212,4 @@ export function taskReadmePathForTask(opts: {
 }): string {
   return path.join(opts.gitRoot, opts.workflowDir, opts.taskId, "README.md");
 }
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
