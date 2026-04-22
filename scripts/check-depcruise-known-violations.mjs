@@ -5,8 +5,8 @@ import { defineCheck, parseScriptArgs, runScriptMain } from "./lib/script-runtim
 
 const SCRIPT_NAME = "check-depcruise-known-violations.mjs";
 const DEFAULT_KNOWN_VIOLATIONS_PATH = ".dependency-cruiser-known-violations.json";
-const MAX_KNOWN_VIOLATIONS_TOTAL = 3;
-const MAX_KNOWN_VIOLATIONS_BY_RULE = new Map([["no-circular", 3]]);
+const MAX_KNOWN_VIOLATIONS_TOTAL = 0;
+const MAX_KNOWN_VIOLATIONS_BY_RULE = new Map([["no-circular", 0]]);
 
 function parseNonNegativeInteger(value, flagName) {
   const parsed = Number.parseInt(value, 10);

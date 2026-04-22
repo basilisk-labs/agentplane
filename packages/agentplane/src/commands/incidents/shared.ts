@@ -22,9 +22,14 @@ import {
   normalizeTaskDocVersion,
 } from "../task/shared.js";
 import type { CommandContext } from "../shared/task-backend.js";
-
-export const INCIDENTS_POLICY_PATH = ".agentplane/policy/incidents.md";
-export const INCIDENTS_POLICY_ASSET_PATH = "packages/agentplane/assets/policy/incidents.md";
+import {
+  INCIDENTS_POLICY_ASSET_PATH,
+  INCIDENTS_POLICY_PATH,
+} from "../../runtime/incidents/paths.js";
+export {
+  INCIDENTS_POLICY_ASSET_PATH,
+  INCIDENTS_POLICY_PATH,
+} from "../../runtime/incidents/paths.js";
 const INCIDENTS_POLICY_LINE_BUDGET = 100;
 
 export type LoadedTaskIncidents = {
