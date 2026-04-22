@@ -36,7 +36,7 @@ import {
   promptWorkflowStep,
 } from "./steps/index.js";
 import type { InitV2PromptClack } from "./steps/contracts.js";
-import { outroError, outroSuccess, previewInstall, section } from "./ui-v2.js";
+import { introLogo, outroError, outroSuccess, previewInstall, section } from "./ui-v2.js";
 import { ensureAgentsFiles } from "./write-agents.js";
 import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./write-config.js";
 import { ensureInitRedmineEnvTemplate } from "./write-env.js";
@@ -86,6 +86,7 @@ export async function cmdInitV2(opts: {
   try {
     const promptClack = clack as InitV2PromptClack & Pick<InitV2ClackPrompts, "note">;
     clack.intro("AgentPlane init");
+    introLogo(clack);
     section(clack, "Setup", "Choose the project defaults before AgentPlane writes files.");
     const setup = await promptSetupProfileStep({
       clack: promptClack,

@@ -150,10 +150,14 @@ function normalizeScenarios(raw: unknown): RecipeScenarioDescriptor[] {
     if (!isRecord(entry)) {
       throw new Error(invalidFieldMessage(`manifest.scenarios[${index}]`, "object"));
     }
+    const id = normalizeScenarioId(
+      normalizeRequiredString(entry.id, `manifest.scenarios[${index}].id`),
+    );
+    const summary = normalizeRequiredString(entry.summary, `manifest.scenarios[${index}].summary`);
     return {
-      id: normalizeScenarioId(normalizeRequiredString(entry.id, `manifest.scenarios[${index}].id`)),
-      name: normalizeRequiredString(entry.name, `manifest.scenarios[${index}].name`),
-      summary: normalizeRequiredString(entry.summary, `manifest.scenarios[${index}].summary`),
+      id,
+      name: normalizeOptionalString(entry.name, `manifest.scenarios[${index}].name`) ?? summary,
+      summary,
       description: normalizeOptionalString(
         entry.description,
         `manifest.scenarios[${index}].description`,

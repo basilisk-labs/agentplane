@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  introLogo,
   outroError,
   outroSuccess,
   previewConflicts,
@@ -39,6 +40,15 @@ describe("init ui v2", () => {
 
     expect(clack.log.step).toHaveBeenCalledWith("Setup Profile");
     expect(clack.note).toHaveBeenCalledWith("Pick a profile.");
+  });
+
+  it("emits the ASCII logo through a Clack note", () => {
+    const clack = clackMock();
+
+    introLogo(clack);
+
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("_   ____"));
+    expect(clack.note).toHaveBeenCalledWith(expect.stringContaining("\\___"));
   });
 
   it("emits preview output through Clack note", () => {

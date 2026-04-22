@@ -7,6 +7,15 @@ type InitV2PreviewItem = {
   value: string | number | boolean | null | undefined;
 };
 
+const INIT_ASCII_LOGO = String.raw`
+    _                    _   ____  _
+   / \   __ _  ___ _ __ | |_|  _ \| | __ _ _ __   ___
+  / _ \ / _\` |/ _ \ '_ \| __| |_) | |/ _\` | '_ \ / _ \
+ / ___ \ (_| |  __/ | | | |_|  __/| | (_| | | | |  __/
+/_/   \_\__, |\___|_| |_|\__|_|   |_|\__,_|_| |_|\___|
+        |___/
+`.trim();
+
 function stringifyPreviewValue(value: InitV2PreviewItem["value"]): string {
   if (value === true) return "yes";
   if (value === false) return "no";
@@ -30,6 +39,10 @@ export function section(
   if (message?.trim()) {
     clack.note(message.trim());
   }
+}
+
+export function introLogo(clack: Pick<InitV2ClackPrompts, "note">): void {
+  clack.note(INIT_ASCII_LOGO);
 }
 
 export function previewInstall(
