@@ -1,4 +1,4 @@
-import { normalizeTaskDocVersion } from "@agentplaneorg/core/tasks";
+import { normalizeTaskDocVersion, normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 import type { TaskPrMeta } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../../backends/task-backend.js";
@@ -26,7 +26,7 @@ export function buildSyncedPrMeta(opts: {
 
 export function buildSyncedTask(opts: { task: TaskData; mergedPr: HostedMergedPr }): TaskData {
   const at = opts.mergedPr.mergedAt ?? new Date().toISOString();
-  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  const currentStatus = normalizeTaskStatus(opts.task.status);
   const note =
     `Hosted PR #${opts.mergedPr.number} merged on GitHub main; ` +
     "task projection reconciled from hosted PR artifacts.";
@@ -64,7 +64,7 @@ export function needsHostedMergeSyncFromLocalMeta(opts: {
   task: TaskData;
   meta: LocalMergedPrMeta;
 }): boolean {
-  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  const currentStatus = normalizeTaskStatus(opts.task.status);
   if (currentStatus !== "DONE") return true;
   if ((opts.task.commit?.hash ?? "") !== opts.meta.mergeCommit) return true;
   return false;
@@ -75,7 +75,7 @@ export function buildLocallyMergedSyncedTask(opts: {
   meta: LocalMergedPrMeta;
 }): TaskData {
   const at = opts.meta.mergedAt ?? new Date().toISOString();
-  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  const currentStatus = normalizeTaskStatus(opts.task.status);
   const note =
     "Local PR metadata already marks the task branch as MERGED; " +
     "task projection reconciled without an additional GitHub lookup.";
@@ -108,7 +108,7 @@ export function buildLocallySyncedTask(opts: {
   candidate: LocalBranchPrSyncCandidate;
 }): TaskData {
   const at = new Date().toISOString();
-  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  const currentStatus = normalizeTaskStatus(opts.task.status);
   const note =
     `Local branch_pr reconciliation detected task commit ${opts.candidate.commitHash.slice(0, 12)} ` +
     `on base ${opts.candidate.base}; canonical task state normalized after shipment.`;
@@ -161,7 +161,7 @@ export function needsHostedMergeSync(opts: {
   mergedPr: HostedMergedPr;
   branch: string;
 }): boolean {
-  const currentStatus = String(opts.task.status || "TODO").toUpperCase();
+  const currentStatus = normalizeTaskStatus(opts.task.status);
   const expectedCommit = opts.mergedPr.mergeCommit?.oid ?? "";
   const expectedBase = opts.mergedPr.baseRefName ?? opts.meta.base ?? "";
   const expectedHeadSha = opts.mergedPr.headRefOid ?? opts.meta.head_sha ?? "";

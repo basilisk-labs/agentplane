@@ -1,6 +1,5 @@
 export {
   dedupeStrings,
-  cmdTaskDerive,
   cmdTaskAdd,
   cmdTaskUpdate,
   cmdTaskScrub,
@@ -11,14 +10,9 @@ export {
   cmdTaskScaffold,
   cmdTaskNormalize,
   cmdTaskMigrate,
-  cmdTaskMigrateDoc,
   cmdTaskPlanSet,
   cmdTaskPlanApprove,
   cmdTaskPlanReject,
-  cmdTaskComment,
-  cmdTaskSetStatus,
-  cmdTaskShow,
-  cmdTaskList,
   cmdTaskExport,
   cmdTaskLint,
   cmdTaskDocSet,
@@ -35,24 +29,8 @@ export {
   resolveInitBaseBranch,
   promptInitBaseBranch,
   ensureInitCommit,
-  cmdWorkStart,
-  cmdCleanupMerged,
-  cmdBranchBaseGet,
-  cmdBranchBaseSet,
-  cmdBranchBaseClear,
-  cmdBranchBaseExplain,
-  cmdBranchStatus,
-  cmdBranchRemove,
 } from "./branch/index.js";
 
-export { cmdPrOpen, cmdPrUpdate, cmdPrCheck, cmdPrNote, cmdIntegrate } from "./pr/index.js";
+export { suggestAllowPrefixes, cmdGuardClean, cmdGuardSuggestAllow } from "./guard/index.js";
 
-export {
-  suggestAllowPrefixes,
-  cmdGuardClean,
-  cmdGuardSuggestAllow,
-  cmdGuardCommit,
-} from "./guard/index.js";
-export { cmdCommit } from "./guard/impl/commit.js";
-
-export { HOOK_NAMES, cmdHooksInstall, cmdHooksUninstall, cmdHooksRun } from "./hooks/index.js";
+export { cmdHooksInstall, cmdHooksUninstall, cmdHooksRun } from "./hooks/index.js";

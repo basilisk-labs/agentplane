@@ -1,7 +1,9 @@
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+import { resolveProject } from "@agentplaneorg/core/project";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { loadConfig, resolveProject, type AgentplaneConfig } from "@agentplaneorg/core";
+import { loadConfig } from "@agentplaneorg/core/config";
 
 import { fileExists } from "../../../cli/fs-utils.js";
 import { gitShowFile, toGitPath } from "@agentplaneorg/core/git";

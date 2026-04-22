@@ -11,6 +11,7 @@ import {
   parseTaskIdFromCloseBranch,
   parseTaskIdFromBranch,
 } from "@agentplaneorg/core/git";
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { createCliEmitter, unknownEntityMessage, workflowModeMessage } from "../../cli/output.js";
@@ -110,7 +111,7 @@ async function resolveCleanupCandidates(opts: {
       taskCache.set(target.taskId, task);
     }
     if (!task) continue;
-    const status = String(task.status || "").toUpperCase();
+    const status = normalizeTaskStatus(task.status);
     if (status !== "DONE") continue;
     const diff = await gitDiffNames(opts.gitRoot, opts.baseBranch, branch);
     const lifecycleOnBase = await taskLifecycleIsOnBase({

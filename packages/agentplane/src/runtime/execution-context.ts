@@ -1,4 +1,5 @@
-import type { AgentplaneConfig, ResolvedProject } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 import type { Adapters } from "../adapters/index.js";
 import { buildAdapters } from "../adapters/index.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";

@@ -11,6 +11,7 @@ import {
   type TasksExportSnapshot,
   type TasksExportTask,
 } from "./tasks-export.js";
+import { isTaskStatus, TASK_STATUS_LABEL } from "./task-status.js";
 
 export type TasksLintResult = {
   errors: string[];
@@ -121,8 +122,8 @@ export function lintTasksSnapshot(
 
     if (typeof t.title !== "string" || t.title.length === 0)
       errors.push(`${id}: title must be non-empty`);
-    if (!["TODO", "DOING", "DONE", "BLOCKED"].includes(String(t.status))) {
-      errors.push(`${id}: status must be TODO|DOING|DONE|BLOCKED`);
+    if (!isTaskStatus(t.status)) {
+      errors.push(`${id}: status must be ${TASK_STATUS_LABEL}`);
     }
     if (!["low", "normal", "med", "high"].includes(String(t.priority))) {
       errors.push(`${id}: priority must be low|normal|med|high`);
@@ -154,7 +155,8 @@ export function lintTasksSnapshot(
     }
 
     if (
-      String(t.status) === "DONE" &&
+      isTaskStatus(t.status) &&
+      t.status === "DONE" &&
       (!isRecord(t.commit) ||
         typeof t.commit.hash !== "string" ||
         typeof t.commit.message !== "string")

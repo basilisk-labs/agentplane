@@ -2,7 +2,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { shouldAutoBootstrapAfterIntegrate } from "./bootstrap-guidance.js";
 
-export type PostIntegrateBootstrapResult =
+type PostIntegrateBootstrapResult =
   | { status: "skipped" }
   | { status: "ran" }
   | { status: "failed"; error: string };

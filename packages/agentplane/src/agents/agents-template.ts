@@ -21,6 +21,9 @@ export type WorkflowMode = "direct" | "branch_pr";
 type AgentTemplate = { fileName: string; contents: string };
 export type PolicyTemplate = { relativePath: string; contents: string };
 
+let agentTemplatesCache: Promise<AgentTemplate[]> | null = null;
+const policyGatewayTemplateCache = new Map<PolicyGatewayFlavor, Promise<string>>();
+
 function ensureTrailingNewline(text: string): string {
   return text.endsWith("\n") ? text : `${text}\n`;
 }
@@ -63,7 +66,7 @@ export async function loadAgentsTemplate(): Promise<string> {
   return loadPolicyGatewayTemplate("codex");
 }
 
-export async function loadAgentTemplates(): Promise<AgentTemplate[]> {
+async function readAgentTemplates(): Promise<AgentTemplate[]> {
   const dirPath = AGENTS_DIR_PATH;
   const entries = await readdir(dirPath);
   const jsonFiles = entries.filter((entry) => entry.endsWith(".json"));
@@ -76,6 +79,11 @@ export async function loadAgentTemplates(): Promise<AgentTemplate[]> {
   }
 
   return templates;
+}
+
+export async function loadAgentTemplates(): Promise<AgentTemplate[]> {
+  agentTemplatesCache ??= readAgentTemplates();
+  return agentTemplatesCache;
 }
 
 async function listFilesRecursive(dirPath: string, relPrefix = ""): Promise<string[]> {
@@ -126,8 +134,16 @@ export function filterAgentsByWorkflow(template: string, workflow: WorkflowMode)
   return ensureTrailingNewline(filtered.join("\n").trimEnd());
 }
 
-export async function loadPolicyGatewayTemplate(flavor: PolicyGatewayFlavor): Promise<string> {
+async function readPolicyGatewayTemplate(flavor: PolicyGatewayFlavor): Promise<string> {
   const text = await readFile(AGENTS_TEMPLATE_PATH, "utf8");
   const rendered = renderPolicyGatewayTemplateText(text, policyGatewayFileName(flavor));
   return ensureTrailingNewline(rendered.trimEnd());
+}
+
+export async function loadPolicyGatewayTemplate(flavor: PolicyGatewayFlavor): Promise<string> {
+  const cached = policyGatewayTemplateCache.get(flavor);
+  if (cached) return cached;
+  const template = readPolicyGatewayTemplate(flavor);
+  policyGatewayTemplateCache.set(flavor, template);
+  return template;
 }

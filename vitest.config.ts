@@ -6,18 +6,73 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   resolve: {
-    alias: {
-      "@agentplane/testkit": path.join(__dirname, "packages/testkit/src/index.ts"),
-      "@agentplane/testkit/cli": path.join(__dirname, "packages/testkit/src/cli.ts"),
+    alias: [
+      {
+        find: "@agentplane/testkit/cli",
+        replacement: path.join(__dirname, "packages/testkit/src/cli.ts"),
+      },
+      {
+        find: "@agentplane/testkit/recipes",
+        replacement: path.join(__dirname, "packages/testkit/src/recipes.ts"),
+      },
+      {
+        find: "@agentplane/testkit/release",
+        replacement: path.join(__dirname, "packages/testkit/src/release.ts"),
+      },
+      {
+        find: "@agentplane/testkit/runner",
+        replacement: path.join(__dirname, "packages/testkit/src/runner.ts"),
+      },
+      {
+        find: "@agentplane/testkit/task",
+        replacement: path.join(__dirname, "packages/testkit/src/task.ts"),
+      },
+      {
+        find: "@agentplane/testkit",
+        replacement: path.join(__dirname, "packages/testkit/src/index.ts"),
+      },
       // In-repo tests should run against source, not stale built artifacts.
-      "@agentplaneorg/core/fs": path.join(__dirname, "packages/core/src/fs/index.ts"),
-      "@agentplaneorg/core/git": path.join(__dirname, "packages/core/src/git/index.ts"),
-      "@agentplaneorg/core/logger": path.join(__dirname, "packages/core/src/logger.ts"),
-      "@agentplaneorg/core/process": path.join(__dirname, "packages/core/src/process/index.ts"),
-      "@agentplaneorg/core/schemas": path.join(__dirname, "packages/core/src/schemas/index.ts"),
-      "@agentplaneorg/core/tasks": path.join(__dirname, "packages/core/src/tasks/index.ts"),
-      "@agentplaneorg/core": path.join(__dirname, "packages/core/src/index.ts"),
-    },
+      {
+        find: "@agentplaneorg/core/commit",
+        replacement: path.join(__dirname, "packages/core/src/commit/index.ts"),
+      },
+      {
+        find: "@agentplaneorg/core/config",
+        replacement: path.join(__dirname, "packages/core/src/config/index.ts"),
+      },
+      {
+        find: "@agentplaneorg/core/fs",
+        replacement: path.join(__dirname, "packages/core/src/fs/index.ts"),
+      },
+      {
+        find: "@agentplaneorg/core/git",
+        replacement: path.join(__dirname, "packages/core/src/git/index.ts"),
+      },
+      {
+        find: "@agentplaneorg/core/logger",
+        replacement: path.join(__dirname, "packages/core/src/logger.ts"),
+      },
+      {
+        find: "@agentplaneorg/core/process",
+        replacement: path.join(__dirname, "packages/core/src/process/index.ts"),
+      },
+      {
+        find: "@agentplaneorg/core/project",
+        replacement: path.join(__dirname, "packages/core/src/project/index.ts"),
+      },
+      {
+        find: "@agentplaneorg/core/schemas",
+        replacement: path.join(__dirname, "packages/core/src/schemas/index.ts"),
+      },
+      {
+        find: "@agentplaneorg/core/tasks",
+        replacement: path.join(__dirname, "packages/core/src/tasks/index.ts"),
+      },
+      {
+        find: "@agentplaneorg/core",
+        replacement: path.join(__dirname, "packages/core/src/index.ts"),
+      },
+    ],
   },
   test: {
     include: ["packages/**/src/**/*.test.ts"],

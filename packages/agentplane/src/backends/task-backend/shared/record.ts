@@ -1,5 +1,6 @@
 import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import {
+  normalizeTaskStatus,
   normalizeTaskDocVersion,
   renderTaskDocFromSections,
   taskDocToSectionMap,
@@ -72,7 +73,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
         : undefined,
     breaking: typeof fm.breaking === "boolean" ? fm.breaking : undefined,
     description: typeof fm.description === "string" ? fm.description : "",
-    status: typeof fm.status === "string" ? fm.status : "TODO",
+    status: normalizeTaskStatus(fm.status),
     priority: typeof fm.priority === "string" || typeof fm.priority === "number" ? fm.priority : "",
     owner: typeof fm.owner === "string" ? fm.owner : "",
     revision: normalizeRevision(fm.revision) ?? 1,

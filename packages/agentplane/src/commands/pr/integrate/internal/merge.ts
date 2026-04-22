@@ -1,7 +1,6 @@
+import { validateCommitSubject, extractTaskSuffix } from "@agentplaneorg/core/commit";
 import { mkdir, rename, rm } from "node:fs/promises";
 import path from "node:path";
-
-import { extractTaskSuffix, validateCommitSubject } from "@agentplaneorg/core";
 
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";

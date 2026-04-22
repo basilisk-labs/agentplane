@@ -42,6 +42,7 @@
         "zod-validation-error": "^5.0.0",
       },
       "devDependencies": {
+        "@agentplane/testkit": "0.0.0",
         "@types/yauzl": "^2.10.0",
       },
     },

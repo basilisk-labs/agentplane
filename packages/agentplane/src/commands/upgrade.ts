@@ -1,7 +1,8 @@
+import { resolveProject } from "@agentplaneorg/core/project";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import { loadConfig } from "@agentplaneorg/core/config";
 
 import { fileExists } from "../cli/fs-utils.js";
 import { exitCodeForError } from "../cli/exit-codes.js";

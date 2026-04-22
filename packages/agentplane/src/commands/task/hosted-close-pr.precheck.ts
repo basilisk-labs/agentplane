@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { resolveBaseBranch, gitEnv, parseTaskIdFromCloseBranch } from "@agentplaneorg/core/git";
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists } from "../../cli/fs-utils.js";
@@ -259,7 +260,7 @@ export async function precheckHostedClosePr(
     meta?.status === "MERGED" &&
     sourceBranch.length > 0 &&
     localMergeCommit.length > 0 &&
-    String(task.status || "TODO").toUpperCase() === "DONE" &&
+    normalizeTaskStatus(task.status) === "DONE" &&
     (task.commit?.hash?.trim() ?? "") === localMergeCommit;
   if (canonicalCloseAlreadyPresent) {
     return {

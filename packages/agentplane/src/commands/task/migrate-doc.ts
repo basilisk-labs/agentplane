@@ -1,7 +1,8 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import type { AgentplaneConfig } from "@agentplaneorg/core";
-import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+import { loadConfig } from "@agentplaneorg/core/config";
+import { resolveProject } from "@agentplaneorg/core/project";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import {
   ensureDocSections,

@@ -1,4 +1,4 @@
-import { extractTaskSuffix } from "@agentplaneorg/core";
+import { extractTaskSuffix } from "@agentplaneorg/core/commit";
 
 import type { TaskData } from "../../../backends/task-backend.js";
 import type { PrHandoffNote } from "./note-store.js";

@@ -103,6 +103,7 @@ const sidebars: SidebarsConfig = {
         "developer/cli-bug-ledger-v0-3-x",
         "developer/cli-help-json",
         "developer/typescript-esm-imports",
+        "developer/prompt-assembly-system",
         "developer/recipes-spec",
         "developer/recipes-how-it-works",
         "developer/recipes-development",

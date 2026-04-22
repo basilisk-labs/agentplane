@@ -92,8 +92,10 @@ describe("measure-cli-cold-path script", () => {
           warmups?: number;
           durations_ms?: number[];
           avg_ms?: number;
+          median_ms?: number;
           min_ms?: number;
           max_ms?: number;
+          p95_ms?: number;
           exit_code?: number;
           stdout_preview?: string;
           stderr_preview?: string;
@@ -133,8 +135,10 @@ describe("measure-cli-cold-path script", () => {
         expect(command.durations_ms).toHaveLength(1);
         expect(command.durations_ms?.[0]).toBeGreaterThan(0);
         expect(command.avg_ms).toBeGreaterThan(0);
+        expect(command.median_ms).toBeGreaterThan(0);
         expect(command.min_ms).toBeGreaterThan(0);
         expect(command.max_ms).toBeGreaterThan(0);
+        expect(command.p95_ms).toBeGreaterThan(0);
         expect(command.argv?.at(-2)).toBe("--root");
         expect(command.argv?.at(-1)).toBe(root);
         if (command.id !== "task_next") {

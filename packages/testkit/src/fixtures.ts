@@ -1,6 +1,6 @@
 import { rm } from "node:fs/promises";
 
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 
 import {
   mkGitRepoRoot,

@@ -2,7 +2,7 @@ import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { resolveProject } from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core/project";
 
 import {
   buildRecipeResolverContext,
@@ -21,7 +21,7 @@ import {
   scenarioDescriptor,
   writeDefaultConfig,
   writeInstalledRecipes,
-} from "../../../testkit/src/recipes.js";
+} from "@agentplane/testkit/recipes";
 
 installRecipesCommandHarness();
 

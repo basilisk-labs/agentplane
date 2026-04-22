@@ -1,4 +1,4 @@
-import type { ResolvedProject } from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 import {
   readScenarioDefinition,
   type ResolvedRecipeScenarioSelection,

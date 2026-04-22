@@ -1,4 +1,5 @@
-import type { ApprovalSettings, AgentplaneConfig, ResolvedProject } from "@agentplaneorg/core";
+import type { ApprovalSettings, AgentplaneConfig } from "@agentplaneorg/core/config";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 
 import type { TaskBackendCapabilities } from "../../backends/task-backend.js";
 import type { ProtectedPathKind } from "../../shared/protected-paths.js";

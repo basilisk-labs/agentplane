@@ -1,4 +1,4 @@
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 
 import { CodexRunnerAdapter } from "./codex.js";
 import { CustomRunnerAdapter } from "./custom.js";

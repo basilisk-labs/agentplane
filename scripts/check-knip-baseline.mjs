@@ -8,12 +8,12 @@ const SCRIPT_NAME = "check-knip-baseline.mjs";
 const DEFAULT_CONFIG_PATH = "knip.json";
 
 const BASELINE_LIMITS = {
-  files: 11,
-  exports: 251,
-  types: 301,
+  files: 5,
+  exports: 235,
+  types: 298,
   enumMembers: 0,
   namespaceMembers: 0,
-  total: 563,
+  total: 538,
 };
 
 function parseNonNegativeInteger(value, flagName) {

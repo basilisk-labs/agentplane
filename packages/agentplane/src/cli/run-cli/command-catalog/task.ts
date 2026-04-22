@@ -12,7 +12,7 @@ import { taskExportSpec } from "../../../commands/task/export.command.js";
 import { taskHandoffRecordSpec } from "../../../commands/task/handoff-record.command.js";
 import { taskHandoffShowSpec } from "../../../commands/task/handoff-show.command.js";
 import { taskHandoffSpec } from "../../../commands/task/handoff.command.js";
-import { taskHostedCloseSpec } from "../../../commands/task/hosted-close.command.js";
+import { taskHostedCloseSpec } from "../../../commands/task/hosted-close.spec.js";
 import { taskHostedClosePrSpec } from "../../../commands/task/hosted-close-pr.command.js";
 import { taskLintSpec } from "../../../commands/task/lint.command.js";
 import { taskListSpec } from "../../../commands/task/list.spec.js";

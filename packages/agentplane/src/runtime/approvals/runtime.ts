@@ -1,4 +1,4 @@
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 
 import { promptYesNo } from "../../cli/prompts.js";
 import { PolicyEngine } from "../../policy/engine.js";

@@ -1,5 +1,9 @@
 import type { TaskDocVersion } from "@agentplaneorg/core/tasks";
-import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
+import {
+  normalizeTaskStatus,
+  renderTaskDocFromSections,
+  taskDocToSectionMap,
+} from "@agentplaneorg/core/tasks";
 
 import { isRecord } from "../../../shared/guards.js";
 
@@ -172,7 +176,7 @@ export function taskToIssuePayload(opts: {
   customFields: Record<string, unknown>;
   appendCustomField: (fields: Record<string, unknown>[], key: string, value: unknown) => void;
 }): Record<string, unknown> {
-  const status = toStringSafe(opts.task.status).trim().toUpperCase();
+  const status = normalizeTaskStatus(opts.task.status);
   const payload: Record<string, unknown> = {
     subject: toStringSafe(opts.task.title),
     description: toStringSafe(opts.task.description),

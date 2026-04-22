@@ -1,4 +1,4 @@
-import { ensureDocSections } from "@agentplaneorg/core/tasks";
+import { ensureDocSections, normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
@@ -51,7 +51,7 @@ function isIdempotentDoneRetry(opts: {
   breaking: boolean;
   taskCommitInfo: ResolvedCommitInfo | null;
 }): boolean {
-  if (String(opts.task.status ?? "TODO").toUpperCase() !== "DONE") return false;
+  if (normalizeTaskStatus(opts.task.status) !== "DONE") return false;
   const lastComment = opts.task.comments?.at(-1) ?? null;
   const lastEvent = opts.task.events?.at(-1) ?? null;
   if (lastComment?.author !== opts.author) return false;
@@ -85,7 +85,7 @@ export function assertTaskCanFinish(opts: {
   resultSummary: string;
   force: boolean;
 }): void {
-  if (!opts.force && String(opts.task.status || "TODO").toUpperCase() === "DONE") {
+  if (!opts.force && normalizeTaskStatus(opts.task.status) === "DONE") {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
@@ -159,7 +159,7 @@ export async function loadTaskForFinish(opts: {
       });
       captured = currentTask;
       if (opts.capturePrimaryLifecycleMeta) {
-        primaryStatusFrom = String(currentTask.status || "TODO").toUpperCase();
+        primaryStatusFrom = normalizeTaskStatus(currentTask.status);
         primaryTag = resolvePrimaryTag(toStringArray(currentTask.tags), opts.ctx).primary;
       }
       return [];
@@ -190,9 +190,7 @@ export async function loadTaskForFinish(opts: {
   });
   return {
     loaded: { taskId: opts.taskId, task },
-    primaryStatusFrom: opts.capturePrimaryLifecycleMeta
-      ? String(task.status || "TODO").toUpperCase()
-      : null,
+    primaryStatusFrom: opts.capturePrimaryLifecycleMeta ? normalizeTaskStatus(task.status) : null,
     primaryTag: opts.capturePrimaryLifecycleMeta
       ? resolvePrimaryTag(toStringArray(task.tags), opts.ctx).primary
       : null,

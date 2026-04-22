@@ -1,4 +1,4 @@
-import { resolveProject } from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core/project";
 
 function isNoProjectError(err: unknown): boolean {
   if (err instanceof Error) {

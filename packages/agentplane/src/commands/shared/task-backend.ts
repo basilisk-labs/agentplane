@@ -1,6 +1,7 @@
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import type { AgentplaneConfig, ResolvedProject } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import {
   resolveTaskDocUpdatedBy,

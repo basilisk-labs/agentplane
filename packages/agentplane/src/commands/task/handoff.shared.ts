@@ -1,4 +1,5 @@
 import { resolveBaseBranch } from "@agentplaneorg/core/git";
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import {
@@ -33,9 +34,7 @@ export type TaskResumeContext = {
 };
 
 function taskStatus(task: TaskData): string {
-  return String(task.status || "TODO")
-    .trim()
-    .toUpperCase();
+  return normalizeTaskStatus(task.status);
 }
 
 function nullIfCliIo(err: unknown): null {

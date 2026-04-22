@@ -1,4 +1,4 @@
-import type { RunnerCustomConfig } from "@agentplaneorg/core";
+import type { RunnerCustomConfig } from "@agentplaneorg/core/config";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";

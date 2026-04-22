@@ -1,10 +1,7 @@
 import path from "node:path";
 
-import {
-  applyExecutionToApprovals,
-  type AgentplaneConfig,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import { applyExecutionToApprovals, type AgentplaneConfig } from "@agentplaneorg/core/config";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 
 import type { TaskBackendCapabilities } from "../../backends/task-backend.js";
 import { normalizeGitPathPrefix } from "../../shared/git-path.js";

@@ -1,6 +1,6 @@
 import path from "node:path";
-import type { ResolvedProject } from "@agentplaneorg/core";
-import { resolveProject } from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
+import { resolveProject } from "@agentplaneorg/core/project";
 import { runProcess } from "@agentplaneorg/core/process";
 
 import { mapCoreError } from "../../../cli/error-map.js";

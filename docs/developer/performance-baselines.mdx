@@ -36,9 +36,10 @@ The enforced guard lives in `scripts/baselines/cli-cold-path.json` and runs thro
 bun run bench:cli:cold:check
 ```
 
-The guard uses per-command average-time ceilings with tolerance for machine-level variance. It is
-intended to catch regressions back toward the pre-bundling cold path, not to make cross-machine
-performance claims. Use the raw benchmark after packaging, subpath export, startup, or task-index
-changes. Compare the same checkout shape and task volume when possible; `task list` and
-`task search` are output-size sensitive and should not be compared against a small fixture
-repository.
+The guard uses per-command median-time ceilings with tolerance for machine-level variance. Median is
+the enforced metric because a single transient process-load outlier should not fail CI; `p95_ms`
+and `max_ms` remain diagnostic fields in the raw benchmark output. The guard is intended to catch
+regressions back toward the pre-bundling cold path, not to make cross-machine performance claims.
+Use the raw benchmark after packaging, subpath export, startup, or task-index changes. Compare the
+same checkout shape and task volume when possible; `task list` and `task search` are output-size
+sensitive and should not be compared against a small fixture repository.

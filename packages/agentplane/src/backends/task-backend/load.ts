@@ -1,12 +1,9 @@
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+import { resolveProject, type ResolvedProject } from "@agentplaneorg/core/project";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import {
-  loadConfig,
-  resolveProject,
-  type AgentplaneConfig,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import { loadConfig } from "@agentplaneorg/core/config";
 
 import { loadDotEnv } from "../../shared/env.js";
 import { isRecord } from "../../shared/guards.js";

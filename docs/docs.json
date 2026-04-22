@@ -57,6 +57,7 @@
           "cli-contract",
           "cli-bug-ledger-v0-3-x",
           "harness-engeneering",
+          "prompt-assembly-system",
           "recipes-spec",
           "code-quality"
         ]

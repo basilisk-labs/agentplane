@@ -1,3 +1,5 @@
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
@@ -114,9 +116,7 @@ export async function cmdTaskNormalize(opts: {
           : diffTasksToWrite(scopedTasks, nextTasks);
         const incidentCandidates =
           opts.syncHostedMerges === true || opts.syncBranchPrState === true
-            ? nextTasksToWrite.filter(
-                (task) => String(task.status || "TODO").toUpperCase() === "DONE",
-              )
+            ? nextTasksToWrite.filter((task) => normalizeTaskStatus(task.status) === "DONE")
             : [];
         for (const task of incidentCandidates) {
           await collectTaskIncidents({

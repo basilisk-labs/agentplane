@@ -1,3 +1,5 @@
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+
 import { mapBackendError } from "../../cli/error-map.js";
 import {
   listTaskSummariesMemo,
@@ -31,7 +33,7 @@ export async function cmdTaskListWithFilters(opts: {
     if (!opts.filters.quiet) {
       const counts: Record<string, number> = {};
       for (const task of items) {
-        const status = String(task.status || "TODO").toUpperCase();
+        const status = normalizeTaskStatus(task.status);
         counts[status] = (counts[status] ?? 0) + 1;
       }
       const total = items.length;

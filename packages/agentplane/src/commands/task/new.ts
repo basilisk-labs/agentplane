@@ -1,4 +1,4 @@
-import { setMarkdownSection } from "@agentplaneorg/core/tasks";
+import { normalizeTaskStatus, setMarkdownSection } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, warnMessage } from "../../cli/output.js";
@@ -10,7 +10,6 @@ import {
 } from "../../runtime/task-intake/index.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import { CliError } from "../../shared/errors.js";
-import { buildTaskDocState } from "../../task-doc/state.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import type { TaskData } from "../../backends/task-backend/shared/types.js";
 import {
@@ -136,7 +135,7 @@ function listOpenTaskDuplicates(
   title: string,
 ): { task: TaskData; score: number }[] {
   return tasks
-    .filter((task) => String(task.status ?? "").toUpperCase() !== "DONE")
+    .filter((task) => normalizeTaskStatus(task.status) !== "DONE")
     .map((task) => ({
       task,
       score: duplicateSimilarity(task.title ?? "", title),
@@ -155,7 +154,7 @@ function formatDuplicateTaskMessage(
     .slice(0, 3)
     .map(
       ({ task, score }) =>
-        `${task.id} (${Math.round(score * 100)}% title overlap, status=${String(task.status || "TODO").toUpperCase()}): ${task.title}`,
+        `${task.id} (${Math.round(score * 100)}% title overlap, status=${normalizeTaskStatus(task.status)}): ${task.title}`,
     )
     .join("; ");
   const tail = allowDuplicate
@@ -197,14 +196,7 @@ export async function runTaskNewParsed(opts: {
     const taskId = await ctx.taskBackend.generateTaskId({ length: suffixLength, attempts: 1000 });
     const executionContext = await makeReadOnlyExecutionContext(ctx);
     const createdAt = nowIso();
-    const docState = buildTaskDocState({
-      doc: defaultTaskDocV3({ title: p.title, description: p.description }),
-      owner: p.owner,
-      updatedBy: p.owner,
-      version: TASK_DOC_VERSION_V3,
-      updatedAt: createdAt,
-    });
-    let taskDoc = docState.doc;
+    let taskDoc = defaultTaskDocV3({ title: p.title, description: p.description });
 
     const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
     const primary = resolvePrimaryTag(p.tags, ctx);
@@ -247,13 +239,6 @@ export async function runTaskNewParsed(opts: {
       );
     }
 
-    const normalizedDoc = buildTaskDocState({
-      doc: taskDoc,
-      owner: p.owner,
-      updatedBy: p.owner,
-      version: TASK_DOC_VERSION_V3,
-      updatedAt: createdAt,
-    });
     const intakeContext = createTaskIntakeContext({
       runtime: executionContext.taskIntake,
       source: {
@@ -292,8 +277,8 @@ export async function runTaskNewParsed(opts: {
           tags: p.tags,
           depends_on: p.dependsOn,
           verify: p.verify,
-          doc: normalizedDoc.doc,
-          doc_version: normalizedDoc.doc_version,
+          doc: taskDoc,
+          doc_version: TASK_DOC_VERSION_V3,
           id_source: "generated",
         },
       ],

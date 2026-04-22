@@ -1,4 +1,4 @@
-import type { ExecutionProfile } from "@agentplaneorg/core";
+import type { ExecutionProfile } from "@agentplaneorg/core/config";
 
 import type { WorkflowMode } from "../../../../../agents/agents-template.js";
 import type { PolicyGatewayFlavor } from "../../../../../shared/policy-gateway.js";

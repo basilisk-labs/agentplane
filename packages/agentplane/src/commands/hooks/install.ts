@@ -1,7 +1,7 @@
 import { chmod, mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { resolveProject } from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core/project";
 
 import { mapCoreError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";

@@ -1,3 +1,5 @@
+import { TASK_STATUS_VALUES, type TaskStatus } from "@agentplaneorg/core/tasks";
+
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { toStringList } from "../../cli/spec/parse-utils.js";
@@ -10,7 +12,7 @@ export type TaskAddParsed = {
   taskIds: string[];
   title: string;
   description: string;
-  status: "TODO" | "DOING" | "DONE" | "BLOCKED";
+  status: TaskStatus;
   priority: "low" | "normal" | "med" | "high";
   owner: string;
   tags: string[];
@@ -38,7 +40,7 @@ export const taskAddSpec: CommandSpec<TaskAddParsed> = {
       kind: "string",
       name: "status",
       valueHint: "<TODO|DOING|DONE|BLOCKED>",
-      choices: ["TODO", "DOING", "DONE", "BLOCKED"],
+      choices: [...TASK_STATUS_VALUES],
       default: "TODO",
       description: "Initial status (default: TODO).",
     },

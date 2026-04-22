@@ -1,3 +1,5 @@
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+
 import { CliError } from "../../shared/errors.js";
 import { type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
@@ -22,7 +24,7 @@ export async function recordVerifiedNoopClosure(opts: {
     taskId: opts.taskId,
     policyAction: "task_finish",
     build: async (task) => {
-      if (!opts.force && String(task.status || "TODO").toUpperCase() === "DONE") {
+      if (!opts.force && normalizeTaskStatus(task.status) === "DONE") {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",

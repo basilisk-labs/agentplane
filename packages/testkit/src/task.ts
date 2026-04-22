@@ -1,4 +1,5 @@
-import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { GitContext } from "@agentplaneorg/core/git";
 
 import type { TaskBackend, TaskData } from "../../agentplane/src/backends/task-backend.js";
@@ -31,6 +32,7 @@ export function makeTaskBackendDouble(overrides: Partial<TaskBackend> = {}): Tas
       projection: "canonical",
       projection_read_mode: "fallback",
       reads_from_projection_by_default: false,
+      writes_task_readmes: true,
       supports_task_revisions: true,
       supports_revision_guarded_writes: true,
       may_access_network_on_read: false,

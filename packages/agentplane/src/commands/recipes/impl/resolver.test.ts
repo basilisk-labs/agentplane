@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import type { ResolvedProject } from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { describe, expect, it } from "vitest";
 
 import { resolveRecipeScenarioSelection } from "./resolver.js";

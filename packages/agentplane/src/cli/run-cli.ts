@@ -1,9 +1,5 @@
-import {
-  loadConfig,
-  resolveProject,
-  type LoadedConfig,
-  type ResolvedProject,
-} from "@agentplaneorg/core";
+import { loadConfig, type LoadedConfig } from "@agentplaneorg/core/config";
+import { resolveProject, type ResolvedProject } from "@agentplaneorg/core/project";
 import { mapCoreError, writeError } from "./error-map.js";
 import { exitCodeForError } from "./exit-codes.js";
 import { loadDotEnv } from "../shared/env.js";

@@ -1,7 +1,7 @@
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { INCIDENTS_POLICY_PATH } from "../../incidents/shared.js";
+import { INCIDENTS_POLICY_PATH } from "../../../runtime/incidents/paths.js";
 import { writeTextIfChanged } from "../../../shared/write-if-changed.js";
 
 export function nowIso(): string {

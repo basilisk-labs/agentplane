@@ -1,6 +1,6 @@
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 
-import { cmdRecipeExplainActiveParsed } from "../recipes.js";
+import { cmdRecipeExplainActiveParsed } from "./impl/commands/explain-active.js";
 
 export type RecipesExplainActiveParsed = Record<string, never>;
 

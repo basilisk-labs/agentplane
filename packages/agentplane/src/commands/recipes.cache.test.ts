@@ -9,7 +9,7 @@ import {
   requireRecipesTempHome,
   runRecipesTest,
   writeInstalledRecipesRegistry,
-} from "../../../testkit/src/recipes.js";
+} from "@agentplane/testkit/recipes";
 
 installRecipesCommandHarness();
 

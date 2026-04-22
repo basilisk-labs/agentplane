@@ -1,5 +1,5 @@
-import type { ResolvedProject } from "@agentplaneorg/core";
-import { defaultConfig } from "@agentplaneorg/core";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -23,18 +23,6 @@ const mocks = vi.hoisted(() => ({
   gitBranchExists: vi.fn(),
   gitCurrentBranch: vi.fn(),
 }));
-
-vi.mock("@agentplaneorg/core", async (importOriginal) => {
-  const actualUnknown: unknown = await importOriginal();
-  const actual =
-    actualUnknown && typeof actualUnknown === "object"
-      ? (actualUnknown as Record<string, unknown>)
-      : {};
-  return {
-    ...actual,
-    resolveBaseBranch: mocks.resolveBaseBranch,
-  };
-});
 
 vi.mock("../guard/impl/comment-commit.js", () => ({
   commitFromComment: mocks.commitFromComment,

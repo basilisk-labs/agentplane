@@ -137,6 +137,65 @@ describe("collectRunnerBasePrompts", () => {
     expect(prompts[2]?.resolution?.winner.layer).toBe("builtin");
   });
 
+  it("reuses static bundled framework prompt assembly across repeated collections", async () => {
+    const root = await makeTempRepo();
+
+    const first = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+    });
+    const second = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+    });
+
+    expect(second.find((prompt) => prompt.id === "base.framework_runner")).toBe(
+      first.find((prompt) => prompt.id === "base.framework_runner"),
+    );
+  });
+
+  it("invalidates cached repo-local prompt files when their content changes", async () => {
+    const root = await makeTempRepo();
+    const agentsDir = path.join(root, ".agentplane", "agents");
+    await mkdir(agentsDir, { recursive: true });
+    await writeFile(path.join(root, "AGENTS.md"), "# Repo Policy\n\nInitial policy.\n");
+    await writeFile(
+      path.join(agentsDir, "CODER.json"),
+      JSON.stringify({ id: "CODER", role: "Initial profile" }, null, 2),
+    );
+
+    const initial = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+    });
+    expect(initial.find((prompt) => prompt.id === "base.policy_gateway")?.content).toContain(
+      "Initial policy",
+    );
+    expect(initial.find((prompt) => prompt.id === "base.owner_profile")?.content).toContain(
+      "Initial profile",
+    );
+
+    await writeFile(
+      path.join(root, "AGENTS.md"),
+      "# Repo Policy\n\nUpdated policy with a different byte length.\n",
+    );
+    await writeFile(
+      path.join(agentsDir, "CODER.json"),
+      JSON.stringify({ id: "CODER", role: "Updated profile with extra bytes" }, null, 2),
+    );
+
+    const updated = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+    });
+    expect(updated.find((prompt) => prompt.id === "base.policy_gateway")?.content).toContain(
+      "Updated policy",
+    );
+    expect(updated.find((prompt) => prompt.id === "base.owner_profile")?.content).toContain(
+      "Updated profile",
+    );
+  });
+
   it("adds project-local skill metadata when skills are present", async () => {
     const root = await makeTempRepo();
     const skillDir = path.join(root, "skills", "release-operator");

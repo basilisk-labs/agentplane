@@ -39,6 +39,7 @@ import { recipesUpdateSpec } from "../../agentplane/src/commands/recipes/update.
 import { scenarioInfoSpec } from "../../agentplane/src/commands/scenario/info.command.js";
 import { scenarioListSpec } from "../../agentplane/src/commands/scenario/list.command.js";
 import { scenarioRunSpec } from "../../agentplane/src/commands/scenario/run.command.js";
+import { resetRecipeArchiveCache } from "./cli-harness/recipe-archives.js";
 
 const originalAgentplaneHome = process.env.AGENTPLANE_HOME;
 const originalRecipesKeys = process.env.AGENTPLANE_RECIPES_INDEX_PUBLIC_KEYS;
@@ -60,6 +61,7 @@ export function installRecipesCommandHarness(): void {
 
   afterEach(async () => {
     vi.unstubAllGlobals();
+    await resetRecipeArchiveCache();
     if (tempHome) {
       await rm(tempHome, { recursive: true, force: true });
     }

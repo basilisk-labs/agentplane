@@ -1,4 +1,4 @@
-import { readFile, readdir } from "node:fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 
 import { loadAgentTemplates, loadPolicyGatewayTemplate } from "../../agents/agents-template.js";
@@ -23,6 +23,45 @@ import {
   validateJsonPrompt,
 } from "./prompt-block-shared.js";
 
+type CachedDirEntries = {
+  mtimeMs: number;
+  size: number;
+  entries: string[];
+};
+
+type CachedTextFile = {
+  mtimeMs: number;
+  size: number;
+  text: string;
+};
+
+const dirEntriesCache = new Map<string, CachedDirEntries>();
+const textFileCache = new Map<string, CachedTextFile>();
+
+async function readDirEntriesCached(dirPath: string): Promise<string[]> {
+  const stats = await stat(dirPath);
+  const cached = dirEntriesCache.get(dirPath);
+  if (cached?.mtimeMs === stats.mtimeMs && cached.size === stats.size) {
+    return cached.entries;
+  }
+
+  const entries = await readdir(dirPath);
+  dirEntriesCache.set(dirPath, { mtimeMs: stats.mtimeMs, size: stats.size, entries });
+  return entries;
+}
+
+async function readTextFileCached(absPath: string): Promise<string> {
+  const stats = await stat(absPath);
+  const cached = textFileCache.get(absPath);
+  if (cached?.mtimeMs === stats.mtimeMs && cached.size === stats.size) {
+    return cached.text;
+  }
+
+  const text = await readFile(absPath, "utf8");
+  textFileCache.set(absPath, { mtimeMs: stats.mtimeMs, size: stats.size, text });
+  return text;
+}
+
 async function resolveRepoAgentProfilePath(opts: {
   git_root: string;
   agents_dir: string;
@@ -31,7 +70,7 @@ async function resolveRepoAgentProfilePath(opts: {
   const agentsDir = path.join(opts.git_root, opts.agents_dir);
   if (!(await fileExists(agentsDir))) return null;
 
-  const entries = await readdir(agentsDir);
+  const entries = await readDirEntriesCached(agentsDir);
   const wanted = `${opts.owner_id}.json`.toLowerCase();
   const match = entries.find((entry) => entry.endsWith(".json") && entry.toLowerCase() === wanted);
   if (!match) return null;
@@ -54,7 +93,7 @@ export async function resolveOwnerProfilePromptSource(opts: {
         value: {
           source,
           title: `Owner Agent Profile (${opts.owner_id})`,
-          content: validateJsonPrompt(source, await readFile(repoProfilePath, "utf8")),
+          content: validateJsonPrompt(source, await readTextFileCached(repoProfilePath)),
         },
       }),
     );
@@ -124,7 +163,7 @@ export async function resolvePolicyGatewayPromptSource(opts: {
         value: {
           source,
           title: `Repository Policy Gateway (${gateway.fileName})`,
-          content: normalizeText(await readFile(gateway.absPath, "utf8")),
+          content: normalizeText(await readTextFileCached(gateway.absPath)),
         },
       }),
     );

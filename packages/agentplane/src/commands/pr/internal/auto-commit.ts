@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { buildTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core";
+import { buildTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core/commit";
 
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "../../guard/impl/env.js";
 import { toGitPath, gitEnv } from "@agentplaneorg/core/git";

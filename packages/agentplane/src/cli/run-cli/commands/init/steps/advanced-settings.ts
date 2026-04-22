@@ -1,4 +1,4 @@
-import type { ExecutionProfile } from "@agentplaneorg/core";
+import type { ExecutionProfile } from "@agentplaneorg/core/config";
 
 import type { InitFlags, SetupProfilePreset } from "../model.js";
 import { setupProfilePresets } from "../presets.js";

@@ -1,4 +1,4 @@
-import { type AgentplaneConfig } from "@agentplaneorg/core";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 
 type CommentPrefix = { raw: string; label: string };
 

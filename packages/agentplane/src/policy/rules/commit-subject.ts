@@ -1,4 +1,4 @@
-import { validateCommitSubject } from "@agentplaneorg/core";
+import { validateCommitSubject } from "@agentplaneorg/core/commit";
 
 import { gitError, okResult } from "../result.js";
 import type { PolicyContext, PolicyResult } from "../model.js";

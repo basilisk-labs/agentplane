@@ -1,5 +1,6 @@
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
-import { cmdRecipeCachePruneParsed, type RecipeCachePruneFlags } from "../recipes.js";
+import { cmdRecipeCachePruneParsed } from "./impl/commands/cache-prune.js";
+import type { RecipeCachePruneFlags } from "./impl/types.js";
 
 export type RecipesCachePruneParsed = RecipeCachePruneFlags;
 

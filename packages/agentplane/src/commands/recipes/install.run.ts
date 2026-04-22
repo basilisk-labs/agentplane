@@ -2,7 +2,7 @@ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { CliError } from "../../shared/errors.js";
 
-import { cmdRecipeInstall } from "../recipes.js";
+import { cmdRecipeInstall } from "./impl/commands/install.js";
 import type { RecipesInstallParsed } from "./install.spec.js";
 import { recipesInstallSpec } from "./install.spec.js";
 

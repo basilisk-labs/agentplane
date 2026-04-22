@@ -1,4 +1,4 @@
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import { describe, expect, it } from "vitest";
 
 import { createCapabilityRegistry } from "../capabilities/index.js";

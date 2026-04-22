@@ -15,7 +15,7 @@ import {
 import { branchRemoveSpec } from "../../../commands/branch/remove.command.js";
 import { branchStatusSpec } from "../../../commands/branch/status.command.js";
 import { workStartSpec } from "../../../commands/branch/work-start.command.js";
-import { integrateSpec } from "../../../commands/integrate.command.js";
+import { integrateSpec } from "../../../commands/integrate.spec.js";
 import {
   prCheckSpec,
   prCloseSpec,
@@ -24,7 +24,7 @@ import {
   prOpenSpec,
   prSpec,
   prUpdateSpec,
-} from "../../../commands/pr/pr.command.js";
+} from "../../../commands/pr/pr.spec.js";
 import { recipesAddSpec } from "../../../commands/recipes/add.command.js";
 import { recipesActiveSpec } from "../../../commands/recipes/active.command.js";
 import { recipesCachePruneSpec } from "../../../commands/recipes/cache-prune.command.js";

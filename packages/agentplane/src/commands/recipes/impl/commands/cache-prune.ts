@@ -1,7 +1,7 @@
 import { readdir, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { defaultConfig } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
 
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { fileExists } from "../../../../cli/fs-utils.js";

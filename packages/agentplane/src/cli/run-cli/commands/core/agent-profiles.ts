@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { resolveProject } from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core/project";
 
 import type { RoleProfileGuide } from "../../../command-guide.js";
 import { fileExists } from "../../../fs-utils.js";

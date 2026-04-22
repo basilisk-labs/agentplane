@@ -1,6 +1,7 @@
 import path from "node:path";
 
-import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import { loadConfig } from "@agentplaneorg/core/config";
+import { resolveProject } from "@agentplaneorg/core/project";
 
 import { mapCoreError } from "../../cli/error-map.js";
 import { createCliEmitter, unknownEntityMessage } from "../../cli/output.js";
