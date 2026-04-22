@@ -1,10 +1,11 @@
 ---
 id: "202604221918-HQ0WPR"
 title: "Add test routing guard"
-status: "DOING"
+result_summary: "Added test routing guard for uncovered, duplicate, and unknown test routes."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-22T19:30:57.315Z"
   updated_by: "CODER"
   note: "Command: node scripts/check-test-routing.mjs; Result: pass; Evidence: test routing OK, total tests 315. Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK. Command: bun run test:fast; Result: pass; Evidence: 238 test files passed, 1379 tests passed, 2 skipped."
-commit: null
+commit:
+  hash: "06c912b60a7f7863a8507362c4ffc2392518d570"
+  message: "✨ HQ0WPR test: add routing guard"
 comments:
   -
     author: "CODER"
     body: "Start: implementing test routing guard on top of the shared inventory to fail uncovered and duplicate primary routes."
+  -
+    author: "CODER"
+    body: "Verified: test routing guard added with current inventory pass, focused guard tests, project check, and fast suite passing."
 events:
   -
     type: "status"
@@ -44,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: node scripts/check-test-routing.mjs; Result: pass; Evidence: test routing OK, total tests 315. Command: bun run vitest:projects:check; Result: pass; Evidence: vitest workspace projects OK. Command: bun run test:fast; Result: pass; Evidence: 238 test files passed, 1379 tests passed, 2 skipped."
+  -
+    type: "status"
+    at: "2026-04-22T19:31:05.370Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: test routing guard added with current inventory pass, focused guard tests, project check, and fast suite passing."
 doc_version: 3
-doc_updated_at: "2026-04-22T19:30:57.318Z"
+doc_updated_at: "2026-04-22T19:31:05.371Z"
 doc_updated_by: "CODER"
 description: "Add a guard that verifies every test has an explicit primary route, aggregate routes are intentional, and overlapping or uncovered tests fail fast."
 sections:
