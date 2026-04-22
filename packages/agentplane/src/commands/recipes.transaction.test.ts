@@ -10,6 +10,7 @@ import {
   cmdRecipeUpdateParsed,
 } from "./recipes.js";
 import { refreshProjectOverlayArtifacts } from "./recipes/impl/overlay-project.js";
+import { createRecipeArchiveWithManifest, pathExists } from "@agentplane/testkit";
 import {
   baseRecipeManifest,
   installRecipe,
@@ -19,8 +20,7 @@ import {
   resolveProjectRecipeDir,
   resolveProjectRecipesRegistryPath,
   writeDefaultConfig,
-} from "../../../testkit/src/recipes.js";
-import { createRecipeArchiveWithManifest, pathExists } from "@agentplane/testkit";
+} from "@agentplane/testkit/recipes";
 
 installRecipesCommandHarness();
 

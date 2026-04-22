@@ -1,10 +1,10 @@
 ---
 id: "202604220256-VE4YY5"
 title: "Seal testkit public surface and ban deep imports"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,16 +24,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-22T08:03:44.973Z"
+  updated_by: "CODER"
+  note: "Passed: bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check. Deep testkit imports removed; public @agentplane/testkit subpaths resolved in Vitest and TypeScript."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: seal @agentplane/testkit public exports and replace direct packages/testkit/src imports with package-level imports."
+events:
+  -
+    type: "status"
+    at: "2026-04-22T07:49:09.113Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: seal @agentplane/testkit public exports and replace direct packages/testkit/src imports with package-level imports."
+  -
+    type: "verify"
+    at: "2026-04-22T08:03:44.973Z"
+    author: "CODER"
+    state: "ok"
+    note: "Passed: bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check. Deep testkit imports removed; public @agentplane/testkit subpaths resolved in Vitest and TypeScript."
 doc_version: 3
-doc_updated_at: "2026-04-22T02:56:03.649Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-22T08:03:44.979Z"
+doc_updated_by: "CODER"
 description: "Export required helpers through @agentplane/testkit and add guardrails that prevent direct imports from packages/testkit/src in tests."
 sections:
   Summary: "Make testkit consumption package-level and prevent new deep import coupling."
@@ -44,7 +60,19 @@ sections:
     3. Rewrite consumers to @agentplane/testkit imports.
     4. Add lint or dep-cruiser guard for future deep imports.
   Verify Steps: "Run testkit tests, affected suites, arch checks, fast CI."
-  Verification: "Pending implementation."
+  Verification: |-
+    Pending implementation.
+    
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-22T08:03:44.973Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Passed: bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check. Deep testkit imports removed; public @agentplane/testkit subpaths resolved in Vitest and TypeScript.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T07:49:09.120Z, excerpt_hash=sha256:250396234b6d12990d7126598b9075b7d2a881b0ce5efb31041de2f1649745ca
+    
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Restore deep imports and remove added guardrail."
   Findings: "None yet."
 id_source: "generated"
@@ -71,6 +99,17 @@ Run testkit tests, affected suites, arch checks, fast CI.
 ## Verification
 
 Pending implementation.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-22T08:03:44.973Z — VERIFY — ok
+
+By: CODER
+
+Note: Passed: bun run arch:baseline && bun run arch:deps; bun run ci:local:fast; bun run knip:check; git diff --check. Deep testkit imports removed; public @agentplane/testkit subpaths resolved in Vitest and TypeScript.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-22T07:49:09.120Z, excerpt_hash=sha256:250396234b6d12990d7126598b9075b7d2a881b0ce5efb31041de2f1649745ca
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 

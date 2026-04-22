@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
-import { makeTaskCommandContext } from "../../../../testkit/src/task.js";
+import { makeTaskCommandContext } from "@agentplane/testkit/task";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskMutationPlan } from "../shared/task-mutation.js";
 

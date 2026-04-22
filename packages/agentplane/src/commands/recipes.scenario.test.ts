@@ -21,7 +21,7 @@ import {
   scenarioDescriptor,
   writeDefaultConfig,
   writeInstalledRecipes,
-} from "../../../testkit/src/recipes.js";
+} from "@agentplane/testkit/recipes";
 
 installRecipesCommandHarness();
 

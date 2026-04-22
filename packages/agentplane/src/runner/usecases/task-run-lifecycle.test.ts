@@ -23,7 +23,7 @@ import {
   retryTaskRunnerExecution,
 } from "./task-run-lifecycle.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
-import { writeRunnerExecutable } from "../../../../testkit/src/runner.js";
+import { writeRunnerExecutable } from "@agentplane/testkit/runner";
 
 installRunCliIntegrationHarness();
 const originalPath = process.env.PATH;

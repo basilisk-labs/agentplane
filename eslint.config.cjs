@@ -34,6 +34,13 @@ const sharedBoundaryPatterns = [
   "../ports/*",
 ];
 
+const testkitDeepImportPatterns = [
+  "**/testkit/src/*",
+  "**/testkit/src/*.js",
+  "**/testkit/dist/*",
+  "**/testkit/dist/*.js",
+];
+
 const coreSubpathRestrictedImportNames = [
   "AGENTPLANE_CONFIG_SCHEMA",
   "AgentplaneConfigSchema",
@@ -306,6 +313,17 @@ module.exports = [
     files: ["**/*.test.ts"],
     rules: {
       "@typescript-eslint/no-floating-promises": "off",
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [coreSubpathRestrictedImportPath],
+          patterns: testkitDeepImportPatterns.map((group) => ({
+            group: [group],
+            message:
+              "Import test helpers through @agentplane/testkit instead of packages/testkit internals.",
+          })),
+        },
+      ],
     },
   },
 

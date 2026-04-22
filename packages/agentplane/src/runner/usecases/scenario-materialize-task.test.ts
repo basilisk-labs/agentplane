@@ -9,7 +9,7 @@ import {
   installRecipesCommandHarness,
   mkGitRepoRoot,
   writeDefaultConfig,
-} from "../../../../testkit/src/recipes.js";
+} from "@agentplane/testkit/recipes";
 import {
   materializeRecipeScenarioTask,
   buildMaterializedRecipeTask,

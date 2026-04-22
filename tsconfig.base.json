@@ -6,7 +6,12 @@
     "baseUrl": ".",
     "paths": {
       "@agentplane/testkit": ["packages/testkit/src/index.ts"],
-      "@agentplane/testkit/*": ["packages/testkit/src/*"],
+      "@agentplane/testkit/cli": ["packages/testkit/src/cli.ts"],
+      "@agentplane/testkit/recipes": ["packages/testkit/src/recipes.ts"],
+      "@agentplane/testkit/release": ["packages/testkit/src/release.ts"],
+      "@agentplane/testkit/runner": ["packages/testkit/src/runner.ts"],
+      "@agentplane/testkit/task": ["packages/testkit/src/task.ts"],
+      "@agentplane/testkit/*": ["packages/testkit/src/*.ts"],
       "@agentplaneorg/core": ["packages/core/src/index.ts"],
       "@agentplaneorg/core/*": ["packages/core/src/*"],
       "@agentplaneorg/recipes": ["packages/recipes/src/index.ts"],

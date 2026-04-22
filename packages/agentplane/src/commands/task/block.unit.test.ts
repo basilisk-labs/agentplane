@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
-import { makeTaskCommandContext, makeTaskFixture } from "../../../../testkit/src/task.js";
+import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const mocks = vi.hoisted(() => ({

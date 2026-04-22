@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
-import { makeTaskFixture } from "../../../../testkit/src/task.js";
+import { makeTaskFixture } from "@agentplane/testkit/task";
 import {
   buildTaskStatusTransition,
   executeTaskStatusTransitionRequest,

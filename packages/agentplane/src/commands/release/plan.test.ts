@@ -5,7 +5,7 @@ import { promisify } from "node:util";
 import { expect, it } from "vitest";
 
 import { commitAll, describeWhenNotHook, tempRepo } from "@agentplane/testkit";
-import { seedReleaseWorkspace } from "../../../../testkit/src/release.js";
+import { seedReleaseWorkspace } from "@agentplane/testkit/release";
 import { runReleasePlan, releasePlanSpec } from "./plan.command.js";
 
 const execFileAsync = promisify(execFile);

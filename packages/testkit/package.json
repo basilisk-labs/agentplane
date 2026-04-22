@@ -22,12 +22,30 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./cli": "./dist/cli.js",
-    "./recipes": "./dist/recipes.js",
-    "./task": "./dist/task.js",
-    "./release": "./dist/release.js",
-    "./runner": "./dist/runner.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./cli": {
+      "types": "./dist/cli.d.ts",
+      "default": "./dist/cli.js"
+    },
+    "./recipes": {
+      "types": "./dist/recipes.d.ts",
+      "default": "./dist/recipes.js"
+    },
+    "./task": {
+      "types": "./dist/task.d.ts",
+      "default": "./dist/task.js"
+    },
+    "./release": {
+      "types": "./dist/release.d.ts",
+      "default": "./dist/release.js"
+    },
+    "./runner": {
+      "types": "./dist/runner.d.ts",
+      "default": "./dist/runner.js"
+    }
   },
   "types": "./dist/index.d.ts",
   "dependencies": {

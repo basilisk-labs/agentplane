@@ -5,7 +5,7 @@ import {
   makeTaskBackendDouble,
   makeTaskCommandContext,
   makeTaskFixture,
-} from "../../../../testkit/src/task.js";
+} from "@agentplane/testkit/task";
 import type { CommandContext } from "./task-backend.js";
 
 function cloneTask(task: TaskData): TaskData {
