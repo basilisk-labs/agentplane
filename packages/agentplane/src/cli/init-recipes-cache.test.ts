@@ -1,0 +1,39 @@
+import { writeFile } from "node:fs/promises";
+import path from "node:path";
+import { describe, expect, it } from "vitest";
+
+import {
+  baseRecipeEntry,
+  baseRecipeManifest,
+  installRecipesCommandHarness,
+  requireRecipesTempHome,
+  scenarioDescriptor,
+} from "@agentplane/testkit/recipes";
+
+import { listCachedRecipes } from "./run-cli/commands/init/recipes.js";
+
+installRecipesCommandHarness();
+
+describe("init cached recipes", () => {
+  it("lists cached legacy scenario manifests that omit scenario name", async () => {
+    const scenario = { ...scenarioDescriptor(), name: undefined };
+    const manifest = baseRecipeManifest({ scenarios: [scenario] });
+    await writeFile(
+      path.join(requireRecipesTempHome(), "recipes.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          updated_at: "2026-04-22T00:00:00.000Z",
+          recipes: [baseRecipeEntry({ manifest })],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    await expect(listCachedRecipes()).resolves.toEqual([
+      { id: "viewer", summary: "Preview tasks", version: "1.2.3" },
+    ]);
+  });
+});
