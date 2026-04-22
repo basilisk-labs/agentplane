@@ -121,7 +121,11 @@ export async function cmdTaskDocSet(opts: {
     const backend = ctx.taskBackend;
     const resolved = ctx.resolvedProject;
     const config = ctx.config;
-    if (!backend.getTaskDoc || !backend.writeTask) {
+    if (
+      backend.capabilities?.writes_task_readmes === false ||
+      !backend.getTaskDoc ||
+      !backend.writeTask
+    ) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",

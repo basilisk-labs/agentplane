@@ -648,8 +648,11 @@ describe("runCli", () => {
       gitRoot: root,
       agentplaneDir: path.join(root, ".agentplane"),
     };
+    const unsupportedBackend = stubTaskBackend({ id: "fake" });
+    unsupportedBackend.capabilities.writes_task_readmes = false;
+
     const loadResult = {
-      backend: stubTaskBackend({ id: "fake" }),
+      backend: unsupportedBackend,
       backendId: "fake",
       resolved,
       config: defaultConfig(),
