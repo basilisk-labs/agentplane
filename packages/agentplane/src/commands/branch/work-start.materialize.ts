@@ -55,7 +55,9 @@ export async function materializeRepoLocalDistForWorktree(opts: {
 }): Promise<void> {
   const sourceRoots = resolveRuntimeSourceRoots(opts.repoRoot);
   const copyTargets = [
+    ["packages/core/package.json", "packages/core/package.json"],
     ["packages/core/dist", "packages/core/dist"],
+    ["packages/agentplane/package.json", "packages/agentplane/package.json"],
     ["packages/agentplane/dist", "packages/agentplane/dist"],
     ["packages/agentplane/bin", "packages/agentplane/bin"],
   ] as const;

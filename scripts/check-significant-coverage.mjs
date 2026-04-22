@@ -3,14 +3,6 @@ import path from "node:path";
 
 const TARGETS = [
   {
-    source: "packages/agentplane/src/cli/run-cli/commands/init.ts",
-    tests: [
-      "packages/agentplane/src/cli/run-cli.core.init.test.ts",
-      "packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts",
-      "packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts",
-    ],
-  },
-  {
     source: "packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts",
     tests: [
       "packages/agentplane/src/cli/run-cli.core.init.test.ts",
@@ -32,14 +24,6 @@ const TARGETS = [
       "packages/agentplane/src/cli/run-cli.core.init.test.ts",
       "packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts",
       "packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts",
-    ],
-  },
-  {
-    source: "packages/agentplane/src/commands/task/finish.ts",
-    tests: [
-      "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
-      "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
-      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
     ],
   },
   {
@@ -89,13 +73,6 @@ const TARGETS = [
   {
     source: "packages/agentplane/src/commands/task/hosted-merge-sync/pr-meta.ts",
     tests: ["packages/agentplane/src/commands/task/hosted-merge-sync.test.ts"],
-  },
-  {
-    source: "packages/agentplane/src/commands/guard/impl/commands.ts",
-    tests: [
-      "packages/agentplane/src/commands/guard/impl/commands.unit.test.ts",
-      "packages/agentplane/src/cli/run-cli.core.guard.test.ts",
-    ],
   },
   {
     source: "packages/agentplane/src/commands/guard/impl/allow.ts",

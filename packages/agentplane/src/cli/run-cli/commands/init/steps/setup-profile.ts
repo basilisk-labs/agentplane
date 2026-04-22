@@ -2,7 +2,7 @@ import { setupProfilePresets } from "../presets.js";
 import type { InitFlags, SetupProfilePreset } from "../model.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { InitV2PromptClack, SetupProfileStepAnswers } from "./types.js";
+import type { InitV2PromptClack, SetupProfileStepAnswers } from "./contracts.js";
 
 const setupProfileOptions: { value: SetupProfilePreset; label: string; hint: string }[] = [
   {

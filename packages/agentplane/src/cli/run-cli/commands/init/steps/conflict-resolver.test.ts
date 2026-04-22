@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { InitAborted } from "../prompts-v2.js";
 
 import { promptConflictResolverStep } from "./conflict-resolver.js";
-import type { InitV2PromptClack } from "./types.js";
+import type { InitV2PromptClack } from "./contracts.js";
 
 const mocks = vi.hoisted(() => {
   const cancelSymbol = Symbol("cancel");

@@ -8,7 +8,7 @@ import type {
   AdvancedSettingsStepAnswers,
   InitSetupProfileMode,
   InitV2PromptClack,
-} from "./types.js";
+} from "./contracts.js";
 
 const executionProfileOptions: { value: ExecutionProfile; label: string; hint: string }[] = [
   { value: "conservative", label: "Conservative", hint: "Lower autonomy and stricter budgets." },

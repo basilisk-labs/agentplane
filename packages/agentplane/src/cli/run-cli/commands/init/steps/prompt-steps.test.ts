@@ -10,7 +10,7 @@ import { promptPolicyGatewayStep } from "./policy-gateway.js";
 import { promptRecipeSelectionStep } from "./recipe-selection.js";
 import { promptSetupProfileStep } from "./setup-profile.js";
 import { promptWorkflowStep } from "./workflow.js";
-import type { InitV2PromptClack } from "./types.js";
+import type { InitV2PromptClack } from "./contracts.js";
 
 const mocks = vi.hoisted(() => {
   const cancelSymbol = Symbol("cancel");

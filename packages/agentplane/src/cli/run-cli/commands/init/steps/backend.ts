@@ -2,7 +2,7 @@ import type { InitDefaults, InitFlags } from "../model.js";
 import { INIT_DEFAULTS } from "../presets.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { BackendStepAnswers, InitV2PromptClack } from "./types.js";
+import type { BackendStepAnswers, InitV2PromptClack } from "./contracts.js";
 
 const backendOptions: {
   value: NonNullable<InitFlags["backend"]>;
