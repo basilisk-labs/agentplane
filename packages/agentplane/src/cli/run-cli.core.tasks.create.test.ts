@@ -373,6 +373,10 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(readme).toContain("Expected: it succeeds and confirms the requested outcome");
     expect(readme).toContain("## Findings");
     expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId: id });
+    expect(task.frontmatter.sections?.["Verify Steps"]).toContain("Run `bun run test:fast`.");
+    expect(task.frontmatter.sections?.Summary).toContain("Code task");
   });
 
   it("task new without verify commands still seeds approvable Verify Steps for verify-required primary tags", async () => {
