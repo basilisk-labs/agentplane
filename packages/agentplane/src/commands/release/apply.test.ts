@@ -144,7 +144,7 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
             name: "@agentplane/testkit",
             version: "0.0.0",
             private: true,
-            dependencies: { agentplane: "0.2.6" },
+            dependencies: { "@agentplaneorg/core": "0.2.6" },
           },
           null,
           2,
@@ -213,7 +213,7 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
       expect(agentplaneText).toContain('"version": "0.2.7"');
       expect(agentplaneText).toContain('"@agentplaneorg/core": "0.2.7"');
       expect(agentplaneText).toContain('"@agentplaneorg/recipes": "0.2.7"');
-      expect(testkitText).toContain('"agentplane": "0.2.7"');
+      expect(testkitText).toContain('"@agentplaneorg/core": "0.2.7"');
       expect(configText).toContain('"expected_version": "0.2.7"');
 
       const { stdout: tagOut } = await execFileAsync("git", ["tag", "--list", "v0.2.7"], {

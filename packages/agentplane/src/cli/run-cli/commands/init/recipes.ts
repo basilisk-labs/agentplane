@@ -10,7 +10,9 @@ type CachedRecipeInfo = {
 };
 
 export async function listCachedRecipes(): Promise<CachedRecipeInfo[]> {
-  const cached = await readAndMigrateInstalledRecipesFile(resolveInstalledRecipesPath());
+  const cached = await readAndMigrateInstalledRecipesFile(resolveInstalledRecipesPath(), {
+    dropInvalidEntries: true,
+  });
   return cached.recipes.map((recipe) => ({
     id: recipe.id,
     summary: recipe.manifest.summary,

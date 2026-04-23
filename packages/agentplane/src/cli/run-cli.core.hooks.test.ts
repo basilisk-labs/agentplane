@@ -889,6 +889,61 @@ describe("runCli", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     expect(status.stdout.trim()).toBe("");
   });
 
+  it("pre-push hook resolves bun from NVM_BIN when PATH omits it", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "hook-test",
+          private: true,
+          scripts: {
+            "format:check": "node scripts/format-check.mjs",
+            "ci:local:fast": "node scripts/ci-fast.mjs",
+            "ci:local:full": "node scripts/ci-fast.mjs",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    await writeFile(path.join(root, "scripts", "format-check.mjs"), "process.exit(0);\n", "utf8");
+    await writeFile(path.join(root, "scripts", "ci-fast.mjs"), "process.exit(0);\n", "utf8");
+
+    const fakeBinDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-bun-bin-"));
+    const fakeBunPath = path.join(fakeBinDir, "bun");
+    await writeFile(
+      fakeBunPath,
+      [
+        "#!/bin/sh",
+        'case "$2" in',
+        `  format:check) exec "${process.execPath}" scripts/format-check.mjs ;;`,
+        `  ci:local:fast|ci:local:full) exec "${process.execPath}" scripts/ci-fast.mjs ;;`,
+        "  *) exit 64 ;;",
+        "esac",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeBunPath, 0o755);
+
+    const output = execFileSync(process.execPath, [PRE_PUSH_HOOK_SCRIPT], {
+      cwd: root,
+      stdio: "pipe",
+      input: "",
+      env: {
+        ...process.env,
+        PATH: "/usr/bin:/bin",
+        NVM_BIN: fakeBinDir,
+      },
+      encoding: "utf8",
+    });
+
+    expect(output).toContain("Running pre-push checks in standard mode.");
+  });
+
   it("pre-push hook reports tracked-file mutations even when local ci fails", async () => {
     const root = await mkGitRepoRoot();
     await writeFile(

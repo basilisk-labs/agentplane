@@ -279,6 +279,26 @@ describe("runCli", () => {
     }
   });
 
+  it("init surfaces unmanaged hook conflicts before writing agentplane files", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    await mkdir(path.join(root, ".git", "hooks"), { recursive: true });
+    await writeFile(path.join(root, ".git", "hooks", "commit-msg"), "custom", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--hooks", "yes", "--root", root]);
+      expect(code).toBe(4);
+      const error = normalizeSlashes(io.stderr);
+      expect(error).toContain("Init conflicts detected");
+      expect(error).toContain(".git/hooks/commit-msg");
+    } finally {
+      io.restore();
+    }
+
+    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
+  });
+
   it("init vendors selected cached recipes into the project", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);

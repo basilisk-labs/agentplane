@@ -1,5 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
 
 import {
   hasReleaseTagPush,
@@ -10,12 +12,49 @@ import {
   selectBranchDiffRange,
 } from "./lib/pre-push-scope.mjs";
 
+function pushUnique(entries, value) {
+  const candidate = String(value ?? "").trim();
+  if (!candidate || entries.includes(candidate)) return;
+  entries.push(candidate);
+}
+
+function withPreferredRuntimePath(baseEnv = process.env) {
+  const preferredEntries = [];
+  pushUnique(preferredEntries, String(baseEnv.NVM_BIN ?? "").trim());
+  pushUnique(preferredEntries, path.join(String(baseEnv.VOLTA_HOME ?? "").trim(), "bin"));
+  pushUnique(preferredEntries, path.dirname(process.execPath));
+  pushUnique(
+    preferredEntries,
+    path.join(String(baseEnv.HOME ?? os.homedir()).trim(), ".bun", "bin"),
+  );
+
+  const currentPath = String(baseEnv.PATH ?? "");
+  const pathEntries = currentPath
+    .split(path.delimiter)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  for (const entry of pathEntries) {
+    pushUnique(preferredEntries, entry);
+  }
+
+  return {
+    ...baseEnv,
+    PATH: preferredEntries.join(path.delimiter),
+  };
+}
+
 function run(command, args) {
-  execFileSync(command, args, { stdio: "inherit" });
+  execFileSync(command, args, {
+    stdio: "inherit",
+    env: withPreferredRuntimePath(process.env),
+  });
 }
 
 function runWithEnv(command, args, env) {
-  execFileSync(command, args, { stdio: "inherit", env });
+  execFileSync(command, args, {
+    stdio: "inherit",
+    env: withPreferredRuntimePath(env),
+  });
 }
 
 function read(command, args) {

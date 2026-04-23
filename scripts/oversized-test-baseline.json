@@ -8,7 +8,7 @@
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.hooks.test.ts",
-      "lines": 1243
+      "lines": 1298
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.incidents.test.ts",
