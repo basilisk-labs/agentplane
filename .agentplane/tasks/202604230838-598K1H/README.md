@@ -1,10 +1,11 @@
 ---
 id: "202604230838-598K1H"
 title: "Stage allowed task artifacts with non-empty index"
-status: "DOING"
+result_summary: "Implemented non-empty-index active task artifact staging and covered it with guard unit plus CLI integration tests."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-23T09:38:05.042Z"
   updated_by: "CODER"
   note: "Verified: commit wrapper stages active task artifacts with --allow-tasks even when implementation files are already staged."
-commit: null
+commit:
+  hash: "afa741361351587573d24201f54485386e3aa4f7"
+  message: "🛡️ 598K1H guard: stage task artifacts with populated index"
 comments:
   -
     author: "CODER"
     body: "Start: commit allowlist staging behavior is ready after verify matrix completion."
+  -
+    author: "CODER"
+    body: "Verified: commit allowlist now stages active task artifacts before guard validation when --allow-tasks is used with a populated index."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: commit wrapper stages active task artifacts with --allow-tasks even when implementation files are already staged."
+  -
+    type: "status"
+    at: "2026-04-23T09:38:19.733Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: commit allowlist now stages active task artifacts before guard validation when --allow-tasks is used with a populated index."
 doc_version: 3
-doc_updated_at: "2026-04-23T09:38:05.049Z"
+doc_updated_at: "2026-04-23T09:38:19.734Z"
 doc_updated_by: "CODER"
 description: "Adjust commit allowlist behavior or diagnostics so --allow-tasks cannot leave active task artifacts unstaged when other files are already staged."
 sections:
