@@ -1,10 +1,11 @@
 ---
 id: "202604230949-E1BG2Q"
 title: "Split doctor hook readiness diagnostics hotspot"
-status: "DOING"
+result_summary: "Moved doctor hook shim readiness checks into a focused module and restored hotspot gate compliance."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-23T09:51:57.372Z"
   updated_by: "CODER"
   note: "Verified: doctor workspace hotspot split passes hotspot gate and doctor runtime diagnostics remain green."
-commit: null
+commit:
+  hash: "2fc331ddf5032964d1058a4e09c866fbfd6807ca"
+  message: "♻️ E1BG2Q doctor: split hook readiness hotspot"
 comments:
   -
     author: "CODER"
     body: "Start: pre-push hotspot gate requires splitting doctor/workspace.ts below 600 lines."
+  -
+    author: "CODER"
+    body: "Verified: hotspot gate and doctor runtime tests pass after splitting hook readiness diagnostics."
 events:
   -
     type: "status"
@@ -43,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: doctor workspace hotspot split passes hotspot gate and doctor runtime diagnostics remain green."
+  -
+    type: "status"
+    at: "2026-04-23T09:52:18.349Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: hotspot gate and doctor runtime tests pass after splitting hook readiness diagnostics."
 doc_version: 3
-doc_updated_at: "2026-04-23T09:51:57.378Z"
+doc_updated_at: "2026-04-23T09:52:18.350Z"
 doc_updated_by: "CODER"
 description: "Move managed hook shim readiness checks out of doctor/workspace.ts so hotspot gate passes after installed-user diagnostics additions."
 sections:
