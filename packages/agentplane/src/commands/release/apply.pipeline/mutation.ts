@@ -41,8 +41,18 @@ export async function applyReleaseMutation(opts: {
   const shouldUpdateTestkitAgentplaneDependency =
     (await fileExists(opts.testkitPkgPath)) &&
     (await packageDependencyExists(opts.testkitPkgPath, "agentplane"));
+  const shouldUpdateTestkitCoreDependency =
+    (await fileExists(opts.testkitPkgPath)) &&
+    (await packageDependencyExists(opts.testkitPkgPath, "@agentplaneorg/core"));
   if (shouldUpdateTestkitAgentplaneDependency) {
     await replacePackageDependencyVersion(opts.testkitPkgPath, "agentplane", opts.nextVersion);
+  }
+  if (shouldUpdateTestkitCoreDependency) {
+    await replacePackageDependencyVersion(
+      opts.testkitPkgPath,
+      "@agentplaneorg/core",
+      opts.nextVersion,
+    );
   }
 
   const expectedCliVersionPersisted = await maybePersistExpectedCliVersion(
@@ -58,7 +68,7 @@ export async function applyReleaseMutation(opts: {
     "packages/recipes/package.json",
     path.relative(opts.gitRoot, opts.notesPath),
   ];
-  if (shouldUpdateTestkitAgentplaneDependency) {
+  if (shouldUpdateTestkitAgentplaneDependency || shouldUpdateTestkitCoreDependency) {
     stagePaths.push("packages/testkit/package.json");
   }
   if (expectedCliVersionPersisted) {
