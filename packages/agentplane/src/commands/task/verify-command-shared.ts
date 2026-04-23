@@ -207,8 +207,7 @@ export function validateVerifyFindingSource<TParsed>(
     Array.isArray(raw.opts["incident-tag"]) && raw.opts["incident-tag"].length > 0
       ? true
       : Array.isArray(raw.opts["incident-match"]) && raw.opts["incident-match"].length > 0;
-  const hasFindingToggle = raw.opts["local-only"] === true || raw.opts["repo-fixable"] === true;
-  if (!hasFindingField && !hasFindingCollections && !hasFindingToggle) return;
+  if (!hasFindingField && !hasFindingCollections) return;
 
   const observation = raw.opts.observation;
   const impact = raw.opts.impact;
