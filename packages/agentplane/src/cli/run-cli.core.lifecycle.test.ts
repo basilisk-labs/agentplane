@@ -233,6 +233,9 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       ]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Comment body must start with");
+      expect(io.stderr).toContain('actual_start="Missin"');
+      expect(io.stderr).toContain("minimum_length=40");
+      expect(io.stderr).toContain('Fix: pass --body "Start:');
     } finally {
       io.restore();
     }
@@ -282,6 +285,9 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       ]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("at least");
+      expect(io.stderr).toContain("actual_length=16");
+      expect(io.stderr).toContain("required_prefix=Start:");
+      expect(io.stderr).toContain('Fix: expand --body "Start:');
     } finally {
       io.restore();
     }

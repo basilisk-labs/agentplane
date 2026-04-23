@@ -1,10 +1,10 @@
 ---
 id: "202604230838-T201MB"
 title: "Improve lifecycle error guidance"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +26,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: lifecycle error guidance work is ready after quickstart guidance completion."
+events:
+  -
+    type: "status"
+    at: "2026-04-23T09:25:41.811Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: lifecycle error guidance work is ready after quickstart guidance completion."
 doc_version: 3
-doc_updated_at: "2026-04-23T08:40:03.411Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-23T09:25:41.865Z"
+doc_updated_by: "CODER"
 description: "Make common lifecycle errors actionable for start-ready and finish: show prefix and length diagnostics for structured comments and provide concrete commit-selection guidance when finish requires --commit."
 sections:
   Summary: |-

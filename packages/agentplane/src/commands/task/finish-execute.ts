@@ -45,8 +45,14 @@ export async function executeFinishPlan(opts: {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message:
+      message: [
         "finish requires --commit <hash> or existing task commit metadata on every task; implicit HEAD fallback was removed.",
+        `tasks_missing_commit=${tasksMissingCommit.join(", ")}`,
+        "Fix:",
+        "  1) Select the implementation commit explicitly: git log --oneline --decorate -n 10",
+        '  2) Re-run finish with: agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <hash>',
+        "  3) If the implementation is still unstaged, use --commit-from-comment with explicit --commit-allow <path-prefix> instead of relying on HEAD.",
+      ].join("\n"),
     });
   }
 
