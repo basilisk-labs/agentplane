@@ -85,14 +85,23 @@ export function requireStructuredComment(body: string, prefix: string, minChars:
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: `Comment body must start with ${prefix}`,
+      message: [
+        `Comment body must start with ${prefix}`,
+        `actual_start=${JSON.stringify(normalized.slice(0, Math.max(prefix.length, 1)))}`,
+        `actual_length=${normalized.length}; minimum_length=${minChars}`,
+        `Fix: pass --body "${prefix} <specific verification or start note at least ${minChars} characters long>"`,
+      ].join("\n"),
     });
   }
   if (normalized.length < minChars) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: `Comment body must be at least ${minChars} characters`,
+      message: [
+        `Comment body must be at least ${minChars} characters`,
+        `actual_length=${normalized.length}; minimum_length=${minChars}; required_prefix=${prefix}`,
+        `Fix: expand --body "${prefix} <specific verification or start note at least ${minChars} characters long>"`,
+      ].join("\n"),
     });
   }
 }

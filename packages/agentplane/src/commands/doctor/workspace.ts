@@ -12,6 +12,7 @@ import { resolvePolicyGatewayForRepo } from "../../shared/policy-gateway.js";
 import { GitContext } from "@agentplaneorg/core/git";
 import { listTaskProjection, type CommandContext } from "../shared/task-backend.js";
 import { resolveAgentplaneAssetPath } from "../../shared/package-paths.js";
+import { checkManagedHookShimReadiness } from "./hook-readiness.js";
 
 type TaskDocSnapshot = {
   id?: unknown;
@@ -424,6 +425,7 @@ export async function checkWorkspace(
   }
   problems.push(
     ...checkBackendReadiness(opts?.ctx),
+    ...(await checkManagedHookShimReadiness(repoRoot)),
     ...(await checkTaskReadmeMigrationState(repoRoot, opts?.ctx)),
     ...(await checkDoneTaskReadmeArchiveDrift(repoRoot, opts?.ctx)),
     ...(await checkTaskProjectionDrift(repoRoot, opts?.ctx)),

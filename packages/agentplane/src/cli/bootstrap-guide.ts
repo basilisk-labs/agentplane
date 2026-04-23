@@ -2,6 +2,8 @@ import { COMMAND_SNIPPETS } from "./command-snippets.js";
 
 export const AGENT_BOOTSTRAP_DOC_PATH = "docs/user/agent-bootstrap.generated.mdx";
 export const AGENT_BOOTSTRAP_RUNTIME_SURFACE = "agentplane quickstart";
+export const BRANCH_PR_HOSTED_GATE_GUIDANCE =
+  "confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`";
 
 export type BootstrapSection = {
   heading: string;
@@ -139,13 +141,13 @@ export function renderBootstrapDoc(): string {
     "",
     ...renderCommandBlock(BOOTSTRAP_PREFLIGHT_COMMANDS),
     "",
-    "After preflight, follow the configured workflow mode. In repositories configured for `branch_pr`, start with `agentplane help work start`, keep local PR artifacts current with `agentplane pr ...`, wait for hosted required checks with `bun run workflow:wait-remote-checks`, and only then integrate on base; use the direct-mode route below only when `workflow_mode=direct` is intentional.",
+    `After preflight, follow the configured workflow mode. In repositories configured for \`branch_pr\`, start with \`agentplane help work start\`, keep local PR artifacts current with \`agentplane pr ...\`, ${BRANCH_PR_HOSTED_GATE_GUIDANCE}, and only then integrate on base; use the direct-mode route below only when \`workflow_mode=direct\` is intentional.`,
     "",
     ...renderBootstrapSectionLines(BOOTSTRAP_SECTIONS),
     "",
     "## Non-default paths",
     "",
-    "- `branch_pr`: in repositories configured this way, start a task branch/worktree, maintain PR artifacts, wait for hosted required checks, and let INTEGRATOR close on base only after the remote gate is green.",
+    `- \`branch_pr\`: in repositories configured this way, start a task branch/worktree, maintain PR artifacts, ${BRANCH_PR_HOSTED_GATE_GUIDANCE}, and let INTEGRATOR close on base only after the remote gate is green.`,
     "- `direct`: use `task new/plan approve/start-ready -> task verify-show -> verify -> finish` only when `workflow_mode=direct` is intentional.",
     "- Use manual close flags only when a specific policy or recovery situation requires them.",
     "",

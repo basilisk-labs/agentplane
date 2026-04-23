@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const VITEST_TIMEOUT_MS = "60000";
@@ -123,7 +123,7 @@ const RELEASE_CI_BASE_FILES = discoverTests(["packages"], (filePath) => {
   ].some((pattern) => pattern.test(filePath));
 });
 
-const SUITES = {
+export const SUITES = {
   "backend-critical": {
     files: BACKEND_CRITICAL_FILES,
     maxWorkers: "4",
@@ -163,6 +163,17 @@ const SUITES = {
   },
 };
 
+export function listVitestSuiteFiles() {
+  return Object.fromEntries(
+    Object.entries(SUITES)
+      .map(([suiteName, suite]) => [
+        suiteName,
+        [...suite.files].toSorted((a, b) => a.localeCompare(b)),
+      ])
+      .toSorted(([a], [b]) => a.localeCompare(b)),
+  );
+}
+
 function printHelp() {
   process.stdout.write(`Usage: node scripts/run-vitest-suite.mjs <suite> [vitest args...]
 
@@ -174,51 +185,58 @@ ${Object.keys(SUITES)
 `);
 }
 
-const suiteName = process.argv[2];
-if (suiteName === "--help" || suiteName === "-h") {
-  printHelp();
-} else if (suiteName) {
-  const suite = SUITES[suiteName];
-  if (!suite) {
+function main(argv = process.argv.slice(2)) {
+  const suiteName = argv[0];
+  if (suiteName === "--help" || suiteName === "-h") {
     printHelp();
-    throw new Error(`Unknown Vitest suite: ${suiteName}`);
-  }
+    return;
+  } else if (suiteName) {
+    const suite = SUITES[suiteName];
+    if (!suite) {
+      printHelp();
+      throw new Error(`Unknown Vitest suite: ${suiteName}`);
+    }
 
-  if (suite.files.length === 0) {
-    throw new Error(`Vitest suite has no test files: ${suiteName}`);
-  }
+    if (suite.files.length === 0) {
+      throw new Error(`Vitest suite has no test files: ${suiteName}`);
+    }
 
-  const missingFiles = suite.files.filter(
-    (filePath) => !existsSync(path.join(REPO_ROOT, filePath)),
-  );
-  if (missingFiles.length > 0) {
-    throw new Error(
-      `Vitest suite ${suiteName} references missing files: ${missingFiles.join(", ")}`,
+    const missingFiles = suite.files.filter(
+      (filePath) => !existsSync(path.join(REPO_ROOT, filePath)),
     );
+    if (missingFiles.length > 0) {
+      throw new Error(
+        `Vitest suite ${suiteName} references missing files: ${missingFiles.join(", ")}`,
+      );
+    }
+
+    const args = [
+      "vitest",
+      "--config",
+      "vitest.workspace.ts",
+      "run",
+      ...suite.files,
+      `--pool=${suite.pool}`,
+      "--maxWorkers",
+      suite.maxWorkers,
+      "--testTimeout",
+      suite.testTimeout ?? VITEST_TIMEOUT_MS,
+      "--hookTimeout",
+      suite.hookTimeout ?? VITEST_TIMEOUT_MS,
+      ...argv.slice(1),
+    ];
+
+    execFileSync("bunx", args, {
+      cwd: REPO_ROOT,
+      env: process.env,
+      stdio: "inherit",
+    });
+  } else {
+    printHelp();
+    throw new Error("Missing Vitest suite name.");
   }
+}
 
-  const args = [
-    "vitest",
-    "--config",
-    "vitest.workspace.ts",
-    "run",
-    ...suite.files,
-    `--pool=${suite.pool}`,
-    "--maxWorkers",
-    suite.maxWorkers,
-    "--testTimeout",
-    suite.testTimeout ?? VITEST_TIMEOUT_MS,
-    "--hookTimeout",
-    suite.hookTimeout ?? VITEST_TIMEOUT_MS,
-    ...process.argv.slice(3),
-  ];
-
-  execFileSync("bunx", args, {
-    cwd: REPO_ROOT,
-    env: process.env,
-    stdio: "inherit",
-  });
-} else {
-  printHelp();
-  throw new Error("Missing Vitest suite name.");
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
 }

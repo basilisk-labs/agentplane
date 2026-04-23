@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "threshold_lines": 1000,
+  "entries": [
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
+      "lines": 1218
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.hooks.test.ts",
+      "lines": 1243
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.incidents.test.ts",
+      "lines": 1112
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts",
+      "lines": 1023
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts",
+      "lines": 1100
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
+      "lines": 1185
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
+      "lines": 1014
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts",
+      "lines": 1206
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts",
+      "lines": 1183
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.tasks.query-run-prepare.test.ts",
+      "lines": 1081
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli.core.test.ts",
+      "lines": 1029
+    },
+    {
+      "file": "packages/agentplane/src/commands/doctor.command.open-pr.test.ts",
+      "lines": 1112
+    },
+    {
+      "file": "packages/agentplane/src/commands/guard/impl/commands.unit.test.ts",
+      "lines": 1254
+    },
+    {
+      "file": "packages/agentplane/src/commands/release/apply.test.ts",
+      "lines": 1263
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/task-store.test.ts",
+      "lines": 1116
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+      "lines": 1066
+    }
+  ]
+}

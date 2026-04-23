@@ -153,6 +153,55 @@ describe("runCli", () => {
     expect(readme).toContain("Note: Looks good");
   });
 
+  it("verify accepts --local-only without a structured finding", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify local only",
+        "--description",
+        "Verify accepts a plain local-only flag",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Looks good",
+        "--local-only",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`✅ verified ${taskId} (state=ok`);
+      expect(io.stderr).not.toContain("Provide --observation, --impact, and --resolution");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("verify supports --note-file and normalizes it to a single line", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

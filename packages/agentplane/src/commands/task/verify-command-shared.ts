@@ -195,6 +195,14 @@ export function validateVerifyFindingSource<TParsed>(
   spec: CommandSpec<TParsed>,
   opts?: { command?: string },
 ): void {
+  if (raw.opts["local-only"] === true && raw.opts["repo-fixable"] === true) {
+    throw usageError({
+      spec,
+      command: opts?.command,
+      message: "--local-only cannot be combined with --repo-fixable.",
+    });
+  }
+
   const hasFindingField = [
     raw.opts.observation,
     raw.opts.impact,
@@ -207,8 +215,7 @@ export function validateVerifyFindingSource<TParsed>(
     Array.isArray(raw.opts["incident-tag"]) && raw.opts["incident-tag"].length > 0
       ? true
       : Array.isArray(raw.opts["incident-match"]) && raw.opts["incident-match"].length > 0;
-  const hasFindingToggle = raw.opts["local-only"] === true || raw.opts["repo-fixable"] === true;
-  if (!hasFindingField && !hasFindingCollections && !hasFindingToggle) return;
+  if (!hasFindingField && !hasFindingCollections) return;
 
   const observation = raw.opts.observation;
   const impact = raw.opts.impact;

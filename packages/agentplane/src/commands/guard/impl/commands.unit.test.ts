@@ -903,6 +903,51 @@ describe("guard command implementations", () => {
     }
   });
 
+  it("cmdCommit non-close stages active task artifacts from allowTasks when the index is already populated", async () => {
+    const { cmdCommit } = await import("./commit.js");
+    const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    ctx.git.statusChangedPaths
+      .mockResolvedValueOnce(["src/app.ts", ".agentplane/tasks/T-11/README.md"])
+      .mockResolvedValueOnce([]);
+    ctx.git.headHashSubject.mockResolvedValue({
+      hash: "1122334455667788",
+      subject: "✅ ABC123 task: message",
+    });
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-11" });
+
+    const rc = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-11",
+      message: "✅ ABC123 task: message",
+      close: false,
+      allow: ["src"],
+      autoAllow: false,
+      allowTasks: true,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(ctx.git.stage).toHaveBeenCalledWith([".agentplane/tasks/T-11/README.md"]);
+    expect(ctx.git.stage.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.guardCommitCheck.mock.invocationCallOrder[0],
+    );
+    expect(mocks.guardCommitCheck).toHaveBeenCalledWith(
+      expect.objectContaining({
+        allow: ["src"],
+        allowTasks: true,
+        taskId: "T-11",
+      }),
+    );
+  });
+
   it("cmdCommit non-close auto-stages CI changes when --allow-ci provides the scope", async () => {
     const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();

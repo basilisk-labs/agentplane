@@ -882,6 +882,36 @@ describe("task finish validation", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
+  it("explains how to choose a commit when finish lacks commit metadata", async () => {
+    const ctx = mkCtx();
+    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["code"] }));
+
+    const { cmdFinish } = await import("./finish-command.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "ok",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toThrow(/tasks_missing_commit=T-1[\s\S]*git log --oneline --decorate -n 10/);
+  });
+
   it("uses readCommitInfo only when --commit is provided", async () => {
     const ctx = mkCtx();
     mocks.loadTaskFromContext.mockResolvedValue(

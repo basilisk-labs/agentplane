@@ -69,7 +69,7 @@ export const taskDeriveSpec: CommandSpec<TaskDeriveParsed> = {
   ],
   examples: [
     {
-      cmd: 'agentplane task derive 202602070101-ABCD --title "Implement X" --description "Do the thing" --owner CODER --tag code --verify "bun test"',
+      cmd: 'agentplane task derive 202602070101-ABCD --title "Implement X" --description "Do the thing" --owner CODER --tag code --verify "bun run test:project -- cli-core"',
       why: "Create an implementation task derived from a spike with seeded verify steps.",
     },
   ],
