@@ -1,10 +1,11 @@
 ---
 id: "202604230839-Y92ZJJ"
 title: "Prefer canonical test commands in generated guidance"
-status: "DOING"
+result_summary: "Updated generated task derive example coverage and command-contract guard for command guidance."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-23T09:41:00.337Z"
   updated_by: "CODER"
   note: "Verified: generated task derive guidance now uses canonical test:project command and command-check blocks inline test runners in command guidance."
-commit: null
+commit:
+  hash: "7e088c7353727566594831c1db217a19e0e65820"
+  message: "🧪 Y92ZJJ test: prefer canonical generated verify commands"
 comments:
   -
     author: "CODER"
     body: "Start: dependency 598K1H is finished; inspecting generated task guidance and scaffold/derive defaults."
+  -
+    author: "CODER"
+    body: "Verified: derive guidance and contract checks now prefer canonical test scripts instead of bare inline runners."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: generated task derive guidance now uses canonical test:project command and command-check blocks inline test runners in command guidance."
+  -
+    type: "status"
+    at: "2026-04-23T09:41:20.323Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: derive guidance and contract checks now prefer canonical test scripts instead of bare inline runners."
 doc_version: 3
-doc_updated_at: "2026-04-23T09:41:00.341Z"
+doc_updated_at: "2026-04-23T09:41:20.324Z"
 doc_updated_by: "CODER"
 description: "Replace bare or misleading test-runner defaults in generated task guidance with repository canonical commands so agents do not run Vitest suites through the wrong runner."
 sections:
