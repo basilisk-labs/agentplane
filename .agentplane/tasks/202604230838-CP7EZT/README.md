@@ -1,10 +1,11 @@
 ---
 id: "202604230838-CP7EZT"
 title: "Add installed runtime smoke release gate"
-status: "DOING"
+result_summary: "Added packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts and committed the approved usability-hardening task graph."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-23T08:51:52.010Z"
   updated_by: "CODER"
   note: "Installed runtime smoke added and verified: direct init with managed pre-push hooks, branch_pr worktree hook shim, hook suite, format check, and test routing all pass."
-commit: null
+commit:
+  hash: "832bac7a44e84fe4813ef8c9a9926effc21f5780"
+  message: "🧪 CP7EZT test: add installed runtime smoke gate"
 comments:
   -
     author: "CODER"
     body: "Start: Implement installed-runtime smoke coverage for clean-project hooks, direct lifecycle, and branch_pr worktree shim."
+  -
+    author: "CODER"
+    body: "Verified: installed runtime smoke covers clean direct init with managed pre-push hooks, branch_pr worktree shim seeding, hook suite compatibility, formatting, and test routing."
 events:
   -
     type: "status"
@@ -43,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Installed runtime smoke added and verified: direct init with managed pre-push hooks, branch_pr worktree hook shim, hook suite, format check, and test routing all pass."
+  -
+    type: "status"
+    at: "2026-04-23T08:53:08.939Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: installed runtime smoke covers clean direct init with managed pre-push hooks, branch_pr worktree shim seeding, hook suite compatibility, formatting, and test routing."
 doc_version: 3
-doc_updated_at: "2026-04-23T08:51:52.029Z"
+doc_updated_at: "2026-04-23T08:53:08.940Z"
 doc_updated_by: "CODER"
 description: "Add an end-to-end smoke gate that exercises an installed AgentPlane package in a clean git project: init with hooks, push through managed hooks, direct task lifecycle, and branch_pr worktree shim materialization."
 sections:
