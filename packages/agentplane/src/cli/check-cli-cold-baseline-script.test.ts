@@ -174,7 +174,7 @@ describe("check-cli-cold-baseline script", () => {
       commands: [
         {
           id: "quickstart",
-          max_median_ms: 10000,
+          max_median_ms: 10_000,
           expected_exit_code: 0,
         },
       ],
