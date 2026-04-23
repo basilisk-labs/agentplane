@@ -1,10 +1,11 @@
 ---
 id: "202604230821-FBPNBM"
 title: "Harden branch_pr worktree hook shim"
-status: "DOING"
+result_summary: "Hardened branch_pr worktree hook shim for installed workflows."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-23T08:23:03.447Z"
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 6 tests passed including installed runner path in worktree shim. Command: bunx eslint packages/agentplane/src/commands/branch/work-start.hook-shim.ts packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts; Result: pass. Command: bun run --filter=agentplane build; Result: pass."
-commit: null
+commit:
+  hash: "502002d3cd341cb2aeb804ff91430d6f095db7c0"
+  message: "🐛 FBPNBM hooks: harden worktree shim runner"
 comments:
   -
     author: "CODER"
     body: "Start: hardening branch_pr worktree hook shim for installed clean-project workflows."
+  -
+    author: "CODER"
+    body: "Verified: branch_pr worktree shim now captures the installed runner path and keeps npx opt-in."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 6 tests passed including installed runner path in worktree shim. Command: bunx eslint packages/agentplane/src/commands/branch/work-start.hook-shim.ts packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts; Result: pass. Command: bun run --filter=agentplane build; Result: pass."
+  -
+    type: "status"
+    at: "2026-04-23T08:23:19.921Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: branch_pr worktree shim now captures the installed runner path and keeps npx opt-in."
 doc_version: 3
-doc_updated_at: "2026-04-23T08:23:03.451Z"
+doc_updated_at: "2026-04-23T08:23:19.921Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr worktree hook shims use the installed AgentPlane runner path and avoid default npx fallback, matching clean-project hook install behavior."
 sections:
