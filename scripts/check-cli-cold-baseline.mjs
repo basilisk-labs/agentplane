@@ -120,7 +120,7 @@ function compareMeasurementToBaseline(measurement, baseline) {
       failures.push(`${id}: median_ms=${median} exceeds max_median_ms=${maxMedian}`);
     }
     const p95Summary = Number.isFinite(p95) ? `, p95=${p95}ms` : "";
-    summaries.push(`${id} median=${median}ms <= ${maxMedian}ms${p95Summary}`);
+    summaries.push(`${id} median=${median}ms (threshold=${maxMedian}ms${p95Summary})`);
   }
 
   return { failures, summaries };

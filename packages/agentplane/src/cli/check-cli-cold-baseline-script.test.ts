@@ -161,7 +161,7 @@ describe("check-cli-cold-baseline script", () => {
     const result = await runScript(["--baseline", baselinePath, "--measurement", measurementPath]);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("quickstart median=50ms <= 100ms");
+    expect(result.stdout).toContain("quickstart median=50ms (threshold=100ms, p95=1400ms)");
   });
 
   it("retries measured runs before failing so transient cold-start noise does not block the guard", async () => {
@@ -173,14 +173,14 @@ describe("check-cli-cold-baseline script", () => {
       commands: [
         {
           id: "quickstart",
-          max_median_ms: 120,
+          max_median_ms: 250,
           expected_exit_code: 0,
         },
       ],
     });
     const { cliPath, counterPath } = await writeFakeCli(root, {
       slowInvocations: 5,
-      slowMs: 250,
+      slowMs: 500,
       fastMs: 1,
     });
 
