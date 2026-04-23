@@ -1,10 +1,12 @@
 ---
 id: "202604231752-A45A6M"
 title: "Realign 0.3 foundation backlog and retire v0.4 prompt-assembly carryover"
-status: "DOING"
+result_summary: "Realigned the active task board to the 0.3 foundation line and retired the non-active prompt-assembly carryover backlog."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +26,16 @@ verification:
   updated_at: "2026-04-23T17:55:36.068Z"
   updated_by: "PLANNER"
   note: "Backlog realignment completed: the active board now contains only the intended 0.3 foundation tasks and the prompt-assembly carryover backlog has been retired from the active execution path."
-commit: null
+commit:
+  hash: "ac3c6e434485234d8e37b8e72db15e28fc06da9f"
+  message: "✅ A45A6M meta: done"
 comments:
   -
     author: "PLANNER"
     body: "Start: audit the active TODO backlog, define the 0.3 foundation execution graph, and retire non-active prompt-assembly carryover so the board reflects the approved release strategy."
+  -
+    author: "PLANNER"
+    body: "Verified: the active board now reflects the approved 0.3 foundation line, and the non-active prompt-assembly carryover tasks were closed as deferred no-op backlog items."
 events:
   -
     type: "status"
@@ -43,8 +50,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Backlog realignment completed: the active board now contains only the intended 0.3 foundation tasks and the prompt-assembly carryover backlog has been retired from the active execution path."
+  -
+    type: "status"
+    at: "2026-04-23T17:55:52.612Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the active board now reflects the approved 0.3 foundation line, and the non-active prompt-assembly carryover tasks were closed as deferred no-op backlog items."
 doc_version: 3
-doc_updated_at: "2026-04-23T17:55:36.089Z"
+doc_updated_at: "2026-04-23T17:55:52.613Z"
 doc_updated_by: "PLANNER"
 description: "Audit the remaining open prompt-assembly backlog, define the explicit 0.3 foundation scope, create the active execution graph for foundation stabilization, and close or defer superseded open tasks so the task board matches the current release strategy."
 sections:
