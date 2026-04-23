@@ -1,10 +1,11 @@
 ---
 id: "202604230747-CG7JEQ"
 title: "Make installed hooks self-contained for clean projects"
-status: "DOING"
+result_summary: "Made installed hooks self-contained for clean user projects."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-23T07:52:00.421Z"
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.hooks.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 40 tests passed including installed fallback, missing project scripts, and clean release-mode regressions. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 24 tests passed. Command: bunx eslint packages/agentplane/src/commands/hooks/install.ts packages/agentplane/src/commands/hooks/run.pre-push.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Command: bun pm pack --dry-run --ignore-scripts --quiet in packages/agentplane, packages/core, packages/recipes; Result: pass; Evidence: tarball names emitted for all publish packages. Inspection: hook shim now captures installed runner path and npx fallback is opt-in via AGENTPLANE_HOOK_ALLOW_NPX; installed pre-push fallback skips missing project scripts/framework release scripts instead of blocking clean repositories."
-commit: null
+commit:
+  hash: "b330c72a569f4fbe39f0cacd36bd9e40a437488a"
+  message: "🐛 CG7JEQ hooks: make installed hooks self-contained"
 comments:
   -
     author: "CODER"
     body: "Start: hardening installed hooks so clean initialized repositories can push without framework scripts or project-local CI scripts."
+  -
+    author: "CODER"
+    body: "Verified: installed hooks now work in clean initialized repositories without framework scripts, missing project CI scripts, or default npx fallback."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.hooks.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 40 tests passed including installed fallback, missing project scripts, and clean release-mode regressions. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 24 tests passed. Command: bunx eslint packages/agentplane/src/commands/hooks/install.ts packages/agentplane/src/commands/hooks/run.pre-push.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Command: bun pm pack --dry-run --ignore-scripts --quiet in packages/agentplane, packages/core, packages/recipes; Result: pass; Evidence: tarball names emitted for all publish packages. Inspection: hook shim now captures installed runner path and npx fallback is opt-in via AGENTPLANE_HOOK_ALLOW_NPX; installed pre-push fallback skips missing project scripts/framework release scripts instead of blocking clean repositories."
+  -
+    type: "status"
+    at: "2026-04-23T07:52:09.570Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: installed hooks now work in clean initialized repositories without framework scripts, missing project CI scripts, or default npx fallback."
 doc_version: 3
-doc_updated_at: "2026-04-23T07:52:00.424Z"
+doc_updated_at: "2026-04-23T07:52:09.571Z"
 doc_updated_by: "CODER"
 description: "Audit and harden the installed AgentPlane package path so init-installed hooks work in clean user repositories without framework scripts or project-local CI scripts."
 sections:
