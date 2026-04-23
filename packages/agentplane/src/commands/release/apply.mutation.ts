@@ -4,6 +4,10 @@ import path from "node:path";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  resolvePreferredNodeExecutable,
+  withPreferredRuntimePath,
+} from "../../shared/runtime-env.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
 
@@ -110,7 +114,7 @@ export async function maybeUpdateBunLockfile(
   try {
     await execFileAsync("bun", ["install", "--ignore-scripts"], {
       cwd: gitRoot,
-      env: process.env,
+      env: withPreferredRuntimePath(process.env),
       maxBuffer: 50 * 1024 * 1024,
     });
   } catch (err) {
@@ -136,9 +140,9 @@ export async function maybeRefreshGeneratedReference(
   if (!(await fileExists(scriptPath))) return false;
 
   try {
-    await execFileAsync("node", [scriptPath], {
+    await execFileAsync(resolvePreferredNodeExecutable(process.env), [scriptPath], {
       cwd: gitRoot,
-      env: process.env,
+      env: withPreferredRuntimePath(process.env),
       maxBuffer: 20 * 1024 * 1024,
     });
   } catch (err) {
@@ -177,5 +181,5 @@ export function cleanHookEnv(): NodeJS.ProcessEnv {
   delete env.AGENTPLANE_STATUS_TO;
   delete env.AGENTPLANE_AGENT_ID;
   env.AGENTPLANE_ALLOW_CONFIG = "1";
-  return env;
+  return withPreferredRuntimePath(env);
 }

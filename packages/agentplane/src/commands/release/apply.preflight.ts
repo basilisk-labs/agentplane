@@ -4,6 +4,10 @@ import path from "node:path";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { withDiagnosticContext } from "../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  resolvePreferredNodeExecutable,
+  withPreferredRuntimePath,
+} from "../../shared/runtime-env.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
 
@@ -345,11 +349,15 @@ export async function ensureNpmVersionsAvailable(
 ): Promise<void> {
   const scriptPath = path.join(gitRoot, "scripts", "check-npm-version-availability.mjs");
   try {
-    await execFileAsync("node", [scriptPath, "--version", version], {
-      cwd: gitRoot,
-      env: process.env,
-      maxBuffer: 10 * 1024 * 1024,
-    });
+    await execFileAsync(
+      resolvePreferredNodeExecutable(process.env),
+      [scriptPath, "--version", version],
+      {
+        cwd: gitRoot,
+        env: withPreferredRuntimePath(process.env),
+        maxBuffer: 10 * 1024 * 1024,
+      },
+    );
   } catch (err) {
     const details = String(
       (err as { stderr?: string; stdout?: string; message?: string } | null)?.stderr ?? "",
@@ -382,13 +390,13 @@ export async function ensureNpmVersionsAvailable(
 async function runReleasePrepublishPhase(gitRoot: string, phase: "fast" | "heavy"): Promise<void> {
   await execFileAsync("bun", ["run", `release:prepublish:${phase}`], {
     cwd: gitRoot,
-    env: {
+    env: withPreferredRuntimePath({
       ...process.env,
       GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME ?? "agentplane-release",
       GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL ?? "agentplane-release@example.com",
       GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME ?? "agentplane-release",
       GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL ?? "agentplane-release@example.com",
-    },
+    }),
     maxBuffer: 200 * 1024 * 1024,
   });
 }

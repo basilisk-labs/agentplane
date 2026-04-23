@@ -91,7 +91,7 @@ describe("init cached recipes", () => {
 
     const migrated = JSON.parse(
       await readFile(path.join(requireRecipesTempHome(), "recipes.json"), "utf8"),
-    ) as { recipes: Array<{ id: string }> };
+    ) as { recipes: { id: string }[] };
     expect(migrated.recipes.map((entry) => entry.id)).toEqual(["viewer"]);
   });
 });

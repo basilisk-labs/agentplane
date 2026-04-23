@@ -5,6 +5,10 @@ import path from "node:path";
 
 import { fileExists } from "../../cli/fs-utils.js";
 import { resolveAgentplaneRepoScriptPath } from "../../shared/package-paths.js";
+import {
+  resolvePreferredNodeExecutable,
+  withPreferredRuntimePath,
+} from "../../shared/runtime-env.js";
 import type { HooksRunOptions } from "./run.js";
 
 function resolveBundledPrePushHookScriptPath(): string {
@@ -65,7 +69,7 @@ function runHookCommand(gitRoot: string, command: string, args: readonly string[
     command,
     args,
     cwd: gitRoot,
-    env: process.env,
+    env: withPreferredRuntimePath(process.env),
     stdout: "inherit",
     stderr: "inherit",
     reject: false,
@@ -293,7 +297,9 @@ function runInternalPrePushHook(gitRoot: string, stdin: string): number {
     if (isReleasePush) {
       const releaseNotesScript = path.join(gitRoot, "scripts", "check-release-notes.mjs");
       if (fileExistsSync(releaseNotesScript)) {
-        const notesExitCode = runHookCommand(gitRoot, "node", ["scripts/check-release-notes.mjs"]);
+        const notesExitCode = runHookCommand(gitRoot, resolvePreferredNodeExecutable(process.env), [
+          "scripts/check-release-notes.mjs",
+        ]);
         if (notesExitCode !== 0) return notesExitCode;
       } else {
         process.stdout.write(
