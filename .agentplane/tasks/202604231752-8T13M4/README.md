@@ -1,10 +1,12 @@
 ---
 id: "202604231752-8T13M4"
 title: "Harden 0.3 foundation guardrails around task, lifecycle, and workflow contracts"
-status: "DOING"
+result_summary: "Centralized significant and workflow harness target inventories, removed duplicated aggregate guardrail lists, and recorded the external local Vitest code-signing blocker while keeping the 0.3 foundation guardrails green through focused node-based checks."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -30,11 +32,16 @@ verification:
     Command: node scripts/check-workflow-harness-coverage.mjs; Result: pass; Evidence: Workflow harness suite contract OK (5 source targets; matrix=docs/developer/workflow-harness-test-matrix.mdx). Scope: workflow-coverage guardrail now reading the shared inventory.
     Command: node --input-type=module -e ...; Result: pass; Evidence: shared inventory OK (17+5 targets). Scope: shared aggregate target exports and route uniqueness for the touched inventory entries.
     Command: node scripts/check-test-routing.mjs; Result: pass; Evidence: test routing OK; total tests: 321. Scope: repository-wide routing sanity after moving aggregate targets to the shared inventory.
-commit: null
+commit:
+  hash: "a2bb131150c181fef37b2d8e6dbea758c37fd87a"
+  message: "✅ 8T13M4 code: done"
 comments:
   -
     author: "CODER"
     body: "Start: consolidate the touched foundation guardrails onto a shared inventory source, keep the diff narrow, and verify with focused script and test runs before closing the last open 0.3 foundation task."
+  -
+    author: "CODER"
+    body: "Verified: shared aggregate guardrail targets now live in scripts/lib/test-inventory.mjs, the significant/workflow coverage scripts consume that single source of truth, and the inventory contract has focused coverage for the exported target sets."
 events:
   -
     type: "status"
@@ -53,8 +60,15 @@ events:
       Command: node scripts/check-workflow-harness-coverage.mjs; Result: pass; Evidence: Workflow harness suite contract OK (5 source targets; matrix=docs/developer/workflow-harness-test-matrix.mdx). Scope: workflow-coverage guardrail now reading the shared inventory.
       Command: node --input-type=module -e ...; Result: pass; Evidence: shared inventory OK (17+5 targets). Scope: shared aggregate target exports and route uniqueness for the touched inventory entries.
       Command: node scripts/check-test-routing.mjs; Result: pass; Evidence: test routing OK; total tests: 321. Scope: repository-wide routing sanity after moving aggregate targets to the shared inventory.
+  -
+    type: "status"
+    at: "2026-04-23T18:13:13.170Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: shared aggregate guardrail targets now live in scripts/lib/test-inventory.mjs, the significant/workflow coverage scripts consume that single source of truth, and the inventory contract has focused coverage for the exported target sets."
 doc_version: 3
-doc_updated_at: "2026-04-23T18:13:03.403Z"
+doc_updated_at: "2026-04-23T18:13:13.171Z"
 doc_updated_by: "CODER"
 description: "Tighten behavioral guardrails and inventory checks around the current task, lifecycle, PR/integrate, and workflow contours so the 0.3 foundation line is safer to maintain before deeper recipes and runner work resumes."
 sections:
