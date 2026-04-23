@@ -1,10 +1,10 @@
 ---
 id: "202604230838-YPDDS3"
 title: "Diagnose stale installed hook shims"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +27,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: stale installed hook shim diagnostics are ready after installed smoke gate completion."
+events:
+  -
+    type: "status"
+    at: "2026-04-23T08:53:39.147Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: stale installed hook shim diagnostics are ready after installed smoke gate completion."
 doc_version: 3
-doc_updated_at: "2026-04-23T08:39:44.580Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-23T08:53:39.184Z"
+doc_updated_by: "CODER"
 description: "Extend installed workspace diagnostics so AgentPlane reports stale or missing managed hook shims, unavailable installed runners, and clean-project hook skip behavior with actionable remediation."
 sections:
   Summary: |-

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { readFileSync } from "node:fs";
 import os from "node:os";
@@ -201,6 +201,68 @@ async function gitInitWithCommit(root: string, subject: string): Promise<string>
   await execFileAsync("git", ["commit", "--no-verify", "-m", subject], { cwd: root });
   const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
   return stdout.trim();
+}
+
+function currentManagedShimText(installedRunnerPath: string): string {
+  return [
+    "#!/usr/bin/env sh",
+    "# agentplane-hook-shim (do not edit)",
+    "set -e",
+    `INSTALL_BIN='${installedRunnerPath}'`,
+    'if command -v node >/dev/null 2>&1 && [ -f "$INSTALL_BIN" ]; then',
+    '  exec node "$INSTALL_BIN" "$@"',
+    "fi",
+    'ENV_BIN="${AGENTPLANE_HOOK_RUNNER:-}"',
+    'if [ -n "$ENV_BIN" ] && command -v node >/dev/null 2>&1 && [ -f "$ENV_BIN" ]; then',
+    '  exec node "$ENV_BIN" "$@"',
+    "fi",
+    'if [ "${AGENTPLANE_HOOK_ALLOW_NPX:-}" = "1" ] && command -v npx >/dev/null 2>&1; then',
+    '  exec npx --yes agentplane "$@"',
+    "fi",
+    "",
+  ].join("\n");
+}
+
+async function writeManagedHookSurface(
+  root: string,
+  opts: {
+    hooks?: string[];
+    packageJson?: string | null;
+    runnerExists?: boolean;
+    shimText?: string;
+  } = {},
+): Promise<{ runnerPath: string }> {
+  const hooks = opts.hooks ?? ["pre-push"];
+  const hooksDir = path.join(root, ".git", "hooks");
+  const shimPath = path.join(root, ".agentplane", "bin", "agentplane");
+  const runnerPath = path.join(root, ".agentplane", "runtime", "bin", "agentplane.js");
+  await mkdir(hooksDir, { recursive: true });
+  await mkdir(path.dirname(shimPath), { recursive: true });
+  if (opts.runnerExists !== false) {
+    await mkdir(path.dirname(runnerPath), { recursive: true });
+    await writeFile(runnerPath, "#!/usr/bin/env node\nprocess.exit(0);\n", "utf8");
+    await chmod(runnerPath, 0o755);
+  }
+  for (const hook of hooks) {
+    const hookPath = path.join(hooksDir, hook);
+    await writeFile(
+      hookPath,
+      [
+        "#!/usr/bin/env sh",
+        "# agentplane-hook (do not edit)",
+        'exec "$PWD/.agentplane/bin/agentplane" hooks run "$@"',
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(hookPath, 0o755);
+  }
+  await writeFile(shimPath, opts.shimText ?? currentManagedShimText(runnerPath), "utf8");
+  await chmod(shimPath, 0o755);
+  if (opts.packageJson !== undefined && opts.packageJson !== null) {
+    await writeFile(path.join(root, "package.json"), opts.packageJson, "utf8");
+  }
+  return { runnerPath };
 }
 
 async function addFrameworkCheckout(root: string): Promise<{
@@ -668,6 +730,139 @@ describe(
         expect(stderr.mock.calls.flat().join("\n")).toContain(
           "docs/help/legacy-upgrade-recovery.mdx",
         );
+      } finally {
+        stderr.mockRestore();
+      }
+    });
+
+    it("keeps doctor quiet for a current managed hook shim with an available installed runner", async () => {
+      const ws = await mkWorkspace();
+      await gitInitWithCommit(ws.root, "feat: initial");
+      await writeManagedHookSurface(ws.root);
+      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+        /* muted for assertion */
+      });
+      try {
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+        expect(rc).toBe(0);
+        const output = stderr.mock.calls.flat().join("\n");
+        expect(output).not.toContain("managed AgentPlane hook shim");
+        expect(output).not.toContain("managed git hooks are installed");
+      } finally {
+        stderr.mockRestore();
+      }
+    });
+
+    it("warns when a managed hook shim points to a missing installed runner", async () => {
+      const ws = await mkWorkspace();
+      await gitInitWithCommit(ws.root, "feat: initial");
+      const missingRunner = path.join(ws.root, ".agentplane", "runtime", "missing.js");
+      await writeManagedHookSurface(ws.root, {
+        runnerExists: false,
+        shimText: currentManagedShimText(missingRunner),
+      });
+      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+        /* muted for assertion */
+      });
+      try {
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+        expect(rc).toBe(0);
+        const output = stderr.mock.calls.flat().join("\n");
+        expect(output).toContain(
+          "managed AgentPlane hook shim points to a missing installed runner",
+        );
+        expect(output).toContain("Next action: agentplane hooks install");
+        expect(output).toContain(`Embedded runner: ${missingRunner}`);
+      } finally {
+        stderr.mockRestore();
+      }
+    });
+
+    it("warns when a managed hook shim was generated by a stale fallback format", async () => {
+      const ws = await mkWorkspace();
+      await gitInitWithCommit(ws.root, "feat: initial");
+      await writeManagedHookSurface(ws.root, {
+        shimText: [
+          "#!/usr/bin/env sh",
+          "# agentplane-hook-shim (do not edit)",
+          'exec agentplane "$@"',
+          "",
+        ].join("\n"),
+      });
+      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+        /* muted for assertion */
+      });
+      try {
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+        expect(rc).toBe(0);
+        const output = stderr.mock.calls.flat().join("\n");
+        expect(output).toContain(
+          "managed AgentPlane hook shim uses a stale format without an installed runner fallback",
+        );
+        expect(output).toContain(
+          "managed AgentPlane hook shim is missing current fallback branches",
+        );
+      } finally {
+        stderr.mockRestore();
+      }
+    });
+
+    it("reports installed clean-project fallback behavior when local pre-push scripts are absent", async () => {
+      const ws = await mkWorkspace();
+      await gitInitWithCommit(ws.root, "feat: initial");
+      await writeManagedHookSurface(ws.root, { packageJson: '{\n  "scripts": {}\n}\n' });
+      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+        /* muted for assertion */
+      });
+      try {
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+        expect(rc).toBe(0);
+        const output = stderr.mock.calls.flat().join("\n");
+        expect(output).toContain(
+          "managed pre-push hook will use installed clean-project fallback checks",
+        );
+        expect(output).toContain("Missing repository script: scripts/run-pre-push-hook.mjs");
+      } finally {
+        stderr.mockRestore();
+      }
+    });
+
+    it("reports unmanaged hooks without suggesting silent overwrite", async () => {
+      const ws = await mkWorkspace();
+      await gitInitWithCommit(ws.root, "feat: initial");
+      const hooksDir = path.join(ws.root, ".git", "hooks");
+      await mkdir(hooksDir, { recursive: true });
+      await writeFile(
+        path.join(hooksDir, "pre-commit"),
+        "#!/usr/bin/env sh\necho custom\n",
+        "utf8",
+      );
+      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+        /* muted for assertion */
+      });
+      try {
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+        expect(rc).toBe(0);
+        const output = stderr.mock.calls.flat().join("\n");
+        expect(output).toContain(
+          "unmanaged git hooks are present and will not be overwritten by AgentPlane",
+        );
+        expect(output).toContain("Unmanaged hooks: pre-commit");
       } finally {
         stderr.mockRestore();
       }
