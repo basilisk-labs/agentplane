@@ -19,6 +19,43 @@ Agent Plane is now driven by the Node CLI `agentplane` with repository state und
    - `<emoji> <suffix> <primary>: <status>`
 5. Redmine backend is env-first for credentials and field IDs.
 
+## Planned v0.4: prompt assembly
+
+AgentPlane v0.4 is planned to make prompt files compiled outputs from a named module graph.
+
+This is a breaking model change for projects and recipes that treat `AGENTS.md`,
+`.agentplane/policy/**`, or `.agentplane/agents/**` as manually edited source files.
+
+Target v0.4 behavior:
+
+1. `AGENTS.md` or `CLAUDE.md` remains the repository entrypoint.
+2. Additional policy, recipe, and role files are still loaded only when gateway load rules, role
+   activation, workflow mode, task phase, or recipe bindings require them.
+3. Framework base modules, active recipe mutations, and repo-local overrides are resolved into a
+   compiled prompt filesystem.
+4. `AGENTS.md`, `.agentplane/policy/**`, and `.agentplane/agents/**` become compiled
+   compatibility outputs.
+5. Recipes may provide modules for gateway sections, policy rules, agent profiles, validators,
+   templates, and runner context.
+6. Recipe modules are downloaded into the global cache first, then vendored into a project before
+   they can affect that project's prompt graph.
+7. Manual edits to compiled prompt files are treated as drift unless they are recorded as repo-local
+   modules or overrides.
+
+Migration guidance:
+
+1. Move durable local policy changes out of generated prompt files and into explicit repo-local
+   modules or sanctioned policy override surfaces.
+2. Treat recipe installation as two phases: global cache under `AGENTPLANE_HOME` and project-local
+   activation under `.agentplane/recipes/`.
+3. Rebuild prompt artifacts after enabling, disabling, updating, or removing recipe modules.
+4. Inspect generated prompt manifests before accepting an upgrade when recipe behavior changes.
+5. Keep `AGENTS.md` compact; put recipe-specific detail behind lazy load rules instead of copying
+   full recipe text into the entrypoint.
+
+See [Prompt assembly system](../developer/prompt-assembly-system) for the target module, binding,
+mutation, and provenance model.
+
 ## Migration checklist
 
 1. Install/update CLI and run `agentplane init` in repo root.
