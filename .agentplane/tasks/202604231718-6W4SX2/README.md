@@ -1,10 +1,11 @@
 ---
 id: "202604231718-6W4SX2"
 title: "Harden local-ci cold-start step ordering"
-status: "DOING"
+result_summary: "Hardened local-ci cold-start step ordering so the pre-push route stays deterministic without weakening the cold-start thresholds."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -17,15 +18,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-23T17:19:20.052Z"
+  updated_by: "CODER"
+  note: "Validated the reordered cold-start gate with the full fast local CI route and the critical CLI E2E suite under the same NVM plus Bun toolchain used by pre-push."
+commit:
+  hash: "eac66d94df4d7c0e038d269f2abc117997e06c9c"
+  message: "🧱 6W4SX2 ci: reorder cold-start gate"
 comments:
   -
     author: "CODER"
     body: "Start: land the local-ci cold-start ordering fix and matching regression updates, then re-run the full fast route and critical CLI E2E under the pre-push toolchain."
+  -
+    author: "CODER"
+    body: "Verified: local-ci now runs the cold-start baseline before build, the script summaries and regression expectations match the new output contract, and the full fast route plus critical CLI E2E passed under the pre-push toolchain."
 events:
   -
     type: "status"
@@ -34,8 +40,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: land the local-ci cold-start ordering fix and matching regression updates, then re-run the full fast route and critical CLI E2E under the pre-push toolchain."
+  -
+    type: "verify"
+    at: "2026-04-23T17:19:20.052Z"
+    author: "CODER"
+    state: "ok"
+    note: "Validated the reordered cold-start gate with the full fast local CI route and the critical CLI E2E suite under the same NVM plus Bun toolchain used by pre-push."
+  -
+    type: "status"
+    at: "2026-04-23T17:19:21.423Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: local-ci now runs the cold-start baseline before build, the script summaries and regression expectations match the new output contract, and the full fast route plus critical CLI E2E passed under the pre-push toolchain."
 doc_version: 3
-doc_updated_at: "2026-04-23T17:18:43.914Z"
+doc_updated_at: "2026-04-23T17:19:21.424Z"
 doc_updated_by: "CODER"
 description: "Move the CLI cold-start baseline check ahead of the heavy build step in local fast CI, align the cold-baseline script summaries with the new wording, and relax the retry regression fixture so the full fast suite stays deterministic under load."
 sections:
@@ -53,11 +72,22 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-23T17:19:20.052Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Validated the reordered cold-start gate with the full fast local CI route and the critical CLI E2E suite under the same NVM plus Bun toolchain used by pre-push.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-23T17:18:43.914Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: node scripts/run-local-ci.mjs --mode fast passed after moving bench:cli:cold:check ahead of build, and vitest.workspace.ts --project critical remained green on the same checkout.
+      Impact: local pre-push now measures the CLI cold path before build heat, while the updated regression expectations remain deterministic under full-suite load.
+      Resolution: run-local-ci executes the cold baseline before build, the baseline summary wording is internally consistent, and the retry regression fixture leaves enough headroom to pass under full-fast load.
 id_source: "generated"
 ---
 ## Summary
@@ -84,6 +114,14 @@ Reorder local fast CI so bench:cli:cold:check runs before the build-heavy steps,
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-23T17:19:20.052Z — VERIFY — ok
+
+By: CODER
+
+Note: Validated the reordered cold-start gate with the full fast local CI route and the critical CLI E2E suite under the same NVM plus Bun toolchain used by pre-push.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-23T17:18:43.914Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -92,3 +130,7 @@ Reorder local fast CI so bench:cli:cold:check runs before the build-heavy steps,
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: node scripts/run-local-ci.mjs --mode fast passed after moving bench:cli:cold:check ahead of build, and vitest.workspace.ts --project critical remained green on the same checkout.
+  Impact: local pre-push now measures the CLI cold path before build heat, while the updated regression expectations remain deterministic under full-suite load.
+  Resolution: run-local-ci executes the cold baseline before build, the baseline summary wording is internally consistent, and the retry regression fixture leaves enough headroom to pass under full-fast load.
