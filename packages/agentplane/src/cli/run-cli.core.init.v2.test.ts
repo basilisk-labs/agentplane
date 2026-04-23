@@ -131,6 +131,47 @@ async function writeLegacyRecipeCache(): Promise<void> {
   );
 }
 
+async function writeInvalidRecipeCacheWithoutPromptSurfaces(): Promise<void> {
+  await writeFile(
+    path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"),
+    JSON.stringify(
+      {
+        schema_version: 1,
+        updated_at: "2026-04-22T00:00:00.000Z",
+        recipes: [
+          {
+            id: "metadata-only",
+            version: "0.9.0",
+            source: "local",
+            installed_at: "2026-04-22T00:00:00.000Z",
+            tags: ["docs"],
+            manifest: {
+              schema_version: "1",
+              kind: "project_overlay",
+              id: "metadata-only",
+              version: "0.9.0",
+              name: "Metadata Only",
+              summary: "Metadata-only cached recipe",
+              agents: [
+                {
+                  id: "viewer",
+                  display_name: "Viewer",
+                  role: "viewer",
+                  summary: "Preview tasks",
+                  file: "agents/viewer.md",
+                },
+              ],
+            },
+          },
+        ],
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+}
+
 installRunCliIntegrationHarness();
 
 describe("runCli interactive init UI", () => {
@@ -298,6 +339,42 @@ describe("runCli interactive init UI", () => {
     };
     expect(migrated.recipes[0]?.manifest.scenarios[0]?.file).toBe("scenarios/RECIPE_SCENARIO.json");
     expect(migrated.recipes[0]?.manifest.scenarios[0]?.use_when).toEqual(["Recipe scenario"]);
+  });
+
+  it("completes the default TTY dialog when cached manifests without prompts or scenarios are pruned", async () => {
+    const root = await mkTempDir();
+    await writeInvalidRecipeCacheWithoutPromptSurfaces();
+    mocks.selectMock
+      .mockResolvedValueOnce("full-harness")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("direct")
+      .mockResolvedValueOnce("allow_other_task_readmes")
+      .mockResolvedValueOnce("local")
+      .mockResolvedValueOnce("aggressive");
+    mocks.confirmMock
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--root", root]);
+
+      expect(code).toBe(0);
+      expect(io.stderr).not.toContain("Invalid field manifest: expected prompts or scenarios");
+    } finally {
+      io.restore();
+    }
+
+    expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
+    expect(mocks.textMock).not.toHaveBeenCalled();
+    expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
+    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(true);
+    const migrated = JSON.parse(
+      await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
+    ) as { recipes: unknown[] };
+    expect(migrated.recipes).toEqual([]);
   });
 
   it("keeps --experimental-ui as a compatibility alias", async () => {

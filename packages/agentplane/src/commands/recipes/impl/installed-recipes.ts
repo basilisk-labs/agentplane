@@ -12,32 +12,56 @@ import { invalidFieldMessage } from "../../../cli/output.js";
 import { isRecord } from "../../../shared/guards.js";
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 
-function validateInstalledRecipesFile(raw: unknown): InstalledRecipesFile {
+type ValidateInstalledRecipesFileOptions = {
+  dropInvalidEntries?: boolean;
+};
+
+function normalizeInstalledRecipeEntry(entry: unknown, opts?: ValidateInstalledRecipesFileOptions) {
+  if (!isRecord(entry)) {
+    if (opts?.dropInvalidEntries) return null;
+    throw new Error(invalidFieldMessage("recipes.json.recipes[]", "object"));
+  }
+
+  let manifest;
+  try {
+    manifest = validateRecipeManifest(entry.manifest);
+  } catch (error) {
+    if (opts?.dropInvalidEntries) return null;
+    throw error;
+  }
+
+  const id = typeof entry.id === "string" ? entry.id.trim() : manifest.id;
+  const version = typeof entry.version === "string" ? entry.version.trim() : manifest.version;
+  const source = typeof entry.source === "string" ? entry.source.trim() : "";
+  const installedAt = typeof entry.installed_at === "string" ? entry.installed_at.trim() : "";
+  if (!id || !version || !source || !installedAt) {
+    if (opts?.dropInvalidEntries) return null;
+    throw new Error(
+      invalidFieldMessage("recipes.json.recipes[]", "id, version, source, installed_at"),
+    );
+  }
+  if (id !== manifest.id || version !== manifest.version) {
+    if (opts?.dropInvalidEntries) return null;
+    throw new Error(invalidFieldMessage("recipes.json.recipes[]", "id/version match manifest"));
+  }
+  const tags = normalizeRecipeTags(entry.tags ?? manifest.tags ?? []);
+  return { id, version, source, installed_at: installedAt, tags, manifest };
+}
+
+function validateInstalledRecipesFile(
+  raw: unknown,
+  opts?: ValidateInstalledRecipesFileOptions,
+): InstalledRecipesFile {
   if (!isRecord(raw)) throw new Error(invalidFieldMessage("recipes.json", "object"));
   if (raw.schema_version !== 1)
     throw new Error(invalidFieldMessage("recipes.json.schema_version", "1"));
   if (!Array.isArray(raw.recipes))
     throw new Error(invalidFieldMessage("recipes.json.recipes", "array"));
   const updatedAt = typeof raw.updated_at === "string" ? raw.updated_at : "";
-  const recipes = raw.recipes
-    .filter((entry) => isRecord(entry))
-    .map((entry) => {
-      const manifest = validateRecipeManifest(entry.manifest);
-      const id = typeof entry.id === "string" ? entry.id.trim() : manifest.id;
-      const version = typeof entry.version === "string" ? entry.version.trim() : manifest.version;
-      const source = typeof entry.source === "string" ? entry.source.trim() : "";
-      const installedAt = typeof entry.installed_at === "string" ? entry.installed_at.trim() : "";
-      if (!id || !version || !source || !installedAt) {
-        throw new Error(
-          invalidFieldMessage("recipes.json.recipes[]", "id, version, source, installed_at"),
-        );
-      }
-      if (id !== manifest.id || version !== manifest.version) {
-        throw new Error(invalidFieldMessage("recipes.json.recipes[]", "id/version match manifest"));
-      }
-      const tags = normalizeRecipeTags(entry.tags ?? manifest.tags ?? []);
-      return { id, version, source, installed_at: installedAt, tags, manifest };
-    });
+  const recipes = raw.recipes.flatMap((entry) => {
+    const normalized = normalizeInstalledRecipeEntry(entry, opts);
+    return normalized ? [normalized] : [];
+  });
   return { schema_version: 1, updated_at: updatedAt, recipes };
 }
 
@@ -67,10 +91,11 @@ export async function readInstalledRecipesFile(filePath: string): Promise<Instal
 
 export async function readAndMigrateInstalledRecipesFile(
   filePath: string,
+  opts?: ValidateInstalledRecipesFileOptions,
 ): Promise<InstalledRecipesFile> {
   try {
     const raw = JSON.parse(await readFile(filePath, "utf8")) as unknown;
-    const normalized = sortInstalledRecipes(validateInstalledRecipesFile(raw));
+    const normalized = sortInstalledRecipes(validateInstalledRecipesFile(raw, opts));
     if (installedRecipesNeedMigration(raw, normalized)) {
       await mkdir(path.dirname(filePath), { recursive: true });
       await writeJsonStableIfChanged(filePath, normalized);
