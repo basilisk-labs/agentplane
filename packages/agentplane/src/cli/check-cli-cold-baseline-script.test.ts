@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -50,6 +50,38 @@ function payload(medianMs: number) {
       },
     ],
   };
+}
+
+async function writeFakeCli(
+  root: string,
+  opts: { slowInvocations: number; slowMs: number; fastMs: number; failInvocations?: number },
+): Promise<{ cliPath: string; counterPath: string }> {
+  const counterPath = path.join(root, "counter.txt");
+  const cliDir = path.join(root, "stub", "bin");
+  const cliPath = path.join(cliDir, "agentplane.js");
+  await mkdir(cliDir, { recursive: true });
+  await writeFile(counterPath, "0\n", "utf8");
+  await writeFile(
+    cliPath,
+    [
+      "const fs = require('node:fs');",
+      `const counterPath = ${JSON.stringify(counterPath)};`,
+      "let counter = 0;",
+      "try {",
+      "  counter = Number.parseInt(fs.readFileSync(counterPath, 'utf8').trim(), 10) || 0;",
+      "} catch {}",
+      "counter += 1;",
+      "fs.writeFileSync(counterPath, `${counter}\\n`, 'utf8');",
+      `const delayMs = counter <= ${opts.slowInvocations} ? ${opts.slowMs} : ${opts.fastMs};`,
+      `const exitCode = counter <= ${opts.failInvocations ?? 0} ? 1 : 0;`,
+      "const startedAt = Date.now();",
+      "while (Date.now() - startedAt < delayMs) {}",
+      "process.exit(exitCode);",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  return { cliPath, counterPath };
 }
 
 describe("check-cli-cold-baseline script", () => {
@@ -130,6 +162,45 @@ describe("check-cli-cold-baseline script", () => {
     const result = await runScript(["--baseline", baselinePath, "--measurement", measurementPath]);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("quickstart median=50ms <= 100ms");
+    expect(result.stdout).toContain("quickstart median=50ms (threshold=100ms, p95=1400ms)");
+  });
+
+  it("retries measured runs before failing so transient cold-start noise does not block the guard", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cold-baseline-"));
+    const baselinePath = await writeJson(root, "baseline.json", {
+      schema_version: 2,
+      mode: "cli_cold_path_v1",
+      metric: "median_ms",
+      commands: [
+        {
+          id: "quickstart",
+          max_median_ms: 10_000,
+          expected_exit_code: 0,
+        },
+      ],
+    });
+    const { cliPath, counterPath } = await writeFakeCli(root, {
+      slowInvocations: 0,
+      slowMs: 1,
+      fastMs: 1,
+      failInvocations: 5,
+    });
+
+    const result = await runScript([
+      "--baseline",
+      baselinePath,
+      "--cli",
+      cliPath,
+      "--root",
+      root,
+      "--runs",
+      "1",
+      "--attempts",
+      "2",
+    ]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("CLI cold-start baseline OK after retry 2/2");
+    expect(await readFile(counterPath, "utf8")).toBe("10\n");
   });
 });

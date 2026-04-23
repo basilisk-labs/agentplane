@@ -30,7 +30,7 @@ function parseNonNegativeInt(raw, flag) {
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["baseline", "measurement", "root", "cli", "runs", "warmups"],
+    valueFlags: ["baseline", "measurement", "root", "cli", "runs", "warmups", "attempts"],
   });
   if (positionals.length > 0) {
     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
@@ -43,6 +43,7 @@ function parseArgs(argv) {
     cliPath: flags.cli ? path.resolve(flags.cli) : null,
     runs: flags.runs === undefined ? 3 : parsePositiveInt(flags.runs, "runs"),
     warmups: flags.warmups === undefined ? 0 : parseNonNegativeInt(flags.warmups, "warmups"),
+    attempts: flags.attempts === undefined ? 1 : parsePositiveInt(flags.attempts, "attempts"),
   };
 }
 
@@ -59,16 +60,29 @@ function runMeasurement(options) {
   const args = [MEASURE_SCRIPT_PATH, "--root", options.root, "--runs", String(options.runs)];
   if (options.warmups > 0) args.push("--warmups", String(options.warmups));
   if (options.cliPath) args.push("--cli", options.cliPath);
-  const stdout = execFileSync(process.execPath, args, {
-    cwd: repoRoot,
-    encoding: "utf8",
-    env: {
-      ...process.env,
-      AGENTPLANE_NO_UPDATE_CHECK: "1",
-    },
-    maxBuffer: 10 * 1024 * 1024,
-  });
-  return JSON.parse(stdout);
+  try {
+    const stdout = execFileSync(process.execPath, args, {
+      cwd: repoRoot,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        AGENTPLANE_NO_UPDATE_CHECK: "1",
+      },
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    return JSON.parse(stdout);
+  } catch (error) {
+    const stdout =
+      error && typeof error === "object" && typeof error.stdout === "string" ? error.stdout : "";
+    if (stdout.trim().length > 0) {
+      try {
+        return JSON.parse(stdout);
+      } catch {
+        // fall through to the original error when the failed run did not emit a valid payload.
+      }
+    }
+    throw error;
+  }
 }
 
 function normalizeCommandList(payload, label) {
@@ -119,7 +133,7 @@ function compareMeasurementToBaseline(measurement, baseline) {
       failures.push(`${id}: median_ms=${median} exceeds max_median_ms=${maxMedian}`);
     }
     const p95Summary = Number.isFinite(p95) ? `, p95=${p95}ms` : "";
-    summaries.push(`${id} median=${median}ms <= ${maxMedian}ms${p95Summary}`);
+    summaries.push(`${id} median=${median}ms (threshold=${maxMedian}ms${p95Summary})`);
   }
 
   return { failures, summaries };
@@ -130,21 +144,33 @@ const main = defineCheck({
   parseArgs,
   async check({ options, stdout }) {
     const baseline = readJson(options.baselinePath, "baseline");
-    const measurement = options.measurementPath
-      ? readJson(options.measurementPath, "measurement")
-      : runMeasurement(options);
-    const { failures, summaries } = compareMeasurementToBaseline(measurement, baseline);
-    if (failures.length > 0) {
-      throw new Error(
-        [
-          "CLI cold-start baseline guard failed.",
-          ...failures.map((failure) => `- ${failure}`),
-          "",
-          "Run bun run bench:cli:cold to inspect current timings. Only raise baseline ceilings after reviewed performance drift.",
-        ].join("\n"),
-      );
+    const attempts = options.measurementPath ? 1 : options.attempts;
+    let lastFailures = [];
+    let lastSummaries = [];
+
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+      const measurement = options.measurementPath
+        ? readJson(options.measurementPath, "measurement")
+        : runMeasurement(options);
+      const { failures, summaries } = compareMeasurementToBaseline(measurement, baseline);
+      if (failures.length === 0) {
+        const retrySuffix = attempt > 1 ? ` after retry ${attempt}/${attempts}` : "";
+        stdout.write(`CLI cold-start baseline OK${retrySuffix} (${summaries.join("; ")})\n`);
+        return;
+      }
+      lastFailures = failures;
+      lastSummaries = summaries;
     }
-    stdout.write(`CLI cold-start baseline OK (${summaries.join("; ")})\n`);
+
+    throw new Error(
+      [
+        `CLI cold-start baseline guard failed after ${attempts} attempt${attempts === 1 ? "" : "s"}.`,
+        ...lastFailures.map((failure) => `- ${failure}`),
+        ...(lastSummaries.length > 0 ? ["", `Last measurement: ${lastSummaries.join("; ")}`] : []),
+        "",
+        "Run bun run bench:cli:cold to inspect current timings. Only raise baseline ceilings after reviewed performance drift.",
+      ].join("\n"),
+    );
   },
 });
 

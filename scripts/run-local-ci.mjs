@@ -82,6 +82,14 @@ function createBaselineStepEntries({ includeBuild }) {
     ...(includeBuild
       ? [
           [
+            "CLI cold-start baseline (check)",
+            () => runCommand("bun", ["run", "bench:cli:cold:check"]),
+          ],
+        ]
+      : []),
+    ...(includeBuild
+      ? [
+          [
             "Build",
             () => {
               runCommand("bun", ["run", "--filter=@agentplaneorg/core", "build"]);
@@ -100,14 +108,6 @@ function createBaselineStepEntries({ includeBuild }) {
     ],
     ["Hotspot threshold (check)", () => runCommand("bun", ["run", "hotspots:check"])],
     ["Vitest projects (check)", () => runCommand("bun", ["run", "vitest:projects:check"])],
-    ...(includeBuild
-      ? [
-          [
-            "CLI cold-start baseline (check)",
-            () => runCommand("bun", ["run", "bench:cli:cold:check"]),
-          ],
-        ]
-      : []),
   ];
 }
 
