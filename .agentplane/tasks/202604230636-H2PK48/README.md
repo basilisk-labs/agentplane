@@ -1,10 +1,11 @@
 ---
 id: "202604230636-H2PK48"
 title: "Fix installed pre-push hook fallback"
-status: "DOING"
+result_summary: "Fixed installed CLI pre-push fallback for initialized user repositories."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-23T06:45:32.780Z"
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.hooks.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 38 tests passed including installed fallback regression. Command: bunx eslint packages/agentplane/src/commands/hooks/run.pre-push.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Evidence: package build completed. Regression: repository without scripts/run-pre-push-hook.mjs executes internal installed CLI fallback and does not emit Missing pre-push hook script."
-commit: null
+commit:
+  hash: "9a42dbb083d27b82a5a447ecf7e7f5c9ac89da2c"
+  message: "🐛 H2PK48 hooks: fix installed pre-push fallback"
 comments:
   -
     author: "CODER"
     body: "Start: fixing installed pre-push hook fallback so initialized user repositories can push without framework scripts."
+  -
+    author: "CODER"
+    body: "Verified: installed pre-push fallback works without repository-local framework scripts and focused hook checks passed."
 events:
   -
     type: "status"
@@ -43,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.hooks.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 38 tests passed including installed fallback regression. Command: bunx eslint packages/agentplane/src/commands/hooks/run.pre-push.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Evidence: package build completed. Regression: repository without scripts/run-pre-push-hook.mjs executes internal installed CLI fallback and does not emit Missing pre-push hook script."
+  -
+    type: "status"
+    at: "2026-04-23T06:46:24.220Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: installed pre-push fallback works without repository-local framework scripts and focused hook checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-23T06:45:32.786Z"
+doc_updated_at: "2026-04-23T06:46:24.221Z"
 doc_updated_by: "CODER"
 description: "Make agentplane hooks run pre-push work in initialized user repositories that do not contain framework scripts/run-pre-push-hook.mjs by using an installed CLI fallback instead of failing usage."
 sections:
