@@ -1,5 +1,9 @@
 import { COMMAND_SNIPPETS } from "./command-snippets.js";
-import { BOOTSTRAP_PREFLIGHT_COMMANDS, BOOTSTRAP_TASK_PREP_COMMANDS } from "./bootstrap-guide.js";
+import {
+  BOOTSTRAP_PREFLIGHT_COMMANDS,
+  BOOTSTRAP_TASK_PREP_COMMANDS,
+  BRANCH_PR_HOSTED_GATE_GUIDANCE,
+} from "./bootstrap-guide.js";
 
 type RoleGuide = {
   role: string;
@@ -85,7 +89,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "INTEGRATOR",
     lines: [
       SHARED_STARTUP_NOTE,
-      '- branch_pr: require a green hosted PR gate first (`bun run workflow:wait-remote-checks` on the task branch or PR), then run `agentplane pr check <task-id>` -> `agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify` -> `agentplane finish <task-id> --commit <git-rev> --author INTEGRATOR --body "Verified: ..." --result "..." --close-commit` on the base branch.',
+      `- branch_pr: require a green hosted PR gate first (${BRANCH_PR_HOSTED_GATE_GUIDANCE}), then run \`agentplane pr check <task-id>\` -> \`agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify\` -> \`agentplane finish <task-id> --commit <git-rev> --author INTEGRATOR --body "Verified: ..." --result "..." --close-commit\` on the base branch.`,
       "- branch_pr hosted shortcut: if GitHub merges the task PR directly, `Task Hosted Close` pushes the deterministic closure branch automatically and opens the follow-up closure PR when organization policy allows Actions PR creation; otherwise it leaves a manual PR link on the merged task PR. Pull the updated base branch after that closure PR merges instead of creating a local finish-only tail commit.",
       `- direct: the task owner normally closes with \`${COMMAND_SNIPPETS.core.finishTask}\` plus \`--result "..." \`.`,
       "- For branch-level flags and branch/base diagnostics, use `agentplane help work start`, `agentplane help integrate`, and `agentplane help branch base`.",
@@ -185,7 +189,7 @@ export function renderQuickstart(): string {
     "",
     "Configured workflow route:",
     "",
-    "- `branch_pr`: start from `agentplane help work start`, keep local PR artifacts current with `agentplane pr ...`, wait for hosted required checks with `bun run workflow:wait-remote-checks`, then integrate on base.",
+    `- \`branch_pr\`: start from \`agentplane help work start\`, keep local PR artifacts current with \`agentplane pr ...\`, ${BRANCH_PR_HOSTED_GATE_GUIDANCE}, then integrate on base.`,
     `- \`direct\`: task setup is \`${BOOTSTRAP_TASK_PREP_COMMANDS[0]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[1]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[2]}\`.`,
     `- \`direct\`: execution is \`${COMMAND_SNIPPETS.core.startTask}\` -> \`${COMMAND_SNIPPETS.core.taskVerifyShow}\` -> \`${COMMAND_SNIPPETS.core.verifyTask}\` -> \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result "..." \`.`,
     "- In `direct`, `finish` creates the deterministic close commit by default; do not assume that route is the repository default when `workflow_mode=branch_pr`.",
@@ -199,7 +203,8 @@ export function renderQuickstart(): string {
     "",
     "## Non-default",
     "",
-    "- `branch_pr`: use `agentplane help work start`, `agentplane help pr`, `bun run workflow:wait-remote-checks`, and `agentplane help integrate` when the repository is configured that way.",
+    "- `branch_pr`: use `agentplane help work start`, `agentplane help pr`, `agentplane pr check <task-id>`, and `agentplane help integrate` when the repository is configured that way.",
+    "- Framework maintainers may use repo-local helper scripts such as `bun run workflow:wait-remote-checks` when those scripts exist; installed user repositories must not depend on them.",
     "- Recovery/mixed state: use `agentplane doctor`, `agentplane upgrade`, and `agentplane runtime explain`.",
     "- Manual close or allowlist details belong in command-specific help, not on this first screen.",
   ].join("\n");

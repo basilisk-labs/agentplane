@@ -63,7 +63,12 @@ describe("command-guide", () => {
     expect(text).toContain("## Go deeper");
     expect(text).toContain("activate ORCHESTRATOR for planning and the task owner role");
     expect(text).toContain("agentplane task start-ready");
+    expect(text).toContain("agentplane pr check <task-id>");
+    expect(text).toContain("Framework maintainers may use repo-local helper scripts");
     expect(text).toContain("workflow:wait-remote-checks");
+    expect(text).not.toContain(
+      "wait for hosted required checks with `bun run workflow:wait-remote-checks`",
+    );
     expect(text).not.toContain("docs/user/agent-bootstrap.generated.mdx");
     expect(text).not.toContain("## Commit message format");
   });
@@ -79,7 +84,11 @@ describe("command-guide", () => {
     expect(text).toContain("agentplane incidents collect <task-id> --check");
     expect(text).toContain("promotion is the default unless you pass `--local-only`");
     expect(text).toContain("Plain prose in `Findings` stays task-local");
+    expect(text).toContain("configured CI/provider gate");
     expect(text).toContain("workflow:wait-remote-checks");
+    expect(text).not.toContain(
+      "wait for hosted required checks with `bun run workflow:wait-remote-checks`",
+    );
   });
 
   it("updates the planner role guidance to the promotion-by-default findings flow", () => {

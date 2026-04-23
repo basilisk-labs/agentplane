@@ -1,10 +1,10 @@
 ---
 id: "202604230838-X40R09"
 title: "Keep quickstart installed-user guidance self-contained"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +27,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: installed quickstart guidance is ready after stale hook diagnostics completion."
+events:
+  -
+    type: "status"
+    at: "2026-04-23T09:21:54.549Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: installed quickstart guidance is ready after stale hook diagnostics completion."
 doc_version: 3
-doc_updated_at: "2026-04-23T08:39:53.610Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-23T09:21:54.564Z"
+doc_updated_by: "CODER"
 description: "Remove repo-only command assumptions from installed quickstart guidance and route branch_pr users to CLI-native commands or explicitly optional framework-maintainer scripts."
 sections:
   Summary: |-
