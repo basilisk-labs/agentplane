@@ -1,5 +1,6 @@
 import { resolveProject } from "@agentplaneorg/core/project";
 import { runProcessSync } from "@agentplaneorg/core/process";
+import fs from "node:fs";
 import path from "node:path";
 
 import { fileExists } from "../../cli/fs-utils.js";
@@ -16,6 +17,8 @@ type PrePushUpdate = {
   remoteRef: string;
   remoteSha: string;
 };
+
+type PackageScripts = Record<string, string>;
 
 class HookFailure extends Error {
   constructor(
@@ -100,6 +103,45 @@ function readGitText(gitRoot: string, args: readonly string[]): string {
   return String(result.stdout ?? "").trim();
 }
 
+function readPackageScripts(gitRoot: string): PackageScripts {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(path.join(gitRoot, "package.json"), "utf8")) as {
+      scripts?: unknown;
+    };
+    if (!parsed.scripts || typeof parsed.scripts !== "object" || Array.isArray(parsed.scripts)) {
+      return {};
+    }
+    const scripts: PackageScripts = {};
+    for (const [name, value] of Object.entries(parsed.scripts)) {
+      if (typeof value === "string") scripts[name] = value;
+    }
+    return scripts;
+  } catch {
+    return {};
+  }
+}
+
+function hasProjectScript(scripts: PackageScripts, name: string): boolean {
+  return Object.hasOwn(scripts, name);
+}
+
+function runOptionalProjectScript(
+  gitRoot: string,
+  scripts: PackageScripts,
+  name: string,
+  opts: { env?: NodeJS.ProcessEnv; heading?: string } = {},
+): { exitCode: number; skipped: boolean } {
+  if (!hasProjectScript(scripts, name)) {
+    process.stdout.write(`Skipping ${name}: package.json script is not defined.\n`);
+    return { exitCode: 0, skipped: true };
+  }
+  if (opts.heading) process.stdout.write(opts.heading);
+  const exitCode = opts.env
+    ? runHookCommandWithEnv(gitRoot, "bun", ["run", name], opts.env)
+    : runHookCommand(gitRoot, "bun", ["run", name]);
+  return { exitCode, skipped: false };
+}
+
 function trackedChangesShort(gitRoot: string): string {
   return readGitText(gitRoot, ["status", "--short", "--untracked-files=no"]);
 }
@@ -176,6 +218,14 @@ function readChangedFilesForRange(
     .filter(Boolean);
 }
 
+function fileExistsSync(filePath: string): boolean {
+  try {
+    return fs.statSync(filePath).isFile();
+  } catch {
+    return false;
+  }
+}
+
 function isTruthyHookEnv(name: string): boolean {
   return (
     String(process.env[name] ?? "")
@@ -198,6 +248,7 @@ function runInternalPrePushHook(gitRoot: string, stdin: string): number {
     const mode = isReleasePush ? "release" : "standard";
     process.stdout.write(`Running pre-push checks in ${mode} mode.\n`);
     const ciScript = envFull ? "ci:local:full" : "ci:local:fast";
+    const scripts = readPackageScripts(gitRoot);
     const changedFiles = readChangedFilesForRange(
       gitRoot,
       selectBranchDiffRange(updates, {
@@ -209,9 +260,10 @@ function runInternalPrePushHook(gitRoot: string, stdin: string): number {
         ? { ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") }
         : process.env;
 
-    process.stdout.write("\n== Format (check) ==\n");
-    const formatExitCode = runHookCommand(gitRoot, "bun", ["run", "format:check"]);
-    if (formatExitCode !== 0) {
+    const formatResult = runOptionalProjectScript(gitRoot, scripts, "format:check", {
+      heading: "\n== Format (check) ==\n",
+    });
+    if (formatResult.exitCode !== 0) {
       failIfTrackedChanges(
         gitRoot,
         "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
@@ -220,24 +272,35 @@ function runInternalPrePushHook(gitRoot: string, stdin: string): number {
         "pre-push blocked: formatting check failed. Run `bun run format`, review the diff, commit it, and push again.",
       );
     }
-    failIfTrackedChanges(
-      gitRoot,
-      "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
-    );
+    if (!formatResult.skipped) {
+      failIfTrackedChanges(
+        gitRoot,
+        "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
+      );
+    }
 
-    const ciExitCode = runHookCommandWithEnv(gitRoot, "bun", ["run", ciScript], ciEnv);
-    failIfTrackedChanges(
-      gitRoot,
-      `pre-push blocked: ${ciScript} changed tracked files. Commit or revert those changes and push again.`,
-    );
-    if (ciExitCode !== 0) {
+    const ciResult = runOptionalProjectScript(gitRoot, scripts, ciScript, { env: ciEnv });
+    if (!ciResult.skipped) {
+      failIfTrackedChanges(
+        gitRoot,
+        `pre-push blocked: ${ciScript} changed tracked files. Commit or revert those changes and push again.`,
+      );
+    }
+    if (ciResult.exitCode !== 0) {
       fail(`pre-push blocked: ${ciScript} failed. Fix the reported checks and push again.`);
     }
 
     if (isReleasePush) {
-      const notesExitCode = runHookCommand(gitRoot, "node", ["scripts/check-release-notes.mjs"]);
-      if (notesExitCode !== 0) return notesExitCode;
-      return runHookCommand(gitRoot, "bun", ["run", "release:prepublish"]);
+      const releaseNotesScript = path.join(gitRoot, "scripts", "check-release-notes.mjs");
+      if (fileExistsSync(releaseNotesScript)) {
+        const notesExitCode = runHookCommand(gitRoot, "node", ["scripts/check-release-notes.mjs"]);
+        if (notesExitCode !== 0) return notesExitCode;
+      } else {
+        process.stdout.write(
+          "Skipping release notes check: scripts/check-release-notes.mjs is not defined.\n",
+        );
+      }
+      return runOptionalProjectScript(gitRoot, scripts, "release:prepublish").exitCode;
     }
     return 0;
   } catch (error) {

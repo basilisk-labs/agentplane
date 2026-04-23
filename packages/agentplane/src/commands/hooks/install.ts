@@ -7,6 +7,7 @@ import { mapCoreError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { infoMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 import {
   fileIsManaged,
   HOOK_MARKER,
@@ -35,7 +36,16 @@ function hookScriptText(hook: HookName): string {
   ].join("\n");
 }
 
-function shimScriptText(): string {
+function shellSingleQuote(value: string): string {
+  return `'${value.replaceAll("'", String.raw`'\''`)}'`;
+}
+
+function resolveInstalledHookRunnerPath(): string {
+  const activeBin = String(process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN ?? "").trim();
+  return activeBin || resolveAgentplaneBinPath();
+}
+
+function shimScriptText(installedRunnerPath: string): string {
   return [
     "#!/usr/bin/env sh",
     `# ${SHIM_MARKER} (do not edit)`,
@@ -46,6 +56,10 @@ function shimScriptText(): string {
     'if command -v node >/dev/null 2>&1 && [ -f "$LOCAL_BIN" ]; then',
     '  exec node "$LOCAL_BIN" "$@"',
     "fi",
+    `INSTALL_BIN=${shellSingleQuote(installedRunnerPath)}`,
+    'if command -v node >/dev/null 2>&1 && [ -f "$INSTALL_BIN" ]; then',
+    '  exec node "$INSTALL_BIN" "$@"',
+    "fi",
     'ENV_BIN="${AGENTPLANE_HOOK_RUNNER:-}"',
     'if [ -n "$ENV_BIN" ] && command -v node >/dev/null 2>&1 && [ -f "$ENV_BIN" ]; then',
     '  exec node "$ENV_BIN" "$@"',
@@ -53,10 +67,10 @@ function shimScriptText(): string {
     "if command -v agentplane >/dev/null 2>&1; then",
     '  exec agentplane "$@"',
     "fi",
-    "if command -v npx >/dev/null 2>&1; then",
+    'if [ "${AGENTPLANE_HOOK_ALLOW_NPX:-}" = "1" ] && command -v npx >/dev/null 2>&1; then',
     '  exec npx --yes agentplane "$@"',
     "fi",
-    'echo "agentplane shim: runner not found (need env runner, repo-local source, agentplane in PATH, or node+npx)." >&2',
+    'echo "agentplane shim: runner not found (need installed runner, env runner, repo-local source, agentplane in PATH, or AGENTPLANE_HOOK_ALLOW_NPX=1)." >&2',
     "  exit 127",
     "",
   ].join("\n");
@@ -76,7 +90,7 @@ async function ensureShim(agentplaneDir: string, gitRoot: string): Promise<void>
       });
     }
   }
-  await writeFile(shimPath, shimScriptText(), "utf8");
+  await writeFile(shimPath, shimScriptText(resolveInstalledHookRunnerPath()), "utf8");
   await chmod(shimPath, 0o755);
 }
 
