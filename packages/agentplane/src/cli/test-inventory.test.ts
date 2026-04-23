@@ -6,7 +6,9 @@ const {
   buildTestInventory,
   classifyPrimaryTestRoutes,
   discoverPackageTestFiles,
+  SIGNIFICANT_COVERAGE_TARGETS,
   summarizeTestInventory,
+  WORKFLOW_HARNESS_TARGETS,
 } = testInventoryModule as {
   buildTestInventory: () => {
     filePath: string;
@@ -15,9 +17,11 @@ const {
   }[];
   classifyPrimaryTestRoutes: (filePath: string) => string[];
   discoverPackageTestFiles: () => string[];
+  SIGNIFICANT_COVERAGE_TARGETS: { source: string; tests: string[] }[];
   summarizeTestInventory: (
     entries: { filePath: string; primaryRoutes: string[]; aggregateRoutes: string[] }[],
   ) => Record<string, number>;
+  WORKFLOW_HARNESS_TARGETS: { source: string; tests: string[] }[];
 };
 
 describe("test inventory", () => {
@@ -70,5 +74,22 @@ describe("test inventory", () => {
     expect(summary.core).toBeGreaterThan(0);
     expect(summary.recipes).toBeGreaterThan(0);
     expect(summary.testkit).toBeGreaterThan(0);
+  });
+
+  it("exposes shared target inventories for aggregate guardrail contracts", () => {
+    const inventory = new Set(discoverPackageTestFiles());
+
+    expect(SIGNIFICANT_COVERAGE_TARGETS.length).toBeGreaterThan(0);
+    expect(WORKFLOW_HARNESS_TARGETS.length).toBeGreaterThan(0);
+
+    for (const target of [...SIGNIFICANT_COVERAGE_TARGETS, ...WORKFLOW_HARNESS_TARGETS]) {
+      expect(target.source).toMatch(/^packages\/.+\.ts$/);
+      expect(target.tests.length).toBeGreaterThan(0);
+      expect(new Set(target.tests).size).toBe(target.tests.length);
+      for (const testFile of target.tests) {
+        expect(inventory.has(testFile)).toBe(true);
+        expect(classifyPrimaryTestRoutes(testFile).length).toBe(1);
+      }
+    }
   });
 });
