@@ -1,10 +1,11 @@
 ---
 id: "202604230838-XRSYS4"
 title: "Cover verify flag matrix"
-status: "DOING"
+result_summary: "Added table-driven verify flag matrix and aligned --local-only/--repo-fixable conflict validation with findings add semantics."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -21,15 +22,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-23T09:33:18.502Z"
+  updated_by: "CODER"
+  note: "Verify flag matrix passed; incidents suite passed after parser consistency fix; format check passed."
+commit:
+  hash: "2802ed132d92f800f5cce123e1964d476557e38d"
+  message: "🧪 XRSYS4 test: cover verify flag matrix"
 comments:
   -
     author: "CODER"
     body: "Start: verify flag matrix coverage is ready after lifecycle diagnostics completion."
+  -
+    author: "CODER"
+    body: "Verified: verify matrix, incidents suite, and format check passed."
 events:
   -
     type: "status"
@@ -38,8 +44,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: verify flag matrix coverage is ready after lifecycle diagnostics completion."
+  -
+    type: "verify"
+    at: "2026-04-23T09:33:18.502Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verify flag matrix passed; incidents suite passed after parser consistency fix; format check passed."
+  -
+    type: "status"
+    at: "2026-04-23T09:33:19.359Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: verify matrix, incidents suite, and format check passed."
 doc_version: 3
-doc_updated_at: "2026-04-23T09:30:20.643Z"
+doc_updated_at: "2026-04-23T09:33:19.361Z"
 doc_updated_by: "CODER"
 description: "Add table-driven coverage for verify flag combinations so plain verification, local-only, repo-fixable, partial findings, and complete structured findings behave predictably."
 sections:
@@ -58,6 +77,14 @@ sections:
     2. Run `bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.incidents*.test.ts` if incident promotion behavior is touched. Expected: incident command behavior remains green.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-23T09:33:18.502Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verify flag matrix passed; incidents suite passed after parser consistency fix; format check passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-23T09:30:20.643Z, excerpt_hash=sha256:fc62dc9e35e6a819a98b5d4255f8f18ca03b88975601703340ccb9c2d093db5a
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert verify tests and any minimal parser changes. Existing verify command behavior should remain available."
   Findings: ""
@@ -88,6 +115,14 @@ In scope: verify parser/CLI behavior coverage and minimal fixes for inconsistent
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-23T09:33:18.502Z — VERIFY — ok
+
+By: CODER
+
+Note: Verify flag matrix passed; incidents suite passed after parser consistency fix; format check passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-23T09:30:20.643Z, excerpt_hash=sha256:fc62dc9e35e6a819a98b5d4255f8f18ca03b88975601703340ccb9c2d093db5a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
