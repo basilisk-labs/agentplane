@@ -60,16 +60,29 @@ function runMeasurement(options) {
   const args = [MEASURE_SCRIPT_PATH, "--root", options.root, "--runs", String(options.runs)];
   if (options.warmups > 0) args.push("--warmups", String(options.warmups));
   if (options.cliPath) args.push("--cli", options.cliPath);
-  const stdout = execFileSync(process.execPath, args, {
-    cwd: repoRoot,
-    encoding: "utf8",
-    env: {
-      ...process.env,
-      AGENTPLANE_NO_UPDATE_CHECK: "1",
-    },
-    maxBuffer: 10 * 1024 * 1024,
-  });
-  return JSON.parse(stdout);
+  try {
+    const stdout = execFileSync(process.execPath, args, {
+      cwd: repoRoot,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        AGENTPLANE_NO_UPDATE_CHECK: "1",
+      },
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    return JSON.parse(stdout);
+  } catch (error) {
+    const stdout =
+      error && typeof error === "object" && typeof error.stdout === "string" ? error.stdout : "";
+    if (stdout.trim().length > 0) {
+      try {
+        return JSON.parse(stdout);
+      } catch {
+        // fall through to the original error when the failed run did not emit a valid payload.
+      }
+    }
+    throw error;
+  }
 }
 
 function normalizeCommandList(payload, label) {

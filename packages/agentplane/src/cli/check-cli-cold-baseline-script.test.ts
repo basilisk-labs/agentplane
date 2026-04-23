@@ -54,7 +54,7 @@ function payload(medianMs: number) {
 
 async function writeFakeCli(
   root: string,
-  opts: { slowInvocations: number; slowMs: number; fastMs: number },
+  opts: { slowInvocations: number; slowMs: number; fastMs: number; failInvocations?: number },
 ): Promise<{ cliPath: string; counterPath: string }> {
   const counterPath = path.join(root, "counter.txt");
   const cliDir = path.join(root, "stub", "bin");
@@ -73,9 +73,10 @@ async function writeFakeCli(
       "counter += 1;",
       "fs.writeFileSync(counterPath, `${counter}\\n`, 'utf8');",
       `const delayMs = counter <= ${opts.slowInvocations} ? ${opts.slowMs} : ${opts.fastMs};`,
+      `const exitCode = counter <= ${opts.failInvocations ?? 0} ? 1 : 0;`,
       "const startedAt = Date.now();",
       "while (Date.now() - startedAt < delayMs) {}",
-      "process.exit(0);",
+      "process.exit(exitCode);",
       "",
     ].join("\n"),
     "utf8",
@@ -173,15 +174,16 @@ describe("check-cli-cold-baseline script", () => {
       commands: [
         {
           id: "quickstart",
-          max_median_ms: 250,
+          max_median_ms: 10000,
           expected_exit_code: 0,
         },
       ],
     });
     const { cliPath, counterPath } = await writeFakeCli(root, {
-      slowInvocations: 5,
-      slowMs: 500,
+      slowInvocations: 0,
+      slowMs: 1,
       fastMs: 1,
+      failInvocations: 5,
     });
 
     const result = await runScript([
