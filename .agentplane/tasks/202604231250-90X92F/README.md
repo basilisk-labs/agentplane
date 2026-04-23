@@ -1,10 +1,11 @@
 ---
 id: "202604231250-90X92F"
 title: "Preflight init hook conflicts before apply"
-status: "DOING"
+result_summary: "Added hook-install conflict preflight to both init orchestration paths, regression coverage for non-interactive and v2 conflict handling, and aligned framework bootstrap shim generation with the current installed-runner/fallback contract to eliminate stale-shim doctor warnings."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-23T13:02:31.543Z"
   updated_by: "CODER"
   note: "Verified hook-conflict fail-fast init hardening: /Users/densmirnov/.bun/bin/bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts; /Users/densmirnov/.bun/bin/bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.init.v2.test.ts; /Users/densmirnov/.bun/bin/bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.hooks.test.ts; /Users/densmirnov/.bun/bin/bun run test:project -- agentplane packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; /Users/densmirnov/.bun/bin/bun run format:check; /Users/densmirnov/.bun/bin/bun run typecheck; /Users/densmirnov/.bun/bin/bun run framework:dev:bootstrap; /opt/homebrew/bin/agentplane doctor."
-commit: null
+commit:
+  hash: "31d14c0288a4ba40617f2ba3f330a87921badc7c"
+  message: "🛡️ 90X92F init: preflight hook conflicts before apply"
 comments:
   -
     author: "CODER"
     body: "Start: audit hook-install failure timing inside init, add a preflight/probe path that detects hook or shim conflicts before file writes, and cover both legacy and v2 init flows with focused regression tests."
+  -
+    author: "CODER"
+    body: "Verified: init now probes managed hook/shim conflicts before any project files are written, surfaces those conflicts in both legacy and v2 init flows, and bootstrap now materializes the current shim contract so doctor stays clean after rebuilds."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified hook-conflict fail-fast init hardening: /Users/densmirnov/.bun/bin/bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts; /Users/densmirnov/.bun/bin/bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.init.v2.test.ts; /Users/densmirnov/.bun/bin/bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.hooks.test.ts; /Users/densmirnov/.bun/bin/bun run test:project -- agentplane packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts; /Users/densmirnov/.bun/bin/bun run format:check; /Users/densmirnov/.bun/bin/bun run typecheck; /Users/densmirnov/.bun/bin/bun run framework:dev:bootstrap; /opt/homebrew/bin/agentplane doctor."
+  -
+    type: "status"
+    at: "2026-04-23T13:02:52.904Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: init now probes managed hook/shim conflicts before any project files are written, surfaces those conflicts in both legacy and v2 init flows, and bootstrap now materializes the current shim contract so doctor stays clean after rebuilds."
 doc_version: 3
-doc_updated_at: "2026-04-23T13:02:31.569Z"
+doc_updated_at: "2026-04-23T13:02:52.905Z"
 doc_updated_by: "CODER"
 description: "Audit init hook installation lifecycle, detect hook/shim conflicts before init writes project files, fail before mutations when --hooks=true would be blocked, and add focused regression coverage for both legacy and v2 init paths."
 sections:
