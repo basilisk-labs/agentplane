@@ -30,7 +30,7 @@ function parseNonNegativeInt(raw, flag) {
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["baseline", "measurement", "root", "cli", "runs", "warmups"],
+    valueFlags: ["baseline", "measurement", "root", "cli", "runs", "warmups", "attempts"],
   });
   if (positionals.length > 0) {
     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
@@ -43,6 +43,7 @@ function parseArgs(argv) {
     cliPath: flags.cli ? path.resolve(flags.cli) : null,
     runs: flags.runs === undefined ? 3 : parsePositiveInt(flags.runs, "runs"),
     warmups: flags.warmups === undefined ? 0 : parseNonNegativeInt(flags.warmups, "warmups"),
+    attempts: flags.attempts === undefined ? 1 : parsePositiveInt(flags.attempts, "attempts"),
   };
 }
 
@@ -130,21 +131,33 @@ const main = defineCheck({
   parseArgs,
   async check({ options, stdout }) {
     const baseline = readJson(options.baselinePath, "baseline");
-    const measurement = options.measurementPath
-      ? readJson(options.measurementPath, "measurement")
-      : runMeasurement(options);
-    const { failures, summaries } = compareMeasurementToBaseline(measurement, baseline);
-    if (failures.length > 0) {
-      throw new Error(
-        [
-          "CLI cold-start baseline guard failed.",
-          ...failures.map((failure) => `- ${failure}`),
-          "",
-          "Run bun run bench:cli:cold to inspect current timings. Only raise baseline ceilings after reviewed performance drift.",
-        ].join("\n"),
-      );
+    const attempts = options.measurementPath ? 1 : options.attempts;
+    let lastFailures = [];
+    let lastSummaries = [];
+
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+      const measurement = options.measurementPath
+        ? readJson(options.measurementPath, "measurement")
+        : runMeasurement(options);
+      const { failures, summaries } = compareMeasurementToBaseline(measurement, baseline);
+      if (failures.length === 0) {
+        const retrySuffix = attempt > 1 ? ` after retry ${attempt}/${attempts}` : "";
+        stdout.write(`CLI cold-start baseline OK${retrySuffix} (${summaries.join("; ")})\n`);
+        return;
+      }
+      lastFailures = failures;
+      lastSummaries = summaries;
     }
-    stdout.write(`CLI cold-start baseline OK (${summaries.join("; ")})\n`);
+
+    throw new Error(
+      [
+        `CLI cold-start baseline guard failed after ${attempts} attempt${attempts === 1 ? "" : "s"}.`,
+        ...lastFailures.map((failure) => `- ${failure}`),
+        ...(lastSummaries.length > 0 ? ["", `Last measurement: ${lastSummaries.join("; ")}`] : []),
+        "",
+        "Run bun run bench:cli:cold to inspect current timings. Only raise baseline ceilings after reviewed performance drift.",
+      ].join("\n"),
+    );
   },
 });
 
