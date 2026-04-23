@@ -1,10 +1,10 @@
 ---
 id: "202604230838-XRSYS4"
 title: "Cover verify flag matrix"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +26,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: verify flag matrix coverage is ready after lifecycle diagnostics completion."
+events:
+  -
+    type: "status"
+    at: "2026-04-23T09:30:20.627Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: verify flag matrix coverage is ready after lifecycle diagnostics completion."
 doc_version: 3
-doc_updated_at: "2026-04-23T08:40:15.346Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-23T09:30:20.643Z"
+doc_updated_by: "CODER"
 description: "Add table-driven coverage for verify flag combinations so plain verification, local-only, repo-fixable, partial findings, and complete structured findings behave predictably."
 sections:
   Summary: |-
