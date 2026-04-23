@@ -1,10 +1,11 @@
 ---
 id: "202604230838-X40R09"
 title: "Keep quickstart installed-user guidance self-contained"
-status: "DOING"
+result_summary: "Updated quickstart/role/bootstrap guidance to route branch_pr users through CLI-native commands and mark workflow:wait-remote-checks as an optional framework-maintainer helper only."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -22,15 +23,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-23T09:25:15.944Z"
+  updated_by: "CODER"
+  note: "Quickstart and bootstrap guidance are self-contained for installed users; command-guide tests, docs:cli:check, docs:bootstrap:check, and format check passed."
+commit:
+  hash: "a94c38ef0e5b4ef50e00c540d7aa42c05409bbcd"
+  message: "🧭 X40R09 guide: keep quickstart self-contained"
 comments:
   -
     author: "CODER"
     body: "Start: installed quickstart guidance is ready after stale hook diagnostics completion."
+  -
+    author: "CODER"
+    body: "Verified: command-guide tests, CLI docs freshness, bootstrap docs freshness, and format check passed."
 events:
   -
     type: "status"
@@ -39,8 +45,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: installed quickstart guidance is ready after stale hook diagnostics completion."
+  -
+    type: "verify"
+    at: "2026-04-23T09:25:15.944Z"
+    author: "CODER"
+    state: "ok"
+    note: "Quickstart and bootstrap guidance are self-contained for installed users; command-guide tests, docs:cli:check, docs:bootstrap:check, and format check passed."
+  -
+    type: "status"
+    at: "2026-04-23T09:25:17.384Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: command-guide tests, CLI docs freshness, bootstrap docs freshness, and format check passed."
 doc_version: 3
-doc_updated_at: "2026-04-23T09:21:54.564Z"
+doc_updated_at: "2026-04-23T09:25:17.386Z"
 doc_updated_by: "CODER"
 description: "Remove repo-only command assumptions from installed quickstart guidance and route branch_pr users to CLI-native commands or explicitly optional framework-maintainer scripts."
 sections:
@@ -59,6 +78,14 @@ sections:
     2. Run `bun run docs:cli:check`. Expected: generated CLI docs are fresh if help output changes.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-23T09:25:15.944Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Quickstart and bootstrap guidance are self-contained for installed users; command-guide tests, docs:cli:check, docs:bootstrap:check, and format check passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-23T09:21:54.564Z, excerpt_hash=sha256:c7cb750449cad9fb38d45d99c44833a21b12c8c427fdb7d3751703d071fe0a6d
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert quickstart/role guidance edits and any regenerated documentation."
   Findings: ""
@@ -89,6 +116,14 @@ In scope: installed quickstart and role guidance text that currently implies rep
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-23T09:25:15.944Z — VERIFY — ok
+
+By: CODER
+
+Note: Quickstart and bootstrap guidance are self-contained for installed users; command-guide tests, docs:cli:check, docs:bootstrap:check, and format check passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-23T09:21:54.564Z, excerpt_hash=sha256:c7cb750449cad9fb38d45d99c44833a21b12c8c427fdb7d3751703d071fe0a6d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
