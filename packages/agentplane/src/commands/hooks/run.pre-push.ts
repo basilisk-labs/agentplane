@@ -3,12 +3,28 @@ import { runProcessSync } from "@agentplaneorg/core/process";
 import path from "node:path";
 
 import { fileExists } from "../../cli/fs-utils.js";
-import { CliError } from "../../shared/errors.js";
 import { resolveAgentplaneRepoScriptPath } from "../../shared/package-paths.js";
 import type { HooksRunOptions } from "./run.js";
 
 function resolveBundledPrePushHookScriptPath(): string {
   return resolveAgentplaneRepoScriptPath("run-pre-push-hook.mjs");
+}
+
+type PrePushUpdate = {
+  localRef: string;
+  localSha: string;
+  remoteRef: string;
+  remoteSha: string;
+};
+
+class HookFailure extends Error {
+  constructor(
+    message: string,
+    readonly details: string[] = [],
+  ) {
+    super(message);
+    this.name = "HookFailure";
+  }
 }
 
 export async function resolvePrePushHookScriptPath(
@@ -20,6 +36,221 @@ export async function resolvePrePushHookScriptPath(
   const bundledScriptPath = opts.bundledScriptPath ?? resolveBundledPrePushHookScriptPath();
   if (await fileExists(bundledScriptPath)) return bundledScriptPath;
   return null;
+}
+
+function parsePrePushStdin(rawStdin: string): PrePushUpdate[] {
+  return rawStdin
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [localRef = "", localSha = "", remoteRef = "", remoteSha = ""] = line.split(/\s+/);
+      return { localRef, localSha, remoteRef, remoteSha };
+    });
+}
+
+function isAllZeroSha(value: string): boolean {
+  return /^[0]+$/.test(value);
+}
+
+function isBranchRef(ref: string): boolean {
+  return ref.startsWith("refs/heads/");
+}
+
+function runHookCommand(gitRoot: string, command: string, args: readonly string[]): number {
+  const result = runProcessSync({
+    command,
+    args,
+    cwd: gitRoot,
+    env: process.env,
+    stdout: "inherit",
+    stderr: "inherit",
+    reject: false,
+  });
+  return result.exitCode ?? (result.signal ? 1 : 0);
+}
+
+function runHookCommandWithEnv(
+  gitRoot: string,
+  command: string,
+  args: readonly string[],
+  env: NodeJS.ProcessEnv,
+): number {
+  const result = runProcessSync({
+    command,
+    args,
+    cwd: gitRoot,
+    env,
+    stdout: "inherit",
+    stderr: "inherit",
+    reject: false,
+  });
+  return result.exitCode ?? (result.signal ? 1 : 0);
+}
+
+function readGitText(gitRoot: string, args: readonly string[]): string {
+  const result = runProcessSync({
+    command: "git",
+    args,
+    cwd: gitRoot,
+    encoding: "utf8",
+    reject: false,
+  });
+  if (result.exitCode !== 0) return "";
+  return String(result.stdout ?? "").trim();
+}
+
+function trackedChangesShort(gitRoot: string): string {
+  return readGitText(gitRoot, ["status", "--short", "--untracked-files=no"]);
+}
+
+function fail(message: string, details: string[] = []): never {
+  throw new HookFailure(message, details);
+}
+
+function failIfTrackedChanges(gitRoot: string, message: string): void {
+  const changes = trackedChangesShort(gitRoot);
+  if (!changes) return;
+  fail(message, [changes]);
+}
+
+function gitRefExists(gitRoot: string, ref: string): boolean {
+  return readGitText(gitRoot, ["rev-parse", "--verify", "--quiet", ref]).length > 0;
+}
+
+function hasReleaseTagPush(updates: readonly PrePushUpdate[]): boolean {
+  return updates.some((update) => update.remoteRef.startsWith("refs/tags/"));
+}
+
+function isDeleteOnlyPush(updates: readonly PrePushUpdate[]): boolean {
+  return (
+    updates.length > 0 &&
+    updates.every(
+      (update) =>
+        isBranchRef(update.remoteRef) && isAllZeroSha(update.localSha) && Boolean(update.remoteSha),
+    )
+  );
+}
+
+function resolveDefaultBaseRef(gitRoot: string): string | null {
+  const remoteHead = readGitText(gitRoot, [
+    "symbolic-ref",
+    "--quiet",
+    "--short",
+    "refs/remotes/origin/HEAD",
+  ]);
+  if (remoteHead) return remoteHead;
+  if (gitRefExists(gitRoot, "origin/main")) return "origin/main";
+  if (gitRefExists(gitRoot, "main")) return "main";
+  return null;
+}
+
+function selectBranchDiffRange(
+  updates: readonly PrePushUpdate[],
+  opts: { newBranchFallbackRef?: string | null } = {},
+): { from: string; to: string } | null {
+  const branchUpdates = updates.filter(
+    (update) => isBranchRef(update.localRef) && isBranchRef(update.remoteRef),
+  );
+  if (branchUpdates.length !== 1) return null;
+  const [update] = branchUpdates;
+  if (!update?.localSha || !update.remoteSha) return null;
+  if (isAllZeroSha(update.localSha)) return null;
+  if (isAllZeroSha(update.remoteSha)) {
+    const fallbackRef =
+      typeof opts.newBranchFallbackRef === "string" ? opts.newBranchFallbackRef.trim() : "";
+    return fallbackRef ? { from: fallbackRef, to: update.localSha } : null;
+  }
+  return { from: update.remoteSha, to: update.localSha };
+}
+
+function readChangedFilesForRange(
+  gitRoot: string,
+  range: { from: string; to: string } | null,
+): string[] {
+  if (!range) return [];
+  const output = readGitText(gitRoot, ["diff", "--name-only", `${range.from}..${range.to}`]);
+  return output
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function isTruthyHookEnv(name: string): boolean {
+  return (
+    String(process.env[name] ?? "")
+      .trim()
+      .toLowerCase() === "1"
+  );
+}
+
+function runInternalPrePushHook(gitRoot: string, stdin: string): number {
+  try {
+    const updates = parsePrePushStdin(stdin);
+    const envRelease = isTruthyHookEnv("AGENTPLANE_HOOKS_RELEASE");
+    const envFull = isTruthyHookEnv("AGENTPLANE_HOOKS_FULL");
+    const isReleasePush = envRelease || envFull || hasReleaseTagPush(updates);
+    if (!isReleasePush && isDeleteOnlyPush(updates)) {
+      process.stdout.write("Skipping pre-push checks for delete-only remote branch cleanup.\n");
+      return 0;
+    }
+
+    const mode = isReleasePush ? "release" : "standard";
+    process.stdout.write(`Running pre-push checks in ${mode} mode.\n`);
+    const ciScript = envFull ? "ci:local:full" : "ci:local:fast";
+    const changedFiles = readChangedFilesForRange(
+      gitRoot,
+      selectBranchDiffRange(updates, {
+        newBranchFallbackRef: resolveDefaultBaseRef(gitRoot),
+      }),
+    );
+    const ciEnv =
+      changedFiles.length > 0
+        ? { ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") }
+        : process.env;
+
+    process.stdout.write("\n== Format (check) ==\n");
+    const formatExitCode = runHookCommand(gitRoot, "bun", ["run", "format:check"]);
+    if (formatExitCode !== 0) {
+      failIfTrackedChanges(
+        gitRoot,
+        "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
+      );
+      fail(
+        "pre-push blocked: formatting check failed. Run `bun run format`, review the diff, commit it, and push again.",
+      );
+    }
+    failIfTrackedChanges(
+      gitRoot,
+      "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
+    );
+
+    const ciExitCode = runHookCommandWithEnv(gitRoot, "bun", ["run", ciScript], ciEnv);
+    failIfTrackedChanges(
+      gitRoot,
+      `pre-push blocked: ${ciScript} changed tracked files. Commit or revert those changes and push again.`,
+    );
+    if (ciExitCode !== 0) {
+      fail(`pre-push blocked: ${ciScript} failed. Fix the reported checks and push again.`);
+    }
+
+    if (isReleasePush) {
+      const notesExitCode = runHookCommand(gitRoot, "node", ["scripts/check-release-notes.mjs"]);
+      if (notesExitCode !== 0) return notesExitCode;
+      return runHookCommand(gitRoot, "bun", ["run", "release:prepublish"]);
+    }
+    return 0;
+  } catch (error) {
+    if (error instanceof HookFailure) {
+      process.stderr.write(`\n${error.message}\n`);
+      for (const detail of error.details) {
+        if (!detail) continue;
+        process.stderr.write(`${detail}\n`);
+      }
+      return 1;
+    }
+    throw error;
+  }
 }
 
 async function readHookStdinUtf8(timeoutMs = 25): Promise<string> {
@@ -69,19 +300,10 @@ export async function runPrePushHook(opts: HooksRunOptions): Promise<number> {
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
   });
+  const stdin = await readHookStdinUtf8();
   const scriptPath = await resolvePrePushHookScriptPath(resolved.gitRoot);
   if (!scriptPath) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: [
-        "Missing pre-push hook script: scripts/run-pre-push-hook.mjs",
-        "The pre-push hook needs a repository-local script or an installed CLI bundle that ships the fallback.",
-        "Fix:",
-        "  1) Restore scripts/run-pre-push-hook.mjs in this repository, or",
-        "  2) Run `agentplane hooks uninstall` if this repository should not use the agentplane pre-push gate.",
-      ].join("\n"),
-    });
+    return runInternalPrePushHook(resolved.gitRoot, stdin);
   }
   const result = runProcessSync({
     command: "node",
@@ -89,7 +311,7 @@ export async function runPrePushHook(opts: HooksRunOptions): Promise<number> {
     cwd: resolved.gitRoot,
     env: process.env,
     encoding: "utf8",
-    input: await readHookStdinUtf8(),
+    input: stdin,
     stdin: "pipe",
     stdout: "inherit",
     stderr: "inherit",

@@ -499,6 +499,48 @@ describe("runCli", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     ).resolves.toBeNull();
   });
 
+  it("hooks run pre-push uses installed CLI fallback when repository script is absent", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "installed-hook-fallback",
+          private: true,
+          scripts: {
+            "format:check": "node scripts/format-check.mjs",
+            "ci:local:fast": "node scripts/ci-fast.mjs",
+            "ci:local:full": "node scripts/ci-fast.mjs",
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    await writeFile(path.join(root, "scripts", "format-check.mjs"), "process.exit(0);\n", "utf8");
+    await writeFile(
+      path.join(root, "scripts", "ci-fast.mjs"),
+      "import { writeFileSync } from 'node:fs';\nwriteFileSync('.agentplane/cache/pre-push-fallback.marker', 'ok\\n');\n",
+      "utf8",
+    );
+    await mkdir(path.join(root, ".agentplane", "cache"), { recursive: true });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-push", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stderr).not.toContain("Missing pre-push hook script");
+      await expect(
+        pathExists(path.join(root, ".agentplane/cache/pre-push-fallback.marker")),
+      ).resolves.toBe(true);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("hooks run post-merge prunes merged local task worktrees on the base branch", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
