@@ -2,6 +2,9 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 const WORKFLOWS_DIR = path.join(process.cwd(), ".github", "workflows");
+const COMMAND_GUIDANCE_DIRS = [
+  path.join(process.cwd(), "packages", "agentplane", "src", "commands"),
+];
 
 const FORBIDDEN_PATTERNS = [
   { label: "inline bun test", pattern: /\bbun test\b/g },
@@ -19,6 +22,26 @@ async function listWorkflowFiles(dir) {
       continue;
     }
     if (entry.isFile() && /\.(?:yml|yaml)$/u.test(entry.name)) {
+      files.push(fullPath);
+    }
+  }
+  return files.toSorted();
+}
+
+async function listCommandGuidanceFiles(dir) {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...(await listCommandGuidanceFiles(fullPath)));
+      continue;
+    }
+    if (
+      entry.isFile() &&
+      /\.(?:command|spec)\.ts$/u.test(entry.name) &&
+      !entry.name.endsWith(".test.ts")
+    ) {
       files.push(fullPath);
     }
   }
@@ -52,21 +75,24 @@ function formatMatches(filePath, text) {
 
 async function main() {
   const workflowFiles = await listWorkflowFiles(WORKFLOWS_DIR);
+  const commandGuidanceFiles = (
+    await Promise.all(COMMAND_GUIDANCE_DIRS.map((dir) => listCommandGuidanceFiles(dir)))
+  ).flat();
   const findings = [];
 
-  for (const filePath of workflowFiles) {
+  for (const filePath of [...workflowFiles, ...commandGuidanceFiles]) {
     const text = await readFile(filePath, "utf8");
     findings.push(...formatMatches(filePath, text));
   }
 
   if (findings.length === 0) {
-    process.stdout.write("workflow command contract OK\n");
+    process.stdout.write("workflow and command guidance contract OK\n");
     return;
   }
 
   const lines = [
-    "Workflow command contract violation: inline test runners were found in workflow YAML.",
-    "Use canonical repository scripts (for example `bun run test:platform-critical`) instead of embedding test runner command lines.",
+    "Workflow command contract violation: inline test runners were found in workflow YAML or command guidance.",
+    "Use canonical repository scripts (for example `bun run test:platform-critical` or `bun run test:project -- cli-core`) instead of embedding test runner command lines.",
     "",
   ];
 

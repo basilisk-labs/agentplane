@@ -155,7 +155,7 @@ describe("runCli", () => {
         "--tag",
         "code",
         "--verify",
-        "bun test",
+        "bun run test:project -- cli-core",
         "--root",
         root,
       ]);
@@ -175,7 +175,7 @@ describe("runCli", () => {
       expect(code).toBe(0);
       const parsed = JSON.parse(ioShow.stdout) as { depends_on?: string[]; verify?: string[] };
       expect(parsed.depends_on ?? []).toContain(spikeId);
-      expect(parsed.verify ?? []).toEqual(["bun test"]);
+      expect(parsed.verify ?? []).toEqual(["bun run test:project -- cli-core"]);
     } finally {
       ioShow.restore();
     }
@@ -190,7 +190,7 @@ describe("runCli", () => {
     expect(derivedReadme).toContain("## Findings");
     expect(derivedReadme).toContain(`derived from spike ${spikeId}`);
     expect(derivedReadme).toContain(
-      "1. Run `bun test`. Expected: it succeeds and confirms the requested outcome for this task.",
+      "1. Run `bun run test:project -- cli-core`. Expected: it succeeds and confirms the requested outcome for this task.",
     );
     expect(derivedReadme).not.toContain(
       "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
