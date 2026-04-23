@@ -1,10 +1,12 @@
 ---
 id: "202604231752-69PYBD"
 title: "Refresh foundation docs and remove stale 0.4 guidance"
-status: "DOING"
+result_summary: "Refreshed the active developer docs for the 0.3.23 foundation line and removed stale v0.4-first guidance from current surfaces."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +27,16 @@ verification:
   updated_at: "2026-04-23T18:05:24.679Z"
   updated_by: "DOCS"
   note: "The active developer docs now describe the current 0.3.23 foundation line accurately, and stale prompt-assembly-first guidance was either removed or explicitly recast as deferred design context."
-commit: null
+commit:
+  hash: "a6a157a6982b8852817ec9b07c3177bf0ac54f85"
+  message: "✅ 69PYBD docs: done"
 comments:
   -
     author: "DOCS"
     body: "Start: audit the active developer docs, remove stale v0.4-first guidance, and realign the foundation-facing documentation to the current 0.3.23 stabilization strategy."
+  -
+    author: "DOCS"
+    body: "Verified: the active developer docs now reflect the current 0.3.23 foundation priorities, and deferred prompt-assembly notes are clearly marked instead of being presented as the active roadmap."
 events:
   -
     type: "status"
@@ -44,8 +51,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "The active developer docs now describe the current 0.3.23 foundation line accurately, and stale prompt-assembly-first guidance was either removed or explicitly recast as deferred design context."
+  -
+    type: "status"
+    at: "2026-04-23T18:05:25.557Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the active developer docs now reflect the current 0.3.23 foundation priorities, and deferred prompt-assembly notes are clearly marked instead of being presented as the active roadmap."
 doc_version: 3
-doc_updated_at: "2026-04-23T18:05:24.685Z"
+doc_updated_at: "2026-04-23T18:05:25.561Z"
 doc_updated_by: "DOCS"
 description: "Update developer docs so architecture, refactor, testing, and release-readiness guidance reflect the current 0.3.23 foundation state, remove stale or misleading v0.4-forward-looking claims from active guidance, and keep only accurate current references."
 sections:
