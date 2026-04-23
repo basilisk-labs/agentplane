@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -6,6 +6,7 @@ import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
+  mkGitRepoRoot,
   mkTempDir,
   pathExists,
 } from "@agentplane/testkit";
@@ -375,6 +376,38 @@ describe("runCli interactive init UI", () => {
       await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
     ) as { recipes: unknown[] };
     expect(migrated.recipes).toEqual([]);
+  });
+
+  it("surfaces hook conflicts before the default TTY dialog applies init", async () => {
+    const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, ".git", "hooks"), { recursive: true });
+    await writeFile(path.join(root, ".git", "hooks", "commit-msg"), "custom", "utf8");
+    mocks.selectMock
+      .mockResolvedValueOnce("full-harness")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("direct")
+      .mockResolvedValueOnce("allow_other_task_readmes")
+      .mockResolvedValueOnce("local")
+      .mockResolvedValueOnce("aggressive")
+      .mockResolvedValueOnce("cancel");
+    mocks.confirmMock.mockResolvedValueOnce(false).mockResolvedValueOnce(false);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--interactive-ui", "--hooks", "yes", "--root", root]);
+
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Init cancelled during conflict resolution.");
+    } finally {
+      io.restore();
+    }
+
+    expect(mocks.noteMock).toHaveBeenCalledWith(
+      expect.stringContaining(".git/hooks/commit-msg"),
+      "Init conflicts detected",
+    );
+    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
   });
 
   it("keeps --experimental-ui as a compatibility alias", async () => {

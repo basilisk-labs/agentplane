@@ -156,7 +156,12 @@ function hookScriptText(hook) {
   ].join("\n");
 }
 
-function shimScriptText() {
+function shellSingleQuote(value) {
+  return `'${String(value).replaceAll("'", String.raw`'\''`)}'`;
+}
+
+function shimScriptText(repoRoot) {
+  const installedBin = path.join(repoRoot, "packages", "agentplane", "bin", "agentplane.js");
   return [
     "#!/usr/bin/env sh",
     `# ${SHIM_MARKER} (do not edit)`,
@@ -167,6 +172,10 @@ function shimScriptText() {
     'if command -v node >/dev/null 2>&1 && [ -f "$LOCAL_BIN" ]; then',
     '  exec node "$LOCAL_BIN" "$@"',
     "fi",
+    `INSTALL_BIN=${shellSingleQuote(installedBin)}`,
+    'if command -v node >/dev/null 2>&1 && [ -f "$INSTALL_BIN" ]; then',
+    '  exec node "$INSTALL_BIN" "$@"',
+    "fi",
     'ENV_BIN="${AGENTPLANE_HOOK_RUNNER:-}"',
     'if [ -n "$ENV_BIN" ] && command -v node >/dev/null 2>&1 && [ -f "$ENV_BIN" ]; then',
     '  exec node "$ENV_BIN" "$@"',
@@ -174,10 +183,10 @@ function shimScriptText() {
     "if command -v agentplane >/dev/null 2>&1; then",
     '  exec agentplane "$@"',
     "fi",
-    "if command -v npx >/dev/null 2>&1; then",
+    'if [ "${AGENTPLANE_HOOK_ALLOW_NPX:-}" = "1" ] && command -v npx >/dev/null 2>&1; then',
     '  exec npx --yes agentplane "$@"',
     "fi",
-    'echo "agentplane shim: runner not found (need env runner, repo-local source, agentplane in PATH, or node+npx)." >&2',
+    'echo "agentplane shim: runner not found (need installed runner, env runner, repo-local source, agentplane in PATH, or AGENTPLANE_HOOK_ALLOW_NPX=1)." >&2',
     "  exit 127",
     "",
   ].join("\n");
@@ -191,7 +200,7 @@ function ensureManagedShim(repoRoot) {
     throw new Error(`Refusing to overwrite existing shim: ${path.relative(repoRoot, shimPath)}`);
   }
   fs.mkdirSync(shimDir, { recursive: true });
-  fs.writeFileSync(shimPath, shimScriptText(), "utf8");
+  fs.writeFileSync(shimPath, shimScriptText(repoRoot), "utf8");
   fs.chmodSync(shimPath, 0o755);
 }
 

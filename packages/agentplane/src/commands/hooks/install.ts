@@ -45,6 +45,28 @@ function resolveInstalledHookRunnerPath(): string {
   return activeBin || resolveAgentplaneBinPath();
 }
 
+export async function collectHooksInstallConflicts(opts: {
+  gitRoot: string;
+  agentplaneDir: string;
+}): Promise<string[]> {
+  const hooksDir = await resolveGitHooksDir(opts.gitRoot);
+  const conflicts: string[] = [];
+  const shimPath = path.join(opts.agentplaneDir, "bin", "agentplane");
+  if (await fileExists(shimPath)) {
+    const managed = await fileIsManaged(shimPath, SHIM_MARKER);
+    if (!managed) conflicts.push(shimPath);
+  }
+
+  for (const hook of HOOK_NAMES) {
+    const hookPath = path.join(hooksDir, hook);
+    if (!(await fileExists(hookPath))) continue;
+    const managed = await fileIsManaged(hookPath, HOOK_MARKER);
+    if (!managed) conflicts.push(hookPath);
+  }
+
+  return conflicts;
+}
+
 function shimScriptText(installedRunnerPath: string): string {
   return [
     "#!/usr/bin/env sh",

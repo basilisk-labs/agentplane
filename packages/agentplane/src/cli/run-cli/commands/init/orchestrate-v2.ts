@@ -2,6 +2,7 @@ import path from "node:path";
 import { buildExecutionProfile } from "@agentplaneorg/core/config";
 import { setPinnedBaseBranch } from "@agentplaneorg/core/git";
 
+import { collectHooksInstallConflicts } from "../../../../commands/hooks/install.js";
 import { cmdHooksInstall, ensureInitCommit } from "../../../../commands/workflow.js";
 import { getVersion } from "../../../../meta/version.js";
 import { CliError } from "../../../../shared/errors.js";
@@ -148,10 +149,10 @@ export async function cmdInitV2(opts: {
       path.join(resolved.agentplaneDir, "backends", backend.backend),
     ];
     const initFiles = [configPath, backendPath];
-    const conflicts = await collectInitConflicts({ initDirs, initFiles });
+    const initConflicts = await collectInitConflicts({ initDirs, initFiles });
     const gatewayPath = path.join(resolved.gitRoot, policyGatewayFileName(policy.policyGateway));
     const agentsMissing = !(await fileExists(gatewayPath));
-    if (conflicts.length > 0 && agentsMissing) {
+    if (initConflicts.length > 0 && agentsMissing) {
       await ensureAgentplaneDirs(resolved.agentplaneDir, backend.backend);
       await ensureAgentsFiles({
         gitRoot: resolved.gitRoot,
@@ -162,6 +163,13 @@ export async function cmdInitV2(opts: {
         backendPathAbs: backendPath,
       });
     }
+    const hookConflicts = advanced.hooks
+      ? await collectHooksInstallConflicts({
+          gitRoot: resolved.gitRoot,
+          agentplaneDir: resolved.agentplaneDir,
+        })
+      : [];
+    const conflicts = [...new Set([...initConflicts, ...hookConflicts])];
 
     const conflictChoice =
       opts.flags.force || opts.flags.backup
