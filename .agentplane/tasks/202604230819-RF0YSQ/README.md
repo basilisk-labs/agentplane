@@ -1,10 +1,11 @@
 ---
 id: "202604230819-RF0YSQ"
 title: "Allow verify --local-only without structured finding"
-status: "DOING"
+result_summary: "Allowed plain verify --local-only records."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-23T08:21:10.110Z"
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 29 tests passed including plain --local-only regression. Command: bunx eslint packages/agentplane/src/commands/task/verify-command-shared.ts packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Installed clean-project smoke: pseudo-installed package layout ran verify --local-only successfully for task 202604230820-WKCRYR."
-commit: null
+commit:
+  hash: "197905c623adea66a8a9951eacedbbe5c2344f88"
+  message: "🐛 RF0YSQ verify: allow plain local-only records"
 comments:
   -
     author: "CODER"
     body: "Start: fixing verify --local-only validation for plain clean-project verification records."
+  -
+    author: "CODER"
+    body: "Verified: plain verify records can include --local-only without structured finding fields, and installed clean-project smoke passed."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts --pool=threads --maxWorkers 4; Result: pass; Evidence: 29 tests passed including plain --local-only regression. Command: bunx eslint packages/agentplane/src/commands/task/verify-command-shared.ts packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Installed clean-project smoke: pseudo-installed package layout ran verify --local-only successfully for task 202604230820-WKCRYR."
+  -
+    type: "status"
+    at: "2026-04-23T08:21:24.428Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: plain verify records can include --local-only without structured finding fields, and installed clean-project smoke passed."
 doc_version: 3
-doc_updated_at: "2026-04-23T08:21:10.113Z"
+doc_updated_at: "2026-04-23T08:21:24.428Z"
 doc_updated_by: "CODER"
 description: "Fix verify validation so --local-only only modifies appended structured findings and does not make plain verification notes fail in clean user workflows."
 sections:
