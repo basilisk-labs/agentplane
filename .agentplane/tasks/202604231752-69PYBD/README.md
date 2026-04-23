@@ -1,10 +1,10 @@
 ---
 id: "202604231752-69PYBD"
 title: "Refresh foundation docs and remove stale 0.4 guidance"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -21,15 +21,31 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-23T18:05:24.679Z"
+  updated_by: "DOCS"
+  note: "The active developer docs now describe the current 0.3.23 foundation line accurately, and stale prompt-assembly-first guidance was either removed or explicitly recast as deferred design context."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: audit the active developer docs, remove stale v0.4-first guidance, and realign the foundation-facing documentation to the current 0.3.23 stabilization strategy."
+events:
+  -
+    type: "status"
+    at: "2026-04-23T18:02:33.454Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: audit the active developer docs, remove stale v0.4-first guidance, and realign the foundation-facing documentation to the current 0.3.23 stabilization strategy."
+  -
+    type: "verify"
+    at: "2026-04-23T18:05:24.679Z"
+    author: "DOCS"
+    state: "ok"
+    note: "The active developer docs now describe the current 0.3.23 foundation line accurately, and stale prompt-assembly-first guidance was either removed or explicitly recast as deferred design context."
 doc_version: 3
-doc_updated_at: "2026-04-23T17:53:05.427Z"
+doc_updated_at: "2026-04-23T18:05:24.685Z"
 doc_updated_by: "DOCS"
 description: "Update developer docs so architecture, refactor, testing, and release-readiness guidance reflect the current 0.3.23 foundation state, remove stale or misleading v0.4-forward-looking claims from active guidance, and keep only accurate current references."
 sections:
@@ -60,6 +76,14 @@ sections:
     docs/developer/recipes-how-it-works.mdx:46:See [Prompt assembly system](prompt-assembly-system) for the full module and mutation contract. shows only intentionally retained historical or explicitly deferred references after the doc cleanup.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-23T18:05:24.679Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: The active developer docs now describe the current 0.3.23 foundation line accurately, and stale prompt-assembly-first guidance was either removed or explicitly recast as deferred design context.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-23T18:02:33.466Z, excerpt_hash=sha256:7298a17be71396769192e2e07ae131b900d1aa937511338f5d2c16240e21d2f6
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -104,6 +128,14 @@ docs/developer/recipes-how-it-works.mdx:46:See [Prompt assembly system](prompt-a
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-23T18:05:24.679Z — VERIFY — ok
+
+By: DOCS
+
+Note: The active developer docs now describe the current 0.3.23 foundation line accurately, and stale prompt-assembly-first guidance was either removed or explicitly recast as deferred design context.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-23T18:02:33.466Z, excerpt_hash=sha256:7298a17be71396769192e2e07ae131b900d1aa937511338f5d2c16240e21d2f6
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

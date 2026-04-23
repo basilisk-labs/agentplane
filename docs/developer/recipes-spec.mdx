@@ -14,16 +14,8 @@ Recipes v1 use a vendor-based lifecycle:
 
 After vendoring, runtime reads recipes only from the project-local vendor store.
 
-Prompt assembly changes planned for v0.4:
-
-- recipes may provide named prompt modules for the gateway, policy tree, agent profiles,
-  validators, templates, and runner context;
-- recipe modules are first cached globally, then vendored into a project before they can affect
-  that project's prompt graph;
-- active recipes mutate the module graph and trigger regenerated prompt artifacts rather than
-  patching `AGENTS.md` directly.
-
-See [Prompt assembly system](prompt-assembly-system) for the planned v0.4 breaking-change model.
+This page documents the active `0.3.23` recipe contract. Deferred prompt-assembly ideas are not
+part of the active runtime contract and should not be treated as current recipe behavior.
 
 The repository-level docs inventory (`docs/recipes-inventory.json`) is a generated projection sourced
 from `agentplane-recipes/index.json` plus the checked-in recipe manifests under
@@ -37,7 +29,6 @@ Optional directories:
 
 - `agents/`
 - `assets/`
-- `modules/`
 - `policy/`
 - `prompts/`
 - `README.md`
@@ -63,14 +54,13 @@ First-class sections include `compatibility`, `overlay`, `skills`, `tools`, `age
 
 Contract notes:
 
-- planned v0.4 recipes may add `modules` and `mutations` sections that describe named prompt
-  modules and operations over the project prompt graph.
 - `agents/` and `skills/` are markdown-first assets. Their content must survive compilation without being reduced to legacy JSON stubs.
-- agent behavior should be represented as role profile and role instruction modules before being
-  compiled into `.agentplane/agents/*` compatibility files.
 - `tools/` remain structured manifests plus executable content where required.
 - `scenarios/` are recipe-owned assets, not a separate top-level package kind.
 - Public scenario descriptors must be sufficient for resolver-driven selection without reading unrelated internal files.
+
+Deferred prompt-assembly work may revisit recipe-owned prompt modules later, but that is outside the
+active `0.3` contract and should not appear in current operational guidance.
 
 ## CLI surface
 

@@ -1,7 +1,14 @@
 ---
-title: "Prompt assembly system"
-description: "Target v0.4 architecture for assembling AGENTS.md, policy files, agent profiles, and recipe-driven prompt modules."
+title: "Prompt assembly system (deferred design note)"
+description: "Deferred post-0.3 design note for a possible future prompt-assembly architecture."
 ---
+
+This page is a deferred design note, not active runtime guidance.
+
+The current `0.3.23` line still relies on the existing `init`/`upgrade` managed-file model plus the
+current recipe overlay behavior. The module-graph compiler described below is preserved as future
+design context only and is intentionally off the active foundation execution path until `0.3`
+stabilization is complete.
 
 The planned AgentPlane v0.4 prompt system treats prompt files as compiled artifacts from a named
 module graph.

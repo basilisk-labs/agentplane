@@ -1,6 +1,6 @@
 ---
 title: "Framework refactor program"
-description: "Current code map, subsystem analysis ledger, and ordered refactor roadmap for the Agent Plane framework repository."
+description: "Historical subsystem analysis plus the current foundation-first refactor priorities for the Agent Plane framework repository."
 ---
 
 ## Purpose
@@ -11,7 +11,20 @@ It serves three roles:
 
 1. A current code map of the repository.
 2. A collection point for subsystem analysis findings.
-3. An ordered refactor roadmap derived from those findings.
+3. A historical roadmap snapshot derived from those findings.
+
+## Active status
+
+As of `0.3.23`, this document is partly historical.
+
+The active execution order is foundation-first:
+
+1. tighten task, workflow, PR/integrate, backend, and CLI correctness;
+2. clean stale or misleading developer guidance;
+3. harden guardrails and release-readiness around the existing `0.3` line.
+
+Deeper prompt-assembly, recipe-domain, and runner-expansion work is intentionally deferred until the
+current foundation line is stable enough to stop absorbing surprise regressions.
 
 ## Current foundation status
 
@@ -24,7 +37,9 @@ The framework control-plane foundation from the F-001 through F-010 roadmap is n
 5. `runtime/task-intake` defines clarification, draft, and materialization contracts ahead of higher-level `task create` flows.
 6. `runtime/explain` and `runtime/protocol` provide machine-readable explain payloads plus additive protocol/result envelopes for persisted runner artifacts and future integrations.
 
-That means the remaining work is mostly downstream: documentation, incident-policy hygiene, recipe/runner expansion on top of the stable contracts, and release packaging.
+That does not mean the active work should expand immediately into recipes, runner architecture, or
+prompt assembly. The current priority is to finish hardening the `0.3` foundation before reopening
+those deeper refactor tracks.
 
 ## Code map
 
@@ -304,7 +319,10 @@ Refactor opportunities:
    - script freshness/sync definitions.
 5. The codebase has good test coverage, but many correctness guarantees still depend on tests catching drift rather than on types/contracts making drift impossible.
 
-## Ordered refactor roadmap
+## Historical roadmap snapshot
+
+The sequence below is preserved as provenance for the original multi-epic analysis. Treat it as a
+historical planning artifact, not as the active `0.3` execution queue.
 
 ### Analysis gate
 
@@ -338,10 +356,14 @@ Refactor opportunities:
 11. `202603251539-YTQX10` — consolidate CI, freshness, and sync tooling into shared generators.
     Objective: clean up repo tooling only after artifact contracts and command surfaces stop moving.
 
-### Why this order
+### Why this order originally
 
 1. The first four tasks tighten the task and workflow contract, because that contract currently leaks into every other subsystem.
-2. Backend and runner refactors come next because they depend on canonical task/workflow state and then become the execution substrate for higher layers.
-3. CLI refactors follow once backend and runner contracts stop shifting under the command surface.
-4. Recipe, scenario, upgrade, and release refactors become safer after CLI and runner seams are explicit.
-5. Scripts and CI are last because they should consume stabilized artifacts and command surfaces, not chase moving internals.
+2. Backend and runner refactors were intended to come next because they depend on canonical task/workflow state and then become the execution substrate for higher layers.
+3. CLI refactors were intended to follow once backend and runner contracts stopped shifting under the command surface.
+4. Recipe, scenario, upgrade, and release refactors were expected to become safer after CLI and runner seams were explicit.
+5. Scripts and CI were left for last because they should consume stabilized artifacts and command surfaces, not chase moving internals.
+
+For the active `0.3` line, use this ordering only as background context. The live backlog now
+favors foundation hardening and stale-doc cleanup before any renewed recipe, runner, or prompt
+assembly expansion.
