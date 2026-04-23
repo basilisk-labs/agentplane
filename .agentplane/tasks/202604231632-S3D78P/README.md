@@ -1,10 +1,11 @@
 ---
 id: "202604231632-S3D78P"
 title: "Fix release preflight lint drift"
-status: "DOING"
+result_summary: "Release preflight lint drift fixed"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -17,15 +18,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-23T16:33:21.923Z"
+  updated_by: "CODER"
+  note: "Removed the unused import from apply.preflight.git.ts so the exact push-blocking checks now pass. Validation: bun x prettier packages/agentplane/src/commands/release/apply.preflight.git.ts --check; bun run lint:core -- packages/agentplane/src/commands/release/apply.preflight.git.ts."
+commit:
+  hash: "717bc99dbb0609dcbcb460b9227a8255cd4f88ac"
+  message: "🧹 S3D78P release: remove stale preflight import"
 comments:
   -
     author: "CODER"
     body: "Start: remove the unused import in apply.preflight.git.ts and rerun the exact lint/prettier checks that blocked the server push."
+  -
+    author: "CODER"
+    body: "Verified: the stale import is removed and the push-blocking lint route is clean."
 events:
   -
     type: "status"
@@ -34,8 +40,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: remove the unused import in apply.preflight.git.ts and rerun the exact lint/prettier checks that blocked the server push."
+  -
+    type: "verify"
+    at: "2026-04-23T16:33:21.923Z"
+    author: "CODER"
+    state: "ok"
+    note: "Removed the unused import from apply.preflight.git.ts so the exact push-blocking checks now pass. Validation: bun x prettier packages/agentplane/src/commands/release/apply.preflight.git.ts --check; bun run lint:core -- packages/agentplane/src/commands/release/apply.preflight.git.ts."
+  -
+    type: "status"
+    at: "2026-04-23T16:33:37.624Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the stale import is removed and the push-blocking lint route is clean."
 doc_version: 3
-doc_updated_at: "2026-04-23T16:32:29.191Z"
+doc_updated_at: "2026-04-23T16:33:37.625Z"
 doc_updated_by: "CODER"
 description: "Remove the unused import left in packages/agentplane/src/commands/release/apply.preflight.git.ts after the hotspot decomposition so pre-push lint passes without changing release behavior."
 sections:
@@ -53,6 +72,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-23T16:33:21.923Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Removed the unused import from apply.preflight.git.ts so the exact push-blocking checks now pass. Validation: bun x prettier packages/agentplane/src/commands/release/apply.preflight.git.ts --check; bun run lint:core -- packages/agentplane/src/commands/release/apply.preflight.git.ts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-23T16:32:29.191Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -84,6 +111,14 @@ Remove the unused import left in packages/agentplane/src/commands/release/apply.
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-23T16:33:21.923Z — VERIFY — ok
+
+By: CODER
+
+Note: Removed the unused import from apply.preflight.git.ts so the exact push-blocking checks now pass. Validation: bun x prettier packages/agentplane/src/commands/release/apply.preflight.git.ts --check; bun run lint:core -- packages/agentplane/src/commands/release/apply.preflight.git.ts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-23T16:32:29.191Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
