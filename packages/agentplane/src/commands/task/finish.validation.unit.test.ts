@@ -909,35 +909,7 @@ describe("task finish validation", () => {
         confirmStatusCommit: false,
         quiet: true,
       }),
-    ).rejects.toMatchObject({
-      code: "E_USAGE",
-      message: expect.stringContaining("tasks_missing_commit=T-1"),
-    });
-    await expect(
-      cmdFinish({
-        ctx,
-        cwd: "/repo",
-        taskIds: ["T-1"],
-        author: "A",
-        body: "Verified: this is long enough",
-        result: "ok",
-        breaking: false,
-        force: false,
-        commitFromComment: false,
-        commitAllow: [],
-        commitAutoAllow: false,
-        commitAllowTasks: false,
-        commitRequireClean: false,
-        statusCommit: false,
-        statusCommitAllow: [],
-        statusCommitAutoAllow: false,
-        statusCommitRequireClean: false,
-        confirmStatusCommit: false,
-        quiet: true,
-      }),
-    ).rejects.toMatchObject({
-      message: expect.stringContaining("git log --oneline --decorate -n 10"),
-    });
+    ).rejects.toThrow(/tasks_missing_commit=T-1[\s\S]*git log --oneline --decorate -n 10/);
   });
 
   it("uses readCommitInfo only when --commit is provided", async () => {

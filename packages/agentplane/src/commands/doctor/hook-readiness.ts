@@ -32,7 +32,7 @@ function unquoteShellSingleQuoted(value: string): string {
 }
 
 function extractInstallBinFromShim(shimText: string): string | null {
-  const match = shimText.match(/\nINSTALL_BIN='((?:'\\''|[^'])*)'/);
+  const match = /\nINSTALL_BIN='((?:'\\''|[^'])*)'/.exec(shimText);
   if (!match) return null;
   return unquoteShellSingleQuoted(match[1] ?? "").trim() || null;
 }

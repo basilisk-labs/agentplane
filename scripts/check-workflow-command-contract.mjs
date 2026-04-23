@@ -75,9 +75,10 @@ function formatMatches(filePath, text) {
 
 async function main() {
   const workflowFiles = await listWorkflowFiles(WORKFLOWS_DIR);
-  const commandGuidanceFiles = (
-    await Promise.all(COMMAND_GUIDANCE_DIRS.map((dir) => listCommandGuidanceFiles(dir)))
-  ).flat();
+  const commandGuidanceFileGroups = await Promise.all(
+    COMMAND_GUIDANCE_DIRS.map((dir) => listCommandGuidanceFiles(dir)),
+  );
+  const commandGuidanceFiles = commandGuidanceFileGroups.flat();
   const findings = [];
 
   for (const filePath of [...workflowFiles, ...commandGuidanceFiles]) {
