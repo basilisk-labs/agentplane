@@ -1,10 +1,12 @@
 ---
 id: "202604231744-MD4XTG"
 title: "Decompose migrate-doc runtime hotspot"
-status: "DOING"
+result_summary: "Reduced packages/agentplane/src/commands/task/migrate-doc.ts from 461 lines to 191 by extracting README migration helpers into migrate-doc.readme.ts while preserving command behavior and removing the file from the runtime hotspot warning set."
+risk_level: "low"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +27,16 @@ verification:
     Command: ./node_modules/.bin/tsc -p packages/agentplane/tsconfig.json --noEmit; Result: pass; Evidence: typecheck completed successfully with the extracted readme helper module wired into the task command. Scope: package-level type safety for the touched task command modules.
     Command: node scripts/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; Result: pass; Evidence: hotspot threshold check passed and migrate-doc.ts no longer appears in the runtime warning list. Scope: repository hotspot guard after the migrate-doc split.
     Command: git diff --check; Result: pass; Evidence: no whitespace or patch formatting errors. Scope: final patch hygiene for the touched files.
-commit: null
+commit:
+  hash: "be332d42d4cf9ec6bece7272579f7360e670e0f4"
+  message: "✅ MD4XTG code: done"
 comments:
   -
     author: "CODER"
     body: "Start: split migrate-doc into smaller helpers, keep the command surface stable, and re-run the migrate-doc focused verification after the extraction."
+  -
+    author: "CODER"
+    body: "Verified: split the README migration logic out of migrate-doc.ts, kept the command orchestration stable, and confirmed the hotspot gate, package typecheck, and patch hygiene stay green for the touched task-doc migration path."
 events:
   -
     type: "status"
@@ -48,8 +55,15 @@ events:
       Command: ./node_modules/.bin/tsc -p packages/agentplane/tsconfig.json --noEmit; Result: pass; Evidence: typecheck completed successfully with the extracted readme helper module wired into the task command. Scope: package-level type safety for the touched task command modules.
       Command: node scripts/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300; Result: pass; Evidence: hotspot threshold check passed and migrate-doc.ts no longer appears in the runtime warning list. Scope: repository hotspot guard after the migrate-doc split.
       Command: git diff --check; Result: pass; Evidence: no whitespace or patch formatting errors. Scope: final patch hygiene for the touched files.
+  -
+    type: "status"
+    at: "2026-04-23T18:22:15.742Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: split the README migration logic out of migrate-doc.ts, kept the command orchestration stable, and confirmed the hotspot gate, package typecheck, and patch hygiene stay green for the touched task-doc migration path."
 doc_version: 3
-doc_updated_at: "2026-04-23T18:21:58.425Z"
+doc_updated_at: "2026-04-23T18:22:15.743Z"
 doc_updated_by: "CODER"
 description: "Split packages/agentplane/src/commands/task/migrate-doc.ts into smaller focused helpers while preserving migrate-doc behavior and existing task migration coverage."
 sections:
