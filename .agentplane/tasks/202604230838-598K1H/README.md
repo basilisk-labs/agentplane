@@ -1,10 +1,10 @@
 ---
 id: "202604230838-598K1H"
 title: "Stage allowed task artifacts with non-empty index"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-23T09:38:05.042Z"
+  updated_by: "CODER"
+  note: "Verified: commit wrapper stages active task artifacts with --allow-tasks even when implementation files are already staged."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: commit allowlist staging behavior is ready after verify matrix completion."
+events:
+  -
+    type: "status"
+    at: "2026-04-23T09:34:33.073Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: commit allowlist staging behavior is ready after verify matrix completion."
+  -
+    type: "verify"
+    at: "2026-04-23T09:38:05.042Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: commit wrapper stages active task artifacts with --allow-tasks even when implementation files are already staged."
 doc_version: 3
-doc_updated_at: "2026-04-23T08:40:26.152Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-23T09:38:05.049Z"
+doc_updated_by: "CODER"
 description: "Adjust commit allowlist behavior or diagnostics so --allow-tasks cannot leave active task artifacts unstaged when other files are already staged."
 sections:
   Summary: |-
@@ -49,9 +65,22 @@ sections:
     2. Run `bun run test:project -- guard`. Expected: guard implementation tests pass.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-23T09:38:05.042Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: commit wrapper stages active task artifacts with --allow-tasks even when implementation files are already staged.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-23T09:34:33.087Z, excerpt_hash=sha256:d30a1c827664953ad84d161b8af98517dd7da46e4c100d73160136dc1684b8a8
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert commit staging behavior and tests. Users can fall back to manually staging task artifacts before commit."
-  Findings: ""
+  Findings: |-
+    - Observation: Ran bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts; bun run test:project -- guard; Prettier check for changed files.
+      Impact: Prevents task artifacts from being split into a later refresh commit or left outside the intended task-scoped commit when the index is already populated.
+      Resolution: Added non-empty-index staging before guard validation and regression coverage.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -79,6 +108,14 @@ In scope: commit allowlist staging behavior and diagnostics for active task arti
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-23T09:38:05.042Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: commit wrapper stages active task artifacts with --allow-tasks even when implementation files are already staged.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-23T09:34:33.087Z, excerpt_hash=sha256:d30a1c827664953ad84d161b8af98517dd7da46e4c100d73160136dc1684b8a8
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -86,3 +123,9 @@ In scope: commit allowlist staging behavior and diagnostics for active task arti
 Revert commit staging behavior and tests. Users can fall back to manually staging task artifacts before commit.
 
 ## Findings
+
+- Observation: Ran bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts; bun run test:project -- guard; Prettier check for changed files.
+  Impact: Prevents task artifacts from being split into a later refresh commit or left outside the intended task-scoped commit when the index is already populated.
+  Resolution: Added non-empty-index staging before guard validation and regression coverage.
+  Promotion: incident-candidate
+  Fixability: external

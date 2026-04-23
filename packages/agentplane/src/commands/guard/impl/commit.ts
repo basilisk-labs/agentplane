@@ -176,6 +176,29 @@ function formatCommitRef(commit: { hash: string; subject: string } | null): stri
   return `${commit.hash?.slice(0, 12) ?? ""} ${commit.subject ?? ""}`.trim();
 }
 
+async function stageActiveTaskArtifactsFromAllowTasks(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  allowTasks: boolean;
+}): Promise<string[]> {
+  if (!opts.allowTasks) return [];
+
+  const changedPaths = await opts.ctx.git.statusChangedPaths();
+  const taskArtifactPaths = changedPaths.filter((relPath) =>
+    isTaskLocalAdvancePath({
+      workflowDir: opts.ctx.config.paths.workflow_dir,
+      taskId: opts.taskId,
+      tasksPath: opts.ctx.config.paths.tasks_path,
+      relPath,
+    }),
+  );
+  if (taskArtifactPaths.length === 0) return [];
+
+  const unique = [...new Set(taskArtifactPaths)].toSorted((a, b) => a.localeCompare(b));
+  await opts.ctx.git.stage(unique);
+  return unique;
+}
+
 export async function cmdCommit(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -249,6 +272,19 @@ export async function cmdCommit(opts: {
       if (!opts.quiet) {
         process.stdout.write(
           `${infoMessage(`commit auto-staged ${autoStaged.length} path(s) from allowlist`)}\n`,
+        );
+      }
+    } else {
+      autoStaged = await stageActiveTaskArtifactsFromAllowTasks({
+        ctx,
+        taskId: opts.taskId,
+        allowTasks: opts.allowTasks,
+      });
+      if (autoStaged.length > 0 && !opts.quiet) {
+        process.stdout.write(
+          `${infoMessage(
+            `commit auto-staged ${autoStaged.length} active task artifact path(s) from --allow-tasks`,
+          )}\n`,
         );
       }
     }

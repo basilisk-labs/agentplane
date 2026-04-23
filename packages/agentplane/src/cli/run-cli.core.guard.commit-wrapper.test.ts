@@ -557,6 +557,81 @@ describe("runCli", { timeout: COMMIT_WRAPPER_SUITE_TIMEOUT_MS }, () => {
     expect(changed).toEqual([`.agentplane/tasks/${taskId}/README.md`, "src/app.ts"]);
   });
 
+  it("commit wrapper stages active task artifacts with --allow-tasks when the index already has implementation files", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    const taskId = "202601010101-ABCDEF";
+    const readme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Stage active task artifacts with populated index",
+        result_summary: "",
+        description: "desc",
+        status: "DOING",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["cli", "code"],
+        verify: [],
+        verification: null,
+        commit: null,
+        doc_version: 3,
+        doc_updated_at: "2026-03-12T00:00:00.000Z",
+        doc_updated_by: "CODER",
+      },
+      "## Summary\n\nUpdated\n",
+    );
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await mkdir(path.join(root, ".agentplane", "tasks", taskId), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const x = 1;\n", "utf8");
+    await writeFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), readme, "utf8");
+    await writeFile(
+      path.join(root, ".agentplane", "tasks", taskId, "evidence.txt"),
+      "active task evidence\n",
+      "utf8",
+    );
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        taskId,
+        "-m",
+        "✨ ABCDEF commit: stage active task artifacts with populated index",
+        "--allow",
+        "src",
+        "--allow-tasks",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(
+        "commit auto-staged 2 active task artifact path(s) from --allow-tasks",
+      );
+      expect(io.stdout).toContain(
+        `staged=.agentplane/tasks/${taskId}/evidence.txt, .agentplane/tasks/${taskId}/README.md`,
+      );
+    } finally {
+      io.restore();
+    }
+
+    const showRes = await execFileAsync("git", ["show", "--name-only", "--format="], {
+      cwd: root,
+    });
+    const changed = showRes.stdout
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    expect(changed).toEqual([
+      `.agentplane/tasks/${taskId}/README.md`,
+      `.agentplane/tasks/${taskId}/evidence.txt`,
+      "src/app.ts",
+    ]);
+  });
+
   it("commit wrapper lets --allow-tasks cover a non-README active task artifact without a duplicate explicit prefix", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -622,16 +697,11 @@ describe("runCli", { timeout: COMMIT_WRAPPER_SUITE_TIMEOUT_MS }, () => {
       .split("\n")
       .map((s) => s.trim())
       .filter(Boolean);
-    expect(headChanged).toEqual([`.agentplane/tasks/${taskId}/README.md`]);
-
-    const codeRes = await execFileAsync("git", ["show", "--name-only", "--format=", "HEAD~1"], {
-      cwd: root,
-    });
-    const codeChanged = codeRes.stdout
-      .split("\n")
-      .map((s) => s.trim())
-      .filter(Boolean);
-    expect(codeChanged).toEqual([`.agentplane/tasks/${taskId}/evidence.txt`, "src/app.ts"]);
+    expect(headChanged).toEqual([
+      `.agentplane/tasks/${taskId}/README.md`,
+      `.agentplane/tasks/${taskId}/evidence.txt`,
+      "src/app.ts",
+    ]);
   });
 
   it("commit wrapper surfaces invalid task README frontmatter as the concrete reconcile failure", async () => {
