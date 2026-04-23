@@ -4,11 +4,11 @@
   "entries": [
     {
       "file": "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
-      "lines": 1148
+      "lines": 1218
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.hooks.test.ts",
-      "lines": 1127
+      "lines": 1243
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.incidents.test.ts",
@@ -52,7 +52,7 @@
     },
     {
       "file": "packages/agentplane/src/commands/guard/impl/commands.unit.test.ts",
-      "lines": 1209
+      "lines": 1254
     },
     {
       "file": "packages/agentplane/src/commands/release/apply.test.ts",
@@ -64,7 +64,7 @@
     },
     {
       "file": "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
-      "lines": 1008
+      "lines": 1066
     }
   ]
 }
