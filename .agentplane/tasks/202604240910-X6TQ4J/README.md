@@ -1,10 +1,12 @@
 ---
 id: "202604240910-X6TQ4J"
 title: "Refresh knip baseline for release prepublish"
-status: "DOING"
+result_summary: "Knip baseline refreshed for release prepublish"
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +25,16 @@ verification:
   updated_at: "2026-04-24T09:10:50.748Z"
   updated_by: "CODER"
   note: "Command: /Users/densmirnov/.bun/bin/bun run knip:check; git diff --check. Result: pass. Evidence: refreshed the baseline constants to the current reviewed repository counts and the knip baseline guard now reports files=5, exports=239, types=333, total=577 within limits; git diff --check stayed clean. Scope: release-prepublish knip baseline unblock only."
-commit: null
+commit:
+  hash: "a02322eb9e7b985100e7e9dd051e80d3d53b9f07"
+  message: "✅ X6TQ4J meta: done"
 comments:
   -
     author: "CODER"
     body: "Start: refresh the stale knip baseline to the current reviewed counts so the heavy release prepublish gate can pass, then return to the v0.3.25 release task."
+  -
+    author: "CODER"
+    body: "Verified: refresh the stale knip baseline so heavy release prepublish accepts the current repository state."
 events:
   -
     type: "status"
@@ -42,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: /Users/densmirnov/.bun/bin/bun run knip:check; git diff --check. Result: pass. Evidence: refreshed the baseline constants to the current reviewed repository counts and the knip baseline guard now reports files=5, exports=239, types=333, total=577 within limits; git diff --check stayed clean. Scope: release-prepublish knip baseline unblock only."
+  -
+    type: "status"
+    at: "2026-04-24T09:10:51.782Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: refresh the stale knip baseline so heavy release prepublish accepts the current repository state."
 doc_version: 3
-doc_updated_at: "2026-04-24T09:10:50.753Z"
+doc_updated_at: "2026-04-24T09:10:51.783Z"
 doc_updated_by: "CODER"
 description: "Update the knip unused-code baseline to the current reviewed repository counts so the heavy release prepublish gate can pass and v0.3.25 can publish."
 sections:
