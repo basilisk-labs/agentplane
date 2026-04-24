@@ -1,10 +1,11 @@
 ---
 id: "202604241137-6FJ1M8"
 title: "v0.3 freeze E1: document shared module topology"
-status: "DOING"
+result_summary: "E1 complete: shared module topology is documented and linked before E2 code movement."
+status: "DONE"
 priority: "normal"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-24T13:25:37.943Z"
   updated_by: "DOCS"
   note: "Command: bun run docs:onboarding:check => pass. Command: node .agentplane/policy/check-routing.mjs => pass. Command: bun run docs:cli:check => pass, generated CLI reference unchanged. Command: bun run format:check && git diff --check => pass. Command: agentplane doctor => pass. Review: module topology doc covers all six shared directories and reserves ADR 0011 for the later v0.3 surface-freeze ADR."
-commit: null
+commit:
+  hash: "2798c865dc7673cf9bc375c79de0f198b203f1f7"
+  message: "📝 6FJ1M8 docs: document shared module topology"
 comments:
   -
     author: "DOCS"
     body: "Start: document shared module topology, dependency direction, and ADR references before any shared-layer code moves."
+  -
+    author: "DOCS"
+    body: "Verified: module topology documentation covers all current shared directories, allowed dependency direction, docs navigation, and ADR references while leaving ADR 0011 for the v0.3 freeze record."
 events:
   -
     type: "status"
@@ -44,8 +50,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: bun run docs:onboarding:check => pass. Command: node .agentplane/policy/check-routing.mjs => pass. Command: bun run docs:cli:check => pass, generated CLI reference unchanged. Command: bun run format:check && git diff --check => pass. Command: agentplane doctor => pass. Review: module topology doc covers all six shared directories and reserves ADR 0011 for the later v0.3 surface-freeze ADR."
+  -
+    type: "status"
+    at: "2026-04-24T13:26:29.118Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: module topology documentation covers all current shared directories, allowed dependency direction, docs navigation, and ADR references while leaving ADR 0011 for the v0.3 freeze record."
 doc_version: 3
-doc_updated_at: "2026-04-24T13:25:37.977Z"
+doc_updated_at: "2026-04-24T13:26:29.121Z"
 doc_updated_by: "DOCS"
 description: "Create developer documentation and ADR coverage for shared/common module layers and allowed dependency directions before moving code."
 sections:
