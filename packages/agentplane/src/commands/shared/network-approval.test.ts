@@ -21,7 +21,7 @@ describe("ensureNetworkApproved", () => {
 
   it("prompts in interactive mode when require_network=true and --yes is not provided", async () => {
     const config = defaultConfig();
-    const spy = vi.spyOn(prompts, "promptYesNo").mockResolvedValue(true);
+    const spy = vi.spyOn(prompts, "confirmPrompt").mockResolvedValue(true);
     try {
       await ensureNetworkApproved({
         config,
@@ -37,7 +37,7 @@ describe("ensureNetworkApproved", () => {
 
   it("accepts when --yes is provided", async () => {
     const config = defaultConfig();
-    const spy = vi.spyOn(prompts, "promptYesNo").mockResolvedValue(true);
+    const spy = vi.spyOn(prompts, "confirmPrompt").mockResolvedValue(true);
     try {
       await ensureNetworkApproved({
         config,

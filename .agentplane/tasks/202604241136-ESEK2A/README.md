@@ -1,10 +1,10 @@
 ---
 id: "202604241136-ESEK2A"
 title: "v0.3 freeze B1: migrate remaining legacy prompts to Clack adapter"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -15,19 +15,36 @@ tags:
 verify:
   - "rg -n 'promptChoice|promptYesNo|promptInput' packages/agentplane/src"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-04-24T11:48:18.553Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved from v0.3 freeze graph; B1 limited to non-init prompt consumers, with init route preserved for B2."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-04-24T11:49:50.125Z"
+  updated_by: "CODER"
+  note: "Command: rg -n 'promptChoice|promptYesNo|promptInput' packages/agentplane/src --glob '!*.test.ts' | Result: pass; non-init production consumers moved off legacy names, remaining matches are cli/prompts compatibility aliases, init v1 orchestrate, and recipe overlay promptInputs variable false positive. Command: bun run test -- runtime/approvals, shared approvals/network, workflow, cli/prompts focused files | Result: pass; 5 files, 47 tests. Command: bun run typecheck | Result: pass. Command: git diff --check | Result: pass."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: Implement B1 only by moving non-init prompt consumers to generic Clack-backed adapter names, leaving init v1/v2 routing untouched for B2."
+events:
+  -
+    type: "status"
+    at: "2026-04-24T11:48:26.157Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Implement B1 only by moving non-init prompt consumers to generic Clack-backed adapter names, leaving init v1/v2 routing untouched for B2."
+  -
+    type: "verify"
+    at: "2026-04-24T11:49:50.125Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: rg -n 'promptChoice|promptYesNo|promptInput' packages/agentplane/src --glob '!*.test.ts' | Result: pass; non-init production consumers moved off legacy names, remaining matches are cli/prompts compatibility aliases, init v1 orchestrate, and recipe overlay promptInputs variable false positive. Command: bun run test -- runtime/approvals, shared approvals/network, workflow, cli/prompts focused files | Result: pass; 5 files, 47 tests. Command: bun run typecheck | Result: pass. Command: git diff --check | Result: pass."
 doc_version: 3
-doc_updated_at: "2026-04-24T11:36:27.993Z"
+doc_updated_at: "2026-04-24T11:49:50.130Z"
 doc_updated_by: "CODER"
 description: "Move the remaining promptChoice/promptYesNo/promptInput callsites onto the Clack-backed prompt abstraction so init no longer keeps the legacy UI stack alive."
 sections:
@@ -39,15 +56,26 @@ sections:
     - In scope: Move the remaining promptChoice/promptYesNo/promptInput callsites onto the Clack-backed prompt abstraction so init no longer keeps the legacy UI stack alive.
     - Out of scope: unrelated refactors not required for "v0.3 freeze B1: migrate remaining legacy prompts to Clack adapter".
   Plan: |-
-    1. Implement the change for "v0.3 freeze B1: migrate remaining legacy prompts to Clack adapter".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+    1. Keep init v1/v2 routing untouched; B1 only covers non-init consumers of legacy prompt helper names.
+    2. Add generic Clack-backed prompt adapter exports in packages/agentplane/src/cli/prompts.ts while retaining promptChoice/promptYesNo/promptInput for init v1 compatibility until B2.
+    3. Move runtime approvals and shared git base-branch prompting to the generic adapter names.
+    4. Update affected non-init tests to spy on the generic adapter names.
+    5. Verify production grep leaves legacy prompt names only in cli/prompts.ts and init/orchestrate.ts, then run focused tests.
   Verify Steps: |-
-    1. Review the requested outcome for "v0.3 freeze B1: migrate remaining legacy prompts to Clack adapter". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run `rg -n 'promptChoice|promptYesNo|promptInput' packages/agentplane/src --glob '!*.test.ts'`. Expected: production matches remain only in `packages/agentplane/src/cli/prompts.ts` and init v1 `packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts`; overlay `promptInputs` variable is a documented false positive if still matched.
+    2. Run focused tests for non-init prompt consumers: `bun run test -- packages/agentplane/src/runtime/approvals/runtime.test.ts packages/agentplane/src/commands/shared/network-approval.test.ts packages/agentplane/src/commands/shared/approval-requirements.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/prompts.test.ts`. Expected: pass.
+    3. Run `bun run typecheck`. Expected: pass.
+    4. Run `git diff --check`. Expected: no whitespace errors.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-24T11:49:50.125Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: rg -n 'promptChoice|promptYesNo|promptInput' packages/agentplane/src --glob '!*.test.ts' | Result: pass; non-init production consumers moved off legacy names, remaining matches are cli/prompts compatibility aliases, init v1 orchestrate, and recipe overlay promptInputs variable false positive. Command: bun run test -- runtime/approvals, shared approvals/network, workflow, cli/prompts focused files | Result: pass; 5 files, 47 tests. Command: bun run typecheck | Result: pass. Command: git diff --check | Result: pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-24T11:48:26.167Z, excerpt_hash=sha256:cc57743c4607c8fb8bac1bf0817a0f97782950479a743a9387fca5786529523a
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -68,19 +96,30 @@ Move the remaining promptChoice/promptYesNo/promptInput callsites onto the Clack
 
 ## Plan
 
-1. Implement the change for "v0.3 freeze B1: migrate remaining legacy prompts to Clack adapter".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Keep init v1/v2 routing untouched; B1 only covers non-init consumers of legacy prompt helper names.
+2. Add generic Clack-backed prompt adapter exports in packages/agentplane/src/cli/prompts.ts while retaining promptChoice/promptYesNo/promptInput for init v1 compatibility until B2.
+3. Move runtime approvals and shared git base-branch prompting to the generic adapter names.
+4. Update affected non-init tests to spy on the generic adapter names.
+5. Verify production grep leaves legacy prompt names only in cli/prompts.ts and init/orchestrate.ts, then run focused tests.
 
 ## Verify Steps
 
-1. Review the requested outcome for "v0.3 freeze B1: migrate remaining legacy prompts to Clack adapter". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run `rg -n 'promptChoice|promptYesNo|promptInput' packages/agentplane/src --glob '!*.test.ts'`. Expected: production matches remain only in `packages/agentplane/src/cli/prompts.ts` and init v1 `packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts`; overlay `promptInputs` variable is a documented false positive if still matched.
+2. Run focused tests for non-init prompt consumers: `bun run test -- packages/agentplane/src/runtime/approvals/runtime.test.ts packages/agentplane/src/commands/shared/network-approval.test.ts packages/agentplane/src/commands/shared/approval-requirements.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/prompts.test.ts`. Expected: pass.
+3. Run `bun run typecheck`. Expected: pass.
+4. Run `git diff --check`. Expected: no whitespace errors.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-24T11:49:50.125Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: rg -n 'promptChoice|promptYesNo|promptInput' packages/agentplane/src --glob '!*.test.ts' | Result: pass; non-init production consumers moved off legacy names, remaining matches are cli/prompts compatibility aliases, init v1 orchestrate, and recipe overlay promptInputs variable false positive. Command: bun run test -- runtime/approvals, shared approvals/network, workflow, cli/prompts focused files | Result: pass; 5 files, 47 tests. Command: bun run typecheck | Result: pass. Command: git diff --check | Result: pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-24T11:48:26.167Z, excerpt_hash=sha256:cc57743c4607c8fb8bac1bf0817a0f97782950479a743a9387fca5786529523a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

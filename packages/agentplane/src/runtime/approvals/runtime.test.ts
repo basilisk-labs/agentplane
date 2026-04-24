@@ -70,7 +70,7 @@ describe("runtime/approvals", () => {
   it("prompts in interactive mode for required approvals", async () => {
     const config = defaultConfig();
     const runtime = new ApprovalRuntime({ config });
-    const spy = vi.spyOn(prompts, "promptYesNo").mockResolvedValue(true);
+    const spy = vi.spyOn(prompts, "confirmPrompt").mockResolvedValue(true);
     try {
       await runtime.ensure({
         action: "release_apply",

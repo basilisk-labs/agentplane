@@ -53,7 +53,7 @@ describe("approval requirements", () => {
 
   it("prompts in interactive mode for required actions", async () => {
     const config = defaultConfig();
-    const spy = vi.spyOn(prompts, "promptYesNo").mockResolvedValue(true);
+    const spy = vi.spyOn(prompts, "confirmPrompt").mockResolvedValue(true);
     try {
       await ensureActionApproved({
         action: "recipe_list_remote",

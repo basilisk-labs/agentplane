@@ -1,6 +1,6 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 
-import { promptYesNo } from "../../cli/prompts.js";
+import { confirmPrompt } from "../../cli/prompts.js";
 import { PolicyEngine } from "../../policy/engine.js";
 import { CliError } from "../../shared/errors.js";
 
@@ -170,7 +170,7 @@ export class ApprovalRuntime {
       });
     }
 
-    const approved = await promptYesNo(`Allow ${opts.action}? ${opts.reason}`, false);
+    const approved = await confirmPrompt(`Allow ${opts.action}? ${opts.reason}`, false);
     if (!approved) {
       throw new CliError({
         exitCode: 3,
