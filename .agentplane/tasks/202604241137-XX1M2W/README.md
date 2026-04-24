@@ -1,10 +1,11 @@
 ---
 id: "202604241137-XX1M2W"
 title: "v0.3 hygiene H3: resolve agentplane-recipes submodule residue"
-status: "DOING"
+result_summary: "Kept agentplane-recipes submodule metadata unchanged and recorded that the audit's empty-submodule premise is stale for the current checkout."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-24T14:44:17.429Z"
   updated_by: "CODER"
   note: "Command: git submodule status. Result: pass. Evidence: agentplane-recipes is pinned at 021c99bc8527220bf9339872903cf30105adea97. Scope: submodule initialization state. Command: test ! -f .gitmodules || cat .gitmodules. Result: pass. Evidence: .gitmodules contains path=agentplane-recipes and basilisk-labs/agentplane-recipes URL. Scope: submodule metadata. Additional checks: git ls-tree HEAD agentplane-recipes shows mode 160000 gitlink; git -C agentplane-recipes status --short --untracked-files=no is clean."
-commit: null
+commit:
+  hash: "ce73b85d4bbaa115952729444af60d2b4dd3f5ed"
+  message: "📝 XX1M2W task: record recipes submodule decision"
 comments:
   -
     author: "CODER"
     body: "Start: Resolve the agentplane-recipes submodule hygiene item by checking the current gitlink, .gitmodules metadata, and live directory contents before deciding whether any repo metadata should change."
+  -
+    author: "CODER"
+    body: "Verified: agentplane-recipes is an active clean submodule gitlink, .gitmodules is valid, and no stale metadata removal is warranted."
 events:
   -
     type: "status"
@@ -44,14 +50,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: git submodule status. Result: pass. Evidence: agentplane-recipes is pinned at 021c99bc8527220bf9339872903cf30105adea97. Scope: submodule initialization state. Command: test ! -f .gitmodules || cat .gitmodules. Result: pass. Evidence: .gitmodules contains path=agentplane-recipes and basilisk-labs/agentplane-recipes URL. Scope: submodule metadata. Additional checks: git ls-tree HEAD agentplane-recipes shows mode 160000 gitlink; git -C agentplane-recipes status --short --untracked-files=no is clean."
+  -
+    type: "status"
+    at: "2026-04-24T14:44:54.550Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: agentplane-recipes is an active clean submodule gitlink, .gitmodules is valid, and no stale metadata removal is warranted."
 doc_version: 3
-doc_updated_at: "2026-04-24T14:44:17.435Z"
+doc_updated_at: "2026-04-24T14:44:54.551Z"
 doc_updated_by: "CODER"
 description: "Decide and apply the repository treatment for the empty agentplane-recipes submodule reference: initialize it as active or remove the stale .gitmodules entry."
 sections:
   Summary: |-
     v0.3 hygiene H3: resolve agentplane-recipes submodule residue
-
+    
     Decide and apply the repository treatment for the empty agentplane-recipes submodule reference: initialize it as active or remove the stale .gitmodules entry.
   Scope: |-
     - In scope: Decide and apply the repository treatment for the empty agentplane-recipes submodule reference: initialize it as active or remove the stale .gitmodules entry.
@@ -68,13 +81,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-24T14:44:17.429Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Command: git submodule status. Result: pass. Evidence: agentplane-recipes is pinned at 021c99bc8527220bf9339872903cf30105adea97. Scope: submodule initialization state. Command: test ! -f .gitmodules || cat .gitmodules. Result: pass. Evidence: .gitmodules contains path=agentplane-recipes and basilisk-labs/agentplane-recipes URL. Scope: submodule metadata. Additional checks: git ls-tree HEAD agentplane-recipes shows mode 160000 gitlink; git -C agentplane-recipes status --short --untracked-files=no is clean.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-24T14:44:08.715Z, excerpt_hash=sha256:a2aedc152ae5b7c9999d4b6dabcd7d4fd92f5fa663fc0749f1e8c34f149cb774
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
