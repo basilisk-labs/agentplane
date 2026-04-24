@@ -17,6 +17,15 @@ Durable config and task artifact contracts now use Zod in `packages/core/src/**`
 
 For the architectural decision and practical boundary guidance, see [ADR: Zod Contract SSOT](schema-runtime-contract-adr) and [Schema validation strategy](schema-validation-strategy).
 
+## Current priority
+
+This page describes the current implementation surfaces. It is not an endorsement of expanding
+recipe, runner, or prompt-assembly scope immediately.
+
+For the active `0.3` line, the priority is to harden existing task, workflow, PR/integrate,
+backend, and CLI contracts first. Deeper prompt-assembly and recipe-domain redesign remains
+deferred until that foundation work settles.
+
 ## Framework control plane
 
 The framework layer is the reusable control plane that recipes and runner-specific code now consume instead of rebuilding local helper state.
@@ -126,6 +135,9 @@ Policy enforcement now resolves through the framework layer and is then consumed
 - `PolicyEngine` classifies actions and `ApprovalRuntime` evaluates gated behavior such as network, fs, git, config, and force mutations.
 - `ResolvedExecutionProfileRuntime` carries approval escalation, budgets, stop/handoff conditions, trace policy, and timeout policy.
 - Runner and recipe-adjacent flows receive the same resolved policy inputs through the canonical context and persisted runner bundle.
+
+The existence of these shared surfaces should not be read as an active mandate to broaden the
+runner or recipe architecture during `0.3` stabilization.
 
 ## Release flow
 

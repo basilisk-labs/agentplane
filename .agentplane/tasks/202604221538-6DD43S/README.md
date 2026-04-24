@@ -1,10 +1,13 @@
 ---
 id: "202604221538-6DD43S"
 title: "Epic E: Prompt assembly verification and docs"
-status: "TODO"
+result_summary: "No-op closure recorded."
+risk_level: "low"
+breaking: false
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -31,34 +34,50 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: |-
+      Verified: no implementation changes were required; closure is recorded as no-op bookkeeping.
+      
+      Note: Deferred beyond the active 0.3 foundation stabilization line; removed from the active board during backlog realignment before deeper prompt-assembly, recipe, and runner work resumes.
+events:
+  -
+    type: "status"
+    at: "2026-04-23T17:54:33.367Z"
+    author: "ORCHESTRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: |-
+      Verified: no implementation changes were required; closure is recorded as no-op bookkeeping.
+      
+      Note: Deferred beyond the active 0.3 foundation stabilization line; removed from the active board during backlog realignment before deeper prompt-assembly, recipe, and runner work resumes.
 doc_version: 3
-doc_updated_at: "2026-04-22T15:38:49.580Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-23T17:54:33.367Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Roll-up epic for compiler tests, init/upgrade migration tests, recipe lifecycle tests, doctor diagnostics, and shipped-behavior docs."
 sections:
   Summary: |-
     Epic E: Prompt assembly verification and docs
-
+    
     Roll-up epic for compiler tests, init/upgrade migration tests, recipe lifecycle tests, doctor diagnostics, and shipped-behavior docs.
   Scope: |-
     - In scope: Roll-up epic for compiler tests, init/upgrade migration tests, recipe lifecycle tests, doctor diagnostics, and shipped-behavior docs.
     - Out of scope: unrelated refactors not required for "Epic E: Prompt assembly verification and docs".
   Plan: |-
     Goal: Epic E: Prompt assembly verification and docs
-
+    
     Plan:
     1. Inspect the current implementation and tests around this scope.
     2. Make the smallest implementation change that satisfies the task contract.
     3. Add or update focused tests and fixtures for the changed behavior.
     4. Update docs or generated schemas only when the code-facing contract changes.
-
+    
     Acceptance:
     - All verification and docs tasks are DONE with final checks recorded.
     - Existing public behavior outside this scope is preserved.
     - Verification evidence is recorded before finish.
-
+    
     Rollback Plan:
     - Revert this task commit and rerun the focused verification commands.
   Verify Steps: |-

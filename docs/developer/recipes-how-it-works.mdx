@@ -17,10 +17,6 @@ recipe-owned scenario assets it still compiles.
 
 `recipes install` stops here. It does not make the recipe active for any project.
 
-In the planned v0.4 prompt assembly model, the global cache is also where downloaded recipe module
-packages are stored before project activation. Cached modules have no authority until the recipe is
-vendored and active in a project.
-
 ## Vendoring flow
 
 `recipes add`:
@@ -31,19 +27,8 @@ vendored and active in a project.
 4. Recompiles `.agentplane/generated/overlay-bundle.json` and `.agentplane/generated/recipe-assets.json`.
 5. Leaves runtime pointed at the vendored project-local package, not at the global cache.
 
-For the planned v0.4 prompt assembly model, vendoring additionally feeds the prompt compiler:
-
-1. Reads active recipe modules and mutations from `.agentplane/recipes/packages/<recipe-id>/`.
-2. Validates module ids, targets, mutability, compatibility, and recipe conflicts.
-3. Resolves bindings by role, phase, command, workflow mode, tags, and repo type.
-4. Rebuilds the compiled prompt filesystem:
-   - `AGENTS.md` or `CLAUDE.md`;
-   - `.agentplane/policy/**`;
-   - `.agentplane/agents/**`;
-   - generated prompt graph and manifest artifacts.
-5. Preserves `AGENTS.md` as the entrypoint and keeps recipe-specific detail behind lazy load rules.
-
-See [Prompt assembly system](prompt-assembly-system) for the full module and mutation contract.
+Deferred prompt-assembly/compiler work may revisit vendoring later, but it is not part of the
+active `0.3.23` behavior documented here.
 
 ## Listing and inspection
 
