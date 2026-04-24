@@ -1,10 +1,11 @@
 ---
 id: "202604241137-PC2MZW"
 title: "v0.3 hygiene H5: add release-critical full lifecycle integration test"
-status: "DOING"
+result_summary: "Added packages/agentplane/src/cli/release-critical-lifecycle.test.ts and registered it in scripts/run-vitest-suite.mjs release-critical."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-24T14:54:44.642Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/release-critical-lifecycle.test.ts --pool=forks --testTimeout 120000 --hookTimeout 120000. Result: pass. Evidence: 1 test passed; direct lifecycle reached init, task new, plan set/approve, task start-ready, task verify-show, verify, finish, and clean git status in the temp repo. Scope: new lifecycle indicator. Command: bun run test:release:critical. Result: pass. Evidence: 4 files passed, 16 tests passed. Scope: release-critical aggregate. Additional checks: bun run lint:core -- packages/agentplane/src/cli/release-critical-lifecycle.test.ts scripts/run-vitest-suite.mjs passed; Prettier check for changed files and git diff --check passed."
-commit: null
+commit:
+  hash: "4dc48d9a15af8a64cc22ae0e24103d4ac02223a5"
+  message: "✅ PC2MZW task: add release critical lifecycle test"
 comments:
   -
     author: "CODER"
     body: "Start: Add the release-critical full lifecycle integration test as the living v0.3 freeze indicator, using the existing runCli integration harness and local git-only side effects."
+  -
+    author: "CODER"
+    body: "Verified: release-critical now includes a dedicated direct lifecycle integration test and the aggregate release-critical suite passes."
 events:
   -
     type: "status"
@@ -44,14 +50,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/release-critical-lifecycle.test.ts --pool=forks --testTimeout 120000 --hookTimeout 120000. Result: pass. Evidence: 1 test passed; direct lifecycle reached init, task new, plan set/approve, task start-ready, task verify-show, verify, finish, and clean git status in the temp repo. Scope: new lifecycle indicator. Command: bun run test:release:critical. Result: pass. Evidence: 4 files passed, 16 tests passed. Scope: release-critical aggregate. Additional checks: bun run lint:core -- packages/agentplane/src/cli/release-critical-lifecycle.test.ts scripts/run-vitest-suite.mjs passed; Prettier check for changed files and git diff --check passed."
+  -
+    type: "status"
+    at: "2026-04-24T14:55:40.731Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release-critical now includes a dedicated direct lifecycle integration test and the aggregate release-critical suite passes."
 doc_version: 3
-doc_updated_at: "2026-04-24T14:54:44.648Z"
+doc_updated_at: "2026-04-24T14:55:40.732Z"
 doc_updated_by: "CODER"
 description: "Add one release-critical integration test covering init, task new, plan, start, verify, and finish as the living v0.3 freeze indicator."
 sections:
   Summary: |-
     v0.3 hygiene H5: add release-critical full lifecycle integration test
-
+    
     Add one release-critical integration test covering init, task new, plan, start, verify, and finish as the living v0.3 freeze indicator.
   Scope: |-
     - In scope: Add one release-critical integration test covering init, task new, plan, start, verify, and finish as the living v0.3 freeze indicator.
@@ -68,13 +81,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-24T14:54:44.642Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Command: bunx vitest run packages/agentplane/src/cli/release-critical-lifecycle.test.ts --pool=forks --testTimeout 120000 --hookTimeout 120000. Result: pass. Evidence: 1 test passed; direct lifecycle reached init, task new, plan set/approve, task start-ready, task verify-show, verify, finish, and clean git status in the temp repo. Scope: new lifecycle indicator. Command: bun run test:release:critical. Result: pass. Evidence: 4 files passed, 16 tests passed. Scope: release-critical aggregate. Additional checks: bun run lint:core -- packages/agentplane/src/cli/release-critical-lifecycle.test.ts scripts/run-vitest-suite.mjs passed; Prettier check for changed files and git diff --check passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-24T14:50:55.845Z, excerpt_hash=sha256:223c2f795f673674e87ff6fa377065f04525b220104e1f8cad4cf517056207a8
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
