@@ -1,10 +1,11 @@
 ---
 id: "202604241136-F3ZYZJ"
 title: "v0.3 freeze A1: prune agentplane package JS before bundling"
-status: "DOING"
+result_summary: "A1 added prune-package-js to agentplane build:bundle and verified bundled CLI runtime output."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-24T11:40:42.920Z"
   updated_by: "CODER"
   note: "Command: rg -n 'agentplane/dist' packages --glob '*.ts' | Result: pass with reviewed non-import path fixture in branch/work-start.materialize.ts. Command: bun run --filter=agentplane build | Result: pass; build runs prune-package-js before tsup and emits dist/cli.js. Command: find packages/agentplane/dist -type f | wc -l | Result: pass; count 1248, with only one JS runtime file and zero JS maps; declarations remain for later A3 whitelist work. Command: git diff --check | Result: pass."
-commit: null
+commit:
+  hash: "cfb17902e0f2c7ecf9327d583bb1defaf412f2aa"
+  message: "📦 F3ZYZJ release: prune agentplane package JS before bundling"
 comments:
   -
     author: "CODER"
     body: "Start: Implement A1 only by adding the existing prune-package-js step before tsup in agentplane build:bundle, then verify package build output and deep dist imports."
+  -
+    author: "CODER"
+    body: "Verified: A1 build bundle now prunes package JS before tsup; build passes, dist has only cli.js as runtime JS, no JS maps, and remaining declaration artifacts are deferred to A3."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: rg -n 'agentplane/dist' packages --glob '*.ts' | Result: pass with reviewed non-import path fixture in branch/work-start.materialize.ts. Command: bun run --filter=agentplane build | Result: pass; build runs prune-package-js before tsup and emits dist/cli.js. Command: find packages/agentplane/dist -type f | wc -l | Result: pass; count 1248, with only one JS runtime file and zero JS maps; declarations remain for later A3 whitelist work. Command: git diff --check | Result: pass."
+  -
+    type: "status"
+    at: "2026-04-24T11:41:27.981Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: A1 build bundle now prunes package JS before tsup; build passes, dist has only cli.js as runtime JS, no JS maps, and remaining declaration artifacts are deferred to A3."
 doc_version: 3
-doc_updated_at: "2026-04-24T11:40:42.954Z"
+doc_updated_at: "2026-04-24T11:41:27.983Z"
 doc_updated_by: "CODER"
 description: "Add prune-package-js to the agentplane build:bundle path and verify the publish dist runtime surface shrinks without breaking the tsup CLI bundle."
 sections:
