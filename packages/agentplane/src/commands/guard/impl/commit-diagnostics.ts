@@ -1,4 +1,4 @@
-import { stripAnsi } from "../../../cli/shared/ansi.js";
+import { stripAnsi } from "../../../shared/ansi.js";
 import { withDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 

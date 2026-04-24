@@ -65,7 +65,7 @@ const CLI_HELP_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.help-(?:contract|snap)\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.docs-cli\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/spec\//,
-  /^packages\/agentplane\/src\/cli\/shared\//,
+  /^packages\/agentplane\/src\/shared\/ansi(?:\.test)?\.ts$/,
 ];
 const CLI_HELP_DISCOVERY_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:docs-cli|help-contract|help-snap)\.test\.ts$/,
@@ -234,7 +234,7 @@ const CLI_HELP_TEST_FILES = [
   "packages/agentplane/src/cli/spec/help-render.test.ts",
   "packages/agentplane/src/cli/spec/registry.test.ts",
   "packages/agentplane/src/cli/spec/suggest.test.ts",
-  "packages/agentplane/src/cli/shared/ansi.test.ts",
+  "packages/agentplane/src/shared/ansi.test.ts",
   ...discoverTestFiles(["packages/agentplane/src/cli"], CLI_HELP_DISCOVERY_PATTERNS),
 ];
 const CLI_CORE_TEST_FILES = [
