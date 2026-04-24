@@ -1,10 +1,11 @@
 ---
 id: "202604241137-PT2V56"
 title: "v0.3 freeze G2: accept ADR for v0.3 surface freeze"
-status: "DOING"
+result_summary: "G2 complete: ADR 0011 accepts the v0.3 surface freeze, defines frozen and allowed surfaces for 0.3.x, and points v0.4 planning to FREEZE.v0.3.md."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-24T13:55:43.933Z"
   updated_by: "DOCS"
   note: "Verified G2: ADR 0011 exists, contains Accepted plus 0.3/0.4/FREEZE.v0.3.md markers, ADR README index references it, policy routing passes, doctor passes, format:check passes, and git diff --check passes."
-commit: null
+commit:
+  hash: "814f306631567303dbb1825ae02bf2129bf3367a"
+  message: "📝 PT2V56 task: accept v0.3 freeze ADR"
 comments:
   -
     author: "DOCS"
     body: "Start: Adding ADR 0011 for the accepted v0.3 surface freeze decision, scoped to docs only, then validating ADR markers, routing, doctor, formatting, and diff cleanliness."
+  -
+    author: "DOCS"
+    body: "Verified: ADR 0011 exists, contains Accepted plus 0.3/0.4/FREEZE.v0.3.md markers, ADR README index references it, policy routing passes, doctor passes, format:check passes, and git diff --check passes."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified G2: ADR 0011 exists, contains Accepted plus 0.3/0.4/FREEZE.v0.3.md markers, ADR README index references it, policy routing passes, doctor passes, format:check passes, and git diff --check passes."
+  -
+    type: "status"
+    at: "2026-04-24T13:56:12.366Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: ADR 0011 exists, contains Accepted plus 0.3/0.4/FREEZE.v0.3.md markers, ADR README index references it, policy routing passes, doctor passes, format:check passes, and git diff --check passes."
 doc_version: 3
-doc_updated_at: "2026-04-24T13:55:43.962Z"
+doc_updated_at: "2026-04-24T13:56:12.368Z"
 doc_updated_by: "DOCS"
 description: "Add ADR 0011 defining the frozen v0.3 public surface, allowed internal refactors, and migration pointer toward v0.4."
 sections:
