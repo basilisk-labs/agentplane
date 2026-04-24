@@ -1,10 +1,11 @@
 ---
 id: "202604241137-BBVYQQ"
 title: "v0.3 hygiene H4: ban test-helper suffix regression"
-status: "DOING"
+result_summary: "Added a hard ESLint guard for **/*.test-helpers.ts and removed stale suffix allowances from hotspot and local CI selection."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-24T14:49:11.017Z"
   updated_by: "CODER"
   note: "Command: bun run lint. Result: pass. Evidence: lint:core and lint:website completed successfully. Scope: ESLint enforcement including the new **/*.test-helpers.ts guard. Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000. Result: pass. Evidence: 2 files, 45 tests passed. Scope: removed stale suffix allowances. Command: git ls-files -- '*.test-helpers.ts'. Result: pass. Evidence: no tracked files matched. Negative check: temporary packages/agentplane/src/tmp.test-helpers.ts failed ESLint with the new no-restricted-syntax message, then was removed. Additional checks: Prettier check for changed files and git diff --check passed."
-commit: null
+commit:
+  hash: "756059b4446978de4cfd27b60c8d9ee6780f6afc"
+  message: "🧹 BBVYQQ task: ban test helper suffix"
 comments:
   -
     author: "CODER"
     body: "Start: Add enforcement against the obsolete .test-helpers.ts suffix and remove stale allowances that would let the suffix re-enter after the baseline reached zero."
+  -
+    author: "CODER"
+    body: "Verified: full lint passes, focused hotspot/local-ci tests pass, tracked .test-helpers.ts inventory is empty, and a temporary suffix file fails ESLint on the new guard."
 events:
   -
     type: "status"
@@ -45,14 +51,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run lint. Result: pass. Evidence: lint:core and lint:website completed successfully. Scope: ESLint enforcement including the new **/*.test-helpers.ts guard. Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000. Result: pass. Evidence: 2 files, 45 tests passed. Scope: removed stale suffix allowances. Command: git ls-files -- '*.test-helpers.ts'. Result: pass. Evidence: no tracked files matched. Negative check: temporary packages/agentplane/src/tmp.test-helpers.ts failed ESLint with the new no-restricted-syntax message, then was removed. Additional checks: Prettier check for changed files and git diff --check passed."
+  -
+    type: "status"
+    at: "2026-04-24T14:49:43.509Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: full lint passes, focused hotspot/local-ci tests pass, tracked .test-helpers.ts inventory is empty, and a temporary suffix file fails ESLint on the new guard."
 doc_version: 3
-doc_updated_at: "2026-04-24T14:49:11.022Z"
+doc_updated_at: "2026-04-24T14:49:43.510Z"
 doc_updated_by: "CODER"
 description: "Add or tighten enforcement so .test-helpers.ts files cannot re-enter after the baseline reaches zero."
 sections:
   Summary: |-
     v0.3 hygiene H4: ban test-helper suffix regression
-
+    
     Add or tighten enforcement so .test-helpers.ts files cannot re-enter after the baseline reaches zero.
   Scope: |-
     - In scope: Add or tighten enforcement so .test-helpers.ts files cannot re-enter after the baseline reaches zero.
@@ -69,13 +82,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-24T14:49:11.017Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Command: bun run lint. Result: pass. Evidence: lint:core and lint:website completed successfully. Scope: ESLint enforcement including the new **/*.test-helpers.ts guard. Command: bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000. Result: pass. Evidence: 2 files, 45 tests passed. Scope: removed stale suffix allowances. Command: git ls-files -- '*.test-helpers.ts'. Result: pass. Evidence: no tracked files matched. Negative check: temporary packages/agentplane/src/tmp.test-helpers.ts failed ESLint with the new no-restricted-syntax message, then was removed. Additional checks: Prettier check for changed files and git diff --check passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-24T14:46:28.095Z, excerpt_hash=sha256:96e2d6ac7200476a5fce9b929fca636511c73352d0c769e751cec425ada34abe
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
