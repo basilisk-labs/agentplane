@@ -1,10 +1,11 @@
 ---
 id: "202604241137-DFNX5S"
 title: "v0.3 freeze G1: add root FREEZE v0.3 surface artifact"
-status: "DOING"
+result_summary: "G1 complete: root FREEZE.v0.3.md now records the v0.3 surface contract, command inventory, lifecycle map, config schema pointer, package boundary, CLI hash, version, and bound checkout."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -32,11 +33,16 @@ verification:
   updated_at: "2026-04-24T13:53:03.931Z"
   updated_by: "DOCS"
   note: "Verified G1: FREEZE.v0.3.md exists, references 0.3.x and agentplane@0.3.25, records CLI SHA256 6554e5a592a22cfffd3154f41cd72c8e6c2e52bc53b3d6eda9d8d455c87965e2, command spec count is 95, policy routing passes, doctor passes, format:check passes, and git diff --check passes."
-commit: null
+commit:
+  hash: "5425603f4f7a5fac3d82f9a3f910ee12ccbd5d13"
+  message: "🧊 DFNX5S task: add v0.3 freeze surface artifact"
 comments:
   -
     author: "DOCS"
     body: "Start: Creating the root FREEZE.v0.3.md artifact from current repo facts without changing release state, then validating version references, CLI hash, routing, doctor, and docs sanity."
+  -
+    author: "DOCS"
+    body: "Verified: FREEZE.v0.3.md exists, references 0.3.x and agentplane@0.3.25, records CLI SHA256, command spec count is 95, policy routing passes, doctor passes, format:check passes, and git diff --check passes."
 events:
   -
     type: "status"
@@ -51,8 +57,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified G1: FREEZE.v0.3.md exists, references 0.3.x and agentplane@0.3.25, records CLI SHA256 6554e5a592a22cfffd3154f41cd72c8e6c2e52bc53b3d6eda9d8d455c87965e2, command spec count is 95, policy routing passes, doctor passes, format:check passes, and git diff --check passes."
+  -
+    type: "status"
+    at: "2026-04-24T13:53:31.990Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: FREEZE.v0.3.md exists, references 0.3.x and agentplane@0.3.25, records CLI SHA256, command spec count is 95, policy routing passes, doctor passes, format:check passes, and git diff --check passes."
 doc_version: 3
-doc_updated_at: "2026-04-24T13:53:03.961Z"
+doc_updated_at: "2026-04-24T13:53:31.991Z"
 doc_updated_by: "DOCS"
 description: "Create FREEZE.v0.3.md with command surface mapping, lifecycle map, config contract pointer, CLI bundle hash, version, and git commit binding."
 sections:
