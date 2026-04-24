@@ -1,10 +1,10 @@
 ---
 id: "202604241137-DFNX5S"
 title: "v0.3 freeze G1: add root FREEZE v0.3 surface artifact"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 1
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,19 +23,36 @@ verify:
   - "rg -n '0\\.3\\.' FREEZE.v0.3.md"
   - "test -f FREEZE.v0.3.md"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-04-24T13:49:21.118Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-04-24T13:53:03.931Z"
+  updated_by: "DOCS"
+  note: "Verified G1: FREEZE.v0.3.md exists, references 0.3.x and agentplane@0.3.25, records CLI SHA256 6554e5a592a22cfffd3154f41cd72c8e6c2e52bc53b3d6eda9d8d455c87965e2, command spec count is 95, policy routing passes, doctor passes, format:check passes, and git diff --check passes."
+commit: null
+comments:
+  -
+    author: "DOCS"
+    body: "Start: Creating the root FREEZE.v0.3.md artifact from current repo facts without changing release state, then validating version references, CLI hash, routing, doctor, and docs sanity."
+events:
+  -
+    type: "status"
+    at: "2026-04-24T13:49:28.175Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Creating the root FREEZE.v0.3.md artifact from current repo facts without changing release state, then validating version references, CLI hash, routing, doctor, and docs sanity."
+  -
+    type: "verify"
+    at: "2026-04-24T13:53:03.931Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Verified G1: FREEZE.v0.3.md exists, references 0.3.x and agentplane@0.3.25, records CLI SHA256 6554e5a592a22cfffd3154f41cd72c8e6c2e52bc53b3d6eda9d8d455c87965e2, command spec count is 95, policy routing passes, doctor passes, format:check passes, and git diff --check passes."
 doc_version: 3
-doc_updated_at: "2026-04-24T11:37:21.523Z"
+doc_updated_at: "2026-04-24T13:53:03.961Z"
 doc_updated_by: "DOCS"
 description: "Create FREEZE.v0.3.md with command surface mapping, lifecycle map, config contract pointer, CLI bundle hash, version, and git commit binding."
 sections:
@@ -47,15 +64,23 @@ sections:
     - In scope: Create FREEZE.v0.3.md with command surface mapping, lifecycle map, config contract pointer, CLI bundle hash, version, and git commit binding.
     - Out of scope: unrelated refactors not required for "v0.3 freeze G1: add root FREEZE v0.3 surface artifact".
   Plan: |-
-    1. Implement the change for "v0.3 freeze G1: add root FREEZE v0.3 surface artifact".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+    1. Generate FREEZE.v0.3.md from current repository facts: package version, current commit, dist/cli.js SHA256, command surface inventory, lifecycle/close taxonomy, config schema contract pointer, and verification gates.
+    2. Keep the artifact docs-only and non-mutating for release state: no version bump, no release apply, no tag or network action.
+    3. Verify the artifact exists, references 0.3.x/current version, has a CLI hash from the current built dist, and passes routing/doctor plus markdown/content sanity checks.
   Verify Steps: |-
     1. Review the requested outcome for "v0.3 freeze G1: add root FREEZE v0.3 surface artifact". Expected: the visible result matches ## Summary and stays inside approved scope.
     2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-24T13:53:03.931Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Verified G1: FREEZE.v0.3.md exists, references 0.3.x and agentplane@0.3.25, records CLI SHA256 6554e5a592a22cfffd3154f41cd72c8e6c2e52bc53b3d6eda9d8d455c87965e2, command spec count is 95, policy routing passes, doctor passes, format:check passes, and git diff --check passes.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-24T13:49:28.249Z, excerpt_hash=sha256:195bdad535c4ef271e2cca9565708821eab47dbe160a200e9577a8a3bde43b8a
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -76,9 +101,9 @@ Create FREEZE.v0.3.md with command surface mapping, lifecycle map, config contra
 
 ## Plan
 
-1. Implement the change for "v0.3 freeze G1: add root FREEZE v0.3 surface artifact".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Generate FREEZE.v0.3.md from current repository facts: package version, current commit, dist/cli.js SHA256, command surface inventory, lifecycle/close taxonomy, config schema contract pointer, and verification gates.
+2. Keep the artifact docs-only and non-mutating for release state: no version bump, no release apply, no tag or network action.
+3. Verify the artifact exists, references 0.3.x/current version, has a CLI hash from the current built dist, and passes routing/doctor plus markdown/content sanity checks.
 
 ## Verify Steps
 
@@ -89,6 +114,14 @@ Create FREEZE.v0.3.md with command surface mapping, lifecycle map, config contra
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-24T13:53:03.931Z — VERIFY — ok
+
+By: DOCS
+
+Note: Verified G1: FREEZE.v0.3.md exists, references 0.3.x and agentplane@0.3.25, records CLI SHA256 6554e5a592a22cfffd3154f41cd72c8e6c2e52bc53b3d6eda9d8d455c87965e2, command spec count is 95, policy routing passes, doctor passes, format:check passes, and git diff --check passes.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-24T13:49:28.249Z, excerpt_hash=sha256:195bdad535c4ef271e2cca9565708821eab47dbe160a200e9577a8a3bde43b8a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
