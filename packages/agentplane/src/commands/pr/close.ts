@@ -2,13 +2,14 @@ import { mapCoreError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import {
-  isGhNotFound,
-  resolveDefaultGithubRepo,
-  runGhApiJson,
-  runGhApiNoOutput,
-} from "./internal/gh-api.js";
+  deleteCloseRemoteHeadBranch,
+  ensureNonEmptyCloseFlag,
+  resolveCloseGithubRepo,
+  type CloseRemoteBranchAction,
+} from "../shared/close-precheck.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { runGhApiJson, runGhApiNoOutput } from "./internal/gh-api.js";
 
 type GithubPullResponse = {
   number: number;
@@ -29,25 +30,8 @@ type PrCloseResult = {
   state: string;
   comment: "added" | "skipped";
   remoteBranch: string | null;
-  remoteBranchAction:
-    | "deleted"
-    | "skipped"
-    | "skipped-fork"
-    | "skipped-missing-head"
-    | "already-absent";
+  remoteBranchAction: CloseRemoteBranchAction | "skipped" | "skipped-fork" | "skipped-missing-head";
 };
-
-function ensureNonEmptyFlag(name: string, value: string): string {
-  const trimmed = value.trim();
-  if (!trimmed) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_USAGE"),
-      code: "E_USAGE",
-      message: `Invalid value for --${name}.`,
-    });
-  }
-  return trimmed;
-}
 
 export async function cmdPrClose(opts: {
   ctx?: CommandContext;
@@ -73,9 +57,9 @@ export async function cmdPrClose(opts: {
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const commandCwd = ctx.resolvedProject.gitRoot;
     const repo = opts.repo
-      ? ensureNonEmptyFlag("repo", opts.repo)
-      : await resolveDefaultGithubRepo(commandCwd);
-    const comment = opts.comment?.trim() ? ensureNonEmptyFlag("comment", opts.comment) : null;
+      ? ensureNonEmptyCloseFlag("repo", opts.repo)
+      : await resolveCloseGithubRepo({ gitRoot: commandCwd, repoOverride: null });
+    const comment = opts.comment?.trim() ? ensureNonEmptyCloseFlag("comment", opts.comment) : null;
     const pr = await runGhApiJson<GithubPullResponse>(commandCwd, [
       `repos/${repo}/pulls/${opts.prNumber}`,
     ]);
@@ -116,20 +100,11 @@ export async function cmdPrClose(opts: {
       } else if (headRepo && headRepo !== repo) {
         remoteBranchAction = "skipped-fork";
       } else {
-        try {
-          await runGhApiNoOutput(commandCwd, [
-            `repos/${repo}/git/refs/heads/${encodeURIComponent(headRef)}`,
-            "-X",
-            "DELETE",
-          ]);
-          remoteBranchAction = "deleted";
-        } catch (err) {
-          if (isGhNotFound(err)) {
-            remoteBranchAction = "already-absent";
-          } else {
-            throw err;
-          }
-        }
+        remoteBranchAction = await deleteCloseRemoteHeadBranch({
+          cwd: commandCwd,
+          repo,
+          branch: headRef,
+        });
       }
     }
 
