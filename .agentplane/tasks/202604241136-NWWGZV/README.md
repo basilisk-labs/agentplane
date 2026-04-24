@@ -1,10 +1,11 @@
 ---
 id: "202604241136-NWWGZV"
 title: "v0.3 freeze C1: move run-cli test helpers into testkit"
-status: "DOING"
+result_summary: "C1 complete: repo-private run-cli helper modules no longer live under agentplane src/cli and test imports resolve through @agentplane/testkit subpaths."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-24T12:58:15.625Z"
   updated_by: "CODER"
   note: "C1 verified: run-cli helper modules moved to testkit subpaths, agentplane tsconfig helper exclusions removed, focused cli-core suites passed, testkit build/typecheck/format checks passed, release contract/vitest routing/knip checks passed, doctor OK."
-commit: null
+commit:
+  hash: "369492bad10209d7b3b4468b82e12daab93ea71a"
+  message: "🧪 NWWGZV task: move CLI helpers to testkit"
 comments:
   -
     author: "CODER"
     body: "Start: move excluded run-cli helper modules into testkit while avoiding a package dependency cycle via a narrow internal testing bridge."
+  -
+    author: "CODER"
+    body: "Verified: moved run-cli helper modules into testkit subpaths, removed agentplane tsconfig helper exclusions, preserved helper behavior through focused CLI suites and build/typecheck/format/knip checks."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "C1 verified: run-cli helper modules moved to testkit subpaths, agentplane tsconfig helper exclusions removed, focused cli-core suites passed, testkit build/typecheck/format checks passed, release contract/vitest routing/knip checks passed, doctor OK."
+  -
+    type: "status"
+    at: "2026-04-24T12:58:38.262Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: moved run-cli helper modules into testkit subpaths, removed agentplane tsconfig helper exclusions, preserved helper behavior through focused CLI suites and build/typecheck/format/knip checks."
 doc_version: 3
-doc_updated_at: "2026-04-24T12:58:15.657Z"
+doc_updated_at: "2026-04-24T12:58:38.264Z"
 doc_updated_by: "CODER"
 description: "Move run-cli.core helper modules out of agentplane src into @agentplane/testkit/cli and remove custom tsconfig exclusions."
 sections:
