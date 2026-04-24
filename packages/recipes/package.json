@@ -46,7 +46,8 @@
     "build": "tsc -b && bun run build:bundle",
     "build:bundle": "node ../../scripts/prune-package-js.mjs dist && tsup && node ../../scripts/manifest.mjs build .",
     "typecheck": "tsc -b",
-    "prepack": "bun run clean && bun run build",
+    "prepack": "bun run clean && bun run build && node ../../scripts/manifest.mjs sanitize .",
+    "postpack": "node ../../scripts/manifest.mjs build .",
     "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack",
     "test": "bun test ./src/index.test.ts ./src/overlay.test.ts"
   }

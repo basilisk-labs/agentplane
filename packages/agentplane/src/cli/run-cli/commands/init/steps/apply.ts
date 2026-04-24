@@ -115,15 +115,14 @@ export async function applyInitWithProgress(opts: {
   });
   installPaths.push(...idePaths);
 
-  await withStep({
+  const recipePaths = await withStep({
     clack: opts.clack,
     start: "Materializing recipes",
     success: "Materialized recipes",
     failure: "Failed to materialize recipes",
-    run: async () => {
-      await opts.plan.recipes();
-    },
+    run: async () => asInstallPaths(await opts.plan.recipes()),
   });
+  installPaths.push(...recipePaths);
 
   if (opts.includeInstallCommit && opts.plan.installCommit) {
     await withStep({

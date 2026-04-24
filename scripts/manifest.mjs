@@ -16,6 +16,7 @@ function usage() {
     "",
     "Commands:",
     "  build <package-dir>           Emit dist/.build-manifest.json for a package build",
+    "  sanitize <package-dir>        Rewrite dist/.build-manifest.json for npm packaging",
     "  publish-result [options]      Emit a publish-result artifact for the GitHub publish workflow",
     "  release-ready [options]       Inspect the checkout and emit a release-ready manifest",
   ].join("\n");
@@ -66,6 +67,9 @@ async function runBuildManifest(argv) {
 
   const manifest = {
     schema_version: 1,
+    manifest_kind: "development",
+    package_name: packageJson.name,
+    package_version: packageJson.version,
     package_dir: packageDir,
     generated_at: new Date().toISOString(),
     git_head: resolveGitHead(packageDir),
@@ -82,6 +86,30 @@ async function runBuildManifest(argv) {
   const outPath = path.join(packageDir, "dist", ".build-manifest.json");
   await mkdir(path.dirname(outPath), { recursive: true });
   await writeFile(outPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+}
+
+async function runSanitizeManifest(argv) {
+  const packageDirArg = argv[0];
+  if (!packageDirArg) {
+    throw new Error("usage: node scripts/manifest.mjs sanitize <package-dir>");
+  }
+
+  const packageDir = path.resolve(packageDirArg);
+  const packageJson = JSON.parse(await readFile(path.join(packageDir, "package.json"), "utf8"));
+  const manifestPath = path.join(packageDir, "dist", ".build-manifest.json");
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  const sanitized = {
+    schema_version: 1,
+    manifest_kind: "package",
+    package_name: packageJson.name,
+    package_version: packageJson.version,
+    git_head: typeof manifest.git_head === "string" ? manifest.git_head : null,
+    watched_runtime_snapshot_hash:
+      typeof manifest.watched_runtime_snapshot_hash === "string"
+        ? manifest.watched_runtime_snapshot_hash
+        : null,
+  };
+  await writeFile(manifestPath, `${JSON.stringify(sanitized, null, 2)}\n`, "utf8");
 }
 
 function publishResultUsage() {
@@ -638,6 +666,10 @@ async function main() {
   }
   if (top.command === "build") {
     await runBuildManifest(top.args);
+    return;
+  }
+  if (top.command === "sanitize") {
+    await runSanitizeManifest(top.args);
     return;
   }
   if (top.command === "publish-result") {

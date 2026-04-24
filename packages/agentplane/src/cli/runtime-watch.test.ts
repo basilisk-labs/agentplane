@@ -170,6 +170,24 @@ describe("runtime-watch", () => {
     expect(manifest.watched_runtime_snapshot_hash.length).toBe(64);
   });
 
+  it("sanitizes build manifests for package publication", async () => {
+    const { packageDir } = await setupPackageFixture("agentplane");
+    const scriptPath = path.join(workspaceRoot, "scripts", "manifest.mjs");
+
+    await execFileAsync("node", [scriptPath, "build", packageDir], { cwd: workspaceRoot });
+    await execFileAsync("node", [scriptPath, "sanitize", packageDir], { cwd: workspaceRoot });
+    const manifest = await readManifest(packageDir);
+
+    expect(manifest).toMatchObject({
+      schema_version: 1,
+      manifest_kind: "package",
+      package_name: "agentplane",
+    });
+    expect(manifest).not.toHaveProperty("package_dir");
+    expect(manifest).not.toHaveProperty("generated_at");
+    expect(manifest).not.toHaveProperty("watched_runtime_files");
+  });
+
   it("limits core snapshots to src files", async () => {
     const { packageDir } = await setupPackageFixture("@agentplaneorg/core");
     const scriptPath = path.join(workspaceRoot, "scripts", "manifest.mjs");

@@ -132,7 +132,7 @@ retry_policy:
 timeouts:
   stall_seconds: 900
 in_scope_paths:
-  - packages/**
+  - "**"
 ---
 
 ## Prompt Template

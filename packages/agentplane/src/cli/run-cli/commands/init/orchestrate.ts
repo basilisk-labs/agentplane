@@ -75,19 +75,6 @@ function shouldRunInteractiveInit(flags: InitParsed): boolean {
   return shouldUseInitClackPrompts();
 }
 
-function assertInteractiveFlagSupported(opts: {
-  flags: InitParsed;
-  spec: CommandSpec<InitParsed>;
-}): void {
-  if (!opts.flags.interactiveUi || shouldRunInteractiveInit(opts.flags)) return;
-  throw usageError({
-    spec: opts.spec,
-    command: "init",
-    message:
-      "Interactive init requires an interactive TTY. Omit --interactive-ui for the non-interactive route.",
-  });
-}
-
 function assertNonInteractiveInitAllowed(opts: {
   flags: InitParsed;
   spec: CommandSpec<InitParsed>;
@@ -371,7 +358,7 @@ async function applyInitPlan(opts: {
         return ideRes.installPaths;
       },
       recipes: async () => {
-        await maybeAddCachedRecipes({
+        return await maybeAddCachedRecipes({
           recipes: opts.answers.recipes,
           cwd: opts.cwd,
           rootOverride: opts.rootOverride,
@@ -397,7 +384,6 @@ export async function cmdInit(opts: {
   spec: CommandSpec<InitParsed>;
 }): Promise<number> {
   const interactive = shouldRunInteractiveInit(opts.flags);
-  assertInteractiveFlagSupported({ flags: opts.flags, spec: opts.spec });
   assertNonInteractiveInitAllowed({ flags: opts.flags, spec: opts.spec, interactive });
   const clack = interactive ? requireInitClack(await loadInitClackPrompts(), opts.spec) : null;
 

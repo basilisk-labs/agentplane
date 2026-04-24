@@ -2219,7 +2219,6 @@ Options:
 - `--force`: Overwrite init conflicts by deleting existing paths. (default=false)
 - `--backup`: Backup init conflicts before overwriting. (default=false)
 - `--yes`: Non-interactive mode (do not prompt; use defaults for missing flags). (default=false)
-- `--interactive-ui`: Use the interactive Clack-powered init UI. (default=false)
 - `--gitignore-agents`: Add gateway/agent files (AGENTS.md or CLAUDE.md and .agentplane/agents/) to .gitignore and skip the initial install commit. (default=false)
 
 Examples:
@@ -3436,7 +3435,7 @@ Options:
 Examples:
 
 ```sh
-agentplane task scrub --find "agentctl" --replace "agentplane" --dry-run
+agentplane task scrub --find "old-owner" --replace "new-owner" --dry-run
 ```
 
 - Preview which tasks would change.

@@ -45,7 +45,7 @@ export const taskScrubSpec: CommandSpec<TaskScrubParsed> = {
   ],
   examples: [
     {
-      cmd: 'agentplane task scrub --find "agentctl" --replace "agentplane" --dry-run',
+      cmd: 'agentplane task scrub --find "old-owner" --replace "new-owner" --dry-run',
       why: "Preview which tasks would change.",
     },
   ],

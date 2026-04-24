@@ -182,7 +182,7 @@ describe("runCli interactive init UI", () => {
     restoreEnv();
   });
 
-  it("runs the preview, confirm, and apply path behind --interactive-ui", async () => {
+  it("runs the preview, confirm, and apply path on the default interactive route", async () => {
     const root = await mkTempDir();
     mocks.selectMock
       .mockResolvedValueOnce("light")
@@ -193,7 +193,7 @@ describe("runCli interactive init UI", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["init", "--interactive-ui", "--root", root]);
+      const code = await runCli(["init", "--root", root]);
 
       expect(code).toBe(0);
       expect(io.stdout).toContain(".agentplane");
@@ -418,7 +418,7 @@ describe("runCli interactive init UI", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["init", "--interactive-ui", "--hooks", "yes", "--root", root]);
+      const code = await runCli(["init", "--hooks", "yes", "--root", root]);
 
       expect(code).toBe(2);
       expect(io.stderr).toContain("Init cancelled during conflict resolution.");
@@ -433,25 +433,18 @@ describe("runCli interactive init UI", () => {
     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
   });
 
-  it("keeps --experimental-ui as a compatibility alias", async () => {
+  it("rejects removed interactive init compatibility flags", async () => {
     const root = await mkTempDir();
-    mocks.selectMock
-      .mockResolvedValueOnce("light")
-      .mockResolvedValueOnce("codex")
-      .mockResolvedValueOnce("codex")
-      .mockResolvedValueOnce("local");
-    mocks.confirmMock.mockResolvedValueOnce(true);
 
     const io = captureStdIO();
     try {
       const code = await runCli(["init", "--experimental-ui", "--root", root]);
 
-      expect(code).toBe(0);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Unknown option: --experimental-ui");
     } finally {
       io.restore();
     }
-
-    expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
   });
 
   it("keeps unified non-interactive init for non-TTY and --yes", async () => {
