@@ -1,10 +1,11 @@
 ---
 id: "202604241137-YDECVA"
 title: "v0.3 hygiene H1: ratchet Knip baseline after cleanup"
-status: "DOING"
+result_summary: "Lowered BASELINE_LIMITS to files=5, exports=236, types=294, enumMembers=0, namespaceMembers=0, total=535."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-24T14:39:54.989Z"
   updated_by: "CODER"
   note: "Command: bun run knip:check. Result: pass. Evidence: Knip unused-code baseline OK (files=5/5, exports=236/236, types=294/294, enumMembers=0/0, namespaceMembers=0/0, total=535/535). Scope: scripts/check-knip-baseline.mjs baseline enforcement after v0.3 cleanup. Additional checks: git diff --check passed; agentplane doctor passed with 0 errors and 0 warnings."
-commit: null
+commit:
+  hash: "519c514ba974b602fcc74a0f2f8ece5ad9ba5181"
+  message: "🔧 YDECVA task: ratchet knip baseline"
 comments:
   -
     author: "CODER"
     body: "Start: Ratchet the Knip unused-code baseline after completed v0.3 cleanup, keeping the change limited to the enforcement script and verifying with the repository Knip check surface."
+  -
+    author: "CODER"
+    body: "Verified: Knip baseline ratcheted to the current post-cleanup counts and validated with bun run knip:check, git diff --check, and agentplane doctor."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run knip:check. Result: pass. Evidence: Knip unused-code baseline OK (files=5/5, exports=236/236, types=294/294, enumMembers=0/0, namespaceMembers=0/0, total=535/535). Scope: scripts/check-knip-baseline.mjs baseline enforcement after v0.3 cleanup. Additional checks: git diff --check passed; agentplane doctor passed with 0 errors and 0 warnings."
+  -
+    type: "status"
+    at: "2026-04-24T14:40:22.002Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Knip baseline ratcheted to the current post-cleanup counts and validated with bun run knip:check, git diff --check, and agentplane doctor."
 doc_version: 3
-doc_updated_at: "2026-04-24T14:39:55.000Z"
+doc_updated_at: "2026-04-24T14:40:22.003Z"
 doc_updated_by: "CODER"
 description: "Lower the Knip unused-code baseline by the amount removed during v0.3 freeze cleanup."
 sections:
