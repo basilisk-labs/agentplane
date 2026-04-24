@@ -1,10 +1,12 @@
 ---
 id: "202604240852-5HG7EY"
 title: "Format init cached recipe hotfix tests for push"
-status: "DOING"
+result_summary: "Init hotfix regression tests formatted for push"
+risk_level: "low"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +25,16 @@ verification:
   updated_at: "2026-04-24T08:53:42.059Z"
   updated_by: "CODER"
   note: "Command: ./node_modules/.bin/prettier --write packages/agentplane/src/cli/run-cli.core.init.v2.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts; ./node_modules/.bin/prettier --check packages/agentplane/src/cli/run-cli.core.init.v2.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts; git diff --check. Result: pass. Evidence: Prettier rewrote the two new init regression tests into canonical style, subsequent check reported all matched files clean, and git diff --check returned no whitespace errors. Scope: formatting-only recovery for the init cached recipe hotfix branch publication path."
-commit: null
+commit:
+  hash: "3b725d87f78288824c6b38ac652d37bea768d9b5"
+  message: "✅ 5HG7EY meta: done"
 comments:
   -
     author: "CODER"
     body: "Start: format the two init regression tests flagged by pre-push, then publish the existing hotfix branch."
+  -
+    author: "CODER"
+    body: "Verified: format the new init regression tests so protected pre-push accepts the hotfix branch."
 events:
   -
     type: "status"
@@ -42,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: ./node_modules/.bin/prettier --write packages/agentplane/src/cli/run-cli.core.init.v2.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts; ./node_modules/.bin/prettier --check packages/agentplane/src/cli/run-cli.core.init.v2.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts; git diff --check. Result: pass. Evidence: Prettier rewrote the two new init regression tests into canonical style, subsequent check reported all matched files clean, and git diff --check returned no whitespace errors. Scope: formatting-only recovery for the init cached recipe hotfix branch publication path."
+  -
+    type: "status"
+    at: "2026-04-24T08:53:43.109Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: format the new init regression tests so protected pre-push accepts the hotfix branch."
 doc_version: 3
-doc_updated_at: "2026-04-24T08:53:42.064Z"
+doc_updated_at: "2026-04-24T08:53:43.110Z"
 doc_updated_by: "CODER"
 description: "Apply required Prettier formatting to the new init cached recipe regression tests so the protected pre-push gate passes and the hotfix branch can be published."
 sections:
