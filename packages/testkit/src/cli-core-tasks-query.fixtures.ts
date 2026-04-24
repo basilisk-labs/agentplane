@@ -1,14 +1,9 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import {
-  installRunCliIntegrationHarness,
-  pathExists,
-  waitForCondition,
-  writeDefaultConfig,
-} from "@agentplane/testkit";
+import { loadCommandContext, type taskBackend } from "agentplane/internal/testing";
 
-import type * as taskBackend from "../backends/task-backend.js";
-import { loadCommandContext } from "../commands/shared/task-backend.js";
+import { installRunCliIntegrationHarness, pathExists, writeDefaultConfig } from "./cli-harness.js";
+import { waitForCondition } from "./wait.js";
 
 function useRunCliIntegrationHarness(): void {
   installRunCliIntegrationHarness();
@@ -23,7 +18,7 @@ async function waitForRunnerState(opts: {
   const timeoutMs = opts.timeoutMs ?? 5000;
   const runsRoot = path.join(opts.root, ".agentplane", "tasks", opts.taskId, "runs");
 
-  return await waitForCondition({
+  const match = await waitForCondition({
     description: `runner state in ${runsRoot}`,
     timeoutMs,
     read: async () => {
@@ -38,12 +33,13 @@ async function waitForRunnerState(opts: {
       }
       return null;
     },
-    predicate: (
-      match,
-    ): match is { runId: string; statePath: string; state: Record<string, unknown> } =>
-      match !== null,
+    predicate: (match) => match !== null,
     onTimeout: () => new Error(`Timed out waiting for runner state in ${runsRoot}`),
   });
+  if (!match) {
+    throw new Error(`Timed out waiting for runner state in ${runsRoot}`);
+  }
+  return match;
 }
 
 async function seedTaskQueryFixture(root: string, tasks: taskBackend.TaskData[]): Promise<void> {

@@ -75,7 +75,7 @@ import {
   type ResolvedProject,
   type RunShowPayload,
   type taskBackend,
-} from "./run-cli.core.tasks.query-support.js";
+} from "@agentplane/testkit/cli-core-tasks-query";
 
 useRunCliIntegrationHarness();
 

@@ -30,6 +30,18 @@
       "types": "./dist/cli.d.ts",
       "default": "./dist/cli.js"
     },
+    "./cli-core-lifecycle": {
+      "types": "./dist/cli-core-lifecycle.d.ts",
+      "default": "./dist/cli-core-lifecycle.js"
+    },
+    "./cli-core-pr-flow": {
+      "types": "./dist/cli-core-pr-flow.d.ts",
+      "default": "./dist/cli-core-pr-flow.js"
+    },
+    "./cli-core-tasks-query": {
+      "types": "./dist/cli-core-tasks-query.d.ts",
+      "default": "./dist/cli-core-tasks-query.js"
+    },
     "./recipes": {
       "types": "./dist/recipes.d.ts",
       "default": "./dist/recipes.js"

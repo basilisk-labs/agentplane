@@ -23,15 +23,25 @@ export {
   taskDocToSectionMap,
 } from "@agentplaneorg/core/tasks";
 
-export { runCli } from "./run-cli.js";
-export { infoMessage } from "./output.js";
 export {
+  evolveRunnerRunState,
   filterAgentsByWorkflow,
+  formatRunnerCapabilitySummaryLines,
+  formatRunnerPolicyFieldSummaryLines,
+  infoMessage,
   loadAgentTemplates,
   loadAgentsTemplate,
-} from "../agents/agents-template.js";
-export type * as taskBackend from "../backends/task-backend.js";
-export { loadCommandContext, loadTaskFromContext } from "../commands/shared/task-backend.js";
+  loadCommandContext,
+  loadTaskFromContext,
+  prepareTaskRunnerExecution,
+  processSupervision,
+  prompts,
+  resolveUpdateCheckCachePath,
+  runCli,
+  VERIFY_STEPS_PLACEHOLDER,
+  writeRunnerRunState,
+} from "agentplane/internal/testing";
+export type { taskBackend } from "agentplane/internal/testing";
 export {
   captureStdIO,
   cleanGitEnv,
@@ -53,13 +63,3 @@ export {
   writeConfig,
   writeDefaultConfig,
 } from "@agentplane/testkit";
-export { evolveRunnerRunState, writeRunnerRunState } from "../runner/artifacts.js";
-export {
-  formatRunnerCapabilitySummaryLines,
-  formatRunnerPolicyFieldSummaryLines,
-} from "../runner/policy-display.js";
-export { prepareTaskRunnerExecution } from "../runner/usecases/task-run.js";
-export * as processSupervision from "../runner/process-supervision/signals.js";
-export { resolveUpdateCheckCachePath } from "./update-check.js";
-export * as prompts from "./prompts.js";
-export { VERIFY_STEPS_PLACEHOLDER } from "../commands/task/shared/docs.js";

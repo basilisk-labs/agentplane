@@ -1,9 +1,10 @@
-import { infoMessage } from "./output.js";
 import {
   formatRunnerCapabilitySummaryLines,
   formatRunnerPolicyFieldSummaryLines,
-} from "../runner/policy-display.js";
-import type { RunnerAdapterCapabilities, RunnerPolicyDecision } from "../runner/types.js";
+  infoMessage,
+  type RunnerAdapterCapabilities,
+  type RunnerPolicyDecision,
+} from "agentplane/internal/testing";
 
 type RunShowPayload = {
   task_id: string;

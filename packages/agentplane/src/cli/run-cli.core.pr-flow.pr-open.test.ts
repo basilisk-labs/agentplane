@@ -56,7 +56,7 @@ import {
   installFakeGhPrApiRequiringPublishedPacketHead,
   installFakeGhPrLookup,
   type ResolvedProject,
-} from "./run-cli.core.pr-flow.pr-support.js";
+} from "@agentplane/testkit/cli-core-pr-flow";
 
 describe("runCli pr open flow", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
   it("pr open creates PR artifacts", async () => {

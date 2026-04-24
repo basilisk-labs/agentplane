@@ -56,7 +56,7 @@ import {
   installFakeGhPrApiRequiringPublishedPacketHead,
   installFakeGhPrLookup,
   type ResolvedProject,
-} from "./run-cli.core.pr-flow.pr-support.js";
+} from "@agentplane/testkit/cli-core-pr-flow";
 
 describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
   it("task start-ready auto-creates PR artifacts in branch_pr mode", async () => {

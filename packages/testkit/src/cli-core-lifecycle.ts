@@ -1,8 +1,9 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { runCli } from "./run-cli.js";
-import { captureStdIO } from "@agentplane/testkit";
+import { runCli } from "agentplane/internal/testing";
+
+import { captureStdIO } from "./cli-harness/stdio.js";
 
 export const START_COMMIT_PATH_HANDLING_TIMEOUT_MS = 120_000;
 

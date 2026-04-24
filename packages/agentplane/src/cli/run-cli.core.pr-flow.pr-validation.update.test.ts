@@ -56,7 +56,7 @@ import {
   installFakeGhPrApiRequiringPublishedPacketHead,
   installFakeGhPrLookup,
   type ResolvedProject,
-} from "./run-cli.core.pr-flow.pr-support.js";
+} from "@agentplane/testkit/cli-core-pr-flow";
 
 describe("runCli PR validation and hydration flow (pr update scenarios)", () => {
   it("pr update hydrates existing GitHub PR state into previously local-only artifacts", async () => {

@@ -7,6 +7,9 @@
     "paths": {
       "@agentplane/testkit": ["packages/testkit/src/index.ts"],
       "@agentplane/testkit/cli": ["packages/testkit/src/cli.ts"],
+      "@agentplane/testkit/cli-core-lifecycle": ["packages/testkit/src/cli-core-lifecycle.ts"],
+      "@agentplane/testkit/cli-core-pr-flow": ["packages/testkit/src/cli-core-pr-flow.ts"],
+      "@agentplane/testkit/cli-core-tasks-query": ["packages/testkit/src/cli-core-tasks-query.ts"],
       "@agentplane/testkit/recipes": ["packages/testkit/src/recipes.ts"],
       "@agentplane/testkit/release": ["packages/testkit/src/release.ts"],
       "@agentplane/testkit/runner": ["packages/testkit/src/runner.ts"],

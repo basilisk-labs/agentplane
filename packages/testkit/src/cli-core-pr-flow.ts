@@ -20,12 +20,14 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import { extractTaskSuffix, validateCommitSubject } from "@agentplaneorg/core/commit";
 import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
-import { runCli } from "./run-cli.js";
 import {
   filterAgentsByWorkflow,
   loadAgentTemplates,
   loadAgentsTemplate,
-} from "../agents/agents-template.js";
+  prompts,
+  resolveUpdateCheckCachePath,
+  runCli,
+} from "agentplane/internal/testing";
 import {
   approveTaskPlan,
   captureStdIO,
@@ -51,8 +53,6 @@ import {
   writeDefaultConfig,
   recordVerificationOk,
 } from "@agentplane/testkit";
-import { resolveUpdateCheckCachePath } from "./update-check.js";
-import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 

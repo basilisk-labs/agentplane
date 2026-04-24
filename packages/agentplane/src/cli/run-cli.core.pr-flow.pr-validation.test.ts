@@ -56,7 +56,7 @@ import {
   installFakeGhPrApiRequiringPublishedPacketHead,
   installFakeGhPrLookup,
   type ResolvedProject,
-} from "./run-cli.core.pr-flow.pr-support.js";
+} from "@agentplane/testkit/cli-core-pr-flow";
 
 describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }, () => {
   it("pr note requires branch_pr workflow", async () => {
