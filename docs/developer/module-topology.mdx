@@ -1,0 +1,57 @@
+---
+title: "Module topology"
+description: "Ownership and dependency direction for shared modules in the Agent Plane runtime."
+---
+
+This page documents the current shared-module topology for the `0.3` line.
+It is a boundary map, not a rename plan. Code movement should keep behavior stable and land through
+task-scoped refactors after the target layer is explicit.
+
+## Shared layers
+
+| Directory                                               | Scope                                                                                      | Allowed dependencies                                                                                                       | Do not use for                                                                                                        |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `packages/agentplane/src/shared/`                       | Cross-cutting runtime helpers used across CLI, commands, runtime, and policy code.         | Core package subpaths, local runtime-neutral helpers, low-level errors/env/path utilities.                                 | Feature-specific task, PR, recipe, backend, or UI behavior.                                                           |
+| `packages/agentplane/src/cli/shared/`                   | CLI presentation helpers that are only meaningful inside the CLI surface.                  | CLI output/spec code and runtime-neutral shared helpers.                                                                   | Command domain logic, task mutation, backend adapters, or reusable policy rules.                                      |
+| `packages/agentplane/src/commands/shared/`              | Command-layer infrastructure reused by multiple command families.                          | CLI output/error helpers, backend loading, task mutation helpers, PR metadata helpers when the behavior is command-scoped. | Runtime-wide helpers or feature-specific state that belongs under `commands/task/**`, `commands/pr/**`, or a backend. |
+| `packages/agentplane/src/commands/task/shared/`         | Task-command domain helpers.                                                               | Task backend contracts, task transition helpers, task docs, task git-log helpers.                                          | Generic command infrastructure or non-task command behavior.                                                          |
+| `packages/agentplane/src/backends/task-backend/shared/` | Backend adapter normalization and record helpers.                                          | Backend-local types, task id/record normalization, backend persistence helpers.                                            | CLI output, command handlers, or workflow policy.                                                                     |
+| `packages/agentplane/src/runtime/shared/`               | Runtime bridge helpers for installed/repo-local runtime resolution and version comparison. | Runtime-source, repo CLI version, package path, and version comparison helpers.                                            | Command-specific task/PR behavior or backend storage logic.                                                           |
+
+## Dependency direction
+
+Use the narrowest owner that matches the behavior:
+
+1. Put runtime-neutral helpers in `src/shared`.
+2. Put command orchestration helpers in `commands/shared`.
+3. Put task-only command helpers in `commands/task/shared`.
+4. Put backend adapter helpers in `backends/task-backend/shared`.
+5. Put runtime installation/version bridge helpers in `runtime/shared`.
+6. Keep CLI-only formatting in `cli/shared` until it is promoted to a broader shared layer.
+
+Feature code may depend inward on broader helpers, but broader helpers should not grow feature state
+just because multiple call sites need it. If a helper needs task semantics, PR metadata, or backend
+records to make sense, it belongs in that feature layer, not in `src/shared`.
+
+## Current move guidance
+
+The current topology intentionally leaves one small inconsistency visible:
+`packages/agentplane/src/cli/shared/ansi.ts` is the only module in `cli/shared`.
+If it remains CLI-only, keep it there. If it becomes a general output helper, move it to
+`packages/agentplane/src/shared/ansi.ts` in a dedicated code task and update imports in that same
+task.
+
+Do not rename every `shared/` directory mechanically. The directory name is less important than
+the ownership rule above: shared within which layer, and reusable by which consumers.
+
+## ADR coverage
+
+This document is aligned with:
+
+- [ADR 0003: Refactor Sequencing](../adr/0003-refactor-sequencing.md), which requires refactor
+  sequencing by drift risk and dependency impact.
+- [ADR 0010: Core Root Export Compatibility](../adr/0010-core-root-export-compatibility.md),
+  which keeps public root compatibility while internal code uses narrower core subpaths.
+
+No new ADR number is allocated here. ADR 0011 is reserved for the later `v0.3` surface-freeze
+decision so the public freeze record and migration pointer stay discoverable.

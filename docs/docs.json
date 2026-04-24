@@ -49,6 +49,7 @@
         "group": "Developer",
         "pages": [
           "architecture",
+          "module-topology",
           "schema-runtime-contract-adr",
           "schema-validation-strategy",
           "release-process-architecture",
