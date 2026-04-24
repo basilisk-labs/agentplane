@@ -4,9 +4,7 @@ import {
   introLogo,
   outroError,
   outroSuccess,
-  previewConflicts,
   previewInstall,
-  renderInitConflictPreview,
   renderInitPreview,
   section,
 } from "./ui.js";
@@ -62,25 +60,6 @@ describe("init ui", () => {
     expect(clack.note).toHaveBeenCalledWith(
       ["backend           local", "network approval  no"].join("\n"),
       "Install preview",
-    );
-  });
-
-  it("renders and previews conflicts as relative paths", () => {
-    const clack = clackMock();
-    const conflicts = [
-      "/repo/.agentplane/config.json",
-      "/repo/.agentplane/backends/local/backend.json",
-    ];
-
-    expect(renderInitConflictPreview("/repo", conflicts)).toBe(
-      ["- .agentplane/config.json", "- .agentplane/backends/local/backend.json"].join("\n"),
-    );
-
-    previewConflicts(clack, { gitRoot: "/repo", conflicts });
-
-    expect(clack.note).toHaveBeenCalledWith(
-      ["- .agentplane/config.json", "- .agentplane/backends/local/backend.json"].join("\n"),
-      "Init conflicts detected",
     );
   });
 
