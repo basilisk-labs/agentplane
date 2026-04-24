@@ -1,10 +1,11 @@
 ---
 id: "202604241136-ESEK2A"
 title: "v0.3 freeze B1: migrate remaining legacy prompts to Clack adapter"
-status: "DOING"
+result_summary: "B1 migrated non-init prompt consumers to generic Clack-backed adapter names."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-24T11:49:50.125Z"
   updated_by: "CODER"
   note: "Command: rg -n 'promptChoice|promptYesNo|promptInput' packages/agentplane/src --glob '!*.test.ts' | Result: pass; non-init production consumers moved off legacy names, remaining matches are cli/prompts compatibility aliases, init v1 orchestrate, and recipe overlay promptInputs variable false positive. Command: bun run test -- runtime/approvals, shared approvals/network, workflow, cli/prompts focused files | Result: pass; 5 files, 47 tests. Command: bun run typecheck | Result: pass. Command: git diff --check | Result: pass."
-commit: null
+commit:
+  hash: "6bb77d710c8a235fbebc5aff113e0d9f26f167d3"
+  message: "✨ ESEK2A cli: route non-init prompts through adapter names"
 comments:
   -
     author: "CODER"
     body: "Start: Implement B1 only by moving non-init prompt consumers to generic Clack-backed adapter names, leaving init v1/v2 routing untouched for B2."
+  -
+    author: "CODER"
+    body: "Verified: B1 moved non-init prompt consumers to generic Clack-backed adapter names, preserved init v1 compatibility aliases for B2, passed focused prompt/approval/workflow tests, typecheck, and refreshed repo-local runtime."
 events:
   -
     type: "status"
@@ -43,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: rg -n 'promptChoice|promptYesNo|promptInput' packages/agentplane/src --glob '!*.test.ts' | Result: pass; non-init production consumers moved off legacy names, remaining matches are cli/prompts compatibility aliases, init v1 orchestrate, and recipe overlay promptInputs variable false positive. Command: bun run test -- runtime/approvals, shared approvals/network, workflow, cli/prompts focused files | Result: pass; 5 files, 47 tests. Command: bun run typecheck | Result: pass. Command: git diff --check | Result: pass."
+  -
+    type: "status"
+    at: "2026-04-24T11:50:36.746Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: B1 moved non-init prompt consumers to generic Clack-backed adapter names, preserved init v1 compatibility aliases for B2, passed focused prompt/approval/workflow tests, typecheck, and refreshed repo-local runtime."
 doc_version: 3
-doc_updated_at: "2026-04-24T11:49:50.130Z"
+doc_updated_at: "2026-04-24T11:50:36.747Z"
 doc_updated_by: "CODER"
 description: "Move the remaining promptChoice/promptYesNo/promptInput callsites onto the Clack-backed prompt abstraction so init no longer keeps the legacy UI stack alive."
 sections:
