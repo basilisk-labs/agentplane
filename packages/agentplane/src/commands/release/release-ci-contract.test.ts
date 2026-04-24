@@ -86,10 +86,10 @@ describe("release CI contract", () => {
     expect(agentplaneTsconfig.exclude).toEqual(["src/**/*.test.ts"]);
   });
 
-  it("checks the generated bootstrap doc against the actual runtime-source dist path", async () => {
+  it("checks the generated bootstrap doc against the actual runtime-source source path", async () => {
     const checkScript = await readRootText("scripts/check-agent-bootstrap-fresh.mjs");
 
-    expect(checkScript).toContain('"runtime",\n  "shared",\n  "runtime-source.js"');
+    expect(checkScript).toContain('"runtime",\n  "shared",\n  "runtime-source.ts"');
     expect(checkScript).not.toContain('"dist",\n  "shared",\n  "runtime-source.js"');
   });
 
