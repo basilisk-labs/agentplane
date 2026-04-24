@@ -187,7 +187,7 @@ describe("init v2 prompt steps", () => {
   it("accepts undefined validation input for cached recipe selection", async () => {
     resetPromptMocks();
     mocks.textMock.mockImplementationOnce(
-      async (opts?: { validate?: (value: string) => string | void }) => {
+      (opts?: { validate?: (value: string) => string | void }) => {
         expect(opts?.validate?.(undefined as never)).toBeUndefined();
         return "recipe-a";
       },
