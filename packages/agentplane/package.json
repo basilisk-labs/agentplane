@@ -49,7 +49,7 @@
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
     "build": "npm run clean && tsc -b --force && npm run build:bundle",
-    "build:bundle": "tsup && node ../../scripts/manifest.mjs build .",
+    "build:bundle": "node ../../scripts/prune-package-js.mjs dist && tsup && node ../../scripts/manifest.mjs build .",
     "typecheck": "tsc -b",
     "prepare": "npm run build",
     "prepack": "npm run clean && npm run build",
