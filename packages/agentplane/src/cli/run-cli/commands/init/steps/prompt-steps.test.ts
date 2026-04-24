@@ -184,6 +184,24 @@ describe("init v2 prompt steps", () => {
     expect(mocks.textMock).not.toHaveBeenCalled();
   });
 
+  it("accepts undefined validation input for cached recipe selection", async () => {
+    resetPromptMocks();
+    mocks.textMock.mockImplementationOnce(async (opts?: { validate?: (value: string) => string | void }) => {
+      expect(opts?.validate?.(undefined as never)).toBeUndefined();
+      return "recipe-a";
+    });
+
+    await expect(
+      promptRecipeSelectionStep({
+        clack: clackMock(),
+        flags: {},
+        setupProfilePreset: "full-harness",
+        setupProfileMode: "full",
+        cachedRecipes: ["recipe-a", "recipe-b"],
+      }),
+    ).resolves.toEqual({ recipes: ["recipe-a"] });
+  });
+
   it("propagates cancellation through InitAborted", async () => {
     resetPromptMocks();
     mocks.selectMock.mockResolvedValueOnce(mocks.cancelSymbol);

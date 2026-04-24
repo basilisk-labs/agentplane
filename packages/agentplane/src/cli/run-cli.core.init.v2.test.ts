@@ -342,6 +342,40 @@ describe("runCli interactive init UI", () => {
     expect(migrated.recipes[0]?.manifest.scenarios[0]?.use_when).toEqual(["Recipe scenario"]);
   });
 
+  it("does not crash when cached recipe text validation receives undefined before submit", async () => {
+    const root = await mkTempDir();
+    await writeLegacyRecipeCache();
+    mocks.selectMock
+      .mockResolvedValueOnce("full-harness")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("codex")
+      .mockResolvedValueOnce("direct")
+      .mockResolvedValueOnce("allow_other_task_readmes")
+      .mockResolvedValueOnce("local")
+      .mockResolvedValueOnce("aggressive");
+    mocks.confirmMock
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
+    mocks.textMock.mockImplementationOnce(async (opts?: { validate?: (value: string) => string | void }) => {
+      expect(() => opts?.validate?.(undefined as never)).not.toThrow();
+      return "none";
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--root", root]);
+
+      expect(code).toBe(0);
+      expect(io.stderr).not.toContain("Cannot read properties of undefined");
+    } finally {
+      io.restore();
+    }
+
+    expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
+    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(true);
+  });
+
   it("completes the default TTY dialog when cached manifests without prompts or scenarios are pruned", async () => {
     const root = await mkTempDir();
     await writeInvalidRecipeCacheWithoutPromptSurfaces();

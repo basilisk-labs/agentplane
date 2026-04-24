@@ -53,11 +53,12 @@ export async function textStepValue(
   return assertNotCancelled(clack, answer, opts.cancelMessage);
 }
 
-export function parseCommaSeparatedSelection(answer: string, fallback: string[]): string[] {
-  const normalized = answer.trim().toLowerCase();
+export function parseCommaSeparatedSelection(answer: unknown, fallback: string[]): string[] {
+  const rawAnswer = typeof answer === "string" ? answer : "";
+  const normalized = rawAnswer.trim().toLowerCase();
   if (normalized === "") return [...fallback];
   if (normalized === "none") return [];
-  return answer
+  return rawAnswer
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
