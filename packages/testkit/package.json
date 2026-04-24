@@ -49,7 +49,7 @@
   },
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "@agentplaneorg/core": "0.3.24"
+    "@agentplaneorg/core": "0.3.25"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
