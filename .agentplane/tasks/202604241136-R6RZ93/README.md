@@ -1,10 +1,11 @@
 ---
 id: "202604241136-R6RZ93"
 title: "v0.3 freeze D3: split verify-record and hosted-close command hotspots"
-status: "DOING"
+result_summary: "D3 complete: verify-record.ts and hosted-close.command.ts are below the 400-line hotspot warning threshold."
+status: "DONE"
 priority: "normal"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-04-24T13:20:53.438Z"
   updated_by: "CODER"
   note: "Command: bun run hotspots:check => pass; verify-record.ts is 144 LoC and hosted-close.command.ts is 243 LoC. Command: bun run test -- packages/agentplane/src/commands/task => pass, 25 files / 166 tests. Command: bun run typecheck => pass. Additional checks: focused hosted-close CLI test passed, format:check and git diff --check passed, knip and arch:deps passed, framework:dev:bootstrap and doctor passed."
-commit: null
+commit:
+  hash: "e8f695ac830b8d8c3cc98b79319ac73a118637fd"
+  message: "♻️ R6RZ93 task: split task lifecycle hotspots"
 comments:
   -
     author: "CODER"
     body: "Start: split verify-record and hosted-close command hotspots into smaller task modules while preserving existing CLI exports and behavior."
+  -
+    author: "CODER"
+    body: "Verified: verify-record and hosted-close command hotspots were split into smaller modules while preserving public exports and task close/verify behavior."
 events:
   -
     type: "status"
@@ -46,8 +52,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run hotspots:check => pass; verify-record.ts is 144 LoC and hosted-close.command.ts is 243 LoC. Command: bun run test -- packages/agentplane/src/commands/task => pass, 25 files / 166 tests. Command: bun run typecheck => pass. Additional checks: focused hosted-close CLI test passed, format:check and git diff --check passed, knip and arch:deps passed, framework:dev:bootstrap and doctor passed."
+  -
+    type: "status"
+    at: "2026-04-24T13:21:39.424Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: verify-record and hosted-close command hotspots were split into smaller modules while preserving public exports and task close/verify behavior."
 doc_version: 3
-doc_updated_at: "2026-04-24T13:20:53.470Z"
+doc_updated_at: "2026-04-24T13:21:39.427Z"
 doc_updated_by: "CODER"
 description: "Split the remaining task lifecycle hotspots verify-record.ts and hosted-close.command.ts into smaller units without changing CLI behavior."
 sections:
