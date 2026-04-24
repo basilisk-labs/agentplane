@@ -36,8 +36,15 @@
     "agentplane": "bin/agentplane.js"
   },
   "files": [
-    "bin",
-    "dist",
+    "bin/agentplane.js",
+    "bin/dist-guard.js",
+    "bin/framework-dev-contract.js",
+    "bin/runtime-context.js",
+    "bin/runtime-watch.js",
+    "bin/stale-dist-policy.js",
+    "dist/.build-manifest.json",
+    "dist/cli.d.ts",
+    "dist/cli.js",
     "assets",
     "README.md",
     "LICENSE"
