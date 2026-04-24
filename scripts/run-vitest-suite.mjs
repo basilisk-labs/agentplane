@@ -58,6 +58,7 @@ const BACKEND_CRITICAL_FILES = [
 ];
 
 const RELEASE_CRITICAL_FILES = [
+  "packages/agentplane/src/cli/release-critical-lifecycle.test.ts",
   "packages/agentplane/src/cli/release-recovery-script.test.ts",
   "packages/agentplane/src/cli/release-smoke.test.ts",
   "packages/agentplane/src/cli/cli-smoke.test.ts",

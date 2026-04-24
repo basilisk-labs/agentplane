@@ -5,7 +5,12 @@ import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { CliError } from "../../shared/errors.js";
-import { resolveDefaultGithubRepo, runGhApiJson } from "../pr/internal/gh-api.js";
+import {
+  ensureBranchPrCloseWorkflowMode,
+  resolveCloseGithubOwner,
+  resolveCloseGithubRepo,
+} from "../shared/close-precheck.js";
+import { runGhApiJson } from "../pr/internal/gh-api.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { parsePrMeta } from "../shared/pr-meta.js";
@@ -26,15 +31,6 @@ type HostedCloseState = {
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
   taskBranch: string | null;
 };
-
-async function resolveGithubRepo(opts: {
-  gitRoot: string;
-  repoOverride: string | null;
-}): Promise<string> {
-  const repo = opts.repoOverride?.trim() ?? "";
-  if (repo) return repo;
-  return await resolveDefaultGithubRepo(opts.gitRoot);
-}
 
 function selectMergedPullRecord(opts: {
   pulls: GithubPullRequestRecord[];
@@ -71,8 +67,7 @@ async function resolveHostedCloseMergeRecord(opts: {
   baseBranch: string | null;
   prNumber: number | null;
 }): Promise<GithubPullRequestRecord | null> {
-  const owner = opts.repo.split("/")[0]?.trim() ?? "";
-  if (!owner) return null;
+  const owner = resolveCloseGithubOwner(opts.repo);
   const query = new URLSearchParams({
     state: "closed",
     head: `${owner}:${opts.sourceBranch}`,
@@ -128,13 +123,7 @@ async function readHostedCloseState(opts: {
     rootOverride: opts.rootOverride,
     taskId: opts.taskId,
   });
-  if (config.workflow_mode !== "branch_pr") {
-    throw new CliError({
-      exitCode: exitCodeForError("E_USAGE"),
-      code: "E_USAGE",
-      message: `Invalid workflow_mode: ${config.workflow_mode} (expected branch_pr)`,
-    });
-  }
+  ensureBranchPrCloseWorkflowMode(config.workflow_mode);
   if (!(await fileExists(metaPath))) {
     return { meta: null, task, taskBranch };
   }
@@ -246,7 +235,7 @@ export async function precheckHostedClosePr(
   });
 
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
-  const repo = await resolveGithubRepo({ gitRoot, repoOverride: opts.repo ?? null });
+  const repo = await resolveCloseGithubRepo({ gitRoot, repoOverride: opts.repo ?? null });
   const defaultBaseBranch = await resolveBaseBranch({
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,

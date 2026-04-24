@@ -2,7 +2,7 @@ import type { InitDefaults, InitFlags, InitIde } from "../model.js";
 import { INIT_DEFAULTS } from "../presets.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { IdeStepAnswers, InitV2PromptClack } from "./contracts.js";
+import type { IdeStepAnswers, InitPromptClack } from "./contracts.js";
 
 const ideOptions: { value: InitIde; label: string; hint: string }[] = [
   { value: "codex", label: "Codex", hint: "Use Codex-oriented local rules." },
@@ -11,7 +11,7 @@ const ideOptions: { value: InitIde; label: string; hint: string }[] = [
 ];
 
 export async function promptIdeStep(opts: {
-  clack: InitV2PromptClack;
+  clack: InitPromptClack;
   flags: Pick<InitFlags, "ide">;
   defaults?: Pick<InitDefaults, "ide">;
 }): Promise<IdeStepAnswers> {

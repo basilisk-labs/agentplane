@@ -4,7 +4,7 @@ import { setupProfilePresets } from "../presets.js";
 import { parseCommaSeparatedSelection, textStepValue } from "./prompt-utils.js";
 import type {
   InitSetupProfileMode,
-  InitV2PromptClack,
+  InitPromptClack,
   RecipeSelectionStepAnswers,
 } from "./contracts.js";
 
@@ -20,7 +20,7 @@ function normalizeCachedRecipeIds(
 }
 
 export async function promptRecipeSelectionStep(opts: {
-  clack: InitV2PromptClack;
+  clack: InitPromptClack;
   flags: Pick<InitFlags, "recipes">;
   setupProfilePreset: SetupProfilePreset;
   setupProfileMode: InitSetupProfileMode;

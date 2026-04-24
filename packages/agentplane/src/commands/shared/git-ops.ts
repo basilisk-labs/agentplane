@@ -10,7 +10,7 @@ import {
   setPinnedBaseBranch,
 } from "@agentplaneorg/core/git";
 import { exitCodeForError } from "../../cli/exit-codes.js";
-import { promptChoice, promptInput } from "../../cli/prompts.js";
+import { selectPrompt, textPrompt } from "../../cli/prompts.js";
 import { CliError } from "../../shared/errors.js";
 import { emitTraceEvent } from "../../shared/trace-events.js";
 export {
@@ -40,7 +40,7 @@ export async function promptInitBaseBranch(opts: {
   }
 
   const promptNewBranch = async (hasBranches: boolean): Promise<string> => {
-    const raw = await promptInput(`Enter new base branch name (default ${opts.fallback}): `);
+    const raw = await textPrompt(`Enter new base branch name (default ${opts.fallback}): `);
     const candidate = raw.trim() || opts.fallback;
     if (!candidate) {
       throw new CliError({
@@ -70,7 +70,7 @@ export async function promptInitBaseBranch(opts: {
   const createLabel = "Create new branch";
   const defaultChoice =
     current && branches.includes(current) ? current : (branches[0] ?? opts.fallback);
-  const choice = await promptChoice(
+  const choice = await selectPrompt(
     "Select base branch",
     [...branches, createLabel],
     defaultChoice,

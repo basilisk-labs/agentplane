@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   ROOT,
   assertAgentplaneCliDistFreshForDocs,
@@ -9,25 +10,25 @@ import {
 } from "./lib/generated-artifacts.mjs";
 import { defineScript, runScriptMain } from "./lib/script-runtime.mjs";
 
-const CLI_DIST_DIR = path.join(ROOT, "packages", "agentplane", "dist", "cli");
-const BOOTSTRAP_DIST = path.join(CLI_DIST_DIR, "bootstrap-guide.js");
-const COMMAND_GUIDE_DIST = path.join(CLI_DIST_DIR, "command-guide.js");
-const RUNTIME_COMMAND_DIST = path.join(
+const CLI_SOURCE_DIR = path.join(ROOT, "packages", "agentplane", "src", "cli");
+const BOOTSTRAP_SOURCE = path.join(CLI_SOURCE_DIR, "bootstrap-guide.ts");
+const COMMAND_GUIDE_SOURCE = path.join(CLI_SOURCE_DIR, "command-guide.ts");
+const RUNTIME_COMMAND_SOURCE = path.join(
   ROOT,
   "packages",
   "agentplane",
-  "dist",
+  "src",
   "commands",
-  "runtime.command.js",
+  "runtime.command.ts",
 );
-const RUNTIME_SOURCE_DIST = path.join(
+const RUNTIME_SOURCE = path.join(
   ROOT,
   "packages",
   "agentplane",
-  "dist",
+  "src",
   "runtime",
   "shared",
-  "runtime-source.js",
+  "runtime-source.ts",
 );
 const DOC_PATH = path.join(ROOT, "docs", "user", "agent-bootstrap.generated.mdx");
 const AGENTS_PATH = path.join(ROOT, "AGENTS.md");
@@ -76,30 +77,41 @@ function assertExcludesAll(source, unexpected, label) {
   }
 }
 
+function reexecWithBunForSourceImports() {
+  if (globalThis.Bun) return false;
+  if (process.env.AGENTPLANE_BUN_REEXEC === "1") {
+    throw new Error("Bun runtime is required to import TypeScript source modules for this check.");
+  }
+  const result = spawnSync("bun", [fileURLToPath(import.meta.url), ...process.argv.slice(2)], {
+    cwd: ROOT,
+    stdio: "inherit",
+    env: { ...process.env, AGENTPLANE_BUN_REEXEC: "1" },
+  });
+  if (result.error) throw result.error;
+  process.exitCode = result.status ?? 1;
+  return true;
+}
+
 const main = defineScript({
   name: "check-agent-bootstrap-fresh",
   async run() {
+    if (reexecWithBunForSourceImports()) return;
     await assertAgentplaneCliDistFreshForDocs(ROOT);
     if (
-      !(await fileExists(BOOTSTRAP_DIST)) ||
-      !(await fileExists(COMMAND_GUIDE_DIST)) ||
-      !(await fileExists(RUNTIME_COMMAND_DIST)) ||
-      !(await fileExists(RUNTIME_SOURCE_DIST))
+      !(await fileExists(BOOTSTRAP_SOURCE)) ||
+      !(await fileExists(COMMAND_GUIDE_SOURCE)) ||
+      !(await fileExists(RUNTIME_COMMAND_SOURCE)) ||
+      !(await fileExists(RUNTIME_SOURCE))
     ) {
       throw new Error(
-        "CLI dist artifacts required for bootstrap freshness checks are missing. Refresh repo-local runtime first:\n" +
-          "  bun run framework:dev:bootstrap\n" +
-          "Or rebuild explicitly:\n" +
-          "  bun run --filter=@agentplaneorg/core build\n" +
-          "  bun run --filter=agentplane build\n" +
-          "  bun run --filter=@agentplane/testkit build",
+        "CLI source artifacts required for bootstrap freshness checks are missing. Restore packages/agentplane/src before retrying.",
       );
     }
 
-    const bootstrapModule = await import(pathToFileURL(BOOTSTRAP_DIST).href);
-    const commandGuideModule = await import(pathToFileURL(COMMAND_GUIDE_DIST).href);
-    const runtimeModule = await import(pathToFileURL(RUNTIME_COMMAND_DIST).href);
-    const runtimeSourceModule = await import(pathToFileURL(RUNTIME_SOURCE_DIST).href);
+    const bootstrapModule = await import(pathToFileURL(BOOTSTRAP_SOURCE).href);
+    const commandGuideModule = await import(pathToFileURL(COMMAND_GUIDE_SOURCE).href);
+    const runtimeModule = await import(pathToFileURL(RUNTIME_COMMAND_SOURCE).href);
+    const runtimeSourceModule = await import(pathToFileURL(RUNTIME_SOURCE).href);
     const checkBootstrapDocFresh = defineGeneratedArtifactCheck({
       outputPath: DOC_PATH,
       tempPrefix: "agentplane-bootstrap-doc-",
@@ -119,7 +131,7 @@ const main = defineScript({
       activeBinaryPath: path.join(ROOT, "packages", "agentplane", "bin", "agentplane.js"),
       agentplanePackageRoot: path.join(ROOT, "packages", "agentplane"),
       corePackageJsonPath: path.join(ROOT, "packages", "core", "package.json"),
-      entryModuleUrl: pathToFileURL(RUNTIME_COMMAND_DIST).href,
+      entryModuleUrl: pathToFileURL(RUNTIME_COMMAND_SOURCE).href,
     });
     const frameworkDev = runtimeModule.buildFrameworkDevWorkflow(runtimeReport);
 

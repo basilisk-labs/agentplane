@@ -51,7 +51,7 @@ import * as prompts from "./prompts.js";
 import {
   START_COMMIT_PATH_HANDLING_TIMEOUT_MS,
   startDirectWork,
-} from "./run-cli.core.lifecycle.helpers.js";
+} from "@agentplane/testkit/cli-core-lifecycle";
 
 installRunCliIntegrationHarness();
 

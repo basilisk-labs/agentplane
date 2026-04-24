@@ -3,7 +3,7 @@ import { isConfigRecord } from "./defaults.js";
 import {
   type AgentplaneConfig as AgentplaneConfigShape,
   validateAgentplaneConfig,
-} from "./schema.js";
+} from "./schema.impl.js";
 
 export type AgentplaneConfig = AgentplaneConfigShape;
 

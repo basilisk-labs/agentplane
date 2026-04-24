@@ -673,7 +673,7 @@ describe("commands/workflow", () => {
 
   it("prompt init base branch creates new branch when repo has no branches", async () => {
     const root = await mkGitRepoRoot();
-    const input = vi.spyOn(prompts, "promptInput").mockResolvedValue("");
+    const input = vi.spyOn(prompts, "textPrompt").mockResolvedValue("");
     const branch = await promptInitBaseBranch({ gitRoot: root, fallback: "main" });
     expect(branch).toBe("main");
     const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], {
@@ -686,8 +686,8 @@ describe("commands/workflow", () => {
   it("prompt init base branch uses choice and creates a new branch", async () => {
     const root = await mkGitRepoRoot();
     await gitCommitFile(root, "seed.txt", "chore: seed");
-    const choice = vi.spyOn(prompts, "promptChoice").mockResolvedValue("Create new branch");
-    const input = vi.spyOn(prompts, "promptInput").mockResolvedValue("feature");
+    const choice = vi.spyOn(prompts, "selectPrompt").mockResolvedValue("Create new branch");
+    const input = vi.spyOn(prompts, "textPrompt").mockResolvedValue("feature");
     const branch = await promptInitBaseBranch({ gitRoot: root, fallback: "main" });
     expect(branch).toBe("feature");
     const { stdout } = await execFileAsync("git", ["branch", "--list", "feature"], { cwd: root });

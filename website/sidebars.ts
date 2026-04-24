@@ -96,6 +96,7 @@ const sidebars: SidebarsConfig = {
         "developer/design-principles",
         "developer/architecture",
         "developer/project-layout",
+        "developer/module-topology",
         "developer/workflow-contract",
         "developer/workflow-harness-test-matrix",
         "developer/documentation-information-architecture",

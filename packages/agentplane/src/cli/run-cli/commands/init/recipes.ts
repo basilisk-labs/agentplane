@@ -20,7 +20,7 @@ export async function listCachedRecipes(): Promise<CachedRecipeInfo[]> {
   }));
 }
 
-export function renderCachedRecipesHint(recipes: CachedRecipeInfo[]): string {
+function renderCachedRecipesHint(recipes: CachedRecipeInfo[]): string {
   if (recipes.length === 0) {
     return "Cached recipes: none. Use `agentplane recipes install <id>` before selecting recipes during init.";
   }

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { applyInitV2WithProgress, withStep } from "./apply.js";
+import { applyInitWithProgress, withStep } from "./apply.js";
 
 function createSpinnerMocks() {
   const start = vi.fn();
@@ -9,7 +9,7 @@ function createSpinnerMocks() {
   return { start, stop, message };
 }
 
-describe("init v2 apply wrapper", () => {
+describe("init apply wrapper", () => {
   it("runs withStep with spinner progress and success message", async () => {
     const spinner = createSpinnerMocks();
     const clack = { spinner: vi.fn(() => spinner) };
@@ -50,7 +50,7 @@ describe("init v2 apply wrapper", () => {
     expect(spinner.stop).toHaveBeenCalledWith("Failed to create install commit");
   });
 
-  it("applies init v2 writers in order and forwards install paths to commit step", async () => {
+  it("applies init writers in order and forwards install paths to commit step", async () => {
     const calls: string[] = [];
 
     const config = vi.fn(() => {
@@ -86,7 +86,7 @@ describe("init v2 apply wrapper", () => {
       return Promise.resolve();
     });
 
-    const result = await applyInitV2WithProgress({
+    const result = await applyInitWithProgress({
       plan: {
         config,
         agents,
@@ -124,7 +124,7 @@ describe("init v2 apply wrapper", () => {
     const hooks = vi.fn(() => Promise.resolve([".agentplane/bin/agentplane"]));
     const installCommit = vi.fn(() => Promise.resolve());
 
-    const result = await applyInitV2WithProgress({
+    const result = await applyInitWithProgress({
       plan: {
         config: () => Promise.resolve(),
         agents: () => Promise.resolve([]),

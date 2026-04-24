@@ -1,6 +1,6 @@
 {
   "name": "agentplane",
-  "version": "0.3.24",
+  "version": "0.3.26",
   "description": "Agent Plane CLI for task workflows, recipes, and project automation.",
   "keywords": [
     "agentplane",
@@ -36,8 +36,15 @@
     "agentplane": "bin/agentplane.js"
   },
   "files": [
-    "bin",
-    "dist",
+    "bin/agentplane.js",
+    "bin/dist-guard.js",
+    "bin/framework-dev-contract.js",
+    "bin/runtime-context.js",
+    "bin/runtime-watch.js",
+    "bin/stale-dist-policy.js",
+    "dist/.build-manifest.json",
+    "dist/cli.d.ts",
+    "dist/cli.js",
     "assets",
     "README.md",
     "LICENSE"
@@ -49,15 +56,14 @@
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
     "build": "npm run clean && tsc -b --force && npm run build:bundle",
-    "build:bundle": "tsup && node ../../scripts/manifest.mjs build .",
+    "build:bundle": "node ../../scripts/prune-package-js.mjs dist && tsup && node ../../scripts/manifest.mjs build .",
     "typecheck": "tsc -b",
-    "prepare": "npm run build",
     "prepack": "npm run clean && npm run build",
     "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack"
   },
   "dependencies": {
-    "@agentplaneorg/core": "0.3.24",
-    "@agentplaneorg/recipes": "0.3.24",
+    "@agentplaneorg/core": "0.3.26",
+    "@agentplaneorg/recipes": "0.3.26",
     "@clack/prompts": "^1.2.0",
     "yauzl": "^2.10.0",
     "zod": "^3",

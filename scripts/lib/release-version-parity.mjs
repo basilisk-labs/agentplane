@@ -1,10 +1,23 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
+const FREEZE_V03_PATH = "FREEZE.v0.3.md";
+const V03_VERSION_RE = /^0\.3\.\d+(?:[-+][0-9A-Za-z.-]+)?$/u;
+
 async function readPackageJson(rootDir, relPath) {
   const absPath = path.join(rootDir, relPath);
   const raw = JSON.parse(await readFile(absPath, "utf8"));
   return { absPath, raw };
+}
+
+async function readOptionalText(rootDir, relPath) {
+  try {
+    return await readFile(path.join(rootDir, relPath), "utf8");
+  } catch (error) {
+    const code = error && typeof error === "object" ? error.code : undefined;
+    if (code === "ENOENT") return null;
+    throw error;
+  }
 }
 
 async function readWorkspacePrivatePackageNames(rootDir) {
@@ -125,6 +138,7 @@ export async function readReleaseParityState(rootDir) {
   ]);
   const privateWorkspacePackageNames = await readWorkspacePrivatePackageNames(rootDir);
   const packageWorkspaceDependencies = await readPackageWorkspaceDependencies(rootDir);
+  const freezeV03Text = await readOptionalText(rootDir, FREEZE_V03_PATH);
 
   const coreVersion = readVersion(corePkg, corePath);
   const agentplaneVersion = readVersion(agentplanePkg, agentplanePath);
@@ -144,6 +158,10 @@ export async function readReleaseParityState(rootDir) {
     recipesDependency,
     packageWorkspaceDependencies,
     publishDependencyErrors,
+    freezeV03: {
+      relPath: FREEZE_V03_PATH,
+      text: freezeV03Text,
+    },
   };
 }
 
@@ -202,6 +220,28 @@ export function collectReleaseParityErrors(state, opts = {}) {
 
   for (const error of state.publishDependencyErrors ?? []) {
     errors.push(error);
+  }
+
+  const freezeV03 = state.freezeV03 ?? { relPath: FREEZE_V03_PATH, text: null };
+  const isV03Version = V03_VERSION_RE.test(state.agentplaneVersion);
+  if (isV03Version && freezeV03.text === null) {
+    errors.push(
+      `${freezeV03.relPath} is required while packages/agentplane version ${state.agentplaneVersion} is in the frozen 0.3.x line.`,
+    );
+  }
+  if (!isV03Version && freezeV03.text !== null) {
+    errors.push(
+      `${freezeV03.relPath} exists but packages/agentplane version ${state.agentplaneVersion} is outside the frozen 0.3.x line; retire or replace the freeze artifact as part of the next surface ADR.`,
+    );
+  }
+  if (
+    isV03Version &&
+    freezeV03.text !== null &&
+    !freezeV03.text.includes(`agentplane@${state.agentplaneVersion}`)
+  ) {
+    errors.push(
+      `${freezeV03.relPath} must reference current package version agentplane@${state.agentplaneVersion}.`,
+    );
   }
 
   for (const dep of state.packageWorkspaceDependencies ?? []) {

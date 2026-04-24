@@ -75,6 +75,8 @@ same task.
 
 - Root policy and contributor guidance live in `AGENTS.md` and this file.
 - Public docs live under `docs/`; the site shell lives under `website/`.
+- Shared module ownership and dependency direction are documented in
+  `docs/developer/module-topology.mdx`.
 - Generated command references should be refreshed through the documented
   generation flow rather than edited manually.
 

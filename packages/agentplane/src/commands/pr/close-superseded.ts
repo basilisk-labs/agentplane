@@ -2,9 +2,16 @@ import { readFile } from "node:fs/promises";
 
 import { mapCoreError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
-import { createCliEmitter, infoMessage, workflowModeMessage } from "../../cli/output.js";
+import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  deleteCloseRemoteHeadBranch,
+  ensureBranchPrCloseWorkflowMode,
+  resolveCloseGithubOwner,
+  resolveCloseGithubRepo,
+  type CloseRemoteBranchAction,
+} from "../shared/close-precheck.js";
 import {
   loadBackendTask,
   loadCommandContext,
@@ -13,12 +20,7 @@ import {
 import { parsePrMetaForwardCompatible } from "../shared/pr-meta.js";
 
 import { cmdPrClose } from "./close.js";
-import {
-  isGhNotFound,
-  resolveDefaultGithubRepo,
-  runGhApiJson,
-  runGhApiNoOutput,
-} from "./internal/gh-api.js";
+import { runGhApiJson } from "./internal/gh-api.js";
 import { resolvePrPaths } from "./internal/pr-paths.js";
 
 type GithubPullRecord = {
@@ -26,21 +28,6 @@ type GithubPullRecord = {
   state?: string;
   html_url?: string;
 };
-
-async function deleteRemoteBranch(opts: {
-  cwd: string;
-  repo: string;
-  branch: string;
-}): Promise<"deleted" | "already-absent"> {
-  const endpoint = `repos/${opts.repo}/git/refs/heads/${encodeURIComponent(opts.branch)}`;
-  try {
-    await runGhApiNoOutput(opts.cwd, [endpoint, "-X", "DELETE"]);
-    return "deleted";
-  } catch (err) {
-    if (isGhNotFound(err)) return "already-absent";
-    throw err;
-  }
-}
 
 export async function cmdPrCloseSuperseded(opts: {
   ctx?: CommandContext;
@@ -73,13 +60,7 @@ export async function cmdPrCloseSuperseded(opts: {
     }
 
     const { config, metaPath, resolved } = await resolvePrPaths({ ...opts, ctx });
-    if (config.workflow_mode !== "branch_pr") {
-      throw new CliError({
-        exitCode: exitCodeForError("E_USAGE"),
-        code: "E_USAGE",
-        message: workflowModeMessage(config.workflow_mode, "branch_pr"),
-      });
-    }
+    ensureBranchPrCloseWorkflowMode(config.workflow_mode);
     if (!(await fileExists(metaPath))) {
       throw new CliError({
         exitCode: exitCodeForError("E_VALIDATION"),
@@ -98,22 +79,15 @@ export async function cmdPrCloseSuperseded(opts: {
       });
     }
 
-    const repo = await resolveDefaultGithubRepo(resolved.gitRoot);
-    const owner = repo.split("/", 1)[0]?.trim() ?? "";
-    if (!owner) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_VALIDATION"),
-        code: "E_VALIDATION",
-        message: "Could not derive GitHub owner from remote origin.",
-      });
-    }
+    const repo = await resolveCloseGithubRepo({ gitRoot: resolved.gitRoot, repoOverride: null });
+    const owner = resolveCloseGithubOwner(repo);
 
     const openPrs = await runGhApiJson<GithubPullRecord[]>(resolved.gitRoot, [
       `repos/${repo}/pulls?head=${encodeURIComponent(`${owner}:${branch}`)}&state=open&per_page=100`,
     ]);
     if (openPrs.length === 0) {
-      const remoteBranchAction = opts.deleteRemoteBranch
-        ? await deleteRemoteBranch({ cwd: resolved.gitRoot, repo, branch })
+      const remoteBranchAction: CloseRemoteBranchAction | "skipped" = opts.deleteRemoteBranch
+        ? await deleteCloseRemoteHeadBranch({ cwd: resolved.gitRoot, repo, branch })
         : "skipped";
       output.report(
         [

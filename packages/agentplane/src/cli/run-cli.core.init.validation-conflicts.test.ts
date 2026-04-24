@@ -48,7 +48,6 @@ import {
   writeDefaultConfig,
 } from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
-import * as prompts from "./prompts.js";
 
 function normalizeSlashes(value: string): string {
   return value.replaceAll("\\", "/");
@@ -72,86 +71,59 @@ describe("runCli", () => {
     }
   });
 
-  it("init prompts for interactive defaults", async () => {
+  it("init --setup-profile works in non-tty mode without explicit workflow flags", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
-    const originalIsTTY = process.stdin.isTTY;
-    Object.defineProperty(process.stdin, "isTTY", { value: true, configurable: true });
-    const choice = vi.spyOn(prompts, "promptChoice").mockImplementation((_p, choices, def) => {
-      if (choices.includes("branch_pr")) return "branch_pr";
-      if (choices.includes("local")) return "local";
-      if (choices.includes("balanced")) return "balanced";
-      if (choices.includes("manager")) return "manager";
-      return def;
-    });
-    const yesNo = vi.spyOn(prompts, "promptYesNo").mockImplementation((prompt, def) => {
-      if (prompt.includes("Install managed git hooks")) return false;
-      return def;
-    });
-    const promptInput = vi.spyOn(prompts, "promptInput").mockResolvedValue("");
     const io = captureStdIO();
     try {
-      const code = await runCli(["init", "--root", root]);
+      const code = await runCli(["init", "--setup-profile", "light", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).not.toContain("[Workflow]");
-      expect(choice).toHaveBeenCalled();
-      expect(yesNo).not.toHaveBeenCalled();
-      expect(promptInput).not.toHaveBeenCalled();
+      expect(io.stdout).toContain(".agentplane");
     } finally {
-      Object.defineProperty(process.stdin, "isTTY", { value: originalIsTTY, configurable: true });
-      choice.mockRestore();
-      yesNo.mockRestore();
-      promptInput.mockRestore();
       io.restore();
     }
+
+    const config = JSON.parse(
+      await readFile(path.join(root, ".agentplane", "config.json"), "utf8"),
+    ) as {
+      workflow_mode: string;
+      agents: {
+        approvals: { require_network: boolean; require_plan: boolean; require_verify: boolean };
+      };
+    };
+    expect(config.workflow_mode).toBe("direct");
+    expect(config.agents.approvals.require_network).toBe(false);
+    expect(config.agents.approvals.require_plan).toBe(false);
+    expect(config.agents.approvals.require_verify).toBe(false);
   });
 
-  it("init --setup-profile developer keeps full interactive questionnaire", async () => {
+  it("init --setup-profile developer applies full-harness defaults in non-tty mode", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
-    const originalIsTTY = process.stdin.isTTY;
-    Object.defineProperty(process.stdin, "isTTY", { value: true, configurable: true });
-    const choice = vi.spyOn(prompts, "promptChoice").mockImplementation((_p, choices, def) => {
-      if (choices.includes("branch_pr")) return "branch_pr";
-      if (choices.includes("local")) return "local";
-      if (choices.includes("balanced")) return "balanced";
-      return def;
-    });
-    const yesNo = vi.spyOn(prompts, "promptYesNo").mockImplementation((prompt, def) => {
-      if (prompt.includes("Install managed git hooks")) return false;
-      return def;
-    });
-    const promptInput = vi.spyOn(prompts, "promptInput").mockResolvedValue("");
     const io = captureStdIO();
     try {
       const code = await runCli(["init", "--root", root, "--setup-profile", "developer"]);
       expect(code).toBe(0);
-      expect(io.stdout).not.toContain("◇  Workflow");
-      expect(choice).toHaveBeenCalled();
-      expect(yesNo).toHaveBeenCalled();
-      expect(
-        yesNo.mock.calls.some(([prompt]) =>
-          String(prompt).includes("Require explicit approval for network actions?"),
-        ),
-      ).toBe(true);
-      expect(
-        yesNo.mock.calls.some(([prompt]) =>
-          String(prompt).includes("Require plan approval before work starts?"),
-        ),
-      ).toBe(false);
-      expect(
-        yesNo.mock.calls.some(([prompt]) =>
-          String(prompt).includes("Require explicit approval before recording verification?"),
-        ),
-      ).toBe(false);
-      expect(promptInput).toHaveBeenCalled();
+      expect(io.stdout).toContain(".agentplane");
     } finally {
-      Object.defineProperty(process.stdin, "isTTY", { value: originalIsTTY, configurable: true });
-      choice.mockRestore();
-      yesNo.mockRestore();
-      promptInput.mockRestore();
       io.restore();
     }
+
+    const config = JSON.parse(
+      await readFile(path.join(root, ".agentplane", "config.json"), "utf8"),
+    ) as {
+      agents: {
+        approvals: { require_network: boolean; require_plan: boolean; require_verify: boolean };
+      };
+      execution: { profile: string; unsafe_actions_requiring_explicit_user_ok: string[] };
+    };
+    expect(config.agents.approvals.require_network).toBe(true);
+    expect(config.agents.approvals.require_plan).toBe(true);
+    expect(config.agents.approvals.require_verify).toBe(true);
+    expect(config.execution.profile).toBe("conservative");
+    expect(config.execution.unsafe_actions_requiring_explicit_user_ok).toContain(
+      "Network actions when approvals are disabled.",
+    );
   });
 
   it("init scopes to the target directory (does not climb to a parent git repo)", async () => {

@@ -8,28 +8,44 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: "@agentplane/testkit/cli",
+        find: /^@agentplane\/testkit\/cli-core-lifecycle$/,
+        replacement: path.join(__dirname, "packages/testkit/src/cli-core-lifecycle.ts"),
+      },
+      {
+        find: /^@agentplane\/testkit\/cli-core-pr-flow$/,
+        replacement: path.join(__dirname, "packages/testkit/src/cli-core-pr-flow.ts"),
+      },
+      {
+        find: /^@agentplane\/testkit\/cli-core-tasks-query$/,
+        replacement: path.join(__dirname, "packages/testkit/src/cli-core-tasks-query.ts"),
+      },
+      {
+        find: /^@agentplane\/testkit\/cli$/,
         replacement: path.join(__dirname, "packages/testkit/src/cli.ts"),
       },
       {
-        find: "@agentplane/testkit/recipes",
+        find: /^@agentplane\/testkit\/recipes$/,
         replacement: path.join(__dirname, "packages/testkit/src/recipes.ts"),
       },
       {
-        find: "@agentplane/testkit/release",
+        find: /^@agentplane\/testkit\/release$/,
         replacement: path.join(__dirname, "packages/testkit/src/release.ts"),
       },
       {
-        find: "@agentplane/testkit/runner",
+        find: /^@agentplane\/testkit\/runner$/,
         replacement: path.join(__dirname, "packages/testkit/src/runner.ts"),
       },
       {
-        find: "@agentplane/testkit/task",
+        find: /^@agentplane\/testkit\/task$/,
         replacement: path.join(__dirname, "packages/testkit/src/task.ts"),
       },
       {
-        find: "@agentplane/testkit",
+        find: /^@agentplane\/testkit$/,
         replacement: path.join(__dirname, "packages/testkit/src/index.ts"),
+      },
+      {
+        find: "agentplane/internal/testing",
+        replacement: path.join(__dirname, "packages/agentplane/src/testing/index.ts"),
       },
       // In-repo tests should run against source, not stale built artifacts.
       {

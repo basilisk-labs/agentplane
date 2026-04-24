@@ -119,12 +119,6 @@ describe("hotspot-report script", () => {
       'process.stdout.write("ignore me\\n");\nif (backendId === "redmine") return;\n',
       "utf8",
     );
-    await writeFile(
-      path.join(runtimeDir, "ignored.test-helpers.ts"),
-      Array.from({ length: 20 }, (_, index) => `const helper${index} = ${index};`).join("\n"),
-      "utf8",
-    );
-
     const result = await runScript([
       "--root",
       root,

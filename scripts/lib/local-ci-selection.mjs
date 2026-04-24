@@ -21,7 +21,6 @@ const DOCTOR_BUCKET_PATTERNS = [/^packages\/agentplane\/src\/commands\/doctor(?:
 const BACKEND_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/backends\/task-backend\//,
   /^packages\/agentplane\/src\/backends\/task-backend(?:\..+)?\.test\.ts$/,
-  /^packages\/agentplane\/src\/backends\/task-backend\.test-helpers\.ts$/,
   /^packages\/agentplane\/src\/backends\/task-index\.ts$/,
   /^packages\/agentplane\/src\/commands\/backend(?:\/|\.|$)/,
   /^packages\/agentplane\/src\/commands\/shared\/task-backend(?:\.test)?\.ts$/,
@@ -65,7 +64,7 @@ const CLI_HELP_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.help-(?:contract|snap)\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.docs-cli\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/spec\//,
-  /^packages\/agentplane\/src\/cli\/shared\//,
+  /^packages\/agentplane\/src\/shared\/ansi(?:\.test)?\.ts$/,
 ];
 const CLI_HELP_DISCOVERY_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:docs-cli|help-contract|help-snap)\.test\.ts$/,
@@ -74,7 +73,6 @@ const CLI_HELP_DISCOVERY_PATTERNS = [
 const CLI_CORE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\/(?!commands\/init\/)/,
-  /^packages\/agentplane\/src\/cli\/run-cli\.test-helpers\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta(?:\..+)?|misc|pr-flow(?:\..+)?)\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
@@ -234,7 +232,7 @@ const CLI_HELP_TEST_FILES = [
   "packages/agentplane/src/cli/spec/help-render.test.ts",
   "packages/agentplane/src/cli/spec/registry.test.ts",
   "packages/agentplane/src/cli/spec/suggest.test.ts",
-  "packages/agentplane/src/cli/shared/ansi.test.ts",
+  "packages/agentplane/src/shared/ansi.test.ts",
   ...discoverTestFiles(["packages/agentplane/src/cli"], CLI_HELP_DISCOVERY_PATTERNS),
 ];
 const CLI_CORE_TEST_FILES = [

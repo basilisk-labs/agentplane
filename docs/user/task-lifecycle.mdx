@@ -235,6 +235,30 @@ sequenceDiagram
 - **Docs updates**: task README sections are updated via `agentplane task doc set`; keep the active `doc_version` contract explicit when editing task docs.
 - **Exports**: task snapshots are updated only via `agentplane` commands.
 
+## Lifecycle and close taxonomy v0.3
+
+The v0.3 close surface is locked around one rule: a close command must make the
+task state, task README, and git history agree about the terminal outcome. The
+commands below differ by workflow mode and by whether the task is closed as
+completed work, a no-op, a duplicate, or a hosted PR outcome.
+
+| Command                                                              | Mode                                               | When to use                                                                        | Git writes                                                                            | Task docs writes                                                                    | Final status                                     |
+| -------------------------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `agentplane finish <task-id>`                                        | `direct`                                           | Normal close after local verification and an implementation commit.                | Creates the deterministic close commit by default.                                    | Appends the Verified close record, stores commit metadata, and updates frontmatter. | `DONE`                                           |
+| `agentplane finish <task-id> --close-commit`                         | `branch_pr` base checkout or explicit direct close | Close after integration, or force the explicit close-commit path.                  | Creates the close commit after validating the close snapshot.                         | Same close metadata as `finish`; in `branch_pr`, the base task record is canonical. | `DONE`                                           |
+| `agentplane finish <task-id> --no-close-commit`                      | `direct` fallback                                  | Leave close commit handling manual after recording the finish result.              | Records finish metadata without creating the deterministic close commit.              | `DONE`                                                                              |
+| `agentplane task close-noop <task-id>`                               | `direct`                                           | Close a task that intentionally produced no implementation change.                 | Creates a task-only close/status commit when the command path requires one.           | Records the no-op reason in the task README.                                        | `DONE`                                           |
+| `agentplane task close-duplicate <task-id> --of <canonical-task-id>` | `direct`                                           | Close an accidental duplicate and point to the canonical task.                     | Creates the close/status commit for the duplicate task record.                        | Records the duplicate relationship and terminal reason.                             | `DONE`                                           |
+| `agentplane task hosted-close <task-id>`                             | `branch_pr` base checkout                          | Reconcile a task after a hosted PR merge already represents the shipped work.      | Records or reuses the hosted merge/close state on base.                               | Refreshes task and PR metadata from the hosted merge evidence.                      | `DONE`                                           |
+| `agentplane task hosted-close-pr <task-id>`                          | `branch_pr` base checkout                          | Open or skip a follow-up close PR when hosted merge state needs base-side closure. | May create a follow-up close branch/PR unless the canonical close is already present. | Recreates or refreshes base PR metadata before deciding the close route.            | `DONE` or no-op when already closed              |
+| `agentplane pr close <task-id>`                                      | `branch_pr` task PR                                | Close an open hosted PR without marking the task completed.                        | Uses the hosted provider and may delete the remote head branch.                       | Updates local PR artifacts when the command path has a task context.                | Task status unchanged                            |
+| `agentplane pr close-superseded <task-id>`                           | `branch_pr` task PR                                | Close a PR for work that was superseded by another task or branch.                 | Closes the hosted PR and may delete the remote branch.                                | Records superseded close evidence in PR artifacts.                                  | Task status unchanged unless separately finished |
+
+Use `finish` for normal completion. Use `close-noop` and `close-duplicate`
+only when the terminal reason is not "implemented and verified". Use `pr close`
+commands for hosted PR lifecycle only; they are not substitutes for task
+closure.
+
 ## Related docs
 
 - [Agent bootstrap](agent-bootstrap.generated)
@@ -242,3 +266,4 @@ sequenceDiagram
 - [Branching and PR artifacts](branching-and-pr-artifacts)
 - [Tasks and backends](tasks-and-backends)
 - [Configuration](configuration)
+- [Developer close taxonomy](../developer/close-taxonomy)

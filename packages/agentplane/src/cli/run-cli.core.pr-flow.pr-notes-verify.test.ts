@@ -56,7 +56,7 @@ import {
   installFakeGhPrApiRequiringPublishedPacketHead,
   installFakeGhPrLookup,
   type ResolvedProject,
-} from "./run-cli.core.pr-flow.pr-support.js";
+} from "@agentplane/testkit/cli-core-pr-flow";
 
 describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }, () => {
   it("pr update prefers the base upstream ref for diffstat when local base lags", async () => {

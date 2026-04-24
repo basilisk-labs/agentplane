@@ -19,7 +19,7 @@ function getClackPrompts(): Promise<ClackPrompts | null> {
   return clackPromptsPromise;
 }
 
-export async function promptChoice(
+export async function selectPrompt(
   prompt: string,
   choices: string[],
   defaultValue: string,
@@ -51,7 +51,7 @@ export async function promptChoice(
   return trimmed;
 }
 
-export async function promptYesNo(prompt: string, defaultValue: boolean): Promise<boolean> {
+export async function confirmPrompt(prompt: string, defaultValue: boolean): Promise<boolean> {
   const clack = await getClackPrompts();
   if (clack) {
     const answer = await clack.confirm({
@@ -76,7 +76,7 @@ export async function promptYesNo(prompt: string, defaultValue: boolean): Promis
   return defaultValue;
 }
 
-export async function promptInput(prompt: string): Promise<string> {
+export async function textPrompt(prompt: string): Promise<string> {
   const clack = await getClackPrompts();
   if (clack) {
     const answer = await clack.text({ message: prompt });
@@ -92,3 +92,7 @@ export async function promptInput(prompt: string): Promise<string> {
   rl.close();
   return answer.trim();
 }
+
+export const promptChoice = selectPrompt;
+export const promptYesNo = confirmPrompt;
+export const promptInput = textPrompt;

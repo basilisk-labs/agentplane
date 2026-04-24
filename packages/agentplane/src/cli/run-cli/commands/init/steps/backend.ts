@@ -2,7 +2,7 @@ import type { InitDefaults, InitFlags } from "../model.js";
 import { INIT_DEFAULTS } from "../presets.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { BackendStepAnswers, InitV2PromptClack } from "./contracts.js";
+import type { BackendStepAnswers, InitPromptClack } from "./contracts.js";
 
 const backendOptions: {
   value: NonNullable<InitFlags["backend"]>;
@@ -14,7 +14,7 @@ const backendOptions: {
 ];
 
 export async function promptBackendStep(opts: {
-  clack: InitV2PromptClack;
+  clack: InitPromptClack;
   flags: Pick<InitFlags, "backend">;
   defaults?: Pick<InitDefaults, "backend">;
 }): Promise<BackendStepAnswers> {

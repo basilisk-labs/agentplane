@@ -19,6 +19,8 @@ description: "How the repository is structured and where key components live."
 - `packages/agentplane/src/cli/`: parser, help rendering, command wiring
 - `packages/agentplane/src/commands/`: command handlers and domain logic
 - `packages/agentplane/src/backends/`: task backend adapters
+- `packages/agentplane/src/**/shared/`: layer-scoped shared helpers; see
+  [Module topology](module-topology) before moving helpers between layers
 - `packages/agentplane/assets/`: framework templates copied by `init` and used by `upgrade`
 - `packages/agentplane/dist/`: built output used by runtime and publish
 

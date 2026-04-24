@@ -1,5 +1,6 @@
 import path from "node:path";
 import { execFile } from "node:child_process";
+import { writeFile } from "node:fs/promises";
 import { promisify } from "node:util";
 
 import { describe, expect, it } from "vitest";
@@ -9,6 +10,22 @@ import { initReleaseWorkspace, writePackageJson } from "@agentplane/testkit/rele
 const execFileAsync = promisify(execFile);
 
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/check-release-parity.mjs");
+
+async function runParity(root: string): Promise<{ ok: boolean; stderr: string }> {
+  return execFileAsync("node", [SCRIPT_PATH], { cwd: root }).then(
+    () => ({ ok: true, stderr: "" }),
+    (error: unknown) => {
+      const stderr =
+        typeof error === "object" &&
+        error !== null &&
+        "stderr" in error &&
+        typeof (error as { stderr?: unknown }).stderr === "string"
+          ? (error as { stderr: string }).stderr
+          : "";
+      return { ok: false, stderr };
+    },
+  );
+}
 
 describe("check-release-parity script", () => {
   it("passes when package versions and core dependency are aligned", async () => {
@@ -22,6 +39,72 @@ describe("check-release-parity script", () => {
     });
 
     await expect(execFileAsync("node", [SCRIPT_PATH], { cwd: root })).resolves.toBeDefined();
+  });
+
+  it("passes when the v0.3 freeze artifact references the current package version", async () => {
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-parity-",
+      coreVersion: "0.3.25",
+      cliVersion: "0.3.25",
+      recipesVersion: "0.3.25",
+      dependencyVersion: "0.3.25",
+      recipesDependencyVersion: "0.3.25",
+    });
+    await writeFile(path.join(root, "FREEZE.v0.3.md"), "Package version: `agentplane@0.3.25`.\n");
+
+    await expect(execFileAsync("node", [SCRIPT_PATH], { cwd: root })).resolves.toBeDefined();
+  });
+
+  it("fails when the v0.3 freeze artifact is missing for a 0.3.x package version", async () => {
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-parity-",
+      coreVersion: "0.3.25",
+      cliVersion: "0.3.25",
+      recipesVersion: "0.3.25",
+      dependencyVersion: "0.3.25",
+      recipesDependencyVersion: "0.3.25",
+    });
+
+    const result = await runParity(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("FREEZE.v0.3.md is required");
+  });
+
+  it("fails when the v0.3 freeze artifact references a stale package version", async () => {
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-parity-",
+      coreVersion: "0.3.25",
+      cliVersion: "0.3.25",
+      recipesVersion: "0.3.25",
+      dependencyVersion: "0.3.25",
+      recipesDependencyVersion: "0.3.25",
+    });
+    await writeFile(path.join(root, "FREEZE.v0.3.md"), "Package version: `agentplane@0.3.24`.\n");
+
+    const result = await runParity(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain(
+      "FREEZE.v0.3.md must reference current package version agentplane@0.3.25",
+    );
+  });
+
+  it("fails when the v0.3 freeze artifact remains after the workspace leaves 0.3.x", async () => {
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-parity-",
+      coreVersion: "0.4.0",
+      cliVersion: "0.4.0",
+      recipesVersion: "0.4.0",
+      dependencyVersion: "0.4.0",
+      recipesDependencyVersion: "0.4.0",
+    });
+    await writeFile(path.join(root, "FREEZE.v0.3.md"), "Package version: `agentplane@0.3.25`.\n");
+
+    const result = await runParity(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("outside the frozen 0.3.x line");
   });
 
   it("fails when core dependency version drifts from workspace version", async () => {

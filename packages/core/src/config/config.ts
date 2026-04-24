@@ -1,4 +1,4 @@
-import type { AgentplaneConfig as AgentplaneConfigShape } from "./schema.js";
+import type { AgentplaneConfig as AgentplaneConfigShape } from "./schema.impl.js";
 
 export type AgentplaneConfig = AgentplaneConfigShape;
 export { defaultConfig, setByDottedKey } from "./defaults.js";

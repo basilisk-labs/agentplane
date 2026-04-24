@@ -3,7 +3,7 @@ import type { InitDefaults, InitFlags } from "../model.js";
 import { INIT_DEFAULTS } from "../presets.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { InitSetupProfileMode, InitV2PromptClack, WorkflowStepAnswers } from "./contracts.js";
+import type { InitSetupProfileMode, InitPromptClack, WorkflowStepAnswers } from "./contracts.js";
 
 type DirectCloseDirtyPolicyChoice = "allow-other-task-readmes" | "strict";
 
@@ -38,7 +38,7 @@ function directCloseDirtyChoiceToPolicy(
 }
 
 export async function promptWorkflowStep(opts: {
-  clack: InitV2PromptClack;
+  clack: InitPromptClack;
   flags: Pick<InitFlags, "workflow" | "directCloseDirtyPolicy">;
   setupProfileMode: InitSetupProfileMode;
   defaults?: Pick<InitDefaults, "workflow" | "directCloseDirtyPolicy">;

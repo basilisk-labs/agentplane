@@ -1,0 +1,74 @@
+---
+title: "Close taxonomy"
+description: "Developer map for v0.3 task and PR close commands."
+---
+
+## Purpose
+
+This document fixes the v0.3 vocabulary for task closure. It is a developer
+companion to the user lifecycle guide and is the input map for shared precheck
+extraction work.
+
+## Closure invariants
+
+Every task close path must answer the same questions before it writes:
+
+1. Which workflow mode owns the close: `direct` or `branch_pr`.
+2. Which evidence proves the terminal state: local commit, close commit, hosted
+   merge, duplicate link, or no-op reason.
+3. Which task README is canonical for the write.
+4. Whether git history must receive a deterministic close commit, a hosted PR
+   update, or no commit.
+5. Whether the command is closing the task or only closing a hosted PR.
+
+`finish`, `task close-noop`, `task close-duplicate`, `task hosted-close`, and
+`task hosted-close-pr` are task lifecycle commands. `pr close` and
+`pr close-superseded` are hosted PR lifecycle commands; they do not by
+themselves prove that the task is done.
+
+## Command matrix
+
+| Command                | Implementation area               | Mode                               | Lifecycle meaning                                        | Shared precheck candidates                                                                           |
+| ---------------------- | --------------------------------- | ---------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `finish`               | `commands/task/finish-*`          | `direct` and base-side `branch_pr` | Close a verified task and attach commit/result metadata. | clean index rules, task status readiness, close commit snapshot validity                             |
+| `task close-noop`      | `commands/task/close-noop*`       | `direct`                           | Close a task whose correct result is no code/doc change. | task status readiness, terminal reason validation, task-only write scope                             |
+| `task close-duplicate` | `commands/task/close-duplicate*`  | `direct`                           | Close a duplicate and point at a canonical task.         | canonical task exists, duplicate is not already terminal, task-only write scope                      |
+| `task hosted-close`    | `commands/task/hosted-close*`     | `branch_pr` base checkout          | Reconcile task closure from hosted merge evidence.       | base checkout, hosted merge identity, PR metadata freshness, clean task artifact write scope         |
+| `task hosted-close-pr` | `commands/task/hosted-close-pr*`  | `branch_pr` base checkout          | Create or skip a follow-up close PR after hosted merge.  | already-closed no-op detection, PR metadata recovery, branch/remote identity, clean close-tail scope |
+| `pr close`             | `commands/pr/close.ts`            | hosted PR operation                | Close a hosted PR without implying task completion.      | PR identity, auth/transport, remote branch delete decision                                           |
+| `pr close-superseded`  | `commands/pr/close-superseded.ts` | hosted PR operation                | Close a PR because another route superseded it.          | superseded task/PR evidence, auth/transport, remote branch delete decision                           |
+
+## Git and task writes
+
+| Route                               | Git write                                            | Task README write                           | PR artifact write                                         |
+| ----------------------------------- | ---------------------------------------------------- | ------------------------------------------- | --------------------------------------------------------- |
+| Normal direct finish                | deterministic close commit                           | status `DONE`, verification/finish metadata | none                                                      |
+| Explicit `--no-close-commit` finish | none from close phase                                | status `DONE`, verification/finish metadata | none                                                      |
+| No-op close                         | task close/status commit when needed                 | status `DONE`, no-op reason                 | none                                                      |
+| Duplicate close                     | task close/status commit when needed                 | status `DONE`, duplicate pointer            | none                                                      |
+| Hosted close                        | base-side close or reconciliation commit when needed | status `DONE`, hosted merge metadata        | refreshes stale/missing base PR metadata                  |
+| Hosted close PR                     | follow-up close branch/PR unless already closed      | close-tail or no-op metadata                | creates/refreshes close PR artifacts                      |
+| `pr close`                          | hosted provider close, optional remote branch delete | no task terminal write                      | updates close evidence when task PR artifacts are present |
+| `pr close-superseded`               | hosted provider close, optional remote branch delete | no task terminal write                      | records superseded close evidence                         |
+
+## Precheck extraction boundary
+
+D2 may extract shared prechecks only where the lifecycle meaning is identical.
+The safe shared layer is:
+
+- current checkout and workflow-mode validation;
+- clean/allowed index validation;
+- PR metadata presence, parseability, and freshness;
+- hosted provider identity and remote branch delete decision;
+- already-closed/no-op detection for hosted close routes.
+
+D2 must not merge task lifecycle semantics with hosted PR-only semantics. A
+shared helper can say "this PR can be closed" or "this close-tail is already
+represented on base"; it must not decide that a task is `DONE` unless the caller
+is a task lifecycle command.
+
+## User-facing rule
+
+Use `finish` for completed and verified work. Use `task close-noop` or
+`task close-duplicate` when the task is terminal for a non-implementation
+reason. Use `pr close` commands only for hosted PR state.

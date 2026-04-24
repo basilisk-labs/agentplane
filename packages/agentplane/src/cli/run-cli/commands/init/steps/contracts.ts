@@ -3,20 +3,20 @@ import type { ExecutionProfile } from "@agentplaneorg/core/config";
 import type { WorkflowMode } from "../../../../../agents/agents-template.js";
 import type { PolicyGatewayFlavor } from "../../../../../shared/policy-gateway.js";
 import type { InitFlags, InitIde, SetupProfilePreset } from "../model.js";
-import type { InitV2ClackPrompts } from "../prompts-v2.js";
+import type { InitClackPrompts } from "../prompts.js";
 
 export type InitSetupProfileMode = "compact" | "full";
 
-export type InitV2PromptOption<T extends string> = {
+export type InitPromptOption<T extends string> = {
   value: T;
   label: string;
   hint?: string;
 };
 
-export type InitV2PromptClack = Pick<InitV2ClackPrompts, "cancel" | "isCancel"> & {
+export type InitPromptClack = Pick<InitClackPrompts, "cancel" | "isCancel"> & {
   select<T extends string>(opts: {
     message: string;
-    options: InitV2PromptOption<T>[];
+    options: InitPromptOption<T>[];
     initialValue?: T;
   }): Promise<T | symbol>;
   confirm(opts: { message: string; initialValue?: boolean }): Promise<boolean | symbol>;

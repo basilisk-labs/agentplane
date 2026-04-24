@@ -1,9 +1,10 @@
-import { InitAborted } from "../prompts-v2.js";
-import type { InitV2ClackPrompts } from "../prompts-v2.js";
-import { previewConflicts } from "../ui-v2.js";
+import path from "node:path";
+
+import { InitAborted } from "../prompts.js";
+import type { InitClackPrompts } from "../prompts.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { InitV2PromptClack } from "./contracts.js";
+import type { InitPromptClack } from "./contracts.js";
 
 type ConflictChoice = "overwrite" | "backup";
 type ConflictResolutionChoice = ConflictChoice | "cancel";
@@ -30,8 +31,12 @@ const conflictResolutionOptions: {
   },
 ];
 
+function renderConflictPreview(gitRoot: string, conflicts: readonly string[]): string {
+  return conflicts.map((conflict) => `- ${path.relative(gitRoot, conflict)}`).join("\n");
+}
+
 export async function promptConflictResolverStep(opts: {
-  clack: InitV2PromptClack & Pick<InitV2ClackPrompts, "note">;
+  clack: InitPromptClack & Pick<InitClackPrompts, "note">;
   gitRoot: string;
   conflicts: readonly string[];
 }): Promise<ConflictChoice | null> {
@@ -39,10 +44,7 @@ export async function promptConflictResolverStep(opts: {
     return null;
   }
 
-  previewConflicts(opts.clack, {
-    gitRoot: opts.gitRoot,
-    conflicts: opts.conflicts,
-  });
+  opts.clack.note(renderConflictPreview(opts.gitRoot, opts.conflicts), "Init conflicts detected");
 
   const resolution = await selectStepValue(opts.clack, {
     message: "How should init resolve existing conflicts?",

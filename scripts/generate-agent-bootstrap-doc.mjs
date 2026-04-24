@@ -1,30 +1,50 @@
 import { writeFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { assertAgentplaneCliDistFreshForDocs, fileExists } from "./lib/generated-artifacts.mjs";
 import { defineScript, runBunx, runScriptMain } from "./lib/script-runtime.mjs";
 
 const ROOT = process.cwd();
-const CLI_DIST_DIR = path.join(ROOT, "packages", "agentplane", "dist", "cli");
-const CLI_DIST_ENTRY = path.join(CLI_DIST_DIR, "bootstrap-guide.js");
+const CLI_SOURCE_ENTRY = path.join(
+  ROOT,
+  "packages",
+  "agentplane",
+  "src",
+  "cli",
+  "bootstrap-guide.ts",
+);
 const DOC_PATH = path.join(ROOT, "docs", "user", "agent-bootstrap.generated.mdx");
+
+function reexecWithBunForSourceImports() {
+  if (globalThis.Bun) return false;
+  if (process.env.AGENTPLANE_BUN_REEXEC === "1") {
+    throw new Error(
+      "Bun runtime is required to import TypeScript source modules for this generator.",
+    );
+  }
+  const result = spawnSync("bun", [fileURLToPath(import.meta.url), ...process.argv.slice(2)], {
+    cwd: ROOT,
+    stdio: "inherit",
+    env: { ...process.env, AGENTPLANE_BUN_REEXEC: "1" },
+  });
+  if (result.error) throw result.error;
+  process.exitCode = result.status ?? 1;
+  return true;
+}
 
 const main = defineScript({
   name: "generate-agent-bootstrap-doc",
   async run() {
+    if (reexecWithBunForSourceImports()) return;
     await assertAgentplaneCliDistFreshForDocs(ROOT);
-    if (!(await fileExists(CLI_DIST_ENTRY))) {
+    if (!(await fileExists(CLI_SOURCE_ENTRY))) {
       throw new Error(
-        "CLI dist bootstrap renderer is missing. Refresh repo-local runtime first:\n" +
-          "  bun run framework:dev:bootstrap\n" +
-          "Or rebuild explicitly:\n" +
-          "  bun run --filter=@agentplaneorg/core build\n" +
-          "  bun run --filter=agentplane build\n" +
-          "  bun run --filter=@agentplane/testkit build",
+        "CLI source bootstrap renderer is missing. Restore packages/agentplane/src/cli/bootstrap-guide.ts before retrying.",
       );
     }
 
-    const moduleUrl = pathToFileURL(CLI_DIST_ENTRY).href;
+    const moduleUrl = pathToFileURL(CLI_SOURCE_ENTRY).href;
     const { renderBootstrapDoc } = await import(moduleUrl);
     const content = renderBootstrapDoc();
     await writeFile(DOC_PATH, content, "utf8");

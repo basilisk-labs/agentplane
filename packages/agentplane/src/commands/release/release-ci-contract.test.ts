@@ -77,20 +77,19 @@ describe("release CI contract", () => {
     expect(agentplanePackageJson.scripts?.build).toContain("tsc -b --force");
   });
 
-  it("keeps repo-only helper files out of the publishable agentplane build", async () => {
+  it("keeps repo-only CLI helper exclusions out of the publishable agentplane build", async () => {
     const agentplaneTsconfigText = await readRootText("packages/agentplane/tsconfig.json");
     const agentplaneTsconfig = JSON.parse(agentplaneTsconfigText) as {
       exclude?: string[];
     };
 
-    expect(agentplaneTsconfig.exclude).toContain("src/cli/run-cli.core.pr-flow.pr-support.ts");
-    expect(agentplaneTsconfig.exclude).toContain("src/cli/run-cli.core.tasks.query-support*.ts");
+    expect(agentplaneTsconfig.exclude).toEqual(["src/**/*.test.ts"]);
   });
 
-  it("checks the generated bootstrap doc against the actual runtime-source dist path", async () => {
+  it("checks the generated bootstrap doc against the actual runtime-source source path", async () => {
     const checkScript = await readRootText("scripts/check-agent-bootstrap-fresh.mjs");
 
-    expect(checkScript).toContain('"runtime",\n  "shared",\n  "runtime-source.js"');
+    expect(checkScript).toContain('"runtime",\n  "shared",\n  "runtime-source.ts"');
     expect(checkScript).not.toContain('"dist",\n  "shared",\n  "runtime-source.js"');
   });
 

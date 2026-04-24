@@ -1,6 +1,6 @@
-import type { AgentplaneConfig as AgentplaneConfigShape } from "./schema.js";
+import type { AgentplaneConfig as AgentplaneConfigShape } from "./schema.impl.js";
 
-export { defaultAgentplaneConfig as defaultConfig } from "./schema.js";
+export { defaultAgentplaneConfig as defaultConfig } from "./schema.impl.js";
 
 export function isConfigRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);

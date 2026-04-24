@@ -1,5 +1,5 @@
 export { promptAdvancedSettingsStep } from "./advanced-settings.js";
-export { applyInitV2WithProgress } from "./apply.js";
+export { applyInitWithProgress } from "./apply.js";
 export { promptBackendStep } from "./backend.js";
 export { promptConflictResolverStep } from "./conflict-resolver.js";
 export { promptIdeStep } from "./ide.js";

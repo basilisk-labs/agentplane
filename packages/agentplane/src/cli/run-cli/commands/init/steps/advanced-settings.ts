@@ -7,7 +7,7 @@ import { confirmStepValue, selectStepValue } from "./prompt-utils.js";
 import type {
   AdvancedSettingsStepAnswers,
   InitSetupProfileMode,
-  InitV2PromptClack,
+  InitPromptClack,
 } from "./contracts.js";
 
 const executionProfileOptions: { value: ExecutionProfile; label: string; hint: string }[] = [
@@ -17,7 +17,7 @@ const executionProfileOptions: { value: ExecutionProfile; label: string; hint: s
 ];
 
 export async function promptAdvancedSettingsStep(opts: {
-  clack: InitV2PromptClack;
+  clack: InitPromptClack;
   flags: Pick<
     InitFlags,
     | "hooks"
