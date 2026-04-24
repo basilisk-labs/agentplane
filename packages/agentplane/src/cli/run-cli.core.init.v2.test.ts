@@ -357,10 +357,12 @@ describe("runCli interactive init UI", () => {
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(true);
-    mocks.textMock.mockImplementationOnce(async (opts?: { validate?: (value: string) => string | void }) => {
-      expect(() => opts?.validate?.(undefined as never)).not.toThrow();
-      return "none";
-    });
+    mocks.textMock.mockImplementationOnce(
+      async (opts?: { validate?: (value: string) => string | void }) => {
+        expect(() => opts?.validate?.(undefined as never)).not.toThrow();
+        return "none";
+      },
+    );
 
     const io = captureStdIO();
     try {
