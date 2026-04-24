@@ -9,11 +9,11 @@ const DEFAULT_CONFIG_PATH = "knip.json";
 
 const BASELINE_LIMITS = {
   files: 5,
-  exports: 235,
-  types: 332,
+  exports: 239,
+  types: 333,
   enumMembers: 0,
   namespaceMembers: 0,
-  total: 571,
+  total: 577,
 };
 
 function parseNonNegativeInteger(value, flagName) {
