@@ -1,10 +1,11 @@
 ---
 id: "202604241136-ZE24F8"
 title: "v0.3 freeze B3: prune orphaned init UI exports"
-status: "DOING"
+result_summary: "B3 complete: init UI exports are narrower and knip baseline is back within guard."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-24T12:45:32.537Z"
   updated_by: "CODER"
   note: "B3 verified: orphan init conflict-preview exports removed, conflict preview behavior remains covered in resolver tests, knip baseline returns to 239 exports/577 total, typecheck/format/routing/bootstrap/doctor pass."
-commit: null
+commit:
+  hash: "d8bbd52c710558f4c491219212d8d9a1af8c72b8"
+  message: "🧹 ZE24F8 task: prune init preview exports"
 comments:
   -
     author: "CODER"
     body: "Start: prune orphaned init conflict preview exports after B2, keeping behavior covered through conflict resolver tests and focused validation."
+  -
+    author: "CODER"
+    body: "Verified: removed orphan init conflict-preview exports, kept resolver-owned conflict preview behavior covered, restored knip baseline and formatting/routing checks."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "B3 verified: orphan init conflict-preview exports removed, conflict preview behavior remains covered in resolver tests, knip baseline returns to 239 exports/577 total, typecheck/format/routing/bootstrap/doctor pass."
+  -
+    type: "status"
+    at: "2026-04-24T12:45:49.033Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: removed orphan init conflict-preview exports, kept resolver-owned conflict preview behavior covered, restored knip baseline and formatting/routing checks."
 doc_version: 3
-doc_updated_at: "2026-04-24T12:45:32.564Z"
+doc_updated_at: "2026-04-24T12:45:49.035Z"
 doc_updated_by: "CODER"
 description: "Remove unused init conflict-preview exports after the single init path lands and ratchet unused-export baseline where applicable."
 sections:
