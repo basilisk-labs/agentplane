@@ -1,10 +1,11 @@
 ---
 id: "202604241137-7JH02T"
 title: "v0.3 hygiene H2: decide bin d.ts packaging treatment"
-status: "DOING"
+result_summary: "Kept bin/*.d.ts in repo for v0.3 as local TypeScript declaration surfaces; publish artifact remains clean via files[] whitelist."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-24T14:42:04.234Z"
   updated_by: "CODER"
   note: "Command: find packages/agentplane/bin -maxdepth 1 -name '*.d.ts' -print. Result: pass. Evidence: four local declaration files remain: runtime-watch, runtime-context, stale-dist-policy, framework-dev-contract. Scope: local bin declaration inventory. Command: npm pack --dry-run --ignore-scripts in packages/agentplane. Result: pass. Evidence: 46 tarball files, package size 355.2 kB, no bin/*.d.ts listed. Scope: publish artifact boundary. Additional check: bun run typecheck passed."
-commit: null
+commit:
+  hash: "a1564ce73a3bea8cb77ab7699438dbff8090a3fc"
+  message: "📝 7JH02T task: record bin declaration decision"
 comments:
   -
     author: "CODER"
     body: "Start: Evaluate the bin declaration files as a packaging hygiene task, keeping the decision bounded to publish output, local TypeScript needs, and documented verification evidence."
+  -
+    author: "CODER"
+    body: "Verified: bin declarations remain local-only, npm pack excludes bin/*.d.ts, and typecheck passes with the adjacent declarations retained."
 events:
   -
     type: "status"
@@ -45,14 +51,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: find packages/agentplane/bin -maxdepth 1 -name '*.d.ts' -print. Result: pass. Evidence: four local declaration files remain: runtime-watch, runtime-context, stale-dist-policy, framework-dev-contract. Scope: local bin declaration inventory. Command: npm pack --dry-run --ignore-scripts in packages/agentplane. Result: pass. Evidence: 46 tarball files, package size 355.2 kB, no bin/*.d.ts listed. Scope: publish artifact boundary. Additional check: bun run typecheck passed."
+  -
+    type: "status"
+    at: "2026-04-24T14:42:59.932Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bin declarations remain local-only, npm pack excludes bin/*.d.ts, and typecheck passes with the adjacent declarations retained."
 doc_version: 3
-doc_updated_at: "2026-04-24T14:42:04.240Z"
+doc_updated_at: "2026-04-24T14:42:59.933Z"
 doc_updated_by: "CODER"
 description: "Evaluate moving bin declaration files or replacing them with JSDoc so package bin artifacts stay minimal without runtime regressions."
 sections:
   Summary: |-
     v0.3 hygiene H2: decide bin d.ts packaging treatment
-
+    
     Evaluate moving bin declaration files or replacing them with JSDoc so package bin artifacts stay minimal without runtime regressions.
   Scope: |-
     - In scope: Evaluate moving bin declaration files or replacing them with JSDoc so package bin artifacts stay minimal without runtime regressions.
@@ -69,13 +82,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-24T14:42:04.234Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Command: find packages/agentplane/bin -maxdepth 1 -name '*.d.ts' -print. Result: pass. Evidence: four local declaration files remain: runtime-watch, runtime-context, stale-dist-policy, framework-dev-contract. Scope: local bin declaration inventory. Command: npm pack --dry-run --ignore-scripts in packages/agentplane. Result: pass. Evidence: 46 tarball files, package size 355.2 kB, no bin/*.d.ts listed. Scope: publish artifact boundary. Additional check: bun run typecheck passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-24T14:41:54.449Z, excerpt_hash=sha256:28730ab53a99ae7a0d3b061b6de607a66bcf5ec40ac4d923b72148213a265f2a
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
