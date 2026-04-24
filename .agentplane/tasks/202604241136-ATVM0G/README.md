@@ -1,10 +1,11 @@
 ---
 id: "202604241136-ATVM0G"
 title: "v0.3 freeze D1: document lifecycle and close taxonomy"
-status: "DOING"
+result_summary: "D1 complete: close/finish command taxonomy is documented for user and developer surfaces."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-24T13:02:20.034Z"
   updated_by: "DOCS"
   note: "D1 verified: task lifecycle docs now include v0.3 close taxonomy, developer close taxonomy added, docs CLI/onboarding checks pass, routing/doctor/format checks pass."
-commit: null
+commit:
+  hash: "8914d4423f7e656558756040b71fc5486c0ec267"
+  message: "📝 ATVM0G docs: map close taxonomy"
 comments:
   -
     author: "DOCS"
     body: "Start: document v0.3 lifecycle and close taxonomy across user and developer docs without changing command behavior."
+  -
+    author: "DOCS"
+    body: "Verified: documented the v0.3 lifecycle close taxonomy in user docs and added the developer close taxonomy map for D2 precheck extraction."
 events:
   -
     type: "status"
@@ -44,8 +50,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "D1 verified: task lifecycle docs now include v0.3 close taxonomy, developer close taxonomy added, docs CLI/onboarding checks pass, routing/doctor/format checks pass."
+  -
+    type: "status"
+    at: "2026-04-24T13:02:36.890Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: documented the v0.3 lifecycle close taxonomy in user docs and added the developer close taxonomy map for D2 precheck extraction."
 doc_version: 3
-doc_updated_at: "2026-04-24T13:02:20.064Z"
+doc_updated_at: "2026-04-24T13:02:36.892Z"
 doc_updated_by: "DOCS"
 description: "Add the v0.3 task lifecycle and close taxonomy documentation that maps close/finish commands to modes, git writes, docs writes, and final statuses."
 sections:
