@@ -1,10 +1,11 @@
 ---
 id: "202604241136-45ZVBA"
 title: "v0.3 freeze D2: extract shared close precheck"
-status: "DOING"
+result_summary: "D2 complete: close-family precheck behavior is centralized without changing CLI result shapes."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-24T13:11:08.319Z"
   updated_by: "CODER"
   note: "Command: bun run test -- packages/agentplane/src/commands/pr packages/agentplane/src/commands/task => pass, 33 files / 212 tests. Command: bun run typecheck => pass. Command: bun run format:check && git diff --check => pass. Additional checks: focused cli-core pr close/superseded/hosted-close-pr passed, knip baseline passed, arch:deps passed, framework:dev:bootstrap and doctor passed."
-commit: null
+commit:
+  hash: "b0e5d197f62a0ec9b35d4a9a3444e767768b1313"
+  message: "🧪 45ZVBA task: cover shared close precheck"
 comments:
   -
     author: "CODER"
     body: "Start: extract the shared close-family precheck helper for branch_pr workflow, GitHub repo/owner, non-empty close flags, and remote branch delete handling; preserve existing pr close and hosted-close-pr behavior."
+  -
+    author: "CODER"
+    body: "Verified: shared close precheck helpers now cover branch_pr workflow validation, GitHub repo/owner resolution, non-empty close flags, and remote head branch deletion behavior across pr close, pr close-superseded, and task hosted-close-pr."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run test -- packages/agentplane/src/commands/pr packages/agentplane/src/commands/task => pass, 33 files / 212 tests. Command: bun run typecheck => pass. Command: bun run format:check && git diff --check => pass. Additional checks: focused cli-core pr close/superseded/hosted-close-pr passed, knip baseline passed, arch:deps passed, framework:dev:bootstrap and doctor passed."
+  -
+    type: "status"
+    at: "2026-04-24T13:12:38.957Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: shared close precheck helpers now cover branch_pr workflow validation, GitHub repo/owner resolution, non-empty close flags, and remote head branch deletion behavior across pr close, pr close-superseded, and task hosted-close-pr."
 doc_version: 3
-doc_updated_at: "2026-04-24T13:11:08.351Z"
+doc_updated_at: "2026-04-24T13:12:38.958Z"
 doc_updated_by: "CODER"
 description: "Extract common PR/task close precheck behavior from pr close and hosted-close paths into a shared helper after the taxonomy defines the common contract."
 sections:
