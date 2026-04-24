@@ -1,10 +1,11 @@
 ---
 id: "202604241136-CKSK2S"
 title: "v0.3 freeze A2: remove prepare from package publish scripts"
-status: "DOING"
+result_summary: "A2 removed the agentplane prepare script and verified package dry-run behavior."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-24T11:43:46.528Z"
   updated_by: "CODER"
   note: "Command: rg -n '\"prepare\"' packages/agentplane/package.json packages/core/package.json packages/recipes/package.json | Result: pass; command returned no matches, so no prepare script remains. Command: npm pack --dry-run --ignore-scripts in packages/agentplane | Result: pass; dry-run pack produced agentplane@0.3.25 metadata with 1295 files, 546.0 kB. Command: npm pack --dry-run in packages/agentplane | Result: pass; prepack ran clean/build, tsup emitted dist/cli.js, dry-run pack completed. Command: git diff --check | Result: pass."
-commit: null
+commit:
+  hash: "ab19e0169d696fe19ea330761ce56ff826b57f9f"
+  message: "📦 CKSK2S release: remove agentplane prepare script"
 comments:
   -
     author: "CODER"
     body: "Start: Implement A2 only by removing the remaining agentplane prepare script, preserving prepack and prepublishOnly, then verifying pack dry-runs."
+  -
+    author: "CODER"
+    body: "Verified: A2 removed the remaining prepare lifecycle script from agentplane while preserving prepack and prepublishOnly; both npm pack dry-run paths completed successfully."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: rg -n '\"prepare\"' packages/agentplane/package.json packages/core/package.json packages/recipes/package.json | Result: pass; command returned no matches, so no prepare script remains. Command: npm pack --dry-run --ignore-scripts in packages/agentplane | Result: pass; dry-run pack produced agentplane@0.3.25 metadata with 1295 files, 546.0 kB. Command: npm pack --dry-run in packages/agentplane | Result: pass; prepack ran clean/build, tsup emitted dist/cli.js, dry-run pack completed. Command: git diff --check | Result: pass."
+  -
+    type: "status"
+    at: "2026-04-24T11:44:34.856Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: A2 removed the remaining prepare lifecycle script from agentplane while preserving prepack and prepublishOnly; both npm pack dry-run paths completed successfully."
 doc_version: 3
-doc_updated_at: "2026-04-24T11:43:46.537Z"
+doc_updated_at: "2026-04-24T11:44:34.856Z"
 doc_updated_by: "CODER"
 description: "Remove unsupported git-install prepare behavior from publishable packages where present and keep prepack/prepublishOnly as the release build path."
 sections:
