@@ -1,10 +1,11 @@
 ---
 id: "202604241136-H753HG"
 title: "v0.3 freeze A3: whitelist agentplane package files"
-status: "DOING"
+result_summary: "A3 whitelisted agentplane package files and verified the compact tarball surface."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-24T11:46:57.142Z"
   updated_by: "CODER"
   note: "Command: npm pack --dry-run --ignore-scripts --json in packages/agentplane | Result: pass; entryCount=46, size=356263 bytes, dist=[.build-manifest.json, cli.d.ts, cli.js], no bin .d.ts and no map files. Command: npm pack --dry-run --json in packages/agentplane | Result: pass; prepack build completed and entryCount=46, size=356271 bytes. Command: find packages/agentplane/dist -type f -name '*.js' | sort | Result: pass; only packages/agentplane/dist/cli.js. Command: git diff --check | Result: pass."
-commit: null
+commit:
+  hash: "3c25f4d2d1a2f1b7888fcbb52de6b48e72ed2989"
+  message: "📦 H753HG release: whitelist agentplane package files"
 comments:
   -
     author: "CODER"
     body: "Start: Implement A3 only by replacing broad package files entries with explicit runtime/publish artifacts, retaining dist build manifest for install verification."
+  -
+    author: "CODER"
+    body: "Verified: A3 replaced broad package files entries with an explicit runtime whitelist; dry-run packs contain 46 entries, no map files, no bin declarations, and only dist build manifest, cli.d.ts, and cli.js under dist."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: npm pack --dry-run --ignore-scripts --json in packages/agentplane | Result: pass; entryCount=46, size=356263 bytes, dist=[.build-manifest.json, cli.d.ts, cli.js], no bin .d.ts and no map files. Command: npm pack --dry-run --json in packages/agentplane | Result: pass; prepack build completed and entryCount=46, size=356271 bytes. Command: find packages/agentplane/dist -type f -name '*.js' | sort | Result: pass; only packages/agentplane/dist/cli.js. Command: git diff --check | Result: pass."
+  -
+    type: "status"
+    at: "2026-04-24T11:47:17.303Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: A3 replaced broad package files entries with an explicit runtime whitelist; dry-run packs contain 46 entries, no map files, no bin declarations, and only dist build manifest, cli.d.ts, and cli.js under dist."
 doc_version: 3
-doc_updated_at: "2026-04-24T11:46:57.147Z"
+doc_updated_at: "2026-04-24T11:47:17.304Z"
 doc_updated_by: "CODER"
 description: "Tighten packages/agentplane package files so the npm tarball contains only required bin, dist, assets, README, and LICENSE artifacts."
 sections:
