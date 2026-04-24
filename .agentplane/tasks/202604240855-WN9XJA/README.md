@@ -1,10 +1,12 @@
 ---
 id: "202604240855-WN9XJA"
 title: "Fix lint in init hotfix regression mocks"
-status: "DOING"
+result_summary: "Init hotfix regression mocks satisfy lint gate"
+risk_level: "low"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +25,16 @@ verification:
   updated_at: "2026-04-24T08:57:21.773Z"
   updated_by: "CODER"
   note: "Command: /Users/densmirnov/.bun/bin/bun run lint:core -- packages/agentplane/src/cli/run-cli.core.init.v2.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts; ./node_modules/.bin/prettier --check packages/agentplane/src/cli/run-cli.core.init.v2.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts; git diff --check. Result: pass. Evidence: removed the unnecessary async wrappers from both mock callbacks, bun-run lint completed cleanly on the touched tests, Prettier check reported all matched files clean, and git diff --check returned no whitespace issues. Scope: final lint recovery for the init cached recipe hotfix publication path."
-commit: null
+commit:
+  hash: "41c872223835e938d44e74aa7861a5e779c82a3f"
+  message: "✅ WN9XJA meta: done"
 comments:
   -
     author: "CODER"
     body: "Start: remove unnecessary async from the two init regression mocks, verify lint on the touched files, then publish the branch."
+  -
+    author: "CODER"
+    body: "Verified: remove unnecessary async wrappers from the new init regression mocks so lint and push gates pass."
 events:
   -
     type: "status"
@@ -42,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: /Users/densmirnov/.bun/bin/bun run lint:core -- packages/agentplane/src/cli/run-cli.core.init.v2.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts; ./node_modules/.bin/prettier --check packages/agentplane/src/cli/run-cli.core.init.v2.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts; git diff --check. Result: pass. Evidence: removed the unnecessary async wrappers from both mock callbacks, bun-run lint completed cleanly on the touched tests, Prettier check reported all matched files clean, and git diff --check returned no whitespace issues. Scope: final lint recovery for the init cached recipe hotfix publication path."
+  -
+    type: "status"
+    at: "2026-04-24T08:57:22.852Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: remove unnecessary async wrappers from the new init regression mocks so lint and push gates pass."
 doc_version: 3
-doc_updated_at: "2026-04-24T08:57:21.777Z"
+doc_updated_at: "2026-04-24T08:57:22.857Z"
 doc_updated_by: "CODER"
 description: "Remove unnecessary async wrappers from the new init regression test mocks so pre-push lint passes and the hotfix branch can publish."
 sections:
