@@ -1,10 +1,11 @@
 ---
 id: "202604241137-Z82PKG"
 title: "v0.3 freeze F1: simplify core config schema naming"
-status: "DOING"
+result_summary: "F1 complete: core config schema implementation now lives in schema.impl.ts, the thin schema.ts shim is removed, and public exports remain available via config and schemas indexes."
+status: "DONE"
 priority: "normal"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-24T13:33:53.182Z"
   updated_by: "CODER"
   note: "Verified F1: typecheck, docs:recipes:check, focused core config tests, core build, old config-zod/schema reference grep, format:check, git diff --check, framework bootstrap, and doctor all pass."
-commit: null
+commit:
+  hash: "88a24928345a0be0aa077f888dea9eda6c03d3b5"
+  message: "♻️ Z82PKG task: simplify config schema naming"
 comments:
   -
     author: "CODER"
     body: "Start: rename the concrete core config schema implementation, remove the thin schema shim, and keep public core exports stable."
+  -
+    author: "CODER"
+    body: "Verified: typecheck, docs:recipes:check, focused core config tests, core build, old config-zod/schema reference grep, format:check, git diff --check, framework bootstrap, and doctor all pass."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified F1: typecheck, docs:recipes:check, focused core config tests, core build, old config-zod/schema reference grep, format:check, git diff --check, framework bootstrap, and doctor all pass."
+  -
+    type: "status"
+    at: "2026-04-24T13:34:18.584Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: typecheck, docs:recipes:check, focused core config tests, core build, old config-zod/schema reference grep, format:check, git diff --check, framework bootstrap, and doctor all pass."
 doc_version: 3
-doc_updated_at: "2026-04-24T13:33:53.215Z"
+doc_updated_at: "2026-04-24T13:34:18.586Z"
 doc_updated_by: "CODER"
 description: "Rename the concrete Zod config schema implementation and remove thin schema shim confusion while preserving public core exports."
 sections:
