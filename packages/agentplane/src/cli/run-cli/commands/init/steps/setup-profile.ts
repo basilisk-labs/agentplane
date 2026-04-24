@@ -2,7 +2,7 @@ import { setupProfilePresets } from "../presets.js";
 import type { InitFlags, SetupProfilePreset } from "../model.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { InitV2PromptClack, SetupProfileStepAnswers } from "./contracts.js";
+import type { InitPromptClack, SetupProfileStepAnswers } from "./contracts.js";
 
 const setupProfileOptions: { value: SetupProfilePreset; label: string; hint: string }[] = [
   {
@@ -23,7 +23,7 @@ const setupProfileOptions: { value: SetupProfilePreset; label: string; hint: str
 ];
 
 export async function promptSetupProfileStep(opts: {
-  clack: InitV2PromptClack;
+  clack: InitPromptClack;
   flags: Pick<InitFlags, "setupProfile">;
   defaultProfile?: SetupProfilePreset;
 }): Promise<SetupProfileStepAnswers> {

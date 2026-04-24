@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { InitAborted } from "../prompts-v2.js";
+import { InitAborted } from "../prompts.js";
 
 import { promptConflictResolverStep } from "./conflict-resolver.js";
-import type { InitV2PromptClack } from "./contracts.js";
+import type { InitPromptClack } from "./contracts.js";
 
 const mocks = vi.hoisted(() => {
   const cancelSymbol = Symbol("cancel");
@@ -16,7 +16,7 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-function clackMock(): InitV2PromptClack & { note: (message: string, title?: string) => void } {
+function clackMock(): InitPromptClack & { note: (message: string, title?: string) => void } {
   return {
     cancel: mocks.cancelMock,
     isCancel: mocks.isCancelMock,
@@ -34,7 +34,7 @@ function resetMocks(): void {
   mocks.selectMock.mockReset();
 }
 
-describe("init v2 conflict resolver step", () => {
+describe("init conflict resolver step", () => {
   it("returns overwrite for overwrite selection", async () => {
     resetMocks();
     mocks.selectMock.mockResolvedValueOnce("overwrite");

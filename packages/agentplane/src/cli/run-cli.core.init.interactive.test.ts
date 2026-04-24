@@ -54,7 +54,6 @@ vi.mock("@clack/prompts", () => ({
 
 const originalStdinIsTty = Object.getOwnPropertyDescriptor(process.stdin, "isTTY");
 const originalStdoutIsTty = Object.getOwnPropertyDescriptor(process.stdout, "isTTY");
-const originalInitUi = process.env.AGENTPLANE_INIT_UI;
 const originalPromptMode = process.env.AGENTPLANE_PROMPTS;
 
 function setTty(enabled: boolean): void {
@@ -76,11 +75,6 @@ function restoreTty(): void {
 }
 
 function restoreEnv(): void {
-  if (originalInitUi === undefined) {
-    delete process.env.AGENTPLANE_INIT_UI;
-  } else {
-    process.env.AGENTPLANE_INIT_UI = originalInitUi;
-  }
   if (originalPromptMode === undefined) {
     delete process.env.AGENTPLANE_PROMPTS;
   } else {
@@ -179,7 +173,6 @@ describe("runCli interactive init UI", () => {
   beforeEach(() => {
     setTty(true);
     restoreEnv();
-    delete process.env.AGENTPLANE_INIT_UI;
     delete process.env.AGENTPLANE_PROMPTS;
     resetClackMocks();
   });
@@ -227,14 +220,8 @@ describe("runCli interactive init UI", () => {
     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
   });
 
-  it("routes to interactive init UI from AGENTPLANE_INIT_UI=interactive", async () => {
+  it("respects explicit init flags on the default interactive route", async () => {
     const root = await mkTempDir();
-    process.env.AGENTPLANE_INIT_UI = "interactive";
-    mocks.selectMock
-      .mockResolvedValueOnce("light")
-      .mockResolvedValueOnce("codex")
-      .mockResolvedValueOnce("codex")
-      .mockResolvedValueOnce("local");
     mocks.confirmMock.mockResolvedValueOnce(true);
 
     const io = captureStdIO();
@@ -268,7 +255,7 @@ describe("runCli interactive init UI", () => {
     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(true);
   });
 
-  it("uses init v2 for the default TTY interactive route", async () => {
+  it("uses init for the default TTY interactive route", async () => {
     const root = await mkTempDir();
     mocks.selectMock
       .mockResolvedValueOnce("light")
@@ -467,7 +454,7 @@ describe("runCli interactive init UI", () => {
     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
   });
 
-  it("keeps legacy init for non-TTY and --yes", async () => {
+  it("keeps unified non-interactive init for non-TTY and --yes", async () => {
     const root = await mkTempDir();
     setTty(false);
 
@@ -484,7 +471,7 @@ describe("runCli interactive init UI", () => {
     expect(mocks.confirmMock).not.toHaveBeenCalled();
   });
 
-  it("keeps legacy init when plain prompt mode is requested for non-interactive init", async () => {
+  it("keeps unified non-interactive init when plain prompt mode is requested for non-interactive init", async () => {
     const root = await mkTempDir();
     process.env.AGENTPLANE_PROMPTS = "plain";
     setTty(false);

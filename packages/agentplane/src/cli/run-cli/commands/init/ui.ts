@@ -1,8 +1,8 @@
 import path from "node:path";
 
-import type { InitV2ClackPrompts } from "./prompts-v2.js";
+import type { InitClackPrompts } from "./prompts.js";
 
-type InitV2PreviewItem = {
+type InitPreviewItem = {
   label: string;
   value: string | number | boolean | null | undefined;
 };
@@ -14,14 +14,14 @@ const INIT_ASCII_LOGO = String.raw`
 agent/plane
 `.trim();
 
-function stringifyPreviewValue(value: InitV2PreviewItem["value"]): string {
+function stringifyPreviewValue(value: InitPreviewItem["value"]): string {
   if (value === true) return "yes";
   if (value === false) return "no";
   if (value === null || value === undefined || value === "") return "(none)";
   return String(value);
 }
 
-export function renderInitV2Preview(items: InitV2PreviewItem[]): string {
+export function renderInitPreview(items: InitPreviewItem[]): string {
   const labelWidth = Math.max(...items.map((item) => item.label.length), 0);
   return items
     .map((item) => `${item.label.padEnd(labelWidth)}  ${stringifyPreviewValue(item.value)}`)
@@ -29,7 +29,7 @@ export function renderInitV2Preview(items: InitV2PreviewItem[]): string {
 }
 
 export function section(
-  clack: Pick<InitV2ClackPrompts, "log" | "note">,
+  clack: Pick<InitClackPrompts, "log" | "note">,
   title: string,
   message?: string,
 ): void {
@@ -39,36 +39,36 @@ export function section(
   }
 }
 
-export function introLogo(clack: Pick<InitV2ClackPrompts, "note">): void {
+export function introLogo(clack: Pick<InitClackPrompts, "note">): void {
   clack.note(INIT_ASCII_LOGO);
 }
 
 export function previewInstall(
-  clack: Pick<InitV2ClackPrompts, "note">,
-  items: InitV2PreviewItem[],
+  clack: Pick<InitClackPrompts, "note">,
+  items: InitPreviewItem[],
 ): void {
-  clack.note(renderInitV2Preview(items), "Install preview");
+  clack.note(renderInitPreview(items), "Install preview");
 }
 
-export function renderInitV2ConflictPreview(gitRoot: string, conflicts: readonly string[]): string {
+export function renderInitConflictPreview(gitRoot: string, conflicts: readonly string[]): string {
   return conflicts.map((conflict) => `- ${path.relative(gitRoot, conflict)}`).join("\n");
 }
 
 export function previewConflicts(
-  clack: Pick<InitV2ClackPrompts, "note">,
+  clack: Pick<InitClackPrompts, "note">,
   opts: {
     gitRoot: string;
     conflicts: readonly string[];
   },
 ): void {
-  clack.note(renderInitV2ConflictPreview(opts.gitRoot, opts.conflicts), "Init conflicts detected");
+  clack.note(renderInitConflictPreview(opts.gitRoot, opts.conflicts), "Init conflicts detected");
 }
 
-export function outroSuccess(clack: Pick<InitV2ClackPrompts, "outro">, root: string): void {
+export function outroSuccess(clack: Pick<InitClackPrompts, "outro">, root: string): void {
   clack.outro(`AgentPlane initialized in ${root}.`);
 }
 
-export function outroError(clack: Pick<InitV2ClackPrompts, "log" | "outro">, error: unknown): void {
+export function outroError(clack: Pick<InitClackPrompts, "log" | "outro">, error: unknown): void {
   const message = error instanceof Error ? error.message : String(error);
   clack.log.error(message);
   clack.outro("AgentPlane init did not complete.");

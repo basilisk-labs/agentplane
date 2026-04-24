@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import * as clack from "@clack/prompts";
 
-import { InitAborted } from "../prompts-v2.js";
+import { InitAborted } from "../prompts.js";
 
 import { promptAdvancedSettingsStep } from "./advanced-settings.js";
 import { promptBackendStep } from "./backend.js";
@@ -10,7 +10,7 @@ import { promptPolicyGatewayStep } from "./policy-gateway.js";
 import { promptRecipeSelectionStep } from "./recipe-selection.js";
 import { promptSetupProfileStep } from "./setup-profile.js";
 import { promptWorkflowStep } from "./workflow.js";
-import type { InitV2PromptClack } from "./contracts.js";
+import type { InitPromptClack } from "./contracts.js";
 
 const mocks = vi.hoisted(() => {
   const cancelSymbol = Symbol("cancel");
@@ -32,8 +32,8 @@ vi.mock("@clack/prompts", () => ({
   text: mocks.textMock,
 }));
 
-function clackMock(): InitV2PromptClack {
-  return clack as InitV2PromptClack;
+function clackMock(): InitPromptClack {
+  return clack as InitPromptClack;
 }
 
 function resetPromptMocks(): void {
@@ -44,7 +44,7 @@ function resetPromptMocks(): void {
   mocks.textMock.mockReset();
 }
 
-describe("init v2 prompt steps", () => {
+describe("init prompt steps", () => {
   it("collects the happy path for full-harness interactive setup", async () => {
     resetPromptMocks();
     mocks.selectMock

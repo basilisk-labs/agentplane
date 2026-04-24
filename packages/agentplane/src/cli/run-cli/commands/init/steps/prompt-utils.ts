@@ -1,12 +1,12 @@
-import { assertNotCancelled } from "../prompts-v2.js";
+import { assertNotCancelled } from "../prompts.js";
 
-import type { InitV2PromptClack, InitV2PromptOption } from "./contracts.js";
+import type { InitPromptClack, InitPromptOption } from "./contracts.js";
 
 export async function selectStepValue<T extends string>(
-  clack: InitV2PromptClack,
+  clack: InitPromptClack,
   opts: {
     message: string;
-    options: InitV2PromptOption<T>[];
+    options: InitPromptOption<T>[];
     initialValue: T;
     cancelMessage?: string;
   },
@@ -20,7 +20,7 @@ export async function selectStepValue<T extends string>(
 }
 
 export async function confirmStepValue(
-  clack: InitV2PromptClack,
+  clack: InitPromptClack,
   opts: {
     message: string;
     initialValue: boolean;
@@ -35,7 +35,7 @@ export async function confirmStepValue(
 }
 
 export async function textStepValue(
-  clack: InitV2PromptClack,
+  clack: InitPromptClack,
   opts: {
     message: string;
     defaultValue?: string;

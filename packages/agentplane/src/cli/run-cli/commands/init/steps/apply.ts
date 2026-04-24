@@ -1,26 +1,26 @@
-import type { InitV2ClackPrompts } from "../prompts-v2.js";
+import type { InitClackPrompts } from "../prompts.js";
 
-type InitV2ApplySpinner = {
+type InitApplySpinner = {
   start: (message: string) => void;
   stop: (message?: string) => void;
   message?: (message: string) => void;
 };
 
-type InitV2ApplyClack = Pick<InitV2ClackPrompts, "spinner">;
+type InitApplyClack = Pick<InitClackPrompts, "spinner">;
 
-type InitV2ApplyStepWriter = () => Promise<void | readonly string[]>;
+type InitApplyStepWriter = () => Promise<void | readonly string[]>;
 
-type InitV2ApplyInstallCommitWriter = (installPaths: readonly string[]) => Promise<void>;
+type InitApplyInstallCommitWriter = (installPaths: readonly string[]) => Promise<void>;
 
-type InitV2ApplyPlan = {
-  config: InitV2ApplyStepWriter;
-  agents: InitV2ApplyStepWriter;
-  workflow: InitV2ApplyStepWriter;
-  gitignore: InitV2ApplyStepWriter;
-  hooks?: InitV2ApplyStepWriter;
-  ideSync: InitV2ApplyStepWriter;
-  recipes: InitV2ApplyStepWriter;
-  installCommit?: InitV2ApplyInstallCommitWriter;
+type InitApplyPlan = {
+  config: InitApplyStepWriter;
+  agents: InitApplyStepWriter;
+  workflow: InitApplyStepWriter;
+  gitignore: InitApplyStepWriter;
+  hooks?: InitApplyStepWriter;
+  ideSync: InitApplyStepWriter;
+  recipes: InitApplyStepWriter;
+  installCommit?: InitApplyInstallCommitWriter;
 };
 
 function asInstallPaths(value: void | readonly string[]): string[] {
@@ -29,13 +29,13 @@ function asInstallPaths(value: void | readonly string[]): string[] {
 }
 
 export async function withStep<T>(opts: {
-  clack?: InitV2ApplyClack | null;
+  clack?: InitApplyClack | null;
   start: string;
   success?: string;
   failure?: string;
   run: (setProgress: (message: string) => void) => Promise<T>;
 }): Promise<T> {
-  const spinner: InitV2ApplySpinner | null = opts.clack ? opts.clack.spinner() : null;
+  const spinner: InitApplySpinner | null = opts.clack ? opts.clack.spinner() : null;
   spinner?.start(opts.start);
   const setProgress = (message: string): void => {
     spinner?.message?.(message);
@@ -51,9 +51,9 @@ export async function withStep<T>(opts: {
   }
 }
 
-export async function applyInitV2WithProgress(opts: {
-  clack?: InitV2ApplyClack | null;
-  plan: InitV2ApplyPlan;
+export async function applyInitWithProgress(opts: {
+  clack?: InitApplyClack | null;
+  plan: InitApplyPlan;
   includeInstallCommit: boolean;
 }): Promise<{ installPaths: string[] }> {
   const installPaths: string[] = [];

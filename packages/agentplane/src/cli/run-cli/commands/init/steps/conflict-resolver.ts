@@ -1,9 +1,9 @@
-import { InitAborted } from "../prompts-v2.js";
-import type { InitV2ClackPrompts } from "../prompts-v2.js";
-import { previewConflicts } from "../ui-v2.js";
+import { InitAborted } from "../prompts.js";
+import type { InitClackPrompts } from "../prompts.js";
+import { previewConflicts } from "../ui.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { InitV2PromptClack } from "./contracts.js";
+import type { InitPromptClack } from "./contracts.js";
 
 type ConflictChoice = "overwrite" | "backup";
 type ConflictResolutionChoice = ConflictChoice | "cancel";
@@ -31,7 +31,7 @@ const conflictResolutionOptions: {
 ];
 
 export async function promptConflictResolverStep(opts: {
-  clack: InitV2PromptClack & Pick<InitV2ClackPrompts, "note">;
+  clack: InitPromptClack & Pick<InitClackPrompts, "note">;
   gitRoot: string;
   conflicts: readonly string[];
 }): Promise<ConflictChoice | null> {

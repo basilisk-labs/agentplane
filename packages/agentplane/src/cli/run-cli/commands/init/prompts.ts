@@ -1,6 +1,6 @@
 import type * as ClackPromptsModule from "@clack/prompts";
 
-export type InitV2ClackPrompts = typeof ClackPromptsModule;
+export type InitClackPrompts = typeof ClackPromptsModule;
 
 export class InitAborted extends Error {
   readonly code = "INIT_ABORTED";
@@ -11,9 +11,9 @@ export class InitAborted extends Error {
   }
 }
 
-let clackPromptPromise: Promise<InitV2ClackPrompts> | null = null;
+let clackPromptPromise: Promise<InitClackPrompts> | null = null;
 
-export function shouldUseInitV2ClackPrompts(): boolean {
+export function shouldUseInitClackPrompts(): boolean {
   return (
     process.env.AGENTPLANE_PROMPTS !== "plain" &&
     process.stdin.isTTY === true &&
@@ -21,14 +21,14 @@ export function shouldUseInitV2ClackPrompts(): boolean {
   );
 }
 
-export function loadInitV2ClackPrompts(): Promise<InitV2ClackPrompts | null> {
-  if (!shouldUseInitV2ClackPrompts()) return Promise.resolve(null);
+export function loadInitClackPrompts(): Promise<InitClackPrompts | null> {
+  if (!shouldUseInitClackPrompts()) return Promise.resolve(null);
   clackPromptPromise ??= import("@clack/prompts");
   return clackPromptPromise;
 }
 
 export function assertNotCancelled<T>(
-  clack: Pick<InitV2ClackPrompts, "cancel" | "isCancel">,
+  clack: Pick<InitClackPrompts, "cancel" | "isCancel">,
   value: T,
   message = "Init cancelled.",
 ): Exclude<T, symbol> {

@@ -3,7 +3,7 @@ import type { InitFlags, InitDefaults } from "../model.js";
 import { INIT_DEFAULTS } from "../presets.js";
 
 import { selectStepValue } from "./prompt-utils.js";
-import type { InitV2PromptClack, PolicyGatewayStepAnswers } from "./contracts.js";
+import type { InitPromptClack, PolicyGatewayStepAnswers } from "./contracts.js";
 
 const policyGatewayOptions: { value: PolicyGatewayFlavor; label: string; hint: string }[] = [
   { value: "codex", label: "Codex", hint: "Install AGENTS.md." },
@@ -11,7 +11,7 @@ const policyGatewayOptions: { value: PolicyGatewayFlavor; label: string; hint: s
 ];
 
 export async function promptPolicyGatewayStep(opts: {
-  clack: InitV2PromptClack;
+  clack: InitPromptClack;
   flags: Pick<InitFlags, "policyGateway">;
   defaults?: Pick<InitDefaults, "policyGateway">;
 }): Promise<PolicyGatewayStepAnswers> {

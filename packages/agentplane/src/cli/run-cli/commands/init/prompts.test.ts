@@ -3,9 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   assertNotCancelled,
   InitAborted,
-  loadInitV2ClackPrompts,
-  shouldUseInitV2ClackPrompts,
-} from "./prompts-v2.js";
+  loadInitClackPrompts,
+  shouldUseInitClackPrompts,
+} from "./prompts.js";
 
 const mocks = vi.hoisted(() => {
   const cancelSymbol = Symbol("cancel");
@@ -51,7 +51,7 @@ function restoreTty(): void {
   }
 }
 
-describe("init prompts v2 loader", () => {
+describe("init prompts loader", () => {
   beforeEach(() => {
     setTty(false);
     if (originalPromptMode === undefined) {
@@ -75,20 +75,20 @@ describe("init prompts v2 loader", () => {
 
   it("does not load Clack when init runs in plain or non-TTY mode", async () => {
     setTty(false);
-    await expect(loadInitV2ClackPrompts()).resolves.toBeNull();
-    expect(shouldUseInitV2ClackPrompts()).toBe(false);
+    await expect(loadInitClackPrompts()).resolves.toBeNull();
+    expect(shouldUseInitClackPrompts()).toBe(false);
 
     setTty(true);
     process.env.AGENTPLANE_PROMPTS = "plain";
-    await expect(loadInitV2ClackPrompts()).resolves.toBeNull();
-    expect(shouldUseInitV2ClackPrompts()).toBe(false);
+    await expect(loadInitClackPrompts()).resolves.toBeNull();
+    expect(shouldUseInitClackPrompts()).toBe(false);
   });
 
   it("loads and reuses the same Clack module in interactive mode", async () => {
     setTty(true);
 
-    const first = await loadInitV2ClackPrompts();
-    const second = await loadInitV2ClackPrompts();
+    const first = await loadInitClackPrompts();
+    const second = await loadInitClackPrompts();
 
     expect(first).not.toBeNull();
     expect(second).toBe(first);

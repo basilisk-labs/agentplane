@@ -6,10 +6,10 @@ import {
   outroSuccess,
   previewConflicts,
   previewInstall,
-  renderInitV2ConflictPreview,
-  renderInitV2Preview,
+  renderInitConflictPreview,
+  renderInitPreview,
   section,
-} from "./ui-v2.js";
+} from "./ui.js";
 
 function clackMock() {
   return {
@@ -22,10 +22,10 @@ function clackMock() {
   };
 }
 
-describe("init ui v2", () => {
+describe("init ui", () => {
   it("renders aligned preview rows with deterministic value labels", () => {
     expect(
-      renderInitV2Preview([
+      renderInitPreview([
         { label: "workflow", value: "direct" },
         { label: "hooks", value: true },
         { label: "recipes", value: "" },
@@ -72,7 +72,7 @@ describe("init ui v2", () => {
       "/repo/.agentplane/backends/local/backend.json",
     ];
 
-    expect(renderInitV2ConflictPreview("/repo", conflicts)).toBe(
+    expect(renderInitConflictPreview("/repo", conflicts)).toBe(
       ["- .agentplane/config.json", "- .agentplane/backends/local/backend.json"].join("\n"),
     );
 
