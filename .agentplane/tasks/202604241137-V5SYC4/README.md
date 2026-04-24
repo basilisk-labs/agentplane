@@ -1,10 +1,11 @@
 ---
 id: "202604241137-V5SYC4"
 title: "v0.3 freeze G3: guard release parity against freeze artifact drift"
-status: "DOING"
+result_summary: "G3 complete: release parity now requires FREEZE.v0.3.md for 0.3.x, checks it references the current agentplane version, rejects stale freeze artifacts after leaving 0.3.x, and keeps bootstrap docs compatible with the pruned dist contour."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-24T14:36:18.009Z"
   updated_by: "CODER"
   note: "Verified G3: node scripts/check-release-parity.mjs passes; bun run release:ci-check completed successfully including release-ci-base, workflow coverage, significant coverage, and release-critical suites; focused parity/bootstrap tests pass; typecheck, lint:core, docs:bootstrap:check, git diff --check, and doctor pass."
-commit: null
+commit:
+  hash: "5eac9cc82a7b47e0e50a3295b79d26ff6f4fd244"
+  message: "🧊 V5SYC4 task: guard freeze parity"
 comments:
   -
     author: "CODER"
     body: "Start: Extending release parity to guard FREEZE.v0.3.md against 0.3 version drift and stale 0.4 transition state, with focused regression tests and release CI verification."
+  -
+    author: "CODER"
+    body: "Verified: node scripts/check-release-parity.mjs passes; bun run release:ci-check completed successfully including release-ci-base, workflow coverage, significant coverage, and release-critical suites; focused parity/bootstrap tests pass; typecheck, lint:core, docs:bootstrap:check, git diff --check, and doctor pass."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified G3: node scripts/check-release-parity.mjs passes; bun run release:ci-check completed successfully including release-ci-base, workflow coverage, significant coverage, and release-critical suites; focused parity/bootstrap tests pass; typecheck, lint:core, docs:bootstrap:check, git diff --check, and doctor pass."
+  -
+    type: "status"
+    at: "2026-04-24T14:36:44.244Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: node scripts/check-release-parity.mjs passes; bun run release:ci-check completed successfully including release-ci-base, workflow coverage, significant coverage, and release-critical suites; focused parity/bootstrap tests pass; typecheck, lint:core, docs:bootstrap:check, git diff --check, and doctor pass."
 doc_version: 3
-doc_updated_at: "2026-04-24T14:36:18.029Z"
+doc_updated_at: "2026-04-24T14:36:44.245Z"
 doc_updated_by: "CODER"
 description: "Update release parity checks so FREEZE.v0.3.md tracks the current 0.3 package version and future 0.4 transition is explicit."
 sections:
