@@ -1,10 +1,11 @@
 ---
 id: "202604241914-FRBSYS"
 title: "Harden release hygiene docs workflow scope and artifact gates"
-status: "DOING"
+result_summary: "Implemented repo-neutral workflow scope, release artifact/package gates, sanitized build manifest packaging, init recipe install-commit paths, roadmap 0.6 eval-system planning, and current-docs legacy cleanup."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -17,15 +18,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-24T21:02:26.724Z"
+  updated_by: "CODER"
+  note: "Verified release hygiene, workflow scope, docs cleanup, sanitized manifest, recipe install commit paths, package gates, and full release:ci-check on the current tree."
+commit:
+  hash: "2315c795be6a51b8aafcec8005b9e25f39e68c31"
+  message: "🧹 FRBSYS task: harden release hygiene gates"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved release hygiene, docs cleanup, workflow scope, package artifact, manifest, and init recipe commit hardening in the current direct checkout."
+  -
+    author: "CODER"
+    body: "Verified: full release hygiene implementation completed; release:ci-check passed on the current tree after policy asset sync."
 events:
   -
     type: "status"
@@ -34,8 +40,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implementing the approved release hygiene, docs cleanup, workflow scope, package artifact, manifest, and init recipe commit hardening in the current direct checkout."
+  -
+    type: "verify"
+    at: "2026-04-24T21:02:26.724Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified release hygiene, workflow scope, docs cleanup, sanitized manifest, recipe install commit paths, package gates, and full release:ci-check on the current tree."
+  -
+    type: "status"
+    at: "2026-04-24T21:02:36.231Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: full release hygiene implementation completed; release:ci-check passed on the current tree after policy asset sync."
 doc_version: 3
-doc_updated_at: "2026-04-24T19:15:15.534Z"
+doc_updated_at: "2026-04-24T21:02:36.232Z"
 doc_updated_by: "CODER"
 description: "Implement repo-neutral workflow scope, artifact and package gates, sanitized build manifest, init recipe install paths, roadmap 0.6, and current-code documentation cleanup."
 sections:
@@ -58,11 +77,24 @@ sections:
     8. Run bun run release:ci-check. Expected: full release gate passes.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-24T21:02:26.724Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified release hygiene, workflow scope, docs cleanup, sanitized manifest, recipe install commit paths, package gates, and full release:ci-check on the current tree.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-24T19:15:15.534Z, excerpt_hash=sha256:6475c698e4617af11221f60d45e6e0cf7cc35b2f46fe34da03fd905288ba58f1
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: node .agentplane/policy/check-routing.mjs, artifact/task/package gates, local tarball install smoke, docs freshness checks, focused init/runtime tests, typecheck, lint, doctor, and bun run release:ci-check all passed.
+      Impact: Release hygiene gates now block volatile artifacts and dirty package contents; clean init uses repo-neutral workflow scope; current docs no longer expose legacy init flags or agentctl examples.
+      Resolution: Implemented gates, docs/runtime updates, sanitized npm manifest flow, init recipe install path capture, and roadmap 0.6 eval-system entry.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -94,6 +126,14 @@ Implement repo-neutral workflow scope, artifact and package gates, sanitized bui
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-24T21:02:26.724Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified release hygiene, workflow scope, docs cleanup, sanitized manifest, recipe install commit paths, package gates, and full release:ci-check on the current tree.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-24T19:15:15.534Z, excerpt_hash=sha256:6475c698e4617af11221f60d45e6e0cf7cc35b2f46fe34da03fd905288ba58f1
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -102,3 +142,9 @@ Implement repo-neutral workflow scope, artifact and package gates, sanitized bui
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: node .agentplane/policy/check-routing.mjs, artifact/task/package gates, local tarball install smoke, docs freshness checks, focused init/runtime tests, typecheck, lint, doctor, and bun run release:ci-check all passed.
+  Impact: Release hygiene gates now block volatile artifacts and dirty package contents; clean init uses repo-neutral workflow scope; current docs no longer expose legacy init flags or agentctl examples.
+  Resolution: Implemented gates, docs/runtime updates, sanitized npm manifest flow, init recipe install path capture, and roadmap 0.6 eval-system entry.
+  Promotion: incident-candidate
+  Fixability: external
