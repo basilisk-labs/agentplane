@@ -23,6 +23,15 @@ export {
 } from "./config.js";
 
 export {
+  AGENTPLANE_CONFIG_SCHEMA,
+  AgentplaneConfigSchema,
+  defaultAgentplaneConfig,
+  formatAgentplaneConfigIssues,
+  renderAgentplaneConfigSchemaJson,
+  validateAgentplaneConfig,
+} from "./schema.impl.js";
+
+export {
   applyExecutionToApprovals,
   buildExecutionProfile,
   EXECUTION_PROFILE_PRESETS,

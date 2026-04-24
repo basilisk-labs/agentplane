@@ -6,7 +6,7 @@ export {
   renderAgentplaneConfigSchemaJson,
   validateAgentplaneConfig,
   type AgentplaneConfig,
-} from "../config/schema.js";
+} from "../config/index.js";
 
 export {
   listTaskHandoffSchemaErrors,
