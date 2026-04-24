@@ -1,10 +1,11 @@
 ---
 id: "202604241136-RTDFZS"
 title: "v0.3 freeze B2: remove init v1 orchestrator and make one init path"
-status: "DOING"
+result_summary: "B2 complete: init now has a single orchestrator and shared apply path; compatibility aliases remain for --interactive-ui/--experimental-ui."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-24T12:37:54.877Z"
   updated_by: "CODER"
   note: "B2 unified init path verified: v2/router naming removed, readline init production usage removed, init command unit tests and cli-core init integration tests pass, typecheck/format/diff checks pass, framework bootstrap and doctor pass."
-commit: null
+commit:
+  hash: "174837465c087c8f7bfa26365ae9be3cdb271be4"
+  message: "✨ RTDFZS task: unify init orchestration"
 comments:
   -
     author: "CODER"
     body: "Start: Unify init around one command path while preserving --yes, non-TTY, plain prompt mode, force/backup, and init mutation semantics."
+  -
+    author: "CODER"
+    body: "Verified: unified init orchestration around one Clack/non-interactive apply path; removed v2-named files and AGENTPLANE_INIT_UI routing; preserved --yes/plain/non-TTY setup-profile behavior."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "B2 unified init path verified: v2/router naming removed, readline init production usage removed, init command unit tests and cli-core init integration tests pass, typecheck/format/diff checks pass, framework bootstrap and doctor pass."
+  -
+    type: "status"
+    at: "2026-04-24T12:38:34.036Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: unified init orchestration around one Clack/non-interactive apply path; removed v2-named files and AGENTPLANE_INIT_UI routing; preserved --yes/plain/non-TTY setup-profile behavior."
 doc_version: 3
-doc_updated_at: "2026-04-24T12:37:54.890Z"
+doc_updated_at: "2026-04-24T12:38:34.037Z"
 doc_updated_by: "CODER"
 description: "Collapse init v1/v2 into a single orchestrator, preserve non-TTY preset behavior, and remove obsolete interactive-ui and experimental-ui flags."
 sections:
