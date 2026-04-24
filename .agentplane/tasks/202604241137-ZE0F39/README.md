@@ -1,10 +1,11 @@
 ---
 id: "202604241137-ZE0F39"
 title: "v0.3 freeze E2: move CLI ansi helper into shared layer"
-status: "DOING"
+result_summary: "E2 complete: the ansi helper and test now live in src/shared, cli/shared is removed from the checkout, and local CI routing references the new shared test path."
+status: "DONE"
 priority: "normal"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-04-24T13:48:02.976Z"
   updated_by: "CODER"
   note: "Verified E2: shared directory count is 5; typecheck passed; bun run test -- packages/agentplane/src passed with 219 files and 1240 tests passed, 2 skipped after routing metadata update; focused routing/local-ci/ansi tests passed; format:check, git diff --check, knip:check, arch:deps, framework bootstrap, and doctor all pass."
-commit: null
+commit:
+  hash: "dab231c5c7682b4712d919afe265caea62d95fcc"
+  message: "♻️ ZE0F39 task: move ansi helper to shared"
 comments:
   -
     author: "CODER"
     body: "Start: Moving the CLI ansi helper into the documented shared layer, updating imports and tests, then verifying directory count, tests, typecheck, formatting, dependency checks, bootstrap, and doctor."
+  -
+    author: "CODER"
+    body: "Verified: shared directory count is 5; typecheck passed; bun run test -- packages/agentplane/src passed with 219 files and 1240 tests passed, 2 skipped; focused routing/local-ci/ansi tests passed; format:check, git diff --check, knip:check, arch:deps, framework bootstrap, and doctor all pass."
 events:
   -
     type: "status"
@@ -46,8 +52,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified E2: shared directory count is 5; typecheck passed; bun run test -- packages/agentplane/src passed with 219 files and 1240 tests passed, 2 skipped after routing metadata update; focused routing/local-ci/ansi tests passed; format:check, git diff --check, knip:check, arch:deps, framework bootstrap, and doctor all pass."
+  -
+    type: "status"
+    at: "2026-04-24T13:48:33.610Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: shared directory count is 5; typecheck passed; bun run test -- packages/agentplane/src passed with 219 files and 1240 tests passed, 2 skipped; focused routing/local-ci/ansi tests passed; format:check, git diff --check, knip:check, arch:deps, framework bootstrap, and doctor all pass."
 doc_version: 3
-doc_updated_at: "2026-04-24T13:48:03.005Z"
+doc_updated_at: "2026-04-24T13:48:33.612Z"
 doc_updated_by: "CODER"
 description: "Move the lone cli/shared ansi helper into the documented shared layer and update imports/tests so shared directory count drops."
 sections:
