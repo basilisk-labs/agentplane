@@ -328,8 +328,22 @@ module.exports = [
   },
 
   {
+    files: ["**/*.test-helpers.ts"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "Program",
+          message:
+            "Do not add .test-helpers.ts files. Put shared test helpers in @agentplane/testkit or colocate them in a focused *.test.ts file.",
+        },
+      ],
+    },
+  },
+
+  {
     files: ["packages/agentplane/src/**/*.ts", "packages/testkit/src/**/*.ts"],
-    ignores: ["**/*.test.ts", "**/*.test-helpers.ts"],
+    ignores: ["**/*.test.ts"],
     rules: {
       "no-restricted-imports": [
         "error",

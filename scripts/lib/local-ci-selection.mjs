@@ -21,7 +21,6 @@ const DOCTOR_BUCKET_PATTERNS = [/^packages\/agentplane\/src\/commands\/doctor(?:
 const BACKEND_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/backends\/task-backend\//,
   /^packages\/agentplane\/src\/backends\/task-backend(?:\..+)?\.test\.ts$/,
-  /^packages\/agentplane\/src\/backends\/task-backend\.test-helpers\.ts$/,
   /^packages\/agentplane\/src\/backends\/task-index\.ts$/,
   /^packages\/agentplane\/src\/commands\/backend(?:\/|\.|$)/,
   /^packages\/agentplane\/src\/commands\/shared\/task-backend(?:\.test)?\.ts$/,
@@ -74,7 +73,6 @@ const CLI_HELP_DISCOVERY_PATTERNS = [
 const CLI_CORE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\/(?!commands\/init\/)/,
-  /^packages\/agentplane\/src\/cli\/run-cli\.test-helpers\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta(?:\..+)?|misc|pr-flow(?:\..+)?)\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
