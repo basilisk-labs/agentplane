@@ -1,10 +1,12 @@
 ---
 id: "202604231823-3425P4"
 title: "Publish v0.3.24 patch release"
-status: "DOING"
+result_summary: "Release v0.3.24 is published: release commit 62f379389fd7f36a591a20384287b08ca17ce5f7 was merged into main via PR #517 as merge commit bcfcfab7bfccc7532fe43a64b68d879c715f0c7e, tag v0.3.24 is on the remote, and Publish to npm run 24880065158 completed successfully."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -28,7 +30,9 @@ verification:
     Command: AGENTPLANE_RELEASE_DRY_RUN=1 agentplane release apply; Result: pass; Evidence: prepared release commit 62f379389fd7f36a591a20384287b08ca17ce5f7 and local tag v0.3.24 with report .agentplane/.release/apply/2026-04-23T18-25-27-747Z.json. Scope: direct-mode release mutation path before protected-main recovery.
     Command: gh pr create/merge for #517; Result: pass; Evidence: PR https://github.com/basilisk-labs/agentplane/pull/517 merged into main as bcfcfab7bfccc7532fe43a64b68d879c715f0c7e while preserving the tagged release commit in main history. Scope: protected-main recovery for the release commit.
     Command: gh run watch 24880065158 --exit-status; Result: pass; Evidence: Publish to npm completed successfully for merge SHA bcfcfab7bfccc7532fe43a64b68d879c715f0c7e. Scope: hosted publication evidence for v0.3.24.
-commit: null
+commit:
+  hash: "e9c30e71aff43a854fa3f0b5834ce3430d903823"
+  message: "✅ 3425P4 meta: done"
 comments:
   -
     author: "CODER"
@@ -39,6 +43,9 @@ comments:
   -
     author: "CODER"
     body: "Start: continue the blocked v0.3.24 release through the protected-main recovery route by opening a PR from codex/release-v0.3.24, merging it without squash so the tagged release commit stays in main history, and then recording final publication evidence."
+  -
+    author: "CODER"
+    body: "Verified: published v0.3.24 through the protected-main recovery path, preserved the tagged release commit in main history, and confirmed the hosted Publish to npm workflow succeeded for the merged release SHA."
 events:
   -
     type: "status"
@@ -72,8 +79,15 @@ events:
       Command: AGENTPLANE_RELEASE_DRY_RUN=1 agentplane release apply; Result: pass; Evidence: prepared release commit 62f379389fd7f36a591a20384287b08ca17ce5f7 and local tag v0.3.24 with report .agentplane/.release/apply/2026-04-23T18-25-27-747Z.json. Scope: direct-mode release mutation path before protected-main recovery.
       Command: gh pr create/merge for #517; Result: pass; Evidence: PR https://github.com/basilisk-labs/agentplane/pull/517 merged into main as bcfcfab7bfccc7532fe43a64b68d879c715f0c7e while preserving the tagged release commit in main history. Scope: protected-main recovery for the release commit.
       Command: gh run watch 24880065158 --exit-status; Result: pass; Evidence: Publish to npm completed successfully for merge SHA bcfcfab7bfccc7532fe43a64b68d879c715f0c7e. Scope: hosted publication evidence for v0.3.24.
+  -
+    type: "status"
+    at: "2026-04-24T08:33:31.499Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: published v0.3.24 through the protected-main recovery path, preserved the tagged release commit in main history, and confirmed the hosted Publish to npm workflow succeeded for the merged release SHA."
 doc_version: 3
-doc_updated_at: "2026-04-24T08:33:23.012Z"
+doc_updated_at: "2026-04-24T08:33:31.499Z"
 doc_updated_by: "CODER"
 description: "Cut the next patch release for the completed 0.3 foundation stabilization work after all open tasks are closed, the release notes are updated, and the direct-mode release flow verifies cleanly."
 sections:
