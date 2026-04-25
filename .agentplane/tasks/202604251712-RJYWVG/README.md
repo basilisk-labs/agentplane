@@ -1,10 +1,11 @@
 ---
 id: "202604251712-RJYWVG"
 title: "Refactor finish command spec validation"
-status: "DOING"
+result_summary: "split finish spec helpers"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -18,15 +19,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-25T17:28:32.721Z"
+  updated_by: "CODER"
+  note: "Focused finish validation and help tests passed; docs:cli:check, typecheck, lint:core, arch:check, hotspot-report, task-state, artifact gate, targeted Prettier, framework bootstrap, doctor, and routing checks passed. Full format:check remains blocked only by unrelated untracked REFACTORING_PLAN_v3.md."
+commit:
+  hash: "7437f2af9b73ef81cf22b360aea5bc15db17df7e"
+  message: "♻️ RJYWVG task: split finish spec helpers"
 comments:
   -
     author: "CODER"
     body: "Start: Split finish.spec.ts validation and parse helpers into focused sibling modules while preserving the public finishSpec export, generated help, and finish CLI behavior."
+  -
+    author: "CODER"
+    body: "Verified: finishSpec now delegates validation and parse helpers to a shared module, focused tests and quality gates passed, and the public finish CLI surface stayed stable."
 events:
   -
     type: "status"
@@ -35,8 +41,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Split finish.spec.ts validation and parse helpers into focused sibling modules while preserving the public finishSpec export, generated help, and finish CLI behavior."
+  -
+    type: "verify"
+    at: "2026-04-25T17:28:32.721Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused finish validation and help tests passed; docs:cli:check, typecheck, lint:core, arch:check, hotspot-report, task-state, artifact gate, targeted Prettier, framework bootstrap, doctor, and routing checks passed. Full format:check remains blocked only by unrelated untracked REFACTORING_PLAN_v3.md."
+  -
+    type: "status"
+    at: "2026-04-25T17:28:44.410Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: finishSpec now delegates validation and parse helpers to a shared module, focused tests and quality gates passed, and the public finish CLI surface stayed stable."
 doc_version: 3
-doc_updated_at: "2026-04-25T17:28:05.198Z"
+doc_updated_at: "2026-04-25T17:28:44.411Z"
 doc_updated_by: "CODER"
 description: "Split finish.spec.ts option groups and raw validation helpers into focused modules while preserving finish flags, generated help, and parse output."
 sections:
@@ -58,6 +77,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-25T17:28:32.721Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused finish validation and help tests passed; docs:cli:check, typecheck, lint:core, arch:check, hotspot-report, task-state, artifact gate, targeted Prettier, framework bootstrap, doctor, and routing checks passed. Full format:check remains blocked only by unrelated untracked REFACTORING_PLAN_v3.md.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-25T17:28:05.198Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -99,6 +126,14 @@ Split finish.spec.ts option groups and raw validation helpers into focused modul
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-25T17:28:32.721Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused finish validation and help tests passed; docs:cli:check, typecheck, lint:core, arch:check, hotspot-report, task-state, artifact gate, targeted Prettier, framework bootstrap, doctor, and routing checks passed. Full format:check remains blocked only by unrelated untracked REFACTORING_PLAN_v3.md.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-25T17:28:05.198Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
