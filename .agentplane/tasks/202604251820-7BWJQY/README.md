@@ -1,10 +1,11 @@
 ---
 id: "202604251820-7BWJQY"
 title: "Refactor scenario command helpers"
-status: "DOING"
+result_summary: "commands/scenario/impl/commands.ts now delegates selection/validation and tool execution to focused helpers, dropped below hotspot threshold, and scenario command behavior remained green under focused and global checks."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,15 +19,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-25T19:04:35.623Z"
+  updated_by: "CODER"
+  note: "Split commands/scenario/impl/commands.ts into scenario-selection.ts and scenario-tool-runtime.ts, reduced commands.ts to 144 lines, and passed focused scenario command tests plus typecheck, lint, arch, hotspot, task-state, artifact, format, bootstrap, doctor, and routing checks."
+commit:
+  hash: "b240ce466579d657d5f1520291ac0c8cf4c23cb9"
+  message: "♻️ 7BWJQY task: split scenario command helpers"
 comments:
   -
     author: "CODER"
     body: "Start: Extract scenario selection, validation, and tool-runtime helpers from commands/scenario/impl/commands.ts into focused sibling modules while preserving CLI output and error mapping."
+  -
+    author: "CODER"
+    body: "Verified: split scenario selection, validation, and tool-runtime helpers without changing CLI output or error semantics; full validation suite passed."
 events:
   -
     type: "status"
@@ -35,8 +41,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Extract scenario selection, validation, and tool-runtime helpers from commands/scenario/impl/commands.ts into focused sibling modules while preserving CLI output and error mapping."
+  -
+    type: "verify"
+    at: "2026-04-25T19:04:35.623Z"
+    author: "CODER"
+    state: "ok"
+    note: "Split commands/scenario/impl/commands.ts into scenario-selection.ts and scenario-tool-runtime.ts, reduced commands.ts to 144 lines, and passed focused scenario command tests plus typecheck, lint, arch, hotspot, task-state, artifact, format, bootstrap, doctor, and routing checks."
+  -
+    type: "status"
+    at: "2026-04-25T19:04:42.516Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: split scenario selection, validation, and tool-runtime helpers without changing CLI output or error semantics; full validation suite passed."
 doc_version: 3
-doc_updated_at: "2026-04-25T18:20:23.672Z"
+doc_updated_at: "2026-04-25T19:04:42.517Z"
 doc_updated_by: "CODER"
 description: "Extract recipe-scenario selection, validation, and tool-runtime helpers from commands/scenario/impl/commands.ts into focused sibling modules while preserving CLI output and error mapping."
 sections:
@@ -54,6 +73,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-25T19:04:35.623Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Split commands/scenario/impl/commands.ts into scenario-selection.ts and scenario-tool-runtime.ts, reduced commands.ts to 144 lines, and passed focused scenario command tests plus typecheck, lint, arch, hotspot, task-state, artifact, format, bootstrap, doctor, and routing checks.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-25T18:20:23.672Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +112,14 @@ Extract recipe-scenario selection, validation, and tool-runtime helpers from com
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-25T19:04:35.623Z — VERIFY — ok
+
+By: CODER
+
+Note: Split commands/scenario/impl/commands.ts into scenario-selection.ts and scenario-tool-runtime.ts, reduced commands.ts to 144 lines, and passed focused scenario command tests plus typecheck, lint, arch, hotspot, task-state, artifact, format, bootstrap, doctor, and routing checks.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-25T18:20:23.672Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
