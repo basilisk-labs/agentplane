@@ -1,10 +1,11 @@
 ---
 id: "202604251626-EYF4Z9"
 title: "Refactor remaining direct output surfaces"
-status: "DOING"
+result_summary: "enforce zero production console usage"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -21,15 +22,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-25T17:10:16.160Z"
+  updated_by: "CODER"
+  note: "logging:check passed with count=0 max=0; focused no-console and doctor runtime tests passed; typecheck, lint:core, arch:check, task-state, artifact policy, targeted Prettier, framework bootstrap, doctor, and routing checks passed. Full format:check remains blocked only by unrelated untracked REFACTORING_PLAN_v3.md."
+commit:
+  hash: "a56b27122f913b5d75dc9b4f223523c8a3304a68"
+  message: "♻️ EYF4Z9 task: enforce zero console usage"
 comments:
   -
     author: "CODER"
     body: "Start: Replace the remaining production console calls with explicit stream writes, lower the no-console baseline to zero, and leave broader stdout command surfaces as separate emitter-contract work."
+  -
+    author: "CODER"
+    body: "Verified: production console usage is now enforced at zero, focused tests and quality gates passed, and broader stream-output cleanup is recorded for later atoms."
 events:
   -
     type: "status"
@@ -38,8 +44,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Replace the remaining production console calls with explicit stream writes, lower the no-console baseline to zero, and leave broader stdout command surfaces as separate emitter-contract work."
+  -
+    type: "verify"
+    at: "2026-04-25T17:10:16.160Z"
+    author: "CODER"
+    state: "ok"
+    note: "logging:check passed with count=0 max=0; focused no-console and doctor runtime tests passed; typecheck, lint:core, arch:check, task-state, artifact policy, targeted Prettier, framework bootstrap, doctor, and routing checks passed. Full format:check remains blocked only by unrelated untracked REFACTORING_PLAN_v3.md."
+  -
+    type: "status"
+    at: "2026-04-25T17:10:42.142Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: production console usage is now enforced at zero, focused tests and quality gates passed, and broader stream-output cleanup is recorded for later atoms."
 doc_version: 3
-doc_updated_at: "2026-04-25T17:07:54.078Z"
+doc_updated_at: "2026-04-25T17:10:42.145Z"
 doc_updated_by: "CODER"
 description: "Replace selected direct stdout/stderr or console-based command output clusters with render helpers or existing CLI output primitives, keeping JSON/structured output contracts intact."
 sections:
@@ -62,6 +81,14 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-25T17:10:16.160Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: logging:check passed with count=0 max=0; focused no-console and doctor runtime tests passed; typecheck, lint:core, arch:check, task-state, artifact policy, targeted Prettier, framework bootstrap, doctor, and routing checks passed. Full format:check remains blocked only by unrelated untracked REFACTORING_PLAN_v3.md.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-25T17:07:54.078Z, excerpt_hash=sha256:4ee9d119c6e946159cfdf12d2bc48297e29447efbc9c52ac41cf87b938f56111
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -108,6 +135,14 @@ Replace selected direct stdout/stderr or console-based command output clusters w
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-25T17:10:16.160Z — VERIFY — ok
+
+By: CODER
+
+Note: logging:check passed with count=0 max=0; focused no-console and doctor runtime tests passed; typecheck, lint:core, arch:check, task-state, artifact policy, targeted Prettier, framework bootstrap, doctor, and routing checks passed. Full format:check remains blocked only by unrelated untracked REFACTORING_PLAN_v3.md.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-25T17:07:54.078Z, excerpt_hash=sha256:4ee9d119c6e946159cfdf12d2bc48297e29447efbc9c52ac41cf87b938f56111
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
