@@ -1,10 +1,11 @@
 ---
 id: "202604251626-PQAXKH"
 title: "Refactor doctor workspace diagnostics"
-status: "DOING"
+result_summary: "Extracted task README migration, archive drift, and projection drift checks into workspace-task-state.ts; doctor/workspace.ts is no longer a hotspot."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-25T16:41:14.466Z"
   updated_by: "CODER"
   note: "Doctor workspace task-state extraction passed focused doctor tests, typecheck, lint, architecture, touched-file formatting, hotspot, task/artifact gates, and diff checks; full format:check is blocked by unrelated untracked REFACTORING_PLAN_v3.md."
-commit: null
+commit:
+  hash: "ddb2374567c04478f72d7262bcdcfbafd7a31669"
+  message: "♻️ PQAXKH task: split doctor workspace state checks"
 comments:
   -
     author: "CODER"
     body: "Start: Refactoring doctor workspace diagnostics as the second sequential atom, preserving doctor behavior and focused diagnostics tests."
+  -
+    author: "CODER"
+    body: "Verified: doctor workspace state checks split passed focused tests and repository gates; only unrelated untracked REFACTORING_PLAN_v3.md blocks global format check."
 events:
   -
     type: "status"
@@ -44,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Doctor workspace task-state extraction passed focused doctor tests, typecheck, lint, architecture, touched-file formatting, hotspot, task/artifact gates, and diff checks; full format:check is blocked by unrelated untracked REFACTORING_PLAN_v3.md."
+  -
+    type: "status"
+    at: "2026-04-25T16:42:23.032Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: doctor workspace state checks split passed focused tests and repository gates; only unrelated untracked REFACTORING_PLAN_v3.md blocks global format check."
 doc_version: 3
-doc_updated_at: "2026-04-25T16:41:29.242Z"
+doc_updated_at: "2026-04-25T16:42:23.033Z"
 doc_updated_by: "CODER"
 description: "Extract doctor workspace checks and rendering into focused helpers so workspace.ts drops below hotspot threshold while doctor output and fix behavior stay unchanged."
 sections:
