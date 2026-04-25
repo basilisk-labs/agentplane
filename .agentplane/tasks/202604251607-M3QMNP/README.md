@@ -1,10 +1,11 @@
 ---
 id: "202604251607-M3QMNP"
 title: "Optimize duplicate mechanism implementations"
-status: "DOING"
+result_summary: "Implemented read-only init conflict discovery, shared hook shim rendering, and centralized task run output formatting."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-25T16:20:30.061Z"
   updated_by: "CODER"
   note: "Focused init/hooks/task-run suites passed; typecheck, lint:core, format:check, arch:check, logging:check, artifact policy, task-state, hotspot gate, git diff --check, and framework:dev:bootstrap passed."
-commit: null
+commit:
+  hash: "81acba6ff531016845fe4e94ce98067ec62799f4"
+  message: "♻️ M3QMNP task: consolidate duplicate mechanisms"
 comments:
   -
     author: "CODER"
     body: "Start: Optimizing the approved duplicate-mechanism scope in direct mode: init conflict discovery, hook shim template reuse, and task run output rendering, with focused verification before finish."
+  -
+    author: "CODER"
+    body: "Verified: duplicate mechanisms consolidated after focused tests and repository gates passed; residual hotspots recorded for separate atoms."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused init/hooks/task-run suites passed; typecheck, lint:core, format:check, arch:check, logging:check, artifact policy, task-state, hotspot gate, git diff --check, and framework:dev:bootstrap passed."
+  -
+    type: "status"
+    at: "2026-04-25T16:22:00.426Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: duplicate mechanisms consolidated after focused tests and repository gates passed; residual hotspots recorded for separate atoms."
 doc_version: 3
-doc_updated_at: "2026-04-25T16:21:10.820Z"
+doc_updated_at: "2026-04-25T16:22:00.428Z"
 doc_updated_by: "CODER"
 description: "Consolidate duplicated implementation paths found after the v0.3.27 audit: keep init conflict discovery read-only, share hook shim rendering between hook install and branch work start, and centralize task run output formatting without changing CLI behavior."
 sections:
