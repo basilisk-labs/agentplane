@@ -1,10 +1,11 @@
 ---
 id: "202604251729-1F9PPF"
 title: "Refactor PR check snapshot helpers"
-status: "DOING"
+result_summary: "split PR check helpers"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -18,15 +19,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-25T17:38:01.964Z"
+  updated_by: "CODER"
+  note: "Focused pr check validation suites passed; full format:check, typecheck, lint:core, arch:check, hotspot-report, task-state, artifact gate, framework bootstrap, doctor, and routing checks passed. pr/check.ts left the hotspot set and the runtime warning count dropped to seven."
+commit:
+  hash: "da7a92059f85b3195ab85e412270191510529083"
+  message: "♻️ 1F9PPF task: split PR check helpers"
 comments:
   -
     author: "CODER"
     body: "Start: Extract the PR artifact snapshot and freshness helper cluster from pr/check.ts into focused internal modules while preserving branch_pr validation behavior and output."
+  -
+    author: "CODER"
+    body: "Verified: pr check now delegates snapshot and freshness helpers to an internal module, focused branch_pr validation suites and full repo gates passed, and the command left the hotspot list."
 events:
   -
     type: "status"
@@ -35,8 +41,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Extract the PR artifact snapshot and freshness helper cluster from pr/check.ts into focused internal modules while preserving branch_pr validation behavior and output."
+  -
+    type: "verify"
+    at: "2026-04-25T17:38:01.964Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused pr check validation suites passed; full format:check, typecheck, lint:core, arch:check, hotspot-report, task-state, artifact gate, framework bootstrap, doctor, and routing checks passed. pr/check.ts left the hotspot set and the runtime warning count dropped to seven."
+  -
+    type: "status"
+    at: "2026-04-25T17:38:14.906Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pr check now delegates snapshot and freshness helpers to an internal module, focused branch_pr validation suites and full repo gates passed, and the command left the hotspot list."
 doc_version: 3
-doc_updated_at: "2026-04-25T17:37:37.915Z"
+doc_updated_at: "2026-04-25T17:38:14.908Z"
 doc_updated_by: "CODER"
 description: "Extract PR artifact snapshot and freshness helpers from pr/check.ts into focused internal modules while preserving branch_pr validation behavior and CLI output."
 sections:
@@ -58,6 +77,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-25T17:38:01.964Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused pr check validation suites passed; full format:check, typecheck, lint:core, arch:check, hotspot-report, task-state, artifact gate, framework bootstrap, doctor, and routing checks passed. pr/check.ts left the hotspot set and the runtime warning count dropped to seven.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-25T17:37:37.915Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -95,6 +122,14 @@ Extract PR artifact snapshot and freshness helpers from pr/check.ts into focused
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-25T17:38:01.964Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused pr check validation suites passed; full format:check, typecheck, lint:core, arch:check, hotspot-report, task-state, artifact gate, framework bootstrap, doctor, and routing checks passed. pr/check.ts left the hotspot set and the runtime warning count dropped to seven.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-25T17:37:37.915Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
