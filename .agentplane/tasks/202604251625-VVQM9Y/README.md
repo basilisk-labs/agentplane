@@ -1,10 +1,11 @@
 ---
 id: "202604251625-VVQM9Y"
 title: "Refactor workflow runtime validation"
-status: "DOING"
+result_summary: "Split validate.ts into orchestration, front matter schema validation, and primitive validation helpers; workflow-runtime/validate.ts is no longer a hotspot."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-25T16:33:49.279Z"
   updated_by: "CODER"
   note: "Workflow runtime validation refactor passed focused tests, typecheck, lint, architecture, formatting, hotspot, task/artifact gates, and framework bootstrap."
-commit: null
+commit:
+  hash: "b343976ab9c063d426c0a595f1c9a3c2875056fb"
+  message: "♻️ VVQM9Y task: split workflow validation"
 comments:
   -
     author: "CODER"
     body: "Start: Refactoring workflow-runtime validation as the first approved atom, preserving validation behavior and using focused workflow-runtime tests plus repository gates."
+  -
+    author: "CODER"
+    body: "Verified: workflow-runtime validation split passed focused tests and repository gates; refactor graph recorded for the next sequential atoms."
 events:
   -
     type: "status"
@@ -43,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Workflow runtime validation refactor passed focused tests, typecheck, lint, architecture, formatting, hotspot, task/artifact gates, and framework bootstrap."
+  -
+    type: "status"
+    at: "2026-04-25T16:35:36.453Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: workflow-runtime validation split passed focused tests and repository gates; refactor graph recorded for the next sequential atoms."
 doc_version: 3
-doc_updated_at: "2026-04-25T16:34:04.511Z"
+doc_updated_at: "2026-04-25T16:35:36.454Z"
 doc_updated_by: "CODER"
 description: "Split workflow-runtime validation into smaller modules without changing validation behavior, error messages, or workflow schema semantics. Target the current validate.ts hotspot first."
 sections:
