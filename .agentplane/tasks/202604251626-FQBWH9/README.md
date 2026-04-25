@@ -1,10 +1,11 @@
 ---
 id: "202604251626-FQBWH9"
 title: "Refactor command task-backend context"
-status: "DOING"
+result_summary: "Extracted branch snapshot task loading into task-backend-branch-snapshot.ts; commands/shared/task-backend.ts is no longer a hotspot."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-25T16:46:57.397Z"
   updated_by: "CODER"
   note: "Task-backend branch snapshot extraction passed focused task-backend tests, cli-core lifecycle/listing tests, typecheck, lint, architecture, touched-file formatting, hotspot, task/artifact gates, and diff checks; full format:check remains blocked by unrelated untracked REFACTORING_PLAN_v3.md."
-commit: null
+commit:
+  hash: "428c0b9bf87378eb3be561a35be4274f715c0600"
+  message: "♻️ FQBWH9 task: split task backend branch snapshots"
 comments:
   -
     author: "CODER"
     body: "Start: Refactoring commands/shared/task-backend.ts as the third sequential atom, preserving command context API and backend projection behavior."
+  -
+    author: "CODER"
+    body: "Verified: task backend branch snapshot split passed focused tests and repository gates; unrelated untracked REFACTORING_PLAN_v3.md remains outside scope."
 events:
   -
     type: "status"
@@ -44,8 +50,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Task-backend branch snapshot extraction passed focused task-backend tests, cli-core lifecycle/listing tests, typecheck, lint, architecture, touched-file formatting, hotspot, task/artifact gates, and diff checks; full format:check remains blocked by unrelated untracked REFACTORING_PLAN_v3.md."
+  -
+    type: "status"
+    at: "2026-04-25T16:47:55.555Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: task backend branch snapshot split passed focused tests and repository gates; unrelated untracked REFACTORING_PLAN_v3.md remains outside scope."
 doc_version: 3
-doc_updated_at: "2026-04-25T16:47:13.860Z"
+doc_updated_at: "2026-04-25T16:47:55.556Z"
 doc_updated_by: "CODER"
 description: "Split commands/shared/task-backend.ts by context loading, validation, and backend projection helpers while preserving command context API and backend behavior."
 sections:
