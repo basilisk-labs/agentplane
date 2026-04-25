@@ -69,6 +69,13 @@ function verifyLocalBuildManifest({ packageName, installDir, expectedPackageDir,
     );
   }
 
+  if (manifest.manifest_kind === "package") {
+    if (Object.prototype.hasOwnProperty.call(manifest, "package_dir")) {
+      fail(`${packageName} package manifest must not include package_dir`);
+    }
+    return;
+  }
+
   const normalizedExpected = path.resolve(expectedPackageDir);
   const normalizedActual = path.resolve(String(manifest.package_dir ?? ""));
   if (normalizedActual !== normalizedExpected) {

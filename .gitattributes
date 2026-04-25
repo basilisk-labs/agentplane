@@ -15,3 +15,16 @@
 *.css text eol=lf working-tree-encoding=UTF-8
 
 *.webmanifest text eol=lf working-tree-encoding=UTF-8
+
+.agentplane/tasks.json export-ignore
+.agentplane/tasks/**/runs export-ignore
+.agentplane/tasks/**/runs/** export-ignore
+.agentplane/tasks/**/repro export-ignore
+.agentplane/tasks/**/repro/** export-ignore
+.agentplane/tasks/**/*.log export-ignore
+.agentplane/tasks/**/*.jsonl export-ignore
+.agentplane/cache/** export-ignore
+.agentplane/bin/** export-ignore
+.agentplane/.npm-cache/** export-ignore
+.agentplane/.release/** export-ignore
+.agentplane/.upgrade/** export-ignore

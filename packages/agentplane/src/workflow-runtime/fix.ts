@@ -33,7 +33,7 @@ const DEFAULT_FRONT_MATTER: WorkflowFrontMatter = {
   timeouts: {
     stall_seconds: 900,
   },
-  in_scope_paths: ["packages/**"],
+  in_scope_paths: ["**"],
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {

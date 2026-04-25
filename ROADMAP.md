@@ -21,13 +21,13 @@ Completed groups:
 
 Open groups:
 
-- Framework migration tasks: Vitest projects, dependency-cruiser, knip, tsup/subpath exports, clack
-  prototype, and Zod validation error rendering.
-- Documentation cleanup: condense long design/editorial docs and add concise README status badges.
-- Performance and bundle checks: CLI cold-path baseline, core subpath exports, dead export cleanup,
-  and yauzl alternative evaluation.
-- CI guardrails and large tests: types-file guardrail, significant coverage extensions, critical
-  Vitest route, and remaining mega-test splits.
+- Release hygiene: source archive policy, package tarball assertions, install smoke coverage, and
+  sanitized build metadata.
+- Documentation freshness: keep current user/developer docs aligned with generated CLI help and
+  move historical migration notes out of the main install path.
+- Init correctness: keep init plan/apply behavior transactional and ensure every materialized file
+  intended for the first install commit is included.
+- Future eval system: define repeatable evaluation suites before they become release gates.
 
 ## 0.1 Foundation and Baseline Workflow
 
@@ -41,20 +41,32 @@ Open groups:
 - Modularize subsystems to keep scaling simple and predictable.
 - Formalize operational processes at the CLI level.
 
-## 0.3 Prompt System Improvements
+## 0.3 Git-native Task Control Plane
 
-- Improve agent prompts for better determinism and execution quality.
-- Formalize process contracts at the agent-prompt level.
-- Deliver a dedicated Claude Code-compatible version.
+- Lock the repo-local control plane: policy gateway, `.agentplane/` layout, workflow modes, task
+  README storage, task export snapshots, and deterministic finish/close behavior.
+- Stabilize task lifecycle commands: create, plan, approve, start, verify, finish, close, hosted
+  close, docs, findings, and backend projection.
+- Keep package installation clean: published artifacts must contain the bundled runtime and declared
+  public assets only, not source checkout or runner evidence.
 
-## 0.4 Recipes and Plugin Extension Model
+## 0.4 Modular Prompt and Recipe Extension Model
 
-- Support custom agents, tools/SKILLS, and scenarios through recipes.
-- Define recipe packaging, versioning, and compatibility rules.
-- Add recipe discovery, installation, and validation flows in CLI.
+- Compile prompt modules from framework, policy, agents, recipes, and project overrides.
+- Support custom agents, tools/skills, and scenarios through versioned recipes.
+- Add recipe discovery, installation, activation, validation, and prompt drift diagnostics.
 
 ## 0.5 Agentplane Runner
 
 - Build Agentplane Runner for autonomous task execution.
 - Enable coordinated swarm-style execution by custom agents.
 - Provide orchestration primitives for reliable multi-agent runs.
+
+## 0.6 Evaluation System
+
+- Define eval manifests for agents, recipes, runner behavior, lifecycle flows, and prompt compiler
+  regressions.
+- Run scenario-based evaluations with reproducible inputs, scoring, evidence artifacts, and
+  comparison reports.
+- Promote stable eval suites into release gates so task lifecycle, recipe behavior, and runner
+  execution quality can regress only with explicit review.

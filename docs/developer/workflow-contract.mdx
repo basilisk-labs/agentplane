@@ -5,7 +5,7 @@ description: "Formal contract for .agentplane/WORKFLOW.md: schema, required sect
 
 ## Scope
 
-This contract defines the required format for `.agentplane/WORKFLOW.md` used by the planned workflow runtime.
+This contract defines the required format for `.agentplane/WORKFLOW.md` used by the workflow runtime.
 
 - Front matter schema source: `schemas/workflow.schema.json`
 - Prompt body is required and interpreted as a template.
@@ -124,7 +124,7 @@ retry_policy:
 timeouts:
   stall_seconds: 900
 in_scope_paths:
-  - packages/**
+  - "**"
 ---
 
 ## Prompt Template

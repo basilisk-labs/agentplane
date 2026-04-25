@@ -278,6 +278,10 @@ describe("runCli", () => {
     expect(gitignore).toContain(".agentplane/.release");
     expect(gitignore).toContain(".agentplane/upgrade");
     expect(gitignore).toContain(".agentplane/tasks.json");
+
+    const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
+    expect(workflowText).toContain('  - "**"');
+    expect(workflowText).not.toContain("packages/**");
   });
 
   it("init --setup-profile vibecoder --yes applies compact autonomous defaults", async () => {
@@ -302,6 +306,30 @@ describe("runCli", () => {
     const commitMsgHookPath = path.join(root, ".git", "hooks", "commit-msg");
     expect(await pathExists(hookShimPath)).toBe(false);
     expect(await pathExists(commitMsgHookPath)).toBe(false);
+  });
+
+  it("init with cached recipes includes materialized recipe files in the install commit", async () => {
+    const cacheRoot = await mkGitRepoRoot();
+    await writeDefaultConfig(cacheRoot);
+    const { archivePath, manifest } = await createRecipeArchive({
+      id: "init-recipe",
+      version: "0.4.0",
+    });
+    expect(
+      await runCliSilent(["recipes", "install", "--path", archivePath, "--root", cacheRoot]),
+    ).toBe(0);
+
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const code = await runCli(["init", "--yes", "--recipes", String(manifest.id), "--root", root]);
+    expect(code).toBe(0);
+
+    const execFileAsync = promisify(execFile);
+    const { stdout } = await execFileAsync("git", ["show", "--name-only", "--pretty=", "HEAD"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    expect(normalizeSlashes(stdout)).toContain(".agentplane/recipes/packages/init-recipe/");
   });
 
   it("init --gitignore-agents updates .gitignore and skips the install commit", async () => {

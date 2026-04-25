@@ -11,7 +11,11 @@ function pruneJs(dir) {
       pruneJs(fullPath);
       continue;
     }
-    if (fullPath.endsWith(".js") || fullPath.endsWith(".js.map")) {
+    if (
+      fullPath.endsWith(".js") ||
+      fullPath.endsWith(".js.map") ||
+      fullPath.endsWith(".d.ts.map")
+    ) {
       rmSync(fullPath, { force: true });
     }
   }

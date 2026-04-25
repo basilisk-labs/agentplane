@@ -2,7 +2,7 @@
 
 Status: draft freeze artifact for the `0.3.x` line.
 Generated: 2026-04-24.
-Package version: `agentplane@0.3.26`.
+Package version: `agentplane@0.3.27`.
 Bound checkout: `a8151894058519242870871264fc5c60ebae30e1`.
 CLI bundle: `packages/agentplane/dist/cli.js`.
 CLI SHA256: `6554e5a592a22cfffd3154f41cd72c8e6c2e52bc53b3d6eda9d8d455c87965e2`.
@@ -120,7 +120,7 @@ validator is `validateAgentplaneConfig()`. Deprecated-key stripping remains in
 
 ## Artifact Boundary
 
-The npm package boundary for `agentplane@0.3.26` is intentionally narrow:
+The npm package boundary for `agentplane@0.3.27` is intentionally narrow:
 
 - `bin/*.js` entries explicitly whitelisted in `packages/agentplane/package.json`.
 - `dist/cli.js` and `dist/cli.d.ts`.

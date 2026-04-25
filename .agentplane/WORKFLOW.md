@@ -4,7 +4,7 @@ approvals:
   require_plan: false
   require_verify: false
 in_scope_paths:
-  - "packages/**"
+  - "**"
 mode: "direct"
 owners:
   orchestrator: "ORCHESTRATOR"
