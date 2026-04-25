@@ -1,10 +1,11 @@
 ---
 id: "202604251626-BX2JXQ"
 title: "Refactor task plan and finish spec surfaces"
-status: "DOING"
+result_summary: "split task plan helpers"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -21,15 +22,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-04-25T16:55:11.698Z"
+  updated_by: "CODER"
+  note: "Focused plan/help/finish tests passed; docs:cli:check, typecheck, lint:core, arch:check, hotspot-report, task-state, artifact gate, framework bootstrap, doctor, and routing checks passed. Full format:check remains blocked only by unrelated untracked REFACTORING_PLAN_v3.md; targeted Prettier passed for touched files."
+commit:
+  hash: "7ee423a4d31aefe5988395b01f2f3e63f1a1b97d"
+  message: "♻️ BX2JXQ task: split task plan helpers"
 comments:
   -
     author: "CODER"
     body: "Start: Refactor the task plan or finish command surface using one low-risk extraction, preserving command flags, generated help, and existing task behavior."
+  -
+    author: "CODER"
+    body: "Verified: task plan helper extraction preserved command behavior, focused tests and command docs checks passed, and remaining finish.spec hotspot is recorded as separate follow-up."
 events:
   -
     type: "status"
@@ -38,8 +44,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Refactor the task plan or finish command surface using one low-risk extraction, preserving command flags, generated help, and existing task behavior."
+  -
+    type: "verify"
+    at: "2026-04-25T16:55:11.698Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused plan/help/finish tests passed; docs:cli:check, typecheck, lint:core, arch:check, hotspot-report, task-state, artifact gate, framework bootstrap, doctor, and routing checks passed. Full format:check remains blocked only by unrelated untracked REFACTORING_PLAN_v3.md; targeted Prettier passed for touched files."
+  -
+    type: "status"
+    at: "2026-04-25T16:55:40.523Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: task plan helper extraction preserved command behavior, focused tests and command docs checks passed, and remaining finish.spec hotspot is recorded as separate follow-up."
 doc_version: 3
-doc_updated_at: "2026-04-25T16:54:11.084Z"
+doc_updated_at: "2026-04-25T16:55:40.525Z"
 doc_updated_by: "CODER"
 description: "Reduce task plan and finish spec hotspots by extracting spec option groups and render/validation helpers without changing command flags or generated help."
 sections:
@@ -62,6 +81,14 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-25T16:55:11.698Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused plan/help/finish tests passed; docs:cli:check, typecheck, lint:core, arch:check, hotspot-report, task-state, artifact gate, framework bootstrap, doctor, and routing checks passed. Full format:check remains blocked only by unrelated untracked REFACTORING_PLAN_v3.md; targeted Prettier passed for touched files.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-25T16:54:11.084Z, excerpt_hash=sha256:2831cf5bdd44bf5ed61f2651cfcca3d175731841971cf93c5ea2502ca3295dec
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -104,6 +131,14 @@ Reduce task plan and finish spec hotspots by extracting spec option groups and r
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-25T16:55:11.698Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused plan/help/finish tests passed; docs:cli:check, typecheck, lint:core, arch:check, hotspot-report, task-state, artifact gate, framework bootstrap, doctor, and routing checks passed. Full format:check remains blocked only by unrelated untracked REFACTORING_PLAN_v3.md; targeted Prettier passed for touched files.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-25T16:54:11.084Z, excerpt_hash=sha256:2831cf5bdd44bf5ed61f2651cfcca3d175731841971cf93c5ea2502ca3295dec
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
