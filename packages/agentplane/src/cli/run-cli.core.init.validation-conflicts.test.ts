@@ -349,7 +349,7 @@ describe("runCli", () => {
     }
   });
 
-  it("init restores missing AGENTS.md before reporting config/backend conflicts", async () => {
+  it("init does not write agent files before reporting config/backend conflicts", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const agentplaneDir = path.join(root, ".agentplane");
@@ -363,8 +363,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--yes", "--root", root]);
       expect(code).toBe(4);
-      expect(await pathExists(path.join(root, "AGENTS.md"))).toBe(true);
-      expect(await pathExists(path.join(root, ".agentplane", "agents", "CODER.json"))).toBe(true);
+      expect(await pathExists(path.join(root, "AGENTS.md"))).toBe(false);
+      expect(await pathExists(path.join(root, ".agentplane", "agents", "CODER.json"))).toBe(false);
       const error = normalizeSlashes(io.stderr);
       expect(error).toContain("Init conflicts detected");
       expect(error).toContain(".agentplane/config.json");

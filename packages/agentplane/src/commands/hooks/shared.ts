@@ -6,7 +6,7 @@ import { isPathWithin } from "../shared/path.js";
 import { CliError } from "../../shared/errors.js";
 
 export const HOOK_MARKER = "agentplane-hook";
-export const SHIM_MARKER = "agentplane-hook-shim";
+export { HOOK_SHIM_MARKER as SHIM_MARKER } from "../shared/hook-shim-template.js";
 export const HOOK_NAMES = ["commit-msg", "pre-commit", "pre-push", "post-merge"] as const;
 export type HookName = (typeof HOOK_NAMES)[number];
 

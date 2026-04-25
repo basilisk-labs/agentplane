@@ -9,9 +9,7 @@ import { cmdHooksInstall, ensureInitCommit } from "../../../../commands/workflow
 import { getVersion } from "../../../../meta/version.js";
 import { CliError } from "../../../../shared/errors.js";
 import type { PolicyGatewayFlavor } from "../../../../shared/policy-gateway.js";
-import { policyGatewayFileName } from "../../../../shared/policy-gateway.js";
 import { mapCoreError } from "../../../error-map.js";
-import { fileExists } from "../../../fs-utils.js";
 import { usageError } from "../../../spec/errors.js";
 import type { CommandSpec } from "../../../spec/spec.js";
 
@@ -212,22 +210,6 @@ async function collectInitAndHookConflicts(opts: {
   ];
   const initFiles = [opts.paths.configPath, opts.paths.backendPath];
   const initConflicts = await collectInitConflicts({ initDirs, initFiles });
-  const gatewayPath = path.join(
-    opts.paths.gitRoot,
-    policyGatewayFileName(opts.answers.policyGateway),
-  );
-  const agentsMissing = !(await fileExists(gatewayPath));
-  if (initConflicts.length > 0 && agentsMissing) {
-    await ensureAgentplaneDirs(opts.paths.agentplaneDir, opts.answers.backend);
-    await ensureAgentsFiles({
-      gitRoot: opts.paths.gitRoot,
-      agentplaneDir: opts.paths.agentplaneDir,
-      workflow: opts.answers.workflow,
-      policyGateway: opts.answers.policyGateway,
-      configPathAbs: opts.paths.configPath,
-      backendPathAbs: opts.paths.backendPath,
-    });
-  }
   const hookConflicts = opts.answers.hooks
     ? await collectHooksInstallConflicts({
         gitRoot: opts.paths.gitRoot,
