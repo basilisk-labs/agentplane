@@ -49,22 +49,22 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   };
 
   if (isWorkflowEnforcementDisabled()) {
-    console.log(
-      successMessage(
+    process.stdout.write(
+      `${successMessage(
         "doctor",
         undefined,
         `workflow contract checks disabled via ${workflowEnforcementEnvHint()}.`,
-      ),
+      )}\n`,
     );
   }
 
   if (p.fix) {
     const fix = await safeFixGitignore(repoRoot);
-    console.log(successMessage("doctor fix", undefined, fix.note));
+    process.stdout.write(`${successMessage("doctor fix", undefined, fix.note)}\n`);
     const idx = await safeFixTaskIndex(repoRoot);
-    console.log(successMessage("doctor fix", undefined, idx.note));
+    process.stdout.write(`${successMessage("doctor fix", undefined, idx.note)}\n`);
     const workflowFix = await safeFixWorkflow(repoRoot);
-    console.log(successMessage("doctor fix", undefined, workflowFix.note));
+    process.stdout.write(`${successMessage("doctor fix", undefined, workflowFix.note)}\n`);
   }
 
   const problems = await runChecks();
@@ -72,15 +72,15 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   if (problems.length > 0) {
     const warningCount = problems.filter((problem) => findingSeverity(problem) === "WARN").length;
     const infoCount = problems.filter((problem) => findingSeverity(problem) === "INFO").length;
-    console.error(
-      warnMessage(
+    process.stderr.write(
+      `${warnMessage(
         `doctor findings: errors=${errors.length} warnings=${warningCount} info=${infoCount}`,
-      ),
+      )}\n`,
     );
-    for (const prob of problems) console.error(`- ${prob}`);
+    for (const prob of problems) process.stderr.write(`- ${prob}\n`);
     if (errors.length > 0) return 1;
   }
 
-  console.log(successMessage("doctor", undefined, "OK"));
+  process.stdout.write(`${successMessage("doctor", undefined, "OK")}\n`);
   return 0;
 };

@@ -8,6 +8,7 @@ async function main(): Promise<void> {
 
 main().catch((err) => {
   // Last-resort fallback. The contract for tests is "exit non-zero and surface the error".
-  console.error(err);
+  const message = err instanceof Error ? (err.stack ?? err.message) : String(err);
+  process.stderr.write(`${message}\n`);
   process.exitCode = 1;
 });
