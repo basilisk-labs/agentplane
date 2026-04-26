@@ -1067,12 +1067,12 @@
       "exports": [
         {
           "name": "assertReleaseBumpApproved",
-          "line": 75,
+          "line": 72,
           "col": 17
         },
         {
           "name": "runPushPreflight",
-          "line": 23,
+          "line": 20,
           "col": 23
         }
       ]
@@ -2002,38 +2002,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/runner/adapters/index.ts",
-      "exports": [
-        {
-          "name": "CodexRunnerAdapter",
-          "line": 18,
-          "col": 10
-        },
-        {
-          "name": "CustomRunnerAdapter",
-          "line": 19,
-          "col": 10
-        },
-        {
-          "name": "runnerAdapterFailureResult",
-          "line": 21,
-          "col": 10
-        },
-        {
-          "name": "runnerAdapterSuccessResult",
-          "line": 21,
-          "col": 38
-        }
-      ],
-      "types": [
-        {
-          "name": "RunnerAdapter",
-          "line": 20,
-          "col": 15
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/runner/adapters/recipe-run-profile.ts",
       "types": [
         {
@@ -2945,10 +2913,10 @@
   ],
   "counts": {
     "files": 5,
-    "exports": 154,
-    "types": 269,
+    "exports": 150,
+    "types": 268,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 428
+    "total": 423
   }
 }
