@@ -35,43 +35,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync.ts",
-      "exports": [
-        {
-          "name": "handleRedmineConflict",
-          "line": 10,
-          "col": 3
-        },
-        {
-          "name": "inferRedmineStatusIdForTaskStatus",
-          "line": 5,
-          "col": 3
-        },
-        {
-          "name": "loadRedmineInferredStatusByTaskStatus",
-          "line": 6,
-          "col": 3
-        },
-        {
-          "name": "selectRedmineInferredStatus",
-          "line": 7,
-          "col": 3
-        },
-        {
-          "name": "syncPushRedmine",
-          "line": 12,
-          "col": 3
-        }
-      ],
-      "types": [
-        {
-          "name": "RedmineSyncContext",
-          "line": 1,
-          "col": 15
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync/status.ts",
       "exports": [
         {
@@ -2913,10 +2876,10 @@
   ],
   "counts": {
     "files": 5,
-    "exports": 150,
-    "types": 268,
+    "exports": 145,
+    "types": 267,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 423
+    "total": 417
   }
 }
