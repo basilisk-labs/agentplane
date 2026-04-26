@@ -1,10 +1,11 @@
 ---
 id: "202604261425-VDTHW4"
 title: "Prune Redmine runtime barrel exports"
-status: "DOING"
+result_summary: "Removed internal Redmine runtime barrel and reduced Knip baseline total to 504."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-26T14:27:17.937Z"
   updated_by: "CODER"
   note: "Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: node scripts/check-knip-baseline.mjs; Result: pass; Evidence: baseline OK total=504. Command: focused Redmine/task-backend vitest; Result: pass; Evidence: 7 files, 54 tests passed. Command: bun run format:check and git diff --check; Result: pass. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime ready."
-commit: null
+commit:
+  hash: "cc6805aae6c1874209650843980612887ba1ffdd"
+  message: "🚧 VDTHW4 task: prune Redmine runtime barrel exports"
 comments:
   -
     author: "CODER"
     body: "Start: Pruning the internal Redmine runtime barrel by switching its only callsite to direct imports, then refreshing the Knip baseline and running the declared code checks."
+  -
+    author: "CODER"
+    body: "Verified: Redmine runtime barrel removed, sole callsite now imports runtime context/methods directly, Knip baseline total reduced from 523 to 504, and local code checks passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: node scripts/check-knip-baseline.mjs; Result: pass; Evidence: baseline OK total=504. Command: focused Redmine/task-backend vitest; Result: pass; Evidence: 7 files, 54 tests passed. Command: bun run format:check and git diff --check; Result: pass. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime ready."
+  -
+    type: "status"
+    at: "2026-04-26T14:27:50.208Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Redmine runtime barrel removed, sole callsite now imports runtime context/methods directly, Knip baseline total reduced from 523 to 504, and local code checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-26T14:27:17.940Z"
+doc_updated_at: "2026-04-26T14:27:50.208Z"
 doc_updated_by: "CODER"
 description: "Replace the internal Redmine backend-runtime barrel with direct module imports from the only callsite, then refresh the Knip baseline."
 sections:
