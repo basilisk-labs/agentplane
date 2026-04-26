@@ -6,7 +6,7 @@ import { createCliEmitter } from "../../../cli/output.js";
 import { withDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 
-import { cleanupIntegratedBranch } from "./internal/cleanup.js";
+import { cleanupMergedLocalBranch as cleanupIntegratedBranch } from "../../shared/merged-branch-cleanup.js";
 import {
   renderPostIntegrateBootstrapFailureGuidance,
   renderPostIntegrateBootstrapGuidance,

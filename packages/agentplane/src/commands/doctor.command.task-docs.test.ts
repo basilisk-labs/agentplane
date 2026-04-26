@@ -45,6 +45,12 @@ function readCurrentCliVersion(): string {
 
 const currentCliVersion = readCurrentCliVersion();
 
+function spyOnStderrWrite() {
+  return vi
+    .spyOn(process.stderr, "write")
+    .mockImplementation((() => true) as typeof process.stderr.write);
+}
+
 const VALID_WORKFLOW = `---
 version: 1
 mode: direct
@@ -267,9 +273,7 @@ describe(
     it("warns when active tasks still use legacy README v2 format", async () => {
       const ws = await mkWorkspace();
       const commitHash = await gitInitWithCommit(ws.root, "feat: baseline");
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = spyOnStderrWrite();
       await writeFile(
         path.join(ws.root, ".agentplane", "tasks.json"),
         JSON.stringify(
@@ -310,9 +314,7 @@ describe(
       async () => {
         const ws = await mkWorkspace();
         const commitHash = await gitInitWithCommit(ws.root, "feat: baseline");
-        const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-          /* muted for assertion */
-        });
+        const stderr = spyOnStderrWrite();
         await writeFile(
           path.join(ws.root, ".agentplane", "tasks.json"),
           JSON.stringify(
@@ -357,9 +359,7 @@ describe(
 
     it("warns when task README bodies drift from canonical frontmatter sections", async () => {
       const ws = await mkWorkspace();
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = spyOnStderrWrite();
       try {
         const taskId = "202603140040-DRIFT1";
         const taskDir = path.join(ws.root, ".agentplane", "tasks", taskId);
@@ -419,9 +419,7 @@ describe(
 
     it("prefers live task projection over a stale exported snapshot for README migration checks", async () => {
       const ws = await mkWorkspace();
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = spyOnStderrWrite();
       await mkdir(path.join(ws.root, ".agentplane", "tasks", "202603081006-PRJ3"), {
         recursive: true,
       });
@@ -485,9 +483,7 @@ describe(
       async () => {
         const ws = await mkWorkspace();
         await gitInitWithCommit(ws.root, "feat: initial");
-        const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-          /* muted for assertion */
-        });
+        const stderr = spyOnStderrWrite();
         await writeFile(
           path.join(ws.root, ".agentplane", "tasks.json"),
           JSON.stringify(
@@ -524,9 +520,7 @@ describe(
     it("skips older archive-only historical commit anomalies by default", async () => {
       const ws = await mkWorkspace();
       const goodHash = await gitInitWithCommit(ws.root, "feat: initial");
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = spyOnStderrWrite();
       const tasks = [
         {
           id: "202602111750-OLD111",
@@ -559,9 +553,7 @@ describe(
     it("surfaces older historical archive anomalies when archive-full is enabled", async () => {
       const ws = await mkWorkspace();
       const goodHash = await gitInitWithCommit(ws.root, "feat: initial");
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = spyOnStderrWrite();
       const tasks = [
         {
           id: "202602111750-OLD111",
@@ -595,9 +587,7 @@ describe(
     it("warns but does not fail when DONE task commit points to a close commit subject", async () => {
       const ws = await mkWorkspace();
       const closeHash = await gitInitWithCommit(ws.root, "✅ ABC123 close: done");
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = spyOnStderrWrite();
       await writeFile(
         path.join(ws.root, ".agentplane", "tasks.json"),
         JSON.stringify(

@@ -1,7 +1,6 @@
 export {
   appendIncidentRegistryEntries,
   createIncidentRegistrySkeleton,
-  formatIncidentRegistryEntry,
   parseIncidentRegistry,
 } from "./registry-strategy.js";
 export {
@@ -9,4 +8,4 @@ export {
   renderIncidentAdvice,
   resolveIncidentAdviceMatches,
 } from "./advice-strategy.js";
-export { extractIncidentCandidatesFromFindings, planIncidentCollection } from "./plan-strategy.js";
+export { planIncidentCollection } from "./plan-strategy.js";

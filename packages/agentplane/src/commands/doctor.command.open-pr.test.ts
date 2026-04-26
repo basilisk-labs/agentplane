@@ -45,6 +45,12 @@ function readCurrentCliVersion(): string {
 
 const currentCliVersion = readCurrentCliVersion();
 
+function spyOnStderrWrite() {
+  return vi
+    .spyOn(process.stderr, "write")
+    .mockImplementation((() => true) as typeof process.stderr.write);
+}
+
 const VALID_WORKFLOW = `---
 version: 1
 mode: direct
@@ -456,9 +462,7 @@ describe(
         cwd: ws.root,
       });
 
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = spyOnStderrWrite();
       try {
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
@@ -627,9 +631,7 @@ describe(
         cwd: ws.root,
       });
 
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = spyOnStderrWrite();
       try {
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
@@ -1058,9 +1060,7 @@ describe(
     it("warns when a Redmine backend is configured without canonical_state readiness", async () => {
       const ws = await mkWorkspace();
       await configureRedmineBackend(ws.root);
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = spyOnStderrWrite();
       try {
         const rc = await withIsolatedRedmineEnv(async () => {
           return await runDoctor(
@@ -1081,9 +1081,7 @@ describe(
     it("stays quiet on Redmine readiness when canonical_state support is configured", async () => {
       const ws = await mkWorkspace();
       await configureRedmineBackend(ws.root, { canonicalStateFieldId: "9" });
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = spyOnStderrWrite();
       try {
         const rc = await withIsolatedRedmineEnv(async () => {
           return await runDoctor(

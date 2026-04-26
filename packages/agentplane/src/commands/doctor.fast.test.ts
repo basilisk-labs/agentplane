@@ -16,6 +16,12 @@ type TestWorkspace = {
 const workspaces: string[] = [];
 const execFileAsync = promisify(execFile);
 
+function spyOnStderrWrite() {
+  return vi
+    .spyOn(process.stderr, "write")
+    .mockImplementation((() => true) as typeof process.stderr.write);
+}
+
 const VALID_WORKFLOW = `---
 version: 1
 mode: direct
@@ -213,9 +219,7 @@ describe("doctor.fast", () => {
   it("prints runtime info when doctor runs inside a framework checkout", async () => {
     const ws = await mkWorkspace();
     const framework = await addFrameworkCheckout(ws.root);
-    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-      /* muted for assertion */
-    });
+    const stderr = spyOnStderrWrite();
     const prevActiveBin = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
     process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = framework.repoBin;
     try {

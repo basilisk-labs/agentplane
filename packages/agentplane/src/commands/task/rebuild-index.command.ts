@@ -24,7 +24,7 @@ export function makeRunTaskRebuildIndexHandler(
     // Other backends may ignore the cache.
     await ctx.taskBackend.listTasks();
 
-    console.log(successMessage("rebuild-index", undefined, "OK"));
+    process.stdout.write(`${successMessage("rebuild-index", undefined, "OK")}\n`);
     return 0;
   };
 }

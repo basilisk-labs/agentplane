@@ -3,7 +3,8 @@ import { usageError } from "../cli/spec/errors.js";
 import type { CommandContext } from "./shared/task-backend.js";
 
 import { cmdFinish } from "./task/finish-command.js";
-import { finishSpec, type FinishParsed } from "./finish.spec.js";
+import type { FinishParsed } from "./finish.spec.shared.js";
+import { finishSpec } from "./finish.spec.js";
 
 export function makeRunFinishHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: FinishParsed): Promise<number> => {

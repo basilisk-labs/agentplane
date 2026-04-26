@@ -24,7 +24,7 @@
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
-      "lines": 1185
+      "lines": 1182
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
@@ -48,7 +48,7 @@
     },
     {
       "file": "packages/agentplane/src/commands/doctor.command.open-pr.test.ts",
-      "lines": 1112
+      "lines": 1110
     },
     {
       "file": "packages/agentplane/src/commands/guard/impl/commands.unit.test.ts",
@@ -64,7 +64,11 @@
     },
     {
       "file": "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
-      "lines": 1066
+      "lines": 1038
     }
-  ]
+  ],
+  "summary": {
+    "entries": 16,
+    "total_lines": 18227
+  }
 }

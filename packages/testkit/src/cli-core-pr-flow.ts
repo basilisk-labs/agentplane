@@ -27,7 +27,7 @@ import {
   prompts,
   resolveUpdateCheckCachePath,
   runCli,
-} from "agentplane/internal/testing";
+} from "./agentplane-internal.js";
 import {
   approveTaskPlan,
   captureStdIO,

@@ -45,6 +45,18 @@ function readCurrentCliVersion(): string {
 
 const currentCliVersion = readCurrentCliVersion();
 
+function captureStderr(): { output: () => string; restore: () => void } {
+  const chunks: string[] = [];
+  const spy = vi.spyOn(process.stderr, "write").mockImplementation(((chunk: unknown) => {
+    chunks.push(String(chunk));
+    return true;
+  }) as typeof process.stderr.write);
+  return {
+    output: () => chunks.join(""),
+    restore: () => spy.mockRestore(),
+  };
+}
+
 const VALID_WORKFLOW = `---
 version: 1
 mode: direct
@@ -305,9 +317,7 @@ describe(
     it("summarizes repeated unknown historical hashes instead of printing one warning per task", async () => {
       const ws = await mkWorkspace();
       await gitInitWithCommit(ws.root, "feat: initial");
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       try {
         await writeFile(
           path.join(ws.root, ".agentplane", "tasks.json"),
@@ -341,7 +351,7 @@ describe(
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).toContain(
           "[INFO] Historical task archive contains 3 DONE tasks with unknown implementation commit hashes across 2 distinct commit hashes.",
         );
@@ -352,7 +362,7 @@ describe(
           "DONE task references unknown historical commit hash: 202602111810-AAA111",
         );
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
@@ -362,9 +372,7 @@ describe(
         const ws = await mkWorkspace();
         const closeHashA = await gitInitWithCommit(ws.root, "✅ ABC123 close: done");
         const closeHashB = await gitInitWithCommit(ws.root, "✅ XYZ999 close: merged");
-        const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-          /* muted for assertion */
-        });
+        const stderr = captureStderr();
         try {
           await writeFile(
             path.join(ws.root, ".agentplane", "tasks.json"),
@@ -386,7 +394,7 @@ describe(
             { fix: false, dev: false },
           );
           expect(rc).toBe(0);
-          const output = stderr.mock.calls.flat().join("\n");
+          const output = stderr.output();
           expect(output).toContain(
             "[INFO] Historical task archive contains 3 DONE tasks with historical close-commit references that were classified as non-actionable archive records across 2 distinct commit hashes.",
           );
@@ -396,7 +404,7 @@ describe(
             "DONE task implementation commit points to a close commit: 202602111820-AAA111",
           );
         } finally {
-          stderr.mockRestore();
+          stderr.restore();
         }
       },
       DOCTOR_HISTORICAL_ARCHIVE_TIMEOUT_MS,
@@ -405,9 +413,7 @@ describe(
     it("downgrades legacy backfill historical hashes to info", async () => {
       const ws = await mkWorkspace();
       await gitInitWithCommit(ws.root, "feat: initial");
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       try {
         await writeFile(
           path.join(ws.root, ".agentplane", "tasks.json"),
@@ -434,20 +440,18 @@ describe(
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).toContain("[INFO] DONE task references unknown historical commit hash");
         expect(output).not.toContain("[WARN] DONE task references unknown historical commit hash");
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
     it("downgrades no-op close-commit references to info", async () => {
       const ws = await mkWorkspace();
       const closeHash = await gitInitWithCommit(ws.root, "✅ ABC123 close: done");
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       try {
         await writeFile(
           path.join(ws.root, ".agentplane", "tasks.json"),
@@ -473,7 +477,7 @@ describe(
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).toContain(
           "[INFO] DONE task implementation commit resolves to a historical close commit reference: 202602111824-ABC123",
         );
@@ -481,16 +485,14 @@ describe(
           "[WARN] DONE task implementation commit points to a close commit: 202602111824-ABC123",
         );
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
     it("downgrades legacy close: record task doc references to info", async () => {
       const ws = await mkWorkspace();
       const closeHash = await gitInitWithCommit(ws.root, "✅ ABC123 close: record task doc");
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       try {
         await writeFile(
           path.join(ws.root, ".agentplane", "tasks.json"),
@@ -520,7 +522,7 @@ describe(
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).toContain(
           "[INFO] DONE task implementation commit resolves to a historical close commit reference: 202602111825-ABC123",
         );
@@ -528,16 +530,14 @@ describe(
           "[WARN] DONE task implementation commit points to a close commit: 202602111825-ABC123",
         );
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
     it("warns when DONE task README archives exist on disk but are missing from the git index", async () => {
       const ws = await mkWorkspace();
       await gitInitWithCommit(ws.root, "feat: initial");
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       try {
         const taskId = "202603081538-0YPG92";
         const taskDir = path.join(ws.root, ".agentplane", "tasks", taskId);
@@ -617,22 +617,20 @@ describe(
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).toContain(
           "[WARN] State: DONE task archive README files exist on disk but are missing from the git index",
         );
         expect(output).toContain(taskId);
         expect(output).toContain(`git add .agentplane/tasks/${taskId}/README.md`);
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
     it("warns when the active CLI is older than the repository expectation", async () => {
       const ws = await mkWorkspace();
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       await writeFile(
         path.join(ws.root, ".agentplane", "config.json"),
         JSON.stringify(
@@ -660,20 +658,18 @@ describe(
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).toContain("expects agentplane 9.9.9");
         expect(output).toContain("Run: npm i -g agentplane@9.9.9");
         expect(output).toContain("Then verify: agentplane runtime explain");
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
     it("does not emit version-match findings when the active CLI already satisfies the repository expectation", async () => {
       const ws = await mkWorkspace();
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       await writeFile(
         path.join(ws.root, ".agentplane", "config.json"),
         JSON.stringify(
@@ -701,37 +697,29 @@ describe(
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).not.toContain("doctor findings:");
         expect(output).not.toContain("Repository expected agentplane CLI");
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
     it("fails when the managed policy tree is incomplete for the active gateway", async () => {
       const ws = await mkWorkspace();
       await rm(path.join(ws.root, ".agentplane", "policy", "workflow.upgrade.md"), { force: true });
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       try {
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false },
         );
         expect(rc).toBe(1);
-        expect(stderr.mock.calls.flat().join("\n")).toContain(
-          "State: framework-managed policy tree is incomplete",
-        );
-        expect(stderr.mock.calls.flat().join("\n")).toContain(
-          "Next action: agentplane upgrade --yes",
-        );
-        expect(stderr.mock.calls.flat().join("\n")).toContain(
-          "docs/help/legacy-upgrade-recovery.mdx",
-        );
+        expect(stderr.output()).toContain("State: framework-managed policy tree is incomplete");
+        expect(stderr.output()).toContain("Next action: agentplane upgrade --yes");
+        expect(stderr.output()).toContain("docs/help/legacy-upgrade-recovery.mdx");
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
@@ -739,20 +727,18 @@ describe(
       const ws = await mkWorkspace();
       await gitInitWithCommit(ws.root, "feat: initial");
       await writeManagedHookSurface(ws.root);
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       try {
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).not.toContain("managed AgentPlane hook shim");
         expect(output).not.toContain("managed git hooks are installed");
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
@@ -764,23 +750,21 @@ describe(
         runnerExists: false,
         shimText: currentManagedShimText(missingRunner),
       });
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       try {
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).toContain(
           "managed AgentPlane hook shim points to a missing installed runner",
         );
         expect(output).toContain("Next action: agentplane hooks install");
         expect(output).toContain(`Embedded runner: ${missingRunner}`);
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
@@ -795,16 +779,14 @@ describe(
           "",
         ].join("\n"),
       });
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       try {
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).toContain(
           "managed AgentPlane hook shim uses a stale format without an installed runner fallback",
         );
@@ -812,7 +794,7 @@ describe(
           "managed AgentPlane hook shim is missing current fallback branches",
         );
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
@@ -820,22 +802,20 @@ describe(
       const ws = await mkWorkspace();
       await gitInitWithCommit(ws.root, "feat: initial");
       await writeManagedHookSurface(ws.root, { packageJson: '{\n  "scripts": {}\n}\n' });
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       try {
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).toContain(
           "managed pre-push hook will use installed clean-project fallback checks",
         );
         expect(output).toContain("Missing repository script: scripts/run-pre-push-hook.mjs");
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
@@ -849,31 +829,27 @@ describe(
         "#!/usr/bin/env sh\necho custom\n",
         "utf8",
       );
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       try {
         const rc = await runDoctor(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).toContain(
           "unmanaged git hooks are present and will not be overwritten by AgentPlane",
         );
         expect(output).toContain("Unmanaged hooks: pre-commit");
       } finally {
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
     it("prints runtime info when doctor runs inside a framework checkout", async () => {
       const ws = await mkWorkspace();
       const framework = await addFrameworkCheckout(ws.root);
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       const prevActiveBin = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
       process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = framework.repoBin;
       try {
@@ -882,7 +858,7 @@ describe(
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).toContain("Runtime mode: repo-local");
         expect(output).toContain(`Active binary: ${framework.repoBin}`);
         expect(output).toContain(`Framework repo root: ${ws.root}`);
@@ -890,16 +866,14 @@ describe(
       } finally {
         if (prevActiveBin === undefined) delete process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
         else process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = prevActiveBin;
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
 
     it("warns when the global binary is forced inside a framework checkout", async () => {
       const ws = await mkWorkspace();
       await addFrameworkCheckout(ws.root);
-      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-        /* muted for assertion */
-      });
+      const stderr = captureStderr();
       const prevActiveBin = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
       const prevForce = process.env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK;
       process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = path.join(
@@ -913,7 +887,7 @@ describe(
           { fix: false, dev: false },
         );
         expect(rc).toBe(0);
-        const output = stderr.mock.calls.flat().join("\n");
+        const output = stderr.output();
         expect(output).toContain("Framework checkout is forcing the global installed binary");
         expect(output).toContain("Unset it unless that override is intentional");
         expect(output).toContain("Runtime mode: global-forced-in-framework");
@@ -922,7 +896,7 @@ describe(
         else process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = prevActiveBin;
         if (prevForce === undefined) delete process.env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK;
         else process.env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK = prevForce;
-        stderr.mockRestore();
+        stderr.restore();
       }
     });
   },

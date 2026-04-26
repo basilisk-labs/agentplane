@@ -9,7 +9,7 @@ import { workflowModeMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
 import { emitTraceEvent } from "../../../shared/trace-events.js";
 import type { TaskData } from "../../../backends/task-backend.js";
-import { INCIDENTS_POLICY_PATH } from "../../../runtime/incidents/paths.js";
+import { INCIDENTS_POLICY_PATH } from "../../../runtime/incidents/index.js";
 import { resolvePrArtifactHeadSha, parsePrMeta, type PrMeta } from "../../shared/pr-meta.js";
 import { isTaskLocalOnlyAdvance } from "../../shared/task-local-freshness.js";
 import {

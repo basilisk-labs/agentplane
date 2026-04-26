@@ -40,8 +40,8 @@ export {
   runCli,
   VERIFY_STEPS_PLACEHOLDER,
   writeRunnerRunState,
-} from "agentplane/internal/testing";
-export type { taskBackend } from "agentplane/internal/testing";
+} from "./agentplane-internal.js";
+export type { taskBackend } from "./agentplane-internal.js";
 export {
   captureStdIO,
   cleanGitEnv,

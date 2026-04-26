@@ -8,6 +8,8 @@ import {
   appendIncidentRegistryEntries,
   buildIncidentAdviceQueryFromTask,
   createIncidentRegistrySkeleton,
+  INCIDENTS_POLICY_ASSET_PATH,
+  INCIDENTS_POLICY_PATH,
   parseIncidentRegistry,
   planIncidentCollection,
   resolveIncidentAdviceMatches,
@@ -22,14 +24,10 @@ import {
   normalizeTaskDocVersion,
 } from "../task/shared.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import {
-  INCIDENTS_POLICY_ASSET_PATH,
-  INCIDENTS_POLICY_PATH,
-} from "../../runtime/incidents/paths.js";
 export {
   INCIDENTS_POLICY_ASSET_PATH,
   INCIDENTS_POLICY_PATH,
-} from "../../runtime/incidents/paths.js";
+} from "../../runtime/incidents/index.js";
 const INCIDENTS_POLICY_LINE_BUDGET = 100;
 
 export type LoadedTaskIncidents = {

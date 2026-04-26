@@ -1,6 +1,6 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { loadCommandContext, type taskBackend } from "agentplane/internal/testing";
+import { loadCommandContext, type taskBackend } from "./agentplane-internal.js";
 
 import { installRunCliIntegrationHarness, pathExists, writeDefaultConfig } from "./cli-harness.js";
 import { waitForCondition } from "./wait.js";

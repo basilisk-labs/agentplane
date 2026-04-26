@@ -1,12 +1,13 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import ts from "typescript";
 
 import { defineScript, runScriptMain } from "./lib/script-runtime.mjs";
 
 const SCRIPT_NAME = "check-no-console.mjs";
-const MAX_CONSOLE_OCCURRENCES = 25;
-const CONSOLE_PATTERN = /\bconsole\.(?:log|warn|error)\b/g;
+const MAX_CONSOLE_OCCURRENCES = 0;
+const CONSOLE_METHODS = new Set(["log", "warn", "error"]);
 const EXCLUDED_DIR_NAMES = new Set([".git", "dist", "node_modules"]);
 const EXCLUDED_FILE_PATTERNS = [/\.test\.ts$/, /\.spec\.ts$/];
 
@@ -78,13 +79,20 @@ function collectConsoleOccurrences(repoRoot) {
 
   for (const file of files) {
     const source = readFileSync(file, "utf8");
-    const lines = source.split("\n");
-    for (const [index, line] of lines.entries()) {
-      CONSOLE_PATTERN.lastIndex = 0;
-      if (CONSOLE_PATTERN.test(line)) {
-        occurrences.push(`${normalizePath(path.relative(repoRoot, file))}:${index + 1}`);
+    const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true);
+    const visit = (node) => {
+      if (
+        ts.isPropertyAccessExpression(node) &&
+        ts.isIdentifier(node.expression) &&
+        node.expression.text === "console" &&
+        CONSOLE_METHODS.has(node.name.text)
+      ) {
+        const location = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile));
+        occurrences.push(`${normalizePath(path.relative(repoRoot, file))}:${location.line + 1}`);
       }
-    }
+      ts.forEachChild(node, visit);
+    };
+    visit(sourceFile);
   }
 
   return occurrences;

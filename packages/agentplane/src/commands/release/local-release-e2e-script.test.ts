@@ -6,8 +6,8 @@ import { promisify } from "node:util";
 
 import { afterEach, describe, expect, it } from "vitest";
 
+import { writeExecutableFile } from "@agentplane/testkit";
 import { seedReleaseWorkspace } from "@agentplane/testkit/release";
-import { writeExecutableFile } from "../../test-helpers/fs.js";
 
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/run-local-release-e2e.mjs");

@@ -1,4 +1,5 @@
-import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "./task-backend.js";

@@ -1,0 +1,3500 @@
+{
+  "schema_version": 1,
+  "generated_by": "check-knip-baseline.mjs",
+  "entries": [
+    {
+      "file": "packages/agentplane/bin/framework-dev-contract.d.ts",
+      "files": [
+        {
+          "name": "packages/agentplane/bin/framework-dev-contract.d.ts"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/bin/runtime-context.d.ts",
+      "files": [
+        {
+          "name": "packages/agentplane/bin/runtime-context.d.ts"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/bin/runtime-watch.d.ts",
+      "files": [
+        {
+          "name": "packages/agentplane/bin/runtime-watch.d.ts"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/bin/stale-dist-policy.d.ts",
+      "files": [
+        {
+          "name": "packages/agentplane/bin/stale-dist-policy.d.ts"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/agents/agents-template.ts",
+      "types": [
+        {
+          "name": "PolicyTemplate",
+          "line": 22,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend/local-backend-state.ts",
+      "exports": [
+        {
+          "name": "toTaskDocMutationComments",
+          "line": 39,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-cache-doc.ts",
+      "types": [
+        {
+          "name": "RedmineCacheDocContext",
+          "line": 29,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-report.ts",
+      "types": [
+        {
+          "name": "RedmineReportContext",
+          "line": 10,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-runtime.ts",
+      "exports": [
+        {
+          "name": "appendRedmineBackendCommentNotes",
+          "line": 9,
+          "col": 3
+        },
+        {
+          "name": "appendRedmineBackendCustomField",
+          "line": 10,
+          "col": 3
+        },
+        {
+          "name": "assertRedmineExpectedRevision",
+          "line": 23,
+          "col": 3
+        },
+        {
+          "name": "assertRedmineExpectedRevisionSupported",
+          "line": 24,
+          "col": 3
+        },
+        {
+          "name": "cacheRedmineTask",
+          "line": 25,
+          "col": 3
+        },
+        {
+          "name": "coerceRedmineBackendDocVersion",
+          "line": 26,
+          "col": 3
+        },
+        {
+          "name": "diffRedmineBackendTasks",
+          "line": 11,
+          "col": 3
+        },
+        {
+          "name": "ensureRedmineDocMetadata",
+          "line": 27,
+          "col": 3
+        },
+        {
+          "name": "findRedmineIssueByTaskId",
+          "line": 12,
+          "col": 3
+        },
+        {
+          "name": "listRedmineRemoteTasks",
+          "line": 13,
+          "col": 3
+        },
+        {
+          "name": "maybeParseRedmineBackendJson",
+          "line": 14,
+          "col": 3
+        },
+        {
+          "name": "normalizeRedmineBackendComments",
+          "line": 15,
+          "col": 3
+        },
+        {
+          "name": "redmineBackendCustomFieldValue",
+          "line": 16,
+          "col": 3
+        },
+        {
+          "name": "redmineBackendTasksDiffer",
+          "line": 17,
+          "col": 3
+        },
+        {
+          "name": "redmineIssueToTask",
+          "line": 18,
+          "col": 3
+        },
+        {
+          "name": "redmineTaskIdFieldId",
+          "line": 28,
+          "col": 3
+        },
+        {
+          "name": "redmineTaskToIssuePayload",
+          "line": 19,
+          "col": 3
+        },
+        {
+          "name": "requestRedmineBackendJson",
+          "line": 20,
+          "col": 3
+        },
+        {
+          "name": "setRedmineIssueCustomField",
+          "line": 29,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync.ts",
+      "exports": [
+        {
+          "name": "handleRedmineConflict",
+          "line": 10,
+          "col": 3
+        },
+        {
+          "name": "inferRedmineStatusIdForTaskStatus",
+          "line": 5,
+          "col": 3
+        },
+        {
+          "name": "loadRedmineInferredStatusByTaskStatus",
+          "line": 6,
+          "col": 3
+        },
+        {
+          "name": "selectRedmineInferredStatus",
+          "line": 7,
+          "col": 3
+        },
+        {
+          "name": "syncPushRedmine",
+          "line": 12,
+          "col": 3
+        }
+      ],
+      "types": [
+        {
+          "name": "RedmineSyncContext",
+          "line": 1,
+          "col": 15
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync/status.ts",
+      "exports": [
+        {
+          "name": "loadRedmineInferredStatusByTaskStatus",
+          "line": 20,
+          "col": 23
+        },
+        {
+          "name": "selectRedmineInferredStatus",
+          "line": 63,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync/sync.ts",
+      "exports": [
+        {
+          "name": "handleRedmineConflict",
+          "line": 85,
+          "col": 23
+        },
+        {
+          "name": "syncPushRedmine",
+          "line": 24,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend/redmine/env.ts",
+      "types": [
+        {
+          "name": "RedmineEnvConfig",
+          "line": 3,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend/redmine/state.ts",
+      "types": [
+        {
+          "name": "RedmineCanonicalState",
+          "line": 15,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend/shared.ts",
+      "exports": [
+        {
+          "name": "normalizeDependsOn",
+          "line": 51,
+          "col": 3
+        },
+        {
+          "name": "normalizeTaskRunnerOutcome",
+          "line": 47,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend/shared/constants.ts",
+      "exports": [
+        {
+          "name": "SUPPORTED_DOC_VERSIONS",
+          "line": 7,
+          "col": 14
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-index.ts",
+      "exports": [
+        {
+          "name": "TASK_INDEX_SCHEMA_VERSION",
+          "line": 8,
+          "col": 14
+        }
+      ],
+      "types": [
+        {
+          "name": "TaskIndexFile",
+          "line": 23,
+          "col": 13
+        },
+        {
+          "name": "TaskIndexFileV2",
+          "line": 17,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/archive.ts",
+      "exports": [
+        {
+          "name": "validateArchive",
+          "line": 22,
+          "col": 23
+        }
+      ],
+      "types": [
+        {
+          "name": "ArchiveEntryIssue",
+          "line": 17,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/bootstrap-guide.ts",
+      "exports": [
+        {
+          "name": "AGENT_BOOTSTRAP_DOC_PATH",
+          "line": 3,
+          "col": 14
+        },
+        {
+          "name": "AGENT_BOOTSTRAP_RUNTIME_SURFACE",
+          "line": 4,
+          "col": 14
+        },
+        {
+          "name": "BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS",
+          "line": 29,
+          "col": 14
+        },
+        {
+          "name": "BOOTSTRAP_RECOVERY_COMMANDS",
+          "line": 46,
+          "col": 14
+        },
+        {
+          "name": "BOOTSTRAP_SECTIONS",
+          "line": 52,
+          "col": 14
+        },
+        {
+          "name": "BOOTSTRAP_VERIFICATION_COMMANDS",
+          "line": 37,
+          "col": 14
+        },
+        {
+          "name": "renderBootstrapReferenceLine",
+          "line": 102,
+          "col": 17
+        },
+        {
+          "name": "renderBootstrapSectionLines",
+          "line": 106,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "BootstrapSection",
+          "line": 8,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/command-invocations.ts",
+      "exports": [
+        {
+          "name": "getCanonicalCommandInvocation",
+          "line": 35,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/critical/cli-runner.ts",
+      "files": [
+        {
+          "name": "packages/agentplane/src/cli/critical/cli-runner.ts"
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/critical/harness.ts",
+      "exports": [
+        {
+          "name": "readText",
+          "line": 42,
+          "col": 23
+        }
+      ],
+      "types": [
+        {
+          "name": "RunCliResult",
+          "line": 9,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/error-map.ts",
+      "types": [
+        {
+          "name": "NextAction",
+          "line": 16,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/output.ts",
+      "types": [
+        {
+          "name": "CliEmitter",
+          "line": 22,
+          "col": 13
+        },
+        {
+          "name": "CliEmitterStream",
+          "line": 8,
+          "col": 13
+        },
+        {
+          "name": "CliOutputWriter",
+          "line": 4,
+          "col": 13
+        },
+        {
+          "name": "CliReportOptions",
+          "line": 17,
+          "col": 13
+        },
+        {
+          "name": "CommandResult",
+          "line": 40,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/reason-codes.ts",
+      "types": [
+        {
+          "name": "ReasonCodeCategory",
+          "line": 1,
+          "col": 13
+        },
+        {
+          "name": "ReasonCodeMeta",
+          "line": 10,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli/command-catalog.ts",
+      "exports": [
+        {
+          "name": "getCommandInvocation",
+          "line": 51,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "CatalogMatch",
+          "line": 20,
+          "col": 13
+        },
+        {
+          "name": "CommandEntry",
+          "line": 11,
+          "col": 15
+        },
+        {
+          "name": "RunDeps",
+          "line": 11,
+          "col": 29
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts",
+      "types": [
+        {
+          "name": "CommandMeta",
+          "line": 31,
+          "col": 13
+        },
+        {
+          "name": "CommandModule",
+          "line": 36,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli/commands/core.ts",
+      "exports": [
+        {
+          "name": "agentsSpec",
+          "line": 1,
+          "col": 10
+        },
+        {
+          "name": "codexPluginInstallSpec",
+          "line": 3,
+          "col": 3
+        },
+        {
+          "name": "codexPluginSpec",
+          "line": 4,
+          "col": 3
+        },
+        {
+          "name": "codexSpec",
+          "line": 5,
+          "col": 3
+        },
+        {
+          "name": "makeRunCodexPluginInstallHandler",
+          "line": 6,
+          "col": 3
+        },
+        {
+          "name": "preflightSpec",
+          "line": 10,
+          "col": 10
+        },
+        {
+          "name": "quickstartSpec",
+          "line": 11,
+          "col": 10
+        },
+        {
+          "name": "roleSpec",
+          "line": 12,
+          "col": 10
+        },
+        {
+          "name": "runCodex",
+          "line": 7,
+          "col": 3
+        },
+        {
+          "name": "runCodexPlugin",
+          "line": 8,
+          "col": 3
+        },
+        {
+          "name": "runPreflight",
+          "line": 10,
+          "col": 25
+        },
+        {
+          "name": "runQuickstart",
+          "line": 11,
+          "col": 26
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli/commands/core/agent-profiles.ts",
+      "types": [
+        {
+          "name": "AgentProfile",
+          "line": 11,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli/commands/init/execution.ts",
+      "types": [
+        {
+          "name": "ResolvedInitPaths",
+          "line": 24,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli/globals.ts",
+      "types": [
+        {
+          "name": "CliOutputMode",
+          "line": 45,
+          "col": 13
+        },
+        {
+          "name": "ParsedArgs",
+          "line": 5,
+          "col": 13
+        },
+        {
+          "name": "ParsedGlobalArgsResult",
+          "line": 48,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli/update-warning.ts",
+      "exports": [
+        {
+          "name": "resolveAgentplaneHome",
+          "line": 22,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/spec/help.ts",
+      "types": [
+        {
+          "name": "HelpParsed",
+          "line": 13,
+          "col": 13
+        },
+        {
+          "name": "HelpRegistryView",
+          "line": 19,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/spec/parse-utils.ts",
+      "exports": [
+        {
+          "name": "assertNonEmptyStrings",
+          "line": 19,
+          "col": 17
+        },
+        {
+          "name": "asTrimmedString",
+          "line": 4,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/spec/registry.ts",
+      "exports": [
+        {
+          "name": "formatCommandId",
+          "line": 153,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "CommandGraphMatch",
+          "line": 11,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/spec/spec.ts",
+      "types": [
+        {
+          "name": "UsageErrorFactory",
+          "line": 96,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/update-check.ts",
+      "types": [
+        {
+          "name": "UpdateCheckFetchResult",
+          "line": 21,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/codex/plugin-install.ts",
+      "exports": [
+        {
+          "name": "resolveCodexMarketplacePath",
+          "line": 214,
+          "col": 17
+        },
+        {
+          "name": "resolveCodexPluginRoot",
+          "line": 210,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "CodexPluginInstallResult",
+          "line": 42,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/doctor/workspace-task-state.ts",
+      "exports": [
+        {
+          "name": "buildTaskReadmeMigrationFindings",
+          "line": 61,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/doctor/workspace.ts",
+      "exports": [
+        {
+          "name": "buildTaskReadmeMigrationFindings",
+          "line": 16,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/guard/impl/close-message.ts",
+      "types": [
+        {
+          "name": "CloseCommitMessage",
+          "line": 143,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/guard/impl/commit-diagnostics.ts",
+      "types": [
+        {
+          "name": "CommitFailurePhase",
+          "line": 14,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/guard/impl/env.ts",
+      "types": [
+        {
+          "name": "CanonicalGitIdentity",
+          "line": 3,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/guard/index.ts",
+      "exports": [
+        {
+          "name": "gitStatusChangedPaths",
+          "line": 3,
+          "col": 26
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/incidents/shared.ts",
+      "exports": [
+        {
+          "name": "formatIncidentCollectionIssues",
+          "line": 142,
+          "col": 17
+        },
+        {
+          "name": "incidentRegistryAssetPath",
+          "line": 54,
+          "col": 17
+        },
+        {
+          "name": "incidentRegistryPath",
+          "line": 50,
+          "col": 17
+        },
+        {
+          "name": "INCIDENTS_POLICY_ASSET_PATH",
+          "line": 28,
+          "col": 3
+        },
+        {
+          "name": "INCIDENTS_POLICY_PATH",
+          "line": 29,
+          "col": 3
+        },
+        {
+          "name": "loadTaskIncidents",
+          "line": 111,
+          "col": 23
+        },
+        {
+          "name": "renderIncidentCollectionOutcome",
+          "line": 236,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "LoadedTaskIncidents",
+          "line": 33,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/pr/internal/freshness.ts",
+      "types": [
+        {
+          "name": "PrArtifactFreshness",
+          "line": 10,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/pr/internal/note-store.ts",
+      "exports": [
+        {
+          "name": "parsePrHandoffNotes",
+          "line": 35,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.ts",
+      "exports": [
+        {
+          "name": "isUnknownRevisionError",
+          "line": 19,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/pr/internal/pr-paths.ts",
+      "types": [
+        {
+          "name": "ResolvedPrPaths",
+          "line": 12,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/pr/internal/review-template.ts",
+      "exports": [
+        {
+          "name": "renderPrHandoffNotes",
+          "line": 203,
+          "col": 17
+        },
+        {
+          "name": "updateAutoSummaryBlock",
+          "line": 181,
+          "col": 17
+        },
+        {
+          "name": "updateHandoffNotesBlock",
+          "line": 212,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/pr/internal/sync-branch.ts",
+      "exports": [
+        {
+          "name": "isUnknownRevisionError",
+          "line": 17,
+          "col": 17
+        },
+        {
+          "name": "resolveBranchHeadSha",
+          "line": 26,
+          "col": 23
+        },
+        {
+          "name": "resolvePrDiffBaseRef",
+          "line": 72,
+          "col": 23
+        }
+      ],
+      "types": [
+        {
+          "name": "ResolvedPrSyncBranch",
+          "line": 12,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/pr/internal/sync-github.ts",
+      "exports": [
+        {
+          "name": "formatUnpublishedRemoteHeadReason",
+          "line": 140,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "ObservedGithubPr",
+          "line": 23,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/pr/internal/sync.ts",
+      "types": [
+        {
+          "name": "PrRemoteMode",
+          "line": 38,
+          "col": 30
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/recipes.ts",
+      "exports": [
+        {
+          "name": "cmdRecipeActiveParsed",
+          "line": 81,
+          "col": 3
+        },
+        {
+          "name": "cmdRecipeExplainActiveParsed",
+          "line": 85,
+          "col": 3
+        },
+        {
+          "name": "collectRecipeScenarioDetails",
+          "line": 65,
+          "col": 3
+        },
+        {
+          "name": "compileProjectOverlayArtifacts",
+          "line": 43,
+          "col": 3
+        },
+        {
+          "name": "inspectProjectRecipe",
+          "line": 40,
+          "col": 26
+        },
+        {
+          "name": "normalizeResolvedRecipeRunProfile",
+          "line": 74,
+          "col": 3
+        },
+        {
+          "name": "normalizeScenarioToolStep",
+          "line": 66,
+          "col": 3
+        },
+        {
+          "name": "readActiveRecipeIds",
+          "line": 44,
+          "col": 3
+        },
+        {
+          "name": "readInstalledRecipesFile",
+          "line": 32,
+          "col": 10
+        },
+        {
+          "name": "readProjectRecipesRegistry",
+          "line": 35,
+          "col": 3
+        },
+        {
+          "name": "readRecipeManifest",
+          "line": 30,
+          "col": 10
+        },
+        {
+          "name": "readScenarioIndex",
+          "line": 68,
+          "col": 3
+        },
+        {
+          "name": "RECIPE_RUNS_DIR_NAME",
+          "line": 5,
+          "col": 3
+        },
+        {
+          "name": "RECIPES_DIR_NAME",
+          "line": 2,
+          "col": 3
+        },
+        {
+          "name": "RECIPES_SCENARIOS_DIR_NAME",
+          "line": 3,
+          "col": 3
+        },
+        {
+          "name": "RECIPES_SCENARIOS_INDEX_NAME",
+          "line": 4,
+          "col": 3
+        },
+        {
+          "name": "refreshProjectOverlayArtifacts",
+          "line": 47,
+          "col": 3
+        },
+        {
+          "name": "removeProjectRecipeRegistryEntry",
+          "line": 36,
+          "col": 3
+        },
+        {
+          "name": "resolveInstalledRecipeDir",
+          "line": 53,
+          "col": 3
+        },
+        {
+          "name": "resolveInstalledRecipesPath",
+          "line": 54,
+          "col": 3
+        },
+        {
+          "name": "resolveProjectInstalledRecipeDir",
+          "line": 55,
+          "col": 3
+        },
+        {
+          "name": "resolveProjectOverlayBundlePath",
+          "line": 56,
+          "col": 3
+        },
+        {
+          "name": "resolveProjectRecipeAssetsPath",
+          "line": 57,
+          "col": 3
+        },
+        {
+          "name": "resolveProjectRecipesCacheDir",
+          "line": 59,
+          "col": 3
+        },
+        {
+          "name": "resolveProjectRecipesDir",
+          "line": 58,
+          "col": 3
+        },
+        {
+          "name": "resolveProjectRecipesPackagesDir",
+          "line": 52,
+          "col": 3
+        },
+        {
+          "name": "resolveProjectRecipesRegistryPath",
+          "line": 60,
+          "col": 3
+        },
+        {
+          "name": "resolveProjectVendoredRecipeDir",
+          "line": 61,
+          "col": 3
+        },
+        {
+          "name": "resolveRecipeCompatibility",
+          "line": 75,
+          "col": 3
+        },
+        {
+          "name": "setRecipeActive",
+          "line": 48,
+          "col": 3
+        },
+        {
+          "name": "upsertProjectRecipeRegistryEntry",
+          "line": 37,
+          "col": 3
+        },
+        {
+          "name": "validateRecipeManifest",
+          "line": 30,
+          "col": 30
+        },
+        {
+          "name": "writeProjectRecipesRegistry",
+          "line": 38,
+          "col": 3
+        }
+      ],
+      "types": [
+        {
+          "name": "CompiledOverlayBundle",
+          "line": 11,
+          "col": 3
+        },
+        {
+          "name": "CompiledRecipeAssetEntry",
+          "line": 9,
+          "col": 3
+        },
+        {
+          "name": "CompiledRecipeAssetRegistry",
+          "line": 10,
+          "col": 3
+        },
+        {
+          "name": "ProjectOverlayManifestV2",
+          "line": 18,
+          "col": 3
+        },
+        {
+          "name": "RecipeCachePruneFlags",
+          "line": 26,
+          "col": 3
+        },
+        {
+          "name": "RecipeConflictMode",
+          "line": 12,
+          "col": 3
+        },
+        {
+          "name": "RecipeInstallSource",
+          "line": 13,
+          "col": 3
+        },
+        {
+          "name": "RecipeKind",
+          "line": 14,
+          "col": 3
+        },
+        {
+          "name": "RecipeListFlags",
+          "line": 27,
+          "col": 3
+        },
+        {
+          "name": "RecipeListRemoteFlags",
+          "line": 28,
+          "col": 3
+        },
+        {
+          "name": "RecipeResolverCompatibility",
+          "line": 15,
+          "col": 3
+        },
+        {
+          "name": "RecipeResolverCompatibilityFailure",
+          "line": 16,
+          "col": 3
+        },
+        {
+          "name": "RecipeResolverContext",
+          "line": 17,
+          "col": 3
+        },
+        {
+          "name": "ResolvedRecipeRunProfile",
+          "line": 20,
+          "col": 3
+        },
+        {
+          "name": "ResolvedRecipeScenario",
+          "line": 21,
+          "col": 3
+        },
+        {
+          "name": "ResolvedRecipeScenarioSelection",
+          "line": 22,
+          "col": 3
+        },
+        {
+          "name": "ResolveRecipeScenarioSelectionFlags",
+          "line": 19,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/recipes/impl/apply.ts",
+      "exports": [
+        {
+          "name": "applyRecipeAgents",
+          "line": 98,
+          "col": 23
+        },
+        {
+          "name": "applyRecipeScenarios",
+          "line": 160,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/recipes/impl/commands.ts",
+      "exports": [
+        {
+          "name": "cmdRecipeActiveParsed",
+          "line": 7,
+          "col": 10
+        },
+        {
+          "name": "cmdRecipeExplainActiveParsed",
+          "line": 8,
+          "col": 10
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/recipes/impl/constants.ts",
+      "exports": [
+        {
+          "name": "RECIPE_RUNS_DIR_NAME",
+          "line": 14,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/recipes/impl/overlay-project.ts",
+      "exports": [
+        {
+          "name": "compileProjectOverlayArtifacts",
+          "line": 45,
+          "col": 23
+        },
+        {
+          "name": "compileProjectOverlayArtifactsFromRegistry",
+          "line": 35,
+          "col": 23
+        },
+        {
+          "name": "setRecipeActive",
+          "line": 24,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/recipes/impl/paths.ts",
+      "exports": [
+        {
+          "name": "resolveAgentplaneHome",
+          "line": 16,
+          "col": 17
+        },
+        {
+          "name": "resolveProjectGeneratedDir",
+          "line": 72,
+          "col": 17
+        },
+        {
+          "name": "resolveProjectRecipesCacheDir",
+          "line": 68,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/recipes/impl/project-recipe-state.ts",
+      "types": [
+        {
+          "name": "ProjectRecipeInspection",
+          "line": 42,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/recipes/impl/project-registry.ts",
+      "exports": [
+        {
+          "name": "removeProjectRecipeRegistryEntry",
+          "line": 166,
+          "col": 23
+        },
+        {
+          "name": "upsertProjectRecipeRegistryEntry",
+          "line": 156,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/recipes/impl/resolver.ts",
+      "exports": [
+        {
+          "name": "normalizeResolvedRecipeRunProfile",
+          "line": 174,
+          "col": 17
+        },
+        {
+          "name": "resolveRecipeCompatibility",
+          "line": 71,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/recipes/impl/types.ts",
+      "types": [
+        {
+          "name": "CompiledOverlayBundle",
+          "line": 4,
+          "col": 3
+        },
+        {
+          "name": "CompiledOverlayPromptFragment",
+          "line": 5,
+          "col": 3
+        },
+        {
+          "name": "CompiledOverlayTraceEntry",
+          "line": 6,
+          "col": 3
+        },
+        {
+          "name": "CompiledOverlayValidator",
+          "line": 7,
+          "col": 3
+        },
+        {
+          "name": "CompiledRecipeAssetEntry",
+          "line": 2,
+          "col": 3
+        },
+        {
+          "name": "CompiledRecipeAssetRegistry",
+          "line": 3,
+          "col": 3
+        },
+        {
+          "name": "InstalledRecipeEntry",
+          "line": 8,
+          "col": 3
+        },
+        {
+          "name": "InstalledRecipesFile",
+          "line": 9,
+          "col": 3
+        },
+        {
+          "name": "OverlayPromptFragment",
+          "line": 10,
+          "col": 3
+        },
+        {
+          "name": "OverlayStrength",
+          "line": 11,
+          "col": 3
+        },
+        {
+          "name": "OverlaySurface",
+          "line": 12,
+          "col": 3
+        },
+        {
+          "name": "OverlayValidator",
+          "line": 13,
+          "col": 3
+        },
+        {
+          "name": "OverlayWhen",
+          "line": 14,
+          "col": 3
+        },
+        {
+          "name": "ProjectInstalledRecipeEntry",
+          "line": 16,
+          "col": 3
+        },
+        {
+          "name": "ProjectInstalledRecipesFile",
+          "line": 17,
+          "col": 3
+        },
+        {
+          "name": "ProjectOverlayManifestV2",
+          "line": 15,
+          "col": 3
+        },
+        {
+          "name": "ProjectRecipeMaterialization",
+          "line": 18,
+          "col": 3
+        },
+        {
+          "name": "ProjectRecipeRegistryEntry",
+          "line": 19,
+          "col": 3
+        },
+        {
+          "name": "ProjectRecipeState",
+          "line": 21,
+          "col": 3
+        },
+        {
+          "name": "RecipeAgentDefinition",
+          "line": 22,
+          "col": 3
+        },
+        {
+          "name": "RecipeCompatibility",
+          "line": 23,
+          "col": 3
+        },
+        {
+          "name": "RecipeConflictMode",
+          "line": 24,
+          "col": 3
+        },
+        {
+          "name": "RecipeInstallSource",
+          "line": 25,
+          "col": 3
+        },
+        {
+          "name": "RecipeKind",
+          "line": 26,
+          "col": 3
+        },
+        {
+          "name": "RecipeManifest",
+          "line": 27,
+          "col": 3
+        },
+        {
+          "name": "RecipeResolverCompatibility",
+          "line": 28,
+          "col": 3
+        },
+        {
+          "name": "RecipeResolverCompatibilityFailure",
+          "line": 29,
+          "col": 3
+        },
+        {
+          "name": "RecipeResolverContext",
+          "line": 30,
+          "col": 3
+        },
+        {
+          "name": "RecipeRunProfile",
+          "line": 31,
+          "col": 3
+        },
+        {
+          "name": "RecipeScenarioDescriptor",
+          "line": 32,
+          "col": 3
+        },
+        {
+          "name": "RecipeScenarioDetail",
+          "line": 33,
+          "col": 3
+        },
+        {
+          "name": "RecipesIndex",
+          "line": 38,
+          "col": 3
+        },
+        {
+          "name": "RecipesIndexSignature",
+          "line": 39,
+          "col": 3
+        },
+        {
+          "name": "RecipeSkillDefinition",
+          "line": 34,
+          "col": 3
+        },
+        {
+          "name": "RecipeTaskTemplate",
+          "line": 35,
+          "col": 3
+        },
+        {
+          "name": "RecipeTaskTemplateDoc",
+          "line": 36,
+          "col": 3
+        },
+        {
+          "name": "RecipeToolDefinition",
+          "line": 37,
+          "col": 3
+        },
+        {
+          "name": "ResolvedRecipeRunProfile",
+          "line": 41,
+          "col": 3
+        },
+        {
+          "name": "ResolvedRecipeScenario",
+          "line": 42,
+          "col": 3
+        },
+        {
+          "name": "ResolvedRecipeScenarioSelection",
+          "line": 43,
+          "col": 3
+        },
+        {
+          "name": "ResolveRecipeScenarioSelectionFlags",
+          "line": 40,
+          "col": 3
+        },
+        {
+          "name": "ScenarioDefinition",
+          "line": 44,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/recipes/impl/version.ts",
+      "exports": [
+        {
+          "name": "compareRecipeVersions",
+          "line": 3,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/release/apply.pipeline.ts",
+      "types": [
+        {
+          "name": "ReleaseApplyResolvedProject",
+          "line": 54,
+          "col": 13
+        },
+        {
+          "name": "ReleaseApplyRouteResolverArgs",
+          "line": 47,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/release/apply.pipeline/finalize.ts",
+      "exports": [
+        {
+          "name": "finalizeReleaseApply",
+          "line": 19,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/release/apply.pipeline/mutation.ts",
+      "exports": [
+        {
+          "name": "applyReleaseMutation",
+          "line": 21,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/release/apply.pipeline/preflight.ts",
+      "exports": [
+        {
+          "name": "assertReleaseBumpApproved",
+          "line": 73,
+          "col": 17
+        },
+        {
+          "name": "runPushPreflight",
+          "line": 21,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/release/apply.pipeline/state.ts",
+      "exports": [
+        {
+          "name": "resolveReleasePlanInputs",
+          "line": 26,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/release/apply.preflight.package.ts",
+      "exports": [
+        {
+          "name": "readAgentplaneDependencyVersion",
+          "line": 45,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/release/apply.preflight.plan.ts",
+      "exports": [
+        {
+          "name": "findLatestPlanDir",
+          "line": 58,
+          "col": 23
+        },
+        {
+          "name": "parseVersionPlan",
+          "line": 33,
+          "col": 17
+        },
+        {
+          "name": "readJsonFile",
+          "line": 18,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/release/apply.preflight.ts",
+      "exports": [
+        {
+          "name": "findLatestPlanDir",
+          "line": 3,
+          "col": 3
+        },
+        {
+          "name": "parseVersionPlan",
+          "line": 5,
+          "col": 3
+        },
+        {
+          "name": "readAgentplaneDependencyVersion",
+          "line": 9,
+          "col": 3
+        },
+        {
+          "name": "readJsonFile",
+          "line": 6,
+          "col": 3
+        },
+        {
+          "name": "releasePushDescription",
+          "line": 21,
+          "col": 3
+        }
+      ],
+      "types": [
+        {
+          "name": "ReleaseCommandLabel",
+          "line": 22,
+          "col": 8
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/scenario/info.command.ts",
+      "exports": [
+        {
+          "name": "runScenarioInfo",
+          "line": 32,
+          "col": 14
+        }
+      ],
+      "types": [
+        {
+          "name": "ScenarioInfoParsed",
+          "line": 5,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/scenario/list.command.ts",
+      "exports": [
+        {
+          "name": "runScenarioList",
+          "line": 14,
+          "col": 14
+        }
+      ],
+      "types": [
+        {
+          "name": "ScenarioListParsed",
+          "line": 4,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/scenario/run.command.ts",
+      "exports": [
+        {
+          "name": "runScenarioRun",
+          "line": 32,
+          "col": 14
+        }
+      ],
+      "types": [
+        {
+          "name": "ScenarioRunParsed",
+          "line": 5,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/approval-requirements.ts",
+      "types": [
+        {
+          "name": "ApprovalAction",
+          "line": 6,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/diagnostics.ts",
+      "types": [
+        {
+          "name": "DiagnosticInfo",
+          "line": 7,
+          "col": 13
+        },
+        {
+          "name": "DiagnosticNextAction",
+          "line": 1,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/git-ops.ts",
+      "exports": [
+        {
+          "name": "gitAddPaths",
+          "line": 23,
+          "col": 3
+        },
+        {
+          "name": "gitCommit",
+          "line": 24,
+          "col": 3
+        },
+        {
+          "name": "gitListBranches",
+          "line": 21,
+          "col": 3
+        },
+        {
+          "name": "gitStagedPaths",
+          "line": 26,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/merged-branch-cleanup.ts",
+      "types": [
+        {
+          "name": "MergedBranchCleanupResult",
+          "line": 6,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/operator-pipeline.ts",
+      "types": [
+        {
+          "name": "OperatorPipelineSpec",
+          "line": 1,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/pr-meta.ts",
+      "types": [
+        {
+          "name": "ObservedGithubPrState",
+          "line": 10,
+          "col": 13
+        },
+        {
+          "name": "PrArtifactState",
+          "line": 25,
+          "col": 13
+        },
+        {
+          "name": "PrArtifactTextState",
+          "line": 19,
+          "col": 13
+        },
+        {
+          "name": "ShellInvocation",
+          "line": 196,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/task-backend.ts",
+      "exports": [
+        {
+          "name": "backendHasLocalCanonicalSource",
+          "line": 130,
+          "col": 17
+        },
+        {
+          "name": "backendWritesTaskReadmes",
+          "line": 134,
+          "col": 17
+        },
+        {
+          "name": "getTaskBackendCapabilities",
+          "line": 109,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/task-handoff.ts",
+      "exports": [
+        {
+          "name": "readTaskPrBranch",
+          "line": 111,
+          "col": 23
+        }
+      ],
+      "types": [
+        {
+          "name": "TaskHandoffPaths",
+          "line": 20,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/task-mutation.ts",
+      "types": [
+        {
+          "name": "TaskCollectionMutationPlan",
+          "line": 23,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/task-store.ts",
+      "exports": [
+        {
+          "name": "appendTaskCommentsIntent",
+          "line": 13,
+          "col": 3
+        },
+        {
+          "name": "appendTaskEventsIntent",
+          "line": 15,
+          "col": 3
+        },
+        {
+          "name": "taskStorePatchFromIntents",
+          "line": 21,
+          "col": 3
+        }
+      ],
+      "types": [
+        {
+          "name": "TaskStoreDocPatch",
+          "line": 2,
+          "col": 3
+        },
+        {
+          "name": "TaskStoreLike",
+          "line": 5,
+          "col": 3
+        },
+        {
+          "name": "TaskStoreMutationOptions",
+          "line": 6,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/task-store/intents.ts",
+      "exports": [
+        {
+          "name": "appendTaskCommentsIntent",
+          "line": 25,
+          "col": 17
+        },
+        {
+          "name": "appendTaskEventsIntent",
+          "line": 33,
+          "col": 17
+        },
+        {
+          "name": "taskStorePatchFromIntents",
+          "line": 151,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/task-store/readme.ts",
+      "exports": [
+        {
+          "name": "ensureUnchangedOnDisk",
+          "line": 90,
+          "col": 23
+        },
+        {
+          "name": "readStoredTaskRevision",
+          "line": 27,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/task-store/types.ts",
+      "types": [
+        {
+          "name": "TaskStoreReader",
+          "line": 99,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/findings.ts",
+      "exports": [
+        {
+          "name": "renderFindingsAddRegistryNote",
+          "line": 153,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "StructuredFindingMutationPlan",
+          "line": 88,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/finish-findings.ts",
+      "types": [
+        {
+          "name": "FinishStructuredFindingInput",
+          "line": 6,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/finish-shared.ts",
+      "exports": [
+        {
+          "name": "assertTaskCanFinish",
+          "line": 79,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/handoff.shared.ts",
+      "types": [
+        {
+          "name": "TaskResumeContext",
+          "line": 24,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/hosted-merge-sync.ts",
+      "exports": [
+        {
+          "name": "syncHostedMergedTask",
+          "line": 38,
+          "col": 23
+        }
+      ],
+      "types": [
+        {
+          "name": "HostedMergedPr",
+          "line": 21,
+          "col": 3
+        },
+        {
+          "name": "HostedMergeSyncResult",
+          "line": 22,
+          "col": 3
+        },
+        {
+          "name": "LocalBranchPrSyncCandidate",
+          "line": 24,
+          "col": 3
+        },
+        {
+          "name": "LocalDoneBranchPrDrift",
+          "line": 25,
+          "col": 3
+        },
+        {
+          "name": "LocalMergedPrMeta",
+          "line": 26,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/index.ts",
+      "exports": [
+        {
+          "name": "cmdTaskCloseDuplicate",
+          "line": 21,
+          "col": 10
+        },
+        {
+          "name": "cmdTaskCloseNoop",
+          "line": 23,
+          "col": 10
+        },
+        {
+          "name": "cmdTaskComment",
+          "line": 17,
+          "col": 10
+        },
+        {
+          "name": "cmdTaskDerive",
+          "line": 20,
+          "col": 10
+        },
+        {
+          "name": "cmdTaskList",
+          "line": 7,
+          "col": 34
+        },
+        {
+          "name": "cmdTaskMigrateDoc",
+          "line": 15,
+          "col": 10
+        },
+        {
+          "name": "cmdTaskSetStatus",
+          "line": 18,
+          "col": 10
+        },
+        {
+          "name": "cmdTaskShow",
+          "line": 19,
+          "col": 10
+        },
+        {
+          "name": "cmdTaskStartReady",
+          "line": 22,
+          "col": 10
+        },
+        {
+          "name": "makeRunTaskHostedClosePrHandler",
+          "line": 25,
+          "col": 3
+        },
+        {
+          "name": "runTaskNewParsed",
+          "line": 2,
+          "col": 10
+        },
+        {
+          "name": "taskHostedClosePrSpec",
+          "line": 26,
+          "col": 3
+        }
+      ],
+      "types": [
+        {
+          "name": "TaskNewParsed",
+          "line": 1,
+          "col": 15
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/migrate-doc.ts",
+      "types": [
+        {
+          "name": "TaskDocMigrationResult",
+          "line": 23,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/plan-shared.ts",
+      "types": [
+        {
+          "name": "PlanBackend",
+          "line": 19,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/run-output.ts",
+      "types": [
+        {
+          "name": "TaskRunOutput",
+          "line": 11,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/shared.ts",
+      "exports": [
+        {
+          "name": "buildTaskStatusTransition",
+          "line": 62,
+          "col": 3
+        },
+        {
+          "name": "buildTaskVerificationTransition",
+          "line": 64,
+          "col": 3
+        },
+        {
+          "name": "dependencyWarningMessages",
+          "line": 36,
+          "col": 3
+        },
+        {
+          "name": "emitTransitionWarnings",
+          "line": 51,
+          "col": 3
+        },
+        {
+          "name": "ensureCommentCommitAllowed",
+          "line": 50,
+          "col": 3
+        },
+        {
+          "name": "readDeferredTaskTransitionWarnings",
+          "line": 66,
+          "col": 3
+        },
+        {
+          "name": "readHeadCommit",
+          "line": 57,
+          "col": 3
+        },
+        {
+          "name": "requiresVerificationByPrimary",
+          "line": 30,
+          "col": 3
+        },
+        {
+          "name": "resolvePrimaryTagFromConfig",
+          "line": 28,
+          "col": 3
+        },
+        {
+          "name": "resolveTaskTransitionExecutorAgent",
+          "line": 54,
+          "col": 3
+        },
+        {
+          "name": "VERIFICATION_RESULTS_BEGIN",
+          "line": 10,
+          "col": 3
+        },
+        {
+          "name": "VERIFICATION_RESULTS_END",
+          "line": 11,
+          "col": 3
+        }
+      ],
+      "types": [
+        {
+          "name": "DependencyState",
+          "line": 35,
+          "col": 8
+        },
+        {
+          "name": "ExecuteTaskStatusTransitionRequest",
+          "line": 70,
+          "col": 8
+        },
+        {
+          "name": "ExecuteTaskVerificationTransitionRequest",
+          "line": 72,
+          "col": 8
+        },
+        {
+          "name": "PrimaryTagResolution",
+          "line": 25,
+          "col": 8
+        },
+        {
+          "name": "QueryTaskProjectionResult",
+          "line": 81,
+          "col": 8
+        },
+        {
+          "name": "TaskStatusTransitionCommentCommitPolicy",
+          "line": 69,
+          "col": 8
+        },
+        {
+          "name": "TaskStatusTransitionDependencyPolicy",
+          "line": 68,
+          "col": 8
+        },
+        {
+          "name": "TaskStatusTransitionExecution",
+          "line": 71,
+          "col": 8
+        },
+        {
+          "name": "TaskTagPolicy",
+          "line": 26,
+          "col": 8
+        },
+        {
+          "name": "TaskTransitionWrite",
+          "line": 67,
+          "col": 8
+        },
+        {
+          "name": "TaskVerificationTransitionExecution",
+          "line": 73,
+          "col": 8
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/shared/direct-work-lock.ts",
+      "exports": [
+        {
+          "name": "directWorkLockPath",
+          "line": 12,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "DirectWorkLock",
+          "line": 4,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/shared/listing.ts",
+      "types": [
+        {
+          "name": "QueryTaskProjectionResult",
+          "line": 174,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/shared/tags.ts",
+      "exports": [
+        {
+          "name": "resolvePrimaryTagFromConfig",
+          "line": 164,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "PrimaryTagResolution",
+          "line": 61,
+          "col": 13
+        },
+        {
+          "name": "TaskTagPolicy",
+          "line": 67,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/shared/transitions.ts",
+      "exports": [
+        {
+          "name": "ensureCommentCommitAllowed",
+          "line": 60,
+          "col": 17
+        },
+        {
+          "name": "readHeadCommit",
+          "line": 201,
+          "col": 23
+        },
+        {
+          "name": "resolveTaskTransitionExecutorAgent",
+          "line": 127,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/shared/workflow-transition-service.ts",
+      "types": [
+        {
+          "name": "ExecuteTaskVerificationTransitionRequest",
+          "line": 63,
+          "col": 13
+        },
+        {
+          "name": "TaskVerificationTransitionExecution",
+          "line": 74,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/upgrade/plan.ts",
+      "types": [
+        {
+          "name": "ManagedUpgradePlan",
+          "line": 18,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/upgrade/policy.ts",
+      "exports": [
+        {
+          "name": "INCIDENTS_APPEND_MARKER",
+          "line": 4,
+          "col": 14
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/harness/dynamic-tool-contract.ts",
+      "types": [
+        {
+          "name": "DynamicToolInputSchema",
+          "line": 1,
+          "col": 13
+        },
+        {
+          "name": "DynamicToolRegistry",
+          "line": 13,
+          "col": 13
+        },
+        {
+          "name": "DynamicToolResponse",
+          "line": 15,
+          "col": 13
+        },
+        {
+          "name": "DynamicToolSpec",
+          "line": 7,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/harness/hooks-lifecycle.ts",
+      "types": [
+        {
+          "name": "HookName",
+          "line": 3,
+          "col": 13
+        },
+        {
+          "name": "HookPolicy",
+          "line": 5,
+          "col": 13
+        },
+        {
+          "name": "HookResult",
+          "line": 11,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/harness/reconcile.ts",
+      "types": [
+        {
+          "name": "ReconcileAction",
+          "line": 24,
+          "col": 13
+        },
+        {
+          "name": "ReconcileConfig",
+          "line": 18,
+          "col": 13
+        },
+        {
+          "name": "ReconcileObservedIssue",
+          "line": 12,
+          "col": 13
+        },
+        {
+          "name": "ReconcileResult",
+          "line": 29,
+          "col": 13
+        },
+        {
+          "name": "ReconcileRunningEntry",
+          "line": 3,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/harness/retry-policy.ts",
+      "types": [
+        {
+          "name": "RetryDelayType",
+          "line": 10,
+          "col": 13
+        },
+        {
+          "name": "RetryEntry",
+          "line": 19,
+          "col": 13
+        },
+        {
+          "name": "RetryPolicy",
+          "line": 12,
+          "col": 13
+        },
+        {
+          "name": "RetryReasonCode",
+          "line": 1,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/harness/scheduler.ts",
+      "types": [
+        {
+          "name": "SchedulerEntry",
+          "line": 8,
+          "col": 13
+        },
+        {
+          "name": "SchedulerIssue",
+          "line": 1,
+          "col": 13
+        },
+        {
+          "name": "SchedulerLimits",
+          "line": 13,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/harness/state-machine.ts",
+      "exports": [
+        {
+          "name": "assertTransitionOrThrow",
+          "line": 91,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "OrchestrationEvent",
+          "line": 3,
+          "col": 13
+        },
+        {
+          "name": "TransitionResult",
+          "line": 11,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/harness/token-accounting.ts",
+      "types": [
+        {
+          "name": "TokenAccumulator",
+          "line": 12,
+          "col": 13
+        },
+        {
+          "name": "TokenTotals",
+          "line": 1,
+          "col": 13
+        },
+        {
+          "name": "TokenUsageEvent",
+          "line": 7,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/policy/engine.ts",
+      "types": [
+        {
+          "name": "ActionId",
+          "line": 20,
+          "col": 13
+        },
+        {
+          "name": "PolicyDecision",
+          "line": 7,
+          "col": 13
+        },
+        {
+          "name": "PolicyEngineContext",
+          "line": 22,
+          "col": 13
+        },
+        {
+          "name": "PolicyViolation",
+          "line": 13,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/adapters/execute-supervised.ts",
+      "types": [
+        {
+          "name": "SupervisedRunnerBaseResultInput",
+          "line": 34,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/adapters/index.ts",
+      "exports": [
+        {
+          "name": "CodexRunnerAdapter",
+          "line": 18,
+          "col": 10
+        },
+        {
+          "name": "CustomRunnerAdapter",
+          "line": 19,
+          "col": 10
+        },
+        {
+          "name": "runnerAdapterFailureResult",
+          "line": 21,
+          "col": 10
+        },
+        {
+          "name": "runnerAdapterSuccessResult",
+          "line": 21,
+          "col": 38
+        }
+      ],
+      "types": [
+        {
+          "name": "RunnerAdapter",
+          "line": 20,
+          "col": 15
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/adapters/recipe-run-profile.ts",
+      "types": [
+        {
+          "name": "RecipeRunProfileMetadata",
+          "line": 4,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/artifacts.ts",
+      "exports": [
+        {
+          "name": "createRunnerInvocationSnapshot",
+          "line": 26,
+          "col": 17
+        },
+        {
+          "name": "createRunnerRunState",
+          "line": 76,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/codex-approval-probe.ts",
+      "types": [
+        {
+          "name": "CodexApprovalProbeAssessment",
+          "line": 13,
+          "col": 13
+        },
+        {
+          "name": "CodexApprovalProbeVerdict",
+          "line": 3,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/codex-smoke.ts",
+      "types": [
+        {
+          "name": "CodexSmokeClassification",
+          "line": 5,
+          "col": 13
+        },
+        {
+          "name": "CodexSmokeOutcome",
+          "line": 3,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/config.ts",
+      "exports": [
+        {
+          "name": "KNOWN_RUNNER_ADAPTER_IDS",
+          "line": 8,
+          "col": 14
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/context/base-prompt-sources.ts",
+      "exports": [
+        {
+          "name": "loadFrameworkRunnerPrompt",
+          "line": 250,
+          "col": 10
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/context/prompt-block-shared.ts",
+      "exports": [
+        {
+          "name": "ensureTrailingNewline",
+          "line": 38,
+          "col": 17
+        },
+        {
+          "name": "FRAMEWORK_RUNNER_PROMPT_URL",
+          "line": 12,
+          "col": 14
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/context/task-context.ts",
+      "types": [
+        {
+          "name": "RunnerTaskContextEnvelope",
+          "line": 24,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/process-supervision/trace-session.ts",
+      "types": [
+        {
+          "name": "TraceSession",
+          "line": 6,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/result-manifest.ts",
+      "exports": [
+        {
+          "name": "RUNNER_RESULT_MANIFEST_SCHEMA_VERSION",
+          "line": 15,
+          "col": 14
+        },
+        {
+          "name": "sourceRunnerResultManifestPath",
+          "line": 289,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/run-repository.ts",
+      "exports": [
+        {
+          "name": "parseRunnerEventsText",
+          "line": 28,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/task-state-render.ts",
+      "exports": [
+        {
+          "name": "normalizeRunnerOutcomeSection",
+          "line": 24,
+          "col": 17
+        },
+        {
+          "name": "stripRunnerHistory",
+          "line": 76,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/trace-artifacts.ts",
+      "types": [
+        {
+          "name": "FinalizedTraceArtifact",
+          "line": 13,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/usecases/scenario-materialize-task.ts",
+      "types": [
+        {
+          "name": "MaterializedRecipeScenarioTask",
+          "line": 27,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/usecases/task-run-inspect.ts",
+      "types": [
+        {
+          "name": "LoadedTaskRunnerInspection",
+          "line": 8,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/usecases/task-run-lifecycle.ts",
+      "types": [
+        {
+          "name": "CancelledTaskRunnerExecution",
+          "line": 7,
+          "col": 3
+        },
+        {
+          "name": "ResumedTaskRunnerExecution",
+          "line": 8,
+          "col": 3
+        },
+        {
+          "name": "RetriedTaskRunnerExecution",
+          "line": 9,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/approvals/index.ts",
+      "exports": [
+        {
+          "name": "resolveEffectiveApprovalSettings",
+          "line": 12,
+          "col": 3
+        }
+      ],
+      "types": [
+        {
+          "name": "ApprovalDecisionSource",
+          "line": 2,
+          "col": 3
+        },
+        {
+          "name": "ApprovalRequest",
+          "line": 3,
+          "col": 3
+        },
+        {
+          "name": "ApprovalResolveOptions",
+          "line": 5,
+          "col": 3
+        },
+        {
+          "name": "ApprovalRuntimeOptions",
+          "line": 6,
+          "col": 3
+        },
+        {
+          "name": "EffectiveApprovalSettings",
+          "line": 7,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/behavior/index.ts",
+      "types": [
+        {
+          "name": "BehaviorResolutionEntry",
+          "line": 5,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/capabilities/index.ts",
+      "types": [
+        {
+          "name": "AgentplaneCapabilityAvailability",
+          "line": 11,
+          "col": 3
+        },
+        {
+          "name": "AgentplaneCapabilityEntry",
+          "line": 12,
+          "col": 3
+        },
+        {
+          "name": "AgentplaneCapabilityFilter",
+          "line": 13,
+          "col": 3
+        },
+        {
+          "name": "AgentplaneCapabilityKind",
+          "line": 14,
+          "col": 3
+        },
+        {
+          "name": "AgentplaneCapabilitySourceId",
+          "line": 16,
+          "col": 3
+        },
+        {
+          "name": "AgentplaneCapabilitySourceRef",
+          "line": 17,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/execution-context.ts",
+      "exports": [
+        {
+          "name": "resolveExecutionContext",
+          "line": 84,
+          "col": 23
+        },
+        {
+          "name": "resolveReadOnlyExecutionContext",
+          "line": 74,
+          "col": 23
+        }
+      ],
+      "types": [
+        {
+          "name": "AgentplaneBackendContext",
+          "line": 28,
+          "col": 13
+        },
+        {
+          "name": "AgentplaneRepositoryContext",
+          "line": 22,
+          "col": 13
+        },
+        {
+          "name": "ExecutionContext",
+          "line": 53,
+          "col": 13
+        },
+        {
+          "name": "ReadOnlyExecutionContext",
+          "line": 35,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/execution-profile/index.ts",
+      "types": [
+        {
+          "name": "ExecutionBudgetCounter",
+          "line": 2,
+          "col": 3
+        },
+        {
+          "name": "ExecutionBudgetPhase",
+          "line": 3,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/explain/index.ts",
+      "types": [
+        {
+          "name": "ExplainBehaviorInputCategory",
+          "line": 4,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/harness/index.ts",
+      "exports": [
+        {
+          "name": "resolveHarnessContract",
+          "line": 1,
+          "col": 10
+        }
+      ],
+      "types": [
+        {
+          "name": "HarnessSourceId",
+          "line": 4,
+          "col": 3
+        },
+        {
+          "name": "HarnessSourceRef",
+          "line": 5,
+          "col": 3
+        },
+        {
+          "name": "HarnessTraceField",
+          "line": 6,
+          "col": 3
+        },
+        {
+          "name": "ResolvedHarnessTrace",
+          "line": 8,
+          "col": 3
+        },
+        {
+          "name": "ResolvedProtectedPathGroups",
+          "line": 9,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/prompt-modules/index.ts",
+      "types": [
+        {
+          "name": "PromptModuleAddMutation",
+          "line": 25,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleAddress",
+          "line": 4,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleBinding",
+          "line": 27,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleBindingKind",
+          "line": 28,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleBindMutation",
+          "line": 26,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleConflictPolicy",
+          "line": 5,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleContentKind",
+          "line": 6,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleContractSchemaVersion",
+          "line": 7,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleDependency",
+          "line": 8,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleDisableMutation",
+          "line": 29,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleGraphNode",
+          "line": 10,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleLoadCondition",
+          "line": 11,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleMergeMode",
+          "line": 12,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleMergePolicy",
+          "line": 13,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleMutability",
+          "line": 14,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleMutationBase",
+          "line": 31,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleMutationSource",
+          "line": 33,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleMutationWhen",
+          "line": 34,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleNamespace",
+          "line": 15,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleOwner",
+          "line": 16,
+          "col": 8
+        },
+        {
+          "name": "PromptModulePatchMutation",
+          "line": 35,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleProvenance",
+          "line": 17,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleReference",
+          "line": 18,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleReplaceMutation",
+          "line": 36,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleSelector",
+          "line": 37,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleSlot",
+          "line": 19,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleSourceKind",
+          "line": 20,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleStructuredPatch",
+          "line": 38,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleSurface",
+          "line": 21,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleTarget",
+          "line": 22,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleValidator",
+          "line": 39,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleValidatorMutation",
+          "line": 40,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleValidatorPhase",
+          "line": 41,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/prompt-modules/model.ts",
+      "types": [
+        {
+          "name": "PromptModuleReference",
+          "line": 149,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/protocol/index.ts",
+      "exports": [
+        {
+          "name": "buildFrameworkExplainProtocolResult",
+          "line": 3,
+          "col": 3
+        }
+      ],
+      "types": [
+        {
+          "name": "AgentplaneProtocolBase",
+          "line": 10,
+          "col": 8
+        },
+        {
+          "name": "AgentplaneProtocolCompatibility",
+          "line": 11,
+          "col": 8
+        },
+        {
+          "name": "AgentplaneProtocolError",
+          "line": 12,
+          "col": 8
+        },
+        {
+          "name": "AgentplaneProtocolErrorResult",
+          "line": 13,
+          "col": 8
+        },
+        {
+          "name": "AgentplaneProtocolKind",
+          "line": 14,
+          "col": 8
+        },
+        {
+          "name": "AgentplaneProtocolResult",
+          "line": 15,
+          "col": 8
+        },
+        {
+          "name": "AgentplaneProtocolSchemaVersion",
+          "line": 16,
+          "col": 8
+        },
+        {
+          "name": "AgentplaneProtocolStatus",
+          "line": 17,
+          "col": 8
+        },
+        {
+          "name": "AgentplaneProtocolSuccessResult",
+          "line": 18,
+          "col": 8
+        },
+        {
+          "name": "FrameworkExplainProtocolResult",
+          "line": 19,
+          "col": 8
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/protocol/model.ts",
+      "types": [
+        {
+          "name": "AgentplaneProtocolResult",
+          "line": 45,
+          "col": 13
+        },
+        {
+          "name": "AgentplaneProtocolStatus",
+          "line": 7,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/protocol/resolve.ts",
+      "exports": [
+        {
+          "name": "buildFrameworkExplainProtocolResult",
+          "line": 47,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/shared/repo-cli-version.ts",
+      "exports": [
+        {
+          "name": "getRepoExpectedCliVersion",
+          "line": 26,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/shared/runtime-source.ts",
+      "types": [
+        {
+          "name": "ResolveRuntimeSourceInfoOptions",
+          "line": 45,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/shared/version-compare.ts",
+      "exports": [
+        {
+          "name": "parseVersionParts",
+          "line": 6,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "ParsedVersionParts",
+          "line": 1,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/task-intake/index.ts",
+      "types": [
+        {
+          "name": "ClarificationContract",
+          "line": 9,
+          "col": 3
+        },
+        {
+          "name": "ClarificationQuestion",
+          "line": 10,
+          "col": 3
+        },
+        {
+          "name": "TaskGraphDependency",
+          "line": 11,
+          "col": 3
+        },
+        {
+          "name": "TaskGraphDraft",
+          "line": 12,
+          "col": 3
+        },
+        {
+          "name": "TaskGraphDraftTask",
+          "line": 13,
+          "col": 3
+        },
+        {
+          "name": "TaskIntakeContext",
+          "line": 14,
+          "col": 3
+        },
+        {
+          "name": "TaskIntakeInput",
+          "line": 15,
+          "col": 3
+        },
+        {
+          "name": "TaskIntakeInputKind",
+          "line": 16,
+          "col": 3
+        },
+        {
+          "name": "TaskIntakePrecedence",
+          "line": 17,
+          "col": 3
+        },
+        {
+          "name": "TaskIntakeSourceId",
+          "line": 19,
+          "col": 3
+        },
+        {
+          "name": "TaskIntakeSourceRef",
+          "line": 20,
+          "col": 3
+        },
+        {
+          "name": "TaskMaterializationEntry",
+          "line": 21,
+          "col": 3
+        },
+        {
+          "name": "TaskMaterializationPlan",
+          "line": 22,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/shared/errors.ts",
+      "exports": [
+        {
+          "name": "HandoffError",
+          "line": 100,
+          "col": 14
+        }
+      ],
+      "types": [
+        {
+          "name": "JsonErrorGuidance",
+          "line": 130,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/shared/policy-gateway.ts",
+      "exports": [
+        {
+          "name": "POLICY_GATEWAY_FILE_BY_FLAVOR",
+          "line": 7,
+          "col": 14
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/shared/protected-paths.ts",
+      "types": [
+        {
+          "name": "ProtectedPathOverride",
+          "line": 5,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/shared/trace-events.ts",
+      "types": [
+        {
+          "name": "TraceEvent",
+          "line": 4,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/shared/workflow-artifacts.ts",
+      "types": [
+        {
+          "name": "WorkflowArtifactApprovals",
+          "line": 13,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/workflow-runtime/file-ops.ts",
+      "exports": [
+        {
+          "name": "readWorkflowDocument",
+          "line": 37,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/workflow-runtime/observability.ts",
+      "types": [
+        {
+          "name": "WorkflowEvent",
+          "line": 13,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/workflow-runtime/types.ts",
+      "types": [
+        {
+          "name": "WorkflowSectionName",
+          "line": 31,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/core/src/config/defaults.ts",
+      "types": [
+        {
+          "name": "AgentplaneConfig",
+          "line": 47,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/core/src/tasks/task-artifact-schema.shared.ts",
+      "exports": [
+        {
+          "name": "formatSchemaErrors",
+          "line": 47,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "JsonSchemaDocument",
+          "line": 6,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/core/src/tasks/task-artifact-schema.ts",
+      "exports": [
+        {
+          "name": "TASK_HANDOFF_SCHEMA",
+          "line": 45,
+          "col": 14
+        },
+        {
+          "name": "TASK_PR_META_SCHEMA",
+          "line": 40,
+          "col": 14
+        },
+        {
+          "name": "TASK_README_FRONTMATTER_SCHEMA",
+          "line": 25,
+          "col": 14
+        },
+        {
+          "name": "TASKS_EXPORT_SCHEMA",
+          "line": 35,
+          "col": 14
+        }
+      ]
+    },
+    {
+      "file": "packages/core/src/tasks/task-artifact-schema.verification.ts",
+      "exports": [
+        {
+          "name": "PLAN_APPROVAL_STATE_VALUES",
+          "line": 5,
+          "col": 14
+        },
+        {
+          "name": "VERIFICATION_STATE_VALUES",
+          "line": 6,
+          "col": 14
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "files": 5,
+    "exports": 231,
+    "types": 291,
+    "enumMembers": 0,
+    "namespaceMembers": 0,
+    "total": 527
+  }
+}

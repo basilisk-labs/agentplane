@@ -165,10 +165,6 @@ export function parseIncidentRegistry(text: string): IncidentRegistry {
   return { entries };
 }
 
-export function formatIncidentRegistryEntry(entry: IncidentRegistryEntry): string {
-  return formatIncidentRegistryEntryForStyle(entry, "structured");
-}
-
 function parseInlineIncidentEntry(trimmedLine: string): Record<string, string> | null {
   if (!trimmedLine.startsWith("- ")) return null;
   const body = trimmedLine.slice(2).trim();
