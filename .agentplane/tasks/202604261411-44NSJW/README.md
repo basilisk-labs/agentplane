@@ -1,10 +1,11 @@
 ---
 id: "202604261411-44NSJW"
 title: "Remove obvious unused public exports"
-status: "DOING"
+result_summary: "Knip baseline reduced from total 527 to 523."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-26T14:14:30.956Z"
   updated_by: "CODER"
   note: "Removed four obvious internal-only exports from Knip baseline."
-commit: null
+commit:
+  hash: "5e3d48ff68d2b6c8331b215b64b0baec26b7d682"
+  message: "✅ 44NSJW meta: done"
 comments:
   -
     author: "CODER"
     body: "Start: remove obvious internal-only exports from the Knip baseline."
+  -
+    author: "CODER"
+    body: "Verified: four internal-only exports removed and Knip baseline lowered."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed four obvious internal-only exports from Knip baseline."
+  -
+    type: "status"
+    at: "2026-04-26T14:15:19.123Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: four internal-only exports removed and Knip baseline lowered."
 doc_version: 3
-doc_updated_at: "2026-04-26T14:14:30.967Z"
+doc_updated_at: "2026-04-26T14:15:19.125Z"
 doc_updated_by: "CODER"
 description: "Reduce Knip baseline by unexporting internal-only types/functions that are currently listed as unused public surface."
 sections:
