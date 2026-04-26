@@ -1067,12 +1067,12 @@
       "exports": [
         {
           "name": "assertReleaseBumpApproved",
-          "line": 73,
+          "line": 75,
           "col": 17
         },
         {
           "name": "runPushPreflight",
-          "line": 21,
+          "line": 23,
           "col": 23
         }
       ]
@@ -1082,7 +1082,7 @@
       "exports": [
         {
           "name": "resolveReleasePlanInputs",
-          "line": 26,
+          "line": 24,
           "col": 23
         }
       ]
@@ -1114,43 +1114,6 @@
           "name": "readJsonFile",
           "line": 18,
           "col": 23
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/release/apply.preflight.ts",
-      "exports": [
-        {
-          "name": "findLatestPlanDir",
-          "line": 3,
-          "col": 3
-        },
-        {
-          "name": "parseVersionPlan",
-          "line": 5,
-          "col": 3
-        },
-        {
-          "name": "readAgentplaneDependencyVersion",
-          "line": 9,
-          "col": 3
-        },
-        {
-          "name": "readJsonFile",
-          "line": 6,
-          "col": 3
-        },
-        {
-          "name": "releasePushDescription",
-          "line": 21,
-          "col": 3
-        }
-      ],
-      "types": [
-        {
-          "name": "ReleaseCommandLabel",
-          "line": 22,
-          "col": 8
         }
       ]
     },
@@ -2982,10 +2945,10 @@
   ],
   "counts": {
     "files": 5,
-    "exports": 159,
-    "types": 270,
+    "exports": 154,
+    "types": 269,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 434
+    "total": 428
   }
 }

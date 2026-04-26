@@ -15,7 +15,7 @@ import { seedReleaseWorkspace, writeReleaseNotes } from "@agentplane/testkit/rel
 import { runReleasePlan } from "./plan.command.js";
 import { pushReleaseRefs, runReleaseApply, runReleaseCandidate } from "./apply.command.js";
 import { cleanHookEnv, packageDependencyExists } from "./apply.mutation.js";
-import { readOptionalAgentplaneDependencyVersion } from "./apply.preflight.js";
+import { readOptionalAgentplaneDependencyVersion } from "./apply.preflight.package.js";
 
 const execFileAsync = promisify(execFile);
 const ORIGINAL_DRY_RUN = process.env.AGENTPLANE_RELEASE_DRY_RUN;
