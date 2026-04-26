@@ -93,6 +93,13 @@ function readBaseline(baselinePath) {
   }
   return {
     thresholdLines: Number(raw.threshold_lines),
+    summary:
+      raw.summary && typeof raw.summary === "object"
+        ? {
+            entries: Number(raw.summary.entries),
+            totalLines: Number(raw.summary.total_lines),
+          }
+        : null,
     entries: raw.entries.map((entry) => ({
       file: String(entry.file),
       lines: Number(entry.lines),
@@ -156,6 +163,38 @@ export function validateOversizedTestBaseline({ baseline, current, thresholdLine
   return errors;
 }
 
+function summarizeEntries(entries) {
+  return {
+    entries: entries.length,
+    totalLines: entries.reduce((sum, entry) => sum + entry.lines, 0),
+  };
+}
+
+function validateOversizedTestSummary({ baseline, current }) {
+  const errors = [];
+  if (!baseline.summary) return errors;
+  if (!Number.isInteger(baseline.summary.entries) || baseline.summary.entries < 0) {
+    errors.push("Invalid baseline summary: entries must be a non-negative integer");
+  }
+  if (!Number.isInteger(baseline.summary.totalLines) || baseline.summary.totalLines < 0) {
+    errors.push("Invalid baseline summary: total_lines must be a non-negative integer");
+  }
+  if (errors.length > 0) return errors;
+
+  const currentSummary = summarizeEntries(current);
+  if (currentSummary.entries > baseline.summary.entries) {
+    errors.push(
+      `Oversized test entry count grew beyond baseline: ${currentSummary.entries} > ${baseline.summary.entries}`,
+    );
+  }
+  if (currentSummary.totalLines > baseline.summary.totalLines) {
+    errors.push(
+      `Oversized test total lines grew beyond baseline: ${currentSummary.totalLines} > ${baseline.summary.totalLines}`,
+    );
+  }
+  return errors;
+}
+
 export async function main(argv = process.argv.slice(2)) {
   const parsed = parseArgs(argv);
   if (parsed.help) {
@@ -176,6 +215,7 @@ export async function main(argv = process.argv.slice(2)) {
     current,
     thresholdLines: parsed.thresholdLines,
   });
+  errors.push(...validateOversizedTestSummary({ baseline, current }));
   if (errors.length > 0) {
     process.stderr.write(
       [
@@ -187,8 +227,9 @@ export async function main(argv = process.argv.slice(2)) {
     return 1;
   }
 
+  const currentSummary = summarizeEntries(current);
   process.stdout.write(
-    `Oversized test baseline OK (${current.length} entries, threshold>${parsed.thresholdLines}).\n`,
+    `Oversized test baseline OK (${currentSummary.entries} entries, ${currentSummary.totalLines} total lines, threshold>${parsed.thresholdLines}).\n`,
   );
   return 0;
 }

@@ -64,7 +64,11 @@
     },
     {
       "file": "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
-      "lines": 1066
+      "lines": 1038
     }
-  ]
+  ],
+  "summary": {
+    "entries": 16,
+    "total_lines": 18232
+  }
 }

@@ -345,6 +345,7 @@ describe("hotspot-report script", () => {
         {
           schema_version: 1,
           threshold_lines: 3,
+          summary: { entries: 1, total_lines: 5 },
           entries: [{ file: "packages/example/src/large.test.ts", lines: 5 }],
         },
         null,
@@ -386,6 +387,7 @@ describe("hotspot-report script", () => {
         {
           schema_version: 1,
           threshold_lines: 3,
+          summary: { entries: 1, total_lines: 5 },
           entries: [{ file: "packages/example/src/large.test.ts", lines: 5 }],
         },
         null,
@@ -410,5 +412,44 @@ describe("hotspot-report script", () => {
     expect(result.stderr).toContain(
       "New oversized test without baseline: packages/example/src/new-large.test.ts",
     );
+    expect(result.stderr).toContain("Oversized test entry count grew beyond baseline: 2 > 1");
+    expect(result.stderr).toContain("Oversized test total lines grew beyond baseline: 11 > 5");
+  });
+
+  it("fails oversized test baseline when aggregate totals grow", async () => {
+    const root = await makeTempRoot("agentplane-hotspot-test-baseline-");
+    await mkdir(path.join(root, "packages", "agentplane", "src"), { recursive: true });
+    await mkdir(path.join(root, "packages", "example", "src"), { recursive: true });
+    await writeFile(path.join(root, "packages", "agentplane", "src", "ok.ts"), "const ok = 1;\n");
+    await writeFile(
+      path.join(root, "packages", "example", "src", "large.test.ts"),
+      Array.from({ length: 5 }, (_, index) => `const testValue${index} = ${index};`).join("\n"),
+    );
+    const baselinePath = path.join(root, "baseline.json");
+    await writeFile(
+      baselinePath,
+      JSON.stringify(
+        {
+          schema_version: 1,
+          threshold_lines: 3,
+          summary: { entries: 1, total_lines: 4 },
+          entries: [{ file: "packages/example/src/large.test.ts", lines: 5 }],
+        },
+        null,
+        2,
+      ),
+    );
+
+    const result = await runBaselineScript([
+      "--root",
+      root,
+      "--baseline",
+      baselinePath,
+      "--threshold-lines",
+      "3",
+    ]);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain("Oversized test total lines grew beyond baseline: 5 > 4");
   });
 });
