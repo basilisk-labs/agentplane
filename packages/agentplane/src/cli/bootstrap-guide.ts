@@ -1,11 +1,10 @@
 import { COMMAND_SNIPPETS } from "./command-snippets.js";
 
 export const AGENT_BOOTSTRAP_DOC_PATH = "docs/user/agent-bootstrap.generated.mdx";
-export const AGENT_BOOTSTRAP_RUNTIME_SURFACE = "agentplane quickstart";
 export const BRANCH_PR_HOSTED_GATE_GUIDANCE =
   "confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`";
 
-export type BootstrapSection = {
+type BootstrapSection = {
   heading: string;
   summary: string;
   commands: readonly string[];
@@ -43,13 +42,13 @@ export const BOOTSTRAP_VERIFICATION_COMMANDS = [
   "node .agentplane/policy/check-routing.mjs",
 ] as const;
 
-export const BOOTSTRAP_RECOVERY_COMMANDS = [
+const BOOTSTRAP_RECOVERY_COMMANDS = [
   "agentplane doctor",
   "agentplane upgrade --dry-run",
   "agentplane upgrade",
 ] as const;
 
-export const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
+const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
   {
     heading: "1. Preflight",
     summary:
@@ -99,11 +98,7 @@ export const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
   },
 ] as const;
 
-export function renderBootstrapReferenceLine(): string {
-  return `Canonical installed startup surface: \`${AGENT_BOOTSTRAP_RUNTIME_SURFACE}\`.`;
-}
-
-export function renderBootstrapSectionLines(sections: readonly BootstrapSection[]): string[] {
+function renderBootstrapSectionLines(sections: readonly BootstrapSection[]): string[] {
   const lines: string[] = [];
   for (const section of sections) {
     lines.push(`## ${section.heading}`, "", section.summary, "");

@@ -194,46 +194,14 @@
           "col": 14
         },
         {
-          "name": "AGENT_BOOTSTRAP_RUNTIME_SURFACE",
-          "line": 4,
-          "col": 14
-        },
-        {
           "name": "BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS",
-          "line": 29,
-          "col": 14
-        },
-        {
-          "name": "BOOTSTRAP_RECOVERY_COMMANDS",
-          "line": 46,
-          "col": 14
-        },
-        {
-          "name": "BOOTSTRAP_SECTIONS",
-          "line": 52,
+          "line": 28,
           "col": 14
         },
         {
           "name": "BOOTSTRAP_VERIFICATION_COMMANDS",
-          "line": 37,
+          "line": 36,
           "col": 14
-        },
-        {
-          "name": "renderBootstrapReferenceLine",
-          "line": 102,
-          "col": 17
-        },
-        {
-          "name": "renderBootstrapSectionLines",
-          "line": 106,
-          "col": 17
-        }
-      ],
-      "types": [
-        {
-          "name": "BootstrapSection",
-          "line": 8,
-          "col": 13
         }
       ]
     },
@@ -3014,10 +2982,10 @@
   ],
   "counts": {
     "files": 5,
-    "exports": 164,
-    "types": 271,
+    "exports": 159,
+    "types": 270,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 440
+    "total": 434
   }
 }
