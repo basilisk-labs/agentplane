@@ -500,53 +500,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/commands/incidents/shared.ts",
-      "exports": [
-        {
-          "name": "formatIncidentCollectionIssues",
-          "line": 142,
-          "col": 17
-        },
-        {
-          "name": "incidentRegistryAssetPath",
-          "line": 54,
-          "col": 17
-        },
-        {
-          "name": "incidentRegistryPath",
-          "line": 50,
-          "col": 17
-        },
-        {
-          "name": "INCIDENTS_POLICY_ASSET_PATH",
-          "line": 28,
-          "col": 3
-        },
-        {
-          "name": "INCIDENTS_POLICY_PATH",
-          "line": 29,
-          "col": 3
-        },
-        {
-          "name": "loadTaskIncidents",
-          "line": 111,
-          "col": 23
-        },
-        {
-          "name": "renderIncidentCollectionOutcome",
-          "line": 236,
-          "col": 17
-        }
-      ],
-      "types": [
-        {
-          "name": "LoadedTaskIncidents",
-          "line": 33,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/commands/pr/internal/freshness.ts",
       "types": [
         {
@@ -2876,10 +2829,10 @@
   ],
   "counts": {
     "files": 5,
-    "exports": 145,
-    "types": 267,
+    "exports": 138,
+    "types": 266,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 417
+    "total": 409
   }
 }
