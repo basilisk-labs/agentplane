@@ -1,10 +1,11 @@
 ---
 id: "202604260904-CSE3XB"
 title: "Fix lint drift before push"
-status: "DOING"
+result_summary: "Pre-push lint blockers resolved; lint/typecheck/knip/format/diff checks passed."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-26T09:07:13.221Z"
   updated_by: "CODER"
   note: "Fixed pre-push lint drift after refactor cleanup."
-commit: null
+commit:
+  hash: "5d7434a52438062d18ae1e13d996a69aa1dbf3df"
+  message: "✅ CSE3XB code: done"
 comments:
   -
     author: "CODER"
     body: "Start: Fix the lint violations reported by pre-push so the already verified refactor/docs commits can be pushed cleanly."
+  -
+    author: "CODER"
+    body: "Verified: pre-push lint drift fixed and focused validation passed cleanly."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fixed pre-push lint drift after refactor cleanup."
+  -
+    type: "status"
+    at: "2026-04-26T09:07:53.534Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-push lint drift fixed and focused validation passed cleanly."
 doc_version: 3
-doc_updated_at: "2026-04-26T09:07:13.225Z"
+doc_updated_at: "2026-04-26T09:07:53.534Z"
 doc_updated_by: "CODER"
 description: "Fix lint violations surfaced by pre-push after the refactor sequence and repush main."
 sections:
