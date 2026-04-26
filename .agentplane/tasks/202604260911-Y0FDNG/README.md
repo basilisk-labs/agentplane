@@ -1,10 +1,11 @@
 ---
 id: "202604260911-Y0FDNG"
 title: "Align doctor tests with stderr writer"
-status: "DOING"
+result_summary: "Doctor test stderr capture aligned with runDoctor output contract."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-26T09:13:59.399Z"
   updated_by: "CODER"
   note: "Aligned doctor tests with process.stderr.write diagnostics."
-commit: null
+commit:
+  hash: "1205d95c2273ced208985229ce2d84374f09ed77"
+  message: "✅ Y0FDNG meta: done"
 comments:
   -
     author: "CODER"
     body: "Start: repair stale doctor test stderr capture so pre-push can validate the current output contract."
+  -
+    author: "CODER"
+    body: "Verified: doctor diagnostics tests now capture process stderr output and focused suites pass."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Aligned doctor tests with process.stderr.write diagnostics."
+  -
+    type: "status"
+    at: "2026-04-26T09:14:06.818Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: doctor diagnostics tests now capture process stderr output and focused suites pass."
 doc_version: 3
-doc_updated_at: "2026-04-26T09:13:59.403Z"
+doc_updated_at: "2026-04-26T09:14:06.819Z"
 doc_updated_by: "CODER"
 description: "Repair pre-push doctor test expectations after diagnostics moved through process.stderr.write rather than console.error."
 sections:
