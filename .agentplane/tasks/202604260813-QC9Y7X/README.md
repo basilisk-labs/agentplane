@@ -1,10 +1,11 @@
 ---
 id: "202604260813-QC9Y7X"
 title: "Document spec package freeze boundary"
-status: "DOING"
+result_summary: "Documented @agentplane/spec freeze boundary."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-26T08:14:09.281Z"
   updated_by: "DOCS"
   note: "Documented @agentplane/spec v0.3 freeze boundary without package metadata changes."
-commit: null
+commit:
+  hash: "6068f6e921763bd67fdeea4f09c8c796f09b8432"
+  message: "✅ QC9Y7X docs: done"
 comments:
   -
     author: "DOCS"
     body: "Start: Clarify the v0.3 freeze boundary for the private @agentplane/spec package in ADR and freeze docs without changing release or package metadata."
+  -
+    author: "DOCS"
+    body: "Verified: Clarified the private @agentplane/spec v0.3 freeze boundary in ADR-0011 and FREEZE.v0.3.md, with routing, doctor, formatting, and diff checks passing."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Documented @agentplane/spec v0.3 freeze boundary without package metadata changes."
+  -
+    type: "status"
+    at: "2026-04-26T08:14:16.047Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Clarified the private @agentplane/spec v0.3 freeze boundary in ADR-0011 and FREEZE.v0.3.md, with routing, doctor, formatting, and diff checks passing."
 doc_version: 3
-doc_updated_at: "2026-04-26T08:14:09.288Z"
+doc_updated_at: "2026-04-26T08:14:16.047Z"
 doc_updated_by: "DOCS"
 description: "Clarify the v0.3 freeze treatment for the private @agentplane/spec package so contract status is explicit without publishing or version changes."
 sections:
