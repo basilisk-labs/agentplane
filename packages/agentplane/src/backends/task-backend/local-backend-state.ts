@@ -36,7 +36,7 @@ export function assertExpectedRevision(opts: {
   );
 }
 
-export function toTaskDocMutationComments(comments: unknown): TaskDocMutationState["comments"] {
+function toTaskDocMutationComments(comments: unknown): TaskDocMutationState["comments"] {
   if (!Array.isArray(comments)) return null;
   const normalized = comments.flatMap((entry) => {
     if (!isRecord(entry)) return [];

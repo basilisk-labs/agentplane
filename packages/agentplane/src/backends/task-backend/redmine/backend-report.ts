@@ -7,7 +7,7 @@ import {
 } from "./inspect.js";
 import { type TaskBackendInspectionResult, type TaskData } from "../shared.js";
 
-export type RedmineReportContext = {
+type RedmineReportContext = {
   projectId: string;
   customFields: Record<string, unknown>;
   requestJson: (

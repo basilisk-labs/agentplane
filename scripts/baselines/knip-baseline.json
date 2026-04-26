@@ -35,46 +35,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/agents/agents-template.ts",
-      "types": [
-        {
-          "name": "PolicyTemplate",
-          "line": 22,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/backends/task-backend/local-backend-state.ts",
-      "exports": [
-        {
-          "name": "toTaskDocMutationComments",
-          "line": 39,
-          "col": 17
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-cache-doc.ts",
-      "types": [
-        {
-          "name": "RedmineCacheDocContext",
-          "line": 29,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-report.ts",
-      "types": [
-        {
-          "name": "RedmineReportContext",
-          "line": 10,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/backends/task-backend/redmine/backend-runtime.ts",
       "exports": [
         {
@@ -3491,10 +3451,10 @@
   ],
   "counts": {
     "files": 5,
-    "exports": 231,
-    "types": 291,
+    "exports": 230,
+    "types": 288,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 527
+    "total": 523
   }
 }
