@@ -370,71 +370,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/cli/run-cli/commands/core.ts",
-      "exports": [
-        {
-          "name": "agentsSpec",
-          "line": 1,
-          "col": 10
-        },
-        {
-          "name": "codexPluginInstallSpec",
-          "line": 3,
-          "col": 3
-        },
-        {
-          "name": "codexPluginSpec",
-          "line": 4,
-          "col": 3
-        },
-        {
-          "name": "codexSpec",
-          "line": 5,
-          "col": 3
-        },
-        {
-          "name": "makeRunCodexPluginInstallHandler",
-          "line": 6,
-          "col": 3
-        },
-        {
-          "name": "preflightSpec",
-          "line": 10,
-          "col": 10
-        },
-        {
-          "name": "quickstartSpec",
-          "line": 11,
-          "col": 10
-        },
-        {
-          "name": "roleSpec",
-          "line": 12,
-          "col": 10
-        },
-        {
-          "name": "runCodex",
-          "line": 7,
-          "col": 3
-        },
-        {
-          "name": "runCodexPlugin",
-          "line": 8,
-          "col": 3
-        },
-        {
-          "name": "runPreflight",
-          "line": 10,
-          "col": 25
-        },
-        {
-          "name": "runQuickstart",
-          "line": 11,
-          "col": 26
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/cli/run-cli/commands/core/agent-profiles.ts",
       "types": [
         {
@@ -3079,10 +3014,10 @@
   ],
   "counts": {
     "files": 5,
-    "exports": 176,
+    "exports": 164,
     "types": 271,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 452
+    "total": 440
   }
 }
