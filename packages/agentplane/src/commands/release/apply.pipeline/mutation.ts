@@ -14,7 +14,7 @@ import {
   replacePackageDependencyVersion,
   replacePackageVersionInFile,
 } from "../apply.mutation.js";
-import { fileExists } from "../apply.preflight.js";
+import { fileExists } from "../apply.preflight.plan.js";
 import type { ReleaseCommandMutation, ReleaseCommandState } from "../apply.types.js";
 import { emitReleaseLine } from "./shared.js";
 

@@ -4,12 +4,11 @@ import { usageError } from "../../../cli/spec/errors.js";
 import type { CommandSpec } from "../../../cli/spec/spec.js";
 import { ensureActionApproved } from "../../shared/approval-requirements.js";
 import { ensureNetworkApproved } from "../../shared/network-approval.js";
+import { ensureRemoteExists, ensureRemoteTagDoesNotExist } from "../apply.preflight.git.js";
 import {
   ensureNpmVersionsAvailable,
-  ensureRemoteExists,
-  ensureRemoteTagDoesNotExist,
   runReleasePrepublishGate,
-} from "../apply.preflight.js";
+} from "../apply.preflight.publish.js";
 import type {
   ReleaseApplyParsed,
   ReleaseApplyRoute,
