@@ -1,10 +1,11 @@
 ---
 id: "202604261724-RD2T2E"
 title: "Prune incident shared exports"
-status: "DOING"
+result_summary: "Pruned incident shared exports and reduced Knip baseline total from 417 to 409."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -57,11 +58,16 @@ verification:
     Result: pass
     Evidence: Framework dev runtime is ready.
     Scope: repo-local CLI/runtime after incident source change.
-commit: null
+commit:
+  hash: "c0ec979e579e7198ee74c3562c528b78a781e812"
+  message: "🚧 RD2T2E task: prune incident shared exports"
 comments:
   -
     author: "CODER"
     body: "Start: Prune unused incident shared exports while preserving incident command and task lifecycle consumers, then refresh Knip and run focused verification."
+  -
+    author: "CODER"
+    body: "Verified: Made unused incident shared exports module-local while preserving incident command and task lifecycle consumers, refreshed Knip baseline to total 409, and passed incident-focused tests plus typecheck, lint, Knip, format, diff check, and framework bootstrap."
 events:
   -
     type: "status"
@@ -110,8 +116,15 @@ events:
       Result: pass
       Evidence: Framework dev runtime is ready.
       Scope: repo-local CLI/runtime after incident source change.
+  -
+    type: "status"
+    at: "2026-04-26T17:29:31.107Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Made unused incident shared exports module-local while preserving incident command and task lifecycle consumers, refreshed Knip baseline to total 409, and passed incident-focused tests plus typecheck, lint, Knip, format, diff check, and framework bootstrap."
 doc_version: 3
-doc_updated_at: "2026-04-26T17:28:57.678Z"
+doc_updated_at: "2026-04-26T17:29:31.108Z"
 doc_updated_by: "CODER"
 description: "Make unused exports in commands/incidents/shared.ts module-local while preserving incident command and task lifecycle consumers, then refresh the Knip baseline."
 sections:
