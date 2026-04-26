@@ -5,7 +5,7 @@ import {
   RUNNER_API_VERSION,
   RUNNER_BUNDLE_SCHEMA_VERSION,
 } from "../../agentplane/src/runner/types.js";
-import { writeExecutableFile } from "../../agentplane/src/test-helpers/fs.js";
+import { writeExecutableFile } from "./fixtures.js";
 
 type MakeRunnerContextBundleOptions = {
   adapterId?: string;

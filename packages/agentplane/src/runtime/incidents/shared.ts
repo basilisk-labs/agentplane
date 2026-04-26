@@ -155,7 +155,7 @@ function parseDateOnly(value: string): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-export function occursWithinDays(date: string, now: Date, days: number): boolean {
+function occursWithinDays(date: string, now: Date, days: number): boolean {
   const timestamp = parseDateOnly(date);
   if (timestamp === null) return false;
   const delta = now.getTime() - timestamp;
@@ -163,7 +163,7 @@ export function occursWithinDays(date: string, now: Date, days: number): boolean
   return delta <= days * 24 * 60 * 60 * 1000;
 }
 
-export function entryStateRank(state: IncidentRegistryEntryState): number {
+function entryStateRank(state: IncidentRegistryEntryState): number {
   if (state === "promoted") return 2;
   if (state === "stabilized") return 1;
   return 0;

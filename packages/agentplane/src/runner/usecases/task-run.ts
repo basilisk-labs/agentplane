@@ -19,10 +19,9 @@ import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
 import { collectRunnerBasePrompts } from "../context/base-prompts.js";
 import { assembleRunnerTaskContext } from "../context/task-context.js";
 import { applyRunnerPolicyRefusal, buildRunnerPolicyDecision } from "../policy-decision.js";
-import { createRunnerRunId } from "../run-id.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { RunnerRunRepository } from "../run-repository.js";
-import { resolveTaskRunnerPaths } from "../task-run-paths.js";
+import { createRunnerRunId, resolveTaskRunnerPaths } from "../task-run-paths.js";
 import { normalizeRecipeArtifactPrefixes } from "../result-manifest-policy.js";
 import {
   RUNNER_API_VERSION,

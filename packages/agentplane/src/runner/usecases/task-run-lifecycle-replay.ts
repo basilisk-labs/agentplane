@@ -1,9 +1,8 @@
 import { createRunnerAdapter } from "../adapters/index.js";
 import { evolveRunnerRunState } from "../artifacts.js";
-import { createRunnerRunId } from "../run-id.js";
 import { RunnerRunRepository } from "../run-repository.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
-import { resolveTaskRunnerPaths } from "../task-run-paths.js";
+import { createRunnerRunId, resolveTaskRunnerPaths } from "../task-run-paths.js";
 import type { RunnerContextBundle } from "../types.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 

@@ -1,4 +1,4 @@
-import type { ClockPort } from "../../ports/clock-port.js";
+import type { ClockPort } from "../../ports/index.js";
 
 export class SystemClockAdapter implements ClockPort {
   nowIso(): string {

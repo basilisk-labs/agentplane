@@ -28,9 +28,7 @@ import {
   parseIncidentRegistry,
 } from "./registry-strategy.js";
 
-export function extractIncidentCandidatesFromFindings(
-  findings: string,
-): IncidentFindingCandidate[] {
+function extractIncidentCandidatesFromFindings(findings: string): IncidentFindingCandidate[] {
   return parseIncidentFindingBlocks(findings)
     .filter((candidate) => candidate.shouldPromote)
     .map(({ shouldPromote: _shouldPromote, ...candidate }) => candidate);

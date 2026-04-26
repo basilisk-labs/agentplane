@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { runCli } from "agentplane/internal/testing";
+import { runCli } from "./agentplane-internal.js";
 
 import { captureStdIO } from "./cli-harness/stdio.js";
 

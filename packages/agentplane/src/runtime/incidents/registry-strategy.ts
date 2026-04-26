@@ -165,7 +165,7 @@ export function parseIncidentRegistry(text: string): IncidentRegistry {
   return { entries };
 }
 
-export function formatIncidentRegistryEntry(entry: IncidentRegistryEntry): string {
+function formatIncidentRegistryEntry(entry: IncidentRegistryEntry): string {
   return formatIncidentRegistryEntryForStyle(entry, "structured");
 }
 

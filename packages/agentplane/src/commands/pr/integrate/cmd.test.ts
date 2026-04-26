@@ -22,8 +22,8 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../../../cli/output.js", () => ({
   createCliEmitter: mocks.createCliEmitter,
 }));
-vi.mock("./internal/cleanup.js", () => ({
-  cleanupIntegratedBranch: mocks.cleanupIntegratedBranch,
+vi.mock("../../shared/merged-branch-cleanup.js", () => ({
+  cleanupMergedLocalBranch: mocks.cleanupIntegratedBranch,
 }));
 vi.mock("./internal/finalize.js", () => ({
   finalizeIntegrate: mocks.finalizeIntegrate,

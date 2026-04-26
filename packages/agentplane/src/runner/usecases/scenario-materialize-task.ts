@@ -17,7 +17,7 @@ import {
 import { buildTaskDocState } from "../../task-doc/state.js";
 import { dedupeStrings } from "../../shared/strings.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
-import { createRunnerRunId } from "../run-id.js";
+import { createRunnerRunId } from "../task-run-paths.js";
 import type { RunnerRecipeContext } from "../types.js";
 import {
   assembleRunnerRecipeContext,

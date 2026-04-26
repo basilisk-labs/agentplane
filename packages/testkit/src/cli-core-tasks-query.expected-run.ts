@@ -4,7 +4,7 @@ import {
   infoMessage,
   type RunnerAdapterCapabilities,
   type RunnerPolicyDecision,
-} from "agentplane/internal/testing";
+} from "./agentplane-internal.js";
 
 type RunShowPayload = {
   task_id: string;

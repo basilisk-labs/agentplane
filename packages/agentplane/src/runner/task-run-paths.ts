@@ -15,6 +15,10 @@ export type TaskRunnerPaths = RunnerArtifactPaths & {
   runs_dir: string;
 };
 
+export function createRunnerRunId(date: Date = new Date()): string {
+  return date.toISOString().replaceAll(":", "-").replaceAll(".", "-");
+}
+
 export function resolveTaskRunnerPaths(opts: {
   git_root: string;
   workflow_dir: string;

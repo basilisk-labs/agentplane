@@ -18,8 +18,7 @@
       "@agentplaneorg/core": ["packages/core/src/index.ts"],
       "@agentplaneorg/core/*": ["packages/core/src/*"],
       "@agentplaneorg/recipes": ["packages/recipes/src/index.ts"],
-      "@agentplaneorg/recipes/*": ["packages/recipes/src/*"],
-      "agentplane/internal/testing": ["packages/agentplane/src/testing/index.ts"]
+      "@agentplaneorg/recipes/*": ["packages/recipes/src/*"]
     },
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
