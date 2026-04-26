@@ -1,10 +1,11 @@
 ---
 id: "202604260810-7FQZGE"
 title: "Enforce oversized test aggregate baseline"
-status: "DOING"
+result_summary: "Oversized-test baseline now enforces aggregate totals."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-26T08:12:46.604Z"
   updated_by: "CODER"
   note: "Added aggregate oversized-test baseline caps and regression coverage."
-commit: null
+commit:
+  hash: "54adec131c8d1690e151d23f556f0ccb6ac675c3"
+  message: "✅ 7FQZGE code: done"
 comments:
   -
     author: "CODER"
     body: "Start: Strengthen the oversized-test baseline by adding aggregate count and total-line caps while preserving existing per-file no-growth behavior."
+  -
+    author: "CODER"
+    body: "Verified: Added aggregate oversized-test entry and total-line caps, refreshed the baseline to current counts, and covered aggregate growth in focused script tests."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added aggregate oversized-test baseline caps and regression coverage."
+  -
+    type: "status"
+    at: "2026-04-26T08:12:53.220Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Added aggregate oversized-test entry and total-line caps, refreshed the baseline to current counts, and covered aggregate growth in focused script tests."
 doc_version: 3
-doc_updated_at: "2026-04-26T08:12:46.612Z"
+doc_updated_at: "2026-04-26T08:12:53.221Z"
 doc_updated_by: "CODER"
 description: "Make the oversized test baseline expose and enforce aggregate entry and line-count totals in addition to per-file no-growth checks."
 sections:
