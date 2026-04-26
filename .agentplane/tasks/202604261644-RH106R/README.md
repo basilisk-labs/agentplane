@@ -1,10 +1,11 @@
 ---
 id: "202604261644-RH106R"
 title: "Prune Redmine sync re-exports"
-status: "DOING"
+result_summary: "Pruned Redmine sync re-exports and reduced Knip baseline total from 423 to 417."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -58,11 +59,16 @@ verification:
     Result: pass
     Evidence: Framework dev runtime is ready.
     Scope: repo-local CLI/runtime after backend source change.
-commit: null
+commit:
+  hash: "f0299e842dd60df9bc10f78c5c05dde5b396b134"
+  message: "🚧 RH106R task: prune redmine sync re-exports"
 comments:
   -
     author: "CODER"
     body: "Start: Prune unused Redmine sync re-exports without changing RedmineBackend behavior, refresh Knip, and run backend-focused verification."
+  -
+    author: "CODER"
+    body: "Verified: Removed unused Redmine sync re-exports while preserving RedmineBackend imports, refreshed Knip baseline to total 417, and passed Redmine/backend tests plus typecheck, lint, Knip, format, diff check, and framework bootstrap."
 events:
   -
     type: "status"
@@ -111,8 +117,15 @@ events:
       Result: pass
       Evidence: Framework dev runtime is ready.
       Scope: repo-local CLI/runtime after backend source change.
+  -
+    type: "status"
+    at: "2026-04-26T16:46:09.815Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Removed unused Redmine sync re-exports while preserving RedmineBackend imports, refreshed Knip baseline to total 417, and passed Redmine/backend tests plus typecheck, lint, Knip, format, diff check, and framework bootstrap."
 doc_version: 3
-doc_updated_at: "2026-04-26T16:45:56.774Z"
+doc_updated_at: "2026-04-26T16:46:09.816Z"
 doc_updated_by: "CODER"
 description: "Remove unused re-exports from redmine/backend-sync.ts while preserving the RedmineBackend imports, then refresh the Knip baseline."
 sections:
