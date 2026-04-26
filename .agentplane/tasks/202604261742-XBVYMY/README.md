@@ -1,10 +1,11 @@
 ---
 id: "202604261742-XBVYMY"
 title: "Harden CLI cold-start guard retries"
-status: "DOING"
+result_summary: "Updated bench:cli:cold:check to use warmups=2 and attempts=5, refreshed scripts docs, and recorded verification evidence."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-26T17:45:23.144Z"
   updated_by: "CODER"
   note: "Validated cold-start guard retry budget update: focused script tests passed, updated bench:cli:cold:check passed with existing thresholds, docs script check passed, format/typecheck/diff checks passed."
-commit: null
+commit:
+  hash: "bd20eb499bd9df57f6c02e0c7aeed95b344b16a3"
+  message: "🚧 XBVYMY task: harden cold-start guard retries"
 comments:
   -
     author: "CODER"
     body: "Start: Harden the default CLI cold-start guard retry settings without changing latency thresholds, then refresh scripts docs and verify the guard."
+  -
+    author: "CODER"
+    body: "Verified: cold-start guard retry budget hardened with unchanged latency thresholds; focused script tests, standalone guard, docs script check, format, typecheck, and diff checks passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Validated cold-start guard retry budget update: focused script tests passed, updated bench:cli:cold:check passed with existing thresholds, docs script check passed, format/typecheck/diff checks passed."
+  -
+    type: "status"
+    at: "2026-04-26T17:45:52.995Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: cold-start guard retry budget hardened with unchanged latency thresholds; focused script tests, standalone guard, docs script check, format, typecheck, and diff checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-26T17:45:23.186Z"
+doc_updated_at: "2026-04-26T17:45:52.996Z"
 doc_updated_by: "CODER"
 description: "Make the default bench:cli:cold:check script less flaky in pre-push by increasing warmups and retry attempts without raising latency thresholds."
 sections:
