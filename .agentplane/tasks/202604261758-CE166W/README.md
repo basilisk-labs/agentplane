@@ -4,7 +4,7 @@ title: "Publish next v0.3 patch release"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-26T18:38:45.525Z"
+  updated_by: "CODER"
+  note: "Release v0.3.28 verified: local release:ci-check passed; pre-push full-fast and critical E2E passed; PR #535 merged to main at 23a4f525; Core CI release-ready and Docs CI passed; Publish to npm run 24964025048 passed; remote tag v0.3.28 points to 23a4f525; npm packages agentplane, @agentplaneorg/core, and @agentplaneorg/recipes are published at 0.3.28; GitHub Release v0.3.28 is live with upgrade assets."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Publish v0.3.28 from the current origin/main state after running release gates and recording remote tag evidence."
+  -
+    type: "verify"
+    at: "2026-04-26T18:38:45.525Z"
+    author: "CODER"
+    state: "ok"
+    note: "Release v0.3.28 verified: local release:ci-check passed; pre-push full-fast and critical E2E passed; PR #535 merged to main at 23a4f525; Core CI release-ready and Docs CI passed; Publish to npm run 24964025048 passed; remote tag v0.3.28 points to 23a4f525; npm packages agentplane, @agentplaneorg/core, and @agentplaneorg/recipes are published at 0.3.28; GitHub Release v0.3.28 is live with upgrade assets."
 doc_version: 3
-doc_updated_at: "2026-04-26T17:59:00.070Z"
+doc_updated_at: "2026-04-26T18:38:45.529Z"
 doc_updated_by: "CODER"
 description: "Run release checks on current origin/main and publish the next patch release."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-26T18:38:45.525Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Release v0.3.28 verified: local release:ci-check passed; pre-push full-fast and critical E2E passed; PR #535 merged to main at 23a4f525; Core CI release-ready and Docs CI passed; Publish to npm run 24964025048 passed; remote tag v0.3.28 points to 23a4f525; npm packages agentplane, @agentplaneorg/core, and @agentplaneorg/recipes are published at 0.3.28; GitHub Release v0.3.28 is live with upgrade assets.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-26T17:59:00.070Z, excerpt_hash=sha256:bd2ee14dc7f2f116ebb84ff30fb9ac7c0300653be9e58aa2712bddb0cefd2e29
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Release plan: version=v0.3.28, tag=v0.3.28, scope=publish the current origin/mai
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-26T18:38:45.525Z — VERIFY — ok
+
+By: CODER
+
+Note: Release v0.3.28 verified: local release:ci-check passed; pre-push full-fast and critical E2E passed; PR #535 merged to main at 23a4f525; Core CI release-ready and Docs CI passed; Publish to npm run 24964025048 passed; remote tag v0.3.28 points to 23a4f525; npm packages agentplane, @agentplaneorg/core, and @agentplaneorg/recipes are published at 0.3.28; GitHub Release v0.3.28 is live with upgrade assets.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-26T17:59:00.070Z, excerpt_hash=sha256:bd2ee14dc7f2f116ebb84ff30fb9ac7c0300653be9e58aa2712bddb0cefd2e29
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
