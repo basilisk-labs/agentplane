@@ -5,7 +5,6 @@ import type { RunnerAdapterCapabilities } from "./capabilities.js";
 import type { RunnerContextBundle, RunnerExecutionContract } from "./context.js";
 import type { RUNNER_API_VERSION, RUNNER_BUNDLE_SCHEMA_VERSION } from "./constants.js";
 import type {
-  RunnerInvocation,
   RunnerResult,
   RunnerResultStatus,
   RunnerTracePolicy,

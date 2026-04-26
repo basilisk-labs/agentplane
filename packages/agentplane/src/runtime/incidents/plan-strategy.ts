@@ -28,12 +28,6 @@ import {
   parseIncidentRegistry,
 } from "./registry-strategy.js";
 
-function extractIncidentCandidatesFromFindings(findings: string): IncidentFindingCandidate[] {
-  return parseIncidentFindingBlocks(findings)
-    .filter((candidate) => candidate.shouldPromote)
-    .map(({ shouldPromote: _shouldPromote, ...candidate }) => candidate);
-}
-
 function parseIncidentFindingBlocks(
   findings: string,
 ): (IncidentFindingCandidate & { shouldPromote: boolean })[] {

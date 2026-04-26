@@ -91,12 +91,12 @@ function normalizeIssueEntries(report) {
       for (const key of ISSUE_KEYS) {
         const value = issue[key];
         if (!Array.isArray(value) || value.length === 0) continue;
-        entry[key] = value.map(normalizeIssueItem).sort(compareIssueItems);
+        entry[key] = value.map((item) => normalizeIssueItem(item)).toSorted(compareIssueItems);
       }
       return entry;
     })
     .filter((entry) => ISSUE_KEYS.some((key) => Array.isArray(entry[key]) && entry[key].length > 0))
-    .sort((left, right) => left.file.localeCompare(right.file));
+    .toSorted((left, right) => left.file.localeCompare(right.file));
 }
 
 function compareIssueItems(left, right) {
@@ -185,11 +185,11 @@ function diffEntries(currentEntries, baselineEntries) {
     added: [...current.entries()]
       .filter(([key]) => !baseline.has(key))
       .map(([, label]) => label)
-      .sort(),
+      .toSorted(),
     removed: [...baseline.entries()]
       .filter(([key]) => !current.has(key))
       .map(([, label]) => label)
-      .sort(),
+      .toSorted(),
   };
 }
 
