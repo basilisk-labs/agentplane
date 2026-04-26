@@ -69,7 +69,7 @@ describe("core commands (unit)", () => {
       return true;
     }) as unknown as typeof process.stdout.write);
 
-    const { runRole } = await import("./core.js");
+    const { runRole } = await import("./core/role.js");
 
     try {
       await runRole(ctx, { role: "   " });
@@ -119,7 +119,7 @@ describe("core commands (unit)", () => {
     );
     mockRenderRole.mockImplementation((_role, opts) => (opts?.profile ? "GUIDE" : null));
 
-    const { runRole } = await import("./core.js");
+    const { runRole } = await import("./core/role.js");
     const rc = await runRole(ctx, { role: "UPGRADER" });
     expect(rc).toBe(0);
     const out = writes.join("");
@@ -148,7 +148,7 @@ describe("core commands (unit)", () => {
     mockRenderRole.mockReturnValue("### CODER\nRole: Implement scope\nCLI/runtime notes:\n- note");
     mockGetRoleSupplementLines.mockReturnValue(["- note"]);
 
-    const { runRole } = await import("./core.js");
+    const { runRole } = await import("./core/role.js");
     const rc = await runRole(ctx, { role: "CODER", json: true });
     expect(rc).toBe(0);
     const payload = JSON.parse(writes.join("")) as {
@@ -172,7 +172,7 @@ describe("core commands (unit)", () => {
     mockRenderRole.mockReturnValue(null);
     mockListRoles.mockReturnValue(["ORCHESTRATOR"]);
 
-    const { runRole } = await import("./core.js");
+    const { runRole } = await import("./core/role.js");
     try {
       await runRole(ctx, { role: "NOPE" });
       expect.unreachable();
@@ -190,7 +190,7 @@ describe("core commands (unit)", () => {
       return true;
     }) as unknown as typeof process.stdout.write);
 
-    const { makeRunAgentsHandler } = await import("./core.js");
+    const { makeRunAgentsHandler } = await import("./core/agents.js");
     const deps: RunDeps = {
       getCtx: (_cmd) => Promise.reject(new Error("getCtx not used in agents unit tests")),
       getResolvedProject: (_cmd) =>
@@ -241,7 +241,7 @@ describe("core commands (unit)", () => {
       ),
     );
 
-    const { makeRunAgentsHandler } = await import("./core.js");
+    const { makeRunAgentsHandler } = await import("./core/agents.js");
     const deps: RunDeps = {
       getCtx: (_cmd) => Promise.reject(new Error("getCtx not used in agents unit tests")),
       getResolvedProject: (_cmd) =>
