@@ -91,7 +91,7 @@ Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `
 | Script                 | Command                                                             | Purpose                             |
 | ---------------------- | ------------------------------------------------------------------- | ----------------------------------- |
 | `bench:cli:cold`       | `node scripts/measure-cli-cold-path.mjs`                            | Run bench workflow: cli cold.       |
-| `bench:cli:cold:check` | `node scripts/check-cli-cold-baseline.mjs --warmups 1 --attempts 2` | Run bench workflow: cli cold check. |
+| `bench:cli:cold:check` | `node scripts/check-cli-cold-baseline.mjs --warmups 2 --attempts 5` | Run bench workflow: cli cold check. |
 
 ## Misc
 
