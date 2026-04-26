@@ -1,10 +1,11 @@
 ---
 id: "202604261331-JYNP4Y"
 title: "Fix oversized baseline drift after core import split"
-status: "DOING"
+result_summary: "Run-cli core import support now keeps subpath imports compact and oversized baseline total below the committed cap."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-26T13:38:04.080Z"
   updated_by: "CODER"
   note: "Fixed oversized baseline drift from core subpath imports."
-commit: null
+commit:
+  hash: "b634901e0f462f5d00ce5160ddd1234d75ced68f"
+  message: "✅ JYNP4Y meta: done"
 comments:
   -
     author: "CODER"
     body: "Start: repair oversized-test baseline drift caused by expanded core subpath imports."
+  -
+    author: "CODER"
+    body: "Verified: oversized baseline drift fixed without increasing baseline limits."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fixed oversized baseline drift from core subpath imports."
+  -
+    type: "status"
+    at: "2026-04-26T13:38:49.984Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: oversized baseline drift fixed without increasing baseline limits."
 doc_version: 3
-doc_updated_at: "2026-04-26T13:38:04.094Z"
+doc_updated_at: "2026-04-26T13:38:49.986Z"
 doc_updated_by: "CODER"
 description: "Compact the run-cli test import surface introduced by core subpath migration so oversized test baselines do not grow."
 sections:
