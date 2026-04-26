@@ -1,10 +1,11 @@
 ---
 id: "202604260922-W41685"
 title: "Migrate core root imports to subpaths"
-status: "DOING"
+result_summary: "packages/agentplane/src no longer imports @agentplaneorg/core root directly."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-26T09:24:46.558Z"
   updated_by: "CODER"
   note: "Migrated agentplane source imports away from @agentplaneorg/core root."
-commit: null
+commit:
+  hash: "e65d24d78f64488c20ccd21f817f4293e42d4281"
+  message: "✅ W41685 meta: done"
 comments:
   -
     author: "CODER"
     body: "Start: migrate bare core imports to subpath imports without changing behavior."
+  -
+    author: "CODER"
+    body: "Verified: bare core imports removed from agentplane sources and focused checks passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Migrated agentplane source imports away from @agentplaneorg/core root."
+  -
+    type: "status"
+    at: "2026-04-26T09:24:51.598Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bare core imports removed from agentplane sources and focused checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-26T09:24:46.561Z"
+doc_updated_at: "2026-04-26T09:24:51.598Z"
 doc_updated_by: "CODER"
 description: "Reduce bare @agentplaneorg/core imports in agentplane sources by replacing test/runtime imports with explicit core subpath imports."
 sections:
