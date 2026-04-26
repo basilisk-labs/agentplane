@@ -1,10 +1,11 @@
 ---
 id: "202604260814-KZGZ77"
 title: "Split runner type contracts"
-status: "DOING"
+result_summary: "Split runner type contracts behind the existing facade."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-26T08:17:57.782Z"
   updated_by: "CODER"
   note: "Split runner type contracts into focused modules while preserving runner/types.js facade."
-commit: null
+commit:
+  hash: "3ac3ec8c5a3b1640a00fc076d0b1071a534dab21"
+  message: "✅ KZGZ77 code: done"
 comments:
   -
     author: "CODER"
     body: "Start: Split runner type contracts into focused modules while preserving the runner/types.js import surface for existing call sites."
+  -
+    author: "CODER"
+    body: "Verified: Split runner type contracts into focused modules under runner/types while preserving the runner/types.js facade; typecheck, runner tests, knip, formatting, bootstrap, and doctor passed."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Split runner type contracts into focused modules while preserving runner/types.js facade."
+  -
+    type: "status"
+    at: "2026-04-26T08:18:04.295Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Split runner type contracts into focused modules under runner/types while preserving the runner/types.js facade; typecheck, runner tests, knip, formatting, bootstrap, and doctor passed."
 doc_version: 3
-doc_updated_at: "2026-04-26T08:17:57.789Z"
+doc_updated_at: "2026-04-26T08:18:04.296Z"
 doc_updated_by: "CODER"
 description: "Split the large runner/types.ts contract barrel into focused runner type modules while preserving the existing runner/types.js import surface."
 sections:
