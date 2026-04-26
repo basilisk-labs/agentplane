@@ -2,13 +2,11 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import {
-  cmdRecipeAddParsed,
-  cmdRecipeDisableParsed,
-  cmdRecipeEnableParsed,
-  cmdRecipeRemoveParsed,
-  cmdRecipeUpdateParsed,
-} from "./recipes.js";
+import { cmdRecipeAddParsed } from "./recipes/impl/commands/add.js";
+import { cmdRecipeDisableParsed } from "./recipes/impl/commands/disable.js";
+import { cmdRecipeEnableParsed } from "./recipes/impl/commands/enable.js";
+import { cmdRecipeRemoveParsed } from "./recipes/impl/commands/remove.js";
+import { cmdRecipeUpdateParsed } from "./recipes/impl/commands/update.js";
 import { refreshProjectOverlayArtifacts } from "./recipes/impl/overlay-project.js";
 import { createRecipeArchiveWithManifest, pathExists } from "@agentplane/testkit";
 import {

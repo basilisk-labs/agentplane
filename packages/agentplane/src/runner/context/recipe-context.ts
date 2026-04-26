@@ -5,11 +5,9 @@ import {
   type ScenarioDefinition,
 } from "@agentplaneorg/recipes";
 
-import {
-  readProjectRecipeAssetRegistry,
-  readProjectInstalledRecipes,
-  resolveRecipeScenarioSelection,
-} from "../../commands/recipes.js";
+import { readProjectRecipeAssetRegistry } from "../../commands/recipes/impl/overlay-project.js";
+import { readProjectInstalledRecipes } from "../../commands/recipes/impl/project-installed-recipes.js";
+import { resolveRecipeScenarioSelection } from "../../commands/recipes/impl/resolver.js";
 import { resolveRecipeCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import { CliError } from "../../shared/errors.js";
 import type { RunnerRecipeContext } from "../types.js";

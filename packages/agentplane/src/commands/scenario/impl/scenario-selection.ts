@@ -5,12 +5,9 @@ import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { fileExists } from "../../../cli/fs-utils.js";
 import { CliError } from "../../../shared/errors.js";
-import {
-  readProjectInstalledRecipes,
-  readScenarioDefinition,
-  resolveRecipeScenarioSelection,
-  type ScenarioDefinition,
-} from "../../recipes.js";
+import { readScenarioDefinition, type ScenarioDefinition } from "@agentplaneorg/recipes";
+import { readProjectInstalledRecipes } from "../../recipes/impl/project-installed-recipes.js";
+import { resolveRecipeScenarioSelection } from "../../recipes/impl/resolver.js";
 
 type ScenarioCliSelection = Awaited<ReturnType<typeof resolveRecipeScenarioSelection>>;
 type ScenarioSelectionErrorRule = {
