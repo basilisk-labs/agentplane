@@ -1,10 +1,11 @@
 ---
 id: "202604261637-7VVX7E"
 title: "Prune runner adapter re-exports"
-status: "DOING"
+result_summary: "Pruned runner adapter re-exports and reduced Knip baseline total from 428 to 423."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -57,11 +58,16 @@ verification:
     Result: pass
     Evidence: Framework dev runtime is ready.
     Scope: repo-local CLI/runtime after runner source change.
-commit: null
+commit:
+  hash: "2479ffa6eade3dcde8b08f7921fe7d3bcfe2fb4d"
+  message: "🚧 7VVX7E task: prune runner adapter re-exports"
 comments:
   -
     author: "CODER"
     body: "Start: Prune unused runner adapter re-exports from the adapters index while keeping createRunnerAdapter behavior intact, then refresh Knip and run runner-focused verification."
+  -
+    author: "CODER"
+    body: "Verified: Removed unused runner adapter re-exports while preserving createRunnerAdapter, refreshed Knip baseline to total 423, and passed runner-focused tests plus typecheck, lint, Knip, format, diff check, and framework bootstrap."
 events:
   -
     type: "status"
@@ -110,8 +116,15 @@ events:
       Result: pass
       Evidence: Framework dev runtime is ready.
       Scope: repo-local CLI/runtime after runner source change.
+  -
+    type: "status"
+    at: "2026-04-26T16:39:07.059Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Removed unused runner adapter re-exports while preserving createRunnerAdapter, refreshed Knip baseline to total 423, and passed runner-focused tests plus typecheck, lint, Knip, format, diff check, and framework bootstrap."
 doc_version: 3
-doc_updated_at: "2026-04-26T16:38:52.146Z"
+doc_updated_at: "2026-04-26T16:39:07.059Z"
 doc_updated_by: "CODER"
 description: "Remove unused class/helper/type re-exports from runner/adapters/index.ts while keeping createRunnerAdapter as the internal factory, then refresh the Knip baseline."
 sections:
